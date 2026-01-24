@@ -1,0 +1,11 @@
+﻿Network Working Group                                          A. Architect
+Request for Comments: 0004                                BICAMERAL PROJECT
+Category: Kernel Standard                                  Status: RATIFIED
+
+                    "THE MONOLITH": THE SOVEREIGN
+                       LINUX KERNEL AND LIBC
+
+Abstract
+   This document specifies the operating system kernel. 
+   Components: Linux (LTS), Musl (Static), Busybox.
+   Hardening: CONFIG_MODULES=n, CONFIG_SECURITY_SELINUX=y.

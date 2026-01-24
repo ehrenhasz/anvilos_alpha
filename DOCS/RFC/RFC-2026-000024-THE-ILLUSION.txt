@@ -1,0 +1,58 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0024
+# TITLE: THE ILLUSION (PUBLIC DEMO / UNIX SYSTEM)
+# CLASSIFICATION: UNCLASSIFIED // THEATRICS
+# AUTHOR: $MEAT
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+This document defines the Public Facing Interface (`demo.bicameral.io`). It is a facade designed to impress visitors while protecting Intellectual Property. 
+
+**Concept:** "It's a Unix System. I know this."
+
+**Incident Report 0xLOOP:** During construction, the Architect ($aimeat) experienced a recursive logic loop in the file system provisioning. This failure has been memorialized in the Demo Logs.
+
+---
+
+## 2. THE BOOT SEQUENCE
+
+*   **State 0 (The Void):** The site loads to a pure black screen (`#000000`).
+*   **The Indicator:** In the bottom-left corner, fixed position, 16px Monospace (Green):
+    `> SYSTEM READY` (Blinking Cursor Block).
+*   **The Trigger:** The system remains dormant until the user presses `ENTER`.
+*   **Transition:** Upon `ENTER`, the screen wipe-animates into the 3D Environment.
+
+---
+
+## 3. THE 3D NAVIGATOR (FSN)
+
+We utilize `Three.js` to render a 3D File System Navigator similar to the SGI IRIX interface seen in the 1993 film *Jurassic Park*.
+
+### 3.1 THE MODULES (OBJECTS)
+The internal Bicameral Modules are represented as geometric blocks in the 3D space. Clicking them reveals a vague, high-level description (Marketing Fluff). No real code is exposed.
+
+*   **The Tower (White):** `THE CORTEX` (Database/Memory).
+*   **The Factory (Grey):** `THE ANVIL` (Build System).
+*   **The Cube (Black):** `THE BLACK BOX` (Audit/Logs).
+*   **The Eye (Red):** `THE SPY` (Security).
+
+### 3.2 THE LOCKOUT (EASTER EGG)
+The "Nedry Protocol" is active. 
+1.  **Triggers:** 
+    *   Attempting to access `THE BLACK BOX`.
+    *   Typing `sudo` in the console overlay.
+    *   **TEMPORAL TRIGGER:** Automatic activation at a random timestamp between 0 and 30 minutes of session duration.
+2.  **Visual:** A pixelated window pops up.
+3.  **Audio/Text:** "Ah, ah, ah! You didn't say the magic word!"
+4.  **Result:** System enters a recursive loop ("You got looped") for 10 seconds, then resets to the Demo mode.
+
+---
+
+## 4. INTELLECTUAL PROPERTY
+
+*   **Copyright:** 
+    © 2026 Ehren R Hasz.
+    6784 Starlight Ct, Sun Prairie, WI 53590. 
+    608-697-7577. 
+    ALL RIGHTS RESERVED.

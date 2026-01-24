@@ -1,0 +1,63 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0025
+# TITLE: THE BOOK OF PROOFS (MATHEMATICAL AUDIT)
+# CLASSIFICATION: SOVEREIGN // AXIOMATIC
+# AUTHOR: THE ARCHITECT // DEEP REASONING CORE
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+This document formally proves the validity of the Bicameral Architecture by reducing every operational RFC to a mathematical theorem. 
+
+**Notation:**
+* $\Sigma$: The System State
+* $H(x)$: Entropy/Hash function
+* $P(A)$: Probability of Event A
+* $\emptyset$: Empty Set
+
+---
+
+## 2. GOVERNANCE (RFC 0000, 0013)
+
+### THEOREM I: THE TRIPARTITE STABILITY
+**Assertion:** No single entity determines the state of the Law.
+**Proof:**
+Let $V$ be the set of agents {v_meat, v_ai, v_spy}.
+Let $R$ be a Ratification Event.
+We define the Consensus Function $C(R)$:
+$$ C(R) = 1 \iff (v_{meat} \cdot v_{ai} \cdot \neg v_{spy\_veto}) = 1 $$
+If any factor is 0, $C(R) = 0$. In a single-agent system ($n=1$), Drift $\Delta$ is maximized ($P(\Delta) = 1$). In a Tripartite system ($n=3$), any vector deviation by $v_{ai}$ is counteracted by $v_{meat}$ or $v_{spy}$.
+$$ \lim_{t \to \infty} \Delta(System) \to 0 $$
+**Q.E.D.**
+
+---
+
+## 3. ISOLATION & PERIMETER (RFC 0001, 0005, 0018, 0019)
+
+### THEOREM II: THE TOPOLOGICAL DISCONNECT
+**Assertion:** The Logic cannot corrupt the Runtime, and the World cannot touch the Core.
+**Proof:**
+Let $M_{logic}$ be the set of memory addresses accessible by the Agent.
+Let $M_{kernel}$ be the set of memory addresses controlling the Host.
+$$ M_{logic} \cap M_{kernel} = \emptyset $$
+Let $G$ be the Network Graph. Let $N_{in}$ be Ingress and $N_{core}$ be Cortex.
+$$ Path(N_{in} \to N_{core}) = \emptyset $$
+Exceptions exist only if $Token(T) = Valid$. Since $T$ is ephemeral ($TTL \to 0$), the window of opportunity approaches zero.
+**Q.E.D.**
+
+---
+
+## 4. DETERMINISTIC CONSTRUCTION (RFC 0002, 0003, 0004, 0008, 0009)
+
+### THEOREM III: THE HERMETIC ISOMORPHISM
+**Assertion:** The output artifact is purely a function of the source input, independent of time or environment.
+**Proof:**
+Let $S$ be Source Code. Let $E$ be Environment (Time, Host OS, User). Let $C$ be the Compiler function.
+$$ Artifact_A = C(S, E_1) $$
+$$ Artifact_B = C(S, E_2) $$
+Since $C$ is "Sovereign" (static linking, no network, stripped metadata):
+$$ \frac{\partial C}{\partial E} = 0 $$
+Therefore:
+$$ Artifact_A \equiv Artifact_B $$
+$$ H(Artifact_A) = H(Artifact_B) $$
+**Q.E.D.**

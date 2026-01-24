@@ -1,0 +1,8 @@
+# Use a minimal base image to import the root filesystem
+FROM scratch
+
+# Add the pre-compiled Gentoo stage3 tarball to the root of the container
+ADD stage3.tar.xz /
+
+# Set the default command to be a shell inside the new rootfs
+CMD ["/bin/bash"]

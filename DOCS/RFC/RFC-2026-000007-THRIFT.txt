@@ -1,0 +1,13 @@
+RFC: 2026-007
+Title: THRIFT (The Ration)
+Version: v0.1.0
+Status: RATIFIED
+
+## 1. Concept
+Cloud tokens are for strategy; Local GPU is for labor.
+
+## 2. Mechanism
+The Router.
+
+## 3. Constraint
+"Meal Tasks" (Formatting, Sanitization, Summarization) are offloaded to the local GPU (Tier 1). Only "Strategy" touches the Cloud (Tier 2).

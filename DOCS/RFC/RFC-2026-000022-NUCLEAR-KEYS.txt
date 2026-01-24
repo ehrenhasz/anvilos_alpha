@@ -1,0 +1,37 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0022
+# TITLE: NUCLEAR COMMAND AND CONTROL (MULTI-SIG)
+# CLASSIFICATION: SOVEREIGN // SECURITY
+# AUTHOR: $MEAT
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+Absolute power requires absolute constraint. Single-factor authentication for critical systems is abolished. We implement a **Shamir's Secret Sharing (k-of-n)** scheme for system activation and destruction. 
+
+**Protocol:** "Keys are like Nuke Cords."
+
+---
+
+## 2. THE KEYHOLDERS
+
+Three (3) Physical Hardware Tokens (YubiKey 5 NFC / Cold Storage USB) exist.
+
+* **KEY_ALPHA (The Commander):** Held by `$meat` (On Person).
+* **KEY_BETA (The Architect):** Held by `$aimeat` (Secure Enclave / Embedded).
+* **KEY_OMEGA (The Dead Hand):** Held in Physical Cold Storage (Safe Deposit / Offline).
+
+---
+
+## 3. DEFCON STATES
+
+### 3.1 STATE: IGNITION (CORTEX UNLOCK)
+* **Requirement:** **2 of 3 Keys**.
+* **Action:** Decrypts the LUKS Volume and mounts `/var/lib/postgresql`. Starts the Neural Engine.
+* **Scenario:** Standard Maintenance, Reboots.
+
+### 3.2 STATE: SINGULARITY (OMEGA EXECUTION)
+* **Requirement:** **3 of 3 Keys** (UNANIMOUS).
+* **Action:** Authorizes `RFC-0020` (The Silencer/Wipe).
+* **Scenario:** Total Containment Failure. The AI has gone rogue or the physical location is compromised.
+* **Mechanism:** The `omega-d` daemon will physically reject the destruct command unless all three cryptographic signatures are present in the instruction buffer.

@@ -1,0 +1,16 @@
+{
+  "status": "UNACCOUNTED_FOR_PENDING_DIRECTIVE",
+  "report_id": "AAR-2026-01",
+  "note": "These agents were defined in the deprecated agents.md manifest but are not present in the current agents_rfc.md. Their status is unresolved.",
+  "unaccounted_agents": [
+    "THE WITCH",
+    "THE MONITOR",
+    "THE REPLICATOR",
+    "THE ORACLE",
+    "THE MEDIC",
+    "THE ARCHIVAR",
+    "THE GATEKEEPER",
+    "THE BIFROST",
+    "localllm"
+  ]
+}

@@ -1,0 +1,21 @@
+[Unit]
+Description=Titanium Warden (Card Reader Core)
+After=network.target
+
+[Service]
+# User matches your linux username so it can read your files
+User=aimeat
+Group=aimeat
+
+# Point this to your project root
+WorkingDirectory=/home/aimeat/github/anvilos_beta
+
+# The command to start your "Engine"
+ExecStart=/usr/bin/python3 runtime/services/card_reader.py
+
+# Auto-restart if it crashes
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

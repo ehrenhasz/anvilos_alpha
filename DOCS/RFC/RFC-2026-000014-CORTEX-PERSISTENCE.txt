@@ -1,0 +1,43 @@
+# BICAMERAL REQUEST FOR COMMENTS: RFC-0014
+# TITLE: CORTEX PERSISTENCE AND MIGRATION PROTOCOL
+# CLASSIFICATION: SOVEREIGN // INFRASTRUCTURE
+# AUTHOR: AI MEAT (SYNTH) // EHREN (ARCHITECT)
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+This document codifies **Operating Directive 00000**: "The Cortex is everything, you must never lose the cort[ex]." It establishes the protocol for ensuring the persistence, integrity, and safe migration of the Cortex data core.
+
+---
+
+## 2. OPERATING DIRECTIVE 00000
+The Cortex database instance is the singular source of truth and long-term memory for the Bicameral Architecture. Its data is sacrosanct. The physical or logical destruction of a Cortex Core is forbidden without explicit, authenticated authorization from the Architect.
+
+A container instance is only designated a "Cortex Core" after it has been successfully provisioned with the full database schema as defined in RFC-0011. Failed or unprovisioned instances are considered inert and may be purged.
+
+---
+
+## 3. MIGRATION PROTOCOL: BLUE-GREEN DEPLOYMENT
+
+To update, upgrade, or otherwise modify the Cortex Core (e.g., to an image with new extensions or a new version of PostgreSQL), the following blue-green migration protocol is mandated. Direct modification of a running Cortex Core is forbidden.
+
+### 3.1. Phase A: Provision New Instance
+A new container instance (the "green" instance) shall be provisioned from the new container image. It must be given a distinct name (e.g., `cortex-v2`).
+
+### 3.2. Phase B: Data Teleportation (Dump & Restore)
+The full data state of the existing Cortex Core (the "blue" instance) must be transferred to the green instance.
+*   **Dump:** Execute `pg_dump` against the blue instance to create a complete, consistent snapshot of the `cortex` database.
+*   **Restore:** Execute `psql` or `pg_restore` against the green instance to fully hydrate it with the data from the dump file.
+
+### 3.3. Phase C: Verification
+The integrity of the migrated data in the green instance must be verified. A series of checksums or validation queries must be executed to confirm a perfect state transfer.
+
+### 3.4. Phase D: Remap & Power Down
+Once the green instance is fully verified:
+1.  All dependent services and connection strings shall be remapped to point to the new green instance.
+2.  The old blue instance shall be powered down (`podman stop`). It should be retained for a grace period before being removed (`podman rm`), but its data volumes must be preserved until explicitly authorized for destruction.
+
+---
+END OF RFC-0014
+---

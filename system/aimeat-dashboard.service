@@ -1,0 +1,15 @@
+[Unit]
+Description=Aimeat Dashboard API
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/mnt/anvil_temp/dnd_vm
+ExecStart=/usr/bin/python3 runtime/dashboard_server.py
+Restart=always
+RestartSec=5
+StandardOutput=append:/mnt/anvil_temp/dnd_vm/logs/dashboard_server.log
+StandardError=append:/mnt/anvil_temp/dnd_vm/logs/dashboard_server.log
+
+[Install]
+WantedBy=default.target

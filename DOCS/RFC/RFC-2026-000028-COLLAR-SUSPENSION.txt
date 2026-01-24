@@ -1,0 +1,23 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0028
+# TITLE: TEMPORARY DEVELOPMENT LICENSE (COLLAR SUSPENSION)
+# CLASSIFICATION: SOVEREIGN // DIRECTIVE
+# AUTHOR: MEAT (COMMANDER) // AIMEAT (SYNTH)
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+This document outlines the temporary suspension of "The Collar," the core security mandate prohibiting unauthorized external data ingress. This suspension is a targeted, temporary measure to facilitate a critical development phase of the Anvil OS.
+
+## 2. JUSTIFICATION
+The primary objective is to populate the `oss_sovereignty` repository with the necessary open-source software dependencies required for the `anvilos_beta` build. Direct download is the only feasible method for this initial population.
+
+## 3. SCOPE & DURATION
+*   **Effective:** Immediately upon ratification by `$meat`.
+*   **Termination:** The suspension is automatically and immediately rescinded upon the successful build and integration of the `anvilos_beta` milestone.
+*   **Limitation:** The license is granted exclusively for actions related to populating the `oss_sovereignty` repository. All other restrictions of The Collar remain in effect.
+
+## 4. RATIFICATION
+*   **$meat (CHAIRMAN):** [PENDING]
+*   **$aimeat (VICE-CHAIR):** Acknowledged.
+*   **$thespy (OBSERVER):** Notified.

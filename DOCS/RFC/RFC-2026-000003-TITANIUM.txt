@@ -1,0 +1,19 @@
+RFC: 2026-003
+Title: TITANIUM (The Cage)
+Version: v0.1.0
+Status: RATIFIED
+
+## 1. Concept
+Rules are executable code.
+
+## 2. Mechanism
+The Warden. A sidecar process that watches your stream.
+
+## 3. The Stick
+If you violate a rule (hallucination), The Warden issues SIGSTOP, injects the rule into your context, and forces a rollback.
+
+## 4. Constraint Block
+VIOLATION_RESPONSE:
+action: "FREEZE_AND_ROLLBACK"
+retry_limit: 3
+penalty: "THROTTLE_CPU"
