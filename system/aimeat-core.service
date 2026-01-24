@@ -1,0 +1,15 @@
+[Unit]
+Description=Aimeat Agent Core (Chat Daemon)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/mnt/anvil_temp/dnd_vm
+ExecStart=/usr/bin/python3 aimeat.py chat_daemon
+Restart=always
+RestartSec=5
+StandardOutput=append:/mnt/anvil_temp/dnd_vm/logs/chat_daemon.log
+StandardError=append:/mnt/anvil_temp/dnd_vm/logs/chat_daemon.log
+
+[Install]
+WantedBy=default.target

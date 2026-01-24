@@ -1,0 +1,12 @@
+BUILD_TMP/
+ARTIFACTS/
+rootfs/
+*.iso
+*.img
+*.squashfs
+*.swp
+node_modules/
+.env
+.DS_Store
+Thumbs.db
+core

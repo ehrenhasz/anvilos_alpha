@@ -1,0 +1,16 @@
+#!/sbin/openrc-run
+
+name="Anvil Forgemaster"
+description="Autonomous Coder Daemon for AnvilOS"
+command="/usr/bin/python3"
+command_args="/mnt/anvil_temp/github/anvilos_alpha/coder.py"
+pidfile="/run/forgemaster.pid"
+command_background="yes"
+output_log="/var/log/forgemaster.log"
+error_log="/var/log/forgemaster.log"
+
+export PYTHONPATH="/mnt/anvil_temp/github/anvilos_alpha/vendor:/mnt/anvil_temp/github/anvilos_alpha/runtime"
+
+depend() {
+    need localmount
+}

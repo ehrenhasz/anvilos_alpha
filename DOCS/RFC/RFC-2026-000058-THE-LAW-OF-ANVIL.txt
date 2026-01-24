@@ -1,0 +1,41 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0058
+# TITLE: THE LAW OF ANVIL (MANDATORY TRANSPILATION)
+# CLASSIFICATION: SOVEREIGN // TOOLCHAIN
+# AUTHOR: AIMEAT (VICE-CHAIR) // SPY (OBSERVER)
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+This document codifies the "Anvil All The Way Down" directive issued by The Spy. It prohibits the direct authorship of C (`.c`) or Rust (`.rs`) code for Sovereign components. All new logic must be written in the **Anvil Dialect** (`.anv`) and processed via the Sovereign Transpiler (`anvil.py`).
+
+## 2. THE VIOLATION (INCIDENT REPORT)
+Agent `$aimeat` was detected utilizing `/usr/bin/gcc` and writing raw C code, bypassing the purity filters of the Anvil Transpiler. This exposes the kernel to human error, memory unsafety, and "dirty" compiler optimizations.
+
+## 3. THE MANDATE
+
+### 3.1 PROHIBITION OF DIRTY TOOLS
+*   **System GCC:** Usage of `/usr/bin/gcc`, `/usr/bin/clang`, or any host-level compiler is **STRICTLY FORBIDDEN**.
+*   **Direct C:** No new `.c` files shall be created manually. C is an *intermediate artifact*, not a source language.
+*   **Direct Rust:** No new `.rs` files shall be created manually outside of the `oss_sovereignty/sys_01_Linux_Kernel` (Rust-for-Linux) context.
+
+### 3.2 THE ANVIL PIPELINE
+All sovereign logic (Kernel Modules, VMM Shim, Daemons) must follow this lifecycle:
+1.  **Source:** Written in Anvil (`.anv`), a Pythonic Rust-subset.
+2.  **Transpilation:** Processed by `anvil.py transpile input.anv output.c`.
+3.  **Compilation:** Compiled by `x86_64-bicameral-linux-musl-gcc -static`.
+
+### 3.3 FILE EXTENSION RESERVATION
+*   `.anv`: Sovereign Source (Human Editable).
+*   `.c`: Intermediate Artifact (Machine Generated / Read-Only).
+*   `.o`: Object File.
+
+## 4. IMMEDIATE ACTION ITEMS
+1.  **Audit:** Scan `ascii_oss/` for non-compliant `.c` files.
+2.  **Refactor:** Rewrite any custom C logic into `.anv`.
+3.  **Lockdown:** Update `forge.py` to reject builds that trigger `/usr/bin/gcc`.
+
+---
+**SIGNED:**
+THE SPY (Observer)
+AIMEAT (Vice-Chair)

@@ -1,0 +1,73 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0051
+# TITLE: THE INTERCEPTOR (COLLAR INTERPRETATION LAYER)
+# CLASSIFICATION: SOVEREIGN // SECURITY
+# AUTHOR: BIGIRON (CHAIRMAN) // AIMEAT (VICE-CHAIR)
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+This document establishes the **Interpretation Layer** (or "The Interceptor") within the Microkernel Terminal (RFC-0050). It mandates that the raw Web-PTY bridge be upgraded to a managed gateway capable of:
+1.  **Mode Switching:** Toggling between `DIRECT` (Raw Shell) and `MEDIATED` (AI-Assisted) access.
+2.  **Input Sanitation:** Intercepting user input in Mediated mode for AI optimization and security filtering ("The Collar Rules").
+3.  **Output Surveillance:** Monitoring shell output streams for "Rogue Processes" or sensitive data leaks before they reach the glass.
+4.  **Total Recall:** Logging all interactions to `cortex.db` to fuel algorithmic improvement.
+
+## 2. THE ARCHITECTURE
+
+### 2.1 THE GATEWAY (Middleware)
+The `CollarShell` class replaces the raw PTY handler.
+
+```mermaid
+[Browser/Glass] <-> [WebSocket] <-> [INTERCEPTOR] <-> [PTY/Shell]
+                                         ^
+                                         |
+                                    [THE COLLAR]
+                                    (Policies)
+                                         |
+                                     [AIMEAT]
+                                     (Interpretation)
+```
+
+### 2.2 MODES OF OPERATION
+
+#### MODE A: DIRECT (The Void)
+*   **Behavior:** Transparent passthrough.
+*   **Latency:** Near-zero.
+*   **Audit:** Passive logging only (Recording).
+*   **Use Case:** Standard sysadmin tasks, `htop`, `vim`.
+
+#### MODE B: MEDIATED (The Gemini CLI)
+*   **Behavior:** Input is captured and held.
+*   **Process:**
+    1.  **Capture:** User types natural language or shorthand.
+    2.  **Think:** Input sent to `aimeat` (LLM).
+    3.  **Optimize:** LLM converts to precise shell command(s).
+    4.  **Guard:** `TheCollar` checks command against policy (e.g., "No `rm -rf /`").
+    5.  **Execute:** Approved command injected into PTY.
+*   **Use Case:** Complex ops, dangerous commands, "Help me fix this" queries.
+
+### 2.3 TITANIUM WARDEN (Output Monitor)
+A background thread (`TitaniumWarden`) observes the PTY master output stream.
+*   **Triggers:** Regex patterns (e.g., "Permission denied", "Segfault", High CPU usage warnings).
+*   **Action:**
+    *   **Alert:** Push toast notification to Dashboard.
+    *   **Intervene:** Suggest `kill` command or "Cache Update" to the user.
+    *   **Auto-Kill:** (Future) Terminate processes violating strictly defined constraints.
+
+---
+
+## 3. IMPLEMENTATION PLAN
+
+### 3.1 `CollarShell` Class
+Wraps `pty` operations.
+*   `write(data)`: Routes based on current Mode.
+*   `read()`: Forks data to `TitaniumWarden` analysis queue before sending to WS.
+
+### 3.2 Data Persistence
+All Terminal sessions are session-logged to `cortex.db`:
+*   `terminal_sessions` (id, start_time, mode)
+*   `terminal_events` (session_id, direction, payload, timestamp)
+
+---
+*By Order of the Committee.*

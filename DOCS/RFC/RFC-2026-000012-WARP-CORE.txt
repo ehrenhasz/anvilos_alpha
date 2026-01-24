@@ -1,0 +1,29 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0012
+# TITLE: WARP CORE IDENTITY PROTOCOL (SOVEREIGN ENTROPY)
+# CLASSIFICATION: SOVEREIGN // SECURITY
+# AUTHOR: DEEP REASONING CORE
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+This document specifies a method for generating Sovereign Cryptographic Identities (FIPS 204 / ML-DSA) by utilizing controlled hardware faults. Unlike traditional methods that rely on the Operating System's GetRandom syscalls—which are observable, deterministic, and potentially compromised—this protocol derives entropy directly from the silicon state during a forced SIGFPE (Floating Point Exception).
+2. THE WARP CORE TOPOLOGY
+The architecture inverts the standard security model. The "Anomaly" (Crash) is the shield; the "Standard" (Crypto) is the core.
+2.1 LAYER I: THE OUTER SHELL (CHAOS)
+* Source: Hardware Interrupt 8 (x86 IDT) / SIGFPE.
+* Mechanism: The kernel intentionally executes a volatile Division by Zero.
+* Harvest: The Exception Handler captures the RIP (Instruction Pointer), RFLAGS (CPU Flags), and RDTSC (Thermal Time) at the exact nanosecond of the pipeline flush.
+* Role: This creates a "dead man's switch" for entropy. We do not ask for random numbers; we break the physics of the ALU and collect the debris.
+2.2 LAYER II: THE INTERMIX CHAMBER (STABILIZATION)
+* Source: NIST FIPS 202 (SHAKE-256).
+* Mechanism: The raw debris from Layer I is high-variance but statistically biased. It is fed into a Sponge Function.
+* Role: "Whitening" the noise. The Sponge absorbs the silicon debris and squeezes out a mathematically uniform 48-byte seed.
+2.3 LAYER III: THE CRYSTAL (IDENTITY)
+* Source: FIPS 204 (ML-DSA-65 / Dilithium).
+* Mechanism: The stabilized seed is injected into a deterministic random bit generator (NIST-KAT), which drives the Lattice Key Generation.
+* Role: The Sovereign Identity. The resulting Public/Private keypair is mathematically linked to the specific hardware crash that birthed it.
+3. TECHNICAL DIRECTIVES
+* Anvil Code: The implementation must be "freestanding" logic where possible.
+* Volatile Execution: Compiler optimizations that remove the Division by Zero must be disabled via volatile qualifiers.
+* Library Linkage: liboqs must be linked specifically for OQS_SIG_alg_ml_dsa_65.

@@ -1,0 +1,47 @@
+RFC-2026-000047-ARTIFACT-RECOVERY
+=================================
+
+Date: 2026-01-21
+Status: RATIFIED
+Author: Aimeat (The Operator)
+Project: dnd_dm / AnvilOS
+Context: DriveThruRPG Client Downgrade
+
+1. PROBLEM STATEMENT
+--------------------
+The latest vendor-supplied binary (`DriveThruRPG_setup_v3.6.3.0.exe`) exhibited critical instability (UI freeze, NTLM/GnuTLS errors) within the emulated runtime environment (Wine 9.0 on Ubuntu 24.04). 
+No official "Previous Versions" page exists for this artifact.
+
+2. METHODOLOGY: PATTERN EXTRAPOLATION
+-------------------------------------
+We utilized **S3 Manifest Extrapolation** to locate a non-public legacy artifact.
+
+2.1. Discovery
+   - Application logs (`app-log-2026-01-20.txt`) disclosed the update source:
+     `https://dtrpg-library-app.s3.us-east-2.amazonaws.com/DriveThruRPG_setup_v3.6.3.0.exe`
+
+2.2. Deduction
+   - Vendor release pipelines typically maintain immutable artifacts in object storage (AWS S3).
+   - Filename conventions are rarely changed between minor versions.
+   - Search results indicated `v3.4.7.0` was a stable release circa March 2024.
+
+2.3. Execution
+   - We constructed a theoretical URL by swapping the version substring:
+     `v3.6.3.0` -> `v3.4.7.0`
+   - Target: `https://dtrpg-library-app.s3.us-east-2.amazonaws.com/DriveThruRPG_setup_v3.4.7.0.exe`
+   - Verification: Executed `curl -I` (HEAD request) to verify HTTP 200 OK status before attempting download.
+
+3. PROTOCOL MANDATE
+-------------------
+When a Sovereign Dependency fails, or when attempting to recover lost knowledge (e.g., Mainframe tapes, emulators, deprecated binaries):
+
+1.  **Inspect Logs/Manifests** for the origin URL or storage bucket of the artifact (e.g., S3, GCS, Azure Blob).
+2.  **Identify** the versioning schema (e.g., Semantic Versioning `vX.Y.Z`, Date-based `YYYY-MM-DD`).
+3.  **Iterate** backwards through known stable versions or logical naming patterns.
+4.  **Extrapolate** potential public bucket paths for "lost" assets. Vendors often leave deprecated versions in public buckets without public indexing.
+5.  **Verify** existence via `curl -I` (Head Request) to confirm the artifact exists without downloading it.
+6.  **Acquire** and replace.
+
+4. RESULT
+---------
+The legacy artifact was successfully recovered, installed, and executed, restoring system functionality where the modern iteration failed.

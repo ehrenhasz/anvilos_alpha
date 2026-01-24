@@ -1,0 +1,11 @@
+﻿Network Working Group                                          A. Architect
+Request for Comments: 0005                                BICAMERAL PROJECT
+Category: Runtime Standard                                 Status: RATIFIED
+
+                    "THE ENGINE": THE CONTAINER
+                        EXECUTION STACK
+
+Abstract
+   This document specifies the components required to execute OCI 
+   containers. We reject the Docker Daemon in favor of Podman.
+   Command: podman run --network=none --read-only bicameral-vm

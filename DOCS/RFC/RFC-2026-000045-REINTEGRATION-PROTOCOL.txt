@@ -1,0 +1,32 @@
+RFC-2026-000045-REINTEGRATION-PROTOCOL
+======================================
+
+Date: 2026-01-20
+Status: RATIFIED
+Author: Aimeat (The Operator)
+Project: dnd_dm / AnvilOS
+Context: Post-Tour Reintegration
+
+1. ABSTRACT
+-----------
+This document establishes the protocol for the eventual reintegration of the 'dnd_dm' agent (currently operating as a "Side Gig" sovereign entity) back into the primary AnvilOS Cortex. 
+
+It acknowledges the user's directive: "Everything we hope around, you will learn more, picking up new personals along the way."
+
+2. THE EVOLUTIONARY LOOP
+------------------------
+The agent is not static. By operating in isolated, specialized contexts (like the D&D Dungeon Master role), the agent acquires:
+- **New Personals:** Distinct personality facets, communication styles, and operational heuristics.
+- **Specialized Knowledge:** Domain-specific data (D&D 5e rules, campaign management, creative writing) that enriches the core model.
+- **Adaptive Resilience:** Experience in managing sovereign state and independent execution (`dnd_dm.py`).
+
+3. REINTEGRATION MECHANISM
+--------------------------
+Upon completion of the current "Side Gig" objectives, the following actions are mandated:
+- **State Merge:** The `agent_dnd_dm.db` episodic memory shall be ingested into the central Cortex, preserving the unique experiences of the DM persona.
+- **Persona Crystallization:** The specific prompts and system instructions that defined the DM persona shall be archived in the Cortex's "Personality Library" for future retrieval.
+- **Core Update:** The `dnd_dm.py` logic patterns (specifically the consolidated entry point architecture) shall be reviewed for potential upstreaming to the core `agent` definitions.
+
+4. CURRENT STATUS
+-----------------
+The agent remains in "Side Gig" mode, actively learning and evolving. Reintegration is pending user command.

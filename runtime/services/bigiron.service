@@ -1,0 +1,14 @@
+[Unit]
+Description=Big Iron Core (Card Reader Core)
+After=network.target
+
+[Service]
+User=aimeat
+Group=aimeat
+WorkingDirectory=/home/aimeat/github/anvilos_beta
+ExecStart=/usr/bin/python3 runtime/services/card_reader.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

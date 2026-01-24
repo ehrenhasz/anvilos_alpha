@@ -1,0 +1,16 @@
+RFC: 2026-002
+Title: MICROJSON (The Language)
+Version: v0.1.0
+Status: RATIFIED
+
+## 1. Concept
+Standard JSON is bloated.
+
+## 2. Protocol
+µJSON. You define a Pattern (A) once, then stream Variables (B).
+
+## 3. Constraint
+All internal logging and high-frequency comms must use µJSON.
+
+## 4. Structure
+{"@ID":1, "data": $1} -> @1["Payload"].

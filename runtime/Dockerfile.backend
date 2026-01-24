@@ -1,0 +1,32 @@
+# Step 1: Python Base (Slim for reduced size)
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libsqlite3-dev \
+    cron \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements.backend.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.backend.txt
+
+# Copy the rest of the runtime code into a 'runtime' subdirectory
+# This matches the host structure expected by the scripts
+COPY . ./runtime
+
+# Expose the API port
+EXPOSE 8000
+
+# Environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PROJECT_ROOT=/app
+
+# Start the FastAPI server
+CMD ["python", "runtime/dashboard_server.py"]

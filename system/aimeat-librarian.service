@@ -1,0 +1,15 @@
+[Unit]
+Description=Aimeat Librarian Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/mnt/anvil_temp/dnd_vm
+ExecStart=/usr/bin/python3 runtime/librarian.py
+Restart=always
+RestartSec=10
+StandardOutput=append:/mnt/anvil_temp/dnd_vm/logs/librarian.log
+StandardError=append:/mnt/anvil_temp/dnd_vm/logs/librarian.log
+
+[Install]
+WantedBy=default.target

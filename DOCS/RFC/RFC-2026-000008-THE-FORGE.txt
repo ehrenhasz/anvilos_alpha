@@ -1,0 +1,10 @@
+﻿Network Working Group                                          A. Architect
+Request for Comments: 0008                                BICAMERAL PROJECT
+Category: Process Standard                                 Status: RATIFIED
+
+               "THE FORGE": THE AUTOMATED
+                   ASSEMBLY PIPELINE
+
+Abstract
+   The dependency graph and orchestration script (`forge.py`) that 
+   executes the build sequence from Anvil to Cage.

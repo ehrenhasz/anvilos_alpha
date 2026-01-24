@@ -1,0 +1,10 @@
+﻿Network Working Group                                          A. Architect
+Request for Comments: 0006 (v2)                            BICAMERAL PROJECT
+Category: Cryptography Standard                            Status: RATIFIED
+
+                     "THE SALT": THE SOVEREIGN
+                    POST-QUANTUM CRYPTO FOUNDATION
+
+Abstract
+   We implement a Hybrid Key Exchange mechanism: libsodium (X25519) + 
+   ML-KEM-768 (Kyber).
