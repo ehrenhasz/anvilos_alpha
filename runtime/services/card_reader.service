@@ -1,0 +1,13 @@
+[Unit]
+Description=Card Reader Service - The Anvil Executor
+After=network.target
+
+[Service]
+# IMPORTANT: Before installing, update the paths below to match your system.
+# The project root is not automatically detected by systemd.
+ExecStart=/usr/bin/python3 /home/aimeat/github/anvilos_beta/runtime/services/card_reader.py
+WorkingDirectory=/home/aimeat/github/anvilos_beta
+Restart=always
+
+[Install]
+WantedBy=default.target

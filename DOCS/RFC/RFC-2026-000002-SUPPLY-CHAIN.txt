@@ -1,0 +1,16 @@
+﻿Network Working Group                                          A. Architect
+Request for Comments: 0002                                BICAMERAL PROJECT
+Category: Filesystem Standard                              Status: RATIFIED
+
+                 THE "ASCII_OSS" DIRECTORY STANDARD
+
+Abstract
+   This document defines the strict filesystem hierarchy required to 
+   maintain Supply Chain Sovereignty. 
+   
+   Structure:
+   ascii_oss/$TOOL_NAME/
+   â”œâ”€â”€ origin/     (DIRTY: Exact clone of upstream git)
+   â”œâ”€â”€ sovereign/  (CLEAN: The forked, lobotomized source)
+   â”œâ”€â”€ buildroot/  (TEMP: Build artifacts)
+   â””â”€â”€ MANIFEST.md (LAW: Audit logs)

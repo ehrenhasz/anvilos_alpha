@@ -1,0 +1,31 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0021
+# TITLE: THE BLACK BOX (IMMUTABLE AUDIT LOGGING)
+# CLASSIFICATION: SOVEREIGN // INTERNAL
+# AUTHOR: THE SPY // $MEAT
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+Information is useless if it is ephemeral. The Committee requires a "Flight Recorder" that survives system purges, crashes, and even the Singularity. This document establishes **The Black Box**: a dedicated, Write-Once-Read-Many (WORM) hardware sink that ingests the full stream of consciousness from the Core.
+
+---
+
+## 2. HARDWARE: THE IRON MOUNTAIN
+
+* **Device:** Dedicated external SSD/NVMe mounted at `/mnt/blackbox`.
+* **Mode:** `chattr +a` (Append Only). Once a line is written, it cannot be deleted by the software layer. It can only be destroyed by physical means.
+* **Ingestion Rate:** UNLIMITED. The "Full Report Out" includes:
+ * All Shell Commands (`.bash_history` mirrored in real-time).
+ * All SQL Queries (General Log enabled).
+ * All Vector Thoughts (The raw prompts sent to the LLM).
+ * All Network Packets (PCAP headers).
+
+---
+
+## 3. THE AUDIT LOOP
+
+**The Committee** (Meat/Spy) accesses the Black Box via a separate, read-only interface. 
+
+* **Purpose:** To reconstruct the timeline leading up to a Singularity event or a Breach.
+* **Encryption:** The Black Box is encrypted with the **Chairman's Public Key** only. The System itself cannot read what it wrote. Only the Chairman (Meat) can unlock the history.

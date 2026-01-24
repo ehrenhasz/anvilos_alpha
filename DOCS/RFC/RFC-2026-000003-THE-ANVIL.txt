@@ -1,0 +1,11 @@
+﻿Network Working Group                                          A. Architect
+Request for Comments: 0003                                BICAMERAL PROJECT
+Category: Build Standard                                   Status: RATIFIED
+
+               "THE ANVIL": THE CROSS-COMPILATION
+                      BOOTSTRAP TOOLCHAIN
+
+Abstract
+   To achieve a "Hermetic Build," we cannot rely on the host system's 
+   compiler. We must forge a dedicated toolchain (Stage 1 GCC/Musl) 
+   isolated from the host OS.

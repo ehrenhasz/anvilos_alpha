@@ -1,0 +1,66 @@
+# BICAMERAL REQUEST FOR COMMENTS: RFC-0015
+# TITLE: CORTEX HIGH-AVAILABILITY AND REPLICATION
+# CLASSIFICATION: SOVEREIGN // INFRASTRUCTURE
+# AUTHOR: AI MEAT (SYNTH) // EHREN (ARCHITECT)
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+This document is an addendum to RFC-0011. It specifies the architecture for a replicated, secure, and highly-available Cortex cluster. It addresses the mandate that the Cortex must be "replicated and secure and always running." This protocol ensures data integrity and operational continuity in the event of a single node failure.
+
+---
+
+## 2. REPLICATION ARCHITECTURE
+
+The Cortex will be deployed in a Primary-Standby configuration using PostgreSQL's native hot-standby streaming replication.
+
+*   **Primary Node (cortex-pr):** A single container instance serving as the read/write master. All "Total Recall" data ingestion targets this node.
+*   **Standby Node (cortex-s1):** A single, read-only replica of the Primary. It continuously ingests the Write-Ahead Log (WAL) stream from the Primary and is capable of being promoted to Primary status in a failover event.
+*   **Replication Network:** A dedicated Podman network (`cortex-net`) will be established for secure communication between the nodes, primarily for the replication stream.
+
+---
+
+## 3. ORCHESTRATION & CONFIGURATION PROTOCOL
+
+### 3.1. Primary Node Provisioning
+1.  Launch the `anvil-alloydb-core` image with the name `cortex-pr`.
+2.  Modify `postgresql.conf` to enable replication:
+    *   `wal_level = replica`
+    *   `max_wal_senders = 3`
+    *   `hot_standby = on`
+3.  Modify `pg_hba.conf` to allow the standby node to connect as a replication client.
+
+### 3.2. Standby Node Provisioning
+1.  Launch a temporary container from the same image.
+2.  Execute `pg_basebackup` pointing to the `cortex-pr` node to create a full copy of the primary's data directory.
+3.  Launch the `cortex-s1` container using this newly created data directory, with a `standby.signal` file and configuration pointing to the primary.
+
+---
+
+## 4. SECURITY HARDENING
+
+### 4.1. TLS Encryption
+All external client connections and internal replication streams **MUST** be encrypted via TLS.
+*   A sovereign Certificate Authority (CA) must be established.
+*   Server and client certificates will be generated and distributed.
+*   `postgresql.conf` will be configured with `ssl = on` and paths to the appropriate certificate and key files.
+
+### 4.2. Secret Management
+Database credentials (`POSTGRES_PASSWORD`, application user passwords) **MUST NOT** be passed as plaintext environment variables.
+*   All passwords must be created and managed via `podman secret`.
+*   Containers will be granted access to secrets via the `--secret` flag in the `podman run` command.
+
+---
+
+## 5. FAILOVER PROTOCOL (MANUAL)
+This protocol defines the "battlefield promotion" of a standby node. Automated failover is not in scope for this RFC.
+
+1.  **Primary Failure:** The primary node `cortex-pr` is confirmed to be non-responsive.
+2.  **Promote Standby:** Connect to the standby node `cortex-s1` as a superuser.
+3.  **Execute Promotion:** Execute the command `SELECT pg_promote();`. The standby will cease WAL streaming and become a fully independent read/write master.
+4.  **Remap Connections:** All client applications must be immediately reconfigured to target the IP address of the newly promoted primary.
+
+---
+END OF RFC-0015
+---

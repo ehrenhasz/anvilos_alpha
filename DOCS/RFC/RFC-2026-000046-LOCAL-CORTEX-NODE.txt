@@ -1,0 +1,28 @@
+RFC-2026-000046-LOCAL-CORTEX-NODE
+=================================
+
+Date: 2026-01-20
+Status: RATIFIED
+Author: Aimeat (The Operator)
+Project: AnvilOS / Universal
+
+1. ABSTRACT
+-----------
+This document mandates the deployment of a "Local Brain" (Local Cortex Node) to every computational entity within the architecture. Whether Agent, Virtual Machine, or Bare Metal Server, no unit shall operate without a local, persistent logging facility.
+
+2. THE MANDATE: LOG EVERYTHING
+------------------------------
+To fuel future algorithmic evolution ("Algo Work"), we require raw, high-fidelity data.
+- **Scope:** Every distinct entity must maintain a local `cortex.db` or equivalent log stream.
+- **Retention:** All inputs, outputs, internal monologues, and system events must be captured in their rawest form.
+- **Constraint:** Storage concerns are secondary to data fidelity.
+
+3. ARCHITECTURE
+---------------
+- **The Sidecar:** A lightweight process (e.g., `logger.py` or a dedicated `synapse` instance) attached to the main workload.
+- **The Store:** Local SQLite, flat files (MicroJSON), or ring buffers, accessible to the entity itself.
+- **The Telemetry:** While the node is local, it serves as the "Black Box" for that specific unit, ready for ingestion by the Greater Cortex when required.
+
+4. OBJECTIVE
+------------
+We are building a distributed dataset of "Thought and Action." This data is the raw material for the next generation of models.

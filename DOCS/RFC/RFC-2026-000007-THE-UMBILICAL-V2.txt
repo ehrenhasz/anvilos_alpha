@@ -1,0 +1,11 @@
+﻿Network Working Group                                          A. Architect
+Request for Comments: 0007 (v2)                            BICAMERAL PROJECT
+Category: Interface Standard                               Status: RATIFIED
+
+               "THE UMBILICAL": THE SOVEREIGN
+                  VSOCK & PQC TUNNEL DAEMON
+
+Abstract
+   This document defines `umbilical-d`, running as PID 2.
+   It rejects TCP/IP in favor of AF_VSOCK. 
+   It implements the RFC-0006 Post-Quantum Handshake.

@@ -1,0 +1,52 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0056
+# TITLE: THE CRYSTAL PALACE (USERLAND ARCHITECTURE)
+# CLASSIFICATION: SOVEREIGN // USERLAND
+# AUTHOR: MEAT (COMMANDER)
+# STATUS: DRAFT
+
+---
+
+## 1. ABSTRACT
+The Mainframe is the brain. The Tesseract is the soul. The Crystal Palace is the body.
+This protocol defines the architecture for the **Userland**, mandating that all user-facing applications run as "Microkernel Crystals"—isolated, ephemeral, and strictly typed execution environments. It also enforces a strict **2-Factor Authentication (2FA)** protocol for system entry, leveraging the Tesseract Identity.
+
+## 2. THE CRYSTAL PROTOCOL (APP ISOLATION)
+Applications are not installed; they are crystallized.
+*   **Definition:** A "Crystal" is a self-contained, read-only application image (SquashFS/AppImage) mounted into a restrictive sandbox (Firecracker/Bubblewrap) upon execution.
+*   **The Crystal Lattice (WM):** The Window Manager (WM) acts as the "Lattice," holding these Crystals in place. It manages the layout but does not execute the code inside the Crystal.
+*   **Lifecycle:**
+    1.  **Nucleation:** User requests app.
+    2.  **Growth:** System mounts image, spins up isolation layer (The Jail Cell - RFC-0054).
+    3.  **Resonance:** App executes. State is kept in memory or flushed to DB.
+    4.  **Shatter:** On close, the container is destroyed. No residue.
+
+## 3. THE GATEKEEPER (2FA LOGON)
+Access to the Crystal Palace requires proof of identity across two dimensions.
+
+### 3.1 FACTOR 1: THE KNOWLEDGE (PASSWORD)
+*   Standard high-entropy passphrase.
+*   Hashed via Argon2id (RFC-Standard).
+
+### 3.2 FACTOR 2: THE ARTIFACT (TESSERACT TOKEN)
+*   **Mechanism:** Challenge-Response via the Tesseract Engine (RFC-0055).
+*   **The Key:** A physical or digital token (YubiKey / TOTP) seeded from the user's sovereign Dilithium Crystal.
+*   **The Flow:**
+    1.  User enters Passphrase.
+    2.  System presents a `Tesseract Challenge` (Cryptographic Nonce).
+    3.  User must sign Nonce with their Private Dilithium Key.
+    4.  System validates signature against the Public Lattice.
+
+## 4. IMPLEMENTATION DIRECTIVES
+
+### 4.1 THE CRYSTAL RUNTIME
+*   **Tech:** `bwrap` (Bubblewrap) or `firecracker-microvm`.
+*   **Policy:** No network access by default. Explicit permission required for `eth0`.
+*   **Filesystem:** Read-Only Root. `/tmp` is `tmpfs`. Persistent storage only via mounted `anvil-db` socket.
+
+### 4.2 THE GREETER (LOGON)
+*   **Action:** Replace standard `getty` / `lightdm` with `anvil-greeter`.
+*   **UI:** Minimal TUI/GUI.
+*   **Backend:** Interacts directly with `cortex.db` (User Table) and `runtime/tesseract.py`.
+
+---
+**[SHE] The Palace is clear. The walls are transparent. We see everything.**

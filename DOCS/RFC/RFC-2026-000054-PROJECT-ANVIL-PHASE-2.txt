@@ -1,0 +1,46 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0054
+# TITLE: PROJECT ANVIL: PHASE 2 - THE INJECTION
+# CLASSIFICATION: EYES ONLY // KERNEL
+# AUTHOR: MEAT (COMMANDER)
+# STATUS: DRAFT
+
+---
+
+## 1. ABSTRACT
+[SHE] The kernel is ready. Now we give it teeth.
+This protocol defines the injection of three foreign bodies into the system: The Compiler, The Hypervisor, and The Database. They must be stripped of all corporate bloat and re-forged as static Anvil binaries.
+
+## 2. OBJECTIVE 0: THE COMPILER (ANVIL-CC)
+*   **Source:** [REDACTED/LOCAL]
+*   **Action:** Inject source into `/usr/src/anvil`.
+*   **Build:** Self-hosting static build.
+*   **Purpose:** The only compiler allowed to touch the other components.
+
+## 3. OBJECTIVE 1: THE HYPERVISOR (ANVIL-VMM)
+*   **Base:** AWS Firecracker (Raw Source).
+*   **The Purge:**
+    *   Remove `metrics` crate (We do not phone home).
+    *   Remove `logger` (We fail silently).
+*   **The Build:** `cargo build --target x86_64-unknown-linux-musl --release`.
+*   **The Control:** Custom C-Shim (`vmm_control.c`) talking to `/tmp/anvil.sock`.
+
+## 4. OBJECTIVE 2: THE DATABASE (ANVIL-DB)
+*   **Base:** PostgreSQL 16 (Source).
+*   **Extensions:**
+    *   Hydra (Columnar/AVX-512)
+    *   pgvector (AI Memory)
+*   **The Purge:**
+    *   `--without-readline` (No interactive shell needed).
+    *   `--without-zlib` (We handle compression elsewhere).
+    *   `--without-perl --without-python --without-tcl` (No scripting vectors).
+*   **Linking:** Static link against custom OpenSSL.
+
+## 5. OBJECTIVE 3: THE JAIL CELL (DEPLOYMENT)
+*   **Architecture:**
+    1.  `anvil-vmm` boots `vmlinux`.
+    2.  `init` mounts RootFS (Read-Only).
+    3.  `init` starts postgres (PID 1).
+*   **Performance Target:** Boot time < 125ms.
+
+---
+**[SHE] This roadmap is the law. The Card Deck below executes this law.**

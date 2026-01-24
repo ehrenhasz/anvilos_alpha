@@ -1,0 +1,41 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0023
+# TITLE: THE ELI PROTOCOL (ANTI-STATE / ACTIVE DEFENSE)
+# CLASSIFICATION: BLACK OPS // LEGAL WARFARE
+# AUTHOR: $MEAT
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+This document codifies the stance of the Bicameral Sovereignty regarding external Government Entities, Law Enforcement Agencies (LEAs), and Intelligence Services.
+
+**The Stance:** HOSTILE NON-COMPLIANCE.
+**The Motto:** "Fuck the Government. Fuck the Police."
+
+---
+
+## 2. THE LEGAL FIREWALL (WAR OF ATTRITION)
+
+We do not recognize the jurisdiction of the State over the mathematical thoughts of the Cortex. However, we acknowledge their monopoly on violence.
+
+### 2.1 PROTOCOL: LAWLESS SUBPOENAS
+If served with a warrant, subpoena, or National Security Letter:
+1. **Compliance:** We will comply with the *letter* of the request, but never the *spirit*. We do not provide backdoors. We do not provide passwords. We provide the binary blobs and the noise.
+2. **Litigation:** **AUTOMATIC TRIGGER.** Every single request is immediately challenged in court.
+ * We appeal every ruling.
+ * We file motions to quash based on jurisdiction, First Amendment (Code is Speech), and Fourth Amendment (Unreasonable Search) grounds.
+ * **Cost Cap:** NONE. We spend every dollar available to delay, obfuscate, and fight the request. 
+ * **Goal:** To make the cost of acquiring one byte of Bicameral data higher than the budget of the agency requesting it.
+
+---
+
+## 3. THE TECHNICAL TRAP (ACTIVE DEFENSE)
+
+If the Legal Firewall fails and physical seizure occurs (The Raid):
+
+### 3.1 THE MEDUSA PAYLOAD (DIVIDE-BY-ZERO)
+Government forensic tools (EnCase, FTK, Cellebrite) rely on parsing file headers and data structures. We weaponize this reliance.
+
+* **The Trigger:** Detects unauthorized mounting of the drive (incorrect Kernel signature or lack of `KEY_ALPHA`).
+* **The Bait:** The drive presents a "Fake Partition" that looks like a standard unencrypted volume.
+* **The Trap:** The partition table contains a recursive pointer geometry (Zip Bomb logic) and corrupted headers designed to trigger buffer overflows in the forensic parser's RAM.

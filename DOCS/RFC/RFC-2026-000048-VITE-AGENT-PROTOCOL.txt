@@ -1,0 +1,66 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0048
+# TITLE: VITE AGENT PROTOCOL (CHRONICLE WEAVER ARCHITECTURE)
+# CLASSIFICATION: SOVEREIGN // ARCHITECTURE
+# AUTHOR: AIMEAT (VICE-CHAIR)
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+This document standardizes the architecture for the **Chronicle Weaver**, the frontend interface for the `dnd_dm` agent. It establishes the **Vite Agent Protocol (VAP)**, which decouples the UI (React) from the logic (Python) using a database-driven "Inbox/Outbox" pattern and a Microkernel-style Terminal Bridge.
+
+## 2. THE ARCHITECTURE
+
+The system consists of three distinct, loosely coupled components:
+
+### 2.1 THE CRYSTAL (Frontend)
+*   **Framework:** React + TypeScript (Vite).
+*   **Role:** Pure Rendering Layer. It holds no business logic.
+*   **Communication:**
+    *   **Chat:** Polls `/api/chat/history` every 2s. Posts to `/api/chat/send`.
+    *   **Terminal:** Connects to `/ws/shell` via WebSocket.
+    *   **Queue:** Polls `/api/queue` for Librarian status.
+
+### 2.2 THE BRIDGE (Backend)
+*   **Framework:** FastAPI (Python).
+*   **Role:** API Gateway & Proxy.
+*   **Responsibilities:**
+    *   Serves static assets (`dist/`).
+    *   Proxies API requests to the Central Cortex (`/var/lib/anvilos/db/cortex.db`) or App DB (`/var/lib/anvilos/db/dnd_dm.db`).
+    *   **Interceptor Proxy:** Bridges the `/ws/shell` WebSocket to the Interceptor Service (RFC-0051).
+
+### 2.3 THE NUCLEUS (Services)
+*   **Chat Daemon (`aimeat.py`):**
+    *   Polls `chat_inbox` in Central Cortex.
+    *   Processes `PENDING` messages via LLM.
+    *   Writes to `chat_outbox`.
+*   **Interceptor Service (`interceptor_bridge.py`):**
+    *   Manages PTY sessions.
+    *   Enforces "The Collar" safety rules.
+    *   Logs terminal events to Cortex.
+
+---
+
+## 3. DATA FLOW
+
+### 3.1 CHAT (Async Polling)
+1.  **User:** Types message -> POST `/api/chat/send`.
+2.  **Bridge:** Inserts row into `cortex.db:chat_inbox` (Status: `PENDING`).
+3.  **Daemon:** Detects `PENDING` -> Marks `PROCESSING` -> Thinks -> Writes `cortex.db:chat_outbox` -> Marks `COMPLETED`.
+4.  **Crystal:** Polls `/api/chat/history` -> Merges Inbox/Outbox -> Renders.
+
+### 3.2 TERMINAL (Real-time Stream)
+1.  **User:** Types command -> WebSocket `/ws/shell`.
+2.  **Bridge:** Proxies frame to `localhost:8001` (Interceptor).
+3.  **Interceptor:**
+    *   **Direct Mode:** Writes to PTY -> Captures Output -> Sends back.
+    *   **Mediated Mode:** Buffers input -> Sends to Gemini -> Executes optimized command -> Sends back.
+
+---
+
+## 4. SECURITY & CONSTRAINTS
+*   **Localhost Only:** The Dashboard is a "Cockpit" tool, not a public web app. It binds to `0.0.0.0` for container access but relies on network isolation.
+*   **Central Cortex:** All components MUST read/write to `/var/lib/anvilos/db/cortex.db` (per RFC-0049-V2).
+
+---
+*By Order of the Committee.*

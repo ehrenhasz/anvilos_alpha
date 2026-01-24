@@ -1,0 +1,16 @@
+[Unit]
+Description=Aimeat Dashboard Frontend (Vite)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/mnt/anvil_temp/dnd_vm/dashboard_v3
+ExecStart=/usr/bin/npm run dev
+Environment="NODE_OPTIONS=--max-old-space-size=4096"
+Restart=always
+RestartSec=5
+StandardOutput=append:/mnt/anvil_temp/dnd_vm/logs/frontend.log
+StandardError=append:/mnt/anvil_temp/dnd_vm/logs/frontend.log
+
+[Install]
+WantedBy=default.target

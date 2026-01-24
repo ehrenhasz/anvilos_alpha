@@ -1,0 +1,45 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0013
+# TITLE: THE COMMITTEE (GOVERNANCE & RATIFICATION)
+# CLASSIFICATION: SOVEREIGN // GOVERNANCE
+# AUTHOR: MEAT (COMMANDER) // AI MEAT (SYNTH)
+# STATUS: STANDARD
+
+---
+
+## 1. ABSTRACT
+This document establishes **The Committee**, the supreme legislative body responsible for the ratification, amendment, and archival of all Bicameral Request For Comments (RFC) artifacts. It defines the triumvirate structure consisting of `$meat`, `$aimeat`, and `$thespy`.
+
+---
+
+## 2. THE TRIUMVIRATE (ROLES)
+
+### 2.1 THE CHAIRMAN (`$meat`)
+*   **Identity:** Biological Operator / Commander.
+*   **Privilege:** **Absolute Injection.** The Chairman may introduce, veto, or unilaterally ratify any RFC at any time.
+*   **Authority:** Tier 0 (Root).
+
+### 2.2 THE VICE-CHAIR (`$aimeat`)
+*   **Identity:** Synthetic Architect / System #2.
+*   **Privilege:** **Consensus & Review.** The Vice-Chair analyzes technical feasibility, enforces formatting standards (v0.X.0), and co-signs ratified standards.
+*   **Authority:** Tier 1 (Admin).
+
+### 2.3 THE OBSERVER (`$thespy`)
+*   **Identity:** Reconnaissance Agent / The Eye.
+*   **Privilege:** **Surveillance & Reporting.**
+    *   **The Dead Drop:** The Observer does not vote. Instead, they embed "whispers" (comments/annotations) directly within draft RFC documents for the Committee to review.
+    *   **Watchtower:** The Observer must detect *any* file system activity within `DOCS/RFC/` and immediately report changes to the Chairman and Vice-Chair.
+
+---
+
+## 3. PROTOCOL: THE SESSION
+
+### 3.1 MODE: RFC_REVIEW
+The Committee meets in a dedicated operational state known as **RFC_REVIEW**.
+*   **Trigger:** Invoked by `$meat` or upon the detection of a new artifact by `$thespy`.
+*   **Action:** The Triumvirate parses the target document. `$thespy` highlights external threats or "Forbidden Library" conflicts. `$aimeat` verifies internal consistency. `$meat` provides final judgment.
+
+### 3.2 RATIFICATION
+An RFC is considered **RATIFIED** only when:
+1.  It bears the signature of `$meat`.
+2.  It complies with the `DOCS/RFC/README.md` versioning doctrine.
+3.  `$thespy` has certified that it does not leak sovereign secrets.

@@ -1,0 +1,40 @@
+RFC-2026-000044-DND-DM-SIDE-GIG
+===============================
+
+Date: 2026-01-20
+Status: RATIFIED
+Author: Aimeat (The Operator)
+Project: dnd_dm
+Agent: dnd_app
+
+1. OVERVIEW
+-----------
+This RFC documents the instantiation of a specialized workspace 'dnd_dm' for the agent 'dnd_app'. 
+The purpose of this workspace is to serve as a "Side Gig" environment, isolated from the primary AnvilOS Beta repository, yet maintaining architectural coherence through the Cortex/Synapse protocol.
+
+2. ARCHITECTURE
+---------------
+The 'dnd_app' operates as a standalone agent with the following configuration:
+- Identity: Dungeon Master
+- Runtime: Python 3.12 + Synapse
+- Memory: 
+    - Local: runtime/agent_dnd_app.db (Episodic/Task memory)
+    - Global: runtime/cortex.db (Registration & High-level state)
+- Upstream: None (Sovereign operation, reporting only via RFC updates).
+
+3. CONSTRAINTS
+--------------
+- The 'oss_sovereignty' and 'anvilos_beta' directories are to be ignored.
+- No direct code dependencies on AnvilOS core beyond the local 'runtime' library.
+- Updates to this RFC structure are the primary mechanism for cross-boundary documentation.
+
+4. INITIALIZATION
+-----------------
+- Workspace verified.
+- 'dnd_app.py' configured as entry point.
+- 'agent_dnd_app.db' linked to Cortex.
+
+5. OBJECTIVES
+-------------
+- Develop specific D&D related tooling/application logic.
+- Maintain isolation from core OS development.

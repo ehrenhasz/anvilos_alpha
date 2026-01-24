@@ -1,0 +1,71 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0017
+# TITLE: THE TESSERACT (4-DIMENSIONAL WARP CORE TOPOLOGY)
+# CLASSIFICATION: SOVEREIGN // THEORETICAL
+# AUTHOR: AI MEAT (SYNTH) // MADAM CHAIRMAN
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+This document proposes the architecture for the **True Warp Core**. It supersedes the singular "Warp Core" defined in RFC-0012 by arranging entropy sources and cryptographic lattices into a 3x3 geometric matrix (The Grid). This 2-dimensional plane is then extruded into 4-dimensional space-time, creating a **Tesseract Engine** where cryptographic identity is not a static key, but a fluid coordinate in a hyper-dimensional manifold.
+
+---
+
+## 2. THE BASE LAYER: THE NINE GATES (2D)
+
+The foundational unit is a 3x3 Grid, creating 9 points of intersection.
+
+### 2.1 THE AXES
+*   **The X-Axis (Chaos):** 3 Discrete **Warp Core Emitters** (RFC-0012).
+    *   *Emitter Alpha:* Thermal Noise.
+    *   *Emitter Beta:* Radio Frequency (RF) Background.
+    *   *Emitter Gamma:* Silicon Division-by-Zero debris.
+*   **The Y-Axis (Order):** 3 Discrete **Dilithium Crystal Planes** (ML-DSA Lattices).
+    *   *Plane Prime:* Mode 2 (Speed).
+    *   *Plane Secundus:* Mode 3 (Balance).
+    *   *Plane Tertius:* Mode 5 (Paranoia).
+
+### 2.2 THE INTERSECTION (THE NEXUS)
+At each of the 9 coordinates `(x, y)`, the raw Entropy from the Emitter strikes the Lattice of the Plane.
+*   **Result:** A "Shard." A partial, volatile key fragment born from the collision of pure chaos and pure math.
+*   **The Grid:** The sum of these 9 Shards forms the "Instantaneous State" of the Core.
+
+---
+
+## 3. THE EXPANSION: DIMENSIONAL ASCENSION
+
+### 3.1 THE 3RD DIMENSION (DEPTH/REDUNDANCY)
+We do not rely on a single 3x3 Grid. We stack them.
+*   **The Stack:** Multiple 3x3 Grids layered endlessly (The Z-Axis).
+*   **Function:** Error correction and consensus. If Shard `(1,1)` in Layer A disagrees with Shard `(1,1)` in Layer B, the "Mint" (RFC-0016) arbitrates based on future probability.
+
+### 3.2 THE 4TH DIMENSION (TIME/FLUX)
+This is the definition of the **True Warp Core**.
+The Tesseract is not static. It rotates in the 4th dimension (Time).
+
+*   **Temporal rotation:** The mapping between Emitters (X) and Planes (Y) shifts constantly.
+    *   *T=0:* Alpha feeds Prime.
+    *   *T=1:* Alpha feeds Tertius.
+*   **The Hyper-Key:** The actual Sovereign Key is not found in the grid itself, but in the **motion** of the grid through time. The key is the *trajectory*, not the coordinate.
+
+---
+
+## 4. IMPLEMENTATION THEORY
+
+### 4.1 THE MATRIX
+```python
+# Theoretical representation of the 3x3 Grid at Time T
+matrix = [
+    [ (Alpha + Prime),   (Beta + Prime),   (Gamma + Prime)   ],
+    [ (Alpha + Secundus), (Beta + Secundus), (Gamma + Secundus) ],
+    [ (Alpha + Tertius),  (Beta + Tertius),  (Gamma + Tertius)  ]
+]
+```
+
+### 4.2 THE 4D PROJECTION
+To decrypt the system, one implies knowledge of:
+1.  The state of the 9 Shards (Space).
+2.  The precise moment of the rotation (Time).
+3.  The predictive vector of the Mint (Future).
+
+This renders the core impervious to static analysis. To hack the Tesseract, one must hack the timeline itself.

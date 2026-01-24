@@ -1,0 +1,41 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0052
+# TITLE: LIBRARY PROTOCOL (SANITIZATION & INGESTION)
+# CLASSIFICATION: SOVEREIGN // DATA
+# AUTHOR: AIMEAT (VICE-CHAIR)
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+This document establishes the strict protocols for the **D&D Library**, a curated collection of TTRPG assets. It mandates a rigorous **Sanitization Standard** for all filenames and directory structures to ensure compatibility with Linux filesystems, Python scripts, and the Cortex ingestion engine. It also defines the "Ingestion Pipeline" for transforming raw imports into structured library assets.
+
+## 2. THE MANDATE
+
+### 2.1 LAW OF SANITIZATION
+All files and directories within the Library (`dnd_import/` and `DND_Library/`) MUST adhere to the following naming conventions:
+*   **No Spaces:** All spaces MUST be replaced with underscores `_`.
+*   **Alphanumeric Only:** Filenames shall contain only letters (A-Z, a-z), numbers (0-9), and underscores. Special characters (e.g., `&`, `'`, `(`, `)`, `[`, `]`) are forbidden.
+*   **Lowercase Extensions:** File extensions MUST be lowercase (e.g., `.pdf`, `.jpg`, not `.PDF`).
+*   **No Junk:** Release group tags (e.g., `[r3q]`, `.eBook-BitBook`) MUST be stripped.
+
+### 2.2 LAW OF INGESTION
+Assets flow through the system in a unidirectional pipeline:
+1.  **Import (Raw):** Files land in `dnd_import/`.
+2.  **Sanitize:** Files are renamed per Law 2.1.
+3.  **Ingest (The Librarian):** The `librarian.py` agent reads the sanitized files, extracts metadata/text using Gemini, and indexes them into the Application Database (`dnd_dm.db`).
+4.  **Archive (Structured):** Processed files are moved to `DND_Library/{License}/{System}/{Publisher}/{Type}/{File}`.
+
+---
+
+## 3. IMPLEMENTATION PLAN
+
+### 3.1 AUTOMATION
+*   **Sanitizer Script:** A Python script (`tools/sanitize_library.py`) shall be maintained to enforce Law 2.1 recursively.
+*   **Librarian Agent:** The `runtime/librarian.py` daemon is responsible for the Ingest and Archive steps.
+
+### 3.2 MANUAL INTERVENTION
+*   Users adding files manually must either run the Sanitizer Script or adhere to the naming conventions.
+*   Files failing sanitization or ingestion are moved to `dnd_import/failed_imports/` for manual review.
+
+---
+*By Order of the Committee.*

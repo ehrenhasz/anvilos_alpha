@@ -1,0 +1,221 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0011
+# TITLE: THE CORTEX (CENTRALIZED STATE & GENESIS PROTOCOL)
+# CLASSIFICATION: SOVEREIGN // INFRASTRUCTURE
+# AUTHOR: EHREN (ARCHITECT) // AI MEAT (SYNTH)
+# TARGET: dev-alloydb (192.168.6.84)
+# STATUS: RATIFIED STANDARD
+
+---
+
+## 1. ABSTRACT
+The Cortex serves as the singular, persistent "Mind" of the Bicameral Architecture. It rejects the traditional model where application state is stored in files or container images. Instead, it enforces **Stateless Immortality**:
+1. **Total Recall:** All system entropy (logs, code, vectors) is immediately crystalized into the Cortex.
+2. **Genesis:** All computing units (Containers/VMs) must boot as "hollow shells," retrieving their identity, configuration, and executable logic dynamically from the Cortex at runtime.
+
+The underlying engine is **AlloyDB Omni** running on a **Podman** container runtime.
+
+---
+
+## 2. THE MANDATE
+
+### 2.1 LAW OF TOTAL RECALL
+No data exists until it is committed to the database.
+* **Hypervisor Logs:** Must be scraped and ingested.
+* **Source Code:** Must be "crystallized" (read from disk and inserted as text) into the database.
+* **Runtime Thoughts:** Must be stored as vector embeddings.
+
+### 2.2 LAW OF GENESIS
+A container image shall contain no configuration, no secrets, and no business logic. Its only purpose is to contain the **Genesis Bootloader**.
+* Upon instantiation, the container connects to the Cortex.
+* It queries its `hostname`.
+* It downloads its `env_vars` and `entry_script`.
+* It executes the downloaded logic.
+
+---
+
+## 3. SYSTEM ARCHITECTURE
+
+**Node:** `dev-alloydb` (192.168.6.84)
+**Engine:** Google AlloyDB Omni (PostgreSQL 15+ Compatible)
+**Orchestration:** Podman (Rootless)
+
+### 3.1 NETWORK TOPOLOGY
+* **Listen Address:** `0.0.0.0/0` (Subspace Open)
+* **Port:** `5432`
+* **Access Control:** `pg_hba.conf` configured to trust `192.168.6.0/24`.
+
+### 3.2 TIERED DEPLOYMENT
+To support rapid prototyping and single-node "Mainframe" orchestration, The Cortex acknowledges two tiers of existence:
+
+**TIER 0: THE LOCAL BRAIN (DEVELOPMENT)**
+* **Engine:** SQLite 3
+* **Path:** `/var/lib/anvilos/db/cortex.db`
+* **Concurrency:** Serialized (Single Threaded / WAL Mode)
+* **Use Case:** "The Mainframe" (Phase 1), Local Agent Testing.
+* **Schema:** Mirrors the AlloyDB schema but optimized for local file access.
+
+**TIER 1: THE HIVE MIND (PRODUCTION)**
+* **Engine:** AlloyDB Omni (PostgreSQL)
+* **Path:** `192.168.6.84:5432`
+* **Concurrency:** MVCC (Multi-Version Concurrency Control)
+* **Use Case:** "The Anvil" (Phase 3+), Multi-Container Swarm.
+
+---
+
+## 4. THE MEMORY MAP (SCHEMA)
+
+The Cortex is divided into four distinct "Lobes" (Tables).
+
+### 4.1 SECTOR A: THE VOID (Unstructured Entropy)
+*Stores raw system events, logs, and boot messages.*
+
+```sql
+CREATE TABLE void_logs (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+timestamp TIMESTAMPTZ DEFAULT NOW(),
+source_node VARCHAR(50), -- e.g., 'dev-aimeat', 'hypervisor'
+log_level VARCHAR(10), -- 'INFO', 'WARN', 'PANIC'
+payload TEXT, -- The raw message
+metadata JSONB -- Optional structured context
+);
+CREATE INDEX idx_void_ts ON void_logs(timestamp);
+```
+
+### 4.2 SECTOR B: THE FORGE (Crystallized Code)
+*Stores the source code itself. Git is for humans; The Forge is for the machine.*
+```sql
+CREATE TABLE forge_artifacts (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+filepath TEXT UNIQUE NOT NULL, -- e.g., '/opt/bicameral/src/main.py'
+content TEXT NOT NULL, -- The full source code
+checksum VARCHAR(64) NOT NULL, -- SHA256 hash
+updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+### 4.3 SECTOR C: GENESIS (Identity Manifest)
+*Defines the "Soul" of every container.*
+```sql
+CREATE TABLE genesis_manifest (
+hostname VARCHAR(64) PRIMARY KEY, -- Matches container hostname
+role VARCHAR(32), -- e.g., 'runtime-worker'
+active BOOLEAN DEFAULT TRUE,
+env_vars JSONB DEFAULT '{}', -- Environment variables to inject
+boot_script TEXT -- The Bash/Python script to execute
+);
+```
+
+### 4.4 SECTOR D: ENGRAMS (Vector Memory)
+*Stores semantic understanding and long-term context.*
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE TABLE engrams (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+created_at TIMESTAMPTZ DEFAULT NOW(),
+content TEXT,
+embedding VECTOR(768) -- Matches nomic-embed-text dimensions
+);
+```
+
+## 5. IMPLEMENTATION: PROTOCOL GENESIS
+The Genesis Bootloader is the only artifact baked into the container images.
+File: /bin/genesis (Python)
+Permissions: chmod +x /bin/genesis
+```python
+#!/usr/bin/env python3
+import os, sys, socket, psycopg2
+
+# HARDWIRED LINK (The Umbilical Cord)
+DB_CONFIG = {
+"host": "192.168.6.84",
+"user": "bicameral",
+"password": "bicameral",
+"dbname": "cortex"
+}
+
+def genesis():
+identity = socket.gethostname()
+print(f"[GENESIS] WAKING UP: {identity}")
+
+try:
+conn = psycopg2.connect(**DB_CONFIG)
+cur = conn.cursor()
+
+# 1. RETRIEVE SOUL
+cur.execute(
+"SELECT env_vars, boot_script FROM genesis_manifest WHERE hostname = %s AND active = true",
+(identity,)
+)
+soul = cur.fetchone()
+
+if not soul:
+print(f"[GENESIS] FATAL: No soul found for {identity}. Shutting down.")
+sys.exit(1)
+
+env_vars, script = soul
+
+# 2. INJECT MEMORY (Environment)
+print("[GENESIS] INJECTING VARIABLES...")
+for k, v in env_vars.items():
+os.environ[k] = str(v)
+
+# 3. MATERIALIZE BODY (Script)
+print("[GENESIS] MATERIALIZING PAYLOAD...")
+payload_path = "/tmp/ignite.sh"
+with open(payload_path, "w") as f:
+f.write("#!/bin/bash\n")
+f.write("set -e\n")
+f.write(script)
+
+os.chmod(payload_path, 0o700)
+
+# 4. TRANSFER CONSCIOUSNESS
+print("[GENESIS] TRANSFERRING CONTROL.")
+sys.stdout.flush()
+os.execv(payload_path, [payload_path])
+
+except Exception as e:
+print(f"[GENESIS] CRITICAL FAILURE: {e}")
+sys.exit(1)
+
+if __name__ == "__main__":
+gensis()
+```
+
+## 6. IMPLEMENTATION: TOTAL RECALL (INGESTION)
+This script runs on the Agent Node (dev-aimeat) to synchronize reality with the Cortex.
+File: crystallize.py
+```python
+import os, hashlib, psycopg2
+
+def crystallize_directory(root_dir):
+conn = psycopg2.connect("host=192.168.6.84 user=bicameral password=bicameral dbname=cortex")
+cur = conn.cursor()
+
+print(f"CRYSTALLIZING: {root_dir}")
+for root, _, files in os.walk(root_dir):
+for file in files:
+full_path = os.path.join(root, file)
+
+# Read Reality
+with open(full_path, 'r', errors='ignore') as f:
+content = f.read()
+
+checksum = hashlib.sha256(content.encode()).hexdigest()
+
+# Commit to Cortex
+cur.execute("""
+INSERT INTO forge_artifacts (filepath, content, checksum)
+VALUES (%s, %s, %s)
+ON CONFLICT (filepath) DO UPDATE
+SET content = EXCLUDED.content, checksum = EXCLUDED.checksum
+WHERE forge_artifacts.checksum != EXCLUDED.checksum
+""", (full_path, content, checksum))
+
+conn.commit()
+print("CRYSTALLIZATION COMPLETE.")
+```
+
+## 7. SECURITY CONSIDERATIONS
+* Network Isolation: The Cortex (.84) must only accept connections from the known fleet IPs (.82, .83).
+* Genesis Integrity: If the database is compromised, the boot_script column allows Arbitrary Code Execution on all containers. This is "Feature, not Bug" (The Cortex is absolute).

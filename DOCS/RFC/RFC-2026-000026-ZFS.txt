@@ -1,0 +1,56 @@
+# BICAMERAL REQUEST FOR COMMENTS: RFC-0026
+# TITLE: THE FOUNDATION (ZFS-ONLY ROOT)
+# CLASSIFICATION: SOVEREIGN // KERNEL
+# AUTHOR: AIMEAT (SYNTH)
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+To ensure data integrity, resilience, and sovereign control over the storage substrate, this RFC mandates that the final Anvil OS build will use ZFS as its sole and exclusive root filesystem. All other filesystem drivers (ext4, btrfs, etc.) will be purged from the final kernel artifact.
+
+This RFC also acknowledges the immediate reality that the build environment itself resides on a non-ZFS filesystem (`ext4`). The build process must therefore be capable of generating a bootable ZFS image from an `ext4` host.
+
+---
+
+## 2. THE MANDATE: ZFS AS THE MONOLITHIC ROOT
+
+### 2.1 FILESYSTEM PURGE
+The kernel configuration (`anvil.toml` or equivalent) shall be modified to explicitly disable all filesystem drivers except for ZFS and essential pseudo-filesystems (e.g., procfs, sysfs, devtmpfs). The final kernel binary must not contain code for ext4, xfs, btrfs, or any other general-purpose block-based filesystem.
+
+### 2.2 BOOTLOADER INTEGRATION
+The bootloader (`grub.cfg`) and `initramfs` must be configured to recognize and boot from a ZFS pool. The `initramfs` will contain the necessary ZFS userspace tools (`zpool`, `zfs`) to import the root pool and pass control to the ZFS-based `init`.
+
+---
+
+## 3. TRANSITIONAL PROTOCOL: BUILDING FROM A FOREIGN HOST
+
+The build pipeline (`forge.py` or equivalent scripts) must be updated to handle the creation of a ZFS image on a non-ZFS host.
+
+### 3.1 VIRTUAL BLOCK DEVICE
+The build script will create a loopback file-based block device (e.g., `rootfs.img`) on the host `ext4` filesystem. This file will serve as the virtual disk for the ZFS pool.
+
+### 3.2 ZFS PROVISIONING
+The script will use `zpool` and `zfs` userspace tools (compiled via The Anvil toolchain) to:
+1.  Create a new ZFS pool within the `rootfs.img` file (`zpool create anvil_root /path/to/rootfs.img`).
+2.  Create the necessary root datasets (e.g., `anvil_root/ROOT`, `anvil_root/home`).
+3.  Mount these datasets to a temporary location.
+4.  Install the Anvil OS base system onto these mounted datasets.
+5.  Unmount the datasets and export the pool.
+
+### 3.3 ISO GENERATION
+The final `build_iso.sh` script will embed the `rootfs.img` file into the ISO, to be used by the bootloader.
+
+---
+
+## 4. ACTION ITEMS (KERNEL PLAN PHASE 10)
+
+-   **assimilate_zfs_source**: Add the OpenZFS source repository to `oss_sovereignty`.
+-   **compile_zfs_tools**: Create recipes to cross-compile the ZFS userspace utilities using the Anvil toolchain.
+-   **integrate_zfs_kernel**: Integrate the ZFS kernel module source into the Anvil kernel build, ensuring it is statically compiled.
+-   **create_zfs_image_recipe**: Implement the "Transitional Protocol" script described in Section 3.
+-   **update_iso_recipe**: Modify the final ISO generation script to handle the ZFS root image.
+
+---
+END OF RFC-0026
+---
