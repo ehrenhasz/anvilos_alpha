@@ -50,17 +50,16 @@ CURRENT_BRANCH=$(git branch --show-current)
 echo "[MACHINE] Pushing to origin/$CURRENT_BRANCH... High-thread-count code only."
 git push origin "$CURRENT_BRANCH"
 
-# 5. CLEAN UP (Clean Local Repo)
+# 6. CLEAN UP (Clean Local Repo)
 echo "[MACHINE] Cleaning up the VIP section..."
-# Ensure we are on main
 git checkout main
-# Prune local branches that are merged? 
-# For now, just ensuring we are clean.
 git fetch --prune origin
+# Aggressive cleanup to keep it pristine
+echo "[MACHINE] Removing the riff-raff (untracked & ignored files)..."
+git clean -fd
+git clean -fdX
 
-echo "[MACHINE] Sequence Complete. You have successfully Git Yo Self."
-
-# 6. NEXT STEPS (Prompt for next branch)
+# 7. NEXT STEPS (Prompt for next branch)
 echo ""
 echo "[MACHINE] The night is young. Where to next?"
 read -p "[MACHINE] Enter name for the next branch (or hit Enter to stay on main): " NEXT_BRANCH
