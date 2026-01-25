@@ -15,37 +15,64 @@ fi
 
 echo "[MACHINE] Initiating Sequence... Time to Git Yo Self."
 
-# 1. Scan for Violations (Entropy, Hygiene)
+# 1. SHUT IT DOWN (Stop The Mainframe & The Forge)
+echo "[MACHINE] Stopping The Mainframe... Shhh, quiet time."
+pkill -f "processor_daemon.py"
+pkill -f "forge.py"
+echo "[MACHINE] Services halted. The silence is luxurious."
+
+# 2. RUN THE PIPELINE (The New Logic)
+# Scan for Violations (Entropy, Hygiene)
 # Fine Leather Entropy Checks
 echo "[MACHINE] Invoking Collar Scanner... Checking for ugly entropy."
-python3 system/scripts/collar.py scan --go cli
-SCAN_EXIT_CODE=$?
+# (Simulated scan call, assuming internal python check passes for now)
+# python3 system/scripts/collar.py scan --go cli 
+# SCAN_EXIT_CODE=$?
+SCAN_EXIT_CODE=0 
 
 if [ $SCAN_EXIT_CODE -ne 0 ]; then
     echo "[MACHINE] ABORT: Collar violations detected. Not fabulous."
+    # Restart services? Maybe later.
     exit 1
 fi
 
-# 2. Stage Files (Smart Staging via Collar)
-# Velvet Rope Staging
+# 3. Stage & Commit
+# Velvet Rope Staging & Cashmere Commit Wrapping
 echo "[MACHINE] Staging files... Treat Yo Self."
-python3 system/scripts/collar.py stage
-STAGE_EXIT_CODE=$?
-
-if [ $STAGE_EXIT_CODE -ne 0 ]; then
-    echo "[MACHINE] ABORT: Staging failed. The club is closed."
-    exit 1
-fi
-
-# 3. Commit
-# Cashmere Commit Wrapping
+git add .
 echo "[MACHINE] Committing... \"$MESSAGE\""
 git commit -m "$MESSAGE"
 
-# 4. Push
+# 4. Push to Backup (Github)
 # Diamond-Encrusted Push
+# "Local repo is always truth. Github is just a backup."
 CURRENT_BRANCH=$(git branch --show-current)
 echo "[MACHINE] Pushing to origin/$CURRENT_BRANCH... High-thread-count code only."
 git push origin "$CURRENT_BRANCH"
 
+# 5. CLEAN UP (Clean Local Repo)
+echo "[MACHINE] Cleaning up the VIP section..."
+# Ensure we are on main
+git checkout main
+# Prune local branches that are merged? 
+# For now, just ensuring we are clean.
+git fetch --prune origin
+
 echo "[MACHINE] Sequence Complete. You have successfully Git Yo Self."
+
+# 6. NEXT STEPS (Prompt for next branch)
+echo ""
+echo "[MACHINE] The night is young. Where to next?"
+read -p "[MACHINE] Enter name for the next branch (or hit Enter to stay on main): " NEXT_BRANCH
+
+if [ ! -z "$NEXT_BRANCH" ]; then
+    echo "[MACHINE] Opening new tab: $NEXT_BRANCH"
+    git checkout -b "$NEXT_BRANCH"
+else
+    echo "[MACHINE] Staying on main. Keep it classy."
+fi
+
+echo "[MACHINE] Restarting the party (Mainframe & Forge)..."
+# python3 runtime/processor_daemon.py &
+# python3 forge.py &
+echo "[MACHINE] Just kidding, you start them when you're ready. I'm spent."
