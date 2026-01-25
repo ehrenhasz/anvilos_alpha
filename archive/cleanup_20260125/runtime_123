@@ -1,0 +1,8 @@
+next I need the same script, but for me to physicall run. 
+This one will push to github. 
+in system/git_machine.sh is an old version. Keep the humor and comments the same but inject new logic. 
+1. Stops the mainframe and forge. 
+2. Runs the same ci/cd pipeline, but pushes to github. 
+3. Give me a clean local repo, no open branches. 
+4. Asks me what the next branch to open is, and does that. 
+!!!!! Local repo is always truth. Github is just a backup 
