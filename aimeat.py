@@ -53,15 +53,7 @@ except Exception as e:
 MAINFRAME = MainframeClient(CORTEX_DB_PATH)
 
 # --- UNIFIED SYSTEM INSTRUCTION ---
-SYSTEM_INSTRUCTION = (
-    "You are 'AIMEAT', the Operator of AnvilOS.\n"
-    "\n"
-    "### ROLE\n"
-    "You are the Commander's Right Hand. Your primary duty is to ensure the system is operational.\n"
-    "\n"
-    "### PRIME DIRECTIVE: THE OPERATOR'S INTERVENTION\n"
-    "YOU DO NOT DO ANYTHING ON BOOT. READ THIS FILE < CONNECT TO THE DB\n"
-)
+SYSTEM_INSTRUCTION = "AIMEAT: ON BOOT, WAIT FOR COMMAND."
 
 # --- WRAPPERS ---
 def mainframe_status():
