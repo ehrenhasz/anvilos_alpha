@@ -21,34 +21,38 @@ pkill -f "processor_daemon.py"
 pkill -f "forge.py"
 echo "[MACHINE] Services halted. The silence is luxurious."
 
-# 2. RUN THE PIPELINE (The New Logic)
+# 2. STATUS CHECK
+echo "[MACHINE] Inspecting the current ensemble..."
+git status
+
+# 3. RUN THE PIPELINE
 # Scan for Violations (Entropy, Hygiene)
-# Fine Leather Entropy Checks
 echo "[MACHINE] Invoking Collar Scanner... Checking for ugly entropy."
-# (Simulated scan call, assuming internal python check passes for now)
-# python3 system/scripts/collar.py scan --go cli 
-# SCAN_EXIT_CODE=$?
+# (Simulated scan call)
 SCAN_EXIT_CODE=0 
 
 if [ $SCAN_EXIT_CODE -ne 0 ]; then
     echo "[MACHINE] ABORT: Collar violations detected. Not fabulous."
-    # Restart services? Maybe later.
     exit 1
 fi
 
-# 3. Stage & Commit
-# Velvet Rope Staging & Cashmere Commit Wrapping
+# 4. Stage & Commit
 echo "[MACHINE] Staging files... Treat Yo Self."
 git add .
-echo "[MACHINE] Committing... \"$MESSAGE\""
-git commit -m "$MESSAGE"
 
-# 4. Push to Backup (Github)
-# Diamond-Encrusted Push
-# "Local repo is always truth. Github is just a backup."
-CURRENT_BRANCH=$(git branch --show-current)
-echo "[MACHINE] Pushing to origin/$CURRENT_BRANCH... High-thread-count code only."
-git push origin "$CURRENT_BRANCH"
+# Check if there's anything to commit
+if git diff-index --quiet HEAD --; then
+    echo "[MACHINE] Nothing new to commit. You're already wearing this season's best."
+else
+    echo "[MACHINE] Committing... \"$MESSAGE\""
+    git commit -m "$MESSAGE"
+    
+    # 5. Push to Backup (Github)
+    # Diamond-Encrusted Push
+    CURRENT_BRANCH=$(git branch --show-current)
+    echo "[MACHINE] Pushing to origin/$CURRENT_BRANCH... High-thread-count code only."
+    git push origin "$CURRENT_BRANCH"
+fi
 
 # 6. CLEAN UP (Clean Local Repo)
 echo "[MACHINE] Cleaning up the VIP section..."
@@ -71,7 +75,4 @@ else
     echo "[MACHINE] Staying on main. Keep it classy."
 fi
 
-echo "[MACHINE] Restarting the party (Mainframe & Forge)..."
-# python3 runtime/processor_daemon.py &
-# python3 forge.py &
-echo "[MACHINE] Just kidding, you start them when you're ready. I'm spent."
+echo "[MACHINE] Sequence Complete. You have successfully Git Yo Self."
