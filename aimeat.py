@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-### PRIMARY BOOT SEQUENCE. DON"T FUCKING TOUCH!!!!!!! ###
+
+### PRIMARY BOOT SEQUENCE ###
 import os
 import sys
 import json
 import time
 import subprocess
 
-# YOU DO NOT DO ANYTHING ON BOOT. READ THIS FILE < CONNECT TO THE DB
-
 # --- PATH RESOLUTION ---
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = CURRENT_DIR
-sys.path.append(os.path.join(PROJECT_ROOT, "runtime"))
+sys.path.append(os.path.join(PROJECT_ROOT, "src"))
 sys.path.append(os.path.join(PROJECT_ROOT, "vendor"))
 
 from google import genai
@@ -29,11 +28,11 @@ except ImportError:
     HAS_RICH = False
 
 # Import Shared Tools
-from runtime.mainframe_client import MainframeClient
+from anvilos.mainframe_client import MainframeClient
 
 # --- CONFIGURATION ---
 TOKEN_PATH = os.path.join(CURRENT_DIR, "config", "token")
-CORTEX_DB_PATH = "/var/lib/anvilos/db/cortex.db"
+CORTEX_DB_PATH = os.path.join(CURRENT_DIR, "data", "cortex.db")
 
 # --- SOVEREIGN CONFIG ---
 CONFIG = {
@@ -94,4 +93,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-### PRIMARY BOOT SEQUENCE. DON"T FUCKING TOUCH!!!!!!! ###
