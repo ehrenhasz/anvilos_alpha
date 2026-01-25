@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 WorkingDirectory=/mnt/anvil_temp/dnd_vm/dashboard_v3
 ExecStart=/usr/bin/npm run dev
-Environment="NODE_OPTIONS=--max-old-space-size=4096"
+Environment="NODE_OPTIONS=--max-old-space-size=8192"
 Restart=always
 RestartSec=5
 StandardOutput=append:/mnt/anvil_temp/dnd_vm/logs/frontend.log
