@@ -1,46 +1,54 @@
 BICAMERAL REQUEST FOR COMMENTS: RFC-0054
-# TITLE: PROJECT ANVIL: PHASE 2 - THE INJECTION
+# TITLE: PROJECT ANVIL: PHASE 2 - THE MONOLITH & INJECTION
 # CLASSIFICATION: EYES ONLY // KERNEL
 # AUTHOR: MEAT (COMMANDER)
-# STATUS: DRAFT
+# STATUS: RATIFIED
 
 ---
 
 ## 1. ABSTRACT
-[SHE] The kernel is ready. Now we give it teeth.
-This protocol defines the injection of three foreign bodies into the system: The Compiler, The Hypervisor, and The Database. They must be stripped of all corporate bloat and re-forged as static Anvil binaries.
+Phase 2 is the pivotal transition from loose scripts to a sovereign operating system. It consists of two sub-phases:
+1.  **Phase 2A (The Monolith):** Forging the custom Kernel with built-in ZFS and creating the bootable ISO.
+2.  **Phase 2B (The Injection):** Compiling and injecting the hermetic toolchain and core services (Compiler, VMM, DB) into that new OS.
 
-## 2. OBJECTIVE 0: THE COMPILER (ANVIL-CC)
-*   **Source:** [REDACTED/LOCAL]
-*   **Action:** Inject source into `/usr/src/anvil`.
-*   **Build:** Self-hosting static build.
-*   **Purpose:** The only compiler allowed to touch the other components.
+## 2. PHASE 2A: THE MONOLITH (INFRASTRUCTURE)
+*Ref: PHASE2_DIRECTIVES.md*
 
-## 3. OBJECTIVE 1: THE HYPERVISOR (ANVIL-VMM)
-*   **Base:** AWS Firecracker (Raw Source).
-*   **The Purge:**
-    *   Remove `metrics` crate (We do not phone home).
-    *   Remove `logger` (We fail silently).
-*   **The Build:** `cargo build --target x86_64-unknown-linux-musl --release`.
-*   **The Control:** Custom C-Shim (`vmm_control.c`) talking to `/tmp/anvil.sock`.
+### 2.1. The Kernel (Heart)
+*   **Base:** Linux 6.6.x (LTS).
+*   **Modification:** OpenZFS 2.2.x merged directly into the kernel tree (`CONFIG_ZFS=y`).
+*   **Configuration:** Monolithic (No Modules). `CONFIG_BLK_DEV_INITRD=y`, `CONFIG_BLK_DEV_LOOP=y`.
 
-## 4. OBJECTIVE 2: THE DATABASE (ANVIL-DB)
-*   **Base:** PostgreSQL 16 (Source).
-*   **Extensions:**
-    *   Hydra (Columnar/AVX-512)
-    *   pgvector (AI Memory)
-*   **The Purge:**
-    *   `--without-readline` (No interactive shell needed).
-    *   `--without-zlib` (We handle compression elsewhere).
-    *   `--without-perl --without-python --without-tcl` (No scripting vectors).
-*   **Linking:** Static link against custom OpenSSL.
+### 2.2. The Userland (Muscles)
+*   **Base:** Busybox (Static).
+*   **Storage:** ZFS Utilities (Static, Custom Build).
+*   **Init:** Custom Python/Shell `init` script for ZFS Pool import and Switch Root.
 
-## 5. OBJECTIVE 3: THE JAIL CELL (DEPLOYMENT)
-*   **Architecture:**
-    1.  `anvil-vmm` boots `vmlinux`.
-    2.  `init` mounts RootFS (Read-Only).
-    3.  `init` starts postgres (PID 1).
-*   **Performance Target:** Boot time < 125ms.
+### 2.3. The Artifact (Body)
+*   **Output:** `anvilos-phase2.iso`.
+*   **Structure:** Hybrid ISO with a ZFS Pool image (`rootfs.img`) embedded.
 
 ---
-**[SHE] This roadmap is the law. The Card Deck below executes this law.**
+
+## 3. PHASE 2B: THE INJECTION (PAYLOAD)
+Once the Monolith boots, we inject the "Holy Trinity" of services.
+
+### 3.1. OBJECTIVE 0: THE COMPILER (ANVIL-CC)
+*   **Action:** Inject GCC/Musl source.
+*   **Build:** Self-hosting static build within the running Monolith.
+*   **Purpose:** The only compiler allowed to touch the other components.
+
+### 3.2. OBJECTIVE 1: THE HYPERVISOR (ANVIL-VMM)
+*   **Base:** AWS Firecracker (Raw Source).
+*   **The Purge:** Remove metrics, logging, and non-essential crates.
+*   **The Build:** Static binary targeting `x86_64-unknown-linux-musl`.
+*   **The Control:** Custom C-Shim talking to `/tmp/anvil.sock`.
+
+### 3.3. OBJECTIVE 2: THE DATABASE (ANVIL-DB)
+*   **Base:** PostgreSQL 16 (Source).
+*   **Extensions:** Hydra (Columnar), pgvector (AI Memory).
+*   **The Purge:** Remove readline, zlib, perl, python, tcl.
+*   **Linking:** Static link against custom OpenSSL.
+
+---
+**[SHE] First we build the house (2A), then we move in the furniture (2B).**

@@ -11,7 +11,15 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, '..', '..'))
 RUNTIME_DIR = os.path.join(PROJECT_ROOT, "runtime")
 # RFC-0049-V2: Central Cortex
-DB_PATH = "/var/lib/anvilos/db/cortex.db"
+DEFAULT_DB_PATH = "/var/lib/anvilos/db/cortex.db"
+LOCAL_DB_PATH = os.path.join(PROJECT_ROOT, "data", "cortex.db")
+
+if os.path.exists(DEFAULT_DB_PATH):
+    DB_PATH = DEFAULT_DB_PATH
+elif os.path.exists(LOCAL_DB_PATH):
+    DB_PATH = LOCAL_DB_PATH
+else:
+    DB_PATH = DEFAULT_DB_PATH # Fallback to default for error reporting
 
 # Add runtime to path for potential imports
 sys.path.append(RUNTIME_DIR)

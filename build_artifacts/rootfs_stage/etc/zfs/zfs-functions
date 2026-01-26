@@ -87,10 +87,10 @@ else
 fi
 
 # Paths to what we need
-ZFS="/sbin/zfs"
-ZED="/sbin/zed"
-ZPOOL="/sbin/zpool"
-ZPOOL_CACHE="//etc/zfs/zpool.cache"
+ZFS="/usr/sbin/zfs"
+ZED="/usr/sbin/zed"
+ZPOOL="/usr/sbin/zpool"
+ZPOOL_CACHE="/etc/zfs/zpool.cache"
 
 # Sensible defaults
 ZFS_LOAD_KEY='yes'

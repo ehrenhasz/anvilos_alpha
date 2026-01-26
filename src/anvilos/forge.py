@@ -15,9 +15,57 @@ sys.path.append(CURRENT_DIR)
 import json
 import time
 import sqlite3
+import glob
 import traceback
 from google import genai
 from google.genai import types
+from google.genai.errors import ClientError
+
+# --- HELPER: SCHEMA SNAPSHOT ---
+def get_schema_snapshot():
+    """
+    Scans for DB files and dumps the EXACT schema.
+    This runs BEFORE the AI starts, so it knows the column names perfectly.
+    """
+    snapshot = "--- LIVE DATABASE SCHEMA ---\n"
+    
+    # Find DBs (Adjust path if needed)
+    # We look in the project root relative to this file
+    # PROJECT_ROOT is defined below, but we can't use it easily in a standalone function 
+    # if it's not passed, but let's rely on the glob being recursive from CWD or using PROJECT_ROOT if global
+    # forge.py sets CWD to project root in some contexts? 
+    # Actually, forge.py defines PROJECT_ROOT at top level. We can use it if we move this function 
+    # after PROJECT_ROOT definition, OR just use glob relative to where we run.
+    # The user provided code uses glob("**/*.db").
+    
+    try:
+        # Search from current working directory
+        db_files = glob.glob("**/*.db", recursive=True)
+        if not db_files: return "CRITICAL: No .db file found. I am blind."
+        
+        snapshot += f"FOUND DATABASES: {db_files}\n"
+        for db in db_files:
+            try:
+                conn = sqlite3.connect(db)
+                cursor = conn.cursor()
+                
+                # Get Tables
+                cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+                tables = [r[0] for r in cursor.fetchall()]
+                
+                # Get Columns for each table
+                for table in tables:
+                    cursor.execute(f"PRAGMA table_info({table})")
+                    # Format: name (type)
+                    cols = [f"{c[1]} ({c[2]})" for c in cursor.fetchall()]
+                    snapshot += f"  TABLE '{table}': {', '.join(cols)}\n"
+                conn.close()
+            except Exception as e:
+                snapshot += f"SCHEMA READ ERROR for {db}: {e}\n"
+    except Exception as e:
+        return f"SNAPSHOT FAILED: {e}"
+        
+    return snapshot
 
 # Try to import rich for pretty printing
 try:
@@ -142,6 +190,22 @@ def print_system(text, style="bold cyan"):
 def print_error(text):
     print_system(f"[ERROR] {text}", style="bold red")
 
+def send_message_safe(chat, content):
+    max_retries = 3
+    retry_count = 0
+    while retry_count < max_retries:
+        try:
+            return chat.send_message(content)
+        except ClientError as e:
+            if e.code == 429:
+                retry_count += 1
+                wait_time = 5 * retry_count
+                print_error(f"RATE LIMIT HIT. Cooling down for {wait_time}s... (Attempt {retry_count}/{max_retries})")
+                time.sleep(wait_time)
+            else:
+                raise e
+    raise Exception("Max retries exceeded")
+
 # --- CORE: AUTO-LOOP ---
 def run_agent():
     if not API_KEY:
@@ -154,11 +218,31 @@ def run_agent():
         console.clear()
         console.print(Panel(f"IDENTITY: {CONFIG['IDENTITY']} | MODEL: {CONFIG['MODEL_ID']}", title="ANVIL-OS CODER UPLINK", border_style="bold magenta"))
     
+    # 1. GENERATE INTELLIGENCE (The Probe)
+    print_system("... Forge Probing Schema ...")
+    schema_data = get_schema_snapshot()
+
+    # 2. INJECT INTELLIGENCE
+    final_instruction = (
+        f"*** SYSTEM REALITY ***\n"
+        f"{schema_data}\n\n"
+        "*** INTELLIGENCE DIRECTIVES ***\n"
+        "1. SCHEMA COMPLIANCE: You see the exact tables and columns above. USE THEM.\n"
+        "   - Do not hallucinate column names. If it says 'id', do not use 'card_id'.\n"
+        "   - If you need to write SQL, strict adherence to the schema above is mandatory.\n"
+        "2. ANVIL OS STANDARDS:\n"
+        "   - Status Codes: 0=PENDING, 1=PROCESSING, 2=PUNCHED (Done), 9=JAMMED (Fail).\n"
+        "   - 'card_stack' contains atomic operations.\n"
+        "   - 'sys_jobs' contains high-level workflows.\n"
+        "\n"
+        f"{SYSTEM_INSTRUCTION}"
+    )
+
     chat = client.chats.create(
         model=CONFIG["MODEL_ID"],
         config=types.GenerateContentConfig(
             tools=list(TOOLS.values()),
-            system_instruction=SYSTEM_INSTRUCTION,
+            system_instruction=final_instruction,
             temperature=0.3
         )
     )
@@ -174,7 +258,7 @@ def run_agent():
         "4. Loop this process until you need clarification or hit the retry limit."
     )
     
-    response = chat.send_message(initial_prompt)
+    response = send_message_safe(chat, initial_prompt)
 
     failure_streak = 0 
 
@@ -246,7 +330,7 @@ def run_agent():
                         ))
 
                 # 5. Feed back to model
-                response = chat.send_message(tool_responses)
+                response = send_message_safe(chat, tool_responses)
             
             # --- USER INTERRUPT ---
             if HAS_RICH:
@@ -260,11 +344,14 @@ def run_agent():
                 if HAS_RICH: console.clear()
                 continue
 
-            response = chat.send_message(user_input)
+            response = send_message_safe(chat, user_input)
 
-        except Exception as e:
-            print_error(f"CRITICAL FAULT: {e}")
+        except KeyboardInterrupt:
+            print("\nExiting...")
             break
+        except Exception as e:
+            print(f"Error: {e}")
+            continue
 
 if __name__ == "__main__":
     run_agent()

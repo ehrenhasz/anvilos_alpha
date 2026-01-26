@@ -1,1 +1,1 @@
-//libexec/zfs/zed.d/data-notify.sh
+/usr/libexec/zfs/zed.d/data-notify.sh

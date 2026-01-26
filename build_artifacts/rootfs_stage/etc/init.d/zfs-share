@@ -27,7 +27,7 @@
 # Debian GNU/kFreeBSD zfsutils 8.1-3 package, written by Aurelien Jarno.
 
 # Source the common init script
-. //etc/zfs/zfs-functions
+. /etc/zfs/zfs-functions
 
 # ----------------------------------------------------
 

@@ -63,14 +63,14 @@ install() {
 	# -H ensures they are marked host-only
 	# -o ensures there is no error upon absence of these files
 	inst_multiple -o -H \
-		"//etc/zfs/zpool.cache" \
-		"//etc/zfs/vdev_id.conf"
+		"/etc/zfs/zpool.cache" \
+		"/etc/zfs/vdev_id.conf"
 
 	# Synchronize initramfs and system hostid
-	if ! inst_simple -H //etc/hostid; then
+	if ! inst_simple -H /etc/hostid; then
 		if HOSTID="$(hostid 2>/dev/null)" && [[ "${HOSTID}" != "00000000" ]]; then
-			zgenhostid -o "${initdir}//etc/hostid" "${HOSTID}"
-			mark_hostonly //etc/hostid
+			zgenhostid -o "${initdir}/etc/hostid" "${HOSTID}"
+			mark_hostonly /etc/hostid
 		fi
 	fi
 

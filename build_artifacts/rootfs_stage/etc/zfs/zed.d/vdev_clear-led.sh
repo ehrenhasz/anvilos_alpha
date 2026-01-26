@@ -1,1 +1,1 @@
-//libexec/zfs/zed.d/vdev_clear-led.sh
+/usr/libexec/zfs/zed.d/vdev_clear-led.sh

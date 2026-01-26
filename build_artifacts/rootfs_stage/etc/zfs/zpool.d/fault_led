@@ -1,1 +1,1 @@
-//libexec/zfs/zpool.d/fault_led
+/usr/libexec/zfs/zpool.d/fault_led

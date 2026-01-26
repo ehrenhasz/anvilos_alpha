@@ -9,5 +9,5 @@ ConditionEnvironment=BOOTFS
 
 [Service]
 Type=oneshot
-ExecStart=-/bin/sh -c '. /lib/dracut-lib.sh; SNAPNAME="$(getarg bootfs.snapshot)"; exec /sbin/zfs snapshot "$BOOTFS@${SNAPNAME:-%v}"'
+ExecStart=-/bin/sh -c '. /lib/dracut-lib.sh; SNAPNAME="$(getarg bootfs.snapshot)"; exec /usr/sbin/zfs snapshot "$BOOTFS@${SNAPNAME:-%v}"'
 RemainAfterExit=yes

@@ -174,8 +174,8 @@ am__append_6 = lib/cpuset.c
 am__append_7 = lib/path.c \
 	lib/sysfs.c lib/procfs.c
 # tinfo or ncurses are optional
-#am__append_8 = $(TINFO_LIBS)
-#am__append_9 = $(TINFO_CFLAGS)
+am__append_8 = $(TINFO_LIBS)
+am__append_9 = $(TINFO_CFLAGS)
 #am__append_10 = $(NCURSES_LIBS)
 #am__append_11 = $(NCURSES_CFLAGS)
 am__append_12 = test_cpuset
@@ -413,17 +413,17 @@ am__append_45 = libblkid/libblkid.3.adoc
 #am__append_126 = ul
 #am__append_127 = text-utils/ul.1
 #am__append_128 = text-utils/ul.1.adoc
-##am__append_129 = $(TINFO_LIBS) \
-##	$(TINFO_CFLAGS)
-#am__append_130 = $(NCURSES_CFLAGS)
-#am__append_131 = $(NCURSES_LIBS)
+#am__append_129 = $(TINFO_LIBS) \
+#	$(TINFO_CFLAGS)
+##am__append_130 = $(NCURSES_CFLAGS)
+##am__append_131 = $(NCURSES_LIBS)
 #am__append_132 = more
 #am__append_133 = text-utils/more.1
 #am__append_134 = text-utils/more.1.adoc
-##am__append_135 = $(TINFO_LIBS) \
-##	$(TINFO_CFLAGS)
-#am__append_136 = $(NCURSES_CFLAGS)
-#am__append_137 = $(NCURSES_LIBS)
+#am__append_135 = $(TINFO_LIBS) \
+#	$(TINFO_CFLAGS)
+##am__append_136 = $(NCURSES_CFLAGS)
+##am__append_137 = $(NCURSES_LIBS)
 #am__append_138 = test_more
 #am__append_139 = script
 #am__append_140 = term-utils/script.1
@@ -445,10 +445,10 @@ am__append_45 = libblkid/libblkid.3.adoc
 #am__append_156 = setterm
 #am__append_157 = term-utils/setterm.1
 #am__append_158 = term-utils/setterm.1.adoc
-##am__append_159 = $(TINFO_LIBS)
-##am__append_160 = $(TINFO_CFLAGS)
-#am__append_161 = $(NCURSES_LIBS)
-#am__append_162 = $(NCURSES_CFLAGS)
+#am__append_159 = $(TINFO_LIBS)
+#am__append_160 = $(TINFO_CFLAGS)
+##am__append_161 = $(NCURSES_LIBS)
+##am__append_162 = $(NCURSES_CFLAGS)
 #am__append_163 = mesg
 #am__append_164 = term-utils/mesg.1
 #am__append_165 = term-utils/mesg.1.adoc
@@ -745,8 +745,8 @@ am__append_45 = libblkid/libblkid.3.adoc
 #am__append_406 = misc-utils/cal.1
 #am__append_407 = misc-utils/cal.1.adoc
 # tinfo or ncurses are optional
-##am__append_408 = $(TINFO_LIBS)
-##am__append_409 = $(TINFO_CFLAGS)
+#am__append_408 = $(TINFO_LIBS)
+#am__append_409 = $(TINFO_CFLAGS)
 ##am__append_410 = $(NCURSES_LIBS)
 ##am__append_411 = $(NCURSES_CFLAGS)
 #am__append_412 = test_cal
@@ -774,7 +774,7 @@ am__append_45 = libblkid/libblkid.3.adoc
 #am__append_434 = lsblk
 #am__append_435 = misc-utils/lsblk.8
 #am__append_436 = misc-utils/lsblk.8.adoc
-##am__append_437 = -ludev
+#am__append_437 = -ludev
 #am__append_438 = uuidgen
 #am__append_439 = misc-utils/uuidgen.1
 #am__append_440 = misc-utils/uuidgen.1.adoc
@@ -804,7 +804,7 @@ am__append_45 = libblkid/libblkid.3.adoc
 #am__append_461 = findmnt
 #am__append_462 = misc-utils/findmnt.8
 #am__append_463 = misc-utils/findmnt.8.adoc
-##am__append_464 = -ludev
+#am__append_464 = -ludev
 #am__append_465 = kill
 #am__append_466 = misc-utils/kill.1
 #am__append_467 = misc-utils/kill.1.adoc
@@ -1672,7 +1672,7 @@ libsmartcols_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(LDFLAGS) -o $@
 #am_libsmartcols_la_rpath = -rpath \
 #	$(usrlib_execdir)
-#am__DEPENDENCIES_4 = $(am__DEPENDENCIES_1)
+am__DEPENDENCIES_4 = $(am__DEPENDENCIES_1)
 #am__DEPENDENCIES_5 =  \
 #	$(am__DEPENDENCIES_1)
 libtcolors_la_DEPENDENCIES = $(am__DEPENDENCIES_4) \
@@ -1792,8 +1792,8 @@ blockdev_OBJECTS = $(am_blockdev_OBJECTS)
 am__cal_SOURCES_DIST = misc-utils/cal.c
 #am_cal_OBJECTS = misc-utils/cal-cal.$(OBJEXT)
 cal_OBJECTS = $(am_cal_OBJECTS)
-##am__DEPENDENCIES_6 =  \
-##	$(am__DEPENDENCIES_1)
+#am__DEPENDENCIES_6 =  \
+#	$(am__DEPENDENCIES_1)
 ##am__DEPENDENCIES_7 = $(am__DEPENDENCIES_1)
 #cal_DEPENDENCIES = $(am__DEPENDENCIES_3) libcommon.la \
 #	libtcolors.la $(am__DEPENDENCIES_6) \
@@ -2412,11 +2412,11 @@ mkswap_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 am__more_SOURCES_DIST = text-utils/more.c
 #am_more_OBJECTS = text-utils/more-more.$(OBJEXT)
 more_OBJECTS = $(am_more_OBJECTS)
-##am__DEPENDENCIES_16 =  \
-##	$(am__DEPENDENCIES_1) \
-##	$(am__DEPENDENCIES_1)
-#am__DEPENDENCIES_17 =  \
+#am__DEPENDENCIES_16 =  \
+#	$(am__DEPENDENCIES_1) \
 #	$(am__DEPENDENCIES_1)
+##am__DEPENDENCIES_17 =  \
+##	$(am__DEPENDENCIES_1)
 #more_DEPENDENCIES = $(am__DEPENDENCIES_3) \
 #	$(am__DEPENDENCIES_1) libcommon.la \
 #	$(am__DEPENDENCIES_16) $(am__DEPENDENCIES_17)
@@ -2801,10 +2801,10 @@ am__setterm_SOURCES_DIST = term-utils/setterm.c
 #am_setterm_OBJECTS =  \
 #	term-utils/setterm-setterm.$(OBJEXT)
 setterm_OBJECTS = $(am_setterm_OBJECTS)
-##am__DEPENDENCIES_23 =  \
-##	$(am__DEPENDENCIES_1)
-#am__DEPENDENCIES_24 =  \
+#am__DEPENDENCIES_23 =  \
 #	$(am__DEPENDENCIES_1)
+##am__DEPENDENCIES_24 =  \
+##	$(am__DEPENDENCIES_1)
 #setterm_DEPENDENCIES = $(am__DEPENDENCIES_3) \
 #	libcommon.la $(am__DEPENDENCIES_23) \
 #	$(am__DEPENDENCIES_24)
@@ -3618,11 +3618,11 @@ uclampset_OBJECTS = $(am_uclampset_OBJECTS)
 am__ul_SOURCES_DIST = text-utils/ul.c
 #am_ul_OBJECTS = text-utils/ul-ul.$(OBJEXT)
 ul_OBJECTS = $(am_ul_OBJECTS)
-##am__DEPENDENCIES_38 =  \
-##	$(am__DEPENDENCIES_1) \
-##	$(am__DEPENDENCIES_1)
-#am__DEPENDENCIES_39 =  \
+#am__DEPENDENCIES_38 =  \
+#	$(am__DEPENDENCIES_1) \
 #	$(am__DEPENDENCIES_1)
+##am__DEPENDENCIES_39 =  \
+##	$(am__DEPENDENCIES_1)
 #ul_DEPENDENCIES = $(am__DEPENDENCIES_3) \
 #	$(am__DEPENDENCIES_38) $(am__DEPENDENCIES_39)
 ul_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -5020,11 +5020,11 @@ MSGMERGE = :
 NCURSES5_CONFIG = 
 NCURSES6_CONFIG = 
 NCURSESW5_CONFIG = 
-NCURSESW6_CONFIG = 
+NCURSESW6_CONFIG = ncursesw6-config
 NCURSESW_CFLAGS = 
 NCURSESW_LIBS = 
-NCURSES_CFLAGS = 
-NCURSES_LIBS = 
+NCURSES_CFLAGS = -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600
+NCURSES_LIBS = -lncursesw -ltinfo
 NM = /usr/bin/nm -B
 NMEDIT = 
 NO_UNUSED_WARN_CFLAGS =  -Wno-unused-parameter
@@ -5080,8 +5080,8 @@ SYSTEMD_LIBS =
 TINFOW_CFLAGS = 
 TINFOW_LIBS = 
 TINFO_CFLAGS = 
-TINFO_LIBS = 
-TINFO_LIBS_STATIC = 
+TINFO_LIBS = -ltinfo
+TINFO_LIBS_STATIC = -ltinfo
 UBSAN_LDFLAGS = 
 USE_NLS = yes
 VERSION = 2.39.3

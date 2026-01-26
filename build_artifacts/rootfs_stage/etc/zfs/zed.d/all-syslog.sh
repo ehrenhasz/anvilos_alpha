@@ -1,1 +1,1 @@
-//libexec/zfs/zed.d/all-syslog.sh
+/usr/libexec/zfs/zed.d/all-syslog.sh
