@@ -60,9 +60,9 @@ class MainframeMonitor:
 
     def generate_header(self):
         grid = Table.grid(expand=True)
-        grid.add_column(justify="left")
-        grid.add_column(justify="center")
-        grid.add_column(justify="right")
+        grid.add_column(justify="left", ratio=1)
+        grid.add_column(justify="center", ratio=1)
+        grid.add_column(justify="right", ratio=1)
         
         now = datetime.now().strftime("%H:%M:%S")
         grid.add_row(
@@ -107,14 +107,14 @@ class MainframeMonitor:
 
         # System Status Block
         sys_status = "[bold green]ONLINE[/bold green]"
-        if errors > 0:
+        if errors > 5:
             sys_status = "[bold red]ATTENTION REQ[/bold red]"
         elif processing > 0:
             sys_status = "[bold yellow]COMPUTING[/bold yellow]"
 
         text = Text()
         text.append("\nSYSTEM STATUS: ", style="bold white")
-        text.append(f"{sys_status}\n\n")
+        text.append_text(Text.from_markup(f"{sys_status}\n\n"))
         
         text.append(f"TOTAL CARDS : {total}\n", style="white")
         text.append(f"-------------------\n")

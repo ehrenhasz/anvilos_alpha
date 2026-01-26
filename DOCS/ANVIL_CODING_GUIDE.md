@@ -106,4 +106,24 @@ conn = sqlite3.connect("my_db.db") # Banned in Anvil Runtime
 
 ---
 
+## 4. THE WORKFLOW (The Forge)
+**ANVIL IS LAW. THE HOLD.**
+
+The transition from intent to artifact is a strictly mediated process. No code enters the system except through the Forge.
+
+### 4.1 The Hierarchy of Execution
+1.  **Directives (Cards):** Human or Gemini CLI provides instructions as a **Card**. These are high-level "TODO" items, often passed through comments or task files.
+2.  **The Forge Agent:** Processes the Directives and generates **`recipe.py`** cards. These are the technical blueprints for the Mainframe.
+3.  **The Mainframe:** The central execution engine ( `/usr/local/bin/anvil`). It consumes `recipe.py` and produces the final output.
+
+### 4.2 Sovereign Artifacts
+The Mainframe only codes in **Anvil**. It is incapable of producing standard Python or shell scripts for the runtime.
+- **`.anv` Files:** The functional code, written in the Sovereign Anvil language.
+- **MicroJSON Sidecar:** Every `.anv` file is accompanied by a MicroJSON file containing:
+    - A human-readable description of the code's purpose.
+    - A cryptographic **Checksum** for verification.
+- **Verification:** Any artifact missing its MicroJSON sidecar or failing checksum validation is rejected by The Hold.
+
+---
+
 *Adherence to this manual is monitored by The Collar. Violations will result in process termination.*

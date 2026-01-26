@@ -1,0 +1,11 @@
+prefix=/home/aimeat/anvilos/oss_sovereignty/util-linux-2.39.3/../staging
+exec_prefix=/home/aimeat/anvilos/oss_sovereignty/util-linux-2.39.3/../staging
+libdir=/home/aimeat/anvilos/oss_sovereignty/util-linux-2.39.3/../staging/lib
+includedir=/home/aimeat/anvilos/oss_sovereignty/util-linux-2.39.3/../staging/include
+
+Name: uuid
+Description: Universally unique id library
+Version: 2.39.3
+Requires:
+Cflags: -I${includedir}/uuid
+Libs: -L${libdir} -luuid
