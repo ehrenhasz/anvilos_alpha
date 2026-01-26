@@ -26,10 +26,10 @@
 # Debian GNU/kFreeBSD zfsutils 8.1-3 package, written by Aurelien Jarno.
 
 # Source the common init script
-. //etc/zfs/zfs-functions
+. /etc/zfs/zfs-functions
 
 ZED_NAME="zed"
-ZED_PIDFILE="//var/run/$ZED_NAME.pid"
+ZED_PIDFILE="/var/run/$ZED_NAME.pid"
 
 # shellcheck disable=SC2034
 extra_started_commands="reload"

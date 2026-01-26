@@ -1,1 +1,1 @@
-//libexec/zfs/zed.d/history_event-zfs-list-cacher.sh
+/usr/libexec/zfs/zed.d/history_event-zfs-list-cacher.sh

@@ -174,9 +174,8 @@ module/zfs/libzpool_la-gzip.lo: module/zfs/gzip.c \
  /usr/include/x86_64-linux-gnu/sys/utsname.h \
  /usr/include/x86_64-linux-gnu/bits/utsname.h \
  lib/libspl/include/sys/trace_zfs.h \
- lib/libspl/include/os/linux/sys/zfs_context_os.h \
- /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include/zlib.h \
- /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include/zconf.h
+ lib/libspl/include/os/linux/sys/zfs_context_os.h /usr/include/zlib.h \
+ /usr/include/zconf.h
 /usr/include/stdc-predef.h:
 zfs_config.h:
 lib/libspl/include/sys/debug.h:
@@ -396,5 +395,5 @@ lib/libspl/include/sys/sunddi.h:
 /usr/include/x86_64-linux-gnu/bits/utsname.h:
 lib/libspl/include/sys/trace_zfs.h:
 lib/libspl/include/os/linux/sys/zfs_context_os.h:
-/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include/zlib.h:
-/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include/zconf.h:
+/usr/include/zlib.h:
+/usr/include/zconf.h:

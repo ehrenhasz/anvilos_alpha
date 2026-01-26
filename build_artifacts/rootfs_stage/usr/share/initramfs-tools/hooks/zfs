@@ -10,15 +10,15 @@ fi
 
 . /usr/share/initramfs-tools/hook-functions
 
-for req in "/sbin/zpool" "/sbin/zfs" "/sbin/mount.zfs"; do
+for req in "/usr/sbin/zpool" "/usr/sbin/zfs" "/sbin/mount.zfs"; do
 	copy_exec "$req" || {
 		echo "$req not available!" >&2
 		exit 2
 	}
 done
 
-copy_exec "no/vdev_id"
-copy_exec "no/zvol_id"
+copy_exec "/lib/udev/vdev_id"
+copy_exec "/lib/udev/zvol_id"
 if command -v systemd-ask-password > /dev/null; then
 	copy_exec "$(command -v systemd-ask-password)"
 fi
@@ -37,15 +37,15 @@ if [ 0 -gt 0 ]; then
 fi
 
 copy_file config "/etc/hostid"
-copy_file cache  "//etc/zfs/zpool.cache"
+copy_file cache  "/etc/zfs/zpool.cache"
 copy_file config "/etc/default/zfs"
-copy_file config "//etc/zfs/zfs-functions"
-copy_file config "//etc/zfs/vdev_id.conf"
-for f in "//etc/zfs/initramfs-tools-load-key" "//etc/zfs/initramfs-tools-load-key.d/"*; do
+copy_file config "/etc/zfs/zfs-functions"
+copy_file config "/etc/zfs/vdev_id.conf"
+for f in "/etc/zfs/initramfs-tools-load-key" "/etc/zfs/initramfs-tools-load-key.d/"*; do
 	copy_file config "$f"
 done
-copy_file rule   "no/rules.d/60-zvol.rules"
-copy_file rule   "no/rules.d/69-vdev.rules"
+copy_file rule   "/lib/udev/rules.d/60-zvol.rules"
+copy_file rule   "/lib/udev/rules.d/69-vdev.rules"
 
 manual_add_modules zfs
 

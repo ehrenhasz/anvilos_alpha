@@ -212,13 +212,12 @@ lib/libzfs/libzfs_la-libzfs_sendrecv.lo: lib/libzfs/libzfs_sendrecv.c \
  include/sys/bptree.h include/sys/rrwlock.h include/sys/dsl_synctask.h \
  include/sys/mmp.h include/sys/uberblock_impl.h include/sys/uberblock.h \
  include/sys/vdev.h include/sys/metaslab.h include/sys/zfs_stat.h \
- include/libuutil.h include/cityhash.h \
- /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include/zlib.h \
- /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include/zconf.h \
- include/sys/zio_checksum.h include/zfeature_common.h \
- include/sys/dsl_crypt.h include/sys/dmu_tx.h include/sys/zio_crypt.h \
- include/sys/crypto/api.h include/sys/crypto/common.h \
- include/sys/dsl_dataset.h include/sys/dsl_deadlist.h include/sys/zthr.h \
+ include/libuutil.h include/cityhash.h /usr/include/zlib.h \
+ /usr/include/zconf.h include/sys/zio_checksum.h \
+ include/zfeature_common.h include/sys/dsl_crypt.h include/sys/dmu_tx.h \
+ include/sys/zio_crypt.h include/sys/crypto/api.h \
+ include/sys/crypto/common.h include/sys/dsl_dataset.h \
+ include/sys/dsl_deadlist.h include/sys/zthr.h \
  /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
  /usr/include/x86_64-linux-gnu/bits/socket_type.h \
@@ -524,8 +523,8 @@ include/sys/metaslab.h:
 include/sys/zfs_stat.h:
 include/libuutil.h:
 include/cityhash.h:
-/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include/zlib.h:
-/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include/zconf.h:
+/usr/include/zlib.h:
+/usr/include/zconf.h:
 include/sys/zio_checksum.h:
 include/zfeature_common.h:
 include/sys/dsl_crypt.h:

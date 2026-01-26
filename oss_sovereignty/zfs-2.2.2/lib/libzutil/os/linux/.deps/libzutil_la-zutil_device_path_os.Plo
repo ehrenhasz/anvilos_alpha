@@ -136,9 +136,9 @@ lib/libzutil/os/linux/libzutil_la-zutil_device_path_os.lo: \
  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
  include/sys/efi_partition.h include/sys/uuid.h \
- lib/libspl/include/os/linux/sys/byteorder.h include/libzutil.h \
- include/sys/nvpair.h lib/libspl/include/sys/time.h /usr/include/time.h \
- /usr/include/x86_64-linux-gnu/bits/time.h \
+ lib/libspl/include/os/linux/sys/byteorder.h /usr/include/libudev.h \
+ include/libzutil.h include/sys/nvpair.h lib/libspl/include/sys/time.h \
+ /usr/include/time.h /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/bits/timex.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
@@ -307,6 +307,7 @@ lib/libspl/include/string.h:
 include/sys/efi_partition.h:
 include/sys/uuid.h:
 lib/libspl/include/os/linux/sys/byteorder.h:
+/usr/include/libudev.h:
 include/libzutil.h:
 include/sys/nvpair.h:
 lib/libspl/include/sys/time.h:

@@ -16,7 +16,7 @@ get_pool_devices() {
   local pooldev
   local resolved
   poolconfigtemp="$(mktemp)"
-  if ! /sbin/zpool list -v -H -P "$1" > "$poolconfigtemp" 2>&1 ; then
+  if ! /usr/sbin/zpool list -v -H -P "$1" > "$poolconfigtemp" 2>&1 ; then
     poolconfigoutput="$(cat "$poolconfigtemp")"
     dinfo "zfsexpandknowledge: pool $1 cannot be listed: $poolconfigoutput"
   else

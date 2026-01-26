@@ -1,4 +1,4 @@
-prefix=/home/aimeat/anvilos/oss_sovereignty/libtirpc-1.3.4/../staging
+prefix=/home/aimeat/anvilos/oss_sovereignty/staging
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

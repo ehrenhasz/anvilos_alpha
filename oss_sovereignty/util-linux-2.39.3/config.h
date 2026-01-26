@@ -258,7 +258,7 @@
 /* #undef HAVE_LIBNCURSES */
 
 /* Define if ncursesw library available */
-/* #undef HAVE_LIBNCURSESW */
+#define HAVE_LIBNCURSESW 1
 
 /* Define to 1 if you have the `readline' library (-lreadline). */
 /* #undef HAVE_LIBREADLINE */
@@ -273,10 +273,10 @@
 /* #undef HAVE_LIBSYSTEMD */
 
 /* Define if libtinfo or libtinfow available. */
-/* #undef HAVE_LIBTINFO */
+#define HAVE_LIBTINFO 1
 
 /* Define to 1 if you have the `udev' library (-ludev). */
-/* #undef HAVE_LIBUDEV */
+#define HAVE_LIBUDEV 1
 
 /* Define if libuser is available */
 /* #undef HAVE_LIBUSER */
@@ -402,10 +402,10 @@
 #define HAVE_NANOSLEEP 1
 
 /* Define to 1 if you have the <ncursesw/ncurses.h> header file. */
-/* #undef HAVE_NCURSESW_NCURSES_H */
+#define HAVE_NCURSESW_NCURSES_H 1
 
 /* Define to 1 if you have the <ncursesw/term.h> header file. */
-/* #undef HAVE_NCURSESW_TERM_H */
+#define HAVE_NCURSESW_TERM_H 1
 
 /* Define to 1 if you have the <ncurses.h> header file. */
 /* #undef HAVE_NCURSES_H */
@@ -483,7 +483,7 @@
 #define HAVE_REBOOT 1
 
 /* Define if curses library has the resizeterm(). */
-/* #undef HAVE_RESIZETERM */
+#define HAVE_RESIZETERM 1
 
 /* Define to 1 if you have the `rpmatch' function. */
 #define HAVE_RPMATCH 1
@@ -758,7 +758,7 @@
 #define HAVE_USELOCALE 1
 
 /* Define if curses library has the use_default_colors(). */
-/* #undef HAVE_USE_DEFAULT_COLORS */
+#define HAVE_USE_DEFAULT_COLORS 1
 
 /* Define to 1 if you have the `usleep' function. */
 #define HAVE_USLEEP 1

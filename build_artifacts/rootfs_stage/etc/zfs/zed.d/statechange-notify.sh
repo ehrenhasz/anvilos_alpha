@@ -1,1 +1,1 @@
-//libexec/zfs/zed.d/statechange-notify.sh
+/usr/libexec/zfs/zed.d/statechange-notify.sh

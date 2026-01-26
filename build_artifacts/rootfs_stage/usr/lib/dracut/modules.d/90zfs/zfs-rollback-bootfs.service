@@ -9,5 +9,5 @@ ConditionEnvironment=BOOTFS
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c '. /lib/dracut-lib.sh; SNAPNAME="$(getarg bootfs.rollback)"; exec /sbin/zfs rollback -Rf "$BOOTFS@${SNAPNAME:-%v}"'
+ExecStart=/bin/sh -c '. /lib/dracut-lib.sh; SNAPNAME="$(getarg bootfs.rollback)"; exec /usr/sbin/zfs rollback -Rf "$BOOTFS@${SNAPNAME:-%v}"'
 RemainAfterExit=yes

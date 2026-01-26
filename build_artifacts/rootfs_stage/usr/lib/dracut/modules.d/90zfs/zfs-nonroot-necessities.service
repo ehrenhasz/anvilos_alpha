@@ -10,7 +10,7 @@ PassEnvironment=BOOTFS
 ExecStart=/bin/sh -c '                                                \
     . /lib/dracut-zfs-lib.sh;                                         \
     _zfs_nonroot_necessities_cb() {                                   \
-        /sbin/zfs mount | grep -m1 -q "^$1 " && return 0;         \
+        /usr/sbin/zfs mount | grep -m1 -q "^$1 " && return 0;         \
         echo "Mounting $1 on /sysroot$2";                             \
         mount -o zfsutil -t zfs "$1" "/sysroot$2";                    \
     };                                                                \

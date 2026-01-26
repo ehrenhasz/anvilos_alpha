@@ -1,1 +1,1 @@
-//libexec/zfs/zed.d/statechange-led.sh
+/usr/libexec/zfs/zed.d/statechange-led.sh

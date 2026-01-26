@@ -35,7 +35,7 @@ override_dh_autoreconf:
 
 override_dh_auto_configure:
 	@# Build the userland, but don't build the kernel modules.
-	dh_auto_configure -- --with-config=user --enable-static=yes --enable-shared=no --prefix=/ --libdir=/lib --sbindir=/sbin --disable-systemd --disable-pyzfs --with-udevdir=no --disable-nls LIBUUID_CFLAGS= -I/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include LIBUUID_LIBS= -L/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/lib -luuid LIBBLKID_CFLAGS= -I/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include LIBBLKID_LIBS= -L/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/lib -lblkid ZLIB_CFLAGS= -I/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include ZLIB_LIBS= -L/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/lib -lz LIBTIRPC_CFLAGS= -I/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include/tirpc LIBTIRPC_LIBS= -L/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/lib -ltirpc \
+	dh_auto_configure -- --with-config=kernel --with-linux=../linux-6.6.14 --with-linux-obj=../linux-6.6.14 \
 	  --bindir=/usr/bin \
 	  --sbindir=/sbin \
 	  --libdir=/lib/"$(DEB_HOST_MULTIARCH)" \
@@ -190,7 +190,7 @@ override_dh_prep-deb-files:
 
 override_dh_configure_modules: override_dh_configure_modules_stamp
 override_dh_configure_modules_stamp:
-	./configure --with-config=user --enable-static=yes --enable-shared=no --prefix=/ --libdir=/lib --sbindir=/sbin --disable-systemd --disable-pyzfs --with-udevdir=no --disable-nls LIBUUID_CFLAGS= -I/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include LIBUUID_LIBS= -L/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/lib -luuid LIBBLKID_CFLAGS= -I/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include LIBBLKID_LIBS= -L/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/lib -lblkid ZLIB_CFLAGS= -I/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include ZLIB_LIBS= -L/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/lib -lz LIBTIRPC_CFLAGS= -I/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/include/tirpc LIBTIRPC_LIBS= -L/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/../staging/lib -ltirpc \
+	./configure --with-config=kernel --with-linux=../linux-6.6.14 --with-linux-obj=../linux-6.6.14 \
 		--with-config=kernel \
 		--with-linux=$(KSRC) \
 		--with-linux-obj=$(KOBJ)

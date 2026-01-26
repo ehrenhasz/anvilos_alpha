@@ -77,7 +77,38 @@
 - [x] Implement `Witch.sign_artifact(artifact_hash)`
 - [x] Implement `Witch.reject_artifact(artifact_hash)`
 
-## PHASE 2: THE INJECTION (KERNEL INTEGRATION)
+## PHASE 2A: THE MONOLITH (INFRASTRUCTURE) [P0]
+> Ref: PHASE2_DIRECTIVES.md
+
+### 2A.1 Source Acquisition
+- [x] **OpenZFS**: Fetch OpenZFS v2.2.2 source tarball to `oss_sovereignty/zfs`.
+- [ ] **Clean Source**: Ensure `oss_sovereignty/linux-6.6.14` and `busybox` are clean.
+
+### 2A.2 Userland Preparation (The Muscles)
+- [ ] **Busybox**: Config `CONFIG_STATIC=y`. Build `busybox`.
+- [ ] **ZFS Utils**: Build static `zpool` and `zfs` binaries.
+- [ ] **Artifacts**: Place `busybox`, `zpool`, `zfs` in `build_artifacts/bin`.
+
+### 2A.3 Kernel Forging (The Heart)
+- [ ] **Preparation**: Copy OpenZFS source into `linux-6.6.14/drivers/zfs`.
+- [ ] **Configuration**: Monolithic, `CONFIG_ZFS=y`, `CONFIG_BLK_DEV_LOOP=y`, `CONFIG_BLK_DEV_INITRD=y`.
+- [ ] **Compilation**: `make bzImage`.
+- [ ] **Artifact**: `build_artifacts/bzImage`.
+
+### 2A.4 The ZFS Root (The Body)
+- [ ] **Loopback**: Create 500MB `rootfs.img`.
+- [ ] **Pool**: Create `anvil_pool` and `anvil_pool/ROOT`.
+- [ ] **Population**: Install busybox, zfs, zpool, and custom `/init`.
+- [ ] **Export**: `zpool export anvil_pool`.
+
+### 2A.5 The Initramfs (The Key)
+- [ ] **Script**: Create `init` script (Mount ISO -> Loop -> Import Pool -> Switch Root).
+- [ ] **Pack**: Generate `initramfs.cpio.gz`.
+
+### 2A.6 Final Artifact
+- [ ] **ISO**: Generate `anvilos-phase2.iso` with kernel, initramfs, and rootfs.img.
+
+## PHASE 2B: THE INJECTION (PAYLOAD)
 ### 2.1 ANVIL-CC (Sovereign Compiler)
 - [x] Inject `sys_09_Anvil` source
 - [x] Configure cross-toolchain symlinks (`ext/toolchain`)
@@ -109,21 +140,6 @@
 - [ ] Compile `init` static binary
 - [ ] Create `rootfs` directory structure
 - [ ] Copy `init` to `rootfs/sbin/init`
-## Active Tasks (Phase 2: The Injection)
-- [ ] **[CRITICAL]** Clear Card Stack & Reset DB. (Done)
-- [ ] **[KERNEL]** Fetch and configure Linux Kernel source (v6.x).
-    - [ ] Config: Tiny, KVM Guest support, VirtIO drivers (Net, Blk, Console).
-    - [ ] Build: `make bzImage` using Sovereign GCC.
-- [ ] **[ROOTFS]** Build Minimal Rootfs (Alpine-ish or scratch).
-    - [ ] Compile `busybox` (static).
-    - [ ] Compile `bash` (static).
-    - [ ] Compile `vim` (static or tiny).
-    - [ ] Compile `dropbear` or `openssh` (static).
-- [ ] **[BOOT]** Generate `initramfs` / ISO structure.
-    - [ ] Write `init` script (PID 1).
-    - [ ] Create `isolinux` config.
-- [ ] **[VMM]** (Optional) Finalize `anvil-vmm.c` for direct kernel boot if ISO fails.
-
 
 ## PHASE 3: THE TESSERACT (CRYPTO)
 ### 3.1 Warp Core
@@ -179,8 +195,13 @@
 - [ ] Implement `Greeter.prompt_2fa(nonce)`
 - [ ] Implement `Greeter.verify_2fa(signature)`
 
-## PHASE 6: THE FOUNDATION
-### 6.1 Preparation
+## PHASE 6: DOCUMENTATION (RFC-059) [P2]
+- [ ] **[MAN]** Create man pages for Anvil Coding Standards.
+- [ ] **[MAN]** Create man pages for MicroJSON & Mainframe.
+- [ ] **[MAN]** Create man pages for The Committee.
+
+## PHASE 7: THE FOUNDATION (LEGACY/BACKLOG)
+### 7.1 Preparation
 - [ ] Boot Live CD
 - [ ] Verify `ping 8.8.8.8`
 - [ ] Run `fdisk /dev/sda` (Wipe)
@@ -190,31 +211,31 @@
 - [ ] Format `/dev/sda2` as ext4
 - [ ] Mount `/dev/sda2` to `/mnt/gentoo`
 
-### 6.2 Stage3
+### 7.2 Stage3
 - [ ] Download Stage3 tarball
 - [ ] Verify GPG signature of Stage3
 - [ ] Untar Stage3 to `/mnt/gentoo`
 - [ ] Verify `xattrs` are preserved
 
-## PHASE 7: THE PROFILE
-### 7.1 Chroot Setup
+## PHASE 8: THE PROFILE
+### 8.1 Chroot Setup
 - [ ] Copy `/etc/resolv.conf` to `/mnt/gentoo/etc/`
 - [ ] Mount `/proc`
 - [ ] Mount `/sys`
 - [ ] Mount `/dev`
 - [ ] Chroot into `/mnt/gentoo`
 
-### 7.2 Profile Selection
+### 8.2 Profile Selection
 - [ ] Run `emerge-webrsync`
 - [ ] Run `eselect profile list`
 - [ ] Run `eselect profile set default/linux/amd64/23.0/no-multilib/hardened/selinux`
 
-## PHASE 8: YOUR KERNEL
-### 8.1 Sources
+## PHASE 9: YOUR KERNEL
+### 9.1 Sources
 - [ ] Run `emerge sys-kernel/gentoo-sources`
 - [ ] Symlink `/usr/src/linux`
 
-### 8.2 Configuration
+### 9.2 Configuration
 - [ ] Run `make menuconfig`
 - [ ] Enable `CONFIG_SECURITY_SELINUX`
 - [ ] Enable `CONFIG_AUDIT`
@@ -222,55 +243,55 @@
 - [ ] Enable `CONFIG_SLAB_FREELIST_HARDENED`
 - [ ] Save `.config`
 
-### 8.3 Compilation
+### 9.3 Compilation
 - [ ] Run `make -j$(nproc)`
 - [ ] Run `make modules_install`
 - [ ] Copy `arch/x86/boot/bzImage` to `/boot/vmlinuz-anvil`
 
-## PHASE 9: THE USERSPACE
-### 9.1 Core Utils
+## PHASE 10: THE USERSPACE
+### 10.1 Core Utils
 - [ ] Emerge `sysklogd`
 - [ ] Emerge `cronie`
 - [ ] Emerge `dhcpcd`
 - [ ] Emerge `policycoreutils`
 - [ ] Emerge `selinux-base-policy`
 
-## PHASE 10: THE LABELING
-### 10.1 Config
+## PHASE 11: THE LABELING
+### 11.1 Config
 - [ ] Edit `/etc/selinux/config`
 - [ ] Set `SELINUX=permissive`
 - [ ] Set `SELINUXTYPE=mcs`
 
-### 10.2 Application
+### 11.2 Application
 - [ ] Run `rlpkg -a -r` (Relabel All)
 
-## PHASE 11: THE BOOTLOADER
-### 11.1 GRUB
+## PHASE 12: THE BOOTLOADER
+### 12.1 GRUB
 - [ ] Emerge `sys-boot/grub`
 - [ ] Install GRUB to `/dev/sda`
 - [ ] Edit `/etc/default/grub`
 - [ ] Add kernel params: `security=selinux selinux=1`
 - [ ] Run `grub-mkconfig -o /boot/grub/grub.cfg`
 
-## PHASE 12: THE FINAL HANDOVER
-### 12.1 Lockdown
+## PHASE 13: THE FINAL HANDOVER
+### 13.1 Lockdown
 - [ ] Edit `/etc/selinux/config`
 - [ ] Set `SELINUX=enforcing`
 - [ ] Reboot system
 
-## PHASE 13: THE FINAL FORM (ISO)
-### 13.1 Build Script
+## PHASE 14: THE FINAL FORM (ISO)
+### 14.1 Build Script
 - [ ] Create `scripts/mkiso.sh`
 - [ ] Add logic to create `isolinux` directory
 - [ ] Add logic to copy kernel and initramfs
 - [ ] Add `xorriso` command generation
 
-### 13.2 Installer
+### 14.2 Installer
 - [ ] Create `scripts/anvil-install.sh`
 - [ ] Add disk detection logic
 - [ ] Add partition logic
 - [ ] Add mode selection (Dev/Server)
 
-### 13.3 Verification
+### 14.3 Verification
 - [ ] Validate ISO checksum
 - [ ] Boot ISO in QEMU

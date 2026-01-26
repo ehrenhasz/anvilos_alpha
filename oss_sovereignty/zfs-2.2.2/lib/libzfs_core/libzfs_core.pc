@@ -1,13 +1,13 @@
-prefix=/
+prefix=/usr/local
 exec_prefix=${prefix}
-libdir=/lib
+libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 
 Name: libzfs_core
 Description: LibZFS core library
 Version: 2.2.2
 URL: https://github.com/openzfs/zfs
-Requires.private: blkid uuid libtirpc zlib
+Requires.private:    
 Cflags: -I${includedir}/libzfs -I${includedir}/libspl
 Libs: -L${libdir} -lzfs_core -lnvpair
-Libs.private:  -L/usr/local/lib -lm -pthread
+Libs.private:   -lm -pthread
