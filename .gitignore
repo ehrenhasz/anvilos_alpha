@@ -60,3 +60,4 @@ kernel_fail.json
 repair_kernel_recipes.py
 full_kernel_repair.py
 *.swp
+config/token
