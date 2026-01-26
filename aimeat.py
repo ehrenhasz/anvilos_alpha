@@ -6,26 +6,13 @@ import sys
 import json
 import time
 import subprocess
+import sqlite3
 
 # --- PATH RESOLUTION ---
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = CURRENT_DIR
 sys.path.append(os.path.join(PROJECT_ROOT, "src"))
 sys.path.append(os.path.join(PROJECT_ROOT, "vendor"))
-
-from google import genai
-from google.genai import types
-
-# Try to import rich
-try:
-    from rich.console import Console
-    from rich.markdown import Markdown
-    from rich.panel import Panel
-    from rich.text import Text
-    console = Console()
-    HAS_RICH = True
-except ImportError:
-    HAS_RICH = False
 
 # Import Shared Tools
 from anvilos.mainframe_client import MainframeClient
@@ -41,47 +28,57 @@ CONFIG = {
     "MODEL_ID": "gemini-2.0-flash",
 }
 
-# --- AUTHENTICATION ---
-API_KEY = None
-try:
-    if os.path.exists(TOKEN_PATH):
-        with open(TOKEN_PATH, 'r') as f:
-            API_KEY = f.read().strip()
-except Exception as e:
-    print(f"[WARN] Auth load issue: {e}")
-
 MAINFRAME = MainframeClient(CORTEX_DB_PATH)
 
-# --- UNIFIED SYSTEM INSTRUCTION ---
-SYSTEM_INSTRUCTION = "AIMEAT: ON BOOT, WAIT FOR COMMAND."
+def get_daemon_status():
+    """Checks if Architect and Processor daemons are running."""
+    try:
+        ps = subprocess.check_output(["ps", "aux"], text=True)
+        return {
+            "architect": "architect_daemon.py" in ps,
+            "processor": "processor_daemon.py" in ps
+        }
+    except:
+        return {"architect": False, "processor": False}
 
-# --- WRAPPERS ---
-def mainframe_status():
-    return MAINFRAME.get_stack_state()
+def report_for_duty():
+    """Tactical system summary for the Operator."""
+    daemons = get_daemon_status()
+    stack = MAINFRAME.get_stack_state()
+    
+    # Check for latest chat history
+    last_msg = "NONE"
+    try:
+        with sqlite3.connect(CORTEX_DB_PATH) as conn:
+            row = conn.execute("SELECT message FROM chat_inbox ORDER BY timestamp DESC LIMIT 1").fetchone()
+            if row: last_msg = row[0]
+    except: pass
 
-def mainframe_inject(op: str, payload: dict):
-    # Operator has high priority
-    return MAINFRAME.inject_card(op, payload) 
-
-def mainframe_anvil_build(filename: str, source_code: str, target_binary: str):
-    return MAINFRAME.inject_anvil(filename, source_code, target_binary)
-
-TOOLS = {
-    "mainframe_status": mainframe_status,
-    "mainframe_inject": mainframe_inject,
-    "mainframe_anvil_build": mainframe_anvil_build
-}
+    print(f"\n[bold]AIMEAT SYSTEM ONLINE[/bold]")
+    print(f"IDENTITY: {CONFIG['IDENTITY']}")
+    print(f"CORTEX:   {'CONNECTED' if os.path.exists(CORTEX_DB_PATH) else 'OFFLINE'}")
+    print(f"DAEMONS:  ARCHITECT=[{'ON' if daemons['architect'] else 'OFF'}] PROCESSOR=[{'ON' if daemons['processor'] else 'OFF'}]")
+    print(f"STACK:    PENDING={stack.get('pending_count', 0)} PROCESSING={stack.get('processing_count', 0)}")
+    print(f"LAST_IN:  {last_msg[:50]}...")
+    print(f"\nREADY FOR COMMAND.\n")
 
 # --- CLI ENTRY ---
 def main():
     if len(sys.argv) > 1:
         cmd = sys.argv[1]
         if cmd == "status":
-            print(json.dumps(mainframe_status(), indent=2))
+            print(json.dumps(MAINFRAME.get_stack_state(), indent=2))
+        elif cmd == "report":
+            report_for_duty()
         else:
             print(f"Unknown command: {cmd}")
     else:
-        print("No command provided. Available commands: status.")
+        report_for_duty()
 
 if __name__ == "__main__":
+    # Minimal 'rich' wrapper for fast boot
+    try:
+        from rich import print
+    except ImportError:
+        pass 
     main()

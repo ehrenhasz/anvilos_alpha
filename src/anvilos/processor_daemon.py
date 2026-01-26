@@ -11,6 +11,7 @@ import logging
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 SYSTEM_DB = os.path.join(PROJECT_ROOT, "data", "cortex.db")
 sys.path.append(os.path.join(PROJECT_ROOT, "src"))
+sys.path.append(os.path.join(PROJECT_ROOT, "vendor"))
 
 from anvilos.cortex.db_interface import CortexDB
 

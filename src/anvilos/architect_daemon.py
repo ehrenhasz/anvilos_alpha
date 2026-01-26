@@ -1,18 +1,20 @@
-#!/usr/bin/env python3
 import os
 import sys
 import json
 import uuid
 import time
 import logging
-from google import genai
-from google.genai import types
 
 # --- PATH RESOLUTION ---
+
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 SYSTEM_DB = os.path.join(PROJECT_ROOT, "data", "cortex.db")
 TOKEN_PATH = os.path.join(PROJECT_ROOT, "config", "token")
 sys.path.append(os.path.join(PROJECT_ROOT, "src"))
+sys.path.append(os.path.join(PROJECT_ROOT, "vendor"))
+
+from google import genai
+from google.genai import types
 
 from anvilos.cortex.db_interface import CortexDB
 
