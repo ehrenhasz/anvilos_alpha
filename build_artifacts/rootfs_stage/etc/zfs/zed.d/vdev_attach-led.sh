@@ -1,0 +1,1 @@
+//libexec/zfs/zed.d/vdev_attach-led.sh

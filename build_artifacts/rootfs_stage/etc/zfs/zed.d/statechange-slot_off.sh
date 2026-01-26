@@ -1,0 +1,1 @@
+//libexec/zfs/zed.d/statechange-slot_off.sh

@@ -107,7 +107,13 @@ def main_loop():
             if card:
                 card_id = card['id']
                 op = card['op']
-                pld = json.loads(card['pld'])
+                
+                try:
+                    pld = json.loads(card['pld'])
+                except json.JSONDecodeError as e:
+                    logger.error(f"Card {card_id} Malformed Payload: {e}")
+                    DB.log_result(card_id, {"error": "Malformed MicroJSON Payload"}, 9)
+                    continue
                 
                 logger.info(f"Processing Card {card_id}: {op}")
                 

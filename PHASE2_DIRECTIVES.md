@@ -2,57 +2,50 @@
 
 > **MANDATE:** WE ONLY CODE IN ANVIL. ALL OTHERS ARE BANNED.
 > **GUIDE:** Adhere strictly to `DOCS/ANVIL_CODING_GUIDE.md`.
-> **PRIME DIRECTIVE:** If it runs on python3, it is not Anvil code. It is a prototype. If it runs on `/usr/local/bin/anvil`, it is Law.
+> **PRIME DIRECTIVE:** Use `architect_daemon.py` to create these cards.
 
 ## 0. CODING STANDARDS (The Law)
-- [ ] **Hermetic Toolchain**: Production code must be forged for the Anvil MicroPython runtime.
-- [ ] **MicroJSON ONLY**: ALL JSON payloads, logs, and persistence MUST use MicroJSON (RFC-0002). Standard JSON is BANNED.
+- [ ] **MicroJSON ONLY**: ALL JSON payloads, logs, and persistence MUST use MicroJSON (RFC-0002).
 - [ ] **100-Line Limit**: Atomic units only. No file > 100 lines.
-- [ ] **Forbidden**: `requests`, `subprocess`, `threading`, and raw `sqlite3` are BANNED in the runtime.
+- [ ] **Forbidden**: `requests`, `subprocess`, `threading`, and raw `sqlite3` in runtime.
 
-## 1. SOURCE ACQUISITION (The Materials)
-- [ ] **OpenZFS**: Fetch OpenZFS v2.2.2 source tarball to `oss_sovereignty/zfs`.
-- [ ] **Clean Source**: Ensure `oss_sovereignty/linux-6.6.14` and `busybox` are clean.
+## 1. SOURCE PREPARATION (The Foundation)
+- [x] **Card 100:** `fetch_zfs_source` (Download & Extract OpenZFS 2.2.2)
+- [ ] **Card 101:** `clean_linux_source` (Run `make mrproper` in `oss_sovereignty/linux-6.6.14`)
+- [ ] **Card 102:** `clean_busybox_source` (Run `make mrproper` in `oss_sovereignty/busybox-1.36.1`)
 
-## 2. USERLAND PREPARATION (The Muscles)
-- [ ] **Busybox**: Config `CONFIG_STATIC=y`. Build `busybox`.
-- [ ] **ZFS Utils**: Build static `zpool` and `zfs` binaries (requires hacking Makefiles or using `musl-gcc` wrappers).
-- [ ] **Artifacts**: Place `busybox`, `zpool`, `zfs` in `build_artifacts/bin`.
+## 2. USERLAND FORGING (The Muscles)
+### Busybox (Static)
+- [ ] **Card 200:** `config_busybox_static` (Generate `.config` with `CONFIG_STATIC=y`)
+- [ ] **Card 201:** `build_busybox` (Run `make -j$(nproc)`)
+- [ ] **Card 202:** `install_busybox` (Install to `build_artifacts/rootfs_stage/bin`)
+
+### ZFS Utils (Static)
+- [ ] **Card 210:** `prep_zfs_build` (Install deps: `zlib-devel`, `libuuid-devel`, `libblkid-devel` if needed inside container)
+- [ ] **Card 211:** `config_zfs_static` (Run `./configure --enable-static --disable-shared --with-config=user`)
+- [ ] **Card 212:** `build_zfs_utils` (Run `make -j$(nproc)`)
+- [ ] **Card 213:** `install_zfs_utils` (Copy `zpool`, `zfs` to `build_artifacts/rootfs_stage/sbin`)
 
 ## 3. KERNEL FORGING (The Heart)
-- [ ] **Preparation**: Copy OpenZFS source into `linux-6.6.14/drivers/zfs` (or use `--add-drivers` patch).
-- [ ] **Configuration**:
-    -   `CONFIG_ZFS=y` (Built-in, NOT module).
-    -   Disable Ext4, Btrfs, XFS (`# CONFIG_EXT4_FS is not set`).
-    -   `CONFIG_BLK_DEV_LOOP=y` (Essential for mounting rootfs.img).
-    -   `CONFIG_BLK_DEV_INITRD=y`.
-- [ ] **Compilation**: `make bzImage`.
-- [ ] **Artifact**: `build_artifacts/bzImage`.
+- [ ] **Card 300:** `prepare_kernel_headers` (Install headers for ZFS build compatibility)
+- [ ] **Card 301:** `graft_zfs_modules` (Configure ZFS as kernel module source or built-in if patched)
+    * *Note: ZFS usually builds as modules. For Monolith, we might need to link statically or use initramfs to load modules.*
+    * *Refined Strategy: Build ZFS modules against kernel, then install modules to rootfs.*
+- [ ] **Card 302:** `config_kernel_monolith` (Enable `CONFIG_BLK_DEV_LOOP`, `CONFIG_BLK_DEV_INITRD`, `CONFIG_MODULES`)
+- [ ] **Card 303:** `build_kernel_bzImage` (Run `make bzImage`)
+- [ ] **Card 304:** `build_kernel_modules` (Run `make modules`)
+- [ ] **Card 305:** `install_kernel_artifacts` (Copy `bzImage` to `build_artifacts/iso/boot`)
 
 ## 4. THE ZFS ROOT (The Body)
-- [ ] **Loopback Creation**: Create 500MB file `build_artifacts/rootfs.img`.
-- [ ] **Pool Creation**:
-    -   `zpool create -o ashift=12 -O compression=lz4 -O mountpoint=none -R /mnt/anvil_temp anvil_pool /path/to/rootfs.img`.
-    -   `zfs create -o mountpoint=/ anvil_pool/ROOT`.
-- [ ] **Population**:
-    -   Install `busybox` to `/mnt/anvil_temp/bin/busybox`.
-    -   Install `zfs`, `zpool` to `/mnt/anvil_temp/sbin/`.
-    -   Create `/init` (ZFS-aware PID 1) in `/mnt/anvil_temp/`.
-- [ ] **Export**: `zpool export anvil_pool`.
+- [ ] **Card 400:** `create_sparse_rootfs` (Create 500MB `rootfs.img`)
+- [ ] **Card 401:** `format_rootfs_pool` (Loopback mount -> `zpool create` -> Export)
+    * *Constraint: This requires privileged access. If container fails, do this on host manually.*
+- [ ] **Card 402:** `mount_and_populate` (Import pool, Copy `rootfs_stage/*` to pool, Export)
 
 ## 5. THE INITRAMFS (The Key)
-- [ ] **Script**: Create `init` script that:
-    1.  Mounts ISO/CDROM.
-    2.  `losetup /dev/loop0 /cdrom/rootfs.img`.
-    3.  `zpool import -d /dev/loop0 -f anvil_pool`.
-    4.  `mount -t zfs anvil_pool/ROOT /new_root`.
-    5.  `switch_root /new_root /init`.
-- [ ] **Pack**: `find . | cpio -H newc -o | gzip > ../initramfs.cpio.gz`.
+- [ ] **Card 500:** `write_init_script` (Python/Shell script to: Mount ISO -> Loop `rootfs.img` -> Import Pool -> Switch Root)
+- [ ] **Card 501:** `pack_initramfs` (CPIO + Gzip `build_artifacts/initramfs_stage`)
 
 ## 6. FINAL ARTIFACT (The Anvil)
-- [ ] **ISO Structure**:
-    -   `/boot/bzImage`
-    -   `/boot/initramfs.cpio.gz`
-    -   `/rootfs.img` (The ZFS Pool)
-    -   `/isolinux/isolinux.cfg`
-- [ ] **Burn**: `xorriso` to generate `anvilos-alpha.iso`.
+- [ ] **Card 600:** `generate_isolinux_cfg` (Write `isolinux.cfg` boot menu)
+- [ ] **Card 601:** `burn_iso` (Run `xorriso` to create `anvilos-phase2.iso`)
