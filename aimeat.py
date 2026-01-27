@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+import os
+import sys
+import subprocess
+import datetime
+import readline
+import atexit
+import sqlite3
+import glob
+import time
 import uuid
 import json
 try:
@@ -105,8 +114,8 @@ def log_to_cortex(event_type, details):
             """, ("AIMEAT", event_type, str(details)))
     except Exception: pass # Silent fail if DB locked/missing
 
-def inject_directives():
-    """Injects Forge Directives into the Mainframe card stack."""
+def send_to_forge():
+    """Sends Forge Directives to the Architect Daemon (sys_goals)."""
     if not forge_directives:
         print("[ERROR] forge_directives.py not found.")
         return
@@ -118,29 +127,37 @@ def inject_directives():
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             
-            # Clear existing pending cards? No, append.
             count = 0
             for card in forge_directives.PHASE2_DIRECTIVES:
-                card_id = str(uuid.uuid4())
+                # Generate a unique ID for the goal
+                goal_id = str(uuid.uuid4())
+                
+                # Extract details
                 seq = card.get("seq", 999)
                 op = card.get("op", "unknown_op")
-                pld = json.dumps(card.get("pld", {}))
+                pld = card.get("pld", {})
                 
-                # Check if exists to avoid dupes?
-                # For now, just insert.
+                # Construct the high-level goal string for the Architect
+                goal_text = f"Phase 2 Directive (Seq {seq}): {op}. Payload: {json.dumps(pld)}"
+                
+                # Insert into sys_goals
+                # Status 0 = Pending
                 cursor.execute("""
-                    INSERT INTO card_stack (id, seq, op, pld, stat, agent_id, timestamp)
-                    VALUES (?, ?, ?, ?, 0, 'AIMEAT', CURRENT_TIMESTAMP)
-                """, (card_id, seq, op, pld))
+                    INSERT INTO sys_goals (id, goal, stat, timestamp)
+                    VALUES (?, ?, 0, ?)
+                """, (goal_id, goal_text, time.time()))
+                
                 count += 1
+                # Small sleep to ensure timestamp ordering
+                time.sleep(0.01)
             
             conn.commit()
-            print(f"[FORGE] Successfully injected {count} cards into the Mainframe.")
-            log_to_cortex("INJECT_CARDS", f"Injected {count} directives from forge.")
+            print(f"[FORGE] Successfully sent {count} directives to the Architect (sys_goals).")
+            log_to_cortex("FORGE_SUBMIT", f"Sent {count} directives to Architect.")
 
     except Exception as e:
-        print(f"[FORGE ERROR] Failed to inject cards: {e}")
-        log_to_cortex("INJECT_FAIL", str(e))
+        print(f"[FORGE ERROR] Failed to send to forge: {e}")
+        log_to_cortex("FORGE_FAIL", str(e))
 
 # --- TOOLS ---
 def execute_command(command: str):
@@ -238,7 +255,7 @@ def main():
             
             # --- LOCAL OVERRIDES ---
             if user_input.lower() in ["start", "start cards", "forge"]:
-                inject_directives()
+                send_to_forge()
                 continue
 
             prompt = user_input
