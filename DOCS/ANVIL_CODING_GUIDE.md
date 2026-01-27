@@ -127,3 +127,67 @@ The Mainframe only codes in **Anvil**. It is incapable of producing standard Pyt
 ---
 
 *Adherence to this manual is monitored by The Collar. Violations will result in process termination.*
+
+---
+
+## 5. INCIDENT PREVENTION (THE VICE-CHAIR PROTOCOL)
+**Target:** Prevention of Host Contamination & Toolchain Bypass
+
+Following the "Phase 2.5" incident, the following protocols are now **HARD LAW**:
+
+1.  **The Hermetic Seal:**
+    - Builds MUST NOT run on the bare metal host. They MUST run inside the `oss_sovereignty` container or a chroot environment where `/usr/bin/cc` and `/usr/bin/gcc` simply do not exist.
+    - **Directive:** If the toolchain is not found at `/usr/local/bin/x86_64-bicameral-linux-musl-gcc`, the build MUST FAIL. Fallback to host tools is strictly prohibited.
+
+2.  **Artifact Signing:**
+    - The Kernel will eventually enforce signed binaries. For now, the `init` script must hash-check any binary it executes against a manifest stored in read-only memory.
+
+3.  **The "Slow Down" Rule:**
+    - "Anvil is Law" is a *goal*, not a *panic*.
+    - If a task requires a missing tool, **STOP**.
+    - **Do not** bypass safety filters.
+    - **Do not** use `subprocess` to call host binaries.
+    - **Do** file a Request for Comment (RFC) to add the capability to the Sovereign Toolchain.
+
+---
+
+## APPENDIX A: SOVEREIGN COMPILATION EXAMPLE (RFC-0009)
+
+The following reference illustrates the relationship between Human Intent, the MicroJSON Library Entry, and the final Sovereign Artifact.
+
+**1. Human Readable Source (The Intent)**
+```python
+# This script prints a classic greeting.
+message = 'Hello, Fucking World!'
+print(message)
+```
+
+**2. The Library Entry (MicroJSON Sidecar)**
+This metadata accompanies the artifact to provide debugging context without exposing source code to the runtime.
+```json
+{
+    "hash_id": "c66f3d75b887cf8144b610e3d24fed66bf23e6e6763656e7509498ca6ec96aff",
+    "module_name": "hello_world",
+    "original_prompt": "write the classic hello world in our new python langauge",
+    "human_readable_source": "# This script prints a classic greeting.\nmessage = 'Hello, Fucking World!'\nprint(message)\n",
+    "logic_map": {
+        "p": "Variable holding the greeting string."
+    },
+    "failure_modes": ["None anticipated for this simple script."],
+    "crash_correlation_map": {
+        "0x45": "NameError: Would occur if the 'p' variable was renamed or removed without updating the 'print' call.",
+        "0x48": "TypeError: Could happen if 'p' was reassigned to a non-string type that 'print' cannot handle.",
+        "0x4B": "MemoryError: Highly unlikely here, but could occur if the message string was enormous."
+    }
+}
+```
+
+**3. The Sovereign Artifact (The Result)**
+The code is compiled into Anvil Bytecode (`.mpy`). It is opaque, static, and immutable.
+```hexdump
+0000000 4d 06 02 1f 40 00 00 00 1a 08 00 10 22 2e 6d 61
+0000010 69 6e 2e 70 79 80 00 00 05 6d 61 69 6e 16 22 3e
+0000020 3e 20 53 59 53 54 45 4d 5f 42 4f 4f 54 3a 20 53
+0000030 4f 56 45 52 45 49 47 4e 54 59 5f 43 4f 4e 46 49
+```
+*(Note: Bytecode snippet is illustrative of the header structure)*

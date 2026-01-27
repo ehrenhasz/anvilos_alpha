@@ -81,6 +81,12 @@ def _validate_card(op, pld):
     The Warden: scrutinizes the card for violations of The Law of Anvil.
     Returns: (bool, str) -> (Allowed?, Reason)
     """
+    # 0. Source Verification (The Collar)
+    # Cards must be signed by the Forge or the Commander.
+    source = pld.get("_source", "UNKNOWN")
+    if source not in ["FORGE", "COMMANDER"]:
+        return False, f"VIOLATION: Untrusted Source '{source}'. Only FORGE or COMMANDER may inject cards."
+
     if op == "SYS_CMD":
         cmd = pld.get("cmd", "")
         # 1. Dirty Tools Prohibition
@@ -110,10 +116,22 @@ def _validate_card(op, pld):
         if "runtime/security" in path or "cortex.db" in path:
             return False, "VIOLATION: Write to protected system path rejected."
             
+        # 4. The Collar (RFC-0058 / RFC-000666.2)
+        # Any file written to 'src/' or 'native/' MUST be .anv or .json (MicroJSON sidecar)
+        # Exemptions: logs, temporary build artifacts, documentation
+        is_source_code = "src/" in path or "native/" in path
+        is_exempt = "logs/" in path or "tmp/" in path or "build_artifacts/" in path or "DOCS/" in path
+        
+        if is_source_code and not is_exempt:
+            valid_extensions = (".anv", ".json")
+            if not path.endswith(valid_extensions):
+                return False, f"VIOLATION (THE COLLAR): Write to {path} rejected. Only .anv or .json allowed for source code."
+            
     return True, "OK"
 
 def main_loop():
     logger.info("Processor Daemon Online. Monitoring card_stack...")
+    DB.log_stream("MAINFRAME", "STARTUP", {"msg": "Processor Daemon Online"})
     
     while True:
         try:
@@ -128,15 +146,18 @@ def main_loop():
                 except json.JSONDecodeError as e:
                     logger.error(f"Card {card_id} Malformed Payload: {e}")
                     DB.log_result(card_id, {"error": "Malformed MicroJSON Payload"}, 9)
+                    DB.log_stream("MAINFRAME", "ERROR", {"card": card_id, "error": str(e)})
                     continue
                 
                 logger.info(f"Processing Card {card_id}: {op}")
+                DB.log_stream("MAINFRAME", "PROCESSING", {"card": card_id, "op": op})
                 
                 # --- WARDEN CHECK ---
                 allowed, reason = _validate_card(op, pld)
                 if not allowed:
                     logger.warning(f"Card {card_id} REJECTED by Warden: {reason}")
                     DB.log_result(card_id, {"error": reason}, 9) # 9 = Jam/Error
+                    DB.log_stream("MAINFRAME", "REJECTED", {"card": card_id, "reason": reason})
                     continue
 
                 result = None
@@ -149,8 +170,6 @@ def main_loop():
                     result = execute_file_write(pld)
                     success = "error" not in result
                 elif op == "GEN_OP":
-                    # Placeholder for generative operations (e.g., calling back to Architect/Gemini)
-                    # For now, we just log it as a success no-op
                     logger.info("Executing GEN_OP (No-op)")
                     result = {"msg": "GEN_OP executed (Simulation)"}
                     success = True
@@ -162,9 +181,11 @@ def main_loop():
                 stat = 2 if success else 9
                 DB.log_result(card_id, result, stat)
                 logger.info(f"Card {card_id} finished with status {stat}")
+                DB.log_stream("MAINFRAME", "COMPLETE", {"card": card_id, "status": stat})
             
         except Exception as e:
             logger.error(f"Loop Error: {e}")
+            DB.log_stream("MAINFRAME", "CRASH", {"error": str(e)})
             
         time.sleep(2)
 

@@ -97,7 +97,7 @@ class MainframeClient:
         except Exception as e:
             return {"error": str(e)}
 
-    def inject_card(self, op, payload, seq=None):
+    def inject_card(self, op, payload, seq=None, source="UNKNOWN"):
         """Injects a card directly into the Mainframe Stack."""
         import uuid
         card_id = str(uuid.uuid4())
@@ -106,6 +106,10 @@ class MainframeClient:
             if op == "SYS_CMD" and "cmd" in payload:
                 if "/usr/bin/gcc" in payload["cmd"] or "gcc " in payload["cmd"] and "musl-gcc" not in payload["cmd"]:
                     return {"status": "FAILURE", "error": "VIOLATION OF RFC-0058: Use of host GCC is forbidden. Use Anvil toolchain."}
+
+            # Embed Source in Payload for Processor Daemon Validation
+            if isinstance(payload, dict):
+                payload["_source"] = source
 
             with sqlite3.connect(self.db_path) as conn:
                 if seq is None:
@@ -117,11 +121,15 @@ class MainframeClient:
                     INSERT INTO card_stack (id, seq, op, pld, stat, timestamp)
                     VALUES (?, ?, ?, ?, 0, ?)
                 """, (card_id, seq, op, json.dumps(payload), time.time()))
+            
+            # STREAM TO CORTEX
+            self.log_telemetry(source, "CARD_INJECTED", {"id": card_id, "op": op, "seq": seq})
+            
             return {"status": "SUCCESS", "id": card_id, "seq": seq}
         except Exception as e:
             return {"status": "FAILURE", "error": str(e)}
 
-    def inject_anvil(self, filename, source_code, target_binary):
+    def inject_anvil(self, filename, source_code, target_binary, source="UNKNOWN"):
         """
         High-level helper to inject an Anvil build cycle:
         1. Write .anv file
@@ -133,20 +141,32 @@ class MainframeClient:
         c_file = f"{base_name}.c"
         
         # 1. Write Source
-        res1 = self.inject_card("FILE_WRITE", {"path": filename, "content": source_code})
+        res1 = self.inject_card("FILE_WRITE", {"path": filename, "content": source_code}, source=source)
         if res1["status"] == "FAILURE": return res1
         
         # 2. Transpile
         transpile_cmd = f"python3 oss_sovereignty/sys_09_Anvil/source/anvil.py transpile {filename} {c_file}"
-        res2 = self.inject_card("SYS_CMD", {"cmd": transpile_cmd, "timeout": 30})
+        res2 = self.inject_card("SYS_CMD", {"cmd": transpile_cmd, "timeout": 30}, source=source)
         if res2["status"] == "FAILURE": return res2
         
         # 3. Compile (Using Sovereign Toolchain)
         toolchain_gcc = "ext/toolchain/bin/x86_64-unknown-linux-musl-gcc"
         compile_cmd = f"{toolchain_gcc} -static -o {target_binary} {c_file}"
-        res3 = self.inject_card("SYS_CMD", {"cmd": compile_cmd, "timeout": 60})
+        res3 = self.inject_card("SYS_CMD", {"cmd": compile_cmd, "timeout": 60}, source=source)
         
         return {"status": "SUCCESS", "cycle_id": res1["id"]}
+
+    def log_telemetry(self, agent_id, event_type, details):
+        """Streams live telemetry to the Cortex."""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                conn.execute("""
+                    INSERT INTO live_stream (agent_id, event_type, details, timestamp)
+                    VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                """, (agent_id, event_type, str(details)))
+        except Exception as e:
+            # Fallback to stderr if DB fails
+            sys.stderr.write(f"[TELEMETRY FAIL] {e}\n")
 
     def submit_job(self, job_type, context, payload):
         """Submits a job to the Card Reader (Big Iron)."""
