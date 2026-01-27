@@ -204,7 +204,8 @@ cmd/zpool/os/linux/zpool-zpool_vdev_os.o: \
  /usr/include/x86_64-linux-gnu/sys/mount.h /usr/include/linux/mount.h \
  include/libzfs_core.h /usr/include/scsi/scsi.h /usr/include/scsi/sg.h \
  include/sys/efi_partition.h include/sys/uuid.h include/sys/mntent.h \
- /usr/include/uuid/uuid.h /usr/include/blkid/blkid.h
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/uuid/uuid.h \
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/blkid/blkid.h
 /usr/include/stdc-predef.h:
 zfs_config.h:
 lib/libspl/include/assert.h:
@@ -472,5 +473,5 @@ include/libzfs_core.h:
 include/sys/efi_partition.h:
 include/sys/uuid.h:
 include/sys/mntent.h:
-/usr/include/uuid/uuid.h:
-/usr/include/blkid/blkid.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/uuid/uuid.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/blkid/blkid.h:

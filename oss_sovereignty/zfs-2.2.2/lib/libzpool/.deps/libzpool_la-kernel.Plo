@@ -204,7 +204,9 @@ lib/libzpool/libzpool_la-kernel.lo: lib/libzpool/kernel.c \
  /usr/include/x86_64-linux-gnu/sys/mount.h /usr/include/linux/mount.h \
  lib/libspl/include/sys/systeminfo.h include/sys/zfs_onexit.h \
  include/sys/zfs_vfsops.h include/sys/zstd/zstd.h include/sys/zvol.h \
- include/zfs_fletcher.h /usr/include/zlib.h /usr/include/zconf.h
+ include/zfs_fletcher.h \
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/zlib.h \
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/zconf.h
 /usr/include/stdc-predef.h:
 zfs_config.h:
 lib/libspl/include/assert.h:
@@ -471,5 +473,5 @@ include/sys/zfs_vfsops.h:
 include/sys/zstd/zstd.h:
 include/sys/zvol.h:
 include/zfs_fletcher.h:
-/usr/include/zlib.h:
-/usr/include/zconf.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/zlib.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/zconf.h:

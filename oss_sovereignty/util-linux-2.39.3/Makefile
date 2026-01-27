@@ -910,127 +910,127 @@ am__append_45 = libblkid/libblkid.3.adoc
 #	disk-utils/resizepart.8.adoc \
 #	disk-utils/partx.8.adoc
 
-#am__append_553 = bash-completion/blkid
-#am__append_554 = bash-completion/cal
-#am__append_555 = bash-completion/col
-#am__append_556 = bash-completion/colcrt
-#am__append_557 = bash-completion/colrm
-#am__append_558 = bash-completion/column
-#am__append_559 = bash-completion/fincore
-#am__append_560 = bash-completion/findfs
-#am__append_561 = bash-completion/findmnt
-#am__append_562 = bash-completion/flock
-#am__append_563 = bash-completion/getopt
-#am__append_564 = bash-completion/hexdump
-#am__append_565 = bash-completion/ipcmk
-#am__append_566 = bash-completion/ipcrm
-#am__append_567 = bash-completion/ipcs
-#am__append_568 = bash-completion/irqtop
-#am__append_569 = bash-completion/isosize
-#am__append_570 = bash-completion/logger
-#am__append_571 = bash-completion/look
-#am__append_572 = bash-completion/lsipc
-#am__append_573 = bash-completion/lsirq
-#am__append_574 = bash-completion/lsns
-#am__append_575 = bash-completion/mcookie
-#am__append_576 = bash-completion/mkfs
-#am__append_577 = bash-completion/mkswap
-#am__append_578 = bash-completion/namei
-#am__append_579 = bash-completion/prlimit
-#am__append_580 = bash-completion/readprofile
-#am__append_581 = bash-completion/renice
-#am__append_582 = bash-completion/rev
-#am__append_583 = bash-completion/script
-#am__append_584 = bash-completion/scriptreplay
-#am__append_585 = bash-completion/scriptlive
-#am__append_586 = bash-completion/setsid
-#am__append_587 = bash-completion/whereis
-#am__append_588 = bash-completion/wipefs
-#am__append_589 = bash-completion/fsck
-#am__append_590 = bash-completion/mkfs.bfs
-#am__append_591 = \
-#	bash-completion/fsck.minix \
-#	bash-completion/mkfs.minix
+##am__append_553 = bash-completion/blkid
+##am__append_554 = bash-completion/cal
+##am__append_555 = bash-completion/col
+##am__append_556 = bash-completion/colcrt
+##am__append_557 = bash-completion/colrm
+##am__append_558 = bash-completion/column
+##am__append_559 = bash-completion/fincore
+##am__append_560 = bash-completion/findfs
+##am__append_561 = bash-completion/findmnt
+##am__append_562 = bash-completion/flock
+##am__append_563 = bash-completion/getopt
+##am__append_564 = bash-completion/hexdump
+##am__append_565 = bash-completion/ipcmk
+##am__append_566 = bash-completion/ipcrm
+##am__append_567 = bash-completion/ipcs
+##am__append_568 = bash-completion/irqtop
+##am__append_569 = bash-completion/isosize
+##am__append_570 = bash-completion/logger
+##am__append_571 = bash-completion/look
+##am__append_572 = bash-completion/lsipc
+##am__append_573 = bash-completion/lsirq
+##am__append_574 = bash-completion/lsns
+##am__append_575 = bash-completion/mcookie
+##am__append_576 = bash-completion/mkfs
+##am__append_577 = bash-completion/mkswap
+##am__append_578 = bash-completion/namei
+##am__append_579 = bash-completion/prlimit
+##am__append_580 = bash-completion/readprofile
+##am__append_581 = bash-completion/renice
+##am__append_582 = bash-completion/rev
+##am__append_583 = bash-completion/script
+##am__append_584 = bash-completion/scriptreplay
+##am__append_585 = bash-completion/scriptlive
+##am__append_586 = bash-completion/setsid
+##am__append_587 = bash-completion/whereis
+##am__append_588 = bash-completion/wipefs
+##am__append_589 = bash-completion/fsck
+##am__append_590 = bash-completion/mkfs.bfs
+##am__append_591 = \
+##	bash-completion/fsck.minix \
+##	bash-completion/mkfs.minix
 
-#am__append_592 = \
-#	bash-completion/fsck.cramfs \
-#	bash-completion/mkfs.cramfs
+##am__append_592 = \
+##	bash-completion/fsck.cramfs \
+##	bash-completion/mkfs.cramfs
 
-#am__append_593 = \
-#	bash-completion/addpart \
-#	bash-completion/delpart \
-#	bash-completion/resizepart \
-#	bash-completion/partx
+##am__append_593 = \
+##	bash-completion/addpart \
+##	bash-completion/delpart \
+##	bash-completion/resizepart \
+##	bash-completion/partx
 
-#am__append_594 = bash-completion/raw
-#am__append_595 = bash-completion/swaplabel
-#am__append_596 = bash-completion/fdformat
-#am__append_597 = bash-completion/blockdev
-#am__append_598 = bash-completion/fdisk
-#am__append_599 = bash-completion/sfdisk
-#am__append_600 = bash-completion/cfdisk
-#am__append_601 = \
-#	bash-completion/chfn \
-#	bash-completion/chsh
+##am__append_594 = bash-completion/raw
+##am__append_595 = bash-completion/swaplabel
+##am__append_596 = bash-completion/fdformat
+##am__append_597 = bash-completion/blockdev
+##am__append_598 = bash-completion/fdisk
+##am__append_599 = bash-completion/sfdisk
+##am__append_600 = bash-completion/cfdisk
+##am__append_601 = \
+##	bash-completion/chfn \
+##	bash-completion/chsh
 
-#am__append_602 = bash-completion/last
-#am__append_603 = install-data-hook-bashcomp-lastb
-#am__append_604 = bash-completion/lslogins
-#am__append_605 = bash-completion/newgrp
-#am__append_606 = bash-completion/su
-#am__append_607 = install-data-hook-bashcomp-runuser
-#am__append_608 = bash-completion/utmpdump
-#am__append_609 = bash-completion/uuidgen
-#am__append_610 = bash-completion/uuidparse
-#am__append_611 = bash-completion/uuidd
-#am__append_612 = bash-completion/lsblk
-#am__append_613 = bash-completion/lslocks
-#am__append_614 = bash-completion/rename
-#am__append_615 = bash-completion/chrt
-#am__append_616 = bash-completion/uclampset
-#am__append_617 = bash-completion/ionice
-#am__append_618 = bash-completion/taskset
-#am__append_619 = bash-completion/chcpu
-#am__append_620 = bash-completion/chmem
-#am__append_621 = bash-completion/eject
-#am__append_622 = bash-completion/fallocate
-#am__append_623 = bash-completion/hwclock
-#am__append_624 = bash-completion/tunelp
-#am__append_625 = bash-completion/lscpu
-#am__append_626 = bash-completion/lsmem
-#am__append_627 = bash-completion/losetup
-#am__append_628 = bash-completion/mount \
-#	bash-completion/umount
-#am__append_629 = bash-completion/mountpoint
-#am__append_630 = bash-completion/nsenter
-#am__append_631 = bash-completion/pivot_root
-#am__append_632 = bash-completion/setpriv
-#am__append_633 = bash-completion/swapon \
-#	bash-completion/swapoff
-#am__append_634 = bash-completion/unshare
-#am__append_635 = bash-completion/wdctl
-#am__append_636 = bash-completion/blkdiscard
-#am__append_637 = bash-completion/blkzone
-#am__append_638 = bash-completion/ctrlaltdel
-#am__append_639 = bash-completion/dmesg
-#am__append_640 = bash-completion/fsfreeze
-#am__append_641 = bash-completion/fstrim
-#am__append_642 = bash-completion/ldattach
-#am__append_643 = bash-completion/rfkill
-#am__append_644 = bash-completion/rtcwake
-#am__append_645 = bash-completion/setarch
-#am__append_646 = bash-completion/zramctl
-#am__append_647 = bash-completion/mesg
-#am__append_648 = bash-completion/wall
-#am__append_649 = bash-completion/write
-#am__append_650 = bash-completion/setterm
-#am__append_651 = bash-completion/more
-#am__append_652 = bash-completion/pg
-#am__append_653 = bash-completion/ul
-#am__append_654 = bash-completion/hardlink
-#am__append_655 = bash-completion/pipesz
-#am__append_656 = bash-completion/fadvise
-#am__append_657 = bash-completion/waitpid
+##am__append_602 = bash-completion/last
+##am__append_603 = install-data-hook-bashcomp-lastb
+##am__append_604 = bash-completion/lslogins
+##am__append_605 = bash-completion/newgrp
+##am__append_606 = bash-completion/su
+##am__append_607 = install-data-hook-bashcomp-runuser
+##am__append_608 = bash-completion/utmpdump
+##am__append_609 = bash-completion/uuidgen
+##am__append_610 = bash-completion/uuidparse
+##am__append_611 = bash-completion/uuidd
+##am__append_612 = bash-completion/lsblk
+##am__append_613 = bash-completion/lslocks
+##am__append_614 = bash-completion/rename
+##am__append_615 = bash-completion/chrt
+##am__append_616 = bash-completion/uclampset
+##am__append_617 = bash-completion/ionice
+##am__append_618 = bash-completion/taskset
+##am__append_619 = bash-completion/chcpu
+##am__append_620 = bash-completion/chmem
+##am__append_621 = bash-completion/eject
+##am__append_622 = bash-completion/fallocate
+##am__append_623 = bash-completion/hwclock
+##am__append_624 = bash-completion/tunelp
+##am__append_625 = bash-completion/lscpu
+##am__append_626 = bash-completion/lsmem
+##am__append_627 = bash-completion/losetup
+##am__append_628 = bash-completion/mount \
+##	bash-completion/umount
+##am__append_629 = bash-completion/mountpoint
+##am__append_630 = bash-completion/nsenter
+##am__append_631 = bash-completion/pivot_root
+##am__append_632 = bash-completion/setpriv
+##am__append_633 = bash-completion/swapon \
+##	bash-completion/swapoff
+##am__append_634 = bash-completion/unshare
+##am__append_635 = bash-completion/wdctl
+##am__append_636 = bash-completion/blkdiscard
+##am__append_637 = bash-completion/blkzone
+##am__append_638 = bash-completion/ctrlaltdel
+##am__append_639 = bash-completion/dmesg
+##am__append_640 = bash-completion/fsfreeze
+##am__append_641 = bash-completion/fstrim
+##am__append_642 = bash-completion/ldattach
+##am__append_643 = bash-completion/rfkill
+##am__append_644 = bash-completion/rtcwake
+##am__append_645 = bash-completion/setarch
+##am__append_646 = bash-completion/zramctl
+##am__append_647 = bash-completion/mesg
+##am__append_648 = bash-completion/wall
+##am__append_649 = bash-completion/write
+##am__append_650 = bash-completion/setterm
+##am__append_651 = bash-completion/more
+##am__append_652 = bash-completion/pg
+##am__append_653 = bash-completion/ul
+##am__append_654 = bash-completion/hardlink
+##am__append_655 = bash-completion/pipesz
+##am__append_656 = bash-completion/fadvise
+##am__append_657 = bash-completion/waitpid
 am__append_658 = test_mkfds test_enosys
 #am__append_659 = -e 's|@LIBSELINUX[@]|libselinux|g'
 am__append_660 = -e 's|@LIBSELINUX[@]||g'
@@ -5106,7 +5106,7 @@ am__leading_dot = .
 am__quote = 
 am__tar = tar --format=posix -chf - "$$tardir"
 am__untar = tar -xf -
-bashcompletiondir = ${datarootdir}/bash-completion/completions
+bashcompletiondir = 
 bindir = ${exec_prefix}/bin
 build = x86_64-pc-linux-gnu
 build_alias = 
@@ -5139,11 +5139,11 @@ pdfdir = ${docdir}
 pkgconfigdir = ${usrlib_execdir}/pkgconfig
 pkgpyexecdir = ${pyexecdir}/util-linux
 pkgpythondir = ${pythondir}/util-linux
-prefix = /home/aimeat/anvilos/oss_sovereignty/util-linux-2.39.3/../staging
+prefix = /home/aimeat/anvilos/oss_sovereignty/staging
 program_transform_name = s,x,x,
 psdir = ${docdir}
-pyexecdir = ${PYTHON_EXEC_PREFIX}/lib/python3.12/site-packages
-pythondir = ${PYTHON_PREFIX}/lib/python3.12/site-packages
+pyexecdir = ${PYTHON_EXEC_PREFIX}/local/lib/python3.12/dist-packages
+pythondir = ${PYTHON_PREFIX}/local/lib/python3.12/dist-packages
 runstatedir = ${localstatedir}/run
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
@@ -5159,7 +5159,7 @@ usrbin_execdir = ${exec_prefix}/bin
 usrlib_execdir = ${exec_prefix}/lib
 usrsbin_execdir = ${exec_prefix}/sbin
 vendordir = 
-with_bashcompletiondir = ${datarootdir}/bash-completion/completions
+with_bashcompletiondir = 
 with_systemdsystemunitdir = 
 AM_CPPFLAGS = -include config.h -I$(top_srcdir)/include \
 	-DLOCALEDIR=\"$(localedir)\" \
@@ -17604,12 +17604,12 @@ install-exec-hook:
 #	chmod 4755 $(DESTDIR)$(bindir)/mount
 #	chown root:root $(DESTDIR)$(bindir)/umount
 #	chmod 4755 $(DESTDIR)$(bindir)/umount
-#install-data-hook-bashcomp-lastb::
-#	ln -sf last $(DESTDIR)$(bashcompletiondir)/lastb
+##install-data-hook-bashcomp-lastb::
+##	ln -sf last $(DESTDIR)$(bashcompletiondir)/lastb
 
-#install-data-hook-bashcomp-runuser::
-##	ln -sf su $(DESTDIR)$(bashcompletiondir)/runuser
-#	cp $(top_srcdir)/bash-completion/su $(DESTDIR)$(bashcompletiondir)/runuser
+##install-data-hook-bashcomp-runuser::
+###	ln -sf su $(DESTDIR)$(bashcompletiondir)/runuser
+##	cp $(top_srcdir)/bash-completion/su $(DESTDIR)$(bashcompletiondir)/runuser
 
 clean-local-tests:
 	rm -rf $(top_builddir)/tests/output $(top_builddir)/tests/diff

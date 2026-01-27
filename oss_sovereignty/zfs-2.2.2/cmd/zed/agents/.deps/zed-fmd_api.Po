@@ -133,7 +133,8 @@ cmd/zed/agents/zed-fmd_api.o: cmd/zed/agents/fmd_api.c \
  /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
  /usr/include/x86_64-linux-gnu/bits/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/stdio2.h /usr/include/regex.h \
- lib/libspl/include/sys/processor.h /usr/include/uuid/uuid.h \
+ lib/libspl/include/sys/processor.h \
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/uuid/uuid.h \
  lib/libspl/include/string.h /usr/include/string.h /usr/include/strings.h \
  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
@@ -331,7 +332,7 @@ lib/libspl/include/stdlib.h:
 /usr/include/x86_64-linux-gnu/bits/stdio2.h:
 /usr/include/regex.h:
 lib/libspl/include/sys/processor.h:
-/usr/include/uuid/uuid.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/uuid/uuid.h:
 lib/libspl/include/string.h:
 /usr/include/string.h:
 /usr/include/strings.h:

@@ -129,13 +129,16 @@ lib/libefi/libefi_la-rdwr_efi.lo: lib/libefi/rdwr_efi.c \
  lib/libspl/include/string.h /usr/include/string.h /usr/include/strings.h \
  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
- /usr/include/uuid/uuid.h lib/libspl/include/sys/time.h \
- /usr/include/time.h /usr/include/x86_64-linux-gnu/bits/time.h \
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/uuid/uuid.h \
+ lib/libspl/include/sys/time.h /usr/include/time.h \
+ /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/bits/timex.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
- /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/zlib.h \
- /usr/include/zconf.h /usr/include/libintl.h /usr/include/locale.h \
+ /usr/include/x86_64-linux-gnu/sys/time.h \
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/zlib.h \
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/zconf.h \
+ /usr/include/libintl.h /usr/include/locale.h \
  /usr/include/x86_64-linux-gnu/bits/locale.h \
  lib/libspl/include/sys/dkio.h lib/libspl/include/sys/dklabel.h \
  lib/libspl/include/sys/mhd.h lib/libspl/include/sys/dktp/fdisk.h \
@@ -301,7 +304,7 @@ lib/libspl/include/string.h:
 /usr/include/strings.h:
 /usr/include/x86_64-linux-gnu/bits/strings_fortified.h:
 /usr/include/x86_64-linux-gnu/bits/string_fortified.h:
-/usr/include/uuid/uuid.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/uuid/uuid.h:
 lib/libspl/include/sys/time.h:
 /usr/include/time.h:
 /usr/include/x86_64-linux-gnu/bits/time.h:
@@ -309,8 +312,8 @@ lib/libspl/include/sys/time.h:
 /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
 /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
 /usr/include/x86_64-linux-gnu/sys/time.h:
-/usr/include/zlib.h:
-/usr/include/zconf.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/zlib.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/zconf.h:
 /usr/include/libintl.h:
 /usr/include/locale.h:
 /usr/include/x86_64-linux-gnu/bits/locale.h:

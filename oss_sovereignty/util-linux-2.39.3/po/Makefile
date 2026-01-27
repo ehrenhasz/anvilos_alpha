@@ -23,7 +23,7 @@ srcdir = .
 top_srcdir = ..
 
 
-prefix = /home/aimeat/anvilos/oss_sovereignty/util-linux-2.39.3/../staging
+prefix = /home/aimeat/anvilos/oss_sovereignty/staging
 exec_prefix = ${prefix}
 datarootdir = ${prefix}/share
 datadir = ${datarootdir}

@@ -336,7 +336,7 @@ am__leading_dot = .
 am__quote = 
 am__tar = tar --format=posix -chf - "$$tardir"
 am__untar = tar -xf -
-bashcompletiondir = ${datarootdir}/bash-completion/completions
+bashcompletiondir = 
 bindir = ${exec_prefix}/bin
 build = x86_64-pc-linux-gnu
 build_alias = 
@@ -369,11 +369,11 @@ pdfdir = ${docdir}
 pkgconfigdir = ${usrlib_execdir}/pkgconfig
 pkgpyexecdir = ${pyexecdir}/util-linux
 pkgpythondir = ${pythondir}/util-linux
-prefix = /home/aimeat/anvilos/oss_sovereignty/util-linux-2.39.3/../staging
+prefix = /home/aimeat/anvilos/oss_sovereignty/staging
 program_transform_name = s,x,x,
 psdir = ${docdir}
-pyexecdir = ${PYTHON_EXEC_PREFIX}/lib/python3.12/site-packages
-pythondir = ${PYTHON_PREFIX}/lib/python3.12/site-packages
+pyexecdir = ${PYTHON_EXEC_PREFIX}/local/lib/python3.12/dist-packages
+pythondir = ${PYTHON_PREFIX}/local/lib/python3.12/dist-packages
 runstatedir = ${localstatedir}/run
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
@@ -389,7 +389,7 @@ usrbin_execdir = ${exec_prefix}/bin
 usrlib_execdir = ${exec_prefix}/lib
 usrsbin_execdir = ${exec_prefix}/sbin
 vendordir = 
-with_bashcompletiondir = ${datarootdir}/bash-completion/completions
+with_bashcompletiondir = 
 with_systemdsystemunitdir = 
 
 # We require automake 1.10 at least.

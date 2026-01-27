@@ -5,10 +5,10 @@
 # It is necessary for linking the library.
 
 # The name that we can dlopen(3).
-dlname='libblkid.so.1'
+dlname=''
 
 # Names of this library.
-library_names='libblkid.so.1.1.0 libblkid.so.1 libblkid.so'
+library_names=''
 
 # The name of the static archive.
 old_library='libblkid.a'
@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/home/aimeat/anvilos/oss_sovereignty/util-linux-2.39.3/../staging/lib'
+libdir='/home/aimeat/anvilos/oss_sovereignty/staging/lib'

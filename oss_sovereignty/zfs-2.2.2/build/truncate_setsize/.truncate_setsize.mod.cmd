@@ -1,1 +1,0 @@
-savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/truncate_setsize/truncate_setsize.mod := printf '%s\n'   truncate_setsize.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/truncate_setsize/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/truncate_setsize/truncate_setsize.mod

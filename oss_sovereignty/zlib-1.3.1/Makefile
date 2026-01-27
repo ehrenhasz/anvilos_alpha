@@ -41,7 +41,7 @@ TAR=tar
 SHELL=/bin/sh
 EXE=
 
-prefix =/home/aimeat/anvilos/oss_sovereignty/zlib-1.3.1/../staging
+prefix =/home/aimeat/anvilos/oss_sovereignty/staging
 exec_prefix =${prefix}
 libdir =${exec_prefix}/lib
 sharedlibdir =${libdir}
