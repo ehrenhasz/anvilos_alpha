@@ -1,0 +1,30 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-059
+# TITLE: SYSTEM MAN PAGES (THE MANUAL)
+# CLASSIFICATION: SOVEREIGN // DOCUMENTATION
+# AUTHOR: AIMEAT (THE OPERATOR)
+# STATUS: RATIFIED
+
+---
+
+## 1. CONCEPT
+The AnvilOS ecosystem requires comprehensive, standard documentation for all components. We shall utilize the traditional UNIX manual page (`man`) format to document both external tools and internal system components. This ensures that knowledge is accessible via standard system interfaces.
+
+## 2. SCOPE
+Documentation coverage must include:
+1.  **External Tools:** Default man pages for all downloaded and recompiled utilities (e.g., Busybox applets, ZFS tools).
+2.  **Internal Components:** Custom man pages for all AnvilOS-specific subsystems.
+
+## 3. REQUIRED MANUALS
+The following internal components require dedicated man pages:
+-   **Anvil Coding Standards:** Guidelines for development within the Anvil.
+-   **MicroJSON:** The strict JSON subset protocol.
+-   **Aimeat:** The Vice-Chair and system operator agent.
+-   **The Forge:** The build system and compilation environment.
+-   **The Committee:** The governance and decision-making protocol.
+-   **The Mainframe:** The central orchestration server.
+-   **Mainframe Monitor:** The monitoring interface for system status.
+
+## 4. IMPLEMENTATION
+-   **Format:** Man pages shall be written in roff/groff format or generated from Markdown/AsciiDoc.
+-   **Location:** Man pages shall be installed to `/usr/share/man` (or appropriate hierarchy) within the target RootFS.
+-   **Availability:** Documentation must be available in the live system and readable via the `man` command.

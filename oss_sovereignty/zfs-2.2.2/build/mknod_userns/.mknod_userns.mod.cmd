@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/mknod_userns/mknod_userns.mod := printf '%s\n'   mknod_userns.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/mknod_userns/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/mknod_userns/mknod_userns.mod

@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/copy_from_iter/copy_from_iter.mod := printf '%s\n'   copy_from_iter.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/copy_from_iter/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/copy_from_iter/copy_from_iter.mod

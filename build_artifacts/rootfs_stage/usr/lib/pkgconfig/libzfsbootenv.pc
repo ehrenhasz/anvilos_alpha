@@ -1,0 +1,12 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libzfsbootenv
+Description: LibZFSBootENV library
+Version: 2.2.2
+URL: https://github.com/openzfs/zfs
+Requires: libzfs
+Cflags: -I${includedir}
+Libs: -L${libdir} -lzfsbootenv

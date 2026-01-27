@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/clear_inode/clear_inode.mod := printf '%s\n'   clear_inode.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/clear_inode/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/clear_inode/clear_inode.mod

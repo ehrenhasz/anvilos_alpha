@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/posix_acl_equiv_mode/posix_acl_equiv_mode.mod := printf '%s\n'   posix_acl_equiv_mode.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/posix_acl_equiv_mode/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/posix_acl_equiv_mode/posix_acl_equiv_mode.mod

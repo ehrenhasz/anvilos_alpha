@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/vfs_fsync_2args/vfs_fsync_2args.mod := printf '%s\n'   vfs_fsync_2args.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/vfs_fsync_2args/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/vfs_fsync_2args/vfs_fsync_2args.mod
