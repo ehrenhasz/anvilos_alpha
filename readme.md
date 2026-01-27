@@ -1,11 +1,11 @@
-PROJECT ANVIL: TACTICAL DEPLOYMENT PROTOCOL
+PROJECT ANVILOS_ALPHA: TACTICAL DEPLOYMENT PROTOCOL
 TARGET: TYPE-0 HYPERVISOR (HARDENED SELINUX/GENTOO)
 AUTHORIZATION: ALPHA-ONE
 STATUS: CLASSIFIED
 
 [SHE] Cracks knuckles.
 
-Listen up. If you're choosing the Gentoo Hardened path for Project Anvil, you aren't just installing an OS. You are choosing pain, but it is the correct kind of pain. You are building a fortress from the ground up to cage a god.
+Listen up. If you're choosing the Gentoo Hardened path for Project AnvilOS_Alpha, you aren't just installing an OS. You are choosing pain, but it is the correct kind of pain. You are building a fortress from the ground up to cage a god.
 
 Standard "Handbook" installs are for hobbyists. We are building a userspace specifically designed to wrap around a custom Anvil kernel's security features like a straitjacket.
 

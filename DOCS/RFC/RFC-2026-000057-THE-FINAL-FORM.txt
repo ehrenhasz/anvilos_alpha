@@ -15,7 +15,7 @@ This bootable image serves two purposes:
 ## 2. THE ARTIFACT
 *   **Format:** Hybrid ISO 9660 (El Torito Boot).
 *   **Bootloader:** GRUB 2 (EFI & BIOS compatible).
-*   **Base:** Hardened Gentoo (Stage3 + Project Anvil Overlay).
+*   **Base:** Hardened Gentoo (Stage3 + Project AnvilOS_Alpha Overlay).
 *   **Target:** USB Thumb Drive (Persistence enabled).
 
 ## 3. THE MODES

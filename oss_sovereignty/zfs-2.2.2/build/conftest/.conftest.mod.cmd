@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/conftest/conftest.mod := printf '%s\n'   conftest.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/conftest/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/conftest/conftest.mod

@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/create_flags/create_flags.mod := printf '%s\n'   create_flags.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/create_flags/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/create_flags/create_flags.mod

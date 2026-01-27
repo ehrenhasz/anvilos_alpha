@@ -42,7 +42,7 @@ class MainframeMonitor:
         if code == 0: return "[dim]PENDING[/dim]"
         if code == 1: return "[yellow]PROCESSING[/yellow]"
         if code == 2: return "[green]PUNCHED[/green]"
-        if code == 9: return "[bold red]JAM / ERR[/bold red]"
+        if code == 9: return "[red]JAM / ERR[/red]"
         return "?"
 
     def make_layout(self) -> Layout:
@@ -66,19 +66,19 @@ class MainframeMonitor:
         
         now = datetime.now().strftime("%H:%M:%S")
         grid.add_row(
-            "[bold green]PROJECT ANVIL[/bold green]",
-            "[bold white]CORTEX MAINFRAME INTERFACE[/bold white]",
-            f"[bold green]{now}[/bold green]"
+            "[green]PROJECT ANVILOS_ALPHA[/green]",
+            "[cyan]CORTEX MAINFRAME INTERFACE[/cyan]",
+            f"[green]{now}[/green]"
         )
-        return Panel(grid, style="bold white on black", box=box.HEAVY)
+        return Panel(grid, style="green on black", box=box.SQUARE)
 
     def generate_stack_view(self):
-        table = Table(title="INSTRUCTION STACK", expand=True, border_style="green", box=box.SIMPLE_HEAD)
-        table.add_column("SEQ", justify="right", style="cyan", no_wrap=True)
-        table.add_column("ID", style="magenta")
-        table.add_column("OP CODE", style="bold white")
-        table.add_column("PAYLOAD", style="dim white")
-        table.add_column("STATUS", justify="center")
+        table = Table(expand=True, border_style="green", box=box.SIMPLE_HEAD)
+        table.add_column("SEQ", justify="right", style="blue", header_style="blue", no_wrap=True)
+        table.add_column("ID", style="magenta", header_style="magenta")
+        table.add_column("OP CODE", style="yellow", header_style="yellow")
+        table.add_column("PAYLOAD", style="cyan", header_style="cyan")
+        table.add_column("STATUS", justify="center", style="green", header_style="green")
 
         cards = self.fetch_cards()
         for c in cards:
@@ -92,7 +92,7 @@ class MainframeMonitor:
                 pld_display,
                 self.get_status_text(stat)
             )
-        return Panel(table, title="[BATCH QUEUE]", border_style="green")
+        return Panel(table, title="[INSTRUCTION STACK]", border_style="green")
 
     def generate_telemetry(self):
         stats = self.fetch_stats()
@@ -106,24 +106,24 @@ class MainframeMonitor:
         pct = (completed / total * 100) if total > 0 else 0
 
         # System Status Block
-        sys_status = "[bold green]ONLINE[/bold green]"
+        sys_status = "[green]ONLINE[/green]"
         if errors > 5:
-            sys_status = "[bold red]ATTENTION REQ[/bold red]"
+            sys_status = "[red]ATTENTION REQ[/red]"
         elif processing > 0:
-            sys_status = "[bold yellow]COMPUTING[/bold yellow]"
+            sys_status = "[yellow]COMPUTING[/yellow]"
 
         text = Text()
-        text.append("\nSYSTEM STATUS: ", style="bold white")
+        text.append("\nSYSTEM STATUS: ", style="cyan")
         text.append_text(Text.from_markup(f"{sys_status}\n\n"))
         
-        text.append(f"TOTAL CARDS : {total}\n", style="white")
-        text.append(f"-------------------\n")
-        text.append(f"PENDING     : {pending}\n", style="dim")
+        text.append(f"TOTAL CARDS : {total}\n", style="cyan")
+        text.append(f"-------------------\n", style="blue")
+        text.append(f"PENDING     : {pending}\n", style="blue")
         text.append(f"PROCESSING  : {processing}\n", style="yellow")
         text.append(f"PUNCHED     : {completed}\n", style="green")
         text.append(f"JAMMED      : {errors}\n", style="red")
         
-        text.append(f"\nCOMPLETION  : {pct:.1f}%\n", style="blue")
+        text.append(f"\nCOMPLETION  : {pct:.1f}%\n", style="magenta")
 
         return Panel(
             Align.center(text), 
@@ -132,10 +132,13 @@ class MainframeMonitor:
         )
 
     def generate_footer(self):
-        return Panel(
-            Text("ANVIL OS v1.0.4 | [ESC] INTERRUPT | [R] RELOAD KERNEL", justify="center", style="black on green"),
-            box=box.SIMPLE
+        text = Text.from_markup(
+            "[green]F1[/green] [green]RESTART[/green] [blue]|[/blue] "
+            "[yellow]F2[/yellow] [yellow]START[/yellow] [blue]|[/blue] "
+            "[cyan]F3[/cyan] [cyan]SORT[/cyan] [blue]|[/blue] "
+            "[red]ESC[/red] [red]QUIT[/red]"
         )
+        return Panel(Align.center(text), style="green on black", box=box.SQUARE)
 
     def run(self):
         layout = self.make_layout()

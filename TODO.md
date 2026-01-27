@@ -1,4 +1,4 @@
-# PROJECT ANVIL: ATOMIC TACTICAL BACKLOG
+# PROJECT ANVILOS_ALPHA: ATOMIC TACTICAL BACKLOG
 
 > **PRIME DIRECTIVE (UPDATED - JAN 23 2026):** 
 > 1. **CONTAINERIZATION:** All compilation and execution logic runs in `anvil-gentoo-container`.
