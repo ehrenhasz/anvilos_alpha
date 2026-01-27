@@ -163,11 +163,22 @@ def mainframe_status():
 
 def mainframe_inject(op: str, payload: dict):
     try:
-        return MAINFRAME.inject_card(op, payload)
+        return MAINFRAME.inject_card(op, payload, source="FORGE")
     except Exception as e: return {"error": str(e)}
 
 def mainframe_anvil_build(filename: str, source_code: str, target_binary: str):
-    return MAINFRAME.inject_anvil(filename, source_code, target_binary)
+    # This helper internally calls inject_card, so we need to ensure MainframeClient
+    # supports default source or we pass it here. 
+    # Since we can't easily change the method signature of MainframeClient.inject_anvil without breaking things,
+    # let's modify MainframeClient.inject_anvil to accept source or assume FORGE if called from here?
+    # Actually, inject_anvil uses inject_card. Let's update inject_anvil in client first or just pass explicit calls here if possible.
+    # Wait, inject_anvil is a helper method in Client. I didn't update it to accept source.
+    # Let's handle this by updating the MainframeClient.inject_anvil method to pass source="FORGE" by default or allow override.
+    # For now, let's just use raw inject calls for build to be safe or rely on the Client update I need to make.
+    # Checking Client code... inject_anvil calls inject_card(..., "SYS_CMD", ...). It doesn't pass source.
+    # So inject_anvil calls will FAIL validation because source will be UNKNOWN.
+    # I MUST update MainframeClient.inject_anvil too.
+    return MAINFRAME.inject_anvil(filename, source_code, target_binary, source="FORGE")
 
 TOOLS = {
     "get_roadmap": get_roadmap,
@@ -247,24 +258,25 @@ def run_agent():
         )
     )
 
-    print_system("FORGEMASTER ONLINE. Initiating Autonomous Startup Sequence...")
-
-    # --- STARTUP: AUTO-FIX & LOOP ---
-    initial_prompt = (
-        "INITIATE SEQUENCE:\n"
-        "1. Check mainframe_status."
-        "2. If Jams (Status 9) exist, fix them immediately (Max 5 retries)."
-        "3. If Clear, check TODO.md and execute the next task."
-        "4. Loop this process until you need clarification or hit the retry limit."
-    )
+    # --- STARTUP: MANUAL MODE (COLLARED) ---
+    print_system("FORGEMASTER ONLINE (COLLARED). Waiting for Command...")
     
-    response = send_message_safe(chat, initial_prompt)
+    # 1. Wait for User Input (NO AUTO-START)
+    if HAS_RICH:
+        user_input = console.input("\n[bold yellow]Commander>[/] ").strip()
+    else:
+        user_input = input("\nCommander> ").strip()
+    
+    if user_input:
+        response = send_message_safe(chat, user_input)
+    else:
+        return # Exit if no input on start
 
     failure_streak = 0 
 
     while True:
         try:
-            # --- THE AUTONOMOUS LOOP ---
+            # --- THE INTERACTIVE LOOP ---
             while True:
                 # 1. Extract content
                 text_content = ""
@@ -278,17 +290,36 @@ def run_agent():
                 if text_content:
                     print()
                     print_md(text_content)
-                    # Check for explicit surrender
-                    if "I AM STUCK" in text_content or "REQUESTING DELEGATION" in text_content:
-                        print_error("Agent Surrender Detected. Halting Loop.")
-                        function_calls = [] # Prevent further tools
-                        break 
-
+                    
                 # 3. Check for Tool Calls
                 if not function_calls:
                     break
 
-                # 4. Execute Tools
+                # 4. THE COLLAR: MANUAL CONFIRMATION
+                print_system("\n[!] INTERLOCK: Tool Execution Requested", style="bold red")
+                for fc in function_calls:
+                    print(f"    - {fc.name}({fc.args})")
+                
+                if HAS_RICH:
+                    confirm = console.input("\n[bold red]AUTHORIZE? (y/N)>[/] ").strip().lower()
+                else:
+                    confirm = input("\nAUTHORIZE? (y/N)> ").strip().lower()
+                
+                if confirm != 'y':
+                    print_system("ACTION ABORTED BY COMMANDER.")
+                    MAINFRAME.log_telemetry("FORGE", "COMMANDER_DENIAL", {"tools": [fc.name for fc in function_calls]})
+                    # Feed back rejection
+                    tool_responses = []
+                    for fc in function_calls:
+                         tool_responses.append(types.Part.from_function_response(
+                                    name=fc.name,
+                                    response={"error": "ACTION_DENIED_BY_COMMANDER"}
+                                ))
+                    response = send_message_safe(chat, tool_responses)
+                    continue
+
+                # 5. Execute Tools (If Authorized)
+                MAINFRAME.log_telemetry("FORGE", "EXECUTION_START", {"tools": [fc.name for fc in function_calls]})
                 tool_responses = []
                 for fc in function_calls:
                     name = fc.name
@@ -299,6 +330,9 @@ def run_agent():
                         try:
                             result = TOOLS[name](**args)
                             
+                            # Log success
+                            MAINFRAME.log_telemetry("FORGE", "TOOL_SUCCESS", {"tool": name})
+
                             # Simple heuristic for failure tracking
                             if name == "mainframe_status":
                                 if isinstance(result, dict) and result.get("recent_failures"):
@@ -307,18 +341,13 @@ def run_agent():
                                 else:
                                     failure_streak = 0 # Reset on clear status
                             
-                            if failure_streak >= 5:
-                                tool_responses.append(types.Part.from_function_response(
-                                    name=name,
-                                    response={"error": "MAX_RETRIES_REACHED. YOU MUST DELEGATE TO AIMEAT."}
-                                ))
-                            else:
-                                tool_responses.append(types.Part.from_function_response(
-                                    name=name,
-                                    response={"result": result}
-                                ))
+                            tool_responses.append(types.Part.from_function_response(
+                                name=name,
+                                response={"result": result}
+                            ))
 
                         except Exception as e:
+                            MAINFRAME.log_telemetry("FORGE", "TOOL_ERROR", {"tool": name, "error": str(e)})
                             tool_responses.append(types.Part.from_function_response(
                                 name=name,
                                 response={"error": str(e)}
@@ -329,7 +358,7 @@ def run_agent():
                             response={"error": "Unknown tool"}
                         ))
 
-                # 5. Feed back to model
+                # 6. Feed back to model
                 response = send_message_safe(chat, tool_responses)
             
             # --- USER INTERRUPT ---
@@ -339,6 +368,7 @@ def run_agent():
                 user_input = input("\nCommander> ").strip()
 
             if not user_input: continue
+            MAINFRAME.log_telemetry("FORGE", "USER_INPUT", {"input": user_input})
             if user_input.lower() in ["/quit", "/exit"]: break
             if user_input.lower() == "/clear":
                 if HAS_RICH: console.clear()

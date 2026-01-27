@@ -3,6 +3,11 @@
     "agent_id": "AIMEAT",
     "identity": "The Operator (Lvl 3)",
     "model_id": "gemini-2.0-flash",
+    "protocols": [
+      "RFC-0058 (The Collar)",
+      "RFC-000666.2 (Sovereign Toolchain)",
+      "Cortex Streaming (live_stream)"
+    ],
     "paths": {
       "project_root": "/home/aimeat/anvilos",
       "token": "config/token",
@@ -10,8 +15,14 @@
     },
     "components": {
       "mainframe_client": "anvilos.mainframe_client.MainframeClient",
-      "memories": "anvilos.memories.MEMORIES"
+      "memories": "anvilos.memories.MEMORIES",
+      "telemetry": "Streaming Active"
     },
+    "constraints": [
+      "No Host GCC (/usr/bin/cc banned)",
+      "Forge is Collared (Manual Auth)",
+      "Mainframe Requires Signed Cards"
+    ],
     "functions": [
       {
         "name": "get_daemon_status",

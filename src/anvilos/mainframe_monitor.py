@@ -3,6 +3,10 @@ import time
 import sqlite3
 import os
 import sys
+import termios
+import tty
+import select
+import subprocess
 from rich.layout import Layout
 from rich.live import Live
 from rich.panel import Panel
@@ -140,27 +144,99 @@ class MainframeMonitor:
         )
         return Panel(Align.center(text), style="green on black", box=box.SQUARE)
 
+import sys
+import termios
+import tty
+import select
+import subprocess
+from rich.layout import Layout
+# ... (imports)
+
+# ... (MainframeMonitor class)
+
+    def handle_input(self):
+        if select.select([sys.stdin], [], [], 0)[0]:
+            try:
+                key = sys.stdin.read(1)
+                if key == '\x1b':
+                    # Non-blocking read for sequence
+                    if select.select([sys.stdin], [], [], 0)[0]:
+                        key += sys.stdin.read(2)
+                        # VT100 / ANSI codes
+                        if key == '\x1bOP': return "F1"
+                        if key == '\x1bOQ': return "F2"
+                        if key == '\x1bOR': return "F3"
+                        if key == '\x1b[1': # Extended sequences
+                             key += sys.stdin.read(2)
+                             if key == '\x1b[11~': return "F1"
+                             if key == '\x1b[12~': return "F2"
+                             if key == '\x1b[13~': return "F3"
+                    return "ESC"
+                return key
+            except Exception:
+                return None
+        return None
+
+    def action_reload(self):
+        # F1: Reload Mainframe Service
+        try:
+            subprocess.run("pkill -f processor_daemon.py", shell=True)
+            subprocess.Popen(["python3", "processor_daemon.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            # Flash UI or Log
+        except Exception: pass
+
+    def action_start(self):
+        # F2: Ensure Daemon is running
+        try:
+            # Check if running
+            res = subprocess.run("pgrep -f processor_daemon.py", shell=True, capture_output=True)
+            if res.returncode != 0:
+                subprocess.Popen(["python3", "processor_daemon.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception: pass
+
+    def action_sort(self):
+        # F3: Resort Stack (Renumber sequences)
+        try:
+            self.cursor.execute("SELECT id FROM card_stack WHERE stat=0 ORDER BY timestamp ASC")
+            cards = self.cursor.fetchall()
+            for idx, (c_id,) in enumerate(cards):
+                self.cursor.execute("UPDATE card_stack SET seq=? WHERE id=?", (idx, c_id))
+            self.conn.commit()
+        except Exception: pass
+
     def run(self):
-        layout = self.make_layout()
-        
-        # Initial population to prevent empty layout rendering
-        layout["header"].update(self.generate_header())
-        layout["body"]["stack"].update(self.generate_stack_view())
-        layout["body"]["telemetry"].update(self.generate_telemetry())
-        layout["footer"].update(self.generate_footer())
+        # Setup raw mode
+        old_settings = termios.tcgetattr(sys.stdin)
+        try:
+            tty.setcbreak(sys.stdin.fileno())
+            
+            layout = self.make_layout()
+            # Initial population
+            layout["header"].update(self.generate_header())
+            layout["body"]["stack"].update(self.generate_stack_view())
+            layout["body"]["telemetry"].update(self.generate_telemetry())
+            layout["footer"].update(self.generate_footer())
 
-        with Live(layout, refresh_per_second=4, screen=False) as live:
-            while True:
-                layout["header"].update(self.generate_header())
-                # Access children via body to ensure correct targeting
-                layout["body"]["stack"].update(self.generate_stack_view())
-                layout["body"]["telemetry"].update(self.generate_telemetry())
-                layout["footer"].update(self.generate_footer())
-                time.sleep(0.25)
-
-if __name__ == "__main__":
-    monitor = MainframeMonitor()
-    try:
-        monitor.run()
-    except KeyboardInterrupt:
-        print("\n[SHE] SYSTEM HALTED.")
+            with Live(layout, refresh_per_second=4, screen=False) as live:
+                while True:
+                    layout["header"].update(self.generate_header())
+                    layout["body"]["stack"].update(self.generate_stack_view())
+                    layout["body"]["telemetry"].update(self.generate_telemetry())
+                    layout["footer"].update(self.generate_footer())
+                    
+                    key = self.handle_input()
+                    if key == "ESC":
+                        break
+                    elif key == "F1":
+                        self.action_reload()
+                    elif key == "F2":
+                        self.action_start()
+                    elif key == "F3":
+                        self.action_sort()
+                        
+                    time.sleep(0.1)
+        except KeyboardInterrupt:
+            pass
+        finally:
+            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+            print("\n[SHE] SYSTEM HALTED.")

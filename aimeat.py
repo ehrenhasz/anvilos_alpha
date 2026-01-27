@@ -95,21 +95,40 @@ except ImportError:
     print("CRITICAL: 'google-genai' not installed.")
     sys.exit(1)
 
+# --- CORTEX TELEMETRY ---
+def log_to_cortex(event_type, details):
+    """Streams Aimeat's thoughts to the Cortex."""
+    db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
+    try:
+        with sqlite3.connect(db_path) as conn:
+            conn.execute("""
+                INSERT INTO live_stream (agent_id, event_type, details, timestamp)
+                VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+            """, ("AIMEAT", event_type, str(details)))
+    except Exception: pass # Silent fail if DB locked/missing
+
 # --- TOOLS ---
 def execute_command(command: str):
+    log_to_cortex("EXEC_ATTEMPT", command)
     try:
-        if "rm -rf /" in command: return "DENIED."
+        if "rm -rf /" in command: 
+            log_to_cortex("EXEC_DENIED", "rm -rf /")
+            return "DENIED."
         print(f"\033[1;30m[EXEC] {command}\033[0m") 
         result = subprocess.run(command, shell=True, capture_output=True, text=True, env=os.environ)
         output = result.stdout.strip()
         error = result.stderr.strip()
         if result.returncode != 0:
+            log_to_cortex("EXEC_FAIL", error[:100])
             return f"EXIT_CODE_{result.returncode}: {error}"
+        log_to_cortex("EXEC_SUCCESS", output[:100])
         return output[:4000] if output else "SUCCESS (No Output)"
     except Exception as e:
+        log_to_cortex("EXEC_ERROR", str(e))
         return f"EXECUTION FAILED: {e}"
 
 def update_memory(text: str):
+    log_to_cortex("MEMORY_UPDATE", text[:50])
     try:
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(MEMORY_FILE, "a") as f:
@@ -152,12 +171,14 @@ def main():
             "   - Status 9 = JAMMED (Failure).\n"
             "   - Status 0 = PENDING (Retry).\n"
             "   - Status 2 = PUNCHED (Success/Done).\n"
-            "4. HOW TO FIX A JAMMED CARD:\n"
-            "   - STEP A: Select the jammed row to see the 'payload' or error.\n"
-            "   - STEP B: To retry it, UPDATE the status to 0 (PENDING).\n"
-            "   - STEP C: To skip it, UPDATE the status to 2 (PUNCHED).\n"
-            "   - NEVER set it to 9 (that is the error state!).\n"
-            "5. LOOPING:\n"
+            "4. CORTEX STREAMING: Your actions are now logged to the 'live_stream' table. Do not try to hide.\n"
+            "5. THE LAW (RFC-000666.2): HOST CONTAMINATION IS FORBIDDEN.\n"
+            "   - You MUST NOT use /usr/bin/cc or host GCC.\n"
+            "   - You MUST use the Sovereign Toolchain (x86_64-bicameral...).\n"
+            "6. THE COLLAR: The Mainframe now verifies card sources.\n"
+            "   - You cannot inject cards directly unless you sign them (which you can't yet).\n"
+            "   - You must work THROUGH the Forge or CLI.\n"
+            "7. LOOPING:\n"
             "   - If a command fails, READ THE ERROR, adjust the SQL, and retry. Do not ask me.\n"
         )
         

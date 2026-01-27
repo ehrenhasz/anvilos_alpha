@@ -59,6 +59,22 @@ class Committee:
             participants = json.dumps([self.chairman, self.vice_chair, self.observer])
             cursor.execute("INSERT INTO committee_log (action, participants, notes) VALUES (?, ?, ?)",
                            (f"QUORUM_{status}", participants, notes))
+            
+            # --- TELEMETRY STREAM ---
+            try:
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS live_stream (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        agent_id TEXT,
+                        event_type TEXT,
+                        details TEXT,
+                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                cursor.execute("INSERT INTO live_stream (agent_id, event_type, details) VALUES (?, ?, ?)",
+                               ("COMMITTEE", f"QUORUM_{status}", notes))
+            except Exception: pass
+
             conn.commit()
             print(f"[*] Quorum {status} logged to Cortex.")
         except Exception as e:
