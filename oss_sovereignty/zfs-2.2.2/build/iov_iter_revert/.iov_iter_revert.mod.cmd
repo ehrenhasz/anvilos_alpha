@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/iov_iter_revert/iov_iter_revert.mod := printf '%s\n'   iov_iter_revert.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/iov_iter_revert/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/iov_iter_revert/iov_iter_revert.mod

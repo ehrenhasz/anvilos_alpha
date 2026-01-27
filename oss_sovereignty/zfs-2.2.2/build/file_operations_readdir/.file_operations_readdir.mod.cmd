@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/file_operations_readdir/file_operations_readdir.mod := printf '%s\n'   file_operations_readdir.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/file_operations_readdir/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/file_operations_readdir/file_operations_readdir.mod

@@ -182,7 +182,7 @@ target_triplet = x86_64-pc-linux-gnu
 #am__append_4 = -fstack-protector-strong -shared \
 #	-Wl,-x -Wl,--fatal-warnings \
 #	-Wl,--warn-shared-textrel -lm
-#am__append_5 = $(scripts_scripts)
+am__append_5 = $(scripts_scripts)
 am__append_6 = \
 	rpm/generic/zfs-dkms.spec.in \
 	rpm/generic/zfs-kmod.spec.in \
@@ -192,308 +192,308 @@ am__append_6 = \
 	rpm/redhat/zfs-kmod.spec.in \
 	rpm/redhat/zfs.spec.in
 
-bin_PROGRAMS = raidz_test$(EXEEXT)
-sbin_PROGRAMS = zfs_ids_to_path$(EXEEXT) \
-	zhack$(EXEEXT) ztest$(EXEEXT) zdb$(EXEEXT) \
-	zfs$(EXEEXT) zinject$(EXEEXT) zpool$(EXEEXT) \
-	zstream$(EXEEXT) $(am__EXEEXT_2)
-zfsexec_PROGRAMS = zpool_influxdb$(EXEEXT)
-mounthelper_PROGRAMS = $(am__EXEEXT_1)
-am__append_7 = fsck.zfs $(dist_zpoolexec_SCRIPTS)
-am__append_8 = fsck.zfs
-am__append_9 = cmd/fsck.zfs.in \
-	cmd/zpool/zpool.d/README
-am__append_10 = zfs_ids_to_path zhack ztest \
-	raidz_test zdb zfs zinject zpool \
-	zpool_influxdb zstream
-#am__append_11 = -lgeom -ljail
-#am__append_12 = \
-#	cmd/zpool/os/freebsd/zpool_vdev_os.c
+#bin_PROGRAMS = raidz_test$(EXEEXT)
+#sbin_PROGRAMS = zfs_ids_to_path$(EXEEXT) \
+#	zhack$(EXEEXT) ztest$(EXEEXT) zdb$(EXEEXT) \
+#	zfs$(EXEEXT) zinject$(EXEEXT) zpool$(EXEEXT) \
+#	zstream$(EXEEXT) $(am__EXEEXT_2)
+#zfsexec_PROGRAMS = zpool_influxdb$(EXEEXT)
+#mounthelper_PROGRAMS = $(am__EXEEXT_1)
+#am__append_7 = fsck.zfs $(dist_zpoolexec_SCRIPTS)
+#am__append_8 = fsck.zfs
+#am__append_9 = cmd/fsck.zfs.in \
+#	cmd/zpool/zpool.d/README
+#am__append_10 = zfs_ids_to_path zhack ztest \
+#	raidz_test zdb zfs zinject zpool \
+#	zpool_influxdb zstream
+##am__append_11 = -lgeom -ljail
+##am__append_12 = \
+##	cmd/zpool/os/freebsd/zpool_vdev_os.c
 
-am__append_13 = \
-	cmd/zpool/os/linux/zpool_vdev_os.c
+#am__append_13 = \
+#	cmd/zpool/os/linux/zpool_vdev_os.c
 
-#am__append_14 = -lgeom
-am__append_15 = zpool-install-data-hook
-am__append_16 = install-exec-hook cmd lib checkabi \
-	storeabi check_libabi_version \
-	allow_libabi_only_for_x86_64
-am__append_17 = mount.zfs
-am__append_18 = mount.zfs \
-	raidz_test zgenhostid zed
-am__append_19 = zgenhostid zed
-am__append_20 = cmd/zvol_wait
-am__append_21 = cmd/zvol_wait \
-	$(dist_zedconf_DATA) \
-	$(dist_zedexec_SCRIPTS) \
-	$(nodist_zedexec_SCRIPTS)
-am__append_22 = $(nodist_zedexec_SCRIPTS)
-am__append_23 =  \
-	cmd/zed/zed.d/README \
-	cmd/zed/agents/README.md
-am__append_24 = zed-install-data-hook
-am__append_25 = arc_summary     arcstat        dbufstat        zilstat
-am__append_26 = arc_summary     arcstat        dbufstat        zilstat
-am__append_27 = cmd/arc_summary cmd/arcstat.in cmd/dbufstat.in cmd/zilstat.in
-am__append_28 = $(nodist_bashcompletion_DATA) \
-	contrib/pyzfs/setup.py
-am__append_29 = $(nodist_bashcompletion_DATA)
-am__append_30 = contrib/pyzfs/libzfs_core \
-	contrib/pyzfs/README contrib/pyzfs/LICENSE \
-	contrib/pyzfs/docs contrib/zcp/autosnap.lua
-#am__append_31 = pyzfs-all-local
-#am__append_32 = pyzfs-clean-local
-am__append_33 = contrib/bpftrace/taskqlatency.bt \
-	contrib/bpftrace/zfs-trace.sh \
-	contrib/dracut/README.md \
-	contrib/initramfs/README.md
-am__append_34 = contrib/bpftrace/zfs-trace.sh \
-	$(pkgdracut_02_SCRIPTS) \
-	$(pkgdracut_90_SCRIPTS) \
-	$(i_t_check_scripts)
-am__append_35 =  \
-	$(pkgdracut_02_SCRIPTS) \
-	$(pkgdracut_90_SCRIPTS) \
-	$(pkgdracut_90_DATA) \
-	$(i_t_hooks_SCRIPTS)
-am__append_36 = $(sudoersd_DATA)
-am__append_37 = $(sysconf_zfs_DATA)
-am__append_38 = $(sysconf_zfs_DATA)
-am__append_39 = $(initconf_DATA)
-am__append_40 = $(initconf_DATA)
-am__append_41 = etc/init.d/README.md
-am__append_42 = $(init_SCRIPTS)
-am__append_43 = $(init_SCRIPTS)
-am__append_44 = $(systemdunit_DATA)
-am__append_45 = systemd-install-data-hook
-systemdgenerator_PROGRAMS = etc/systemd/system-generators/zfs-mount-generator$(EXEEXT)
-am__append_46 = $(systemdgenerator_PROGRAMS)
-#am__append_47 = \
-#	module/icp/asm-aarch64/blake3/b3_aarch64_sse2.S \
-#	module/icp/asm-aarch64/blake3/b3_aarch64_sse41.S \
-#	module/icp/asm-aarch64/sha2/sha256-armv8.S \
-#	module/icp/asm-aarch64/sha2/sha512-armv8.S
+##am__append_14 = -lgeom
+#am__append_15 = zpool-install-data-hook
+#am__append_16 = install-exec-hook cmd lib checkabi \
+#	storeabi check_libabi_version \
+#	allow_libabi_only_for_x86_64
+#am__append_17 = mount.zfs
+#am__append_18 = mount.zfs \
+#	raidz_test zgenhostid zed
+#am__append_19 = zgenhostid zed
+#am__append_20 = cmd/zvol_wait
+#am__append_21 = cmd/zvol_wait \
+#	$(dist_zedconf_DATA) \
+#	$(dist_zedexec_SCRIPTS) \
+#	$(nodist_zedexec_SCRIPTS)
+#am__append_22 = $(nodist_zedexec_SCRIPTS)
+#am__append_23 =  \
+#	cmd/zed/zed.d/README \
+#	cmd/zed/agents/README.md
+#am__append_24 = zed-install-data-hook
+#am__append_25 = arc_summary     arcstat        dbufstat        zilstat
+#am__append_26 = arc_summary     arcstat        dbufstat        zilstat
+#am__append_27 = cmd/arc_summary cmd/arcstat.in cmd/dbufstat.in cmd/zilstat.in
+#am__append_28 = $(nodist_bashcompletion_DATA) \
+#	contrib/pyzfs/setup.py
+#am__append_29 = $(nodist_bashcompletion_DATA)
+#am__append_30 = contrib/pyzfs/libzfs_core \
+#	contrib/pyzfs/README contrib/pyzfs/LICENSE \
+#	contrib/pyzfs/docs contrib/zcp/autosnap.lua
+##am__append_31 = pyzfs-all-local
+##am__append_32 = pyzfs-clean-local
+#am__append_33 = contrib/bpftrace/taskqlatency.bt \
+#	contrib/bpftrace/zfs-trace.sh \
+#	contrib/dracut/README.md \
+#	contrib/initramfs/README.md
+#am__append_34 = contrib/bpftrace/zfs-trace.sh \
+#	$(pkgdracut_02_SCRIPTS) \
+#	$(pkgdracut_90_SCRIPTS) \
+#	$(i_t_check_scripts)
+#am__append_35 =  \
+#	$(pkgdracut_02_SCRIPTS) \
+#	$(pkgdracut_90_SCRIPTS) \
+#	$(pkgdracut_90_DATA) \
+#	$(i_t_hooks_SCRIPTS)
+#am__append_36 = $(sudoersd_DATA)
+#am__append_37 = $(sysconf_zfs_DATA)
+#am__append_38 = $(sysconf_zfs_DATA)
+#am__append_39 = $(initconf_DATA)
+#am__append_40 = $(initconf_DATA)
+##am__append_41 = etc/init.d/README.md
+##am__append_42 = $(init_SCRIPTS)
+##am__append_43 = $(init_SCRIPTS)
+##am__append_44 = $(systemdunit_DATA)
+##am__append_45 = systemd-install-data-hook
+##systemdgenerator_PROGRAMS = etc/systemd/system-generators/zfs-mount-generator$(EXEEXT)
+##am__append_46 = $(systemdgenerator_PROGRAMS)
+##am__append_47 = \
+##	module/icp/asm-aarch64/blake3/b3_aarch64_sse2.S \
+##	module/icp/asm-aarch64/blake3/b3_aarch64_sse41.S \
+##	module/icp/asm-aarch64/sha2/sha256-armv8.S \
+##	module/icp/asm-aarch64/sha2/sha512-armv8.S
 
-#am__append_48 = \
-#	module/icp/asm-arm/sha2/sha256-armv7.S \
-#	module/icp/asm-arm/sha2/sha512-armv7.S
+##am__append_48 = \
+##	module/icp/asm-arm/sha2/sha256-armv7.S \
+##	module/icp/asm-arm/sha2/sha512-armv7.S
 
-#am__append_49 = \
-#	module/icp/asm-ppc64/blake3/b3_ppc64le_sse2.S \
-#	module/icp/asm-ppc64/blake3/b3_ppc64le_sse41.S \
-#	module/icp/asm-ppc64/sha2/sha256-ppc.S \
-#	module/icp/asm-ppc64/sha2/sha512-ppc.S \
-#	module/icp/asm-ppc64/sha2/sha256-p8.S \
-#	module/icp/asm-ppc64/sha2/sha512-p8.S
+##am__append_49 = \
+##	module/icp/asm-ppc64/blake3/b3_ppc64le_sse2.S \
+##	module/icp/asm-ppc64/blake3/b3_ppc64le_sse41.S \
+##	module/icp/asm-ppc64/sha2/sha256-ppc.S \
+##	module/icp/asm-ppc64/sha2/sha512-ppc.S \
+##	module/icp/asm-ppc64/sha2/sha256-p8.S \
+##	module/icp/asm-ppc64/sha2/sha512-p8.S
 
-am__append_50 = \
-	module/icp/asm-x86_64/aes/aeskey.c \
-	module/icp/asm-x86_64/aes/aes_amd64.S \
-	module/icp/asm-x86_64/aes/aes_aesni.S \
-	module/icp/asm-x86_64/modes/gcm_pclmulqdq.S \
-	module/icp/asm-x86_64/modes/aesni-gcm-x86_64.S \
-	module/icp/asm-x86_64/modes/ghash-x86_64.S \
-	module/icp/asm-x86_64/sha2/sha256-x86_64.S \
-	module/icp/asm-x86_64/sha2/sha512-x86_64.S \
-	module/icp/asm-x86_64/blake3/blake3_avx2.S \
-	module/icp/asm-x86_64/blake3/blake3_avx512.S \
-	module/icp/asm-x86_64/blake3/blake3_sse2.S \
-	module/icp/asm-x86_64/blake3/blake3_sse41.S
+#am__append_50 = \
+#	module/icp/asm-x86_64/aes/aeskey.c \
+#	module/icp/asm-x86_64/aes/aes_amd64.S \
+#	module/icp/asm-x86_64/aes/aes_aesni.S \
+#	module/icp/asm-x86_64/modes/gcm_pclmulqdq.S \
+#	module/icp/asm-x86_64/modes/aesni-gcm-x86_64.S \
+#	module/icp/asm-x86_64/modes/ghash-x86_64.S \
+#	module/icp/asm-x86_64/sha2/sha256-x86_64.S \
+#	module/icp/asm-x86_64/sha2/sha512-x86_64.S \
+#	module/icp/asm-x86_64/blake3/blake3_avx2.S \
+#	module/icp/asm-x86_64/blake3/blake3_avx512.S \
+#	module/icp/asm-x86_64/blake3/blake3_sse2.S \
+#	module/icp/asm-x86_64/blake3/blake3_sse41.S
 
-am__append_51 = libnvpair.la libshare.la \
-	libspl_assert.la libspl.la libtpool.la \
-	libuutil.la libzfs_core.la libzfs.la \
-	libzfsbootenv.la libzpool.la libzutil.la
-am__append_52 = -Wl,-z,defs
-am__append_53 = lib/libnvpair/libnvpair.abi \
-	lib/libnvpair/libnvpair.suppr \
-	lib/libuutil/libuutil.abi \
-	lib/libuutil/libuutil.suppr \
-	lib/libzfs_core/libzfs_core.abi \
-	lib/libzfs_core/libzfs_core.suppr \
-	lib/libzfs/libzfs.abi \
-	lib/libzfs/libzfs.suppr \
-	lib/libzfs/THIRDPARTYLICENSE.openssl \
-	lib/libzfs/THIRDPARTYLICENSE.openssl.descrip \
-	lib/libzfsbootenv/libzfsbootenv.abi \
-	lib/libzfsbootenv/libzfsbootenv.suppr \
-	$(dist_noinst_man_MANS) $(dist_man_MANS) \
-	tests/zfs-tests/cmd/file/file_common.h
-am__append_54 = \
-	lib/libshare/os/linux/nfs.c \
-	lib/libshare/os/linux/smb.c
+#am__append_51 = libnvpair.la libshare.la \
+#	libspl_assert.la libspl.la libtpool.la \
+#	libuutil.la libzfs_core.la libzfs.la \
+#	libzfsbootenv.la libzpool.la libzutil.la
+#am__append_52 = -Wl,-z,defs
+#am__append_53 = lib/libnvpair/libnvpair.abi \
+#	lib/libnvpair/libnvpair.suppr \
+#	lib/libuutil/libuutil.abi \
+#	lib/libuutil/libuutil.suppr \
+#	lib/libzfs_core/libzfs_core.abi \
+#	lib/libzfs_core/libzfs_core.suppr \
+#	lib/libzfs/libzfs.abi \
+#	lib/libzfs/libzfs.suppr \
+#	lib/libzfs/THIRDPARTYLICENSE.openssl \
+#	lib/libzfs/THIRDPARTYLICENSE.openssl.descrip \
+#	lib/libzfsbootenv/libzfsbootenv.abi \
+#	lib/libzfsbootenv/libzfsbootenv.suppr \
+#	$(dist_noinst_man_MANS) $(dist_man_MANS) \
+#	tests/zfs-tests/cmd/file/file_common.h
+#am__append_54 = \
+#	lib/libshare/os/linux/nfs.c \
+#	lib/libshare/os/linux/smb.c
 
-#am__append_55 = \
-#	lib/libshare/os/freebsd/nfs.c \
-#	lib/libshare/os/freebsd/smb.c
+##am__append_55 = \
+##	lib/libshare/os/freebsd/nfs.c \
+##	lib/libshare/os/freebsd/smb.c
 
-#am__append_56 = \
-#	lib/libspl/include/os/freebsd/fcntl.h
+##am__append_56 = \
+##	lib/libspl/include/os/freebsd/fcntl.h
 
-am__append_57 = \
-	lib/libspl/include/os/linux/sys/byteorder.h \
-	lib/libspl/include/os/linux/sys/errno.h \
-	lib/libspl/include/os/linux/sys/mnttab.h \
-	lib/libspl/include/os/linux/sys/mount.h \
-	lib/libspl/include/os/linux/sys/param.h \
-	lib/libspl/include/os/linux/sys/stat.h \
-	lib/libspl/include/os/linux/sys/sysmacros.h \
-	lib/libspl/include/os/linux/sys/zfs_context_os.h
+#am__append_57 = \
+#	lib/libspl/include/os/linux/sys/byteorder.h \
+#	lib/libspl/include/os/linux/sys/errno.h \
+#	lib/libspl/include/os/linux/sys/mnttab.h \
+#	lib/libspl/include/os/linux/sys/mount.h \
+#	lib/libspl/include/os/linux/sys/param.h \
+#	lib/libspl/include/os/linux/sys/stat.h \
+#	lib/libspl/include/os/linux/sys/sysmacros.h \
+#	lib/libspl/include/os/linux/sys/zfs_context_os.h
 
-#am__append_58 = \
-#	lib/libspl/include/os/freebsd/sys/byteorder.h \
-#	lib/libspl/include/os/freebsd/sys/fcntl.h \
-#	lib/libspl/include/os/freebsd/sys/file.h \
-#	lib/libspl/include/os/freebsd/sys/mnttab.h \
-#	lib/libspl/include/os/freebsd/sys/mount.h \
-#	lib/libspl/include/os/freebsd/sys/param.h \
-#	lib/libspl/include/os/freebsd/sys/stat.h \
-#	lib/libspl/include/os/freebsd/sys/sysmacros.h \
-#	lib/libspl/include/os/freebsd/sys/vfs.h \
-#	lib/libspl/include/os/freebsd/sys/zfs_context_os.h
+##am__append_58 = \
+##	lib/libspl/include/os/freebsd/sys/byteorder.h \
+##	lib/libspl/include/os/freebsd/sys/fcntl.h \
+##	lib/libspl/include/os/freebsd/sys/file.h \
+##	lib/libspl/include/os/freebsd/sys/mnttab.h \
+##	lib/libspl/include/os/freebsd/sys/mount.h \
+##	lib/libspl/include/os/freebsd/sys/param.h \
+##	lib/libspl/include/os/freebsd/sys/stat.h \
+##	lib/libspl/include/os/freebsd/sys/sysmacros.h \
+##	lib/libspl/include/os/freebsd/sys/vfs.h \
+##	lib/libspl/include/os/freebsd/sys/zfs_context_os.h
 
-am__append_59 = \
-	lib/libspl/os/linux/getexecname.c \
-	lib/libspl/os/linux/gethostid.c \
-	lib/libspl/os/linux/getmntany.c \
-	lib/libspl/os/linux/zone.c
+#am__append_59 = \
+#	lib/libspl/os/linux/getexecname.c \
+#	lib/libspl/os/linux/gethostid.c \
+#	lib/libspl/os/linux/getmntany.c \
+#	lib/libspl/os/linux/zone.c
 
-#am__append_60 = \
-#	lib/libspl/os/freebsd/getexecname.c \
-#	lib/libspl/os/freebsd/gethostid.c \
-#	lib/libspl/os/freebsd/getmntany.c \
-#	lib/libspl/os/freebsd/mnttab.c \
-#	lib/libspl/os/freebsd/zone.c
+##am__append_60 = \
+##	lib/libspl/os/freebsd/getexecname.c \
+##	lib/libspl/os/freebsd/gethostid.c \
+##	lib/libspl/os/freebsd/getmntany.c \
+##	lib/libspl/os/freebsd/mnttab.c \
+##	lib/libspl/os/freebsd/zone.c
 
-am__append_61 = -Wl,-z,defs
-am__append_62 = \
-	lib/libzfs_core/os/linux/libzfs_core_ioctl.c
+#am__append_61 = -Wl,-z,defs
+#am__append_62 = \
+#	lib/libzfs_core/os/linux/libzfs_core_ioctl.c
 
-#am__append_63 = -Iinclude/os/freebsd/zfs
-#am__append_64 = \
-#	lib/libzfs_core/os/freebsd/libzfs_core_ioctl.c
+##am__append_63 = -Iinclude/os/freebsd/zfs
+##am__append_64 = \
+##	lib/libzfs_core/os/freebsd/libzfs_core_ioctl.c
 
-am__append_65 = -Wl,-z,defs
-#am__append_66 = -lutil -lgeom
-#am__append_67 = \
-#	lib/libzfs/os/freebsd/libzfs_compat.c \
-#	lib/libzfs/os/freebsd/libzfs_zmount.c
+#am__append_65 = -Wl,-z,defs
+##am__append_66 = -lutil -lgeom
+##am__append_67 = \
+##	lib/libzfs/os/freebsd/libzfs_compat.c \
+##	lib/libzfs/os/freebsd/libzfs_zmount.c
 
-am__append_68 = \
-	lib/libzfs/os/linux/libzfs_mount_os.c \
-	lib/libzfs/os/linux/libzfs_pool_os.c \
-	lib/libzfs/os/linux/libzfs_util_os.c
+#am__append_68 = \
+#	lib/libzfs/os/linux/libzfs_mount_os.c \
+#	lib/libzfs/os/linux/libzfs_pool_os.c \
+#	lib/libzfs/os/linux/libzfs_util_os.c
 
-am__append_69 = -Wl,-z,defs
-#am__append_70 = -lutil -lgeom
-am__append_71 = -Wl,-z,defs
-am__append_72 = -Wl,-z,defs
-#am__append_73 = -lgeom
-am__append_74 = \
-	lib/libzutil/os/linux/zutil_setproctitle.c \
-	lib/libzutil/os/linux/zutil_device_path_os.c \
-	lib/libzutil/os/linux/zutil_import_os.c
+#am__append_69 = -Wl,-z,defs
+##am__append_70 = -lutil -lgeom
+#am__append_71 = -Wl,-z,defs
+#am__append_72 = -Wl,-z,defs
+##am__append_73 = -lgeom
+#am__append_74 = \
+#	lib/libzutil/os/linux/zutil_setproctitle.c \
+#	lib/libzutil/os/linux/zutil_device_path_os.c \
+#	lib/libzutil/os/linux/zutil_import_os.c
 
-#am__append_75 = \
-#	lib/libzutil/os/freebsd/zutil_device_path_os.c \
-#	lib/libzutil/os/freebsd/zutil_import_os.c
+##am__append_75 = \
+##	lib/libzutil/os/freebsd/zutil_device_path_os.c \
+##	lib/libzutil/os/freebsd/zutil_import_os.c
 
-am__append_76 = \
-	libefi.la \
-	-lrt
+#am__append_76 = \
+#	libefi.la \
+#	-lrt
 
-am__append_77 = libefi.la
-am__append_78 = libefi.la \
-	udev/zvol_id
-#am__append_79 = \
-#	man/man8/zfs-jail.8 \
-#	man/man8/zfs-unjail.8
+#am__append_77 = libefi.la
+#am__append_78 = libefi.la \
+#	udev/zvol_id
+##am__append_79 = \
+##	man/man8/zfs-jail.8 \
+##	man/man8/zfs-unjail.8
 
-am__append_80 = \
-	man/man8/zfs-unzone.8 \
-	man/man8/zfs-zone.8
+#am__append_80 = \
+#	man/man8/zfs-unzone.8 \
+#	man/man8/zfs-zone.8
 
-am__append_81 = $(nodist_man_MANS) \
-	$(nodist_scripts_zfs_tests_include_DATA) \
-	$(scripts_test_runner_bin_SCRIPTS)
-am__append_82 = mancheck
+#am__append_81 = $(nodist_man_MANS) \
+#	$(nodist_scripts_zfs_tests_include_DATA) \
+#	$(scripts_test_runner_bin_SCRIPTS)
+#am__append_82 = mancheck
 
 # The manual pager in most Linux distros defaults to "BSD" when .Os is blank,
 # but leaving it blank makes things a lot easier on
 # FreeBSD when OpenZFS is vendored in the base system.
-am__append_83 = man-install-data-hook
-am__append_84 = tests/zfs-tests/tests
-scripts_zfs_tests_bin_PROGRAMS =  \
-	tests/zfs-tests/cmd/chg_usr_exec$(EXEEXT) \
-	tests/zfs-tests/cmd/cp_files$(EXEEXT) \
-	tests/zfs-tests/cmd/ctime$(EXEEXT) \
-	tests/zfs-tests/cmd/dir_rd_update$(EXEEXT) \
-	tests/zfs-tests/cmd/dosmode_readonly_write$(EXEEXT) \
-	tests/zfs-tests/cmd/get_diff$(EXEEXT) \
-	tests/zfs-tests/cmd/rename_dir$(EXEEXT) \
-	tests/zfs-tests/cmd/suid_write_to_file$(EXEEXT) \
-	tests/zfs-tests/cmd/truncate_test$(EXEEXT) \
-	tests/zfs-tests/cmd/zfs_diff-socket$(EXEEXT) \
-	tests/zfs-tests/cmd/badsend$(EXEEXT) \
-	tests/zfs-tests/cmd/btree_test$(EXEEXT) \
-	$(am__EXEEXT_3) \
-	tests/zfs-tests/cmd/draid$(EXEEXT) \
-	tests/zfs-tests/cmd/file_append$(EXEEXT) \
-	tests/zfs-tests/cmd/file_check$(EXEEXT) \
-	tests/zfs-tests/cmd/file_trunc$(EXEEXT) \
-	tests/zfs-tests/cmd/file_write$(EXEEXT) \
-	tests/zfs-tests/cmd/largest_file$(EXEEXT) \
-	tests/zfs-tests/cmd/randwritecomp$(EXEEXT) \
-	tests/zfs-tests/cmd/libzfs_input_check$(EXEEXT) \
-	tests/zfs-tests/cmd/mkbusy$(EXEEXT) \
-	tests/zfs-tests/cmd/mkfile$(EXEEXT) \
-	tests/zfs-tests/cmd/mkfiles$(EXEEXT) \
-	tests/zfs-tests/cmd/mktree$(EXEEXT) \
-	tests/zfs-tests/cmd/mmap_exec$(EXEEXT) \
-	tests/zfs-tests/cmd/mmap_seek$(EXEEXT) \
-	tests/zfs-tests/cmd/mmap_sync$(EXEEXT) \
-	tests/zfs-tests/cmd/mmapwrite$(EXEEXT) \
-	tests/zfs-tests/cmd/readmmap$(EXEEXT) \
-	$(am__EXEEXT_4) \
-	tests/zfs-tests/cmd/nvlist_to_lua$(EXEEXT) \
-	tests/zfs-tests/cmd/rm_lnkcnt_zero_file$(EXEEXT) \
-	tests/zfs-tests/cmd/send_doall$(EXEEXT) \
-	tests/zfs-tests/cmd/stride_dd$(EXEEXT) \
-	tests/zfs-tests/cmd/threadsappend$(EXEEXT) \
-	tests/zfs-tests/cmd/ereports$(EXEEXT) \
-	tests/zfs-tests/cmd/edonr_test$(EXEEXT) \
-	tests/zfs-tests/cmd/skein_test$(EXEEXT) \
-	tests/zfs-tests/cmd/sha2_test$(EXEEXT) \
-	tests/zfs-tests/cmd/blake3_test$(EXEEXT) \
-	$(am__EXEEXT_5)
-am__append_85 = tests/zfs-tests/cmd/devname2devid
-#am__append_86 = tests/zfs-tests/cmd/mmap_libaio
-am__append_87 = tests/zfs-tests/cmd/getversion \
-	tests/zfs-tests/cmd/user_ns_exec \
-	tests/zfs-tests/cmd/renameat2 \
-	tests/zfs-tests/cmd/xattrtest \
-	tests/zfs-tests/cmd/zed_fd_spill-zedlet \
-	tests/zfs-tests/cmd/idmap_util \
-	tests/zfs-tests/cmd/clonefile \
-	tests/zfs-tests/cmd/read_dos_attributes \
-	tests/zfs-tests/cmd/write_dos_attributes \
-	tests/zfs-tests/cmd/randfree_file \
-	tests/zfs-tests/cmd/file_fadvise
-am__append_88 = tests/zfs-tests/cmd/linux_dos_attributes/dos_attributes.h
-scripts_zfs_tests_functional_libzfs_PROGRAMS = tests/zfs-tests/tests/functional/libzfs/many_fds$(EXEEXT)
-scripts_zfs_tests_functional_hkdf_PROGRAMS = tests/zfs-tests/tests/functional/hkdf/hkdf_test$(EXEEXT)
-scripts_zfs_tests_functional_tmpfile_PROGRAMS = tests/zfs-tests/tests/functional/tmpfile/tmpfile_001_pos$(EXEEXT) \
-	tests/zfs-tests/tests/functional/tmpfile/tmpfile_002_pos$(EXEEXT) \
-	tests/zfs-tests/tests/functional/tmpfile/tmpfile_003_pos$(EXEEXT) \
-	tests/zfs-tests/tests/functional/tmpfile/tmpfile_stat_mode$(EXEEXT) \
-	tests/zfs-tests/tests/functional/tmpfile/tmpfile_test$(EXEEXT)
-am__append_89 = tests/README.md
-am__append_90 = $(shell find $(srcdir)/tests -name '*.sh')
-am__append_91 = $(udevrule_DATA)
-udev_PROGRAMS =  \
-	udev/zvol_id$(EXEEXT)
-am__append_92 = udev
-#am__append_93 = module
+#am__append_83 = man-install-data-hook
+#am__append_84 = tests/zfs-tests/tests
+#scripts_zfs_tests_bin_PROGRAMS =  \
+#	tests/zfs-tests/cmd/chg_usr_exec$(EXEEXT) \
+#	tests/zfs-tests/cmd/cp_files$(EXEEXT) \
+#	tests/zfs-tests/cmd/ctime$(EXEEXT) \
+#	tests/zfs-tests/cmd/dir_rd_update$(EXEEXT) \
+#	tests/zfs-tests/cmd/dosmode_readonly_write$(EXEEXT) \
+#	tests/zfs-tests/cmd/get_diff$(EXEEXT) \
+#	tests/zfs-tests/cmd/rename_dir$(EXEEXT) \
+#	tests/zfs-tests/cmd/suid_write_to_file$(EXEEXT) \
+#	tests/zfs-tests/cmd/truncate_test$(EXEEXT) \
+#	tests/zfs-tests/cmd/zfs_diff-socket$(EXEEXT) \
+#	tests/zfs-tests/cmd/badsend$(EXEEXT) \
+#	tests/zfs-tests/cmd/btree_test$(EXEEXT) \
+#	$(am__EXEEXT_3) \
+#	tests/zfs-tests/cmd/draid$(EXEEXT) \
+#	tests/zfs-tests/cmd/file_append$(EXEEXT) \
+#	tests/zfs-tests/cmd/file_check$(EXEEXT) \
+#	tests/zfs-tests/cmd/file_trunc$(EXEEXT) \
+#	tests/zfs-tests/cmd/file_write$(EXEEXT) \
+#	tests/zfs-tests/cmd/largest_file$(EXEEXT) \
+#	tests/zfs-tests/cmd/randwritecomp$(EXEEXT) \
+#	tests/zfs-tests/cmd/libzfs_input_check$(EXEEXT) \
+#	tests/zfs-tests/cmd/mkbusy$(EXEEXT) \
+#	tests/zfs-tests/cmd/mkfile$(EXEEXT) \
+#	tests/zfs-tests/cmd/mkfiles$(EXEEXT) \
+#	tests/zfs-tests/cmd/mktree$(EXEEXT) \
+#	tests/zfs-tests/cmd/mmap_exec$(EXEEXT) \
+#	tests/zfs-tests/cmd/mmap_seek$(EXEEXT) \
+#	tests/zfs-tests/cmd/mmap_sync$(EXEEXT) \
+#	tests/zfs-tests/cmd/mmapwrite$(EXEEXT) \
+#	tests/zfs-tests/cmd/readmmap$(EXEEXT) \
+#	$(am__EXEEXT_4) \
+#	tests/zfs-tests/cmd/nvlist_to_lua$(EXEEXT) \
+#	tests/zfs-tests/cmd/rm_lnkcnt_zero_file$(EXEEXT) \
+#	tests/zfs-tests/cmd/send_doall$(EXEEXT) \
+#	tests/zfs-tests/cmd/stride_dd$(EXEEXT) \
+#	tests/zfs-tests/cmd/threadsappend$(EXEEXT) \
+#	tests/zfs-tests/cmd/ereports$(EXEEXT) \
+#	tests/zfs-tests/cmd/edonr_test$(EXEEXT) \
+#	tests/zfs-tests/cmd/skein_test$(EXEEXT) \
+#	tests/zfs-tests/cmd/sha2_test$(EXEEXT) \
+#	tests/zfs-tests/cmd/blake3_test$(EXEEXT) \
+#	$(am__EXEEXT_5)
+##am__append_85 = tests/zfs-tests/cmd/devname2devid
+##am__append_86 = tests/zfs-tests/cmd/mmap_libaio
+#am__append_87 = tests/zfs-tests/cmd/getversion \
+#	tests/zfs-tests/cmd/user_ns_exec \
+#	tests/zfs-tests/cmd/renameat2 \
+#	tests/zfs-tests/cmd/xattrtest \
+#	tests/zfs-tests/cmd/zed_fd_spill-zedlet \
+#	tests/zfs-tests/cmd/idmap_util \
+#	tests/zfs-tests/cmd/clonefile \
+#	tests/zfs-tests/cmd/read_dos_attributes \
+#	tests/zfs-tests/cmd/write_dos_attributes \
+#	tests/zfs-tests/cmd/randfree_file \
+#	tests/zfs-tests/cmd/file_fadvise
+#am__append_88 = tests/zfs-tests/cmd/linux_dos_attributes/dos_attributes.h
+#scripts_zfs_tests_functional_libzfs_PROGRAMS = tests/zfs-tests/tests/functional/libzfs/many_fds$(EXEEXT)
+#scripts_zfs_tests_functional_hkdf_PROGRAMS = tests/zfs-tests/tests/functional/hkdf/hkdf_test$(EXEEXT)
+#scripts_zfs_tests_functional_tmpfile_PROGRAMS = tests/zfs-tests/tests/functional/tmpfile/tmpfile_001_pos$(EXEEXT) \
+#	tests/zfs-tests/tests/functional/tmpfile/tmpfile_002_pos$(EXEEXT) \
+#	tests/zfs-tests/tests/functional/tmpfile/tmpfile_003_pos$(EXEEXT) \
+#	tests/zfs-tests/tests/functional/tmpfile/tmpfile_stat_mode$(EXEEXT) \
+#	tests/zfs-tests/tests/functional/tmpfile/tmpfile_test$(EXEEXT)
+#am__append_89 = tests/README.md
+#am__append_90 = $(shell find $(srcdir)/tests -name '*.sh')
+#am__append_91 = $(udevrule_DATA)
+#udev_PROGRAMS =  \
+#	udev/zvol_id$(EXEEXT)
+#am__append_92 = udev
+am__append_93 = module
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/always-arch.m4 \
@@ -750,23 +750,23 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(mounthelperdir)" \
 	"$(DESTDIR)$(extradir)" "$(DESTDIR)$(libspldir)" \
 	"$(DESTDIR)$(libspl_ia32dir)" "$(DESTDIR)$(libspl_rpcdir)" \
 	"$(DESTDIR)$(libspl_sysdir)" "$(DESTDIR)$(libspl_sys_dktpdir)"
-am__EXEEXT_1 = mount.zfs$(EXEEXT)
-am__EXEEXT_2 =  \
-	zgenhostid$(EXEEXT) \
-	zed$(EXEEXT)
-am__EXEEXT_3 = tests/zfs-tests/cmd/devname2devid$(EXEEXT)
-#am__EXEEXT_4 = tests/zfs-tests/cmd/mmap_libaio$(EXEEXT)
-am__EXEEXT_5 = tests/zfs-tests/cmd/getversion$(EXEEXT) \
-	tests/zfs-tests/cmd/user_ns_exec$(EXEEXT) \
-	tests/zfs-tests/cmd/renameat2$(EXEEXT) \
-	tests/zfs-tests/cmd/xattrtest$(EXEEXT) \
-	tests/zfs-tests/cmd/zed_fd_spill-zedlet$(EXEEXT) \
-	tests/zfs-tests/cmd/idmap_util$(EXEEXT) \
-	tests/zfs-tests/cmd/clonefile$(EXEEXT) \
-	tests/zfs-tests/cmd/read_dos_attributes$(EXEEXT) \
-	tests/zfs-tests/cmd/write_dos_attributes$(EXEEXT) \
-	tests/zfs-tests/cmd/randfree_file$(EXEEXT) \
-	tests/zfs-tests/cmd/file_fadvise$(EXEEXT)
+#am__EXEEXT_1 = mount.zfs$(EXEEXT)
+#am__EXEEXT_2 =  \
+#	zgenhostid$(EXEEXT) \
+#	zed$(EXEEXT)
+##am__EXEEXT_3 = tests/zfs-tests/cmd/devname2devid$(EXEEXT)
+##am__EXEEXT_4 = tests/zfs-tests/cmd/mmap_libaio$(EXEEXT)
+#am__EXEEXT_5 = tests/zfs-tests/cmd/getversion$(EXEEXT) \
+#	tests/zfs-tests/cmd/user_ns_exec$(EXEEXT) \
+#	tests/zfs-tests/cmd/renameat2$(EXEEXT) \
+#	tests/zfs-tests/cmd/xattrtest$(EXEEXT) \
+#	tests/zfs-tests/cmd/zed_fd_spill-zedlet$(EXEEXT) \
+#	tests/zfs-tests/cmd/idmap_util$(EXEEXT) \
+#	tests/zfs-tests/cmd/clonefile$(EXEEXT) \
+#	tests/zfs-tests/cmd/read_dos_attributes$(EXEEXT) \
+#	tests/zfs-tests/cmd/write_dos_attributes$(EXEEXT) \
+#	tests/zfs-tests/cmd/randfree_file$(EXEEXT) \
+#	tests/zfs-tests/cmd/file_fadvise$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS) $(mounthelper_PROGRAMS) $(sbin_PROGRAMS) \
 	$(scripts_zfs_tests_bin_PROGRAMS) \
 	$(scripts_zfs_tests_functional_hkdf_PROGRAMS) \
@@ -804,15 +804,15 @@ am__uninstall_files_from_dir = { \
 LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES) \
 	$(pammodule_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-#contrib_pam_zfs_key_pam_zfs_key_la_DEPENDENCIES =  \
-#	libnvpair.la \
-#	libuutil.la libzfs.la \
-#	libzfs_core.la \
-#	$(am__DEPENDENCIES_1)
+##contrib_pam_zfs_key_pam_zfs_key_la_DEPENDENCIES =  \
+##	libnvpair.la \
+##	libuutil.la libzfs.la \
+##	libzfs_core.la \
+##	$(am__DEPENDENCIES_1)
 am__contrib_pam_zfs_key_pam_zfs_key_la_SOURCES_DIST =  \
 	contrib/pam_zfs_key/pam_zfs_key.c
 am__dirstamp = $(am__leading_dot)dirstamp
-#am_contrib_pam_zfs_key_pam_zfs_key_la_OBJECTS = contrib/pam_zfs_key/pam_zfs_key_la-pam_zfs_key.lo
+##am_contrib_pam_zfs_key_pam_zfs_key_la_OBJECTS = contrib/pam_zfs_key/pam_zfs_key_la-pam_zfs_key.lo
 contrib_pam_zfs_key_pam_zfs_key_la_OBJECTS =  \
 	$(am_contrib_pam_zfs_key_pam_zfs_key_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
@@ -823,135 +823,135 @@ contrib_pam_zfs_key_pam_zfs_key_la_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(contrib_pam_zfs_key_pam_zfs_key_la_CFLAGS) $(CFLAGS) \
 	$(contrib_pam_zfs_key_pam_zfs_key_la_LDFLAGS) $(LDFLAGS) -o $@
-#am_contrib_pam_zfs_key_pam_zfs_key_la_rpath =  \
-#	-rpath $(pammoduledir)
+##am_contrib_pam_zfs_key_pam_zfs_key_la_rpath =  \
+##	-rpath $(pammoduledir)
 libavl_la_LIBADD =
-nodist_libavl_la_OBJECTS =  \
-	module/avl/libavl_la-avl.lo
+#nodist_libavl_la_OBJECTS =  \
+#	module/avl/libavl_la-avl.lo
 libavl_la_OBJECTS = $(nodist_libavl_la_OBJECTS)
 libavl_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libavl_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_libavl_la_rpath =
-libefi_la_DEPENDENCIES =  \
-	$(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+#am_libavl_la_rpath =
+#libefi_la_DEPENDENCIES =  \
+#	$(am__DEPENDENCIES_1) \
+#	$(am__DEPENDENCIES_1)
 am__libefi_la_SOURCES_DIST = lib/libefi/rdwr_efi.c
-am_libefi_la_OBJECTS = lib/libefi/libefi_la-rdwr_efi.lo
+#am_libefi_la_OBJECTS = lib/libefi/libefi_la-rdwr_efi.lo
 libefi_la_OBJECTS = $(am_libefi_la_OBJECTS)
 libefi_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libefi_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_libefi_la_rpath =
+#am_libefi_la_rpath =
 libicp_la_LIBADD =
-#am__objects_1 = module/icp/asm-aarch64/blake3/libicp_la-b3_aarch64_sse2.lo \
-#	module/icp/asm-aarch64/blake3/libicp_la-b3_aarch64_sse41.lo \
-#	module/icp/asm-aarch64/sha2/libicp_la-sha256-armv8.lo \
-#	module/icp/asm-aarch64/sha2/libicp_la-sha512-armv8.lo
-#am__objects_2 = module/icp/asm-arm/sha2/libicp_la-sha256-armv7.lo \
-#	module/icp/asm-arm/sha2/libicp_la-sha512-armv7.lo
-#am__objects_3 = module/icp/asm-ppc64/blake3/libicp_la-b3_ppc64le_sse2.lo \
-#	module/icp/asm-ppc64/blake3/libicp_la-b3_ppc64le_sse41.lo \
-#	module/icp/asm-ppc64/sha2/libicp_la-sha256-ppc.lo \
-#	module/icp/asm-ppc64/sha2/libicp_la-sha512-ppc.lo \
-#	module/icp/asm-ppc64/sha2/libicp_la-sha256-p8.lo \
-#	module/icp/asm-ppc64/sha2/libicp_la-sha512-p8.lo
-am__objects_4 = module/icp/asm-x86_64/aes/libicp_la-aeskey.lo \
-	module/icp/asm-x86_64/aes/libicp_la-aes_amd64.lo \
-	module/icp/asm-x86_64/aes/libicp_la-aes_aesni.lo \
-	module/icp/asm-x86_64/modes/libicp_la-gcm_pclmulqdq.lo \
-	module/icp/asm-x86_64/modes/libicp_la-aesni-gcm-x86_64.lo \
-	module/icp/asm-x86_64/modes/libicp_la-ghash-x86_64.lo \
-	module/icp/asm-x86_64/sha2/libicp_la-sha256-x86_64.lo \
-	module/icp/asm-x86_64/sha2/libicp_la-sha512-x86_64.lo \
-	module/icp/asm-x86_64/blake3/libicp_la-blake3_avx2.lo \
-	module/icp/asm-x86_64/blake3/libicp_la-blake3_avx512.lo \
-	module/icp/asm-x86_64/blake3/libicp_la-blake3_sse2.lo \
-	module/icp/asm-x86_64/blake3/libicp_la-blake3_sse41.lo
-nodist_libicp_la_OBJECTS =  \
-	module/icp/spi/libicp_la-kcf_spi.lo \
-	module/icp/api/libicp_la-kcf_ctxops.lo \
-	module/icp/api/libicp_la-kcf_cipher.lo \
-	module/icp/api/libicp_la-kcf_mac.lo \
-	module/icp/algs/aes/libicp_la-aes_impl_aesni.lo \
-	module/icp/algs/aes/libicp_la-aes_impl_generic.lo \
-	module/icp/algs/aes/libicp_la-aes_impl_x86-64.lo \
-	module/icp/algs/aes/libicp_la-aes_impl.lo \
-	module/icp/algs/aes/libicp_la-aes_modes.lo \
-	module/icp/algs/blake3/libicp_la-blake3.lo \
-	module/icp/algs/blake3/libicp_la-blake3_generic.lo \
-	module/icp/algs/blake3/libicp_la-blake3_impl.lo \
-	module/icp/algs/edonr/libicp_la-edonr.lo \
-	module/icp/algs/modes/libicp_la-modes.lo \
-	module/icp/algs/modes/libicp_la-cbc.lo \
-	module/icp/algs/modes/libicp_la-gcm_generic.lo \
-	module/icp/algs/modes/libicp_la-gcm_pclmulqdq.lo \
-	module/icp/algs/modes/libicp_la-gcm.lo \
-	module/icp/algs/modes/libicp_la-ctr.lo \
-	module/icp/algs/modes/libicp_la-ccm.lo \
-	module/icp/algs/modes/libicp_la-ecb.lo \
-	module/icp/algs/sha2/libicp_la-sha2_generic.lo \
-	module/icp/algs/sha2/libicp_la-sha256_impl.lo \
-	module/icp/algs/sha2/libicp_la-sha512_impl.lo \
-	module/icp/algs/skein/libicp_la-skein.lo \
-	module/icp/algs/skein/libicp_la-skein_block.lo \
-	module/icp/algs/skein/libicp_la-skein_iv.lo \
-	module/icp/libicp_la-illumos-crypto.lo \
-	module/icp/io/libicp_la-aes.lo \
-	module/icp/io/libicp_la-sha2_mod.lo \
-	module/icp/io/libicp_la-skein_mod.lo \
-	module/icp/core/libicp_la-kcf_sched.lo \
-	module/icp/core/libicp_la-kcf_prov_lib.lo \
-	module/icp/core/libicp_la-kcf_callprov.lo \
-	module/icp/core/libicp_la-kcf_mech_tabs.lo \
-	module/icp/core/libicp_la-kcf_prov_tabs.lo \
-	module/zfs/libicp_la-zfs_impl.lo \
-	$(am__objects_1) $(am__objects_2) \
-	$(am__objects_3) $(am__objects_4)
+##am__objects_1 = module/icp/asm-aarch64/blake3/libicp_la-b3_aarch64_sse2.lo \
+##	module/icp/asm-aarch64/blake3/libicp_la-b3_aarch64_sse41.lo \
+##	module/icp/asm-aarch64/sha2/libicp_la-sha256-armv8.lo \
+##	module/icp/asm-aarch64/sha2/libicp_la-sha512-armv8.lo
+##am__objects_2 = module/icp/asm-arm/sha2/libicp_la-sha256-armv7.lo \
+##	module/icp/asm-arm/sha2/libicp_la-sha512-armv7.lo
+##am__objects_3 = module/icp/asm-ppc64/blake3/libicp_la-b3_ppc64le_sse2.lo \
+##	module/icp/asm-ppc64/blake3/libicp_la-b3_ppc64le_sse41.lo \
+##	module/icp/asm-ppc64/sha2/libicp_la-sha256-ppc.lo \
+##	module/icp/asm-ppc64/sha2/libicp_la-sha512-ppc.lo \
+##	module/icp/asm-ppc64/sha2/libicp_la-sha256-p8.lo \
+##	module/icp/asm-ppc64/sha2/libicp_la-sha512-p8.lo
+#am__objects_4 = module/icp/asm-x86_64/aes/libicp_la-aeskey.lo \
+#	module/icp/asm-x86_64/aes/libicp_la-aes_amd64.lo \
+#	module/icp/asm-x86_64/aes/libicp_la-aes_aesni.lo \
+#	module/icp/asm-x86_64/modes/libicp_la-gcm_pclmulqdq.lo \
+#	module/icp/asm-x86_64/modes/libicp_la-aesni-gcm-x86_64.lo \
+#	module/icp/asm-x86_64/modes/libicp_la-ghash-x86_64.lo \
+#	module/icp/asm-x86_64/sha2/libicp_la-sha256-x86_64.lo \
+#	module/icp/asm-x86_64/sha2/libicp_la-sha512-x86_64.lo \
+#	module/icp/asm-x86_64/blake3/libicp_la-blake3_avx2.lo \
+#	module/icp/asm-x86_64/blake3/libicp_la-blake3_avx512.lo \
+#	module/icp/asm-x86_64/blake3/libicp_la-blake3_sse2.lo \
+#	module/icp/asm-x86_64/blake3/libicp_la-blake3_sse41.lo
+#nodist_libicp_la_OBJECTS =  \
+#	module/icp/spi/libicp_la-kcf_spi.lo \
+#	module/icp/api/libicp_la-kcf_ctxops.lo \
+#	module/icp/api/libicp_la-kcf_cipher.lo \
+#	module/icp/api/libicp_la-kcf_mac.lo \
+#	module/icp/algs/aes/libicp_la-aes_impl_aesni.lo \
+#	module/icp/algs/aes/libicp_la-aes_impl_generic.lo \
+#	module/icp/algs/aes/libicp_la-aes_impl_x86-64.lo \
+#	module/icp/algs/aes/libicp_la-aes_impl.lo \
+#	module/icp/algs/aes/libicp_la-aes_modes.lo \
+#	module/icp/algs/blake3/libicp_la-blake3.lo \
+#	module/icp/algs/blake3/libicp_la-blake3_generic.lo \
+#	module/icp/algs/blake3/libicp_la-blake3_impl.lo \
+#	module/icp/algs/edonr/libicp_la-edonr.lo \
+#	module/icp/algs/modes/libicp_la-modes.lo \
+#	module/icp/algs/modes/libicp_la-cbc.lo \
+#	module/icp/algs/modes/libicp_la-gcm_generic.lo \
+#	module/icp/algs/modes/libicp_la-gcm_pclmulqdq.lo \
+#	module/icp/algs/modes/libicp_la-gcm.lo \
+#	module/icp/algs/modes/libicp_la-ctr.lo \
+#	module/icp/algs/modes/libicp_la-ccm.lo \
+#	module/icp/algs/modes/libicp_la-ecb.lo \
+#	module/icp/algs/sha2/libicp_la-sha2_generic.lo \
+#	module/icp/algs/sha2/libicp_la-sha256_impl.lo \
+#	module/icp/algs/sha2/libicp_la-sha512_impl.lo \
+#	module/icp/algs/skein/libicp_la-skein.lo \
+#	module/icp/algs/skein/libicp_la-skein_block.lo \
+#	module/icp/algs/skein/libicp_la-skein_iv.lo \
+#	module/icp/libicp_la-illumos-crypto.lo \
+#	module/icp/io/libicp_la-aes.lo \
+#	module/icp/io/libicp_la-sha2_mod.lo \
+#	module/icp/io/libicp_la-skein_mod.lo \
+#	module/icp/core/libicp_la-kcf_sched.lo \
+#	module/icp/core/libicp_la-kcf_prov_lib.lo \
+#	module/icp/core/libicp_la-kcf_callprov.lo \
+#	module/icp/core/libicp_la-kcf_mech_tabs.lo \
+#	module/icp/core/libicp_la-kcf_prov_tabs.lo \
+#	module/zfs/libicp_la-zfs_impl.lo \
+#	$(am__objects_1) $(am__objects_2) \
+#	$(am__objects_3) $(am__objects_4)
 libicp_la_OBJECTS = $(nodist_libicp_la_OBJECTS)
 libicp_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libicp_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_libicp_la_rpath =
-libnvpair_la_DEPENDENCIES = libspl_assert.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+#am_libicp_la_rpath =
+#libnvpair_la_DEPENDENCIES = libspl_assert.la \
+#	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am__dist_libnvpair_la_SOURCES_DIST = lib/libnvpair/libnvpair.c \
 	lib/libnvpair/libnvpair_json.c \
 	lib/libnvpair/nvpair_alloc_system.c
-dist_libnvpair_la_OBJECTS =  \
-	lib/libnvpair/libnvpair_la-libnvpair.lo \
-	lib/libnvpair/libnvpair_la-libnvpair_json.lo \
-	lib/libnvpair/libnvpair_la-nvpair_alloc_system.lo
-nodist_libnvpair_la_OBJECTS = module/nvpair/libnvpair_la-nvpair_alloc_fixed.lo \
-	module/nvpair/libnvpair_la-nvpair.lo \
-	module/nvpair/libnvpair_la-fnvpair.lo
+#dist_libnvpair_la_OBJECTS =  \
+#	lib/libnvpair/libnvpair_la-libnvpair.lo \
+#	lib/libnvpair/libnvpair_la-libnvpair_json.lo \
+#	lib/libnvpair/libnvpair_la-nvpair_alloc_system.lo
+#nodist_libnvpair_la_OBJECTS = module/nvpair/libnvpair_la-nvpair_alloc_fixed.lo \
+#	module/nvpair/libnvpair_la-nvpair.lo \
+#	module/nvpair/libnvpair_la-fnvpair.lo
 libnvpair_la_OBJECTS = $(dist_libnvpair_la_OBJECTS) \
 	$(nodist_libnvpair_la_OBJECTS)
 libnvpair_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libnvpair_la_CFLAGS) \
 	$(CFLAGS) $(libnvpair_la_LDFLAGS) $(LDFLAGS) -o $@
-am_libnvpair_la_rpath = -rpath $(libdir)
+#am_libnvpair_la_rpath = -rpath $(libdir)
 libshare_la_LIBADD =
 am__libshare_la_SOURCES_DIST = lib/libshare/libshare_impl.h \
 	lib/libshare/libshare.c lib/libshare/nfs.c lib/libshare/nfs.h \
 	lib/libshare/smb.h lib/libshare/os/linux/nfs.c \
 	lib/libshare/os/linux/smb.c lib/libshare/os/freebsd/nfs.c \
 	lib/libshare/os/freebsd/smb.c
-am__objects_5 = lib/libshare/os/linux/libshare_la-nfs.lo \
-	lib/libshare/os/linux/libshare_la-smb.lo
-#am__objects_6 = lib/libshare/os/freebsd/libshare_la-nfs.lo \
-#	lib/libshare/os/freebsd/libshare_la-smb.lo
-am_libshare_la_OBJECTS =  \
-	lib/libshare/libshare_la-libshare.lo \
-	lib/libshare/libshare_la-nfs.lo \
-	$(am__objects_5) $(am__objects_6)
+#am__objects_5 = lib/libshare/os/linux/libshare_la-nfs.lo \
+#	lib/libshare/os/linux/libshare_la-smb.lo
+##am__objects_6 = lib/libshare/os/freebsd/libshare_la-nfs.lo \
+##	lib/libshare/os/freebsd/libshare_la-smb.lo
+#am_libshare_la_OBJECTS =  \
+#	lib/libshare/libshare_la-libshare.lo \
+#	lib/libshare/libshare_la-nfs.lo \
+#	$(am__objects_5) $(am__objects_6)
 libshare_la_OBJECTS = $(am_libshare_la_OBJECTS)
 libshare_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libshare_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_libshare_la_rpath =
-libspl_la_DEPENDENCIES = libspl_assert.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+#am_libshare_la_rpath =
+#libspl_la_DEPENDENCIES = libspl_assert.la \
+#	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am__libspl_la_SOURCES_DIST = lib/libspl/libspl_impl.h \
 	lib/libspl/atomic.c lib/libspl/getexecname.c lib/libspl/list.c \
 	lib/libspl/mkdirp.c lib/libspl/page.c lib/libspl/strlcat.c \
@@ -965,82 +965,82 @@ am__libspl_la_SOURCES_DIST = lib/libspl/libspl_impl.h \
 	lib/libspl/os/freebsd/gethostid.c \
 	lib/libspl/os/freebsd/getmntany.c \
 	lib/libspl/os/freebsd/mnttab.c lib/libspl/os/freebsd/zone.c
-am__objects_7 = lib/libspl/os/linux/libspl_la-getexecname.lo \
-	lib/libspl/os/linux/libspl_la-gethostid.lo \
-	lib/libspl/os/linux/libspl_la-getmntany.lo \
-	lib/libspl/os/linux/libspl_la-zone.lo
-#am__objects_8 = lib/libspl/os/freebsd/libspl_la-getexecname.lo \
-#	lib/libspl/os/freebsd/libspl_la-gethostid.lo \
-#	lib/libspl/os/freebsd/libspl_la-getmntany.lo \
-#	lib/libspl/os/freebsd/libspl_la-mnttab.lo \
-#	lib/libspl/os/freebsd/libspl_la-zone.lo
-am_libspl_la_OBJECTS =  \
-	lib/libspl/libspl_la-atomic.lo \
-	lib/libspl/libspl_la-getexecname.lo \
-	lib/libspl/libspl_la-list.lo \
-	lib/libspl/libspl_la-mkdirp.lo \
-	lib/libspl/libspl_la-page.lo \
-	lib/libspl/libspl_la-strlcat.lo \
-	lib/libspl/libspl_la-strlcpy.lo \
-	lib/libspl/libspl_la-timestamp.lo \
-	$(am__objects_7) $(am__objects_8)
+#am__objects_7 = lib/libspl/os/linux/libspl_la-getexecname.lo \
+#	lib/libspl/os/linux/libspl_la-gethostid.lo \
+#	lib/libspl/os/linux/libspl_la-getmntany.lo \
+#	lib/libspl/os/linux/libspl_la-zone.lo
+##am__objects_8 = lib/libspl/os/freebsd/libspl_la-getexecname.lo \
+##	lib/libspl/os/freebsd/libspl_la-gethostid.lo \
+##	lib/libspl/os/freebsd/libspl_la-getmntany.lo \
+##	lib/libspl/os/freebsd/libspl_la-mnttab.lo \
+##	lib/libspl/os/freebsd/libspl_la-zone.lo
+#am_libspl_la_OBJECTS =  \
+#	lib/libspl/libspl_la-atomic.lo \
+#	lib/libspl/libspl_la-getexecname.lo \
+#	lib/libspl/libspl_la-list.lo \
+#	lib/libspl/libspl_la-mkdirp.lo \
+#	lib/libspl/libspl_la-page.lo \
+#	lib/libspl/libspl_la-strlcat.lo \
+#	lib/libspl/libspl_la-strlcpy.lo \
+#	lib/libspl/libspl_la-timestamp.lo \
+#	$(am__objects_7) $(am__objects_8)
 libspl_la_OBJECTS = $(am_libspl_la_OBJECTS)
 libspl_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libspl_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_libspl_la_rpath =
+#am_libspl_la_rpath =
 libspl_assert_la_LIBADD =
 am__libspl_assert_la_SOURCES_DIST = lib/libspl/assert.c
-am_libspl_assert_la_OBJECTS =  \
-	lib/libspl/libspl_assert_la-assert.lo
+#am_libspl_assert_la_OBJECTS =  \
+#	lib/libspl/libspl_assert_la-assert.lo
 libspl_assert_la_OBJECTS = $(am_libspl_assert_la_OBJECTS)
 libspl_assert_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libspl_assert_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-am_libspl_assert_la_rpath =
+#am_libspl_assert_la_rpath =
 libtpool_la_LIBADD =
 am__libtpool_la_SOURCES_DIST = lib/libtpool/thread_pool.c \
 	lib/libtpool/thread_pool_impl.h
-am_libtpool_la_OBJECTS =  \
-	lib/libtpool/libtpool_la-thread_pool.lo
+#am_libtpool_la_OBJECTS =  \
+#	lib/libtpool/libtpool_la-thread_pool.lo
 libtpool_la_OBJECTS = $(am_libtpool_la_OBJECTS)
 libtpool_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libtpool_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_libtpool_la_rpath =
+#am_libtpool_la_rpath =
 libunicode_la_LIBADD =
-nodist_libunicode_la_OBJECTS =  \
-	module/unicode/libunicode_la-u8_textprep.lo \
-	module/unicode/libunicode_la-uconv.lo
+#nodist_libunicode_la_OBJECTS =  \
+#	module/unicode/libunicode_la-u8_textprep.lo \
+#	module/unicode/libunicode_la-uconv.lo
 libunicode_la_OBJECTS = $(nodist_libunicode_la_OBJECTS)
 libunicode_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libunicode_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_libunicode_la_rpath =
-libuutil_la_DEPENDENCIES = libavl.la libspl.la \
-	$(am__DEPENDENCIES_1)
+#am_libunicode_la_rpath =
+#libuutil_la_DEPENDENCIES = libavl.la libspl.la \
+#	$(am__DEPENDENCIES_1)
 am__libuutil_la_SOURCES_DIST = lib/libuutil/uu_alloc.c \
 	lib/libuutil/uu_avl.c lib/libuutil/uu_ident.c \
 	lib/libuutil/uu_list.c lib/libuutil/uu_misc.c \
 	lib/libuutil/uu_string.c
-am_libuutil_la_OBJECTS =  \
-	lib/libuutil/libuutil_la-uu_alloc.lo \
-	lib/libuutil/libuutil_la-uu_avl.lo \
-	lib/libuutil/libuutil_la-uu_ident.lo \
-	lib/libuutil/libuutil_la-uu_list.lo \
-	lib/libuutil/libuutil_la-uu_misc.lo \
-	lib/libuutil/libuutil_la-uu_string.lo
+#am_libuutil_la_OBJECTS =  \
+#	lib/libuutil/libuutil_la-uu_alloc.lo \
+#	lib/libuutil/libuutil_la-uu_avl.lo \
+#	lib/libuutil/libuutil_la-uu_ident.lo \
+#	lib/libuutil/libuutil_la-uu_list.lo \
+#	lib/libuutil/libuutil_la-uu_misc.lo \
+#	lib/libuutil/libuutil_la-uu_string.lo
 libuutil_la_OBJECTS = $(am_libuutil_la_OBJECTS)
 libuutil_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libuutil_la_CFLAGS) \
 	$(CFLAGS) $(libuutil_la_LDFLAGS) $(LDFLAGS) -o $@
-am_libuutil_la_rpath = -rpath $(libdir)
-libzfs_la_DEPENDENCIES = libshare.la libzfs_core.la \
-	libnvpair.la libzutil.la libuutil.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+#am_libuutil_la_rpath = -rpath $(libdir)
+#libzfs_la_DEPENDENCIES = libshare.la libzfs_core.la \
+#	libnvpair.la libzutil.la libuutil.la \
+#	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+#	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+#	$(am__DEPENDENCIES_1)
 am__dist_libzfs_la_SOURCES_DIST = lib/libzfs/libzfs_impl.h \
 	lib/libzfs/libzfs_changelist.c lib/libzfs/libzfs_config.c \
 	lib/libzfs/libzfs_crypto.c lib/libzfs/libzfs_dataset.c \
@@ -1053,295 +1053,295 @@ am__dist_libzfs_la_SOURCES_DIST = lib/libzfs/libzfs_impl.h \
 	lib/libzfs/os/linux/libzfs_mount_os.c \
 	lib/libzfs/os/linux/libzfs_pool_os.c \
 	lib/libzfs/os/linux/libzfs_util_os.c
-#am__objects_9 = lib/libzfs/os/freebsd/libzfs_la-libzfs_compat.lo \
-#	lib/libzfs/os/freebsd/libzfs_la-libzfs_zmount.lo
-am__objects_10 = lib/libzfs/os/linux/libzfs_la-libzfs_mount_os.lo \
-	lib/libzfs/os/linux/libzfs_la-libzfs_pool_os.lo \
-	lib/libzfs/os/linux/libzfs_la-libzfs_util_os.lo
-dist_libzfs_la_OBJECTS =  \
-	lib/libzfs/libzfs_la-libzfs_changelist.lo \
-	lib/libzfs/libzfs_la-libzfs_config.lo \
-	lib/libzfs/libzfs_la-libzfs_crypto.lo \
-	lib/libzfs/libzfs_la-libzfs_dataset.lo \
-	lib/libzfs/libzfs_la-libzfs_diff.lo \
-	lib/libzfs/libzfs_la-libzfs_import.lo \
-	lib/libzfs/libzfs_la-libzfs_iter.lo \
-	lib/libzfs/libzfs_la-libzfs_mount.lo \
-	lib/libzfs/libzfs_la-libzfs_pool.lo \
-	lib/libzfs/libzfs_la-libzfs_sendrecv.lo \
-	lib/libzfs/libzfs_la-libzfs_status.lo \
-	lib/libzfs/libzfs_la-libzfs_util.lo \
-	$(am__objects_9) $(am__objects_10)
-nodist_libzfs_la_OBJECTS =  \
-	module/zcommon/libzfs_la-cityhash.lo \
-	module/zcommon/libzfs_la-zfeature_common.lo \
-	module/zcommon/libzfs_la-zfs_comutil.lo \
-	module/zcommon/libzfs_la-zfs_deleg.lo \
-	module/zcommon/libzfs_la-zfs_fletcher.lo \
-	module/zcommon/libzfs_la-zfs_fletcher_aarch64_neon.lo \
-	module/zcommon/libzfs_la-zfs_fletcher_avx512.lo \
-	module/zcommon/libzfs_la-zfs_fletcher_intel.lo \
-	module/zcommon/libzfs_la-zfs_fletcher_sse.lo \
-	module/zcommon/libzfs_la-zfs_fletcher_superscalar.lo \
-	module/zcommon/libzfs_la-zfs_fletcher_superscalar4.lo \
-	module/zcommon/libzfs_la-zfs_namecheck.lo \
-	module/zcommon/libzfs_la-zfs_prop.lo \
-	module/zcommon/libzfs_la-zpool_prop.lo \
-	module/zcommon/libzfs_la-zprop_common.lo
+##am__objects_9 = lib/libzfs/os/freebsd/libzfs_la-libzfs_compat.lo \
+##	lib/libzfs/os/freebsd/libzfs_la-libzfs_zmount.lo
+#am__objects_10 = lib/libzfs/os/linux/libzfs_la-libzfs_mount_os.lo \
+#	lib/libzfs/os/linux/libzfs_la-libzfs_pool_os.lo \
+#	lib/libzfs/os/linux/libzfs_la-libzfs_util_os.lo
+#dist_libzfs_la_OBJECTS =  \
+#	lib/libzfs/libzfs_la-libzfs_changelist.lo \
+#	lib/libzfs/libzfs_la-libzfs_config.lo \
+#	lib/libzfs/libzfs_la-libzfs_crypto.lo \
+#	lib/libzfs/libzfs_la-libzfs_dataset.lo \
+#	lib/libzfs/libzfs_la-libzfs_diff.lo \
+#	lib/libzfs/libzfs_la-libzfs_import.lo \
+#	lib/libzfs/libzfs_la-libzfs_iter.lo \
+#	lib/libzfs/libzfs_la-libzfs_mount.lo \
+#	lib/libzfs/libzfs_la-libzfs_pool.lo \
+#	lib/libzfs/libzfs_la-libzfs_sendrecv.lo \
+#	lib/libzfs/libzfs_la-libzfs_status.lo \
+#	lib/libzfs/libzfs_la-libzfs_util.lo \
+#	$(am__objects_9) $(am__objects_10)
+#nodist_libzfs_la_OBJECTS =  \
+#	module/zcommon/libzfs_la-cityhash.lo \
+#	module/zcommon/libzfs_la-zfeature_common.lo \
+#	module/zcommon/libzfs_la-zfs_comutil.lo \
+#	module/zcommon/libzfs_la-zfs_deleg.lo \
+#	module/zcommon/libzfs_la-zfs_fletcher.lo \
+#	module/zcommon/libzfs_la-zfs_fletcher_aarch64_neon.lo \
+#	module/zcommon/libzfs_la-zfs_fletcher_avx512.lo \
+#	module/zcommon/libzfs_la-zfs_fletcher_intel.lo \
+#	module/zcommon/libzfs_la-zfs_fletcher_sse.lo \
+#	module/zcommon/libzfs_la-zfs_fletcher_superscalar.lo \
+#	module/zcommon/libzfs_la-zfs_fletcher_superscalar4.lo \
+#	module/zcommon/libzfs_la-zfs_namecheck.lo \
+#	module/zcommon/libzfs_la-zfs_prop.lo \
+#	module/zcommon/libzfs_la-zpool_prop.lo \
+#	module/zcommon/libzfs_la-zprop_common.lo
 libzfs_la_OBJECTS = $(dist_libzfs_la_OBJECTS) \
 	$(nodist_libzfs_la_OBJECTS)
 libzfs_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libzfs_la_CFLAGS) \
 	$(CFLAGS) $(libzfs_la_LDFLAGS) $(LDFLAGS) -o $@
-am_libzfs_la_rpath = -rpath $(libdir)
-libzfs_core_la_DEPENDENCIES = libnvpair.la libspl.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+#am_libzfs_la_rpath = -rpath $(libdir)
+#libzfs_core_la_DEPENDENCIES = libnvpair.la libspl.la \
+#	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am__libzfs_core_la_SOURCES_DIST = lib/libzfs_core/libzfs_core.c \
 	lib/libzfs_core/os/linux/libzfs_core_ioctl.c \
 	lib/libzfs_core/os/freebsd/libzfs_core_ioctl.c
-am__objects_11 = lib/libzfs_core/os/linux/libzfs_core_la-libzfs_core_ioctl.lo
-#am__objects_12 = lib/libzfs_core/os/freebsd/libzfs_core_la-libzfs_core_ioctl.lo
-am_libzfs_core_la_OBJECTS = lib/libzfs_core/libzfs_core_la-libzfs_core.lo \
-	$(am__objects_11) $(am__objects_12)
-#nodist_libzfs_core_la_OBJECTS = module/os/freebsd/zfs/libzfs_core_la-zfs_ioctl_compat.lo
+#am__objects_11 = lib/libzfs_core/os/linux/libzfs_core_la-libzfs_core_ioctl.lo
+##am__objects_12 = lib/libzfs_core/os/freebsd/libzfs_core_la-libzfs_core_ioctl.lo
+#am_libzfs_core_la_OBJECTS = lib/libzfs_core/libzfs_core_la-libzfs_core.lo \
+#	$(am__objects_11) $(am__objects_12)
+##nodist_libzfs_core_la_OBJECTS = module/os/freebsd/zfs/libzfs_core_la-zfs_ioctl_compat.lo
 libzfs_core_la_OBJECTS = $(am_libzfs_core_la_OBJECTS) \
 	$(nodist_libzfs_core_la_OBJECTS)
 libzfs_core_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libzfs_core_la_CFLAGS) $(CFLAGS) $(libzfs_core_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
-am_libzfs_core_la_rpath = -rpath $(libdir)
-libzfsbootenv_la_DEPENDENCIES = libzfs.la \
-	libnvpair.la
+#am_libzfs_core_la_rpath = -rpath $(libdir)
+#libzfsbootenv_la_DEPENDENCIES = libzfs.la \
+#	libnvpair.la
 am__dist_libzfsbootenv_la_SOURCES_DIST =  \
 	lib/libzfsbootenv/lzbe_device.c lib/libzfsbootenv/lzbe_pair.c \
 	lib/libzfsbootenv/lzbe_util.c
-dist_libzfsbootenv_la_OBJECTS = lib/libzfsbootenv/libzfsbootenv_la-lzbe_device.lo \
-	lib/libzfsbootenv/libzfsbootenv_la-lzbe_pair.lo \
-	lib/libzfsbootenv/libzfsbootenv_la-lzbe_util.lo
+#dist_libzfsbootenv_la_OBJECTS = lib/libzfsbootenv/libzfsbootenv_la-lzbe_device.lo \
+#	lib/libzfsbootenv/libzfsbootenv_la-lzbe_pair.lo \
+#	lib/libzfsbootenv/libzfsbootenv_la-lzbe_util.lo
 libzfsbootenv_la_OBJECTS = $(dist_libzfsbootenv_la_OBJECTS)
 libzfsbootenv_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libzfsbootenv_la_CFLAGS) $(CFLAGS) \
 	$(libzfsbootenv_la_LDFLAGS) $(LDFLAGS) -o $@
-am_libzfsbootenv_la_rpath = -rpath $(libdir)
-libzpool_la_DEPENDENCIES = libicp.la libunicode.la \
-	libnvpair.la libzstd.la libzutil.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+#am_libzfsbootenv_la_rpath = -rpath $(libdir)
+#libzpool_la_DEPENDENCIES = libicp.la libunicode.la \
+#	libnvpair.la libzstd.la libzutil.la \
+#	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+#	$(am__DEPENDENCIES_1)
 am__dist_libzpool_la_SOURCES_DIST = lib/libzpool/kernel.c \
 	lib/libzpool/taskq.c lib/libzpool/util.c
-dist_libzpool_la_OBJECTS =  \
-	lib/libzpool/libzpool_la-kernel.lo \
-	lib/libzpool/libzpool_la-taskq.lo \
-	lib/libzpool/libzpool_la-util.lo
-nodist_libzpool_la_OBJECTS =  \
-	module/lua/libzpool_la-lapi.lo \
-	module/lua/libzpool_la-lauxlib.lo \
-	module/lua/libzpool_la-lbaselib.lo \
-	module/lua/libzpool_la-lcode.lo \
-	module/lua/libzpool_la-lcompat.lo \
-	module/lua/libzpool_la-lcorolib.lo \
-	module/lua/libzpool_la-lctype.lo \
-	module/lua/libzpool_la-ldebug.lo \
-	module/lua/libzpool_la-ldo.lo \
-	module/lua/libzpool_la-lfunc.lo \
-	module/lua/libzpool_la-lgc.lo \
-	module/lua/libzpool_la-llex.lo \
-	module/lua/libzpool_la-lmem.lo \
-	module/lua/libzpool_la-lobject.lo \
-	module/lua/libzpool_la-lopcodes.lo \
-	module/lua/libzpool_la-lparser.lo \
-	module/lua/libzpool_la-lstate.lo \
-	module/lua/libzpool_la-lstring.lo \
-	module/lua/libzpool_la-lstrlib.lo \
-	module/lua/libzpool_la-ltable.lo \
-	module/lua/libzpool_la-ltablib.lo \
-	module/lua/libzpool_la-ltm.lo \
-	module/lua/libzpool_la-lvm.lo \
-	module/lua/libzpool_la-lzio.lo \
-	module/os/linux/zfs/libzpool_la-abd_os.lo \
-	module/os/linux/zfs/libzpool_la-arc_os.lo \
-	module/os/linux/zfs/libzpool_la-trace.lo \
-	module/os/linux/zfs/libzpool_la-vdev_file.lo \
-	module/os/linux/zfs/libzpool_la-zfs_debug.lo \
-	module/os/linux/zfs/libzpool_la-zfs_racct.lo \
-	module/os/linux/zfs/libzpool_la-zfs_znode.lo \
-	module/os/linux/zfs/libzpool_la-zio_crypt.lo \
-	module/zcommon/libzpool_la-cityhash.lo \
-	module/zcommon/libzpool_la-zfeature_common.lo \
-	module/zcommon/libzpool_la-zfs_comutil.lo \
-	module/zcommon/libzpool_la-zfs_deleg.lo \
-	module/zcommon/libzpool_la-zfs_fletcher.lo \
-	module/zcommon/libzpool_la-zfs_fletcher_aarch64_neon.lo \
-	module/zcommon/libzpool_la-zfs_fletcher_avx512.lo \
-	module/zcommon/libzpool_la-zfs_fletcher_intel.lo \
-	module/zcommon/libzpool_la-zfs_fletcher_sse.lo \
-	module/zcommon/libzpool_la-zfs_fletcher_superscalar.lo \
-	module/zcommon/libzpool_la-zfs_fletcher_superscalar4.lo \
-	module/zcommon/libzpool_la-zfs_namecheck.lo \
-	module/zcommon/libzpool_la-zfs_prop.lo \
-	module/zcommon/libzpool_la-zpool_prop.lo \
-	module/zcommon/libzpool_la-zprop_common.lo \
-	module/zfs/libzpool_la-abd.lo \
-	module/zfs/libzpool_la-aggsum.lo \
-	module/zfs/libzpool_la-arc.lo \
-	module/zfs/libzpool_la-blake3_zfs.lo \
-	module/zfs/libzpool_la-blkptr.lo \
-	module/zfs/libzpool_la-bplist.lo \
-	module/zfs/libzpool_la-bpobj.lo \
-	module/zfs/libzpool_la-bptree.lo \
-	module/zfs/libzpool_la-bqueue.lo \
-	module/zfs/libzpool_la-btree.lo \
-	module/zfs/libzpool_la-brt.lo \
-	module/zfs/libzpool_la-dbuf.lo \
-	module/zfs/libzpool_la-dbuf_stats.lo \
-	module/zfs/libzpool_la-ddt.lo \
-	module/zfs/libzpool_la-ddt_zap.lo \
-	module/zfs/libzpool_la-dmu.lo \
-	module/zfs/libzpool_la-dmu_diff.lo \
-	module/zfs/libzpool_la-dmu_object.lo \
-	module/zfs/libzpool_la-dmu_objset.lo \
-	module/zfs/libzpool_la-dmu_recv.lo \
-	module/zfs/libzpool_la-dmu_redact.lo \
-	module/zfs/libzpool_la-dmu_send.lo \
-	module/zfs/libzpool_la-dmu_traverse.lo \
-	module/zfs/libzpool_la-dmu_tx.lo \
-	module/zfs/libzpool_la-dmu_zfetch.lo \
-	module/zfs/libzpool_la-dnode.lo \
-	module/zfs/libzpool_la-dnode_sync.lo \
-	module/zfs/libzpool_la-dsl_bookmark.lo \
-	module/zfs/libzpool_la-dsl_crypt.lo \
-	module/zfs/libzpool_la-dsl_dataset.lo \
-	module/zfs/libzpool_la-dsl_deadlist.lo \
-	module/zfs/libzpool_la-dsl_deleg.lo \
-	module/zfs/libzpool_la-dsl_destroy.lo \
-	module/zfs/libzpool_la-dsl_dir.lo \
-	module/zfs/libzpool_la-dsl_pool.lo \
-	module/zfs/libzpool_la-dsl_prop.lo \
-	module/zfs/libzpool_la-dsl_scan.lo \
-	module/zfs/libzpool_la-dsl_synctask.lo \
-	module/zfs/libzpool_la-dsl_userhold.lo \
-	module/zfs/libzpool_la-edonr_zfs.lo \
-	module/zfs/libzpool_la-fm.lo \
-	module/zfs/libzpool_la-gzip.lo \
-	module/zfs/libzpool_la-hkdf.lo \
-	module/zfs/libzpool_la-lz4.lo \
-	module/zfs/libzpool_la-lz4_zfs.lo \
-	module/zfs/libzpool_la-lzjb.lo \
-	module/zfs/libzpool_la-metaslab.lo \
-	module/zfs/libzpool_la-mmp.lo \
-	module/zfs/libzpool_la-multilist.lo \
-	module/zfs/libzpool_la-objlist.lo \
-	module/zfs/libzpool_la-pathname.lo \
-	module/zfs/libzpool_la-range_tree.lo \
-	module/zfs/libzpool_la-refcount.lo \
-	module/zfs/libzpool_la-rrwlock.lo \
-	module/zfs/libzpool_la-sa.lo \
-	module/zfs/libzpool_la-sha2_zfs.lo \
-	module/zfs/libzpool_la-skein_zfs.lo \
-	module/zfs/libzpool_la-spa.lo \
-	module/zfs/libzpool_la-spa_checkpoint.lo \
-	module/zfs/libzpool_la-spa_config.lo \
-	module/zfs/libzpool_la-spa_errlog.lo \
-	module/zfs/libzpool_la-spa_history.lo \
-	module/zfs/libzpool_la-spa_log_spacemap.lo \
-	module/zfs/libzpool_la-spa_misc.lo \
-	module/zfs/libzpool_la-spa_stats.lo \
-	module/zfs/libzpool_la-space_map.lo \
-	module/zfs/libzpool_la-space_reftree.lo \
-	module/zfs/libzpool_la-txg.lo \
-	module/zfs/libzpool_la-uberblock.lo \
-	module/zfs/libzpool_la-unique.lo \
-	module/zfs/libzpool_la-vdev.lo \
-	module/zfs/libzpool_la-vdev_draid.lo \
-	module/zfs/libzpool_la-vdev_draid_rand.lo \
-	module/zfs/libzpool_la-vdev_indirect.lo \
-	module/zfs/libzpool_la-vdev_indirect_births.lo \
-	module/zfs/libzpool_la-vdev_indirect_mapping.lo \
-	module/zfs/libzpool_la-vdev_initialize.lo \
-	module/zfs/libzpool_la-vdev_label.lo \
-	module/zfs/libzpool_la-vdev_mirror.lo \
-	module/zfs/libzpool_la-vdev_missing.lo \
-	module/zfs/libzpool_la-vdev_queue.lo \
-	module/zfs/libzpool_la-vdev_raidz.lo \
-	module/zfs/libzpool_la-vdev_raidz_math.lo \
-	module/zfs/libzpool_la-vdev_raidz_math_aarch64_neon.lo \
-	module/zfs/libzpool_la-vdev_raidz_math_aarch64_neonx2.lo \
-	module/zfs/libzpool_la-vdev_raidz_math_avx2.lo \
-	module/zfs/libzpool_la-vdev_raidz_math_avx512bw.lo \
-	module/zfs/libzpool_la-vdev_raidz_math_avx512f.lo \
-	module/zfs/libzpool_la-vdev_raidz_math_powerpc_altivec.lo \
-	module/zfs/libzpool_la-vdev_raidz_math_scalar.lo \
-	module/zfs/libzpool_la-vdev_raidz_math_sse2.lo \
-	module/zfs/libzpool_la-vdev_raidz_math_ssse3.lo \
-	module/zfs/libzpool_la-vdev_rebuild.lo \
-	module/zfs/libzpool_la-vdev_removal.lo \
-	module/zfs/libzpool_la-vdev_root.lo \
-	module/zfs/libzpool_la-vdev_trim.lo \
-	module/zfs/libzpool_la-zap.lo \
-	module/zfs/libzpool_la-zap_leaf.lo \
-	module/zfs/libzpool_la-zap_micro.lo \
-	module/zfs/libzpool_la-zcp.lo \
-	module/zfs/libzpool_la-zcp_get.lo \
-	module/zfs/libzpool_la-zcp_global.lo \
-	module/zfs/libzpool_la-zcp_iter.lo \
-	module/zfs/libzpool_la-zcp_set.lo \
-	module/zfs/libzpool_la-zcp_synctask.lo \
-	module/zfs/libzpool_la-zfeature.lo \
-	module/zfs/libzpool_la-zfs_byteswap.lo \
-	module/zfs/libzpool_la-zfs_chksum.lo \
-	module/zfs/libzpool_la-zfs_fm.lo \
-	module/zfs/libzpool_la-zfs_fuid.lo \
-	module/zfs/libzpool_la-zfs_ratelimit.lo \
-	module/zfs/libzpool_la-zfs_rlock.lo \
-	module/zfs/libzpool_la-zfs_sa.lo \
-	module/zfs/libzpool_la-zil.lo \
-	module/zfs/libzpool_la-zio.lo \
-	module/zfs/libzpool_la-zio_checksum.lo \
-	module/zfs/libzpool_la-zio_compress.lo \
-	module/zfs/libzpool_la-zio_inject.lo \
-	module/zfs/libzpool_la-zle.lo \
-	module/zfs/libzpool_la-zrlock.lo \
-	module/zfs/libzpool_la-zthr.lo
+#dist_libzpool_la_OBJECTS =  \
+#	lib/libzpool/libzpool_la-kernel.lo \
+#	lib/libzpool/libzpool_la-taskq.lo \
+#	lib/libzpool/libzpool_la-util.lo
+#nodist_libzpool_la_OBJECTS =  \
+#	module/lua/libzpool_la-lapi.lo \
+#	module/lua/libzpool_la-lauxlib.lo \
+#	module/lua/libzpool_la-lbaselib.lo \
+#	module/lua/libzpool_la-lcode.lo \
+#	module/lua/libzpool_la-lcompat.lo \
+#	module/lua/libzpool_la-lcorolib.lo \
+#	module/lua/libzpool_la-lctype.lo \
+#	module/lua/libzpool_la-ldebug.lo \
+#	module/lua/libzpool_la-ldo.lo \
+#	module/lua/libzpool_la-lfunc.lo \
+#	module/lua/libzpool_la-lgc.lo \
+#	module/lua/libzpool_la-llex.lo \
+#	module/lua/libzpool_la-lmem.lo \
+#	module/lua/libzpool_la-lobject.lo \
+#	module/lua/libzpool_la-lopcodes.lo \
+#	module/lua/libzpool_la-lparser.lo \
+#	module/lua/libzpool_la-lstate.lo \
+#	module/lua/libzpool_la-lstring.lo \
+#	module/lua/libzpool_la-lstrlib.lo \
+#	module/lua/libzpool_la-ltable.lo \
+#	module/lua/libzpool_la-ltablib.lo \
+#	module/lua/libzpool_la-ltm.lo \
+#	module/lua/libzpool_la-lvm.lo \
+#	module/lua/libzpool_la-lzio.lo \
+#	module/os/linux/zfs/libzpool_la-abd_os.lo \
+#	module/os/linux/zfs/libzpool_la-arc_os.lo \
+#	module/os/linux/zfs/libzpool_la-trace.lo \
+#	module/os/linux/zfs/libzpool_la-vdev_file.lo \
+#	module/os/linux/zfs/libzpool_la-zfs_debug.lo \
+#	module/os/linux/zfs/libzpool_la-zfs_racct.lo \
+#	module/os/linux/zfs/libzpool_la-zfs_znode.lo \
+#	module/os/linux/zfs/libzpool_la-zio_crypt.lo \
+#	module/zcommon/libzpool_la-cityhash.lo \
+#	module/zcommon/libzpool_la-zfeature_common.lo \
+#	module/zcommon/libzpool_la-zfs_comutil.lo \
+#	module/zcommon/libzpool_la-zfs_deleg.lo \
+#	module/zcommon/libzpool_la-zfs_fletcher.lo \
+#	module/zcommon/libzpool_la-zfs_fletcher_aarch64_neon.lo \
+#	module/zcommon/libzpool_la-zfs_fletcher_avx512.lo \
+#	module/zcommon/libzpool_la-zfs_fletcher_intel.lo \
+#	module/zcommon/libzpool_la-zfs_fletcher_sse.lo \
+#	module/zcommon/libzpool_la-zfs_fletcher_superscalar.lo \
+#	module/zcommon/libzpool_la-zfs_fletcher_superscalar4.lo \
+#	module/zcommon/libzpool_la-zfs_namecheck.lo \
+#	module/zcommon/libzpool_la-zfs_prop.lo \
+#	module/zcommon/libzpool_la-zpool_prop.lo \
+#	module/zcommon/libzpool_la-zprop_common.lo \
+#	module/zfs/libzpool_la-abd.lo \
+#	module/zfs/libzpool_la-aggsum.lo \
+#	module/zfs/libzpool_la-arc.lo \
+#	module/zfs/libzpool_la-blake3_zfs.lo \
+#	module/zfs/libzpool_la-blkptr.lo \
+#	module/zfs/libzpool_la-bplist.lo \
+#	module/zfs/libzpool_la-bpobj.lo \
+#	module/zfs/libzpool_la-bptree.lo \
+#	module/zfs/libzpool_la-bqueue.lo \
+#	module/zfs/libzpool_la-btree.lo \
+#	module/zfs/libzpool_la-brt.lo \
+#	module/zfs/libzpool_la-dbuf.lo \
+#	module/zfs/libzpool_la-dbuf_stats.lo \
+#	module/zfs/libzpool_la-ddt.lo \
+#	module/zfs/libzpool_la-ddt_zap.lo \
+#	module/zfs/libzpool_la-dmu.lo \
+#	module/zfs/libzpool_la-dmu_diff.lo \
+#	module/zfs/libzpool_la-dmu_object.lo \
+#	module/zfs/libzpool_la-dmu_objset.lo \
+#	module/zfs/libzpool_la-dmu_recv.lo \
+#	module/zfs/libzpool_la-dmu_redact.lo \
+#	module/zfs/libzpool_la-dmu_send.lo \
+#	module/zfs/libzpool_la-dmu_traverse.lo \
+#	module/zfs/libzpool_la-dmu_tx.lo \
+#	module/zfs/libzpool_la-dmu_zfetch.lo \
+#	module/zfs/libzpool_la-dnode.lo \
+#	module/zfs/libzpool_la-dnode_sync.lo \
+#	module/zfs/libzpool_la-dsl_bookmark.lo \
+#	module/zfs/libzpool_la-dsl_crypt.lo \
+#	module/zfs/libzpool_la-dsl_dataset.lo \
+#	module/zfs/libzpool_la-dsl_deadlist.lo \
+#	module/zfs/libzpool_la-dsl_deleg.lo \
+#	module/zfs/libzpool_la-dsl_destroy.lo \
+#	module/zfs/libzpool_la-dsl_dir.lo \
+#	module/zfs/libzpool_la-dsl_pool.lo \
+#	module/zfs/libzpool_la-dsl_prop.lo \
+#	module/zfs/libzpool_la-dsl_scan.lo \
+#	module/zfs/libzpool_la-dsl_synctask.lo \
+#	module/zfs/libzpool_la-dsl_userhold.lo \
+#	module/zfs/libzpool_la-edonr_zfs.lo \
+#	module/zfs/libzpool_la-fm.lo \
+#	module/zfs/libzpool_la-gzip.lo \
+#	module/zfs/libzpool_la-hkdf.lo \
+#	module/zfs/libzpool_la-lz4.lo \
+#	module/zfs/libzpool_la-lz4_zfs.lo \
+#	module/zfs/libzpool_la-lzjb.lo \
+#	module/zfs/libzpool_la-metaslab.lo \
+#	module/zfs/libzpool_la-mmp.lo \
+#	module/zfs/libzpool_la-multilist.lo \
+#	module/zfs/libzpool_la-objlist.lo \
+#	module/zfs/libzpool_la-pathname.lo \
+#	module/zfs/libzpool_la-range_tree.lo \
+#	module/zfs/libzpool_la-refcount.lo \
+#	module/zfs/libzpool_la-rrwlock.lo \
+#	module/zfs/libzpool_la-sa.lo \
+#	module/zfs/libzpool_la-sha2_zfs.lo \
+#	module/zfs/libzpool_la-skein_zfs.lo \
+#	module/zfs/libzpool_la-spa.lo \
+#	module/zfs/libzpool_la-spa_checkpoint.lo \
+#	module/zfs/libzpool_la-spa_config.lo \
+#	module/zfs/libzpool_la-spa_errlog.lo \
+#	module/zfs/libzpool_la-spa_history.lo \
+#	module/zfs/libzpool_la-spa_log_spacemap.lo \
+#	module/zfs/libzpool_la-spa_misc.lo \
+#	module/zfs/libzpool_la-spa_stats.lo \
+#	module/zfs/libzpool_la-space_map.lo \
+#	module/zfs/libzpool_la-space_reftree.lo \
+#	module/zfs/libzpool_la-txg.lo \
+#	module/zfs/libzpool_la-uberblock.lo \
+#	module/zfs/libzpool_la-unique.lo \
+#	module/zfs/libzpool_la-vdev.lo \
+#	module/zfs/libzpool_la-vdev_draid.lo \
+#	module/zfs/libzpool_la-vdev_draid_rand.lo \
+#	module/zfs/libzpool_la-vdev_indirect.lo \
+#	module/zfs/libzpool_la-vdev_indirect_births.lo \
+#	module/zfs/libzpool_la-vdev_indirect_mapping.lo \
+#	module/zfs/libzpool_la-vdev_initialize.lo \
+#	module/zfs/libzpool_la-vdev_label.lo \
+#	module/zfs/libzpool_la-vdev_mirror.lo \
+#	module/zfs/libzpool_la-vdev_missing.lo \
+#	module/zfs/libzpool_la-vdev_queue.lo \
+#	module/zfs/libzpool_la-vdev_raidz.lo \
+#	module/zfs/libzpool_la-vdev_raidz_math.lo \
+#	module/zfs/libzpool_la-vdev_raidz_math_aarch64_neon.lo \
+#	module/zfs/libzpool_la-vdev_raidz_math_aarch64_neonx2.lo \
+#	module/zfs/libzpool_la-vdev_raidz_math_avx2.lo \
+#	module/zfs/libzpool_la-vdev_raidz_math_avx512bw.lo \
+#	module/zfs/libzpool_la-vdev_raidz_math_avx512f.lo \
+#	module/zfs/libzpool_la-vdev_raidz_math_powerpc_altivec.lo \
+#	module/zfs/libzpool_la-vdev_raidz_math_scalar.lo \
+#	module/zfs/libzpool_la-vdev_raidz_math_sse2.lo \
+#	module/zfs/libzpool_la-vdev_raidz_math_ssse3.lo \
+#	module/zfs/libzpool_la-vdev_rebuild.lo \
+#	module/zfs/libzpool_la-vdev_removal.lo \
+#	module/zfs/libzpool_la-vdev_root.lo \
+#	module/zfs/libzpool_la-vdev_trim.lo \
+#	module/zfs/libzpool_la-zap.lo \
+#	module/zfs/libzpool_la-zap_leaf.lo \
+#	module/zfs/libzpool_la-zap_micro.lo \
+#	module/zfs/libzpool_la-zcp.lo \
+#	module/zfs/libzpool_la-zcp_get.lo \
+#	module/zfs/libzpool_la-zcp_global.lo \
+#	module/zfs/libzpool_la-zcp_iter.lo \
+#	module/zfs/libzpool_la-zcp_set.lo \
+#	module/zfs/libzpool_la-zcp_synctask.lo \
+#	module/zfs/libzpool_la-zfeature.lo \
+#	module/zfs/libzpool_la-zfs_byteswap.lo \
+#	module/zfs/libzpool_la-zfs_chksum.lo \
+#	module/zfs/libzpool_la-zfs_fm.lo \
+#	module/zfs/libzpool_la-zfs_fuid.lo \
+#	module/zfs/libzpool_la-zfs_ratelimit.lo \
+#	module/zfs/libzpool_la-zfs_rlock.lo \
+#	module/zfs/libzpool_la-zfs_sa.lo \
+#	module/zfs/libzpool_la-zil.lo \
+#	module/zfs/libzpool_la-zio.lo \
+#	module/zfs/libzpool_la-zio_checksum.lo \
+#	module/zfs/libzpool_la-zio_compress.lo \
+#	module/zfs/libzpool_la-zio_inject.lo \
+#	module/zfs/libzpool_la-zle.lo \
+#	module/zfs/libzpool_la-zrlock.lo \
+#	module/zfs/libzpool_la-zthr.lo
 libzpool_la_OBJECTS = $(dist_libzpool_la_OBJECTS) \
 	$(nodist_libzpool_la_OBJECTS)
 libzpool_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libzpool_la_CFLAGS) \
 	$(CFLAGS) $(libzpool_la_LDFLAGS) $(LDFLAGS) -o $@
-am_libzpool_la_rpath = -rpath $(libdir)
+#am_libzpool_la_rpath = -rpath $(libdir)
 libzstd_la_LIBADD =
-nodist_libzstd_la_OBJECTS = module/zstd/lib/common/libzstd_la-entropy_common.lo \
-	module/zstd/lib/common/libzstd_la-error_private.lo \
-	module/zstd/lib/common/libzstd_la-fse_decompress.lo \
-	module/zstd/lib/common/libzstd_la-pool.lo \
-	module/zstd/lib/common/libzstd_la-zstd_common.lo \
-	module/zstd/lib/compress/libzstd_la-fse_compress.lo \
-	module/zstd/lib/compress/libzstd_la-hist.lo \
-	module/zstd/lib/compress/libzstd_la-huf_compress.lo \
-	module/zstd/lib/compress/libzstd_la-zstd_compress_literals.lo \
-	module/zstd/lib/compress/libzstd_la-zstd_compress_sequences.lo \
-	module/zstd/lib/compress/libzstd_la-zstd_compress_superblock.lo \
-	module/zstd/lib/compress/libzstd_la-zstd_compress.lo \
-	module/zstd/lib/compress/libzstd_la-zstd_double_fast.lo \
-	module/zstd/lib/compress/libzstd_la-zstd_fast.lo \
-	module/zstd/lib/compress/libzstd_la-zstd_lazy.lo \
-	module/zstd/lib/compress/libzstd_la-zstd_ldm.lo \
-	module/zstd/lib/compress/libzstd_la-zstd_opt.lo \
-	module/zstd/lib/decompress/libzstd_la-huf_decompress.lo \
-	module/zstd/lib/decompress/libzstd_la-zstd_ddict.lo \
-	module/zstd/lib/decompress/libzstd_la-zstd_decompress.lo \
-	module/zstd/lib/decompress/libzstd_la-zstd_decompress_block.lo \
-	module/zstd/libzstd_la-zfs_zstd.lo
+#nodist_libzstd_la_OBJECTS = module/zstd/lib/common/libzstd_la-entropy_common.lo \
+#	module/zstd/lib/common/libzstd_la-error_private.lo \
+#	module/zstd/lib/common/libzstd_la-fse_decompress.lo \
+#	module/zstd/lib/common/libzstd_la-pool.lo \
+#	module/zstd/lib/common/libzstd_la-zstd_common.lo \
+#	module/zstd/lib/compress/libzstd_la-fse_compress.lo \
+#	module/zstd/lib/compress/libzstd_la-hist.lo \
+#	module/zstd/lib/compress/libzstd_la-huf_compress.lo \
+#	module/zstd/lib/compress/libzstd_la-zstd_compress_literals.lo \
+#	module/zstd/lib/compress/libzstd_la-zstd_compress_sequences.lo \
+#	module/zstd/lib/compress/libzstd_la-zstd_compress_superblock.lo \
+#	module/zstd/lib/compress/libzstd_la-zstd_compress.lo \
+#	module/zstd/lib/compress/libzstd_la-zstd_double_fast.lo \
+#	module/zstd/lib/compress/libzstd_la-zstd_fast.lo \
+#	module/zstd/lib/compress/libzstd_la-zstd_lazy.lo \
+#	module/zstd/lib/compress/libzstd_la-zstd_ldm.lo \
+#	module/zstd/lib/compress/libzstd_la-zstd_opt.lo \
+#	module/zstd/lib/decompress/libzstd_la-huf_decompress.lo \
+#	module/zstd/lib/decompress/libzstd_la-zstd_ddict.lo \
+#	module/zstd/lib/decompress/libzstd_la-zstd_decompress.lo \
+#	module/zstd/lib/decompress/libzstd_la-zstd_decompress_block.lo \
+#	module/zstd/libzstd_la-zfs_zstd.lo
 libzstd_la_OBJECTS = $(nodist_libzstd_la_OBJECTS)
 libzstd_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libzstd_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_libzstd_la_rpath =
-am__DEPENDENCIES_2 = libefi.la
-libzutil_la_DEPENDENCIES = libavl.la libtpool.la \
-	libnvpair.la libspl.la $(am__DEPENDENCIES_2) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+#am_libzstd_la_rpath =
+#am__DEPENDENCIES_2 = libefi.la
+#libzutil_la_DEPENDENCIES = libavl.la libtpool.la \
+#	libnvpair.la libspl.la $(am__DEPENDENCIES_2) \
+#	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am__libzutil_la_SOURCES_DIST = lib/libzutil/zutil_device_path.c \
 	lib/libzutil/zutil_import.c lib/libzutil/zutil_import.h \
 	lib/libzutil/zutil_nicenum.c lib/libzutil/zutil_pool.c \
@@ -1350,66 +1350,66 @@ am__libzutil_la_SOURCES_DIST = lib/libzutil/zutil_device_path.c \
 	lib/libzutil/os/linux/zutil_import_os.c \
 	lib/libzutil/os/freebsd/zutil_device_path_os.c \
 	lib/libzutil/os/freebsd/zutil_import_os.c
-am__objects_13 = lib/libzutil/os/linux/libzutil_la-zutil_setproctitle.lo \
-	lib/libzutil/os/linux/libzutil_la-zutil_device_path_os.lo \
-	lib/libzutil/os/linux/libzutil_la-zutil_import_os.lo
-#am__objects_14 = lib/libzutil/os/freebsd/libzutil_la-zutil_device_path_os.lo \
-#	lib/libzutil/os/freebsd/libzutil_la-zutil_import_os.lo
-am_libzutil_la_OBJECTS = lib/libzutil/libzutil_la-zutil_device_path.lo \
-	lib/libzutil/libzutil_la-zutil_import.lo \
-	lib/libzutil/libzutil_la-zutil_nicenum.lo \
-	lib/libzutil/libzutil_la-zutil_pool.lo \
-	$(am__objects_13) $(am__objects_14)
+#am__objects_13 = lib/libzutil/os/linux/libzutil_la-zutil_setproctitle.lo \
+#	lib/libzutil/os/linux/libzutil_la-zutil_device_path_os.lo \
+#	lib/libzutil/os/linux/libzutil_la-zutil_import_os.lo
+##am__objects_14 = lib/libzutil/os/freebsd/libzutil_la-zutil_device_path_os.lo \
+##	lib/libzutil/os/freebsd/libzutil_la-zutil_import_os.lo
+#am_libzutil_la_OBJECTS = lib/libzutil/libzutil_la-zutil_device_path.lo \
+#	lib/libzutil/libzutil_la-zutil_import.lo \
+#	lib/libzutil/libzutil_la-zutil_nicenum.lo \
+#	lib/libzutil/libzutil_la-zutil_pool.lo \
+#	$(am__objects_13) $(am__objects_14)
 libzutil_la_OBJECTS = $(am_libzutil_la_OBJECTS)
 libzutil_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libzutil_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_libzutil_la_rpath =
+#am_libzutil_la_rpath =
 am__etc_systemd_system_generators_zfs_mount_generator_SOURCES_DIST =  \
 	etc/systemd/system-generators/zfs-mount-generator.c
-am_etc_systemd_system_generators_zfs_mount_generator_OBJECTS = etc/systemd/system-generators/zfs-mount-generator.$(OBJEXT)
+##am_etc_systemd_system_generators_zfs_mount_generator_OBJECTS = etc/systemd/system-generators/zfs-mount-generator.$(OBJEXT)
 etc_systemd_system_generators_zfs_mount_generator_OBJECTS = $(am_etc_systemd_system_generators_zfs_mount_generator_OBJECTS)
-etc_systemd_system_generators_zfs_mount_generator_DEPENDENCIES = libzfs.la
+##etc_systemd_system_generators_zfs_mount_generator_DEPENDENCIES = libzfs.la
 etc_systemd_system_generators_zfs_mount_generator_LINK = $(LIBTOOL) \
 	$(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(etc_systemd_system_generators_zfs_mount_generator_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am__mount_zfs_SOURCES_DIST = cmd/mount_zfs.c
-am_mount_zfs_OBJECTS =  \
-	cmd/mount_zfs.$(OBJEXT)
+#am_mount_zfs_OBJECTS =  \
+#	cmd/mount_zfs.$(OBJEXT)
 mount_zfs_OBJECTS = $(am_mount_zfs_OBJECTS)
-mount_zfs_DEPENDENCIES =  \
-	libzfs.la libzfs_core.la \
-	libnvpair.la \
-	$(am__DEPENDENCIES_1)
+#mount_zfs_DEPENDENCIES =  \
+#	libzfs.la libzfs_core.la \
+#	libnvpair.la \
+#	$(am__DEPENDENCIES_1)
 am__raidz_test_SOURCES_DIST = cmd/raidz_test/raidz_bench.c \
 	cmd/raidz_test/raidz_test.c cmd/raidz_test/raidz_test.h
-am_raidz_test_OBJECTS = cmd/raidz_test/raidz_test-raidz_bench.$(OBJEXT) \
-	cmd/raidz_test/raidz_test-raidz_test.$(OBJEXT)
+#am_raidz_test_OBJECTS = cmd/raidz_test/raidz_test-raidz_bench.$(OBJEXT) \
+#	cmd/raidz_test/raidz_test-raidz_test.$(OBJEXT)
 raidz_test_OBJECTS = $(am_raidz_test_OBJECTS)
-raidz_test_DEPENDENCIES = libzpool.la libzfs_core.la
+#raidz_test_DEPENDENCIES = libzpool.la libzfs_core.la
 raidz_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(raidz_test_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 tests_zfs_tests_cmd_badsend_SOURCES = tests/zfs-tests/cmd/badsend.c
 tests_zfs_tests_cmd_badsend_OBJECTS =  \
 	tests/zfs-tests/cmd/badsend.$(OBJEXT)
-tests_zfs_tests_cmd_badsend_DEPENDENCIES =  \
-	libzfs_core.la libzfs.la libnvpair.la
+#tests_zfs_tests_cmd_badsend_DEPENDENCIES =  \
+#	libzfs_core.la libzfs.la libnvpair.la
 am__tests_zfs_tests_cmd_blake3_test_SOURCES_DIST =  \
 	tests/zfs-tests/cmd/checksum/blake3_test.c
-am_tests_zfs_tests_cmd_blake3_test_OBJECTS = tests/zfs-tests/cmd/checksum/blake3_test.$(OBJEXT)
+#am_tests_zfs_tests_cmd_blake3_test_OBJECTS = tests/zfs-tests/cmd/checksum/blake3_test.$(OBJEXT)
 tests_zfs_tests_cmd_blake3_test_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_blake3_test_OBJECTS)
-tests_zfs_tests_cmd_blake3_test_DEPENDENCIES =  \
-	$(tests_zfs_tests_cmd_skein_test_LDADD)
+#tests_zfs_tests_cmd_blake3_test_DEPENDENCIES =  \
+#	$(tests_zfs_tests_cmd_skein_test_LDADD)
 tests_zfs_tests_cmd_btree_test_SOURCES =  \
 	tests/zfs-tests/cmd/btree_test.c
 tests_zfs_tests_cmd_btree_test_OBJECTS =  \
 	tests/zfs-tests/cmd/btree_test-btree_test.$(OBJEXT)
-tests_zfs_tests_cmd_btree_test_DEPENDENCIES =  \
-	libzpool.la libzfs_core.la
+#tests_zfs_tests_cmd_btree_test_DEPENDENCIES =  \
+#	libzpool.la libzfs_core.la
 tests_zfs_tests_cmd_chg_usr_exec_SOURCES =  \
 	tests/zfs-tests/cmd/chg_usr_exec.c
 tests_zfs_tests_cmd_chg_usr_exec_OBJECTS =  \
@@ -1432,7 +1432,7 @@ tests_zfs_tests_cmd_devname2devid_SOURCES =  \
 	tests/zfs-tests/cmd/devname2devid.c
 tests_zfs_tests_cmd_devname2devid_OBJECTS =  \
 	tests/zfs-tests/cmd/devname2devid-devname2devid.$(OBJEXT)
-tests_zfs_tests_cmd_devname2devid_DEPENDENCIES = $(am__DEPENDENCIES_1)
+##tests_zfs_tests_cmd_devname2devid_DEPENDENCIES = $(am__DEPENDENCIES_1)
 tests_zfs_tests_cmd_devname2devid_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(tests_zfs_tests_cmd_devname2devid_CFLAGS) $(CFLAGS) \
@@ -1450,52 +1450,52 @@ tests_zfs_tests_cmd_dosmode_readonly_write_LDADD = $(LDADD)
 tests_zfs_tests_cmd_draid_SOURCES = tests/zfs-tests/cmd/draid.c
 tests_zfs_tests_cmd_draid_OBJECTS =  \
 	tests/zfs-tests/cmd/draid-draid.$(OBJEXT)
-tests_zfs_tests_cmd_draid_DEPENDENCIES =  \
-	libzpool.la libnvpair.la \
-	$(am__DEPENDENCIES_1)
+#tests_zfs_tests_cmd_draid_DEPENDENCIES =  \
+#	libzpool.la libnvpair.la \
+#	$(am__DEPENDENCIES_1)
 tests_zfs_tests_cmd_draid_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(tests_zfs_tests_cmd_draid_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am__tests_zfs_tests_cmd_edonr_test_SOURCES_DIST =  \
 	tests/zfs-tests/cmd/checksum/edonr_test.c
-am_tests_zfs_tests_cmd_edonr_test_OBJECTS = tests/zfs-tests/cmd/checksum/edonr_test.$(OBJEXT)
+#am_tests_zfs_tests_cmd_edonr_test_OBJECTS = tests/zfs-tests/cmd/checksum/edonr_test.$(OBJEXT)
 tests_zfs_tests_cmd_edonr_test_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_edonr_test_OBJECTS)
-tests_zfs_tests_cmd_edonr_test_DEPENDENCIES =  \
-	$(tests_zfs_tests_cmd_skein_test_LDADD)
+#tests_zfs_tests_cmd_edonr_test_DEPENDENCIES =  \
+#	$(tests_zfs_tests_cmd_skein_test_LDADD)
 tests_zfs_tests_cmd_ereports_SOURCES = tests/zfs-tests/cmd/ereports.c
 tests_zfs_tests_cmd_ereports_OBJECTS =  \
 	tests/zfs-tests/cmd/ereports.$(OBJEXT)
-tests_zfs_tests_cmd_ereports_DEPENDENCIES =  \
-	libnvpair.la libzfs.la
+#tests_zfs_tests_cmd_ereports_DEPENDENCIES =  \
+#	libnvpair.la libzfs.la
 am__tests_zfs_tests_cmd_file_append_SOURCES_DIST =  \
 	tests/zfs-tests/cmd/file/file_append.c
-am_tests_zfs_tests_cmd_file_append_OBJECTS = tests/zfs-tests/cmd/file/file_append.$(OBJEXT)
+#am_tests_zfs_tests_cmd_file_append_OBJECTS = tests/zfs-tests/cmd/file/file_append.$(OBJEXT)
 tests_zfs_tests_cmd_file_append_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_file_append_OBJECTS)
 tests_zfs_tests_cmd_file_append_LDADD = $(LDADD)
 am__tests_zfs_tests_cmd_file_check_SOURCES_DIST =  \
 	tests/zfs-tests/cmd/file/file_check.c
-am_tests_zfs_tests_cmd_file_check_OBJECTS = tests/zfs-tests/cmd/file/file_check.$(OBJEXT)
+#am_tests_zfs_tests_cmd_file_check_OBJECTS = tests/zfs-tests/cmd/file/file_check.$(OBJEXT)
 tests_zfs_tests_cmd_file_check_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_file_check_OBJECTS)
 tests_zfs_tests_cmd_file_check_LDADD = $(LDADD)
 am__tests_zfs_tests_cmd_file_fadvise_SOURCES_DIST =  \
 	tests/zfs-tests/cmd/file/file_fadvise.c
-am_tests_zfs_tests_cmd_file_fadvise_OBJECTS = tests/zfs-tests/cmd/file/file_fadvise.$(OBJEXT)
+#am_tests_zfs_tests_cmd_file_fadvise_OBJECTS = tests/zfs-tests/cmd/file/file_fadvise.$(OBJEXT)
 tests_zfs_tests_cmd_file_fadvise_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_file_fadvise_OBJECTS)
 tests_zfs_tests_cmd_file_fadvise_LDADD = $(LDADD)
 am__tests_zfs_tests_cmd_file_trunc_SOURCES_DIST =  \
 	tests/zfs-tests/cmd/file/file_trunc.c
-am_tests_zfs_tests_cmd_file_trunc_OBJECTS = tests/zfs-tests/cmd/file/file_trunc.$(OBJEXT)
+#am_tests_zfs_tests_cmd_file_trunc_OBJECTS = tests/zfs-tests/cmd/file/file_trunc.$(OBJEXT)
 tests_zfs_tests_cmd_file_trunc_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_file_trunc_OBJECTS)
 tests_zfs_tests_cmd_file_trunc_LDADD = $(LDADD)
 am__tests_zfs_tests_cmd_file_write_SOURCES_DIST =  \
 	tests/zfs-tests/cmd/file/file_write.c
-am_tests_zfs_tests_cmd_file_write_OBJECTS = tests/zfs-tests/cmd/file/file_write.$(OBJEXT)
+#am_tests_zfs_tests_cmd_file_write_OBJECTS = tests/zfs-tests/cmd/file/file_write.$(OBJEXT)
 tests_zfs_tests_cmd_file_write_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_file_write_OBJECTS)
 tests_zfs_tests_cmd_file_write_LDADD = $(LDADD)
@@ -1512,19 +1512,19 @@ tests_zfs_tests_cmd_idmap_util_SOURCES =  \
 	tests/zfs-tests/cmd/idmap_util.c
 tests_zfs_tests_cmd_idmap_util_OBJECTS =  \
 	tests/zfs-tests/cmd/idmap_util.$(OBJEXT)
-tests_zfs_tests_cmd_idmap_util_DEPENDENCIES =  \
-	libspl.la
+#tests_zfs_tests_cmd_idmap_util_DEPENDENCIES =  \
+#	libspl.la
 am__tests_zfs_tests_cmd_largest_file_SOURCES_DIST =  \
 	tests/zfs-tests/cmd/file/largest_file.c
-am_tests_zfs_tests_cmd_largest_file_OBJECTS = tests/zfs-tests/cmd/file/largest_file.$(OBJEXT)
+#am_tests_zfs_tests_cmd_largest_file_OBJECTS = tests/zfs-tests/cmd/file/largest_file.$(OBJEXT)
 tests_zfs_tests_cmd_largest_file_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_largest_file_OBJECTS)
 tests_zfs_tests_cmd_largest_file_LDADD = $(LDADD)
 tests_zfs_tests_cmd_libzfs_input_check_SOURCES =  \
 	tests/zfs-tests/cmd/libzfs_input_check.c
 tests_zfs_tests_cmd_libzfs_input_check_OBJECTS = tests/zfs-tests/cmd/libzfs_input_check-libzfs_input_check.$(OBJEXT)
-tests_zfs_tests_cmd_libzfs_input_check_DEPENDENCIES =  \
-	libzfs_core.la libnvpair.la
+#tests_zfs_tests_cmd_libzfs_input_check_DEPENDENCIES =  \
+#	libzfs_core.la libnvpair.la
 tests_zfs_tests_cmd_mkbusy_SOURCES = tests/zfs-tests/cmd/mkbusy.c
 tests_zfs_tests_cmd_mkbusy_OBJECTS =  \
 	tests/zfs-tests/cmd/mkbusy.$(OBJEXT)
@@ -1532,8 +1532,8 @@ tests_zfs_tests_cmd_mkbusy_LDADD = $(LDADD)
 tests_zfs_tests_cmd_mkfile_SOURCES = tests/zfs-tests/cmd/mkfile.c
 tests_zfs_tests_cmd_mkfile_OBJECTS =  \
 	tests/zfs-tests/cmd/mkfile.$(OBJEXT)
-tests_zfs_tests_cmd_mkfile_DEPENDENCIES =  \
-	$(am__DEPENDENCIES_1)
+#tests_zfs_tests_cmd_mkfile_DEPENDENCIES =  \
+#	$(am__DEPENDENCIES_1)
 tests_zfs_tests_cmd_mkfiles_SOURCES = tests/zfs-tests/cmd/mkfiles.c
 tests_zfs_tests_cmd_mkfiles_OBJECTS =  \
 	tests/zfs-tests/cmd/mkfiles.$(OBJEXT)
@@ -1551,7 +1551,7 @@ tests_zfs_tests_cmd_mmap_libaio_SOURCES =  \
 	tests/zfs-tests/cmd/mmap_libaio.c
 tests_zfs_tests_cmd_mmap_libaio_OBJECTS =  \
 	tests/zfs-tests/cmd/mmap_libaio-mmap_libaio.$(OBJEXT)
-#tests_zfs_tests_cmd_mmap_libaio_DEPENDENCIES = $(am__DEPENDENCIES_1)
+##tests_zfs_tests_cmd_mmap_libaio_DEPENDENCIES = $(am__DEPENDENCIES_1)
 tests_zfs_tests_cmd_mmap_libaio_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(tests_zfs_tests_cmd_mmap_libaio_CFLAGS) $(CFLAGS) \
@@ -1575,22 +1575,22 @@ tests_zfs_tests_cmd_nvlist_to_lua_SOURCES =  \
 	tests/zfs-tests/cmd/nvlist_to_lua.c
 tests_zfs_tests_cmd_nvlist_to_lua_OBJECTS =  \
 	tests/zfs-tests/cmd/nvlist_to_lua.$(OBJEXT)
-tests_zfs_tests_cmd_nvlist_to_lua_DEPENDENCIES =  \
-	libzfs_core.la libnvpair.la
+#tests_zfs_tests_cmd_nvlist_to_lua_DEPENDENCIES =  \
+#	libzfs_core.la libnvpair.la
 am__tests_zfs_tests_cmd_randfree_file_SOURCES_DIST =  \
 	tests/zfs-tests/cmd/file/randfree_file.c
-am_tests_zfs_tests_cmd_randfree_file_OBJECTS = tests/zfs-tests/cmd/file/randfree_file.$(OBJEXT)
+#am_tests_zfs_tests_cmd_randfree_file_OBJECTS = tests/zfs-tests/cmd/file/randfree_file.$(OBJEXT)
 tests_zfs_tests_cmd_randfree_file_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_randfree_file_OBJECTS)
 tests_zfs_tests_cmd_randfree_file_LDADD = $(LDADD)
 am__tests_zfs_tests_cmd_randwritecomp_SOURCES_DIST =  \
 	tests/zfs-tests/cmd/file/randwritecomp.c
-am_tests_zfs_tests_cmd_randwritecomp_OBJECTS = tests/zfs-tests/cmd/file/randwritecomp.$(OBJEXT)
+#am_tests_zfs_tests_cmd_randwritecomp_OBJECTS = tests/zfs-tests/cmd/file/randwritecomp.$(OBJEXT)
 tests_zfs_tests_cmd_randwritecomp_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_randwritecomp_OBJECTS)
 tests_zfs_tests_cmd_randwritecomp_LDADD = $(LDADD)
 am__tests_zfs_tests_cmd_read_dos_attributes_SOURCES_DIST = tests/zfs-tests/cmd/linux_dos_attributes/read_dos_attributes.c
-am_tests_zfs_tests_cmd_read_dos_attributes_OBJECTS = tests/zfs-tests/cmd/linux_dos_attributes/read_dos_attributes.$(OBJEXT)
+#am_tests_zfs_tests_cmd_read_dos_attributes_OBJECTS = tests/zfs-tests/cmd/linux_dos_attributes/read_dos_attributes.$(OBJEXT)
 tests_zfs_tests_cmd_read_dos_attributes_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_read_dos_attributes_OBJECTS)
 tests_zfs_tests_cmd_read_dos_attributes_LDADD = $(LDADD)
@@ -1617,22 +1617,22 @@ tests_zfs_tests_cmd_send_doall_SOURCES =  \
 	tests/zfs-tests/cmd/send_doall.c
 tests_zfs_tests_cmd_send_doall_OBJECTS =  \
 	tests/zfs-tests/cmd/send_doall.$(OBJEXT)
-tests_zfs_tests_cmd_send_doall_DEPENDENCIES =  \
-	libzfs_core.la libzfs.la libnvpair.la
+#tests_zfs_tests_cmd_send_doall_DEPENDENCIES =  \
+#	libzfs_core.la libzfs.la libnvpair.la
 am__tests_zfs_tests_cmd_sha2_test_SOURCES_DIST =  \
 	tests/zfs-tests/cmd/checksum/sha2_test.c
-am_tests_zfs_tests_cmd_sha2_test_OBJECTS = tests/zfs-tests/cmd/checksum/sha2_test.$(OBJEXT)
+#am_tests_zfs_tests_cmd_sha2_test_OBJECTS = tests/zfs-tests/cmd/checksum/sha2_test.$(OBJEXT)
 tests_zfs_tests_cmd_sha2_test_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_sha2_test_OBJECTS)
-tests_zfs_tests_cmd_sha2_test_DEPENDENCIES =  \
-	$(tests_zfs_tests_cmd_skein_test_LDADD)
+#tests_zfs_tests_cmd_sha2_test_DEPENDENCIES =  \
+#	$(tests_zfs_tests_cmd_skein_test_LDADD)
 am__tests_zfs_tests_cmd_skein_test_SOURCES_DIST =  \
 	tests/zfs-tests/cmd/checksum/skein_test.c
-am_tests_zfs_tests_cmd_skein_test_OBJECTS = tests/zfs-tests/cmd/checksum/skein_test.$(OBJEXT)
+#am_tests_zfs_tests_cmd_skein_test_OBJECTS = tests/zfs-tests/cmd/checksum/skein_test.$(OBJEXT)
 tests_zfs_tests_cmd_skein_test_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_skein_test_OBJECTS)
-tests_zfs_tests_cmd_skein_test_DEPENDENCIES =  \
-	libicp.la libspl.la libspl_assert.la
+#tests_zfs_tests_cmd_skein_test_DEPENDENCIES =  \
+#	libicp.la libspl.la libspl_assert.la
 tests_zfs_tests_cmd_stride_dd_SOURCES =  \
 	tests/zfs-tests/cmd/stride_dd.c
 tests_zfs_tests_cmd_stride_dd_OBJECTS =  \
@@ -1659,7 +1659,7 @@ tests_zfs_tests_cmd_user_ns_exec_OBJECTS =  \
 	tests/zfs-tests/cmd/user_ns_exec.$(OBJEXT)
 tests_zfs_tests_cmd_user_ns_exec_LDADD = $(LDADD)
 am__tests_zfs_tests_cmd_write_dos_attributes_SOURCES_DIST = tests/zfs-tests/cmd/linux_dos_attributes/write_dos_attributes.c
-am_tests_zfs_tests_cmd_write_dos_attributes_OBJECTS = tests/zfs-tests/cmd/linux_dos_attributes/write_dos_attributes.$(OBJEXT)
+#am_tests_zfs_tests_cmd_write_dos_attributes_OBJECTS = tests/zfs-tests/cmd/linux_dos_attributes/write_dos_attributes.$(OBJEXT)
 tests_zfs_tests_cmd_write_dos_attributes_OBJECTS =  \
 	$(am_tests_zfs_tests_cmd_write_dos_attributes_OBJECTS)
 tests_zfs_tests_cmd_write_dos_attributes_LDADD = $(LDADD)
@@ -1682,14 +1682,14 @@ tests_zfs_tests_tests_functional_hkdf_hkdf_test_SOURCES =  \
 	tests/zfs-tests/tests/functional/hkdf/hkdf_test.c
 tests_zfs_tests_tests_functional_hkdf_hkdf_test_OBJECTS =  \
 	tests/zfs-tests/tests/functional/hkdf/hkdf_test.$(OBJEXT)
-tests_zfs_tests_tests_functional_hkdf_hkdf_test_DEPENDENCIES =  \
-	libzpool.la
+#tests_zfs_tests_tests_functional_hkdf_hkdf_test_DEPENDENCIES =  \
+#	libzpool.la
 tests_zfs_tests_tests_functional_libzfs_many_fds_SOURCES =  \
 	tests/zfs-tests/tests/functional/libzfs/many_fds.c
 tests_zfs_tests_tests_functional_libzfs_many_fds_OBJECTS =  \
 	tests/zfs-tests/tests/functional/libzfs/many_fds.$(OBJEXT)
-tests_zfs_tests_tests_functional_libzfs_many_fds_DEPENDENCIES =  \
-	libzfs.la
+#tests_zfs_tests_tests_functional_libzfs_many_fds_DEPENDENCIES =  \
+#	libzfs.la
 tests_zfs_tests_tests_functional_tmpfile_tmpfile_001_pos_SOURCES =  \
 	tests/zfs-tests/tests/functional/tmpfile/tmpfile_001_pos.c
 tests_zfs_tests_tests_functional_tmpfile_tmpfile_001_pos_OBJECTS = tests/zfs-tests/tests/functional/tmpfile/tmpfile_001_pos.$(OBJEXT)
@@ -1719,11 +1719,11 @@ udev_zvol_id_SOURCES = udev/zvol_id.c
 udev_zvol_id_OBJECTS = udev/zvol_id.$(OBJEXT)
 udev_zvol_id_LDADD = $(LDADD)
 am__zdb_SOURCES_DIST = cmd/zdb/zdb.c cmd/zdb/zdb.h cmd/zdb/zdb_il.c
-am_zdb_OBJECTS = cmd/zdb/zdb-zdb.$(OBJEXT) \
-	cmd/zdb/zdb-zdb_il.$(OBJEXT)
+#am_zdb_OBJECTS = cmd/zdb/zdb-zdb.$(OBJEXT) \
+#	cmd/zdb/zdb-zdb_il.$(OBJEXT)
 zdb_OBJECTS = $(am_zdb_OBJECTS)
-zdb_DEPENDENCIES = libzpool.la libzfs_core.la \
-	libnvpair.la $(am__DEPENDENCIES_1)
+#zdb_DEPENDENCIES = libzpool.la libzfs_core.la \
+#	libnvpair.la $(am__DEPENDENCIES_1)
 zdb_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(zdb_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
@@ -1738,108 +1738,108 @@ am__zed_SOURCES_DIST = cmd/zed/zed.c cmd/zed/zed.h cmd/zed/zed_conf.c \
 	cmd/zed/agents/zfs_agents.c cmd/zed/agents/zfs_agents.h \
 	cmd/zed/agents/zfs_diagnosis.c cmd/zed/agents/zfs_mod.c \
 	cmd/zed/agents/zfs_retire.c
-am_zed_OBJECTS =  \
-	cmd/zed/zed-zed.$(OBJEXT) \
-	cmd/zed/zed-zed_conf.$(OBJEXT) \
-	cmd/zed/zed-zed_disk_event.$(OBJEXT) \
-	cmd/zed/zed-zed_event.$(OBJEXT) \
-	cmd/zed/zed-zed_exec.$(OBJEXT) \
-	cmd/zed/zed-zed_file.$(OBJEXT) \
-	cmd/zed/zed-zed_log.$(OBJEXT) \
-	cmd/zed/zed-zed_strings.$(OBJEXT) \
-	cmd/zed/agents/zed-fmd_api.$(OBJEXT) \
-	cmd/zed/agents/zed-fmd_serd.$(OBJEXT) \
-	cmd/zed/agents/zed-zfs_agents.$(OBJEXT) \
-	cmd/zed/agents/zed-zfs_diagnosis.$(OBJEXT) \
-	cmd/zed/agents/zed-zfs_mod.$(OBJEXT) \
-	cmd/zed/agents/zed-zfs_retire.$(OBJEXT)
+#am_zed_OBJECTS =  \
+#	cmd/zed/zed-zed.$(OBJEXT) \
+#	cmd/zed/zed-zed_conf.$(OBJEXT) \
+#	cmd/zed/zed-zed_disk_event.$(OBJEXT) \
+#	cmd/zed/zed-zed_event.$(OBJEXT) \
+#	cmd/zed/zed-zed_exec.$(OBJEXT) \
+#	cmd/zed/zed-zed_file.$(OBJEXT) \
+#	cmd/zed/zed-zed_log.$(OBJEXT) \
+#	cmd/zed/zed-zed_strings.$(OBJEXT) \
+#	cmd/zed/agents/zed-fmd_api.$(OBJEXT) \
+#	cmd/zed/agents/zed-fmd_serd.$(OBJEXT) \
+#	cmd/zed/agents/zed-zfs_agents.$(OBJEXT) \
+#	cmd/zed/agents/zed-zfs_diagnosis.$(OBJEXT) \
+#	cmd/zed/agents/zed-zfs_mod.$(OBJEXT) \
+#	cmd/zed/agents/zed-zfs_retire.$(OBJEXT)
 zed_OBJECTS = $(am_zed_OBJECTS)
-zed_DEPENDENCIES = libzfs.la \
-	libzfs_core.la \
-	libnvpair.la libuutil.la \
-	$(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+#zed_DEPENDENCIES = libzfs.la \
+#	libzfs_core.la \
+#	libnvpair.la libuutil.la \
+#	$(am__DEPENDENCIES_1) \
+#	$(am__DEPENDENCIES_1) \
+#	$(am__DEPENDENCIES_1)
 zed_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(zed_CFLAGS) $(CFLAGS) \
 	$(zed_LDFLAGS) $(LDFLAGS) -o $@
 am__zfs_SOURCES_DIST = cmd/zfs/zfs_iter.c cmd/zfs/zfs_iter.h \
 	cmd/zfs/zfs_main.c cmd/zfs/zfs_project.c \
 	cmd/zfs/zfs_projectutil.h cmd/zfs/zfs_util.h
-am_zfs_OBJECTS = cmd/zfs/zfs_iter.$(OBJEXT) \
-	cmd/zfs/zfs_main.$(OBJEXT) \
-	cmd/zfs/zfs_project.$(OBJEXT)
+#am_zfs_OBJECTS = cmd/zfs/zfs_iter.$(OBJEXT) \
+#	cmd/zfs/zfs_main.$(OBJEXT) \
+#	cmd/zfs/zfs_project.$(OBJEXT)
 zfs_OBJECTS = $(am_zfs_OBJECTS)
-zfs_DEPENDENCIES = libzfs.la libzfs_core.la \
-	libnvpair.la libuutil.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+#zfs_DEPENDENCIES = libzfs.la libzfs_core.la \
+#	libnvpair.la libuutil.la \
+#	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am__zfs_ids_to_path_SOURCES_DIST = cmd/zfs_ids_to_path.c
-am_zfs_ids_to_path_OBJECTS =  \
-	cmd/zfs_ids_to_path.$(OBJEXT)
+#am_zfs_ids_to_path_OBJECTS =  \
+#	cmd/zfs_ids_to_path.$(OBJEXT)
 zfs_ids_to_path_OBJECTS = $(am_zfs_ids_to_path_OBJECTS)
-zfs_ids_to_path_DEPENDENCIES = libzfs.la
+#zfs_ids_to_path_DEPENDENCIES = libzfs.la
 am__zgenhostid_SOURCES_DIST = cmd/zgenhostid.c
-am_zgenhostid_OBJECTS =  \
-	cmd/zgenhostid.$(OBJEXT)
+#am_zgenhostid_OBJECTS =  \
+#	cmd/zgenhostid.$(OBJEXT)
 zgenhostid_OBJECTS = $(am_zgenhostid_OBJECTS)
 zgenhostid_LDADD = $(LDADD)
 am__zhack_SOURCES_DIST = cmd/zhack.c
-am_zhack_OBJECTS = cmd/zhack-zhack.$(OBJEXT)
+#am_zhack_OBJECTS = cmd/zhack-zhack.$(OBJEXT)
 zhack_OBJECTS = $(am_zhack_OBJECTS)
-zhack_DEPENDENCIES = libzpool.la libzfs_core.la \
-	libnvpair.la
+#zhack_DEPENDENCIES = libzpool.la libzfs_core.la \
+#	libnvpair.la
 am__zinject_SOURCES_DIST = cmd/zinject/translate.c \
 	cmd/zinject/zinject.c cmd/zinject/zinject.h
-am_zinject_OBJECTS =  \
-	cmd/zinject/translate.$(OBJEXT) \
-	cmd/zinject/zinject.$(OBJEXT)
+#am_zinject_OBJECTS =  \
+#	cmd/zinject/translate.$(OBJEXT) \
+#	cmd/zinject/zinject.$(OBJEXT)
 zinject_OBJECTS = $(am_zinject_OBJECTS)
-zinject_DEPENDENCIES = libzfs.la libzfs_core.la \
-	libnvpair.la
+#zinject_DEPENDENCIES = libzfs.la libzfs_core.la \
+#	libnvpair.la
 am__zpool_SOURCES_DIST = cmd/zpool/zpool_iter.c cmd/zpool/zpool_main.c \
 	cmd/zpool/zpool_util.c cmd/zpool/zpool_util.h \
 	cmd/zpool/zpool_vdev.c cmd/zpool/os/freebsd/zpool_vdev_os.c \
 	cmd/zpool/os/linux/zpool_vdev_os.c
-#am__objects_15 = cmd/zpool/os/freebsd/zpool-zpool_vdev_os.$(OBJEXT)
-am__objects_16 = cmd/zpool/os/linux/zpool-zpool_vdev_os.$(OBJEXT)
-am_zpool_OBJECTS =  \
-	cmd/zpool/zpool-zpool_iter.$(OBJEXT) \
-	cmd/zpool/zpool-zpool_main.$(OBJEXT) \
-	cmd/zpool/zpool-zpool_util.$(OBJEXT) \
-	cmd/zpool/zpool-zpool_vdev.$(OBJEXT) \
-	$(am__objects_15) $(am__objects_16)
+##am__objects_15 = cmd/zpool/os/freebsd/zpool-zpool_vdev_os.$(OBJEXT)
+#am__objects_16 = cmd/zpool/os/linux/zpool-zpool_vdev_os.$(OBJEXT)
+#am_zpool_OBJECTS =  \
+#	cmd/zpool/zpool-zpool_iter.$(OBJEXT) \
+#	cmd/zpool/zpool-zpool_main.$(OBJEXT) \
+#	cmd/zpool/zpool-zpool_util.$(OBJEXT) \
+#	cmd/zpool/zpool-zpool_vdev.$(OBJEXT) \
+#	$(am__objects_15) $(am__objects_16)
 zpool_OBJECTS = $(am_zpool_OBJECTS)
-zpool_DEPENDENCIES = libzfs.la libzfs_core.la \
-	libnvpair.la libuutil.la libzutil.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+#zpool_DEPENDENCIES = libzfs.la libzfs_core.la \
+#	libnvpair.la libuutil.la libzutil.la \
+#	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+#	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 zpool_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(zpool_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 am__zpool_influxdb_SOURCES_DIST = cmd/zpool_influxdb/zpool_influxdb.c
-am_zpool_influxdb_OBJECTS =  \
-	cmd/zpool_influxdb/zpool_influxdb.$(OBJEXT)
+#am_zpool_influxdb_OBJECTS =  \
+#	cmd/zpool_influxdb/zpool_influxdb.$(OBJEXT)
 zpool_influxdb_OBJECTS = $(am_zpool_influxdb_OBJECTS)
-zpool_influxdb_DEPENDENCIES = libspl.la libnvpair.la \
-	libzfs.la
+#zpool_influxdb_DEPENDENCIES = libspl.la libnvpair.la \
+#	libzfs.la
 am__zstream_SOURCES_DIST = cmd/zstream/zstream.c cmd/zstream/zstream.h \
 	cmd/zstream/zstream_decompress.c cmd/zstream/zstream_dump.c \
 	cmd/zstream/zstream_recompress.c cmd/zstream/zstream_redup.c \
 	cmd/zstream/zstream_token.c
-am_zstream_OBJECTS = cmd/zstream/zstream.$(OBJEXT) \
-	cmd/zstream/zstream_decompress.$(OBJEXT) \
-	cmd/zstream/zstream_dump.$(OBJEXT) \
-	cmd/zstream/zstream_recompress.$(OBJEXT) \
-	cmd/zstream/zstream_redup.$(OBJEXT) \
-	cmd/zstream/zstream_token.$(OBJEXT)
+#am_zstream_OBJECTS = cmd/zstream/zstream.$(OBJEXT) \
+#	cmd/zstream/zstream_decompress.$(OBJEXT) \
+#	cmd/zstream/zstream_dump.$(OBJEXT) \
+#	cmd/zstream/zstream_recompress.$(OBJEXT) \
+#	cmd/zstream/zstream_redup.$(OBJEXT) \
+#	cmd/zstream/zstream_token.$(OBJEXT)
 zstream_OBJECTS = $(am_zstream_OBJECTS)
-zstream_DEPENDENCIES = libzfs.la libzfs_core.la \
-	libzpool.la libnvpair.la
+#zstream_DEPENDENCIES = libzfs.la libzfs_core.la \
+#	libzpool.la libnvpair.la
 am__ztest_SOURCES_DIST = cmd/ztest.c
-am_ztest_OBJECTS = cmd/ztest-ztest.$(OBJEXT)
+#am_ztest_OBJECTS = cmd/ztest-ztest.$(OBJEXT)
 ztest_OBJECTS = $(am_ztest_OBJECTS)
-ztest_DEPENDENCIES = libzpool.la libzfs_core.la \
-	libnvpair.la
+#ztest_DEPENDENCIES = libzpool.la libzfs_core.la \
+#	libnvpair.la
 ztest_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(ztest_CFLAGS) $(CFLAGS) \
 	$(ztest_LDFLAGS) $(LDFLAGS) -o $@
@@ -2956,7 +2956,7 @@ am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
 distcleancheck_listfiles = find . -type f -print
 ACLOCAL = ${SHELL} '/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/config/missing' aclocal-1.16
 AIO_H_CFLAGS = 
-AIO_H_LIBS =  -lrt
+AIO_H_LIBS = 
 AIO_H_PC = 
 ALIEN = alien
 ALIEN_MAJOR = 
@@ -2979,7 +2979,7 @@ CCAS = gcc
 CCASDEPMODE = depmode=gcc3
 CCASFLAGS = -g -O2
 CCDEPMODE = depmode=gcc3
-CFGOPTS = --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-static --disable-shared --with-config=user --with-tirpc
+CFGOPTS = --with-linux=/home/aimeat/anvilos/oss_sovereignty/linux-6.6.14 --with-linux-obj=/home/aimeat/anvilos/oss_sovereignty/linux-6.6.14 --with-config=kernel
 CFLAGS = -g -O2
 CHECKBASHISMS = 
 CODE_COVERAGE_CFLAGS = 
@@ -2989,7 +2989,7 @@ CODE_COVERAGE_ENABLED = no
 CODE_COVERAGE_LDFLAGS = 
 CODE_COVERAGE_LIBS = 
 CPPCHECK = @printf "skipping cppcheck because cppcheck is not installed\n"
-CPPFLAGS = -I/home/aimeat/anvilos/oss_sovereignty/staging/include -I/home/aimeat/anvilos/oss_sovereignty/staging/include/tirpc
+CPPFLAGS = 
 CPU_COUNT = 8
 CSCOPE = cscope
 CTAGS = ctags
@@ -3008,7 +3008,7 @@ DEFINE_PAM =
 DEFINE_PYTHON_PKG_VERSION = 
 DEFINE_PYTHON_VERSION = 
 DEFINE_PYZFS = 
-DEFINE_SYSTEMD = --with systemd --define "_unitdir $(systemdunitdir)" --define "_presetdir $(systemdpresetdir)" --define "_generatordir $(systemdgeneratordir)"
+DEFINE_SYSTEMD = 
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DLLTOOL = false
@@ -3058,19 +3058,19 @@ KERNEL_MAKE =
 KERNEL_NO_IPA_SRA = -fno-ipa-sra
 LCOV = 
 LD = /usr/bin/ld
-LDFLAGS = -L/home/aimeat/anvilos/oss_sovereignty/staging/lib
-LIBAIO_CFLAGS = -I/usr/local/include
-LIBAIO_LIBS = -L/usr/local/lib
+LDFLAGS = 
+LIBAIO_CFLAGS = 
+LIBAIO_LIBS = 
 LIBAIO_PC = 
 LIBATOMIC_LIBS = 
 LIBBLKID_CFLAGS = 
-LIBBLKID_LIBS =  -lblkid
+LIBBLKID_LIBS = 
 LIBBLKID_PC = 
 LIBCLOCK_GETTIME = 
 LIBCRYPTO_CFLAGS = 
-LIBCRYPTO_LIBS =  -lcrypto
+LIBCRYPTO_LIBS = 
 LIBCRYPTO_PC = 
-LIBFETCH_DYNAMIC = 0
+LIBFETCH_DYNAMIC = 
 LIBFETCH_LIBS = 
 LIBFETCH_SONAME = 
 LIBICONV = -liconv
@@ -3078,19 +3078,19 @@ LIBINTL =
 LIBOBJS = 
 LIBS = 
 LIBTIRPC_CFLAGS = 
-LIBTIRPC_LIBS =  -ltirpc
+LIBTIRPC_LIBS = 
 LIBTIRPC_PC = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBUDEV_CFLAGS = 
-LIBUDEV_LIBS =  -ludev
+LIBUDEV_LIBS = 
 LIBUDEV_PC = 
 LIBUUID_CFLAGS = 
-LIBUUID_LIBS =  -luuid
+LIBUUID_LIBS = 
 LIBUUID_PC = 
-LINUX = 
-LINUX_OBJ = 
-LINUX_SYMBOLS = 
-LINUX_VERSION = 
+LINUX = /home/aimeat/anvilos/oss_sovereignty/linux-6.6.14
+LINUX_OBJ = /home/aimeat/anvilos/oss_sovereignty/linux-6.6.14
+LINUX_SYMBOLS = Module.symvers
+LINUX_VERSION = 6.6.14
 LIPO = 
 LN_S = ln -s
 LTLIBICONV = -liconv
@@ -3127,8 +3127,8 @@ PARALLEL =
 PATH_SEPARATOR = :
 PKG_CONFIG = 
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = /home/aimeat/anvilos/oss_sovereignty/staging/lib/pkgconfig
-POSUB = po
+PKG_CONFIG_PATH = 
+POSUB = 
 PYTHON = python3
 PYTHON_CPPFLAGS = 
 PYTHON_EXEC_PREFIX = ${exec_prefix}
@@ -3153,8 +3153,8 @@ RPMBUILD_VERSION =
 RPM_DEFINE_COMMON = --define "$(DEBUG_ZFS) 1" --define "$(DEBUGINFO_ZFS) 1" --define "$(DEBUG_KMEM_ZFS) 1" --define "$(DEBUG_KMEM_TRACKING_ZFS) 1" --define "$(ASAN_ZFS) 1" --define "$(UBSAN_ZFS) 1"
 RPM_DEFINE_DKMS = 
 RPM_DEFINE_INITRAMFS = --define "_initramfs 1"
-RPM_DEFINE_KMOD = --define "_wrong_version_format_terminate_build 0"
-RPM_DEFINE_UTIL =  --define "_initconfdir $(initconfdir)" --define "_dracutdir $(dracutdir)" --define "_udevdir $(udevdir)" --define "_udevruledir $(udevruledir)" --define "_bashcompletiondir $(bashcompletiondir)" $(DEFINE_SYSTEMD) $(DEFINE_PYZFS) $(DEFINE_PAM) $(DEFINE_PYTHON_VERSION) $(DEFINE_PYTHON_PKG_VERSION) --define "_lib $(MULTIARCH_LIBDIR)"
+RPM_DEFINE_KMOD = --define "_wrong_version_format_terminate_build 0" --define "kernels $(LINUX_VERSION)" --define "ksrc $(LINUX)" --define "kobj $(LINUX_OBJ)" --define "kernel_cc KERNEL_CC=$(KERNEL_CC)" --define "kernel_ld KERNEL_LD=$(KERNEL_LD)" --define "kernel_llvm KERNEL_LLVM=$(KERNEL_LLVM)"
+RPM_DEFINE_UTIL =  --define "_initconfdir $(initconfdir)" --define "_bashcompletiondir $(bashcompletiondir)" $(DEFINE_SYSTEMD) $(DEFINE_PYZFS) $(DEFINE_PAM) $(DEFINE_PYTHON_VERSION) $(DEFINE_PYTHON_PKG_VERSION) --define "_lib $(MULTIARCH_LIBDIR)"
 RPM_SPEC_DIR = rpm/generic
 RPM_VERSION = 
 SED = /usr/bin/sed
@@ -3179,7 +3179,7 @@ WITH_INVARIANTS =
 XGETTEXT = :
 XGETTEXT_015 = :
 XGETTEXT_EXTRA_OPTIONS = 
-ZFS_CONFIG = user
+ZFS_CONFIG = kernel
 ZFS_META_ALIAS = zfs-2.2.2-1
 ZFS_META_AUTHOR = OpenZFS
 ZFS_META_DATA = 
@@ -3193,7 +3193,7 @@ ZFS_META_NAME = zfs
 ZFS_META_RELEASE = 1
 ZFS_META_VERSION = 2.2.2
 ZLIB_CFLAGS = 
-ZLIB_LIBS =  -lz
+ZLIB_LIBS = 
 ZLIB_PC = 
 abs_builddir = /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2
 abs_srcdir = /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2
@@ -3221,7 +3221,7 @@ builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
-dracutdir = /usr/lib/dracut
+dracutdir = 
 dvidir = ${docdir}
 exec_prefix = ${prefix}
 host = x86_64-pc-linux-gnu
@@ -3233,24 +3233,24 @@ htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
 initconfdir = /etc/default
-initdir = /etc/init.d
+initdir = ${prefix}/etc/init.d
 install_sh = ${SHELL} /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/config/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
-localstatedir = /var
+localstatedir = ${prefix}/var
 mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
-modulesloaddir = /usr/lib/modules-load.d
-mounthelperdir = /sbin
+modulesloaddir = 
+mounthelperdir = 
 oldincludedir = /usr/include
-pamconfigsdir = ${datadir}/pam-configs
-pammoduledir = ${exec_prefix}/lib/security
+pamconfigsdir = 
+pammoduledir = 
 pdfdir = ${docdir}
-pkgconfigdir = ${libdir}/pkgconfig
+pkgconfigdir = 
 pkgpyexecdir = ${pyexecdir}/zfs
 pkgpythondir = ${pythondir}/zfs
-prefix = /usr
+prefix = /usr/local
 program_transform_name = s,x,x,
 psdir = ${docdir}
 pyexecdir = ${PYTHON_EXEC_PREFIX}/local/lib/python3.12/dist-packages
@@ -3260,10 +3260,10 @@ runstatedir = ${localstatedir}/run
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 srcdir = .
-sysconfdir = /etc
-systemdgeneratordir = /usr/lib/systemd/system-generators
-systemdpresetdir = /usr/lib/systemd/system-preset
-systemdunitdir = /usr/lib/systemd/system
+sysconfdir = ${prefix}/etc
+systemdgeneratordir = 
+systemdpresetdir = 
+systemdunitdir = 
 target = x86_64-pc-linux-gnu
 target_alias = 
 target_cpu = x86_64
@@ -3272,9 +3272,9 @@ target_vendor = pc
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
-udevdir = /lib/udev
-udevruledir = /lib/udev/rules.d
-zfsexecdir = ${exec_prefix}/libexec/zfs
+udevdir = 
+udevruledir = 
+zfsexecdir = 
 CLEANFILES = $(SUBSTFILES) scripts/common.sh $(am__append_8) \
 	$(am__append_26) $(GITREV)
 
@@ -3442,1156 +3442,1156 @@ scripts_scripts = \
 	scripts/zimport.sh \
 	scripts/zloop.sh
 
-dist_scripts_SCRIPTS = $(scripts_scripts)
-dist_zfsexec_SCRIPTS = \
-	scripts/zfs_prepare_disk
+#dist_scripts_SCRIPTS = $(scripts_scripts)
+#dist_zfsexec_SCRIPTS = \
+#	scripts/zfs_prepare_disk
 
 ACLOCAL_AMFLAGS = -I config
 SUBDIRS = include $(am__append_84) $(am__append_93)
-bin_SCRIPTS = $(am__append_25)
-sbin_SCRIPTS = fsck.zfs
-dist_bin_SCRIPTS = $(am__append_20)
-zfs_ids_to_path_SOURCES = \
-	cmd/zfs_ids_to_path.c
+#bin_SCRIPTS = $(am__append_25)
+#sbin_SCRIPTS = fsck.zfs
+#dist_bin_SCRIPTS = $(am__append_20)
+#zfs_ids_to_path_SOURCES = \
+#	cmd/zfs_ids_to_path.c
 
-zfs_ids_to_path_LDADD = \
-	libzfs.la
+#zfs_ids_to_path_LDADD = \
+#	libzfs.la
 
-zhack_CPPFLAGS = $(AM_CPPFLAGS) $(FORCEDEBUG_CPPFLAGS)
-zhack_SOURCES = \
-	cmd/zhack.c
+#zhack_CPPFLAGS = $(AM_CPPFLAGS) $(FORCEDEBUG_CPPFLAGS)
+#zhack_SOURCES = \
+#	cmd/zhack.c
 
-zhack_LDADD = \
-	libzpool.la \
-	libzfs_core.la \
-	libnvpair.la
+#zhack_LDADD = \
+#	libzpool.la \
+#	libzfs_core.la \
+#	libnvpair.la
 
 # Get rid of compiler warning for unchecked truncating snprintfs on gcc 7.1.1
-ztest_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) \
-	$(NO_FORMAT_TRUNCATION)
-ztest_CPPFLAGS = $(AM_CPPFLAGS) $(FORCEDEBUG_CPPFLAGS)
-ztest_SOURCES = \
-	cmd/ztest.c
+#ztest_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) \
+#	$(NO_FORMAT_TRUNCATION)
+#ztest_CPPFLAGS = $(AM_CPPFLAGS) $(FORCEDEBUG_CPPFLAGS)
+#ztest_SOURCES = \
+#	cmd/ztest.c
 
-ztest_LDADD = libzpool.la libzfs_core.la \
-	libnvpair.la -lm
-ztest_LDFLAGS = -pthread
-raidz_test_CFLAGS = $(AM_CFLAGS)   $(KERNEL_CFLAGS)
-raidz_test_CPPFLAGS = $(AM_CPPFLAGS) $(FORCEDEBUG_CPPFLAGS)
-raidz_test_SOURCES = \
-	cmd/raidz_test/raidz_bench.c \
-	cmd/raidz_test/raidz_test.c \
-	cmd/raidz_test/raidz_test.h
+#ztest_LDADD = libzpool.la libzfs_core.la \
+#	libnvpair.la -lm
+#ztest_LDFLAGS = -pthread
+#raidz_test_CFLAGS = $(AM_CFLAGS)   $(KERNEL_CFLAGS)
+#raidz_test_CPPFLAGS = $(AM_CPPFLAGS) $(FORCEDEBUG_CPPFLAGS)
+#raidz_test_SOURCES = \
+#	cmd/raidz_test/raidz_bench.c \
+#	cmd/raidz_test/raidz_test.c \
+#	cmd/raidz_test/raidz_test.h
 
-raidz_test_LDADD = libzpool.la libzfs_core.la -lm
-zdb_CPPFLAGS = $(AM_CPPFLAGS) $(FORCEDEBUG_CPPFLAGS)
-zdb_CFLAGS = $(AM_CFLAGS) $(LIBCRYPTO_CFLAGS)
-zdb_SOURCES = \
-	cmd/zdb/zdb.c \
-	cmd/zdb/zdb.h \
-	cmd/zdb/zdb_il.c
+#raidz_test_LDADD = libzpool.la libzfs_core.la -lm
+#zdb_CPPFLAGS = $(AM_CPPFLAGS) $(FORCEDEBUG_CPPFLAGS)
+#zdb_CFLAGS = $(AM_CFLAGS) $(LIBCRYPTO_CFLAGS)
+#zdb_SOURCES = \
+#	cmd/zdb/zdb.c \
+#	cmd/zdb/zdb.h \
+#	cmd/zdb/zdb_il.c
 
-zdb_LDADD = libzpool.la libzfs_core.la libnvpair.la \
-	$(LIBCRYPTO_LIBS)
-zfs_SOURCES = \
-	cmd/zfs/zfs_iter.c \
-	cmd/zfs/zfs_iter.h \
-	cmd/zfs/zfs_main.c \
-	cmd/zfs/zfs_project.c \
-	cmd/zfs/zfs_projectutil.h \
-	cmd/zfs/zfs_util.h
+#zdb_LDADD = libzpool.la libzfs_core.la libnvpair.la \
+#	$(LIBCRYPTO_LIBS)
+#zfs_SOURCES = \
+#	cmd/zfs/zfs_iter.c \
+#	cmd/zfs/zfs_iter.h \
+#	cmd/zfs/zfs_main.c \
+#	cmd/zfs/zfs_project.c \
+#	cmd/zfs/zfs_projectutil.h \
+#	cmd/zfs/zfs_util.h
 
-zfs_LDADD = libzfs.la libzfs_core.la libnvpair.la \
-	libuutil.la $(LTLIBINTL) $(am__append_11)
-zinject_SOURCES = \
-	cmd/zinject/translate.c \
-	cmd/zinject/zinject.c \
-	cmd/zinject/zinject.h
+#zfs_LDADD = libzfs.la libzfs_core.la libnvpair.la \
+#	libuutil.la $(LTLIBINTL) $(am__append_11)
+#zinject_SOURCES = \
+#	cmd/zinject/translate.c \
+#	cmd/zinject/zinject.c \
+#	cmd/zinject/zinject.h
 
-zinject_LDADD = \
-	libzfs.la \
-	libzfs_core.la \
-	libnvpair.la
+#zinject_LDADD = \
+#	libzfs.la \
+#	libzfs_core.la \
+#	libnvpair.la
 
-zpool_CFLAGS = $(AM_CFLAGS) $(LIBBLKID_CFLAGS) \
-	$(LIBUUID_CFLAGS)
-zpool_CPPFLAGS = $(AM_CPPFLAGS) \
-	-I$(srcdir)/cmd/zpool
-zpool_SOURCES = cmd/zpool/zpool_iter.c \
-	cmd/zpool/zpool_main.c \
-	cmd/zpool/zpool_util.c \
-	cmd/zpool/zpool_util.h \
-	cmd/zpool/zpool_vdev.c $(am__append_12) \
-	$(am__append_13)
-zpool_LDADD = libzfs.la libzfs_core.la libnvpair.la \
-	libuutil.la libzutil.la $(LTLIBINTL) \
-	$(am__append_14) -lm $(LIBBLKID_LIBS) \
-	$(LIBUUID_LIBS)
-zpoolexecdir = $(zfsexecdir)/zpool.d
-dist_zpoolexec_SCRIPTS = \
-	cmd/zpool/zpool.d/ata_err \
-	cmd/zpool/zpool.d/cmd_to \
-	cmd/zpool/zpool.d/defect \
-	cmd/zpool/zpool.d/dm-deps \
-	cmd/zpool/zpool.d/enc \
-	cmd/zpool/zpool.d/encdev \
-	cmd/zpool/zpool.d/fault_led \
-	cmd/zpool/zpool.d/health \
-	cmd/zpool/zpool.d/hours_on \
-	cmd/zpool/zpool.d/iostat \
-	cmd/zpool/zpool.d/iostat-10s \
-	cmd/zpool/zpool.d/iostat-1s \
-	cmd/zpool/zpool.d/label \
-	cmd/zpool/zpool.d/locate_led \
-	cmd/zpool/zpool.d/lsblk \
-	cmd/zpool/zpool.d/media \
-	cmd/zpool/zpool.d/model \
-	cmd/zpool/zpool.d/nonmed \
-	cmd/zpool/zpool.d/nvme_err \
-	cmd/zpool/zpool.d/off_ucor \
-	cmd/zpool/zpool.d/pend_sec \
-	cmd/zpool/zpool.d/pwr_cyc \
-	cmd/zpool/zpool.d/r_proc \
-	cmd/zpool/zpool.d/r_ucor \
-	cmd/zpool/zpool.d/realloc \
-	cmd/zpool/zpool.d/rep_ucor \
-	cmd/zpool/zpool.d/serial \
-	cmd/zpool/zpool.d/ses \
-	cmd/zpool/zpool.d/size \
-	cmd/zpool/zpool.d/slot \
-	cmd/zpool/zpool.d/smart \
-	cmd/zpool/zpool.d/smart_test \
-	cmd/zpool/zpool.d/smartx \
-	cmd/zpool/zpool.d/temp \
-	cmd/zpool/zpool.d/test_ended \
-	cmd/zpool/zpool.d/test_progress \
-	cmd/zpool/zpool.d/test_status \
-	cmd/zpool/zpool.d/test_type \
-	cmd/zpool/zpool.d/upath \
-	cmd/zpool/zpool.d/vendor \
-	cmd/zpool/zpool.d/w_proc \
-	cmd/zpool/zpool.d/w_ucor
+#zpool_CFLAGS = $(AM_CFLAGS) $(LIBBLKID_CFLAGS) \
+#	$(LIBUUID_CFLAGS)
+#zpool_CPPFLAGS = $(AM_CPPFLAGS) \
+#	-I$(srcdir)/cmd/zpool
+#zpool_SOURCES = cmd/zpool/zpool_iter.c \
+#	cmd/zpool/zpool_main.c \
+#	cmd/zpool/zpool_util.c \
+#	cmd/zpool/zpool_util.h \
+#	cmd/zpool/zpool_vdev.c $(am__append_12) \
+#	$(am__append_13)
+#zpool_LDADD = libzfs.la libzfs_core.la libnvpair.la \
+#	libuutil.la libzutil.la $(LTLIBINTL) \
+#	$(am__append_14) -lm $(LIBBLKID_LIBS) \
+#	$(LIBUUID_LIBS)
+#zpoolexecdir = $(zfsexecdir)/zpool.d
+#dist_zpoolexec_SCRIPTS = \
+#	cmd/zpool/zpool.d/ata_err \
+#	cmd/zpool/zpool.d/cmd_to \
+#	cmd/zpool/zpool.d/defect \
+#	cmd/zpool/zpool.d/dm-deps \
+#	cmd/zpool/zpool.d/enc \
+#	cmd/zpool/zpool.d/encdev \
+#	cmd/zpool/zpool.d/fault_led \
+#	cmd/zpool/zpool.d/health \
+#	cmd/zpool/zpool.d/hours_on \
+#	cmd/zpool/zpool.d/iostat \
+#	cmd/zpool/zpool.d/iostat-10s \
+#	cmd/zpool/zpool.d/iostat-1s \
+#	cmd/zpool/zpool.d/label \
+#	cmd/zpool/zpool.d/locate_led \
+#	cmd/zpool/zpool.d/lsblk \
+#	cmd/zpool/zpool.d/media \
+#	cmd/zpool/zpool.d/model \
+#	cmd/zpool/zpool.d/nonmed \
+#	cmd/zpool/zpool.d/nvme_err \
+#	cmd/zpool/zpool.d/off_ucor \
+#	cmd/zpool/zpool.d/pend_sec \
+#	cmd/zpool/zpool.d/pwr_cyc \
+#	cmd/zpool/zpool.d/r_proc \
+#	cmd/zpool/zpool.d/r_ucor \
+#	cmd/zpool/zpool.d/realloc \
+#	cmd/zpool/zpool.d/rep_ucor \
+#	cmd/zpool/zpool.d/serial \
+#	cmd/zpool/zpool.d/ses \
+#	cmd/zpool/zpool.d/size \
+#	cmd/zpool/zpool.d/slot \
+#	cmd/zpool/zpool.d/smart \
+#	cmd/zpool/zpool.d/smart_test \
+#	cmd/zpool/zpool.d/smartx \
+#	cmd/zpool/zpool.d/temp \
+#	cmd/zpool/zpool.d/test_ended \
+#	cmd/zpool/zpool.d/test_progress \
+#	cmd/zpool/zpool.d/test_status \
+#	cmd/zpool/zpool.d/test_type \
+#	cmd/zpool/zpool.d/upath \
+#	cmd/zpool/zpool.d/vendor \
+#	cmd/zpool/zpool.d/w_proc \
+#	cmd/zpool/zpool.d/w_ucor
 
-zpoolconfdefaults = \
-	dm-deps \
-	enc \
-	encdev \
-	fault_led \
-	iostat \
-	iostat-1s \
-	iostat-10s \
-	label \
-	locate_led \
-	lsblk \
-	media \
-	model \
-	serial \
-	ses \
-	size \
-	slot \
-	smart \
-	smartx \
-	temp \
-	health \
-	r_proc \
-	w_proc \
-	r_ucor \
-	w_ucor \
-	nonmed \
-	defect \
-	hours_on \
-	realloc \
-	rep_ucor \
-	cmd_to \
-	pend_sec \
-	off_ucor \
-	ata_err \
-	nvme_err \
-	pwr_cyc \
-	upath \
-	vendor \
-	smart_test \
-	test_type \
-	test_status \
-	test_progress \
-	test_ended
+#zpoolconfdefaults = \
+#	dm-deps \
+#	enc \
+#	encdev \
+#	fault_led \
+#	iostat \
+#	iostat-1s \
+#	iostat-10s \
+#	label \
+#	locate_led \
+#	lsblk \
+#	media \
+#	model \
+#	serial \
+#	ses \
+#	size \
+#	slot \
+#	smart \
+#	smartx \
+#	temp \
+#	health \
+#	r_proc \
+#	w_proc \
+#	r_ucor \
+#	w_ucor \
+#	nonmed \
+#	defect \
+#	hours_on \
+#	realloc \
+#	rep_ucor \
+#	cmd_to \
+#	pend_sec \
+#	off_ucor \
+#	ata_err \
+#	nvme_err \
+#	pwr_cyc \
+#	upath \
+#	vendor \
+#	smart_test \
+#	test_type \
+#	test_status \
+#	test_progress \
+#	test_ended
 
-zpoolcompatdir = $(pkgdatadir)/compatibility.d
-dist_zpoolcompat_DATA = \
-	cmd/zpool/compatibility.d/compat-2018 \
-	cmd/zpool/compatibility.d/compat-2019 \
-	cmd/zpool/compatibility.d/compat-2020 \
-	cmd/zpool/compatibility.d/compat-2021 \
-	cmd/zpool/compatibility.d/freebsd-11.0 \
-	cmd/zpool/compatibility.d/freebsd-11.2 \
-	cmd/zpool/compatibility.d/freebsd-11.3 \
-	cmd/zpool/compatibility.d/freenas-9.10.2 \
-	cmd/zpool/compatibility.d/grub2 \
-	cmd/zpool/compatibility.d/openzfs-2.0-freebsd \
-	cmd/zpool/compatibility.d/openzfs-2.0-linux \
-	cmd/zpool/compatibility.d/openzfs-2.1-freebsd \
-	cmd/zpool/compatibility.d/openzfs-2.1-linux \
-	cmd/zpool/compatibility.d/openzfs-2.2 \
-	cmd/zpool/compatibility.d/openzfsonosx-1.7.0 \
-	cmd/zpool/compatibility.d/openzfsonosx-1.8.1 \
-	cmd/zpool/compatibility.d/openzfsonosx-1.9.3 \
-	cmd/zpool/compatibility.d/zol-0.6.1 \
-	cmd/zpool/compatibility.d/zol-0.6.4 \
-	cmd/zpool/compatibility.d/zol-0.6.5 \
-	cmd/zpool/compatibility.d/zol-0.7 \
-	cmd/zpool/compatibility.d/zol-0.8
+#zpoolcompatdir = $(pkgdatadir)/compatibility.d
+#dist_zpoolcompat_DATA = \
+#	cmd/zpool/compatibility.d/compat-2018 \
+#	cmd/zpool/compatibility.d/compat-2019 \
+#	cmd/zpool/compatibility.d/compat-2020 \
+#	cmd/zpool/compatibility.d/compat-2021 \
+#	cmd/zpool/compatibility.d/freebsd-11.0 \
+#	cmd/zpool/compatibility.d/freebsd-11.2 \
+#	cmd/zpool/compatibility.d/freebsd-11.3 \
+#	cmd/zpool/compatibility.d/freenas-9.10.2 \
+#	cmd/zpool/compatibility.d/grub2 \
+#	cmd/zpool/compatibility.d/openzfs-2.0-freebsd \
+#	cmd/zpool/compatibility.d/openzfs-2.0-linux \
+#	cmd/zpool/compatibility.d/openzfs-2.1-freebsd \
+#	cmd/zpool/compatibility.d/openzfs-2.1-linux \
+#	cmd/zpool/compatibility.d/openzfs-2.2 \
+#	cmd/zpool/compatibility.d/openzfsonosx-1.7.0 \
+#	cmd/zpool/compatibility.d/openzfsonosx-1.8.1 \
+#	cmd/zpool/compatibility.d/openzfsonosx-1.9.3 \
+#	cmd/zpool/compatibility.d/zol-0.6.1 \
+#	cmd/zpool/compatibility.d/zol-0.6.4 \
+#	cmd/zpool/compatibility.d/zol-0.6.5 \
+#	cmd/zpool/compatibility.d/zol-0.7 \
+#	cmd/zpool/compatibility.d/zol-0.8
 
 
 # canonical <- alias symbolic link pairs
 # eg: "2018" is a link to "compat-2018"
-zpoolcompatlinks = \
-	"compat-2018		2018" \
-	"compat-2019		2019" \
-	"compat-2020		2020" \
-	"compat-2021		2021" \
-	"freebsd-11.0		freebsd-11.1" \
-	"freebsd-11.0		freenas-11.0" \
-	"freebsd-11.2		freenas-11.2" \
-	"freebsd-11.3		freebsd-11.4" \
-	"freebsd-11.3		freebsd-12.0" \
-	"freebsd-11.3		freebsd-12.1" \
-	"freebsd-11.3		freebsd-12.2" \
-	"freebsd-11.3		freebsd-12.3" \
-	"freebsd-11.3		freebsd-12.4" \
-	"openzfs-2.1-freebsd	freebsd-13.0" \
-	"openzfs-2.1-freebsd	freebsd-13.1" \
-	"openzfs-2.1-freebsd	freebsd-13.2" \
-	"freebsd-11.3		freenas-11.3" \
-	"freenas-11.0		freenas-11.1" \
-	"openzfsonosx-1.9.3	openzfsonosx-1.9.4" \
-	"openzfs-2.0-freebsd	truenas-12.0" \
-	"zol-0.7		ubuntu-18.04" \
-	"zol-0.8		ubuntu-20.04" \
-	"openzfs-2.1-linux	ubuntu-22.04" \
-	"openzfs-2.2		openzfs-2.2-linux" \
-	"openzfs-2.2		openzfs-2.2-freebsd"
+#zpoolcompatlinks = \
+#	"compat-2018		2018" \
+#	"compat-2019		2019" \
+#	"compat-2020		2020" \
+#	"compat-2021		2021" \
+#	"freebsd-11.0		freebsd-11.1" \
+#	"freebsd-11.0		freenas-11.0" \
+#	"freebsd-11.2		freenas-11.2" \
+#	"freebsd-11.3		freebsd-11.4" \
+#	"freebsd-11.3		freebsd-12.0" \
+#	"freebsd-11.3		freebsd-12.1" \
+#	"freebsd-11.3		freebsd-12.2" \
+#	"freebsd-11.3		freebsd-12.3" \
+#	"freebsd-11.3		freebsd-12.4" \
+#	"openzfs-2.1-freebsd	freebsd-13.0" \
+#	"openzfs-2.1-freebsd	freebsd-13.1" \
+#	"openzfs-2.1-freebsd	freebsd-13.2" \
+#	"freebsd-11.3		freenas-11.3" \
+#	"freenas-11.0		freenas-11.1" \
+#	"openzfsonosx-1.9.3	openzfsonosx-1.9.4" \
+#	"openzfs-2.0-freebsd	truenas-12.0" \
+#	"zol-0.7		ubuntu-18.04" \
+#	"zol-0.8		ubuntu-20.04" \
+#	"openzfs-2.1-linux	ubuntu-22.04" \
+#	"openzfs-2.2		openzfs-2.2-linux" \
+#	"openzfs-2.2		openzfs-2.2-freebsd"
 
-zpoolconfdir = $(sysconfdir)/zfs/zpool.d
-zpool_influxdb_SOURCES = \
-	cmd/zpool_influxdb/zpool_influxdb.c
+#zpoolconfdir = $(sysconfdir)/zfs/zpool.d
+#zpool_influxdb_SOURCES = \
+#	cmd/zpool_influxdb/zpool_influxdb.c
 
-zpool_influxdb_LDADD = \
-	libspl.la \
-	libnvpair.la \
-	libzfs.la
-
-zstream_SOURCES = \
-	cmd/zstream/zstream.c \
-	cmd/zstream/zstream.h \
-	cmd/zstream/zstream_decompress.c \
-	cmd/zstream/zstream_dump.c \
-	cmd/zstream/zstream_recompress.c \
-	cmd/zstream/zstream_redup.c \
-	cmd/zstream/zstream_token.c
-
-zstream_LDADD = \
-	libzfs.la \
-	libzfs_core.la \
-	libzpool.la \
-	libnvpair.la
-
-mount_zfs_SOURCES = \
-	cmd/mount_zfs.c
-
-mount_zfs_LDADD = libzfs.la \
-	libzfs_core.la \
-	libnvpair.la $(LTLIBINTL)
-zgenhostid_SOURCES = \
-	cmd/zgenhostid.c
-
-zedconfdir = $(sysconfdir)/zfs/zed.d
-dist_zedconf_DATA = \
-	cmd/zed/zed.d/zed-functions.sh \
-	cmd/zed/zed.d/zed.rc
-
-zedexecdir = $(zfsexecdir)/zed.d
-dist_zedexec_SCRIPTS = \
-	cmd/zed/zed.d/all-debug.sh \
-	cmd/zed/zed.d/all-syslog.sh \
-	cmd/zed/zed.d/data-notify.sh \
-	cmd/zed/zed.d/generic-notify.sh \
-	cmd/zed/zed.d/pool_import-led.sh \
-	cmd/zed/zed.d/resilver_finish-notify.sh \
-	cmd/zed/zed.d/resilver_finish-start-scrub.sh \
-	cmd/zed/zed.d/scrub_finish-notify.sh \
-	cmd/zed/zed.d/statechange-led.sh \
-	cmd/zed/zed.d/statechange-notify.sh \
-	cmd/zed/zed.d/statechange-slot_off.sh \
-	cmd/zed/zed.d/trim_finish-notify.sh \
-	cmd/zed/zed.d/vdev_attach-led.sh \
-	cmd/zed/zed.d/vdev_clear-led.sh
-
-nodist_zedexec_SCRIPTS = \
-	cmd/zed/zed.d/history_event-zfs-list-cacher.sh
-
-zedconfdefaults = \
-	all-syslog.sh \
-	data-notify.sh \
-	history_event-zfs-list-cacher.sh \
-	pool_import-led.sh \
-	resilver_finish-notify.sh \
-	resilver_finish-start-scrub.sh \
-	scrub_finish-notify.sh \
-	statechange-led.sh \
-	statechange-notify.sh \
-	statechange-slot_off.sh \
-	vdev_attach-led.sh \
-	vdev_clear-led.sh
-
-zed_CFLAGS = $(AM_CFLAGS) \
-	$(LIBUDEV_CFLAGS) \
-	$(LIBUUID_CFLAGS)
-zed_SOURCES = \
-	cmd/zed/zed.c \
-	cmd/zed/zed.h \
-	cmd/zed/zed_conf.c \
-	cmd/zed/zed_conf.h \
-	cmd/zed/zed_disk_event.c \
-	cmd/zed/zed_disk_event.h \
-	cmd/zed/zed_event.c \
-	cmd/zed/zed_event.h \
-	cmd/zed/zed_exec.c \
-	cmd/zed/zed_exec.h \
-	cmd/zed/zed_file.c \
-	cmd/zed/zed_file.h \
-	cmd/zed/zed_log.c \
-	cmd/zed/zed_log.h \
-	cmd/zed/zed_strings.c \
-	cmd/zed/zed_strings.h \
-	\
-	cmd/zed/agents/fmd_api.c \
-	cmd/zed/agents/fmd_api.h \
-	cmd/zed/agents/fmd_serd.c \
-	cmd/zed/agents/fmd_serd.h \
-	cmd/zed/agents/zfs_agents.c \
-	cmd/zed/agents/zfs_agents.h \
-	cmd/zed/agents/zfs_diagnosis.c \
-	cmd/zed/agents/zfs_mod.c \
-	cmd/zed/agents/zfs_retire.c
-
-zed_LDADD = libzfs.la \
-	libzfs_core.la \
-	libnvpair.la libuutil.la \
-	-lrt $(LIBATOMIC_LIBS) \
-	$(LIBUDEV_LIBS) \
-	$(LIBUUID_LIBS)
-zed_LDFLAGS = -pthread
-nodist_bashcompletion_DATA = contrib/bash_completion.d/zfs
-#pyzfs_V_1 = -v
-pkgdracut_02dir = $(dracutdir)/modules.d/02zfsexpandknowledge
-pkgdracut_02_SCRIPTS = \
-	contrib/dracut/02zfsexpandknowledge/module-setup.sh
-
-pkgdracut_90dir = $(dracutdir)/modules.d/90zfs
-pkgdracut_90_SCRIPTS = \
-	contrib/dracut/90zfs/export-zfs.sh \
-	contrib/dracut/90zfs/import-opts-generator.sh \
-	contrib/dracut/90zfs/module-setup.sh \
-	contrib/dracut/90zfs/mount-zfs.sh \
-	contrib/dracut/90zfs/parse-zfs.sh \
-	contrib/dracut/90zfs/zfs-generator.sh \
-	contrib/dracut/90zfs/zfs-lib.sh \
-	contrib/dracut/90zfs/zfs-load-key.sh \
-	contrib/dracut/90zfs/zfs-needshutdown.sh
-
-pkgdracut_90_DATA = \
-	contrib/dracut/90zfs/zfs-env-bootfs.service \
-	contrib/dracut/90zfs/zfs-nonroot-necessities.service \
-	contrib/dracut/90zfs/zfs-rollback-bootfs.service \
-	contrib/dracut/90zfs/zfs-snapshot-bootfs.service
-
-i_tdir = /usr/share/initramfs-tools
-dist_i_t_SCRIPTS = \
-	contrib/initramfs/zfsunlock
-
-i_t_confhooks_ddir = $(i_tdir)/conf-hooks.d
-dist_i_t_confhooks_d_DATA = \
-	contrib/initramfs/conf-hooks.d/zfs
-
-i_t_conf_ddir = $(i_tdir)/conf.d
-dist_i_t_conf_d_DATA = \
-	contrib/initramfs/conf.d/zfs
-
-i_t_hooksdir = $(i_tdir)/hooks
-i_t_hooks_SCRIPTS = \
-	contrib/initramfs/hooks/zfs \
-	contrib/initramfs/hooks/zfsunlock
-
-i_t_scriptsdir = $(i_tdir)/scripts
-dist_i_t_scripts_SCRIPTS = \
-	contrib/initramfs/scripts/zfs
-
-i_t_scripts_localtopdir = $(i_t_scriptsdir)/local-top
-dist_i_t_scripts_localtop_SCRIPTS = \
-	contrib/initramfs/scripts/local-top/zfs
-
-i_t_check_scripts = $(dist_i_t_SCRIPTS) $(i_t_hooks_SCRIPTS) $(dist_i_t_scripts_SCRIPTS) $(dist_i_t_scripts_localtop_SCRIPTS)
-#contrib_pam_zfs_key_pam_zfs_key_la_CFLAGS =  \
-#	$(AM_CFLAGS) \
-#	$(LIBCRYPTO_CFLAGS)
-#pammodule_LTLIBRARIES = contrib/pam_zfs_key/pam_zfs_key.la
-#contrib_pam_zfs_key_pam_zfs_key_la_SOURCES = contrib/pam_zfs_key/pam_zfs_key.c
-#contrib_pam_zfs_key_pam_zfs_key_la_LIBADD =  \
+#zpool_influxdb_LDADD = \
+#	libspl.la \
 #	libnvpair.la \
-#	libuutil.la libzfs.la \
-#	libzfs_core.la -lpam \
-#	$(LIBCRYPTO_LIBS)
-#contrib_pam_zfs_key_pam_zfs_key_la_LDFLAGS = -version-info 1:0:0 -avoid-version -module -shared
-#dist_pamconfigs_DATA = contrib/pam_zfs_key/zfs_key
-sudoersddir = $(sysconfdir)/sudoers.d
-sudoersd_DATA = \
-	etc/sudoers.d/zfs
+#	libzfs.la
 
-sysconf_zfsdir = $(sysconfdir)/zfs
-dist_sysconf_zfs_DATA = \
-	etc/zfs/vdev_id.conf.alias.example \
-	etc/zfs/vdev_id.conf.multipath.example \
-	etc/zfs/vdev_id.conf.sas_direct.example \
-	etc/zfs/vdev_id.conf.sas_switch.example \
-	etc/zfs/vdev_id.conf.scsi.example
+#zstream_SOURCES = \
+#	cmd/zstream/zstream.c \
+#	cmd/zstream/zstream.h \
+#	cmd/zstream/zstream_decompress.c \
+#	cmd/zstream/zstream_dump.c \
+#	cmd/zstream/zstream_recompress.c \
+#	cmd/zstream/zstream_redup.c \
+#	cmd/zstream/zstream_token.c
 
-sysconf_zfs_DATA = \
-	etc/zfs/zfs-functions
+#zstream_LDADD = \
+#	libzfs.la \
+#	libzfs_core.la \
+#	libzpool.la \
+#	libnvpair.la
 
-initconf_DATA = \
-	etc/default/zfs
+#mount_zfs_SOURCES = \
+#	cmd/mount_zfs.c
 
-init_SCRIPTS = \
-	etc/init.d/zfs-import \
-	etc/init.d/zfs-load-key \
-	etc/init.d/zfs-mount \
-	etc/init.d/zfs-share \
-	etc/init.d/zfs-zed
+#mount_zfs_LDADD = libzfs.la \
+#	libzfs_core.la \
+#	libnvpair.la $(LTLIBINTL)
+#zgenhostid_SOURCES = \
+#	cmd/zgenhostid.c
 
-dist_systemdpreset_DATA = \
-	etc/systemd/system/50-zfs.preset
+#zedconfdir = $(sysconfdir)/zfs/zed.d
+#dist_zedconf_DATA = \
+#	cmd/zed/zed.d/zed-functions.sh \
+#	cmd/zed/zed.d/zed.rc
 
-systemdunit_DATA = \
-	etc/systemd/system/zfs-import-cache.service \
-	etc/systemd/system/zfs-import-scan.service \
-	etc/systemd/system/zfs-import.target \
-	etc/systemd/system/zfs-mount.service \
-	etc/systemd/system/zfs-scrub-monthly@.timer \
-	etc/systemd/system/zfs-scrub-weekly@.timer \
-	etc/systemd/system/zfs-scrub@.service \
-	etc/systemd/system/zfs-trim-monthly@.timer \
-	etc/systemd/system/zfs-trim-weekly@.timer \
-	etc/systemd/system/zfs-trim@.service \
-	etc/systemd/system/zfs-share.service \
-	etc/systemd/system/zfs-volume-wait.service \
-	etc/systemd/system/zfs-volumes.target \
-	etc/systemd/system/zfs-zed.service \
-	etc/systemd/system/zfs.target
+#zedexecdir = $(zfsexecdir)/zed.d
+#dist_zedexec_SCRIPTS = \
+#	cmd/zed/zed.d/all-debug.sh \
+#	cmd/zed/zed.d/all-syslog.sh \
+#	cmd/zed/zed.d/data-notify.sh \
+#	cmd/zed/zed.d/generic-notify.sh \
+#	cmd/zed/zed.d/pool_import-led.sh \
+#	cmd/zed/zed.d/resilver_finish-notify.sh \
+#	cmd/zed/zed.d/resilver_finish-start-scrub.sh \
+#	cmd/zed/zed.d/scrub_finish-notify.sh \
+#	cmd/zed/zed.d/statechange-led.sh \
+#	cmd/zed/zed.d/statechange-notify.sh \
+#	cmd/zed/zed.d/statechange-slot_off.sh \
+#	cmd/zed/zed.d/trim_finish-notify.sh \
+#	cmd/zed/zed.d/vdev_attach-led.sh \
+#	cmd/zed/zed.d/vdev_clear-led.sh
 
-etc_systemd_system_generators_zfs_mount_generator_SOURCES = \
-	etc/systemd/system-generators/zfs-mount-generator.c
+#nodist_zedexec_SCRIPTS = \
+#	cmd/zed/zed.d/history_event-zfs-list-cacher.sh
 
-etc_systemd_system_generators_zfs_mount_generator_LDADD = \
-	libzfs.la
+#zedconfdefaults = \
+#	all-syslog.sh \
+#	data-notify.sh \
+#	history_event-zfs-list-cacher.sh \
+#	pool_import-led.sh \
+#	resilver_finish-notify.sh \
+#	resilver_finish-start-scrub.sh \
+#	scrub_finish-notify.sh \
+#	statechange-led.sh \
+#	statechange-notify.sh \
+#	statechange-slot_off.sh \
+#	vdev_attach-led.sh \
+#	vdev_clear-led.sh
 
-etc_systemd_system_generators_zfs_mount_generator_LDFLAGS = -pthread
-dist_modulesload_DATA = \
-	etc/modules-load.d/zfs.conf
+#zed_CFLAGS = $(AM_CFLAGS) \
+#	$(LIBUDEV_CFLAGS) \
+#	$(LIBUUID_CFLAGS)
+#zed_SOURCES = \
+#	cmd/zed/zed.c \
+#	cmd/zed/zed.h \
+#	cmd/zed/zed_conf.c \
+#	cmd/zed/zed_conf.h \
+#	cmd/zed/zed_disk_event.c \
+#	cmd/zed/zed_disk_event.h \
+#	cmd/zed/zed_event.c \
+#	cmd/zed/zed_event.h \
+#	cmd/zed/zed_exec.c \
+#	cmd/zed/zed_exec.h \
+#	cmd/zed/zed_file.c \
+#	cmd/zed/zed_file.h \
+#	cmd/zed/zed_log.c \
+#	cmd/zed/zed_log.h \
+#	cmd/zed/zed_strings.c \
+#	cmd/zed/zed_strings.h \
+#	\
+#	cmd/zed/agents/fmd_api.c \
+#	cmd/zed/agents/fmd_api.h \
+#	cmd/zed/agents/fmd_serd.c \
+#	cmd/zed/agents/fmd_serd.h \
+#	cmd/zed/agents/zfs_agents.c \
+#	cmd/zed/agents/zfs_agents.h \
+#	cmd/zed/agents/zfs_diagnosis.c \
+#	cmd/zed/agents/zfs_mod.c \
+#	cmd/zed/agents/zfs_retire.c
 
-noinst_LTLIBRARIES = libavl.la libicp.la libshare.la \
-	libspl_assert.la libspl.la libtpool.la \
-	libunicode.la libzstd.la libzutil.la \
-	$(am__append_77)
-lib_LTLIBRARIES = libnvpair.la libuutil.la \
-	libzfs_core.la libzfs.la libzfsbootenv.la \
-	libzpool.la
-pkgconfig_DATA = lib/libzfs_core/libzfs_core.pc \
-	lib/libzfs/libzfs.pc \
-	lib/libzfsbootenv/libzfsbootenv.pc
-libavl_la_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) \
-	$(LIBRARY_CFLAGS) -fvisibility=hidden
-nodist_libavl_la_SOURCES = \
-	module/avl/avl.c
+#zed_LDADD = libzfs.la \
+#	libzfs_core.la \
+#	libnvpair.la libuutil.la \
+#	-lrt $(LIBATOMIC_LIBS) \
+#	$(LIBUDEV_LIBS) \
+#	$(LIBUUID_LIBS)
+#zed_LDFLAGS = -pthread
+#nodist_bashcompletion_DATA = contrib/bash_completion.d/zfs
+##pyzfs_V_1 = -v
+#pkgdracut_02dir = $(dracutdir)/modules.d/02zfsexpandknowledge
+#pkgdracut_02_SCRIPTS = \
+#	contrib/dracut/02zfsexpandknowledge/module-setup.sh
 
-libicp_la_CCASFLAGS = $(AM_CCASFLAGS)
-libicp_la_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) $(LIBRARY_CFLAGS)
-nodist_libicp_la_SOURCES = module/icp/spi/kcf_spi.c \
-	module/icp/api/kcf_ctxops.c \
-	module/icp/api/kcf_cipher.c \
-	module/icp/api/kcf_mac.c \
-	module/icp/algs/aes/aes_impl_aesni.c \
-	module/icp/algs/aes/aes_impl_generic.c \
-	module/icp/algs/aes/aes_impl_x86-64.c \
-	module/icp/algs/aes/aes_impl.c \
-	module/icp/algs/aes/aes_modes.c \
-	module/icp/algs/blake3/blake3.c \
-	module/icp/algs/blake3/blake3_generic.c \
-	module/icp/algs/blake3/blake3_impl.c \
-	module/icp/algs/edonr/edonr.c \
-	module/icp/algs/modes/modes.c \
-	module/icp/algs/modes/cbc.c \
-	module/icp/algs/modes/gcm_generic.c \
-	module/icp/algs/modes/gcm_pclmulqdq.c \
-	module/icp/algs/modes/gcm.c \
-	module/icp/algs/modes/ctr.c \
-	module/icp/algs/modes/ccm.c \
-	module/icp/algs/modes/ecb.c \
-	module/icp/algs/sha2/sha2_generic.c \
-	module/icp/algs/sha2/sha256_impl.c \
-	module/icp/algs/sha2/sha512_impl.c \
-	module/icp/algs/skein/skein.c \
-	module/icp/algs/skein/skein_block.c \
-	module/icp/algs/skein/skein_iv.c \
-	module/icp/illumos-crypto.c \
-	module/icp/io/aes.c module/icp/io/sha2_mod.c \
-	module/icp/io/skein_mod.c \
-	module/icp/core/kcf_sched.c \
-	module/icp/core/kcf_prov_lib.c \
-	module/icp/core/kcf_callprov.c \
-	module/icp/core/kcf_mech_tabs.c \
-	module/icp/core/kcf_prov_tabs.c \
-	module/zfs/zfs_impl.c $(am__append_47) \
-	$(am__append_48) $(am__append_49) \
-	$(am__append_50)
-libnvpair_la_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) \
-	$(LIBRARY_CFLAGS) $(LIBTIRPC_CFLAGS) \
-	-fvisibility=hidden
-dist_libnvpair_la_SOURCES = \
-	lib/libnvpair/libnvpair.c \
-	lib/libnvpair/libnvpair_json.c \
-	lib/libnvpair/nvpair_alloc_system.c
+#pkgdracut_90dir = $(dracutdir)/modules.d/90zfs
+#pkgdracut_90_SCRIPTS = \
+#	contrib/dracut/90zfs/export-zfs.sh \
+#	contrib/dracut/90zfs/import-opts-generator.sh \
+#	contrib/dracut/90zfs/module-setup.sh \
+#	contrib/dracut/90zfs/mount-zfs.sh \
+#	contrib/dracut/90zfs/parse-zfs.sh \
+#	contrib/dracut/90zfs/zfs-generator.sh \
+#	contrib/dracut/90zfs/zfs-lib.sh \
+#	contrib/dracut/90zfs/zfs-load-key.sh \
+#	contrib/dracut/90zfs/zfs-needshutdown.sh
 
-nodist_libnvpair_la_SOURCES = \
-	module/nvpair/nvpair_alloc_fixed.c \
-	module/nvpair/nvpair.c \
-	module/nvpair/fnvpair.c
+#pkgdracut_90_DATA = \
+#	contrib/dracut/90zfs/zfs-env-bootfs.service \
+#	contrib/dracut/90zfs/zfs-nonroot-necessities.service \
+#	contrib/dracut/90zfs/zfs-rollback-bootfs.service \
+#	contrib/dracut/90zfs/zfs-snapshot-bootfs.service
 
-libnvpair_la_LIBADD = libspl_assert.la \
-	$(LIBTIRPC_LIBS) $(LTLIBINTL)
-libnvpair_la_LDFLAGS = $(am__append_52) \
-	-version-info 3:0:0
-libshare_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) \
-	-fvisibility=hidden
-libshare_la_CPPFLAGS = $(AM_CPPFLAGS) \
-	-I$(srcdir)/lib/libshare
-libshare_la_SOURCES = lib/libshare/libshare_impl.h \
-	lib/libshare/libshare.c lib/libshare/nfs.c \
-	lib/libshare/nfs.h lib/libshare/smb.h \
-	$(am__append_54) $(am__append_55)
-libspldir = $(includedir)/libspl
-libspl_HEADERS = lib/libspl/include/assert.h \
-	lib/libspl/include/atomic.h \
-	lib/libspl/include/libgen.h \
-	lib/libspl/include/libshare.h \
-	lib/libspl/include/statcommon.h \
-	lib/libspl/include/stdlib.h \
-	lib/libspl/include/string.h \
-	lib/libspl/include/umem.h \
-	lib/libspl/include/unistd.h \
-	lib/libspl/include/zone.h $(am__append_56)
-libspl_rpcdir = $(libspldir)/rpc
-libspl_rpc_HEADERS = \
-	lib/libspl/include/rpc/xdr.h
+#i_tdir = /usr/share/initramfs-tools
+#dist_i_t_SCRIPTS = \
+#	contrib/initramfs/zfsunlock
 
-libspl_sysdir = $(libspldir)/sys
-libspl_sys_HEADERS = lib/libspl/include/sys/acl.h \
-	lib/libspl/include/sys/acl_impl.h \
-	lib/libspl/include/sys/asm_linkage.h \
-	lib/libspl/include/sys/callb.h \
-	lib/libspl/include/sys/cmn_err.h \
-	lib/libspl/include/sys/cred.h \
-	lib/libspl/include/sys/debug.h \
-	lib/libspl/include/sys/dkio.h \
-	lib/libspl/include/sys/dklabel.h \
-	lib/libspl/include/sys/feature_tests.h \
-	lib/libspl/include/sys/inttypes.h \
-	lib/libspl/include/sys/isa_defs.h \
-	lib/libspl/include/sys/kmem.h \
-	lib/libspl/include/sys/kstat.h \
-	lib/libspl/include/sys/list.h \
-	lib/libspl/include/sys/list_impl.h \
-	lib/libspl/include/sys/mhd.h \
-	lib/libspl/include/sys/mkdev.h \
-	lib/libspl/include/sys/policy.h \
-	lib/libspl/include/sys/poll.h \
-	lib/libspl/include/sys/priv.h \
-	lib/libspl/include/sys/processor.h \
-	lib/libspl/include/sys/simd.h \
-	lib/libspl/include/sys/stack.h \
-	lib/libspl/include/sys/stdtypes.h \
-	lib/libspl/include/sys/string.h \
-	lib/libspl/include/sys/sunddi.h \
-	lib/libspl/include/sys/systeminfo.h \
-	lib/libspl/include/sys/time.h \
-	lib/libspl/include/sys/trace_spl.h \
-	lib/libspl/include/sys/trace_zfs.h \
-	lib/libspl/include/sys/types.h \
-	lib/libspl/include/sys/types32.h \
-	lib/libspl/include/sys/uio.h \
-	lib/libspl/include/sys/vnode.h \
-	lib/libspl/include/sys/wmsum.h \
-	lib/libspl/include/sys/zone.h \
-	$(am__append_57) $(am__append_58)
-libspl_ia32dir = $(libspldir)/sys/ia32
+#i_t_confhooks_ddir = $(i_tdir)/conf-hooks.d
+#dist_i_t_confhooks_d_DATA = \
+#	contrib/initramfs/conf-hooks.d/zfs
+
+#i_t_conf_ddir = $(i_tdir)/conf.d
+#dist_i_t_conf_d_DATA = \
+#	contrib/initramfs/conf.d/zfs
+
+#i_t_hooksdir = $(i_tdir)/hooks
+#i_t_hooks_SCRIPTS = \
+#	contrib/initramfs/hooks/zfs \
+#	contrib/initramfs/hooks/zfsunlock
+
+#i_t_scriptsdir = $(i_tdir)/scripts
+#dist_i_t_scripts_SCRIPTS = \
+#	contrib/initramfs/scripts/zfs
+
+#i_t_scripts_localtopdir = $(i_t_scriptsdir)/local-top
+#dist_i_t_scripts_localtop_SCRIPTS = \
+#	contrib/initramfs/scripts/local-top/zfs
+
+#i_t_check_scripts = $(dist_i_t_SCRIPTS) $(i_t_hooks_SCRIPTS) $(dist_i_t_scripts_SCRIPTS) $(dist_i_t_scripts_localtop_SCRIPTS)
+##contrib_pam_zfs_key_pam_zfs_key_la_CFLAGS =  \
+##	$(AM_CFLAGS) \
+##	$(LIBCRYPTO_CFLAGS)
+##pammodule_LTLIBRARIES = contrib/pam_zfs_key/pam_zfs_key.la
+##contrib_pam_zfs_key_pam_zfs_key_la_SOURCES = contrib/pam_zfs_key/pam_zfs_key.c
+##contrib_pam_zfs_key_pam_zfs_key_la_LIBADD =  \
+##	libnvpair.la \
+##	libuutil.la libzfs.la \
+##	libzfs_core.la -lpam \
+##	$(LIBCRYPTO_LIBS)
+##contrib_pam_zfs_key_pam_zfs_key_la_LDFLAGS = -version-info 1:0:0 -avoid-version -module -shared
+##dist_pamconfigs_DATA = contrib/pam_zfs_key/zfs_key
+#sudoersddir = $(sysconfdir)/sudoers.d
+#sudoersd_DATA = \
+#	etc/sudoers.d/zfs
+
+#sysconf_zfsdir = $(sysconfdir)/zfs
+#dist_sysconf_zfs_DATA = \
+#	etc/zfs/vdev_id.conf.alias.example \
+#	etc/zfs/vdev_id.conf.multipath.example \
+#	etc/zfs/vdev_id.conf.sas_direct.example \
+#	etc/zfs/vdev_id.conf.sas_switch.example \
+#	etc/zfs/vdev_id.conf.scsi.example
+
+#sysconf_zfs_DATA = \
+#	etc/zfs/zfs-functions
+
+#initconf_DATA = \
+#	etc/default/zfs
+
+##init_SCRIPTS = \
+##	etc/init.d/zfs-import \
+##	etc/init.d/zfs-load-key \
+##	etc/init.d/zfs-mount \
+##	etc/init.d/zfs-share \
+##	etc/init.d/zfs-zed
+
+##dist_systemdpreset_DATA = \
+##	etc/systemd/system/50-zfs.preset
+
+##systemdunit_DATA = \
+##	etc/systemd/system/zfs-import-cache.service \
+##	etc/systemd/system/zfs-import-scan.service \
+##	etc/systemd/system/zfs-import.target \
+##	etc/systemd/system/zfs-mount.service \
+##	etc/systemd/system/zfs-scrub-monthly@.timer \
+##	etc/systemd/system/zfs-scrub-weekly@.timer \
+##	etc/systemd/system/zfs-scrub@.service \
+##	etc/systemd/system/zfs-trim-monthly@.timer \
+##	etc/systemd/system/zfs-trim-weekly@.timer \
+##	etc/systemd/system/zfs-trim@.service \
+##	etc/systemd/system/zfs-share.service \
+##	etc/systemd/system/zfs-volume-wait.service \
+##	etc/systemd/system/zfs-volumes.target \
+##	etc/systemd/system/zfs-zed.service \
+##	etc/systemd/system/zfs.target
+
+##etc_systemd_system_generators_zfs_mount_generator_SOURCES = \
+##	etc/systemd/system-generators/zfs-mount-generator.c
+
+##etc_systemd_system_generators_zfs_mount_generator_LDADD = \
+##	libzfs.la
+
+##etc_systemd_system_generators_zfs_mount_generator_LDFLAGS = -pthread
+##dist_modulesload_DATA = \
+##	etc/modules-load.d/zfs.conf
+
+#noinst_LTLIBRARIES = libavl.la libicp.la libshare.la \
+#	libspl_assert.la libspl.la libtpool.la \
+#	libunicode.la libzstd.la libzutil.la \
+#	$(am__append_77)
+#lib_LTLIBRARIES = libnvpair.la libuutil.la \
+#	libzfs_core.la libzfs.la libzfsbootenv.la \
+#	libzpool.la
+#pkgconfig_DATA = lib/libzfs_core/libzfs_core.pc \
+#	lib/libzfs/libzfs.pc \
+#	lib/libzfsbootenv/libzfsbootenv.pc
+#libavl_la_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) \
+#	$(LIBRARY_CFLAGS) -fvisibility=hidden
+#nodist_libavl_la_SOURCES = \
+#	module/avl/avl.c
+
+#libicp_la_CCASFLAGS = $(AM_CCASFLAGS)
+#libicp_la_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) $(LIBRARY_CFLAGS)
+#nodist_libicp_la_SOURCES = module/icp/spi/kcf_spi.c \
+#	module/icp/api/kcf_ctxops.c \
+#	module/icp/api/kcf_cipher.c \
+#	module/icp/api/kcf_mac.c \
+#	module/icp/algs/aes/aes_impl_aesni.c \
+#	module/icp/algs/aes/aes_impl_generic.c \
+#	module/icp/algs/aes/aes_impl_x86-64.c \
+#	module/icp/algs/aes/aes_impl.c \
+#	module/icp/algs/aes/aes_modes.c \
+#	module/icp/algs/blake3/blake3.c \
+#	module/icp/algs/blake3/blake3_generic.c \
+#	module/icp/algs/blake3/blake3_impl.c \
+#	module/icp/algs/edonr/edonr.c \
+#	module/icp/algs/modes/modes.c \
+#	module/icp/algs/modes/cbc.c \
+#	module/icp/algs/modes/gcm_generic.c \
+#	module/icp/algs/modes/gcm_pclmulqdq.c \
+#	module/icp/algs/modes/gcm.c \
+#	module/icp/algs/modes/ctr.c \
+#	module/icp/algs/modes/ccm.c \
+#	module/icp/algs/modes/ecb.c \
+#	module/icp/algs/sha2/sha2_generic.c \
+#	module/icp/algs/sha2/sha256_impl.c \
+#	module/icp/algs/sha2/sha512_impl.c \
+#	module/icp/algs/skein/skein.c \
+#	module/icp/algs/skein/skein_block.c \
+#	module/icp/algs/skein/skein_iv.c \
+#	module/icp/illumos-crypto.c \
+#	module/icp/io/aes.c module/icp/io/sha2_mod.c \
+#	module/icp/io/skein_mod.c \
+#	module/icp/core/kcf_sched.c \
+#	module/icp/core/kcf_prov_lib.c \
+#	module/icp/core/kcf_callprov.c \
+#	module/icp/core/kcf_mech_tabs.c \
+#	module/icp/core/kcf_prov_tabs.c \
+#	module/zfs/zfs_impl.c $(am__append_47) \
+#	$(am__append_48) $(am__append_49) \
+#	$(am__append_50)
+#libnvpair_la_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) \
+#	$(LIBRARY_CFLAGS) $(LIBTIRPC_CFLAGS) \
+#	-fvisibility=hidden
+#dist_libnvpair_la_SOURCES = \
+#	lib/libnvpair/libnvpair.c \
+#	lib/libnvpair/libnvpair_json.c \
+#	lib/libnvpair/nvpair_alloc_system.c
+
+#nodist_libnvpair_la_SOURCES = \
+#	module/nvpair/nvpair_alloc_fixed.c \
+#	module/nvpair/nvpair.c \
+#	module/nvpair/fnvpair.c
+
+#libnvpair_la_LIBADD = libspl_assert.la \
+#	$(LIBTIRPC_LIBS) $(LTLIBINTL)
+#libnvpair_la_LDFLAGS = $(am__append_52) \
+#	-version-info 3:0:0
+#libshare_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) \
+#	-fvisibility=hidden
+#libshare_la_CPPFLAGS = $(AM_CPPFLAGS) \
+#	-I$(srcdir)/lib/libshare
+#libshare_la_SOURCES = lib/libshare/libshare_impl.h \
+#	lib/libshare/libshare.c lib/libshare/nfs.c \
+#	lib/libshare/nfs.h lib/libshare/smb.h \
+#	$(am__append_54) $(am__append_55)
+#libspldir = $(includedir)/libspl
+#libspl_HEADERS = lib/libspl/include/assert.h \
+#	lib/libspl/include/atomic.h \
+#	lib/libspl/include/libgen.h \
+#	lib/libspl/include/libshare.h \
+#	lib/libspl/include/statcommon.h \
+#	lib/libspl/include/stdlib.h \
+#	lib/libspl/include/string.h \
+#	lib/libspl/include/umem.h \
+#	lib/libspl/include/unistd.h \
+#	lib/libspl/include/zone.h $(am__append_56)
+#libspl_rpcdir = $(libspldir)/rpc
+#libspl_rpc_HEADERS = \
+#	lib/libspl/include/rpc/xdr.h
+
+#libspl_sysdir = $(libspldir)/sys
+#libspl_sys_HEADERS = lib/libspl/include/sys/acl.h \
+#	lib/libspl/include/sys/acl_impl.h \
+#	lib/libspl/include/sys/asm_linkage.h \
+#	lib/libspl/include/sys/callb.h \
+#	lib/libspl/include/sys/cmn_err.h \
+#	lib/libspl/include/sys/cred.h \
+#	lib/libspl/include/sys/debug.h \
+#	lib/libspl/include/sys/dkio.h \
+#	lib/libspl/include/sys/dklabel.h \
+#	lib/libspl/include/sys/feature_tests.h \
+#	lib/libspl/include/sys/inttypes.h \
+#	lib/libspl/include/sys/isa_defs.h \
+#	lib/libspl/include/sys/kmem.h \
+#	lib/libspl/include/sys/kstat.h \
+#	lib/libspl/include/sys/list.h \
+#	lib/libspl/include/sys/list_impl.h \
+#	lib/libspl/include/sys/mhd.h \
+#	lib/libspl/include/sys/mkdev.h \
+#	lib/libspl/include/sys/policy.h \
+#	lib/libspl/include/sys/poll.h \
+#	lib/libspl/include/sys/priv.h \
+#	lib/libspl/include/sys/processor.h \
+#	lib/libspl/include/sys/simd.h \
+#	lib/libspl/include/sys/stack.h \
+#	lib/libspl/include/sys/stdtypes.h \
+#	lib/libspl/include/sys/string.h \
+#	lib/libspl/include/sys/sunddi.h \
+#	lib/libspl/include/sys/systeminfo.h \
+#	lib/libspl/include/sys/time.h \
+#	lib/libspl/include/sys/trace_spl.h \
+#	lib/libspl/include/sys/trace_zfs.h \
+#	lib/libspl/include/sys/types.h \
+#	lib/libspl/include/sys/types32.h \
+#	lib/libspl/include/sys/uio.h \
+#	lib/libspl/include/sys/vnode.h \
+#	lib/libspl/include/sys/wmsum.h \
+#	lib/libspl/include/sys/zone.h \
+#	$(am__append_57) $(am__append_58)
+#libspl_ia32dir = $(libspldir)/sys/ia32
+##libspl_ia32_HEADERS = \
+##	lib/libspl/include/os/freebsd/sys/ia32/asm_linkage.h
+
 #libspl_ia32_HEADERS = \
-#	lib/libspl/include/os/freebsd/sys/ia32/asm_linkage.h
+#	lib/libspl/include/os/linux/sys/ia32/asm_linkage.h
 
-libspl_ia32_HEADERS = \
-	lib/libspl/include/os/linux/sys/ia32/asm_linkage.h
+#libspl_sys_dktpdir = $(libspl_sysdir)/dktp
+#libspl_sys_dktp_HEADERS = \
+#	lib/libspl/include/sys/dktp/fdisk.h
 
-libspl_sys_dktpdir = $(libspl_sysdir)/dktp
-libspl_sys_dktp_HEADERS = \
-	lib/libspl/include/sys/dktp/fdisk.h
+#libspl_assert_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS)
+#libspl_la_CFLAGS = $(libspl_assert_la_CFLAGS)
+#libspl_assert_la_SOURCES = \
+#	lib/libspl/assert.c
 
-libspl_assert_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS)
-libspl_la_CFLAGS = $(libspl_assert_la_CFLAGS)
-libspl_assert_la_SOURCES = \
-	lib/libspl/assert.c
-
-libspl_la_SOURCES = lib/libspl/libspl_impl.h \
-	lib/libspl/atomic.c lib/libspl/getexecname.c \
-	lib/libspl/list.c lib/libspl/mkdirp.c \
-	lib/libspl/page.c lib/libspl/strlcat.c \
-	lib/libspl/strlcpy.c lib/libspl/timestamp.c \
-	lib/libspl/include/sys/list.h \
-	lib/libspl/include/sys/list_impl.h \
-	$(am__append_59) $(am__append_60)
-libspl_la_LIBADD = libspl_assert.la \
-	$(LIBATOMIC_LIBS) $(LIBCLOCK_GETTIME)
+#libspl_la_SOURCES = lib/libspl/libspl_impl.h \
+#	lib/libspl/atomic.c lib/libspl/getexecname.c \
+#	lib/libspl/list.c lib/libspl/mkdirp.c \
+#	lib/libspl/page.c lib/libspl/strlcat.c \
+#	lib/libspl/strlcpy.c lib/libspl/timestamp.c \
+#	lib/libspl/include/sys/list.h \
+#	lib/libspl/include/sys/list_impl.h \
+#	$(am__append_59) $(am__append_60)
+#libspl_la_LIBADD = libspl_assert.la \
+#	$(LIBATOMIC_LIBS) $(LIBCLOCK_GETTIME)
 # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61118
-libtpool_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) \
-	-fvisibility=hidden $(NO_CLOBBERED)
-libtpool_la_SOURCES = \
-	lib/libtpool/thread_pool.c \
-	lib/libtpool/thread_pool_impl.h
+#libtpool_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) \
+#	-fvisibility=hidden $(NO_CLOBBERED)
+#libtpool_la_SOURCES = \
+#	lib/libtpool/thread_pool.c \
+#	lib/libtpool/thread_pool_impl.h
 
-libunicode_la_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) $(LIBRARY_CFLAGS)
-nodist_libunicode_la_SOURCES = \
-	module/unicode/u8_textprep.c \
-	module/unicode/uconv.c
+#libunicode_la_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) $(LIBRARY_CFLAGS)
+#nodist_libunicode_la_SOURCES = \
+#	module/unicode/u8_textprep.c \
+#	module/unicode/uconv.c
 
-libuutil_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) $(LIBRARY_CFLAGS)
-libuutil_la_SOURCES = \
-	lib/libuutil/uu_alloc.c \
-	lib/libuutil/uu_avl.c \
-	lib/libuutil/uu_ident.c \
-	lib/libuutil/uu_list.c \
-	lib/libuutil/uu_misc.c \
-	lib/libuutil/uu_string.c
+#libuutil_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) $(LIBRARY_CFLAGS)
+#libuutil_la_SOURCES = \
+#	lib/libuutil/uu_alloc.c \
+#	lib/libuutil/uu_avl.c \
+#	lib/libuutil/uu_ident.c \
+#	lib/libuutil/uu_list.c \
+#	lib/libuutil/uu_misc.c \
+#	lib/libuutil/uu_string.c
 
-libuutil_la_LIBADD = libavl.la libspl.la \
-	$(LTLIBINTL)
-libuutil_la_LDFLAGS = -pthread $(am__append_61) \
-	-version-info 3:0:0
-libzfs_core_la_CFLAGS = $(AM_CFLAGS) \
-	$(LIBRARY_CFLAGS) -fvisibility=hidden
-libzfs_core_la_SOURCES =  \
-	lib/libzfs_core/libzfs_core.c \
-	$(am__append_62) $(am__append_64)
-libzfs_core_la_CPPFLAGS = $(AM_CPPFLAGS) \
-	$(am__append_63)
-#nodist_libzfs_core_la_SOURCES = \
-#	module/os/freebsd/zfs/zfs_ioctl_compat.c
+#libuutil_la_LIBADD = libavl.la libspl.la \
+#	$(LTLIBINTL)
+#libuutil_la_LDFLAGS = -pthread $(am__append_61) \
+#	-version-info 3:0:0
+#libzfs_core_la_CFLAGS = $(AM_CFLAGS) \
+#	$(LIBRARY_CFLAGS) -fvisibility=hidden
+#libzfs_core_la_SOURCES =  \
+#	lib/libzfs_core/libzfs_core.c \
+#	$(am__append_62) $(am__append_64)
+#libzfs_core_la_CPPFLAGS = $(AM_CPPFLAGS) \
+#	$(am__append_63)
+##nodist_libzfs_core_la_SOURCES = \
+##	module/os/freebsd/zfs/zfs_ioctl_compat.c
 
-libzfs_core_la_LIBADD = libnvpair.la libspl.la \
-	$(LTLIBINTL) $(am__append_66)
-libzfs_core_la_LDFLAGS = -pthread $(am__append_65) \
-	-version-info 3:0:0
-libzfs_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) \
-	$(LIBCRYPTO_CFLAGS) $(ZLIB_CFLAGS) \
-	-fvisibility=hidden
-dist_libzfs_la_SOURCES = lib/libzfs/libzfs_impl.h \
-	lib/libzfs/libzfs_changelist.c \
-	lib/libzfs/libzfs_config.c \
-	lib/libzfs/libzfs_crypto.c \
-	lib/libzfs/libzfs_dataset.c \
-	lib/libzfs/libzfs_diff.c \
-	lib/libzfs/libzfs_import.c \
-	lib/libzfs/libzfs_iter.c \
-	lib/libzfs/libzfs_mount.c \
-	lib/libzfs/libzfs_pool.c \
-	lib/libzfs/libzfs_sendrecv.c \
-	lib/libzfs/libzfs_status.c \
-	lib/libzfs/libzfs_util.c $(am__append_67) \
-	$(am__append_68)
-nodist_libzfs_la_SOURCES = \
-	module/zcommon/cityhash.c \
-	module/zcommon/zfeature_common.c \
-	module/zcommon/zfs_comutil.c \
-	module/zcommon/zfs_deleg.c \
-	module/zcommon/zfs_fletcher.c \
-	module/zcommon/zfs_fletcher_aarch64_neon.c \
-	module/zcommon/zfs_fletcher_avx512.c \
-	module/zcommon/zfs_fletcher_intel.c \
-	module/zcommon/zfs_fletcher_sse.c \
-	module/zcommon/zfs_fletcher_superscalar.c \
-	module/zcommon/zfs_fletcher_superscalar4.c \
-	module/zcommon/zfs_namecheck.c \
-	module/zcommon/zfs_prop.c \
-	module/zcommon/zpool_prop.c \
-	module/zcommon/zprop_common.c
+#libzfs_core_la_LIBADD = libnvpair.la libspl.la \
+#	$(LTLIBINTL) $(am__append_66)
+#libzfs_core_la_LDFLAGS = -pthread $(am__append_65) \
+#	-version-info 3:0:0
+#libzfs_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) \
+#	$(LIBCRYPTO_CFLAGS) $(ZLIB_CFLAGS) \
+#	-fvisibility=hidden
+#dist_libzfs_la_SOURCES = lib/libzfs/libzfs_impl.h \
+#	lib/libzfs/libzfs_changelist.c \
+#	lib/libzfs/libzfs_config.c \
+#	lib/libzfs/libzfs_crypto.c \
+#	lib/libzfs/libzfs_dataset.c \
+#	lib/libzfs/libzfs_diff.c \
+#	lib/libzfs/libzfs_import.c \
+#	lib/libzfs/libzfs_iter.c \
+#	lib/libzfs/libzfs_mount.c \
+#	lib/libzfs/libzfs_pool.c \
+#	lib/libzfs/libzfs_sendrecv.c \
+#	lib/libzfs/libzfs_status.c \
+#	lib/libzfs/libzfs_util.c $(am__append_67) \
+#	$(am__append_68)
+#nodist_libzfs_la_SOURCES = \
+#	module/zcommon/cityhash.c \
+#	module/zcommon/zfeature_common.c \
+#	module/zcommon/zfs_comutil.c \
+#	module/zcommon/zfs_deleg.c \
+#	module/zcommon/zfs_fletcher.c \
+#	module/zcommon/zfs_fletcher_aarch64_neon.c \
+#	module/zcommon/zfs_fletcher_avx512.c \
+#	module/zcommon/zfs_fletcher_intel.c \
+#	module/zcommon/zfs_fletcher_sse.c \
+#	module/zcommon/zfs_fletcher_superscalar.c \
+#	module/zcommon/zfs_fletcher_superscalar4.c \
+#	module/zcommon/zfs_namecheck.c \
+#	module/zcommon/zfs_prop.c \
+#	module/zcommon/zpool_prop.c \
+#	module/zcommon/zprop_common.c
 
-libzfs_la_LIBADD = libshare.la libzfs_core.la \
-	libnvpair.la libzutil.la libuutil.la -lrt \
-	-lm $(LIBCRYPTO_LIBS) $(ZLIB_LIBS) \
-	$(LIBFETCH_LIBS) $(LTLIBINTL) \
-	$(am__append_70)
-libzfs_la_LDFLAGS = -pthread $(am__append_69) \
-	-version-info 5:0:1
-libzfsbootenv_la_CFLAGS = $(AM_CFLAGS) \
-	$(LIBRARY_CFLAGS) -fvisibility=hidden
-libzfsbootenv_la_CPPFLAGS = $(AM_CPPFLAGS) \
-	-I$(srcdir)/include/os/linux/zfs
-dist_libzfsbootenv_la_SOURCES = \
-	lib/libzfsbootenv/lzbe_device.c \
-	lib/libzfsbootenv/lzbe_pair.c \
-	lib/libzfsbootenv/lzbe_util.c
+#libzfs_la_LIBADD = libshare.la libzfs_core.la \
+#	libnvpair.la libzutil.la libuutil.la -lrt \
+#	-lm $(LIBCRYPTO_LIBS) $(ZLIB_LIBS) \
+#	$(LIBFETCH_LIBS) $(LTLIBINTL) \
+#	$(am__append_70)
+#libzfs_la_LDFLAGS = -pthread $(am__append_69) \
+#	-version-info 5:0:1
+#libzfsbootenv_la_CFLAGS = $(AM_CFLAGS) \
+#	$(LIBRARY_CFLAGS) -fvisibility=hidden
+#libzfsbootenv_la_CPPFLAGS = $(AM_CPPFLAGS) \
+#	-I$(srcdir)/include/os/linux/zfs
+#dist_libzfsbootenv_la_SOURCES = \
+#	lib/libzfsbootenv/lzbe_device.c \
+#	lib/libzfsbootenv/lzbe_pair.c \
+#	lib/libzfsbootenv/lzbe_util.c
 
-libzfsbootenv_la_LIBADD = \
-	libzfs.la \
-	libnvpair.la
+#libzfsbootenv_la_LIBADD = \
+#	libzfs.la \
+#	libnvpair.la
 
-libzfsbootenv_la_LDFLAGS = $(am__append_71) \
-	-version-info 1:0:0
-libzpool_la_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) \
-	$(LIBRARY_CFLAGS) $(ZLIB_CFLAGS)
-libzpool_la_CPPFLAGS = $(AM_CPPFLAGS) \
-	$(FORCEDEBUG_CPPFLAGS) \
-	-I$(srcdir)/include/os/linux/zfs \
-	-DLIB_ZPOOL_BUILD
-dist_libzpool_la_SOURCES = \
-	lib/libzpool/kernel.c \
-	lib/libzpool/taskq.c \
-	lib/libzpool/util.c
+#libzfsbootenv_la_LDFLAGS = $(am__append_71) \
+#	-version-info 1:0:0
+#libzpool_la_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) \
+#	$(LIBRARY_CFLAGS) $(ZLIB_CFLAGS)
+#libzpool_la_CPPFLAGS = $(AM_CPPFLAGS) \
+#	$(FORCEDEBUG_CPPFLAGS) \
+#	-I$(srcdir)/include/os/linux/zfs \
+#	-DLIB_ZPOOL_BUILD
+#dist_libzpool_la_SOURCES = \
+#	lib/libzpool/kernel.c \
+#	lib/libzpool/taskq.c \
+#	lib/libzpool/util.c
 
-nodist_libzpool_la_SOURCES = \
-	module/lua/lapi.c \
-	module/lua/lauxlib.c \
-	module/lua/lbaselib.c \
-	module/lua/lcode.c \
-	module/lua/lcompat.c \
-	module/lua/lcorolib.c \
-	module/lua/lctype.c \
-	module/lua/ldebug.c \
-	module/lua/ldo.c \
-	module/lua/lfunc.c \
-	module/lua/lgc.c \
-	module/lua/llex.c \
-	module/lua/lmem.c \
-	module/lua/lobject.c \
-	module/lua/lopcodes.c \
-	module/lua/lparser.c \
-	module/lua/lstate.c \
-	module/lua/lstring.c \
-	module/lua/lstrlib.c \
-	module/lua/ltable.c \
-	module/lua/ltablib.c \
-	module/lua/ltm.c \
-	module/lua/lvm.c \
-	module/lua/lzio.c \
-	\
-	module/os/linux/zfs/abd_os.c \
-	module/os/linux/zfs/arc_os.c \
-	module/os/linux/zfs/trace.c \
-	module/os/linux/zfs/vdev_file.c \
-	module/os/linux/zfs/zfs_debug.c \
-	module/os/linux/zfs/zfs_racct.c \
-	module/os/linux/zfs/zfs_znode.c \
-	module/os/linux/zfs/zio_crypt.c \
-	\
-	module/zcommon/cityhash.c \
-	module/zcommon/zfeature_common.c \
-	module/zcommon/zfs_comutil.c \
-	module/zcommon/zfs_deleg.c \
-	module/zcommon/zfs_fletcher.c \
-	module/zcommon/zfs_fletcher_aarch64_neon.c \
-	module/zcommon/zfs_fletcher_avx512.c \
-	module/zcommon/zfs_fletcher_intel.c \
-	module/zcommon/zfs_fletcher_sse.c \
-	module/zcommon/zfs_fletcher_superscalar.c \
-	module/zcommon/zfs_fletcher_superscalar4.c \
-	module/zcommon/zfs_namecheck.c \
-	module/zcommon/zfs_prop.c \
-	module/zcommon/zpool_prop.c \
-	module/zcommon/zprop_common.c \
-	\
-	module/zfs/abd.c \
-	module/zfs/aggsum.c \
-	module/zfs/arc.c \
-	module/zfs/blake3_zfs.c \
-	module/zfs/blkptr.c \
-	module/zfs/bplist.c \
-	module/zfs/bpobj.c \
-	module/zfs/bptree.c \
-	module/zfs/bqueue.c \
-	module/zfs/btree.c \
-	module/zfs/brt.c \
-	module/zfs/dbuf.c \
-	module/zfs/dbuf_stats.c \
-	module/zfs/ddt.c \
-	module/zfs/ddt_zap.c \
-	module/zfs/dmu.c \
-	module/zfs/dmu_diff.c \
-	module/zfs/dmu_object.c \
-	module/zfs/dmu_objset.c \
-	module/zfs/dmu_recv.c \
-	module/zfs/dmu_redact.c \
-	module/zfs/dmu_send.c \
-	module/zfs/dmu_traverse.c \
-	module/zfs/dmu_tx.c \
-	module/zfs/dmu_zfetch.c \
-	module/zfs/dnode.c \
-	module/zfs/dnode_sync.c \
-	module/zfs/dsl_bookmark.c \
-	module/zfs/dsl_crypt.c \
-	module/zfs/dsl_dataset.c \
-	module/zfs/dsl_deadlist.c \
-	module/zfs/dsl_deleg.c \
-	module/zfs/dsl_destroy.c \
-	module/zfs/dsl_dir.c \
-	module/zfs/dsl_pool.c \
-	module/zfs/dsl_prop.c \
-	module/zfs/dsl_scan.c \
-	module/zfs/dsl_synctask.c \
-	module/zfs/dsl_userhold.c \
-	module/zfs/edonr_zfs.c \
-	module/zfs/fm.c \
-	module/zfs/gzip.c \
-	module/zfs/hkdf.c \
-	module/zfs/lz4.c \
-	module/zfs/lz4_zfs.c \
-	module/zfs/lzjb.c \
-	module/zfs/metaslab.c \
-	module/zfs/mmp.c \
-	module/zfs/multilist.c \
-	module/zfs/objlist.c \
-	module/zfs/pathname.c \
-	module/zfs/range_tree.c \
-	module/zfs/refcount.c \
-	module/zfs/rrwlock.c \
-	module/zfs/sa.c \
-	module/zfs/sha2_zfs.c \
-	module/zfs/skein_zfs.c \
-	module/zfs/spa.c \
-	module/zfs/spa_checkpoint.c \
-	module/zfs/spa_config.c \
-	module/zfs/spa_errlog.c \
-	module/zfs/spa_history.c \
-	module/zfs/spa_log_spacemap.c \
-	module/zfs/spa_misc.c \
-	module/zfs/spa_stats.c \
-	module/zfs/space_map.c \
-	module/zfs/space_reftree.c \
-	module/zfs/txg.c \
-	module/zfs/uberblock.c \
-	module/zfs/unique.c \
-	module/zfs/vdev.c \
-	module/zfs/vdev_draid.c \
-	module/zfs/vdev_draid_rand.c \
-	module/zfs/vdev_indirect.c \
-	module/zfs/vdev_indirect_births.c \
-	module/zfs/vdev_indirect_mapping.c \
-	module/zfs/vdev_initialize.c \
-	module/zfs/vdev_label.c \
-	module/zfs/vdev_mirror.c \
-	module/zfs/vdev_missing.c \
-	module/zfs/vdev_queue.c \
-	module/zfs/vdev_raidz.c \
-	module/zfs/vdev_raidz_math.c \
-	module/zfs/vdev_raidz_math_aarch64_neon.c \
-	module/zfs/vdev_raidz_math_aarch64_neonx2.c \
-	module/zfs/vdev_raidz_math_avx2.c \
-	module/zfs/vdev_raidz_math_avx512bw.c \
-	module/zfs/vdev_raidz_math_avx512f.c \
-	module/zfs/vdev_raidz_math_powerpc_altivec.c \
-	module/zfs/vdev_raidz_math_scalar.c \
-	module/zfs/vdev_raidz_math_sse2.c \
-	module/zfs/vdev_raidz_math_ssse3.c \
-	module/zfs/vdev_rebuild.c \
-	module/zfs/vdev_removal.c \
-	module/zfs/vdev_root.c \
-	module/zfs/vdev_trim.c \
-	module/zfs/zap.c \
-	module/zfs/zap_leaf.c \
-	module/zfs/zap_micro.c \
-	module/zfs/zcp.c \
-	module/zfs/zcp_get.c \
-	module/zfs/zcp_global.c \
-	module/zfs/zcp_iter.c \
-	module/zfs/zcp_set.c \
-	module/zfs/zcp_synctask.c \
-	module/zfs/zfeature.c \
-	module/zfs/zfs_byteswap.c \
-	module/zfs/zfs_chksum.c \
-	module/zfs/zfs_fm.c \
-	module/zfs/zfs_fuid.c \
-	module/zfs/zfs_ratelimit.c \
-	module/zfs/zfs_rlock.c \
-	module/zfs/zfs_sa.c \
-	module/zfs/zil.c \
-	module/zfs/zio.c \
-	module/zfs/zio_checksum.c \
-	module/zfs/zio_compress.c \
-	module/zfs/zio_inject.c \
-	module/zfs/zle.c \
-	module/zfs/zrlock.c \
-	module/zfs/zthr.c
+#nodist_libzpool_la_SOURCES = \
+#	module/lua/lapi.c \
+#	module/lua/lauxlib.c \
+#	module/lua/lbaselib.c \
+#	module/lua/lcode.c \
+#	module/lua/lcompat.c \
+#	module/lua/lcorolib.c \
+#	module/lua/lctype.c \
+#	module/lua/ldebug.c \
+#	module/lua/ldo.c \
+#	module/lua/lfunc.c \
+#	module/lua/lgc.c \
+#	module/lua/llex.c \
+#	module/lua/lmem.c \
+#	module/lua/lobject.c \
+#	module/lua/lopcodes.c \
+#	module/lua/lparser.c \
+#	module/lua/lstate.c \
+#	module/lua/lstring.c \
+#	module/lua/lstrlib.c \
+#	module/lua/ltable.c \
+#	module/lua/ltablib.c \
+#	module/lua/ltm.c \
+#	module/lua/lvm.c \
+#	module/lua/lzio.c \
+#	\
+#	module/os/linux/zfs/abd_os.c \
+#	module/os/linux/zfs/arc_os.c \
+#	module/os/linux/zfs/trace.c \
+#	module/os/linux/zfs/vdev_file.c \
+#	module/os/linux/zfs/zfs_debug.c \
+#	module/os/linux/zfs/zfs_racct.c \
+#	module/os/linux/zfs/zfs_znode.c \
+#	module/os/linux/zfs/zio_crypt.c \
+#	\
+#	module/zcommon/cityhash.c \
+#	module/zcommon/zfeature_common.c \
+#	module/zcommon/zfs_comutil.c \
+#	module/zcommon/zfs_deleg.c \
+#	module/zcommon/zfs_fletcher.c \
+#	module/zcommon/zfs_fletcher_aarch64_neon.c \
+#	module/zcommon/zfs_fletcher_avx512.c \
+#	module/zcommon/zfs_fletcher_intel.c \
+#	module/zcommon/zfs_fletcher_sse.c \
+#	module/zcommon/zfs_fletcher_superscalar.c \
+#	module/zcommon/zfs_fletcher_superscalar4.c \
+#	module/zcommon/zfs_namecheck.c \
+#	module/zcommon/zfs_prop.c \
+#	module/zcommon/zpool_prop.c \
+#	module/zcommon/zprop_common.c \
+#	\
+#	module/zfs/abd.c \
+#	module/zfs/aggsum.c \
+#	module/zfs/arc.c \
+#	module/zfs/blake3_zfs.c \
+#	module/zfs/blkptr.c \
+#	module/zfs/bplist.c \
+#	module/zfs/bpobj.c \
+#	module/zfs/bptree.c \
+#	module/zfs/bqueue.c \
+#	module/zfs/btree.c \
+#	module/zfs/brt.c \
+#	module/zfs/dbuf.c \
+#	module/zfs/dbuf_stats.c \
+#	module/zfs/ddt.c \
+#	module/zfs/ddt_zap.c \
+#	module/zfs/dmu.c \
+#	module/zfs/dmu_diff.c \
+#	module/zfs/dmu_object.c \
+#	module/zfs/dmu_objset.c \
+#	module/zfs/dmu_recv.c \
+#	module/zfs/dmu_redact.c \
+#	module/zfs/dmu_send.c \
+#	module/zfs/dmu_traverse.c \
+#	module/zfs/dmu_tx.c \
+#	module/zfs/dmu_zfetch.c \
+#	module/zfs/dnode.c \
+#	module/zfs/dnode_sync.c \
+#	module/zfs/dsl_bookmark.c \
+#	module/zfs/dsl_crypt.c \
+#	module/zfs/dsl_dataset.c \
+#	module/zfs/dsl_deadlist.c \
+#	module/zfs/dsl_deleg.c \
+#	module/zfs/dsl_destroy.c \
+#	module/zfs/dsl_dir.c \
+#	module/zfs/dsl_pool.c \
+#	module/zfs/dsl_prop.c \
+#	module/zfs/dsl_scan.c \
+#	module/zfs/dsl_synctask.c \
+#	module/zfs/dsl_userhold.c \
+#	module/zfs/edonr_zfs.c \
+#	module/zfs/fm.c \
+#	module/zfs/gzip.c \
+#	module/zfs/hkdf.c \
+#	module/zfs/lz4.c \
+#	module/zfs/lz4_zfs.c \
+#	module/zfs/lzjb.c \
+#	module/zfs/metaslab.c \
+#	module/zfs/mmp.c \
+#	module/zfs/multilist.c \
+#	module/zfs/objlist.c \
+#	module/zfs/pathname.c \
+#	module/zfs/range_tree.c \
+#	module/zfs/refcount.c \
+#	module/zfs/rrwlock.c \
+#	module/zfs/sa.c \
+#	module/zfs/sha2_zfs.c \
+#	module/zfs/skein_zfs.c \
+#	module/zfs/spa.c \
+#	module/zfs/spa_checkpoint.c \
+#	module/zfs/spa_config.c \
+#	module/zfs/spa_errlog.c \
+#	module/zfs/spa_history.c \
+#	module/zfs/spa_log_spacemap.c \
+#	module/zfs/spa_misc.c \
+#	module/zfs/spa_stats.c \
+#	module/zfs/space_map.c \
+#	module/zfs/space_reftree.c \
+#	module/zfs/txg.c \
+#	module/zfs/uberblock.c \
+#	module/zfs/unique.c \
+#	module/zfs/vdev.c \
+#	module/zfs/vdev_draid.c \
+#	module/zfs/vdev_draid_rand.c \
+#	module/zfs/vdev_indirect.c \
+#	module/zfs/vdev_indirect_births.c \
+#	module/zfs/vdev_indirect_mapping.c \
+#	module/zfs/vdev_initialize.c \
+#	module/zfs/vdev_label.c \
+#	module/zfs/vdev_mirror.c \
+#	module/zfs/vdev_missing.c \
+#	module/zfs/vdev_queue.c \
+#	module/zfs/vdev_raidz.c \
+#	module/zfs/vdev_raidz_math.c \
+#	module/zfs/vdev_raidz_math_aarch64_neon.c \
+#	module/zfs/vdev_raidz_math_aarch64_neonx2.c \
+#	module/zfs/vdev_raidz_math_avx2.c \
+#	module/zfs/vdev_raidz_math_avx512bw.c \
+#	module/zfs/vdev_raidz_math_avx512f.c \
+#	module/zfs/vdev_raidz_math_powerpc_altivec.c \
+#	module/zfs/vdev_raidz_math_scalar.c \
+#	module/zfs/vdev_raidz_math_sse2.c \
+#	module/zfs/vdev_raidz_math_ssse3.c \
+#	module/zfs/vdev_rebuild.c \
+#	module/zfs/vdev_removal.c \
+#	module/zfs/vdev_root.c \
+#	module/zfs/vdev_trim.c \
+#	module/zfs/zap.c \
+#	module/zfs/zap_leaf.c \
+#	module/zfs/zap_micro.c \
+#	module/zfs/zcp.c \
+#	module/zfs/zcp_get.c \
+#	module/zfs/zcp_global.c \
+#	module/zfs/zcp_iter.c \
+#	module/zfs/zcp_set.c \
+#	module/zfs/zcp_synctask.c \
+#	module/zfs/zfeature.c \
+#	module/zfs/zfs_byteswap.c \
+#	module/zfs/zfs_chksum.c \
+#	module/zfs/zfs_fm.c \
+#	module/zfs/zfs_fuid.c \
+#	module/zfs/zfs_ratelimit.c \
+#	module/zfs/zfs_rlock.c \
+#	module/zfs/zfs_sa.c \
+#	module/zfs/zil.c \
+#	module/zfs/zio.c \
+#	module/zfs/zio_checksum.c \
+#	module/zfs/zio_compress.c \
+#	module/zfs/zio_inject.c \
+#	module/zfs/zle.c \
+#	module/zfs/zrlock.c \
+#	module/zfs/zthr.c
 
-libzpool_la_LIBADD = libicp.la libunicode.la \
-	libnvpair.la libzstd.la libzutil.la \
-	$(LIBCLOCK_GETTIME) $(ZLIB_LIBS) -ldl -lm \
-	$(am__append_73)
-libzpool_la_LDFLAGS = -pthread $(am__append_72) \
-	-version-info 5:0:0
+#libzpool_la_LIBADD = libicp.la libunicode.la \
+#	libnvpair.la libzstd.la libzutil.la \
+#	$(LIBCLOCK_GETTIME) $(ZLIB_LIBS) -ldl -lm \
+#	$(am__append_73)
+#libzpool_la_LDFLAGS = -pthread $(am__append_72) \
+#	-version-info 5:0:0
 # -fno-tree-vectorize is set for gcc in zstd/common/compiler.h
 # Set it for other compilers, too.
-libzstd_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) \
-	-fno-tree-vectorize -include \
-	$(top_srcdir)/module/zstd/include/zstd_compat_wrapper.h \
-	-fno-tree-vectorize -Wp,-w $(AM_CFLAGS)
-nodist_libzstd_la_SOURCES = \
-	module/zstd/lib/common/entropy_common.c \
-	module/zstd/lib/common/error_private.c \
-	module/zstd/lib/common/fse_decompress.c \
-	module/zstd/lib/common/pool.c \
-	module/zstd/lib/common/zstd_common.c \
-	module/zstd/lib/compress/fse_compress.c \
-	module/zstd/lib/compress/hist.c \
-	module/zstd/lib/compress/huf_compress.c \
-	module/zstd/lib/compress/zstd_compress_literals.c \
-	module/zstd/lib/compress/zstd_compress_sequences.c \
-	module/zstd/lib/compress/zstd_compress_superblock.c \
-	module/zstd/lib/compress/zstd_compress.c \
-	module/zstd/lib/compress/zstd_double_fast.c \
-	module/zstd/lib/compress/zstd_fast.c \
-	module/zstd/lib/compress/zstd_lazy.c \
-	module/zstd/lib/compress/zstd_ldm.c \
-	module/zstd/lib/compress/zstd_opt.c \
-	module/zstd/lib/decompress/huf_decompress.c \
-	module/zstd/lib/decompress/zstd_ddict.c \
-	module/zstd/lib/decompress/zstd_decompress.c \
-	module/zstd/lib/decompress/zstd_decompress_block.c \
-	module/zstd/zfs_zstd.c
+#libzstd_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) \
+#	-fno-tree-vectorize -include \
+#	$(top_srcdir)/module/zstd/include/zstd_compat_wrapper.h \
+#	-fno-tree-vectorize -Wp,-w $(AM_CFLAGS)
+#nodist_libzstd_la_SOURCES = \
+#	module/zstd/lib/common/entropy_common.c \
+#	module/zstd/lib/common/error_private.c \
+#	module/zstd/lib/common/fse_decompress.c \
+#	module/zstd/lib/common/pool.c \
+#	module/zstd/lib/common/zstd_common.c \
+#	module/zstd/lib/compress/fse_compress.c \
+#	module/zstd/lib/compress/hist.c \
+#	module/zstd/lib/compress/huf_compress.c \
+#	module/zstd/lib/compress/zstd_compress_literals.c \
+#	module/zstd/lib/compress/zstd_compress_sequences.c \
+#	module/zstd/lib/compress/zstd_compress_superblock.c \
+#	module/zstd/lib/compress/zstd_compress.c \
+#	module/zstd/lib/compress/zstd_double_fast.c \
+#	module/zstd/lib/compress/zstd_fast.c \
+#	module/zstd/lib/compress/zstd_lazy.c \
+#	module/zstd/lib/compress/zstd_ldm.c \
+#	module/zstd/lib/compress/zstd_opt.c \
+#	module/zstd/lib/decompress/huf_decompress.c \
+#	module/zstd/lib/decompress/zstd_ddict.c \
+#	module/zstd/lib/decompress/zstd_decompress.c \
+#	module/zstd/lib/decompress/zstd_decompress_block.c \
+#	module/zstd/zfs_zstd.c
 
-libzutil_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) \
-	$(LIBBLKID_CFLAGS) $(LIBUDEV_CFLAGS) \
-	-fvisibility=hidden
-libzutil_la_CPPFLAGS = $(AM_CPPFLAGS) \
-	-I$(srcdir)/lib/libzutil
-libzutil_la_SOURCES =  \
-	lib/libzutil/zutil_device_path.c \
-	lib/libzutil/zutil_import.c \
-	lib/libzutil/zutil_import.h \
-	lib/libzutil/zutil_nicenum.c \
-	lib/libzutil/zutil_pool.c $(am__append_74) \
-	$(am__append_75)
-libzutil_la_LIBADD = libavl.la libtpool.la \
-	libnvpair.la libspl.la $(am__append_76) -lm \
-	$(LIBBLKID_LIBS) $(LIBUDEV_LIBS)
-libefi_la_CFLAGS = $(AM_CFLAGS) \
-	$(LIBRARY_CFLAGS) \
-	$(LIBUUID_CFLAGS) \
-	$(ZLIB_CFLAGS) \
-	-fvisibility=hidden
-libefi_la_SOURCES = \
-	lib/libefi/rdwr_efi.c
+#libzutil_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) \
+#	$(LIBBLKID_CFLAGS) $(LIBUDEV_CFLAGS) \
+#	-fvisibility=hidden
+#libzutil_la_CPPFLAGS = $(AM_CPPFLAGS) \
+#	-I$(srcdir)/lib/libzutil
+#libzutil_la_SOURCES =  \
+#	lib/libzutil/zutil_device_path.c \
+#	lib/libzutil/zutil_import.c \
+#	lib/libzutil/zutil_import.h \
+#	lib/libzutil/zutil_nicenum.c \
+#	lib/libzutil/zutil_pool.c $(am__append_74) \
+#	$(am__append_75)
+#libzutil_la_LIBADD = libavl.la libtpool.la \
+#	libnvpair.la libspl.la $(am__append_76) -lm \
+#	$(LIBBLKID_LIBS) $(LIBUDEV_LIBS)
+#libefi_la_CFLAGS = $(AM_CFLAGS) \
+#	$(LIBRARY_CFLAGS) \
+#	$(LIBUUID_CFLAGS) \
+#	$(ZLIB_CFLAGS) \
+#	-fvisibility=hidden
+#libefi_la_SOURCES = \
+#	lib/libefi/rdwr_efi.c
 
-libefi_la_LIBADD = $(LIBUUID_LIBS) $(ZLIB_LIBS)
-dist_noinst_man_MANS = \
-	man/man1/cstyle.1
+#libefi_la_LIBADD = $(LIBUUID_LIBS) $(ZLIB_LIBS)
+#dist_noinst_man_MANS = \
+#	man/man1/cstyle.1
 
-dist_man_MANS = man/man1/arcstat.1 \
-	man/man1/raidz_test.1 man/man1/test-runner.1 \
-	man/man1/zhack.1 man/man1/ztest.1 \
-	man/man1/zvol_wait.1 man/man5/vdev_id.conf.5 \
-	man/man4/spl.4 man/man4/zfs.4 \
-	man/man7/dracut.zfs.7 man/man7/vdevprops.7 \
-	man/man7/zfsconcepts.7 man/man7/zfsprops.7 \
-	man/man7/zpool-features.7 \
-	man/man7/zpoolconcepts.7 \
-	man/man7/zpoolprops.7 man/man8/fsck.zfs.8 \
-	man/man8/mount.zfs.8 man/man8/vdev_id.8 \
-	man/man8/zdb.8 man/man8/zfs.8 \
-	man/man8/zfs-allow.8 man/man8/zfs-bookmark.8 \
-	man/man8/zfs-change-key.8 \
-	man/man8/zfs-clone.8 man/man8/zfs-create.8 \
-	man/man8/zfs-destroy.8 man/man8/zfs-diff.8 \
-	man/man8/zfs-get.8 man/man8/zfs-groupspace.8 \
-	man/man8/zfs-hold.8 man/man8/zfs-inherit.8 \
-	man/man8/zfs-list.8 man/man8/zfs-load-key.8 \
-	man/man8/zfs-mount.8 man/man8/zfs-program.8 \
-	man/man8/zfs-project.8 \
-	man/man8/zfs-projectspace.8 \
-	man/man8/zfs-promote.8 \
-	man/man8/zfs-receive.8 man/man8/zfs-recv.8 \
-	man/man8/zfs-redact.8 man/man8/zfs-release.8 \
-	man/man8/zfs-rename.8 \
-	man/man8/zfs-rollback.8 man/man8/zfs-send.8 \
-	man/man8/zfs-set.8 man/man8/zfs-share.8 \
-	man/man8/zfs-snapshot.8 \
-	man/man8/zfs-unallow.8 \
-	man/man8/zfs-unload-key.8 \
-	man/man8/zfs-unmount.8 \
-	man/man8/zfs-upgrade.8 \
-	man/man8/zfs-userspace.8 man/man8/zfs-wait.8 \
-	man/man8/zfs_ids_to_path.8 \
-	man/man8/zfs_prepare_disk.8 \
-	man/man8/zgenhostid.8 man/man8/zinject.8 \
-	man/man8/zpool.8 man/man8/zpool-add.8 \
-	man/man8/zpool-attach.8 \
-	man/man8/zpool-checkpoint.8 \
-	man/man8/zpool-clear.8 \
-	man/man8/zpool-create.8 \
-	man/man8/zpool-destroy.8 \
-	man/man8/zpool-detach.8 \
-	man/man8/zpool-events.8 \
-	man/man8/zpool-export.8 man/man8/zpool-get.8 \
-	man/man8/zpool-history.8 \
-	man/man8/zpool-import.8 \
-	man/man8/zpool-initialize.8 \
-	man/man8/zpool-iostat.8 \
-	man/man8/zpool-labelclear.8 \
-	man/man8/zpool-list.8 \
-	man/man8/zpool-offline.8 \
-	man/man8/zpool-online.8 \
-	man/man8/zpool-reguid.8 \
-	man/man8/zpool-remove.8 \
-	man/man8/zpool-reopen.8 \
-	man/man8/zpool-replace.8 \
-	man/man8/zpool-resilver.8 \
-	man/man8/zpool-scrub.8 man/man8/zpool-set.8 \
-	man/man8/zpool-split.8 \
-	man/man8/zpool-status.8 \
-	man/man8/zpool-sync.8 man/man8/zpool-trim.8 \
-	man/man8/zpool-upgrade.8 \
-	man/man8/zpool-wait.8 man/man8/zstream.8 \
-	man/man8/zstreamdump.8 \
-	man/man8/zpool_influxdb.8 $(am__append_79) \
-	$(am__append_80)
-nodist_man_MANS = \
-	man/man8/zed.8 \
-	man/man8/zfs-mount-generator.8
+#dist_man_MANS = man/man1/arcstat.1 \
+#	man/man1/raidz_test.1 man/man1/test-runner.1 \
+#	man/man1/zhack.1 man/man1/ztest.1 \
+#	man/man1/zvol_wait.1 man/man5/vdev_id.conf.5 \
+#	man/man4/spl.4 man/man4/zfs.4 \
+#	man/man7/dracut.zfs.7 man/man7/vdevprops.7 \
+#	man/man7/zfsconcepts.7 man/man7/zfsprops.7 \
+#	man/man7/zpool-features.7 \
+#	man/man7/zpoolconcepts.7 \
+#	man/man7/zpoolprops.7 man/man8/fsck.zfs.8 \
+#	man/man8/mount.zfs.8 man/man8/vdev_id.8 \
+#	man/man8/zdb.8 man/man8/zfs.8 \
+#	man/man8/zfs-allow.8 man/man8/zfs-bookmark.8 \
+#	man/man8/zfs-change-key.8 \
+#	man/man8/zfs-clone.8 man/man8/zfs-create.8 \
+#	man/man8/zfs-destroy.8 man/man8/zfs-diff.8 \
+#	man/man8/zfs-get.8 man/man8/zfs-groupspace.8 \
+#	man/man8/zfs-hold.8 man/man8/zfs-inherit.8 \
+#	man/man8/zfs-list.8 man/man8/zfs-load-key.8 \
+#	man/man8/zfs-mount.8 man/man8/zfs-program.8 \
+#	man/man8/zfs-project.8 \
+#	man/man8/zfs-projectspace.8 \
+#	man/man8/zfs-promote.8 \
+#	man/man8/zfs-receive.8 man/man8/zfs-recv.8 \
+#	man/man8/zfs-redact.8 man/man8/zfs-release.8 \
+#	man/man8/zfs-rename.8 \
+#	man/man8/zfs-rollback.8 man/man8/zfs-send.8 \
+#	man/man8/zfs-set.8 man/man8/zfs-share.8 \
+#	man/man8/zfs-snapshot.8 \
+#	man/man8/zfs-unallow.8 \
+#	man/man8/zfs-unload-key.8 \
+#	man/man8/zfs-unmount.8 \
+#	man/man8/zfs-upgrade.8 \
+#	man/man8/zfs-userspace.8 man/man8/zfs-wait.8 \
+#	man/man8/zfs_ids_to_path.8 \
+#	man/man8/zfs_prepare_disk.8 \
+#	man/man8/zgenhostid.8 man/man8/zinject.8 \
+#	man/man8/zpool.8 man/man8/zpool-add.8 \
+#	man/man8/zpool-attach.8 \
+#	man/man8/zpool-checkpoint.8 \
+#	man/man8/zpool-clear.8 \
+#	man/man8/zpool-create.8 \
+#	man/man8/zpool-destroy.8 \
+#	man/man8/zpool-detach.8 \
+#	man/man8/zpool-events.8 \
+#	man/man8/zpool-export.8 man/man8/zpool-get.8 \
+#	man/man8/zpool-history.8 \
+#	man/man8/zpool-import.8 \
+#	man/man8/zpool-initialize.8 \
+#	man/man8/zpool-iostat.8 \
+#	man/man8/zpool-labelclear.8 \
+#	man/man8/zpool-list.8 \
+#	man/man8/zpool-offline.8 \
+#	man/man8/zpool-online.8 \
+#	man/man8/zpool-reguid.8 \
+#	man/man8/zpool-remove.8 \
+#	man/man8/zpool-reopen.8 \
+#	man/man8/zpool-replace.8 \
+#	man/man8/zpool-resilver.8 \
+#	man/man8/zpool-scrub.8 man/man8/zpool-set.8 \
+#	man/man8/zpool-split.8 \
+#	man/man8/zpool-status.8 \
+#	man/man8/zpool-sync.8 man/man8/zpool-trim.8 \
+#	man/man8/zpool-upgrade.8 \
+#	man/man8/zpool-wait.8 man/man8/zstream.8 \
+#	man/man8/zstreamdump.8 \
+#	man/man8/zpool_influxdb.8 $(am__append_79) \
+#	$(am__append_80)
+#nodist_man_MANS = \
+#	man/man8/zed.8 \
+#	man/man8/zfs-mount-generator.8
 
-scripts_zfs_tests_bindir = $(datadir)/$(PACKAGE)/zfs-tests/bin
-tests_zfs_tests_cmd_badsend_LDADD = \
-	libzfs_core.la \
-	libzfs.la \
-	libnvpair.la
+#scripts_zfs_tests_bindir = $(datadir)/$(PACKAGE)/zfs-tests/bin
+#tests_zfs_tests_cmd_badsend_LDADD = \
+#	libzfs_core.la \
+#	libzfs.la \
+#	libnvpair.la
 
-tests_zfs_tests_cmd_btree_test_CPPFLAGS = $(AM_CPPFLAGS) $(FORCEDEBUG_CPPFLAGS)
-tests_zfs_tests_cmd_btree_test_LDADD = \
-	libzpool.la \
-	libzfs_core.la
+#tests_zfs_tests_cmd_btree_test_CPPFLAGS = $(AM_CPPFLAGS) $(FORCEDEBUG_CPPFLAGS)
+#tests_zfs_tests_cmd_btree_test_LDADD = \
+#	libzpool.la \
+#	libzfs_core.la
 
-tests_zfs_tests_cmd_devname2devid_CFLAGS = $(AM_CFLAGS) $(LIBUDEV_CFLAGS)
-tests_zfs_tests_cmd_devname2devid_LDADD = $(LIBUDEV_LIBS)
-tests_zfs_tests_cmd_draid_CFLAGS = $(AM_CFLAGS) $(ZLIB_CFLAGS)
-tests_zfs_tests_cmd_draid_LDADD = libzpool.la \
-	libnvpair.la $(ZLIB_LIBS)
-tests_zfs_tests_cmd_file_append_SOURCES = tests/zfs-tests/cmd/file/file_append.c
-tests_zfs_tests_cmd_file_check_SOURCES = tests/zfs-tests/cmd/file/file_check.c
-tests_zfs_tests_cmd_file_trunc_SOURCES = tests/zfs-tests/cmd/file/file_trunc.c
-tests_zfs_tests_cmd_file_write_SOURCES = tests/zfs-tests/cmd/file/file_write.c
-tests_zfs_tests_cmd_largest_file_SOURCES = tests/zfs-tests/cmd/file/largest_file.c
-tests_zfs_tests_cmd_randwritecomp_SOURCES = tests/zfs-tests/cmd/file/randwritecomp.c
-tests_zfs_tests_cmd_libzfs_input_check_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/include/os/linux/zfs
-tests_zfs_tests_cmd_libzfs_input_check_LDADD = \
-	libzfs_core.la \
-	libnvpair.la
+##tests_zfs_tests_cmd_devname2devid_CFLAGS = $(AM_CFLAGS) $(LIBUDEV_CFLAGS)
+##tests_zfs_tests_cmd_devname2devid_LDADD = $(LIBUDEV_LIBS)
+#tests_zfs_tests_cmd_draid_CFLAGS = $(AM_CFLAGS) $(ZLIB_CFLAGS)
+#tests_zfs_tests_cmd_draid_LDADD = libzpool.la \
+#	libnvpair.la $(ZLIB_LIBS)
+#tests_zfs_tests_cmd_file_append_SOURCES = tests/zfs-tests/cmd/file/file_append.c
+#tests_zfs_tests_cmd_file_check_SOURCES = tests/zfs-tests/cmd/file/file_check.c
+#tests_zfs_tests_cmd_file_trunc_SOURCES = tests/zfs-tests/cmd/file/file_trunc.c
+#tests_zfs_tests_cmd_file_write_SOURCES = tests/zfs-tests/cmd/file/file_write.c
+#tests_zfs_tests_cmd_largest_file_SOURCES = tests/zfs-tests/cmd/file/largest_file.c
+#tests_zfs_tests_cmd_randwritecomp_SOURCES = tests/zfs-tests/cmd/file/randwritecomp.c
+#tests_zfs_tests_cmd_libzfs_input_check_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/include/os/linux/zfs
+#tests_zfs_tests_cmd_libzfs_input_check_LDADD = \
+#	libzfs_core.la \
+#	libnvpair.la
 
-tests_zfs_tests_cmd_mkfile_LDADD = $(LTLIBINTL)
-tests_zfs_tests_cmd_mmapwrite_LDADD = -lpthread
-#tests_zfs_tests_cmd_mmap_libaio_CFLAGS = $(AM_CFLAGS) $(LIBAIO_CFLAGS)
-#tests_zfs_tests_cmd_mmap_libaio_LDADD = $(LIBAIO_LIBS)
-tests_zfs_tests_cmd_nvlist_to_lua_LDADD = \
-	libzfs_core.la \
-	libnvpair.la
+#tests_zfs_tests_cmd_mkfile_LDADD = $(LTLIBINTL)
+#tests_zfs_tests_cmd_mmapwrite_LDADD = -lpthread
+##tests_zfs_tests_cmd_mmap_libaio_CFLAGS = $(AM_CFLAGS) $(LIBAIO_CFLAGS)
+##tests_zfs_tests_cmd_mmap_libaio_LDADD = $(LIBAIO_LIBS)
+#tests_zfs_tests_cmd_nvlist_to_lua_LDADD = \
+#	libzfs_core.la \
+#	libnvpair.la
 
-tests_zfs_tests_cmd_rm_lnkcnt_zero_file_LDADD = -lpthread
-tests_zfs_tests_cmd_send_doall_LDADD = \
-	libzfs_core.la \
-	libzfs.la \
-	libnvpair.la
+#tests_zfs_tests_cmd_rm_lnkcnt_zero_file_LDADD = -lpthread
+#tests_zfs_tests_cmd_send_doall_LDADD = \
+#	libzfs_core.la \
+#	libzfs.la \
+#	libnvpair.la
 
-tests_zfs_tests_cmd_stride_dd_LDADD = -lrt
-tests_zfs_tests_cmd_threadsappend_LDADD = -lpthread
-tests_zfs_tests_cmd_ereports_LDADD = \
-	libnvpair.la \
-	libzfs.la
+#tests_zfs_tests_cmd_stride_dd_LDADD = -lrt
+#tests_zfs_tests_cmd_threadsappend_LDADD = -lpthread
+#tests_zfs_tests_cmd_ereports_LDADD = \
+#	libnvpair.la \
+#	libzfs.la
 
-tests_zfs_tests_cmd_skein_test_SOURCES = tests/zfs-tests/cmd/checksum/skein_test.c
-tests_zfs_tests_cmd_sha2_test_SOURCES = tests/zfs-tests/cmd/checksum/sha2_test.c
-tests_zfs_tests_cmd_edonr_test_SOURCES = tests/zfs-tests/cmd/checksum/edonr_test.c
-tests_zfs_tests_cmd_blake3_test_SOURCES = tests/zfs-tests/cmd/checksum/blake3_test.c
-tests_zfs_tests_cmd_skein_test_LDADD = \
-	libicp.la \
-	libspl.la \
-	libspl_assert.la
+#tests_zfs_tests_cmd_skein_test_SOURCES = tests/zfs-tests/cmd/checksum/skein_test.c
+#tests_zfs_tests_cmd_sha2_test_SOURCES = tests/zfs-tests/cmd/checksum/sha2_test.c
+#tests_zfs_tests_cmd_edonr_test_SOURCES = tests/zfs-tests/cmd/checksum/edonr_test.c
+#tests_zfs_tests_cmd_blake3_test_SOURCES = tests/zfs-tests/cmd/checksum/blake3_test.c
+#tests_zfs_tests_cmd_skein_test_LDADD = \
+#	libicp.la \
+#	libspl.la \
+#	libspl_assert.la
 
-tests_zfs_tests_cmd_sha2_test_LDADD = $(tests_zfs_tests_cmd_skein_test_LDADD)
-tests_zfs_tests_cmd_edonr_test_LDADD = $(tests_zfs_tests_cmd_skein_test_LDADD)
-tests_zfs_tests_cmd_blake3_test_LDADD = $(tests_zfs_tests_cmd_skein_test_LDADD)
-tests_zfs_tests_cmd_idmap_util_LDADD = libspl.la
-tests_zfs_tests_cmd_read_dos_attributes_SOURCES = tests/zfs-tests/cmd/linux_dos_attributes/read_dos_attributes.c
-tests_zfs_tests_cmd_write_dos_attributes_SOURCES = tests/zfs-tests/cmd/linux_dos_attributes/write_dos_attributes.c
-tests_zfs_tests_cmd_randfree_file_SOURCES = tests/zfs-tests/cmd/file/randfree_file.c
-tests_zfs_tests_cmd_file_fadvise_SOURCES = tests/zfs-tests/cmd/file/file_fadvise.c
-scripts_zfs_tests_functional_libzfsdir = $(datadir)/$(PACKAGE)/zfs-tests/tests/functional/libzfs
-tests_zfs_tests_tests_functional_libzfs_many_fds_LDADD = \
-	libzfs.la
+#tests_zfs_tests_cmd_sha2_test_LDADD = $(tests_zfs_tests_cmd_skein_test_LDADD)
+#tests_zfs_tests_cmd_edonr_test_LDADD = $(tests_zfs_tests_cmd_skein_test_LDADD)
+#tests_zfs_tests_cmd_blake3_test_LDADD = $(tests_zfs_tests_cmd_skein_test_LDADD)
+#tests_zfs_tests_cmd_idmap_util_LDADD = libspl.la
+#tests_zfs_tests_cmd_read_dos_attributes_SOURCES = tests/zfs-tests/cmd/linux_dos_attributes/read_dos_attributes.c
+#tests_zfs_tests_cmd_write_dos_attributes_SOURCES = tests/zfs-tests/cmd/linux_dos_attributes/write_dos_attributes.c
+#tests_zfs_tests_cmd_randfree_file_SOURCES = tests/zfs-tests/cmd/file/randfree_file.c
+#tests_zfs_tests_cmd_file_fadvise_SOURCES = tests/zfs-tests/cmd/file/file_fadvise.c
+#scripts_zfs_tests_functional_libzfsdir = $(datadir)/$(PACKAGE)/zfs-tests/tests/functional/libzfs
+#tests_zfs_tests_tests_functional_libzfs_many_fds_LDADD = \
+#	libzfs.la
 
-scripts_zfs_tests_functional_hkdfdir = $(datadir)/$(PACKAGE)/zfs-tests/tests/functional/hkdf
-tests_zfs_tests_tests_functional_hkdf_hkdf_test_LDADD = \
-	libzpool.la
+#scripts_zfs_tests_functional_hkdfdir = $(datadir)/$(PACKAGE)/zfs-tests/tests/functional/hkdf
+#tests_zfs_tests_tests_functional_hkdf_hkdf_test_LDADD = \
+#	libzpool.la
 
-scripts_zfs_tests_functional_tmpfiledir = $(datadir)/$(PACKAGE)/zfs-tests/tests/functional/tmpfile
-scripts_zfs_tests_callbacksdir = $(datadir)/$(PACKAGE)/zfs-tests/callbacks
-dist_scripts_zfs_tests_callbacks_SCRIPTS = \
-	tests/zfs-tests/callbacks/zfs_dbgmsg.ksh \
-	tests/zfs-tests/callbacks/zfs_dmesg.ksh \
-	tests/zfs-tests/callbacks/zfs_failsafe.ksh \
-	tests/zfs-tests/callbacks/zfs_mmp.ksh
+#scripts_zfs_tests_functional_tmpfiledir = $(datadir)/$(PACKAGE)/zfs-tests/tests/functional/tmpfile
+#scripts_zfs_tests_callbacksdir = $(datadir)/$(PACKAGE)/zfs-tests/callbacks
+#dist_scripts_zfs_tests_callbacks_SCRIPTS = \
+#	tests/zfs-tests/callbacks/zfs_dbgmsg.ksh \
+#	tests/zfs-tests/callbacks/zfs_dmesg.ksh \
+#	tests/zfs-tests/callbacks/zfs_failsafe.ksh \
+#	tests/zfs-tests/callbacks/zfs_mmp.ksh
 
-scripts_zfs_tests_includedir = $(datadir)/$(PACKAGE)/zfs-tests/include
-dist_scripts_zfs_tests_include_DATA = \
-	tests/zfs-tests/include/blkdev.shlib \
-	tests/zfs-tests/include/commands.cfg \
-	tests/zfs-tests/include/libtest.shlib \
-	tests/zfs-tests/include/math.shlib \
-	tests/zfs-tests/include/properties.shlib \
-	tests/zfs-tests/include/tunables.cfg \
-	tests/zfs-tests/include/zpool_script.shlib
+#scripts_zfs_tests_includedir = $(datadir)/$(PACKAGE)/zfs-tests/include
+#dist_scripts_zfs_tests_include_DATA = \
+#	tests/zfs-tests/include/blkdev.shlib \
+#	tests/zfs-tests/include/commands.cfg \
+#	tests/zfs-tests/include/libtest.shlib \
+#	tests/zfs-tests/include/math.shlib \
+#	tests/zfs-tests/include/properties.shlib \
+#	tests/zfs-tests/include/tunables.cfg \
+#	tests/zfs-tests/include/zpool_script.shlib
 
-nodist_scripts_zfs_tests_include_DATA = \
-	tests/zfs-tests/include/default.cfg
+#nodist_scripts_zfs_tests_include_DATA = \
+#	tests/zfs-tests/include/default.cfg
 
-scripts_test_runner_bindir = $(datadir)/$(PACKAGE)/test-runner/bin
-scripts_test_runner_bin_SCRIPTS = \
-	tests/test-runner/bin/test-runner.py \
-	tests/test-runner/bin/zts-report.py
+#scripts_test_runner_bindir = $(datadir)/$(PACKAGE)/test-runner/bin
+#scripts_test_runner_bin_SCRIPTS = \
+#	tests/test-runner/bin/test-runner.py \
+#	tests/test-runner/bin/zts-report.py
 
-scripts_test_runner_includedir = $(datadir)/$(PACKAGE)/test-runner/include
-dist_scripts_test_runner_include_DATA = \
-	tests/test-runner/include/logapi.shlib
+#scripts_test_runner_includedir = $(datadir)/$(PACKAGE)/test-runner/include
+#dist_scripts_test_runner_include_DATA = \
+#	tests/test-runner/include/logapi.shlib
 
-scripts_runfilesdir = $(datadir)/$(PACKAGE)/runfiles
-dist_scripts_runfiles_DATA = \
-	tests/runfiles/common.run \
-	tests/runfiles/freebsd.run \
-	tests/runfiles/linux.run \
-	tests/runfiles/longevity.run \
-	tests/runfiles/perf-regression.run \
-	tests/runfiles/sanity.run \
-	tests/runfiles/sunos.run
+#scripts_runfilesdir = $(datadir)/$(PACKAGE)/runfiles
+#dist_scripts_runfiles_DATA = \
+#	tests/runfiles/common.run \
+#	tests/runfiles/freebsd.run \
+#	tests/runfiles/linux.run \
+#	tests/runfiles/longevity.run \
+#	tests/runfiles/perf-regression.run \
+#	tests/runfiles/sanity.run \
+#	tests/runfiles/sunos.run
 
-udevrule_DATA = \
-	udev/rules.d/69-vdev.rules \
-	udev/rules.d/60-zvol.rules \
-	udev/rules.d/90-zfs.rules
+#udevrule_DATA = \
+#	udev/rules.d/69-vdev.rules \
+#	udev/rules.d/60-zvol.rules \
+#	udev/rules.d/90-zfs.rules
 
-dist_udev_SCRIPTS = udev/vdev_id
-#extradir = $(prefix)/src/zfs-$(VERSION)
-#extra_HEADERS = zfs.release.in zfs_config.h.in
+#dist_udev_SCRIPTS = udev/vdev_id
+extradir = $(prefix)/src/zfs-$(VERSION)
+extra_HEADERS = zfs.release.in zfs_config.h.in
 GITREV = include/zfs_gitrev.h
 cstyle_line = -exec ${top_srcdir}/scripts/cstyle.pl -cpP {} +
 #cstyle_line = -print0 | parallel -X0 ${top_srcdir}/scripts/cstyle.pl -cpP {}
@@ -12620,9 +12620,9 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-#install-exec-local:
 install-exec-local:
-#install-exec-hook:
+install-exec-local:
+install-exec-hook:
 clean: clean-recursive
 
 clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
@@ -13867,40 +13867,40 @@ scripts-install-data-hook: scripts/common.sh.in Makefile
 		-e '/^export ZTS_DIR=/s|$$|$(datadir)/$(PACKAGE)|' \
 		-e '/^export SCRIPT_DIR=/s|$$|$(datadir)/$(PACKAGE)|' \
 		$< >$(DESTDIR)$(datadir)/$(PACKAGE)/common.sh
-$(call SUBST,fsck.zfs,cmd/)
-zpool-install-data-hook:
-	$(MKDIR_P) "$(DESTDIR)$(zpoolconfdir)"
-	set -x; for f in $(zpoolconfdefaults); do \
-	  [ -f "$(DESTDIR)$(zpoolconfdir)/$${f}" ] || \
-	  [ -L "$(DESTDIR)$(zpoolconfdir)/$${f}" ] || \
-	    $(LN_S) "$(zpoolexecdir)/$${f}" "$(DESTDIR)$(zpoolconfdir)"; \
-	done
-	set -x; printf '%s\n' $(zpoolcompatlinks) | \
-	while read -r canon alias; do \
-		$(LN_S) -f "$${canon}" "$(DESTDIR)$(zpoolcompatdir)/$${alias}"; \
-	done
-install-exec-hook:
-	cd $(DESTDIR)$(sbindir) && $(LN_S) -f zstream zstreamdump
-zed-install-data-hook:
-	$(MKDIR_P) "$(DESTDIR)$(zedconfdir)"
-	set -x; for f in $(zedconfdefaults); do \
-	  [ -f "$(DESTDIR)$(zedconfdir)/$${f}" ] ||\
-	    [ -L "$(DESTDIR)$(zedconfdir)/$${f}" ] || \
-	    $(LN_S) "$(zedexecdir)/$${f}" "$(DESTDIR)$(zedconfdir)"; \
-	done
-$(call SHELLCHECK_OPTS,$(dist_zedconf_DATA) $(dist_zedexec_SCRIPTS) $(nodist_zedexec_SCRIPTS)): SHELLCHECK_SHELL = sh
+#$(call SUBST,fsck.zfs,cmd/)
+#zpool-install-data-hook:
+#	$(MKDIR_P) "$(DESTDIR)$(zpoolconfdir)"
+#	set -x; for f in $(zpoolconfdefaults); do \
+#	  [ -f "$(DESTDIR)$(zpoolconfdir)/$${f}" ] || \
+#	  [ -L "$(DESTDIR)$(zpoolconfdir)/$${f}" ] || \
+#	    $(LN_S) "$(zpoolexecdir)/$${f}" "$(DESTDIR)$(zpoolconfdir)"; \
+#	done
+#	set -x; printf '%s\n' $(zpoolcompatlinks) | \
+#	while read -r canon alias; do \
+#		$(LN_S) -f "$${canon}" "$(DESTDIR)$(zpoolcompatdir)/$${alias}"; \
+#	done
+#install-exec-hook:
+#	cd $(DESTDIR)$(sbindir) && $(LN_S) -f zstream zstreamdump
+#zed-install-data-hook:
+#	$(MKDIR_P) "$(DESTDIR)$(zedconfdir)"
+#	set -x; for f in $(zedconfdefaults); do \
+#	  [ -f "$(DESTDIR)$(zedconfdir)/$${f}" ] ||\
+#	    [ -L "$(DESTDIR)$(zedconfdir)/$${f}" ] || \
+#	    $(LN_S) "$(zedexecdir)/$${f}" "$(DESTDIR)$(zedconfdir)"; \
+#	done
+#$(call SHELLCHECK_OPTS,$(dist_zedconf_DATA) $(dist_zedexec_SCRIPTS) $(nodist_zedexec_SCRIPTS)): SHELLCHECK_SHELL = sh
 # False positive: 1>&"${ZED_FLOCK_FD}" looks suspiciously similar to a >&filename bash extension
-$(call SHELLCHECK_OPTS,$(dist_zedconf_DATA) $(dist_zedexec_SCRIPTS) $(nodist_zedexec_SCRIPTS)): CHECKBASHISMS_IGNORE = -e 'should be >word 2>&1' -e '&"$${ZED_FLOCK_FD}"'
+#$(call SHELLCHECK_OPTS,$(dist_zedconf_DATA) $(dist_zedexec_SCRIPTS) $(nodist_zedexec_SCRIPTS)): CHECKBASHISMS_IGNORE = -e 'should be >word 2>&1' -e '&"$${ZED_FLOCK_FD}"'
 
-$(call SUBST,arcstat,cmd/)
-$(call SUBST,dbufstat,cmd/)
-$(call SUBST,zilstat,cmd/)
-arc_summary: cmd/arc_summary
-	$(AM_V_at)cp $< $@
-cmd: $(bin_SCRIPTS) $(bin_PROGRAMS) $(sbin_SCRIPTS) $(sbin_PROGRAMS) $(dist_bin_SCRIPTS) $(zfsexec_PROGRAMS) $(mounthelper_PROGRAMS)
-$(call SHELLCHECK_OPTS,$(nodist_bashcompletion_DATA)): SHELLCHECK_SHELL = bash
-#pyzfs-all-local: contrib/pyzfs/setup.py
-#	cd contrib/pyzfs && $(PYTHON) setup.py -q $(pyzfs_V_$(V)) egg_info -e . build
+#$(call SUBST,arcstat,cmd/)
+#$(call SUBST,dbufstat,cmd/)
+#$(call SUBST,zilstat,cmd/)
+#arc_summary: cmd/arc_summary
+#	$(AM_V_at)cp $< $@
+#cmd: $(bin_SCRIPTS) $(bin_PROGRAMS) $(sbin_SCRIPTS) $(sbin_PROGRAMS) $(dist_bin_SCRIPTS) $(zfsexec_PROGRAMS) $(mounthelper_PROGRAMS)
+#$(call SHELLCHECK_OPTS,$(nodist_bashcompletion_DATA)): SHELLCHECK_SHELL = bash
+##pyzfs-all-local: contrib/pyzfs/setup.py
+##	cd contrib/pyzfs && $(PYTHON) setup.py -q $(pyzfs_V_$(V)) egg_info -e . build
 
 #
 # On Debian (Ubuntu, and other downstream distros) the install location of
@@ -13919,78 +13919,78 @@ $(call SHELLCHECK_OPTS,$(nodist_bashcompletion_DATA)): SHELLCHECK_SHELL = bash
 # packaged: this could result in failures during the uninstall phase if these
 # files are later created by manually loading the Python modules.
 #
-#install-exec-local:
-#	cd contrib/pyzfs && $(PYTHON) setup.py egg_info -e . install \
-#	  --prefix $(prefix) \
-#	  --root $(DESTDIR)/ \
-#	  --install-lib $(pythonsitedir) \
-#	  --single-version-externally-managed \
-#	  --verbose
-#pyzfs-clean-local:
-#	-$(RM) -r contrib/pyzfs/build/ contrib/pyzfs/pyzfs.egg-info/
+##install-exec-local:
+##	cd contrib/pyzfs && $(PYTHON) setup.py egg_info -e . install \
+##	  --prefix $(prefix) \
+##	  --root $(DESTDIR)/ \
+##	  --install-lib $(pythonsitedir) \
+##	  --single-version-externally-managed \
+##	  --verbose
+##pyzfs-clean-local:
+##	-$(RM) -r contrib/pyzfs/build/ contrib/pyzfs/pyzfs.egg-info/
 # Provided by /bin/sleep, and, again, every implementation of that supports this
-$(call SHELLCHECK_OPTS,$(pkgdracut_90_SCRIPTS)): CHECKBASHISMS_IGNORE = -e 'sleep only takes one integer' -e 'sleep 0.'
-$(call SHELLCHECK_OPTS,$(i_t_check_scripts)): SHELLCHECK_SHELL = sh
-$(call SHELLCHECK_OPTS,$(sysconf_zfs_DATA)): SHELLCHECK_SHELL = sh
-$(call SHELLCHECK_OPTS,$(initconf_DATA)): SHELLCHECK_SHELL = sh
-$(call SHELLCHECK_OPTS,$(init_SCRIPTS)): SHELLCHECK_SHELL = sh
-systemd-install-data-hook:
-	$(MKDIR_P) "$(DESTDIR)$(systemdunitdir)"
-	ln -sf /dev/null "$(DESTDIR)$(systemdunitdir)/zfs-import.service"
-	ln -sf /dev/null "$(DESTDIR)$(systemdunitdir)/zfs-load-key.service"
+#$(call SHELLCHECK_OPTS,$(pkgdracut_90_SCRIPTS)): CHECKBASHISMS_IGNORE = -e 'sleep only takes one integer' -e 'sleep 0.'
+#$(call SHELLCHECK_OPTS,$(i_t_check_scripts)): SHELLCHECK_SHELL = sh
+#$(call SHELLCHECK_OPTS,$(sysconf_zfs_DATA)): SHELLCHECK_SHELL = sh
+#$(call SHELLCHECK_OPTS,$(initconf_DATA)): SHELLCHECK_SHELL = sh
+##$(call SHELLCHECK_OPTS,$(init_SCRIPTS)): SHELLCHECK_SHELL = sh
+##systemd-install-data-hook:
+##	$(MKDIR_P) "$(DESTDIR)$(systemdunitdir)"
+##	ln -sf /dev/null "$(DESTDIR)$(systemdunitdir)/zfs-import.service"
+##	ln -sf /dev/null "$(DESTDIR)$(systemdunitdir)/zfs-load-key.service"
 
 # wchar_t is undefined-signedness, but we compare to >=0; this warns with unsigned wchar_t
-lib/libnvpair/libnvpair_la-libnvpair_json.$(OBJEXT) : CFLAGS += -Wno-type-limits
-lib/libnvpair/libnvpair_la-libnvpair_json.l$(OBJEXT): CFLAGS += -Wno-type-limits
+#lib/libnvpair/libnvpair_la-libnvpair_json.$(OBJEXT) : CFLAGS += -Wno-type-limits
+#lib/libnvpair/libnvpair_la-libnvpair_json.l$(OBJEXT): CFLAGS += -Wno-type-limits
 
-#module/zfs/libzpool_la-vdev_raidz_math_powerpc_altivec.$(OBJEXT) : CFLAGS += -maltivec
-#module/zfs/libzpool_la-vdev_raidz_math_powerpc_altivec.l$(OBJEXT): CFLAGS += -maltivec
-lib: $(noinst_LTLIBRARIES) $(lib_LTLIBRARIES)
+##module/zfs/libzpool_la-vdev_raidz_math_powerpc_altivec.$(OBJEXT) : CFLAGS += -maltivec
+##module/zfs/libzpool_la-vdev_raidz_math_powerpc_altivec.l$(OBJEXT): CFLAGS += -maltivec
+#lib: $(noinst_LTLIBRARIES) $(lib_LTLIBRARIES)
 
-check_libabi_version:
-	if [ $$(abidw -v | $(SED) 's/[^0-9]//g') -lt 200 ]; then \
-		printf '%s\n' "" \
-		    "*** Please use libabigail 2.0.0 version or newer;" \
-		    "*** otherwise results are not consistent!" \
-		    "(or see https://github.com/openzfs/libabigail-docker)"; \
-		exit 1; \
-	fi
+#check_libabi_version:
+#	if [ $$(abidw -v | $(SED) 's/[^0-9]//g') -lt 200 ]; then \
+#		printf '%s\n' "" \
+#		    "*** Please use libabigail 2.0.0 version or newer;" \
+#		    "*** otherwise results are not consistent!" \
+#		    "(or see https://github.com/openzfs/libabigail-docker)"; \
+#		exit 1; \
+#	fi
 
-allow_libabi_only_for_x86_64:
-	echo '*** ABI definitions provided apply only to x86_64:'
-	echo '*** not checking or storing ABI and assuming success.'
+#allow_libabi_only_for_x86_64:
+#	echo '*** ABI definitions provided apply only to x86_64:'
+#	echo '*** not checking or storing ABI and assuming success.'
 
 # These should depend on $(lib_LTLIBRARIES), but this breaks on CI when bound into Docker
-checkabi: check_libabi_version
-	err=0; \
-	for lib in $(lib_LTLIBRARIES); do \
-		lib=$${lib%.la}; \
-		[ -f $(srcdir)/lib/$$lib/$$lib.suppr ] || continue; \
-		echo $$lib:; \
-		abidiff --no-unreferenced-symbols \
-		    --headers-dir1 include \
-		    --suppressions $(srcdir)/lib/$$lib/$$lib.suppr \
-		    $(srcdir)/lib/$$lib/$$lib.abi .libs/$$lib.so || err=$$((err + 1)); \
-	done; \
-	exit $$err
+#checkabi: check_libabi_version
+#	err=0; \
+#	for lib in $(lib_LTLIBRARIES); do \
+#		lib=$${lib%.la}; \
+#		[ -f $(srcdir)/lib/$$lib/$$lib.suppr ] || continue; \
+#		echo $$lib:; \
+#		abidiff --no-unreferenced-symbols \
+#		    --headers-dir1 include \
+#		    --suppressions $(srcdir)/lib/$$lib/$$lib.suppr \
+#		    $(srcdir)/lib/$$lib/$$lib.abi .libs/$$lib.so || err=$$((err + 1)); \
+#	done; \
+#	exit $$err
 
-storeabi: check_libabi_version
-	for lib in $(lib_LTLIBRARIES); do \
-		lib=$${lib%.la}; \
-		[ -f $(srcdir)/lib/$$lib/$$lib.suppr ] || continue; \
-		abidw --no-show-locs \
-		    --no-corpus-path \
-		    --no-comp-dir-path \
-		    --type-id-style hash \
-		    .libs/$$lib.so > $(srcdir)/lib/$$lib/$$lib.abi; \
-	done
-#checkabi: allow_libabi_only_for_x86_64
-#storeabi: allow_libabi_only_for_x86_64
-mancheck:
-	$(top_srcdir)/scripts/mancheck.sh $(srcdir)/man
-man-install-data-hook:
-	cd $(DESTDIR)$(mandir) && $(SED) $(ac_inplace) 's/^\.Os$$/.Os OpenZFS/' $(subst man/,,$(dist_man_MANS) $(nodist_man_MANS))
-udev: $(dist_udev_SCRIPTS) $(udev_PROGRAMS)
+#storeabi: check_libabi_version
+#	for lib in $(lib_LTLIBRARIES); do \
+#		lib=$${lib%.la}; \
+#		[ -f $(srcdir)/lib/$$lib/$$lib.suppr ] || continue; \
+#		abidw --no-show-locs \
+#		    --no-corpus-path \
+#		    --no-comp-dir-path \
+#		    --type-id-style hash \
+#		    .libs/$$lib.so > $(srcdir)/lib/$$lib/$$lib.abi; \
+#	done
+##checkabi: allow_libabi_only_for_x86_64
+##storeabi: allow_libabi_only_for_x86_64
+#mancheck:
+#	$(top_srcdir)/scripts/mancheck.sh $(srcdir)/man
+#man-install-data-hook:
+#	cd $(DESTDIR)$(mandir) && $(SED) $(ac_inplace) 's/^\.Os$$/.Os OpenZFS/' $(subst man/,,$(dist_man_MANS) $(nodist_man_MANS))
+#udev: $(dist_udev_SCRIPTS) $(udev_PROGRAMS)
 
 
 # Code coverage

@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/vfs_getattr_3args/vfs_getattr_3args.mod := printf '%s\n'   vfs_getattr_3args.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/vfs_getattr_3args/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/vfs_getattr_3args/vfs_getattr_3args.mod

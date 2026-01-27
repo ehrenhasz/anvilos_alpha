@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/pde_data/pde_data.mod := printf '%s\n'   pde_data.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/pde_data/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/pde_data/pde_data.mod

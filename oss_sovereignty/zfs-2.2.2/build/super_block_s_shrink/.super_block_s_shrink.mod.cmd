@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/super_block_s_shrink/super_block_s_shrink.mod := printf '%s\n'   super_block_s_shrink.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/super_block_s_shrink/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/super_block_s_shrink/super_block_s_shrink.mod

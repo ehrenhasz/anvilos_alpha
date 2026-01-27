@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/setattr_prepare/setattr_prepare.mod := printf '%s\n'   setattr_prepare.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/setattr_prepare/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/setattr_prepare/setattr_prepare.mod

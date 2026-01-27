@@ -566,7 +566,7 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = ${SHELL} '/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/config/missing' aclocal-1.16
 AIO_H_CFLAGS = 
-AIO_H_LIBS =  -lrt
+AIO_H_LIBS = 
 AIO_H_PC = 
 ALIEN = alien
 ALIEN_MAJOR = 
@@ -589,7 +589,7 @@ CCAS = gcc
 CCASDEPMODE = depmode=gcc3
 CCASFLAGS = -g -O2
 CCDEPMODE = depmode=gcc3
-CFGOPTS = --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-static --disable-shared --with-config=user --with-tirpc
+CFGOPTS = --with-linux=/home/aimeat/anvilos/oss_sovereignty/linux-6.6.14 --with-linux-obj=/home/aimeat/anvilos/oss_sovereignty/linux-6.6.14 --with-config=kernel
 CFLAGS = -g -O2
 CHECKBASHISMS = 
 CODE_COVERAGE_CFLAGS = 
@@ -599,7 +599,7 @@ CODE_COVERAGE_ENABLED = no
 CODE_COVERAGE_LDFLAGS = 
 CODE_COVERAGE_LIBS = 
 CPPCHECK = @printf "skipping cppcheck because cppcheck is not installed\n"
-CPPFLAGS = -I/home/aimeat/anvilos/oss_sovereignty/staging/include -I/home/aimeat/anvilos/oss_sovereignty/staging/include/tirpc
+CPPFLAGS = 
 CPU_COUNT = 8
 CSCOPE = cscope
 CTAGS = ctags
@@ -618,7 +618,7 @@ DEFINE_PAM =
 DEFINE_PYTHON_PKG_VERSION = 
 DEFINE_PYTHON_VERSION = 
 DEFINE_PYZFS = 
-DEFINE_SYSTEMD = --with systemd --define "_unitdir $(systemdunitdir)" --define "_presetdir $(systemdpresetdir)" --define "_generatordir $(systemdgeneratordir)"
+DEFINE_SYSTEMD = 
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DLLTOOL = false
@@ -668,19 +668,19 @@ KERNEL_MAKE =
 KERNEL_NO_IPA_SRA = -fno-ipa-sra
 LCOV = 
 LD = /usr/bin/ld
-LDFLAGS = -L/home/aimeat/anvilos/oss_sovereignty/staging/lib
-LIBAIO_CFLAGS = -I/usr/local/include
-LIBAIO_LIBS = -L/usr/local/lib
+LDFLAGS = 
+LIBAIO_CFLAGS = 
+LIBAIO_LIBS = 
 LIBAIO_PC = 
 LIBATOMIC_LIBS = 
 LIBBLKID_CFLAGS = 
-LIBBLKID_LIBS =  -lblkid
+LIBBLKID_LIBS = 
 LIBBLKID_PC = 
 LIBCLOCK_GETTIME = 
 LIBCRYPTO_CFLAGS = 
-LIBCRYPTO_LIBS =  -lcrypto
+LIBCRYPTO_LIBS = 
 LIBCRYPTO_PC = 
-LIBFETCH_DYNAMIC = 0
+LIBFETCH_DYNAMIC = 
 LIBFETCH_LIBS = 
 LIBFETCH_SONAME = 
 LIBICONV = -liconv
@@ -688,19 +688,19 @@ LIBINTL =
 LIBOBJS = 
 LIBS = 
 LIBTIRPC_CFLAGS = 
-LIBTIRPC_LIBS =  -ltirpc
+LIBTIRPC_LIBS = 
 LIBTIRPC_PC = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBUDEV_CFLAGS = 
-LIBUDEV_LIBS =  -ludev
+LIBUDEV_LIBS = 
 LIBUDEV_PC = 
 LIBUUID_CFLAGS = 
-LIBUUID_LIBS =  -luuid
+LIBUUID_LIBS = 
 LIBUUID_PC = 
-LINUX = 
-LINUX_OBJ = 
-LINUX_SYMBOLS = 
-LINUX_VERSION = 
+LINUX = /home/aimeat/anvilos/oss_sovereignty/linux-6.6.14
+LINUX_OBJ = /home/aimeat/anvilos/oss_sovereignty/linux-6.6.14
+LINUX_SYMBOLS = Module.symvers
+LINUX_VERSION = 6.6.14
 LIPO = 
 LN_S = ln -s
 LTLIBICONV = -liconv
@@ -737,8 +737,8 @@ PARALLEL =
 PATH_SEPARATOR = :
 PKG_CONFIG = 
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = /home/aimeat/anvilos/oss_sovereignty/staging/lib/pkgconfig
-POSUB = po
+PKG_CONFIG_PATH = 
+POSUB = 
 PYTHON = python3
 PYTHON_CPPFLAGS = 
 PYTHON_EXEC_PREFIX = ${exec_prefix}
@@ -763,8 +763,8 @@ RPMBUILD_VERSION =
 RPM_DEFINE_COMMON = --define "$(DEBUG_ZFS) 1" --define "$(DEBUGINFO_ZFS) 1" --define "$(DEBUG_KMEM_ZFS) 1" --define "$(DEBUG_KMEM_TRACKING_ZFS) 1" --define "$(ASAN_ZFS) 1" --define "$(UBSAN_ZFS) 1"
 RPM_DEFINE_DKMS = 
 RPM_DEFINE_INITRAMFS = --define "_initramfs 1"
-RPM_DEFINE_KMOD = --define "_wrong_version_format_terminate_build 0"
-RPM_DEFINE_UTIL =  --define "_initconfdir $(initconfdir)" --define "_dracutdir $(dracutdir)" --define "_udevdir $(udevdir)" --define "_udevruledir $(udevruledir)" --define "_bashcompletiondir $(bashcompletiondir)" $(DEFINE_SYSTEMD) $(DEFINE_PYZFS) $(DEFINE_PAM) $(DEFINE_PYTHON_VERSION) $(DEFINE_PYTHON_PKG_VERSION) --define "_lib $(MULTIARCH_LIBDIR)"
+RPM_DEFINE_KMOD = --define "_wrong_version_format_terminate_build 0" --define "kernels $(LINUX_VERSION)" --define "ksrc $(LINUX)" --define "kobj $(LINUX_OBJ)" --define "kernel_cc KERNEL_CC=$(KERNEL_CC)" --define "kernel_ld KERNEL_LD=$(KERNEL_LD)" --define "kernel_llvm KERNEL_LLVM=$(KERNEL_LLVM)"
+RPM_DEFINE_UTIL =  --define "_initconfdir $(initconfdir)" --define "_bashcompletiondir $(bashcompletiondir)" $(DEFINE_SYSTEMD) $(DEFINE_PYZFS) $(DEFINE_PAM) $(DEFINE_PYTHON_VERSION) $(DEFINE_PYTHON_PKG_VERSION) --define "_lib $(MULTIARCH_LIBDIR)"
 RPM_SPEC_DIR = rpm/generic
 RPM_VERSION = 
 SED = /usr/bin/sed
@@ -789,7 +789,7 @@ WITH_INVARIANTS =
 XGETTEXT = :
 XGETTEXT_015 = :
 XGETTEXT_EXTRA_OPTIONS = 
-ZFS_CONFIG = user
+ZFS_CONFIG = kernel
 ZFS_META_ALIAS = zfs-2.2.2-1
 ZFS_META_AUTHOR = OpenZFS
 ZFS_META_DATA = 
@@ -803,7 +803,7 @@ ZFS_META_NAME = zfs
 ZFS_META_RELEASE = 1
 ZFS_META_VERSION = 2.2.2
 ZLIB_CFLAGS = 
-ZLIB_LIBS =  -lz
+ZLIB_LIBS = 
 ZLIB_PC = 
 abs_builddir = /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/include
 abs_srcdir = /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/include
@@ -831,7 +831,7 @@ builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
-dracutdir = /usr/lib/dracut
+dracutdir = 
 dvidir = ${docdir}
 exec_prefix = ${prefix}
 host = x86_64-pc-linux-gnu
@@ -843,24 +843,24 @@ htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
 initconfdir = /etc/default
-initdir = /etc/init.d
+initdir = ${prefix}/etc/init.d
 install_sh = ${SHELL} /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/config/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
-localstatedir = /var
+localstatedir = ${prefix}/var
 mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
-modulesloaddir = /usr/lib/modules-load.d
-mounthelperdir = /sbin
+modulesloaddir = 
+mounthelperdir = 
 oldincludedir = /usr/include
-pamconfigsdir = ${datadir}/pam-configs
-pammoduledir = ${exec_prefix}/lib/security
+pamconfigsdir = 
+pammoduledir = 
 pdfdir = ${docdir}
-pkgconfigdir = ${libdir}/pkgconfig
+pkgconfigdir = 
 pkgpyexecdir = ${pyexecdir}/zfs
 pkgpythondir = ${pythondir}/zfs
-prefix = /usr
+prefix = /usr/local
 program_transform_name = s,x,x,
 psdir = ${docdir}
 pyexecdir = ${PYTHON_EXEC_PREFIX}/local/lib/python3.12/dist-packages
@@ -870,10 +870,10 @@ runstatedir = ${localstatedir}/run
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 srcdir = .
-sysconfdir = /etc
-systemdgeneratordir = /usr/lib/systemd/system-generators
-systemdpresetdir = /usr/lib/systemd/system-preset
-systemdunitdir = /usr/lib/systemd/system
+sysconfdir = ${prefix}/etc
+systemdgeneratordir = 
+systemdpresetdir = 
+systemdunitdir = 
 target = x86_64-pc-linux-gnu
 target_alias = 
 target_cpu = x86_64
@@ -882,123 +882,123 @@ target_vendor = pc
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-udevdir = /lib/udev
-udevruledir = /lib/udev/rules.d
-zfsexecdir = ${exec_prefix}/libexec/zfs
-#kernel_linuxdir = $(kerneldir)/linux
-#kernel_linux_HEADERS = \
-#	os/linux/kernel/linux/blkdev_compat.h \
-#	os/linux/kernel/linux/compiler_compat.h \
-#	os/linux/kernel/linux/dcache_compat.h \
-#	os/linux/kernel/linux/kmap_compat.h \
-#	os/linux/kernel/linux/mod_compat.h \
-#	os/linux/kernel/linux/page_compat.h \
-#	os/linux/kernel/linux/percpu_compat.h \
-#	os/linux/kernel/linux/simd.h \
-#	os/linux/kernel/linux/simd_aarch64.h \
-#	os/linux/kernel/linux/simd_arm.h \
-#	os/linux/kernel/linux/simd_powerpc.h \
-#	os/linux/kernel/linux/simd_x86.h \
-#	os/linux/kernel/linux/utsname_compat.h \
-#	os/linux/kernel/linux/vfs_compat.h \
-#	os/linux/kernel/linux/xattr_compat.h
+udevdir = 
+udevruledir = 
+zfsexecdir = 
+kernel_linuxdir = $(kerneldir)/linux
+kernel_linux_HEADERS = \
+	os/linux/kernel/linux/blkdev_compat.h \
+	os/linux/kernel/linux/compiler_compat.h \
+	os/linux/kernel/linux/dcache_compat.h \
+	os/linux/kernel/linux/kmap_compat.h \
+	os/linux/kernel/linux/mod_compat.h \
+	os/linux/kernel/linux/page_compat.h \
+	os/linux/kernel/linux/percpu_compat.h \
+	os/linux/kernel/linux/simd.h \
+	os/linux/kernel/linux/simd_aarch64.h \
+	os/linux/kernel/linux/simd_arm.h \
+	os/linux/kernel/linux/simd_powerpc.h \
+	os/linux/kernel/linux/simd_x86.h \
+	os/linux/kernel/linux/utsname_compat.h \
+	os/linux/kernel/linux/vfs_compat.h \
+	os/linux/kernel/linux/xattr_compat.h
 
-#kernel_sysdir = $(kerneldir)/sys
-#kernel_sys_HEADERS = \
-#	os/linux/zfs/sys/policy.h \
-#	os/linux/zfs/sys/trace_acl.h \
-#	os/linux/zfs/sys/trace_arc.h \
-#	os/linux/zfs/sys/trace_common.h \
-#	os/linux/zfs/sys/trace_dbgmsg.h \
-#	os/linux/zfs/sys/trace_dbuf.h \
-#	os/linux/zfs/sys/trace_dmu.h \
-#	os/linux/zfs/sys/trace_dnode.h \
-#	os/linux/zfs/sys/trace_multilist.h \
-#	os/linux/zfs/sys/trace_rrwlock.h \
-#	os/linux/zfs/sys/trace_txg.h \
-#	os/linux/zfs/sys/trace_vdev.h \
-#	os/linux/zfs/sys/trace_zfs.h \
-#	os/linux/zfs/sys/trace_zil.h \
-#	os/linux/zfs/sys/trace_zio.h \
-#	os/linux/zfs/sys/trace_zrlock.h \
-#	os/linux/zfs/sys/zfs_bootenv_os.h \
-#	os/linux/zfs/sys/zfs_context_os.h \
-#	os/linux/zfs/sys/zfs_ctldir.h \
-#	os/linux/zfs/sys/zfs_dir.h \
-#	os/linux/zfs/sys/zfs_vfsops_os.h \
-#	os/linux/zfs/sys/zfs_vnops_os.h \
-#	os/linux/zfs/sys/zfs_znode_impl.h \
-#	os/linux/zfs/sys/zpl.h
+kernel_sysdir = $(kerneldir)/sys
+kernel_sys_HEADERS = \
+	os/linux/zfs/sys/policy.h \
+	os/linux/zfs/sys/trace_acl.h \
+	os/linux/zfs/sys/trace_arc.h \
+	os/linux/zfs/sys/trace_common.h \
+	os/linux/zfs/sys/trace_dbgmsg.h \
+	os/linux/zfs/sys/trace_dbuf.h \
+	os/linux/zfs/sys/trace_dmu.h \
+	os/linux/zfs/sys/trace_dnode.h \
+	os/linux/zfs/sys/trace_multilist.h \
+	os/linux/zfs/sys/trace_rrwlock.h \
+	os/linux/zfs/sys/trace_txg.h \
+	os/linux/zfs/sys/trace_vdev.h \
+	os/linux/zfs/sys/trace_zfs.h \
+	os/linux/zfs/sys/trace_zil.h \
+	os/linux/zfs/sys/trace_zio.h \
+	os/linux/zfs/sys/trace_zrlock.h \
+	os/linux/zfs/sys/zfs_bootenv_os.h \
+	os/linux/zfs/sys/zfs_context_os.h \
+	os/linux/zfs/sys/zfs_ctldir.h \
+	os/linux/zfs/sys/zfs_dir.h \
+	os/linux/zfs/sys/zfs_vfsops_os.h \
+	os/linux/zfs/sys/zfs_vnops_os.h \
+	os/linux/zfs/sys/zfs_znode_impl.h \
+	os/linux/zfs/sys/zpl.h
 
-#kernel_spl_rpcdir = $(kerneldir)/spl/rpc
-#kernel_spl_rpc_HEADERS = \
-#	os/linux/spl/rpc/xdr.h
+kernel_spl_rpcdir = $(kerneldir)/spl/rpc
+kernel_spl_rpc_HEADERS = \
+	os/linux/spl/rpc/xdr.h
 
-#kernel_spl_sysdir = $(kerneldir)/spl/sys
-#kernel_spl_sys_HEADERS = \
-#	os/linux/spl/sys/acl.h \
-#	os/linux/spl/sys/atomic.h \
-#	os/linux/spl/sys/byteorder.h \
-#	os/linux/spl/sys/callb.h \
-#	os/linux/spl/sys/callo.h \
-#	os/linux/spl/sys/cmn_err.h \
-#	os/linux/spl/sys/condvar.h \
-#	os/linux/spl/sys/cred.h \
-#	os/linux/spl/sys/ctype.h \
-#	os/linux/spl/sys/debug.h \
-#	os/linux/spl/sys/disp.h \
-#	os/linux/spl/sys/dkio.h \
-#	os/linux/spl/sys/errno.h \
-#	os/linux/spl/sys/fcntl.h \
-#	os/linux/spl/sys/file.h \
-#	os/linux/spl/sys/inttypes.h \
-#	os/linux/spl/sys/isa_defs.h \
-#	os/linux/spl/sys/kmem.h \
-#	os/linux/spl/sys/kmem_cache.h \
-#	os/linux/spl/sys/kstat.h \
-#	os/linux/spl/sys/list.h \
-#	os/linux/spl/sys/misc.h \
-#	os/linux/spl/sys/mod_os.h \
-#	os/linux/spl/sys/mutex.h \
-#	os/linux/spl/sys/param.h \
-#	os/linux/spl/sys/proc.h \
-#	os/linux/spl/sys/processor.h \
-#	os/linux/spl/sys/procfs_list.h \
-#	os/linux/spl/sys/random.h \
-#	os/linux/spl/sys/rwlock.h \
-#	os/linux/spl/sys/shrinker.h \
-#	os/linux/spl/sys/sid.h \
-#	os/linux/spl/sys/signal.h \
-#	os/linux/spl/sys/simd.h \
-#	os/linux/spl/sys/stat.h \
-#	os/linux/spl/sys/string.h \
-#	os/linux/spl/sys/sunddi.h \
-#	os/linux/spl/sys/sysmacros.h \
-#	os/linux/spl/sys/systeminfo.h \
-#	os/linux/spl/sys/taskq.h \
-#	os/linux/spl/sys/thread.h \
-#	os/linux/spl/sys/time.h \
-#	os/linux/spl/sys/timer.h \
-#	os/linux/spl/sys/trace.h \
-#	os/linux/spl/sys/trace_spl.h \
-#	os/linux/spl/sys/trace_taskq.h \
-#	os/linux/spl/sys/tsd.h \
-#	os/linux/spl/sys/types.h \
-#	os/linux/spl/sys/types32.h \
-#	os/linux/spl/sys/uio.h \
-#	os/linux/spl/sys/user.h \
-#	os/linux/spl/sys/vfs.h \
-#	os/linux/spl/sys/vmem.h \
-#	os/linux/spl/sys/vmsystm.h \
-#	os/linux/spl/sys/vnode.h \
-#	os/linux/spl/sys/wait.h \
-#	os/linux/spl/sys/wmsum.h \
-#	os/linux/spl/sys/zmod.h \
-#	os/linux/spl/sys/zone.h
+kernel_spl_sysdir = $(kerneldir)/spl/sys
+kernel_spl_sys_HEADERS = \
+	os/linux/spl/sys/acl.h \
+	os/linux/spl/sys/atomic.h \
+	os/linux/spl/sys/byteorder.h \
+	os/linux/spl/sys/callb.h \
+	os/linux/spl/sys/callo.h \
+	os/linux/spl/sys/cmn_err.h \
+	os/linux/spl/sys/condvar.h \
+	os/linux/spl/sys/cred.h \
+	os/linux/spl/sys/ctype.h \
+	os/linux/spl/sys/debug.h \
+	os/linux/spl/sys/disp.h \
+	os/linux/spl/sys/dkio.h \
+	os/linux/spl/sys/errno.h \
+	os/linux/spl/sys/fcntl.h \
+	os/linux/spl/sys/file.h \
+	os/linux/spl/sys/inttypes.h \
+	os/linux/spl/sys/isa_defs.h \
+	os/linux/spl/sys/kmem.h \
+	os/linux/spl/sys/kmem_cache.h \
+	os/linux/spl/sys/kstat.h \
+	os/linux/spl/sys/list.h \
+	os/linux/spl/sys/misc.h \
+	os/linux/spl/sys/mod_os.h \
+	os/linux/spl/sys/mutex.h \
+	os/linux/spl/sys/param.h \
+	os/linux/spl/sys/proc.h \
+	os/linux/spl/sys/processor.h \
+	os/linux/spl/sys/procfs_list.h \
+	os/linux/spl/sys/random.h \
+	os/linux/spl/sys/rwlock.h \
+	os/linux/spl/sys/shrinker.h \
+	os/linux/spl/sys/sid.h \
+	os/linux/spl/sys/signal.h \
+	os/linux/spl/sys/simd.h \
+	os/linux/spl/sys/stat.h \
+	os/linux/spl/sys/string.h \
+	os/linux/spl/sys/sunddi.h \
+	os/linux/spl/sys/sysmacros.h \
+	os/linux/spl/sys/systeminfo.h \
+	os/linux/spl/sys/taskq.h \
+	os/linux/spl/sys/thread.h \
+	os/linux/spl/sys/time.h \
+	os/linux/spl/sys/timer.h \
+	os/linux/spl/sys/trace.h \
+	os/linux/spl/sys/trace_spl.h \
+	os/linux/spl/sys/trace_taskq.h \
+	os/linux/spl/sys/tsd.h \
+	os/linux/spl/sys/types.h \
+	os/linux/spl/sys/types32.h \
+	os/linux/spl/sys/uio.h \
+	os/linux/spl/sys/user.h \
+	os/linux/spl/sys/vfs.h \
+	os/linux/spl/sys/vmem.h \
+	os/linux/spl/sys/vmsystm.h \
+	os/linux/spl/sys/vnode.h \
+	os/linux/spl/sys/wait.h \
+	os/linux/spl/sys/wmsum.h \
+	os/linux/spl/sys/zmod.h \
+	os/linux/spl/sys/zone.h
 
-#kernel_spl_ia32dir = $(kernel_spl_sysdir)/ia32
-#kernel_spl_ia32_HEADERS = \
-#	os/linux/spl/sys/ia32/asm_linkage.h
+kernel_spl_ia32dir = $(kernel_spl_sysdir)/ia32
+kernel_spl_ia32_HEADERS = \
+	os/linux/spl/sys/ia32/asm_linkage.h
 
 #noinst_HEADERS = \
 #	os/freebsd/linux/compiler.h \
@@ -1278,10 +1278,10 @@ USER_H = \
 	libzutil.h \
 	thread_pool.h
 
-libzfsdir = $(includedir)/libzfs
-nobase_libzfs_HEADERS = $(COMMON_H) $(USER_H)
+#libzfsdir = $(includedir)/libzfs
+#nobase_libzfs_HEADERS = $(COMMON_H) $(USER_H)
 kerneldir = $(prefix)/src/zfs-$(VERSION)/include
-#nobase_kernel_HEADERS = $(COMMON_H) $(KERNEL_H)
+nobase_kernel_HEADERS = $(COMMON_H) $(KERNEL_H)
 all: all-am
 
 .SUFFIXES:

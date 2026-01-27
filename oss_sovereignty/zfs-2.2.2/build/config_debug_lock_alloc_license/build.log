@@ -1,15 +1,3 @@
 make: Entering directory '/home/aimeat/anvilos/oss_sovereignty/linux-6.6.14'
   MODPOST /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/config_debug_lock_alloc_license/Module.symvers
-WARNING: Module.symvers is missing.
-         Modules may not have dependencies or modversions.
-         You may get many unresolved symbol errors.
-         You can set KBUILD_MODPOST_WARN=1 to turn errors into warning
-         if you want to proceed at your own risk.
-WARNING: modpost: "__mutex_init" [/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/config_debug_lock_alloc_license/config_debug_lock_alloc_license.ko] undefined!
-WARNING: modpost: "mutex_lock" [/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/config_debug_lock_alloc_license/config_debug_lock_alloc_license.ko] undefined!
-WARNING: modpost: "mutex_unlock" [/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/config_debug_lock_alloc_license/config_debug_lock_alloc_license.ko] undefined!
-WARNING: modpost: "__x86_return_thunk" [/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/config_debug_lock_alloc_license/config_debug_lock_alloc_license.ko] undefined!
-WARNING: modpost: "__stack_chk_fail" [/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/config_debug_lock_alloc_license/config_debug_lock_alloc_license.ko] undefined!
-  CC [M]  /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/config_debug_lock_alloc_license/config_debug_lock_alloc_license.mod.o
-  LD [M]  /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/config_debug_lock_alloc_license/config_debug_lock_alloc_license.ko
 make: Leaving directory '/home/aimeat/anvilos/oss_sovereignty/linux-6.6.14'

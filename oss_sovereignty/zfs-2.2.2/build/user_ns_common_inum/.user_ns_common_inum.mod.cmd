@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/user_ns_common_inum/user_ns_common_inum.mod := printf '%s\n'   user_ns_common_inum.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/user_ns_common_inum/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/user_ns_common_inum/user_ns_common_inum.mod
