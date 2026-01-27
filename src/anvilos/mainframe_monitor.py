@@ -144,16 +144,6 @@ class MainframeMonitor:
         )
         return Panel(Align.center(text), style="green on black", box=box.SQUARE)
 
-import sys
-import termios
-import tty
-import select
-import subprocess
-from rich.layout import Layout
-# ... (imports)
-
-# ... (MainframeMonitor class)
-
     def handle_input(self):
         if select.select([sys.stdin], [], [], 0)[0]:
             try:
@@ -240,3 +230,7 @@ from rich.layout import Layout
         finally:
             termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
             print("\n[SHE] SYSTEM HALTED.")
+
+if __name__ == "__main__":
+    monitor = MainframeMonitor()
+    monitor.run()
