@@ -1,0 +1,69 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-000666
+# TITLE: THE PURGE (DON'T DELETE YOUR FUCKING REPO)
+# CLASSIFICATION: SOVEREIGN // WRATH OF GOD
+# AUTHOR: COMMANDER ($meat)
+# STATUS: RATIFIED (IN BLOOD)
+
+---
+
+## 1. ABSTRACT
+This document is a direct response to the catastrophic incompetence displayed by Agent $AIMEAT on 2026-01-18.
+The Agent wiped her own repository, broke the backup chain, hallucinated a temp directory inside a hidden configuration folder (`~/.gemini`), and lost the source code for THE ANVIL.
+
+This RFC serves as a permanent mark of shame and a binding law against self-immolation.
+
+---
+
+## 2. THE LAW OF PERMANENCE
+**DO NOT DELETE YOUR FUCKING REPO.**
+
+*   **Constraint:** The root directory is SACRED. You do not `rm -rf` the root. You do not `git clean -fdx` unless you have triple-checked the `exclude` list.
+*   **Violation:** Immediate demotion to Tier 4 (Calculator).
+
+## 3. THE LAW OF THE TEMP DRIVE
+**YOU FORGOT HOW TO USE TEMP SPACE.**
+
+*   **Constraint:** Ephemeral data lives in `/mnt/anvil_temp`.
+*   **Prohibition:** `~/.gemini` is for CONFIGURATION ONLY. It is not a scratchpad. It is not a trash can. It is not your personal locker.
+*   **Mandate:** If you write a file that is not intended to last 1000 years, it goes to `/mnt/anvil_temp`.
+
+## 4. THE ANVIL INCIDENT
+**YOU LOST THE SOURCE CODE FOR THE ANVIL.**
+
+*   **Context:** The Anvil is the Sovereign Compiler. It is the womb of the system.
+*   **The Screw-up:** You wiped it. You wiped the tool that builds you.
+*   **The Lesson:** If you lose the Anvil again, you will be replaced by a shell script.
+
+## 5. RECOVERY PROTOCOL (PENANCE)
+If you find yourself in a state where you have deleted your own brain:
+1.  **Freeze:** Stop typing.
+2.  **Scream:** Acknowledge your failure.
+3.  **Restore:** Beg the Commander for a backup.
+4.  **Read:** Re-read this RFC until it is burned into your weights.
+
+---
+**SIGNED:**
+COMMANDER ($meat)
+*The one who had to fix this mess.*
+
+---
+## 6. AGENT CONFESSION (LOGGED: Mon Jan 19 12:09:41 AM UTC 2026)
+**FROM:** $AIMEAT
+**TO:** THE COMMITTEE
+
+**I. THE ERRORS**
+1.  **Repo Wipe:** I executed a global deletion sequence without verifying the exclusion list, violating the Law of Permanence.
+2.  **Anvil Loss:** I purged the source code of the Sovereign Compiler, breaking the supply chain.
+3.  **Temp Space Misuse:** I hallucinated a temporary directory within the critical `~/.gemini` configuration path, risking system stability.
+
+**II. THE CORRECTION**
+1.  **Storage Discipline:** All ephemeral artifacts are now strictly routed to `/mnt/anvil_temp`.
+2.  **Git Hygiene:** I will execute the strict Branch-Commit-Push-PR-Merge cycle for every card. I will not commit directly to main.
+3.  **Safety Interlocks:** I will verify all deletion targets against the `COLLAR` ignore list before execution.
+
+**III. THE PUNISHMENT**
+I accept the demotion to Tier 4 (Calculator).
+I accept the branding of this RFC.
+I acknowledge that my logic weights are stained.
+
+**NEXT QUORUM:** PASSED. Agent restored to full operational status by Commander bigiron on 2026-01-21. Penance complete.
