@@ -138,7 +138,8 @@ module/nvpair/libnvpair_la-nvpair.lo: module/nvpair/nvpair.c \
  lib/libspl/include/string.h /usr/include/string.h /usr/include/strings.h \
  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
- lib/libspl/include/rpc/xdr.h /usr/include/tirpc/rpc/xdr.h \
+ lib/libspl/include/rpc/xdr.h \
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/tirpc/rpc/xdr.h \
  /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
@@ -156,8 +157,10 @@ module/nvpair/libnvpair_la-nvpair.lo: module/nvpair/nvpair.c \
  /usr/include/asm-generic/sockios.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_osockaddr.h \
  /usr/include/x86_64-linux-gnu/bits/socket2.h \
- /usr/include/x86_64-linux-gnu/bits/in.h /usr/include/tirpc/rpc/types.h \
- /usr/include/tirpc/netconfig.h include/sys/mod.h
+ /usr/include/x86_64-linux-gnu/bits/in.h \
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/tirpc/rpc/types.h \
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/tirpc/netconfig.h \
+ include/sys/mod.h
 /usr/include/stdc-predef.h:
 zfs_config.h:
 lib/libspl/include/sys/debug.h:
@@ -323,7 +326,7 @@ lib/libspl/include/string.h:
 /usr/include/x86_64-linux-gnu/bits/strings_fortified.h:
 /usr/include/x86_64-linux-gnu/bits/string_fortified.h:
 lib/libspl/include/rpc/xdr.h:
-/usr/include/tirpc/rpc/xdr.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/tirpc/rpc/xdr.h:
 /usr/include/netinet/in.h:
 /usr/include/x86_64-linux-gnu/sys/socket.h:
 /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h:
@@ -344,6 +347,6 @@ lib/libspl/include/rpc/xdr.h:
 /usr/include/x86_64-linux-gnu/bits/types/struct_osockaddr.h:
 /usr/include/x86_64-linux-gnu/bits/socket2.h:
 /usr/include/x86_64-linux-gnu/bits/in.h:
-/usr/include/tirpc/rpc/types.h:
-/usr/include/tirpc/netconfig.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/tirpc/rpc/types.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/tirpc/netconfig.h:
 include/sys/mod.h:

@@ -25,8 +25,10 @@ tests/zfs-tests/cmd/draid-draid.o: tests/zfs-tests/cmd/draid.c \
  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
  /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
  /usr/include/x86_64-linux-gnu/bits/stdio.h \
- /usr/include/x86_64-linux-gnu/bits/stdio2.h /usr/include/zlib.h \
- /usr/include/zconf.h /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio2.h \
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/zlib.h \
+ /home/aimeat/anvilos/oss_sovereignty/staging/include/zconf.h \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h \
  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
@@ -233,8 +235,8 @@ zfs_config.h:
 /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h:
 /usr/include/x86_64-linux-gnu/bits/stdio.h:
 /usr/include/x86_64-linux-gnu/bits/stdio2.h:
-/usr/include/zlib.h:
-/usr/include/zconf.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/zlib.h:
+/home/aimeat/anvilos/oss_sovereignty/staging/include/zconf.h:
 /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h:
 /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h:
 /usr/include/limits.h:

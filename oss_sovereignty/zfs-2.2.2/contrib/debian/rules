@@ -35,7 +35,7 @@ override_dh_autoreconf:
 
 override_dh_auto_configure:
 	@# Build the userland, but don't build the kernel modules.
-	dh_auto_configure -- --with-config=kernel --with-linux=../linux-6.6.14 --with-linux-obj=../linux-6.6.14 \
+	dh_auto_configure -- --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-static --disable-shared --with-config=user --with-tirpc \
 	  --bindir=/usr/bin \
 	  --sbindir=/sbin \
 	  --libdir=/lib/"$(DEB_HOST_MULTIARCH)" \
@@ -190,7 +190,7 @@ override_dh_prep-deb-files:
 
 override_dh_configure_modules: override_dh_configure_modules_stamp
 override_dh_configure_modules_stamp:
-	./configure --with-config=kernel --with-linux=../linux-6.6.14 --with-linux-obj=../linux-6.6.14 \
+	./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-static --disable-shared --with-config=user --with-tirpc \
 		--with-config=kernel \
 		--with-linux=$(KSRC) \
 		--with-linux-obj=$(KOBJ)

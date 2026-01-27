@@ -53,7 +53,7 @@ FMAKE = env -u MAKEFLAGS make $(FMAKEFLAGS)
 modules-Linux:
 	mkdir -p $(sort $(dir $(spl-objs) $(spl-)))
 	mkdir -p $(sort $(dir $(zfs-objs) $(zfs-)))
-	$(MAKE) -C ../linux-6.6.14 $(if ,CC=) \
+	$(MAKE) -C  $(if ,CC=) \
 		$(if ,LD=) $(if ,LLVM=) \
 		M="$$PWD"  CONFIG_ZFS=m modules
 
@@ -68,9 +68,9 @@ modules: modules-Linux
 clean-Linux:
 	@# Only cleanup the kernel build directories when CONFIG_KERNEL
 	@# is defined.  This indicates that kernel modules should be built.
-	$(MAKE) -C ../linux-6.6.14 M="$$PWD"  clean
+#	$(MAKE) -C  M="$$PWD"  clean
 
-	$(RM) Module.symvers Module.markers
+	$(RM)  Module.markers
 	find . -name '*.ur-safe' -type f -delete
 
 clean-FreeBSD:
@@ -82,13 +82,13 @@ clean: clean-Linux
 modules_uninstall-Linux-legacy:
 	$(RM) -r $(addprefix $(KMODDIR)/$(INSTALL_MOD_DIR)/,spl/ avl/ icp/ lua/ nvpair/ unicode/ zcommon/ zfs/ zstd/)
 
-KMODDIR := $(INSTALL_MOD_PATH)/lib/modules/6.6.14
+KMODDIR := $(INSTALL_MOD_PATH)/lib/modules/
 modules_install-Linux: modules_uninstall-Linux-legacy
 	@# Install the kernel modules
-	$(MAKE) -C ../linux-6.6.14 M="$$PWD" modules_install \
+	$(MAKE) -C  M="$$PWD" modules_install \
 		INSTALL_MOD_PATH=$(INSTALL_MOD_PATH) \
 		INSTALL_MOD_DIR=$(INSTALL_MOD_DIR) \
-		KERNELRELEASE=6.6.14
+		KERNELRELEASE=
 	@# Remove extraneous build products when packaging
 	if [ -n "$(DESTDIR)" ]; then \
 		find $(KMODDIR) -name 'modules.*' -delete; \
@@ -99,11 +99,11 @@ modules_install-Linux: modules_uninstall-Linux-legacy
 	@# Naturally, depmod is less than amused by this.
 	@# So if we find it missing or with one of these present,
 	@# we check for the alternate path for the System.map
-	sysmap=$(INSTALL_MOD_PATH)/boot/System.map-6.6.14; \
+	sysmap=$(INSTALL_MOD_PATH)/boot/System.map-; \
 	{ [ -f "$$sysmap" ] && [ $$(wc -l < "$$sysmap") -ge 100 ]; } || \
-		sysmap=$(INSTALL_MOD_PATH)/usr/lib/debug/boot/System.map-6.6.14; \
+		sysmap=$(INSTALL_MOD_PATH)/usr/lib/debug/boot/System.map-; \
 	if [ -f $$sysmap ]; then \
-		depmod -ae -F $$sysmap 6.6.14; \
+		depmod -ae -F $$sysmap ; \
 	fi
 
 modules_install-FreeBSD:
@@ -113,8 +113,8 @@ modules_install-FreeBSD:
 modules_install: modules_install-Linux
 
 data_install-Linux:
-	@mkdir -p $(DESTDIR)//usr/local/src/zfs-2.2.2/6.6.14
-	cp ../zfs.release ../zfs_config.h Module.symvers $(DESTDIR)//usr/local/src/zfs-2.2.2/6.6.14
+	@mkdir -p $(DESTDIR)//usr/src/zfs-2.2.2/
+	cp ../zfs.release ../zfs_config.h  $(DESTDIR)//usr/src/zfs-2.2.2/
 
 data_install-FreeBSD:
 	@
@@ -131,7 +131,7 @@ modules_uninstall-FreeBSD:
 modules_uninstall: modules_uninstall-Linux
 
 data_uninstall-Linux:
-	$(RM) $(addprefix $(DESTDIR)//usr/local/src/zfs-2.2.2/6.6.14/,zfs.release zfs_config.h Module.symvers)
+	$(RM) $(addprefix $(DESTDIR)//usr/src/zfs-2.2.2//,zfs.release zfs_config.h )
 
 data_uninstall-FreeBSD:
 	@
@@ -144,11 +144,11 @@ cppcheck-Linux:
 		--suppress=unmatchedSuppression \
 		--suppress=noValidConfiguration \
 		--enable=warning,information -D_KERNEL \
-		--include=../linux-6.6.14/include/generated/autoconf.h \
+		--include=/include/generated/autoconf.h \
 		--include=../zfs_config.h \
-		--config-exclude=../linux-6.6.14/include \
+		--config-exclude=/include \
 		-i zstd/lib \
-		-I ../linux-6.6.14/include \
+		-I /include \
 		-I ../include/os/linux/kernel \
 		-I ../include/os/linux/spl \
 		-I ../include/os/linux/zfs \
