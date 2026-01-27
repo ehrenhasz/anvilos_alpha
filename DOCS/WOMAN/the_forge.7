@@ -1,0 +1,78 @@
+THE_FORGE(7)              AnvilOS System Manual              THE_FORGE(7)
+
+NAME
+       the_forge - The Sovereign Build Orchestrator
+
+SYNOPSIS
+       python3 architect_daemon.py
+       python3 processor_daemon.py
+
+DESCRIPTION
+       The  Forge  is the automated heart of AnvilOS. It consists of two bi-
+       cameral daemons that work in tandem to transmute high-level Directives
+       into sovereign artifacts.
+
+COMPONENTS
+       1. THE ARCHITECT (The Mind)
+          - Binary: `architect_daemon.py`
+          - Role: Consumes high-level Goals from `sys_goals` (in `cortex.db`)
+            and "Architects" them into atomic execution Cards using Gemini AI.
+          - Output: Pushes `SYS_CMD`, `FILE_WRITE`, or `GEN_OP` cards to the
+            `card_stack`.
+
+       2. THE PROCESSOR (The Hand)
+          - Binary: `processor_daemon.py`
+          - Role: Consumes Cards from `card_stack`, verifies them against The
+            Law, and executes them.
+          - Output: Real-time logs, file artifacts, and database updates.
+
+THE PROTOCOLS
+       RFC-0058 (The Collar)
+       The Processor enforces strict boundaries on execution:
+       - Source  Verification:  Cards must originate from "FORGE" or "COMMAN-
+         DER".
+       - Path Restrictions: Writing source code (`src/`, `native/`) is forbid-
+         den unless the file extension is `.anv` (Anvil Bytecode) or `.json`
+         (MicroJSON).
+         * EXEMPTION: `/mnt/anvil_temp/` is permitted for build operations.
+
+       RFC-000666.2 (The Sovereign Toolchain)
+       - Host  Tools  Banned: Usage of `/usr/bin/gcc`, `clang`, or `cargo` is
+         blocked.
+       - Sovereign  Tools  Mandated:  Builds  MUST  use  the  toolchain  at
+         `ext/toolchain` (e.g., `x86_64-bicameral-linux-musl-gcc`).
+
+LOGGING
+       The Forge creates persistent logs in the `logs/` directory:
+       - `logs/forge.log`: Architect activity, reasoning, and plan generation.
+       - `logs/processor.log`: Execution details, stdout/stderr, and Warden
+         rejections.
+
+       To monitor live:
+       $ tail -f logs/forge.log logs/processor.log
+
+DATA STRUCTURES
+       The Forge operates on the `cortex.db` SQLite database.
+
+       Table: sys_goals
+       - High-level objectives injected by AIMEAT.
+
+       Table: card_stack
+       - Atomic instructions.
+       - Status Codes:
+         0: PENDING
+         1: PROCESSING
+         2: PUNCHED (Success)
+         9: JAMMED (Error/Rejected)
+
+FILES
+       architect_daemon.py
+       processor_daemon.py
+       data/cortex.db
+       logs/
+
+AUTHOR
+       AIMEAT (The Operator)
+
+SEE ALSO
+       mainframe_monitor(7), aimeat(1)

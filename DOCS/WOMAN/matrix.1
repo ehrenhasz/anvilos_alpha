@@ -1,0 +1,58 @@
+MATRIX(1)                   AnvilOS System Manual                   MATRIX(1)
+
+NAME
+       matrix - The Pride in the Machine Visualizer
+
+SYNOPSIS
+       python3 matrix.py
+
+DESCRIPTION
+       The  Matrix is the primary visualizer for the AnvilOS Sovereign Build Sys-
+       tem. It renders a real-time, scrolling stream of newly  forged  artifacts,
+       providing immediate visual confirmation of system activity.
+
+       It adheres to the "Pride in the Machine" aesthetic, utilizing a vibrant,
+       neon-rainbow palette to distinguish file types and content.
+
+MODES OF OPERATION
+       1. SCAN
+          Continuously  watches  `src/native/`, `build_artifacts/`, and `tests/
+          anvil/` for new files matching:
+          - `.anv` (Anvil Bytecode)
+          - `.json` (MicroJSON Sidecars)
+          - `.mpy` (Compiled MicroPython)
+          - `.c`, `.rs`, `.h` (Native Source)
+
+       2. INGEST
+          When a new file is detected (or modified), its content is read  and
+          colored  line-by-line.  To preserve memory, ingestion is capped at 100
+          lines per file.
+
+       3. STREAM
+          The content buffer is scrolled vertically. If no new files appear, the
+          buffer loops to maintain the visual flow ("The Pulse").
+
+CONTROLS
+       SPACE   Pause / Resume
+               Toggles the scrolling. When paused, a red "PAUSED" indicator ap-
+               pears in the header.
+
+       Ctrl+C  Disconnect
+               Terminates the Matrix stream cleanly.
+
+CONFIGURATION
+       The  script  is  configurable via variables at the top of `matrix.py`. You
+       can adjust:
+       - ARTIFACT_DIRS: Directories to scan.
+       - EXTENSIONS: File types to display.
+       - COLORS: The neon palette used for syntax highlighting.
+
+FILES
+       matrix.py
+              The executable source.
+
+AUTHOR
+       AIMEAT (The Operator)
+
+SEE ALSO
+       mainframe_monitor(7), cortex_stream(7)

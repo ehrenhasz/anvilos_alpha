@@ -6,12 +6,27 @@ import time
 import logging
 
 # --- PATH RESOLUTION ---
-
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SYSTEM_DB = os.path.join(PROJECT_ROOT, "data", "cortex.db")
 TOKEN_PATH = os.path.join(PROJECT_ROOT, "config", "token")
-sys.path.append(os.path.join(PROJECT_ROOT, "src"))
+
+# Add vendor directory
 sys.path.append(os.path.join(PROJECT_ROOT, "vendor"))
+
+# Dynamically find and add venv site-packages
+for venv_dir in ["venv", ".venv"]:
+    lib_path = os.path.join(PROJECT_ROOT, venv_dir, "lib")
+    if os.path.exists(lib_path):
+        for py_dir in os.listdir(lib_path):
+            if py_dir.startswith("python"):
+                site_pkg = os.path.join(lib_path, py_dir, "site-packages")
+                if os.path.exists(site_pkg):
+                    sys.path.append(site_pkg)
+
+# DEBUG
+print(f"DEBUG: sys.path = {sys.path}")
+
+sys.path.append(os.path.join(PROJECT_ROOT, "src"))
 
 from google import genai
 from google.genai import types
@@ -19,11 +34,17 @@ from google.genai import types
 from anvilos.cortex.db_interface import CortexDB
 
 # --- LOGGING ---
+os.makedirs(os.path.join(PROJECT_ROOT, "logs"), exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - [ARCHITECT] - %(levelname)s - %(message)s'
+    format='%(asctime)s - [FORGE] - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(os.path.join(PROJECT_ROOT, "logs", "forge.log")),
+        logging.StreamHandler(sys.stderr)
+    ]
 )
 logger = logging.getLogger()
+logger.info(f"DEBUG: sys.path = {sys.path}")
 
 # --- AUTHENTICATION ---
 API_KEY = None
@@ -32,7 +53,7 @@ if os.path.exists(TOKEN_PATH):
         API_KEY = f.read().strip()
 
 if not API_KEY:
-    logger.error("API Key not found. Architect cannot reason.")
+    logger.error("API Key not found. The Forge cannot reason.")
     sys.exit(1)
 
 CLIENT = genai.Client(api_key=API_KEY)
@@ -42,10 +63,10 @@ def architect_recipe(goal):
     """
     Uses Gemini to break down a goal into a series of MicroJSON punch cards.
     """
-    logger.info(f"Architecting recipe for goal: {goal}")
+    logger.info(f"Forging recipe for goal: {goal}")
     
     prompt = f"""
-    You are the ARCHITECT of AnvilOS. Your job is to take a high-level goal and break it down into a sequence of atomic 'Punch Cards' for the PROCESSOR.
+    You are THE FORGE of AnvilOS. Your job is to take a high-level goal and break it down into a sequence of atomic 'Punch Cards' for the PROCESSOR.
     
     The schema for a card is:
     {{
@@ -99,7 +120,7 @@ def architect_recipe(goal):
         return None
 
 def main_loop():
-    logger.info("Architect Daemon Online. Monitoring sys_goals...")
+    logger.info("The Forge Online. Monitoring sys_goals...")
     
     while True:
         try:
@@ -117,7 +138,7 @@ def main_loop():
                 recipe = architect_recipe(goal_text)
                 
                 if recipe:
-                    logger.info(f"Recipe generated with {len(recipe)} cards.")
+                    logger.info(f"Recipe forged with {len(recipe)} cards.")
                     # Insert cards into card_stack using CortexDB
                     for i, card in enumerate(recipe):
                         card_id = str(uuid.uuid4())
@@ -129,7 +150,7 @@ def main_loop():
                 else:
                     # Mark goal as failed (stat=9)
                     DB.update_goal_status(goal_id, 9)
-                    logger.error(f"Failed to architect recipe for goal {goal_id}")
+                    logger.error(f"Failed to forge recipe for goal {goal_id}")
                 
         except Exception as e:
             logger.error(f"Loop Error: {e}")

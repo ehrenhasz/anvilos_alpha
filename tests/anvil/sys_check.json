@@ -1,0 +1,14 @@
+{
+    "hash_id": "a1b2c3d4e5f678901234567890abcdef1234567890abcdef1234567890abcdef",
+    "module_name": "sys_check",
+    "original_prompt": "Create a system check module that verifies the sovereign constant.",
+    "human_readable_source": "# System Check Module\nSOVEREIGN_CONST = 0xANVIL\n\ndef verify():\n    if SOVEREIGN_CONST != 0xANVIL:\n        raise ValueError('Sovereignty Compromised')\n    print('System Sovereign.')\n\nverify()\n",
+    "logic_map": {
+        "SOVEREIGN_CONST": "The immutable constant defining system sovereignty.",
+        "verify": "Function to check the constant."
+    },
+    "failure_modes": ["ValueError if constant is mutated."],
+    "crash_correlation_map": {
+        "0xDEAD": "ValueError: Sovereignty Compromised"
+    }
+}

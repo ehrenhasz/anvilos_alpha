@@ -1,0 +1,23 @@
+==> logs/processor.log <==
+2026-01-26 22:24:33,609 - [PROCESSOR] - INFO - Processing Card 29f7d6d5-b115-4df8-9147-1f23e0e1c658: format_rootfs_zfs
+2026-01-26 22:24:33,611 - [PROCESSOR] - INFO - Card 29f7d6d5-b115-4df8-9147-1f23e0e1c658 finished with status 9
+2026-01-26 22:24:35,614 - [PROCESSOR] - INFO - Processing Card 2d596cec-3cf0-4e3c-9ff8-a610bbed09b5: populate_rootfs
+2026-01-26 22:24:35,616 - [PROCESSOR] - INFO - Card 2d596cec-3cf0-4e3c-9ff8-a610bbed09b5 finished with status 9
+2026-01-26 22:24:37,619 - [PROCESSOR] - INFO - Processing Card 1299bb23-608d-4e34-aaba-854760e0d177: pack_initramfs
+2026-01-26 22:24:37,622 - [PROCESSOR] - INFO - Card 1299bb23-608d-4e34-aaba-854760e0d177 finished with status 9
+2026-01-26 22:24:39,624 - [PROCESSOR] - INFO - Processing Card fddab7b7-4bc2-473f-894b-ae93a2e7b034: gen_isolinux_cfg
+2026-01-26 22:24:39,627 - [PROCESSOR] - INFO - Card fddab7b7-4bc2-473f-894b-ae93a2e7b034 finished with status 9
+2026-01-26 22:24:41,629 - [PROCESSOR] - INFO - Processing Card c9051798-45a6-4841-b1ca-a076ec5488be: burn_iso
+2026-01-26 22:24:41,632 - [PROCESSOR] - INFO - Card c9051798-45a6-4841-b1ca-a076ec5488be finished with status 9
+
+==> logs/architect.log <==
+  File "/home/aimeat/anvilos/vendor/google/genai/_interactions/types/tool.py", line 21, in <module>
+    from pydantic import Field as FieldInfo
+  File "/home/aimeat/anvilos/vendor/pydantic/__init__.py", line 422, in <module>
+    _getattr_migration = getattr_migration(__name__)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aimeat/anvilos/vendor/pydantic/_migration.py", line 262, in getattr_migration
+    from .errors import PydanticImportError
+  File "/home/aimeat/anvilos/vendor/pydantic/errors.py", line 9, in <module>
+    from typing_inspection.introspection import Qualifier
+ModuleNotFoundError: No module named 'typing_inspection'

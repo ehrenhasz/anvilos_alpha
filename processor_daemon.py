@@ -10,15 +10,33 @@ import logging
 # --- PATH RESOLUTION ---
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SYSTEM_DB = os.path.join(PROJECT_ROOT, "data", "cortex.db")
-sys.path.append(os.path.join(PROJECT_ROOT, "src"))
+
+# Add vendor directory
 sys.path.append(os.path.join(PROJECT_ROOT, "vendor"))
+
+# Dynamically find and add venv site-packages
+for venv_dir in ["venv", ".venv"]:
+    lib_path = os.path.join(PROJECT_ROOT, venv_dir, "lib")
+    if os.path.exists(lib_path):
+        for py_dir in os.listdir(lib_path):
+            if py_dir.startswith("python"):
+                site_pkg = os.path.join(lib_path, py_dir, "site-packages")
+                if os.path.exists(site_pkg):
+                    sys.path.append(site_pkg)
+
+sys.path.append(os.path.join(PROJECT_ROOT, "src"))
 
 from anvilos.cortex.db_interface import CortexDB
 
 # --- LOGGING ---
+os.makedirs(os.path.join(PROJECT_ROOT, "logs"), exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - [PROCESSOR] - %(levelname)s - %(message)s'
+    format='%(asctime)s - [PROCESSOR] - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(os.path.join(PROJECT_ROOT, "logs", "processor.log")),
+        logging.StreamHandler(sys.stderr)
+    ]
 )
 logger = logging.getLogger()
 
@@ -118,9 +136,9 @@ def _validate_card(op, pld):
             
         # 4. The Collar (RFC-0058 / RFC-000666.2)
         # Any file written to 'src/' or 'native/' MUST be .anv or .json (MicroJSON sidecar)
-        # Exemptions: logs, temporary build artifacts, documentation
+        # Exemptions: logs, temporary build artifacts, documentation, and the build forge itself (/mnt/anvil_temp)
         is_source_code = "src/" in path or "native/" in path
-        is_exempt = "logs/" in path or "tmp/" in path or "build_artifacts/" in path or "DOCS/" in path
+        is_exempt = "logs/" in path or "tmp/" in path or "build_artifacts/" in path or "DOCS/" in path or "/mnt/anvil_temp/" in path
         
         if is_source_code and not is_exempt:
             valid_extensions = (".anv", ".json")
