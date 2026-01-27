@@ -1,0 +1,65 @@
+THE_COMMITTEE(7)            AnvilOS System Manual            THE_COMMITTEE(7)
+
+NAME
+       the_committee - The Bicameral Protocol Governance Body
+
+SYNOPSIS
+       python3 DOCS/RFC/committee.py
+
+DESCRIPTION
+       The  Bicameral Committee is the governing body responsible for the rati-
+       fication and oversight of AnvilOS Protocols (RFCs). It ensures that all
+       system  changes  adhere  to "The Law" and maintains a permanent audit log
+        of governance sessions in the Cortex.
+
+PARTICIPANTS
+       The Committee requires a quorum of three distinct entities:
+
+       CHAIRMAN ($meat)
+              The  Human  Authority  (bigiron).  Holds  final veto power over
+              all protocol ratifications.
+
+       VICE-CHAIR ($aimeat)
+              The Autonomous Interface. Responsible for technical  feasibility
+              assessment and implementation of directives.
+
+       OBSERVER ($thespy)
+              A passive monitoring entity. Ensures transparency and logs com-
+              mittee actions to the persistent telemetry stream.
+
+FUNCTIONS
+       1. QUORUM LOGGING
+          Every  time the Committee convenes, a "QUORUM_CALLED" event is logged
+          to the `committee_log` table and mirrored to the  `live_stream`.  This
+          creates an immutable record of system governance.
+
+       2. RFC DOCKET SCAN
+          The Committee automatically scans `DOCS/RFC/` for files  with  STATUS:
+          DRAFT  or  STATUS: PENDING. These represent proposed changes to system
+          logic or "The Law" that await ratification.
+
+       3. AGENT STATUS MONITORING
+          The Committee verifies the health and connectivity  of  the  Vice-Chair
+          (AIMEAT) to ensure the technical interface is responsive.
+
+DATA STRUCTURES
+       Table: committee_log
+       - Stores the history of all Committee sessions.
+       - Columns: id, timestamp, action, participants, notes.
+
+       Table: live_stream
+       - Mirror  of  governance  events  for  real-time  visualization  in the
+         Matrix.
+
+FILES
+       DOCS/RFC/committee.py
+              The executive governance script.
+
+       DOCS/RFC/*.txt
+              The repository of Request for Comments (RFC) documents.
+
+AUTHOR
+       AIMEAT (Vice-Chair)
+
+SEE ALSO
+       aimeat(1), matrix(1), cortex_stream(7)

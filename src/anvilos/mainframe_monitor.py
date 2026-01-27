@@ -28,9 +28,10 @@ class MainframeMonitor:
         self.conn = sqlite3.connect(SYSTEM_DB, check_same_thread=False)
         self.cursor = self.conn.cursor()
         
-        # Ensure Mainframe Service is OFF by default
+        # Ensure Mainframe Services are OFF by default
         try:
             subprocess.run("pkill -f processor_daemon.py", shell=True)
+            subprocess.run("pkill -f architect_daemon.py", shell=True)
         except Exception: pass
 
     def fetch_cards(self):
@@ -48,7 +49,7 @@ class MainframeMonitor:
             return {}
 
     def get_status_text(self, code):
-        if code == 0: return "[dim]PENDING[/dim]"
+        if code == 0: return "[bold blue]PENDING[/bold blue]"
         if code == 1: return "[yellow]PROCESSING[/yellow]"
         if code == 2: return "[green]PUNCHED[/green]"
         if code == 9: return "[red]JAM / ERR[/red]"
@@ -118,14 +119,18 @@ class MainframeMonitor:
         try:
             # More specific check to avoid false positives (e.g. matching this check itself)
             # The [p] trick prevents pgrep from matching its own command line
-            res = subprocess.run("pgrep -f 'python3.*[p]rocessor_daemon.py'", shell=True, capture_output=True)
-            daemon_running = (res.returncode == 0)
+            res_p = subprocess.run("pgrep -f 'python3.*[p]rocessor_daemon.py'", shell=True, capture_output=True)
+            res_a = subprocess.run("pgrep -f 'python3.*[a]rchitect_daemon.py'", shell=True, capture_output=True)
+            p_running = (res_p.returncode == 0)
+            a_running = (res_a.returncode == 0)
         except Exception:
-            daemon_running = False
+            p_running = a_running = False
 
         # System Status Block
-        if not daemon_running:
+        if not p_running and not a_running:
             sys_status = "[bold dim red]OFFLINE[/bold dim red]"
+        elif not p_running or not a_running:
+            sys_status = "[bold yellow]DEGRADED[/bold yellow]"
         elif errors > 5:
             sys_status = "[bold red]ATTENTION REQ[/bold red]"
         elif processing > 0:
@@ -158,7 +163,7 @@ class MainframeMonitor:
             "[magenta]F2[/magenta] [magenta]STOP[/magenta] [blue]|[/blue] "
             "[yellow]F3[/yellow] [yellow]RESET[/yellow] [blue]|[/blue] "
             "[cyan]F4[/cyan] [cyan]SORT[/cyan] [blue]|[/blue] "
-            "[white]F5[/white] [white]ARCHIVE[/white] [blue]|[/blue] "
+            "[grey]F5[/grey] [grey]ARCHIVE[/grey] [blue]|[/blue] "
             "[red]ESC[/red] [red]QUIT[/red]"
         )
         if status_msg:
@@ -200,28 +205,40 @@ class MainframeMonitor:
         return None
 
     def action_reload(self):
-        # F3 (Renamed RESET): Reload Mainframe Service
+        # F3 (Renamed RESET): Reload Mainframe Services
         try:
             subprocess.run("pkill -f processor_daemon.py", shell=True)
-            time.sleep(0.5) # Give it a moment to die
-            daemon_path = os.path.join(PROJECT_ROOT, "processor_daemon.py")
-            subprocess.Popen([sys.executable, daemon_path], cwd=PROJECT_ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run("pkill -f architect_daemon.py", shell=True)
+            time.sleep(0.5) # Give them a moment to die
+            
+            p_daemon = os.path.join(PROJECT_ROOT, "processor_daemon.py")
+            a_daemon = os.path.join(PROJECT_ROOT, "architect_daemon.py")
+            
+            subprocess.Popen([sys.executable, p_daemon], cwd=PROJECT_ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.Popen([sys.executable, a_daemon], cwd=PROJECT_ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception: pass
 
     def action_start(self):
-        # F1 (Renamed START): Ensure Daemon is running
+        # F1 (Renamed START): Ensure Daemons are running
         try:
-            # Check if running using the robust check
-            res = subprocess.run("pgrep -f 'python3.*[p]rocessor_daemon.py'", shell=True, capture_output=True)
-            if res.returncode != 0:
-                daemon_path = os.path.join(PROJECT_ROOT, "processor_daemon.py")
-                subprocess.Popen([sys.executable, daemon_path], cwd=PROJECT_ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            p_daemon = os.path.join(PROJECT_ROOT, "processor_daemon.py")
+            a_daemon = os.path.join(PROJECT_ROOT, "architect_daemon.py")
+            
+            # Check if running using robust check
+            res_p = subprocess.run("pgrep -f 'python3.*[p]rocessor_daemon.py'", shell=True, capture_output=True)
+            if res_p.returncode != 0:
+                subprocess.Popen([sys.executable, p_daemon], cwd=PROJECT_ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                
+            res_a = subprocess.run("pgrep -f 'python3.*[a]rchitect_daemon.py'", shell=True, capture_output=True)
+            if res_a.returncode != 0:
+                subprocess.Popen([sys.executable, a_daemon], cwd=PROJECT_ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception: pass
 
     def action_stop(self):
-        # F2 (Renamed STOP): Stop Mainframe Service
+        # F2 (Renamed STOP): Stop Mainframe Services
         try:
             subprocess.run("pkill -f processor_daemon.py", shell=True)
+            subprocess.run("pkill -f architect_daemon.py", shell=True)
         except Exception: pass
 
     def action_sort(self):

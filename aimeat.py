@@ -152,8 +152,8 @@ def send_to_forge():
                 time.sleep(0.01)
             
             conn.commit()
-            print(f"[FORGE] Successfully sent {count} directives to the Architect (sys_goals).")
-            log_to_cortex("FORGE_SUBMIT", f"Sent {count} directives to Architect.")
+            print(f"[FORGE] Successfully sent {count} directives to The Forge (sys_goals).")
+            log_to_cortex("FORGE_SUBMIT", f"Sent {count} directives to The Forge.")
 
     except Exception as e:
         print(f"[FORGE ERROR] Failed to send to forge: {e}")
