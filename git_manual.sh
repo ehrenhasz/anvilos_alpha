@@ -84,8 +84,9 @@ while true; do
     echo -e "${GREEN}4.${GREY} Git Push FORCE ${PURPLE}(Local is Source of Truth)${RESET}"
     echo -e "${GREEN}5.${GREY} Git Merge ${CYAN}(Merge another branch)${RESET}"
     echo -e "${GREEN}6.${GREY} Git Clean ${CYAN}(Nuke untracked files)${RESET}"
-    echo -e "${GREEN}7.${GREY} Status Check ${CYAN}(Show state)${RESET}"
-    echo -e "${GREEN}8.${GREY} Manual Deep Reset ${PURPLE}(Use if auto-fix fails)${RESET}"
+    echo -e "${GREEN}7.${GREY} New Branch ${CYAN}(Create & Switch)${RESET}"
+    echo -e "${GREEN}8.${GREY} Status Check ${CYAN}(Show state)${RESET}"
+    echo -e "${GREEN}9.${GREY} Manual Deep Reset ${PURPLE}(Use if auto-fix fails)${RESET}"
     echo -e "${PURPLE}------------------------------------------${RESET}"
     echo -e "${GREEN}Q.${GREY} Quit${RESET}"
     echo -e "${PURPLE}------------------------------------------${RESET}"
@@ -145,10 +146,22 @@ while true; do
             fi
             ;;
         7)
+            status_msg "Creating New Branch"
+            echo -e -n "${GREEN}Enter new branch name: ${RESET}"
+            read new_branch
+            if [ -n "$new_branch" ]; then
+                git checkout -b "$new_branch"
+                BRANCH="$new_branch"
+                status_msg "Switched to new branch: $BRANCH"
+            else
+                echo "Branch creation aborted."
+            fi
+            ;;
+        8)
             status_msg "Executing: git status"
             git status
             ;;
-        8)
+        9)
             status_msg "MANUAL DEEP RESET"
             echo -e "${GREY}This resets your commit history to match Origin, but keeps your file changes.${RESET}"
             echo -e -n "${GREEN}Run Deep Reset? (y/n): ${RESET}"

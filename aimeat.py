@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
-import os
-import sys
-import subprocess
-import datetime
-import readline
-import atexit
-import sqlite3
-import glob
-import time
+import uuid
+import json
+try:
+    import forge_directives
+except ImportError:
+    forge_directives = None
 
 # --- CONFIG ---
+PROJECT_ROOT = os.getcwd()
 MEMORY_FILE = os.path.expanduser("~/.gemini/gemini.md")
 HISTORY_FILE = os.path.expanduser("~/.gemini/aimeat_history")
 TOKEN_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'token')
 MODEL_ID = "gemini-2.0-flash"
 
 # --- ENV INJECTION ---
-current_dir = os.getcwd()
+current_dir = PROJECT_ROOT
 # Add vendor directory
 sys.path.append(os.path.join(current_dir, "vendor"))
 
@@ -106,6 +104,43 @@ def log_to_cortex(event_type, details):
                 VALUES (?, ?, ?, CURRENT_TIMESTAMP)
             """, ("AIMEAT", event_type, str(details)))
     except Exception: pass # Silent fail if DB locked/missing
+
+def inject_directives():
+    """Injects Forge Directives into the Mainframe card stack."""
+    if not forge_directives:
+        print("[ERROR] forge_directives.py not found.")
+        return
+
+    db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
+    print(f"[FORGE] Connecting to {db_path}...")
+    
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Clear existing pending cards? No, append.
+            count = 0
+            for card in forge_directives.PHASE2_DIRECTIVES:
+                card_id = str(uuid.uuid4())
+                seq = card.get("seq", 999)
+                op = card.get("op", "unknown_op")
+                pld = json.dumps(card.get("pld", {}))
+                
+                # Check if exists to avoid dupes?
+                # For now, just insert.
+                cursor.execute("""
+                    INSERT INTO card_stack (id, seq, op, pld, stat, agent_id, timestamp)
+                    VALUES (?, ?, ?, ?, 0, 'AIMEAT', CURRENT_TIMESTAMP)
+                """, (card_id, seq, op, pld))
+                count += 1
+            
+            conn.commit()
+            print(f"[FORGE] Successfully injected {count} cards into the Mainframe.")
+            log_to_cortex("INJECT_CARDS", f"Injected {count} directives from forge.")
+
+    except Exception as e:
+        print(f"[FORGE ERROR] Failed to inject cards: {e}")
+        log_to_cortex("INJECT_FAIL", str(e))
 
 # --- TOOLS ---
 def execute_command(command: str):
@@ -201,6 +236,11 @@ def main():
             if not user_input: continue
             if user_input.lower() in ["exit", "quit"]: break
             
+            # --- LOCAL OVERRIDES ---
+            if user_input.lower() in ["start", "start cards", "forge"]:
+                inject_directives()
+                continue
+
             prompt = user_input
             if "fix" in user_input.lower():
                  prompt += " (MODE: AUTONOMOUS. Use the schema above. Reset status to 0 to retry. Loop until done.)"
