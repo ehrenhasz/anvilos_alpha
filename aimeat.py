@@ -41,47 +41,84 @@ def get_schema_snapshot():
             return "\n".join([row[0] for row in cursor.fetchall()])
     except Exception as e:
         return f"Schema Error: {e}"
-import importlib
+STATE_FILE = os.path.join(PROJECT_ROOT, "data", "aimeat_state.json")
 
-def send_to_forge(limit=None):
-    """Sends Forge Directives DIRECTLY to the Processor (card_stack)."""
+def get_state():
+    if os.path.exists(STATE_FILE):
+        try:
+            with open(STATE_FILE, 'r') as f:
+                return json.load(f)
+        except: pass
+    return {"index": 0}
+
+def save_state(index):
+    try:
+        with open(STATE_FILE, 'w') as f:
+            json.dump({"index": index}, f)
+    except: pass
+
+def send_to_forge(limit=None, reset=False):
+    """Sends Forge Directives to the Processor (card_stack). Tracks progress."""
     if not forge_directives:
         print("[ERROR] forge_directives.py not found.")
         return
     
-    # Reload to ensure fresh data
-    try:
-        importlib.reload(forge_directives)
-    except Exception:
-        pass
+    # Reload module
+    try: importlib.reload(forge_directives)
+    except: pass
         
     db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
-    print(f"[FORGE] Connecting to {db_path}...")
+    
+    # State Management
+    state = get_state()
+    start_index = state["index"]
+    
+    if reset:
+        start_index = 0
+        print("[STATE] Cursor reset to 0.")
+    
+    # Check DB to see if we should auto-reset (optional heuristic)
+    # If stack is empty and we are at 0, that's fine.
+    # If stack is empty and we are at 1000, maybe user cleared deck?
+    # For now, we trust the explicit 'reset' flag or the stored state.
+    
     try:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
-            directives = forge_directives.PHASE2_DIRECTIVES
             
-            # Explicitly cast to list to be safe
-            if not isinstance(directives, list):
-                directives = list(directives)
-                
+            # Check if stack is empty to offer helpful hint
+            cursor.execute("SELECT COUNT(*) FROM card_stack")
+            stack_depth = cursor.fetchone()[0]
+            if stack_depth == 0 and start_index > 0 and not reset:
+                 print(f"[NOTICE] The Mainframe stack is empty, but my local cursor is at {start_index}.")
+                 print("         If you cleared the deck (F5), use 'reset' to start over.")
+                 # We continue anyway, treating this as "resume"
+            
+            directives = forge_directives.PHASE2_DIRECTIVES
+            if not isinstance(directives, list): directives = list(directives)
+            
             total_available = len(directives)
             
+            # Slice based on state
+            if start_index >= total_available:
+                print(f"[FORGE] All {total_available} cards have already been injected.")
+                return
+
             if limit:
-                directives = directives[:limit]
-                print(f"[FORGE] Limiting to {limit} cards (out of {total_available}).")
+                end_index = min(start_index + limit, total_available)
+                batch = directives[start_index:end_index]
+                print(f"[FORGE] Injecting cards {start_index} to {end_index} (Limit: {limit}).")
             else:
-                print(f"[FORGE] Preparing to inject ALL {total_available} cards.")
+                batch = directives[start_index:]
+                end_index = total_available
+                print(f"[FORGE] Injecting remaining cards {start_index} to {end_index}.")
 
             count = 0
-            for card in directives:
+            for card in batch:
                 card_id = str(uuid.uuid4())
                 seq = card.get("seq", 999)
                 op = card.get("op", "unknown_op")
                 pld = card.get("pld", {})
-                
-                # Mark source as trusted
                 pld["_source"] = "COMMANDER"
                 
                 cursor.execute("""
@@ -95,8 +132,13 @@ def send_to_forge(limit=None):
                     time.sleep(0.01) 
             
             conn.commit()
-            print(f"\n[FORGE] Successfully injected {count} directives directly into card_stack.")
-            log_to_cortex("FORGE_SUBMIT", f"Injected {count} directives.")
+            
+            # Update State
+            save_state(end_index)
+            
+            print(f"\n[FORGE] Successfully injected {count} directives.")
+            log_to_cortex("FORGE_SUBMIT", f"Injected {count} directives (Index {start_index}-{end_index}).")
+            
     except Exception as e:
         print(f"[FORGE ERROR] Failed to inject: {e}")
         log_to_cortex("FORGE_FAIL", str(e))
@@ -178,6 +220,10 @@ def main():
             except KeyboardInterrupt: continue
             if not user_input: continue
             if user_input.lower() in ["exit", "quit"]: break
+            if user_input.lower() in ["reset", "reset forge"]:
+                send_to_forge(limit=0, reset=True)
+                continue
+
             if user_input.lower().startswith("words"):
                 parts = user_input.split()
                 limit = None
@@ -206,7 +252,7 @@ def main():
                     print("[CMD ERROR] Could not parse number of cards.")
                     continue
             if user_input.lower() in ["start", "start cards", "forge"]:
-                send_to_forge()
+                send_to_forge() # Resumes from last state by default
                 continue
             
             if user_input.lower() in ["status", "stack", "list"]:
