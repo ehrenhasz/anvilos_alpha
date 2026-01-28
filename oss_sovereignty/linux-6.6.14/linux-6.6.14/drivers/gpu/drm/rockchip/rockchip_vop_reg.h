@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:Mark Yao <mark.yao@rock-chips.com>
- */
-
 #ifndef _ROCKCHIP_VOP_REG_H
 #define _ROCKCHIP_VOP_REG_H
-
-/* rk3288 register definition */
 #define RK3288_REG_CFG_DONE			0x0000
 #define RK3288_VERSION_INFO			0x0004
 #define RK3288_SYS_CTRL				0x0008
@@ -34,8 +26,6 @@
 #define RK3288_WIN0_DST_ALPHA_CTRL		0x0064
 #define RK3288_WIN0_FADING_CTRL			0x0068
 #define RK3288_WIN0_CTRL2			0x006c
-
-/* win1 register */
 #define RK3288_WIN1_CTRL0			0x0070
 #define RK3288_WIN1_CTRL1			0x0074
 #define RK3288_WIN1_COLOR_KEY			0x0078
@@ -51,7 +41,6 @@
 #define RK3288_WIN1_SRC_ALPHA_CTRL		0x00a0
 #define RK3288_WIN1_DST_ALPHA_CTRL		0x00a4
 #define RK3288_WIN1_FADING_CTRL			0x00a8
-/* win2 register */
 #define RK3288_WIN2_CTRL0			0x00b0
 #define RK3288_WIN2_CTRL1			0x00b4
 #define RK3288_WIN2_VIR0_1			0x00b8
@@ -72,7 +61,6 @@
 #define RK3288_WIN2_DSP_INFO3			0x00f4
 #define RK3288_WIN2_DSP_ST3			0x00f8
 #define RK3288_WIN2_FADING_CTRL			0x00fc
-/* win3 register */
 #define RK3288_WIN3_CTRL0			0x0100
 #define RK3288_WIN3_CTRL1			0x0104
 #define RK3288_WIN3_VIR0_1			0x0108
@@ -93,7 +81,6 @@
 #define RK3288_WIN3_DSP_INFO3			0x0144
 #define RK3288_WIN3_DSP_ST3			0x0148
 #define RK3288_WIN3_FADING_CTRL			0x014c
-/* hwc register */
 #define RK3288_HWC_CTRL0			0x0150
 #define RK3288_HWC_CTRL1			0x0154
 #define RK3288_HWC_MST				0x0158
@@ -101,7 +88,6 @@
 #define RK3288_HWC_SRC_ALPHA_CTRL		0x0160
 #define RK3288_HWC_DST_ALPHA_CTRL		0x0164
 #define RK3288_HWC_FADING_CTRL			0x0168
-/* post process register */
 #define RK3288_POST_DSP_HACT_INFO		0x0170
 #define RK3288_POST_DSP_VACT_INFO		0x0174
 #define RK3288_POST_SCL_FACTOR_YRGB		0x0178
@@ -113,9 +99,6 @@
 #define RK3288_DSP_VACT_ST_END			0x0194
 #define RK3288_DSP_VS_ST_END_F1			0x0198
 #define RK3288_DSP_VACT_ST_END_F1		0x019c
-/* register definition end */
-
-/* rk3368 register definition */
 #define RK3368_REG_CFG_DONE			0x0000
 #define RK3368_VERSION_INFO			0x0004
 #define RK3368_SYS_CTRL				0x0008
@@ -300,8 +283,6 @@
 #define RK3368_CABC_GAMMA_LUT_ADDR		0x1800
 #define RK3368_MCU_BYPASS_WPORT			0x2200
 #define RK3368_MCU_BYPASS_RPORT			0x2300
-/* rk3368 register definition end */
-
 #define RK3366_REG_CFG_DONE			0x0000
 #define RK3366_VERSION_INFO			0x0004
 #define RK3366_SYS_CTRL				0x0008
@@ -463,8 +444,6 @@
 #define RK3366_MMU_INT_MASK			0x241c
 #define RK3366_MMU_INT_STATUS			0x2420
 #define RK3366_MMU_AUTO_GATING			0x2424
-
-/* rk3399 register definition */
 #define RK3399_REG_CFG_DONE			0x0000
 #define RK3399_VERSION_INFO			0x0004
 #define RK3399_SYS_CTRL				0x0008
@@ -656,9 +635,6 @@
 #define RK3399_HWC_LUT_ADDR			0x1800
 #define RK3399_CABC_GAMMA_LUT_ADDR		0x1c00
 #define RK3399_GAMMA_LUT_ADDR			0x2000
-/* rk3399 register definition end */
-
-/* rk3328 register definition end */
 #define RK3328_REG_CFG_DONE			0x00000000
 #define RK3328_VERSION_INFO			0x00000004
 #define RK3328_SYS_CTRL				0x00000008
@@ -764,7 +740,6 @@
 #define RK3328_DBG_WIN3_REG1			0x000004f4
 #define RK3328_DBG_WIN3_REG2			0x000004f8
 #define RK3328_DBG_WIN3_RESERVED		0x000004fc
-
 #define RK3328_HWC_CTRL0			0x00000500
 #define RK3328_HWC_CTRL1			0x00000504
 #define RK3328_HWC_MST				0x00000508
@@ -799,8 +774,6 @@
 #define RK3328_DBG_POST_RESERVED		0x000006ec
 #define RK3328_DBG_DATAO			0x000006f0
 #define RK3328_DBG_DATAO_2			0x000006f4
-
-/* sdr to hdr */
 #define RK3328_SDR2HDR_CTRL			0x00000700
 #define RK3328_EOTF_OETF_Y0			0x00000704
 #define RK3328_RESERVED0001			0x00000708
@@ -811,8 +784,6 @@
 #define RK3328_OETF_DX_DXPOW64			0x0000090c
 #define RK3328_OETF_XN1				0x00000910
 #define RK3328_OETF_XN63			0x00000a08
-
-/* hdr to sdr */
 #define RK3328_HDR2SDR_CTRL			0x00000a10
 #define RK3328_HDR2SDR_SRC_RANGE		0x00000a14
 #define RK3328_HDR2SDR_NORMFACEETF		0x00000a18
@@ -824,10 +795,7 @@
 #define RK3328_EETF_OETF_Y1			0x00000a30
 #define RK3328_SAT_Y1				0x00000ab0
 #define RK3328_SAT_Y8				0x00000acc
-
 #define RK3328_HWC_LUT_ADDR			0x00000c00
-
-/* rk3036 register definition */
 #define RK3036_SYS_CTRL			0x00
 #define RK3036_DSP_CTRL0		0x04
 #define RK3036_DSP_CTRL1		0x08
@@ -869,15 +837,9 @@
 #define RK3036_BCSH_H			0xdc
 #define RK3036_WIN1_LUT_ADDR		0x400
 #define RK3036_HWC_LUT_ADDR		0x800
-/* rk3036 register definition end */
-
-/* rk3126 register definition */
 #define RK3126_WIN1_MST			0x4c
 #define RK3126_WIN1_DSP_INFO		0x50
 #define RK3126_WIN1_DSP_ST		0x54
-/* rk3126 register definition end */
-
-/* px30 register definition */
 #define PX30_REG_CFG_DONE			0x00000
 #define PX30_VERSION				0x00004
 #define PX30_DSP_BG				0x00008
@@ -949,9 +911,6 @@
 #define PX30_FLAG_REG				0x001fc
 #define PX30_HWC_LUT_ADDR			0x00600
 #define PX30_GAMMA_LUT_ADDR			0x00a00
-/* px30 register definition end */
-
-/* rk3188 register definition */
 #define RK3188_SYS_CTRL			0x00
 #define RK3188_DSP_CTRL0		0x04
 #define RK3188_DSP_CTRL1		0x08
@@ -975,9 +934,6 @@
 #define RK3188_DSP_VTOTAL_VS_END	0x74
 #define RK3188_DSP_VACT_ST_END		0x78
 #define RK3188_REG_CFG_DONE		0x90
-/* rk3188 register definition end */
-
-/* rk3066 register definition */
 #define RK3066_SYS_CTRL0		0x00
 #define RK3066_SYS_CTRL1		0x04
 #define RK3066_DSP_CTRL0		0x08
@@ -1028,6 +984,4 @@
 #define RK3066_MCU_BYPASS_RPORT		0x200
 #define RK3066_WIN2_LUT_ADDR		0x400
 #define RK3066_DSP_LUT_ADDR		0x800
-/* rk3066 register definition end */
-
-#endif /* _ROCKCHIP_VOP_REG_H */
+#endif  

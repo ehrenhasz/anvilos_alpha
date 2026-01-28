@@ -1,23 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2004, 2007-2010, 2011-2012 Synopsys, Inc. (www.synopsys.com)
- */
-
 #ifndef __ASM_ARC_CMPXCHG_H
 #define __ASM_ARC_CMPXCHG_H
-
 #include <linux/build_bug.h>
 #include <linux/types.h>
-
 #include <asm/barrier.h>
 #include <asm/smp.h>
-
 #ifdef CONFIG_ARC_HAS_LLSC
-
-/*
- * if (*ptr == @old)
- *      *ptr = @new
- */
 #define __cmpxchg(ptr, old, new)					\
 ({									\
 	__typeof__(*(ptr)) _prev;					\
@@ -28,16 +15,15 @@
 	"	scond  %3, [%1]	\n"					\
 	"	bnz     1b		\n"				\
 	"2:				\n"				\
-	: "=&r"(_prev)	/* Early clobber prevent reg reuse */		\
-	: "r"(ptr),	/* Not "m": llock only supports reg */		\
+	: "=&r"(_prev)	 		\
+	: "r"(ptr),	 		\
 	  "ir"(old),							\
-	  "r"(new)	/* Not "ir": scond can't take LIMM */		\
+	  "r"(new)	 		\
 	: "cc",								\
-	  "memory");	/* gcc knows memory is clobbered */		\
+	  "memory");	 		\
 									\
 	_prev;								\
 })
-
 #define arch_cmpxchg_relaxed(ptr, old, new)				\
 ({									\
 	__typeof__(ptr) _p_ = (ptr);					\
@@ -54,9 +40,7 @@
 	}								\
 	_prev_;								\
 })
-
 #else
-
 #define arch_cmpxchg(ptr, old, new)				        \
 ({									\
 	volatile __typeof__(ptr) _p_ = (ptr);				\
@@ -67,9 +51,7 @@
 									\
 	BUILD_BUG_ON(sizeof(_p_) != 4);					\
 									\
-	/*								\
-	 * spin lock/unlock provide the needed smp_mb() before/after	\
-	 */								\
+	 								\
 	atomic_ops_lock(__flags);					\
 	_prev_ = *_p_;							\
 	if (_prev_ == _o_)						\
@@ -77,24 +59,17 @@
 	atomic_ops_unlock(__flags);					\
 	_prev_;								\
 })
-
 #endif
-
-/*
- * xchg
- */
 #ifdef CONFIG_ARC_HAS_LLSC
-
 #define __arch_xchg(ptr, val)						\
 ({									\
 	__asm__ __volatile__(						\
-	"	ex  %0, [%1]	\n"	/* set new value */	        \
+	"	ex  %0, [%1]	\n"	 	        \
 	: "+r"(val)							\
 	: "r"(ptr)							\
 	: "memory");							\
-	_val_;		/* get old value */				\
+	_val_;		 				\
 })
-
 #define arch_xchg_relaxed(ptr, val)					\
 ({									\
 	__typeof__(ptr) _p_ = (ptr);					\
@@ -109,16 +84,7 @@
 	}								\
 	_val_;								\
 })
-
-#else  /* !CONFIG_ARC_HAS_LLSC */
-
-/*
- * EX instructions is baseline and present in !LLSC too. But in this
- * regime it still needs use @atomic_ops_lock spinlock to allow interop
- * with cmpxchg() which uses spinlock in !LLSC
- * (llist.h use xchg and cmpxchg on sama data)
- */
-
+#else   
 #define arch_xchg(ptr, val)					        \
 ({									\
 	__typeof__(ptr) _p_ = (ptr);					\
@@ -137,7 +103,5 @@
 	atomic_ops_unlock(__flags);					\
 	_val_;								\
 })
-
 #endif
-
 #endif

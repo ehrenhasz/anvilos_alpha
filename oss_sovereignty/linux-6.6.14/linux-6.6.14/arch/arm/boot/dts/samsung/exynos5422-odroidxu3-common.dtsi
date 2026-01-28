@@ -1,35 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hardkernel Odroid XU3/XU3-Lite/XU4 boards common device tree source
- *
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- * Copyright (c) 2014 Collabora Ltd.
- * Copyright (c) 2015 Lukasz Majewski <l.majewski@samsung.com>
- *                    Anand Moon <linux.amoon@gmail.com>
- */
-
 #include <dt-bindings/input/input.h>
 #include "exynos5422-odroid-core.dtsi"
-
 / {
 	aliases {
 		mmc0 = &mmc_0;
 	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
 		pinctrl-names = "default";
 		pinctrl-0 = <&power_key>;
-
 		power-key {
-			/*
-			 * The power button (SW2) is connected to the PWRON
-			 * pin (active high) of the S2MPS11 PMIC, which acts
-			 * as a 16ms debouce filter and signal inverter with
-			 * output on ONOB pin (active low). ONOB PMIC pin is
-			 * then connected to XEINT3 SoC pin.
-			 */
 			gpios = <&gpx0 3 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_POWER>;
 			label = "power key";
@@ -37,21 +16,18 @@
 			wakeup-source;
 		};
 	};
-
 	emmc_pwrseq: pwrseq {
 		pinctrl-0 = <&emmc_nrst_pin>;
 		pinctrl-names = "default";
 		compatible = "mmc-pwrseq-emmc";
 		reset-gpios = <&gpd1 0 GPIO_ACTIVE_LOW>;
 	};
-
 	fan0: pwm-fan {
 		compatible = "pwm-fan";
 		pwms = <&pwm 0 20972 0>;
 		#cooling-cells = <2>;
 		cooling-levels = <0 130 170 230>;
 	};
-
 	thermal-zones {
 		cpu0_thermal: cpu0-thermal {
 			thermal-sensors = <&tmu_cpu0>;
@@ -59,39 +35,33 @@
 			polling-delay = <0>;
 			trips {
 				cpu0_alert0: cpu-alert-0 {
-					temperature = <50000>; /* millicelsius */
-					hysteresis = <5000>; /* millicelsius */
+					temperature = <50000>;  
+					hysteresis = <5000>;  
 					type = "active";
 				};
 				cpu0_alert1: cpu-alert-1 {
-					temperature = <60000>; /* millicelsius */
-					hysteresis = <5000>; /* millicelsius */
+					temperature = <60000>;  
+					hysteresis = <5000>;  
 					type = "active";
 				};
 				cpu0_alert2: cpu-alert-2 {
-					temperature = <70000>; /* millicelsius */
-					hysteresis = <5000>; /* millicelsius */
+					temperature = <70000>;  
+					hysteresis = <5000>;  
 					type = "active";
 				};
 				cpu0_crit0: cpu-crit-0 {
-					temperature = <120000>; /* millicelsius */
-					hysteresis = <0>; /* millicelsius */
+					temperature = <120000>;  
+					hysteresis = <0>;  
 					type = "critical";
 				};
-				/*
-				 * Exynos542x supports only 4 trip-points
-				 * so for these polling mode is required.
-				 * Start polling at temperature level of last
-				 * interrupt-driven trip: cpu0_alert2
-				 */
 				cpu0_alert3: cpu-alert-3 {
-					temperature = <70000>; /* millicelsius */
-					hysteresis = <10000>; /* millicelsius */
+					temperature = <70000>;  
+					hysteresis = <10000>;  
 					type = "passive";
 				};
 				cpu0_alert4: cpu-alert-4 {
-					temperature = <85000>; /* millicelsius */
-					hysteresis = <10000>; /* millicelsius */
+					temperature = <85000>;  
+					hysteresis = <10000>;  
 					type = "passive";
 				};
 			};
@@ -108,11 +78,6 @@
 					trip = <&cpu0_alert2>;
 					cooling-device = <&fan0 2 3>;
 				};
-				/*
-				 * When reaching cpu0_alert3, reduce CPU
-				 * by 2 steps. On Exynos5422/5800 that would
-				 * (usually) be: 1800 MHz and 1200 MHz.
-				 */
 				map3 {
 					trip = <&cpu0_alert3>;
 					cooling-device = <&cpu0 0 2>,
@@ -124,11 +89,6 @@
 							 <&cpu6 0 2>,
 							 <&cpu7 0 2>;
 				};
-				/*
-				 * When reaching cpu0_alert4, reduce CPU
-				 * further, down to 600 MHz (14 steps for big,
-				 * 8 steps for LITTLE).
-				 */
 				cpu0_cooling_map4: map4 {
 					trip = <&cpu0_alert4>;
 					cooling-device = <&cpu0 3 8>,
@@ -422,47 +382,37 @@
 		};
 	};
 };
-
 &buck10_reg {
-	/* Supplies vmmc-supply of mmc_0 */
 	regulator-always-on;
 	regulator-boot-on;
 };
-
 &hdmi {
 	status = "okay";
 	ddc = <&i2c_2>;
 	hpd-gpios = <&gpx3 7 GPIO_ACTIVE_HIGH>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&hdmi_hpd_irq>;
-
 	vdd_osc-supply = <&ldo7_reg>;
 	vdd_pll-supply = <&ldo6_reg>;
 	vdd-supply = <&ldo6_reg>;
 };
-
 &hdmicec {
 	status = "okay";
 	needs-hpd;
 };
-
 &i2c_2 {
 	samsung,i2c-sda-delay = <100>;
 	samsung,i2c-max-bus-freq = <66000>;
-	/* used by HDMI DDC */
 	status = "okay";
 };
-
 &ldo26_reg {
 	regulator-min-microvolt = <3000000>;
 	regulator-max-microvolt = <3000000>;
 	regulator-always-on;
 };
-
 &mixer {
 	status = "okay";
 };
-
 &mmc_0 {
 	status = "okay";
 	mmc-pwrseq = <&emmc_pwrseq>;
@@ -483,7 +433,6 @@
 	vmmc-supply = <&ldo18_reg>;
 	vqmmc-supply = <&ldo3_reg>;
 };
-
 &pinctrl_0 {
 	power_key: power-key-pins {
 		samsung,pins = "gpx0-3";
@@ -491,7 +440,6 @@
 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
 		samsung,pin-drv = <EXYNOS5420_PIN_DRV_LV1>;
 	};
-
 	hdmi_hpd_irq: hdmi-hpd-irq-pins {
 		samsung,pins = "gpx3-7";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
@@ -499,7 +447,6 @@
 		samsung,pin-drv = <EXYNOS5420_PIN_DRV_LV1>;
 	};
 };
-
 &pinctrl_1 {
 	emmc_nrst_pin: emmc-nrst-pins {
 		samsung,pins = "gpd1-0";

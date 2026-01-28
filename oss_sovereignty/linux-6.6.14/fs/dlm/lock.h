@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) 2005-2007 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
-
 #ifndef __LOCK_DOT_H__
 #define __LOCK_DOT_H__
-
 void dlm_dump_rsb(struct dlm_rsb *r);
 void dlm_dump_rsb_name(struct dlm_ls *ls, const char *name, int len);
 void dlm_print_lkb(struct dlm_lkb *lkb);
@@ -24,13 +13,10 @@ int dlm_put_lkb(struct dlm_lkb *lkb);
 void dlm_scan_rsbs(struct dlm_ls *ls);
 int dlm_lock_recovery_try(struct dlm_ls *ls);
 void dlm_unlock_recovery(struct dlm_ls *ls);
-
 int dlm_master_lookup(struct dlm_ls *ls, int from_nodeid, const char *name,
 		      int len, unsigned int flags, int *r_nodeid, int *result);
-
 int dlm_search_rsb_tree(struct rb_root *tree, const void *name, int len,
 			struct dlm_rsb **r_ret);
-
 void dlm_recover_purge(struct dlm_ls *ls);
 void dlm_purge_mstcpy_locks(struct dlm_rsb *r);
 void dlm_recover_grant(struct dlm_ls *ls);
@@ -40,7 +26,6 @@ int dlm_recover_master_copy(struct dlm_ls *ls, const struct dlm_rcom *rc,
 			    __le32 *rl_remid, __le32 *rl_result);
 int dlm_recover_process_copy(struct dlm_ls *ls, const struct dlm_rcom *rc,
 			     uint64_t seq);
-
 int dlm_user_request(struct dlm_ls *ls, struct dlm_user_args *ua, int mode,
 	uint32_t flags, void *name, unsigned int namelen);
 int dlm_user_convert(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
@@ -60,21 +45,16 @@ int dlm_debug_add_lkb(struct dlm_ls *ls, uint32_t lkb_id, char *name, int len,
 		      int lkb_nodeid, unsigned int lkb_flags, int lkb_status);
 int dlm_debug_add_lkb_to_waiters(struct dlm_ls *ls, uint32_t lkb_id,
 				 int mstype, int to_nodeid);
-
 static inline int is_master(struct dlm_rsb *r)
 {
 	return !r->res_nodeid;
 }
-
 static inline void lock_rsb(struct dlm_rsb *r)
 {
 	mutex_lock(&r->res_mutex);
 }
-
 static inline void unlock_rsb(struct dlm_rsb *r)
 {
 	mutex_unlock(&r->res_mutex);
 }
-
 #endif
-

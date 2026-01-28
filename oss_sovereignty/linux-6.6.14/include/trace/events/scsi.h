@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM scsi
-
 #if !defined(_TRACE_SCSI_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_SCSI_H
-
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_host.h>
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #define scsi_opcode_name(opcode)	{ opcode, #opcode }
 #define show_opcode_name(val)					\
 	__print_symbolic(val,					\
@@ -103,7 +99,6 @@
 		scsi_opcode_name(WRITE_SAME_32),		\
 		scsi_opcode_name(ATA_16),			\
 		scsi_opcode_name(ATA_12))
-
 #define scsi_hostbyte_name(result)	{ result, #result }
 #define show_hostbyte_name(val)					\
 	__print_symbolic(val,					\
@@ -123,7 +118,6 @@
 		scsi_hostbyte_name(DID_REQUEUE),		\
 		scsi_hostbyte_name(DID_TRANSPORT_DISRUPTED),	\
 		scsi_hostbyte_name(DID_TRANSPORT_FAILFAST))
-
 #define scsi_statusbyte_name(result)	{ result, #result }
 #define show_statusbyte_name(val)				\
 	__print_symbolic(val,					\
@@ -138,7 +132,6 @@
 		scsi_statusbyte_name(SAM_STAT_TASK_SET_FULL),	\
 		scsi_statusbyte_name(SAM_STAT_ACA_ACTIVE),	\
 		scsi_statusbyte_name(SAM_STAT_TASK_ABORTED))
-
 #define scsi_prot_op_name(result)	{ result, #result }
 #define show_prot_op_name(val)					\
 	__print_symbolic(val,					\
@@ -149,16 +142,11 @@
 		scsi_prot_op_name(SCSI_PROT_WRITE_INSERT),	\
 		scsi_prot_op_name(SCSI_PROT_READ_PASS),		\
 		scsi_prot_op_name(SCSI_PROT_WRITE_PASS))
-
 const char *scsi_trace_parse_cdb(struct trace_seq*, unsigned char*, int);
 #define __parse_cdb(cdb, len) scsi_trace_parse_cdb(p, cdb, len)
-
 TRACE_EVENT(scsi_dispatch_cmd_start,
-
 	TP_PROTO(struct scsi_cmnd *cmd),
-
 	TP_ARGS(cmd),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	host_no	)
 		__field( unsigned int,	channel	)
@@ -173,7 +161,6 @@ TRACE_EVENT(scsi_dispatch_cmd_start,
 		__field( unsigned char,	prot_op )
 		__dynamic_array(unsigned char,	cmnd, cmd->cmd_len)
 	),
-
 	TP_fast_assign(
 		__entry->host_no	= cmd->device->host->host_no;
 		__entry->channel	= cmd->device->channel;
@@ -188,7 +175,6 @@ TRACE_EVENT(scsi_dispatch_cmd_start,
 		__entry->prot_op	= scsi_get_prot_op(cmd);
 		memcpy(__get_dynamic_array(cmnd), cmd->cmnd, cmd->cmd_len);
 	),
-
 	TP_printk("host_no=%u channel=%u id=%u lun=%u data_sgl=%u prot_sgl=%u" \
 		  " prot_op=%s driver_tag=%d scheduler_tag=%d cmnd=(%s %s raw=%s)",
 		  __entry->host_no, __entry->channel, __entry->id,
@@ -198,13 +184,9 @@ TRACE_EVENT(scsi_dispatch_cmd_start,
 		  __parse_cdb(__get_dynamic_array(cmnd), __entry->cmd_len),
 		  __print_hex(__get_dynamic_array(cmnd), __entry->cmd_len))
 );
-
 TRACE_EVENT(scsi_dispatch_cmd_error,
-
 	TP_PROTO(struct scsi_cmnd *cmd, int rtn),
-
 	TP_ARGS(cmd, rtn),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	host_no	)
 		__field( unsigned int,	channel	)
@@ -220,7 +202,6 @@ TRACE_EVENT(scsi_dispatch_cmd_error,
 		__field( unsigned char,	prot_op )
 		__dynamic_array(unsigned char,	cmnd, cmd->cmd_len)
 	),
-
 	TP_fast_assign(
 		__entry->host_no	= cmd->device->host->host_no;
 		__entry->channel	= cmd->device->channel;
@@ -236,7 +217,6 @@ TRACE_EVENT(scsi_dispatch_cmd_error,
 		__entry->prot_op	= scsi_get_prot_op(cmd);
 		memcpy(__get_dynamic_array(cmnd), cmd->cmnd, cmd->cmd_len);
 	),
-
 	TP_printk("host_no=%u channel=%u id=%u lun=%u data_sgl=%u prot_sgl=%u" \
 		  " prot_op=%s driver_tag=%d scheduler_tag=%d cmnd=(%s %s raw=%s)" \
 		  " rtn=%d",
@@ -248,13 +228,9 @@ TRACE_EVENT(scsi_dispatch_cmd_error,
 		  __print_hex(__get_dynamic_array(cmnd), __entry->cmd_len),
 		  __entry->rtn)
 );
-
 DECLARE_EVENT_CLASS(scsi_cmd_done_timeout_template,
-
 	TP_PROTO(struct scsi_cmnd *cmd),
-
 	TP_ARGS(cmd),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	host_no	)
 		__field( unsigned int,	channel	)
@@ -273,10 +249,8 @@ DECLARE_EVENT_CLASS(scsi_cmd_done_timeout_template,
 		__field( u8, asc )
 		__field( u8, ascq )
 	),
-
 	TP_fast_assign(
 		struct scsi_sense_hdr sshdr;
-
 		__entry->host_no	= cmd->device->host->host_no;
 		__entry->channel	= cmd->device->channel;
 		__entry->id		= cmd->device->id;
@@ -301,7 +275,6 @@ DECLARE_EVENT_CLASS(scsi_cmd_done_timeout_template,
 			__entry->ascq = 0;
 		}
 	),
-
 	TP_printk("host_no=%u channel=%u id=%u lun=%u data_sgl=%u prot_sgl=%u " \
 		  "prot_op=%s driver_tag=%d scheduler_tag=%d cmnd=(%s %s raw=%s) " \
 		  "result=(driver=%s host=%s message=%s status=%s) "
@@ -318,33 +291,22 @@ DECLARE_EVENT_CLASS(scsi_cmd_done_timeout_template,
 		  show_statusbyte_name(__entry->result & 0xff),
 		  __entry->sense_key, __entry->asc, __entry->ascq)
 );
-
 DEFINE_EVENT(scsi_cmd_done_timeout_template, scsi_dispatch_cmd_done,
 	     TP_PROTO(struct scsi_cmnd *cmd),
 	     TP_ARGS(cmd));
-
 DEFINE_EVENT(scsi_cmd_done_timeout_template, scsi_dispatch_cmd_timeout,
 	     TP_PROTO(struct scsi_cmnd *cmd),
 	     TP_ARGS(cmd));
-
 TRACE_EVENT(scsi_eh_wakeup,
-
 	TP_PROTO(struct Scsi_Host *shost),
-
 	TP_ARGS(shost),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	host_no	)
 	),
-
 	TP_fast_assign(
 		__entry->host_no	= shost->host_no;
 	),
-
 	TP_printk("host_no=%u", __entry->host_no)
 );
-
-#endif /*  _TRACE_SCSI_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

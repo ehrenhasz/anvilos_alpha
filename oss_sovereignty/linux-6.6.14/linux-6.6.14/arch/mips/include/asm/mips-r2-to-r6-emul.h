@@ -1,15 +1,5 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (c) 2014 Imagination Technologies Ltd.
- * Author: Markos Chandras <markos.chandras@imgtec.com>
- */
-
 #ifndef __ASM_MIPS_R2_TO_R6_EMUL_H
 #define __ASM_MIPS_R2_TO_R6_EMUL_H
-
 struct mips_r2_emulator_stats {
 	u64 movs;
 	u64 hilo;
@@ -24,7 +14,6 @@ struct mips_r2_emulator_stats {
 	u64 llsc;
 	u64 dsemul;
 };
-
 struct mips_r2br_emulator_stats {
 	u64 jrs;
 	u64 bltzl;
@@ -40,9 +29,7 @@ struct mips_r2br_emulator_stats {
 	u64 blezl;
 	u64 bgtzl;
 };
-
 #ifdef CONFIG_DEBUG_FS
-
 #define MIPS_R2_STATS(M)						\
 do {									\
 	u32 nir;							\
@@ -57,31 +44,23 @@ do {									\
 	}								\
 	preempt_enable();						\
 } while (0)
-
 #define MIPS_R2BR_STATS(M)					\
 do {								\
 	preempt_disable();					\
 	__this_cpu_inc(mipsr2bremustats.M);			\
 	preempt_enable();					\
 } while (0)
-
 #else
-
 #define MIPS_R2_STATS(M)          do { } while (0)
 #define MIPS_R2BR_STATS(M)        do { } while (0)
-
-#endif /* CONFIG_DEBUG_FS */
-
+#endif  
 struct r2_decoder_table {
 	u32     mask;
 	u32     code;
 	int     (*func)(struct pt_regs *regs, u32 inst);
 };
-
-
 extern void do_trap_or_bp(struct pt_regs *regs, unsigned int code, int si_code,
 			  const char *str);
-
 #ifndef CONFIG_MIPSR2_TO_R6_EMULATOR
 static int mipsr2_emulation;
 static inline int mipsr2_decoder(struct pt_regs *regs, u32 inst,
@@ -90,12 +69,9 @@ static inline int mipsr2_decoder(struct pt_regs *regs, u32 inst,
 	return 0;
 };
 #else
-/* MIPS R2 Emulator ON/OFF */
 extern int mipsr2_emulation;
 extern int mipsr2_decoder(struct pt_regs *regs, u32 inst,
 			  unsigned long *fcr31);
-#endif /* CONFIG_MIPSR2_TO_R6_EMULATOR */
-
+#endif  
 #define NO_R6EMU	(cpu_has_mips_r6 && !mipsr2_emulation)
-
-#endif /* __ASM_MIPS_R2_TO_R6_EMUL_H */
+#endif  

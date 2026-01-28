@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (C) 2001 Ben. Herrenschmidt (benh@kernel.crashing.org)
- *
- *  Modifications for ppc64:
- *      Copyright (C) 2003 Dave Engebretsen <engebret@us.ibm.com>
- */
 #ifndef __ASM_POWERPC_FIRMWARE_H
 #define __ASM_POWERPC_FIRMWARE_H
-
 #ifdef __KERNEL__
-
 #include <asm/asm-const.h>
-
-/* firmware feature bitmask values */
-
 #define FW_FEATURE_PFT		ASM_CONST(0x0000000000000001)
 #define FW_FEATURE_TCE		ASM_CONST(0x0000000000000002)
 #define FW_FEATURE_SPRG0	ASM_CONST(0x0000000000000004)
@@ -57,9 +45,7 @@
 #define FW_FEATURE_ENERGY_SCALE_INFO ASM_CONST(0x0000040000000000)
 #define FW_FEATURE_WATCHDOG	ASM_CONST(0x0000080000000000)
 #define FW_FEATURE_PLPKS	ASM_CONST(0x0000100000000000)
-
 #ifndef __ASSEMBLY__
-
 enum {
 #ifdef CONFIG_PPC64
 	FW_FEATURE_PSERIES_POSSIBLE = FW_FEATURE_PFT | FW_FEATURE_TCE |
@@ -115,37 +101,25 @@ enum {
 		FW_FEATURE_NATIVE_ALWAYS &
 #endif
 		FW_FEATURE_POSSIBLE,
-
-#else /* CONFIG_PPC64 */
+#else  
 	FW_FEATURE_POSSIBLE = 0,
 	FW_FEATURE_ALWAYS = 0,
 #endif
 };
-
-/* This is used to identify firmware features which are available
- * to the kernel.
- */
 extern unsigned long	powerpc_firmware_features;
-
 #define firmware_has_feature(feature)					\
 	((FW_FEATURE_ALWAYS & (feature)) ||				\
 		(FW_FEATURE_POSSIBLE & powerpc_firmware_features & (feature)))
-
 extern void system_reset_fwnmi(void);
 extern void machine_check_fwnmi(void);
-
-/* This is true if we are using the firmware NMI handler (typically LPAR) */
 extern int fwnmi_active;
 extern int ibm_nmi_interlock_token;
-
 extern unsigned int __start___fw_ftr_fixup, __stop___fw_ftr_fixup;
-
 #ifdef CONFIG_PPC_PSERIES
 void pseries_probe_fw_features(void);
 #else
 static inline void pseries_probe_fw_features(void) { }
 #endif
-
-#endif /* __ASSEMBLY__ */
-#endif /* __KERNEL__ */
-#endif /* __ASM_POWERPC_FIRMWARE_H */
+#endif  
+#endif  
+#endif  

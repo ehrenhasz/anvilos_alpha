@@ -1,78 +1,53 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *	Vxlan private header file
- *
- */
-
 #ifndef _VXLAN_PRIVATE_H
 #define _VXLAN_PRIVATE_H
-
 #include <linux/rhashtable.h>
-
 extern unsigned int vxlan_net_id;
 extern const u8 all_zeros_mac[ETH_ALEN + 2];
 extern const struct rhashtable_params vxlan_vni_rht_params;
-
 #define PORT_HASH_BITS	8
 #define PORT_HASH_SIZE  (1 << PORT_HASH_BITS)
-
-/* per-network namespace private data for this module */
 struct vxlan_net {
 	struct list_head  vxlan_list;
 	struct hlist_head sock_list[PORT_HASH_SIZE];
 	spinlock_t	  sock_lock;
 	struct notifier_block nexthop_notifier_block;
 };
-
-/* Forwarding table entry */
 struct vxlan_fdb {
-	struct hlist_node hlist;	/* linked list of entries */
+	struct hlist_node hlist;	 
 	struct rcu_head	  rcu;
-	unsigned long	  updated;	/* jiffies */
+	unsigned long	  updated;	 
 	unsigned long	  used;
 	struct list_head  remotes;
 	u8		  eth_addr[ETH_ALEN];
-	u16		  state;	/* see ndm_state */
+	u16		  state;	 
 	__be32		  vni;
-	u16		  flags;	/* see ndm_flags and below */
+	u16		  flags;	 
 	struct list_head  nh_list;
 	struct nexthop __rcu *nh;
 	struct vxlan_dev  __rcu *vdev;
 };
-
 #define NTF_VXLAN_ADDED_BY_USER 0x100
-
-/* Virtual Network hash table head */
 static inline struct hlist_head *vni_head(struct vxlan_sock *vs, __be32 vni)
 {
 	return &vs->vni_list[hash_32((__force u32)vni, VNI_HASH_BITS)];
 }
-
-/* Socket hash table head */
 static inline struct hlist_head *vs_head(struct net *net, __be16 port)
 {
 	struct vxlan_net *vn = net_generic(net, vxlan_net_id);
-
 	return &vn->sock_list[hash_32(ntohs(port), PORT_HASH_BITS)];
 }
-
-/* First remote destination for a forwarding entry.
- * Guaranteed to be non-NULL because remotes are never deleted.
- */
 static inline struct vxlan_rdst *first_remote_rcu(struct vxlan_fdb *fdb)
 {
 	if (rcu_access_pointer(fdb->nh))
 		return NULL;
 	return list_entry_rcu(fdb->remotes.next, struct vxlan_rdst, list);
 }
-
 static inline struct vxlan_rdst *first_remote_rtnl(struct vxlan_fdb *fdb)
 {
 	if (rcu_access_pointer(fdb->nh))
 		return NULL;
 	return list_first_entry(&fdb->remotes, struct vxlan_rdst, list);
 }
-
 #if IS_ENABLED(CONFIG_IPV6)
 static inline
 bool vxlan_addr_equal(const union vxlan_addr *a, const union vxlan_addr *b)
@@ -84,7 +59,6 @@ bool vxlan_addr_equal(const union vxlan_addr *a, const union vxlan_addr *b)
 	else
 		return a->sin.sin_addr.s_addr == b->sin.sin_addr.s_addr;
 }
-
 static inline int vxlan_nla_get_addr(union vxlan_addr *ip,
 				     const struct nlattr *nla)
 {
@@ -100,7 +74,6 @@ static inline int vxlan_nla_get_addr(union vxlan_addr *ip,
 		return -EAFNOSUPPORT;
 	}
 }
-
 static inline int vxlan_nla_put_addr(struct sk_buff *skb, int attr,
 				     const union vxlan_addr *ip)
 {
@@ -109,7 +82,6 @@ static inline int vxlan_nla_put_addr(struct sk_buff *skb, int attr,
 	else
 		return nla_put_in_addr(skb, attr, ip->sin.sin_addr.s_addr);
 }
-
 static inline bool vxlan_addr_is_multicast(const union vxlan_addr *ip)
 {
 	if (ip->sa.sa_family == AF_INET6)
@@ -117,15 +89,12 @@ static inline bool vxlan_addr_is_multicast(const union vxlan_addr *ip)
 	else
 		return ipv4_is_multicast(ip->sin.sin_addr.s_addr);
 }
-
-#else /* !CONFIG_IPV6 */
-
+#else  
 static inline
 bool vxlan_addr_equal(const union vxlan_addr *a, const union vxlan_addr *b)
 {
 	return a->sin.sin_addr.s_addr == b->sin.sin_addr.s_addr;
 }
-
 static inline int vxlan_nla_get_addr(union vxlan_addr *ip,
 				     const struct nlattr *nla)
 {
@@ -139,20 +108,16 @@ static inline int vxlan_nla_get_addr(union vxlan_addr *ip,
 		return -EAFNOSUPPORT;
 	}
 }
-
 static inline int vxlan_nla_put_addr(struct sk_buff *skb, int attr,
 				     const union vxlan_addr *ip)
 {
 	return nla_put_in_addr(skb, attr, ip->sin.sin_addr.s_addr);
 }
-
 static inline bool vxlan_addr_is_multicast(const union vxlan_addr *ip)
 {
 	return ipv4_is_multicast(ip->sin.sin_addr.s_addr);
 }
-
 #endif
-
 static inline size_t vxlan_addr_size(const union vxlan_addr *ip)
 {
 	if (ip->sa.sa_family == AF_INET6)
@@ -160,21 +125,16 @@ static inline size_t vxlan_addr_size(const union vxlan_addr *ip)
 	else
 		return sizeof(__be32);
 }
-
 static inline struct vxlan_vni_node *
 vxlan_vnifilter_lookup(struct vxlan_dev *vxlan, __be32 vni)
 {
 	struct vxlan_vni_group *vg;
-
 	vg = rcu_dereference_rtnl(vxlan->vnigrp);
 	if (!vg)
 		return NULL;
-
 	return rhashtable_lookup_fast(&vg->vni_hash, &vni,
 				      vxlan_vni_rht_params);
 }
-
-/* vxlan_core.c */
 int vxlan_fdb_create(struct vxlan_dev *vxlan,
 		     const u8 *mac, union vxlan_addr *ip,
 		     __u16 state, __be16 port, __be32 src_vni,
@@ -197,17 +157,13 @@ void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
 		    __be32 default_vni, struct vxlan_rdst *rdst, bool did_rsc);
 int vxlan_vni_in_use(struct net *src_net, struct vxlan_dev *vxlan,
 		     struct vxlan_config *conf, __be32 vni);
-
-/* vxlan_vnifilter.c */
 int vxlan_vnigroup_init(struct vxlan_dev *vxlan);
 void vxlan_vnigroup_uninit(struct vxlan_dev *vxlan);
-
 void vxlan_vnifilter_init(void);
 void vxlan_vnifilter_uninit(void);
 void vxlan_vnifilter_count(struct vxlan_dev *vxlan, __be32 vni,
 			   struct vxlan_vni_node *vninode,
 			   int type, unsigned int len);
-
 void vxlan_vs_add_vnigrp(struct vxlan_dev *vxlan,
 			 struct vxlan_sock *vs,
 			 bool ipv6);
@@ -216,9 +172,6 @@ int vxlan_vnilist_update_group(struct vxlan_dev *vxlan,
 			       union vxlan_addr *old_remote_ip,
 			       union vxlan_addr *new_remote_ip,
 			       struct netlink_ext_ack *extack);
-
-
-/* vxlan_multicast.c */
 int vxlan_multicast_join(struct vxlan_dev *vxlan);
 int vxlan_multicast_leave(struct vxlan_dev *vxlan);
 bool vxlan_group_used(struct vxlan_net *vn, struct vxlan_dev *dev,
@@ -227,8 +180,6 @@ int vxlan_igmp_join(struct vxlan_dev *vxlan, union vxlan_addr *rip,
 		    int rifindex);
 int vxlan_igmp_leave(struct vxlan_dev *vxlan, union vxlan_addr *rip,
 		     int rifindex);
-
-/* vxlan_mdb.c */
 int vxlan_mdb_dump(struct net_device *dev, struct sk_buff *skb,
 		   struct netlink_callback *cb);
 int vxlan_mdb_add(struct net_device *dev, struct nlattr *tb[], u16 nlmsg_flags,

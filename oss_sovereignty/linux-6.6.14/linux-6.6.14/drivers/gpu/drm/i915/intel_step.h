@@ -1,28 +1,14 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020,2021 Intel Corporation
- */
-
 #ifndef __INTEL_STEP_H__
 #define __INTEL_STEP_H__
-
 #include <linux/types.h>
-
 struct drm_i915_private;
-
 struct intel_step_info {
-	/*
-	 * It is expected to have 4 number steps per letter. Deviation from
-	 * the expectation breaks gmd_to_intel_step().
-	 */
-	u8 graphics_step;	/* Represents the compute tile on Xe_HPC */
+	u8 graphics_step;	 
 	u8 display_step;
 	u8 media_step;
 	u8 basedie_step;
 };
-
 #define STEP_ENUM_VAL(name)  STEP_##name,
-
 #define STEP_NAME_LIST(func)		\
 	func(A0)			\
 	func(A1)			\
@@ -64,19 +50,12 @@ struct intel_step_info {
 	func(J1)			\
 	func(J2)			\
 	func(J3)
-
-/*
- * Symbolic steppings that do not match the hardware. These are valid both as gt
- * and display steppings as symbolic names.
- */
 enum intel_step {
 	STEP_NONE = 0,
 	STEP_NAME_LIST(STEP_ENUM_VAL)
 	STEP_FUTURE,
 	STEP_FOREVER,
 };
-
 void intel_step_init(struct drm_i915_private *i915);
 const char *intel_step_name(enum intel_step step);
-
-#endif /* __INTEL_STEP_H__ */
+#endif  

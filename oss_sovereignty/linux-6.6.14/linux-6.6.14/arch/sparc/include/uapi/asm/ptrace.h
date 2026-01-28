@@ -1,66 +1,33 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI__SPARC_PTRACE_H
 #define _UAPI__SPARC_PTRACE_H
-
 #if defined(__sparc__) && defined(__arch64__)
-/* 64 bit sparc */
 #include <asm/pstate.h>
-
-/* This struct defines the way the registers are stored on the
- * stack during a system call and basically all traps.
- */
-
-/* This magic value must have the low 9 bits clear,
- * as that is where we encode the %tt value, see below.
- */
 #define PT_REGS_MAGIC 0x57ac6c00
-
 #ifndef __ASSEMBLY__
-
 #include <linux/types.h>
-
 struct pt_regs {
-	unsigned long u_regs[16]; /* globals and ins */
+	unsigned long u_regs[16];  
 	unsigned long tstate;
 	unsigned long tpc;
 	unsigned long tnpc;
 	unsigned int y;
-
-	/* We encode a magic number, PT_REGS_MAGIC, along
-	 * with the %tt (trap type) register value at trap
-	 * entry time.  The magic number allows us to identify
-	 * accurately a trap stack frame in the stack
-	 * unwinder, and the %tt value allows us to test
-	 * things like "in a system call" etc. for an arbitray
-	 * process.
-	 *
-	 * The PT_REGS_MAGIC is chosen such that it can be
-	 * loaded completely using just a sethi instruction.
-	 */
 	unsigned int magic;
 };
-
 struct pt_regs32 {
 	unsigned int psr;
 	unsigned int pc;
 	unsigned int npc;
 	unsigned int y;
-	unsigned int u_regs[16]; /* globals and ins */
+	unsigned int u_regs[16];  
 };
-
-/* A V9 register window */
 struct reg_window {
 	unsigned long locals[8];
 	unsigned long ins[8];
 };
-
-/* A 32-bit register window. */
 struct reg_window32 {
 	unsigned int locals[8];
 	unsigned int ins[8];
 };
-
-/* A V9 Sparc stack frame */
 struct sparc_stackf {
 	unsigned long locals[8];
         unsigned long ins[6];
@@ -70,8 +37,6 @@ struct sparc_stackf {
 	unsigned long xargs[6];
 	unsigned long xxargs[1];
 };
-
-/* A 32-bit Sparc stack frame */
 struct sparc_stackf32 {
 	unsigned int locals[8];
         unsigned int ins[6];
@@ -81,41 +46,28 @@ struct sparc_stackf32 {
 	unsigned int xargs[6];
 	unsigned int xxargs[1];
 };
-
 struct sparc_trapf {
 	unsigned long locals[8];
 	unsigned long ins[8];
 	unsigned long _unused;
 	struct pt_regs *regs;
 };
-#endif /* (!__ASSEMBLY__) */
+#endif  
 #else
-/* 32 bit sparc */
-
 #include <asm/psr.h>
-
-/* This struct defines the way the registers are stored on the
- * stack during a system call and basically all traps.
- */
 #ifndef __ASSEMBLY__
-
 #include <linux/types.h>
-
 struct pt_regs {
 	unsigned long psr;
 	unsigned long pc;
 	unsigned long npc;
 	unsigned long y;
-	unsigned long u_regs[16]; /* globals and ins */
+	unsigned long u_regs[16];  
 };
-
-/* A 32-bit register window. */
 struct reg_window32 {
 	unsigned long locals[8];
 	unsigned long ins[8];
 };
-
-/* A Sparc stack frame */
 struct sparc_stackf {
 	unsigned long locals[8];
         unsigned long ins[6];
@@ -125,20 +77,14 @@ struct sparc_stackf {
 	unsigned long xargs[6];
 	unsigned long xxargs[1];
 };
-#endif /* (!__ASSEMBLY__) */
-
-#endif /* (defined(__sparc__) && defined(__arch64__))*/
-
+#endif  
+#endif  
 #ifndef __ASSEMBLY__
-
 #define TRACEREG_SZ	sizeof(struct pt_regs)
 #define STACKFRAME_SZ	sizeof(struct sparc_stackf)
-
 #define TRACEREG32_SZ	sizeof(struct pt_regs32)
 #define STACKFRAME32_SZ	sizeof(struct sparc_stackf32)
-
-#endif /* (!__ASSEMBLY__) */
-
+#endif  
 #define UREG_G0        0
 #define UREG_G1        1
 #define UREG_G2        2
@@ -157,39 +103,21 @@ struct sparc_stackf {
 #define UREG_I7        15
 #define UREG_FP        UREG_I6
 #define UREG_RETPC     UREG_I7
-
 #if defined(__sparc__) && defined(__arch64__)
-/* 64 bit sparc */
-
 #ifndef __ASSEMBLY__
-
-
-#else /* __ASSEMBLY__ */
-/* For assembly code. */
+#else  
 #define TRACEREG_SZ		0xa0
 #define STACKFRAME_SZ		0xc0
-
 #define TRACEREG32_SZ		0x50
 #define STACKFRAME32_SZ		0x60
-#endif /* __ASSEMBLY__ */
-
-#else /* (defined(__sparc__) && defined(__arch64__)) */
-
-/* 32 bit sparc */
-
+#endif  
+#else  
 #ifndef __ASSEMBLY__
-
-
-#else /* (!__ASSEMBLY__) */
-/* For assembly code. */
+#else  
 #define TRACEREG_SZ       0x50
 #define STACKFRAME_SZ     0x60
-#endif /* (!__ASSEMBLY__) */
-
-#endif /* (defined(__sparc__) && defined(__arch64__)) */
-
-
-/* These are for pt_regs. */
+#endif  
+#endif  
 #define PT_V9_G0     0x00
 #define PT_V9_G1     0x08
 #define PT_V9_G2     0x10
@@ -215,8 +143,6 @@ struct sparc_stackf {
 #define PT_TSTATE	PT_V9_TSTATE
 #define PT_TPC		PT_V9_TPC
 #define PT_TNPC		PT_V9_TNPC
-
-/* These for pt_regs32. */
 #define PT_PSR    0x0
 #define PT_PC     0x4
 #define PT_NPC    0x8
@@ -239,8 +165,6 @@ struct sparc_stackf {
 #define PT_I6     0x48
 #define PT_FP     PT_I6
 #define PT_I7     0x4c
-
-/* Reg_window offsets */
 #define RW_V9_L0     0x00
 #define RW_V9_L1     0x08
 #define RW_V9_L2     0x10
@@ -257,7 +181,6 @@ struct sparc_stackf {
 #define RW_V9_I5     0x68
 #define RW_V9_I6     0x70
 #define RW_V9_I7     0x78
-
 #define RW_L0     0x00
 #define RW_L1     0x04
 #define RW_L2     0x08
@@ -274,8 +197,6 @@ struct sparc_stackf {
 #define RW_I5     0x34
 #define RW_I6     0x38
 #define RW_I7     0x3c
-
-/* Stack_frame offsets */
 #define SF_V9_L0     0x00
 #define SF_V9_L1     0x08
 #define SF_V9_L2     0x10
@@ -300,7 +221,6 @@ struct sparc_stackf {
 #define SF_V9_XARG4  0xa8
 #define SF_V9_XARG5  0xb0
 #define SF_V9_XXARG  0xb8
-
 #define SF_L0     0x00
 #define SF_L1     0x04
 #define SF_L2     0x08
@@ -325,9 +245,6 @@ struct sparc_stackf {
 #define SF_XARG4  0x54
 #define SF_XARG5  0x58
 #define SF_XXARG  0x5c
-
-
-/* Stuff for the ptrace system call */
 #define PTRACE_SPARC_DETACH       11
 #define PTRACE_GETREGS            12
 #define PTRACE_SETREGS            13
@@ -339,15 +256,8 @@ struct sparc_stackf {
 #define PTRACE_WRITETEXT          19
 #define PTRACE_GETFPAREGS         20
 #define PTRACE_SETFPAREGS         21
-
-/* There are for debugging 64-bit processes, either from a 32 or 64 bit
- * parent.  Thus their complements are for debugging 32-bit processes only.
- */
-
 #define PTRACE_GETREGS64	  22
 #define PTRACE_SETREGS64	  23
-/* PTRACE_SYSCALL is 24 */
 #define PTRACE_GETFPREGS64	  25
 #define PTRACE_SETFPREGS64	  26
-
-#endif /* _UAPI__SPARC_PTRACE_H */
+#endif  

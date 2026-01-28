@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_FB_H_
 #define _ASM_FB_H_
-
 #include <asm/page.h>
 #include <asm/setup.h>
-
 struct file;
-
 static inline void fb_pgprotect(struct file *file, struct vm_area_struct *vma,
 				unsigned long off)
 {
@@ -18,14 +14,11 @@ static inline void fb_pgprotect(struct file *file, struct vm_area_struct *vma,
 		pgprot_val(vma->vm_page_prot) |= _PAGE_NOCACHE030;
 	if (CPU_IS_040_OR_060) {
 		pgprot_val(vma->vm_page_prot) &= _CACHEMASK040;
-		/* Use no-cache mode, serialized */
 		pgprot_val(vma->vm_page_prot) |= _PAGE_NOCACHE_S;
 	}
-#endif /* CONFIG_SUN3 */
-#endif /* CONFIG_MMU */
+#endif  
+#endif  
 }
 #define fb_pgprotect fb_pgprotect
-
 #include <asm-generic/fb.h>
-
-#endif /* _ASM_FB_H_ */
+#endif  

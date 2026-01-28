@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Marvell 88SE64xx/88SE94xx main function head file
- *
- * Copyright 2007 Red Hat, Inc.
- * Copyright 2008 Marvell. <kewei@marvell.com>
- * Copyright 2009-2011 Marvell. <yuxiangl@marvell.com>
-*/
-
 #ifndef _MV_SAS_H_
 #define _MV_SAS_H_
-
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/spinlock.h>
@@ -29,7 +19,6 @@
 #include <scsi/scsi_tcq.h>
 #include <scsi/sas_ata.h>
 #include "mv_defs.h"
-
 #define DRV_NAME		"mvsas"
 #define DRV_VERSION		"0.8.16"
 #define MVS_ID_NOT_MAPPED	0x7f
@@ -43,20 +32,16 @@
 #define mv_dprintk(format, arg...) no_printk(format, ## arg)
 #endif
 #define MV_MAX_U32			0xffffffff
-
 extern int interrupt_coalescing;
 extern struct mvs_tgt_initiator mvs_tgt;
 extern struct mvs_info *tgt_mvi;
 extern const struct mvs_dispatch mvs_64xx_dispatch;
 extern const struct mvs_dispatch mvs_94xx_dispatch;
-
 #define bit(n) ((u64)1 << n)
-
 #define for_each_phy(__lseq_mask, __mc, __lseq)			\
 	for ((__mc) = (__lseq_mask), (__lseq) = 0;		\
 					(__mc) != 0 ;		\
 					(++__lseq), (__mc) >>= 1)
-
 #define MVS_PHY_ID (1U << sas_phy->id)
 #define MV_INIT_DELAYED_WORK(w, f, d)	INIT_DELAYED_WORK(w, f)
 #define UNASSOC_D2H_FIS(id)		\
@@ -71,21 +56,17 @@ extern const struct mvs_dispatch mvs_94xx_dispatch;
 	(SATA_RECEIVED_FIS_LIST(reg_set) + 0x20)
 #define SATA_RECEIVED_DMA_FIS(reg_set)	\
 	(SATA_RECEIVED_FIS_LIST(reg_set) + 0x00)
-
 enum dev_status {
 	MVS_DEV_NORMAL = 0x0,
 	MVS_DEV_EH	= 0x1,
 };
-
 enum dev_reset {
 	MVS_SOFT_RESET	= 0,
 	MVS_HARD_RESET	= 1,
 	MVS_PHY_TUNE	= 2,
 };
-
 struct mvs_info;
 struct mvs_prv_info;
-
 struct mvs_dispatch {
 	char *name;
 	int (*chip_init)(struct mvs_info *mvi);
@@ -96,24 +77,18 @@ struct mvs_dispatch {
 	u32 (*isr_status)(struct mvs_info *mvi, int irq);
 	void (*interrupt_enable)(struct mvs_info *mvi);
 	void (*interrupt_disable)(struct mvs_info *mvi);
-
 	u32 (*read_phy_ctl)(struct mvs_info *mvi, u32 port);
 	void (*write_phy_ctl)(struct mvs_info *mvi, u32 port, u32 val);
-
 	u32 (*read_port_cfg_data)(struct mvs_info *mvi, u32 port);
 	void (*write_port_cfg_data)(struct mvs_info *mvi, u32 port, u32 val);
 	void (*write_port_cfg_addr)(struct mvs_info *mvi, u32 port, u32 addr);
-
 	u32 (*read_port_vsr_data)(struct mvs_info *mvi, u32 port);
 	void (*write_port_vsr_data)(struct mvs_info *mvi, u32 port, u32 val);
 	void (*write_port_vsr_addr)(struct mvs_info *mvi, u32 port, u32 addr);
-
 	u32 (*read_port_irq_stat)(struct mvs_info *mvi, u32 port);
 	void (*write_port_irq_stat)(struct mvs_info *mvi, u32 port, u32 val);
-
 	u32 (*read_port_irq_mask)(struct mvs_info *mvi, u32 port);
 	void (*write_port_irq_mask)(struct mvs_info *mvi, u32 port, u32 val);
-
 	void (*command_active)(struct mvs_info *mvi, u32 slot_idx);
 	void (*clear_srs_irq)(struct mvs_info *mvi, u8 reg_set, u8 clear_all);
 	void (*issue_stop)(struct mvs_info *mvi, enum mvs_port_type type,
@@ -156,9 +131,7 @@ struct mvs_dispatch {
 	void (*non_spec_ncq_error)(struct mvs_info *mvi);
 	int (*gpio_write)(struct mvs_prv_info *mvs_prv, u8 reg_type,
 			u8 reg_index, u8 reg_count, u8 *write_data);
-
 };
-
 struct mvs_chip_info {
 	u32 		n_host;
 	u32 		n_phy;
@@ -174,31 +147,27 @@ struct mvs_chip_info {
 #define MVS_RX_FISL_SZ		\
 	(mvi->chip->fis_offs + (mvi->chip->fis_count * 0x100))
 #define MVS_CHIP_DISP		(mvi->chip->dispatch)
-
 struct mvs_err_info {
 	__le32			flags;
 	__le32			flags2;
 };
-
 struct mvs_cmd_hdr {
-	__le32			flags;	/* PRD tbl len; SAS, SATA ctl */
-	__le32			lens;	/* cmd, max resp frame len */
-	__le32			tags;	/* targ port xfer tag; tag */
-	__le32			data_len;	/* data xfer len */
-	__le64			cmd_tbl;  	/* command table address */
-	__le64			open_frame;	/* open addr frame address */
-	__le64			status_buf;	/* status buffer address */
-	__le64			prd_tbl;		/* PRD tbl address */
+	__le32			flags;	 
+	__le32			lens;	 
+	__le32			tags;	 
+	__le32			data_len;	 
+	__le64			cmd_tbl;  	 
+	__le64			open_frame;	 
+	__le64			status_buf;	 
+	__le64			prd_tbl;		 
 	__le32			reserved[4];
 };
-
 struct mvs_port {
 	struct asd_sas_port	sas_port;
 	u8			port_attached;
 	u8			wide_port_phymap;
 	struct list_head	list;
 };
-
 struct mvs_phy {
 	struct mvs_info 		*mvi;
 	struct mvs_port		*port;
@@ -222,7 +191,6 @@ struct mvs_phy {
 	enum sas_linkrate	minimum_linkrate;
 	enum sas_linkrate	maximum_linkrate;
 };
-
 struct mvs_device {
 	struct list_head		dev_entry;
 	enum sas_device_type dev_type;
@@ -235,74 +203,30 @@ struct mvs_device {
 	u8 dev_status;
 	u16 reserved;
 };
-
-/* Generate  PHY tunning parameters */
 struct phy_tuning {
-	/* 1 bit,  transmitter emphasis enable	*/
 	u8	trans_emp_en:1;
-	/* 4 bits, transmitter emphasis amplitude */
 	u8	trans_emp_amp:4;
-	/* 3 bits, reserved space */
 	u8	Reserved_2bit_1:3;
-	/* 5 bits, transmitter amplitude */
 	u8	trans_amp:5;
-	/* 2 bits, transmitter amplitude adjust */
 	u8	trans_amp_adj:2;
-	/* 1 bit, reserved space */
 	u8	resv_2bit_2:1;
-	/* 2 bytes, reserved space */
 	u8	reserved[2];
 };
-
 struct ffe_control {
-	/* 4 bits,  FFE Capacitor Select  (value range 0~F)  */
 	u8 ffe_cap_sel:4;
-	/* 3 bits,  FFE Resistor Select (value range 0~7) */
 	u8 ffe_rss_sel:3;
-	/* 1 bit reserve*/
 	u8 reserved:1;
 };
-
-/*
- * HBA_Info_Page is saved in Flash/NVRAM, total 256 bytes.
- * The data area is valid only Signature="MRVL".
- * If any member fills with 0xFF, the member is invalid.
- */
 struct hba_info_page {
-	/* Dword 0 */
-	/* 4 bytes, structure signature,should be "MRVL" at first initial */
 	u8 signature[4];
-
-	/* Dword 1-13 */
 	u32 reserved1[13];
-
-	/* Dword 14-29 */
-	/* 64 bytes, SAS address for each port */
 	u64 sas_addr[8];
-
-	/* Dword 30-31 */
-	/* 8 bytes for vanir 8 port PHY FFE seeting
-	 * BIT 0~3 : FFE Capacitor select(value range 0~F)
-	 * BIT 4~6 : FFE Resistor select(value range 0~7)
-	 * BIT 7: reserve.
-	 */
-
 	struct ffe_control  ffe_ctl[8];
-	/* Dword 32 -43 */
 	u32 reserved2[12];
-
-	/* Dword 44-45 */
-	/* 8 bytes,  0:  1.5G, 1: 3.0G, should be 0x01 at first initial */
 	u8 phy_rate[8];
-
-	/* Dword 46-53 */
-	/* 32 bytes, PHY tuning parameters for each PHY*/
 	struct phy_tuning   phy_tuning[8];
-
-	/* Dword 54-63 */
 	u32 reserved3[10];
-};	/* total 256 bytes */
-
+};	 
 struct mvs_slot_info {
 	struct list_head entry;
 	union {
@@ -312,10 +236,6 @@ struct mvs_slot_info {
 	u32 n_elem;
 	u32 tx;
 	u32 slot_tag;
-
-	/* DMA buffer for storing cmd tbl, open addr frame, status buffer,
-	 * and PRD table
-	 */
 	void *buf;
 	dma_addr_t buf_dma;
 	void *response;
@@ -323,55 +243,29 @@ struct mvs_slot_info {
 	struct mvs_device	*device;
 	void *open_frame;
 };
-
 struct mvs_info {
 	unsigned long flags;
-
-	/* host-wide lock */
 	spinlock_t lock;
-
-	/* our device */
 	struct pci_dev *pdev;
 	struct device *dev;
-
-	/* enhanced mode registers */
 	void __iomem *regs;
-
-	/* peripheral or soc registers */
 	void __iomem *regs_ex;
 	u8 sas_addr[SAS_ADDR_SIZE];
-
-	/* SCSI/SAS glue */
 	struct sas_ha_struct *sas;
 	struct Scsi_Host *shost;
-
-	/* TX (delivery) DMA ring */
 	__le32 *tx;
 	dma_addr_t tx_dma;
-
-	/* cached next-producer idx */
 	u32 tx_prod;
-
-	/* RX (completion) DMA ring */
 	__le32	*rx;
 	dma_addr_t rx_dma;
-
-	/* RX consumer idx */
 	u32 rx_cons;
-
-	/* RX'd FIS area */
 	__le32 *rx_fis;
 	dma_addr_t rx_fis_dma;
-
-	/* DMA command header slots */
 	struct mvs_cmd_hdr *slot;
 	dma_addr_t slot_dma;
-
 	u32 chip_id;
 	const struct mvs_chip_info *chip;
-
 	unsigned long *rsvd_tags;
-	/* further per-slot information */
 	struct mvs_phy phy[MVS_MAX_PHYS];
 	struct mvs_port port[MVS_MAX_PHYS];
 	u32 id;
@@ -383,7 +277,6 @@ struct mvs_info {
 	u16 flashid;
 	u32 flashsize;
 	u32 flashsectSize;
-
 	void *addon;
 	struct hba_info_page hba_info_param;
 	struct mvs_device	devices[MVS_MAX_DEVICES];
@@ -395,7 +288,6 @@ struct mvs_info {
 	void *dma_pool;
 	struct mvs_slot_info slot_info[];
 };
-
 struct mvs_prv_info{
 	u8 n_host;
 	u8 n_phy;
@@ -404,7 +296,6 @@ struct mvs_prv_info{
 	struct mvs_info *mvi[2];
 	struct tasklet_struct mv_tasklet;
 };
-
 struct mvs_wq {
 	struct delayed_work work_q;
 	struct mvs_info *mvi;
@@ -412,7 +303,6 @@ struct mvs_wq {
 	int handler;
 	struct list_head entry;
 };
-
 struct mvs_task_exec_info {
 	struct sas_task *task;
 	struct mvs_cmd_hdr *hdr;
@@ -420,8 +310,6 @@ struct mvs_task_exec_info {
 	u32 tag;
 	int n_elem;
 };
-
-/******************** function prototype *********************/
 void mvs_get_sas_addr(void *buf, u32 buflen);
 void mvs_iounmap(void __iomem *regs);
 int mvs_ioremap(struct mvs_info *mvi, int bar, int bar_ex);
@@ -453,4 +341,3 @@ struct mvs_device *mvs_find_dev_by_reg_set(struct mvs_info *mvi, u8 reg_set);
 int mvs_gpio_write(struct sas_ha_struct *, u8 reg_type, u8 reg_index,
 			u8 reg_count, u8 *write_data);
 #endif
-

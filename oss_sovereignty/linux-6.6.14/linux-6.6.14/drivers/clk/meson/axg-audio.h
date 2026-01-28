@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Copyright (c) 2018 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
-
 #ifndef __AXG_AUDIO_CLKC_H
 #define __AXG_AUDIO_CLKC_H
-
-/*
- * Audio Clock  register offsets
- *
- * Register offsets from the datasheet must be multiplied by 4 before
- * to get the right offset
- */
 #define AUDIO_CLK_GATE_EN	0x000
 #define AUDIO_MCLK_A_CTRL	0x004
 #define AUDIO_MCLK_B_CTRL	0x008
@@ -49,8 +36,6 @@
 #define AUDIO_CLK_PDMIN_CTRL0	0x0AC
 #define AUDIO_CLK_PDMIN_CTRL1	0x0B0
 #define AUDIO_CLK_SPDIFOUT_B_CTRL 0x0B4
-
-/* SM1 introduce new register and some shifts :( */
 #define AUDIO_CLK_GATE_EN1	0x004
 #define AUDIO_SM1_MCLK_A_CTRL	0x008
 #define AUDIO_SM1_MCLK_B_CTRL	0x00C
@@ -64,5 +49,4 @@
 #define AUDIO_SM1_SW_RESET1	0x02C
 #define AUDIO_CLK81_CTRL	0x030
 #define AUDIO_CLK81_EN		0x034
-
-#endif /*__AXG_AUDIO_CLKC_H */
+#endif  

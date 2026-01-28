@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (C) 2003-2018 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_STXX_DEFS_H__
 #define __CVMX_STXX_DEFS_H__
-
 #define CVMX_STXX_ARB_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000608ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_STXX_BCKPRS_CNT(block_id) (CVMX_ADD_IO_SEG(0x0001180090000688ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_STXX_COM_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000600ull) + ((block_id) & 1) * 0x8000000ull)
@@ -44,9 +16,7 @@
 #define CVMX_STXX_STAT_BYTES_LO(block_id) (CVMX_ADD_IO_SEG(0x0001180090000680ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_STXX_STAT_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000638ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_STXX_STAT_PKT_XMT(block_id) (CVMX_ADD_IO_SEG(0x0001180090000640ull) + ((block_id) & 1) * 0x8000000ull)
-
 void __cvmx_interrupt_stxx_int_msk_enable(int index);
-
 union cvmx_stxx_arb_ctl {
 	uint64_t u64;
 	struct cvmx_stxx_arb_ctl_s {
@@ -65,7 +35,6 @@ union cvmx_stxx_arb_ctl {
 #endif
 	} s;
 };
-
 union cvmx_stxx_bckprs_cnt {
 	uint64_t u64;
 	struct cvmx_stxx_bckprs_cnt_s {
@@ -78,7 +47,6 @@ union cvmx_stxx_bckprs_cnt {
 #endif
 	} s;
 };
-
 union cvmx_stxx_com_ctl {
 	uint64_t u64;
 	struct cvmx_stxx_com_ctl_s {
@@ -95,7 +63,6 @@ union cvmx_stxx_com_ctl {
 #endif
 	} s;
 };
-
 union cvmx_stxx_dip_cnt {
 	uint64_t u64;
 	struct cvmx_stxx_dip_cnt_s {
@@ -110,7 +77,6 @@ union cvmx_stxx_dip_cnt {
 #endif
 	} s;
 };
-
 union cvmx_stxx_ign_cal {
 	uint64_t u64;
 	struct cvmx_stxx_ign_cal_s {
@@ -123,7 +89,6 @@ union cvmx_stxx_ign_cal {
 #endif
 	} s;
 };
-
 union cvmx_stxx_int_msk {
 	uint64_t u64;
 	struct cvmx_stxx_int_msk_s {
@@ -150,7 +115,6 @@ union cvmx_stxx_int_msk {
 #endif
 	} s;
 };
-
 union cvmx_stxx_int_reg {
 	uint64_t u64;
 	struct cvmx_stxx_int_reg_s {
@@ -179,7 +143,6 @@ union cvmx_stxx_int_reg {
 #endif
 	} s;
 };
-
 union cvmx_stxx_int_sync {
 	uint64_t u64;
 	struct cvmx_stxx_int_sync_s {
@@ -206,7 +169,6 @@ union cvmx_stxx_int_sync {
 #endif
 	} s;
 };
-
 union cvmx_stxx_min_bst {
 	uint64_t u64;
 	struct cvmx_stxx_min_bst_s {
@@ -219,7 +181,6 @@ union cvmx_stxx_min_bst {
 #endif
 	} s;
 };
-
 union cvmx_stxx_spi4_calx {
 	uint64_t u64;
 	struct cvmx_stxx_spi4_calx_s {
@@ -240,7 +201,6 @@ union cvmx_stxx_spi4_calx {
 #endif
 	} s;
 };
-
 union cvmx_stxx_spi4_dat {
 	uint64_t u64;
 	struct cvmx_stxx_spi4_dat_s {
@@ -255,7 +215,6 @@ union cvmx_stxx_spi4_dat {
 #endif
 	} s;
 };
-
 union cvmx_stxx_spi4_stat {
 	uint64_t u64;
 	struct cvmx_stxx_spi4_stat_s {
@@ -272,7 +231,6 @@ union cvmx_stxx_spi4_stat {
 #endif
 	} s;
 };
-
 union cvmx_stxx_stat_bytes_hi {
 	uint64_t u64;
 	struct cvmx_stxx_stat_bytes_hi_s {
@@ -285,7 +243,6 @@ union cvmx_stxx_stat_bytes_hi {
 #endif
 	} s;
 };
-
 union cvmx_stxx_stat_bytes_lo {
 	uint64_t u64;
 	struct cvmx_stxx_stat_bytes_lo_s {
@@ -298,7 +255,6 @@ union cvmx_stxx_stat_bytes_lo {
 #endif
 	} s;
 };
-
 union cvmx_stxx_stat_ctl {
 	uint64_t u64;
 	struct cvmx_stxx_stat_ctl_s {
@@ -313,7 +269,6 @@ union cvmx_stxx_stat_ctl {
 #endif
 	} s;
 };
-
 union cvmx_stxx_stat_pkt_xmt {
 	uint64_t u64;
 	struct cvmx_stxx_stat_pkt_xmt_s {
@@ -326,5 +281,4 @@ union cvmx_stxx_stat_pkt_xmt {
 #endif
 	} s;
 };
-
 #endif

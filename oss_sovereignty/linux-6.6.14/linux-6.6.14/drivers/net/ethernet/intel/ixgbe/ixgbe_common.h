@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 1999 - 2018 Intel Corporation. */
-
 #ifndef _IXGBE_COMMON_H_
 #define _IXGBE_COMMON_H_
-
 #include "ixgbe_type.h"
 #include "ixgbe.h"
-
 u16 ixgbe_get_pcie_msix_count_generic(struct ixgbe_hw *hw);
 s32 ixgbe_init_hw_generic(struct ixgbe_hw *hw);
 s32 ixgbe_start_hw_generic(struct ixgbe_hw *hw);
@@ -20,11 +15,9 @@ enum ixgbe_bus_speed ixgbe_convert_bus_speed(u16 link_status);
 s32 ixgbe_get_bus_info_generic(struct ixgbe_hw *hw);
 void ixgbe_set_lan_id_multi_port_pcie(struct ixgbe_hw *hw);
 s32 ixgbe_stop_adapter_generic(struct ixgbe_hw *hw);
-
 s32 ixgbe_led_on_generic(struct ixgbe_hw *hw, u32 index);
 s32 ixgbe_led_off_generic(struct ixgbe_hw *hw, u32 index);
 s32 ixgbe_init_led_link_act_generic(struct ixgbe_hw *hw);
-
 s32 ixgbe_init_eeprom_params_generic(struct ixgbe_hw *hw);
 s32 ixgbe_write_eeprom_generic(struct ixgbe_hw *hw, u16 offset, u16 data);
 s32 ixgbe_write_eeprom_buffer_bit_bang_generic(struct ixgbe_hw *hw, u16 offset,
@@ -43,7 +36,6 @@ s32 ixgbe_calc_eeprom_checksum_generic(struct ixgbe_hw *hw);
 s32 ixgbe_validate_eeprom_checksum_generic(struct ixgbe_hw *hw,
 					   u16 *checksum_val);
 s32 ixgbe_update_eeprom_checksum_generic(struct ixgbe_hw *hw);
-
 s32 ixgbe_set_rar_generic(struct ixgbe_hw *hw, u32 index, u8 *addr, u32 vmdq,
 			  u32 enable_addr);
 s32 ixgbe_clear_rar_generic(struct ixgbe_hw *hw, u32 index);
@@ -59,7 +51,6 @@ s32 ixgbe_fc_enable_generic(struct ixgbe_hw *hw);
 s32 ixgbe_setup_fc_generic(struct ixgbe_hw *);
 bool ixgbe_device_supports_autoneg_fc(struct ixgbe_hw *hw);
 void ixgbe_fc_autoneg(struct ixgbe_hw *hw);
-
 s32 ixgbe_acquire_swfw_sync(struct ixgbe_hw *hw, u32 mask);
 void ixgbe_release_swfw_sync(struct ixgbe_hw *hw, u32 mask);
 s32 ixgbe_get_san_mac_addr_generic(struct ixgbe_hw *hw, u8 *san_mac_addr);
@@ -75,10 +66,8 @@ s32 ixgbe_check_mac_link_generic(struct ixgbe_hw *hw,
 				 bool *link_up, bool link_up_wait_to_complete);
 s32 ixgbe_get_wwn_prefix_generic(struct ixgbe_hw *hw, u16 *wwnn_prefix,
 				 u16 *wwpn_prefix);
-
 s32 prot_autoc_read_generic(struct ixgbe_hw *hw, bool *, u32 *reg_val);
 s32 prot_autoc_write_generic(struct ixgbe_hw *hw, u32 reg_val, bool locked);
-
 s32 ixgbe_blink_led_start_generic(struct ixgbe_hw *hw, u32 index);
 s32 ixgbe_blink_led_stop_generic(struct ixgbe_hw *hw, u32 index);
 void ixgbe_set_mac_anti_spoofing(struct ixgbe_hw *hw, bool enable, int vf);
@@ -95,12 +84,9 @@ s32 ixgbe_fw_phy_activity(struct ixgbe_hw *hw, u16 activity,
 void ixgbe_clear_tx_pending(struct ixgbe_hw *hw);
 bool ixgbe_mng_present(struct ixgbe_hw *hw);
 bool ixgbe_mng_enabled(struct ixgbe_hw *hw);
-
 void ixgbe_set_rxpba_generic(struct ixgbe_hw *hw, int num_pb,
 			     u32 headroom, int strategy);
-
 extern const u32 ixgbe_mvals_8259X[IXGBE_MVALS_IDX_LIMIT];
-
 #define IXGBE_I2C_THERMAL_SENSOR_ADDR	0xF8
 #define IXGBE_EMC_INTERNAL_DATA		0x00
 #define IXGBE_EMC_INTERNAL_THERM_LIMIT	0x20
@@ -110,7 +96,6 @@ extern const u32 ixgbe_mvals_8259X[IXGBE_MVALS_IDX_LIMIT];
 #define IXGBE_EMC_DIODE2_THERM_LIMIT	0x1A
 #define IXGBE_EMC_DIODE3_DATA		0x2A
 #define IXGBE_EMC_DIODE3_THERM_LIMIT	0x30
-
 s32 ixgbe_get_thermal_sensor_data_generic(struct ixgbe_hw *hw);
 s32 ixgbe_init_thermal_sensor_thresh_generic(struct ixgbe_hw *hw);
 void ixgbe_get_etk_id(struct ixgbe_hw *hw,
@@ -126,30 +111,24 @@ s32 ixgbe_setup_mac_link_multispeed_fiber(struct ixgbe_hw *hw,
 					  bool autoneg_wait_to_complete);
 void ixgbe_set_soft_rate_select_speed(struct ixgbe_hw *hw,
 				      ixgbe_link_speed speed);
-
 #define IXGBE_FAILED_READ_RETRIES 5
 #define IXGBE_FAILED_READ_REG 0xffffffffU
 #define IXGBE_FAILED_READ_CFG_DWORD 0xffffffffU
 #define IXGBE_FAILED_READ_CFG_WORD 0xffffU
-
 u16 ixgbe_read_pci_cfg_word(struct ixgbe_hw *hw, u32 reg);
 void ixgbe_write_pci_cfg_word(struct ixgbe_hw *hw, u32 reg, u16 value);
-
 static inline bool ixgbe_removed(void __iomem *addr)
 {
 	return unlikely(!addr);
 }
-
 static inline void ixgbe_write_reg(struct ixgbe_hw *hw, u32 reg, u32 value)
 {
 	u8 __iomem *reg_addr = READ_ONCE(hw->hw_addr);
-
 	if (ixgbe_removed(reg_addr))
 		return;
 	writel(value, reg_addr + reg);
 }
 #define IXGBE_WRITE_REG(a, reg, value) ixgbe_write_reg((a), (reg), (value))
-
 #ifndef writeq
 #define writeq writeq
 static inline void writeq(u64 val, void __iomem *addr)
@@ -158,30 +137,22 @@ static inline void writeq(u64 val, void __iomem *addr)
 	writel((u32)(val >> 32), addr + 4);
 }
 #endif
-
 static inline void ixgbe_write_reg64(struct ixgbe_hw *hw, u32 reg, u64 value)
 {
 	u8 __iomem *reg_addr = READ_ONCE(hw->hw_addr);
-
 	if (ixgbe_removed(reg_addr))
 		return;
 	writeq(value, reg_addr + reg);
 }
 #define IXGBE_WRITE_REG64(a, reg, value) ixgbe_write_reg64((a), (reg), (value))
-
 u32 ixgbe_read_reg(struct ixgbe_hw *hw, u32 reg);
 #define IXGBE_READ_REG(a, reg) ixgbe_read_reg((a), (reg))
-
 #define IXGBE_WRITE_REG_ARRAY(a, reg, offset, value) \
 		ixgbe_write_reg((a), (reg) + ((offset) << 2), (value))
-
 #define IXGBE_READ_REG_ARRAY(a, reg, offset) \
 		ixgbe_read_reg((a), (reg) + ((offset) << 2))
-
 #define IXGBE_WRITE_FLUSH(a) ixgbe_read_reg((a), IXGBE_STATUS)
-
 #define ixgbe_hw_to_netdev(hw) (((struct ixgbe_adapter *)(hw)->back)->netdev)
-
 #define hw_dbg(hw, format, arg...) \
 	netdev_dbg(ixgbe_hw_to_netdev(hw), format, ## arg)
 #define hw_err(hw, format, arg...) \
@@ -202,4 +173,4 @@ u32 ixgbe_read_reg(struct ixgbe_hw *hw, u32 reg);
 	netif_warn(adapter, msglvl, adapter->netdev, format, ## arg)
 #define e_crit(msglvl, format, arg...) \
 	netif_crit(adapter, msglvl, adapter->netdev, format, ## arg)
-#endif /* IXGBE_COMMON */
+#endif  

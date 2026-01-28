@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * PIC32 pinctrl driver
- *
- * Joshua Henderson, <joshua.henderson@microchip.com>
- * Copyright (C) 2015 Microchip Technology Inc.  All rights reserved.
- */
 #ifndef PINCTRL_PINCTRL_PIC32_H
 #define PINCTRL_PINCTRL_PIC32_H
-
-/* PORT Registers */
 #define ANSEL_REG	0x00
 #define TRIS_REG	0x10
 #define PORT_REG	0x20
@@ -21,8 +12,6 @@
 #define CNSTAT_REG	0x90
 #define CNNE_REG	0xA0
 #define CNF_REG		0xB0
-
-/* Input PPS Registers */
 #define INT1R 0x04
 #define INT2R 0x08
 #define INT3R 0x0C
@@ -74,8 +63,6 @@
 #define REFCLKI1R 0xE8
 #define REFCLKI3R 0xF0
 #define REFCLKI4R 0xF4
-
-/* Output PPS Registers */
 #define RPA14R 0x138
 #define RPA15R 0x13C
 #define RPB0R 0x140
@@ -129,5 +116,4 @@
 #define RPG7R 0x29C
 #define RPG8R 0x2A0
 #define RPG9R 0x2A4
-
-#endif  /* PINCTRL_PINCTRL_PIC32_H */
+#endif   

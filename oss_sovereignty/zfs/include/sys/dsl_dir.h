@@ -1,33 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2014, Joyent, Inc. All rights reserved.
- * Copyright (c) 2014 Spectra Logic Corporation, All rights reserved.
- */
-
 #ifndef	_SYS_DSL_DIR_H
 #define	_SYS_DSL_DIR_H
-
 #include <sys/dmu.h>
 #include <sys/dsl_deadlist.h>
 #include <sys/dsl_pool.h>
@@ -36,24 +8,16 @@
 #include <sys/zfs_context.h>
 #include <sys/dsl_crypt.h>
 #include <sys/bplist.h>
-
 #ifdef	__cplusplus
 extern "C" {
 #endif
-
 struct dsl_dataset;
 struct zthr;
-/*
- * DD_FIELD_* are strings that are used in the "extensified" dsl_dir zap object.
- * They should be of the format <reverse-dns>:<field>.
- */
-
 #define	DD_FIELD_FILESYSTEM_COUNT	"com.joyent:filesystem_count"
 #define	DD_FIELD_SNAPSHOT_COUNT		"com.joyent:snapshot_count"
 #define	DD_FIELD_CRYPTO_KEY_OBJ		"com.datto:crypto_key_obj"
 #define	DD_FIELD_LIVELIST		"com.delphix:livelist"
 #define	DD_FIELD_SNAPSHOTS_CHANGED	"com.ixsystems:snapshots_changed"
-
 typedef enum dd_used {
 	DD_USED_HEAD,
 	DD_USED_SNAP,
@@ -62,81 +26,53 @@ typedef enum dd_used {
 	DD_USED_REFRSRV,
 	DD_USED_NUM
 } dd_used_t;
-
 #define	DD_FLAG_USED_BREAKDOWN (1<<0)
-
 typedef struct dsl_dir_phys {
-	uint64_t dd_creation_time; /* not actually used */
+	uint64_t dd_creation_time;  
 	uint64_t dd_head_dataset_obj;
 	uint64_t dd_parent_obj;
 	uint64_t dd_origin_obj;
 	uint64_t dd_child_dir_zapobj;
-	/*
-	 * how much space our children are accounting for; for leaf
-	 * datasets, == physical space used by fs + snaps
-	 */
 	uint64_t dd_used_bytes;
 	uint64_t dd_compressed_bytes;
 	uint64_t dd_uncompressed_bytes;
-	/* Administrative quota setting */
 	uint64_t dd_quota;
-	/* Administrative reservation setting */
 	uint64_t dd_reserved;
 	uint64_t dd_props_zapobj;
-	uint64_t dd_deleg_zapobj; /* dataset delegation permissions */
+	uint64_t dd_deleg_zapobj;  
 	uint64_t dd_flags;
 	uint64_t dd_used_breakdown[DD_USED_NUM];
-	uint64_t dd_clones; /* dsl_dir objects */
-	uint64_t dd_pad[13]; /* pad out to 256 bytes for good measure */
+	uint64_t dd_clones;  
+	uint64_t dd_pad[13];  
 } dsl_dir_phys_t;
-
 struct dsl_dir {
 	dmu_buf_user_t dd_dbu;
-
-	/* These are immutable; no lock needed: */
 	uint64_t dd_object;
 	uint64_t dd_crypto_obj;
 	dsl_pool_t *dd_pool;
-
-	/* Stable until user eviction; no lock needed: */
 	dmu_buf_t *dd_dbuf;
-
-	/* protected by lock on pool's dp_dirty_dirs list */
 	txg_node_t dd_dirty_link;
-
-	/* protected by dp_config_rwlock */
 	dsl_dir_t *dd_parent;
-
-	/* Protected by dd_lock */
 	kmutex_t dd_lock;
-	list_t dd_props; /* list of dsl_prop_record_t's */
-	inode_timespec_t dd_snap_cmtime; /* last snapshot namespace change */
+	list_t dd_props;  
+	inode_timespec_t dd_snap_cmtime;  
 	uint64_t dd_origin_txg;
-
-	/* gross estimate of space used by in-flight tx's */
 	uint64_t dd_tempreserved[TXG_SIZE];
-	/* amount of space we expect to write; == amount of dirty data */
 	uint64_t dd_space_towrite[TXG_SIZE];
-
 	dsl_deadlist_t dd_livelist;
 	bplist_t dd_pending_frees;
 	bplist_t dd_pending_allocs;
-
 	kmutex_t dd_activity_lock;
 	kcondvar_t dd_activity_cv;
 	boolean_t dd_activity_cancelled;
 	uint64_t dd_activity_waiters;
-
-	/* protected by dd_lock; keep at end of struct for better locality */
 	char dd_myname[ZFS_MAX_DATASET_NAME_LEN];
 };
-
 static inline dsl_dir_phys_t *
 dsl_dir_phys(dsl_dir_t *dd)
 {
 	return (dd->dd_dbuf->db_data);
 }
-
 void dsl_dir_rele(dsl_dir_t *dd, const void *tag);
 void dsl_dir_async_rele(dsl_dir_t *dd, const void *tag);
 int dsl_dir_hold(dsl_pool_t *dp, const char *name, const void *tag,
@@ -147,7 +83,6 @@ void dsl_dir_name(dsl_dir_t *dd, char *buf);
 int dsl_dir_namelen(dsl_dir_t *dd);
 uint64_t dsl_dir_create_sync(dsl_pool_t *dp, dsl_dir_t *pds,
     const char *name, dmu_tx_t *tx);
-
 uint64_t dsl_dir_get_used(dsl_dir_t *dd);
 uint64_t dsl_dir_get_compressed(dsl_dir_t *dd);
 uint64_t dsl_dir_get_quota(dsl_dir_t *dd);
@@ -161,7 +96,6 @@ uint64_t dsl_dir_get_usedchild(dsl_dir_t *dd);
 void dsl_dir_get_origin(dsl_dir_t *dd, char *buf);
 int dsl_dir_get_filesystem_count(dsl_dir_t *dd, uint64_t *count);
 int dsl_dir_get_snapshot_count(dsl_dir_t *dd, uint64_t *count);
-
 void dsl_dir_stats(dsl_dir_t *dd, nvlist_t *nv);
 uint64_t dsl_dir_space_available(dsl_dir_t *dd,
     dsl_dir_t *ancestor, int64_t delta, int ondiskonly);
@@ -204,13 +138,10 @@ void dsl_dir_remove_livelist(dsl_dir_t *dd, dmu_tx_t *tx, boolean_t total);
 int dsl_dir_wait(dsl_dir_t *dd, dsl_dataset_t *ds, zfs_wait_activity_t activity,
     boolean_t *waited);
 void dsl_dir_cancel_waiters(dsl_dir_t *dd);
-
-/* internal reserved dir name */
 #define	MOS_DIR_NAME "$MOS"
 #define	ORIGIN_DIR_NAME "$ORIGIN"
 #define	FREE_DIR_NAME "$FREE"
 #define	LEAK_DIR_NAME "$LEAK"
-
 #ifdef ZFS_DEBUG
 #define	dprintf_dd(dd, fmt, ...) do { \
 	if (zfs_flags & ZFS_DEBUG_DPRINTF) { \
@@ -223,9 +154,7 @@ void dsl_dir_cancel_waiters(dsl_dir_t *dd);
 #else
 #define	dprintf_dd(dd, fmt, ...)
 #endif
-
 #ifdef	__cplusplus
 }
 #endif
-
-#endif /* _SYS_DSL_DIR_H */
+#endif  

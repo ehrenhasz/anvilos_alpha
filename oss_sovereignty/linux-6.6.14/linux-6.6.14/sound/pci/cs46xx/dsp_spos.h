@@ -1,40 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  The driver for the Cirrus Logic's Sound Fusion CS46XX based soundcards
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
-
-/*
- * 2002-07 Benny Sjostrand benny@hostmobility.com
- */
-
-#ifdef  CONFIG_SND_CS46XX_NEW_DSP /* hack ... */
+#ifdef  CONFIG_SND_CS46XX_NEW_DSP  
 #ifndef __DSP_SPOS_H__
 #define __DSP_SPOS_H__
-
 #define DSP_MAX_SYMBOLS 1024
 #define DSP_MAX_MODULES 64
-
 #define DSP_CODE_BYTE_SIZE             0x00007000UL
 #define DSP_PARAMETER_BYTE_SIZE        0x00003000UL
 #define DSP_SAMPLE_BYTE_SIZE           0x00003800UL
 #define DSP_PARAMETER_BYTE_OFFSET      0x00000000UL
 #define DSP_SAMPLE_BYTE_OFFSET         0x00010000UL
 #define DSP_CODE_BYTE_OFFSET           0x00020000UL
-
 #define WIDE_INSTR_MASK       0x0040
 #define WIDE_LADD_INSTR_MASK  0x0380
-
-/* this instruction types
-   needs to be reallocated when load
-   code into DSP */
 enum wide_opcode {
 	WIDE_FOR_BEGIN_LOOP = 0x20,
 	WIDE_FOR_BEGIN_LOOP2,
-
 	WIDE_COND_GOTO_ADDR = 0x30,
 	WIDE_COND_GOTO_CALL,
-
 	WIDE_TBEQ_COND_GOTO_ADDR = 0x70,
 	WIDE_TBEQ_COND_CALL_ADDR,
 	WIDE_TBEQ_NCOND_GOTO_ADDR,
@@ -44,8 +25,6 @@ enum wide_opcode {
 	WIDE_TBEQ_NCOND_GOTOI_ADDR,
 	WIDE_TBEQ_NCOND_CALL1_ADDR,
 };
-
-/* SAMPLE segment */
 #define VARI_DECIMATE_BUF1       0x0000
 #define WRITE_BACK_BUF1          0x0400
 #define CODEC_INPUT_BUF1         0x0500
@@ -62,13 +41,9 @@ enum wide_opcode {
 #define MIX_SAMPLE_BUF3          0x2F00
 #define MIX_SAMPLE_BUF4          0x2F80
 #define MIX_SAMPLE_BUF5          0x3000
-
-/* Task stack address */
 #define HFG_STACK                0x066A
 #define FG_STACK                 0x066E
 #define BG_STACK                 0x068E
-
-/* SCB's addresses */
 #define SPOSCB_ADDR              0x070
 #define BG_TREE_SCB_ADDR         0x635
 #define NULL_SCB_ADDR            0x000
@@ -95,14 +70,10 @@ enum wide_opcode {
 #define REAR_MIXER_SCB_ADDR      0x180
 #define CLFE_MIXER_SCB_ADDR      0x190
 #define CLFE_CODEC_SCB_ADDR      0x1A0
-
-/* hyperforground SCB's*/
 #define HFG_TREE_SCB             0xBA0
 #define SPDIFI_SCB_INST          0xBB0
 #define SPDIFO_SCB_INST          0xBC0
 #define WRITE_BACK_SPB           0x0D0
-
-/* offsets */
 #define AsyncCIOFIFOPointer  0xd
 #define SPDIFOFIFOPointer    0xd
 #define SPDIFIFIFOPointer    0xd
@@ -115,17 +86,7 @@ enum wide_opcode {
 #define SRCCorPerGof         0x2
 #define SRCPhiIncr6Int26Frac 0xd
 #define SCBVolumeCtrl        0xe
-
-/* conf */
 #define UseASER1Input 1
-
-
-
-/*
- * The following defines are for the flags in the rsConfig01/23 registers of
- * the SP.
- */
-
 #define RSCONFIG_MODULO_SIZE_MASK               0x0000000FL
 #define RSCONFIG_MODULO_16                      0x00000001L
 #define RSCONFIG_MODULO_32                      0x00000002L
@@ -153,13 +114,8 @@ enum wide_opcode {
 #define RSCONFIG_PRIORITY_LOW                   0xC0000000L
 #define RSCONFIG_STREAM_NUM_SHIFT               16L
 #define RSCONFIG_MAX_DMA_SIZE_SHIFT             24L
-
-/* SP constants */
 #define FG_INTERVAL_TIMER_PERIOD                0x0051
 #define BG_INTERVAL_TIMER_PERIOD                0x0100
-
-
-/* Only SP accessible registers */
 #define SP_ASER_COUNTDOWN 0x8040
 #define SP_SPDOUT_FIFO    0x0108
 #define SP_SPDIN_MI_FIFO  0x01E0
@@ -170,12 +126,9 @@ enum wide_opcode {
 #define SP_SPDOUT_STATUS  0x804C
 #define SP_SPDOUT_CONTROL 0x804D
 #define SP_SPDOUT_CSUV    0x808E
-
 static inline u8 _wrap_all_bits (u8 val)
 {
 	u8 wrapped;
-	
-	/* wrap all 8 bits */
 	wrapped = 
 		((val & 0x1 ) << 7) |
 		((val & 0x2 ) << 5) |
@@ -185,32 +138,27 @@ static inline u8 _wrap_all_bits (u8 val)
 		((val & 0x20) >> 3) |
 		((val & 0x40) >> 5) |
 		((val & 0x80) >> 7);
-
 	return wrapped;
 }
-
 static inline void cs46xx_dsp_spos_update_scb (struct snd_cs46xx * chip,
 					       struct dsp_scb_descriptor * scb) 
 {
-	/* update nextSCB and subListPtr in SCB */
 	snd_cs46xx_poke(chip,
 			(scb->address + SCBsubListPtr) << 2,
 			(scb->sub_list_ptr->address << 0x10) |
 			(scb->next_scb_ptr->address));	
 	scb->updated = 1;
 }
-
 static inline void cs46xx_dsp_scb_set_volume (struct snd_cs46xx * chip,
 					      struct dsp_scb_descriptor * scb,
 					      u16 left, u16 right)
 {
 	unsigned int val = ((0xffff - left) << 16 | (0xffff - right));
-
 	snd_cs46xx_poke(chip, (scb->address + SCBVolumeCtrl) << 2, val);
 	snd_cs46xx_poke(chip, (scb->address + SCBVolumeCtrl + 1) << 2, val);
 	scb->volume_set = 1;
 	scb->volume[0] = left;
 	scb->volume[1] = right;
 }
-#endif /* __DSP_SPOS_H__ */
-#endif /* CONFIG_SND_CS46XX_NEW_DSP  */
+#endif  
+#endif  

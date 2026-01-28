@@ -1,18 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2018 Jernej Skrabec <jernej.skrabec@siol.net>
- */
-
 #ifndef _SUN8I_DW_HDMI_H_
 #define _SUN8I_DW_HDMI_H_
-
 #include <drm/bridge/dw_hdmi.h>
 #include <drm/drm_encoder.h>
 #include <linux/clk.h>
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
 #include <linux/reset.h>
-
 #define SUN8I_HDMI_PHY_DBG_CTRL_REG	0x0000
 #define SUN8I_HDMI_PHY_DBG_CTRL_PX_LOCK		BIT(0)
 #define SUN8I_HDMI_PHY_DBG_CTRL_POL_MASK	GENMASK(15, 8)
@@ -20,16 +13,12 @@
 #define SUN8I_HDMI_PHY_DBG_CTRL_POL_NVSYNC	BIT(9)
 #define SUN8I_HDMI_PHY_DBG_CTRL_ADDR_MASK	GENMASK(23, 16)
 #define SUN8I_HDMI_PHY_DBG_CTRL_ADDR(addr)	(addr << 16)
-
 #define SUN8I_HDMI_PHY_REXT_CTRL_REG	0x0004
 #define SUN8I_HDMI_PHY_REXT_CTRL_REXT_EN	BIT(31)
-
 #define SUN8I_HDMI_PHY_READ_EN_REG	0x0010
 #define SUN8I_HDMI_PHY_READ_EN_MAGIC		0x54524545
-
 #define SUN8I_HDMI_PHY_UNSCRAMBLE_REG	0x0014
 #define SUN8I_HDMI_PHY_UNSCRAMBLE_MAGIC		0x42494E47
-
 #define SUN8I_HDMI_PHY_ANA_CFG1_REG	0x0020
 #define SUN8I_HDMI_PHY_ANA_CFG1_REG_SWI		BIT(31)
 #define SUN8I_HDMI_PHY_ANA_CFG1_REG_PWEND	BIT(30)
@@ -59,7 +48,6 @@
 #define SUN8I_HDMI_PHY_ANA_CFG1_LDOEN		BIT(2)
 #define SUN8I_HDMI_PHY_ANA_CFG1_ENVBS		BIT(1)
 #define SUN8I_HDMI_PHY_ANA_CFG1_ENBI		BIT(0)
-
 #define SUN8I_HDMI_PHY_ANA_CFG2_REG	0x0024
 #define SUN8I_HDMI_PHY_ANA_CFG2_M_EN		BIT(31)
 #define SUN8I_HDMI_PHY_ANA_CFG2_PLLDBEN		BIT(30)
@@ -79,7 +67,6 @@
 #define SUN8I_HDMI_PHY_ANA_CFG2_REG_BOOSTCK(x)	((x) << 8)
 #define SUN8I_HDMI_PHY_ANA_CFG2_REG_BOOST(x)	((x) << 6)
 #define SUN8I_HDMI_PHY_ANA_CFG2_REG_RESDI(x)	((x) << 0)
-
 #define SUN8I_HDMI_PHY_ANA_CFG3_REG	0x0028
 #define SUN8I_HDMI_PHY_ANA_CFG3_REG_SLOWCK(x)	((x) << 30)
 #define SUN8I_HDMI_PHY_ANA_CFG3_REG_SLOW(x)	((x) << 28)
@@ -92,7 +79,6 @@
 #define SUN8I_HDMI_PHY_ANA_CFG3_SDAEN		BIT(2)
 #define SUN8I_HDMI_PHY_ANA_CFG3_SCLPD		BIT(1)
 #define SUN8I_HDMI_PHY_ANA_CFG3_SCLEN		BIT(0)
-
 #define SUN8I_HDMI_PHY_PLL_CFG1_REG	0x002c
 #define SUN8I_HDMI_PHY_PLL_CFG1_REG_OD1		BIT(31)
 #define SUN8I_HDMI_PHY_PLL_CFG1_REG_OD		BIT(30)
@@ -111,7 +97,6 @@
 #define SUN8I_HDMI_PHY_PLL_CFG1_BWS		BIT(6)
 #define SUN8I_HDMI_PHY_PLL_CFG1_B_IN_MSK	GENMASK(5, 0)
 #define SUN8I_HDMI_PHY_PLL_CFG1_B_IN_SHIFT	0
-
 #define SUN8I_HDMI_PHY_PLL_CFG2_REG	0x0030
 #define SUN8I_HDMI_PHY_PLL_CFG2_SV_H		BIT(31)
 #define SUN8I_HDMI_PHY_PLL_CFG2_PDCLKSEL(x)	((x) << 29)
@@ -133,20 +118,15 @@
 #define SUN8I_HDMI_PHY_PLL_CFG2_PREDIV_MSK	GENMASK(3, 0)
 #define SUN8I_HDMI_PHY_PLL_CFG2_PREDIV_SHIFT	0
 #define SUN8I_HDMI_PHY_PLL_CFG2_PREDIV(x)	(((x) - 1) << 0)
-
 #define SUN8I_HDMI_PHY_PLL_CFG3_REG	0x0034
 #define SUN8I_HDMI_PHY_PLL_CFG3_SOUT_DIV2	BIT(0)
-
 #define SUN8I_HDMI_PHY_ANA_STS_REG	0x0038
 #define SUN8I_HDMI_PHY_ANA_STS_B_OUT_SHIFT	11
 #define SUN8I_HDMI_PHY_ANA_STS_B_OUT_MSK	GENMASK(16, 11)
 #define SUN8I_HDMI_PHY_ANA_STS_RCALEND2D	BIT(7)
 #define SUN8I_HDMI_PHY_ANA_STS_RCAL_MASK	GENMASK(5, 0)
-
 #define SUN8I_HDMI_PHY_CEC_REG		0x003c
-
 struct sun8i_hdmi_phy;
-
 struct sun8i_hdmi_phy_variant {
 	bool has_phy_clk;
 	bool has_second_pll;
@@ -156,7 +136,6 @@ struct sun8i_hdmi_phy_variant {
 	const struct dw_hdmi_phy_ops *phy_ops;
 	void (*phy_init)(struct sun8i_hdmi_phy *phy);
 };
-
 struct sun8i_hdmi_phy {
 	struct clk			*clk_bus;
 	struct clk			*clk_mod;
@@ -169,14 +148,12 @@ struct sun8i_hdmi_phy {
 	struct reset_control		*rst_phy;
 	const struct sun8i_hdmi_phy_variant *variant;
 };
-
 struct sun8i_dw_hdmi_quirks {
 	enum drm_mode_status (*mode_valid)(struct dw_hdmi *hdmi, void *data,
 					   const struct drm_display_info *info,
 					   const struct drm_display_mode *mode);
 	unsigned int use_drm_infoframe : 1;
 };
-
 struct sun8i_dw_hdmi {
 	struct clk			*clk_tmds;
 	struct device			*dev;
@@ -188,23 +165,17 @@ struct sun8i_dw_hdmi {
 	const struct sun8i_dw_hdmi_quirks *quirks;
 	struct reset_control		*rst_ctrl;
 };
-
 extern struct platform_driver sun8i_hdmi_phy_driver;
-
 static inline struct sun8i_dw_hdmi *
 encoder_to_sun8i_dw_hdmi(struct drm_encoder *encoder)
 {
 	return container_of(encoder, struct sun8i_dw_hdmi, encoder);
 }
-
 int sun8i_hdmi_phy_get(struct sun8i_dw_hdmi *hdmi, struct device_node *node);
-
 int sun8i_hdmi_phy_init(struct sun8i_hdmi_phy *phy);
 void sun8i_hdmi_phy_deinit(struct sun8i_hdmi_phy *phy);
 void sun8i_hdmi_phy_set_ops(struct sun8i_hdmi_phy *phy,
 			    struct dw_hdmi_plat_data *plat_data);
-
 int sun8i_phy_clk_create(struct sun8i_hdmi_phy *phy, struct device *dev,
 			 bool second_parent);
-
-#endif /* _SUN8I_DW_HDMI_H_ */
+#endif  

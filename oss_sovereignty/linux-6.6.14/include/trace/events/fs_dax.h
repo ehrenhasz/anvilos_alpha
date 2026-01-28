@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM fs_dax
-
 #if !defined(_TRACE_FS_DAX_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_FS_DAX_H
-
 #include <linux/tracepoint.h>
-
 DECLARE_EVENT_CLASS(dax_pmd_fault_class,
 	TP_PROTO(struct inode *inode, struct vm_fault *vmf,
 		pgoff_t max_pgoff, int result),
@@ -50,16 +46,13 @@ DECLARE_EVENT_CLASS(dax_pmd_fault_class,
 		__print_flags(__entry->result, "|", VM_FAULT_RESULT_TRACE)
 	)
 )
-
 #define DEFINE_PMD_FAULT_EVENT(name) \
 DEFINE_EVENT(dax_pmd_fault_class, name, \
 	TP_PROTO(struct inode *inode, struct vm_fault *vmf, \
 		pgoff_t max_pgoff, int result), \
 	TP_ARGS(inode, vmf, max_pgoff, result))
-
 DEFINE_PMD_FAULT_EVENT(dax_pmd_fault);
 DEFINE_PMD_FAULT_EVENT(dax_pmd_fault_done);
-
 DECLARE_EVENT_CLASS(dax_pmd_load_hole_class,
 	TP_PROTO(struct inode *inode, struct vm_fault *vmf,
 		struct page *zero_page,
@@ -92,16 +85,13 @@ DECLARE_EVENT_CLASS(dax_pmd_load_hole_class,
 		(unsigned long)__entry->radix_entry
 	)
 )
-
 #define DEFINE_PMD_LOAD_HOLE_EVENT(name) \
 DEFINE_EVENT(dax_pmd_load_hole_class, name, \
 	TP_PROTO(struct inode *inode, struct vm_fault *vmf, \
 		struct page *zero_page, void *radix_entry), \
 	TP_ARGS(inode, vmf, zero_page, radix_entry))
-
 DEFINE_PMD_LOAD_HOLE_EVENT(dax_pmd_load_hole);
 DEFINE_PMD_LOAD_HOLE_EVENT(dax_pmd_load_hole_fallback);
-
 DECLARE_EVENT_CLASS(dax_pmd_insert_mapping_class,
 	TP_PROTO(struct inode *inode, struct vm_fault *vmf,
 		long length, pfn_t pfn, void *radix_entry),
@@ -141,15 +131,12 @@ DECLARE_EVENT_CLASS(dax_pmd_insert_mapping_class,
 		(unsigned long)__entry->radix_entry
 	)
 )
-
 #define DEFINE_PMD_INSERT_MAPPING_EVENT(name) \
 DEFINE_EVENT(dax_pmd_insert_mapping_class, name, \
 	TP_PROTO(struct inode *inode, struct vm_fault *vmf, \
 		long length, pfn_t pfn, void *radix_entry), \
 	TP_ARGS(inode, vmf, length, pfn, radix_entry))
-
 DEFINE_PMD_INSERT_MAPPING_EVENT(dax_pmd_insert_mapping);
-
 DECLARE_EVENT_CLASS(dax_pte_fault_class,
 	TP_PROTO(struct inode *inode, struct vm_fault *vmf, int result),
 	TP_ARGS(inode, vmf, result),
@@ -182,18 +169,15 @@ DECLARE_EVENT_CLASS(dax_pte_fault_class,
 		__print_flags(__entry->result, "|", VM_FAULT_RESULT_TRACE)
 	)
 )
-
 #define DEFINE_PTE_FAULT_EVENT(name) \
 DEFINE_EVENT(dax_pte_fault_class, name, \
 	TP_PROTO(struct inode *inode, struct vm_fault *vmf, int result), \
 	TP_ARGS(inode, vmf, result))
-
 DEFINE_PTE_FAULT_EVENT(dax_pte_fault);
 DEFINE_PTE_FAULT_EVENT(dax_pte_fault_done);
 DEFINE_PTE_FAULT_EVENT(dax_load_hole);
 DEFINE_PTE_FAULT_EVENT(dax_insert_pfn_mkwrite_no_entry);
 DEFINE_PTE_FAULT_EVENT(dax_insert_pfn_mkwrite);
-
 TRACE_EVENT(dax_insert_mapping,
 	TP_PROTO(struct inode *inode, struct vm_fault *vmf, void *radix_entry),
 	TP_ARGS(inode, vmf, radix_entry),
@@ -223,7 +207,6 @@ TRACE_EVENT(dax_insert_mapping,
 		(unsigned long)__entry->radix_entry
 	)
 )
-
 DECLARE_EVENT_CLASS(dax_writeback_range_class,
 	TP_PROTO(struct inode *inode, pgoff_t start_index, pgoff_t end_index),
 	TP_ARGS(inode, start_index, end_index),
@@ -247,15 +230,12 @@ DECLARE_EVENT_CLASS(dax_writeback_range_class,
 		__entry->end_index
 	)
 )
-
 #define DEFINE_WRITEBACK_RANGE_EVENT(name) \
 DEFINE_EVENT(dax_writeback_range_class, name, \
 	TP_PROTO(struct inode *inode, pgoff_t start_index, pgoff_t end_index),\
 	TP_ARGS(inode, start_index, end_index))
-
 DEFINE_WRITEBACK_RANGE_EVENT(dax_writeback_range);
 DEFINE_WRITEBACK_RANGE_EVENT(dax_writeback_range_done);
-
 TRACE_EVENT(dax_writeback_one,
 	TP_PROTO(struct inode *inode, pgoff_t pgoff, pgoff_t pglen),
 	TP_ARGS(inode, pgoff, pglen),
@@ -279,8 +259,5 @@ TRACE_EVENT(dax_writeback_one,
 		__entry->pglen
 	)
 )
-
-#endif /* _TRACE_FS_DAX_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

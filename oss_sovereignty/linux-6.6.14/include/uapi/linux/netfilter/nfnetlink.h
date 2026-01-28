@@ -1,9 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI_NFNETLINK_H
 #define _UAPI_NFNETLINK_H
 #include <linux/types.h>
 #include <linux/netfilter/nfnetlink_compat.h>
-
 enum nfnetlink_groups {
 	NFNLGRP_NONE,
 #define NFNLGRP_NONE			NFNLGRP_NONE
@@ -28,26 +26,14 @@ enum nfnetlink_groups {
 	__NFNLGRP_MAX,
 };
 #define NFNLGRP_MAX	(__NFNLGRP_MAX - 1)
-
-/* General form of address family dependent message.
- */
 struct nfgenmsg {
-	__u8  nfgen_family;		/* AF_xxx */
-	__u8  version;		/* nfnetlink version */
-	__be16    res_id;		/* resource id */
+	__u8  nfgen_family;		 
+	__u8  version;		 
+	__be16    res_id;		 
 };
-
 #define NFNETLINK_V0	0
-
-/* netfilter netlink message types are split in two pieces:
- * 8 bit subsystem, 8bit operation.
- */
-
 #define NFNL_SUBSYS_ID(x)	((x & 0xff00) >> 8)
 #define NFNL_MSG_TYPE(x)	(x & 0x00ff)
-
-/* No enum here, otherwise __stringify() trick of MODULE_ALIAS_NFNL_SUBSYS()
- * won't work anymore */
 #define NFNL_SUBSYS_NONE 		0
 #define NFNL_SUBSYS_CTNETLINK		1
 #define NFNL_SUBSYS_CTNETLINK_EXP	2
@@ -62,21 +48,12 @@ struct nfgenmsg {
 #define NFNL_SUBSYS_NFT_COMPAT		11
 #define NFNL_SUBSYS_HOOK		12
 #define NFNL_SUBSYS_COUNT		13
-
-/* Reserved control nfnetlink messages */
 #define NFNL_MSG_BATCH_BEGIN		NLMSG_MIN_TYPE
 #define NFNL_MSG_BATCH_END		NLMSG_MIN_TYPE+1
-
-/**
- * enum nfnl_batch_attributes - nfnetlink batch netlink attributes
- *
- * @NFNL_BATCH_GENID: generation ID for this changeset (NLA_U32)
- */
 enum nfnl_batch_attributes {
         NFNL_BATCH_UNSPEC,
         NFNL_BATCH_GENID,
         __NFNL_BATCH_MAX
 };
 #define NFNL_BATCH_MAX			(__NFNL_BATCH_MAX - 1)
-
-#endif /* _UAPI_NFNETLINK_H */
+#endif  

@@ -1,39 +1,30 @@
-// SPDX-License-Identifier: GPL-2.0
 #include "tegra20.dtsi"
-
 / {
 	model = "Avionic Design Tamonten SOM";
 	compatible = "ad,tamonten", "nvidia,tegra20";
-
 	aliases {
 		rtc0 = "/i2c@7000d000/tps6586x@34";
 		rtc1 = "/rtc@7000e000";
 		serial0 = &uartd;
 	};
-
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
-
 	memory@0 {
 		reg = <0x00000000 0x20000000>;
 	};
-
 	host1x@50000000 {
 		hdmi@54280000 {
 			vdd-supply = <&hdmi_vdd_reg>;
 			pll-supply = <&hdmi_pll_reg>;
-
 			nvidia,ddc-i2c-bus = <&hdmi_ddc>;
 			nvidia,hpd-gpio = <&gpio TEGRA_GPIO(N, 7)
 				GPIO_ACTIVE_HIGH>;
 		};
 	};
-
 	pinmux@70000014 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&state_default>;
-
 		state_default: pinmux {
 			ata {
 				nvidia,pins = "ata";
@@ -248,7 +239,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
 			};
 		};
-
 		state_i2cmux_ddc: pinmux-i2cmux-ddc {
 			ddc {
 				nvidia,pins = "ddc";
@@ -259,7 +249,6 @@
 				nvidia,function = "rsvd4";
 			};
 		};
-
 		state_i2cmux_idle: pinmux-i2cmux-idle {
 			ddc {
 				nvidia,pins = "ddc";
@@ -270,7 +259,6 @@
 				nvidia,function = "rsvd4";
 			};
 		};
-
 		state_i2cmux_pta: pinmux-i2cmux-pta {
 			ddc {
 				nvidia,pins = "ddc";
@@ -282,42 +270,32 @@
 			};
 		};
 	};
-
 	i2s@70002800 {
 		status = "okay";
 	};
-
 	serial@70006300 {
 		/delete-property/ dmas;
 		/delete-property/ dma-names;
 		status = "okay";
 	};
-
 	i2c@7000c000 {
 		clock-frequency = <400000>;
 		status = "okay";
 	};
-
 	i2c@7000c400 {
 		clock-frequency = <100000>;
 		status = "okay";
 	};
-
 	i2c@7000d000 {
 		clock-frequency = <400000>;
 		status = "okay";
-
 		pmic: tps6586x@34 {
 			compatible = "ti,tps6586x";
 			reg = <0x34>;
 			interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
-
 			ti,system-power-controller;
-
 			#gpio-cells = <2>;
 			gpio-controller;
-
-			/* vdd_5v0_reg must be provided by the base board */
 			sys-supply = <&vdd_5v0_reg>;
 			vin-sm0-supply = <&sys_reg>;
 			vin-sm1-supply = <&sys_reg>;
@@ -327,110 +305,83 @@
 			vinldo4-supply = <&sm2_reg>;
 			vinldo678-supply = <&sm2_reg>;
 			vinldo9-supply = <&sm2_reg>;
-
 			regulators {
 				sys_reg: sys {
 					regulator-name = "vdd_sys";
 					regulator-always-on;
 				};
-
 				vdd_core: sm0 {
 					regulator-name = "vdd_sys_sm0,vdd_core";
 					regulator-min-microvolt = <1200000>;
 					regulator-max-microvolt = <1200000>;
 					regulator-always-on;
 				};
-
 				sm1 {
 					regulator-name = "vdd_sys_sm1,vdd_cpu";
 					regulator-min-microvolt = <1000000>;
 					regulator-max-microvolt = <1000000>;
 					regulator-always-on;
 				};
-
 				sm2_reg: sm2 {
 					regulator-name = "vdd_sys_sm2,vin_ldo*";
 					regulator-min-microvolt = <3700000>;
 					regulator-max-microvolt = <3700000>;
 					regulator-always-on;
 				};
-
 				pci_clk_reg: ldo0 {
 					regulator-name = "vdd_ldo0,vddio_pex_clk";
 					regulator-min-microvolt = <3300000>;
 					regulator-max-microvolt = <3300000>;
 				};
-
 				ldo1 {
 					regulator-name = "vdd_ldo1,avdd_pll*";
 					regulator-min-microvolt = <1100000>;
 					regulator-max-microvolt = <1100000>;
 					regulator-always-on;
 				};
-
 				ldo2 {
 					regulator-name = "vdd_ldo2,vdd_rtc";
 					regulator-min-microvolt = <1200000>;
 					regulator-max-microvolt = <1200000>;
 				};
-
 				ldo3 {
 					regulator-name = "vdd_ldo3,avdd_usb*";
 					regulator-min-microvolt = <3300000>;
 					regulator-max-microvolt = <3300000>;
 					regulator-always-on;
 				};
-
 				ldo4 {
 					regulator-name = "vdd_ldo4,avdd_osc,vddio_sys";
 					regulator-min-microvolt = <1800000>;
 					regulator-max-microvolt = <1800000>;
 					regulator-always-on;
 				};
-
 				ldo5 {
 					regulator-name = "vdd_ldo5,vcore_mmc";
 					regulator-min-microvolt = <2850000>;
 					regulator-max-microvolt = <2850000>;
 				};
-
 				ldo6 {
 					regulator-name = "vdd_ldo6,avdd_vdac";
-					/*
-					 * According to the Tegra 2 Automotive
-					 * DataSheet, a typical value for this
-					 * would be 2.8V, but the PMIC only
-					 * supports 2.85V.
-					 */
 					regulator-min-microvolt = <2850000>;
 					regulator-max-microvolt = <2850000>;
 				};
-
 				hdmi_vdd_reg: ldo7 {
 					regulator-name = "vdd_ldo7,avdd_hdmi";
 					regulator-min-microvolt = <3300000>;
 					regulator-max-microvolt = <3300000>;
 				};
-
 				hdmi_pll_reg: ldo8 {
 					regulator-name = "vdd_ldo8,avdd_hdmi_pll";
 					regulator-min-microvolt = <1800000>;
 					regulator-max-microvolt = <1800000>;
 				};
-
 				ldo9 {
 					regulator-name = "vdd_ldo9,vdd_ddr_rx,avdd_cam";
-					/*
-					 * According to the Tegra 2 Automotive
-					 * DataSheet, a typical value for this
-					 * would be 2.8V, but the PMIC only
-					 * supports 2.85V.
-					 */
 					regulator-min-microvolt = <2850000>;
 					regulator-max-microvolt = <2850000>;
 					regulator-always-on;
 				};
-
 				ldo_rtc {
 					regulator-name = "vdd_rtc_out";
 					regulator-min-microvolt = <3300000>;
@@ -439,13 +390,11 @@
 				};
 			};
 		};
-
 		temperature-sensor@4c {
 			compatible = "onnn,nct1008";
 			reg = <0x4c>;
 		};
 	};
-
 	pmc@7000e400 {
 		nvidia,invert-interrupt;
 		nvidia,suspend-mode = <1>;
@@ -456,7 +405,6 @@
 		nvidia,sys-clock-req-active-high;
 		core-supply = <&vdd_core>;
 	};
-
 	pcie@80003000 {
 		avdd-pex-supply = <&pci_vdd_reg>;
 		vdd-pex-supply = <&pci_vdd_reg>;
@@ -464,53 +412,43 @@
 		avdd-plle-supply = <&pci_vdd_reg>;
 		vddio-pex-clk-supply = <&pci_clk_reg>;
 	};
-
 	usb@c5008000 {
 		status = "okay";
 	};
-
 	usb-phy@c5008000 {
 		status = "okay";
 	};
-
 	mmc@c8000600 {
 		cd-gpios = <&gpio TEGRA_GPIO(H, 2) GPIO_ACTIVE_LOW>;
 		wp-gpios = <&gpio TEGRA_GPIO(H, 3) GPIO_ACTIVE_HIGH>;
 		bus-width = <4>;
 		status = "okay";
 	};
-
 	clk32k_in: clock-32k {
 		compatible = "fixed-clock";
 		clock-frequency = <32768>;
 		#clock-cells = <0>;
 	};
-
 	i2cmux {
 		compatible = "i2c-mux-pinctrl";
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		i2c-parent = <&{/i2c@7000c400}>;
-
 		pinctrl-names = "ddc", "pta", "idle";
 		pinctrl-0 = <&state_i2cmux_ddc>;
 		pinctrl-1 = <&state_i2cmux_pta>;
 		pinctrl-2 = <&state_i2cmux_idle>;
-
 		hdmi_ddc: i2c@0 {
 			reg = <0>;
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		i2c@1 {
 			reg = <1>;
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
 	};
-
 	pci_vdd_reg: regulator-1v05 {
 		compatible = "regulator-fixed";
 		regulator-name = "vdd_1v05";

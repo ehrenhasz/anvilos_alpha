@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * tools/testing/selftests/kvm/include/x86_64/svm.h
- * This is a copy of arch/x86/include/asm/svm.h
- *
- */
-
 #ifndef SELFTEST_KVM_SVM_H
 #define SELFTEST_KVM_SVM_H
-
 enum {
 	INTERCEPT_INTR,
 	INTERCEPT_NMI,
@@ -57,7 +49,6 @@ enum {
 	INTERCEPT_XSETBV,
 	INTERCEPT_RDPRU,
 };
-
 struct hv_vmcb_enlightenments {
 	struct __packed hv_enlightenments_control {
 		u32 nested_flush_hypercall:1;
@@ -70,16 +61,9 @@ struct hv_vmcb_enlightenments {
 	u64 partition_assist_page;
 	u64 reserved;
 } __packed;
-
-/*
- * Hyper-V uses the software reserved clean bit in VMCB
- */
 #define HV_VMCB_NESTED_ENLIGHTENMENTS (1U << 31)
-
-/* Synthetic VM-Exit */
 #define HV_SVM_EXITCODE_ENL			0xf0000000
 #define HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH	(1)
-
 struct __attribute__ ((__packed__)) vmcb_control_area {
 	u32 intercept_cr;
 	u32 intercept_dr;
@@ -116,82 +100,60 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
 	u64 next_rip;
 	u8 insn_len;
 	u8 insn_bytes[15];
-	u64 avic_backing_page;	/* Offset 0xe0 */
-	u8 reserved_6[8];	/* Offset 0xe8 */
-	u64 avic_logical_id;	/* Offset 0xf0 */
-	u64 avic_physical_id;	/* Offset 0xf8 */
+	u64 avic_backing_page;	 
+	u8 reserved_6[8];	 
+	u64 avic_logical_id;	 
+	u64 avic_physical_id;	 
 	u8 reserved_7[8];
-	u64 vmsa_pa;		/* Used for an SEV-ES guest */
+	u64 vmsa_pa;		 
 	u8 reserved_8[720];
-	/*
-	 * Offset 0x3e0, 32 bytes reserved
-	 * for use by hypervisor/software.
-	 */
 	union {
 		struct hv_vmcb_enlightenments hv_enlightenments;
 		u8 reserved_sw[32];
 	};
 };
-
-
 #define TLB_CONTROL_DO_NOTHING 0
 #define TLB_CONTROL_FLUSH_ALL_ASID 1
 #define TLB_CONTROL_FLUSH_ASID 3
 #define TLB_CONTROL_FLUSH_ASID_LOCAL 7
-
 #define V_TPR_MASK 0x0f
-
 #define V_IRQ_SHIFT 8
 #define V_IRQ_MASK (1 << V_IRQ_SHIFT)
-
 #define V_GIF_SHIFT 9
 #define V_GIF_MASK (1 << V_GIF_SHIFT)
-
 #define V_INTR_PRIO_SHIFT 16
 #define V_INTR_PRIO_MASK (0x0f << V_INTR_PRIO_SHIFT)
-
 #define V_IGN_TPR_SHIFT 20
 #define V_IGN_TPR_MASK (1 << V_IGN_TPR_SHIFT)
-
 #define V_INTR_MASKING_SHIFT 24
 #define V_INTR_MASKING_MASK (1 << V_INTR_MASKING_SHIFT)
-
 #define V_GIF_ENABLE_SHIFT 25
 #define V_GIF_ENABLE_MASK (1 << V_GIF_ENABLE_SHIFT)
-
 #define AVIC_ENABLE_SHIFT 31
 #define AVIC_ENABLE_MASK (1 << AVIC_ENABLE_SHIFT)
-
 #define LBR_CTL_ENABLE_MASK BIT_ULL(0)
 #define VIRTUAL_VMLOAD_VMSAVE_ENABLE_MASK BIT_ULL(1)
-
 #define SVM_INTERRUPT_SHADOW_MASK 1
-
 #define SVM_IOIO_STR_SHIFT 2
 #define SVM_IOIO_REP_SHIFT 3
 #define SVM_IOIO_SIZE_SHIFT 4
 #define SVM_IOIO_ASIZE_SHIFT 7
-
 #define SVM_IOIO_TYPE_MASK 1
 #define SVM_IOIO_STR_MASK (1 << SVM_IOIO_STR_SHIFT)
 #define SVM_IOIO_REP_MASK (1 << SVM_IOIO_REP_SHIFT)
 #define SVM_IOIO_SIZE_MASK (7 << SVM_IOIO_SIZE_SHIFT)
 #define SVM_IOIO_ASIZE_MASK (7 << SVM_IOIO_ASIZE_SHIFT)
-
 #define SVM_VM_CR_VALID_MASK	0x001fULL
 #define SVM_VM_CR_SVM_LOCK_MASK 0x0008ULL
 #define SVM_VM_CR_SVM_DIS_MASK  0x0010ULL
-
 #define SVM_NESTED_CTL_NP_ENABLE	BIT(0)
 #define SVM_NESTED_CTL_SEV_ENABLE	BIT(1)
-
 struct __attribute__ ((__packed__)) vmcb_seg {
 	u16 selector;
 	u16 attrib;
 	u32 limit;
 	u64 base;
 };
-
 struct __attribute__ ((__packed__)) vmcb_save_area {
 	struct vmcb_seg es;
 	struct vmcb_seg cs;
@@ -236,14 +198,11 @@ struct __attribute__ ((__packed__)) vmcb_save_area {
 	u64 last_excp_from;
 	u64 last_excp_to;
 };
-
 struct __attribute__ ((__packed__)) vmcb {
 	struct vmcb_control_area control;
 	struct vmcb_save_area save;
 };
-
 #define SVM_VM_CR_SVM_DISABLE 4
-
 #define SVM_SELECTOR_S_SHIFT 4
 #define SVM_SELECTOR_DPL_SHIFT 5
 #define SVM_SELECTOR_P_SHIFT 7
@@ -251,7 +210,6 @@ struct __attribute__ ((__packed__)) vmcb {
 #define SVM_SELECTOR_L_SHIFT 9
 #define SVM_SELECTOR_DB_SHIFT 10
 #define SVM_SELECTOR_G_SHIFT 11
-
 #define SVM_SELECTOR_TYPE_MASK (0xf)
 #define SVM_SELECTOR_S_MASK (1 << SVM_SELECTOR_S_SHIFT)
 #define SVM_SELECTOR_DPL_MASK (3 << SVM_SELECTOR_DPL_SHIFT)
@@ -260,11 +218,9 @@ struct __attribute__ ((__packed__)) vmcb {
 #define SVM_SELECTOR_L_MASK (1 << SVM_SELECTOR_L_SHIFT)
 #define SVM_SELECTOR_DB_MASK (1 << SVM_SELECTOR_DB_SHIFT)
 #define SVM_SELECTOR_G_MASK (1 << SVM_SELECTOR_G_SHIFT)
-
 #define SVM_SELECTOR_WRITE_MASK (1 << 1)
 #define SVM_SELECTOR_READ_MASK SVM_SELECTOR_WRITE_MASK
 #define SVM_SELECTOR_CODE_MASK (1 << 3)
-
 #define INTERCEPT_CR0_READ	0
 #define INTERCEPT_CR3_READ	3
 #define INTERCEPT_CR4_READ	4
@@ -273,7 +229,6 @@ struct __attribute__ ((__packed__)) vmcb {
 #define INTERCEPT_CR3_WRITE	(16 + 3)
 #define INTERCEPT_CR4_WRITE	(16 + 4)
 #define INTERCEPT_CR8_WRITE	(16 + 8)
-
 #define INTERCEPT_DR0_READ	0
 #define INTERCEPT_DR1_READ	1
 #define INTERCEPT_DR2_READ	2
@@ -290,37 +245,26 @@ struct __attribute__ ((__packed__)) vmcb {
 #define INTERCEPT_DR5_WRITE	(16 + 5)
 #define INTERCEPT_DR6_WRITE	(16 + 6)
 #define INTERCEPT_DR7_WRITE	(16 + 7)
-
 #define SVM_EVTINJ_VEC_MASK 0xff
-
 #define SVM_EVTINJ_TYPE_SHIFT 8
 #define SVM_EVTINJ_TYPE_MASK (7 << SVM_EVTINJ_TYPE_SHIFT)
-
 #define SVM_EVTINJ_TYPE_INTR (0 << SVM_EVTINJ_TYPE_SHIFT)
 #define SVM_EVTINJ_TYPE_NMI (2 << SVM_EVTINJ_TYPE_SHIFT)
 #define SVM_EVTINJ_TYPE_EXEPT (3 << SVM_EVTINJ_TYPE_SHIFT)
 #define SVM_EVTINJ_TYPE_SOFT (4 << SVM_EVTINJ_TYPE_SHIFT)
-
 #define SVM_EVTINJ_VALID (1 << 31)
 #define SVM_EVTINJ_VALID_ERR (1 << 11)
-
 #define SVM_EXITINTINFO_VEC_MASK SVM_EVTINJ_VEC_MASK
 #define SVM_EXITINTINFO_TYPE_MASK SVM_EVTINJ_TYPE_MASK
-
 #define	SVM_EXITINTINFO_TYPE_INTR SVM_EVTINJ_TYPE_INTR
 #define	SVM_EXITINTINFO_TYPE_NMI SVM_EVTINJ_TYPE_NMI
 #define	SVM_EXITINTINFO_TYPE_EXEPT SVM_EVTINJ_TYPE_EXEPT
 #define	SVM_EXITINTINFO_TYPE_SOFT SVM_EVTINJ_TYPE_SOFT
-
 #define SVM_EXITINTINFO_VALID SVM_EVTINJ_VALID
 #define SVM_EXITINTINFO_VALID_ERR SVM_EVTINJ_VALID_ERR
-
 #define SVM_EXITINFOSHIFT_TS_REASON_IRET 36
 #define SVM_EXITINFOSHIFT_TS_REASON_JMP 38
 #define SVM_EXITINFOSHIFT_TS_HAS_ERROR_CODE 44
-
 #define SVM_EXITINFO_REG_MASK 0x0F
-
 #define SVM_CR0_SELECTIVE_MASK (X86_CR0_TS | X86_CR0_MP)
-
-#endif /* SELFTEST_KVM_SVM_H */
+#endif  

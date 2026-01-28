@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * O2D300 Device Tree Source
- *
- * Copyright (C) 2012 DENX Software Engineering
- * Anatolij Gustschin <agust@denx.de>
- */
-
 /include/ "o2d.dtsi"
-
 / {
 	model = "ifm,o2d300";
 	compatible = "ifm,o2d";
-
 	localbus {
 		ranges = <0 0 0xfc000000 0x02000000
 			  3 0 0xe3000000 0x00100000>;
@@ -22,7 +12,6 @@
 			device-width = <2>;
 			#size-cells = <1>;
 			#address-cells = <1>;
-
 			partition@40000 {
 				label = "env_1";
 				reg = <0x00040000 0x00020000>;
@@ -38,7 +27,6 @@
 				reg = <0x00080000 0x00260000>;
 				read-only;
 			};
-			/* o2d300 specific partitions */
 			partition@2e0000 {
 				label = "o2d300 user defined";
 				reg = <0x002e0000 0x01d20000>;

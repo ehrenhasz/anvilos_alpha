@@ -1,12 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
-
 #ifndef __RTW89_8852A_RFK_TABLE_H__
 #define __RTW89_8852A_RFK_TABLE_H__
-
 #include "phy.h"
-
 extern const struct rtw89_rfk_tbl rtw8852a_tssi_sys_defs_tbl;
 extern const struct rtw89_rfk_tbl rtw8852a_tssi_sys_defs_2g_tbl;
 extern const struct rtw89_rfk_tbl rtw8852a_tssi_sys_defs_5g_tbl;
@@ -43,7 +37,6 @@ extern const struct rtw89_rfk_tbl rtw8852a_tssi_enable_defs_b_tbl;
 extern const struct rtw89_rfk_tbl rtw8852a_tssi_enable_defs_ab_tbl;
 extern const struct rtw89_rfk_tbl rtw8852a_tssi_disable_defs_tbl;
 extern const struct rtw89_rfk_tbl rtw8852a_tssi_tracking_defs_tbl;
-
 extern const struct rtw89_rfk_tbl rtw8852a_rfk_afe_init_defs_tbl;
 extern const struct rtw89_rfk_tbl rtw8852a_rfk_dack_reload_defs_a_tbl;
 extern const struct rtw89_rfk_tbl rtw8852a_rfk_dack_reload_defs_b_tbl;
@@ -82,5 +75,4 @@ extern const struct rtw89_rfk_tbl rtw8852a_rfk_iqk_set_defs_dbcc_path1_tbl;
 extern const struct rtw89_rfk_tbl rtw8852a_rfk_iqk_restore_defs_nondbcc_path01_tbl;
 extern const struct rtw89_rfk_tbl rtw8852a_rfk_iqk_restore_defs_dbcc_path0_tbl;
 extern const struct rtw89_rfk_tbl rtw8852a_rfk_iqk_restore_defs_dbcc_path1_tbl;
-
 #endif

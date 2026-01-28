@@ -1,23 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2013 QLogic Corporation
- */
 #ifndef __QLA_NX_H
 #define __QLA_NX_H
-
-/*
- * Following are the states of the Phantom. Phantom will set them and
- * Host will read to check if the fields are correct.
-*/
 #define PHAN_INITIALIZE_FAILED		0xffff
 #define PHAN_INITIALIZE_COMPLETE	0xff01
-
-/* Host writes the following to notify that it has done the init-handshake */
 #define PHAN_INITIALIZE_ACK		0xf00f
 #define PHAN_PEG_RCV_INITIALIZED	0xff01
-
-/*CRB_RELATED*/
 #define QLA82XX_CRB_BASE		(QLA82XX_CAM_RAM(0x200))
 #define QLA82XX_REG(X)			(QLA82XX_CRB_BASE+(X))
 #define CRB_CMDPEG_STATE		QLA82XX_REG(0x50)
@@ -26,23 +12,16 @@
 #define CRB_TEMP_STATE			QLA82XX_REG(0x1b4)
 #define CRB_CMDPEG_CHECK_RETRY_COUNT	60
 #define CRB_CMDPEG_CHECK_DELAY		500
-
 #define qla82xx_get_temp_val(x)		((x) >> 16)
 #define qla82xx_get_temp_state(x)	((x) & 0xffff)
 #define qla82xx_encode_temp(val, state)	(((val) << 16) | (state))
-
-/*
- * Temperature control.
- */
 enum {
-	QLA82XX_TEMP_NORMAL = 0x1,	/* Normal operating range */
-	QLA82XX_TEMP_WARN,	/* Sound alert, temperature getting high */
-	QLA82XX_TEMP_PANIC	/* Fatal error, hardware has shut down. */
+	QLA82XX_TEMP_NORMAL = 0x1,	 
+	QLA82XX_TEMP_WARN,	 
+	QLA82XX_TEMP_PANIC	 
 };
-
 #define CRB_NIU_XG_PAUSE_CTL_P0		0x1
 #define CRB_NIU_XG_PAUSE_CTL_P1		0x8
-
 #define QLA82XX_HW_H0_CH_HUB_ADR	0x05
 #define QLA82XX_HW_H1_CH_HUB_ADR	0x0E
 #define QLA82XX_HW_H2_CH_HUB_ADR	0x03
@@ -50,12 +29,8 @@ enum {
 #define QLA82XX_HW_H4_CH_HUB_ADR	0x06
 #define QLA82XX_HW_H5_CH_HUB_ADR	0x07
 #define QLA82XX_HW_H6_CH_HUB_ADR	0x08
-
-/*  Hub 0 */
 #define QLA82XX_HW_MN_CRB_AGT_ADR	0x15
 #define QLA82XX_HW_MS_CRB_AGT_ADR	0x25
-
-/*  Hub 1 */
 #define QLA82XX_HW_PS_CRB_AGT_ADR	0x73
 #define QLA82XX_HW_QMS_CRB_AGT_ADR	0x00
 #define QLA82XX_HW_RPMX3_CRB_AGT_ADR	0x0b
@@ -71,12 +46,9 @@ enum {
 #define QLA82XX_HW_RPMX7_CRB_AGT_ADR	0x0f
 #define QLA82XX_HW_RPMX9_CRB_AGT_ADR	0x12
 #define QLA82XX_HW_SMB_CRB_AGT_ADR	0x18
-
-/*  Hub 2 */
 #define QLA82XX_HW_NIU_CRB_AGT_ADR	0x31
 #define QLA82XX_HW_I2C0_CRB_AGT_ADR	0x19
 #define QLA82XX_HW_I2C1_CRB_AGT_ADR	0x29
-
 #define QLA82XX_HW_SN_CRB_AGT_ADR	0x10
 #define QLA82XX_HW_I2Q_CRB_AGT_ADR	0x20
 #define QLA82XX_HW_LPC_CRB_AGT_ADR	0x22
@@ -90,14 +62,10 @@ enum {
 #define QLA82XX_HW_RPMX5_CRB_AGT_ADR    0x0d
 #define QLA82XX_HW_RPMX6_CRB_AGT_ADR    0x0e
 #define QLA82XX_HW_RPMX8_CRB_AGT_ADR    0x11
-
-/*  Hub 3 */
 #define QLA82XX_HW_PH_CRB_AGT_ADR	0x1A
 #define QLA82XX_HW_SRE_CRB_AGT_ADR	0x50
 #define QLA82XX_HW_EG_CRB_AGT_ADR	0x51
 #define QLA82XX_HW_RPMX0_CRB_AGT_ADR	0x08
-
-/*  Hub 4 */
 #define QLA82XX_HW_PEGN0_CRB_AGT_ADR	0x40
 #define QLA82XX_HW_PEGN1_CRB_AGT_ADR	0x41
 #define QLA82XX_HW_PEGN2_CRB_AGT_ADR	0x42
@@ -110,18 +78,13 @@ enum {
 #define QLA82XX_HW_PEGR2_CRB_AGT_ADR	0x49
 #define QLA82XX_HW_PEGR3_CRB_AGT_ADR	0x4a
 #define QLA82XX_HW_PEGN4_CRB_AGT_ADR	0x4b
-
-/*  Hub 5 */
 #define QLA82XX_HW_PEGS0_CRB_AGT_ADR	0x40
 #define QLA82XX_HW_PEGS1_CRB_AGT_ADR	0x41
 #define QLA82XX_HW_PEGS2_CRB_AGT_ADR	0x42
 #define QLA82XX_HW_PEGS3_CRB_AGT_ADR	0x43
-
 #define QLA82XX_HW_PEGSI_CRB_AGT_ADR	0x44
 #define QLA82XX_HW_PEGSD_CRB_AGT_ADR	0x45
 #define QLA82XX_HW_PEGSC_CRB_AGT_ADR	0x46
-
-/*  Hub 6 */
 #define QLA82XX_HW_CAS0_CRB_AGT_ADR	0x46
 #define QLA82XX_HW_CAS1_CRB_AGT_ADR	0x47
 #define QLA82XX_HW_CAS2_CRB_AGT_ADR	0x48
@@ -131,9 +94,6 @@ enum {
 #define QLA82XX_HW_XDMA_CRB_AGT_ADR	0x05
 #define QLA82XX_HW_OCM0_CRB_AGT_ADR	0x06
 #define QLA82XX_HW_OCM1_CRB_AGT_ADR	0x07
-
-/*  This field defines PCI/X adr [25:20] of agents on the CRB */
-/*  */
 #define QLA82XX_HW_PX_MAP_CRB_PH	0
 #define QLA82XX_HW_PX_MAP_CRB_PS	1
 #define QLA82XX_HW_PX_MAP_CRB_MN	2
@@ -199,10 +159,6 @@ enum {
 #define QLA82XX_HW_PX_MAP_CRB_PGR1	4
 #define QLA82XX_HW_PX_MAP_CRB_PGR2	30
 #define QLA82XX_HW_PX_MAP_CRB_PGR3	41
-
-/*  This field defines CRB adr [31:20] of the agents */
-/*  */
-
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_MN	((QLA82XX_HW_H0_CH_HUB_ADR << 7) | \
 					QLA82XX_HW_MN_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_PH	((QLA82XX_HW_H0_CH_HUB_ADR << 7) | \
@@ -239,14 +195,12 @@ enum {
 					    QLA82XX_HW_RPMX9_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_SMB	    ((QLA82XX_HW_H1_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_SMB_CRB_AGT_ADR)
-
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_NIU      ((QLA82XX_HW_H2_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_NIU_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_I2C0     ((QLA82XX_HW_H2_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_I2C0_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_I2C1     ((QLA82XX_HW_H2_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_I2C1_CRB_AGT_ADR)
-
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_SRE      ((QLA82XX_HW_H3_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_SRE_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_EG       ((QLA82XX_HW_H3_CH_HUB_ADR << 7) | \
@@ -279,7 +233,6 @@ enum {
 					    QLA82XX_HW_CAS2_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_CAS3     ((QLA82XX_HW_H3_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_CAS3_CRB_AGT_ADR)
-
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_PGNI     ((QLA82XX_HW_H4_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_PEGNI_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_PGND     ((QLA82XX_HW_H4_CH_HUB_ADR << 7) | \
@@ -294,7 +247,6 @@ enum {
 					    QLA82XX_HW_PEGN3_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_PGN4     ((QLA82XX_HW_H4_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_PEGN4_CRB_AGT_ADR)
-
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_PGNC     ((QLA82XX_HW_H4_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_PEGNC_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_PGR0     ((QLA82XX_HW_H4_CH_HUB_ADR << 7) | \
@@ -305,7 +257,6 @@ enum {
 					    QLA82XX_HW_PEGR2_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_PGR3     ((QLA82XX_HW_H4_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_PEGR3_CRB_AGT_ADR)
-
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_PGSI     ((QLA82XX_HW_H5_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_PEGSI_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_PGSD     ((QLA82XX_HW_H5_CH_HUB_ADR << 7) | \
@@ -320,7 +271,6 @@ enum {
 					    QLA82XX_HW_PEGS3_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_PGSC     ((QLA82XX_HW_H5_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_PEGSC_CRB_AGT_ADR)
-
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_CAM      ((QLA82XX_HW_H6_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_NCM_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_TIMR     ((QLA82XX_HW_H6_CH_HUB_ADR << 7) | \
@@ -339,7 +289,6 @@ enum {
 					    QLA82XX_HW_OCM1_CRB_AGT_ADR)
 #define QLA82XX_HW_CRB_HUB_AGT_ADR_LPC      ((QLA82XX_HW_H6_CH_HUB_ADR << 7) | \
 					    QLA82XX_HW_LPC_CRB_AGT_ADR)
-
 #define ROMUSB_GLB	(QLA82XX_CRB_ROMUSB + 0x00000)
 #define QLA82XX_ROMUSB_GLB_PEGTUNE_DONE		(ROMUSB_GLB + 0x005c)
 #define QLA82XX_ROMUSB_GLB_STATUS		(ROMUSB_GLB + 0x0004)
@@ -349,18 +298,13 @@ enum {
 #define QLA82XX_ROMUSB_ROM_ABYTE_CNT		(ROMUSB_ROM + 0x0010)
 #define QLA82XX_ROMUSB_ROM_DUMMY_BYTE_CNT	(ROMUSB_ROM + 0x0014)
 #define QLA82XX_ROMUSB_ROM_RDATA		(ROMUSB_ROM + 0x0018)
-
 #define ROMUSB_ROM	(QLA82XX_CRB_ROMUSB + 0x10000)
 #define QLA82XX_ROMUSB_ROM_INSTR_OPCODE	(ROMUSB_ROM + 0x0004)
 #define QLA82XX_ROMUSB_GLB_CAS_RST	(ROMUSB_GLB + 0x0038)
-
-/* Lock IDs for ROM lock */
 #define ROM_LOCK_DRIVER		0x0d417340
-
-#define QLA82XX_PCI_CRB_WINDOWSIZE	0x00100000    /* all are 1MB windows */
+#define QLA82XX_PCI_CRB_WINDOWSIZE	0x00100000     
 #define QLA82XX_PCI_CRB_WINDOW(A)	(QLA82XX_PCI_CRBSPACE + \
 					(A)*QLA82XX_PCI_CRB_WINDOWSIZE)
-
 #define QLA82XX_CRB_C2C_0 \
 	QLA82XX_PCI_CRB_WINDOW(QLA82XX_HW_PX_MAP_CRB_C2C0)
 #define QLA82XX_CRB_C2C_1 \
@@ -387,7 +331,6 @@ enum {
 	QLA82XX_PCI_CRB_WINDOW(QLA82XX_HW_PX_MAP_CRB_I2Q)
 #define QLA82XX_CRB_NIU	\
 	QLA82XX_PCI_CRB_WINDOW(QLA82XX_HW_PX_MAP_CRB_NIU)
-/* HACK upon HACK upon HACK (for PCIE builds) */
 #define QLA82XX_CRB_PCIX_HOST \
 	QLA82XX_PCI_CRB_WINDOW(QLA82XX_HW_PX_MAP_CRB_PH)
 #define QLA82XX_CRB_PCIX_HOST2 \
@@ -395,10 +338,8 @@ enum {
 #define QLA82XX_CRB_PCIX_MD \
 	QLA82XX_PCI_CRB_WINDOW(QLA82XX_HW_PX_MAP_CRB_PS)
 #define QLA82XX_CRB_PCIE	QLA82XX_CRB_PCIX_MD
-/* window 1 pcie slot */
 #define QLA82XX_CRB_PCIE2 \
 	QLA82XX_PCI_CRB_WINDOW(QLA82XX_HW_PX_MAP_CRB_PS2)
-
 #define QLA82XX_CRB_PEG_MD_0 \
 	QLA82XX_PCI_CRB_WINDOW(QLA82XX_HW_PX_MAP_CRB_PGS0)
 #define QLA82XX_CRB_PEG_MD_1 \
@@ -483,21 +424,9 @@ enum {
 	QLA82XX_PCI_CRB_WINDOW(QLA82XX_HW_PX_MAP_CRB_OCM0)
 #define QLA82XX_CRB_SMB \
 	QLA82XX_PCI_CRB_WINDOW(QLA82XX_HW_PX_MAP_CRB_SMB)
-
 #define QLA82XX_CRB_MAX		QLA82XX_PCI_CRB_WINDOW(64)
-
-/*
- * ====================== BASE ADDRESSES ON-CHIP ======================
- * Base addresses of major components on-chip.
- * ====================== BASE ADDRESSES ON-CHIP ======================
- */
 #define QLA8XXX_ADDR_DDR_NET		(0x0000000000000000ULL)
 #define QLA8XXX_ADDR_DDR_NET_MAX	(0x000000000fffffffULL)
-
-/* Imbus address bit used to indicate a host address. This bit is
- * eliminated by the pcie bar and bar select before presentation
- * over pcie. */
-/* host memory via IMBUS */
 #define QLA82XX_P2_ADDR_PCIE	(0x0000000800000000ULL)
 #define QLA82XX_P3_ADDR_PCIE	(0x0000008000000000ULL)
 #define QLA82XX_ADDR_PCIE_MAX	(0x0000000FFFFFFFFFULL)
@@ -506,11 +435,9 @@ enum {
 #define QLA8XXX_ADDR_OCM1	(0x0000000200400000ULL)
 #define QLA8XXX_ADDR_OCM1_MAX	(0x00000002004fffffULL)
 #define QLA8XXX_ADDR_QDR_NET	(0x0000000300000000ULL)
-
 #define QLA82XX_P2_ADDR_QDR_NET_MAX	(0x00000003001fffffULL)
 #define QLA82XX_P3_ADDR_QDR_NET_MAX	(0x0000000303ffffffULL)
 #define QLA8XXX_ADDR_QDR_NET_MAX	(0x0000000307ffffffULL)
-
 #define QLA82XX_PCI_CRBSPACE		(unsigned long)0x06000000
 #define QLA82XX_PCI_DIRECT_CRB		(unsigned long)0x04400000
 #define QLA82XX_PCI_CAMQM		(unsigned long)0x04800000
@@ -518,14 +445,8 @@ enum {
 #define QLA82XX_PCI_DDR_NET		(unsigned long)0x00000000
 #define QLA82XX_PCI_QDR_NET		(unsigned long)0x04000000
 #define QLA82XX_PCI_QDR_NET_MAX		(unsigned long)0x043fffff
-
-/*  PCI Windowing for DDR regions.  */
 #define QLA8XXX_ADDR_IN_RANGE(addr, low, high)            \
 	(((addr) <= (high)) && ((addr) >= (low)))
-
-/*
- *   Register offsets for MN
- */
 #define MIU_CONTROL			(0x000)
 #define MIU_TAG				(0x004)
 #define MIU_TEST_AGT_CTRL		(0x090)
@@ -539,48 +460,36 @@ enum {
 #define MIU_TEST_AGT_RDDATA(i)		(0x0a8+(4*(i)))
 #define MIU_TEST_AGT_ADDR_MASK		0xfffffff8
 #define MIU_TEST_AGT_UPPER_ADDR(off)	(0)
-
-/* MIU_TEST_AGT_CTRL flags. work for SIU as well */
 #define MIU_TA_CTL_START	1
 #define MIU_TA_CTL_ENABLE	2
 #define MIU_TA_CTL_WRITE	4
 #define MIU_TA_CTL_BUSY		8
-
 #define MIU_TA_CTL_WRITE_ENABLE		(MIU_TA_CTL_WRITE | MIU_TA_CTL_ENABLE)
 #define MIU_TA_CTL_WRITE_START		(MIU_TA_CTL_WRITE | MIU_TA_CTL_ENABLE |\
 					 MIU_TA_CTL_START)
 #define MIU_TA_CTL_START_ENABLE		(MIU_TA_CTL_START | MIU_TA_CTL_ENABLE)
-
-/*CAM RAM */
 # define QLA82XX_CAM_RAM_BASE	(QLA82XX_CRB_CAM + 0x02000)
 # define QLA82XX_CAM_RAM(reg)	(QLA82XX_CAM_RAM_BASE + (reg))
-
 #define QLA82XX_PORT_MODE_ADDR		(QLA82XX_CAM_RAM(0x24))
 #define QLA82XX_PEG_HALT_STATUS1	(QLA82XX_CAM_RAM(0xa8))
 #define QLA82XX_PEG_HALT_STATUS2	(QLA82XX_CAM_RAM(0xac))
 #define QLA82XX_PEG_ALIVE_COUNTER	(QLA82XX_CAM_RAM(0xb0))
 #define QLA82XX_CAM_RAM_DB1		(QLA82XX_CAM_RAM(0x1b0))
 #define QLA82XX_CAM_RAM_DB2		(QLA82XX_CAM_RAM(0x1b4))
-
 #define HALT_STATUS_UNRECOVERABLE	0x80000000
 #define HALT_STATUS_RECOVERABLE		0x40000000
-
-
 #define QLA82XX_ROM_LOCK_ID		(QLA82XX_CAM_RAM(0x100))
 #define QLA82XX_CRB_WIN_LOCK_ID		(QLA82XX_CAM_RAM(0x124))
 #define QLA82XX_FW_VERSION_MAJOR	(QLA82XX_CAM_RAM(0x150))
 #define QLA82XX_FW_VERSION_MINOR	(QLA82XX_CAM_RAM(0x154))
 #define QLA82XX_FW_VERSION_SUB		(QLA82XX_CAM_RAM(0x158))
 #define QLA82XX_PCIE_REG(reg)		(QLA82XX_CRB_PCIE + (reg))
-
-/* Driver Coexistence Defines */
 #define QLA82XX_CRB_DRV_ACTIVE		(QLA82XX_CAM_RAM(0x138))
 #define QLA82XX_CRB_DEV_STATE		(QLA82XX_CAM_RAM(0x140))
 #define QLA82XX_CRB_DRV_STATE		(QLA82XX_CAM_RAM(0x144))
 #define QLA82XX_CRB_DRV_SCRATCH		(QLA82XX_CAM_RAM(0x148))
 #define QLA82XX_CRB_DEV_PART_INFO	(QLA82XX_CAM_RAM(0x14c))
 #define QLA82XX_CRB_DRV_IDC_VERSION	(QLA82XX_CAM_RAM(0x174))
-
 enum qla_regs {
 	QLA8XXX_PEG_HALT_STATUS1 = 0,
 	QLA8XXX_PEG_HALT_STATUS2,
@@ -597,8 +506,6 @@ enum qla_regs {
 	QLA8XXX_CRB_CMDPEG_STATE,
 	QLA8XXX_CRB_TEMP_STATE,
 };
-
-/* Every driver should use these Device State */
 #define QLA8XXX_DEV_COLD		1
 #define QLA8XXX_DEV_INITIALIZING	2
 #define QLA8XXX_DEV_READY		3
@@ -606,59 +513,39 @@ enum qla_regs {
 #define QLA8XXX_DEV_NEED_QUIESCENT	5
 #define QLA8XXX_DEV_FAILED		6
 #define QLA8XXX_DEV_QUIESCENT		7
-#define MAX_STATES			8 /* Increment if new state added */
-
+#define MAX_STATES			8  
 #define QLA82XX_IDC_VERSION		0x1
 #define ROM_DEV_INIT_TIMEOUT		30
 #define ROM_DRV_RESET_ACK_TIMEOUT	10
-
 #define PCIE_SETUP_FUNCTION		(0x12040)
 #define PCIE_SETUP_FUNCTION2		(0x12048)
-
 #define QLA82XX_PCIX_PS_REG(reg)	(QLA82XX_CRB_PCIX_MD + (reg))
 #define QLA82XX_PCIX_PS2_REG(reg)	(QLA82XX_CRB_PCIE2 + (reg))
-
-#define PCIE_SEM2_LOCK		(0x1c010)  /* Flash lock   */
-#define PCIE_SEM2_UNLOCK	(0x1c014)  /* Flash unlock */
-#define PCIE_SEM5_LOCK		(0x1c028)  /* Coexistence lock   */
-#define PCIE_SEM5_UNLOCK	(0x1c02c)  /* Coexistence unlock */
-#define PCIE_SEM7_LOCK		(0x1c038)  /* crb win lock */
-#define PCIE_SEM7_UNLOCK	(0x1c03c)  /* crbwin unlock*/
-
-/*
- * The PCI VendorID and DeviceID for our board.
- */
+#define PCIE_SEM2_LOCK		(0x1c010)   
+#define PCIE_SEM2_UNLOCK	(0x1c014)   
+#define PCIE_SEM5_LOCK		(0x1c028)   
+#define PCIE_SEM5_UNLOCK	(0x1c02c)   
+#define PCIE_SEM7_LOCK		(0x1c038)   
+#define PCIE_SEM7_UNLOCK	(0x1c03c)   
 #define QLA82XX_MSIX_TBL_SPACE		8192
 #define QLA82XX_PCI_REG_MSIX_TBL	0x44
 #define QLA82XX_PCI_MSIX_CONTROL	0x40
-
 struct crb_128M_2M_sub_block_map {
 	unsigned valid;
 	unsigned start_128M;
 	unsigned end_128M;
 	unsigned start_2M;
 };
-
 struct crb_128M_2M_block_map {
 	struct crb_128M_2M_sub_block_map sub_block[16];
 };
-
 struct crb_addr_pair {
 	long addr;
 	long data;
 };
-
 #define ADDR_ERROR	((unsigned long) 0xffffffff)
 #define MAX_CTL_CHECK	1000
 #define QLA82XX_FWERROR_CODE(code)	((code >> 8) & 0x1fffff)
-
-/***************************************************************************
- *		PCI related defines.
- **************************************************************************/
-
-/*
- * Interrupt related defines.
- */
 #define PCIX_TARGET_STATUS	(0x10118)
 #define PCIX_TARGET_STATUS_F1	(0x10160)
 #define PCIX_TARGET_STATUS_F2	(0x10164)
@@ -667,7 +554,6 @@ struct crb_addr_pair {
 #define PCIX_TARGET_STATUS_F5	(0x10364)
 #define PCIX_TARGET_STATUS_F6	(0x10368)
 #define PCIX_TARGET_STATUS_F7	(0x1036c)
-
 #define PCIX_TARGET_MASK	(0x10128)
 #define PCIX_TARGET_MASK_F1	(0x10170)
 #define PCIX_TARGET_MASK_F2	(0x10174)
@@ -676,10 +562,6 @@ struct crb_addr_pair {
 #define PCIX_TARGET_MASK_F5	(0x10374)
 #define PCIX_TARGET_MASK_F6	(0x10378)
 #define PCIX_TARGET_MASK_F7	(0x1037c)
-
-/*
- * Message Signaled Interrupts
- */
 #define PCIX_MSI_F0		(0x13000)
 #define PCIX_MSI_F1		(0x13004)
 #define PCIX_MSI_F2		(0x13008)
@@ -689,19 +571,9 @@ struct crb_addr_pair {
 #define PCIX_MSI_F6		(0x13018)
 #define PCIX_MSI_F7		(0x1301c)
 #define PCIX_MSI_F(FUNC)	(0x13000 + ((FUNC) * 4))
-
-/*
- *
- */
 #define PCIX_INT_VECTOR		(0x10100)
 #define PCIX_INT_MASK		(0x10104)
-
-/*
- * Interrupt state machine and other bits.
- */
 #define PCIE_MISCCFG_RC		(0x1206c)
-
-
 #define ISR_INT_TARGET_STATUS \
 	(QLA82XX_PCIX_PS_REG(PCIX_TARGET_STATUS))
 #define ISR_INT_TARGET_STATUS_F1 \
@@ -718,7 +590,6 @@ struct crb_addr_pair {
 	(QLA82XX_PCIX_PS_REG(PCIX_TARGET_STATUS_F6))
 #define ISR_INT_TARGET_STATUS_F7 \
 	(QLA82XX_PCIX_PS_REG(PCIX_TARGET_STATUS_F7))
-
 #define ISR_INT_TARGET_MASK \
 	(QLA82XX_PCIX_PS_REG(PCIX_TARGET_MASK))
 #define ISR_INT_TARGET_MASK_F1 \
@@ -735,20 +606,12 @@ struct crb_addr_pair {
 	(QLA82XX_PCIX_PS_REG(PCIX_TARGET_MASK_F6))
 #define ISR_INT_TARGET_MASK_F7 \
 	(QLA82XX_PCIX_PS_REG(PCIX_TARGET_MASK_F7))
-
 #define ISR_INT_VECTOR			(QLA82XX_PCIX_PS_REG(PCIX_INT_VECTOR))
 #define ISR_INT_MASK			(QLA82XX_PCIX_PS_REG(PCIX_INT_MASK))
 #define ISR_INT_STATE_REG		(QLA82XX_PCIX_PS_REG(PCIE_MISCCFG_RC))
-
 #define	ISR_MSI_INT_TRIGGER(FUNC)	(QLA82XX_PCIX_PS_REG(PCIX_MSI_F(FUNC)))
-
-
 #define	ISR_IS_LEGACY_INTR_IDLE(VAL)		(((VAL) & 0x300) == 0)
 #define	ISR_IS_LEGACY_INTR_TRIGGERED(VAL)	(((VAL) & 0x300) == 0x200)
-
-/*
- * PCI Interrupt Vector Values.
- */
 #define	PCIX_INT_VECTOR_BIT_F0	0x0080
 #define	PCIX_INT_VECTOR_BIT_F1	0x0100
 #define	PCIX_INT_VECTOR_BIT_F2	0x0200
@@ -757,9 +620,6 @@ struct crb_addr_pair {
 #define	PCIX_INT_VECTOR_BIT_F5	0x1000
 #define	PCIX_INT_VECTOR_BIT_F6	0x2000
 #define	PCIX_INT_VECTOR_BIT_F7	0x4000
-
-/* struct qla4_8xxx_legacy_intr_set defined in ql4_def.h */
-
 #define QLA82XX_LEGACY_INTR_CONFIG                                      \
 {                                                                       \
 	{                                                               \
@@ -810,18 +670,10 @@ struct crb_addr_pair {
 		.tgt_mask_reg   =	ISR_INT_TARGET_MASK_F7,         \
 		.pci_int_reg    =	ISR_MSI_INT_TRIGGER(7) },       \
 }
-
-/* Magic number to let user know flash is programmed */
 #define	QLA82XX_BDINFO_MAGIC	0x12345678
 #define FW_SIZE_OFFSET		(0x3e840c)
-
-/* QLA82XX additions */
 #define MIU_TEST_AGT_WRDATA_UPPER_LO	(0x0b0)
 #define	MIU_TEST_AGT_WRDATA_UPPER_HI	(0x0b4)
-
-/* Minidump related */
-
-/* Entry Type Defines */
 #define QLA8XXX_RDNOP	0
 #define QLA8XXX_RDCRB	1
 #define QLA8XXX_RDMUX	2
@@ -848,10 +700,6 @@ struct crb_addr_pair {
 #define QLA8XXX_CNTRL	98
 #define QLA83XX_TLHDR	99
 #define QLA8XXX_RDEND	255
-
-/* Opcodes for Control Entries.
- * These Flags are bit fields.
- */
 #define QLA8XXX_DBG_OPCODE_WR		0x01
 #define QLA8XXX_DBG_OPCODE_RW		0x02
 #define QLA8XXX_DBG_OPCODE_AND		0x04
@@ -860,15 +708,8 @@ struct crb_addr_pair {
 #define QLA8XXX_DBG_OPCODE_RDSTATE	0x20
 #define QLA8XXX_DBG_OPCODE_WRSTATE	0x40
 #define QLA8XXX_DBG_OPCODE_MDSTATE	0x80
-
-/* Driver Flags */
-#define QLA8XXX_DBG_SKIPPED_FLAG	0x80 /* driver skipped this entry  */
-#define QLA8XXX_DBG_SIZE_ERR_FLAG	0x40 /* Entry vs Capture size
-					      * mismatch */
-
-/* Driver_code is for driver to write some info about the entry
- * currently not used.
- */
+#define QLA8XXX_DBG_SKIPPED_FLAG	0x80  
+#define QLA8XXX_DBG_SIZE_ERR_FLAG	0x40  
 struct qla8xxx_minidump_entry_hdr {
 	uint32_t entry_type;
 	uint32_t entry_size;
@@ -880,8 +721,6 @@ struct qla8xxx_minidump_entry_hdr {
 		uint8_t driver_flags;
 	} d_ctrl;
 };
-
-/*  Read CRB entry header */
 struct qla8xxx_minidump_entry_crb {
 	struct qla8xxx_minidump_entry_hdr h;
 	uint32_t addr;
@@ -892,19 +731,16 @@ struct qla8xxx_minidump_entry_crb {
 	} crb_strd;
 	uint32_t data_size;
 	uint32_t op_count;
-
 	struct {
 		uint8_t opcode;
 		uint8_t state_index_v;
 		uint8_t shl;
 		uint8_t shr;
 	} crb_ctrl;
-
 	uint32_t value_1;
 	uint32_t value_2;
 	uint32_t value_3;
 };
-
 struct qla8xxx_minidump_entry_cache {
 	struct qla8xxx_minidump_entry_hdr h;
 	uint32_t tag_reg_addr;
@@ -927,8 +763,6 @@ struct qla8xxx_minidump_entry_cache {
 		uint16_t rsvd_1;
 	} read_ctrl;
 };
-
-/* Read OCM */
 struct qla8xxx_minidump_entry_rdocm {
 	struct qla8xxx_minidump_entry_hdr h;
 	uint32_t rsvd_0;
@@ -940,24 +774,18 @@ struct qla8xxx_minidump_entry_rdocm {
 	uint32_t read_addr;
 	uint32_t read_addr_stride;
 };
-
-/* Read Memory */
 struct qla8xxx_minidump_entry_rdmem {
 	struct qla8xxx_minidump_entry_hdr h;
 	uint32_t rsvd[6];
 	uint32_t read_addr;
 	uint32_t read_data_size;
 };
-
-/* Read ROM */
 struct qla8xxx_minidump_entry_rdrom {
 	struct qla8xxx_minidump_entry_hdr h;
 	uint32_t rsvd[6];
 	uint32_t read_addr;
 	uint32_t read_data_size;
 };
-
-/* Mux entry */
 struct qla8xxx_minidump_entry_mux {
 	struct qla8xxx_minidump_entry_hdr h;
 	uint32_t select_addr;
@@ -969,8 +797,6 @@ struct qla8xxx_minidump_entry_mux {
 	uint32_t read_addr;
 	uint32_t rsvd_1;
 };
-
-/* Queue entry */
 struct qla8xxx_minidump_entry_queue {
 	struct qla8xxx_minidump_entry_hdr h;
 	uint32_t select_addr;
@@ -989,7 +815,6 @@ struct qla8xxx_minidump_entry_queue {
 		uint16_t rsvd_3;
 	} rd_strd;
 };
-
 #define MBC_DIAGNOSTIC_MINIDUMP_TEMPLATE	0x129
 #define RQST_TMPLT_SIZE				0x0
 #define RQST_TMPLT				0x1
@@ -998,10 +823,8 @@ struct qla8xxx_minidump_entry_queue {
 #define MD_MIU_TEST_AGT_CTRL			0x41000090
 #define MD_MIU_TEST_AGT_ADDR_LO			0x41000094
 #define MD_MIU_TEST_AGT_ADDR_HI			0x41000098
-
 #define MD_MIU_TEST_AGT_WRDATA_LO		0x410000A0
 #define MD_MIU_TEST_AGT_WRDATA_HI		0x410000A4
 #define MD_MIU_TEST_AGT_WRDATA_ULO		0x410000B0
 #define MD_MIU_TEST_AGT_WRDATA_UHI		0x410000B4
-
 #endif

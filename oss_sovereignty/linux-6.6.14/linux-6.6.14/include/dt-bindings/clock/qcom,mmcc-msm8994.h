@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2020, Konrad Dybcio
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_MMCC_8994_H
 #define _DT_BINDINGS_CLK_MSM_MMCC_8994_H
-
-/* Clocks */
 #define MMPLL0_EARLY					0
 #define MMPLL0_PLL						1
 #define MMPLL1_EARLY					2
@@ -134,8 +127,6 @@
 #define VENUS0_CORE2_VCODEC_CLK			124
 #define AHB_CLK_SRC						125
 #define FD_AHB_CLK						126
-
-/* GDSCs */
 #define VENUS_GDSC						0
 #define VENUS_CORE0_GDSC				1
 #define VENUS_CORE1_GDSC				2
@@ -148,8 +139,5 @@
 #define OXILI_GX_GDSC					9
 #define OXILI_CX_GDSC					10
 #define FD_GDSC							11
-
-/* Resets */
 #define CAMSS_MICRO_BCR					0
-
 #endif

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef BTRFS_DIR_ITEM_H
 #define BTRFS_DIR_ITEM_H
-
 int btrfs_check_dir_item_collision(struct btrfs_root *root, u64 dir,
 			  const struct fscrypt_str *name);
 int btrfs_insert_dir_item(struct btrfs_trans_handle *trans,
@@ -38,5 +35,4 @@ struct btrfs_dir_item *btrfs_match_dir_item_name(struct btrfs_fs_info *fs_info,
 						 struct btrfs_path *path,
 						 const char *name,
 						 int name_len);
-
 #endif

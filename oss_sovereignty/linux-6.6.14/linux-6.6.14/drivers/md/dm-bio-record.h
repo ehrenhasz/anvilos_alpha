@@ -1,24 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2004-2005 Red Hat, Inc. All rights reserved.
- *
- * This file is released under the GPL.
- */
-
 #ifndef DM_BIO_RECORD_H
 #define DM_BIO_RECORD_H
-
 #include <linux/bio.h>
 #include <linux/blk-integrity.h>
-
-/*
- * There are lots of mutable fields in the bio struct that get
- * changed by the lower levels of the block layer.  Some targets,
- * such as multipath, may wish to resubmit a bio on error.  The
- * functions in this file help the target record and restore the
- * original bio state.
- */
-
 struct dm_bio_details {
 	struct block_device *bi_bdev;
 	int __bi_remaining;
@@ -29,7 +12,6 @@ struct dm_bio_details {
 	struct bio_integrity_payload *bi_integrity;
 #endif
 };
-
 static inline void dm_bio_record(struct dm_bio_details *bd, struct bio *bio)
 {
 	bd->bi_bdev = bio->bi_bdev;
@@ -41,7 +23,6 @@ static inline void dm_bio_record(struct dm_bio_details *bd, struct bio *bio)
 	bd->bi_integrity = bio_integrity(bio);
 #endif
 }
-
 static inline void dm_bio_restore(struct dm_bio_details *bd, struct bio *bio)
 {
 	bio->bi_bdev = bd->bi_bdev;
@@ -53,5 +34,4 @@ static inline void dm_bio_restore(struct dm_bio_details *bd, struct bio *bio)
 	bio->bi_integrity = bd->bi_integrity;
 #endif
 }
-
 #endif

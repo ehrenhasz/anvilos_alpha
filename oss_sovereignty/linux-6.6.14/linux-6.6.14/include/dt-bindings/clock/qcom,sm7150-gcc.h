@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Danila Tikhonov <danila@jiaxyga.com>
- * Copyright (c) 2023, David Wronek <davidwronek@gmail.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SM7150_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SM7150_H
-
-/* GCC clock registers */
 #define GCC_GPLL0_MAIN_DIV_CDIV				0
 #define GPLL0						1
 #define GPLL0_OUT_EVEN					2
@@ -157,8 +148,6 @@
 #define GCC_VS_CTRL_CLK					145
 #define GCC_VS_CTRL_CLK_SRC				146
 #define GCC_VSENSOR_CLK_SRC				147
-
-/* GCC Resets */
 #define GCC_PCIE_0_BCR					0
 #define GCC_PCIE_PHY_BCR				1
 #define GCC_PCIE_PHY_COM_BCR				2
@@ -170,8 +159,6 @@
 #define GCC_USB3_PHY_SEC_BCR				8
 #define GCC_QUSB2PHY_PRIM_BCR				9
 #define GCC_VIDEO_AXI_CLK_BCR				10
-
-/* GCC GDSCRs */
 #define PCIE_0_GDSC					0
 #define UFS_PHY_GDSC					1
 #define USB30_PRIM_GDSC					2
@@ -182,5 +169,4 @@
 #define HLOS1_VOTE_MMNOC_MMU_TBU_HF0_GDSC		7
 #define HLOS1_VOTE_MMNOC_MMU_TBU_HF1_GDSC		8
 #define HLOS1_VOTE_MMNOC_MMU_TBU_SF_GDSC		9
-
 #endif

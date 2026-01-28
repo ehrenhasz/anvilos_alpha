@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Qualcomm SM8350 interconnect IDs
- *
- * Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Linaro Limited
- */
-
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SM8350_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SM8350_H
-
 #define MASTER_QSPI_0			0
 #define MASTER_QUP_1			1
 #define MASTER_A1NOC_CFG		2
@@ -18,7 +9,6 @@
 #define MASTER_USB3_1			6
 #define SLAVE_A1NOC_SNOC		7
 #define SLAVE_SERVICE_A1NOC		8
-
 #define MASTER_QDSS_BAM			0
 #define MASTER_QUP_0			1
 #define MASTER_QUP_2			2
@@ -33,7 +23,6 @@
 #define SLAVE_A2NOC_SNOC		11
 #define SLAVE_ANOC_PCIE_GEM_NOC		12
 #define SLAVE_SERVICE_A2NOC		13
-
 #define MASTER_GEM_NOC_CNOC		0
 #define MASTER_GEM_NOC_PCIE_SNOC	1
 #define MASTER_QDSS_DAP			2
@@ -95,11 +84,9 @@
 #define SLAVE_PCIE_1			58
 #define SLAVE_QDSS_STM			59
 #define SLAVE_TCU			60
-
 #define MASTER_CNOC_DC_NOC		0
 #define SLAVE_LLCC_CFG			1
 #define SLAVE_GEM_NOC_CFG		2
-
 #define MASTER_GPU_TCU			0
 #define MASTER_SYS_TCU			1
 #define MASTER_APPSS_PROC		2
@@ -122,7 +109,6 @@
 #define MASTER_MNOC_HF_MEM_NOC_DISP	19
 #define MASTER_MNOC_SF_MEM_NOC_DISP	20
 #define SLAVE_LLCC_DISP			21
-
 #define MASTER_CNOC_LPASS_AG_NOC	0
 #define SLAVE_LPASS_CORE_CFG		1
 #define SLAVE_LPASS_LPI_CFG		2
@@ -130,12 +116,10 @@
 #define SLAVE_LPASS_TOP_CFG		4
 #define SLAVE_SERVICES_LPASS_AML_NOC	5
 #define SLAVE_SERVICE_LPASS_AG_NOC	6
-
 #define MASTER_LLCC			0
 #define SLAVE_EBI1			1
 #define MASTER_LLCC_DISP		2
 #define SLAVE_EBI1_DISP			3
-
 #define MASTER_CAMNOC_HF		0
 #define MASTER_CAMNOC_ICP		1
 #define MASTER_CAMNOC_SF		2
@@ -154,12 +138,10 @@
 #define MASTER_ROTATOR_DISP		15
 #define SLAVE_MNOC_HF_MEM_NOC_DISP	16
 #define SLAVE_MNOC_SF_MEM_NOC_DISP	17
-
 #define MASTER_CDSP_NOC_CFG		0
 #define MASTER_CDSP_PROC		1
 #define SLAVE_CDSP_MEM_NOC		2
 #define SLAVE_SERVICE_NSP_NOC		3
-
 #define MASTER_A1NOC_SNOC		0
 #define MASTER_A2NOC_SNOC		1
 #define MASTER_SNOC_CFG			2
@@ -168,5 +150,4 @@
 #define SLAVE_SNOC_GEM_NOC_GC		5
 #define SLAVE_SNOC_GEM_NOC_SF		6
 #define SLAVE_SERVICE_SNOC		7
-
 #endif

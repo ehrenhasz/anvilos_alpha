@@ -1,29 +1,17 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Device Tree file for Freescale LS1012A QDS Board.
- *
- * Copyright 2016 Freescale Semiconductor, Inc.
- *
- */
 /dts-v1/;
-
 #include "fsl-ls1012a.dtsi"
-
 / {
 	model = "LS1012A QDS Board";
 	compatible = "fsl,ls1012a-qds", "fsl,ls1012a";
-
 	aliases {
 		mmc0 = &esdhc0;
 		mmc1 = &esdhc1;
 	};
-
 	sys_mclk: clock-mclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <24576000>;
 	};
-
 	reg_3p3v: regulator-3p3v {
 		compatible = "regulator-fixed";
 		regulator-name = "3P3V";
@@ -31,7 +19,6 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-always-on;
 	};
-
 	sound {
 		compatible = "simple-audio-card";
 		simple-audio-card,format = "i2s";
@@ -46,13 +33,11 @@
 			"LINE_IN", "Line In Jack",
 			"Headphone Jack", "HP_OUT",
 			"Speaker Ext", "LINE_OUT";
-
 		simple-audio-card,cpu {
 			sound-dai = <&sai2>;
 			frame-master;
 			bitclock-master;
 		};
-
 		simple-audio-card,codec {
 			sound-dai = <&codec>;
 			frame-master;
@@ -61,11 +46,9 @@
 		};
 	};
 };
-
 &dspi {
 	bus-num = <0>;
 	status = "okay";
-
 	flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -73,7 +56,6 @@
 		reg = <0>;
 		spi-max-frequency = <10000000>;
 	};
-
 	flash@1 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -83,7 +65,6 @@
 		reg = <1>;
 		spi-max-frequency = <10000000>;
 	};
-
 	flash@2 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -94,33 +75,26 @@
 		spi-max-frequency = <10000000>;
 	};
 };
-
 &duart0 {
 	status = "okay";
 };
-
 &esdhc0 {
 	status = "okay";
 };
-
 &esdhc1 {
 	status = "okay";
 };
-
 &i2c0 {
 	status = "okay";
-
 	i2c-mux@77 {
 		compatible = "nxp,pca9547";
 		reg = <0x77>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		i2c@4 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <0x4>;
-
 			codec: sgtl5000@a {
 				#sound-dai-cells = <0>;
 				compatible = "fsl,sgtl5000";
@@ -132,10 +106,8 @@
 		};
 	};
 };
-
 &qspi {
 	status = "okay";
-
 	s25fs512s0: flash@0 {
 		compatible = "jedec,spi-nor";
 		#address-cells = <1>;
@@ -147,11 +119,9 @@
 		spi-tx-bus-width = <2>;
 	};
 };
-
 &sai2 {
 	status = "okay";
 };
-
 &sata {
 	status = "okay";
 };

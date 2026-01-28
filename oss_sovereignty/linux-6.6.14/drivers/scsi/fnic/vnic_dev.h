@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
 #ifndef _VNIC_DEV_H_
 #define _VNIC_DEV_H_
-
 #include "vnic_resource.h"
 #include "vnic_devcmd.h"
-
-/*
- * These defines avoid symbol clash between fnic and enic (Cisco 10G Eth
- * Driver) when both are built with CONFIG options =y
- */
 #define vnic_dev_priv fnic_dev_priv
 #define vnic_dev_get_res_count fnic_dev_get_res_count
 #define vnic_dev_get_res fnic_dev_get_res
@@ -50,37 +39,31 @@
 #define vnic_dev_get_intr_mode fnic_dev_get_intr_mode
 #define vnic_dev_unregister fnic_dev_unregister
 #define vnic_dev_register fnic_dev_register
-
 #ifndef VNIC_PADDR_TARGET
 #define VNIC_PADDR_TARGET	0x0000000000000000ULL
 #endif
-
 #ifndef readq
 static inline u64 readq(void __iomem *reg)
 {
 	return ((u64)readl(reg + 0x4UL) << 32) | (u64)readl(reg);
 }
-
 static inline void writeq(u64 val, void __iomem *reg)
 {
 	writel(val & 0xffffffff, reg);
 	writel(val >> 32, reg + 0x4UL);
 }
 #endif
-
 enum vnic_dev_intr_mode {
 	VNIC_DEV_INTR_MODE_UNKNOWN,
 	VNIC_DEV_INTR_MODE_INTX,
 	VNIC_DEV_INTR_MODE_MSI,
 	VNIC_DEV_INTR_MODE_MSIX,
 };
-
 struct vnic_dev_bar {
 	void __iomem *vaddr;
 	dma_addr_t bus_addr;
 	unsigned long len;
 };
-
 struct vnic_dev_ring {
 	void *descs;
 	size_t size;
@@ -93,10 +76,8 @@ struct vnic_dev_ring {
 	unsigned int desc_count;
 	unsigned int desc_avail;
 };
-
 struct vnic_dev;
 struct vnic_stats;
-
 void *vnic_dev_priv(struct vnic_dev *vdev);
 unsigned int vnic_dev_get_res_count(struct vnic_dev *vdev,
 				    enum vnic_res_type type);
@@ -149,5 +130,4 @@ void vnic_dev_unregister(struct vnic_dev *vdev);
 struct vnic_dev *vnic_dev_register(struct vnic_dev *vdev,
 				   void *priv, struct pci_dev *pdev,
 				   struct vnic_dev_bar *bar);
-
-#endif /* _VNIC_DEV_H_ */
+#endif  

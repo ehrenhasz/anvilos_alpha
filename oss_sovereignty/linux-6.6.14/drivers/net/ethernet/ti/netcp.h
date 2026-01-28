@@ -1,25 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * NetCP driver local header
- *
- * Copyright (C) 2014 Texas Instruments Incorporated
- * Authors:	Sandeep Nair <sandeep_n@ti.com>
- *		Sandeep Paulraj <s-paulraj@ti.com>
- *		Cyril Chemparathy <cyril@ti.com>
- *		Santosh Shilimkar <santosh.shilimkar@ti.com>
- *		Wingman Kwok <w-kwok2@ti.com>
- *		Murali Karicheri <m-karicheri2@ti.com>
- */
 #ifndef __NETCP_H__
 #define __NETCP_H__
-
 #include <linux/netdevice.h>
 #include <linux/soc/ti/knav_dma.h>
 #include <linux/u64_stats_sync.h>
-
-/* Maximum Ethernet frame size supported by Keystone switch */
 #define NETCP_MAX_FRAME_SIZE		9504
-
 #define SGMII_LINK_MAC_MAC_AUTONEG	0
 #define SGMII_LINK_MAC_PHY		1
 #define SGMII_LINK_MAC_MAC_FORCED	2
@@ -29,24 +13,19 @@
 #define RGMII_LINK_MAC_PHY_NO_MDIO	7
 #define XGMII_LINK_MAC_PHY		10
 #define XGMII_LINK_MAC_MAC_FORCED	11
-
 struct netcp_device;
-
 struct netcp_tx_pipe {
 	struct netcp_device	*netcp_device;
 	void			*dma_queue;
 	unsigned int		dma_queue_id;
-	/* To port for packet forwarded to switch. Used only by ethss */
 	u8			switch_to_port;
 #define	SWITCH_TO_PORT_IN_TAGINFO	BIT(0)
 	u8			flags;
 	void			*dma_channel;
 	const char		*dma_chan_name;
 };
-
 #define ADDR_NEW			BIT(0)
 #define ADDR_VALID			BIT(1)
-
 enum netcp_addr_type {
 	ADDR_ANY,
 	ADDR_DEV,
@@ -54,7 +33,6 @@ enum netcp_addr_type {
 	ADDR_MCAST,
 	ADDR_BCAST
 };
-
 struct netcp_addr {
 	struct netcp_intf	*netcp;
 	unsigned char		addr[ETH_ALEN];
@@ -62,21 +40,18 @@ struct netcp_addr {
 	unsigned int		flags;
 	struct list_head	node;
 };
-
 struct netcp_stats {
 	struct u64_stats_sync   syncp_rx ____cacheline_aligned_in_smp;
 	u64                     rx_packets;
 	u64                     rx_bytes;
 	u32                     rx_errors;
 	u32                     rx_dropped;
-
 	struct u64_stats_sync   syncp_tx ____cacheline_aligned_in_smp;
 	u64                     tx_packets;
 	u64                     tx_bytes;
 	u32                     tx_errors;
 	u32                     tx_dropped;
 };
-
 struct netcp_intf {
 	struct device		*dev;
 	struct device		*ndev_dev;
@@ -87,7 +62,6 @@ struct netcp_intf {
 	struct list_head	txhook_list_head;
 	unsigned int		tx_pause_threshold;
 	void			*tx_compl_q;
-
 	unsigned int		tx_resume_threshold;
 	void			*rx_queue;
 	void			*rx_pool;
@@ -98,10 +72,7 @@ struct netcp_intf {
 	struct napi_struct	tx_napi;
 #define ETH_SW_CAN_REMOVE_ETH_FCS	BIT(0)
 	u32			hw_cap;
-
-	/* 64-bit netcp stats */
 	struct netcp_stats	stats;
-
 	void			*rx_channel;
 	const char		*dma_chan_name;
 	u32			rx_pool_size;
@@ -113,17 +84,12 @@ struct netcp_intf {
 	struct list_head	addr_list;
 	bool			netdev_registered;
 	bool			primary_module_attached;
-
-	/* Lock used for protecting Rx/Tx hook list management */
 	spinlock_t		lock;
 	struct netcp_device	*netcp_device;
 	struct device_node	*node_interface;
-
-	/* DMA configuration data */
 	u32			msg_enable;
 	u32			rx_queue_depths[KNAV_DMA_FDQ_PER_CHAN];
 };
-
 #define	NETCP_PSDATA_LEN		KNAV_DMA_NUM_PS_WORDS
 struct netcp_packet {
 	struct sk_buff		*skb;
@@ -135,33 +101,26 @@ struct netcp_packet {
 	struct netcp_tx_pipe	*tx_pipe;
 	bool			rxtstamp_complete;
 	void			*ts_context;
-
 	void (*txtstamp)(void *ctx, struct sk_buff *skb);
 };
-
 static inline u32 *netcp_push_psdata(struct netcp_packet *p_info,
 				     unsigned int bytes)
 {
 	u32 *buf;
 	unsigned int words;
-
 	if ((bytes & 0x03) != 0)
 		return NULL;
 	words = bytes >> 2;
-
 	if ((p_info->psdata_len + words) > NETCP_PSDATA_LEN)
 		return NULL;
-
 	p_info->psdata_len += words;
 	buf = &p_info->psdata[NETCP_PSDATA_LEN - p_info->psdata_len];
 	return buf;
 }
-
 static inline int netcp_align_psdata(struct netcp_packet *p_info,
 				     unsigned int byte_align)
 {
 	int padding;
-
 	switch (byte_align) {
 	case 0:
 		padding = -EINVAL;
@@ -183,19 +142,14 @@ static inline int netcp_align_psdata(struct netcp_packet *p_info,
 	}
 	return padding;
 }
-
 struct netcp_module {
 	const char		*name;
 	struct module		*owner;
 	bool			primary;
-
-	/* probe/remove: called once per NETCP instance */
 	int	(*probe)(struct netcp_device *netcp_device,
 			 struct device *device, struct device_node *node,
 			 void **inst_priv);
 	int	(*remove)(struct netcp_device *netcp_device, void *inst_priv);
-
-	/* attach/release: called once per network interface */
 	int	(*attach)(void *inst_priv, struct net_device *ndev,
 			  struct device_node *node, void **intf_priv);
 	int	(*release)(void *intf_priv);
@@ -207,23 +161,18 @@ struct netcp_module {
 	int	(*del_vid)(void *intf_priv, int vid);
 	int	(*ioctl)(void *intf_priv, struct ifreq *req, int cmd);
 	int	(*set_rx_mode)(void *intf_priv, bool promisc);
-
-	/* used internally */
 	struct list_head	module_list;
 	struct list_head	interface_list;
 };
-
 int netcp_register_module(struct netcp_module *module);
 void netcp_unregister_module(struct netcp_module *module);
 void *netcp_module_get_intf_data(struct netcp_module *module,
 				 struct netcp_intf *intf);
-
 int netcp_txpipe_init(struct netcp_tx_pipe *tx_pipe,
 		      struct netcp_device *netcp_device,
 		      const char *dma_chan_name, unsigned int dma_queue_id);
 int netcp_txpipe_open(struct netcp_tx_pipe *tx_pipe);
 int netcp_txpipe_close(struct netcp_tx_pipe *tx_pipe);
-
 typedef int netcp_hook_rtn(int order, void *data, struct netcp_packet *packet);
 int netcp_register_txhook(struct netcp_intf *netcp_priv, int order,
 			  netcp_hook_rtn *hook_rtn, void *hook_data);
@@ -233,14 +182,9 @@ int netcp_register_rxhook(struct netcp_intf *netcp_priv, int order,
 			  netcp_hook_rtn *hook_rtn, void *hook_data);
 int netcp_unregister_rxhook(struct netcp_intf *netcp_priv, int order,
 			    netcp_hook_rtn *hook_rtn, void *hook_data);
-
-/* SGMII functions */
 int netcp_sgmii_reset(void __iomem *sgmii_ofs, int port);
 bool netcp_sgmii_rtreset(void __iomem *sgmii_ofs, int port, bool set);
 int netcp_sgmii_get_port_link(void __iomem *sgmii_ofs, int port);
 int netcp_sgmii_config(void __iomem *sgmii_ofs, int port, u32 interface);
-
-/* XGBE SERDES init functions */
 int netcp_xgbe_serdes_init(void __iomem *serdes_regs, void __iomem *xgbe_regs);
-
-#endif	/* __NETCP_H__ */
+#endif	 

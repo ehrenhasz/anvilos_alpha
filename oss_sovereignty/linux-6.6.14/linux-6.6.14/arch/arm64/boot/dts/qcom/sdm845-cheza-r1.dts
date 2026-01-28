@@ -1,89 +1,41 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Google Cheza board device tree source
- *
- * Copyright 2018 Google LLC.
- */
-
 /dts-v1/;
-
 #include "sdm845-cheza.dtsi"
-
 / {
 	model = "Google Cheza (rev1)";
 	compatible = "google,cheza-rev1", "qcom,sdm845";
-
-	/*
-	 * FIXED REGULATORS (not in sdm845-cheza.dtsi) - parents above children
-	 */
-
-	/*
-	 * NOTE: Technically pp3500_a is not the exact same signal as
-	 * pp3500_a_vbob (there's a load switch between them and the EC can
-	 * control pp3500_a via "en_pp3300_a"), but from the AP's point of
-	 * view they are the same.
-	 */
 	pp3500_a:
 	pp3500_a_vbob: pp3500-a-vbob-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vreg_bob";
-
-		/*
-		 * Comes on automatically when pp5000_ldo comes on, which
-		 * comes on automatically when ppvar_sys comes on
-		 */
 		regulator-always-on;
 		regulator-boot-on;
 		regulator-min-microvolt = <3500000>;
 		regulator-max-microvolt = <3500000>;
-
 		vin-supply = <&ppvar_sys>;
 	};
-
 	pp3300_dx_edp: pp3300-dx-edp-regulator {
-		/* Yes, it's really 3.5 despite the name of the signal */
 		regulator-min-microvolt = <3500000>;
 		regulator-max-microvolt = <3500000>;
-
 		vin-supply = <&pp3500_a>;
 	};
 };
-
-/* FIXED REGULATOR OVERRIDES (modifications to sdm845-cheza.dtsi) */
-
-/*
- * L19 and L28 technically go to 3.3V, but most boards have old AOP firmware
- * that limits them to 3.0, and trying to run at 3.3V with that old firmware
- * prevents the system from booting.
- */
 &src_pp3000_l19a {
 	regulator-min-microvolt = <3008000>;
 	regulator-max-microvolt = <3008000>;
 };
-
 &src_pp3300_l22a {
 	/delete-property/regulator-boot-on;
 	/delete-property/regulator-always-on;
 };
-
 &src_pp3300_l28a {
 	regulator-min-microvolt = <3008000>;
 	regulator-max-microvolt = <3008000>;
 };
-
 &src_vreg_bob {
 	regulator-min-microvolt = <3500000>;
 	regulator-max-microvolt = <3500000>;
 	vin-supply = <&pp3500_a_vbob>;
 };
-
-/*
- * NON-REGULATOR OVERRIDES
- * (modifications to sdm845-cheza.dtsi) - alphabetized by dtsi label
- */
-
-/* PINCTRL - board-specific pinctrl */
-
 &tlmm {
 	gpio-line-names = "AP_SPI_FP_MISO",
 			  "AP_SPI_FP_MOSI",

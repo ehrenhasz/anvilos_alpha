@@ -1,10 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ATI PCI IDs from XFree86, kept here to make sync'ing with
- * XFree much simpler. Currently, this list is only used by
- * radeonfb
- */
-
 #define PCI_CHIP_RV380_3150             0x3150
 #define PCI_CHIP_RV380_3151             0x3151
 #define PCI_CHIP_RV380_3152             0x3152

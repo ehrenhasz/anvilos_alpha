@@ -1,33 +1,6 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DCN31_DCCG_H__
 #define __DCN31_DCCG_H__
-
 #include "dcn30/dcn30_dccg.h"
-
 #define DCCG_REG_LIST_DCN31() \
 	SR(DPPCLK_DTO_CTRL),\
 	DCCG_SRII(DTO_PARAM, DPPCLK, 0),\
@@ -65,8 +38,6 @@
 	SR(DCCG_GATE_DISABLE_CNTL2),\
 	SR(DCCG_GATE_DISABLE_CNTL3),\
 	SR(HDMISTREAMCLK0_DTO_PARAM)
-
-
 #define DCCG_MASK_SH_LIST_DCN31(mask_sh) \
 	DCCG_SFI(DPPCLK_DTO_CTRL, DTO_ENABLE, DPPCLK, 0, mask_sh),\
 	DCCG_SFI(DPPCLK_DTO_CTRL, DTO_DB_EN, DPPCLK, 0, mask_sh),\
@@ -151,83 +122,63 @@
 	DCCG_SF(DCCG_GATE_DISABLE_CNTL3, SYMCLK32_ROOT_LE1_GATE_DISABLE, mask_sh),\
 	DCCG_SF(HDMISTREAMCLK0_DTO_PARAM, HDMISTREAMCLK0_DTO_PHASE, mask_sh),\
 	DCCG_SF(HDMISTREAMCLK0_DTO_PARAM, HDMISTREAMCLK0_DTO_MODULO, mask_sh)
-
-
 struct dccg *dccg31_create(
 	struct dc_context *ctx,
 	const struct dccg_registers *regs,
 	const struct dccg_shift *dccg_shift,
 	const struct dccg_mask *dccg_mask);
-
 void dccg31_init(struct dccg *dccg);
-
 void dccg31_enable_symclk32_se(
 		struct dccg *dccg,
 		int hpo_se_inst,
 		enum phyd32clk_clock_source phyd32clk);
-
 void dccg31_disable_symclk32_se(
 		struct dccg *dccg,
 		int hpo_se_inst);
-
 void dccg31_enable_symclk32_le(
 		struct dccg *dccg,
 		int hpo_le_inst,
 		enum phyd32clk_clock_source phyd32clk);
-
 void dccg31_disable_symclk32_le(
 		struct dccg *dccg,
 		int hpo_le_inst);
-
 void dccg31_set_symclk32_le_root_clock_gating(
 		struct dccg *dccg,
 		int hpo_le_inst,
 		bool enable);
-
 void dccg31_set_physymclk(
 		struct dccg *dccg,
 		int phy_inst,
 		enum physymclk_clock_source clk_src,
 		bool force_enable);
-
 void dccg31_set_audio_dtbclk_dto(
 		struct dccg *dccg,
 		const struct dtbclk_dto_params *params);
-
 void dccg31_update_dpp_dto(
 	struct dccg *dccg,
 	int dpp_inst,
 	int req_dppclk);
-
 void dccg31_get_dccg_ref_freq(
 	struct dccg *dccg,
 	unsigned int xtalin_freq_inKhz,
 	unsigned int *dccg_ref_freq_inKhz);
-
 void dccg31_set_dpstreamclk(
 	struct dccg *dccg,
 	enum streamclk_source src,
 	int otg_inst,
 	int dp_hpo_inst);
-
 void dccg31_set_dtbclk_dto(
 		struct dccg *dccg,
 		const struct dtbclk_dto_params *params);
-
 void dccg31_otg_add_pixel(
 	struct dccg *dccg,
 	uint32_t otg_inst);
-
 void dccg31_otg_drop_pixel(
 	struct dccg *dccg,
 	uint32_t otg_inst);
-
 void dccg31_set_dispclk_change_mode(
 	struct dccg *dccg,
 	enum dentist_dispclk_change_mode change_mode);
-
 void dccg31_disable_dscclk(struct dccg *dccg, int inst);
-
 void dccg31_enable_dscclk(struct dccg *dccg, int inst);
-
-#endif //__DCN31_DCCG_H__
+#endif  

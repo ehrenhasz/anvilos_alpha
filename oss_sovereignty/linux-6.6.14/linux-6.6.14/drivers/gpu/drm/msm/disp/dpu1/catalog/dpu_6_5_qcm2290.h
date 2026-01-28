@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DPU_6_5_QCM2290_H
 #define _DPU_6_5_QCM2290_H
-
 static const struct dpu_caps qcm2290_dpu_caps = {
 	.max_mixer_width = DEFAULT_DPU_LINE_WIDTH,
 	.max_mixer_blendstages = 0x4,
@@ -15,7 +8,6 @@ static const struct dpu_caps qcm2290_dpu_caps = {
 	.max_linewidth = 2160,
 	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
 };
-
 static const struct dpu_mdp_cfg qcm2290_mdp = {
 	.name = "top_0",
 	.base = 0x0, .len = 0x494,
@@ -24,7 +16,6 @@ static const struct dpu_mdp_cfg qcm2290_mdp = {
 		[DPU_CLK_CTRL_DMA0] = { .reg_off = 0x2ac, .bit_off = 8 },
 	},
 };
-
 static const struct dpu_ctl_cfg qcm2290_ctl[] = {
 	{
 		.name = "ctl_0", .id = CTL_0,
@@ -33,7 +24,6 @@ static const struct dpu_ctl_cfg qcm2290_ctl[] = {
 		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 9),
 	},
 };
-
 static const struct dpu_sspp_cfg qcm2290_sspp[] = {
 	{
 		.name = "sspp_0", .id = SSPP_VIG0,
@@ -53,7 +43,6 @@ static const struct dpu_sspp_cfg qcm2290_sspp[] = {
 		.clk_ctrl = DPU_CLK_CTRL_DMA0,
 	},
 };
-
 static const struct dpu_lm_cfg qcm2290_lm[] = {
 	{
 		.name = "lm_0", .id = LM_0,
@@ -64,7 +53,6 @@ static const struct dpu_lm_cfg qcm2290_lm[] = {
 		.dspp = DSPP_0,
 	},
 };
-
 static const struct dpu_dspp_cfg qcm2290_dspp[] = {
 	{
 		.name = "dspp_0", .id = DSPP_0,
@@ -73,7 +61,6 @@ static const struct dpu_dspp_cfg qcm2290_dspp[] = {
 		.sblk = &sdm845_dspp_sblk,
 	},
 };
-
 static const struct dpu_pingpong_cfg qcm2290_pp[] = {
 	{
 		.name = "pingpong_0", .id = PINGPONG_0,
@@ -85,7 +72,6 @@ static const struct dpu_pingpong_cfg qcm2290_pp[] = {
 		.intr_rdptr = -1,
 	},
 };
-
 static const struct dpu_intf_cfg qcm2290_intf[] = {
 	{
 		.name = "intf_1", .id = INTF_1,
@@ -99,7 +85,6 @@ static const struct dpu_intf_cfg qcm2290_intf[] = {
 		.intr_tear_rd_ptr = DPU_IRQ_IDX(MDP_INTF1_TEAR_INTR, 2),
 	},
 };
-
 static const struct dpu_perf_cfg qcm2290_perf_data = {
 	.max_bw_low = 2700000,
 	.max_bw_high = 2700000,
@@ -121,12 +106,10 @@ static const struct dpu_perf_cfg qcm2290_perf_data = {
 	.clk_inefficiency_factor = 105,
 	.bw_inefficiency_factor = 120,
 };
-
 static const struct dpu_mdss_version qcm2290_mdss_ver = {
 	.core_major_ver = 6,
 	.core_minor_ver = 5,
 };
-
 const struct dpu_mdss_cfg dpu_qcm2290_cfg = {
 	.mdss_ver = &qcm2290_mdss_ver,
 	.caps = &qcm2290_dpu_caps,
@@ -147,5 +130,4 @@ const struct dpu_mdss_cfg dpu_qcm2290_cfg = {
 	.vbif = sdm845_vbif,
 	.perf = &qcm2290_perf_data,
 };
-
 #endif

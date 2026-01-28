@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  linux/drivers/mmc/core/mmc_ops.h
- *
- *  Copyright 2006-2007 Pierre Ossman
- */
-
 #ifndef _MMC_MMC_OPS_H
 #define _MMC_MMC_OPS_H
-
 #include <linux/types.h>
-
 enum mmc_busy_cmd {
 	MMC_BUSY_CMD6,
 	MMC_BUSY_ERASE,
@@ -17,11 +8,9 @@ enum mmc_busy_cmd {
 	MMC_BUSY_EXTR_SINGLE,
 	MMC_BUSY_IO,
 };
-
 struct mmc_host;
 struct mmc_card;
 struct mmc_command;
-
 int mmc_select_card(struct mmc_card *card);
 int mmc_deselect_cards(struct mmc_host *host);
 int mmc_set_dsr(struct mmc_host *host);
@@ -55,6 +44,4 @@ void mmc_run_bkops(struct mmc_card *card);
 int mmc_cmdq_enable(struct mmc_card *card);
 int mmc_cmdq_disable(struct mmc_card *card);
 int mmc_sanitize(struct mmc_card *card, unsigned int timeout_ms);
-
 #endif
-

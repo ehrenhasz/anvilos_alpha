@@ -1,25 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_INTEL_PUNIT_IPC_H_
 #define  _ASM_X86_INTEL_PUNIT_IPC_H_
-
-/*
- * Three types of 8bit P-Unit IPC commands are supported,
- * bit[7:6]: [00]: BIOS; [01]: GTD; [10]: ISPD.
- */
 typedef enum {
 	BIOS_IPC = 0,
 	GTDRIVER_IPC,
 	ISPDRIVER_IPC,
 	RESERVED_IPC,
 } IPC_TYPE;
-
 #define IPC_TYPE_OFFSET			6
 #define IPC_PUNIT_BIOS_CMD_BASE		(BIOS_IPC << IPC_TYPE_OFFSET)
 #define IPC_PUNIT_GTD_CMD_BASE		(GTDDRIVER_IPC << IPC_TYPE_OFFSET)
 #define IPC_PUNIT_ISPD_CMD_BASE		(ISPDRIVER_IPC << IPC_TYPE_OFFSET)
 #define IPC_PUNIT_CMD_TYPE_MASK		(RESERVED_IPC << IPC_TYPE_OFFSET)
-
-/* BIOS => Pcode commands */
 #define IPC_PUNIT_BIOS_ZERO			(IPC_PUNIT_BIOS_CMD_BASE | 0x00)
 #define IPC_PUNIT_BIOS_VR_INTERFACE		(IPC_PUNIT_BIOS_CMD_BASE | 0x01)
 #define IPC_PUNIT_BIOS_READ_PCS			(IPC_PUNIT_BIOS_CMD_BASE | 0x02)
@@ -48,8 +39,6 @@ typedef enum {
 #define IPC_PUNIT_BIOS_WRITE_VF_GL_CTRL		(IPC_PUNIT_BIOS_CMD_BASE | 0x19)
 #define IPC_PUNIT_BIOS_READ_FM_SOC_TEMP_THRESH	(IPC_PUNIT_BIOS_CMD_BASE | 0x1a)
 #define IPC_PUNIT_BIOS_WRITE_FM_SOC_TEMP_THRESH	(IPC_PUNIT_BIOS_CMD_BASE | 0x1b)
-
-/* GT Driver => Pcode commands */
 #define IPC_PUNIT_GTD_ZERO			(IPC_PUNIT_GTD_CMD_BASE | 0x00)
 #define IPC_PUNIT_GTD_CONFIG			(IPC_PUNIT_GTD_CMD_BASE | 0x01)
 #define IPC_PUNIT_GTD_READ_ICCP_LIC_CDYN_SCAL	(IPC_PUNIT_GTD_CMD_BASE | 0x02)
@@ -60,16 +49,12 @@ typedef enum {
 #define IPC_PUNIT_GTD_DIS_VOL_FREQ_CHG_REQUEST	(IPC_PUNIT_GTD_CMD_BASE | 0x17)
 #define IPC_PUNIT_GTD_DYNA_DUTY_CYCLE_CTRL	(IPC_PUNIT_GTD_CMD_BASE | 0x1a)
 #define IPC_PUNIT_GTD_DYNA_DUTY_CYCLE_TUNING	(IPC_PUNIT_GTD_CMD_BASE | 0x1c)
-
-/* ISP Driver => Pcode commands */
 #define IPC_PUNIT_ISPD_ZERO			(IPC_PUNIT_ISPD_CMD_BASE | 0x00)
 #define IPC_PUNIT_ISPD_CONFIG			(IPC_PUNIT_ISPD_CMD_BASE | 0x01)
 #define IPC_PUNIT_ISPD_GET_ISP_LTR_VAL		(IPC_PUNIT_ISPD_CMD_BASE | 0x02)
 #define IPC_PUNIT_ISPD_ACCESS_IU_FREQ_BOUNDS	(IPC_PUNIT_ISPD_CMD_BASE | 0x03)
 #define IPC_PUNIT_ISPD_READ_CDYN_LEVEL		(IPC_PUNIT_ISPD_CMD_BASE | 0x04)
 #define IPC_PUNIT_ISPD_WRITE_CDYN_LEVEL		(IPC_PUNIT_ISPD_CMD_BASE | 0x05)
-
-/* Error codes */
 #define IPC_PUNIT_ERR_SUCCESS			0
 #define IPC_PUNIT_ERR_INVALID_CMD		1
 #define IPC_PUNIT_ERR_INVALID_PARAMETER		2
@@ -77,26 +62,19 @@ typedef enum {
 #define IPC_PUNIT_ERR_CMD_LOCKED		4
 #define IPC_PUNIT_ERR_INVALID_VR_ID		5
 #define IPC_PUNIT_ERR_VR_ERR			6
-
 #if IS_ENABLED(CONFIG_INTEL_PUNIT_IPC)
-
 int intel_punit_ipc_simple_command(int cmd, int para1, int para2);
 int intel_punit_ipc_command(u32 cmd, u32 para1, u32 para2, u32 *in, u32 *out);
-
 #else
-
 static inline int intel_punit_ipc_simple_command(int cmd,
 						  int para1, int para2)
 {
 	return -ENODEV;
 }
-
 static inline int intel_punit_ipc_command(u32 cmd, u32 para1, u32 para2,
 					  u32 *in, u32 *out)
 {
 	return -ENODEV;
 }
-
-#endif /* CONFIG_INTEL_PUNIT_IPC */
-
+#endif  
 #endif

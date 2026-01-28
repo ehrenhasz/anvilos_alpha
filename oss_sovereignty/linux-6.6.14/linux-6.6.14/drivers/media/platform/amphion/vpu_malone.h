@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2020-2021 NXP
- */
-
 #ifndef _AMPHION_VPU_MALONE_H
 #define _AMPHION_VPU_MALONE_H
-
 u32 vpu_malone_get_data_size(void);
 void vpu_malone_init_rpc(struct vpu_shared_addr *shared,
 			 struct vpu_buffer *rpc, dma_addr_t boot_addr);
@@ -42,5 +36,4 @@ int vpu_malone_init_instance(struct vpu_shared_addr *shared, u32 instance);
 u32 vpu_malone_get_max_instance_count(struct vpu_shared_addr *shared);
 bool vpu_malone_check_fmt(enum vpu_core_type type, u32 pixelfmt);
 void vpu_malone_enable_format(u32 pixelformat, int enable);
-
 #endif

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. */
-
 #ifndef __MLX5E_FS_ETHTOOL_H__
 #define __MLX5E_FS_ETHTOOL_H__
-
 struct mlx5e_priv;
 struct mlx5e_ethtool_steering;
 #ifdef CONFIG_MLX5_EN_RXNFC

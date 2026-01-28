@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Various register offset definitions for debuggers, core file
- * examiners and whatnot.
- *
- * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
- */
-
 #ifndef __UAPI_ASM_LOONGARCH_REG_H
 #define __UAPI_ASM_LOONGARCH_REG_H
-
 #define LOONGARCH_EF_R0		0
 #define LOONGARCH_EF_R1		1
 #define LOONGARCH_EF_R2		2
@@ -41,10 +32,6 @@
 #define LOONGARCH_EF_R29	29
 #define LOONGARCH_EF_R30	30
 #define LOONGARCH_EF_R31	31
-
-/*
- * Saved special registers
- */
 #define LOONGARCH_EF_ORIG_A0	32
 #define LOONGARCH_EF_CSR_ERA	33
 #define LOONGARCH_EF_CSR_BADV	34
@@ -53,7 +40,5 @@
 #define LOONGARCH_EF_CSR_EUEN	37
 #define LOONGARCH_EF_CSR_ECFG	38
 #define LOONGARCH_EF_CSR_ESTAT	39
-
-#define LOONGARCH_EF_SIZE	320	/* size in bytes */
-
-#endif /* __UAPI_ASM_LOONGARCH_REG_H */
+#define LOONGARCH_EF_SIZE	320	 
+#endif  

@@ -1,40 +1,12 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-
 #ifndef VEGA12_PP_SMC_H
 #define VEGA12_PP_SMC_H
-
 #pragma pack(push, 1)
-
 #define SMU_UCODE_VERSION                  0x00270a00
-
-/* SMU Response Codes: */
 #define PPSMC_Result_OK                    0x1
 #define PPSMC_Result_Failed                0xFF
 #define PPSMC_Result_UnknownCmd            0xFE
 #define PPSMC_Result_CmdRejectedPrereq     0xFD
 #define PPSMC_Result_CmdRejectedBusy       0xFC
-
 #define PPSMC_MSG_TestMessage                    0x1
 #define PPSMC_MSG_GetSmuVersion                  0x2
 #define PPSMC_MSG_GetDriverIfVersion             0x3
@@ -114,10 +86,7 @@
 #define PPSMC_MSG_GetPptLimit                    0x53
 #define PPSMC_MSG_GetDcModeMaxDpmFreq            0x54
 #define PPSMC_Message_Count                      0x56
-
 typedef uint16_t PPSMC_Result;
 typedef int PPSMC_Msg;
-
 #pragma pack(pop)
-
 #endif

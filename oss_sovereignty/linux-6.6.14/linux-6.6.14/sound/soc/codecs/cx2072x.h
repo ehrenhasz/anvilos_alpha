@@ -1,23 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ALSA SoC CX20721/CX20723 codec driver
- *
- * Copyright:	(C) 2017 Conexant Systems, Inc.
- * Author:	Simon Ho, <Simon.ho@conexant.com>
- */
-
 #ifndef __CX2072X_H__
 #define __CX2072X_H__
-
 #define CX2072X_MCLK_PLL		1
 #define CX2072X_MCLK_EXTERNAL_PLL	1
 #define CX2072X_MCLK_INTERNAL_OSC	2
-
-/*#define CX2072X_RATES		SNDRV_PCM_RATE_8000_192000*/
 #define CX2072X_RATES_DSP	SNDRV_PCM_RATE_48000
-
 #define CX2072X_REG_MAX					0x8a3c
-
 #define CX2072X_VENDOR_ID				0x0200
 #define CX2072X_REVISION_ID				0x0208
 #define CX2072X_CURRENT_BCLK_FREQUENCY			0x00dc
@@ -166,8 +153,6 @@
 #define CX2072X_DIGITAL_TEST18				0x7088
 #define CX2072X_DIGITAL_TEST19				0x708c
 #define CX2072X_DIGITAL_TEST20				0x7090
-
-/* not used in the current code, for future extensions (if any) */
 #define CX2072X_MAX_EQ_BAND		7
 #define CX2072X_MAX_EQ_COEFF		11
 #define CX2072X_MAX_DRC_REGS		9
@@ -176,19 +161,15 @@
 #define CX2072X_PLBK_EQ_COEF_LEN	11
 #define CX2072X_PLBK_DRC_PARM_LEN	9
 #define CX2072X_CLASSD_AMP_LEN		6
-
-/* DAI interface type */
 #define CX2072X_DAI_HIFI	1
 #define CX2072X_DAI_DSP		2
-#define CX2072X_DAI_DSP_PWM	3 /* 4 ch, including mic and AEC */
-
+#define CX2072X_DAI_DSP_PWM	3  
 enum cx2072x_reg_sample_size {
 	CX2072X_SAMPLE_SIZE_8_BITS = 0,
 	CX2072X_SAMPLE_SIZE_16_BITS = 1,
 	CX2072X_SAMPLE_SIZE_24_BITS = 2,
 	CX2072X_SAMPLE_SIZE_RESERVED = 3,
 };
-
 union cx2072x_reg_i2spcm_ctrl_reg1 {
 	struct {
 		u32 rx_data_one_line:1;
@@ -204,7 +185,6 @@ union cx2072x_reg_i2spcm_ctrl_reg1 {
 	} r;
 	u32 ulval;
 };
-
 union cx2072x_reg_i2spcm_ctrl_reg2 {
 	struct {
 		u32 tx_en_ch1:1;
@@ -226,7 +206,6 @@ union cx2072x_reg_i2spcm_ctrl_reg2 {
 	} r;
 	u32 ulval;
 };
-
 union cx2072x_reg_i2spcm_ctrl_reg3 {
 	struct {
 		u32 rx_en_ch1:1;
@@ -248,7 +227,6 @@ union cx2072x_reg_i2spcm_ctrl_reg3 {
 	} r;
 	u32 ulval;
 };
-
 union cx2072x_reg_i2spcm_ctrl_reg4 {
 	struct {
 		u32 rx_mute:1;
@@ -268,7 +246,6 @@ union cx2072x_reg_i2spcm_ctrl_reg4 {
 	} r;
 	u32 ulval;
 };
-
 union cx2072x_reg_i2spcm_ctrl_reg5 {
 	struct {
 		u32 tx_slot_5:5;
@@ -281,7 +258,6 @@ union cx2072x_reg_i2spcm_ctrl_reg5 {
 	} r;
 	u32 ulval;
 };
-
 union cx2072x_reg_i2spcm_ctrl_reg6 {
 	struct {
 		u32 reserved:5;
@@ -293,7 +269,6 @@ union cx2072x_reg_i2spcm_ctrl_reg6 {
 	} r;
 	u32 ulval;
 };
-
 union cx2072x_reg_digital_bios_test2 {
 	struct {
 		u32 pull_down_eapd:2;
@@ -310,5 +285,4 @@ union cx2072x_reg_digital_bios_test2 {
 	} r;
 	u32 ulval;
 };
-
-#endif /* __CX2072X_H__ */
+#endif  

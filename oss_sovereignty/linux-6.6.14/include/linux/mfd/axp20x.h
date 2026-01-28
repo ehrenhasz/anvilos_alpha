@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Functions and registers to access AXP20X power management chip.
- *
- * Copyright (C) 2013, Carlo Caione <carlo@caione.org>
- */
-
 #ifndef __LINUX_MFD_AXP20X_H
 #define __LINUX_MFD_AXP20X_H
-
 #include <linux/regmap.h>
-
 enum axp20x_variants {
 	AXP152_ID = 0,
 	AXP192_ID,
@@ -26,11 +17,8 @@ enum axp20x_variants {
 	AXP15060_ID,
 	NR_AXP20X_VARIANTS,
 };
-
 #define AXP192_DATACACHE(m)		(0x06 + (m))
 #define AXP20X_DATACACHE(m)		(0x04 + (m))
-
-/* Power supply */
 #define AXP152_PWR_OP_MODE		0x01
 #define AXP152_LDO3456_DC1234_CTRL	0x12
 #define AXP152_ALDO_OP_MODE		0x13
@@ -48,14 +36,12 @@ enum axp20x_variants {
 #define AXP152_PEK_KEY			0x36
 #define AXP152_DCDC_FREQ		0x37
 #define AXP152_DCDC_MODE		0x80
-
 #define AXP192_USB_OTG_STATUS		0x04
 #define AXP192_PWR_OUT_CTRL		0x12
 #define AXP192_DCDC2_V_OUT		0x23
 #define AXP192_DCDC1_V_OUT		0x26
 #define AXP192_DCDC3_V_OUT		0x27
 #define AXP192_LDO2_3_V_OUT		0x28
-
 #define AXP20X_PWR_INPUT_STATUS		0x00
 #define AXP20X_PWR_OP_MODE		0x01
 #define AXP20X_USB_OTG_STATUS		0x02
@@ -79,7 +65,6 @@ enum axp20x_variants {
 #define AXP20X_APS_WARN_L2		0x3b
 #define AXP20X_V_LTF_DISCHRG		0x3c
 #define AXP20X_V_HTF_DISCHRG		0x3d
-
 #define AXP22X_PWR_OUT_CTRL1		0x10
 #define AXP22X_PWR_OUT_CTRL2		0x12
 #define AXP22X_PWR_OUT_CTRL3		0x13
@@ -101,7 +86,6 @@ enum axp20x_variants {
 #define AXP22X_ALDO2_V_OUT		0x29
 #define AXP22X_ALDO3_V_OUT		0x2a
 #define AXP22X_CHRG_CTRL3		0x35
-
 #define AXP313A_ON_INDICATE		0x00
 #define AXP313A_OUTPUT_CONTROL		0x10
 #define AXP313A_DCDC1_CONRTOL		0x13
@@ -112,7 +96,6 @@ enum axp20x_variants {
 #define AXP313A_SHUTDOWN_CTRL		0x1a
 #define AXP313A_IRQ_EN			0x20
 #define AXP313A_IRQ_STATE		0x21
-
 #define AXP806_STARTUP_SRC		0x00
 #define AXP806_CHIP_ID			0x03
 #define AXP806_PWR_OUT_CTRL1		0x10
@@ -138,7 +121,6 @@ enum axp20x_variants {
 #define AXP806_VREF_TEMP_WARN_L		0xf3
 #define AXP806_BUS_ADDR_EXT		0xfe
 #define AXP806_REG_ADDR_EXT		0xff
-
 #define AXP803_POLYPHASE_CTRL		0x14
 #define AXP803_FLDO1_V_OUT		0x1c
 #define AXP803_FLDO2_V_OUT		0x1d
@@ -149,10 +131,7 @@ enum axp20x_variants {
 #define AXP803_DCDC5_V_OUT		0x24
 #define AXP803_DCDC6_V_OUT		0x25
 #define AXP803_DCDC_FREQ_CTRL		0x3b
-
-/* Other DCDC regulator control registers are the same as AXP803 */
 #define AXP813_DCDC7_V_OUT		0x26
-
 #define AXP15060_STARTUP_SRC		0x00
 #define AXP15060_PWR_OUT_CTRL1		0x10
 #define AXP15060_PWR_OUT_CTRL2		0x11
@@ -185,15 +164,12 @@ enum axp20x_variants {
 #define AXP15060_PWR_WAKEUP_CTRL		0x31
 #define AXP15060_PWR_DISABLE_DOWN_SEQ		0x32
 #define AXP15060_PEK_KEY		0x36
-
-/* Interrupt */
 #define AXP152_IRQ1_EN			0x40
 #define AXP152_IRQ2_EN			0x41
 #define AXP152_IRQ3_EN			0x42
 #define AXP152_IRQ1_STATE		0x48
 #define AXP152_IRQ2_STATE		0x49
 #define AXP152_IRQ3_STATE		0x4a
-
 #define AXP192_IRQ1_EN			0x40
 #define AXP192_IRQ2_EN			0x41
 #define AXP192_IRQ3_EN			0x42
@@ -204,7 +180,6 @@ enum axp20x_variants {
 #define AXP192_IRQ4_STATE		0x47
 #define AXP192_IRQ5_EN			0x4a
 #define AXP192_IRQ5_STATE		0x4d
-
 #define AXP20X_IRQ1_EN			0x40
 #define AXP20X_IRQ2_EN			0x41
 #define AXP20X_IRQ3_EN			0x42
@@ -217,18 +192,14 @@ enum axp20x_variants {
 #define AXP20X_IRQ4_STATE		0x4b
 #define AXP20X_IRQ5_STATE		0x4c
 #define AXP20X_IRQ6_STATE		0x4d
-
 #define AXP15060_IRQ1_EN		0x40
 #define AXP15060_IRQ2_EN		0x41
 #define AXP15060_IRQ1_STATE		0x48
 #define AXP15060_IRQ2_STATE		0x49
-
-/* ADC */
 #define AXP192_GPIO2_V_ADC_H		0x68
 #define AXP192_GPIO2_V_ADC_L		0x69
 #define AXP192_GPIO3_V_ADC_H		0x6a
 #define AXP192_GPIO3_V_ADC_L		0x6b
-
 #define AXP20X_ACIN_V_ADC_H		0x56
 #define AXP20X_ACIN_V_ADC_L		0x57
 #define AXP20X_ACIN_I_ADC_H		0x58
@@ -256,10 +227,7 @@ enum axp20x_variants {
 #define AXP20X_BATT_DISCHRG_I_L		0x7d
 #define AXP20X_IPSOUT_V_HIGH_H		0x7e
 #define AXP20X_IPSOUT_V_HIGH_L		0x7f
-
-/* Power supply */
 #define AXP192_GPIO30_IN_RANGE		0x85
-
 #define AXP20X_DCDC_MODE		0x80
 #define AXP20X_ADC_EN1			0x82
 #define AXP20X_ADC_EN2			0x83
@@ -270,11 +238,8 @@ enum axp20x_variants {
 #define AXP20X_TIMER_CTRL		0x8a
 #define AXP20X_VBUS_MON			0x8b
 #define AXP20X_OVER_TMP			0x8f
-
 #define AXP22X_PWREN_CTRL1		0x8c
 #define AXP22X_PWREN_CTRL2		0x8d
-
-/* GPIO */
 #define AXP152_GPIO0_CTRL		0x90
 #define AXP152_GPIO1_CTRL		0x91
 #define AXP152_GPIO2_CTRL		0x92
@@ -287,7 +252,6 @@ enum axp20x_variants {
 #define AXP152_PWM1_FREQ_X		0x9b
 #define AXP152_PWM1_FREQ_Y		0x9c
 #define AXP152_PWM1_DUTY_CYCLE		0x9d
-
 #define AXP192_GPIO0_CTRL		0x90
 #define AXP192_LDO_IO0_V_OUT		0x91
 #define AXP192_GPIO1_CTRL		0x92
@@ -297,22 +261,17 @@ enum axp20x_variants {
 #define AXP192_GPIO4_3_STATE		0x96
 #define AXP192_GPIO2_0_PULL		0x97
 #define AXP192_N_RSTO_CTRL		0x9e
-
 #define AXP20X_GPIO0_CTRL		0x90
 #define AXP20X_LDO5_V_OUT		0x91
 #define AXP20X_GPIO1_CTRL		0x92
 #define AXP20X_GPIO2_CTRL		0x93
 #define AXP20X_GPIO20_SS		0x94
 #define AXP20X_GPIO3_CTRL		0x95
-
 #define AXP22X_LDO_IO0_V_OUT		0x91
 #define AXP22X_LDO_IO1_V_OUT		0x93
 #define AXP22X_GPIO_STATE		0x94
 #define AXP22X_GPIO_PULL_DOWN		0x95
-
 #define AXP15060_CLDO4_GPIO2_MODESET		0x2c
-
-/* Battery */
 #define AXP20X_CHRG_CC_31_24		0xb0
 #define AXP20X_CHRG_CC_23_16		0xb1
 #define AXP20X_CHRG_CC_15_8		0xb2
@@ -323,21 +282,15 @@ enum axp20x_variants {
 #define AXP20X_DISCHRG_CC_7_0		0xb7
 #define AXP20X_CC_CTRL			0xb8
 #define AXP20X_FG_RES			0xb9
-
-/* OCV */
 #define AXP20X_RDC_H			0xba
 #define AXP20X_RDC_L			0xbb
 #define AXP20X_OCV(m)			(0xc0 + (m))
 #define AXP20X_OCV_MAX			0xf
-
-/* AXP22X specific registers */
 #define AXP22X_PMIC_TEMP_H		0x56
 #define AXP22X_PMIC_TEMP_L		0x57
 #define AXP22X_TS_ADC_H			0x58
 #define AXP22X_TS_ADC_L			0x59
 #define AXP22X_BATLOW_THRES1		0xe6
-
-/* AXP288/AXP803 specific registers */
 #define AXP288_POWER_REASON		0x02
 #define AXP288_BC_GLOBAL		0x2c
 #define AXP288_BC_VBUS_CNTL		0x2d
@@ -352,11 +305,8 @@ enum axp20x_variants {
 #define AXP288_ADC_TS_PIN_CTRL          0x84
 #define AXP288_RT_BATT_V_H		0xa0
 #define AXP288_RT_BATT_V_L		0xa1
-
 #define AXP813_ACIN_PATH_CTRL		0x3a
 #define AXP813_ADC_RATE			0x85
-
-/* Fuel Gauge */
 #define AXP288_FG_RDC1_REG          0xba
 #define AXP288_FG_RDC0_REG          0xbb
 #define AXP288_FG_OCVH_REG          0xbc
@@ -375,8 +325,6 @@ enum axp20x_variants {
 #define AXP288_FG_TUNE3             0xeb
 #define AXP288_FG_TUNE4             0xec
 #define AXP288_FG_TUNE5             0xed
-
-/* Regulators IDs */
 enum {
 	AXP192_DCDC1 = 0,
 	AXP192_DCDC2,
@@ -387,7 +335,6 @@ enum {
 	AXP192_LDO_IO0,
 	AXP192_REG_ID_MAX
 };
-
 enum {
 	AXP20X_LDO1 = 0,
 	AXP20X_LDO2,
@@ -398,7 +345,6 @@ enum {
 	AXP20X_DCDC3,
 	AXP20X_REG_ID_MAX,
 };
-
 enum {
 	AXP22X_DCDC1 = 0,
 	AXP22X_DCDC2,
@@ -422,7 +368,6 @@ enum {
 	AXP22X_LDO_IO1,
 	AXP22X_REG_ID_MAX,
 };
-
 enum {
 	AXP313A_DCDC1 = 0,
 	AXP313A_DCDC2,
@@ -432,7 +377,6 @@ enum {
 	AXP313A_RTC_LDO,
 	AXP313A_REG_ID_MAX,
 };
-
 enum {
 	AXP806_DCDCA = 0,
 	AXP806_DCDCB,
@@ -452,7 +396,6 @@ enum {
 	AXP806_SW,
 	AXP806_REG_ID_MAX,
 };
-
 enum {
 	AXP809_DCDC1 = 0,
 	AXP809_DCDC2,
@@ -475,7 +418,6 @@ enum {
 	AXP809_SW,
 	AXP809_REG_ID_MAX,
 };
-
 enum {
 	AXP803_DCDC1 = 0,
 	AXP803_DCDC2,
@@ -501,7 +443,6 @@ enum {
 	AXP803_LDO_IO1,
 	AXP803_REG_ID_MAX,
 };
-
 enum {
 	AXP813_DCDC1 = 0,
 	AXP813_DCDC2,
@@ -529,7 +470,6 @@ enum {
 	AXP813_SW,
 	AXP813_REG_ID_MAX,
 };
-
 enum {
 	AXP15060_DCDC1 = 0,
 	AXP15060_DCDC2,
@@ -556,8 +496,6 @@ enum {
 	AXP15060_RTC_LDO,
 	AXP15060_REG_ID_MAX,
 };
-
-/* IRQs */
 enum {
 	AXP152_IRQ_LDO0IN_CONNECT = 1,
 	AXP152_IRQ_LDO0IN_REMOVAL,
@@ -570,7 +508,6 @@ enum {
 	AXP152_IRQ_PEK_SHORT,
 	AXP152_IRQ_PEK_LONG,
 	AXP152_IRQ_TIMER,
-	/* out of bit order to make sure the press event is handled first */
 	AXP152_IRQ_PEK_FAL_EDGE,
 	AXP152_IRQ_PEK_RIS_EDGE,
 	AXP152_IRQ_GPIO3_INPUT,
@@ -578,7 +515,6 @@ enum {
 	AXP152_IRQ_GPIO1_INPUT,
 	AXP152_IRQ_GPIO0_INPUT,
 };
-
 enum axp192_irqs {
 	AXP192_IRQ_ACIN_OVER_V = 1,
 	AXP192_IRQ_ACIN_PLUGIN,
@@ -614,7 +550,6 @@ enum axp192_irqs {
 	AXP192_IRQ_GPIO1_INPUT,
 	AXP192_IRQ_GPIO0_INPUT,
 };
-
 enum {
 	AXP20X_IRQ_ACIN_OVER_V = 1,
 	AXP20X_IRQ_ACIN_PLUGIN,
@@ -647,7 +582,6 @@ enum {
 	AXP20X_IRQ_LOW_PWR_LVL1,
 	AXP20X_IRQ_LOW_PWR_LVL2,
 	AXP20X_IRQ_TIMER,
-	/* out of bit order to make sure the press event is handled first */
 	AXP20X_IRQ_PEK_FAL_EDGE,
 	AXP20X_IRQ_PEK_RIS_EDGE,
 	AXP20X_IRQ_GPIO3_INPUT,
@@ -655,7 +589,6 @@ enum {
 	AXP20X_IRQ_GPIO1_INPUT,
 	AXP20X_IRQ_GPIO0_INPUT,
 };
-
 enum axp22x_irqs {
 	AXP22X_IRQ_ACIN_OVER_V = 1,
 	AXP22X_IRQ_ACIN_PLUGIN,
@@ -678,13 +611,11 @@ enum axp22x_irqs {
 	AXP22X_IRQ_LOW_PWR_LVL1,
 	AXP22X_IRQ_LOW_PWR_LVL2,
 	AXP22X_IRQ_TIMER,
-	/* out of bit order to make sure the press event is handled first */
 	AXP22X_IRQ_PEK_FAL_EDGE,
 	AXP22X_IRQ_PEK_RIS_EDGE,
 	AXP22X_IRQ_GPIO1_INPUT,
 	AXP22X_IRQ_GPIO0_INPUT,
 };
-
 enum axp288_irqs {
 	AXP288_IRQ_VBUS_FALL     = 2,
 	AXP288_IRQ_VBUS_RISE,
@@ -721,7 +652,6 @@ enum axp288_irqs {
 	AXP288_IRQ_MV_CHNG,
 	AXP288_IRQ_BC_USB_CHNG,
 };
-
 enum axp313a_irqs {
 	AXP313A_IRQ_DIE_TEMP_HIGH,
 	AXP313A_IRQ_DCDC2_V_LOW = 2,
@@ -731,7 +661,6 @@ enum axp313a_irqs {
 	AXP313A_IRQ_PEK_FAL_EDGE,
 	AXP313A_IRQ_PEK_RIS_EDGE,
 };
-
 enum axp803_irqs {
 	AXP803_IRQ_ACIN_OVER_V = 1,
 	AXP803_IRQ_ACIN_PLUGIN,
@@ -758,7 +687,6 @@ enum axp803_irqs {
 	AXP803_IRQ_LOW_PWR_LVL1,
 	AXP803_IRQ_LOW_PWR_LVL2,
 	AXP803_IRQ_TIMER,
-	/* out of bit order to make sure the press event is handled first */
 	AXP803_IRQ_PEK_FAL_EDGE,
 	AXP803_IRQ_PEK_RIS_EDGE,
 	AXP803_IRQ_PEK_SHORT,
@@ -769,7 +697,6 @@ enum axp803_irqs {
 	AXP803_IRQ_BC_USB_CHNG,
 	AXP803_IRQ_MV_CHNG,
 };
-
 enum axp806_irqs {
 	AXP806_IRQ_DIE_TEMP_HIGH_LV1,
 	AXP806_IRQ_DIE_TEMP_HIGH_LV2,
@@ -784,7 +711,6 @@ enum axp806_irqs {
 	AXP806_IRQ_POK_FALL,
 	AXP806_IRQ_POK_RISE,
 };
-
 enum axp809_irqs {
 	AXP809_IRQ_ACIN_OVER_V = 1,
 	AXP809_IRQ_ACIN_PLUGIN,
@@ -811,7 +737,6 @@ enum axp809_irqs {
 	AXP809_IRQ_LOW_PWR_LVL1,
 	AXP809_IRQ_LOW_PWR_LVL2,
 	AXP809_IRQ_TIMER,
-	/* out of bit order to make sure the press event is handled first */
 	AXP809_IRQ_PEK_FAL_EDGE,
 	AXP809_IRQ_PEK_RIS_EDGE,
 	AXP809_IRQ_PEK_SHORT,
@@ -820,7 +745,6 @@ enum axp809_irqs {
 	AXP809_IRQ_GPIO1_INPUT,
 	AXP809_IRQ_GPIO0_INPUT,
 };
-
 enum axp15060_irqs {
 	AXP15060_IRQ_DIE_TEMP_HIGH_LV1 = 1,
 	AXP15060_IRQ_DIE_TEMP_HIGH_LV2,
@@ -837,7 +761,6 @@ enum axp15060_irqs {
 	AXP15060_IRQ_PEK_RIS_EDGE,
 	AXP15060_IRQ_GPIO2_INPUT,
 };
-
 struct axp20x_dev {
 	struct device			*dev;
 	int				irq;
@@ -850,58 +773,22 @@ struct axp20x_dev {
 	const struct regmap_config	*regmap_cfg;
 	const struct regmap_irq_chip	*regmap_irq_chip;
 };
-
-/* generic helper function for reading 9-16 bit wide regs */
 static inline int axp20x_read_variable_width(struct regmap *regmap,
 	unsigned int reg, unsigned int width)
 {
 	unsigned int reg_val, result;
 	int err;
-
 	err = regmap_read(regmap, reg, &reg_val);
 	if (err)
 		return err;
-
 	result = reg_val << (width - 8);
-
 	err = regmap_read(regmap, reg + 1, &reg_val);
 	if (err)
 		return err;
-
 	result |= reg_val;
-
 	return result;
 }
-
-/**
- * axp20x_match_device(): Setup axp20x variant related fields
- *
- * @axp20x: axp20x device to setup (.dev field must be set)
- * @dev: device associated with this axp20x device
- *
- * This lets the axp20x core configure the mfd cells and register maps
- * for later use.
- */
 int axp20x_match_device(struct axp20x_dev *axp20x);
-
-/**
- * axp20x_device_probe(): Probe a configured axp20x device
- *
- * @axp20x: axp20x device to probe (must be configured)
- *
- * This function lets the axp20x core register the axp20x mfd devices
- * and irqchip. The axp20x device passed in must be fully configured
- * with axp20x_match_device, its irq set, and regmap created.
- */
 int axp20x_device_probe(struct axp20x_dev *axp20x);
-
-/**
- * axp20x_device_remove(): Remove a axp20x device
- *
- * @axp20x: axp20x device to remove
- *
- * This tells the axp20x core to remove the associated mfd devices
- */
 void axp20x_device_remove(struct axp20x_dev *axp20x);
-
-#endif /* __LINUX_MFD_AXP20X_H */
+#endif  

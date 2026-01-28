@@ -1,19 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* linux/drivers/media/platform/samsung/s5p-jpeg/jpeg-hw-exynos3250.h
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Jacek Anaszewski <j.anaszewski@samsung.com>
- */
 #ifndef JPEG_HW_EXYNOS3250_H_
 #define JPEG_HW_EXYNOS3250_H_
-
 #include <linux/io.h>
 #include <linux/videodev2.h>
-
 #include "jpeg-regs.h"
-
 void exynos3250_jpeg_reset(void __iomem *regs);
 void exynos3250_jpeg_poweron(void __iomem *regs);
 void exynos3250_jpeg_set_dma_num(void __iomem *regs);
@@ -53,5 +42,4 @@ void exynos3250_jpeg_set_timer(void __iomem *regs, unsigned int time_value);
 unsigned int exynos3250_jpeg_get_timer_status(void __iomem *regs);
 void exynos3250_jpeg_set_timer_status(void __iomem *regs);
 void exynos3250_jpeg_clear_timer_status(void __iomem *regs);
-
-#endif /* JPEG_HW_EXYNOS3250_H_ */
+#endif  

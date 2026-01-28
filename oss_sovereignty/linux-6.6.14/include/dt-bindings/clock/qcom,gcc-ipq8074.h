@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016-2017, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLOCK_IPQ_GCC_8074_H
 #define _DT_BINDINGS_CLOCK_IPQ_GCC_8074_H
-
 #define GPLL0					0
 #define GPLL0_MAIN				1
 #define GCC_SLEEP_CLK_SRC			2
@@ -234,7 +228,6 @@
 #define GCC_PCIE0_RCHNG_CLK_SRC			225
 #define GCC_PCIE0_RCHNG_CLK			226
 #define GCC_CRYPTO_PPE_CLK			227
-
 #define GCC_BLSP1_BCR				0
 #define GCC_BLSP1_QUP1_BCR			1
 #define GCC_BLSP1_UART1_BCR			2
@@ -381,8 +374,6 @@
 #define GCC_NSSPORT4_RESET			143
 #define GCC_NSSPORT5_RESET			144
 #define GCC_NSSPORT6_RESET			145
-
 #define USB0_GDSC				0
 #define USB1_GDSC				1
-
 #endif

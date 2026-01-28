@@ -1,20 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef TARGET_CORE_INTERNAL_H
 #define TARGET_CORE_INTERNAL_H
-
 #include <linux/configfs.h>
 #include <linux/list.h>
 #include <linux/types.h>
 #include <target/target_core_base.h>
-
 #define TARGET_CORE_NAME_MAX_LEN	64
 #define TARGET_FABRIC_NAME_SIZE		32
-
 struct target_backend {
 	struct list_head list;
-
 	const struct target_backend_ops *ops;
-
 	struct config_item_type tb_dev_cit;
 	struct config_item_type tb_dev_attrib_cit;
 	struct config_item_type tb_dev_action_cit;
@@ -23,14 +17,12 @@ struct target_backend {
 	struct config_item_type tb_dev_alua_tg_pt_gps_cit;
 	struct config_item_type tb_dev_stat_cit;
 };
-
 struct target_fabric_configfs {
 	atomic_t		tf_access_cnt;
 	struct list_head	tf_list;
 	struct config_group	tf_group;
 	struct config_group	tf_disc_group;
 	const struct target_core_fabric_ops *tf_ops;
-
 	struct config_item_type tf_discovery_cit;
 	struct config_item_type	tf_wwn_cit;
 	struct config_item_type tf_wwn_fabric_stats_cit;
@@ -54,11 +46,7 @@ struct target_fabric_configfs {
 	struct config_item_type tf_tpg_mappedlun_cit;
 	struct config_item_type tf_tpg_mappedlun_stat_cit;
 };
-
-/* target_core_alua.c */
 extern struct t10_alua_lu_gp *default_lu_gp;
-
-/* target_core_device.c */
 struct se_dev_entry *core_get_se_deve_from_rtpi(struct se_node_acl *, u16);
 void	target_pr_kref_release(struct kref *);
 void	core_free_device_list_for_node(struct se_node_acl *,
@@ -89,15 +77,9 @@ void	target_free_device(struct se_device *);
 int	target_for_each_device(int (*fn)(struct se_device *dev, void *data),
 			       void *data);
 void	target_dev_ua_allocate(struct se_device *dev, u8 asc, u8 ascq);
-
-/* target_core_configfs.c */
 extern struct configfs_item_operations target_core_dev_item_ops;
 void	target_setup_backend_cits(struct target_backend *);
-
-/* target_core_fabric_configfs.c */
 int	target_fabric_setup_cits(struct target_fabric_configfs *);
-
-/* target_core_fabric_lib.c */
 int	target_get_pr_transport_id_len(struct se_node_acl *nacl,
 		struct t10_pr_registration *pr_reg, int *format_code);
 int	target_get_pr_transport_id(struct se_node_acl *nacl,
@@ -105,20 +87,13 @@ int	target_get_pr_transport_id(struct se_node_acl *nacl,
 		unsigned char *buf);
 const char *target_parse_pr_out_transport_id(struct se_portal_group *tpg,
 		char *buf, u32 *out_tid_len, char **port_nexus_ptr);
-
-/* target_core_hba.c */
 struct se_hba *core_alloc_hba(const char *, u32, u32);
 int	core_delete_hba(struct se_hba *);
-
-/* target_core_tmr.c */
 void	core_tmr_abort_task(struct se_device *, struct se_tmr_req *,
 			struct se_session *);
 int	core_tmr_lun_reset(struct se_device *, struct se_tmr_req *,
 		struct list_head *, struct se_cmd *);
-
-/* target_core_tpg.c */
 extern struct se_device *g_lun0_dev;
-
 struct se_node_acl *__core_tpg_get_initiator_node_acl(struct se_portal_group *tpg,
 		const char *);
 void	core_tpg_add_node_to_devs(struct se_node_acl *, struct se_portal_group *,
@@ -133,8 +108,6 @@ struct se_node_acl *core_tpg_add_initiator_node_acl(struct se_portal_group *tpg,
 void core_tpg_del_initiator_node_acl(struct se_node_acl *acl);
 int target_tpg_enable(struct se_portal_group *se_tpg);
 int target_tpg_disable(struct se_portal_group *se_tpg);
-
-/* target_core_transport.c */
 int	init_se_kmem_caches(void);
 void	release_se_kmem_caches(void);
 u32	scsi_get_new_index(scsi_index_t);
@@ -155,20 +128,12 @@ bool	target_check_wce(struct se_device *dev);
 bool	target_check_fua(struct se_device *dev);
 void	__target_execute_cmd(struct se_cmd *, bool);
 void	target_queued_submit_work(struct work_struct *work);
-
-/* target_core_stat.c */
 void	target_stat_setup_dev_default_groups(struct se_device *);
 void	target_stat_setup_port_default_groups(struct se_lun *);
 void	target_stat_setup_mappedlun_default_groups(struct se_lun_acl *);
-
-/* target_core_xcopy.c */
 extern struct se_portal_group xcopy_pt_tpg;
-
-/* target_core_configfs.c */
 #define DB_ROOT_LEN		4096
 #define	DB_ROOT_DEFAULT		"/var/target"
 #define	DB_ROOT_PREFERRED	"/etc/target"
-
 extern char db_root[];
-
-#endif /* TARGET_CORE_INTERNAL_H */
+#endif  

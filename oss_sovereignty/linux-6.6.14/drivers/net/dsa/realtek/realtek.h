@@ -1,36 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Realtek SMI interface driver defines
- *
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- * Copyright (C) 2009-2010 Gabor Juhos <juhosg@openwrt.org>
- */
-
 #ifndef _REALTEK_H
 #define _REALTEK_H
-
 #include <linux/phy.h>
 #include <linux/platform_device.h>
 #include <linux/gpio/consumer.h>
 #include <net/dsa.h>
-
-#define REALTEK_HW_STOP_DELAY		25	/* msecs */
-#define REALTEK_HW_START_DELAY		100	/* msecs */
-
+#define REALTEK_HW_STOP_DELAY		25	 
+#define REALTEK_HW_START_DELAY		100	 
 struct realtek_ops;
 struct dentry;
 struct inode;
 struct file;
-
 struct rtl8366_mib_counter {
 	unsigned int	base;
 	unsigned int	offset;
 	unsigned int	length;
 	const char	*name;
 };
-
-/*
- * struct rtl8366_vlan_mc - Virtual LAN member configuration
- */
 struct rtl8366_vlan_mc {
 	u16	vid;
 	u16	untag;
@@ -38,14 +23,12 @@ struct rtl8366_vlan_mc {
 	u8	fid;
 	u8	priority;
 };
-
 struct rtl8366_vlan_4k {
 	u16	vid;
 	u16	untag;
 	u16	member;
 	u8	fid;
 };
-
 struct realtek_priv {
 	struct device		*dev;
 	struct gpio_desc	*reset;
@@ -57,36 +40,26 @@ struct realtek_priv {
 	struct mii_bus		*slave_mii_bus;
 	struct mii_bus		*bus;
 	int			mdio_addr;
-
 	unsigned int		clk_delay;
 	u8			cmd_read;
 	u8			cmd_write;
-	spinlock_t		lock; /* Locks around command writes */
+	spinlock_t		lock;  
 	struct dsa_switch	*ds;
 	struct irq_domain	*irqdomain;
 	bool			leds_disabled;
-
 	unsigned int		cpu_port;
 	unsigned int		num_ports;
 	unsigned int		num_vlan_mc;
 	unsigned int		num_mib_counters;
 	struct rtl8366_mib_counter *mib_counters;
-
 	const struct realtek_ops *ops;
 	int			(*setup_interface)(struct dsa_switch *ds);
 	int			(*write_reg_noack)(void *ctx, u32 addr, u32 data);
-
 	int			vlan_enabled;
 	int			vlan4k_enabled;
-
 	char			buf[4096];
-	void			*chip_data; /* Per-chip extra variant data */
+	void			*chip_data;  
 };
-
-/*
- * struct realtek_ops - vtable for the per-SMI-chiptype operations
- * @detect: detects the chiptype
- */
 struct realtek_ops {
 	int	(*detect)(struct realtek_priv *priv);
 	int	(*reset_chip)(struct realtek_priv *priv);
@@ -114,7 +87,6 @@ struct realtek_ops {
 	int	(*phy_write)(struct realtek_priv *priv, int phy, int regnum,
 			     u16 val);
 };
-
 struct realtek_variant {
 	const struct dsa_switch_ops *ds_ops_smi;
 	const struct dsa_switch_ops *ds_ops_mdio;
@@ -124,8 +96,6 @@ struct realtek_variant {
 	u8 cmd_write;
 	size_t chip_data_sz;
 };
-
-/* RTL8366 library helpers */
 int rtl8366_mc_is_used(struct realtek_priv *priv, int mc_index, int *used);
 int rtl8366_set_vlan(struct realtek_priv *priv, int vid, u32 member,
 		     u32 untag, u32 fid);
@@ -143,8 +113,6 @@ void rtl8366_get_strings(struct dsa_switch *ds, int port, u32 stringset,
 			 uint8_t *data);
 int rtl8366_get_sset_count(struct dsa_switch *ds, int port, int sset);
 void rtl8366_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *data);
-
 extern const struct realtek_variant rtl8366rb_variant;
 extern const struct realtek_variant rtl8365mb_variant;
-
-#endif /*  _REALTEK_H */
+#endif  

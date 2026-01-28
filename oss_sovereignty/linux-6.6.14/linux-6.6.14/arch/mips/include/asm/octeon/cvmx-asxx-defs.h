@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (C) 2003-2018 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_ASXX_DEFS_H__
 #define __CVMX_ASXX_DEFS_H__
-
 #define CVMX_ASXX_GMII_RX_CLK_SET(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000180ull))
 #define CVMX_ASXX_GMII_RX_DAT_SET(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000188ull))
 #define CVMX_ASXX_INT_EN(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000018ull) + ((block_id) & 1) * 0x8000000ull)
@@ -54,9 +26,7 @@
 #define CVMX_ASXX_TX_COMP_BYP(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000068ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_ASXX_TX_HI_WATERX(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800B0000080ull) + (((offset) & 3) + ((block_id) & 1) * 0x1000000ull) * 8)
 #define CVMX_ASXX_TX_PRT_EN(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000008ull) + ((block_id) & 1) * 0x8000000ull)
-
 void __cvmx_interrupt_asxx_enable(int block);
-
 union cvmx_asxx_gmii_rx_clk_set {
 	uint64_t u64;
 	struct cvmx_asxx_gmii_rx_clk_set_s {
@@ -69,7 +39,6 @@ union cvmx_asxx_gmii_rx_clk_set {
 #endif
 	} s;
 };
-
 union cvmx_asxx_gmii_rx_dat_set {
 	uint64_t u64;
 	struct cvmx_asxx_gmii_rx_dat_set_s {
@@ -82,7 +51,6 @@ union cvmx_asxx_gmii_rx_dat_set {
 #endif
 	} s;
 };
-
 union cvmx_asxx_int_en {
 	uint64_t u64;
 	struct cvmx_asxx_int_en_s {
@@ -116,7 +84,6 @@ union cvmx_asxx_int_en {
 #endif
 	} cn30xx;
 };
-
 union cvmx_asxx_int_reg {
 	uint64_t u64;
 	struct cvmx_asxx_int_reg_s {
@@ -150,7 +117,6 @@ union cvmx_asxx_int_reg {
 #endif
 	} cn30xx;
 };
-
 union cvmx_asxx_mii_rx_dat_set {
 	uint64_t u64;
 	struct cvmx_asxx_mii_rx_dat_set_s {
@@ -163,7 +129,6 @@ union cvmx_asxx_mii_rx_dat_set {
 #endif
 	} s;
 };
-
 union cvmx_asxx_prt_loop {
 	uint64_t u64;
 	struct cvmx_asxx_prt_loop_s {
@@ -191,7 +156,6 @@ union cvmx_asxx_prt_loop {
 #endif
 	} cn30xx;
 };
-
 union cvmx_asxx_rld_bypass {
 	uint64_t u64;
 	struct cvmx_asxx_rld_bypass_s {
@@ -204,7 +168,6 @@ union cvmx_asxx_rld_bypass {
 #endif
 	} s;
 };
-
 union cvmx_asxx_rld_bypass_setting {
 	uint64_t u64;
 	struct cvmx_asxx_rld_bypass_setting_s {
@@ -217,7 +180,6 @@ union cvmx_asxx_rld_bypass_setting {
 #endif
 	} s;
 };
-
 union cvmx_asxx_rld_comp {
 	uint64_t u64;
 	struct cvmx_asxx_rld_comp_s {
@@ -243,7 +205,6 @@ union cvmx_asxx_rld_comp {
 #endif
 	} cn38xx;
 };
-
 union cvmx_asxx_rld_data_drv {
 	uint64_t u64;
 	struct cvmx_asxx_rld_data_drv_s {
@@ -258,7 +219,6 @@ union cvmx_asxx_rld_data_drv {
 #endif
 	} s;
 };
-
 union cvmx_asxx_rld_fcram_mode {
 	uint64_t u64;
 	struct cvmx_asxx_rld_fcram_mode_s {
@@ -271,7 +231,6 @@ union cvmx_asxx_rld_fcram_mode {
 #endif
 	} s;
 };
-
 union cvmx_asxx_rld_nctl_strong {
 	uint64_t u64;
 	struct cvmx_asxx_rld_nctl_strong_s {
@@ -284,7 +243,6 @@ union cvmx_asxx_rld_nctl_strong {
 #endif
 	} s;
 };
-
 union cvmx_asxx_rld_nctl_weak {
 	uint64_t u64;
 	struct cvmx_asxx_rld_nctl_weak_s {
@@ -297,7 +255,6 @@ union cvmx_asxx_rld_nctl_weak {
 #endif
 	} s;
 };
-
 union cvmx_asxx_rld_pctl_strong {
 	uint64_t u64;
 	struct cvmx_asxx_rld_pctl_strong_s {
@@ -310,7 +267,6 @@ union cvmx_asxx_rld_pctl_strong {
 #endif
 	} s;
 };
-
 union cvmx_asxx_rld_pctl_weak {
 	uint64_t u64;
 	struct cvmx_asxx_rld_pctl_weak_s {
@@ -323,7 +279,6 @@ union cvmx_asxx_rld_pctl_weak {
 #endif
 	} s;
 };
-
 union cvmx_asxx_rld_setting {
 	uint64_t u64;
 	struct cvmx_asxx_rld_setting_s {
@@ -353,7 +308,6 @@ union cvmx_asxx_rld_setting {
 #endif
 	} cn38xx;
 };
-
 union cvmx_asxx_rx_clk_setx {
 	uint64_t u64;
 	struct cvmx_asxx_rx_clk_setx_s {
@@ -366,7 +320,6 @@ union cvmx_asxx_rx_clk_setx {
 #endif
 	} s;
 };
-
 union cvmx_asxx_rx_prt_en {
 	uint64_t u64;
 	struct cvmx_asxx_rx_prt_en_s {
@@ -388,7 +341,6 @@ union cvmx_asxx_rx_prt_en {
 #endif
 	} cn30xx;
 };
-
 union cvmx_asxx_rx_wol {
 	uint64_t u64;
 	struct cvmx_asxx_rx_wol_s {
@@ -403,7 +355,6 @@ union cvmx_asxx_rx_wol {
 #endif
 	} s;
 };
-
 union cvmx_asxx_rx_wol_msk {
 	uint64_t u64;
 	struct cvmx_asxx_rx_wol_msk_s {
@@ -414,7 +365,6 @@ union cvmx_asxx_rx_wol_msk {
 #endif
 	} s;
 };
-
 union cvmx_asxx_rx_wol_powok {
 	uint64_t u64;
 	struct cvmx_asxx_rx_wol_powok_s {
@@ -427,7 +377,6 @@ union cvmx_asxx_rx_wol_powok {
 #endif
 	} s;
 };
-
 union cvmx_asxx_rx_wol_sig {
 	uint64_t u64;
 	struct cvmx_asxx_rx_wol_sig_s {
@@ -440,7 +389,6 @@ union cvmx_asxx_rx_wol_sig {
 #endif
 	} s;
 };
-
 union cvmx_asxx_tx_clk_setx {
 	uint64_t u64;
 	struct cvmx_asxx_tx_clk_setx_s {
@@ -453,7 +401,6 @@ union cvmx_asxx_tx_clk_setx {
 #endif
 	} s;
 };
-
 union cvmx_asxx_tx_comp_byp {
 	uint64_t u64;
 	struct cvmx_asxx_tx_comp_byp_s {
@@ -518,7 +465,6 @@ union cvmx_asxx_tx_comp_byp {
 #endif
 	} cn58xx;
 };
-
 union cvmx_asxx_tx_hi_waterx {
 	uint64_t u64;
 	struct cvmx_asxx_tx_hi_waterx_s {
@@ -540,7 +486,6 @@ union cvmx_asxx_tx_hi_waterx {
 #endif
 	} cn30xx;
 };
-
 union cvmx_asxx_tx_prt_en {
 	uint64_t u64;
 	struct cvmx_asxx_tx_prt_en_s {
@@ -562,5 +507,4 @@ union cvmx_asxx_tx_prt_en {
 #endif
 	} cn30xx;
 };
-
 #endif

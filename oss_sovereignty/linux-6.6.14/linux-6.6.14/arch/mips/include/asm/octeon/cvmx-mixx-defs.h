@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_MIXX_DEFS_H__
 #define __CVMX_MIXX_DEFS_H__
-
 #define CVMX_MIXX_BIST(offset) (CVMX_ADD_IO_SEG(0x0001070000100078ull) + ((offset) & 1) * 2048)
 #define CVMX_MIXX_CTL(offset) (CVMX_ADD_IO_SEG(0x0001070000100020ull) + ((offset) & 1) * 2048)
 #define CVMX_MIXX_INTENA(offset) (CVMX_ADD_IO_SEG(0x0001070000100050ull) + ((offset) & 1) * 2048)
@@ -43,7 +15,6 @@
 #define CVMX_MIXX_REMCNT(offset) (CVMX_ADD_IO_SEG(0x0001070000100058ull) + ((offset) & 1) * 2048)
 #define CVMX_MIXX_TSCTL(offset) (CVMX_ADD_IO_SEG(0x0001070000100068ull) + ((offset) & 1) * 2048)
 #define CVMX_MIXX_TSTAMP(offset) (CVMX_ADD_IO_SEG(0x0001070000100060ull) + ((offset) & 1) * 2048)
-
 union cvmx_mixx_bist {
 	uint64_t u64;
 	struct cvmx_mixx_bist_s {
@@ -81,7 +52,6 @@ union cvmx_mixx_bist {
 #endif
 	} cn52xx;
 };
-
 union cvmx_mixx_ctl {
 	uint64_t u64;
 	struct cvmx_mixx_ctl_s {
@@ -129,7 +99,6 @@ union cvmx_mixx_ctl {
 #endif
 	} cn52xx;
 };
-
 union cvmx_mixx_intena {
 	uint64_t u64;
 	struct cvmx_mixx_intena_s {
@@ -177,7 +146,6 @@ union cvmx_mixx_intena {
 #endif
 	} cn52xx;
 };
-
 union cvmx_mixx_ircnt {
 	uint64_t u64;
 	struct cvmx_mixx_ircnt_s {
@@ -190,7 +158,6 @@ union cvmx_mixx_ircnt {
 #endif
 	} s;
 };
-
 union cvmx_mixx_irhwm {
 	uint64_t u64;
 	struct cvmx_mixx_irhwm_s {
@@ -205,7 +172,6 @@ union cvmx_mixx_irhwm {
 #endif
 	} s;
 };
-
 union cvmx_mixx_iring1 {
 	uint64_t u64;
 	struct cvmx_mixx_iring1_s {
@@ -237,7 +203,6 @@ union cvmx_mixx_iring1 {
 #endif
 	} cn52xx;
 };
-
 union cvmx_mixx_iring2 {
 	uint64_t u64;
 	struct cvmx_mixx_iring2_s {
@@ -254,7 +219,6 @@ union cvmx_mixx_iring2 {
 #endif
 	} s;
 };
-
 union cvmx_mixx_isr {
 	uint64_t u64;
 	struct cvmx_mixx_isr_s {
@@ -302,7 +266,6 @@ union cvmx_mixx_isr {
 #endif
 	} cn52xx;
 };
-
 union cvmx_mixx_orcnt {
 	uint64_t u64;
 	struct cvmx_mixx_orcnt_s {
@@ -315,7 +278,6 @@ union cvmx_mixx_orcnt {
 #endif
 	} s;
 };
-
 union cvmx_mixx_orhwm {
 	uint64_t u64;
 	struct cvmx_mixx_orhwm_s {
@@ -328,7 +290,6 @@ union cvmx_mixx_orhwm {
 #endif
 	} s;
 };
-
 union cvmx_mixx_oring1 {
 	uint64_t u64;
 	struct cvmx_mixx_oring1_s {
@@ -360,7 +321,6 @@ union cvmx_mixx_oring1 {
 #endif
 	} cn52xx;
 };
-
 union cvmx_mixx_oring2 {
 	uint64_t u64;
 	struct cvmx_mixx_oring2_s {
@@ -377,7 +337,6 @@ union cvmx_mixx_oring2 {
 #endif
 	} s;
 };
-
 union cvmx_mixx_remcnt {
 	uint64_t u64;
 	struct cvmx_mixx_remcnt_s {
@@ -394,7 +353,6 @@ union cvmx_mixx_remcnt {
 #endif
 	} s;
 };
-
 union cvmx_mixx_tsctl {
 	uint64_t u64;
 	struct cvmx_mixx_tsctl_s {
@@ -415,7 +373,6 @@ union cvmx_mixx_tsctl {
 #endif
 	} s;
 };
-
 union cvmx_mixx_tstamp {
 	uint64_t u64;
 	struct cvmx_mixx_tstamp_s {
@@ -426,5 +383,4 @@ union cvmx_mixx_tstamp {
 #endif
 	} s;
 };
-
 #endif

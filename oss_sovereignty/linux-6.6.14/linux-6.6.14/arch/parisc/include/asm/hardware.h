@@ -1,68 +1,58 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _PARISC_HARDWARE_H
 #define _PARISC_HARDWARE_H
-
 #include <linux/mod_devicetable.h>
-
 #define HWTYPE_ANY_ID		PA_HWTYPE_ANY_ID
 #define HVERSION_ANY_ID		PA_HVERSION_ANY_ID
 #define HVERSION_REV_ANY_ID	PA_HVERSION_REV_ANY_ID
 #define SVERSION_ANY_ID		PA_SVERSION_ANY_ID
-
 struct hp_hardware {
-	unsigned int	hw_type:8;	/* HPHW_xxx */
+	unsigned int	hw_type:8;	 
 	unsigned int	hversion:12;
 	unsigned int	sversion:12;
 	unsigned char	opt;
-	unsigned char	name[59];	/* The hardware description */
+	unsigned char	name[59];	 
 } __packed;
-
 struct parisc_device;
-
 enum cpu_type {
-	pcx	= 0, /* pa7000		pa 1.0  */
-	pcxs	= 1, /* pa7000		pa 1.1a */
-	pcxt	= 2, /* pa7100		pa 1.1b */
-	pcxt_	= 3, /* pa7200	(t')	pa 1.1c */
-	pcxl	= 4, /* pa7100lc	pa 1.1d */
-	pcxl2	= 5, /* pa7300lc	pa 1.1e */
-	pcxu	= 6, /* pa8000		pa 2.0  */
-	pcxu_	= 7, /* pa8200	(u+)	pa 2.0  */
-	pcxw	= 8, /* pa8500		pa 2.0  */
-	pcxw_	= 9, /* pa8600	(w+)	pa 2.0  */
-	pcxw2	= 10, /* pa8700		pa 2.0  */
-	mako	= 11, /* pa8800		pa 2.0  */
-	mako2	= 12  /* pa8900		pa 2.0  */
+	pcx	= 0,  
+	pcxs	= 1,  
+	pcxt	= 2,  
+	pcxt_	= 3,  
+	pcxl	= 4,  
+	pcxl2	= 5,  
+	pcxu	= 6,  
+	pcxu_	= 7,  
+	pcxw	= 8,  
+	pcxw_	= 9,  
+	pcxw2	= 10,  
+	mako	= 11,  
+	mako2	= 12   
 };
-
-extern const char * const cpu_name_version[][2]; /* mapping from enum cpu_type to strings */
-
+extern const char * const cpu_name_version[][2];  
 struct parisc_driver;
-
 struct io_module {
-        volatile uint32_t nothing;		/* reg 0 */
+        volatile uint32_t nothing;		 
         volatile uint32_t io_eim;
         volatile uint32_t io_dc_adata;
         volatile uint32_t io_ii_cdata;
-        volatile uint32_t io_dma_link;		/* reg 4 */
+        volatile uint32_t io_dma_link;		 
         volatile uint32_t io_dma_command;
         volatile uint32_t io_dma_address;
         volatile uint32_t io_dma_count;
-        volatile uint32_t io_flex;		/* reg 8 */
+        volatile uint32_t io_flex;		 
         volatile uint32_t io_spa_address;
         volatile uint32_t reserved1[2];
-        volatile uint32_t io_command;		/* reg 12 */
+        volatile uint32_t io_command;		 
         volatile uint32_t io_status;
         volatile uint32_t io_control;
         volatile uint32_t io_data;
-        volatile uint32_t reserved2;		/* reg 16 */
+        volatile uint32_t reserved2;		 
         volatile uint32_t chain_addr;
         volatile uint32_t sub_mask_clr;
         volatile uint32_t reserved3[13];
         volatile uint32_t undefined[480];
         volatile uint32_t unpriv[512];
 };
-
 struct bc_module {
         volatile uint32_t unused1[12];
         volatile uint32_t io_command;
@@ -76,7 +66,6 @@ struct bc_module {
         volatile uint32_t io_io_low;
         volatile uint32_t io_io_high;
 };
-
 #define HPHW_NPROC     0 
 #define HPHW_MEMORY    1       
 #define HPHW_B_DMA     2
@@ -94,17 +83,11 @@ struct bc_module {
 #define HPHW_FABRIC    14
 #define HPHW_MC	       15
 #define HPHW_FAULTY    31
-
 struct parisc_device_id;
-
-/* hardware.c: */
 extern const char *parisc_hardware_description(struct parisc_device_id *id);
 extern enum cpu_type parisc_get_cpu_type(unsigned long hversion);
-
 struct pci_dev;
 struct hardware_path;
-
-/* drivers.c: */
 extern struct parisc_device *alloc_pa_dev(unsigned long hpa,
 		struct hardware_path *path);
 extern int register_parisc_device(struct parisc_device *dev);
@@ -121,9 +104,6 @@ extern void init_parisc_bus(void);
 extern struct device *hwpath_to_device(struct hardware_path *modpath);
 extern void device_to_hwpath(struct device *dev, struct hardware_path *path);
 extern int machine_has_merced_bus(void);
-
-/* inventory.c: */
 extern void do_memory_inventory(void);
 extern void do_device_inventory(void);
-
-#endif /* _PARISC_HARDWARE_H */
+#endif  

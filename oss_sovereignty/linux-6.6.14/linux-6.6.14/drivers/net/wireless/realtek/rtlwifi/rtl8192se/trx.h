@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
-
 #ifndef __REALTEK_PCI92SE_TRX_H__
 #define __REALTEK_PCI92SE_TRX_H__
-
 void rtl92se_tx_fill_desc(struct ieee80211_hw *hw,
 			  struct ieee80211_hdr *hdr, u8 *pdesc,
 			  u8 *pbd_desc_tx, struct ieee80211_tx_info *info,
@@ -20,5 +16,4 @@ void rtl92se_set_desc(struct ieee80211_hw *hw, u8 *pdesc, bool istx,
 u64 rtl92se_get_desc(struct ieee80211_hw *hw,
 		     u8 *desc, bool istx, u8 desc_name);
 void rtl92se_tx_polling(struct ieee80211_hw *hw, u8 hw_queue);
-
 #endif

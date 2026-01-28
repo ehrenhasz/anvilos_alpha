@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef __ARCH_ARM_MACH_OMAP2_CM_REGBITS_24XX_H
 #define __ARCH_ARM_MACH_OMAP2_CM_REGBITS_24XX_H
-
-/*
- * OMAP24XX Clock Management register bits
- *
- * Copyright (C) 2007 Texas Instruments, Inc.
- * Copyright (C) 2007 Nokia Corporation
- *
- * Written by Paul Walmsley
- */
-
 #define OMAP24XX_AUTOSTATE_MPU_MASK			(1 << 0)
 #define OMAP24XX_EN_DSS1_MASK				(1 << 0)
 #define OMAP24XX_ST_MAILBOXES_SHIFT			30

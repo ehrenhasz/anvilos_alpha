@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef B43_RADIO_2056_H_
 #define B43_RADIO_2056_H_
-
 #include <linux/types.h>
-
 #include "tables_nphy.h"
-
 #define B2056_SYN			(0x0 << 12)
 #define B2056_TX0			(0x2 << 12)
 #define B2056_TX1			(0x3 << 12)
@@ -13,7 +9,6 @@
 #define B2056_RX1			(0x7 << 12)
 #define B2056_ALLTX			(0xE << 12)
 #define B2056_ALLRX			(0xF << 12)
-
 #define B2056_SYN_RESERVED_ADDR0	0x00
 #define B2056_SYN_IDCODE		0x01
 #define B2056_SYN_RESERVED_ADDR2	0x02
@@ -197,7 +192,6 @@
 #define B2056_SYN_LOGEN_CORE_CALVALID	0xB4
 #define B2056_SYN_LOGEN_RX_CMOS_CALVALID	0xB5
 #define B2056_SYN_LOGEN_TX_CMOS_VALID	0xB6
-
 #define B2056_TX_RESERVED_ADDR0		0x00
 #define B2056_TX_IDCODE			0x01
 #define B2056_TX_RESERVED_ADDR2		0x02
@@ -353,7 +347,6 @@
 #define B2056_TX_GMBB_IDAC5		0x98
 #define B2056_TX_GMBB_IDAC6		0x99
 #define B2056_TX_GMBB_IDAC7		0x9A
-
 #define B2056_RX_RESERVED_ADDR0		0x00
 #define B2056_RX_IDCODE			0x01
 #define B2056_RX_RESERVED_ADDR2		0x02
@@ -503,7 +496,6 @@
 #define B2056_RX_STATUS_RXLPF_VGA_HPC	0x92
 #define B2056_RX_STATUS_RXLPF_RC	0x93
 #define B2056_RX_STATUS_HPC_RC		0x94
-
 #define B2056_LNA1_A_PU			0x01
 #define B2056_LNA2_A_PU			0x02
 #define B2056_LNA1_G_PU			0x01
@@ -524,7 +516,6 @@
 #define B2056_RSSI_NB_SEL		0x08
 #define B2056_VCM_MASK			0x1C
 #define B2056_RSSI_VCM_SHIFT		0x02
-
 #define B2056_SYN			(0x0 << 12)
 #define B2056_TX0			(0x2 << 12)
 #define B2056_TX1			(0x3 << 12)
@@ -532,7 +523,6 @@
 #define B2056_RX1			(0x7 << 12)
 #define B2056_ALLTX			(0xE << 12)
 #define B2056_ALLRX			(0xF << 12)
-
 #define B2056_SYN_RESERVED_ADDR0	0x00
 #define B2056_SYN_IDCODE		0x01
 #define B2056_SYN_RESERVED_ADDR2	0x02
@@ -716,7 +706,6 @@
 #define B2056_SYN_LOGEN_CORE_CALVALID	0xB4
 #define B2056_SYN_LOGEN_RX_CMOS_CALVALID	0xB5
 #define B2056_SYN_LOGEN_TX_CMOS_VALID	0xB6
-
 #define B2056_TX_RESERVED_ADDR0		0x00
 #define B2056_TX_IDCODE			0x01
 #define B2056_TX_RESERVED_ADDR2		0x02
@@ -872,7 +861,6 @@
 #define B2056_TX_GMBB_IDAC5		0x98
 #define B2056_TX_GMBB_IDAC6		0x99
 #define B2056_TX_GMBB_IDAC7		0x9A
-
 #define B2056_RX_RESERVED_ADDR0		0x00
 #define B2056_RX_IDCODE			0x01
 #define B2056_RX_RESERVED_ADDR2		0x02
@@ -1022,7 +1010,6 @@
 #define B2056_RX_STATUS_RXLPF_VGA_HPC	0x92
 #define B2056_RX_STATUS_RXLPF_RC	0x93
 #define B2056_RX_STATUS_HPC_RC		0x94
-
 #define B2056_LNA1_A_PU			0x01
 #define B2056_LNA2_A_PU			0x02
 #define B2056_LNA1_G_PU			0x01
@@ -1043,11 +1030,8 @@
 #define B2056_RSSI_NB_SEL		0x08
 #define B2056_VCM_MASK			0x1C
 #define B2056_RSSI_VCM_SHIFT		0x02
-
 struct b43_nphy_channeltab_entry_rev3 {
-	/* The channel frequency in MHz */
 	u16 freq;
-	/* Radio register values on channelswitch */
 	u8 radio_syn_pll_vcocal1;
 	u8 radio_syn_pll_vcocal2;
 	u8 radio_syn_pll_refdiv;
@@ -1085,17 +1069,11 @@ struct b43_nphy_channeltab_entry_rev3 {
 	u8 radio_tx1_pgag_boost_tune;
 	u8 radio_tx1_mixa_boost_tune;
 	u8 radio_tx1_mixg_boost_tune;
-	/* PHY register values on channelswitch */
 	struct b43_phy_n_sfo_cfg phy_regs;
 };
-
 void b2056_upload_inittabs(struct b43_wldev *dev,
 			   bool ghz5, bool ignore_uploadflag);
 void b2056_upload_syn_pll_cp2(struct b43_wldev *dev, bool ghz5);
-
-/* Get the NPHY Channel Switch Table entry for a channel.
- * Returns NULL on failure to find an entry. */
 const struct b43_nphy_channeltab_entry_rev3 *
 b43_nphy_get_chantabent_rev3(struct b43_wldev *dev, u16 freq);
-
-#endif /* B43_RADIO_2056_H_ */
+#endif  

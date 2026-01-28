@@ -1,40 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2011 Tobias Klauser <tklauser@distanz.ch>
- */
-
 #ifndef _ASM_NIOS2_ELF_H
 #define _ASM_NIOS2_ELF_H
-
 #include <uapi/asm/elf.h>
-
-/*
- * This is used to ensure we don't load something for the wrong architecture.
- */
 #define elf_check_arch(x) ((x)->e_machine == EM_ALTERA_NIOS2)
-
 #define ELF_PLAT_INIT(_r, load_addr)
-
 #define CORE_DUMP_USE_REGSET
 #define ELF_EXEC_PAGESIZE	4096
-
-/* This is the location that an ET_DYN program is loaded if exec'ed.  Typical
-   use of this is to invoke "./ld.so someprog" to test out a new version of
-   the loader.  We need to make sure that it is out of the way of the program
-   that it will "exec", and that there is sufficient room for the brk.  */
-
 #define ELF_ET_DYN_BASE		0xD0000000UL
-
-/* regs is struct pt_regs, pr_reg is elf_gregset_t (which is
-   now struct_user_regs, they are different) */
-
 #define ARCH_HAS_SETUP_ADDITIONAL_PAGES	1
 struct linux_binprm;
 extern int arch_setup_additional_pages(struct linux_binprm *bprm,
 	int uses_interp);
 #define ELF_CORE_COPY_REGS(pr_reg, regs)				\
 { do {									\
-	/* Bleech. */							\
+	 							\
 	pr_reg[0]  = regs->r8;						\
 	pr_reg[1]  = regs->r9;						\
 	pr_reg[2]  = regs->r10;						\
@@ -73,16 +51,6 @@ extern int arch_setup_additional_pages(struct linux_binprm *bprm,
 		pr_reg[33] = sw->ra;					\
 	}								\
 } while (0); }
-
-/* This yields a mask that user programs can use to figure out what
-   instruction set this cpu supports.  */
-
 #define ELF_HWCAP	(0)
-
-/* This yields a string that ld.so will use to load implementation
-   specific libraries for optimization.  This is more specific in
-   intent than poking at uname or /proc/cpuinfo.  */
-
 #define ELF_PLATFORM  (NULL)
-
-#endif /* _ASM_NIOS2_ELF_H */
+#endif  

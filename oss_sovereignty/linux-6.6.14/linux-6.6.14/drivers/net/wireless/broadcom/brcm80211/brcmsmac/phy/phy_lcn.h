@@ -1,27 +1,17 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
-
 #ifndef _BRCM_PHY_LCN_H_
 #define _BRCM_PHY_LCN_H_
-
 #include <types.h>
-
 struct brcms_phy_lcnphy {
 	int lcnphy_txrf_sp_9_override;
 	u8 lcnphy_full_cal_channel;
 	u8 lcnphy_cal_counter;
 	u16 lcnphy_cal_temper;
 	bool lcnphy_recal;
-
 	u8 lcnphy_rc_cap;
 	u32 lcnphy_mcs20_po;
-
 	u8 lcnphy_tr_isolation_mid;
 	u8 lcnphy_tr_isolation_low;
 	u8 lcnphy_tr_isolation_hi;
-
 	u8 lcnphy_bx_arch;
 	u8 lcnphy_rx_power_offset;
 	u8 lcnphy_rssi_vf;
@@ -31,15 +21,12 @@ struct brcms_phy_lcnphy {
 	u8 lcnphy_rssi_vf_lowtemp;
 	u8 lcnphy_rssi_vc_lowtemp;
 	u8 lcnphy_rssi_gs_lowtemp;
-
 	u8 lcnphy_rssi_vf_hightemp;
 	u8 lcnphy_rssi_vc_hightemp;
 	u8 lcnphy_rssi_gs_hightemp;
-
 	s16 lcnphy_pa0b0;
 	s16 lcnphy_pa0b1;
 	s16 lcnphy_pa0b2;
-
 	u16 lcnphy_rawtempsense;
 	u8 lcnphy_measPower;
 	u8 lcnphy_tempsense_slope;
@@ -53,14 +40,11 @@ struct brcms_phy_lcnphy {
 	u16 lcnphy_tssi_tx_cnt;
 	u16 lcnphy_tssi_idx;
 	u16 lcnphy_tssi_npt;
-
 	u16 lcnphy_target_tx_freq;
 	s8 lcnphy_tx_power_idx_override;
 	u16 lcnphy_noise_samples;
-
 	u32 lcnphy_papdRxGnIdx;
 	u32 lcnphy_papd_rxGnCtrl_init;
-
 	u32 lcnphy_gain_idx_14_lowword;
 	u32 lcnphy_gain_idx_14_hiword;
 	u32 lcnphy_gain_idx_27_lowword;
@@ -90,7 +74,6 @@ struct brcms_phy_lcnphy {
 	s16 lcnphy_cck_dig_filt_type;
 	s16 lcnphy_ofdm_dig_filt_type;
 	struct lcnphy_cal_results lcnphy_cal_results;
-
 	u8 lcnphy_psat_pwr;
 	u8 lcnphy_psat_indx;
 	s32 lcnphy_min_phase;
@@ -102,9 +85,8 @@ struct brcms_phy_lcnphy {
 	u16 lcnphy_local_oval_6;
 	u16 lcnphy_local_oval_5;
 	u16 lcnphy_logen_mixer_1;
-
 	u8 lcnphy_aci_stat;
 	uint lcnphy_aci_start_time;
 	s8 lcnphy_tx_power_offset[TXP_NUM_RATES];
 };
-#endif				/* _BRCM_PHY_LCN_H_ */
+#endif				 

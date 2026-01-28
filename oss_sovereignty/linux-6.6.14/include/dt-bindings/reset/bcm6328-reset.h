@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef __DT_BINDINGS_RESET_BCM6328_H
 #define __DT_BINDINGS_RESET_BCM6328_H
-
 #define BCM6328_RST_SPI		0
 #define BCM6328_RST_EPHY	1
 #define BCM6328_RST_SAR		2
@@ -14,5 +11,4 @@
 #define BCM6328_RST_PCIE	8
 #define BCM6328_RST_PCIE_EXT	9
 #define BCM6328_RST_PCIE_HARD	10
-
-#endif /* __DT_BINDINGS_RESET_BCM6328_H */
+#endif  

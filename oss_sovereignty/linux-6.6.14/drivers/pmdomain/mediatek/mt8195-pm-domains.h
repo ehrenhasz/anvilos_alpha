@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
- */
-
 #ifndef __SOC_MEDIATEK_MT8195_PM_DOMAINS_H
 #define __SOC_MEDIATEK_MT8195_PM_DOMAINS_H
-
 #include "mtk-pm-domains.h"
 #include <dt-bindings/power/mt8195-power.h>
-
-/*
- * MT8195 power domain support
- */
-
 static const struct scpsys_domain_data scpsys_domain_data_mt8195[] = {
 	[MT8195_POWER_DOMAIN_PCIE_MAC_P0] = {
 		.name = "pcie_mac_p0",
@@ -604,10 +592,8 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8195[] = {
 		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
 	},
 };
-
 static const struct scpsys_soc_data mt8195_scpsys_data = {
 	.domains_data = scpsys_domain_data_mt8195,
 	.num_domains = ARRAY_SIZE(scpsys_domain_data_mt8195),
 };
-
-#endif /* __SOC_MEDIATEK_MT8195_PM_DOMAINS_H */
+#endif  

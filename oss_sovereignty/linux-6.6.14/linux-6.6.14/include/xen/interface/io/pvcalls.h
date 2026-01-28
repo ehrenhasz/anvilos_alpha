@@ -1,33 +1,18 @@
-/* SPDX-License-Identifier: MIT */
-
 #ifndef __XEN_PUBLIC_IO_XEN_PVCALLS_H__
 #define __XEN_PUBLIC_IO_XEN_PVCALLS_H__
-
 #include <linux/net.h>
 #include <xen/interface/io/ring.h>
 #include <xen/interface/grant_table.h>
-
-/* "1" means socket, connect, release, bind, listen, accept and poll */
 #define XENBUS_FUNCTIONS_CALLS "1"
-
-/*
- * See docs/misc/pvcalls.markdown in xen.git for the full specification:
- * https://xenbits.xen.org/docs/unstable/misc/pvcalls.html
- */
 struct pvcalls_data_intf {
     RING_IDX in_cons, in_prod, in_error;
-
     uint8_t pad1[52];
-
     RING_IDX out_cons, out_prod, out_error;
-
     uint8_t pad2[52];
-
     RING_IDX ring_order;
     grant_ref_t ref[];
 };
 DEFINE_XEN_FLEX_RING(pvcalls);
-
 #define PVCALLS_SOCKET         0
 #define PVCALLS_CONNECT        1
 #define PVCALLS_RELEASE        2
@@ -35,10 +20,9 @@ DEFINE_XEN_FLEX_RING(pvcalls);
 #define PVCALLS_LISTEN         4
 #define PVCALLS_ACCEPT         5
 #define PVCALLS_POLL           6
-
 struct xen_pvcalls_request {
-    uint32_t req_id; /* private to guest, echoed in response */
-    uint32_t cmd;    /* command to execute */
+    uint32_t req_id;  
+    uint32_t cmd;     
     union {
         struct xen_pvcalls_socket {
             uint64_t id;
@@ -76,14 +60,11 @@ struct xen_pvcalls_request {
         struct xen_pvcalls_poll {
             uint64_t id;
         } poll;
-        /* dummy member to force sizeof(struct xen_pvcalls_request)
-         * to match across archs */
         struct xen_pvcalls_dummy {
             uint8_t dummy[56];
         } dummy;
     } u;
 };
-
 struct xen_pvcalls_response {
     uint32_t req_id;
     uint32_t cmd;
@@ -116,8 +97,6 @@ struct xen_pvcalls_response {
         } dummy;
     } u;
 };
-
 DEFINE_RING_TYPES(xen_pvcalls, struct xen_pvcalls_request,
                   struct xen_pvcalls_response);
-
 #endif

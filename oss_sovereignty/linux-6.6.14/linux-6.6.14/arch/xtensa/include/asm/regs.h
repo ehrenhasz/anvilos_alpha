@@ -1,32 +1,5 @@
-/*
- * Copyright (c) 2006 Tensilica, Inc.  All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of version 2.1 of the GNU Lesser General Public
- * License as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it is
- * free of the rightful claim of any third person regarding infringement
- * or the like.  Any license provided herein, whether implied or
- * otherwise, applies only to this software file.  Patent licenses, if
- * any, provided herein do not apply to combinations of this program with
- * other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, write the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston MA 02111-1307,
- * USA.
- */
-
 #ifndef _XTENSA_REGS_H
 #define _XTENSA_REGS_H
-
-/*  Special registers.  */
-
 #define SREG_MR			32
 #define SREG_IBREAKENABLE	96
 #define SREG_IBREAKA		128
@@ -37,12 +10,8 @@
 #define SREG_EXCSAVE		208
 #define SREG_CCOMPARE		240
 #define SREG_MISC		244
-
-/*  EXCCAUSE register fields  */
-
 #define EXCCAUSE_EXCCAUSE_SHIFT	0
 #define EXCCAUSE_EXCCAUSE_MASK	0x3F
-
 #define EXCCAUSE_ILLEGAL_INSTRUCTION		0
 #define EXCCAUSE_SYSTEM_CALL			1
 #define EXCCAUSE_INSTRUCTION_FETCH_ERROR	2
@@ -77,9 +46,6 @@
 #define EXCCAUSE_COPROCESSOR6_DISABLED		38
 #define EXCCAUSE_COPROCESSOR7_DISABLED		39
 #define EXCCAUSE_N				64
-
-/*  PS register fields.  */
-
 #define PS_WOE_BIT		18
 #define PS_WOE_MASK		0x00040000
 #define PS_CALLINC_SHIFT	16
@@ -94,25 +60,18 @@
 #define PS_INTLEVEL_SHIFT	0
 #define PS_INTLEVEL_WIDTH	4
 #define PS_INTLEVEL_MASK	0x0000000F
-
-/*  DBREAKCn register fields.  */
-
 #define DBREAKC_MASK_BIT		0
 #define DBREAKC_MASK_MASK		0x0000003F
 #define DBREAKC_LOAD_BIT		30
 #define DBREAKC_LOAD_MASK		0x40000000
 #define DBREAKC_STOR_BIT		31
 #define DBREAKC_STOR_MASK		0x80000000
-
-/*  DEBUGCAUSE register fields.  */
-
 #define DEBUGCAUSE_DBNUM_MASK		0xf00
-#define DEBUGCAUSE_DBNUM_SHIFT		8	/* First bit of DBNUM field */
-#define DEBUGCAUSE_DEBUGINT_BIT		5	/* External debug interrupt */
-#define DEBUGCAUSE_BREAKN_BIT		4	/* BREAK.N instruction */
-#define DEBUGCAUSE_BREAK_BIT		3	/* BREAK instruction */
-#define DEBUGCAUSE_DBREAK_BIT		2	/* DBREAK match */
-#define DEBUGCAUSE_IBREAK_BIT		1	/* IBREAK match */
-#define DEBUGCAUSE_ICOUNT_BIT		0	/* ICOUNT would incr. to zero */
-
-#endif /* _XTENSA_SPECREG_H */
+#define DEBUGCAUSE_DBNUM_SHIFT		8	 
+#define DEBUGCAUSE_DEBUGINT_BIT		5	 
+#define DEBUGCAUSE_BREAKN_BIT		4	 
+#define DEBUGCAUSE_BREAK_BIT		3	 
+#define DEBUGCAUSE_DBREAK_BIT		2	 
+#define DEBUGCAUSE_IBREAK_BIT		1	 
+#define DEBUGCAUSE_ICOUNT_BIT		0	 
+#endif  

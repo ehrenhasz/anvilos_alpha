@@ -1,87 +1,59 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * scc2698.h
- *
- * driver for the IPOCTAL boards
- *
- * Copyright (C) 2009-2012 CERN (www.cern.ch)
- * Author: Nicolas Serafini, EIC2 SA
- * Author: Samuel Iglesias Gonsalvez <siglesias@igalia.com>
- */
-
 #ifndef SCC2698_H_
 #define SCC2698_H_
-
-/*
- * union scc2698_channel - Channel access to scc2698 IO
- *
- * dn value are only spacer.
- *
- */
 union scc2698_channel {
 	struct {
-		u8 d0, mr;  /* Mode register 1/2*/
-		u8 d1, sr;  /* Status register */
-		u8 d2, r1;  /* reserved */
-		u8 d3, rhr; /* Receive holding register (R) */
-		u8 junk[8]; /* other crap for block control */
-	} __packed r; /* Read access */
+		u8 d0, mr;   
+		u8 d1, sr;   
+		u8 d2, r1;   
+		u8 d3, rhr;  
+		u8 junk[8];  
+	} __packed r;  
 	struct {
-		u8 d0, mr;  /* Mode register 1/2 */
-		u8 d1, csr; /* Clock select register */
-		u8 d2, cr;  /* Command register */
-		u8 d3, thr; /* Transmit holding register */
-		u8 junk[8]; /* other crap for block control */
-	} __packed w; /* Write access */
+		u8 d0, mr;   
+		u8 d1, csr;  
+		u8 d2, cr;   
+		u8 d3, thr;  
+		u8 junk[8];  
+	} __packed w;  
 };
-
-/*
- * union scc2698_block - Block access to scc2698 IO
- *
- * The scc2698 contain 4 block.
- * Each block containt two channel a and b.
- * dn value are only spacer.
- *
- */
 union scc2698_block {
 	struct {
-		u8 d0, mra;  /* Mode register 1/2 (a) */
-		u8 d1, sra;  /* Status register (a) */
-		u8 d2, r1;   /* reserved */
-		u8 d3, rhra; /* Receive holding register (a) */
-		u8 d4, ipcr; /* Input port change register of block */
-		u8 d5, isr;  /* Interrupt status register of block */
-		u8 d6, ctur; /* Counter timer upper register of block */
-		u8 d7, ctlr; /* Counter timer lower register of block */
-		u8 d8, mrb;  /* Mode register 1/2 (b) */
-		u8 d9, srb;  /* Status register (b) */
-		u8 da, r2;   /* reserved */
-		u8 db, rhrb; /* Receive holding register (b) */
-		u8 dc, r3;   /* reserved */
-		u8 dd, ip;   /* Input port register of block */
-		u8 de, ctg;  /* Start counter timer of block */
-		u8 df, cts;  /* Stop counter timer of block */
-	} __packed r; /* Read access */
+		u8 d0, mra;   
+		u8 d1, sra;   
+		u8 d2, r1;    
+		u8 d3, rhra;  
+		u8 d4, ipcr;  
+		u8 d5, isr;   
+		u8 d6, ctur;  
+		u8 d7, ctlr;  
+		u8 d8, mrb;   
+		u8 d9, srb;   
+		u8 da, r2;    
+		u8 db, rhrb;  
+		u8 dc, r3;    
+		u8 dd, ip;    
+		u8 de, ctg;   
+		u8 df, cts;   
+	} __packed r;  
 	struct {
-		u8 d0, mra;  /* Mode register 1/2 (a) */
-		u8 d1, csra; /* Clock select register (a) */
-		u8 d2, cra;  /* Command register (a) */
-		u8 d3, thra; /* Transmit holding register (a) */
-		u8 d4, acr;  /* Auxiliary control register of block */
-		u8 d5, imr;  /* Interrupt mask register of block  */
-		u8 d6, ctu;  /* Counter timer upper register of block */
-		u8 d7, ctl;  /* Counter timer lower register of block */
-		u8 d8, mrb;  /* Mode register 1/2 (b) */
-		u8 d9, csrb; /* Clock select register (a) */
-		u8 da, crb;  /* Command register (b) */
-		u8 db, thrb; /* Transmit holding register (b) */
-		u8 dc, r1;   /* reserved */
-		u8 dd, opcr; /* Output port configuration register of block */
-		u8 de, r2;   /* reserved */
-		u8 df, r3;   /* reserved */
-	} __packed w; /* Write access */
+		u8 d0, mra;   
+		u8 d1, csra;  
+		u8 d2, cra;   
+		u8 d3, thra;  
+		u8 d4, acr;   
+		u8 d5, imr;   
+		u8 d6, ctu;   
+		u8 d7, ctl;   
+		u8 d8, mrb;   
+		u8 d9, csrb;  
+		u8 da, crb;   
+		u8 db, thrb;  
+		u8 dc, r1;    
+		u8 dd, opcr;  
+		u8 de, r2;    
+		u8 df, r3;    
+	} __packed w;  
 };
-
 #define MR1_CHRL_5_BITS             (0x0 << 0)
 #define MR1_CHRL_6_BITS             (0x1 << 0)
 #define MR1_CHRL_7_BITS             (0x2 << 0)
@@ -98,7 +70,6 @@ union scc2698_block {
 #define MR1_RxINT_FFULL             (0x1 << 6)
 #define MR1_RxRTS_CONTROL_ON        (0x1 << 7)
 #define MR1_RxRTS_CONTROL_OFF       (0x0 << 7)
-
 #define MR2_STOP_BITS_LENGTH_1      (0x7 << 0)
 #define MR2_STOP_BITS_LENGTH_2      (0xF << 0)
 #define MR2_CTS_ENABLE_TX_ON        (0x1 << 4)
@@ -109,7 +80,6 @@ union scc2698_block {
 #define MR2_CH_MODE_ECHO            (0x1 << 6)
 #define MR2_CH_MODE_LOCAL           (0x2 << 6)
 #define MR2_CH_MODE_REMOTE          (0x3 << 6)
-
 #define CR_ENABLE_RX                (0x1 << 0)
 #define CR_DISABLE_RX               (0x1 << 1)
 #define CR_ENABLE_TX                (0x1 << 2)
@@ -125,7 +95,6 @@ union scc2698_block {
 #define CR_CMD_NEGATE_RTSN          (0x9 << 4)
 #define CR_CMD_SET_TIMEOUT_MODE     (0xA << 4)
 #define CR_CMD_DISABLE_TIMEOUT_MODE (0xC << 4)
-
 #define SR_RX_READY                 (0x1 << 0)
 #define SR_FIFO_FULL                (0x1 << 1)
 #define SR_TX_READY                 (0x1 << 2)
@@ -134,9 +103,7 @@ union scc2698_block {
 #define SR_PARITY_ERROR             (0x1 << 5)
 #define SR_FRAMING_ERROR            (0x1 << 6)
 #define SR_RECEIVED_BREAK           (0x1 << 7)
-
 #define SR_ERROR                    (0xF0)
-
 #define ACR_DELTA_IP0_IRQ_EN        (0x1 << 0)
 #define ACR_DELTA_IP1_IRQ_EN        (0x1 << 1)
 #define ACR_DELTA_IP2_IRQ_EN        (0x1 << 2)
@@ -152,7 +119,6 @@ union scc2698_block {
 #define ACR_TClk16                  (0x7 << 4)
 #define ACR_BRG_SET1                (0x0 << 7)
 #define ACR_BRG_SET2                (0x1 << 7)
-
 #define TX_CLK_75                   (0x0 << 0)
 #define TX_CLK_110                  (0x1 << 0)
 #define TX_CLK_38400                (0x2 << 0)
@@ -179,7 +145,6 @@ union scc2698_block {
 #define RX_CLK_1800                 (0xA << 4)
 #define RX_CLK_9600                 (0xB << 4)
 #define RX_CLK_19200                (0xC << 4)
-
 #define OPCR_MPOa_RTSN              (0x0 << 0)
 #define OPCR_MPOa_C_TO              (0x1 << 0)
 #define OPCR_MPOa_TxC1X             (0x2 << 0)
@@ -188,7 +153,6 @@ union scc2698_block {
 #define OPCR_MPOa_RxC16X            (0x5 << 0)
 #define OPCR_MPOa_TxRDY             (0x6 << 0)
 #define OPCR_MPOa_RxRDY_FF          (0x7 << 0)
-
 #define OPCR_MPOb_RTSN              (0x0 << 4)
 #define OPCR_MPOb_C_TO              (0x1 << 4)
 #define OPCR_MPOb_TxC1X             (0x2 << 4)
@@ -197,10 +161,8 @@ union scc2698_block {
 #define OPCR_MPOb_RxC16X            (0x5 << 4)
 #define OPCR_MPOb_TxRDY             (0x6 << 4)
 #define OPCR_MPOb_RxRDY_FF          (0x7 << 4)
-
 #define OPCR_MPP_INPUT              (0x0 << 7)
 #define OPCR_MPP_OUTPUT             (0x1 << 7)
-
 #define IMR_TxRDY_A                 (0x1 << 0)
 #define IMR_RxRDY_FFULL_A           (0x1 << 1)
 #define IMR_DELTA_BREAK_A           (0x1 << 2)
@@ -209,7 +171,6 @@ union scc2698_block {
 #define IMR_RxRDY_FFULL_B           (0x1 << 5)
 #define IMR_DELTA_BREAK_B           (0x1 << 6)
 #define IMR_INPUT_PORT_CHANGE       (0x1 << 7)
-
 #define ISR_TxRDY_A                 (0x1 << 0)
 #define ISR_RxRDY_FFULL_A           (0x1 << 1)
 #define ISR_DELTA_BREAK_A           (0x1 << 2)
@@ -218,8 +179,6 @@ union scc2698_block {
 #define ISR_RxRDY_FFULL_B           (0x1 << 5)
 #define ISR_DELTA_BREAK_B           (0x1 << 6)
 #define ISR_INPUT_PORT_CHANGE       (0x1 << 7)
-
 #define ACK_INT_REQ0			0
 #define ACK_INT_REQ1			2
-
-#endif /* SCC2698_H_ */
+#endif  

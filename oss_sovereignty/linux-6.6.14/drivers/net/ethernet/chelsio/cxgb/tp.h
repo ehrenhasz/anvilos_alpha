@@ -1,15 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* $Date: 2005/03/07 23:59:05 $ $RCSfile: tp.h,v $ $Revision: 1.20 $ */
 #ifndef CHELSIO_TP_H
 #define CHELSIO_TP_H
-
 #include "common.h"
-
 #define TP_MAX_RX_COALESCING_SIZE 16224U
-
 struct tp_mib_statistics {
-
-	/* IP */
 	u32 ipInReceive_hi;
 	u32 ipInReceive_lo;
 	u32 ipInHdrErrors_hi;
@@ -32,10 +25,7 @@ struct tp_mib_statistics {
 	u32 ipReasmReqds;
 	u32 ipReasmOKs;
 	u32 ipReasmFails;
-
 	u32 reserved[8];
-
-	/* TCP */
 	u32 tcpActiveOpens;
 	u32 tcpPassiveOpens;
 	u32 tcpAttemptFails;
@@ -53,18 +43,14 @@ struct tp_mib_statistics {
 	u32 tcpRtoMin;
 	u32 tcpRtoMax;
 };
-
 struct petp;
 struct tp_params;
-
 struct petp *t1_tp_create(adapter_t *adapter, struct tp_params *p);
 void t1_tp_destroy(struct petp *tp);
-
 void t1_tp_intr_disable(struct petp *tp);
 void t1_tp_intr_enable(struct petp *tp);
 void t1_tp_intr_clear(struct petp *tp);
 int t1_tp_intr_handler(struct petp *tp);
-
 void t1_tp_get_mib_statistics(adapter_t *adap, struct tp_mib_statistics *tps);
 void t1_tp_set_tcp_checksum_offload(struct petp *tp, int enable);
 void t1_tp_set_ip_checksum_offload(struct petp *tp, int enable);

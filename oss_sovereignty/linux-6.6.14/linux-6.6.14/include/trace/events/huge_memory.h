@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM huge_memory
-
 #if !defined(__HUGE_MEMORY_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __HUGE_MEMORY_H
-
 #include  <linux/tracepoint.h>
-
 #define SCAN_STATUS							\
 	EM( SCAN_FAIL,			"failed")			\
 	EM( SCAN_SUCCEED,		"succeeded")			\
@@ -40,26 +36,19 @@
 	EM( SCAN_STORE_FAILED,		"store_failed")			\
 	EM( SCAN_COPY_MC,		"copy_poisoned_page")		\
 	EMe(SCAN_PAGE_FILLED,		"page_filled")
-
 #undef EM
 #undef EMe
 #define EM(a, b)	TRACE_DEFINE_ENUM(a);
 #define EMe(a, b)	TRACE_DEFINE_ENUM(a);
-
 SCAN_STATUS
-
 #undef EM
 #undef EMe
 #define EM(a, b)	{a, b},
 #define EMe(a, b)	{a, b}
-
 TRACE_EVENT(mm_khugepaged_scan_pmd,
-
 	TP_PROTO(struct mm_struct *mm, struct page *page, bool writable,
 		 int referenced, int none_or_zero, int status, int unmapped),
-
 	TP_ARGS(mm, page, writable, referenced, none_or_zero, status, unmapped),
-
 	TP_STRUCT__entry(
 		__field(struct mm_struct *, mm)
 		__field(unsigned long, pfn)
@@ -69,7 +58,6 @@ TRACE_EVENT(mm_khugepaged_scan_pmd,
 		__field(int, status)
 		__field(int, unmapped)
 	),
-
 	TP_fast_assign(
 		__entry->mm = mm;
 		__entry->pfn = page ? page_to_pfn(page) : -1;
@@ -79,7 +67,6 @@ TRACE_EVENT(mm_khugepaged_scan_pmd,
 		__entry->status = status;
 		__entry->unmapped = unmapped;
 	),
-
 	TP_printk("mm=%p, scan_pfn=0x%lx, writable=%d, referenced=%d, none_or_zero=%d, status=%s, unmapped=%d",
 		__entry->mm,
 		__entry->pfn,
@@ -89,38 +76,28 @@ TRACE_EVENT(mm_khugepaged_scan_pmd,
 		__print_symbolic(__entry->status, SCAN_STATUS),
 		__entry->unmapped)
 );
-
 TRACE_EVENT(mm_collapse_huge_page,
-
 	TP_PROTO(struct mm_struct *mm, int isolated, int status),
-
 	TP_ARGS(mm, isolated, status),
-
 	TP_STRUCT__entry(
 		__field(struct mm_struct *, mm)
 		__field(int, isolated)
 		__field(int, status)
 	),
-
 	TP_fast_assign(
 		__entry->mm = mm;
 		__entry->isolated = isolated;
 		__entry->status = status;
 	),
-
 	TP_printk("mm=%p, isolated=%d, status=%s",
 		__entry->mm,
 		__entry->isolated,
 		__print_symbolic(__entry->status, SCAN_STATUS))
 );
-
 TRACE_EVENT(mm_collapse_huge_page_isolate,
-
 	TP_PROTO(struct page *page, int none_or_zero,
 		 int referenced, bool  writable, int status),
-
 	TP_ARGS(page, none_or_zero, referenced, writable, status),
-
 	TP_STRUCT__entry(
 		__field(unsigned long, pfn)
 		__field(int, none_or_zero)
@@ -128,7 +105,6 @@ TRACE_EVENT(mm_collapse_huge_page_isolate,
 		__field(bool, writable)
 		__field(int, status)
 	),
-
 	TP_fast_assign(
 		__entry->pfn = page ? page_to_pfn(page) : -1;
 		__entry->none_or_zero = none_or_zero;
@@ -136,7 +112,6 @@ TRACE_EVENT(mm_collapse_huge_page_isolate,
 		__entry->writable = writable;
 		__entry->status = status;
 	),
-
 	TP_printk("scan_pfn=0x%lx, none_or_zero=%d, referenced=%d, writable=%d, status=%s",
 		__entry->pfn,
 		__entry->none_or_zero,
@@ -144,41 +119,31 @@ TRACE_EVENT(mm_collapse_huge_page_isolate,
 		__entry->writable,
 		__print_symbolic(__entry->status, SCAN_STATUS))
 );
-
 TRACE_EVENT(mm_collapse_huge_page_swapin,
-
 	TP_PROTO(struct mm_struct *mm, int swapped_in, int referenced, int ret),
-
 	TP_ARGS(mm, swapped_in, referenced, ret),
-
 	TP_STRUCT__entry(
 		__field(struct mm_struct *, mm)
 		__field(int, swapped_in)
 		__field(int, referenced)
 		__field(int, ret)
 	),
-
 	TP_fast_assign(
 		__entry->mm = mm;
 		__entry->swapped_in = swapped_in;
 		__entry->referenced = referenced;
 		__entry->ret = ret;
 	),
-
 	TP_printk("mm=%p, swapped_in=%d, referenced=%d, ret=%d",
 		__entry->mm,
 		__entry->swapped_in,
 		__entry->referenced,
 		__entry->ret)
 );
-
 TRACE_EVENT(mm_khugepaged_scan_file,
-
 	TP_PROTO(struct mm_struct *mm, struct page *page, struct file *file,
 		 int present, int swap, int result),
-
 	TP_ARGS(mm, page, file, present, swap, result),
-
 	TP_STRUCT__entry(
 		__field(struct mm_struct *, mm)
 		__field(unsigned long, pfn)
@@ -187,7 +152,6 @@ TRACE_EVENT(mm_khugepaged_scan_file,
 		__field(int, swap)
 		__field(int, result)
 	),
-
 	TP_fast_assign(
 		__entry->mm = mm;
 		__entry->pfn = page ? page_to_pfn(page) : -1;
@@ -196,7 +160,6 @@ TRACE_EVENT(mm_khugepaged_scan_file,
 		__entry->swap = swap;
 		__entry->result = result;
 	),
-
 	TP_printk("mm=%p, scan_pfn=0x%lx, filename=%s, present=%d, swap=%d, result=%s",
 		__entry->mm,
 		__entry->pfn,
@@ -205,7 +168,6 @@ TRACE_EVENT(mm_khugepaged_scan_file,
 		__entry->swap,
 		__print_symbolic(__entry->result, SCAN_STATUS))
 );
-
 TRACE_EVENT(mm_khugepaged_collapse_file,
 	TP_PROTO(struct mm_struct *mm, struct page *hpage, pgoff_t index,
 			bool is_shmem, unsigned long addr, struct file *file,
@@ -221,7 +183,6 @@ TRACE_EVENT(mm_khugepaged_collapse_file,
 		__field(int, nr)
 		__field(int, result)
 	),
-
 	TP_fast_assign(
 		__entry->mm = mm;
 		__entry->hpfn = hpage ? page_to_pfn(hpage) : -1;
@@ -232,7 +193,6 @@ TRACE_EVENT(mm_khugepaged_collapse_file,
 		__entry->nr = nr;
 		__entry->result = result;
 	),
-
 	TP_printk("mm=%p, hpage_pfn=0x%lx, index=%ld, addr=%ld, is_shmem=%d, filename=%s, nr=%d, result=%s",
 		__entry->mm,
 		__entry->hpfn,
@@ -243,6 +203,5 @@ TRACE_EVENT(mm_khugepaged_collapse_file,
 		__entry->nr,
 		__print_symbolic(__entry->result, SCAN_STATUS))
 );
-
-#endif /* __HUGE_MEMORY_H */
+#endif  
 #include <trace/define_trace.h>

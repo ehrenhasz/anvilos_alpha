@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_SH_SWITCH_TO_32_H
 #define __ASM_SH_SWITCH_TO_32_H
-
 #ifdef CONFIG_SH_DSP
-
 #define is_dsp_enabled(tsk)						\
 	(!!(tsk->thread.dsp_status.status & SR_DSP))
-
 #define __restore_dsp(tsk)						\
 do {									\
 	register u32 *__ts2 __asm__ ("r2") =				\
@@ -29,7 +25,6 @@ do {									\
 		"ldc.l	@r2+, mod\n\t"					\
 		: : "r" (__ts2));					\
 } while (0)
-
 #define __save_dsp(tsk)							\
 do {									\
 	register u32 *__ts2 __asm__ ("r2") =				\
@@ -53,20 +48,13 @@ do {									\
 		"movs.l	a0, @-r2\n\t"					\
 		: : "r" (__ts2));					\
 } while (0)
-
 #else
-
 #define is_dsp_enabled(tsk)	(0)
 #define __save_dsp(tsk)		do { } while (0)
 #define __restore_dsp(tsk)	do { } while (0)
 #endif
-
 struct task_struct *__switch_to(struct task_struct *prev,
 				struct task_struct *next);
-
-/*
- *	switch_to() should switch tasks to task nr n, first
- */
 #define switch_to(prev, next, last)				\
 do {								\
 	register u32 *__ts1 __asm__ ("r1");			\
@@ -127,5 +115,4 @@ do {								\
 								\
 	last = __last;						\
 } while (0)
-
-#endif /* __ASM_SH_SWITCH_TO_32_H */
+#endif  

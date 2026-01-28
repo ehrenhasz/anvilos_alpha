@@ -1,9 +1,4 @@
-# -*- shell-script -*-
-# bash completion script for cpupower
-# Taken from git.git's completion script.
-
 _cpupower_commands="frequency-info frequency-set idle-info idle-set set info monitor"
-
 _frequency_info ()
 {
 	local flags="-f -w -l -d -p -g -a -s -y -o -m -n --freq --hwfreq --hwlimits --driver --policy --governors --related-cpus --affected-cpus --stats --latency --proc --human --no-rounding"
@@ -13,7 +8,6 @@ _frequency_info ()
 		frequency-info) COMPREPLY=($(compgen -W "$flags" -- "$cur")) ;;
 	esac
 }
-
 _frequency_set ()
 {
 	local flags="-f -g --freq --governor -d --min -u --max -r --related"
@@ -31,7 +25,6 @@ _frequency_set ()
 		frequency-set) COMPREPLY=($(compgen -W "$flags" -- "$cur")) ;;
 	esac
 }
-
 _idle_info()
 {
 	local flags="-f --silent"
@@ -41,7 +34,6 @@ _idle_info()
 		idle-info) COMPREPLY=($(compgen -W "$flags" -- "$cur")) ;;
 	esac
 }
-
 _idle_set()
 {
 	local flags="-d --disable -e --enable -D --disable-by-latency -E --enable-all"
@@ -51,7 +43,6 @@ _idle_set()
 		idle-set) COMPREPLY=($(compgen -W "$flags" -- "$cur")) ;;
 	esac
 }
-
 _set()
 {
 	local flags="--perf-bias, -b"
@@ -61,7 +52,6 @@ _set()
 		set) COMPREPLY=($(compgen -W "$flags" -- "$cur")) ;;
 	esac
 }
-
 _monitor()
 {
 	local flags="-l -m -i -c -v"
@@ -71,7 +61,6 @@ _monitor()
 		monitor) COMPREPLY=($(compgen -W "$flags" -- "$cur")) ;;
 	esac
 }
-
 _taskset()
 {
 	local prev_to_prev="${COMP_WORDS[COMP_CWORD-2]}"
@@ -88,29 +77,22 @@ _taskset()
 		set) _set ;;
 		monitor) _monitor ;;
 	esac
-
 }
-
 _cpupower ()
 {
 	local i
 	local c=1
 	local command
-
 	while test $c -lt $COMP_CWORD; do
 		if test $c == 1; then
 			command="${COMP_WORDS[c]}"
 		fi
 		c=$((++c))
 	done
-
-	# Complete name of subcommand if the user has not finished typing it yet.
 	if test $c -eq $COMP_CWORD -a -z "$command"; then
 		COMPREPLY=($(compgen -W "help -v --version -c --cpu $_cpupower_commands" -- "${COMP_WORDS[COMP_CWORD]}"))
 		return
 	fi
-
-	# Complete arguments to subcommands.
 	case "$command" in
 		-v|--version) return ;;
 		-c|--cpu) _taskset ;;
@@ -123,6 +105,5 @@ _cpupower ()
 		monitor) _monitor ;;
 	esac
 }
-
 complete -o bashdefault -o default -F _cpupower cpupower 2>/dev/null \
     || complete -o default -F _cpupower cpupower

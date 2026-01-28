@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_STACKTRACE_H
 #define _ASM_STACKTRACE_H
-
 #include <asm/ptrace.h>
 #include <asm/asm.h>
 #include <linux/stringify.h>
-
 #ifdef CONFIG_KALLSYMS
 extern int raw_show_trace;
 extern unsigned long unwind_stack(struct task_struct *task, unsigned long *sp,
@@ -22,30 +19,21 @@ static inline unsigned long unwind_stack(struct task_struct *task,
 	return 0;
 }
 #endif
-
 #define STR_PTR_LA    __stringify(PTR_LA)
 #define STR_LONG_S    __stringify(LONG_S)
 #define STR_LONG_L    __stringify(LONG_L)
 #define STR_LONGSIZE  __stringify(LONGSIZE)
-
 #define STORE_ONE_REG(r) \
     STR_LONG_S   " $" __stringify(r)",("STR_LONGSIZE"*"__stringify(r)")(%1)\n\t"
-
 static __always_inline void prepare_frametrace(struct pt_regs *regs)
 {
 #ifndef CONFIG_KALLSYMS
-	/*
-	 * Remove any garbage that may be in regs (specially func
-	 * addresses) to avoid show_raw_backtrace() to report them
-	 */
 	memset(regs, 0, sizeof(*regs));
 #endif
 	__asm__ __volatile__(
 		".set push\n\t"
 		".set noat\n\t"
-		/* Store $1 so we can use it */
 		STR_LONG_S " $1,"STR_LONGSIZE"(%1)\n\t"
-		/* Store the PC */
 		"1: " STR_PTR_LA " $1, 1b\n\t"
 		STR_LONG_S " $1,%0\n\t"
 		STORE_ONE_REG(2)
@@ -78,12 +66,10 @@ static __always_inline void prepare_frametrace(struct pt_regs *regs)
 		STORE_ONE_REG(29)
 		STORE_ONE_REG(30)
 		STORE_ONE_REG(31)
-		/* Restore $1 */
 		STR_LONG_L " $1,"STR_LONGSIZE"(%1)\n\t"
 		".set pop\n\t"
 		: "=m" (regs->cp0_epc)
 		: "r" (regs->regs)
 		: "memory");
 }
-
-#endif /* _ASM_STACKTRACE_H */
+#endif  

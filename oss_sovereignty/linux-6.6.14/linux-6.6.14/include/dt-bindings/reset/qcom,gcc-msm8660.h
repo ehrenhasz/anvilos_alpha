@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_RESET_MSM_GCC_8660_H
 #define _DT_BINDINGS_RESET_MSM_GCC_8660_H
-
 #define AFAB_CORE_RESET					0
 #define SCSS_SYS_RESET					1
 #define SCSS_SYS_POR_RESET				2
@@ -122,5 +116,4 @@
 #define USB_PHY0_RESET					113
 #define USB_PHY1_RESET					114
 #define PRNG_RESET					115
-
 #endif

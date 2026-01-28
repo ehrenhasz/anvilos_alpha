@@ -1,10 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019 ARM Limited
- *
- * Utility macro to ease definition of testcases toggling mode EL
- */
-
 #define DEFINE_TESTCASE_MANGLE_PSTATE_INVALID_MODE(_mode)		\
 									\
 static int mangle_invalid_pstate_run(struct tdescr *td, siginfo_t *si,	\

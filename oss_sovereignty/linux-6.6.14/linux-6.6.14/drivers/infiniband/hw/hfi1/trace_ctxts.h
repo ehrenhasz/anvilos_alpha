@@ -1,19 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
-* Copyright(c) 2015 - 2020 Intel Corporation.
-*/
-
 #if !defined(__HFI1_TRACE_CTXTS_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __HFI1_TRACE_CTXTS_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #include "hfi.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hfi1_ctxts
-
 #define UCTXT_FMT \
 	"cred:%u, credaddr:0x%llx, piobase:0x%p, rcvhdr_cnt:%u, "	\
 	"rcvbase:0x%llx, rcvegrc:%u, rcvegrb:0x%llx, subctxt_cnt:%u"
@@ -59,7 +50,6 @@ TRACE_EVENT(hfi1_uctxtdata,
 		      __entry->subctxt_cnt
 		      )
 );
-
 #define CINFO_FMT \
 	"egrtids:%u, egr_size:%u, hdrq_cnt:%u, hdrq_size:%u, sdma_ring_size:%u"
 TRACE_EVENT(hfi1_ctxt_info,
@@ -96,7 +86,6 @@ TRACE_EVENT(hfi1_ctxt_info,
 		      __entry->sdma_ring_size
 		      )
 );
-
 const char *hfi1_trace_print_rsm_hist(struct trace_seq *p, unsigned int ctxt);
 TRACE_EVENT(ctxt_rsm_hist,
 	    TP_PROTO(unsigned int ctxt),
@@ -105,9 +94,7 @@ TRACE_EVENT(ctxt_rsm_hist,
 	    TP_fast_assign(__entry->ctxt = ctxt;),
 	    TP_printk("%s", hfi1_trace_print_rsm_hist(p, __entry->ctxt))
 );
-
-#endif /* __HFI1_TRACE_CTXTS_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH .

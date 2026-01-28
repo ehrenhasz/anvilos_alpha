@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2014 Marek Vasut <marex@denx.de>
- */
-
 #include "imx53.dtsi"
-
 / {
 	model = "Aries/DENX M53";
 	compatible = "aries,imx53-m53", "denx,imx53-m53", "fsl,imx53";
-
 	memory@70000000 {
 		device_type = "memory";
 		reg = <0x70000000 0x20000000>,
 		      <0xb0000000 0x20000000>;
 	};
-
 	reg_3p2v: regulator-3p2v {
 		compatible = "regulator-fixed";
 		regulator-name = "3P2V";
@@ -22,7 +14,6 @@
 		regulator-max-microvolt = <3200000>;
 		regulator-always-on;
 	};
-
 	reg_backlight: regulator-backlight {
 		compatible = "regulator-fixed";
 		regulator-name = "lcd-supply";
@@ -31,13 +22,11 @@
 		regulator-always-on;
 	};
 };
-
 &i2c2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	clock-frequency = <400000>;
 	status = "okay";
-
 	touchscreen@41 {
 		compatible = "st,stmpe610";
 		reg = <0x41>;
@@ -46,7 +35,6 @@
 		interrupts = <6 0x0>;
 		interrupt-parent = <&gpio7>;
 		irq-trigger = <0x1>;
-
 		stmpe_touchscreen {
 			compatible = "st,stmpe-ts";
 			st,sample-time = <4>;
@@ -60,23 +48,19 @@
 			st,i-drive = <1>;
 		};
 	};
-
 	eeprom: eeprom@50 {
 		compatible = "atmel,24c128";
 		reg = <0x50>;
 		pagesize = <32>;
 	};
-
 	rtc: rtc@68 {
 		compatible = "st,m41t62";
 		reg = <0x68>;
 	};
 };
-
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
-
 	imx53-m53evk {
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
@@ -85,14 +69,12 @@
 				MX53_PAD_PATA_DA_0__GPIO7_6		0x80000000
 			>;
 		};
-
 		pinctrl_i2c2: i2c2grp {
 			fsl,pins = <
 				MX53_PAD_EIM_D16__I2C2_SDA		0xc0000000
 				MX53_PAD_EIM_EB2__I2C2_SCL		0xc0000000
 			>;
 		};
-
 		pinctrl_nand: nandgrp {
 			fsl,pins = <
 				MX53_PAD_NANDF_WE_B__EMI_NANDF_WE_B	0x4
@@ -114,7 +96,6 @@
 		};
 	};
 };
-
 &nfc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_nand>;

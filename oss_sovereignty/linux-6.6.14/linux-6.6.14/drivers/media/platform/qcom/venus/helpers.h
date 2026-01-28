@@ -1,16 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
 #ifndef __VENUS_HELPERS_H__
 #define __VENUS_HELPERS_H__
-
 #include <media/videobuf2-v4l2.h>
-
 struct venus_inst;
 struct venus_core;
-
 bool venus_helper_check_codec(struct venus_inst *inst, u32 v4l2_pixfmt);
 struct vb2_v4l2_buffer *venus_helper_find_buf(struct venus_inst *inst,
 					      unsigned int type, u32 idx);

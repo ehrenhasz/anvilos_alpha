@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-
 #define NV04_PFB_BOOT_0						0x00100000
 #	define NV04_PFB_BOOT_0_RAM_AMOUNT			0x00000003
 #	define NV04_PFB_BOOT_0_RAM_AMOUNT_32MB			0x00000000
@@ -60,14 +58,11 @@
 #define NV40_PFB_TSIZE(i)                             (0x00100608 + (i*16))
 #define NV40_PFB_TSTATUS(i)                           (0x0010060c + (i*16))
 #define NV40_PFB_UNK_800					0x00100800
-
 #define NV_PEXTDEV_BOOT_0					0x00101000
 #define NV_PEXTDEV_BOOT_0_RAMCFG				0x0000003c
 #	define NV_PEXTDEV_BOOT_0_STRAP_FP_IFACE_12BIT		(8 << 12)
 #define NV_PEXTDEV_BOOT_3					0x0010100c
-
 #define NV_RAMIN                                           0x00700000
-
 #define NV_RAMHT_HANDLE_OFFSET                             0
 #define NV_RAMHT_CONTEXT_OFFSET                            4
 #    define NV_RAMHT_CONTEXT_VALID                         (1<<31)
@@ -79,13 +74,10 @@
 #    define NV40_RAMHT_CONTEXT_CHANNEL_SHIFT               23
 #    define NV40_RAMHT_CONTEXT_ENGINE_SHIFT                20
 #    define NV40_RAMHT_CONTEXT_INSTANCE_SHIFT              0
-
-/* Some object classes we care about in the drm */
 #define NV_CLASS_DMA_FROM_MEMORY                           0x00000002
 #define NV_CLASS_DMA_TO_MEMORY                             0x00000003
 #define NV_CLASS_NULL                                      0x00000030
 #define NV_CLASS_DMA_IN_MEMORY                             0x0000003D
-
 #define NV03_USER(i)                             (0x00800000+(i*NV03_USER_SIZE))
 #define NV03_USER__SIZE                                                       16
 #define NV10_USER__SIZE                                                       32
@@ -99,7 +91,6 @@
 #define NV03_USER_REF_CNT(i)                     (0x00800048+(i*NV03_USER_SIZE))
 #define NV03_USER_REF_CNT__SIZE                                               16
 #define NV10_USER_REF_CNT__SIZE                                               32
-
 #define NV40_USER(i)                             (0x00c00000+(i*NV40_USER_SIZE))
 #define NV40_USER_SIZE                                                0x00001000
 #define NV40_USER_DMA_PUT(i)                     (0x00c00040+(i*NV40_USER_SIZE))
@@ -108,7 +99,6 @@
 #define NV40_USER_DMA_GET__SIZE                                               32
 #define NV40_USER_REF_CNT(i)                     (0x00c00048+(i*NV40_USER_SIZE))
 #define NV40_USER_REF_CNT__SIZE                                               32
-
 #define NV50_USER(i)                             (0x00c00000+(i*NV50_USER_SIZE))
 #define NV50_USER_SIZE                                                0x00002000
 #define NV50_USER_DMA_PUT(i)                     (0x00c00040+(i*NV50_USER_SIZE))
@@ -117,9 +107,7 @@
 #define NV50_USER_DMA_GET__SIZE                                              128
 #define NV50_USER_REF_CNT(i)                     (0x00c00048+(i*NV50_USER_SIZE))
 #define NV50_USER_REF_CNT__SIZE                                              128
-
 #define NV03_FIFO_SIZE                                     0x8000UL
-
 #define NV03_PMC_BOOT_0                                    0x00000000
 #define NV03_PMC_BOOT_1                                    0x00000004
 #define NV03_PMC_INTR_0                                    0x00000100
@@ -135,9 +123,6 @@
 #define NV03_PMC_ENABLE                                    0x00000200
 #    define NV_PMC_ENABLE_PFIFO                                (1<<8)
 #    define NV_PMC_ENABLE_PGRAPH                              (1<<12)
-/* Disabling the below bit breaks newer (G7X only?) mobile chipsets,
- * the card will hang early on in the X init process.
- */
 #    define NV_PMC_ENABLE_UNK13                               (1<<13)
 #define NV40_PMC_GRAPH_UNITS				   0x00001540
 #define NV40_PMC_BACKLIGHT				   0x000015f0
@@ -146,8 +131,6 @@
 #define NV40_PMC_1704                                      0x00001704
 #define NV40_PMC_1708                                      0x00001708
 #define NV40_PMC_170C                                      0x0000170C
-
-/* probably PMC ? */
 #define NV50_PUNK_BAR0_PRAMIN                              0x00001700
 #define NV50_PUNK_BAR_CFG_BASE                             0x00001704
 #define NV50_PUNK_BAR_CFG_BASE_VALID                          (1<<30)
@@ -156,13 +139,11 @@
 #define NV50_PUNK_BAR3_CTXDMA                              0x0000170C
 #define NV50_PUNK_BAR3_CTXDMA_VALID                           (1<<31)
 #define NV50_PUNK_UNK1710                                  0x00001710
-
 #define NV04_PBUS_PCI_NV_1                                 0x00001804
 #define NV04_PBUS_PCI_NV_19                                0x0000184C
 #define NV04_PBUS_PCI_NV_20				0x00001850
 #	define NV04_PBUS_PCI_NV_20_ROM_SHADOW_DISABLED		(0 << 0)
 #	define NV04_PBUS_PCI_NV_20_ROM_SHADOW_ENABLED		(1 << 0)
-
 #define NV04_PTIMER_INTR_0                                 0x00009100
 #define NV04_PTIMER_INTR_EN_0                              0x00009140
 #define NV04_PTIMER_NUMERATOR                              0x00009200
@@ -170,7 +151,6 @@
 #define NV04_PTIMER_TIME_0                                 0x00009400
 #define NV04_PTIMER_TIME_1                                 0x00009410
 #define NV04_PTIMER_ALARM_0                                0x00009420
-
 #define NV04_PGRAPH_DEBUG_0                                0x00400080
 #define NV04_PGRAPH_DEBUG_1                                0x00400084
 #define NV04_PGRAPH_DEBUG_2                                0x00400088
@@ -337,9 +317,7 @@
 #define NV04_PGRAPH_NOTIFY                                 0x00400714
 #define NV10_PGRAPH_STATE                                  0x00400714
 #define NV10_PGRAPH_NOTIFY                                 0x00400718
-
 #define NV04_PGRAPH_FIFO                                   0x00400720
-
 #define NV04_PGRAPH_BPIXEL                                 0x00400724
 #define NV10_PGRAPH_RDI_INDEX                              0x00400750
 #define NV04_PGRAPH_FFINTFC_ST2                            0x00400754
@@ -435,9 +413,6 @@
 #define NV40_PGRAPH_TLIMIT1(i)                             (0x00406904 + (i*16))
 #define NV40_PGRAPH_TSIZE1(i)                              (0x00406908 + (i*16))
 #define NV40_PGRAPH_TSTATUS1(i)                            (0x0040690C + (i*16))
-
-
-/* It's a guess that this works on NV03. Confirmed on NV04, though */
 #define NV04_PFIFO_DELAY_0                                 0x00002040
 #define NV04_PFIFO_DMA_TIMESLICE                           0x00002044
 #define NV04_PFIFO_NEXT_CHANNEL                            0x00002050
@@ -566,25 +541,15 @@
 #define NV04_PFIFO_CACHE1_DATA(i)                  (0x00003804+(i*8))
 #define NV40_PFIFO_CACHE1_METHOD(i)                (0x00090000+(i*8))
 #define NV40_PFIFO_CACHE1_DATA(i)                  (0x00090004+(i*8))
-
 #define NV_CRTC0_INTSTAT                                   0x00600100
 #define NV_CRTC0_INTEN                                     0x00600140
 #define NV_CRTC1_INTSTAT                                   0x00602100
 #define NV_CRTC1_INTEN                                     0x00602140
 #    define NV_CRTC_INTR_VBLANK                                (1<<0)
-
 #define NV04_PRAMIN						0x00700000
-
-/* Fifo commands. These are not regs, neither masks */
 #define NV03_FIFO_CMD_JUMP                                 0x20000000
 #define NV03_FIFO_CMD_JUMP_OFFSET_MASK                     0x1ffffffc
 #define NV03_FIFO_CMD_REWIND                               (NV03_FIFO_CMD_JUMP | (0 & NV03_FIFO_CMD_JUMP_OFFSET_MASK))
-
-/* This is a partial import from rules-ng, a few things may be duplicated.
- * Eventually we should completely import everything from rules-ng.
- * For the moment check rules-ng for docs.
-  */
-
 #define NV50_PMC                                            0x00000000
 #define NV50_PMC__LEN                                              0x1
 #define NV50_PMC__ESIZE                                         0x2000
@@ -606,7 +571,6 @@
 #    define NV50_PMC_ENABLE                                 0x00000200
 #        define NV50_PMC_ENABLE_PFIFO                           (1<<8)
 #        define NV50_PMC_ENABLE_PGRAPH                         (1<<12)
-
 #define NV50_PCONNECTOR                                     0x0000e000
 #define NV50_PCONNECTOR__LEN                                       0x1
 #define NV50_PCONNECTOR__ESIZE                                  0x1000
@@ -639,7 +603,6 @@
 #    define NV50_PCONNECTOR_I2C_PORT_3                      0x0000e180
 #    define NV50_PCONNECTOR_I2C_PORT_4                      0x0000e240
 #    define NV50_PCONNECTOR_I2C_PORT_5                      0x0000e258
-
 #define NV50_AUXCH_DATA_OUT(i, n)            ((n) * 4 + (i) * 0x50 + 0x0000e4c0)
 #define NV50_AUXCH_DATA_OUT__SIZE                                             4
 #define NV50_AUXCH_DATA_IN(i, n)             ((n) * 4 + (i) * 0x50 + 0x0000e4d0)
@@ -673,7 +636,6 @@
 #define NV50_AUXCH_STAT_REPLY_I2C_NACK                               0x00040000
 #define NV50_AUXCH_STAT_REPLY_I2C_DEFER                              0x00080000
 #define NV50_AUXCH_STAT_COUNT                                        0x0000001f
-
 #define NV50_PBUS                                           0x00088000
 #define NV50_PBUS__LEN                                             0x1
 #define NV50_PBUS__ESIZE                                        0x1000
@@ -682,23 +644,18 @@
 #        define NV50_PBUS_PCI_ID_VENDOR_ID__SHIFT                    0
 #        define NV50_PBUS_PCI_ID_DEVICE_ID                  0xffff0000
 #        define NV50_PBUS_PCI_ID_DEVICE_ID__SHIFT                   16
-
 #define NV50_PFB                                            0x00100000
 #define NV50_PFB__LEN                                              0x1
 #define NV50_PFB__ESIZE                                         0x1000
-
 #define NV50_PEXTDEV                                        0x00101000
 #define NV50_PEXTDEV__LEN                                          0x1
 #define NV50_PEXTDEV__ESIZE                                     0x1000
-
 #define NV50_PROM                                           0x00300000
 #define NV50_PROM__LEN                                             0x1
 #define NV50_PROM__ESIZE                                       0x10000
-
 #define NV50_PGRAPH                                         0x00400000
 #define NV50_PGRAPH__LEN                                           0x1
 #define NV50_PGRAPH__ESIZE                                     0x10000
-
 #define NV50_PDISPLAY                                                0x00610000
 #define NV50_PDISPLAY_OBJECTS                                        0x00610010
 #define NV50_PDISPLAY_INTR_0                                         0x00610020
@@ -737,27 +694,24 @@
 #define NV50_PDISPLAY_EVO_DMA_CB_VALID                               0x00000001
 #define NV50_PDISPLAY_EVO_UNK2(i)                      ((i) * 0x10 + 0x00610208)
 #define NV50_PDISPLAY_EVO_HASH_TAG(i)                  ((i) * 0x10 + 0x0061020c)
-
 #define NV50_PDISPLAY_CURSOR                                         0x00610270
 #define NV50_PDISPLAY_CURSOR_CURSOR_CTRL2(i)           ((i) * 0x10 + 0x00610270)
 #define NV50_PDISPLAY_CURSOR_CURSOR_CTRL2_ON                         0x00000001
 #define NV50_PDISPLAY_CURSOR_CURSOR_CTRL2_STATUS                     0x00030000
 #define NV50_PDISPLAY_CURSOR_CURSOR_CTRL2_STATUS_ACTIVE              0x00010000
-
 #define NV50_PDISPLAY_PIO_CTRL                                       0x00610300
 #define NV50_PDISPLAY_PIO_CTRL_PENDING                               0x80000000
 #define NV50_PDISPLAY_PIO_CTRL_MTHD                                  0x00001ffc
 #define NV50_PDISPLAY_PIO_CTRL_ENABLED                               0x00000001
 #define NV50_PDISPLAY_PIO_DATA                                       0x00610304
-
 #define NV50_PDISPLAY_CRTC_P(i, r)        ((i) * 0x540 + NV50_PDISPLAY_CRTC_##r)
 #define NV50_PDISPLAY_CRTC_C(i, r)    (4 + (i) * 0x540 + NV50_PDISPLAY_CRTC_##r)
-#define NV50_PDISPLAY_CRTC_UNK_0A18 /* mthd 0x0900 */                0x00610a18
+#define NV50_PDISPLAY_CRTC_UNK_0A18                  0x00610a18
 #define NV50_PDISPLAY_CRTC_CLUT_MODE                                 0x00610a24
 #define NV50_PDISPLAY_CRTC_INTERLACE                                 0x00610a48
 #define NV50_PDISPLAY_CRTC_SCALE_CTRL                                0x00610a50
 #define NV50_PDISPLAY_CRTC_CURSOR_CTRL                               0x00610a58
-#define NV50_PDISPLAY_CRTC_UNK0A78 /* mthd 0x0904 */                 0x00610a78
+#define NV50_PDISPLAY_CRTC_UNK0A78                   0x00610a78
 #define NV50_PDISPLAY_CRTC_UNK0AB8                                   0x00610ab8
 #define NV50_PDISPLAY_CRTC_DEPTH                                     0x00610ac8
 #define NV50_PDISPLAY_CRTC_CLOCK                                     0x00610ad0
@@ -767,7 +721,7 @@
 #define NV50_PDISPLAY_CRTC_DISPLAY_TOTAL                             0x00610af8
 #define NV50_PDISPLAY_CRTC_SYNC_DURATION                             0x00610b00
 #define NV50_PDISPLAY_CRTC_MODE_UNK2                                 0x00610b08
-#define NV50_PDISPLAY_CRTC_UNK_0B10 /* mthd 0x0828 */                0x00610b10
+#define NV50_PDISPLAY_CRTC_UNK_0B10                  0x00610b10
 #define NV50_PDISPLAY_CRTC_FB_SIZE                                   0x00610b18
 #define NV50_PDISPLAY_CRTC_FB_PITCH                                  0x00610b20
 #define NV50_PDISPLAY_CRTC_FB_PITCH_LINEAR                           0x00100000
@@ -776,7 +730,6 @@
 #define NV50_PDISPLAY_CRTC_REAL_RES                                  0x00610b40
 #define NV50_PDISPLAY_CRTC_SCALE_RES1                                0x00610b48
 #define NV50_PDISPLAY_CRTC_SCALE_RES2                                0x00610b50
-
 #define NV50_PDISPLAY_DAC_MODE_CTRL_P(i)                (0x00610b58 + (i) * 0x8)
 #define NV50_PDISPLAY_DAC_MODE_CTRL_C(i)                (0x00610b5c + (i) * 0x8)
 #define NV50_PDISPLAY_SOR_MODE_CTRL_P(i)                (0x00610b70 + (i) * 0x8)
@@ -787,22 +740,17 @@
 #define NV50_PDISPLAY_DAC_MODE_CTRL2_C(i)               (0x00610be0 + (i) * 0x8)
 #define NV90_PDISPLAY_SOR_MODE_CTRL_P(i)                (0x00610794 + (i) * 0x8)
 #define NV90_PDISPLAY_SOR_MODE_CTRL_C(i)                (0x00610798 + (i) * 0x8)
-
 #define NV50_PDISPLAY_CRTC_CLK                                       0x00614000
 #define NV50_PDISPLAY_CRTC_CLK_CTRL1(i)                 ((i) * 0x800 + 0x614100)
 #define NV50_PDISPLAY_CRTC_CLK_CTRL1_CONNECTED                       0x00000600
 #define NV50_PDISPLAY_CRTC_CLK_VPLL_A(i)                ((i) * 0x800 + 0x614104)
 #define NV50_PDISPLAY_CRTC_CLK_VPLL_B(i)                ((i) * 0x800 + 0x614108)
 #define NV50_PDISPLAY_CRTC_CLK_CTRL2(i)                 ((i) * 0x800 + 0x614200)
-
 #define NV50_PDISPLAY_DAC_CLK                                        0x00614000
 #define NV50_PDISPLAY_DAC_CLK_CTRL2(i)                  ((i) * 0x800 + 0x614280)
-
 #define NV50_PDISPLAY_SOR_CLK                                        0x00614000
 #define NV50_PDISPLAY_SOR_CLK_CTRL2(i)                  ((i) * 0x800 + 0x614300)
-
 #define NV50_PDISPLAY_VGACRTC(r)                                ((r) + 0x619400)
-
 #define NV50_PDISPLAY_DAC                                            0x0061a000
 #define NV50_PDISPLAY_DAC_DPMS_CTRL(i)                (0x0061a004 + (i) * 0x800)
 #define NV50_PDISPLAY_DAC_DPMS_CTRL_HSYNC_OFF                        0x00000001
@@ -816,7 +764,6 @@
 #define NV50_PDISPLAY_DAC_LOAD_CTRL_DONE                             0x80000000
 #define NV50_PDISPLAY_DAC_CLK_CTRL1(i)                (0x0061a010 + (i) * 0x800)
 #define NV50_PDISPLAY_DAC_CLK_CTRL1_CONNECTED                        0x00000600
-
 #define NV50_PDISPLAY_SOR                                            0x0061c000
 #define NV50_PDISPLAY_SOR_DPMS_CTRL(i)                (0x0061c004 + (i) * 0x800)
 #define NV50_PDISPLAY_SOR_DPMS_CTRL_PENDING                          0x80000000
@@ -849,11 +796,9 @@
 #define NV50_SOR_DP_UNK120(i, l)         (0x0061c120 + (i) * 0x800 + (l) * 0x80)
 #define NV50_SOR_DP_SCFG(i, l)           (0x0061c128 + (i) * 0x800 + (l) * 0x80)
 #define NV50_SOR_DP_UNK130(i, l)         (0x0061c130 + (i) * 0x800 + (l) * 0x80)
-
 #define NV50_PDISPLAY_USER(i)                        ((i) * 0x1000 + 0x00640000)
 #define NV50_PDISPLAY_USER_PUT(i)                    ((i) * 0x1000 + 0x00640000)
 #define NV50_PDISPLAY_USER_GET(i)                    ((i) * 0x1000 + 0x00640004)
-
 #define NV50_PDISPLAY_CURSOR_USER                                    0x00647000
 #define NV50_PDISPLAY_CURSOR_USER_POS_CTRL(i)        ((i) * 0x1000 + 0x00647080)
 #define NV50_PDISPLAY_CURSOR_USER_POS(i)             ((i) * 0x1000 + 0x00647084)

@@ -1,7 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
 #pragma once
-
 #define TASK_COMM_LEN 16
 #define MAX_ANCESTORS 4
 #define MAX_PATH 256
@@ -13,29 +10,21 @@
 #define MAX_PATH_DEPTH 32
 #define MAX_FILEPATH_LENGTH (MAX_PATH_DEPTH * MAX_PATH)
 #define MAX_CGROUPS_PATH_DEPTH 8
-
 #define MAX_METADATA_PAYLOAD_LEN TASK_COMM_LEN
-
 #define MAX_CGROUP_PAYLOAD_LEN \
 	(MAX_PATH * 2 + (MAX_PATH * MAX_CGROUPS_PATH_DEPTH))
-
 #define MAX_CAP_PAYLOAD_LEN (MAX_METADATA_PAYLOAD_LEN + MAX_CGROUP_PAYLOAD_LEN)
-
 #define MAX_SYSCTL_PAYLOAD_LEN \
 	(MAX_METADATA_PAYLOAD_LEN + MAX_CGROUP_PAYLOAD_LEN + CTL_MAXNAME + MAX_PATH)
-
 #define MAX_KILL_PAYLOAD_LEN \
 	(MAX_METADATA_PAYLOAD_LEN + MAX_CGROUP_PAYLOAD_LEN + TASK_COMM_LEN + \
 	 KILL_TARGET_LEN)
-
 #define MAX_EXEC_PAYLOAD_LEN \
 	(MAX_METADATA_PAYLOAD_LEN + MAX_CGROUP_PAYLOAD_LEN + MAX_FILENAME_LEN + \
 	 MAX_ARGS_LEN + MAX_ENVIRON_LEN)
-
 #define MAX_FILEMOD_PAYLOAD_LEN \
 	(MAX_METADATA_PAYLOAD_LEN + MAX_CGROUP_PAYLOAD_LEN + MAX_FILEPATH_LENGTH + \
 	 MAX_FILEPATH_LENGTH)
-
 enum data_type {
 	INVALID_EVENT,
 	EXEC_EVENT,
@@ -45,20 +34,17 @@ enum data_type {
 	FILEMOD_EVENT,
 	MAX_DATA_TYPE_EVENT
 };
-
 enum filemod_type {
 	FMOD_OPEN,
 	FMOD_LINK,
 	FMOD_SYMLINK,
 };
-
 struct ancestors_data_t {
 	pid_t ancestor_pids[MAX_ANCESTORS];
 	uint32_t ancestor_exec_ids[MAX_ANCESTORS];
 	uint64_t ancestor_start_times[MAX_ANCESTORS];
 	uint32_t num_ancestors;
 };
-
 struct var_metadata_t {
 	enum data_type type;
 	pid_t pid;
@@ -71,7 +57,6 @@ struct var_metadata_t {
 	uint64_t bpf_stats_start_ktime_ns;
 	uint8_t comm_length;
 };
-
 struct cgroup_data_t {
 	ino_t cgroup_root_inode;
 	ino_t cgroup_proc_inode;
@@ -82,7 +67,6 @@ struct cgroup_data_t {
 	uint16_t cgroup_full_length;
 	int cgroup_full_path_root_pos;
 };
-
 struct var_sysctl_data_t {
 	struct var_metadata_t meta;
 	struct cgroup_data_t cgroup_data;
@@ -91,7 +75,6 @@ struct var_sysctl_data_t {
 	uint16_t sysctl_path_length;
 	char payload[MAX_SYSCTL_PAYLOAD_LEN];
 };
-
 struct var_kill_data_t {
 	struct var_metadata_t meta;
 	struct cgroup_data_t cgroup_data;
@@ -105,7 +88,6 @@ struct var_kill_data_t {
 	char payload[MAX_KILL_PAYLOAD_LEN];
 	size_t payload_length;
 };
-
 struct var_exec_data_t {
 	struct var_metadata_t meta;
 	struct cgroup_data_t cgroup_data;
@@ -118,7 +100,6 @@ struct var_exec_data_t {
 	uint16_t environment_length;
 	char payload[MAX_EXEC_PAYLOAD_LEN];
 };
-
 struct var_fork_data_t {
 	struct var_metadata_t meta;
 	pid_t parent_pid;
@@ -126,7 +107,6 @@ struct var_fork_data_t {
 	uint64_t parent_start_time;
 	char payload[MAX_METADATA_PAYLOAD_LEN];
 };
-
 struct var_filemod_data_t {
 	struct var_metadata_t meta;
 	struct cgroup_data_t cgroup_data;
@@ -140,7 +120,6 @@ struct var_filemod_data_t {
 	uint16_t dst_filepath_length;
 	char payload[MAX_FILEMOD_PAYLOAD_LEN];
 };
-
 struct profiler_config_struct {
 	bool fetch_cgroups_from_bpf;
 	ino_t cgroup_fs_inode;
@@ -152,18 +131,15 @@ struct profiler_config_struct {
 	bool read_environ_from_exec;
 	bool enable_cgroup_v1_resolver;
 };
-
 struct bpf_func_stats_data {
 	uint64_t time_elapsed_ns;
 	uint64_t num_executions;
 	uint64_t num_perf_events;
 };
-
 struct bpf_func_stats_ctx {
 	uint64_t start_time_ns;
 	struct bpf_func_stats_data* bpf_func_stats_data_val;
 };
-
 enum bpf_function_id {
 	profiler_bpf_proc_sys_write,
 	profiler_bpf_sched_process_exec,

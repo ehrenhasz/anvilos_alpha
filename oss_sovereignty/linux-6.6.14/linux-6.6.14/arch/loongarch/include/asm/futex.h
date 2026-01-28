@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
- */
 #ifndef _ASM_FUTEX_H
 #define _ASM_FUTEX_H
-
 #include <linux/futex.h>
 #include <linux/uaccess.h>
 #include <asm/asm-extable.h>
 #include <asm/barrier.h>
 #include <asm/errno.h>
-
 #define __futex_atomic_op(insn, ret, oldval, uaddr, oparg)		\
 {									\
 	__asm__ __volatile__(						\
@@ -26,14 +20,11 @@
 	: "0" (0), "ZC" (*uaddr), "Jr" (oparg)			\
 	: "memory", "t0");					\
 }
-
 static inline int
 arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
 {
 	int oldval = 0, ret = 0;
-
 	pagefault_disable();
-
 	switch (op) {
 	case FUTEX_OP_SET:
 		__futex_atomic_op("move $t0, %z5", ret, oldval, uaddr, oparg);
@@ -53,24 +44,18 @@ arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
 	default:
 		ret = -ENOSYS;
 	}
-
 	pagefault_enable();
-
 	if (!ret)
 		*oval = oldval;
-
 	return ret;
 }
-
 static inline int
 futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr, u32 oldval, u32 newval)
 {
 	int ret = 0;
 	u32 val = 0;
-
 	if (!access_ok(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	__asm__ __volatile__(
 	"# futex_atomic_cmpxchg_inatomic			\n"
 	"1:	ll.w	%1, %3					\n"
@@ -85,10 +70,7 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr, u32 oldval, u32 newv
 	: "+r" (ret), "=&r" (val), "=ZC" (*uaddr)
 	: "ZC" (*uaddr), "Jr" (oldval), "Jr" (newval)
 	: "memory", "t0");
-
 	*uval = val;
-
 	return ret;
 }
-
-#endif /* _ASM_FUTEX_H */
+#endif  

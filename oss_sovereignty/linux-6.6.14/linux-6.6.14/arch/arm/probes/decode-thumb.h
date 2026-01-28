@@ -1,28 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * arch/arm/probes/decode-thumb.h
- *
- * Copyright 2013 Linaro Ltd.
- * Written by: David A. Long
- */
-
 #ifndef _ARM_KERNEL_PROBES_THUMB_H
 #define  _ARM_KERNEL_PROBES_THUMB_H
-
 #include "decode.h"
-
-/*
- * True if current instruction is in an IT block.
- */
 #define in_it_block(cpsr)	((cpsr & 0x06000c00) != 0x00000000)
-
-/*
- * Return the condition code to check for the currently executing instruction.
- * This is in ITSTATE<7:4> which is in CPSR<15:12> but is only valid if
- * in_it_block returns true.
- */
 #define current_cond(cpsr)	((cpsr >> 12) & 0xf)
-
 enum probes_t32_action {
 	PROBES_T32_EMULATE_NONE,
 	PROBES_T32_SIMULATE_NOP,
@@ -55,7 +35,6 @@ enum probes_t32_action {
 	PROBES_T32_MUL_ADD_LONG,
 	NUM_PROBES_T32_ACTIONS
 };
-
 enum probes_t16_action {
 	PROBES_T16_ADD_SP,
 	PROBES_T16_CBZ,
@@ -79,10 +58,8 @@ enum probes_t16_action {
 	PROBES_T16_BRANCH,
 	NUM_PROBES_T16_ACTIONS
 };
-
 extern const union decode_item probes_decode_thumb32_table[];
 extern const union decode_item probes_decode_thumb16_table[];
-
 enum probes_insn __kprobes
 thumb16_probes_decode_insn(probes_opcode_t insn, struct arch_probes_insn *asi,
 		bool emulate, const union decode_action *actions,
@@ -91,5 +68,4 @@ enum probes_insn __kprobes
 thumb32_probes_decode_insn(probes_opcode_t insn, struct arch_probes_insn *asi,
 		bool emulate, const union decode_action *actions,
 		const struct decode_checker *checkers[]);
-
 #endif

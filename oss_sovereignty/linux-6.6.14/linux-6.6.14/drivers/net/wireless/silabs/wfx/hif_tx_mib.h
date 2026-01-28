@@ -1,22 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Implementation of the host-to-chip MIBs of the hardware API.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- * Copyright (C) 2010, ST-Ericsson SA
- */
 #ifndef WFX_HIF_TX_MIB_H
 #define WFX_HIF_TX_MIB_H
-
 #include <linux/types.h>
-
 struct sk_buff;
 struct wfx_vif;
 struct wfx_dev;
 struct wfx_hif_ie_table_entry;
 struct wfx_hif_mib_extended_count_table;
-
 int wfx_hif_set_output_power(struct wfx_vif *wvif, int val);
 int wfx_hif_set_beacon_wakeup_period(struct wfx_vif *wvif,
 				     unsigned int dtim_interval, unsigned int listen_interval);
@@ -44,5 +33,4 @@ int wfx_hif_erp_use_protection(struct wfx_vif *wvif, bool enable);
 int wfx_hif_slot_time(struct wfx_vif *wvif, int val);
 int wfx_hif_wep_default_key_id(struct wfx_vif *wvif, int val);
 int wfx_hif_rts_threshold(struct wfx_vif *wvif, int val);
-
 #endif

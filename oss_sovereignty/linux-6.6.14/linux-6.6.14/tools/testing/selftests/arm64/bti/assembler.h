@@ -1,20 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019  Arm Limited
- * Original author: Dave Martin <Dave.Martin@arm.com>
- */
-
 #ifndef ASSEMBLER_H
 #define ASSEMBLER_H
-
 #define NT_GNU_PROPERTY_TYPE_0	5
 #define GNU_PROPERTY_AARCH64_FEATURE_1_AND	0xc0000000
-
-/* Bits for GNU_PROPERTY_AARCH64_FEATURE_1_BTI */
 #define GNU_PROPERTY_AARCH64_FEATURE_1_BTI	(1U << 0)
 #define GNU_PROPERTY_AARCH64_FEATURE_1_PAC	(1U << 1)
-
-
 .macro startfn name:req
 	.globl \name
 \name:
@@ -24,7 +13,6 @@
 		.purgem endfn
 	.endm
 .endm
-
 .macro emit_aarch64_feature_1_and
 	.pushsection .note.gnu.property, "a"
 	.align	3
@@ -48,33 +36,25 @@
 6:
 	.popsection
 .endm
-
 .macro paciasp
 	hint	0x19
 .endm
-
 .macro autiasp
 	hint	0x1d
 .endm
-
 .macro __bti_
 	hint	0x20
 .endm
-
 .macro __bti_c
 	hint	0x22
 .endm
-
 .macro __bti_j
 	hint	0x24
 .endm
-
 .macro __bti_jc
 	hint	0x26
 .endm
-
 .macro bti what=
 	__bti_\what
 .endm
-
-#endif /* ! ASSEMBLER_H */
+#endif  

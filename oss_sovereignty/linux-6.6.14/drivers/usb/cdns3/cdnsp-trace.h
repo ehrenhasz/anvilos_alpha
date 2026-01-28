@@ -1,39 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Cadence CDNSP DRD Driver.
- * Trace support header file
- *
- * Copyright (C) 2020 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- *
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cdnsp-dev
-
-/*
- * The TRACE_SYSTEM_VAR defaults to TRACE_SYSTEM, but must be a
- * legitimate C variable. It is not exported to user space.
- */
 #undef TRACE_SYSTEM_VAR
 #define TRACE_SYSTEM_VAR cdnsp_dev
-
 #if !defined(__CDNSP_DEV_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __CDNSP_DEV_TRACE_H
-
 #include <linux/tracepoint.h>
 #include "cdnsp-gadget.h"
 #include "cdnsp-debug.h"
-
-/*
- * There is limitation for single buffer size in TRACEPOINT subsystem.
- * By default TRACE_BUF_SIZE is 1024, so no all data will be logged.
- * To show more data this must be increased. In most cases the default
- * value is sufficient.
- */
 #define CDNSP_MSG_MAX 500
-
 DECLARE_EVENT_CLASS(cdnsp_log_ep,
 	TP_PROTO(struct cdnsp_ep *pep, u32 stream_id),
 	TP_ARGS(pep, stream_id),
@@ -63,37 +37,30 @@ DECLARE_EVENT_CLASS(cdnsp_log_ep,
 		  __entry->enabled, __entry->num_streams, __entry->td_count,
 		  __entry->first_prime_det, __entry->drbls_count)
 );
-
 DEFINE_EVENT(cdnsp_log_ep, cdnsp_tr_drbl,
 	TP_PROTO(struct cdnsp_ep *pep, u32 stream_id),
 	TP_ARGS(pep, stream_id)
 );
-
 DEFINE_EVENT(cdnsp_log_ep, cdnsp_wait_for_prime,
 	TP_PROTO(struct cdnsp_ep *pep, u32 stream_id),
 	TP_ARGS(pep, stream_id)
 );
-
 DEFINE_EVENT(cdnsp_log_ep, cdnsp_ep_list_empty_with_skip,
 	TP_PROTO(struct cdnsp_ep *pep, u32 stream_id),
 	TP_ARGS(pep, stream_id)
 );
-
 DEFINE_EVENT(cdnsp_log_ep, cdnsp_ep_enable_end,
 	TP_PROTO(struct cdnsp_ep *pep, u32 stream_id),
 	TP_ARGS(pep, stream_id)
 );
-
 DEFINE_EVENT(cdnsp_log_ep, cdnsp_ep_disable_end,
 	TP_PROTO(struct cdnsp_ep *pep, u32 stream_id),
 	TP_ARGS(pep, stream_id)
 );
-
 DEFINE_EVENT(cdnsp_log_ep, cdnsp_ep_busy_try_halt_again,
 	TP_PROTO(struct cdnsp_ep *pep, u32 stream_id),
 	TP_ARGS(pep, stream_id)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_enable_disable,
 	TP_PROTO(int set),
 	TP_ARGS(set),
@@ -105,32 +72,26 @@ DECLARE_EVENT_CLASS(cdnsp_log_enable_disable,
 	),
 	TP_printk("%s", __entry->set ? "enabled" : "disabled")
 );
-
 DEFINE_EVENT(cdnsp_log_enable_disable, cdnsp_pullup,
 	TP_PROTO(int set),
 	TP_ARGS(set)
 );
-
 DEFINE_EVENT(cdnsp_log_enable_disable, cdnsp_u1,
 	TP_PROTO(int set),
 	TP_ARGS(set)
 );
-
 DEFINE_EVENT(cdnsp_log_enable_disable, cdnsp_u2,
 	TP_PROTO(int set),
 	TP_ARGS(set)
 );
-
 DEFINE_EVENT(cdnsp_log_enable_disable, cdnsp_lpm,
 	TP_PROTO(int set),
 	TP_ARGS(set)
 );
-
 DEFINE_EVENT(cdnsp_log_enable_disable, cdnsp_may_wakeup,
 	TP_PROTO(int set),
 	TP_ARGS(set)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_simple,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg),
@@ -142,52 +103,42 @@ DECLARE_EVENT_CLASS(cdnsp_log_simple,
 	),
 	TP_printk("%s", __get_str(text))
 );
-
 DEFINE_EVENT(cdnsp_log_simple, cdnsp_exit,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 DEFINE_EVENT(cdnsp_log_simple, cdnsp_init,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 DEFINE_EVENT(cdnsp_log_simple, cdnsp_slot_id,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 DEFINE_EVENT(cdnsp_log_simple, cdnsp_no_room_on_ring,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 DEFINE_EVENT(cdnsp_log_simple, cdnsp_ep0_status_stage,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 DEFINE_EVENT(cdnsp_log_simple, cdnsp_ep0_request,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 DEFINE_EVENT(cdnsp_log_simple, cdnsp_ep0_set_config,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 DEFINE_EVENT(cdnsp_log_simple, cdnsp_ep0_halted,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 DEFINE_EVENT(cdnsp_log_simple, cdnsp_ep_halt,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 TRACE_EVENT(cdnsp_looking_trb_in_td,
 	TP_PROTO(dma_addr_t suspect, dma_addr_t trb_start, dma_addr_t trb_end,
 		 dma_addr_t curr_seg, dma_addr_t end_seg),
@@ -211,7 +162,6 @@ TRACE_EVENT(cdnsp_looking_trb_in_td,
 		  &__entry->suspect, &__entry->trb_start, &__entry->trb_end,
 		  &__entry->curr_seg, &__entry->end_seg)
 );
-
 TRACE_EVENT(cdnsp_port_info,
 	TP_PROTO(__le32 __iomem *addr, u32 offset, u32 count, u32 rev),
 	TP_ARGS(addr, offset, count, rev),
@@ -230,7 +180,6 @@ TRACE_EVENT(cdnsp_port_info,
 	TP_printk("Ext Cap %p, port offset = %u, count = %u, rev = 0x%x",
 		  __entry->addr, __entry->offset, __entry->count, __entry->rev)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_deq_state,
 	TP_PROTO(struct cdnsp_dequeue_state *state),
 	TP_ARGS(state),
@@ -256,12 +205,10 @@ DECLARE_EVENT_CLASS(cdnsp_log_deq_state,
 		  &__entry->deq_ptr_dma
 	)
 );
-
 DEFINE_EVENT(cdnsp_log_deq_state, cdnsp_new_deq_state,
 	TP_PROTO(struct cdnsp_dequeue_state *state),
 	TP_ARGS(state)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_ctrl,
 	TP_PROTO(struct usb_ctrlrequest *ctrl),
 	TP_ARGS(ctrl),
@@ -285,12 +232,10 @@ DECLARE_EVENT_CLASS(cdnsp_log_ctrl,
 					__entry->wIndex, __entry->wLength)
 	)
 );
-
 DEFINE_EVENT(cdnsp_log_ctrl, cdnsp_ctrl_req,
 	TP_PROTO(struct usb_ctrlrequest *ctrl),
 	TP_ARGS(ctrl)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_bounce,
 	TP_PROTO(struct cdnsp_request *preq, u32 new_buf_len, u32 offset,
 		 dma_addr_t dma, unsigned int unalign),
@@ -314,25 +259,21 @@ DECLARE_EVENT_CLASS(cdnsp_log_bounce,
 		  __entry->offset, &__entry->dma, __entry->unalign
 	)
 );
-
 DEFINE_EVENT(cdnsp_log_bounce, cdnsp_bounce_align_td_split,
 	TP_PROTO(struct cdnsp_request *preq, u32 new_buf_len, u32 offset,
 		 dma_addr_t dma, unsigned int unalign),
 	TP_ARGS(preq, new_buf_len, offset, dma, unalign)
 );
-
 DEFINE_EVENT(cdnsp_log_bounce, cdnsp_bounce_map,
 	TP_PROTO(struct cdnsp_request *preq, u32 new_buf_len, u32 offset,
 		 dma_addr_t dma, unsigned int unalign),
 	TP_ARGS(preq, new_buf_len, offset, dma, unalign)
 );
-
 DEFINE_EVENT(cdnsp_log_bounce, cdnsp_bounce_unmap,
 	TP_PROTO(struct cdnsp_request *preq, u32 new_buf_len, u32 offset,
 		 dma_addr_t dma, unsigned int unalign),
 	TP_ARGS(preq, new_buf_len, offset, dma, unalign)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_trb,
 	TP_PROTO(struct cdnsp_ring *ring, struct cdnsp_generic_trb *trb),
 	TP_ARGS(ring, trb),
@@ -354,7 +295,6 @@ DECLARE_EVENT_CLASS(cdnsp_log_trb,
 		__entry->trb = (union cdnsp_trb *)trb;
 		__entry->trb_dma = cdnsp_trb_virt_to_dma(ring->deq_seg,
 							 (union cdnsp_trb *)trb);
-
 	),
 	TP_printk("%s: %s trb: %p(%pad)", cdnsp_ring_type_string(__entry->type),
 		  cdnsp_decode_trb(__get_buf(CDNSP_MSG_MAX), CDNSP_MSG_MAX,
@@ -363,47 +303,38 @@ DECLARE_EVENT_CLASS(cdnsp_log_trb,
 				   __entry->trb, &__entry->trb_dma
 	)
 );
-
 DEFINE_EVENT(cdnsp_log_trb, cdnsp_handle_event,
 	TP_PROTO(struct cdnsp_ring *ring, struct cdnsp_generic_trb *trb),
 	TP_ARGS(ring, trb)
 );
-
 DEFINE_EVENT(cdnsp_log_trb, cdnsp_trb_without_td,
 	TP_PROTO(struct cdnsp_ring *ring, struct cdnsp_generic_trb *trb),
 	TP_ARGS(ring, trb)
 );
-
 DEFINE_EVENT(cdnsp_log_trb, cdnsp_handle_command,
 	TP_PROTO(struct cdnsp_ring *ring, struct cdnsp_generic_trb *trb),
 	TP_ARGS(ring, trb)
 );
-
 DEFINE_EVENT(cdnsp_log_trb, cdnsp_handle_transfer,
 	TP_PROTO(struct cdnsp_ring *ring, struct cdnsp_generic_trb *trb),
 	TP_ARGS(ring, trb)
 );
-
 DEFINE_EVENT(cdnsp_log_trb, cdnsp_queue_trb,
 	TP_PROTO(struct cdnsp_ring *ring, struct cdnsp_generic_trb *trb),
 	TP_ARGS(ring, trb)
 );
-
 DEFINE_EVENT(cdnsp_log_trb, cdnsp_cmd_wait_for_compl,
 	TP_PROTO(struct cdnsp_ring *ring, struct cdnsp_generic_trb *trb),
 	TP_ARGS(ring, trb)
 );
-
 DEFINE_EVENT(cdnsp_log_trb, cdnsp_cmd_timeout,
 	TP_PROTO(struct cdnsp_ring *ring, struct cdnsp_generic_trb *trb),
 	TP_ARGS(ring, trb)
 );
-
 DEFINE_EVENT(cdnsp_log_trb, cdnsp_defered_event,
 	TP_PROTO(struct cdnsp_ring *ring, struct cdnsp_generic_trb *trb),
 	TP_ARGS(ring, trb)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_pdev,
 	TP_PROTO(struct cdnsp_device *pdev),
 	TP_ARGS(pdev),
@@ -427,27 +358,22 @@ DECLARE_EVENT_CLASS(cdnsp_log_pdev,
 		  &__entry->out_ctx, __entry->port_num
 	)
 );
-
 DEFINE_EVENT(cdnsp_log_pdev, cdnsp_alloc_priv_device,
 	TP_PROTO(struct cdnsp_device *vdev),
 	TP_ARGS(vdev)
 );
-
 DEFINE_EVENT(cdnsp_log_pdev, cdnsp_free_priv_device,
 	TP_PROTO(struct cdnsp_device *vdev),
 	TP_ARGS(vdev)
 );
-
 DEFINE_EVENT(cdnsp_log_pdev, cdnsp_setup_device,
 	TP_PROTO(struct cdnsp_device *vdev),
 	TP_ARGS(vdev)
 );
-
 DEFINE_EVENT(cdnsp_log_pdev, cdnsp_setup_addressable_priv_device,
 	TP_PROTO(struct cdnsp_device *vdev),
 	TP_ARGS(vdev)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_request,
 	TP_PROTO(struct cdnsp_request *req),
 	TP_ARGS(req),
@@ -467,7 +393,6 @@ DECLARE_EVENT_CLASS(cdnsp_log_request,
 		__field(struct scatterlist*, sg)
 		__field(unsigned int, num_sgs)
 		__field(unsigned int, num_mapped_sgs)
-
 	),
 	TP_fast_assign(
 		__assign_str(name, req->pep->name);
@@ -498,42 +423,34 @@ DECLARE_EVENT_CLASS(cdnsp_log_request,
 		  __entry->sg, __entry->num_sgs, __entry->num_mapped_sgs
 		)
 );
-
 DEFINE_EVENT(cdnsp_log_request, cdnsp_request_enqueue,
 	TP_PROTO(struct cdnsp_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(cdnsp_log_request, cdnsp_request_enqueue_busy,
 	TP_PROTO(struct cdnsp_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(cdnsp_log_request, cdnsp_request_enqueue_error,
 	TP_PROTO(struct cdnsp_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(cdnsp_log_request, cdnsp_request_dequeue,
 	TP_PROTO(struct cdnsp_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(cdnsp_log_request, cdnsp_request_giveback,
 	TP_PROTO(struct cdnsp_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(cdnsp_log_request, cdnsp_alloc_request,
 	TP_PROTO(struct cdnsp_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(cdnsp_log_request, cdnsp_free_request,
 	TP_PROTO(struct cdnsp_request *req),
 	TP_ARGS(req)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_ep_ctx,
 	TP_PROTO(struct cdnsp_ep_ctx *ctx),
 	TP_ARGS(ctx),
@@ -554,47 +471,38 @@ DECLARE_EVENT_CLASS(cdnsp_log_ep_ctx,
 						__entry->deq, __entry->tx_info)
 	)
 );
-
 DEFINE_EVENT(cdnsp_log_ep_ctx, cdnsp_ep_disabled,
 	TP_PROTO(struct cdnsp_ep_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_ep_ctx, cdnsp_ep_stopped_or_disabled,
 	TP_PROTO(struct cdnsp_ep_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_ep_ctx, cdnsp_remove_request,
 	TP_PROTO(struct cdnsp_ep_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_ep_ctx, cdnsp_handle_cmd_stop_ep,
 	TP_PROTO(struct cdnsp_ep_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_ep_ctx, cdnsp_handle_cmd_flush_ep,
 	TP_PROTO(struct cdnsp_ep_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_ep_ctx, cdnsp_handle_cmd_set_deq_ep,
 	TP_PROTO(struct cdnsp_ep_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_ep_ctx, cdnsp_handle_cmd_reset_ep,
 	TP_PROTO(struct cdnsp_ep_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_ep_ctx, cdnsp_handle_cmd_config_ep,
 	TP_PROTO(struct cdnsp_ep_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_slot_ctx,
 	TP_PROTO(struct cdnsp_slot_ctx *ctx),
 	TP_ARGS(ctx),
@@ -616,52 +524,42 @@ DECLARE_EVENT_CLASS(cdnsp_log_slot_ctx,
 						  __entry->state)
 	)
 );
-
 DEFINE_EVENT(cdnsp_log_slot_ctx, cdnsp_slot_already_in_default,
 	TP_PROTO(struct cdnsp_slot_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_slot_ctx, cdnsp_handle_cmd_enable_slot,
 	TP_PROTO(struct cdnsp_slot_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_slot_ctx, cdnsp_handle_cmd_disable_slot,
 	TP_PROTO(struct cdnsp_slot_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_slot_ctx, cdnsp_reset_device,
 	TP_PROTO(struct cdnsp_slot_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_slot_ctx, cdnsp_setup_device_slot,
 	TP_PROTO(struct cdnsp_slot_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_slot_ctx, cdnsp_handle_cmd_addr_dev,
 	TP_PROTO(struct cdnsp_slot_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_slot_ctx, cdnsp_handle_cmd_reset_dev,
 	TP_PROTO(struct cdnsp_slot_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_slot_ctx, cdnsp_handle_cmd_set_deq,
 	TP_PROTO(struct cdnsp_slot_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DEFINE_EVENT(cdnsp_log_slot_ctx, cdnsp_configure_endpoint,
 	TP_PROTO(struct cdnsp_slot_ctx *ctx),
 	TP_ARGS(ctx)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_td_info,
 	TP_PROTO(struct cdnsp_request *preq),
 	TP_ARGS(preq),
@@ -688,12 +586,10 @@ DECLARE_EVENT_CLASS(cdnsp_log_td_info,
 		  __entry->last_trb
 		)
 );
-
 DEFINE_EVENT(cdnsp_log_td_info, cdnsp_remove_request_td,
 	TP_PROTO(struct cdnsp_request *preq),
 	TP_ARGS(preq)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_ring,
 	TP_PROTO(struct cdnsp_ring *ring),
 	TP_ARGS(ring),
@@ -737,37 +633,30 @@ DECLARE_EVENT_CLASS(cdnsp_log_ring,
 		  __entry->cycle_state
 		)
 );
-
 DEFINE_EVENT(cdnsp_log_ring, cdnsp_ring_alloc,
 	TP_PROTO(struct cdnsp_ring *ring),
 	TP_ARGS(ring)
 );
-
 DEFINE_EVENT(cdnsp_log_ring, cdnsp_ring_free,
 	TP_PROTO(struct cdnsp_ring *ring),
 	TP_ARGS(ring)
 );
-
 DEFINE_EVENT(cdnsp_log_ring, cdnsp_set_stream_ring,
 	TP_PROTO(struct cdnsp_ring *ring),
 	TP_ARGS(ring)
 );
-
 DEFINE_EVENT(cdnsp_log_ring, cdnsp_ring_expansion,
 	TP_PROTO(struct cdnsp_ring *ring),
 	TP_ARGS(ring)
 );
-
 DEFINE_EVENT(cdnsp_log_ring, cdnsp_inc_enq,
 	TP_PROTO(struct cdnsp_ring *ring),
 	TP_ARGS(ring)
 );
-
 DEFINE_EVENT(cdnsp_log_ring, cdnsp_inc_deq,
 	TP_PROTO(struct cdnsp_ring *ring),
 	TP_ARGS(ring)
 );
-
 DECLARE_EVENT_CLASS(cdnsp_log_portsc,
 		TP_PROTO(u32 portnum, u32 portsc),
 		TP_ARGS(portnum, portsc),
@@ -785,17 +674,14 @@ DECLARE_EVENT_CLASS(cdnsp_log_portsc,
 					      __entry->portsc)
 			)
 );
-
 DEFINE_EVENT(cdnsp_log_portsc, cdnsp_handle_port_status,
 		TP_PROTO(u32 portnum, u32 portsc),
 		TP_ARGS(portnum, portsc)
 );
-
 DEFINE_EVENT(cdnsp_log_portsc, cdnsp_link_state_changed,
 		TP_PROTO(u32 portnum, u32 portsc),
 		TP_ARGS(portnum, portsc)
 );
-
 TRACE_EVENT(cdnsp_stream_number,
 	TP_PROTO(struct cdnsp_ep *pep, int num_stream_ctxs, int num_streams),
 	TP_ARGS(pep, num_stream_ctxs, num_streams),
@@ -812,15 +698,9 @@ TRACE_EVENT(cdnsp_stream_number,
 		  __get_str(name), __entry->num_stream_ctxs,
 		  __entry->num_streams)
 );
-
-#endif /* __CDNSP_TRACE_H */
-
-/* this part must be outside header guard */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
-
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE cdnsp-trace
-
 #include <trace/define_trace.h>

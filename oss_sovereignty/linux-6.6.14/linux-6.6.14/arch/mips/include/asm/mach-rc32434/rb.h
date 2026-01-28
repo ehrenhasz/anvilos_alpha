@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *
- *  Copyright (C) 2004 IDT Inc.
- *  Copyright (C) 2006 Felix Fietkau <nbd@openwrt.org>
- */
 #ifndef __ASM_RC32434_RB_H
 #define __ASM_RC32434_RB_H
-
 #define REGBASE		0x18000000
 #define IDT434_REG_BASE ((volatile void *) KSEG1ADDR(REGBASE))
 #define UART0BASE	0x58000
@@ -36,29 +29,23 @@
 #define LO_FOFF		(1 << 5)
 #define LO_SPICS	(1 << 6)
 #define LO_ULED		(1 << 7)
-
 #define BIT_TO_MASK(x)	(1 << x)
-
 struct dev_reg {
 	u32	base;
 	u32	mask;
 	u32	ctl;
 	u32	timing;
 };
-
 struct korina_device {
 	char *name;
 	unsigned char mac[6];
 	struct net_device *dev;
 };
-
 struct mpmc_device {
 	unsigned char	state;
 	spinlock_t	lock;
 	void __iomem	*base;
 };
-
 extern void set_latch_u5(unsigned char or_mask, unsigned char nand_mask);
 extern unsigned char get_latch_u5(void);
-
-#endif	/* __ASM_RC32434_RB_H */
+#endif	 

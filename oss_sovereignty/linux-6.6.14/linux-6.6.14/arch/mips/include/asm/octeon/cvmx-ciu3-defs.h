@@ -1,21 +1,5 @@
-/*
- * Copyright (c) 2003-2016 Cavium Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- */
-
 #ifndef __CVMX_CIU3_DEFS_H__
 #define __CVMX_CIU3_DEFS_H__
-
 #define CVMX_CIU3_FUSE CVMX_ADD_IO_SEG(0x00010100000001A0ull)
 #define CVMX_CIU3_BIST CVMX_ADD_IO_SEG(0x00010100000001C0ull)
 #define CVMX_CIU3_CONST CVMX_ADD_IO_SEG(0x0001010000000220ull)
@@ -36,7 +20,6 @@
 #define CVMX_CIU3_NMI CVMX_ADD_IO_SEG(0x0001010000000160ull)
 #define CVMX_CIU3_SISCX(offset) (CVMX_ADD_IO_SEG(0x0001010000220000ull) + ((offset) & 255) * 8)
 #define CVMX_CIU3_TIMX(offset) (CVMX_ADD_IO_SEG(0x0001010000010000ull) + ((offset) & 15) * 8)
-
 union cvmx_ciu3_bist {
 	uint64_t u64;
 	struct cvmx_ciu3_bist_s {
@@ -49,7 +32,6 @@ union cvmx_ciu3_bist {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_const {
 	uint64_t u64;
 	struct cvmx_ciu3_const_s {
@@ -66,7 +48,6 @@ union cvmx_ciu3_const {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_ctl {
 	uint64_t u64;
 	struct cvmx_ciu3_ctl_s {
@@ -85,7 +66,6 @@ union cvmx_ciu3_ctl {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_destx_io_int {
 	uint64_t u64;
 	struct cvmx_ciu3_destx_io_int_s {
@@ -106,7 +86,6 @@ union cvmx_ciu3_destx_io_int {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_destx_pp_int {
 	uint64_t u64;
 	struct cvmx_ciu3_destx_pp_int_s {
@@ -127,7 +106,6 @@ union cvmx_ciu3_destx_pp_int {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_gstop {
 	uint64_t u64;
 	struct cvmx_ciu3_gstop_s {
@@ -140,7 +118,6 @@ union cvmx_ciu3_gstop {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_idtx_ctl {
 	uint64_t u64;
 	struct cvmx_ciu3_idtx_ctl_s {
@@ -161,7 +138,6 @@ union cvmx_ciu3_idtx_ctl {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_idtx_io {
 	uint64_t u64;
 	struct cvmx_ciu3_idtx_io_s {
@@ -174,7 +150,6 @@ union cvmx_ciu3_idtx_io {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_idtx_ppx {
 	uint64_t u64;
 	struct cvmx_ciu3_idtx_ppx_s {
@@ -187,7 +162,6 @@ union cvmx_ciu3_idtx_ppx {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_intr_ram_ecc_ctl {
 	uint64_t u64;
 	struct cvmx_ciu3_intr_ram_ecc_ctl_s {
@@ -202,7 +176,6 @@ union cvmx_ciu3_intr_ram_ecc_ctl {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_intr_ram_ecc_st {
 	uint64_t u64;
 	struct cvmx_ciu3_intr_ram_ecc_st_s {
@@ -229,7 +202,6 @@ union cvmx_ciu3_intr_ram_ecc_st {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_intr_ready {
 	uint64_t u64;
 	struct cvmx_ciu3_intr_ready_s {
@@ -246,7 +218,6 @@ union cvmx_ciu3_intr_ready {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_intr_slowdown {
 	uint64_t u64;
 	struct cvmx_ciu3_intr_slowdown_s {
@@ -259,7 +230,6 @@ union cvmx_ciu3_intr_slowdown {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_iscx_ctl {
 	uint64_t u64;
 	struct cvmx_ciu3_iscx_ctl_s {
@@ -280,7 +250,6 @@ union cvmx_ciu3_iscx_ctl {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_iscx_w1c {
 	uint64_t u64;
 	struct cvmx_ciu3_iscx_w1c_s {
@@ -295,7 +264,6 @@ union cvmx_ciu3_iscx_w1c {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_iscx_w1s {
 	uint64_t u64;
 	struct cvmx_ciu3_iscx_w1s_s {
@@ -310,7 +278,6 @@ union cvmx_ciu3_iscx_w1s {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_nmi {
 	uint64_t u64;
 	struct cvmx_ciu3_nmi_s {
@@ -323,7 +290,6 @@ union cvmx_ciu3_nmi {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_siscx {
 	uint64_t u64;
 	struct cvmx_ciu3_siscx_s {
@@ -334,7 +300,6 @@ union cvmx_ciu3_siscx {
 #endif
 	} s;
 };
-
 union cvmx_ciu3_timx {
 	uint64_t u64;
 	struct cvmx_ciu3_timx_s {
@@ -349,5 +314,4 @@ union cvmx_ciu3_timx {
 #endif
 	} s;
 };
-
 #endif

@@ -3,35 +3,27 @@
 #define nv50_atom(p) container_of((p), struct nv50_atom, state)
 #include <drm/drm_atomic.h>
 #include "crc.h"
-
 struct nouveau_encoder;
-
 struct nv50_atom {
 	struct drm_atomic_state state;
-
 	struct list_head outp;
 	bool lock_core;
 	bool flush_disable;
 };
-
 #define nv50_head_atom(p) container_of((p), struct nv50_head_atom, state)
-
 struct nv50_head_atom {
 	struct drm_crtc_state state;
-
 	struct {
 		u32 mask;
 		u32 owned;
 		u32 olut;
 	} wndw;
-
 	struct {
 		u16 iW;
 		u16 iH;
 		u16 oW;
 		u16 oH;
 	} view;
-
 	struct nv50_head_mode {
 		bool interlace;
 		u32 clock;
@@ -51,7 +43,6 @@ struct nv50_head_atom {
 			u16 blankus;
 		} v;
 	} mode;
-
 	struct {
 		bool visible;
 		u32 handle;
@@ -63,7 +54,6 @@ struct nv50_head_atom {
 		u8 output_mode:2;
 		void (*load)(struct drm_color_lut *, int size, void __iomem *);
 	} olut;
-
 	struct {
 		bool visible;
 		u32 handle;
@@ -79,7 +69,6 @@ struct nv50_head_atom {
 		u16 w;
 		u16 h;
 	} core;
-
 	struct {
 		bool visible;
 		u32 handle;
@@ -87,7 +76,6 @@ struct nv50_head_atom {
 		u8  layout:2;
 		u8  format:8;
 	} curs;
-
 	struct {
 		u8  depth;
 		u8  cpp;
@@ -96,24 +84,20 @@ struct nv50_head_atom {
 		u16 w;
 		u16 h;
 	} base;
-
 	struct {
 		u8 cpp;
 	} ovly;
-
 	struct {
 		bool enable:1;
 		u8 bits:2;
 		u8 mode:4;
 	} dither;
-
 	struct {
 		struct {
 			u16 cos:12;
 			u16 sin:12;
 		} sat;
 	} procamp;
-
 	struct {
 		u8 nhsync:1;
 		u8 nvsync:1;
@@ -121,15 +105,11 @@ struct nv50_head_atom {
 		u8 crc_raster:2;
 		u8 bpc;
 	} or;
-
 	struct nv50_crc_atom crc;
-
-	/* Currently only used for MST */
 	struct {
 		int pbn;
 		u8 tu:6;
 	} dp;
-
 	union nv50_head_atom_mask {
 		struct {
 			bool olut:1;
@@ -147,7 +127,6 @@ struct nv50_head_atom {
 		u16 mask;
 	} set, clr;
 };
-
 static inline struct nv50_head_atom *
 nv50_head_atom_get(struct drm_atomic_state *state, struct drm_crtc *crtc)
 {
@@ -156,41 +135,31 @@ nv50_head_atom_get(struct drm_atomic_state *state, struct drm_crtc *crtc)
 		return (void *)statec;
 	return nv50_head_atom(statec);
 }
-
 static inline struct drm_encoder *
 nv50_head_atom_get_encoder(struct nv50_head_atom *atom)
 {
 	struct drm_encoder *encoder;
-
-	/* We only ever have a single encoder */
 	drm_for_each_encoder_mask(encoder, atom->state.crtc->dev,
 				  atom->state.encoder_mask)
 		return encoder;
-
 	return NULL;
 }
-
 #define nv50_wndw_atom(p) container_of((p), struct nv50_wndw_atom, state)
-
 struct nv50_wndw_atom {
 	struct drm_plane_state state;
-
 	struct drm_property_blob *ilut;
 	bool visible;
-
 	struct {
 		u32  handle;
 		u16  offset:12;
 		bool awaken:1;
 	} ntfy;
-
 	struct {
 		u32 handle;
 		u16 offset:12;
 		u32 acquire;
 		u32 release;
 	} sema;
-
 	struct {
 		u32 handle;
 		struct {
@@ -205,16 +174,13 @@ struct nv50_wndw_atom {
 				     void __iomem *);
 		} i;
 	} xlut;
-
 	struct {
 		u32 matrix[12];
 		bool valid;
 	} csc;
-
 	struct {
 		u8  mode:2;
 		u8  interval:4;
-
 		u8  colorspace:2;
 		u8  format;
 		u8  kind:7;
@@ -224,11 +190,9 @@ struct nv50_wndw_atom {
 		u32 pitch[3];
 		u16 w;
 		u16 h;
-
 		u32 handle[6];
 		u64 offset[6];
 	} image;
-
 	struct {
 		u16 sx;
 		u16 sy;
@@ -237,19 +201,16 @@ struct nv50_wndw_atom {
 		u16 dw;
 		u16 dh;
 	} scale;
-
 	struct {
 		u16 x;
 		u16 y;
 	} point;
-
 	struct {
 		u8 depth;
 		u8 k1;
 		u8 src_color:4;
 		u8 dst_color:4;
 	} blend;
-
 	union nv50_wndw_atom_mask {
 		struct {
 			bool ntfy:1;

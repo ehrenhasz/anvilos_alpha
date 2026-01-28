@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVIF_CL0002_H__
 #define __NVIF_CL0002_H__
-
 struct nv_dma_v0 {
 	__u8  version;
 #define NV_DMA_V0_TARGET_VM                                                0x00
@@ -18,9 +16,7 @@ struct nv_dma_v0 {
 	__u8  pad03[5];
 	__u64 start;
 	__u64 limit;
-	/* ... chipset-specific class data */
 };
-
 struct nv50_dma_v0 {
 	__u8  version;
 #define NV50_DMA_V0_PRIV_VM                                                0x00
@@ -41,7 +37,6 @@ struct nv50_dma_v0 {
 	__u8  kind;
 	__u8  pad05[3];
 };
-
 struct gf100_dma_v0 {
 	__u8  version;
 #define GF100_DMA_V0_PRIV_VM                                               0x00
@@ -53,7 +48,6 @@ struct gf100_dma_v0 {
 	__u8  kind;
 	__u8  pad03[5];
 };
-
 struct gf119_dma_v0 {
 	__u8  version;
 #define GF119_DMA_V0_PAGE_LP                                               0x00

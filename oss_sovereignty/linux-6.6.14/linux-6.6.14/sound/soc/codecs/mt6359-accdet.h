@@ -1,21 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 MediaTek Inc.
- * Author: Argus Lin <argus.lin@mediatek.com>
- */
-
 #ifndef _ACCDET_H_
 #define _ACCDET_H_
-
 #include <linux/ctype.h>
 #include <linux/string.h>
-
 #define ACCDET_DEVNAME "accdet"
-
 #define HEADSET_MODE_1		(1)
 #define HEADSET_MODE_2		(2)
 #define HEADSET_MODE_6		(6)
-
 #define MT6359_ACCDET_NUM_BUTTONS 4
 #define MT6359_ACCDET_JACK_MASK (SND_JACK_HEADPHONE | \
 				SND_JACK_HEADSET | \
@@ -27,7 +17,6 @@
 				SND_JACK_BTN_1 | \
 				SND_JACK_BTN_2 | \
 				SND_JACK_BTN_3)
-
 enum eint_moisture_status {
 	M_PLUG_IN =		0,
 	M_WATER_IN =		1,
@@ -36,7 +25,6 @@ enum eint_moisture_status {
 	M_NO_ACT =		4,
 	M_UNKNOWN =		5,
 };
-
 enum {
 	accdet_state000 = 0,
 	accdet_state001,
@@ -49,20 +37,17 @@ enum {
 	eint_state011,
 	eint_inverter_state000,
 };
-
 struct three_key_threshold {
 	unsigned int mid;
 	unsigned int up;
 	unsigned int down;
 };
-
 struct four_key_threshold {
 	unsigned int mid;
 	unsigned int voice;
 	unsigned int up;
 	unsigned int down;
 };
-
 struct pwm_deb_settings {
 	unsigned int pwm_width;
 	unsigned int pwm_thresh;
@@ -79,9 +64,7 @@ struct pwm_deb_settings {
 	unsigned int eint_debounce2;
 	unsigned int eint_debounce3;
 	unsigned int eint_inverter_debounce;
-
 };
-
 struct dts_data {
 	unsigned int mic_vol;
 	unsigned int mic_mode;
@@ -99,7 +82,6 @@ struct dts_data {
 	unsigned int moisture_comp_vref2;
 	unsigned int moisture_use_ext_res;
 };
-
 struct mt6359_accdet {
 	struct snd_soc_jack *jack;
 	struct device *dev;
@@ -109,7 +91,7 @@ struct mt6359_accdet {
 	int accdet_irq;
 	int accdet_eint0;
 	int accdet_eint1;
-	struct mutex res_lock; /* lock protection */
+	struct mutex res_lock;  
 	bool jack_plugged;
 	unsigned int jack_type;
 	unsigned int btn_type;
@@ -122,7 +104,6 @@ struct mt6359_accdet {
 	struct work_struct jd_work;
 	struct workqueue_struct *jd_workqueue;
 };
-
 int mt6359_accdet_enable_jack_detect(struct snd_soc_component *component,
 				     struct snd_soc_jack *jack);
 #endif

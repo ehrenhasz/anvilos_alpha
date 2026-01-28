@@ -1,14 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_ARCH_MFP_PXA3XX_H
 #define __ASM_ARCH_MFP_PXA3XX_H
-
 #include <linux/soc/pxa/mfp.h>
-
 #define MFPR_BASE	(0x40e10000)
-
-/* PXA3xx common MFP configurations - processor specific ones defined
- * in mfp-pxa300.h and mfp-pxa320.h
- */
 #define GPIO0_GPIO		MFP_CFG(GPIO0, AF0)
 #define GPIO1_GPIO		MFP_CFG(GPIO1, AF0)
 #define GPIO2_GPIO		MFP_CFG(GPIO2, AF0)
@@ -55,16 +48,12 @@
 #define GPIO43_GPIO		MFP_CFG(GPIO43, AF0)
 #define GPIO44_GPIO		MFP_CFG(GPIO44, AF0)
 #define GPIO45_GPIO		MFP_CFG(GPIO45, AF0)
-
 #define GPIO47_GPIO		MFP_CFG(GPIO47, AF0)
 #define GPIO48_GPIO		MFP_CFG(GPIO48, AF0)
-
 #define GPIO53_GPIO		MFP_CFG(GPIO53, AF0)
 #define GPIO54_GPIO		MFP_CFG(GPIO54, AF0)
 #define GPIO55_GPIO		MFP_CFG(GPIO55, AF0)
-
 #define GPIO57_GPIO		MFP_CFG(GPIO57, AF0)
-
 #define GPIO63_GPIO		MFP_CFG(GPIO63, AF0)
 #define GPIO64_GPIO		MFP_CFG(GPIO64, AF0)
 #define GPIO65_GPIO		MFP_CFG(GPIO65, AF0)
@@ -130,7 +119,6 @@
 #define GPIO125_GPIO		MFP_CFG(GPIO125, AF0)
 #define GPIO126_GPIO		MFP_CFG(GPIO126, AF0)
 #define GPIO127_GPIO		MFP_CFG(GPIO127, AF0)
-
 #define GPIO0_2_GPIO		MFP_CFG(GPIO0_2, AF0)
 #define GPIO1_2_GPIO		MFP_CFG(GPIO1_2, AF0)
 #define GPIO2_2_GPIO		MFP_CFG(GPIO2_2, AF0)
@@ -138,22 +126,16 @@
 #define GPIO4_2_GPIO		MFP_CFG(GPIO4_2, AF0)
 #define GPIO5_2_GPIO		MFP_CFG(GPIO5_2, AF0)
 #define GPIO6_2_GPIO		MFP_CFG(GPIO6_2, AF0)
-
-/* NOTE: usage of these two functions is not recommended,
- * use pxa3xx_mfp_config() instead.
- */
 static inline unsigned long pxa3xx_mfp_read(int mfp)
 {
 	return mfp_read(mfp);
 }
-
 static inline void pxa3xx_mfp_write(int mfp, unsigned long val)
 {
 	mfp_write(mfp, val);
 }
-
 static inline void pxa3xx_mfp_config(unsigned long *mfp_cfg, int num)
 {
 	mfp_config(mfp_cfg, num);
 }
-#endif /* __ASM_ARCH_MFP_PXA3XX_H */
+#endif  

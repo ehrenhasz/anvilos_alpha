@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Armadeus Systems - <support@armadeus.com>
- */
-
-/* APF28Dev is a docking board for the APF28 SOM */
 #include "imx28-apf28.dts"
-
 / {
 	model = "Armadeus Systems APF28Dev docking/development board";
 	compatible = "armadeus,imx28-apf28dev", "armadeus,imx28-apf28", "fsl,imx28";
-
 	reg_usb0_vbus: regulator-0 {
 		compatible = "regulator-fixed";
 		regulator-name = "usb0_vbus";
@@ -18,35 +10,28 @@
 		gpio = <&gpio1 23 1>;
 		enable-active-high;
 	};
-
 	reg_can0_vcc: regulator-1 {
 		compatible = "regulator-fixed";
 		regulator-name = "can0_vcc";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 	};
-
 	leds {
 		compatible = "gpio-leds";
-
 		user {
 			label = "Heartbeat";
 			gpios = <&gpio0 21 0>;
 			linux,default-trigger = "heartbeat";
 		};
 	};
-
 	backlight {
 		compatible = "pwm-backlight";
-
 		pwms = <&pwm 3 191000>;
 		brightness-levels = <0 4 8 16 32 64 128 255>;
 		default-brightness-level = <6>;
 	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
-
 		user-button {
 			label = "User button";
 			gpios = <&gpio0 17 GPIO_ACTIVE_LOW>;
@@ -55,38 +40,32 @@
 		};
 	};
 };
-
 &auart0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&auart0_pins_a>;
 	uart-has-rtscts;
 	status = "okay";
 };
-
 &can0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&can0_pins_a>;
 	xceiver-supply = <&reg_can0_vcc>;
 	status = "okay";
 };
-
 &i2c0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c0_pins_a>;
 	status = "okay";
 };
-
 &lcdif {
 	pinctrl-names = "default";
 	pinctrl-0 = <&lcdif_16bit_pins_a
 		     &lcdif_pins_apf28dev>;
 	display = <&display0>;
 	status = "okay";
-
 	display0: display0 {
 		bits-per-pixel = <16>;
 		bus-width = <16>;
-
 		display-timings {
 			native-mode = <&timing0>;
 			timing0: timing0 {
@@ -107,12 +86,10 @@
 		};
 	};
 };
-
 &lradc {
 	fsl,lradc-touchscreen-wires = <4>;
 	status = "okay";
 };
-
 &mac1 {
 	phy-mode = "rmii";
 	pinctrl-names = "default";
@@ -120,11 +97,9 @@
 	phy-reset-gpios = <&gpio1 29 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &pinctrl {
 	pinctrl-names = "default";
 	pinctrl-0 = <&hog_pins_apf28dev>;
-
 	hog_pins_apf28dev: hog@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
@@ -141,7 +116,6 @@
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_DISABLE>;
 	};
-
 	lcdif_pins_apf28dev: lcdif-apf28dev@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
@@ -154,7 +128,6 @@
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_DISABLE>;
 	};
-
 	usb0_otg_apf28dev: otg-apf28dev@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
@@ -165,13 +138,11 @@
 		fsl,pull-up = <MXS_PULL_DISABLE>;
 	};
 };
-
 &pwm {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pwm3_pins_a &pwm4_pins_a>;
 	status = "okay";
 };
-
 &ssp0 {
 	compatible = "fsl,imx28-mmc";
 	pinctrl-names = "default";
@@ -180,14 +151,12 @@
 	bus-width = <4>;
 	status = "okay";
 };
-
 &ssp2 {
 	compatible = "fsl,imx28-spi";
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi2_pins_a>;
 	status = "okay";
 };
-
 &usb0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&usb0_otg_apf28dev
@@ -195,15 +164,12 @@
 	vbus-supply = <&reg_usb0_vbus>;
 	status = "okay";
 };
-
 &usb1 {
 	status = "okay";
 };
-
 &usbphy0 {
 	status = "okay";
 };
-
 &usbphy1 {
 	status = "okay";
 };

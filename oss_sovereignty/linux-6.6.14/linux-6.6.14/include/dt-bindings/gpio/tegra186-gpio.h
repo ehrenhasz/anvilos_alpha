@@ -1,19 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants for binding nvidia,tegra186-gpio*.
- *
- * The first cell in Tegra's GPIO specifier is the GPIO ID. The macros below
- * provide names for this.
- *
- * The second cell contains standard flag values specified in gpio.h.
- */
-
 #ifndef _DT_BINDINGS_GPIO_TEGRA186_GPIO_H
 #define _DT_BINDINGS_GPIO_TEGRA186_GPIO_H
-
 #include <dt-bindings/gpio/gpio.h>
-
-/* GPIOs implemented by main GPIO controller */
 #define TEGRA186_MAIN_GPIO_PORT_A 0
 #define TEGRA186_MAIN_GPIO_PORT_B 1
 #define TEGRA186_MAIN_GPIO_PORT_C 2
@@ -37,11 +24,8 @@
 #define TEGRA186_MAIN_GPIO_PORT_Y 20
 #define TEGRA186_MAIN_GPIO_PORT_BB 21
 #define TEGRA186_MAIN_GPIO_PORT_CC 22
-
 #define TEGRA186_MAIN_GPIO(port, offset) \
 	((TEGRA186_MAIN_GPIO_PORT_##port * 8) + offset)
-
-/* GPIOs implemented by AON GPIO controller */
 #define TEGRA186_AON_GPIO_PORT_S 0
 #define TEGRA186_AON_GPIO_PORT_U 1
 #define TEGRA186_AON_GPIO_PORT_V 2
@@ -50,8 +34,6 @@
 #define TEGRA186_AON_GPIO_PORT_AA 5
 #define TEGRA186_AON_GPIO_PORT_EE 6
 #define TEGRA186_AON_GPIO_PORT_FF 7
-
 #define TEGRA186_AON_GPIO(port, offset) \
 	((TEGRA186_AON_GPIO_PORT_##port * 8) + offset)
-
 #endif

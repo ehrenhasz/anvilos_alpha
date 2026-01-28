@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef __ARCH_ARM_MACH_OMAP2_CM_REGBITS_34XX_H
 #define __ARCH_ARM_MACH_OMAP2_CM_REGBITS_34XX_H
-
-/*
- * OMAP3430 Clock Management register bits
- *
- * Copyright (C) 2007-2008 Texas Instruments, Inc.
- * Copyright (C) 2007-2008 Nokia Corporation
- *
- * Written by Paul Walmsley
- */
-
 #define OMAP3430_CM_FCLKEN_IVA2_EN_IVA2_MASK		(1 << 0)
 #define OMAP3430_ST_IVA2_SHIFT				0
 #define OMAP3430_CLKTRCTRL_IVA2_MASK			(0x3 << 0)

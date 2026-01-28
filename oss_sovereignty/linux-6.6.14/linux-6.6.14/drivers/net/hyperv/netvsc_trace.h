@@ -1,14 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #if !defined(_NETVSC_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _NETVSC_TRACE_H
-
 #include <linux/tracepoint.h>
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM netvsc
 #define TRACE_INCLUDE_FILE netvsc_trace
-
 TRACE_DEFINE_ENUM(RNDIS_MSG_PACKET);
 TRACE_DEFINE_ENUM(RNDIS_MSG_INDICATE);
 TRACE_DEFINE_ENUM(RNDIS_MSG_INIT);
@@ -22,7 +17,6 @@ TRACE_DEFINE_ENUM(RNDIS_MSG_RESET);
 TRACE_DEFINE_ENUM(RNDIS_MSG_RESET_C);
 TRACE_DEFINE_ENUM(RNDIS_MSG_KEEPALIVE);
 TRACE_DEFINE_ENUM(RNDIS_MSG_KEEPALIVE_C);
-
 #define show_rndis_type(type)					\
 	__print_symbolic(type,					\
 		 { RNDIS_MSG_PACKET,	  "PACKET" },		\
@@ -38,7 +32,6 @@ TRACE_DEFINE_ENUM(RNDIS_MSG_KEEPALIVE_C);
 		 { RNDIS_MSG_RESET_C,	  "RESET_C", },		\
 		 { RNDIS_MSG_KEEPALIVE,	  "KEEPALIVE", },	\
 		 { RNDIS_MSG_KEEPALIVE_C, "KEEPALIVE_C", })
-
 DECLARE_EVENT_CLASS(rndis_msg_class,
        TP_PROTO(const struct net_device *ndev, u16 q,
 		const struct rndis_message *msg),
@@ -61,19 +54,16 @@ DECLARE_EVENT_CLASS(rndis_msg_class,
 		 __get_str(name), __entry->queue, __entry->req_id,
 		 show_rndis_type(__entry->msg_type), __entry->msg_len)
 );
-
 DEFINE_EVENT(rndis_msg_class, rndis_send,
        TP_PROTO(const struct net_device *ndev, u16 q,
 		const struct rndis_message *msg),
        TP_ARGS(ndev, q, msg)
 );
-
 DEFINE_EVENT(rndis_msg_class, rndis_recv,
        TP_PROTO(const struct net_device *ndev, u16 q,
 		const struct rndis_message *msg),
        TP_ARGS(ndev, q, msg)
 );
-
 TRACE_DEFINE_ENUM(NVSP_MSG_TYPE_INIT);
 TRACE_DEFINE_ENUM(NVSP_MSG_TYPE_INIT_COMPLETE);
 TRACE_DEFINE_ENUM(NVSP_MSG1_TYPE_SEND_NDIS_VER);
@@ -86,13 +76,10 @@ TRACE_DEFINE_ENUM(NVSP_MSG1_TYPE_REVOKE_SEND_BUF);
 TRACE_DEFINE_ENUM(NVSP_MSG1_TYPE_SEND_RNDIS_PKT);
 TRACE_DEFINE_ENUM(NVSP_MSG1_TYPE_SEND_RNDIS_PKT_COMPLETE);
 TRACE_DEFINE_ENUM(NVSP_MSG2_TYPE_SEND_NDIS_CONFIG);
-
 TRACE_DEFINE_ENUM(NVSP_MSG4_TYPE_SEND_VF_ASSOCIATION);
 TRACE_DEFINE_ENUM(NVSP_MSG4_TYPE_SWITCH_DATA_PATH);
-
 TRACE_DEFINE_ENUM(NVSP_MSG5_TYPE_SUBCHANNEL);
 TRACE_DEFINE_ENUM(NVSP_MSG5_TYPE_SEND_INDIRECTION_TABLE);
-
 #define show_nvsp_type(type)								\
 	__print_symbolic(type,								\
 		  { NVSP_MSG_TYPE_INIT,			   "INIT" },			\
@@ -111,7 +98,6 @@ TRACE_DEFINE_ENUM(NVSP_MSG5_TYPE_SEND_INDIRECTION_TABLE);
 		  { NVSP_MSG4_TYPE_SWITCH_DATA_PATH,	   "SWITCH_DATA_PATH" },	\
 		  { NVSP_MSG5_TYPE_SUBCHANNEL,		    "SUBCHANNEL" },		\
 		  { NVSP_MSG5_TYPE_SEND_INDIRECTION_TABLE,  "SEND_INDIRECTION_TABLE" })
-
 TRACE_EVENT(nvsp_send,
 	TP_PROTO(const struct net_device *ndev,
 		 const struct nvsp_message *msg),
@@ -128,7 +114,6 @@ TRACE_EVENT(nvsp_send,
 		  __get_str(name),
 		  show_nvsp_type(__entry->msg_type))
 );
-
 TRACE_EVENT(nvsp_send_pkt,
 	TP_PROTO(const struct net_device *ndev,
 		 const struct vmbus_channel *chan,
@@ -153,7 +138,6 @@ TRACE_EVENT(nvsp_send_pkt,
 		  __entry->channel_type ? "CONTROL" : "DATA",
 		  __entry->section_index, __entry->section_size)
 );
-
 TRACE_EVENT(nvsp_recv,
 	TP_PROTO(const struct net_device *ndev,
 		 const struct vmbus_channel *chan,
@@ -173,10 +157,7 @@ TRACE_EVENT(nvsp_recv,
 		  __get_str(name), __entry->qid,
 		  show_nvsp_type(__entry->msg_type))
 );
-
-#endif /* _NETVSC_TRACE_H */
-
-/* This part must be outside protection */
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/net/hyperv
 #include <trace/define_trace.h>

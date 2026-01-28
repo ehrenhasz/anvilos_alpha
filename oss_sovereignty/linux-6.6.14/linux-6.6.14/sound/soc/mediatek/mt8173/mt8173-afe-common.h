@@ -1,20 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8173_afe_common.h  --  Mediatek 8173 audio driver common definitions
- *
- * Copyright (c) 2015 MediaTek Inc.
- * Author: Koro Chen <koro.chen@mediatek.com>
- *             Sascha Hauer <s.hauer@pengutronix.de>
- *             Hidalgo Huang <hidalgo.huang@mediatek.com>
- *             Ir Lian <ir.lian@mediatek.com>
- */
-
 #ifndef _MT8173_AFE_COMMON_H_
 #define _MT8173_AFE_COMMON_H_
-
 #include <linux/clk.h>
 #include <linux/regmap.h>
-
 enum {
 	MT8173_AFE_MEMIF_DL1,
 	MT8173_AFE_MEMIF_DL2,
@@ -36,7 +23,6 @@ enum {
 	MT8173_AFE_IO_DAIBT,
 	MT8173_AFE_IO_HDMI,
 };
-
 enum {
 	MT8173_AFE_IRQ_DL1,
 	MT8173_AFE_IRQ_DL2,
@@ -47,7 +33,6 @@ enum {
 	MT8173_AFE_IRQ_HDMI,
 	MT8173_AFE_IRQ_NUM,
 };
-
 enum {
 	MT8173_CLK_INFRASYS_AUD,
 	MT8173_CLK_TOP_PDN_AUD,
@@ -61,5 +46,4 @@ enum {
 	MT8173_CLK_BCK1,
 	MT8173_CLK_NUM
 };
-
 #endif

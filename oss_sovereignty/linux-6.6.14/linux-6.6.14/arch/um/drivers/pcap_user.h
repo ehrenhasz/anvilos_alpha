@@ -1,10 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* 
- * Copyright (C) 2002 Jeff Dike (jdike@karaya.com)
- */
-
 #include <net_user.h>
-
 struct pcap_data {
 	char *host_if;
 	int promisc;
@@ -14,8 +8,5 @@ struct pcap_data {
 	void *pcap;
 	void *dev;
 };
-
 extern const struct net_user_info pcap_user_info;
-
 extern int pcap_user_read(int fd, void *buf, int len, struct pcap_data *pri);
-

@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef TOOLS_ARCH_MIPS_UAPI_ASM_MMAN_FIX_H
 #define TOOLS_ARCH_MIPS_UAPI_ASM_MMAN_FIX_H
 #define MADV_DODUMP	17
@@ -36,10 +35,7 @@
 #define PROT_READ	0x01
 #define PROT_SEM	0x10
 #define PROT_WRITE	0x02
-/* MADV_SOFT_OFFLINE is undefined on mips, fix it for perf */
 #define MADV_SOFT_OFFLINE 101
-/* MAP_32BIT is undefined on mips, fix it for perf */
 #define MAP_32BIT	0
-/* MAP_UNINITIALIZED is undefined on mips, fix it for perf */
 #define MAP_UNINITIALIZED	0
 #endif

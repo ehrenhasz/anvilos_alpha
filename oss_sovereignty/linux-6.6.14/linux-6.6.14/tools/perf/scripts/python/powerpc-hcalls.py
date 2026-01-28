@@ -1,38 +1,13 @@
-# SPDX-License-Identifier: GPL-2.0+
-#
-# Copyright (C) 2018 Ravi Bangoria, IBM Corporation
-#
-# Hypervisor call statisics
-
 from __future__ import print_function
-
 import os
 import sys
-
 sys.path.append(os.environ['PERF_EXEC_PATH'] + \
 	'/scripts/python/Perf-Trace-Util/lib/Perf/Trace')
-
 from perf_trace_context import *
 from Core import *
 from Util import *
-
-# output: {
-#	opcode: {
-#		'min': minimum time nsec
-#		'max': maximum time nsec
-#		'time': average time nsec
-#		'cnt': counter
-#	} ...
-# }
 output = {}
-
-# d_enter: {
-#	cpu: {
-#		opcode: nsec
-#	} ...
-# }
 d_enter = {}
-
 hcall_table = {
 	4: 'H_REMOVE',
 	8: 'H_ENTER',
@@ -149,15 +124,12 @@ hcall_table = {
 	796: 'H_SET_MODE',
 	61440: 'H_RTAS',
 }
-
 def hcall_table_lookup(opcode):
 	if (opcode in hcall_table):
 		return hcall_table[opcode]
 	else:
 		return opcode
-
 print_ptrn = '%-28s%10s%10s%10s%10s'
-
 def trace_end():
 	print(print_ptrn % ('hcall', 'count', 'min(ns)', 'max(ns)', 'avg(ns)'))
 	print('-' * 68)
@@ -167,14 +139,11 @@ def trace_end():
 		cnt = output[opcode]['cnt']
 		min_t = output[opcode]['min']
 		max_t = output[opcode]['max']
-
 		print(print_ptrn % (h_name, cnt, min_t, max_t, time//cnt))
-
 def powerpc__hcall_exit(name, context, cpu, sec, nsec, pid, comm, callchain,
 			opcode, retval):
 	if (cpu in d_enter and opcode in d_enter[cpu]):
 		diff = nsecs(sec, nsec) - d_enter[cpu][opcode]
-
 		if (opcode in output):
 			output[opcode]['time'] += diff
 			output[opcode]['cnt'] += 1
@@ -189,11 +158,7 @@ def powerpc__hcall_exit(name, context, cpu, sec, nsec, pid, comm, callchain,
 				'min': diff,
 				'max': diff,
 			}
-
 		del d_enter[cpu][opcode]
-#	else:
-#		print("Can't find matching hcall_enter event. Ignoring sample")
-
 def powerpc__hcall_entry(event_name, context, cpu, sec, nsec, pid, comm,
 			 callchain, opcode):
 		if (cpu in d_enter):

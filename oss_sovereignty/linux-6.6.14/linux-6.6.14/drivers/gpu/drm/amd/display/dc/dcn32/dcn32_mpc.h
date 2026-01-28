@@ -1,36 +1,9 @@
-/* Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_MPCC_DCN32_H__
 #define __DC_MPCC_DCN32_H__
-
 #include "dcn20/dcn20_mpc.h"
 #include "dcn30/dcn30_mpc.h"
-
 #define TO_DCN32_MPC(mpc_base) \
 	container_of(mpc_base, struct dcn32_mpc, base)
-
 #define MPC_REG_LIST_DCN3_2(inst) \
 	MPC_REG_LIST_DCN3_0(inst),\
 	SRII(MPCC_MOVABLE_CM_LOCATION_CONTROL, MPCC, inst),\
@@ -89,7 +62,7 @@
 	SRII(MPCC_MCM_SHAPER_RAMB_REGION_28_29, MPCC_MCM, inst),\
 	SRII(MPCC_MCM_SHAPER_RAMB_REGION_30_31, MPCC_MCM, inst),\
 	SRII(MPCC_MCM_SHAPER_RAMB_REGION_32_33, MPCC_MCM, inst),\
-	SRII(MPCC_MCM_3DLUT_MODE, MPCC_MCM, inst), /*TODO: may need to add other 3DLUT regs*/\
+	SRII(MPCC_MCM_3DLUT_MODE, MPCC_MCM, inst),  \
 	SRII(MPCC_MCM_3DLUT_INDEX, MPCC_MCM, inst),\
 	SRII(MPCC_MCM_3DLUT_DATA, MPCC_MCM, inst),\
 	SRII(MPCC_MCM_3DLUT_DATA_30BIT, MPCC_MCM, inst),\
@@ -173,8 +146,6 @@
 	SRII(MPCC_MCM_1DLUT_RAMB_REGION_30_31, MPCC_MCM, inst),\
 	SRII(MPCC_MCM_1DLUT_RAMB_REGION_32_33, MPCC_MCM, inst),\
 	SRII(MPCC_MCM_MEM_PWR_CTRL, MPCC_MCM, inst)
-
-
 #define MPC_COMMON_MASK_SH_LIST_DCN32(mask_sh) \
 	MPC_COMMON_MASK_SH_LIST_DCN1_0(mask_sh),\
 	SF(MPCC0_MPCC_CONTROL, MPCC_BG_BPC, mask_sh),\
@@ -304,8 +275,6 @@
 	SF(MPCC_MCM0_MPCC_MCM_MEM_PWR_CTRL, MPCC_MCM_3DLUT_MEM_PWR_STATE, mask_sh),\
 	SF(MPCC_MCM0_MPCC_MCM_MEM_PWR_CTRL, MPCC_MCM_1DLUT_MEM_PWR_STATE, mask_sh),\
 	SF(CUR_VUPDATE_LOCK_SET0, CUR_VUPDATE_LOCK_SET, mask_sh)
-
-
 struct dcn32_mpc_registers {
 	MPC_REG_VARIABLE_LIST_DCN3_0;
 	MPC_REG_VARIABLE_LIST_DCN32;
@@ -323,7 +292,6 @@ bool mpc32_program_shaper(
 		struct mpc *mpc,
 		const struct pwl_params *params,
 		uint32_t mpcc_id);
-
 void dcn32_mpc_construct(struct dcn30_mpc *mpc30,
 	struct dc_context *ctx,
 	const struct dcn30_mpc_registers *mpc_regs,
@@ -331,7 +299,6 @@ void dcn32_mpc_construct(struct dcn30_mpc *mpc30,
 	const struct dcn30_mpc_mask *mpc_mask,
 	int num_mpcc,
 	int num_rmu);
-
 void mpc32_power_on_blnd_lut(
 	struct mpc *mpc,
 	uint32_t mpcc_id,
@@ -393,4 +360,4 @@ void mpc32_select_3dlut_ram(
 		enum dc_lut_mode mode,
 		bool is_color_channel_12bits,
 		uint32_t mpcc_id);
-#endif		//__DC_MPCC_DCN32_H__
+#endif		 

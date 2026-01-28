@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * (c) Copyright 2002-2010, Ralink Technology, Inc.
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
-
 #ifndef __MT7601U_INITVALS_H
 #define __MT7601U_INITVALS_H
-
 static const struct mt76_reg_pair bbp_common_vals[] = {
 	{  65,	0x2c },
 	{  66,	0x38 },
@@ -25,29 +18,18 @@ static const struct mt76_reg_pair bbp_common_vals[] = {
 	{ 105,	0x05 },
 	{ 106,	0x35 },
 };
-
 static const struct mt76_reg_pair bbp_chip_vals[] = {
 	{   1, 0x04 },	{   4, 0x40 },	{  20, 0x06 },	{  31, 0x08 },
-	/* CCK Tx Control */
 	{ 178, 0xff },
-	/* AGC/Sync controls */
 	{  66, 0x14 },	{  68, 0x8b },	{  69, 0x12 },	{  70, 0x09 },
 	{  73, 0x11 },	{  75, 0x60 },	{  76, 0x44 },	{  84, 0x9a },
 	{  86, 0x38 },	{  91, 0x07 },	{  92, 0x02 },
-	/* Rx Path Controls */
 	{  99, 0x50 },	{ 101, 0x00 },	{ 103, 0xc0 },	{ 104, 0x92 },
 	{ 105, 0x3c },	{ 106, 0x03 },	{ 128, 0x12 },
-	/* Change RXWI content: Gain Report */
 	{ 142, 0x04 },	{ 143, 0x37 },
-	/* Change RXWI content: Antenna Report */
 	{ 142, 0x03 },	{ 143, 0x99 },
-	/* Calibration Index Register */
-	/* CCK Receiver Control */
 	{ 160, 0xeb },	{ 161, 0xc4 },	{ 162, 0x77 },	{ 163, 0xf9 },
 	{ 164, 0x88 },	{ 165, 0x80 },	{ 166, 0xff },	{ 167, 0xe4 },
-	/* Added AGC controls - these AGC/GLRT registers are accessed
-	 * through R195 and R196.
-	 */
 	{ 195, 0x00 },	{ 196, 0x00 },
 	{ 195, 0x01 },	{ 196, 0x04 },
 	{ 195, 0x02 },	{ 196, 0x20 },
@@ -95,7 +77,6 @@ static const struct mt76_reg_pair bbp_chip_vals[] = {
 	{ 195, 0x93 },	{ 196, 0x11 },
 	{ 195, 0x94 },	{ 196, 0x11 },
 	{ 195, 0x95 },	{ 196, 0x11 },
-	/* PPAD */
 	{  47, 0x80 },	{  60, 0x80 },	{ 150, 0xd2 },	{ 151, 0x32 },
 	{ 152, 0x23 },	{ 153, 0x41 },	{ 154, 0x00 },	{ 155, 0x4f },
 	{ 253, 0x7e },	{ 195, 0x30 },	{ 196, 0x32 },	{ 195, 0x31 },
@@ -103,7 +84,6 @@ static const struct mt76_reg_pair bbp_chip_vals[] = {
 	{ 196, 0x4a },	{ 195, 0x36 },	{ 196, 0x5a },	{ 195, 0x37 },
 	{ 196, 0x5a },
 };
-
 static const struct mt76_reg_pair mac_common_vals[] = {
 	{ MT_LEGACY_BASIC_RATE,		0x0000013f },
 	{ MT_HT_BASIC_RATE,		0x00008003 },
@@ -133,7 +113,6 @@ static const struct mt76_reg_pair mac_common_vals[] = {
 	{ MT_PWR_PIN_CFG,		0x00000000 },
 	{ MT_PN_PAD_MODE,		0x00000001 },
 };
-
 static const struct mt76_reg_pair mac_chip_vals[] = {
 	{ MT_TSO_CTRL,			0x00006050 },
 	{ MT_BCN_OFFSET(0),		0x18100800 },
@@ -153,5 +132,4 @@ static const struct mt76_reg_pair mac_chip_vals[] = {
 	{ MT_FCE_CSO,			0x0000030f },
 	{ MT_FCE_PARAMETERS,		0x00256f0f },
 };
-
 #endif

@@ -1,36 +1,8 @@
-/* Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_MEM_INPUT_DCN10_H__
 #define __DC_MEM_INPUT_DCN10_H__
-
 #include "hubp.h"
-
 #define TO_DCN10_HUBP(hubp)\
 	container_of(hubp, struct dcn10_hubp, base)
-
-/* Register address initialization macro for all ASICs (including those with reduced functionality) */
 #define HUBP_REG_LIST_DCN(id)\
 	SRI(DCHUBP_CNTL, HUBP, id),\
 	SRI(HUBPREQ_DEBUG_DB, HUBP, id),\
@@ -105,15 +77,12 @@
 	SRI(DCN_CUR0_TTU_CNTL0, HUBPREQ, id),\
 	SRI(DCN_CUR0_TTU_CNTL1, HUBPREQ, id),\
 	SRI(HUBP_CLK_CNTL, HUBP, id)
-
-/* Register address initialization macro for ASICs with VM */
 #define HUBP_REG_LIST_DCN_VM(id)\
 	SRI(NOM_PARAMETERS_0, HUBPREQ, id),\
 	SRI(NOM_PARAMETERS_1, HUBPREQ, id),\
 	SRI(NOM_PARAMETERS_2, HUBPREQ, id),\
 	SRI(NOM_PARAMETERS_3, HUBPREQ, id),\
 	SRI(DCN_VM_MX_L1_TLB_CNTL, HUBPREQ, id)
-
 #define HUBP_REG_LIST_DCN10(id)\
 	HUBP_REG_LIST_DCN(id),\
 	HUBP_REG_LIST_DCN_VM(id),\
@@ -141,7 +110,6 @@
 	SRI(CURSOR_POSITION, CURSOR, id), \
 	SRI(CURSOR_HOT_SPOT, CURSOR, id), \
 	SRI(CURSOR_DST_OFFSET, CURSOR, id)
-
 #define HUBP_COMMON_REG_VARIABLE_LIST \
 	uint32_t DCHUBP_CNTL; \
 	uint32_t HUBPREQ_DEBUG_DB; \
@@ -250,12 +218,8 @@
 	uint32_t CURSOR_HOT_SPOT; \
 	uint32_t CURSOR_DST_OFFSET; \
 	uint32_t HUBP_CLK_CNTL
-
 #define HUBP_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
-
-/* Mask/shift struct generation macro for all ASICs (including those with reduced functionality) */
-/*1.x, 2.x, and 3.x*/
 #define HUBP_MASK_SH_LIST_DCN_SHARE_COMMON(mask_sh)\
 	HUBP_SF(HUBP0_DCHUBP_CNTL, HUBP_BLANK_EN, mask_sh),\
 	HUBP_SF(HUBP0_DCHUBP_CNTL, HUBP_TTU_DISABLE, mask_sh),\
@@ -389,18 +353,13 @@
 	HUBP_SF(HUBPREQ0_DCN_SURF0_TTU_CNTL0, QoS_RAMP_DISABLE, mask_sh),\
 	HUBP_SF(HUBPREQ0_DCN_SURF0_TTU_CNTL1, REFCYC_PER_REQ_DELIVERY_PRE, mask_sh),\
 	HUBP_SF(HUBP0_HUBP_CLK_CNTL, HUBP_CLOCK_ENABLE, mask_sh)
-/*2.x and 1.x only*/
 #define HUBP_MASK_SH_LIST_DCN_COMMON(mask_sh)\
 	HUBP_MASK_SH_LIST_DCN_SHARE_COMMON(mask_sh),\
 	HUBP_SF(HUBP0_DCSURF_TILING_CONFIG, RB_ALIGNED, mask_sh),\
 	HUBP_SF(HUBP0_DCHUBP_REQ_SIZE_CONFIG, MPTE_GROUP_SIZE, mask_sh),\
 	HUBP_SF(HUBP0_DCHUBP_REQ_SIZE_CONFIG_C, MPTE_GROUP_SIZE_C, mask_sh)
-
-/*2.x and 1.x only*/
 #define HUBP_MASK_SH_LIST_DCN(mask_sh)\
 	HUBP_MASK_SH_LIST_DCN_COMMON(mask_sh)
-
-/* Mask/shift struct generation macro for ASICs with VM */
 #define HUBP_MASK_SH_LIST_DCN_VM(mask_sh)\
 	HUBP_SF(HUBPREQ0_NOM_PARAMETERS_0, DST_Y_PER_PTE_ROW_NOM_L, mask_sh),\
 	HUBP_SF(HUBPREQ0_NOM_PARAMETERS_1, REFCYC_PER_PTE_GROUP_NOM_L, mask_sh),\
@@ -412,7 +371,6 @@
 	HUBP_SF(HUBPREQ0_DCN_CUR0_TTU_CNTL0, QoS_LEVEL_FIXED, mask_sh),\
 	HUBP_SF(HUBPREQ0_DCN_CUR0_TTU_CNTL0, QoS_RAMP_DISABLE, mask_sh),\
 	HUBP_SF(HUBPREQ0_DCN_CUR0_TTU_CNTL1, REFCYC_PER_REQ_DELIVERY_PRE, mask_sh)
-
 #define HUBP_MASK_SH_LIST_DCN10(mask_sh)\
 	HUBP_MASK_SH_LIST_DCN(mask_sh),\
 	HUBP_MASK_SH_LIST_DCN_VM(mask_sh),\
@@ -453,7 +411,6 @@
 	HUBP_SF(CURSOR0_CURSOR_HOT_SPOT, CURSOR_HOT_SPOT_X, mask_sh), \
 	HUBP_SF(CURSOR0_CURSOR_HOT_SPOT, CURSOR_HOT_SPOT_Y, mask_sh), \
 	HUBP_SF(CURSOR0_CURSOR_DST_OFFSET, CURSOR_DST_X_OFFSET, mask_sh)
-
 #define DCN_HUBP_REG_FIELD_BASE_LIST(type) \
 	type HUBP_BLANK_EN;\
 	type HUBP_DISABLE;\
@@ -622,7 +579,7 @@
 	type DCN_VM_SYSTEM_APERTURE_DEFAULT_SYSTEM;\
 	type DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_MSB;\
 	type DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_LSB;\
-	/* todo:  get these from GVM instead of reading registers ourselves */\
+	 \
 	type PAGE_DIRECTORY_ENTRY_HI32;\
 	type PAGE_DIRECTORY_ENTRY_LO32;\
 	type LOGICAL_PAGE_NUMBER_HI4;\
@@ -649,23 +606,18 @@
 	type CURSOR_HOT_SPOT_Y; \
 	type CURSOR_DST_X_OFFSET; \
 	type OUTPUT_FP
-
 #define DCN_HUBP_REG_FIELD_LIST(type) \
 	DCN_HUBP_REG_FIELD_BASE_LIST(type);\
 	type ALPHA_PLANE_EN
-
 struct dcn_mi_registers {
 	HUBP_COMMON_REG_VARIABLE_LIST;
 };
-
 struct dcn_mi_shift {
 	DCN_HUBP_REG_FIELD_LIST(uint8_t);
 };
-
 struct dcn_mi_mask {
 	DCN_HUBP_REG_FIELD_LIST(uint32_t);
 };
-
 struct dcn_hubp_state {
 	struct _vcs_dpi_display_dlg_regs_st dlg_attr;
 	struct _vcs_dpi_display_ttu_regs_st ttu_attr;
@@ -693,7 +645,6 @@ struct dcn_hubp_state {
 	uint32_t uclk_pstate_force;
 	uint32_t hubp_cntl;
 };
-
 struct dcn10_hubp {
 	struct hubp base;
 	struct dcn_hubp_state state;
@@ -701,7 +652,6 @@ struct dcn10_hubp {
 	const struct dcn_mi_shift *hubp_shift;
 	const struct dcn_mi_mask *hubp_mask;
 };
-
 void hubp1_program_surface_config(
 	struct hubp *hubp,
 	enum surface_pixel_format format,
@@ -711,65 +661,50 @@ void hubp1_program_surface_config(
 	struct dc_plane_dcc_param *dcc,
 	bool horizontal_mirror,
 	unsigned int compat_level);
-
 void hubp1_program_deadline(
 		struct hubp *hubp,
 		struct _vcs_dpi_display_dlg_regs_st *dlg_attr,
 		struct _vcs_dpi_display_ttu_regs_st *ttu_attr);
-
 void hubp1_program_requestor(
 		struct hubp *hubp,
 		struct _vcs_dpi_display_rq_regs_st *rq_regs);
-
 void hubp1_program_pixel_format(
 	struct hubp *hubp,
 	enum surface_pixel_format format);
-
 void hubp1_program_size(
 	struct hubp *hubp,
 	enum surface_pixel_format format,
 	const struct plane_size *plane_size,
 	struct dc_plane_dcc_param *dcc);
-
 void hubp1_program_rotation(
 	struct hubp *hubp,
 	enum dc_rotation_angle rotation,
 	bool horizontal_mirror);
-
 void hubp1_program_tiling(
 	struct hubp *hubp,
 	const union dc_tiling_info *info,
 	const enum surface_pixel_format pixel_format);
-
 void hubp1_dcc_control(struct hubp *hubp,
 		bool enable,
 		enum hubp_ind_block_size independent_64b_blks);
-
 bool hubp1_program_surface_flip_and_addr(
 	struct hubp *hubp,
 	const struct dc_plane_address *address,
 	bool flip_immediate);
-
 bool hubp1_is_flip_pending(struct hubp *hubp);
-
 void hubp1_cursor_set_attributes(
 		struct hubp *hubp,
 		const struct dc_cursor_attributes *attr);
-
 void hubp1_cursor_set_position(
 		struct hubp *hubp,
 		const struct dc_cursor_position *pos,
 		const struct dc_cursor_mi_param *param);
-
 void hubp1_set_blank(struct hubp *hubp, bool blank);
-
 void min_set_viewport(struct hubp *hubp,
 		const struct rect *viewport,
 		const struct rect *viewport_c);
-
 void hubp1_clk_cntl(struct hubp *hubp, bool enable);
 void hubp1_vtg_sel(struct hubp *hubp, uint32_t otg_inst);
-
 void dcn10_hubp_construct(
 	struct dcn10_hubp *hubp1,
 	struct dc_context *ctx,
@@ -777,20 +712,14 @@ void dcn10_hubp_construct(
 	const struct dcn_mi_registers *hubp_regs,
 	const struct dcn_mi_shift *hubp_shift,
 	const struct dcn_mi_mask *hubp_mask);
-
 void hubp1_read_state(struct hubp *hubp);
 void hubp1_clear_underflow(struct hubp *hubp);
-
 enum cursor_pitch hubp1_get_cursor_pitch(unsigned int pitch);
-
 void hubp1_vready_workaround(struct hubp *hubp,
 		struct _vcs_dpi_display_pipe_dest_params_st *pipe_dest);
-
 void hubp1_init(struct hubp *hubp);
 void hubp1_read_state_common(struct hubp *hubp);
 bool hubp1_in_blank(struct hubp *hubp);
 void hubp1_soft_reset(struct hubp *hubp, bool reset);
-
 void hubp1_set_flip_int(struct hubp *hubp);
-
 #endif

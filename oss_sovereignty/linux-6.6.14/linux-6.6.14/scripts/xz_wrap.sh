@@ -1,17 +1,5 @@
-#!/bin/sh
-#
-# This is a wrapper for xz to compress the kernel image using appropriate
-# compression options depending on the architecture.
-#
-# Author: Lasse Collin <lasse.collin@tukaani.org>
-#
-# This file has been put into the public domain.
-# You can do whatever you want with this file.
-#
-
 BCJ=
 LZMA2OPTS=
-
 case $SRCARCH in
 	x86)            BCJ=--x86 ;;
 	powerpc)        BCJ=--powerpc ;;
@@ -19,5 +7,4 @@ case $SRCARCH in
 	arm)            BCJ=--arm ;;
 	sparc)          BCJ=--sparc ;;
 esac
-
 exec $XZ --check=crc32 $BCJ --lzma2=$LZMA2OPTS,dict=32MiB

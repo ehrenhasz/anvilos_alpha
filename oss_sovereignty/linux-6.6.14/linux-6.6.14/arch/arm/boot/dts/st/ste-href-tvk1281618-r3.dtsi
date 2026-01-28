@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Device Tree for the TVK1281618 R3 user interface board (UIB)
- * also known as the "CYTTSP board"
- */
-
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/input/input.h>
-
 / {
 	gpio_keys {
 		compatible = "gpio-keys";
@@ -15,15 +8,12 @@
 		vdd-supply = <&ab8500_ldo_aux1_reg>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&hall_tvk_mode>;
-
 		button@145 {
-			/* Hall sensor */
 			gpios = <&gpio4 17 GPIO_ACTIVE_HIGH>;
-			linux,code = <0>; /* SW_LID */
+			linux,code = <0>;  
 			label = "HED54XXU11 Hall Effect Sensor";
 		};
 	};
-
 	soc {
 		i2c@80004000 {
 			tc35893@44 {
@@ -33,15 +23,12 @@
 				interrupts = <0 IRQ_TYPE_EDGE_RISING>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&tc35893_tvk_mode>;
-
 				interrupt-controller;
 				#interrupt-cells = <1>;
 				status = "disabled";
-
 				tc3589x_gpio {
 					compatible = "toshiba,tc3589x-gpio";
 					interrupts = <0>;
-
 					interrupt-controller;
 					#interrupt-cells = <2>;
 					gpio-controller;
@@ -76,7 +63,6 @@
 				};
 			};
 		};
-
 		i2c@80128000 {
 			accelerometer@19 {
 				compatible = "st,lsm303dlhc-accel";
@@ -98,42 +84,30 @@
 				reg = <0x1e>;
 				vdd-supply = <&ab8500_ldo_aux1_reg>;
 				vddio-supply = <&db8500_vsmps2_reg>;
-				// This interrupt is not properly working with the driver
-				// interrupt-parent = <&gpio1>;
-				// interrupts = <0 IRQ_TYPE_EDGE_RISING>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&magn_tvk_mode>;
 			};
 			gyroscope@68 {
-				/* Gyroscope */
 				compatible = "st,l3g4200d-gyro";
 				reg = <0x68>;
 				vdd-supply = <&ab8500_ldo_aux1_reg>;
 				vddio-supply = <&db8500_vsmps2_reg>;
 			};
 			pressure@5c {
-				/* Barometer/pressure sensor */
 				compatible = "st,lps001wp-press";
 				reg = <0x5c>;
 				vdd-supply = <&ab8500_ldo_aux1_reg>;
 				vddio-supply = <&db8500_vsmps2_reg>;
 			};
 		};
-
 		spi@80111000 {
 			num-cs = <1>;
 			cs-gpios = <&gpio6 24 GPIO_ACTIVE_LOW>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&spi2_default_mode>;
 			status = "okay";
-
 			touchscreen@0 {
 				compatible = "cypress,cy8ctma340";
-				/*
-				 * Actually the max frequency is 6 MHz, but over 2 MHz the
-				 * data rate needs to be restricted to max 2Mbps which the
-				 * SPI framework cannot handle.
-				 */
 				spi-max-frequency = <2000000>;
 				reg = <0>;
 				interrupt-parent = <&gpio2>;
@@ -151,10 +125,8 @@
 				pinctrl-0 = <&cyttsp_tvk_mode>;
 			};
 		};
-
 		mcde@a0350000 {
 			status = "okay";
-
 			dsi@a0351000 {
 				panel {
 					compatible = "sony,acx424akp";
@@ -164,7 +136,6 @@
 				};
 			};
 		};
-
 		pinctrl {
 			hall {
 				hall_tvk_mode: hall_tvk {
@@ -175,7 +146,6 @@
 				};
 			};
 			tc35893 {
-				/* IRQ from the TC35893 */
 				tc35893_tvk_mode: tc35893_tvk {
 					tvk_cfg {
 						pins = "GPIO64_F3";
@@ -185,7 +155,6 @@
 			};
 			accelerometer {
 				accel_tvk_mode: accel_tvk {
-					/* Accelerometer interrupt lines 1 & 2 */
 					tvk_cfg {
 						pins = "GPIO82_C1", "GPIO83_D3";
 						ste,config = <&gpio_in_pd>;
@@ -194,7 +163,6 @@
 			};
 			magnetometer {
 				magn_tvk_mode: magn_tvk {
-					/* GPIO 32 used for DRDY, pull this down */
 					tvk_cfg {
 						pins = "GPIO32_V2";
 						ste,config = <&gpio_in_pd>;
@@ -203,12 +171,10 @@
 			};
 			cyttsp {
 				cyttsp_tvk_mode: cyttsp_tvk {
-					/* Touchscreen uses GPIO84 for IRQ */
 					tvk_cfg1 {
 						pins = "GPIO84_C2";
 						ste,config = <&gpio_in_pu>;
 					};
-					/* GPIO143 is reset */
 					tvk_cfg2 {
 						pins = "GPIO143_D12";
 						ste,config = <&gpio_out_hi>;

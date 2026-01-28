@@ -1,31 +1,10 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * LoongArch specific definitions for NOLIBC
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
-
 #ifndef _NOLIBC_ARCH_LOONGARCH_H
 #define _NOLIBC_ARCH_LOONGARCH_H
-
 #include "compiler.h"
 #include "crt.h"
-
-/* Syscalls for LoongArch :
- *   - stack is 16-byte aligned
- *   - syscall number is passed in a7
- *   - arguments are in a0, a1, a2, a3, a4, a5
- *   - the system call is performed by calling "syscall 0"
- *   - syscall return comes in a0
- *   - the arguments are cast to long and assigned into the target
- *     registers which are then simply passed as registers to the asm code,
- *     so that we don't have to experience issues with register constraints.
- *
- * On LoongArch, select() is not implemented so we have to use pselect6().
- */
 #define __ARCH_WANT_SYS_PSELECT6
 #define _NOLIBC_SYSCALL_CLOBBERLIST \
 	"memory", "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7", "$t8"
-
 #define my_syscall0(num)                                                      \
 ({                                                                            \
 	register long _num  __asm__ ("a7") = (num);                           \
@@ -39,7 +18,6 @@
 	);                                                                    \
 	_arg1;                                                                \
 })
-
 #define my_syscall1(num, arg1)                                                \
 ({                                                                            \
 	register long _num  __asm__ ("a7") = (num);                           \
@@ -53,7 +31,6 @@
 	);                                                                    \
 	_arg1;                                                                \
 })
-
 #define my_syscall2(num, arg1, arg2)                                          \
 ({                                                                            \
 	register long _num  __asm__ ("a7") = (num);                           \
@@ -69,7 +46,6 @@
 	);                                                                    \
 	_arg1;                                                                \
 })
-
 #define my_syscall3(num, arg1, arg2, arg3)                                    \
 ({                                                                            \
 	register long _num  __asm__ ("a7") = (num);                           \
@@ -86,7 +62,6 @@
 	);                                                                    \
 	_arg1;                                                                \
 })
-
 #define my_syscall4(num, arg1, arg2, arg3, arg4)                              \
 ({                                                                            \
 	register long _num  __asm__ ("a7") = (num);                           \
@@ -104,7 +79,6 @@
 	);                                                                    \
 	_arg1;                                                                \
 })
-
 #define my_syscall5(num, arg1, arg2, arg3, arg4, arg5)                        \
 ({                                                                            \
 	register long _num  __asm__ ("a7") = (num);                           \
@@ -123,7 +97,6 @@
 	);                                                                    \
 	_arg1;                                                                \
 })
-
 #define my_syscall6(num, arg1, arg2, arg3, arg4, arg5, arg6)                  \
 ({                                                                            \
 	register long _num  __asm__ ("a7") = (num);                           \
@@ -143,22 +116,18 @@
 	);                                                                    \
 	_arg1;                                                                \
 })
-
 #if __loongarch_grlen == 32
 #define LONG_BSTRINS "bstrins.w"
-#else /* __loongarch_grlen == 64 */
+#else  
 #define LONG_BSTRINS "bstrins.d"
 #endif
-
-/* startup code */
 void __attribute__((weak, noreturn, optimize("Os", "omit-frame-pointer"))) __no_stack_protector _start(void)
 {
 	__asm__ volatile (
-		"move          $a0, $sp\n"         /* save stack pointer to $a0, as arg1 of _start_c */
-		LONG_BSTRINS " $sp, $zero, 3, 0\n" /* $sp must be 16-byte aligned                    */
-		"bl            _start_c\n"         /* transfer to c runtime                          */
+		"move          $a0, $sp\n"          
+		LONG_BSTRINS " $sp, $zero, 3, 0\n"  
+		"bl            _start_c\n"          
 	);
 	__builtin_unreachable();
 }
-
-#endif /* _NOLIBC_ARCH_LOONGARCH_H */
+#endif  

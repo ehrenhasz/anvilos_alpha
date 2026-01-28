@@ -1,25 +1,11 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0
-#
-# Tests whether a suitable Rust toolchain is available.
-
 set -e
-
 min_tool_version=$(dirname $0)/min-tool-version.sh
-
-# Convert the version string x.y.z to a canonical up-to-7-digits form.
-#
-# Note that this function uses one more digit (compared to other
-# instances in other version scripts) to give a bit more space to
-# `rustc` since it will reach 1.100.0 in late 2026.
 get_canonical_version()
 {
 	IFS=.
 	set -- $1
 	echo $((100000 * $1 + 100 * $2 + $3))
 }
-
-# Print a reference to the Quick Start guide in the documentation.
 print_docs_reference()
 {
 	echo >&2 "***"
@@ -27,8 +13,6 @@ print_docs_reference()
 	echo >&2 "*** on how to set up the Rust support."
 	echo >&2 "***"
 }
-
-# Print an explanation about the fact that the script is meant to be called from Kbuild.
 print_kbuild_explanation()
 {
 	echo >&2 "***"
@@ -37,50 +21,35 @@ print_kbuild_explanation()
 	echo >&2 "*** Otherwise, the results may not be meaningful."
 	exit 1
 }
-
-# If the script fails for any reason, or if there was any warning, then
-# print a reference to the documentation on exit.
 warning=0
 trap 'if [ $? -ne 0 ] || [ $warning -ne 0 ]; then print_docs_reference; fi' EXIT
-
-# Check that the expected environment variables are set.
 if [ -z "${RUSTC+x}" ]; then
 	echo >&2 "***"
 	echo >&2 "*** Environment variable 'RUSTC' is not set."
 	print_kbuild_explanation
 fi
-
 if [ -z "${BINDGEN+x}" ]; then
 	echo >&2 "***"
 	echo >&2 "*** Environment variable 'BINDGEN' is not set."
 	print_kbuild_explanation
 fi
-
 if [ -z "${CC+x}" ]; then
 	echo >&2 "***"
 	echo >&2 "*** Environment variable 'CC' is not set."
 	print_kbuild_explanation
 fi
-
-# Check that the Rust compiler exists.
 if ! command -v "$RUSTC" >/dev/null; then
 	echo >&2 "***"
 	echo >&2 "*** Rust compiler '$RUSTC' could not be found."
 	echo >&2 "***"
 	exit 1
 fi
-
-# Check that the Rust bindings generator exists.
 if ! command -v "$BINDGEN" >/dev/null; then
 	echo >&2 "***"
 	echo >&2 "*** Rust bindings generator '$BINDGEN' could not be found."
 	echo >&2 "***"
 	exit 1
 fi
-
-# Check that the Rust compiler version is suitable.
-#
-# Non-stable and distributions' versions may have a version suffix, e.g. `-dev`.
 rust_compiler_output=$( \
 	LC_ALL=C "$RUSTC" --version 2>/dev/null
 ) || rust_compiler_code=$?
@@ -125,10 +94,6 @@ if [ "$rust_compiler_cversion" -gt "$rust_compiler_min_cversion" ]; then
 	echo >&2 "***"
 	warning=1
 fi
-
-# Check that the Rust bindings generator is suitable.
-#
-# Non-stable and distributions' versions may have a version suffix, e.g. `-dev`.
 rust_bindings_generator_output=$( \
 	LC_ALL=C "$BINDGEN" --version 2>/dev/null
 ) || rust_bindings_generator_code=$?
@@ -173,12 +138,6 @@ if [ "$rust_bindings_generator_cversion" -gt "$rust_bindings_generator_min_cvers
 	echo >&2 "***"
 	warning=1
 fi
-
-# Check that the `libclang` used by the Rust bindings generator is suitable.
-#
-# In order to do that, first invoke `bindgen` to get the `libclang` version
-# found by `bindgen`. This step may already fail if, for instance, `libclang`
-# is not found, thus inform the user in such a case.
 bindgen_libclang_output=$( \
 	LC_ALL=C "$BINDGEN" $(dirname $0)/rust_is_available_bindgen_libclang.h 2>&1 >/dev/null
 ) || bindgen_libclang_code=$?
@@ -192,12 +151,6 @@ if [ -n "$bindgen_libclang_code" ]; then
 	echo >&2 "***"
 	exit 1
 fi
-
-# `bindgen` returned successfully, thus use the output to check that the version
-# of the `libclang` found by the Rust bindings generator is suitable.
-#
-# Unlike other version checks, note that this one does not necessarily appear
-# in the first line of the output, thus no `sed` address is provided.
 bindgen_libclang_version=$( \
 	echo "$bindgen_libclang_output" \
 		| sed -nE 's:.*clang version ([0-9]+\.[0-9]+\.[0-9]+).*:\1:p'
@@ -223,12 +176,6 @@ if [ "$bindgen_libclang_cversion" -lt "$bindgen_libclang_min_cversion" ]; then
 	echo >&2 "***"
 	exit 1
 fi
-
-# If the C compiler is Clang, then we can also check whether its version
-# matches the `libclang` version used by the Rust bindings generator.
-#
-# In the future, we might be able to perform a full version check, see
-# https://github.com/rust-lang/rust-bindgen/issues/2138.
 cc_name=$($(dirname $0)/cc-version.sh $CC | cut -f1 -d' ')
 if [ "$cc_name" = Clang ]; then
 	clang_version=$( \
@@ -245,10 +192,6 @@ if [ "$cc_name" = Clang ]; then
 		warning=1
 	fi
 fi
-
-# Check that the source code for the `core` standard library exists.
-#
-# `$KRUSTFLAGS` is passed in case the user added `--sysroot`.
 rustc_sysroot=$("$RUSTC" $KRUSTFLAGS --print sysroot)
 rustc_src=${RUST_LIB_SRC:-"$rustc_sysroot/lib/rustlib/src/rust/library"}
 rustc_src_core="$rustc_src/core/src/lib.rs"

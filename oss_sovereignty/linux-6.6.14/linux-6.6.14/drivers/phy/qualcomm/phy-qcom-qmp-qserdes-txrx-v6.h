@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2023, Linaro Limited
- */
-
 #ifndef QCOM_PHY_QMP_QSERDES_TXRX_USB_V6_H_
 #define QCOM_PHY_QMP_QSERDES_TXRX_USB_V6_H_
-
 #define QSERDES_V6_TX_CLKBUF_ENABLE				0x08
 #define QSERDES_V6_TX_TX_EMP_POST1_LVL				0x0c
 #define QSERDES_V6_TX_TX_DRV_LVL				0x14
@@ -31,7 +25,6 @@
 #define QSERDES_V6_TX_TX_INTERFACE_MODE				0xc4
 #define QSERDES_V6_TX_VMODE_CTRL1				0xc8
 #define QSERDES_V6_TX_PI_QEC_CTRL				0xe4
-
 #define QSERDES_V6_RX_UCDR_FO_GAIN				0x08
 #define QSERDES_V6_RX_UCDR_SO_GAIN				0x14
 #define QSERDES_V6_RX_UCDR_FASTLOCK_FO_GAIN			0x30
@@ -78,5 +71,4 @@
 #define QSERDES_V6_RX_VTH_CODE					0x1b0
 #define QSERDES_V6_RX_SIGDET_CAL_CTRL1				0x1e4
 #define QSERDES_V6_RX_SIGDET_CAL_TRIM				0x1f8
-
 #endif

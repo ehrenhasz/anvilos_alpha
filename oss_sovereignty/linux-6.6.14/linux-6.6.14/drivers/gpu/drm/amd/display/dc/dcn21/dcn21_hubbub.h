@@ -1,32 +1,6 @@
-/*
-* Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
 #ifndef DAL_DC_DCN21_DCN21_HUBBUB_H_
 #define DAL_DC_DCN21_DCN21_HUBBUB_H_
-
 #include "dcn20/dcn20_hubbub.h"
-
 #define HUBBUB_HVM_REG_LIST() \
 	SR(DCHUBBUB_ARB_FRAC_URG_BW_NOM_A),\
 	SR(DCHUBBUB_ARB_FRAC_URG_BW_NOM_B),\
@@ -46,12 +20,10 @@
 	SR(DCHVM_CLK_CTRL), \
 	SR(DCHVM_RIOMMU_CTRL0), \
 	SR(DCHVM_RIOMMU_STAT0)
-
 #define HUBBUB_REG_LIST_DCN21()\
 	HUBBUB_REG_LIST_DCN20_COMMON(), \
 	HUBBUB_SR_WATERMARK_REG_LIST(), \
 	HUBBUB_HVM_REG_LIST()
-
 #define HUBBUB_MASK_SH_LIST_HVM(mask_sh) \
 	HUBBUB_SF(DCHUBBUB_ARB_DF_REQ_OUTSTAND, DCHUBBUB_ARB_MIN_REQ_OUTSTAND_COMMIT_THRESHOLD, mask_sh), \
 	HUBBUB_SF(DCHUBBUB_ARB_FRAC_URG_BW_FLIP_A, DCHUBBUB_ARB_FRAC_URG_BW_FLIP_A, mask_sh), \
@@ -97,7 +69,6 @@
 	HUBBUB_SF(DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_B, DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_B, mask_sh), \
 	HUBBUB_SF(DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_C, DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_C, mask_sh), \
 	HUBBUB_SF(DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_D, DCHUBBUB_ARB_REFCYC_PER_TRIP_TO_MEMORY_D, mask_sh)
-
 #define HUBBUB_MASK_SH_LIST_DCN21(mask_sh)\
 	HUBBUB_MASK_SH_LIST_HVM(mask_sh), \
 	HUBBUB_MASK_SH_LIST_DCN_COMMON(mask_sh), \
@@ -121,7 +92,6 @@
 	HUBBUB_SF(DCN_VM_FAULT_STATUS, DCN_VM_ERROR_TABLE_LEVEL, mask_sh), \
 	HUBBUB_SF(DCN_VM_FAULT_STATUS, DCN_VM_ERROR_PIPE, mask_sh), \
 	HUBBUB_SF(DCN_VM_FAULT_STATUS, DCN_VM_ERROR_INTERRUPT_STATUS, mask_sh)
-
 void dcn21_dchvm_init(struct hubbub *hubbub);
 int hubbub21_init_dchub(struct hubbub *hubbub,
 		struct dcn_hubbub_phys_addr_config *pa_config);
@@ -145,14 +115,11 @@ bool hubbub21_program_pstate_watermarks(
 		struct dcn_watermark_set *watermarks,
 		unsigned int refclk_mhz,
 		bool safe_to_lower);
-
 void hubbub21_wm_read_state(struct hubbub *hubbub,
 		struct dcn_hubbub_wm *wm);
-
 void hubbub21_construct(struct dcn20_hubbub *hubbub,
 	struct dc_context *ctx,
 	const struct dcn_hubbub_registers *hubbub_regs,
 	const struct dcn_hubbub_shift *hubbub_shift,
 	const struct dcn_hubbub_mask *hubbub_mask);
-
-#endif /* DAL_DC_DCN21_DCN21_HUBBUB_H_ */
+#endif  

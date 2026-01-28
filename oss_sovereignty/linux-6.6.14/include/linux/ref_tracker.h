@@ -1,13 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 #ifndef _LINUX_REF_TRACKER_H
 #define _LINUX_REF_TRACKER_H
 #include <linux/refcount.h>
 #include <linux/types.h>
 #include <linux/spinlock.h>
 #include <linux/stackdepot.h>
-
 struct ref_tracker;
-
 struct ref_tracker_dir {
 #ifdef CONFIG_REF_TRACKER
 	spinlock_t		lock;
@@ -15,14 +12,12 @@ struct ref_tracker_dir {
 	refcount_t		untracked;
 	refcount_t		no_tracker;
 	bool			dead;
-	struct list_head	list; /* List of active trackers */
-	struct list_head	quarantine; /* List of dead trackers */
+	struct list_head	list;  
+	struct list_head	quarantine;  
 	char			name[32];
 #endif
 };
-
 #ifdef CONFIG_REF_TRACKER
-
 static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
 					unsigned int quarantine_count,
 					const char *name)
@@ -37,64 +32,48 @@ static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
 	strscpy(dir->name, name, sizeof(dir->name));
 	stack_depot_init();
 }
-
 void ref_tracker_dir_exit(struct ref_tracker_dir *dir);
-
 void ref_tracker_dir_print_locked(struct ref_tracker_dir *dir,
 				  unsigned int display_limit);
-
 void ref_tracker_dir_print(struct ref_tracker_dir *dir,
 			   unsigned int display_limit);
-
 int ref_tracker_dir_snprint(struct ref_tracker_dir *dir, char *buf, size_t size);
-
 int ref_tracker_alloc(struct ref_tracker_dir *dir,
 		      struct ref_tracker **trackerp, gfp_t gfp);
-
 int ref_tracker_free(struct ref_tracker_dir *dir,
 		     struct ref_tracker **trackerp);
-
-#else /* CONFIG_REF_TRACKER */
-
+#else  
 static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
 					unsigned int quarantine_count,
 					const char *name)
 {
 }
-
 static inline void ref_tracker_dir_exit(struct ref_tracker_dir *dir)
 {
 }
-
 static inline void ref_tracker_dir_print_locked(struct ref_tracker_dir *dir,
 						unsigned int display_limit)
 {
 }
-
 static inline void ref_tracker_dir_print(struct ref_tracker_dir *dir,
 					 unsigned int display_limit)
 {
 }
-
 static inline int ref_tracker_dir_snprint(struct ref_tracker_dir *dir,
 					  char *buf, size_t size)
 {
 	return 0;
 }
-
 static inline int ref_tracker_alloc(struct ref_tracker_dir *dir,
 				    struct ref_tracker **trackerp,
 				    gfp_t gfp)
 {
 	return 0;
 }
-
 static inline int ref_tracker_free(struct ref_tracker_dir *dir,
 				   struct ref_tracker **trackerp)
 {
 	return 0;
 }
-
 #endif
-
-#endif /* _LINUX_REF_TRACKER_H */
+#endif  

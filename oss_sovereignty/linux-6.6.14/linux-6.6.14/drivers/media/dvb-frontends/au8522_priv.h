@@ -1,14 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-    Auvitek AU8522 QAM/8VSB demodulator driver
-
-    Copyright (C) 2008 Steven Toth <stoth@linuxtv.org>
-    Copyright (C) 2008 Devin Heitmueller <dheitmueller@linuxtv.org>
-    Copyright (C) 2005-2008 Auvitek International, Ltd.
-
-
-*/
-
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -23,40 +12,27 @@
 #include <media/dvb_frontend.h>
 #include "au8522.h"
 #include "tuner-i2c.h"
-
 #define AU8522_ANALOG_MODE 0
 #define AU8522_DIGITAL_MODE 1
 #define AU8522_SUSPEND_MODE 2
-
 enum au8522_pads {
 	AU8522_PAD_IF_INPUT,
 	AU8522_PAD_VID_OUT,
 	AU8522_PAD_AUDIO_OUT,
 	AU8522_NUM_PADS
 };
-
 struct au8522_state {
 	struct i2c_client *c;
 	struct i2c_adapter *i2c;
-
 	u8 operational_mode;
-
-	/* Used for sharing of the state between analog and digital mode */
 	struct tuner_i2c_props i2c_props;
 	struct list_head hybrid_tuner_instance_list;
-
-	/* configuration settings */
 	struct au8522_config config;
-
 	struct dvb_frontend frontend;
-
 	u32 current_frequency;
 	enum fe_modulation current_modulation;
-
 	u32 fe_status;
 	unsigned int led_state;
-
-	/* Analog settings */
 	struct v4l2_subdev sd;
 	v4l2_std_id std;
 	int vid_input;
@@ -64,31 +40,23 @@ struct au8522_state {
 	u32 id;
 	u32 rev;
 	struct v4l2_ctrl_handler hdl;
-
 #ifdef CONFIG_MEDIA_CONTROLLER
 	struct media_pad pads[AU8522_NUM_PADS];
 #endif
 };
-
-/* These are routines shared by both the VSB/QAM demodulator and the analog
-   decoder */
 int au8522_writereg(struct au8522_state *state, u16 reg, u8 data);
 u8 au8522_readreg(struct au8522_state *state, u16 reg);
 int au8522_init(struct dvb_frontend *fe);
 int au8522_sleep(struct dvb_frontend *fe);
-
 int au8522_get_state(struct au8522_state **state, struct i2c_adapter *i2c,
 		     u8 client_address);
 void au8522_release_state(struct au8522_state *state);
 int au8522_i2c_gate_ctrl(struct dvb_frontend *fe, int enable);
 int au8522_analog_i2c_gate_ctrl(struct dvb_frontend *fe, int enable);
 int au8522_led_ctrl(struct au8522_state *state, int led);
-
-/* REGISTERS */
 #define AU8522_INPUT_CONTROL_REG081H			0x081
 #define AU8522_PGA_CONTROL_REG082H			0x082
 #define AU8522_CLAMPING_CONTROL_REG083H			0x083
-
 #define AU8522_MODULE_CLOCK_CONTROL_REG0A3H		0x0A3
 #define AU8522_SYSTEM_MODULE_CONTROL_0_REG0A4H		0x0A4
 #define AU8522_SYSTEM_MODULE_CONTROL_1_REG0A5H		0x0A5
@@ -102,8 +70,6 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_TUNER_AGC_IF_DEFAULT_REG0ADH		0x0AD
 #define AU8522_TUNER_AGC_STEP_REG0AEH			0x0AE
 #define AU8522_TUNER_GAIN_STEP_REG0AFH			0x0AF
-
-/* Receiver registers */
 #define AU8522_FRMREGTHRD1_REG0B0H			0x0B0
 #define AU8522_FRMREGAGC1H_REG0B1H			0x0B1
 #define AU8522_FRMREGSHIFT1_REG0B2H			0x0B2
@@ -112,7 +78,6 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_FRMREGBBH_REG0B5H			0x0B5
 #define AU8522_FRMREGBBM_REG0B6H			0x0B6
 #define AU8522_FRMREGBBL_REG0B7H			0x0B7
-/* 0xB8 TO 0xD7 are the filter coefficients */
 #define AU8522_FRMREGTHRD2_REG0D8H			0x0D8
 #define AU8522_FRMREGAGC2H_REG0D9H			0x0D9
 #define AU8522_TOREGAGC2_REG0DAH			0x0DA
@@ -121,14 +86,10 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_FRMREGPILOTM_REG0DDH			0x0DD
 #define AU8522_FRMREGPILOTL_REG0DEH			0x0DE
 #define AU8522_TOREGFREQ_REG0DFH			0x0DF
-
 #define AU8522_RX_PGA_RFOUT_REG0EBH			0x0EB
 #define AU8522_RX_PGA_IFOUT_REG0ECH			0x0EC
 #define AU8522_RX_PGA_PGAOUT_REG0EDH			0x0ED
-
 #define AU8522_CHIP_MODE_REG0FEH			0x0FE
-
-/* I2C bus control registers */
 #define AU8522_I2C_CONTROL_REG0_REG090H			0x090
 #define AU8522_I2C_CONTROL_REG1_REG091H			0x091
 #define AU8522_I2C_STATUS_REG092H			0x092
@@ -148,19 +109,14 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_I2C_RD_DATA5_REG0A0H			0x0A0
 #define AU8522_I2C_RD_DATA6_REG0A1H			0x0A1
 #define AU8522_I2C_RD_DATA7_REG0A2H			0x0A2
-
 #define AU8522_ENA_USB_REG101H				0x101
-
 #define AU8522_I2S_CTRL_0_REG110H			0x110
 #define AU8522_I2S_CTRL_1_REG111H			0x111
 #define AU8522_I2S_CTRL_2_REG112H			0x112
-
 #define AU8522_FRMREGFFECONTROL_REG121H			0x121
 #define AU8522_FRMREGDFECONTROL_REG122H			0x122
-
 #define AU8522_CARRFREQOFFSET0_REG201H			0x201
 #define AU8522_CARRFREQOFFSET1_REG202H			0x202
-
 #define AU8522_DECIMATION_GAIN_REG21AH			0x21A
 #define AU8522_FRMREGIFSLP_REG21BH			0x21B
 #define AU8522_FRMREGTHRDL2_REG21CH			0x21C
@@ -176,8 +132,6 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_FRMREGCRLOCK1THL_REG226H			0x226
 #define AU_FRMREGPLLACQPHASESCL_REG227H			0x227
 #define AU8522_FRMREGFREQFBCTRL_REG228H			0x228
-
-/* Analog TV Decoder */
 #define AU8522_TVDEC_STATUS_REG000H			0x000
 #define AU8522_TVDEC_INT_STATUS_REG001H			0x001
 #define AU8522_TVDEC_MACROVISION_STATUS_REG002H		0x002
@@ -218,10 +172,8 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_TVDEC_INTRP_CTRL_REG07BH			0x07B
 #define AU8522_TVDEC_PLL_STATUS_REG07EH			0x07E
 #define AU8522_TVDEC_FSC_FREQ_REG07FH			0x07F
-
 #define AU8522_TVDEC_AGC_LOW_LIMIT_REG0E4H		0x0E4
 #define AU8522_TOREGAAGC_REG0E5H			0x0E5
-
 #define AU8522_TVDEC_CHROMA_AGC_REG401H		0x401
 #define AU8522_TVDEC_CHROMA_SFT_REG402H		0x402
 #define AU8522_FILTER_COEF_R410			0x410
@@ -254,8 +206,6 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_FILTER_COEF_R42B			0x42B
 #define AU8522_FILTER_COEF_R42C			0x42C
 #define AU8522_FILTER_COEF_R42D			0x42D
-
-/* VBI Control Registers */
 #define AU8522_TVDEC_VBI_RX_FIFO_CONTAIN_REG004H	0x004
 #define AU8522_TVDEC_VBI_TX_FIFO_CONTAIN_REG005H	0x005
 #define AU8522_TVDEC_VBI_RX_FIFO_READ_REG006H		0x006
@@ -272,13 +222,10 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_TVDEC_VBI_USER_FRAME_MASK2_REG021H	0x021
 #define AU8522_TVDEC_VBI_USER_FRAME_MASK1_REG022H	0x022
 #define AU8522_TVDEC_VBI_USER_FRAME_MASK0_REG023H	0x023
-
 #define AU8522_REG071H					0x071
 #define AU8522_REG072H					0x072
 #define AU8522_REG074H					0x074
 #define AU8522_REG075H					0x075
-
-/* Digital Demodulator Registers */
 #define AU8522_FRAME_COUNT0_REG084H			0x084
 #define AU8522_RS_STATUS_G0_REG085H			0x085
 #define AU8522_RS_STATUS_B0_REG086H			0x086
@@ -293,7 +240,6 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_FRMREGFFEKEEP_REG304H			0x304
 #define AU8522_FRMREGDFECONTROL1_REG305H		0x305
 #define AU8522_FRMREGEQLERRLOW_REG306H			0x306
-
 #define AU8522_REG42EH				0x42E
 #define AU8522_REG42FH				0x42F
 #define AU8522_REG430H				0x430
@@ -303,13 +249,9 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_REG434H				0x434
 #define AU8522_REG435H				0x435
 #define AU8522_REG436H				0x436
-
-/* GPIO Registers */
 #define AU8522_GPIO_CONTROL_REG0E0H			0x0E0
 #define AU8522_GPIO_STATUS_REG0E1H			0x0E1
 #define AU8522_GPIO_DATA_REG0E2H			0x0E2
-
-/* Audio Control Registers */
 #define AU8522_AUDIOAGC_REG0EEH				0x0EE
 #define AU8522_AUDIO_STATUS_REG0F0H			0x0F0
 #define AU8522_AUDIO_MODE_REG0F1H			0x0F1
@@ -318,39 +260,24 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_AUDIO_VOLUME_REG0F4H			0x0F4
 #define AU8522_FRMREGAUPHASE_REG0F7H			0x0F7
 #define AU8522_REG0F9H					0x0F9
-
 #define AU8522_AUDIOAGC2_REG605H			0x605
 #define AU8522_AUDIOFREQ_REG606H			0x606
-
-
-/**************************************************************/
-
-/* Format control 1 */
-
-/* VCR Mode 7-6 */
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_VCR_MODE_YES		0x80
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_VCR_MODE_NO		0x40
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_VCR_MODE_AUTO		0x00
-/* Field len 5-4 */
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_FIELD_LEN_625		0x20
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_FIELD_LEN_525		0x10
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_FIELD_LEN_AUTO	0x00
-/* Line len (us) 3-2 */
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_LINE_LEN_64_000	0x0b
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_LINE_LEN_63_492	0x08
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_LINE_LEN_63_556	0x04
-/* Subcarrier freq 1-0 */
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_SUBCARRIER_NTSC_AUTO	0x03
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_SUBCARRIER_NTSC_443	0x02
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_SUBCARRIER_NTSC_MN	0x01
 #define AU8522_TVDEC_FORMAT_CTRL1_REG061H_SUBCARRIER_NTSC_50	0x00
-
-/* Format control 2 */
 #define AU8522_TVDEC_FORMAT_CTRL2_REG062H_STD_AUTODETECT	0x00
 #define AU8522_TVDEC_FORMAT_CTRL2_REG062H_STD_NTSC		0x01
 #define AU8522_TVDEC_FORMAT_CTRL2_REG062H_STD_PAL_M		0x02
-
-
 #define AU8522_INPUT_CONTROL_REG081H_ATSC			0xC4
 #define AU8522_INPUT_CONTROL_REG081H_ATVRF			0xC4
 #define AU8522_INPUT_CONTROL_REG081H_ATVRF13			0xC4
@@ -362,9 +289,7 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_INPUT_CONTROL_REG081H_CVBS_CH3			0x69
 #define AU8522_INPUT_CONTROL_REG081H_CVBS_CH4			0x68
 #define AU8522_INPUT_CONTROL_REG081H_CVBS_CH4_SIF		0x28
-/* CH1 AS Y,CH3 AS C */
 #define AU8522_INPUT_CONTROL_REG081H_SVIDEO_CH13		0x23
-/* CH2 AS Y,CH4 AS C */
 #define AU8522_INPUT_CONTROL_REG081H_SVIDEO_CH24		0x20
 #define AU8522_MODULE_CLOCK_CONTROL_REG0A3H_ATSC		0x0C
 #define AU8522_MODULE_CLOCK_CONTROL_REG0A3H_J83B64		0x09
@@ -373,7 +298,6 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_MODULE_CLOCK_CONTROL_REG0A3H_ATVRF		0x1A
 #define AU8522_MODULE_CLOCK_CONTROL_REG0A3H_ATVRF13		0x1A
 #define AU8522_MODULE_CLOCK_CONTROL_REG0A3H_SVIDEO		0x02
-
 #define AU8522_SYSTEM_MODULE_CONTROL_0_REG0A4H_CLEAR		0x00
 #define AU8522_SYSTEM_MODULE_CONTROL_0_REG0A4H_SVIDEO		0x9C
 #define AU8522_SYSTEM_MODULE_CONTROL_0_REG0A4H_CVBS		0x9D
@@ -384,7 +308,6 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_SYSTEM_MODULE_CONTROL_0_REG0A4H_ATVRF13		0xDD
 #define AU8522_SYSTEM_MODULE_CONTROL_0_REG0A4H_PAL		0xDD
 #define AU8522_SYSTEM_MODULE_CONTROL_0_REG0A4H_FM		0xDD
-
 #define AU8522_SYSTEM_MODULE_CONTROL_1_REG0A5H_ATSC		0x80
 #define AU8522_SYSTEM_MODULE_CONTROL_1_REG0A5H_J83B256		0x80
 #define AU8522_SYSTEM_MODULE_CONTROL_1_REG0A5H_J83B64		0x80
@@ -400,8 +323,6 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_SYSTEM_MODULE_CONTROL_1_REG0A5H_IIS		0x09
 #define AU8522_SYSTEM_MODULE_CONTROL_1_REG0A5H_PAL		0x01
 #define AU8522_SYSTEM_MODULE_CONTROL_1_REG0A5H_FM		0x01
-
-/* STILL NEED TO BE REFACTORED @@@@@@@@@@@@@@ */
 #define AU8522_TVDEC_CONTRAST_REG00BH_CVBS			0x79
 #define AU8522_TVDEC_SATURATION_CB_REG00CH_CVBS			0x80
 #define AU8522_TVDEC_SATURATION_CR_REG00DH_CVBS			0x80
@@ -441,6 +362,4 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 #define AU8522_TVDEC_AGC_LOW_LIMIT_REG0E4H_CVBS			0xFE
 #define AU8522_TOREGAAGC_REG0E5H_CVBS				0x00
 #define AU8522_TVDEC_VBI6A_REG035H_CVBS				0x40
-
-/* Enables Closed captioning */
 #define AU8522_TVDEC_VBI_CTRL_H_REG017H_CCON			0x21

@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Hongzhou.Yang <hongzhou.yang@mediatek.com>
- */
-
 #ifndef __PINCTRL_MTK_MT8135_H
 #define __PINCTRL_MTK_MT8135_H
-
 #include <linux/pinctrl/pinctrl.h>
 #include "pinctrl-mtk-common.h"
-
 static const struct mtk_desc_pin mtk_pins_mt8135[] = {
 	MTK_PIN(PINCTRL_PIN(0, "MSDC0_DAT7"),
 		"D21", "mt8135",
@@ -1899,5 +1891,4 @@ static const struct mtk_desc_pin mtk_pins_mt8135[] = {
 		MTK_FUNCTION(5, "CLKM2")
 	),
 };
-
-#endif /* __PINCTRL_MTK_MT8135_H */
+#endif  

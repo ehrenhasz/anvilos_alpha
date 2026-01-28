@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2018 Microsemi Corporation
- */
-
 /dts-v1/;
 #include "jaguar2_common.dtsi"
-
 / {
 	model = "Jaguar2/Aquantia PCB118 Reference Board";
 	compatible = "mscc,jr2-pcb118", "mscc,jr2";
-
 	aliases {
 		i2c150  = &i2c150;
 		i2c151  = &i2c151;
 	};
-
 	i2c0_imux: i2c0-imux {
 		compatible = "i2c-mux-pinctrl";
 		#address-cells = <1>;
@@ -37,7 +29,6 @@
 		};
 	};
 };
-
 &gpio {
 	i2cmux_pins_i: i2cmux-pins {
 		pins = "GPIO_17", "GPIO_16";

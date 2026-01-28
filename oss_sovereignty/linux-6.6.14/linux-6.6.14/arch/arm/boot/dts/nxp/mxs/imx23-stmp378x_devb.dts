@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- */
-
 /dts-v1/;
 #include "imx23.dtsi"
-
 / {
 	model = "Freescale STMP378x Development Board";
 	compatible = "fsl,stmp378x-devb", "fsl,imx23";
-
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0x40000000 0x04000000>;
 	};
-
 	apb@80000000 {
 		apbh@80000000 {
 			ssp0: spi@80010000 {
@@ -26,11 +18,9 @@
 				vmmc-supply = <&reg_vddio_sd0>;
 				status = "okay";
 			};
-
 			pinctrl@80018000 {
 				pinctrl-names = "default";
 				pinctrl-0 = <&hog_pins_a>;
-
 				hog_pins_a: hog@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
@@ -43,14 +33,12 @@
 				};
 			};
 		};
-
 		apbx@80040000 {
 			auart0: serial@8006c000 {
 				pinctrl-names = "default";
 				pinctrl-0 = <&auart0_pins_a>;
 				status = "okay";
 			};
-
 			duart: serial@80070000 {
 				pinctrl-names = "default";
 				pinctrl-0 = <&duart_pins_a>;
@@ -58,7 +46,6 @@
 			};
 		};
 	};
-
 	reg_vddio_sd0: regulator-0 {
 		compatible = "regulator-fixed";
 		regulator-name = "vddio-sd0";

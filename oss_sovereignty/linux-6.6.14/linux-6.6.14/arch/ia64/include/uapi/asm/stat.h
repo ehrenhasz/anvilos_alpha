@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _ASM_IA64_STAT_H
 #define _ASM_IA64_STAT_H
-
-/*
- * Modified 1998, 1999
- *	David Mosberger-Tang <davidm@hpl.hp.com>, Hewlett-Packard Co
- */
-
 struct stat {
 	unsigned long	st_dev;
 	unsigned long	st_ino;
@@ -27,9 +20,7 @@ struct stat {
 	long		st_blocks;
 	unsigned long	__unused[3];
 };
-
 #define STAT_HAVE_NSEC 1
-
 struct ia64_oldstat {
 	unsigned int	st_dev;
 	unsigned int	st_ino;
@@ -48,5 +39,4 @@ struct ia64_oldstat {
 	unsigned int	__unused1;
 	unsigned int	__unused2;
 };
-
-#endif /* _ASM_IA64_STAT_H */
+#endif  

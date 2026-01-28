@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2017 BayLibre SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
-
 / {
 	gpu_opp_table: opp-table {
 		compatible = "operating-points-v2";
-
 		opp-125000000 {
 			opp-hz = /bits/ 64 <125000000>;
 			opp-microvolt = <950000>;
@@ -38,7 +31,6 @@
 		};
 	};
 };
-
 &apb {
 	mali: gpu@c0000 {
 		compatible = "arm,mali-450";

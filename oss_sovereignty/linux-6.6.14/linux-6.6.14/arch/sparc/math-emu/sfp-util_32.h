@@ -1,9 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/types.h>
 #include <asm/byteorder.h>
-
 #define add_ssaaaa(sh, sl, ah, al, bh, bl) 				\
   __asm__ ("addcc %r4,%5,%1\n\t"					\
 	   "addx %r2,%3,%0\n"						\
@@ -24,7 +22,6 @@
 	     "rJ" ((USItype)(al)),					\
 	     "rI" ((USItype)(bl))					\
 	   : "cc")
-
 #define umul_ppmm(w1, w0, u, v) \
   __asm__ ("! Inlined umul_ppmm\n\t"					\
 	"wr	%%g0,%2,%%y	! SPARC has 0-3 delay insn after a wr\n\t" \
@@ -71,9 +68,6 @@
 	   : "%rI" ((USItype)(u)),					\
 	     "r" ((USItype)(v))						\
 	   : "%g1", "%g2", "cc")
-
-/* It's quite necessary to add this much assembler for the sparc.
-   The default udiv_qrnnd (in C) is more than 10 times slower!  */
 #define udiv_qrnnd(q, r, n1, n0, d) \
   __asm__ ("! Inlined udiv_qrnnd\n\t"					\
 	   "mov	32,%%g1\n\t"						\
@@ -105,10 +99,8 @@
 	     "1" ((USItype)(n1)),					\
 	     "0" ((USItype)(n0)) : "%g1", "cc")
 #define UDIV_NEEDS_NORMALIZATION 0
-
 #define abort()								\
 	return 0
-
 #ifdef __BIG_ENDIAN
 #define __BYTE_ORDER __BIG_ENDIAN
 #else

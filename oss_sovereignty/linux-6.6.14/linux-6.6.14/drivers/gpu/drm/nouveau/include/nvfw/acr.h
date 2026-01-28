@@ -1,6 +1,5 @@
 #ifndef __NVFW_ACR_H__
 #define __NVFW_ACR_H__
-
 struct wpr_header {
 #define WPR_HEADER_V0_FALCON_ID_INVALID                              0xffffffff
 	u32 falcon_id;
@@ -16,9 +15,7 @@ struct wpr_header {
 #define WPR_HEADER_V0_STATUS_BOOTSTRAP_READY                                  6
 	u32 status;
 };
-
 void wpr_header_dump(struct nvkm_subdev *, const struct wpr_header *);
-
 struct wpr_header_v1 {
 #define WPR_HEADER_V1_FALCON_ID_INVALID                              0xffffffff
 	u32 falcon_id;
@@ -36,9 +33,7 @@ struct wpr_header_v1 {
 #define WPR_HEADER_V1_STATUS_REVOCATION_CHECK_FAILED                          7
 	u32 status;
 };
-
 void wpr_header_v1_dump(struct nvkm_subdev *, const struct wpr_header_v1 *);
-
 struct wpr_generic_header {
 #define WPR_GENERIC_HEADER_ID_LSF_UCODE_DESC     1
 #define WPR_GENERIC_HEADER_ID_LSF_WPR_HEADER     2
@@ -48,14 +43,11 @@ struct wpr_generic_header {
 	u16 version;
 	u32 size;
 };
-
 struct wpr_header_v2 {
 	struct wpr_generic_header hdr;
 	struct wpr_header_v1 wpr;
 };
-
 void wpr_header_v2_dump(struct nvkm_subdev *, const struct wpr_header_v2 *);
-
 struct lsf_signature {
 	u8 prd_keys[2][16];
 	u8 dbg_keys[2][16];
@@ -63,7 +55,6 @@ struct lsf_signature {
 	u32 b_dbg_present;
 	u32 falcon_id;
 };
-
 struct lsf_signature_v1 {
 	u8 prd_keys[2][16];
 	u8 dbg_keys[2][16];
@@ -73,10 +64,9 @@ struct lsf_signature_v1 {
 	u32 supports_versioning;
 	u32 version;
 	u32 depmap_count;
-	u8 depmap[11/*LSF_LSB_DEPMAP_SIZE*/ * 2 * 4];
+	u8 depmap[11  * 2 * 4];
 	u8 kdf[16];
 };
-
 struct lsb_header_tail {
 	u32 ucode_off;
 	u32 ucode_size;
@@ -91,21 +81,16 @@ struct lsb_header_tail {
 	u32 app_data_size;
 	u32 flags;
 };
-
 struct lsb_header {
 	struct lsf_signature signature;
 	struct lsb_header_tail tail;
 };
-
 void lsb_header_dump(struct nvkm_subdev *, struct lsb_header *);
-
 struct lsb_header_v1 {
 	struct lsf_signature_v1 signature;
 	struct lsb_header_tail tail;
 };
-
 void lsb_header_v1_dump(struct nvkm_subdev *, struct lsb_header_v1 *);
-
 struct lsb_header_v2 {
 	struct wpr_generic_header hdr;
 	struct lsf_signature_v2 {
@@ -171,9 +156,7 @@ struct lsb_header_v2 {
 	} hs_ovl_sig_blob_params;
 	u8 rsvd[20];
 };
-
 void lsb_header_v2_dump(struct nvkm_subdev *, struct lsb_header_v2 *);
-
 struct flcn_acr_desc {
 	union {
 		u8 reserved_dmem[0x200];
@@ -202,9 +185,7 @@ struct flcn_acr_desc {
 		u32 hdcp_policies;
 	} vpr_desc;
 };
-
 void flcn_acr_desc_dump(struct nvkm_subdev *, struct flcn_acr_desc *);
-
 struct flcn_acr_desc_v1 {
 	u8 reserved_dmem[0x200];
 	u32 signatures[4];
@@ -232,6 +213,5 @@ struct flcn_acr_desc_v1 {
 		u32 hdcp_policies;
 	} vpr_desc;
 };
-
 void flcn_acr_desc_v1_dump(struct nvkm_subdev *, struct flcn_acr_desc_v1 *);
 #endif

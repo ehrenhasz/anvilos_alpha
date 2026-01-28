@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_PEXP_DEFS_H__
 #define __CVMX_PEXP_DEFS_H__
-
 #define CVMX_PEXP_NPEI_BAR1_INDEXX(offset) (CVMX_ADD_IO_SEG(0x00011F0000008000ull) + ((offset) & 31) * 16)
 #define CVMX_PEXP_NPEI_BIST_STATUS (CVMX_ADD_IO_SEG(0x00011F0000008580ull))
 #define CVMX_PEXP_NPEI_BIST_STATUS2 (CVMX_ADD_IO_SEG(0x00011F0000008680ull))
@@ -220,5 +192,4 @@
 #define CVMX_PEXP_SLI_STATE3 (CVMX_ADD_IO_SEG(0x00011F0000010640ull))
 #define CVMX_PEXP_SLI_TX_PIPE (CVMX_ADD_IO_SEG(0x00011F0000011230ull))
 #define CVMX_PEXP_SLI_WINDOW_CTL (CVMX_ADD_IO_SEG(0x00011F00000102E0ull))
-
 #endif

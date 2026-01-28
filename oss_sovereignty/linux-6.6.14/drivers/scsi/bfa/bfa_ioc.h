@@ -1,72 +1,40 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014- QLogic Corporation.
- * All rights reserved
- * www.qlogic.com
- *
- * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
- */
-
 #ifndef __BFA_IOC_H__
 #define __BFA_IOC_H__
-
 #include "bfad_drv.h"
 #include "bfa_cs.h"
 #include "bfi.h"
-
 #define BFA_DBG_FWTRC_ENTS	(BFI_IOC_TRC_ENTS)
 #define BFA_DBG_FWTRC_LEN					\
 	(BFA_DBG_FWTRC_ENTS * sizeof(struct bfa_trc_s) +	\
 	(sizeof(struct bfa_trc_mod_s) -				\
 	BFA_TRC_MAX * sizeof(struct bfa_trc_s)))
-/*
- * BFA timer declarations
- */
 typedef void (*bfa_timer_cbfn_t)(void *);
-
-/*
- * BFA timer data structure
- */
 struct bfa_timer_s {
 	struct list_head	qe;
 	bfa_timer_cbfn_t timercb;
 	void		*arg;
-	int		timeout;	/* in millisecs */
+	int		timeout;	 
 };
-
-/*
- * Timer module structure
- */
 struct bfa_timer_mod_s {
 	struct list_head timer_q;
 };
-
-#define BFA_TIMER_FREQ 200 /* specified in millisecs */
-
+#define BFA_TIMER_FREQ 200  
 void bfa_timer_beat(struct bfa_timer_mod_s *mod);
 void bfa_timer_begin(struct bfa_timer_mod_s *mod, struct bfa_timer_s *timer,
 			bfa_timer_cbfn_t timercb, void *arg,
 			unsigned int timeout);
 void bfa_timer_stop(struct bfa_timer_s *timer);
-
-/*
- * Generic Scatter Gather Element used by driver
- */
 struct bfa_sge_s {
 	u32	sg_len;
 	void		*sg_addr;
 };
-
 #define bfa_sge_word_swap(__sge) do {					     \
 	((u32 *)(__sge))[0] = swab32(((u32 *)(__sge))[0]);      \
 	((u32 *)(__sge))[1] = swab32(((u32 *)(__sge))[1]);      \
 	((u32 *)(__sge))[2] = swab32(((u32 *)(__sge))[2]);      \
 } while (0)
-
 #define bfa_swap_words(_x)  (	\
 	((u64)(_x) << 32) | ((u64)(_x) >> 32))
-
 #ifdef __BIG_ENDIAN
 #define bfa_sge_to_be(_x)
 #define bfa_sge_to_le(_x)	bfa_sge_word_swap(_x)
@@ -76,34 +44,26 @@ struct bfa_sge_s {
 #define bfa_sge_to_le(_x)
 #define bfa_sgaddr_le(_x)	(_x)
 #endif
-
-/*
- * BFA memory resources
- */
 struct bfa_mem_dma_s {
-	struct list_head qe;		/* Queue of DMA elements */
-	u32		mem_len;	/* Total Length in Bytes */
-	u8		*kva;		/* kernel virtual address */
-	u64		dma;		/* dma address if DMA memory */
-	u8		*kva_curp;	/* kva allocation cursor */
-	u64		dma_curp;	/* dma allocation cursor */
+	struct list_head qe;		 
+	u32		mem_len;	 
+	u8		*kva;		 
+	u64		dma;		 
+	u8		*kva_curp;	 
+	u64		dma_curp;	 
 };
 #define bfa_mem_dma_t struct bfa_mem_dma_s
-
 struct bfa_mem_kva_s {
-	struct list_head qe;		/* Queue of KVA elements */
-	u32		mem_len;	/* Total Length in Bytes */
-	u8		*kva;		/* kernel virtual address */
-	u8		*kva_curp;	/* kva allocation cursor */
+	struct list_head qe;		 
+	u32		mem_len;	 
+	u8		*kva;		 
+	u8		*kva_curp;	 
 };
 #define bfa_mem_kva_t struct bfa_mem_kva_s
-
 struct bfa_meminfo_s {
 	struct bfa_mem_dma_s dma_info;
 	struct bfa_mem_kva_s kva_info;
 };
-
-/* BFA memory segment setup helpers */
 static inline void bfa_mem_dma_setup(struct bfa_meminfo_s *meminfo,
 				     struct bfa_mem_dma_s *dm_ptr,
 				     size_t seg_sz)
@@ -112,7 +72,6 @@ static inline void bfa_mem_dma_setup(struct bfa_meminfo_s *meminfo,
 	if (seg_sz)
 		list_add_tail(&dm_ptr->qe, &meminfo->dma_info.qe);
 }
-
 static inline void bfa_mem_kva_setup(struct bfa_meminfo_s *meminfo,
 				     struct bfa_mem_kva_s *kva_ptr,
 				     size_t seg_sz)
@@ -121,31 +80,20 @@ static inline void bfa_mem_kva_setup(struct bfa_meminfo_s *meminfo,
 	if (seg_sz)
 		list_add_tail(&kva_ptr->qe, &meminfo->kva_info.qe);
 }
-
-/* BFA dma memory segments iterator */
 #define bfa_mem_dma_sptr(_mod, _i)	(&(_mod)->dma_seg[(_i)])
 #define bfa_mem_dma_seg_iter(_mod, _sptr, _nr, _i)			\
 	for (_i = 0, _sptr = bfa_mem_dma_sptr(_mod, _i); _i < (_nr);	\
 	     _i++, _sptr = bfa_mem_dma_sptr(_mod, _i))
-
 #define bfa_mem_kva_curp(_mod)	((_mod)->kva_seg.kva_curp)
 #define bfa_mem_dma_virt(_sptr)	((_sptr)->kva_curp)
 #define bfa_mem_dma_phys(_sptr)	((_sptr)->dma_curp)
 #define bfa_mem_dma_len(_sptr)	((_sptr)->mem_len)
-
-/* Get the corresponding dma buf kva for a req - from the tag */
 #define bfa_mem_get_dmabuf_kva(_mod, _tag, _rqsz)			      \
 	(((u8 *)(_mod)->dma_seg[BFI_MEM_SEG_FROM_TAG(_tag, _rqsz)].kva_curp) +\
 	 BFI_MEM_SEG_REQ_OFFSET(_tag, _rqsz) * (_rqsz))
-
-/* Get the corresponding dma buf pa for a req - from the tag */
 #define bfa_mem_get_dmabuf_pa(_mod, _tag, _rqsz)			\
 	((_mod)->dma_seg[BFI_MEM_SEG_FROM_TAG(_tag, _rqsz)].dma_curp +	\
 	 BFI_MEM_SEG_REQ_OFFSET(_tag, _rqsz) * (_rqsz))
-
-/*
- * PCI device information required by IOC
- */
 struct bfa_pcidev_s {
 	int		pci_slot;
 	u8		pci_func;
@@ -153,25 +101,14 @@ struct bfa_pcidev_s {
 	u16		ssid;
 	void __iomem	*pci_bar_kva;
 };
-
-/*
- * Structure used to remember the DMA-able memory block's KVA and Physical
- * Address
- */
 struct bfa_dma_s {
-	void		*kva;	/* ! Kernel virtual address	*/
-	u64	pa;	/* ! Physical address		*/
+	void		*kva;	 
+	u64	pa;	 
 };
-
 #define BFA_DMA_ALIGN_SZ	256
 #define BFA_ROUNDUP(_l, _s)	(((_l) + ((_s) - 1)) & ~((_s) - 1))
-
-/*
- * smem size for Crossbow and Catapult
- */
-#define BFI_SMEM_CB_SIZE	0x200000U	/* ! 2MB for crossbow	*/
-#define BFI_SMEM_CT_SIZE	0x280000U	/* ! 2.5MB for catapult	*/
-
+#define BFI_SMEM_CB_SIZE	0x200000U	 
+#define BFI_SMEM_CT_SIZE	0x280000U	 
 #define bfa_dma_be_addr_set(dma_addr, pa)	\
 		__bfa_dma_be_addr_set(&dma_addr, (u64)pa)
 static inline void
@@ -180,17 +117,14 @@ __bfa_dma_be_addr_set(union bfi_addr_u *dma_addr, u64 pa)
 	dma_addr->a32.addr_lo = cpu_to_be32(pa);
 	dma_addr->a32.addr_hi = cpu_to_be32(pa >> 32);
 }
-
 #define bfa_alen_set(__alen, __len, __pa)	\
 	__bfa_alen_set(__alen, __len, (u64)__pa)
-
 static inline void
 __bfa_alen_set(struct bfi_alen_s *alen, u32 len, u64 pa)
 {
 	alen->al_len = cpu_to_be32(len);
 	bfa_dma_be_addr_set(alen->al_addr, pa);
 }
-
 struct bfa_ioc_regs_s {
 	void __iomem *hfn_mbox_cmd;
 	void __iomem *hfn_mbox;
@@ -218,34 +152,22 @@ struct bfa_ioc_regs_s {
 	void __iomem *smem_page_start;
 	u32	smem_pg0;
 };
-
 #define bfa_mem_read(_raddr, _off)	swab32(readl(((_raddr) + (_off))))
 #define bfa_mem_write(_raddr, _off, _val)	\
 			writel(swab32((_val)), ((_raddr) + (_off)))
-/*
- * IOC Mailbox structures
- */
 struct bfa_mbox_cmd_s {
 	struct list_head	qe;
 	u32	msg[BFI_IOC_MSGSZ];
 };
-
-/*
- * IOC mailbox module
- */
 typedef void (*bfa_ioc_mbox_mcfunc_t)(void *cbarg, struct bfi_mbmsg_s *m);
 struct bfa_ioc_mbox_mod_s {
-	struct list_head		cmd_q;	/*  pending mbox queue	*/
-	int			nmclass;	/*  number of handlers */
+	struct list_head		cmd_q;	 
+	int			nmclass;	 
 	struct {
-		bfa_ioc_mbox_mcfunc_t	cbfn;	/*  message handlers	*/
+		bfa_ioc_mbox_mcfunc_t	cbfn;	 
 		void			*cbarg;
 	} mbhdlr[BFI_MC_MAX];
 };
-
-/*
- * IOC callback function interfaces
- */
 typedef void (*bfa_ioc_enable_cbfn_t)(void *bfa, enum bfa_status status);
 typedef void (*bfa_ioc_disable_cbfn_t)(void *bfa);
 typedef void (*bfa_ioc_hbfail_cbfn_t)(void *bfa);
@@ -256,32 +178,21 @@ struct bfa_ioc_cbfn_s {
 	bfa_ioc_hbfail_cbfn_t	hbfail_cbfn;
 	bfa_ioc_reset_cbfn_t	reset_cbfn;
 };
-
-/*
- * IOC event notification mechanism.
- */
 enum bfa_ioc_event_e {
 	BFA_IOC_E_ENABLED	= 1,
 	BFA_IOC_E_DISABLED	= 2,
 	BFA_IOC_E_FAILED	= 3,
 };
-
 typedef void (*bfa_ioc_notify_cbfn_t)(void *, enum bfa_ioc_event_e);
-
 struct bfa_ioc_notify_s {
 	struct list_head		qe;
 	bfa_ioc_notify_cbfn_t	cbfn;
 	void			*cbarg;
 };
-
-/*
- * Initialize a IOC event notification structure
- */
 #define bfa_ioc_notify_init(__notify, __cbfn, __cbarg) do {	\
 	(__notify)->cbfn = (__cbfn);      \
 	(__notify)->cbarg = (__cbarg);      \
 } while (0)
-
 struct bfa_iocpf_s {
 	bfa_fsm_t		fsm;
 	struct bfa_ioc_s	*ioc;
@@ -289,7 +200,6 @@ struct bfa_iocpf_s {
 	bfa_boolean_t		auto_recover;
 	u32			poll_time;
 };
-
 struct bfa_ioc_s {
 	bfa_fsm_t		fsm;
 	struct bfa_s		*bfa;
@@ -309,7 +219,7 @@ struct bfa_ioc_s {
 	struct bfa_ioc_drv_stats_s	stats;
 	bfa_boolean_t		fcmode;
 	bfa_boolean_t		pllinit;
-	bfa_boolean_t		stats_busy;	/*  outstanding stats */
+	bfa_boolean_t		stats_busy;	 
 	u8			port_id;
 	struct bfa_dma_s	attr_dma;
 	struct bfi_ioc_attr_s	*attr;
@@ -322,11 +232,10 @@ struct bfa_ioc_s {
 	enum bfi_port_mode	port0_mode;
 	enum bfi_port_mode	port1_mode;
 	enum bfa_mode_s		port_mode;
-	u8			ad_cap_bm;	/* adapter cap bit mask */
-	u8			port_mode_cfg;	/* config port mode */
+	u8			ad_cap_bm;	 
+	u8			port_mode_cfg;	 
 	int			ioc_aen_seq;
 };
-
 struct bfa_ioc_hwif_s {
 	bfa_status_t (*ioc_pll_init) (void __iomem *rb, enum bfi_asic_mode m);
 	bfa_boolean_t	(*ioc_firmware_lock)	(struct bfa_ioc_s *ioc);
@@ -350,53 +259,33 @@ struct bfa_ioc_hwif_s {
 					enum bfi_ioc_state fwstate);
 	enum bfi_ioc_state	(*ioc_get_alt_fwstate)	(struct bfa_ioc_s *ioc);
 };
-
-/*
- * Queue element to wait for room in request queue. FIFO order is
- * maintained when fullfilling requests.
- */
 struct bfa_reqq_wait_s {
 	struct list_head	qe;
 	void	(*qresume) (void *cbarg);
 	void	*cbarg;
 };
-
 typedef void	(*bfa_cb_cbfn_t) (void *cbarg, bfa_boolean_t complete);
-
-/*
- * Generic BFA callback element.
- */
 struct bfa_cb_qe_s {
 	struct list_head	qe;
 	bfa_cb_cbfn_t	cbfn;
 	bfa_boolean_t	once;
-	bfa_boolean_t	pre_rmv;	/* set for stack based qe(s) */
-	bfa_status_t	fw_status;	/* to access fw status in comp proc */
+	bfa_boolean_t	pre_rmv;	 
+	bfa_status_t	fw_status;	 
 	void		*cbarg;
 };
-
-/*
- * IOCFC state machine definitions/declarations
- */
 enum iocfc_event {
-	IOCFC_E_INIT		= 1,	/* IOCFC init request		*/
-	IOCFC_E_START		= 2,	/* IOCFC mod start request	*/
-	IOCFC_E_STOP		= 3,	/* IOCFC stop request		*/
-	IOCFC_E_ENABLE		= 4,	/* IOCFC enable request		*/
-	IOCFC_E_DISABLE		= 5,	/* IOCFC disable request	*/
-	IOCFC_E_IOC_ENABLED	= 6,	/* IOC enabled message		*/
-	IOCFC_E_IOC_DISABLED	= 7,	/* IOC disabled message		*/
-	IOCFC_E_IOC_FAILED	= 8,	/* failure notice by IOC sm	*/
-	IOCFC_E_DCONF_DONE	= 9,	/* dconf read/write done	*/
-	IOCFC_E_CFG_DONE	= 10,	/* IOCFC config complete	*/
+	IOCFC_E_INIT		= 1,	 
+	IOCFC_E_START		= 2,	 
+	IOCFC_E_STOP		= 3,	 
+	IOCFC_E_ENABLE		= 4,	 
+	IOCFC_E_DISABLE		= 5,	 
+	IOCFC_E_IOC_ENABLED	= 6,	 
+	IOCFC_E_IOC_DISABLED	= 7,	 
+	IOCFC_E_IOC_FAILED	= 8,	 
+	IOCFC_E_DCONF_DONE	= 9,	 
+	IOCFC_E_CFG_DONE	= 10,	 
 };
-
-/*
- * ASIC block configurtion related
- */
-
 typedef void (*bfa_ablk_cbfn_t)(void *, enum bfa_status);
-
 struct bfa_ablk_s {
 	struct bfa_ioc_s	*ioc;
 	struct bfa_ablk_cfg_s	*cfg;
@@ -410,12 +299,7 @@ struct bfa_ablk_s {
 	struct bfa_mem_dma_s	ablk_dma;
 };
 #define BFA_MEM_ABLK_DMA(__bfa)		(&((__bfa)->modules.ablk.ablk_dma))
-
-/*
- *	SFP module specific
- */
 typedef void	(*bfa_cb_sfp_t) (void *cbarg, bfa_status_t status);
-
 struct bfa_sfp_s {
 	void	*dev;
 	struct bfa_ioc_s	*ioc;
@@ -423,77 +307,63 @@ struct bfa_sfp_s {
 	struct sfp_mem_s	*sfpmem;
 	bfa_cb_sfp_t		cbfn;
 	void			*cbarg;
-	enum bfi_sfp_mem_e	memtype; /* mem access type   */
+	enum bfi_sfp_mem_e	memtype;  
 	u32			status;
 	struct bfa_mbox_cmd_s	mbcmd;
-	u8			*dbuf_kva; /* dma buf virtual address */
-	u64			dbuf_pa;   /* dma buf physical address */
+	u8			*dbuf_kva;  
+	u64			dbuf_pa;    
 	struct bfa_ioc_notify_s	ioc_notify;
 	enum bfa_defs_sfp_media_e *media;
 	enum bfa_port_speed	portspeed;
 	bfa_cb_sfp_t		state_query_cbfn;
 	void			*state_query_cbarg;
 	u8			lock;
-	u8			data_valid; /* data in dbuf is valid */
-	u8			state;	    /* sfp state  */
+	u8			data_valid;  
+	u8			state;	     
 	u8			state_query_lock;
 	struct bfa_mem_dma_s	sfp_dma;
-	u8			is_elb;	    /* eloopback  */
+	u8			is_elb;	     
 };
-
 #define BFA_SFP_MOD(__bfa)	(&(__bfa)->modules.sfp)
 #define BFA_MEM_SFP_DMA(__bfa)	(&(BFA_SFP_MOD(__bfa)->sfp_dma))
-
 u32	bfa_sfp_meminfo(void);
-
 void	bfa_sfp_attach(struct bfa_sfp_s *sfp, struct bfa_ioc_s *ioc,
 			void *dev, struct bfa_trc_mod_s *trcmod);
-
 void	bfa_sfp_memclaim(struct bfa_sfp_s *diag, u8 *dm_kva, u64 dm_pa);
 void	bfa_sfp_intr(void *bfaarg, struct bfi_mbmsg_s *msg);
-
 bfa_status_t	bfa_sfp_show(struct bfa_sfp_s *sfp, struct sfp_mem_s *sfpmem,
 			     bfa_cb_sfp_t cbfn, void *cbarg);
-
 bfa_status_t	bfa_sfp_media(struct bfa_sfp_s *sfp,
 			enum bfa_defs_sfp_media_e *media,
 			bfa_cb_sfp_t cbfn, void *cbarg);
-
 bfa_status_t	bfa_sfp_speed(struct bfa_sfp_s *sfp,
 			enum bfa_port_speed portspeed,
 			bfa_cb_sfp_t cbfn, void *cbarg);
-
-/*
- *	Flash module specific
- */
 typedef void	(*bfa_cb_flash_t) (void *cbarg, bfa_status_t status);
-
 struct bfa_flash_s {
-	struct bfa_ioc_s *ioc;		/* back pointer to ioc */
+	struct bfa_ioc_s *ioc;		 
 	struct bfa_trc_mod_s *trcmod;
-	u32		type;           /* partition type */
-	u8		instance;       /* partition instance */
+	u32		type;            
+	u8		instance;        
 	u8		rsv[3];
-	u32		op_busy;        /*  operation busy flag */
-	u32		residue;        /*  residual length */
-	u32		offset;         /*  offset */
-	bfa_status_t	status;         /*  status */
-	u8		*dbuf_kva;      /*  dma buf virtual address */
-	u64		dbuf_pa;        /*  dma buf physical address */
-	struct bfa_reqq_wait_s	reqq_wait; /*  to wait for room in reqq */
-	bfa_cb_flash_t	cbfn;           /*  user callback function */
-	void		*cbarg;         /*  user callback arg */
-	u8		*ubuf;          /*  user supplied buffer */
-	struct bfa_cb_qe_s	hcb_qe; /*  comp: BFA callback qelem */
-	u32		addr_off;       /*  partition address offset */
-	struct bfa_mbox_cmd_s	mb;       /*  mailbox */
-	struct bfa_ioc_notify_s	ioc_notify; /*  ioc event notify */
+	u32		op_busy;         
+	u32		residue;         
+	u32		offset;          
+	bfa_status_t	status;          
+	u8		*dbuf_kva;       
+	u64		dbuf_pa;         
+	struct bfa_reqq_wait_s	reqq_wait;  
+	bfa_cb_flash_t	cbfn;            
+	void		*cbarg;          
+	u8		*ubuf;           
+	struct bfa_cb_qe_s	hcb_qe;  
+	u32		addr_off;        
+	struct bfa_mbox_cmd_s	mb;        
+	struct bfa_ioc_notify_s	ioc_notify;  
 	struct bfa_mem_dma_s	flash_dma;
 };
-
 #define BFA_FLASH(__bfa)		(&(__bfa)->modules.flash)
 #define BFA_MEM_FLASH_DMA(__bfa)	(&(BFA_FLASH(__bfa)->flash_dma))
-
 bfa_status_t bfa_flash_get_attr(struct bfa_flash_s *flash,
 			struct bfa_flash_attr_s *attr,
 			bfa_cb_flash_t cbfn, void *cbarg);
@@ -514,35 +384,21 @@ void bfa_flash_memclaim(struct bfa_flash_s *flash,
 		u8 *dm_kva, u64 dm_pa, bfa_boolean_t mincfg);
 bfa_status_t    bfa_flash_raw_read(void __iomem *pci_bar_kva,
 				u32 offset, char *buf, u32 len);
-
-/*
- *	DIAG module specific
- */
-
 typedef void (*bfa_cb_diag_t) (void *cbarg, bfa_status_t status);
 typedef void (*bfa_cb_diag_beacon_t) (void *dev, bfa_boolean_t beacon,
 			bfa_boolean_t link_e2e_beacon);
-
-/*
- *      Firmware ping test results
- */
 struct bfa_diag_results_fwping {
-	u32     data;   /* store the corrupted data */
+	u32     data;    
 	u32     status;
 	u32     dmastatus;
 	u8      rsvd[4];
 };
-
 struct bfa_diag_qtest_result_s {
 	u32	status;
-	u16	count;	/* successful queue test count */
+	u16	count;	 
 	u8	queue;
-	u8	rsvd;	/* 64-bit align */
+	u8	rsvd;	 
 };
-
-/*
- * Firmware ping test results
- */
 struct bfa_diag_fwping_s {
 	struct bfa_diag_results_fwping *result;
 	bfa_cb_diag_t  cbfn;
@@ -553,22 +409,17 @@ struct bfa_diag_fwping_s {
 	u32             status;
 	u32             count;
 	struct bfa_mbox_cmd_s   mbcmd;
-	u8              *dbuf_kva;      /* dma buf virtual address */
-	u64             dbuf_pa;        /* dma buf physical address */
+	u8              *dbuf_kva;       
+	u64             dbuf_pa;         
 };
-
-/*
- *      Temperature sensor query results
- */
 struct bfa_diag_results_tempsensor_s {
 	u32     status;
-	u16     temp;           /* 10-bit A/D value */
-	u16     brd_temp;       /* 9-bit board temp */
-	u8      ts_junc;        /* show junction tempsensor   */
-	u8      ts_brd;         /* show board tempsensor      */
-	u8      rsvd[6];        /* keep 8 bytes alignment     */
+	u16     temp;            
+	u16     brd_temp;        
+	u8      ts_junc;         
+	u8      ts_brd;          
+	u8      rsvd[6];         
 };
-
 struct bfa_diag_tsensor_s {
 	bfa_cb_diag_t   cbfn;
 	void            *cbarg;
@@ -578,7 +429,6 @@ struct bfa_diag_tsensor_s {
 	u32             status;
 	struct bfa_mbox_cmd_s   mbcmd;
 };
-
 struct bfa_diag_sfpshow_s {
 	struct sfp_mem_s        *sfpmem;
 	bfa_cb_diag_t           cbfn;
@@ -588,21 +438,18 @@ struct bfa_diag_sfpshow_s {
 	u8      rsv[2];
 	u32     status;
 	struct bfa_mbox_cmd_s    mbcmd;
-	u8      *dbuf_kva;      /* dma buf virtual address */
-	u64     dbuf_pa;        /* dma buf physical address */
+	u8      *dbuf_kva;       
+	u64     dbuf_pa;         
 };
-
 struct bfa_diag_led_s {
 	struct bfa_mbox_cmd_s   mbcmd;
-	bfa_boolean_t   lock;   /* 1: ledtest is operating */
+	bfa_boolean_t   lock;    
 };
-
 struct bfa_diag_beacon_s {
 	struct bfa_mbox_cmd_s   mbcmd;
-	bfa_boolean_t   state;          /* port beacon state */
-	bfa_boolean_t   link_e2e;       /* link beacon state */
+	bfa_boolean_t   state;           
+	bfa_boolean_t   link_e2e;        
 };
-
 struct bfa_diag_s {
 	void	*dev;
 	struct bfa_ioc_s		*ioc;
@@ -624,10 +471,8 @@ struct bfa_diag_s {
 	struct bfa_ioc_notify_s	ioc_notify;
 	struct bfa_mem_dma_s	diag_dma;
 };
-
 #define BFA_DIAG_MOD(__bfa)     (&(__bfa)->modules.diag_mod)
 #define BFA_MEM_DIAG_DMA(__bfa) (&(BFA_DIAG_MOD(__bfa)->diag_dma))
-
 u32	bfa_diag_meminfo(void);
 void bfa_diag_memclaim(struct bfa_diag_s *diag, u8 *dm_kva, u64 dm_pa);
 void bfa_diag_attach(struct bfa_diag_s *diag, struct bfa_ioc_s *ioc, void *dev,
@@ -655,36 +500,30 @@ bfa_status_t	bfa_diag_ledtest(struct bfa_diag_s *diag,
 bfa_status_t	bfa_diag_beacon_port(struct bfa_diag_s *diag,
 			bfa_boolean_t beacon, bfa_boolean_t link_e2e_beacon,
 			u32 sec);
-
-/*
- *	PHY module specific
- */
 typedef void (*bfa_cb_phy_t) (void *cbarg, bfa_status_t status);
-
 struct bfa_phy_s {
-	struct bfa_ioc_s *ioc;          /* back pointer to ioc */
-	struct bfa_trc_mod_s *trcmod;   /* trace module */
-	u8	instance;       /* port instance */
-	u8	op_busy;        /* operation busy flag */
+	struct bfa_ioc_s *ioc;           
+	struct bfa_trc_mod_s *trcmod;    
+	u8	instance;        
+	u8	op_busy;         
 	u8	rsv[2];
-	u32	residue;        /* residual length */
-	u32	offset;         /* offset */
-	bfa_status_t	status;         /* status */
-	u8	*dbuf_kva;      /* dma buf virtual address */
-	u64	dbuf_pa;        /* dma buf physical address */
-	struct bfa_reqq_wait_s reqq_wait; /* to wait for room in reqq */
-	bfa_cb_phy_t	cbfn;           /* user callback function */
-	void		*cbarg;         /* user callback arg */
-	u8		*ubuf;          /* user supplied buffer */
-	struct bfa_cb_qe_s	hcb_qe; /* comp: BFA callback qelem */
-	u32	addr_off;       /* phy address offset */
-	struct bfa_mbox_cmd_s	mb;       /* mailbox */
-	struct bfa_ioc_notify_s	ioc_notify; /* ioc event notify */
+	u32	residue;         
+	u32	offset;          
+	bfa_status_t	status;          
+	u8	*dbuf_kva;       
+	u64	dbuf_pa;         
+	struct bfa_reqq_wait_s reqq_wait;  
+	bfa_cb_phy_t	cbfn;            
+	void		*cbarg;          
+	u8		*ubuf;           
+	struct bfa_cb_qe_s	hcb_qe;  
+	u32	addr_off;        
+	struct bfa_mbox_cmd_s	mb;        
+	struct bfa_ioc_notify_s	ioc_notify;  
 	struct bfa_mem_dma_s	phy_dma;
 };
 #define BFA_PHY(__bfa)	(&(__bfa)->modules.phy)
 #define BFA_MEM_PHY_DMA(__bfa)	(&(BFA_PHY(__bfa)->phy_dma))
-
 bfa_boolean_t bfa_phy_busy(struct bfa_ioc_s *ioc);
 bfa_status_t bfa_phy_get_attr(struct bfa_phy_s *phy, u8 instance,
 			struct bfa_phy_attr_s *attr,
@@ -698,44 +537,36 @@ bfa_status_t bfa_phy_update(struct bfa_phy_s *phy, u8 instance,
 bfa_status_t bfa_phy_read(struct bfa_phy_s *phy, u8 instance,
 			void *buf, u32 len, u32 offset,
 			bfa_cb_phy_t cbfn, void *cbarg);
-
 u32	bfa_phy_meminfo(bfa_boolean_t mincfg);
 void bfa_phy_attach(struct bfa_phy_s *phy, struct bfa_ioc_s *ioc,
 		void *dev, struct bfa_trc_mod_s *trcmod, bfa_boolean_t mincfg);
 void bfa_phy_memclaim(struct bfa_phy_s *phy,
 		u8 *dm_kva, u64 dm_pa, bfa_boolean_t mincfg);
 void bfa_phy_intr(void *phyarg, struct bfi_mbmsg_s *msg);
-
-/*
- * FRU module specific
- */
 typedef void (*bfa_cb_fru_t) (void *cbarg, bfa_status_t status);
-
 struct bfa_fru_s {
-	struct bfa_ioc_s *ioc;		/* back pointer to ioc */
-	struct bfa_trc_mod_s *trcmod;	/* trace module */
-	u8		op_busy;	/* operation busy flag */
+	struct bfa_ioc_s *ioc;		 
+	struct bfa_trc_mod_s *trcmod;	 
+	u8		op_busy;	 
 	u8		rsv[3];
-	u32		residue;	/* residual length */
-	u32		offset;		/* offset */
-	bfa_status_t	status;		/* status */
-	u8		*dbuf_kva;	/* dma buf virtual address */
-	u64		dbuf_pa;	/* dma buf physical address */
-	struct bfa_reqq_wait_s reqq_wait; /* to wait for room in reqq */
-	bfa_cb_fru_t	cbfn;		/* user callback function */
-	void		*cbarg;		/* user callback arg */
-	u8		*ubuf;		/* user supplied buffer */
-	struct bfa_cb_qe_s	hcb_qe;	/* comp: BFA callback qelem */
-	u32		addr_off;	/* fru address offset */
-	struct bfa_mbox_cmd_s mb;	/* mailbox */
-	struct bfa_ioc_notify_s ioc_notify; /* ioc event notify */
+	u32		residue;	 
+	u32		offset;		 
+	bfa_status_t	status;		 
+	u8		*dbuf_kva;	 
+	u64		dbuf_pa;	 
+	struct bfa_reqq_wait_s reqq_wait;  
+	bfa_cb_fru_t	cbfn;		 
+	void		*cbarg;		 
+	u8		*ubuf;		 
+	struct bfa_cb_qe_s	hcb_qe;	 
+	u32		addr_off;	 
+	struct bfa_mbox_cmd_s mb;	 
+	struct bfa_ioc_notify_s ioc_notify;  
 	struct bfa_mem_dma_s	fru_dma;
 	u8		trfr_cmpl;
 };
-
 #define BFA_FRU(__bfa)	(&(__bfa)->modules.fru)
 #define BFA_MEM_FRU_DMA(__bfa)	(&(BFA_FRU(__bfa)->fru_dma))
-
 bfa_status_t bfa_fruvpd_update(struct bfa_fru_s *fru,
 			void *buf, u32 len, u32 offset,
 			bfa_cb_fru_t cbfn, void *cbarg, u8 trfr_cmpl);
@@ -755,26 +586,19 @@ void bfa_fru_attach(struct bfa_fru_s *fru, struct bfa_ioc_s *ioc,
 void bfa_fru_memclaim(struct bfa_fru_s *fru,
 		u8 *dm_kva, u64 dm_pa, bfa_boolean_t mincfg);
 void bfa_fru_intr(void *fruarg, struct bfi_mbmsg_s *msg);
-
-/*
- * Driver Config( dconf) specific
- */
 #define BFI_DCONF_SIGNATURE	0xabcdabcd
 #define BFI_DCONF_VERSION	1
-
 #pragma pack(1)
 struct bfa_dconf_hdr_s {
 	u32	signature;
 	u32	version;
 };
-
 struct bfa_dconf_s {
 	struct bfa_dconf_hdr_s		hdr;
 	struct bfa_lunmask_cfg_s	lun_mask;
 	struct bfa_throttle_cfg_s	throttle_cfg;
 };
 #pragma pack()
-
 struct bfa_dconf_mod_s {
 	bfa_sm_t		sm;
 	u8			instance;
@@ -787,23 +611,17 @@ struct bfa_dconf_mod_s {
 	struct bfa_dconf_s	*dconf;
 	struct bfa_mem_kva_s	kva_seg;
 };
-
 #define BFA_DCONF_MOD(__bfa)	\
 	(&(__bfa)->modules.dconf_mod)
 #define BFA_MEM_DCONF_KVA(__bfa)	(&(BFA_DCONF_MOD(__bfa)->kva_seg))
 #define bfa_dconf_read_data_valid(__bfa)	\
 	(BFA_DCONF_MOD(__bfa)->read_data_valid)
-#define BFA_DCONF_UPDATE_TOV	5000	/* memtest timeout in msec */
+#define BFA_DCONF_UPDATE_TOV	5000	 
 #define bfa_dconf_get_min_cfg(__bfa)	\
 	(BFA_DCONF_MOD(__bfa)->min_cfg)
-
 void	bfa_dconf_modinit(struct bfa_s *bfa);
 void	bfa_dconf_modexit(struct bfa_s *bfa);
 bfa_status_t	bfa_dconf_update(struct bfa_s *bfa);
-
-/*
- *	IOC specfic macros
- */
 #define bfa_ioc_pcifn(__ioc)		((__ioc)->pcidev.pci_func)
 #define bfa_ioc_devid(__ioc)		((__ioc)->pcidev.device_id)
 #define bfa_ioc_bar0(__ioc)		((__ioc)->pcidev.pci_bar_kva)
@@ -823,7 +641,6 @@ bfa_status_t	bfa_dconf_update(struct bfa_s *bfa);
 	 BFI_ADAPTER_GETP(SPEED, (__ioc)->attr->adapter_prop))
 #define bfa_ioc_get_nports(__ioc)	\
 	BFI_ADAPTER_GETP(NPORTS, (__ioc)->attr->adapter_prop)
-
 #define bfa_ioc_stats(_ioc, _stats)	((_ioc)->stats._stats++)
 #define BFA_IOC_FWIMG_MINSZ	(16 * 1024)
 #define BFA_IOC_FW_SMEM_SIZE(__ioc)			\
@@ -832,10 +649,6 @@ bfa_status_t	bfa_dconf_update(struct bfa_s *bfa);
 #define BFA_IOC_FLASH_CHUNK_NO(off)		(off / BFI_FLASH_CHUNK_SZ_WORDS)
 #define BFA_IOC_FLASH_OFFSET_IN_CHUNK(off)	(off % BFI_FLASH_CHUNK_SZ_WORDS)
 #define BFA_IOC_FLASH_CHUNK_ADDR(chunkno)  (chunkno * BFI_FLASH_CHUNK_SZ_WORDS)
-
-/*
- * IOC mailbox interface
- */
 void bfa_ioc_mbox_queue(struct bfa_ioc_s *ioc, struct bfa_mbox_cmd_s *cmd);
 void bfa_ioc_mbox_register(struct bfa_ioc_s *ioc,
 		bfa_ioc_mbox_mcfunc_t *mcfuncs);
@@ -844,20 +657,13 @@ void bfa_ioc_mbox_send(struct bfa_ioc_s *ioc, void *ioc_msg, int len);
 bfa_boolean_t bfa_ioc_msgget(struct bfa_ioc_s *ioc, void *mbmsg);
 void bfa_ioc_mbox_regisr(struct bfa_ioc_s *ioc, enum bfi_mclass mc,
 		bfa_ioc_mbox_mcfunc_t cbfn, void *cbarg);
-
-/*
- * IOC interfaces
- */
-
 #define bfa_ioc_pll_init_asic(__ioc) \
 	((__ioc)->ioc_hwif->ioc_pll_init((__ioc)->pcidev.pci_bar_kva, \
 			   (__ioc)->asic_mode))
-
 bfa_status_t bfa_ioc_pll_init(struct bfa_ioc_s *ioc);
 bfa_status_t bfa_ioc_cb_pll_init(void __iomem *rb, enum bfi_asic_mode mode);
 bfa_status_t bfa_ioc_ct_pll_init(void __iomem *rb, enum bfi_asic_mode mode);
 bfa_status_t bfa_ioc_ct2_pll_init(void __iomem *rb, enum bfi_asic_mode mode);
-
 #define bfa_ioc_isr_mode_set(__ioc, __msix) do {			\
 	if ((__ioc)->ioc_hwif->ioc_isr_mode_set)			\
 		((__ioc)->ioc_hwif->ioc_isr_mode_set(__ioc, __msix));	\
@@ -869,12 +675,10 @@ bfa_status_t bfa_ioc_ct2_pll_init(void __iomem *rb, enum bfi_asic_mode mode);
 	if ((__ioc)->ioc_hwif->ioc_lpu_read_stat)		\
 		((__ioc)->ioc_hwif->ioc_lpu_read_stat(__ioc));	\
 } while (0)
-
 void bfa_ioc_set_cb_hwif(struct bfa_ioc_s *ioc);
 void bfa_ioc_set_ct_hwif(struct bfa_ioc_s *ioc);
 void bfa_ioc_set_ct2_hwif(struct bfa_ioc_s *ioc);
 void bfa_ioc_ct2_poweron(struct bfa_ioc_s *ioc);
-
 void bfa_ioc_attach(struct bfa_ioc_s *ioc, void *bfa,
 		struct bfa_ioc_cbfn_s *cbfn, struct bfa_timer_mod_s *timer_mod);
 void bfa_ioc_auto_recover(bfa_boolean_t auto_recover);
@@ -886,7 +690,6 @@ void bfa_ioc_mem_claim(struct bfa_ioc_s *ioc,  u8 *dm_kva, u64 dm_pa);
 void bfa_ioc_enable(struct bfa_ioc_s *ioc);
 void bfa_ioc_disable(struct bfa_ioc_s *ioc);
 bfa_boolean_t bfa_ioc_intx_claim(struct bfa_ioc_s *ioc);
-
 bfa_status_t bfa_ioc_boot(struct bfa_ioc_s *ioc, u32 boot_type,
 		u32 boot_env);
 void bfa_ioc_isr(struct bfa_ioc_s *ioc, struct bfi_mbmsg_s *msg);
@@ -907,7 +710,6 @@ void bfa_ioc_get_adapter_manufacturer(struct bfa_ioc_s *ioc,
 		char *manufacturer);
 void bfa_ioc_get_pci_chip_rev(struct bfa_ioc_s *ioc, char *chip_rev);
 enum bfa_ioc_state bfa_ioc_get_state(struct bfa_ioc_s *ioc);
-
 void bfa_ioc_get_attr(struct bfa_ioc_s *ioc, struct bfa_ioc_attr_s *ioc_attr);
 void bfa_ioc_get_adapter_attr(struct bfa_ioc_s *ioc,
 		struct bfa_adapter_attr_s *ad_attr);
@@ -928,10 +730,6 @@ void bfa_ioc_aen_post(struct bfa_ioc_s *ioc, enum bfa_ioc_aen_event event);
 bfa_status_t bfa_ioc_fw_stats_get(struct bfa_ioc_s *ioc, void *stats);
 bfa_status_t bfa_ioc_fw_stats_clear(struct bfa_ioc_s *ioc);
 void bfa_ioc_debug_save_ftrc(struct bfa_ioc_s *ioc);
-
-/*
- * asic block configuration related APIs
- */
 u32	bfa_ablk_meminfo(void);
 void bfa_ablk_memclaim(struct bfa_ablk_s *ablk, u8 *dma_kva, u64 dma_pa);
 void bfa_ablk_attach(struct bfa_ablk_s *ablk, struct bfa_ioc_s *ioc);
@@ -955,43 +753,31 @@ bfa_status_t bfa_ablk_optrom_en(struct bfa_ablk_s *ablk,
 		bfa_ablk_cbfn_t cbfn, void *cbarg);
 bfa_status_t bfa_ablk_optrom_dis(struct bfa_ablk_s *ablk,
 		bfa_ablk_cbfn_t cbfn, void *cbarg);
-
 bfa_status_t bfa_ioc_flash_img_get_chnk(struct bfa_ioc_s *ioc, u32 off,
 				u32 *fwimg);
-/*
- * bfa mfg wwn API functions
- */
 mac_t bfa_ioc_get_mac(struct bfa_ioc_s *ioc);
 mac_t bfa_ioc_get_mfg_mac(struct bfa_ioc_s *ioc);
-
-/*
- * F/W Image Size & Chunk
- */
 extern u32 bfi_image_cb_size;
 extern u32 bfi_image_ct_size;
 extern u32 bfi_image_ct2_size;
 extern u32 *bfi_image_cb;
 extern u32 *bfi_image_ct;
 extern u32 *bfi_image_ct2;
-
 static inline u32 *
 bfi_image_cb_get_chunk(u32 off)
 {
 	return (u32 *)(bfi_image_cb + off);
 }
-
 static inline u32 *
 bfi_image_ct_get_chunk(u32 off)
 {
 	return (u32 *)(bfi_image_ct + off);
 }
-
 static inline u32 *
 bfi_image_ct2_get_chunk(u32 off)
 {
 	return (u32 *)(bfi_image_ct2 + off);
 }
-
 static inline u32*
 bfa_cb_image_get_chunk(enum bfi_asic_gen asic_gen, u32 off)
 {
@@ -1009,7 +795,6 @@ bfa_cb_image_get_chunk(enum bfi_asic_gen asic_gen, u32 off)
 		return NULL;
 	}
 }
-
 static inline u32
 bfa_cb_image_get_size(enum bfi_asic_gen asic_gen)
 {
@@ -1027,19 +812,10 @@ bfa_cb_image_get_size(enum bfi_asic_gen asic_gen)
 		return 0;
 	}
 }
-
-/*
- * CNA TRCMOD declaration
- */
-/*
- * !!! Only append to the enums defined here to avoid any versioning
- * !!! needed between trace utility and driver version
- */
 enum {
 	BFA_TRC_CNA_PORT	= 1,
 	BFA_TRC_CNA_IOC		= 2,
 	BFA_TRC_CNA_IOC_CB	= 3,
 	BFA_TRC_CNA_IOC_CT	= 4,
 };
-
-#endif /* __BFA_IOC_H__ */
+#endif  

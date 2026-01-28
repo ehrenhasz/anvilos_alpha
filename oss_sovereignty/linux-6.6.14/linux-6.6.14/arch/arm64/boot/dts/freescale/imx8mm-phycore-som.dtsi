@@ -1,26 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 PHYTEC Messtechnik GmbH
- * Author: Teresa Remmet <t.remmet@phytec.de>
- */
-
 #include "imx8mm.dtsi"
 #include <dt-bindings/net/ti-dp83867.h>
-
 / {
 	model = "PHYTEC phyCORE-i.MX8MM";
 	compatible = "phytec,imx8mm-phycore-som", "fsl,imx8mm";
-
 	aliases {
 		rtc0 = &rv3028;
 		rtc1 = &snvs_rtc;
 	};
-
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0x0 0x40000000 0 0x80000000>;
 	};
-
 	reg_vdd_3v3_s: regulator-vdd-3v3-s {
 		compatible = "regulator-fixed";
 		regulator-always-on;
@@ -30,44 +20,33 @@
 		regulator-name = "VDD_3V3_S";
 	};
 };
-
 &A53_0 {
 	cpu-supply = <&reg_vdd_arm>;
 };
-
 &A53_1 {
 	cpu-supply = <&reg_vdd_arm>;
 };
-
 &A53_2 {
 	cpu-supply = <&reg_vdd_arm>;
 };
-
 &A53_3 {
 	cpu-supply = <&reg_vdd_arm>;
 };
-
 &ddrc {
 	operating-points-v2 = <&ddrc_opp_table>;
-
 	ddrc_opp_table: opp-table {
 		compatible = "operating-points-v2";
-
 		opp-25000000 {
 			opp-hz = /bits/ 64 <25000000>;
 		};
-
 		opp-100000000 {
 			opp-hz = /bits/ 64 <100000000>;
 		};
-
 		opp-750000000 {
 			opp-hz = /bits/ 64 <750000000>;
 		};
 	};
 };
-
-/* Ethernet */
 &fec1 {
 	fsl,magic-packet;
 	phy-mode = "rgmii-id";
@@ -75,11 +54,9 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec1>;
 	status = "okay";
-
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		ethphy0: ethernet-phy@0 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			enet-phy-lane-no-swap;
@@ -94,13 +71,10 @@
 		};
 	};
 };
-
-/* SPI Flash */
 &flexspi {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexspi0>;
 	status = "okay";
-
 	som_flash: flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -111,14 +85,11 @@
 		spi-tx-bus-width = <1>;
 	};
 };
-
 &gpio1 {
 	gpio-line-names = "", "", "WDOG_INT", "X_RTC_INT",
 		"", "", "", "RESET_ETHPHY",
 		"", "", "nENABLE_FLATLINK";
 };
-
-/* I2C1 */
 &i2c1 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default","gpio";
@@ -127,11 +98,9 @@
 	scl-gpios = <&gpio5 14 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	sda-gpios = <&gpio5 15 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
-
 	pmic@8 {
 		compatible = "nxp,pf8121a";
 		reg = <0x08>;
-
 		regulators {
 			reg_nvcc_sd1: ldo1 {
 				regulator-always-on;
@@ -139,128 +108,108 @@
 				regulator-max-microvolt = <3300000>;
 				regulator-min-microvolt = <3300000>;
 				regulator-name = "NVCC_SD1 (LDO1)";
-
 				regulator-state-mem {
 					regulator-off-in-suspend;
 				};
 			};
-
 			reg_nvcc_sd2: ldo2 {
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-max-microvolt = <3300000>;
 				regulator-min-microvolt = <1800000>;
 				regulator-name = "NVCC_SD2 (LDO2)";
-
 				regulator-state-mem {
 					regulator-off-in-suspend;
 				};
 			};
-
 			reg_vcc_enet: ldo3 {
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-max-microvolt = <2500000>;
 				regulator-min-microvolt = <1500000>;
 				regulator-name = "VCC_ENET_2V5 (LDO3)";
-
 				regulator-state-mem {
 					regulator-off-in-suspend;
 				};
 			};
-
 			reg_vdda_1v8: ldo4 {
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-max-microvolt = <1800000>;
 				regulator-min-microvolt = <1500000>;
 				regulator-name = "VDDA_1V8 (LDO4)";
-
 				regulator-state-mem {
 					regulator-on-in-suspend;
 					regulator-suspend-min-microvolt = <1500000>;
 					regulator-suspend-max-microvolt = <1500000>;
 				};
 			};
-
 			reg_soc_vdda_phy: buck1 {
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-max-microvolt = <900000>;
 				regulator-min-microvolt = <400000>;
 				regulator-name = "VDD_SOC_VDDA_PHY_0P8 (BUCK1)";
-
 				regulator-state-mem {
 					regulator-on-in-suspend;
 					regulator-suspend-min-microvolt = <400000>;
 					regulator-suspend-max-microvolt = <400000>;
 				};
 			};
-
 			reg_vdd_gpu_dram: buck2 {
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-max-microvolt = <1000000>;
 				regulator-min-microvolt = <1000000>;
 				regulator-name = "VDD_GPU_DRAM (BUCK2)";
-
 				regulator-state-mem {
 					regulator-on-in-suspend;
 					regulator-suspend-max-microvolt = <1000000>;
 					regulator-suspend-min-microvolt = <1000000>;
 				};
 			};
-
 			reg_vdd_vpu: buck3 {
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-max-microvolt = <1000000>;
 				regulator-min-microvolt = <400000>;
 				regulator-name = "VDD_VPU (BUCK3)";
-
 				regulator-state-mem {
 					regulator-off-in-suspend;
 				};
 			};
-
 			reg_vdd_mipi: buck4 {
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-max-microvolt = <1050000>;
 				regulator-min-microvolt = <900000>;
 				regulator-name = "VDD_MIPI_0P9 (BUCK4)";
-
 				regulator-state-mem {
 					regulator-off-in-suspend;
 				};
 			};
-
 			reg_vdd_arm: buck5 {
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-max-microvolt = <1050000>;
 				regulator-min-microvolt = <400000>;
 				regulator-name = "VDD_ARM (BUCK5)";
-
 				regulator-state-mem {
 					regulator-off-in-suspend;
 				};
 			};
-
 			reg_vdd_1v8: buck6 {
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-max-microvolt = <1800000>;
 				regulator-min-microvolt = <1800000>;
 				regulator-name = "VDD_1V8 (BUCK6)";
-
 				regulator-state-mem {
 					regulator-on-in-suspend;
 					regulator-suspend-max-microvolt = <1800000>;
 					regulator-suspend-min-microvolt = <1800000>;
 				};
 			};
-
 			reg_nvcc_dram: buck7 {
 				regulator-always-on;
 				regulator-boot-on;
@@ -268,7 +217,6 @@
 				regulator-min-microvolt = <1100000>;
 				regulator-name = "NVCC_DRAM_1P1V (BUCK7)";
 			};
-
 			reg_vsnvs: vsnvs {
 				regulator-always-on;
 				regulator-boot-on;
@@ -278,7 +226,6 @@
 			};
 		};
 	};
-
 	sn65dsi83: bridge@2d {
 		compatible = "ti,sn65dsi83";
 		enable-gpios = <&gpio1 10 GPIO_ACTIVE_LOW>;
@@ -287,14 +234,12 @@
 		reg = <0x2d>;
 		status = "disabled";
 	};
-
 	eeprom@51 {
 		compatible = "atmel,24c32";
 		pagesize = <32>;
 		reg = <0x51>;
 		vcc-supply = <&reg_vdd_3v3_s>;
 	};
-
 	rv3028: rtc@52 {
 		compatible = "microcrystal,rv3028";
 		interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
@@ -304,8 +249,6 @@
 		reg = <0x52>;
 	};
 };
-
-/* EMMC */
 &usdhc3 {
 	assigned-clocks = <&clk IMX8MM_CLK_USDHC3_ROOT>;
 	assigned-clock-rates = <400000000>;
@@ -318,15 +261,12 @@
 	non-removable;
 	status = "okay";
 };
-
-/* Watchdog */
 &wdog1 {
 	fsl,ext-reset-output;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_wdog>;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl_fec1: fec1grp {
 		fsl,pins = <
@@ -347,7 +287,6 @@
 			MX8MM_IOMUXC_GPIO1_IO07_GPIO1_IO7		0x10
 		>;
 	};
-
 	pinctrl_flexspi0: flexspi0grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_ALE_QSPI_A_SCLK		0x1c2
@@ -358,33 +297,28 @@
 			MX8MM_IOMUXC_NAND_DATA03_QSPI_A_DATA3		0x82
 		>;
 	};
-
 	pinctrl_i2c1: i2c1grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C1_SDA_I2C1_SDA			0x400001c0
 			MX8MM_IOMUXC_I2C1_SCL_I2C1_SCL			0x400001c0
 		>;
 	};
-
 	pinctrl_i2c1_gpio: i2c1gpiogrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C1_SDA_GPIO5_IO15		0x1e0
 			MX8MM_IOMUXC_I2C1_SCL_GPIO5_IO14		0x1e0
 		>;
 	};
-
 	pinctrl_rtc: rtcgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO03_GPIO1_IO3		0x1c0
 		>;
 	};
-
 	pinctrl_sn65dsi83: sn65dsi83grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO10_GPIO1_IO10		0x0
 		>;
 	};
-
 	pinctrl_usdhc3: usdhc3grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_CLE_USDHC3_DATA7		0x1d0
@@ -400,7 +334,6 @@
 			MX8MM_IOMUXC_NAND_WP_B_USDHC3_CMD		0x1d0
 		>;
 	};
-
 	pinctrl_usdhc3_100mhz: usdhc3-100mhzgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_CLE_USDHC3_DATA7		0x1d4
@@ -416,7 +349,6 @@
 			MX8MM_IOMUXC_NAND_WP_B_USDHC3_CMD		0x1d4
 		>;
 	};
-
 	pinctrl_usdhc3_200mhz: usdhc3-200mhzgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_CLE_USDHC3_DATA7		0x1d6
@@ -432,7 +364,6 @@
 			MX8MM_IOMUXC_NAND_WP_B_USDHC3_CMD		0x1d6
 		>;
 	};
-
 	pinctrl_wdog: wdoggrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO02_WDOG1_WDOG_B		0x26

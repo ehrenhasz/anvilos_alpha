@@ -1,17 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-
 /dts-v1/;
-
 #include <dt-bindings/clock/clps711x-clock.h>
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
 	model = "Cirrus Logic EP7209";
 	compatible = "cirrus,ep7209";
-
 	chosen { };
-
 	aliases {
 		gpio0 = &porta;
 		gpio1 = &portb;
@@ -23,71 +17,60 @@
 		timer0 = &timer1;
 		timer1 = &timer2;
 	};
-
 	cpus {
 		#address-cells = <0>;
 		#size-cells = <0>;
-
 		cpu {
 			device_type = "cpu";
 			compatible = "arm,arm720t";
 		};
 	};
-
 	soc {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "simple-bus";
 		interrupt-parent = <&intc>;
 		ranges;
-
 		clks: clks@80000000 {
 			#clock-cells = <1>;
 			compatible = "cirrus,ep7209-clk";
 			reg = <0x80000000 0xc000>;
 			startup-frequency = <73728000>;
 		};
-
 		intc: intc@80000000 {
 			compatible = "cirrus,ep7209-intc";
 			reg = <0x80000000 0x4000>;
 			interrupt-controller;
 			#interrupt-cells = <1>;
 		};
-
 		porta: gpio@80000000 {
 			compatible = "cirrus,ep7209-gpio";
 			reg = <0x80000000 0x1 0x80000040 0x1>;
 			gpio-controller;
 			#gpio-cells = <2>;
 		};
-
 		portb: gpio@80000001 {
 			compatible = "cirrus,ep7209-gpio";
 			reg = <0x80000001 0x1 0x80000041 0x1>;
 			gpio-controller;
 			#gpio-cells = <2>;
 		};
-
 		portd: gpio@80000003 {
 			compatible = "cirrus,ep7209-gpio";
 			reg = <0x80000003 0x1 0x80000043 0x1>;
 			gpio-controller;
 			#gpio-cells = <2>;
 		};
-
 		porte: gpio@80000083 {
 			compatible = "cirrus,ep7209-gpio";
 			reg = <0x80000083 0x1 0x800000c3 0x1>;
 			gpio-controller;
 			#gpio-cells = <2>;
 		};
-
 		syscon1: syscon@80000100 {
 			compatible = "cirrus,ep7209-syscon1", "syscon";
 			reg = <0x80000100 0x80>;
 		};
-
 		bus: bus@80000180 {
 			#address-cells = <2>;
 			#size-cells = <1>;
@@ -105,7 +88,6 @@
 				7 0 0x70000000 0x00000080
 			>;
 		};
-
 		fb: fb@800002c0 {
 			compatible = "cirrus,ep7209-fb";
 			reg = <0x800002c0 0xd44>, <0x60000000 0xc000>;
@@ -113,28 +95,24 @@
 			syscon = <&syscon1>;
 			status = "disabled";
 		};
-
 		timer1: timer@80000300 {
 			compatible = "cirrus,ep7209-timer";
 			reg = <0x80000300 0x4>;
 			clocks = <&clks CLPS711X_CLK_TIMER1>;
 			interrupts = <8>;
 		};
-
 		timer2: timer@80000340 {
 			compatible = "cirrus,ep7209-timer";
 			reg = <0x80000340 0x4>;
 			clocks = <&clks CLPS711X_CLK_TIMER2>;
 			interrupts = <9>;
 		};
-
 		pwm: pwm@80000400 {
 			compatible = "cirrus,ep7209-pwm";
 			reg = <0x80000400 0x4>;
 			clocks = <&clks CLPS711X_CLK_PWM>;
 			#pwm-cells = <1>;
 		};
-
 		uart1: serial@80000480 {
 			compatible = "cirrus,ep7209-uart";
 			reg = <0x80000480 0x80>;
@@ -142,7 +120,6 @@
 			clocks = <&clks CLPS711X_CLK_UART>;
 			syscon = <&syscon1>;
 		};
-
 		spi: spi@80000500 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -153,12 +130,10 @@
 			syscon = <&syscon3>;
 			status = "disabled";
 		};
-
 		syscon2: syscon@80001100 {
 			compatible = "cirrus,ep7209-syscon2", "syscon";
 			reg = <0x80001100 0x80>;
 		};
-
 		uart2: serial@80001480 {
 			compatible = "cirrus,ep7209-uart";
 			reg = <0x80001480 0x80>;
@@ -166,7 +141,6 @@
 			clocks = <&clks CLPS711X_CLK_UART>;
 			syscon = <&syscon2>;
 		};
-
 		dai: dai@80002000 {
 			#sound-dai-cells = <0>;
 			compatible = "cirrus,ep7209-dai";
@@ -177,13 +151,11 @@
 			syscon = <&syscon3>;
 			status = "disabled";
 		};
-
 		syscon3: syscon@80002200 {
 			compatible = "cirrus,ep7209-syscon3", "syscon";
 			reg = <0x80002200 0x40>;
 		};
 	};
-
 	keypad: keypad {
 		compatible = "cirrus,ep7209-keypad";
 		interrupt-parent = <&intc>;
@@ -191,7 +163,6 @@
 		syscon = <&syscon1>;
 		status = "disabled";
 	};
-
 	mctrl: mctrl {
 		compatible = "cirrus,ep7209-mctrl-gpio";
 		gpio,syscon-dev = <&syscon1 0 0>;

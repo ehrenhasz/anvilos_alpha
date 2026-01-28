@@ -1,22 +1,5 @@
-#
-# Copyright 2015 ClusterHQ
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 '''
 Python wrappers for **libzfs_core** library.
-
 *libzfs_core* is intended to be a stable, committed interface for programmatic
 administration of ZFS.
 This wrapper provides one-to-one wrappers for libzfs_core API functions,
@@ -30,16 +13,12 @@ Errors are reported as exceptions rather than integer errno-style
 error codes.  The wrapper takes care to provide one-to-many mapping
 of the error codes to the exceptions by interpreting a context
 in which the error code is produced.
-
 To submit an issue or contribute to development of this package
 please visit its `GitHub repository <https://github.com/openzfs/zfs>`_.
-
 .. data:: MAXNAMELEN
-
     Maximum length of any ZFS name.
 '''
 from __future__ import absolute_import, division, print_function
-
 from ._constants import (
     MAXNAMELEN,
     ZCP_DEFAULT_INSTRLIMIT,
@@ -49,7 +28,6 @@ from ._constants import (
     zfs_keyformat,
     zio_encrypt
 )
-
 from ._libzfs_core import (
     lzc_bookmark,
     lzc_change_key,
@@ -96,7 +74,6 @@ from ._libzfs_core import (
     lzc_list_snaps,
     receive_header,
 )
-
 __all__ = [
     'ctypes',
     'exceptions',
@@ -152,5 +129,3 @@ __all__ = [
     'lzc_list_snaps',
     'receive_header',
 ]
-
-# vim: softtabstop=4 tabstop=4 expandtab shiftwidth=4

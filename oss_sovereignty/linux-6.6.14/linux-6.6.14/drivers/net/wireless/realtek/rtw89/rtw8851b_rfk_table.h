@@ -1,12 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2022-2023  Realtek Corporation
- */
-
 #ifndef __RTW89_8851B_RFK_TABLE_H__
 #define __RTW89_8851B_RFK_TABLE_H__
-
 #include "phy.h"
-
 extern const struct rtw89_rfk_tbl rtw8851b_dadck_setup_defs_tbl;
 extern const struct rtw89_rfk_tbl rtw8851b_dadck_post_defs_tbl;
 extern const struct rtw89_rfk_tbl rtw8851b_dack_s0_1_defs_tbl;
@@ -34,5 +28,4 @@ extern const struct rtw89_rfk_tbl rtw8851b_tssi_slope_defs_a_tbl;
 extern const struct rtw89_rfk_tbl rtw8851b_tssi_track_defs_a_tbl;
 extern const struct rtw89_rfk_tbl rtw8851b_tssi_mv_avg_defs_a_tbl;
 extern const struct rtw89_rfk_tbl rtw8851b_nctl_post_defs_tbl;
-
 #endif

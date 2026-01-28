@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm #define SM8250 interconnect IDs
- *
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __DRIVERS_INTERCONNECT_QCOM_SM8250_H
 #define __DRIVERS_INTERCONNECT_QCOM_SM8250_H
-
 #define SM8250_A1NOC_SNOC_MAS			0
 #define SM8250_A1NOC_SNOC_SLV			1
 #define SM8250_A2NOC_SNOC_MAS			2
@@ -31,7 +23,6 @@
 #define SM8250_MASTER_GPU_TCU			20
 #define SM8250_MASTER_GRAPHICS_3D		21
 #define SM8250_MASTER_IPA			22
-/* 23 was used by MASTER_IPA_CORE, now represented as RPMh clock */
 #define SM8250_MASTER_LLCC			24
 #define SM8250_MASTER_MDP_PORT0			25
 #define SM8250_MASTER_MDP_PORT1			26
@@ -92,7 +83,6 @@
 #define SM8250_SLAVE_GRAPHICS_3D_CFG		81
 #define SM8250_SLAVE_IMEM_CFG			82
 #define SM8250_SLAVE_IPA_CFG			83
-/* 84 was used by SLAVE_IPA_CORE, now represented as RPMh clock */
 #define SM8250_SLAVE_IPC_ROUTER_CFG		85
 #define SM8250_SLAVE_ISENSE_CFG			86
 #define SM8250_SLAVE_LLCC			87
@@ -164,5 +154,4 @@
 #define SM8250_SLAVE_QUP_CORE_0			153
 #define SM8250_SLAVE_QUP_CORE_1			154
 #define SM8250_SLAVE_QUP_CORE_2			155
-
 #endif

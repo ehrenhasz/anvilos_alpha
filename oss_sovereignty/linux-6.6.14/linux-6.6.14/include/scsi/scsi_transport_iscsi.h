@@ -1,20 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * iSCSI transport class definitions
- *
- * Copyright (C) IBM Corporation, 2004
- * Copyright (C) Mike Christie, 2004 - 2006
- * Copyright (C) Dmitry Yusupov, 2004 - 2005
- * Copyright (C) Alex Aizman, 2004 - 2005
- */
 #ifndef SCSI_TRANSPORT_ISCSI_H
 #define SCSI_TRANSPORT_ISCSI_H
-
 #include <linux/device.h>
 #include <linux/list.h>
 #include <linux/mutex.h>
 #include <scsi/iscsi_if.h>
-
 struct scsi_transport_template;
 struct iscsi_transport;
 struct iscsi_endpoint;
@@ -28,54 +17,10 @@ struct iscsi_iface;
 struct bsg_job;
 struct iscsi_bus_flash_session;
 struct iscsi_bus_flash_conn;
-
-/**
- * struct iscsi_transport - iSCSI Transport template
- *
- * @name:		transport name
- * @caps:		iSCSI Data-Path capabilities
- * @create_session:	create new iSCSI session object
- * @destroy_session:	destroy existing iSCSI session object
- * @create_conn:	create new iSCSI connection
- * @bind_conn:		associate this connection with existing iSCSI session
- *			and specified transport descriptor
- * @destroy_conn:	destroy inactive iSCSI connection
- * @set_param:		set iSCSI parameter. Return 0 on success, -ENODATA
- *			when param is not supported, and a -Exx value on other
- *			error.
- * @get_param		get iSCSI parameter. Must return number of bytes
- *			copied to buffer on success, -ENODATA when param
- *			is not supported, and a -Exx value on other error
- * @start_conn:		set connection to be operational
- * @stop_conn:		suspend/recover/terminate connection
- * @send_pdu:		send iSCSI PDU, Login, Logout, NOP-Out, Reject, Text.
- * @session_recovery_timedout: notify LLD a block during recovery timed out
- * @init_task:		Initialize a iscsi_task and any internal structs.
- *			When offloading the data path, this is called from
- *			queuecommand with the session lock, or from the
- *			iscsi_conn_send_pdu context with the session lock.
- *			When not offloading the data path, this is called
- *			from the scsi work queue without the session lock.
- * @xmit_task		Requests LLD to transfer cmd task. Returns 0 or the
- *			number of bytes transferred on success, and -Exyz
- *			value on error. When offloading the data path, this
- *			is called from queuecommand with the session lock, or
- *			from the iscsi_conn_send_pdu context with the session
- *			lock. When not offloading the data path, this is called
- *			from the scsi work queue without the session lock.
- * @cleanup_task:	requests LLD to fail task. Called with session lock
- *			and after the connection has been suspended and
- *			terminated during recovery. If called
- *			from abort task then connection is not suspended
- *			or terminated but sk_callback_lock is held
- *
- * Template API provided by iSCSI Transport
- */
 struct iscsi_transport {
 	struct module *owner;
 	char *name;
 	unsigned int caps;
-
 	struct iscsi_cls_session *(*create_session) (struct iscsi_endpoint *ep,
 					uint16_t cmds_max, uint16_t qdepth,
 					uint32_t sn);
@@ -106,18 +51,15 @@ struct iscsi_transport {
 			 char *data, uint32_t data_size);
 	void (*get_stats) (struct iscsi_cls_conn *conn,
 			   struct iscsi_stats *stats);
-
 	int (*init_task) (struct iscsi_task *task);
 	int (*xmit_task) (struct iscsi_task *task);
 	void (*cleanup_task) (struct iscsi_task *task);
-
 	int (*alloc_pdu) (struct iscsi_task *task, uint8_t opcode);
 	int (*xmit_pdu) (struct iscsi_task *task);
 	int (*init_pdu) (struct iscsi_task *task, unsigned int offset,
 			 unsigned int count);
 	void (*parse_pdu_itt) (struct iscsi_conn *conn, itt_t itt,
 			       int *index, int *age);
-
 	void (*session_recovery_timedout) (struct iscsi_cls_session *session);
 	struct iscsi_endpoint *(*ep_connect) (struct Scsi_Host *shost,
 					      struct sockaddr *dst_addr,
@@ -157,85 +99,57 @@ struct iscsi_transport {
 	int (*get_host_stats) (struct Scsi_Host *shost, char *buf, int len);
 	u8 (*check_protection)(struct iscsi_task *task, sector_t *sector);
 };
-
-/*
- * transport registration upcalls
- */
 extern struct scsi_transport_template *iscsi_register_transport(struct iscsi_transport *tt);
 extern void iscsi_unregister_transport(struct iscsi_transport *tt);
-
-/*
- * control plane upcalls
- */
 extern void iscsi_conn_error_event(struct iscsi_cls_conn *conn,
 				   enum iscsi_err error);
 extern void iscsi_conn_login_event(struct iscsi_cls_conn *conn,
 				   enum iscsi_conn_state state);
 extern int iscsi_recv_pdu(struct iscsi_cls_conn *conn, struct iscsi_hdr *hdr,
 			  char *data, uint32_t data_size);
-
 extern int iscsi_offload_mesg(struct Scsi_Host *shost,
 			      struct iscsi_transport *transport, uint32_t type,
 			      char *data, uint16_t data_size);
-
 extern void iscsi_post_host_event(uint32_t host_no,
 				  struct iscsi_transport *transport,
 				  enum iscsi_host_event_code code,
 				  uint32_t data_size,
 				  uint8_t *data);
-
 extern void iscsi_ping_comp_event(uint32_t host_no,
 				  struct iscsi_transport *transport,
 				  uint32_t status, uint32_t pid,
 				  uint32_t data_size, uint8_t *data);
-
-/* iscsi class connection state */
 enum iscsi_connection_state {
 	ISCSI_CONN_UP = 0,
 	ISCSI_CONN_DOWN,
 	ISCSI_CONN_FAILED,
 	ISCSI_CONN_BOUND,
 };
-
 #define ISCSI_CLS_CONN_BIT_CLEANUP	1
-
 struct iscsi_cls_conn {
-	struct list_head conn_list;	/* item in connlist */
-	void *dd_data;			/* LLD private data */
+	struct list_head conn_list;	 
+	void *dd_data;			 
 	struct iscsi_transport *transport;
-	uint32_t cid;			/* connection id */
-	/*
-	 * This protects the conn startup and binding/unbinding of the ep to
-	 * the conn. Unbinding includes ep_disconnect and stop_conn.
-	 */
+	uint32_t cid;			 
 	struct mutex ep_mutex;
 	struct iscsi_endpoint *ep;
-
-	/* Used when accessing flags and queueing work. */
 	spinlock_t lock;
 	unsigned long flags;
 	struct work_struct cleanup_work;
-
-	struct device dev;		/* sysfs transport/container device */
+	struct device dev;		 
 	enum iscsi_connection_state state;
 };
-
 #define iscsi_dev_to_conn(_dev) \
 	container_of(_dev, struct iscsi_cls_conn, dev)
-
 #define transport_class_to_conn(_cdev) \
 	iscsi_dev_to_conn(_cdev->parent)
-
 #define iscsi_conn_to_session(_conn) \
 	iscsi_dev_to_session(_conn->dev.parent)
-
-/* iscsi class session state */
 enum {
 	ISCSI_SESSION_LOGGED_IN,
 	ISCSI_SESSION_FAILED,
 	ISCSI_SESSION_FREE,
 };
-
 enum {
 	ISCSI_SESSION_TARGET_UNBOUND,
 	ISCSI_SESSION_TARGET_ALLOCATED,
@@ -243,11 +157,9 @@ enum {
 	ISCSI_SESSION_TARGET_UNBINDING,
 	ISCSI_SESSION_TARGET_MAX,
 };
-
 #define ISCSI_MAX_TARGET -1
-
 struct iscsi_cls_session {
-	struct list_head sess_list;		/* item in session_list */
+	struct list_head sess_list;		 
 	struct iscsi_transport *transport;
 	spinlock_t lock;
 	struct work_struct block_work;
@@ -255,86 +167,63 @@ struct iscsi_cls_session {
 	struct work_struct scan_work;
 	struct work_struct unbind_work;
 	struct work_struct destroy_work;
-
-	/* recovery fields */
 	int recovery_tmo;
 	bool recovery_tmo_sysfs_override;
 	struct delayed_work recovery_work;
-
 	struct workqueue_struct *workq;
-
 	unsigned int target_id;
 	bool ida_used;
-
-	/*
-	 * pid of userspace process that created session or -1 if
-	 * created by the kernel.
-	 */
 	pid_t creator;
 	int state;
-	int target_state;			/* session target bind state */
-	int sid;				/* session id */
-	void *dd_data;				/* LLD private data */
-	struct device dev;	/* sysfs transport/container device */
+	int target_state;			 
+	int sid;				 
+	void *dd_data;				 
+	struct device dev;	 
 };
-
 #define iscsi_dev_to_session(_dev) \
 	container_of(_dev, struct iscsi_cls_session, dev)
-
 #define transport_class_to_session(_cdev) \
 	iscsi_dev_to_session(_cdev->parent)
-
 #define iscsi_session_to_shost(_session) \
 	dev_to_shost(_session->dev.parent)
-
 #define starget_to_session(_stgt) \
 	iscsi_dev_to_session(_stgt->dev.parent)
-
 struct iscsi_cls_host {
 	struct mutex mutex;
 	struct request_queue *bsg_q;
 	uint32_t port_speed;
 	uint32_t port_state;
 };
-
 #define iscsi_job_to_shost(_job) \
         dev_to_shost(_job->dev)
-
 extern void iscsi_host_for_each_session(struct Scsi_Host *shost,
 				void (*fn)(struct iscsi_cls_session *));
-
 struct iscsi_endpoint {
-	void *dd_data;			/* LLD private data */
+	void *dd_data;			 
 	struct device dev;
 	int id;
 	struct iscsi_cls_conn *conn;
 };
-
 struct iscsi_iface {
 	struct device dev;
 	struct iscsi_transport *transport;
-	uint32_t iface_type;	/* IPv4 or IPv6 */
-	uint32_t iface_num;	/* iface number, 0 - n */
-	void *dd_data;		/* LLD private data */
+	uint32_t iface_type;	 
+	uint32_t iface_num;	 
+	void *dd_data;		 
 };
-
 #define iscsi_dev_to_iface(_dev) \
 	container_of(_dev, struct iscsi_iface, dev)
-
 #define iscsi_iface_to_shost(_iface) \
 	dev_to_shost(_iface->dev.parent)
-
-
 struct iscsi_bus_flash_conn {
-	struct list_head conn_list;	/* item in connlist */
-	void *dd_data;			/* LLD private data */
+	struct list_head conn_list;	 
+	void *dd_data;			 
 	struct iscsi_transport *transport;
-	struct device dev;		/* sysfs transport/container device */
-	/* iscsi connection parameters */
+	struct device dev;		 
 	uint32_t		exp_statsn;
 	uint32_t		statsn;
-	unsigned		max_recv_dlength; /* initiator_max_recv_dsl*/
-	unsigned		max_xmit_dlength; /* target_max_recv_dsl */
+	unsigned		max_recv_dlength;  
+	unsigned		max_xmit_dlength;  
 	unsigned		max_segment_size;
 	unsigned		tcp_xmit_wsf;
 	unsigned		tcp_recv_wsf;
@@ -347,10 +236,8 @@ struct iscsi_bus_flash_conn {
 	uint16_t		keepalive_timeout;
 	uint16_t		local_port;
 	uint8_t			snack_req_en;
-	/* tcp timestamp negotiation status */
 	uint8_t			tcp_timestamp_stat;
 	uint8_t			tcp_nagle_disable;
-	/* tcp window scale factor */
 	uint8_t			tcp_wsf_disable;
 	uint8_t			tcp_timer_scale;
 	uint8_t			tcp_timestamp_en;
@@ -358,26 +245,20 @@ struct iscsi_bus_flash_conn {
 	uint8_t			ipv6_traffic_class;
 	uint8_t			ipv6_flow_label;
 	uint8_t			fragment_disable;
-	/* Link local IPv6 address is assigned by firmware or driver */
 	uint8_t			is_fw_assigned_ipv6;
 };
-
 #define iscsi_dev_to_flash_conn(_dev) \
 	container_of(_dev, struct iscsi_bus_flash_conn, dev)
-
 #define iscsi_flash_conn_to_flash_session(_conn) \
 	iscsi_dev_to_flash_session(_conn->dev.parent)
-
 #define ISID_SIZE 6
-
 struct iscsi_bus_flash_session {
-	struct list_head sess_list;		/* item in session_list */
+	struct list_head sess_list;		 
 	struct iscsi_transport *transport;
 	unsigned int target_id;
-	int flash_state;	/* persistent or non-persistent */
-	void *dd_data;				/* LLD private data */
-	struct device dev;	/* sysfs transport/container device */
-	/* iscsi session parameters */
+	int flash_state;	 
+	void *dd_data;				 
+	struct device dev;	 
 	unsigned		first_burst;
 	unsigned		max_burst;
 	unsigned short		max_r2t;
@@ -400,45 +281,26 @@ struct iscsi_bus_flash_session {
 	uint16_t		tsid;
 	uint16_t		chap_in_idx;
 	uint16_t		chap_out_idx;
-	/* index of iSCSI discovery session if the entry is
-	 * discovered by iSCSI discovery session
-	 */
 	uint16_t		discovery_parent_idx;
-	/* indicates if discovery was done through iSNS discovery service
-	 * or through sendTarget */
 	uint16_t		discovery_parent_type;
-	/* Firmware auto sendtarget discovery disable */
 	uint8_t			auto_snd_tgt_disable;
 	uint8_t			discovery_sess;
-	/* indicates if this flashnode entry is enabled or disabled */
 	uint8_t			entry_state;
 	uint8_t			chap_auth_en;
-	/* enables firmware to auto logout the discovery session on discovery
-	 * completion
-	 */
 	uint8_t			discovery_logout_en;
 	uint8_t			bidi_chap_en;
-	/* makes authentication for discovery session optional */
 	uint8_t			discovery_auth_optional;
 	uint8_t			isid[ISID_SIZE];
 	uint8_t			is_boot_target;
 };
-
 #define iscsi_dev_to_flash_session(_dev) \
 	container_of(_dev, struct iscsi_bus_flash_session, dev)
-
 #define iscsi_flash_session_to_shost(_session) \
 	dev_to_shost(_session->dev.parent)
-
-/*
- * session and connection functions that can be used by HW iSCSI LLDs
- */
 #define iscsi_cls_session_printk(prefix, _cls_session, fmt, a...) \
 	dev_printk(prefix, &(_cls_session)->dev, fmt, ##a)
-
 #define iscsi_cls_conn_printk(prefix, _cls_conn, fmt, a...) \
 	dev_printk(prefix, &(_cls_conn)->dev, fmt, ##a)
-
 extern int iscsi_session_chkready(struct iscsi_cls_session *session);
 extern int iscsi_is_session_online(struct iscsi_cls_session *session);
 extern struct iscsi_cls_session *iscsi_alloc_session(struct Scsi_Host *shost,
@@ -475,24 +337,19 @@ extern void iscsi_destroy_iface(struct iscsi_iface *iface);
 extern char *iscsi_get_port_speed_name(struct Scsi_Host *shost);
 extern char *iscsi_get_port_state_name(struct Scsi_Host *shost);
 extern int iscsi_is_session_dev(const struct device *dev);
-
 extern char *iscsi_get_discovery_parent_name(int parent_type);
 extern struct device *
 iscsi_find_flashnode(struct Scsi_Host *shost, void *data,
 		     int (*fn)(struct device *dev, void *data));
-
 extern struct iscsi_bus_flash_session *
 iscsi_create_flashnode_sess(struct Scsi_Host *shost, int index,
 			    struct iscsi_transport *transport, int dd_size);
-
 extern struct iscsi_bus_flash_conn *
 iscsi_create_flashnode_conn(struct Scsi_Host *shost,
 			    struct iscsi_bus_flash_session *fnode_sess,
 			    struct iscsi_transport *transport, int dd_size);
-
 extern void
 iscsi_destroy_flashnode_sess(struct iscsi_bus_flash_session *fnode_sess);
-
 extern void iscsi_destroy_all_flashnode(struct Scsi_Host *shost);
 extern int iscsi_flashnode_bus_match(struct device *dev,
 				     struct device_driver *drv);
@@ -501,7 +358,6 @@ iscsi_find_flashnode_sess(struct Scsi_Host *shost, void *data,
 			  int (*fn)(struct device *dev, void *data));
 extern struct device *
 iscsi_find_flashnode_conn(struct iscsi_bus_flash_session *fnode_sess);
-
 extern char *
 iscsi_get_ipaddress_state_name(enum iscsi_ipaddress_state port_state);
 extern char *iscsi_get_router_state_name(enum iscsi_router_state router_state);

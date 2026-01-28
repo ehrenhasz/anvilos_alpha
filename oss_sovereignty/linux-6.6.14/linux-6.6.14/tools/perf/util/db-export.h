@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * db-export.h: Support for exporting data suitable for import to a database
- * Copyright (c) 2014, Intel Corporation.
- */
-
 #ifndef __PERF_DB_EXPORT_H
 #define __PERF_DB_EXPORT_H
-
 #include <linux/types.h>
 #include <linux/list.h>
-
 struct evsel;
 struct machine;
 struct thread;
@@ -21,7 +13,6 @@ struct call_return_processor;
 struct call_path_root;
 struct call_path;
 struct call_return;
-
 struct export_sample {
 	union perf_event	*event;
 	struct perf_sample	*sample;
@@ -31,13 +22,12 @@ struct export_sample {
 	u64			comm_db_id;
 	u64			dso_db_id;
 	u64			sym_db_id;
-	u64			offset; /* ip offset from symbol start */
+	u64			offset;  
 	u64			addr_dso_db_id;
 	u64			addr_sym_db_id;
-	u64			addr_offset; /* addr offset from symbol start */
+	u64			addr_offset;  
 	u64			call_path_id;
 };
-
 struct db_export {
 	int (*export_evsel)(struct db_export *dbe, struct evsel *evsel);
 	int (*export_machine)(struct db_export *dbe, struct machine *machine);
@@ -76,7 +66,6 @@ struct db_export {
 	u64 call_return_last_db_id;
 	u64 context_switch_last_db_id;
 };
-
 int db_export__init(struct db_export *dbe);
 void db_export__exit(struct db_export *dbe);
 int db_export__evsel(struct db_export *dbe, struct evsel *evsel);
@@ -98,13 +87,10 @@ int db_export__branch_type(struct db_export *dbe, u32 branch_type,
 int db_export__sample(struct db_export *dbe, union perf_event *event,
 		      struct perf_sample *sample, struct evsel *evsel,
 		      struct addr_location *al, struct addr_location *addr_al);
-
 int db_export__branch_types(struct db_export *dbe);
-
 int db_export__call_path(struct db_export *dbe, struct call_path *cp);
 int db_export__call_return(struct db_export *dbe, struct call_return *cr,
 			   u64 *parent_db_id);
 int db_export__switch(struct db_export *dbe, union perf_event *event,
 		      struct perf_sample *sample, struct machine *machine);
-
 #endif

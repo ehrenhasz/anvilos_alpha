@@ -1,16 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 MediaTek Inc.
- *
- * Author: Zhiyong Tao <zhiyong.tao@mediatek.com>
- *
- */
-
 #ifndef __PINCTRL_MTK_MT8183_H
 #define __PINCTRL_MTK_MT8183_H
-
 #include "pinctrl-paris.h"
-
 static struct mtk_pin_desc mtk_pins_mt8183[] = {
 	MTK_PIN(
 		0, "GPIO0",
@@ -1912,5 +1902,4 @@ static struct mtk_pin_desc mtk_pins_mt8183[] = {
 		MTK_FUNCTION(0, "GPIO191")
 	),
 };
-
-#endif /* __PINCTRL_MTK_MT8183_H */
+#endif  

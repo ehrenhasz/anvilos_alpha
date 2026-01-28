@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (C) 2017 Oracle Corporation */
-
 #ifndef __UAPI_VBOX_ERR_H__
 #define __UAPI_VBOX_ERR_H__
-
 #define VINF_SUCCESS                        0
 #define VERR_GENERAL_FAILURE                (-1)
 #define VERR_INVALID_PARAMETER              (-2)
@@ -18,7 +14,6 @@
 #define VERR_VERSION_MISMATCH               (-11)
 #define VERR_NOT_IMPLEMENTED                (-12)
 #define VERR_INVALID_FLAGS                  (-13)
-
 #define VERR_NOT_EQUAL                      (-18)
 #define VERR_NOT_SYMLINK                    (-19)
 #define VERR_NO_TMP_MEMORY                  (-20)
@@ -58,11 +53,9 @@
 #define VERR_NO_DIGITS                      (-56)
 #define VERR_NEGATIVE_UNSIGNED              (-57)
 #define VERR_NO_TRANSLATION                 (-58)
-
 #define VERR_NOT_FOUND                      (-78)
 #define VERR_INVALID_STATE                  (-79)
 #define VERR_OUT_OF_RESOURCES               (-80)
-
 #define VERR_FILE_NOT_FOUND                 (-102)
 #define VERR_PATH_NOT_FOUND                 (-103)
 #define VERR_INVALID_NAME                   (-104)
@@ -90,7 +83,6 @@
 #define VERR_NOT_A_DIRECTORY                (-126)
 #define VERR_IS_A_DIRECTORY                 (-127)
 #define VERR_FILE_TOO_BIG                   (-128)
-
 #define VERR_NET_IO_ERROR                       (-400)
 #define VERR_NET_OUT_OF_RESOURCES               (-401)
 #define VERR_NET_HOST_NOT_FOUND                 (-402)
@@ -98,7 +90,6 @@
 #define VERR_NET_PRINT_ERROR                    (-404)
 #define VERR_NET_NO_NETWORK                     (-405)
 #define VERR_NET_NOT_UNIQUE_NAME                (-406)
-
 #define VERR_NET_IN_PROGRESS                    (-436)
 #define VERR_NET_ALREADY_IN_PROGRESS            (-437)
 #define VERR_NET_NOT_SOCKET                     (-438)
@@ -129,8 +120,6 @@
 #define VERR_NET_HOST_UNREACHABLE               (-465)
 #define VERR_NET_PROTOCOL_ERROR                 (-466)
 #define VERR_NET_INCOMPLETE_TX_PACKET           (-467)
-
-/* misc. unsorted codes */
 #define VERR_RESOURCE_BUSY                      (-138)
 #define VERR_DISK_FULL                          (-152)
 #define VERR_TOO_MANY_SYMLINKS                  (-156)
@@ -147,5 +136,4 @@
 #define VERR_DEADLOCK                           (-365)
 #define VERR_BAD_EXE_FORMAT                     (-608)
 #define VINF_HGCM_ASYNC_EXECUTE                 (2903)
-
 #endif

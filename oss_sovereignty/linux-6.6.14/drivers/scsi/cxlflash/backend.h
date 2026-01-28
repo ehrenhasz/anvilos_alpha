@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * CXL Flash Device Driver
- *
- * Written by: Matthew R. Ochs <mrochs@linux.vnet.ibm.com>, IBM Corporation
- *             Uma Krishnan <ukrishn@linux.vnet.ibm.com>, IBM Corporation
- *
- * Copyright (C) 2018 IBM Corporation
- */
-
 #ifndef _CXLFLASH_BACKEND_H
 #define _CXLFLASH_BACKEND_H
-
 extern const struct cxlflash_backend_ops cxlflash_cxl_ops;
 extern const struct cxlflash_backend_ops cxlflash_ocxl_ops;
-
 struct cxlflash_backend_ops {
 	struct module *module;
 	void __iomem * (*psa_map)(void *ctx_cookie);
@@ -44,5 +32,4 @@ struct cxlflash_backend_ops {
 	int (*fd_mmap)(struct file *file, struct vm_area_struct *vm);
 	int (*fd_release)(struct inode *inode, struct file *file);
 };
-
-#endif /* _CXLFLASH_BACKEND_H */
+#endif  

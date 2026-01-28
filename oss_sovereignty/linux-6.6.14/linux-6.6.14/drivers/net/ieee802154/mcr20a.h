@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Driver for NXP MCR20A 802.15.4 Wireless-PAN Networking controller
- *
- * Copyright (C) 2018 Xue Liu <liuxuenetmail@gmail.com>
- */
 #ifndef _MCR20A_H
 #define _MCR20A_H
-
-/* Direct Accress Register */
 #define DAR_IRQ_STS1		0x00
 #define DAR_IRQ_STS2		0x01
 #define DAR_IRQ_STS3		0x02
@@ -47,7 +39,6 @@
 #define DAR_SEQ_STATE		0x24
 #define DAR_LQI_VALUE		0x25
 #define DAR_RSSI_CCA_CONT	0x26
-/*------------------            0x27 */
 #define DAR_ASM_CTRL1		0x28
 #define DAR_ASM_CTRL2		0x29
 #define DAR_ASM_DATA_0		0x2A
@@ -66,14 +57,11 @@
 #define DAR_ASM_DATA_D		0x37
 #define DAR_ASM_DATA_E		0x38
 #define DAR_ASM_DATA_F		0x39
-/*-----------------------       0x3A */
 #define DAR_OVERWRITE_VER	0x3B
 #define DAR_CLK_OUT_CTRL	0x3C
 #define DAR_PWR_MODES		0x3D
 #define IAR_INDEX		0x3E
 #define IAR_DATA		0x3F
-
-/* Indirect Resgister Memory */
 #define IAR_PART_ID		0x00
 #define IAR_XTAL_TRIM		0x01
 #define IAR_PMC_LP_TRIM		0x02
@@ -115,17 +103,14 @@
 #define IAR_CCA2_CORR_PEAKS	0x26
 #define IAR_CCA2_CORR_THRESH	0x27
 #define IAR_TMR_PRESCALE	0x28
-/*--------------------          0x29 */
 #define IAR_GPIO_DATA		0x2A
 #define IAR_GPIO_DIR		0x2B
 #define IAR_GPIO_PUL_EN		0x2C
 #define IAR_GPIO_PUL_SEL	0x2D
 #define IAR_GPIO_DS		0x2E
-/*------------------            0x2F */
 #define IAR_ANT_PAD_CTRL	0x30
 #define IAR_MISC_PAD_CTRL	0x31
 #define IAR_BSM_CTRL		0x32
-/*-------------------           0x33 */
 #define IAR_RNG			0x34
 #define IAR_RX_BYTE_COUNT	0x35
 #define IAR_RX_WTR_MARK		0x36
@@ -144,7 +129,6 @@
 #define IAR_FILTERFAIL_CODE1	0x43
 #define IAR_FILTERFAIL_CODE2	0x44
 #define IAR_SLOT_PRELOAD	0x45
-/*--------------------          0x46 */
 #define IAR_CORR_VT		0x47
 #define IAR_SYNC_CTRL		0x48
 #define IAR_PN_LSB_0		0x49
@@ -160,14 +144,10 @@
 #define IAR_AGC_THR2		0x53
 #define IAR_AGC_HYS		0x54
 #define IAR_AFC			0x55
-/*-------------------           0x56 */
-/*-------------------           0x57 */
 #define IAR_PHY_STS		0x58
 #define IAR_RX_MAX_CORR		0x59
 #define IAR_RX_MAX_PREAMBLE	0x5A
 #define IAR_RSSI		0x5B
-/*-------------------           0x5C */
-/*-------------------           0x5D */
 #define IAR_PLL_DIG_CTRL	0x5E
 #define IAR_VCO_CAL		0x5F
 #define IAR_VCO_BEST_DIFF	0x60
@@ -182,18 +162,12 @@
 #define IAR_RSSI_SLOPE		0x69
 #define IAR_RSSI_CAL1		0x6A
 #define IAR_RSSI_CAL2		0x6B
-/*-------------------           0x6C */
-/*-------------------           0x6D */
 #define IAR_XTAL_CTRL		0x6E
 #define IAR_XTAL_COMP_MIN	0x6F
 #define IAR_XTAL_COMP_MAX	0x70
 #define IAR_XTAL_GM		0x71
-/*-------------------           0x72 */
-/*-------------------           0x73 */
 #define IAR_LNA_TUNE		0x74
 #define IAR_LNA_AGCGAIN		0x75
-/*-------------------           0x76 */
-/*-------------------           0x77 */
 #define IAR_CHF_PMA_GAIN	0x78
 #define IAR_CHF_IBUF		0x79
 #define IAR_CHF_QBUF		0x7A
@@ -206,28 +180,17 @@
 #define IAR_CHF_CC2		0x81
 #define IAR_CHF_IROUT		0x82
 #define IAR_CHF_QROUT		0x83
-/*-------------------           0x84 */
-/*-------------------           0x85 */
 #define IAR_RSSI_CTRL		0x86
-/*-------------------           0x87 */
-/*-------------------           0x88 */
 #define IAR_PA_BIAS		0x89
 #define IAR_PA_TUNING		0x8A
-/*-------------------           0x8B */
-/*-------------------           0x8C */
 #define IAR_PMC_HP_TRIM		0x8D
 #define IAR_VREGA_TRIM		0x8E
-/*-------------------           0x8F */
-/*-------------------           0x90 */
 #define IAR_VCO_CTRL1		0x91
 #define IAR_VCO_CTRL2		0x92
-/*-------------------           0x93 */
-/*-------------------           0x94 */
 #define IAR_ANA_SPARE_OUT1	0x95
 #define IAR_ANA_SPARE_OUT2	0x96
 #define IAR_ANA_SPARE_IN	0x97
 #define IAR_MISCELLANEOUS	0x98
-/*-------------------           0x99 */
 #define IAR_SEQ_MGR_OVRD0	0x9A
 #define IAR_SEQ_MGR_OVRD1	0x9B
 #define IAR_SEQ_MGR_OVRD2	0x9C
@@ -236,14 +199,12 @@
 #define IAR_SEQ_MGR_OVRD5	0x9F
 #define IAR_SEQ_MGR_OVRD6	0xA0
 #define IAR_SEQ_MGR_OVRD7	0xA1
-/*-------------------           0xA2 */
 #define IAR_TESTMODE_CTRL	0xA3
 #define IAR_DTM_CTRL1		0xA4
 #define IAR_DTM_CTRL2		0xA5
 #define IAR_ATM_CTRL1		0xA6
 #define IAR_ATM_CTRL2		0xA7
 #define IAR_ATM_CTRL3		0xA8
-/*-------------------           0xA9 */
 #define IAR_LIM_FE_TEST_CTRL	0xAA
 #define IAR_CHF_TEST_CTRL	0xAB
 #define IAR_VCO_TEST_CTRL	0xAC
@@ -252,8 +213,6 @@
 #define IAR_PMC_TEST_CTRL	0xAF
 #define IAR_SCAN_DTM_PROTECT_1	0xFE
 #define IAR_SCAN_DTM_PROTECT_0	0xFF
-
-/* IRQSTS1 bits */
 #define DAR_IRQSTS1_RX_FRM_PEND		BIT(7)
 #define DAR_IRQSTS1_PLL_UNLOCK_IRQ	BIT(6)
 #define DAR_IRQSTS1_FILTERFAIL_IRQ	BIT(5)
@@ -262,8 +221,6 @@
 #define DAR_IRQSTS1_RXIRQ		BIT(2)
 #define DAR_IRQSTS1_TXIRQ		BIT(1)
 #define DAR_IRQSTS1_SEQIRQ		BIT(0)
-
-/* IRQSTS2 bits */
 #define DAR_IRQSTS2_CRCVALID		BIT(7)
 #define DAR_IRQSTS2_CCA			BIT(6)
 #define DAR_IRQSTS2_SRCADDR		BIT(5)
@@ -272,8 +229,6 @@
 #define DAR_IRQSTS2_ASM_IRQ		BIT(2)
 #define DAR_IRQSTS2_PB_ERR_IRQ		BIT(1)
 #define DAR_IRQSTS2_WAKE_IRQ		BIT(0)
-
-/* IRQSTS3 bits */
 #define DAR_IRQSTS3_TMR4MSK		BIT(7)
 #define DAR_IRQSTS3_TMR3MSK		BIT(6)
 #define DAR_IRQSTS3_TMR2MSK		BIT(5)
@@ -282,8 +237,6 @@
 #define DAR_IRQSTS3_TMR3IRQ		BIT(2)
 #define DAR_IRQSTS3_TMR2IRQ		BIT(1)
 #define DAR_IRQSTS3_TMR1IRQ		BIT(0)
-
-/* PHY_CTRL1 bits */
 #define DAR_PHY_CTRL1_TMRTRIGEN		BIT(7)
 #define DAR_PHY_CTRL1_SLOTTED		BIT(6)
 #define DAR_PHY_CTRL1_CCABFRTX		BIT(5)
@@ -291,8 +244,6 @@
 #define DAR_PHY_CTRL1_RXACKRQD		BIT(4)
 #define DAR_PHY_CTRL1_AUTOACK		BIT(3)
 #define DAR_PHY_CTRL1_XCVSEQ_MASK	0x07
-
-/* PHY_CTRL2 bits */
 #define DAR_PHY_CTRL2_CRC_MSK		BIT(7)
 #define DAR_PHY_CTRL2_PLL_UNLOCK_MSK	BIT(6)
 #define DAR_PHY_CTRL2_FILTERFAIL_MSK	BIT(5)
@@ -301,8 +252,6 @@
 #define DAR_PHY_CTRL2_RXMSK		BIT(2)
 #define DAR_PHY_CTRL2_TXMSK		BIT(1)
 #define DAR_PHY_CTRL2_SEQMSK		BIT(0)
-
-/* PHY_CTRL3 bits */
 #define DAR_PHY_CTRL3_TMR4CMP_EN	BIT(7)
 #define DAR_PHY_CTRL3_TMR3CMP_EN	BIT(6)
 #define DAR_PHY_CTRL3_TMR2CMP_EN	BIT(5)
@@ -310,11 +259,7 @@
 #define DAR_PHY_CTRL3_ASM_MSK		BIT(2)
 #define DAR_PHY_CTRL3_PB_ERR_MSK	BIT(1)
 #define DAR_PHY_CTRL3_WAKE_MSK		BIT(0)
-
-/* RX_FRM_LEN bits */
 #define DAR_RX_FRAME_LENGTH_MASK	(0x7F)
-
-/* PHY_CTRL4 bits */
 #define DAR_PHY_CTRL4_TRCV_MSK		BIT(7)
 #define DAR_PHY_CTRL4_TC3TMOUT		BIT(6)
 #define DAR_PHY_CTRL4_PANCORDNTR0	BIT(5)
@@ -324,16 +269,12 @@
 #define DAR_PHY_CTRL4_TMRLOAD		BIT(2)
 #define DAR_PHY_CTRL4_PROMISCUOUS	BIT(1)
 #define DAR_PHY_CTRL4_TC2PRIME_EN	BIT(0)
-
-/* SRC_CTRL bits */
 #define DAR_SRC_CTRL_INDEX		(0x0F)
 #define DAR_SRC_CTRL_INDEX_SHIFT	(4)
 #define DAR_SRC_CTRL_ACK_FRM_PND	BIT(3)
 #define DAR_SRC_CTRL_SRCADDR_EN		BIT(2)
 #define DAR_SRC_CTRL_INDEX_EN		BIT(1)
 #define DAR_SRC_CTRL_INDEX_DISABLE	BIT(0)
-
-/* DAR_ASM_CTRL1 bits */
 #define DAR_ASM_CTRL1_CLEAR		BIT(7)
 #define DAR_ASM_CTRL1_START		BIT(6)
 #define DAR_ASM_CTRL1_SELFTST		BIT(5)
@@ -341,28 +282,20 @@
 #define DAR_ASM_CTRL1_CBC		BIT(3)
 #define DAR_ASM_CTRL1_AES		BIT(2)
 #define DAR_ASM_CTRL1_LOAD_MAC		BIT(1)
-
-/* DAR_ASM_CTRL2 bits */
 #define DAR_ASM_CTRL2_DATA_REG_TYPE_SEL		(7)
 #define DAR_ASM_CTRL2_DATA_REG_TYPE_SEL_SHIFT	(5)
 #define DAR_ASM_CTRL2_TSTPAS			BIT(1)
-
-/* DAR_CLK_OUT_CTRL bits */
 #define DAR_CLK_OUT_CTRL_EXTEND		BIT(7)
 #define DAR_CLK_OUT_CTRL_HIZ		BIT(6)
 #define DAR_CLK_OUT_CTRL_SR		BIT(5)
 #define DAR_CLK_OUT_CTRL_DS		BIT(4)
 #define DAR_CLK_OUT_CTRL_EN		BIT(3)
 #define DAR_CLK_OUT_CTRL_DIV		(7)
-
-/* DAR_PWR_MODES bits */
 #define DAR_PWR_MODES_XTAL_READY	BIT(5)
 #define DAR_PWR_MODES_XTALEN		BIT(4)
 #define DAR_PWR_MODES_ASM_CLK_EN	BIT(3)
 #define DAR_PWR_MODES_AUTODOZE		BIT(1)
 #define DAR_PWR_MODES_PMC_MODE		BIT(0)
-
-/* RX_FRAME_FILTER bits */
 #define IAR_RX_FRAME_FLT_FRM_VER		(0xC0)
 #define IAR_RX_FRAME_FLT_FRM_VER_SHIFT		(6)
 #define IAR_RX_FRAME_FLT_ACTIVE_PROMISCUOUS	BIT(5)
@@ -371,21 +304,15 @@
 #define IAR_RX_FRAME_FLT_ACK_FT			BIT(2)
 #define IAR_RX_FRAME_FLT_DATA_FT		BIT(1)
 #define IAR_RX_FRAME_FLT_BEACON_FT		BIT(0)
-
-/* DUAL_PAN_CTRL bits */
 #define IAR_DUAL_PAN_CTRL_DUAL_PAN_SAM_LVL_MSK	(0xF0)
 #define IAR_DUAL_PAN_CTRL_DUAL_PAN_SAM_LVL_SHIFT	(4)
 #define IAR_DUAL_PAN_CTRL_CURRENT_NETWORK	BIT(3)
 #define IAR_DUAL_PAN_CTRL_PANCORDNTR1		BIT(2)
 #define IAR_DUAL_PAN_CTRL_DUAL_PAN_AUTO		BIT(1)
 #define IAR_DUAL_PAN_CTRL_ACTIVE_NETWORK	BIT(0)
-
-/* DUAL_PAN_STS bits */
 #define IAR_DUAL_PAN_STS_RECD_ON_PAN1		BIT(7)
 #define IAR_DUAL_PAN_STS_RECD_ON_PAN0		BIT(6)
 #define IAR_DUAL_PAN_STS_DUAL_PAN_REMAIN	(0x3F)
-
-/* CCA_CTRL bits */
 #define IAR_CCA_CTRL_AGC_FRZ_EN			BIT(6)
 #define IAR_CCA_CTRL_CONT_RSSI_EN		BIT(5)
 #define IAR_CCA_CTRL_LQI_RSSI_NOT_CORR	BIT(4)
@@ -393,38 +320,26 @@
 #define IAR_CCA_CTRL_POWER_COMP_EN_LQI	BIT(2)
 #define IAR_CCA_CTRL_POWER_COMP_EN_ED	BIT(1)
 #define IAR_CCA_CTRL_POWER_COMP_EN_CCA1	BIT(0)
-
-/* ANT_PAD_CTRL bits */
 #define IAR_ANT_PAD_CTRL_ANTX_POL	(0x0F)
 #define IAR_ANT_PAD_CTRL_ANTX_POL_SHIFT	(4)
 #define IAR_ANT_PAD_CTRL_ANTX_CTRLMODE	BIT(3)
 #define IAR_ANT_PAD_CTRL_ANTX_HZ	BIT(2)
 #define IAR_ANT_PAD_CTRL_ANTX_EN	(3)
-
-/* MISC_PAD_CTRL bits */
 #define IAR_MISC_PAD_CTRL_MISO_HIZ_EN	BIT(3)
 #define IAR_MISC_PAD_CTRL_IRQ_B_OD	BIT(2)
 #define IAR_MISC_PAD_CTRL_NON_GPIO_DS	BIT(1)
 #define IAR_MISC_PAD_CTRL_ANTX_CURR	(1)
-
-/* ANT_AGC_CTRL bits */
 #define IAR_ANT_AGC_CTRL_FAD_EN_SHIFT	(0)
 #define IAR_ANT_AGC_CTRL_FAD_EN_MASK	(1)
 #define IAR_ANT_AGC_CTRL_ANTX_SHIFT	(1)
 #define IAR_ANT_AGC_CTRL_ANTX_MASK	BIT(AR_ANT_AGC_CTRL_ANTX_SHIFT)
-
-/* BSM_CTRL bits */
 #define BSM_CTRL_BSM_EN		(1)
-
-/* SOFT_RESET bits */
 #define IAR_SOFT_RESET_SOG_RST		BIT(7)
 #define IAR_SOFT_RESET_REGS_RST		BIT(4)
 #define IAR_SOFT_RESET_PLL_RST		BIT(3)
 #define IAR_SOFT_RESET_TX_RST		BIT(2)
 #define IAR_SOFT_RESET_RX_RST		BIT(1)
 #define IAR_SOFT_RESET_SEQ_MGR_RST	BIT(0)
-
-/* SEQ_MGR_CTRL bits */
 #define IAR_SEQ_MGR_CTRL_SEQ_STATE_CTRL		(3)
 #define IAR_SEQ_MGR_CTRL_SEQ_STATE_CTRL_SHIFT	(6)
 #define IAR_SEQ_MGR_CTRL_NO_RX_RECYCLE		BIT(5)
@@ -433,25 +348,17 @@
 #define IAR_SEQ_MGR_CTRL_CLR_NEW_SEQ_INHIBIT	BIT(2)
 #define IAR_SEQ_MGR_CTRL_PSM_LOCK_DIS		BIT(1)
 #define IAR_SEQ_MGR_CTRL_PLL_ABORT_OVRD		BIT(0)
-
-/* SEQ_MGR_STS bits */
 #define IAR_SEQ_MGR_STS_TMR2_SEQ_TRIG_ARMED	BIT(7)
 #define IAR_SEQ_MGR_STS_RX_MODE			BIT(6)
 #define IAR_SEQ_MGR_STS_RX_TIMEOUT_PENDING	BIT(5)
 #define IAR_SEQ_MGR_STS_NEW_SEQ_INHIBIT		BIT(4)
 #define IAR_SEQ_MGR_STS_SEQ_IDLE		BIT(3)
 #define IAR_SEQ_MGR_STS_XCVSEQ_ACTUAL		(7)
-
-/* ABORT_STS bits */
 #define IAR_ABORT_STS_PLL_ABORTED	BIT(2)
 #define IAR_ABORT_STS_TC3_ABORTED	BIT(1)
 #define IAR_ABORT_STS_SW_ABORTED	BIT(0)
-
-/* IAR_FILTERFAIL_CODE2 bits */
 #define IAR_FILTERFAIL_CODE2_PAN_SEL	BIT(7)
 #define IAR_FILTERFAIL_CODE2_9_8	(3)
-
-/* PHY_STS bits */
 #define IAR_PHY_STS_PLL_UNLOCK		BIT(7)
 #define IAR_PHY_STS_PLL_LOCK_ERR	BIT(6)
 #define IAR_PHY_STS_PLL_LOCK		BIT(5)
@@ -459,15 +366,11 @@
 #define IAR_PHY_STS_FILTERFAIL_FLAG_SEL	BIT(2)
 #define IAR_PHY_STS_SFD_DET		BIT(1)
 #define IAR_PHY_STS_PREAMBLE_DET	BIT(0)
-
-/* TESTMODE_CTRL bits */
 #define IAR_TEST_MODE_CTRL_HOT_ANT		BIT(4)
 #define IAR_TEST_MODE_CTRL_IDEAL_RSSI_EN	BIT(3)
 #define IAR_TEST_MODE_CTRL_IDEAL_PFC_EN		BIT(2)
 #define IAR_TEST_MODE_CTRL_CONTINUOUS_EN	BIT(1)
 #define IAR_TEST_MODE_CTRL_FPGA_EN		BIT(0)
-
-/* DTM_CTRL1 bits */
 #define IAR_DTM_CTRL1_ATM_LOCKED	BIT(7)
 #define IAR_DTM_CTRL1_DTM_EN		BIT(6)
 #define IAR_DTM_CTRL1_PAGE5		BIT(5)
@@ -476,14 +379,10 @@
 #define IAR_DTM_CTRL1_PAGE2		BIT(2)
 #define IAR_DTM_CTRL1_PAGE1		BIT(1)
 #define IAR_DTM_CTRL1_PAGE0		BIT(0)
-
-/* TX_MODE_CTRL */
 #define IAR_TX_MODE_CTRL_TX_INV		BIT(4)
 #define IAR_TX_MODE_CTRL_BT_EN		BIT(3)
 #define IAR_TX_MODE_CTRL_DTS2		BIT(2)
 #define IAR_TX_MODE_CTRL_DTS1		BIT(1)
 #define IAR_TX_MODE_CTRL_DTS0		BIT(0)
-
 #define TX_MODE_CTRL_DTS_MASK	(7)
-
-#endif /* _MCR20A_H */
+#endif  

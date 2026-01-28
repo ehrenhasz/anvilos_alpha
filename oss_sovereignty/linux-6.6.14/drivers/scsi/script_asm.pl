@@ -1,70 +1,10 @@
-#!/usr/bin/perl -s
-# SPDX-License-Identifier: GPL-2.0-or-later
-
-# NCR 53c810 script assembler
-# Sponsored by 
-#       iX Multiuser Multitasking Magazine
-#
-# Copyright 1993, Drew Eckhardt
-#      Visionary Computing 
-#      (Unix and Linux consulting and custom programming)
-#      drew@Colorado.EDU
-#      +1 (303) 786-7975 
-#
-#   Support for 53c710 (via -ncr7x0_family switch) added by Richard
-#   Hirst <richard@sleepie.demon.co.uk> - 15th March 1997
-#
-# TolerANT and SCSI SCRIPTS are registered trademarks of NCR Corporation.
-#
-
-# 
-# Basically, I follow the NCR syntax documented in the NCR53c710 
-# Programmer's guide, with the new instructions, registers, etc.
-# from the NCR53c810.
-#
-# Differences between this assembler and NCR's are that 
-# 1.  PASS, REL (data, JUMPs work fine), and the option to start a new 
-#	script,  are unimplemented, since I didn't use them in my scripts.
-# 
-# 2.  I also emit a script_u.h file, which will undefine all of 
-# 	the A_*, E_*, etc. symbols defined in the script.  This 
-#	makes including multiple scripts in one program easier
-# 	
-# 3.  This is a single pass assembler, which only emits 
-#	.h files.
-#
-
-
-# XXX - set these with command line options
-$debug = 0;		# Print general debugging messages
-$debug_external = 0;	# Print external/forward reference messages
-$list_in_array = 1;	# Emit original SCRIPTS assembler in comments in
-			# script.h
-#$prefix;		# (set by perl -s)
-                        # define all arrays having this prefix so we 
-			# don't have name space collisions after 
-			# assembling this file in different ways for
-			# different host adapters
-
-# Constants
-
-
-# Table of the SCSI phase encodings
+$debug = 0;		
+$debug_external = 0;	
+$list_in_array = 1;	
 %scsi_phases = ( 			
     'DATA_OUT', 0x00_00_00_00, 'DATA_IN', 0x01_00_00_00, 'CMD', 0x02_00_00_00,
     'STATUS', 0x03_00_00_00, 'MSG_OUT', 0x06_00_00_00, 'MSG_IN', 0x07_00_00_00
 );
-
-# XXX - replace references to the *_810 constants with general constants
-# assigned at compile time based on chip type.
-
-# Table of operator encodings
-# XXX - NCR53c710 only implements 
-# 	move (nop) = 0x00_00_00_00
-#	or = 0x02_00_00_00
-# 	and = 0x04_00_00_00
-# 	add = 0x06_00_00_00
-
 if ($ncr7x0_family) {
   %operators = (
     '|', 0x02_00_00_00, 'OR', 0x02_00_00_00,
@@ -79,14 +19,9 @@ else {
     'XOR', 0x03_00_00_00, 
     '&', 0x04_00_00_00, 'AND', 0x04_00_00_00, 
     'SHR', 0x05_00_00_00, 
-    # Note : low bit of the operator bit should be set for add with 
-    # carry.
     '+', 0x06_00_00_00 
   );
 }
-
-# Table of register addresses
-
 if ($ncr7x0_family) {
   %registers = (
     'SCNTL0', 0, 'SCNTL1', 1, 'SDID', 2, 'SIEN', 3,
@@ -136,103 +71,52 @@ else {
     'SCRATCHB0', 92, 'SCRATCHB1', 93, 'SCRATCHB2', 94, 'SCRATCHB3', 95
   );
 }
-
-# Parsing regular expressions
 $identifier = '[A-Za-z_][A-Za-z_0-9]*';		
 $decnum = '-?\\d+';
 $hexnum = '0[xX][0-9A-Fa-f]+';		
 $constant = "$hexnum|$decnum";
-
-# yucky - since we can't control grouping of # $constant, we need to 
-# expand out each alternative for $value.
-
 $value = "$identifier|$identifier\\s*[+\-]\\s*$decnum|".
     "$identifier\\s*[+-]\s*$hexnum|$constant";
-
 print STDERR "value regex = $value\n" if ($debug);
-
 $phase = join ('|', keys %scsi_phases);
 print STDERR "phase regex = $phase\n" if ($debug);
 $register = join ('|', keys %registers);
-
-# yucky - since %operators includes meta-characters which must
-# be escaped, I can't use the join() trick I used for the register
-# regex
-
 if ($ncr7x0_family) {
   $operator = '\||OR|AND|\&|\+';
 }
 else {
   $operator = '\||OR|AND|XOR|\&|\+';
 }
-
-# Global variables
-
-%symbol_values = (%registers) ;		# Traditional symbol table
-
-%symbol_references = () ;		# Table of symbol references, where
-					# the index is the symbol name, 
-					# and the contents a white space 
-					# delimited list of address,size
-					# tuples where size is in bytes.
-
-@code = ();				# Array of 32 bit words for SIOP 
-
-@entry = ();				# Array of entry point names
-
-@label = ();				# Array of label names
-
-@absolute = ();				# Array of absolute names
-
-@relative = ();				# Array of relative names
-
-@external = ();				# Array of external names
-
-$address = 0;				# Address of current instruction
-
-$lineno = 0;				# Line number we are parsing
-
-$output = 'script.h';			# Output file
+%symbol_values = (%registers) ;		
+%symbol_references = () ;		
+@code = ();				
+@entry = ();				
+@label = ();				
+@absolute = ();				
+@relative = ();				
+@external = ();				
+$address = 0;				
+$lineno = 0;				
+$output = 'script.h';			
 $outputu = 'scriptu.h';
-
-# &patch ($address, $offset, $length, $value) patches $code[$address]
-# 	so that the $length bytes at $offset have $value added to
-# 	them.  
-
 @inverted_masks = (0x00_00_00_00, 0x00_00_00_ff, 0x00_00_ff_ff, 0x00_ff_ff_ff, 
     0xff_ff_ff_ff);
-
 sub patch {
     local ($address, $offset, $length, $value) = @_;
     if ($debug) {
 	print STDERR "Patching $address at offset $offset, length $length to $value\n";
 	printf STDERR "Old code : %08x\n", $code[$address];
      }
-
     $mask = ($inverted_masks[$length] << ($offset * 8));
-   
     $code[$address] = ($code[$address] & ~$mask) | 
 	(($code[$address] & $mask) + ($value << ($offset * 8)) & 
 	$mask);
-    
     printf STDERR "New code : %08x\n", $code[$address] if ($debug);
 }
-
-# &parse_value($value, $word, $offset, $length) where $value is 
-# 	an identifier or constant, $word is the word offset relative to 
-#	$address, $offset is the starting byte within that word, and 
-#	$length is the length of the field in bytes.
-#
-# Side effects are that the bytes are combined into the @code array
-#	relative to $address, and that the %symbol_references table is 
-# 	updated as appropriate.
-
 sub parse_value {
     local ($value, $word, $offset, $length) = @_;
     local ($tmp);
-
     $symbol = '';
-
     if ($value =~ /^REL\s*\(\s*($identifier)\s*\)\s*(.*)/i) {
 	$relative = 'REL';
 	$symbol = $1;
@@ -244,7 +128,6 @@ print STDERR "Relative reference $symbol\n" if ($debug);
 	$value = $2;
 print STDERR "Absolute reference $symbol\n" if ($debug);
     } 
-
     if ($symbol ne '') {
 print STDERR "Referencing symbol $1, length = $length in $_\n" if ($debug);
      	$tmp = ($address + $word) * 4 + $offset;
@@ -259,14 +142,9 @@ print STDERR "forward $1\n" if ($debug_external);
 	    $symbol_references{$symbol} = "$relative,$tmp,$length";
 	}
     } 
-
     $value = eval $value;
     &patch ($address + $word, $offset, $length, $value);
 }
-
-# &parse_conditional ($conditional) where $conditional is the conditional
-# clause from a transfer control instruction (RETURN, CALL, JUMP, INT).
-
 sub parse_conditional {
     local ($conditional) = @_;
     if ($conditional =~ /^\s*(IF|WHEN)\s*(.*)/i) {
@@ -286,7 +164,6 @@ sub parse_conditional {
 	expected IF or WHEN
 ";
     }
-
     if ($conditional =~ /^NOT\s+(.*)$/i) {
 	$not = 'NOT ';
 	$other = 'OR';
@@ -297,9 +174,8 @@ sub parse_conditional {
 	$not = '';
 	$other = 'AND'
     }
-
     $need_data = 0;
-    if ($conditional =~ /^ATN\s*(.*)/i) {#
+    if ($conditional =~ /^ATN\s*(.*)/i) {
 	die "$0 : syntax error in line $lineno : $_
 	WHEN conditional is incompatible with ATN 
 " if (!$allow_atn);
@@ -316,7 +192,6 @@ sub parse_conditional {
 	$other = '';
 	$need_data = 1;
     }
-
 print STDERR "Parsing conjunction, expecting $other\n" if ($debug);
     if ($conditional =~ /^(AND|OR)\s*(.*)/i) {
 	$conjunction = $1;
@@ -334,7 +209,6 @@ print STDERR "Parsing conjunction, expecting $other\n" if ($debug);
 " if ($conjunction !~ /\s*$other\s*/i);
 	print STDERR "$0 : parsed $1\n" if ($debug);
     }
-
     if ($need_data) {
 print STDERR "looking for data in $conditional\n" if ($debug);
 	if ($conditional=~ /^($value)\s*(.*)/i) {
@@ -348,7 +222,6 @@ print STDERR "looking for data in $conditional\n" if ($debug);
 ";
 	}
     }
-
     if ($conditional =~ /^\s*,\s*(.*)/) {
 	$conditional = $1;
 	if ($conditional =~ /^AND\s\s*MASK\s\s*($value)\s*(.*)/i) {
@@ -369,35 +242,23 @@ print STDERR "looking for data in $conditional\n" if ($debug);
 ";
     }
 }
-
-# Parse command line
 $output = shift;
 $outputu = shift;
-
-    
-# Main loop
 while (<STDIN>) {
     $lineno = $lineno + 1;
     $list[$address] = $list[$address].$_;
-    s/;.*$//;				# Strip comments
-
-
-    chop;				# Leave new line out of error messages
-
-# Handle symbol definitions of the form label:
+    s/;.*$//;				
+    chop;				
     if (/^\s*($identifier)\s*:(.*)/) {
 	if (!defined($symbol_values{$1})) {
-	    $symbol_values{$1} = $address * 4;	# Address is an index into
-	    delete $forward{$1};		# an array of longs
+	    $symbol_values{$1} = $address * 4;	
+	    delete $forward{$1};		
 	    push (@label, $1);
 	    $_ = $2;
 	} else {
 	    die "$0 : redefinition of symbol $1 in line $lineno : $_\n";
 	}
     }
-
-# Handle symbol definitions of the form ABSOLUTE or RELATIVE identifier = 
-# value
     if (/^\s*(ABSOLUTE|RELATIVE)\s+(.*)/i) {
 	$is_absolute = $1;
 	$rest = $2;
@@ -441,7 +302,6 @@ print STDERR "defined external $1 to $external\n" if ($debug_external);
 ";
 	    }
 	}
-# Process ENTRY identifier declarations
     } elsif (/^\s*ENTRY\s+(.*)/i) {
 	if ($1 =~ /^($identifier)\s*$/) {
 	    push (@entry, $1);
@@ -451,7 +311,6 @@ print STDERR "defined external $1 to $external\n" if ($debug_external);
 	expected ENTRY <identifier>
 ";
 	}
-# Process MOVE length, address, WITH|WHEN phase instruction
     } elsif (/^\s*MOVE\s+(.*)/i) {
 	$rest = $1;
 	if ($rest =~ /^FROM\s+($value)\s*,\s*(WITH|WHEN)\s+($phase)\s*$/i) {
@@ -490,7 +349,6 @@ printf STDERR "Move memory instruction = %08x,%08x,%08x\n",
 		$code[$address], $code[$address+1], $code[$address +2] if
 		($debug);
 		$address += 3;
-	
 	    } else {
 		die 
 "$0 : syntax error in line $lineno : $_
@@ -502,14 +360,9 @@ print STDERR "Parsing register to register move\n" if ($debug);
 	    $src = $1;
 	    $op = "\U$2\E";
 	    $rest = $3;
-
 	    $code[$address] = 0x40_00_00_00;
-	
 	    $force = ($op !~ /TO/i); 
-
-
 print STDERR "Forcing register source \n" if ($force && $debug);
-
 	    if (!$force && $src =~ 
 		/^($register)\s+(-|$operator)\s+($value)\s*$/i) {
 print STDERR "register operand  data8 source\n" if ($debug);
@@ -523,8 +376,6 @@ print STDERR "register operand  data8 source\n" if ($debug);
 	    } elsif ($src =~ /^($register)\s*$/i) {
 print STDERR "register source\n" if ($debug);
 		$src_reg = "\U$1\E";
-		# Encode register to register move as a register | 0 
-		# move to register.
 		if (!$force) {
 		    $op = '|';
 		}
@@ -558,7 +409,6 @@ print STDERR "data8 source\n" if ($debug);
 	expected <register>, got $rest
 ";
 	    }
-
 	    if ($rest =~ /^WITH\s+CARRY\s*(.*)/i) {
 		$rest = $1;
 		if ($op eq '+') {
@@ -570,18 +420,14 @@ print STDERR "data8 source\n" if ($debug);
 ";
 		}
 	    }
-
 	    if ($rest !~ /^\s*$/) {
 		die
 "$0 : syntax error in $lineno : $_
 	Expected end of line, got $rest
 ";
 	    }
-
 	    print STDERR "source = $src_reg, data = $data8 , destination = $dst_reg\n"
 		if ($debug);
-	    # Note that Move data8 to reg is encoded as a read-modify-write
-	    # instruction.
 	    if (($src_reg eq undef) || ($src_reg eq $dst_reg)) {
 		$code[$address] |= 0x38_00_00_00 | 
 		    ($registers{$dst_reg} << 16);
@@ -598,12 +444,10 @@ print STDERR "data8 source\n" if ($debug);
 	or either source or destination register must be SFBR.
 ";
 	    }
-
 	    $code[$address] |= $operators{$op};
-	    
 	    &parse_value ($data8, 0, 1, 1);
 	    $code[$address] |= $operators{$op};
-	    $code[$address + 1] = 0x00_00_00_00;# Reserved
+	    $code[$address + 1] = 0x00_00_00_00;
 	    $address += 2;
 	} else {
 	    die 
@@ -614,7 +458,6 @@ print STDERR "data8 source\n" if ($debug);
 		 <expression> TO <register>
 ";
 	}
-# Process SELECT {ATN|} id, fail_address
     } elsif (/^\s*(SELECT|RESELECT)\s+(.*)/i) {
 	$rest = $2;
 	if ($rest =~ /^(ATN|)\s*($value)\s*,\s*($identifier)\s*$/i) {
@@ -666,8 +509,6 @@ print STDERR "Parsing WAIT $rest\n" if ($debug);
 		 (target) WAIT SELECT alternate_address
 ";
 	}
-# Handle SET and CLEAR instructions.  Note that we should also do something
-# with this syntax to set target mode.
     } elsif (/^\s*(SET|CLEAR)\s+(.*)/i) {
 	$set = $1;
 	$list = $2;
@@ -703,15 +544,12 @@ print STDERR "Parsing WAIT $rest\n" if ($debug);
 	    $code[$address] = 0x98_00_00_00;
 	}
 print STDERR "parsing JUMP, rest = $rest\n" if ($debug);
-
-# Relative jump. 
 	if ($rest =~ /^(REL\s*\(\s*$identifier\s*\))\s*(.*)/i) { 
 	    $addr = $1;
 	    $rest = $2;
 print STDERR "parsing JUMP REL, addr = $addr, rest = $rest\n" if ($debug);
 	    $code[$address]  |= 0x00_80_00_00;
 	    &parse_value($addr, 1, 0, 4);
-# Absolute jump, requires no more gunk
 	} elsif ($rest =~ /^($value)\s*(.*)/) {
 	    $addr = $1;
 	    $rest = $2;
@@ -722,7 +560,6 @@ print STDERR "parsing JUMP REL, addr = $addr, rest = $rest\n" if ($debug);
 	expected <address> or REL (address)
 ";
 	}
-
 	if ($rest =~ /^,\s*(.*)/) {
 	    &parse_conditional($1);
 	} elsif ($rest =~ /^\s*$/) {
@@ -733,7 +570,6 @@ print STDERR "parsing JUMP REL, addr = $addr, rest = $rest\n" if ($debug);
 	expected , <conditional> or end of line, got $1
 ";
 	}
-	
 	$address += 2;
     } elsif (/^\s*(RETURN|INTFLY)\s*(.*)/i) {
 	$instruction = $1;
@@ -752,20 +588,16 @@ print STDERR "Parsing $instruction\n" if ($debug);
 	} else {
 	    $code[$address] |= 0x00_08_00_00;
 	}
-	   
 	$code[$address + 1] = 0x00_00_00_00;
 	$address += 2;
     } elsif (/^\s*DISCONNECT\s*$/) {
 	$code[$address] = 0x48_00_00_00;
 	$code[$address + 1] = 0x00_00_00_00;
 	$address += 2;
-# I'm not sure that I should be including this extension, but 
-# what the hell?
     } elsif (/^\s*NOP\s*$/i) {
 	$code[$address] = 0x80_88_00_00;
 	$code[$address + 1] = 0x00_00_00_00;
 	$address += 2;
-# Ignore lines consisting entirely of white space
     } elsif (/^\s*$/) {
     } else {
 	die 
@@ -775,24 +607,17 @@ print STDERR "Parsing $instruction\n" if ($debug);
 ";
     }
 }
-
-# Fill in label references
-
 @undefined = keys %forward;
-if ($#undefined >= 0) {
+if ($
     print STDERR "Undefined symbols : \n";
     foreach $undef (@undefined) {
 	print STDERR "$undef in $forward{$undef}\n";
     }
     exit 1;
 }
-
 @label_patches = ();
-
 @external_patches = ();
-
 @absolute = sort @absolute;
-
 foreach $i (@absolute) {
     foreach $j (split (/\s+/,$symbol_references{$i})) {
 	$j =~ /(REL|ABS),(.*),(.*)/;
@@ -803,11 +628,9 @@ foreach $i (@absolute) {
 "$0 : $symbol $i has invalid relative reference at address $address,
     size $length\n"
 	if ($type eq 'REL');
-	    
 	&patch ($address / 4, $address % 4, $length, $symbol_values{$i});
     }
 }
-
 foreach $external (@external) {
 print STDERR "checking external $external \n" if ($debug_external);
     if ($symbol_references{$external} ne undef) {
@@ -816,16 +639,13 @@ print STDERR "checking external $external \n" if ($debug_external);
 	    $type = $1;
 	    $address = $2;
 	    $length = $3;
-	    
 	    die 
 "$0 : symbol $label is external, has invalid relative reference at $address,
     size $length\n"
 		if ($type eq 'REL');
-
 	    die 
 "$0 : symbol $label has invalid reference at $address, size $length\n"
 		if ((($address % 4) !=0) || ($length != 4));
-
 	    $symbol = $symbol_values{$external};
 	    $add = $code[$address / 4];
 	    if ($add eq 0) {
@@ -834,12 +654,10 @@ print STDERR "checking external $external \n" if ($debug_external);
 		$add = sprintf ("0x%08x", $add);
 		$code[$address / 4] = "$symbol + $add";
 	    }
-		
 print STDERR "referenced external $external at $1\n" if ($debug_external);
 	}
     }
 }
-
 foreach $label (@label) {
     if ($symbol_references{$label} ne undef) {
 	for $reference (split(/\s+/,$symbol_references{$label})) {
@@ -847,27 +665,16 @@ foreach $label (@label) {
 	    $type = $1;
 	    $address = $2;
 	    $length = $3;
-
 	    if ((($address % 4) !=0) || ($length != 4)) {
 		die "$0 : symbol $label has invalid reference at $1, size $2\n";
 	    }
-
 	    if ($type eq 'ABS') {
 		$code[$address / 4] += $symbol_values{$label};
 		push (@label_patches, $address / 4);
 	    } else {
-# 
-# - The address of the reference should be in the second and last word
-#	of an instruction
-# - Relative jumps, etc. are relative to the DSP of the _next_ instruction
-#
-# So, we need to add four to the address of the reference, to get 
-# the address of the next instruction, when computing the reference.
-  
 		$tmp = $symbol_values{$label} - 
 		    ($address + 4);
 		die 
-# Relative addressing is limited to 24 bits.
 "$0 : symbol $label is too far ($tmp) from $address to reference as 
     relative/\n" if (($tmp >= 0x80_00_00) || ($tmp < -0x80_00_00));
 		$code[$address / 4] = $tmp & 0x00_ff_ff_ff;
@@ -875,18 +682,13 @@ foreach $label (@label) {
 	}
     }
 }
-
-# Output SCRIPT[] array, one instruction per line.  Optionally 
-# print the original code too.
-
 open (OUTPUT, ">$output") || die "$0 : can't open $output for writing\n";
 open (OUTPUTU, ">$outputu") || die "$0 : can't open $outputu for writing\n";
-
 ($_ = $0) =~ s:.*/::;
 print OUTPUT "/* DO NOT EDIT - Generated automatically by ".$_." */\n";
 print OUTPUT "static u32 ".$prefix."SCRIPT[] = {\n";
 $instructions = 0;
-for ($i = 0; $i < $#code; ) {
+for ($i = 0; $i < $
     if ($list_in_array) {
 	printf OUTPUT "/*\n$list[$i]\nat 0x%08x : */", $i;
     }
@@ -898,7 +700,6 @@ for ($i = 0; $i < $#code; ) {
     } else {
 	printf OUTPUT "0x%08x,",$code[$i+1];
     }
-
     if (($code[$i] & 0xff_00_00_00) == 0xc0_00_00_00) {
 	if ($code[$i + 2] =~ /$identifier/) {
 	    push (@external_patches, $i+2, $code[$i+2]);
@@ -914,7 +715,6 @@ for ($i = 0; $i < $#code; ) {
     $instructions += 1;
 }
 print OUTPUT "};\n\n";
-
 foreach $i (@absolute) {
     printf OUTPUT "#define A_$i\t0x%08x\n", $symbol_values{$i};
     if (defined($prefix) && $prefix ne '') {
@@ -922,7 +722,6 @@ foreach $i (@absolute) {
 	printf OUTPUTU "#undef A_".$i."_used\n";
     }
     printf OUTPUTU "#undef A_$i\n";
-
     printf OUTPUT "static u32 A_".$i."_used\[\] __attribute((unused)) = {\n";
 printf STDERR "$i is used $symbol_references{$i}\n" if ($debug);
     foreach $j (split (/\s+/,$symbol_references{$i})) {
@@ -935,22 +734,15 @@ printf STDERR "$i is used $symbol_references{$i}\n" if ($debug);
     }
     printf OUTPUT "};\n\n";
 }
-
 foreach $i (sort @entry) {
     printf OUTPUT "#define Ent_$i\t0x%08x\n", $symbol_values{$i};
     printf OUTPUTU "#undef Ent_$i\n", $symbol_values{$i};
 }
-
-#
-# NCR assembler outputs label patches in the form of indices into 
-# the code.
-#
 printf OUTPUT "static u32 ".$prefix."LABELPATCHES[] __attribute((unused)) = {\n";
 for $patch (sort {$a <=> $b} @label_patches) {
     printf OUTPUT "\t0x%08x,\n", $patch;
 }
 printf OUTPUT "};\n\n";
-
 $num_external_patches = 0;
 printf OUTPUT "static struct {\n\tu32\toffset;\n\tvoid\t\t*address;\n".
     "} ".$prefix."EXTERNAL_PATCHES[] __attribute((unused)) = {\n";
@@ -960,11 +752,10 @@ while ($ident = pop(@external_patches)) {
     ++$num_external_patches;
 }
 printf OUTPUT "};\n\n";
-
 printf OUTPUT "static u32 ".$prefix."INSTRUCTIONS __attribute((unused))\t= %d;\n", 
     $instructions;
 printf OUTPUT "static u32 ".$prefix."PATCHES __attribute((unused))\t= %d;\n", 
-    $#label_patches+1;
+    $
 printf OUTPUT "static u32 ".$prefix."EXTERNAL_PATCHES_LEN __attribute((unused))\t= %d;\n",
     $num_external_patches;
 close OUTPUT;

@@ -1,14 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019, Mellanox Technologies. All rights reserved.
- */
-
 #ifndef __MLXBF_TMFIFO_REGS_H__
 #define __MLXBF_TMFIFO_REGS_H__
-
 #include <linux/types.h>
 #include <linux/bits.h>
-
 #define MLXBF_TMFIFO_TX_DATA				0x00
 #define MLXBF_TMFIFO_TX_STS				0x08
 #define MLXBF_TMFIFO_TX_STS__LENGTH			0x0001
@@ -59,15 +52,10 @@
 #define MLXBF_TMFIFO_RX_CTL__MAX_ENTRIES_RESET_VAL	256
 #define MLXBF_TMFIFO_RX_CTL__MAX_ENTRIES_RMASK		GENMASK_ULL(8, 0)
 #define MLXBF_TMFIFO_RX_CTL__MAX_ENTRIES_MASK		GENMASK_ULL(40, 32)
-
-/* BF3 register offsets within resource 0. */
 #define MLXBF_TMFIFO_RX_DATA_BF3	0x0000
 #define MLXBF_TMFIFO_TX_DATA_BF3	0x1000
-
-/* BF3 register offsets within resource 1. */
 #define MLXBF_TMFIFO_RX_STS_BF3		0x0000
 #define MLXBF_TMFIFO_RX_CTL_BF3		0x0008
 #define MLXBF_TMFIFO_TX_STS_BF3		0x0100
 #define MLXBF_TMFIFO_TX_CTL_BF3		0x0108
-
-#endif /* !defined(__MLXBF_TMFIFO_REGS_H__) */
+#endif  

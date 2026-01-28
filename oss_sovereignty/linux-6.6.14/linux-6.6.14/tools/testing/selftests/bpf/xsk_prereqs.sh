@@ -1,15 +1,9 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-# Copyright(c) 2020 Intel Corporation.
-
 ksft_pass=0
 ksft_fail=1
 ksft_xfail=2
 ksft_xpass=3
 ksft_skip=4
-
 XSKOBJ=xskxceiver
-
 validate_root_exec()
 {
 	msg="skip all tests:"
@@ -20,7 +14,6 @@ validate_root_exec()
 		return $ksft_pass
 	fi
 }
-
 validate_veth_support()
 {
 	msg="skip all tests:"
@@ -32,7 +25,6 @@ validate_veth_support()
 		return $ksft_pass
 	fi
 }
-
 test_status()
 {
 	statusval=$1
@@ -44,7 +36,6 @@ test_status()
 		echo "$2: [ PASS ]"
 	fi
 }
-
 test_exit()
 {
 	if [ $1 -ne 0 ]; then
@@ -52,38 +43,31 @@ test_exit()
 	fi
 	exit 1
 }
-
 cleanup_iface()
 {
 	ip link set $1 mtu $2
 	ip link set $1 xdp off
 	ip link set $1 xdpgeneric off
 }
-
 clear_configs()
 {
 	[ $(ip link show $1 &>/dev/null; echo $?;) == 0 ] &&
 		{ ip link del $1; }
 }
-
 cleanup_exit()
 {
 	clear_configs $1 $2
 }
-
 validate_ip_utility()
 {
 	[ ! $(type -P ip) ] && { echo "'ip' not found. Skipping tests."; test_exit $ksft_skip; }
 }
-
 exec_xskxceiver()
 {
         if [[ $busy_poll -eq 1 ]]; then
 	        ARGS+="-b "
 	fi
-
 	./${XSKOBJ} -i ${VETH0} -i ${VETH1} ${ARGS}
-
 	retval=$?
 	test_status $retval "${TEST_NAME}"
 	statusList+=($retval)

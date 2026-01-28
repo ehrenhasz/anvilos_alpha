@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2015 Cavium, Inc.
- */
-
 #ifndef NIC_REG_H
 #define NIC_REG_H
-
 #define   NIC_PF_REG_COUNT			29573
 #define   NIC_VF_REG_COUNT			249
-
-/* Physical function register offsets */
 #define   NIC_PF_CFG				(0x0000)
 #define   NIC_PF_STATUS				(0x0010)
 #define   NIC_PF_INTR_TIMER_CFG			(0x0030)
@@ -143,25 +135,20 @@
 #define   NIC_PF_QSET_0_127_SQ_0_7_CFG		(0x20010C00)
 #define   NIC_PF_QSET_0_127_SQ_0_7_CFG2		(0x20010C08)
 #define   NIC_PF_QSET_0_127_SQ_0_7_STAT_0_1	(0x20010D00)
-
 #define   NIC_PF_MSIX_VEC_0_18_ADDR		(0x000000)
 #define   NIC_PF_MSIX_VEC_0_CTL			(0x000008)
 #define   NIC_PF_MSIX_PBA_0			(0x0F0000)
-
-/* Virtual function register offsets */
 #define   NIC_VNIC_CFG				(0x000020)
 #define   NIC_VF_PF_MAILBOX_0_1			(0x000130)
 #define   NIC_VF_INT				(0x000200)
 #define   NIC_VF_INT_W1S			(0x000220)
 #define   NIC_VF_ENA_W1C			(0x000240)
 #define   NIC_VF_ENA_W1S			(0x000260)
-
 #define   NIC_VNIC_RSS_CFG			(0x0020E0)
 #define   NIC_VNIC_RSS_KEY_0_4			(0x002200)
 #define   NIC_VNIC_TX_STAT_0_4			(0x004000)
 #define   NIC_VNIC_RX_STAT_0_13			(0x004100)
 #define   NIC_QSET_RQ_GEN_CFG			(0x010010)
-
 #define   NIC_QSET_CQ_0_7_CFG			(0x010400)
 #define   NIC_QSET_CQ_0_7_CFG2			(0x010408)
 #define   NIC_QSET_CQ_0_7_THRESH		(0x010410)
@@ -172,10 +159,8 @@
 #define   NIC_QSET_CQ_0_7_STATUS		(0x010440)
 #define   NIC_QSET_CQ_0_7_STATUS2		(0x010448)
 #define   NIC_QSET_CQ_0_7_DEBUG			(0x010450)
-
 #define   NIC_QSET_RQ_0_7_CFG			(0x010600)
 #define   NIC_QSET_RQ_0_7_STAT_0_1		(0x010700)
-
 #define   NIC_QSET_SQ_0_7_CFG			(0x010800)
 #define   NIC_QSET_SQ_0_7_THRESH		(0x010810)
 #define   NIC_QSET_SQ_0_7_BASE			(0x010820)
@@ -185,7 +170,6 @@
 #define   NIC_QSET_SQ_0_7_STATUS		(0x010840)
 #define   NIC_QSET_SQ_0_7_DEBUG			(0x010848)
 #define   NIC_QSET_SQ_0_7_STAT_0_1		(0x010900)
-
 #define   NIC_QSET_RBDR_0_1_CFG			(0x010C00)
 #define   NIC_QSET_RBDR_0_1_THRESH		(0x010C10)
 #define   NIC_QSET_RBDR_0_1_BASE		(0x010C20)
@@ -195,27 +179,22 @@
 #define   NIC_QSET_RBDR_0_1_STATUS0		(0x010C40)
 #define   NIC_QSET_RBDR_0_1_STATUS1		(0x010C48)
 #define   NIC_QSET_RBDR_0_1_PREFETCH_STATUS	(0x010C50)
-
 #define   NIC_VF_MSIX_VECTOR_0_19_ADDR		(0x000000)
 #define   NIC_VF_MSIX_VECTOR_0_19_CTL		(0x000008)
 #define   NIC_VF_MSIX_PBA			(0x0F0000)
-
-/* Offsets within registers */
 #define   NIC_MSIX_VEC_SHIFT			4
 #define   NIC_Q_NUM_SHIFT			18
 #define   NIC_QS_ID_SHIFT			21
 #define   NIC_VF_NUM_SHIFT			21
-
-/* Port kind configuration register */
 struct pkind_cfg {
 #if defined(__BIG_ENDIAN_BITFIELD)
 	u64 reserved_42_63:22;
-	u64 hdr_sl:5;	/* Header skip length */
-	u64 rx_hdr:3;	/* TNS Receive header present */
-	u64 lenerr_en:1;/* L2 length error check enable */
+	u64 hdr_sl:5;	 
+	u64 rx_hdr:3;	 
+	u64 lenerr_en:1; 
 	u64 reserved_32_32:1;
-	u64 maxlen:16;	/* Max frame size */
-	u64 minlen:16;	/* Min frame size */
+	u64 maxlen:16;	 
+	u64 minlen:16;	 
 #elif defined(__LITTLE_ENDIAN_BITFIELD)
 	u64 minlen:16;
 	u64 maxlen:16;
@@ -226,5 +205,4 @@ struct pkind_cfg {
 	u64 reserved_42_63:22;
 #endif
 };
-
-#endif /* NIC_REG_H */
+#endif  

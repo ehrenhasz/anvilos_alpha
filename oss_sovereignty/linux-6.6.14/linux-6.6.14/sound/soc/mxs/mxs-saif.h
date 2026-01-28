@@ -1,18 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2011 Freescale Semiconductor, Inc. All Rights Reserved.
- */
-
-
 #ifndef _MXS_SAIF_H
 #define _MXS_SAIF_H
-
 #define SAIF_CTRL	0x0
 #define SAIF_STAT	0x10
 #define SAIF_DATA	0x20
 #define SAIF_VERSION	0X30
-
-/* SAIF_CTRL */
 #define BM_SAIF_CTRL_SFTRST		0x80000000
 #define BM_SAIF_CTRL_CLKGATE		0x40000000
 #define BP_SAIF_CTRL_BITCLK_MULT_RATE	27
@@ -24,7 +15,6 @@
 #define BM_SAIF_CTRL_FIFO_SERVICE_IRQ_EN	0x01000000
 #define BP_SAIF_CTRL_RSRVD2		21
 #define BM_SAIF_CTRL_RSRVD2		0x00E00000
-
 #define BP_SAIF_CTRL_DMAWAIT_COUNT	16
 #define BM_SAIF_CTRL_DMAWAIT_COUNT	0x001F0000
 #define BF_SAIF_CTRL_DMAWAIT_COUNT(v) \
@@ -47,8 +37,6 @@
 #define BM_SAIF_CTRL_SLAVE_MODE		0x00000004
 #define BM_SAIF_CTRL_READ_MODE		0x00000002
 #define BM_SAIF_CTRL_RUN		0x00000001
-
-/* SAIF_STAT */
 #define BM_SAIF_STAT_PRESENT		0x80000000
 #define BP_SAIF_STAT_RSRVD2		17
 #define BM_SAIF_STAT_RSRVD2		0x7FFE0000
@@ -59,7 +47,6 @@
 #define BM_SAIF_STAT_RSRVD1		0x0000FF80
 #define BF_SAIF_STAT_RSRVD1(v) \
 		(((v) << 7) & BM_SAIF_STAT_RSRVD1)
-
 #define BM_SAIF_STAT_FIFO_UNDERFLOW_IRQ 0x00000040
 #define BM_SAIF_STAT_FIFO_OVERFLOW_IRQ	0x00000020
 #define BM_SAIF_STAT_FIFO_SERVICE_IRQ	0x00000010
@@ -68,8 +55,6 @@
 #define BF_SAIF_STAT_RSRVD0(v) \
 		(((v) << 1) & BM_SAIF_STAT_RSRVD0)
 #define BM_SAIF_STAT_BUSY		0x00000001
-
-/* SAFI_DATA */
 #define BP_SAIF_DATA_PCM_RIGHT		16
 #define BM_SAIF_DATA_PCM_RIGHT		0xFFFF0000
 #define BF_SAIF_DATA_PCM_RIGHT(v) \
@@ -78,8 +63,6 @@
 #define BM_SAIF_DATA_PCM_LEFT		0x0000FFFF
 #define BF_SAIF_DATA_PCM_LEFT(v)	\
 		(((v) << 0) & BM_SAIF_DATA_PCM_LEFT)
-
-/* SAIF_VERSION */
 #define BP_SAIF_VERSION_MAJOR		24
 #define BM_SAIF_VERSION_MAJOR		0xFF000000
 #define BF_SAIF_VERSION_MAJOR(v) \
@@ -92,11 +75,8 @@
 #define BM_SAIF_VERSION_STEP		0x0000FFFF
 #define BF_SAIF_VERSION_STEP(v) \
 		(((v) << 0) & BM_SAIF_VERSION_STEP)
-
 #define MXS_SAIF_MCLK		0
-
 #include "mxs-pcm.h"
-
 struct mxs_saif {
 	struct device *dev;
 	struct clk *clk;
@@ -107,16 +87,13 @@ struct mxs_saif {
 	unsigned int master_id;
 	unsigned int cur_rate;
 	unsigned int ongoing;
-
 	u32 fifo_underrun;
 	u32 fifo_overrun;
-
 	enum {
 		MXS_SAIF_STATE_STOPPED,
 		MXS_SAIF_STATE_RUNNING,
 	} state;
 };
-
 extern int mxs_saif_put_mclk(unsigned int saif_id);
 extern int mxs_saif_get_mclk(unsigned int saif_id, unsigned int mclk,
 					unsigned int rate);

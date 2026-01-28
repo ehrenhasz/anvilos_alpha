@@ -1,9 +1,7 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_BIOS_PRIV_H__
 #define __NVKM_BIOS_PRIV_H__
 #define nvkm_bios(p) container_of((p), struct nvkm_bios, subdev)
 #include <subdev/bios.h>
-
 struct nvbios_source {
 	const char *name;
 	void *(*init)(struct nvkm_bios *, const char *);
@@ -15,10 +13,8 @@ struct nvbios_source {
 	bool no_pcir;
 	bool require_checksum;
 };
-
 int nvbios_extend(struct nvkm_bios *, u32 length);
 int nvbios_shadow(struct nvkm_bios *);
-
 extern const struct nvbios_source nvbios_prom;
 extern const struct nvbios_source nvbios_ramin;
 extern const struct nvbios_source nvbios_acpi_fast;

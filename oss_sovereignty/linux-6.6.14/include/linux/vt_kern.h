@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _VT_KERN_H
 #define _VT_KERN_H
-
-/*
- * this really is an extension of the vc_cons structure in console.c, but
- * with information needed by the vt package
- */
-
 #include <linux/vt.h>
 #include <linux/kd.h>
 #include <linux/tty.h>
@@ -15,14 +8,9 @@
 #include <linux/mm.h>
 #include <linux/consolemap.h>
 #include <linux/notifier.h>
-
 void kd_mksound(unsigned int hz, unsigned int ticks);
 int kbd_rate(struct kbd_repeat *rep);
-
 extern int fg_console, last_console, want_console;
-
-/* console.c */
-
 int vc_allocate(unsigned int console);
 int vc_cons_allocated(unsigned int console);
 int vc_resize(struct vc_data *vc, unsigned int cols, unsigned int lines);
@@ -41,15 +29,10 @@ void update_region(struct vc_data *vc, unsigned long start, int count);
 void redraw_screen(struct vc_data *vc, int is_switch);
 #define update_screen(x) redraw_screen(x, 0)
 #define switch_screen(x) redraw_screen(x, 1)
-
 struct tty_struct;
 int tioclinux(struct tty_struct *tty, unsigned long arg);
-
 #ifdef CONFIG_CONSOLE_TRANSLATIONS
-/* consolemap.c */
-
 struct unipair;
-
 int con_set_trans_old(unsigned char __user * table);
 int con_get_trans_old(unsigned char __user * table);
 int con_set_trans_new(unsigned short __user * table);
@@ -60,7 +43,6 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct, struct uni
 int con_set_default_unimap(struct vc_data *vc);
 void con_free_unimap(struct vc_data *vc);
 int con_copy_unimap(struct vc_data *dst_vc, struct vc_data *src_vc);
-
 #else
 static inline int con_set_trans_old(unsigned char __user *table)
 {
@@ -108,10 +90,7 @@ int con_copy_unimap(struct vc_data *dst_vc, struct vc_data *src_vc)
 {
 	return 0;
 }
-
 #endif
-
-/* vt.c */
 void vt_event_post(unsigned int event, unsigned int old, unsigned int new);
 int vt_waitactive(int n);
 void change_console(struct vc_data *new_vc);
@@ -119,33 +98,23 @@ void reset_vc(struct vc_data *vc);
 int do_unbind_con_driver(const struct consw *csw, int first, int last,
 			 int deflt);
 int vty_init(const struct file_operations *console_fops);
-
 extern bool vt_dont_switch;
 extern int default_utf8;
 extern int global_cursor_default;
-
 struct vt_spawn_console {
 	spinlock_t lock;
 	struct pid *pid;
 	int sig;
 };
 extern struct vt_spawn_console vt_spawn_con;
-
 int vt_move_to_console(unsigned int vt, int alloc);
-
-/* Interfaces for VC notification of character events (for accessibility etc) */
-
 struct vt_notifier_param {
-	struct vc_data *vc;	/* VC on which the update happened */
-	unsigned int c;		/* Printed char */
+	struct vc_data *vc;	 
+	unsigned int c;		 
 };
-
 int register_vt_notifier(struct notifier_block *nb);
 int unregister_vt_notifier(struct notifier_block *nb);
-
 void hide_boot_cursor(bool hide);
-
-/* keyboard  provided interfaces */
 int vt_do_diacrit(unsigned int cmd, void __user *up, int eperm);
 int vt_do_kdskbmode(unsigned int console, unsigned int arg);
 int vt_do_kdskbmeta(unsigned int console, unsigned int arg);
@@ -167,8 +136,6 @@ void vt_clr_kbd_mode_bit(unsigned int console, int bit);
 void vt_set_led_state(unsigned int console, int leds);
 void vt_kbd_con_start(unsigned int console);
 void vt_kbd_con_stop(unsigned int console);
-
 void vc_scrolldelta_helper(struct vc_data *c, int lines,
 		unsigned int rolled_over, void *_base, unsigned int size);
-
-#endif /* _VT_KERN_H */
+#endif  

@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright(c) 2022 Intel Corporation */
 #ifndef _ICP_QAT_HW_20_COMP_H_
 #define _ICP_QAT_HW_20_COMP_H_
-
 #include "icp_qat_hw_20_comp_defs.h"
 #include "icp_qat_fw.h"
-
 struct icp_qat_hw_comp_20_config_csr_lower {
 	enum icp_qat_hw_comp_20_extended_delay_match_mode edmm;
 	enum icp_qat_hw_comp_20_hw_comp_format algo;
@@ -18,12 +14,10 @@ struct icp_qat_hw_comp_20_config_csr_lower {
 	enum icp_qat_hw_comp_20_skip_hash_update hash_update;
 	enum icp_qat_hw_comp_20_byte_skip skip_ctrl;
 };
-
 static inline __u32
 ICP_QAT_FW_COMP_20_BUILD_CONFIG_LOWER(struct icp_qat_hw_comp_20_config_csr_lower csr)
 {
 	u32 val32 = 0;
-
 	QAT_FIELD_SET(val32, csr.algo,
 		      ICP_QAT_HW_COMP_20_CONFIG_CSR_HW_COMP_FORMAT_BITPOS,
 		      ICP_QAT_HW_COMP_20_CONFIG_CSR_HW_COMP_FORMAT_MASK);
@@ -53,10 +47,8 @@ ICP_QAT_FW_COMP_20_BUILD_CONFIG_LOWER(struct icp_qat_hw_comp_20_config_csr_lower
 		      ICP_QAT_HW_COMP_20_CONFIG_CSR_BYTE_SKIP_MASK);
 	QAT_FIELD_SET(val32, csr.abd, ICP_QAT_HW_COMP_20_CONFIG_CSR_ABD_BITPOS,
 		      ICP_QAT_HW_COMP_20_CONFIG_CSR_ABD_MASK);
-
 	return __builtin_bswap32(val32);
 }
-
 struct icp_qat_hw_comp_20_config_csr_upper {
 	enum icp_qat_hw_comp_20_scb_control scb_ctrl;
 	enum icp_qat_hw_comp_20_rmb_control rmb_ctrl;
@@ -69,12 +61,10 @@ struct icp_qat_hw_comp_20_config_csr_upper {
 	__u16 lazy;
 	__u16 nice;
 };
-
 static inline __u32
 ICP_QAT_FW_COMP_20_BUILD_CONFIG_UPPER(struct icp_qat_hw_comp_20_config_csr_upper csr)
 {
 	u32 val32 = 0;
-
 	QAT_FIELD_SET(val32, csr.scb_ctrl,
 		      ICP_QAT_HW_COMP_20_CONFIG_CSR_SCB_CONTROL_BITPOS,
 		      ICP_QAT_HW_COMP_20_CONFIG_CSR_SCB_CONTROL_MASK);
@@ -105,10 +95,8 @@ ICP_QAT_FW_COMP_20_BUILD_CONFIG_UPPER(struct icp_qat_hw_comp_20_config_csr_upper
 	QAT_FIELD_SET(val32, csr.nice,
 		      ICP_QAT_HW_COMP_20_CONFIG_CSR_NICE_PARAM_BITPOS,
 		      ICP_QAT_HW_COMP_20_CONFIG_CSR_NICE_PARAM_MASK);
-
 	return __builtin_bswap32(val32);
 }
-
 struct icp_qat_hw_decomp_20_config_csr_lower {
 	enum icp_qat_hw_decomp_20_hbs_control hbs;
 	enum icp_qat_hw_decomp_20_lbms lbms;
@@ -116,12 +104,10 @@ struct icp_qat_hw_decomp_20_config_csr_lower {
 	enum icp_qat_hw_decomp_20_min_match_control mmctrl;
 	enum icp_qat_hw_decomp_20_lz4_block_checksum_present lbc;
 };
-
 static inline __u32
 ICP_QAT_FW_DECOMP_20_BUILD_CONFIG_LOWER(struct icp_qat_hw_decomp_20_config_csr_lower csr)
 {
 	u32 val32 = 0;
-
 	QAT_FIELD_SET(val32, csr.hbs,
 		      ICP_QAT_HW_DECOMP_20_CONFIG_CSR_HBS_CONTROL_BITPOS,
 		      ICP_QAT_HW_DECOMP_20_CONFIG_CSR_HBS_CONTROL_MASK);
@@ -137,28 +123,22 @@ ICP_QAT_FW_DECOMP_20_BUILD_CONFIG_LOWER(struct icp_qat_hw_decomp_20_config_csr_l
 	QAT_FIELD_SET(val32, csr.lbc,
 		      ICP_QAT_HW_DECOMP_20_CONFIG_CSR_LZ4_BLOCK_CHECKSUM_PRESENT_BITPOS,
 		      ICP_QAT_HW_DECOMP_20_CONFIG_CSR_LZ4_BLOCK_CHECKSUM_PRESENT_MASK);
-
 	return __builtin_bswap32(val32);
 }
-
 struct icp_qat_hw_decomp_20_config_csr_upper {
 	enum icp_qat_hw_decomp_20_speculative_decoder_control sdc;
 	enum icp_qat_hw_decomp_20_mini_cam_control mcc;
 };
-
 static inline __u32
 ICP_QAT_FW_DECOMP_20_BUILD_CONFIG_UPPER(struct icp_qat_hw_decomp_20_config_csr_upper csr)
 {
 	u32 val32 = 0;
-
 	QAT_FIELD_SET(val32, csr.sdc,
 		      ICP_QAT_HW_DECOMP_20_CONFIG_CSR_SPECULATIVE_DECODER_CONTROL_BITPOS,
 		      ICP_QAT_HW_DECOMP_20_CONFIG_CSR_SPECULATIVE_DECODER_CONTROL_MASK);
 	QAT_FIELD_SET(val32, csr.mcc,
 		      ICP_QAT_HW_DECOMP_20_CONFIG_CSR_MINI_CAM_CONTROL_BITPOS,
 		      ICP_QAT_HW_DECOMP_20_CONFIG_CSR_MINI_CAM_CONTROL_MASK);
-
 	return __builtin_bswap32(val32);
 }
-
 #endif

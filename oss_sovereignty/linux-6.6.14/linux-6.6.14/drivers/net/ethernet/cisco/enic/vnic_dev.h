@@ -1,49 +1,35 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
-
 #ifndef _VNIC_DEV_H_
 #define _VNIC_DEV_H_
-
 #include "vnic_resource.h"
 #include "vnic_devcmd.h"
-
 #ifndef VNIC_PADDR_TARGET
 #define VNIC_PADDR_TARGET	0x0000000000000000ULL
 #endif
-
 #ifndef readq
 static inline u64 readq(void __iomem *reg)
 {
 	return (((u64)readl(reg + 0x4UL) << 32) |
 		(u64)readl(reg));
 }
-
 static inline void writeq(u64 val, void __iomem *reg)
 {
 	writel(val & 0xffffffff, reg);
 	writel(val >> 32, reg + 0x4UL);
 }
 #endif
-
 #undef pr_fmt
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-
 enum vnic_dev_intr_mode {
 	VNIC_DEV_INTR_MODE_UNKNOWN,
 	VNIC_DEV_INTR_MODE_INTX,
 	VNIC_DEV_INTR_MODE_MSI,
 	VNIC_DEV_INTR_MODE_MSIX,
 };
-
 struct vnic_dev_bar {
 	void __iomem *vaddr;
 	dma_addr_t bus_addr;
 	unsigned long len;
 };
-
 struct vnic_dev_ring {
 	void *descs;
 	size_t size;
@@ -56,25 +42,21 @@ struct vnic_dev_ring {
 	unsigned int desc_count;
 	unsigned int desc_avail;
 };
-
 enum vnic_proxy_type {
 	PROXY_NONE,
 	PROXY_BY_BDF,
 	PROXY_BY_INDEX,
 };
-
 struct vnic_res {
 	void __iomem *vaddr;
 	dma_addr_t bus_addr;
 	unsigned int count;
 };
-
 struct vnic_intr_coal_timer_info {
 	u32 mul;
 	u32 div;
 	u32 max_usec;
 };
-
 struct vnic_dev {
 	void *priv;
 	struct pci_dev *pdev;
@@ -98,9 +80,7 @@ struct vnic_dev {
 	int (*devcmd_rtn)(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 			  int wait);
 };
-
 struct vnic_stats;
-
 void *vnic_dev_priv(struct vnic_dev *vdev);
 unsigned int vnic_dev_get_res_count(struct vnic_dev *vdev,
 	enum vnic_res_type type);
@@ -172,5 +152,4 @@ int vnic_dev_overlay_offload_cfg(struct vnic_dev *vdev, u8 overlay,
 int vnic_dev_get_supported_feature_ver(struct vnic_dev *vdev, u8 feature,
 				       u64 *supported_versions, u64 *a1);
 int vnic_dev_capable_rss_hash_type(struct vnic_dev *vdev, u8 *rss_hash_type);
-
-#endif /* _VNIC_DEV_H_ */
+#endif  

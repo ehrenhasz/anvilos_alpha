@@ -1,17 +1,9 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
 #ifndef ATH12K_DP_RX_H
 #define ATH12K_DP_RX_H
-
 #include "core.h"
 #include "rx_desc.h"
 #include "debug.h"
-
 #define DP_MAX_NWIFI_HDR_LEN	30
-
 struct ath12k_dp_rx_tid {
 	u8 tid;
 	u32 *vaddr;
@@ -19,26 +11,19 @@ struct ath12k_dp_rx_tid {
 	u32 size;
 	u32 ba_win_sz;
 	bool active;
-
-	/* Info related to rx fragments */
 	u32 cur_sn;
 	u16 last_frag_no;
 	u16 rx_frag_bitmap;
-
 	struct sk_buff_head rx_frags;
 	struct hal_reo_dest_ring *dst_ring_desc;
-
-	/* Timer info related to fragments */
 	struct timer_list frag_timer;
 	struct ath12k_base *ab;
 };
-
 struct ath12k_dp_rx_reo_cache_flush_elem {
 	struct list_head list;
 	struct ath12k_dp_rx_tid data;
 	unsigned long ts;
 };
-
 struct ath12k_dp_rx_reo_cmd {
 	struct list_head list;
 	struct ath12k_dp_rx_tid data;
@@ -46,17 +31,14 @@ struct ath12k_dp_rx_reo_cmd {
 	void (*handler)(struct ath12k_dp *dp, void *ctx,
 			enum hal_reo_cmd_status status);
 };
-
 #define ATH12K_DP_RX_REO_DESC_FREE_THRES  64
 #define ATH12K_DP_RX_REO_DESC_FREE_TIMEOUT_MS 1000
-
 enum ath12k_dp_rx_decap_type {
 	DP_RX_DECAP_TYPE_RAW,
 	DP_RX_DECAP_TYPE_NATIVE_WIFI,
 	DP_RX_DECAP_TYPE_ETHERNET2_DIX,
 	DP_RX_DECAP_TYPE_8023,
 };
-
 struct ath12k_dp_rx_rfc1042_hdr {
 	u8 llc_dsap;
 	u8 llc_ssap;
@@ -64,11 +46,9 @@ struct ath12k_dp_rx_rfc1042_hdr {
 	u8 snap_oui[3];
 	__be16 snap_type;
 } __packed;
-
 static inline u32 ath12k_he_gi_to_nl80211_he_gi(u8 sgi)
 {
 	u32 ret = 0;
-
 	switch (sgi) {
 	case RX_MSDU_START_SGI_0_8_US:
 		ret = NL80211_RATE_INFO_HE_GI_0_8;
@@ -80,10 +60,8 @@ static inline u32 ath12k_he_gi_to_nl80211_he_gi(u8 sgi)
 		ret = NL80211_RATE_INFO_HE_GI_3_2;
 		break;
 	}
-
 	return ret;
 }
-
 int ath12k_dp_rx_ampdu_start(struct ath12k *ar,
 			     struct ieee80211_ampdu_params *params);
 int ath12k_dp_rx_ampdu_stop(struct ath12k *ar,
@@ -123,7 +101,6 @@ int ath12k_dp_rx_bufs_replenish(struct ath12k_base *ab, int mac_id,
 				bool hw_cc);
 int ath12k_dp_rx_pdev_mon_attach(struct ath12k *ar);
 int ath12k_dp_rx_peer_frag_setup(struct ath12k *ar, const u8 *peer_mac, int vdev_id);
-
 int ath12k_dp_rx_pktlog_start(struct ath12k_base *ab);
 int ath12k_dp_rx_pktlog_stop(struct ath12k_base *ab, bool stop_timer);
 u8 ath12k_dp_rx_h_l3pad(struct ath12k_base *ab,
@@ -138,8 +115,6 @@ void ath12k_dp_rx_h_ppdu(struct ath12k *ar, struct hal_rx_desc *rx_desc,
 			 struct ieee80211_rx_status *rx_status);
 struct ath12k_peer *
 ath12k_dp_rx_h_find_peer(struct ath12k_base *ab, struct sk_buff *msdu);
-
 int ath12k_dp_rxdma_ring_sel_config_qcn9274(struct ath12k_base *ab);
 int ath12k_dp_rxdma_ring_sel_config_wcn7850(struct ath12k_base *ab);
-
-#endif /* ATH12K_DP_RX_H */
+#endif  

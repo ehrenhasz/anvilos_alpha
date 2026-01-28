@@ -1,31 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2022-2023  Realtek Corporation
- */
-
 #ifndef __RTW89_8851B_H__
 #define __RTW89_8851B_H__
-
 #include "core.h"
-
 #define RF_PATH_NUM_8851B 1
 #define BB_PATH_NUM_8851B 1
-
 struct rtw8851bu_efuse {
 	u8 rsvd[0x88];
 	u8 mac_addr[ETH_ALEN];
 };
-
 struct rtw8851be_efuse {
 	u8 mac_addr[ETH_ALEN];
 };
-
 struct rtw8851b_tssi_offset {
 	u8 cck_tssi[TSSI_CCK_CH_GROUP_NUM];
 	u8 bw40_tssi[TSSI_MCS_2G_CH_GROUP_NUM];
 	u8 rsvd[7];
 	u8 bw40_1s_tssi_5g[TSSI_MCS_5G_CH_GROUP_NUM];
 } __packed;
-
 struct rtw8851b_efuse {
 	u8 rsvd[0x210];
 	struct rtw8851b_tssi_offset path_a_tssi;
@@ -70,7 +60,5 @@ struct rtw8851b_efuse {
 		struct rtw8851be_efuse e;
 	};
 } __packed;
-
 extern const struct rtw89_chip_info rtw8851b_chip_info;
-
 #endif

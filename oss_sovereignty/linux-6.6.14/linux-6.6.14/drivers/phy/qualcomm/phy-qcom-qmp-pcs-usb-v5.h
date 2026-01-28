@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
-
 #ifndef QCOM_PHY_QMP_PCS_USB_V5_H_
 #define QCOM_PHY_QMP_PCS_USB_V5_H_
-
-/* Only for QMP V5 PHY - USB3 have different offsets than V4 */
 #define QPHY_V5_PCS_USB3_POWER_STATE_CONFIG1		0x000
 #define QPHY_V5_PCS_USB3_AUTONOMOUS_MODE_STATUS		0x004
 #define QPHY_V5_PCS_USB3_AUTONOMOUS_MODE_CTRL		0x008
@@ -32,5 +25,4 @@
 #define QPHY_V5_PCS_USB3_SIGDET_STARTUP_TIMER_VAL	0x058
 #define QPHY_V5_PCS_USB3_TEST_CONTROL			0x05c
 #define QPHY_V5_PCS_USB3_RXTERMINATION_DLY_SEL		0x060
-
 #endif

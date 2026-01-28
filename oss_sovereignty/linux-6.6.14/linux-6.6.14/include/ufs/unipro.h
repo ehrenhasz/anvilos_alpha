@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- */
-
 #ifndef _UNIPRO_H_
 #define _UNIPRO_H_
-
-/*
- * M-TX Configuration Attributes
- */
 #define TX_HIBERN8TIME_CAPABILITY		0x000F
 #define TX_MODE					0x0021
 #define TX_HSRATE_SERIES			0x0022
@@ -34,10 +25,6 @@
 #define TX_CFGCLKFREQVAL			0x00EC
 #define	CFGEXTRATTR				0x00F0
 #define DITHERCTRL2				0x00F1
-
-/*
- * M-RX Configuration Attributes
- */
 #define RX_HS_G1_SYNC_LENGTH_CAP		0x008B
 #define RX_HS_G1_PREP_LENGTH_CAP		0x008C
 #define RX_MIN_ACTIVATETIME_CAPABILITY		0x008F
@@ -72,20 +59,13 @@
 #define ENARXDIRECTCFG4				0x00F2
 #define ENARXDIRECTCFG3				0x00F3
 #define ENARXDIRECTCFG2				0x00F4
-
-
 #define is_mphy_tx_attr(attr)			(attr < RX_MODE)
 #define RX_ADV_FINE_GRAN_STEP(x)		((((x) & 0x3) << 1) | 0x1)
 #define SYNC_LEN_FINE(x)			((x) & 0x3F)
 #define SYNC_LEN_COARSE(x)			((1 << 6) | ((x) & 0x3F))
 #define PREP_LEN(x)				((x) & 0xF)
-
 #define RX_MIN_ACTIVATETIME_UNIT_US		100
 #define HIBERN8TIME_UNIT_US			100
-
-/*
- * Common Block Attributes
- */
 #define TX_GLOBALHIBERNATE			UNIPRO_CB_OFFSET(0x002B)
 #define REFCLKMODE				UNIPRO_CB_OFFSET(0x00BF)
 #define DIRECTCTRL19				UNIPRO_CB_OFFSET(0x00CD)
@@ -96,12 +76,7 @@
 #define CBDCOCTRL5				UNIPRO_CB_OFFSET(0x00F3)
 #define CBPRGPLL2				UNIPRO_CB_OFFSET(0x00F8)
 #define CBPRGTUNING				UNIPRO_CB_OFFSET(0x00FB)
-
 #define UNIPRO_CB_OFFSET(x)			(0x8000 | x)
-
-/*
- * PHY Adapter attributes
- */
 #define PA_PHY_TYPE		0x1500
 #define PA_AVAILTXDATALANES	0x1520
 #define PA_MAXTXSPEEDFAST	0x1521
@@ -161,38 +136,26 @@
 #define PA_PACPERRORCOUNT	0x15C1
 #define PA_PHYTESTCONTROL	0x15C2
 #define PA_TXHSADAPTTYPE       0x15D4
-
-/* Adpat type for PA_TXHSADAPTTYPE attribute */
 #define PA_REFRESH_ADAPT       0x00
 #define PA_INITIAL_ADAPT       0x01
 #define PA_NO_ADAPT            0x03
-
 #define PA_TACTIVATE_TIME_UNIT_US	10
 #define PA_HIBERN8_TIME_UNIT_US		100
-
-/*Other attributes*/
 #define VS_POWERSTATE		0xD083
 #define VS_MPHYCFGUPDT		0xD085
 #define VS_DEBUGOMC		0xD09E
-
 #define PA_GRANULARITY_MIN_VAL	1
 #define PA_GRANULARITY_MAX_VAL	6
-
-/* PHY Adapter Protocol Constants */
 #define PA_MAXDATALANES	4
-
 #define DL_FC0ProtectionTimeOutVal_Default	8191
 #define DL_TC0ReplayTimeOutVal_Default		65535
 #define DL_AFC0ReqTimeOutVal_Default		32767
 #define DL_FC1ProtectionTimeOutVal_Default	8191
 #define DL_TC1ReplayTimeOutVal_Default		65535
 #define DL_AFC1ReqTimeOutVal_Default		32767
-
 #define DME_LocalFC0ProtectionTimeOutVal	0xD041
 #define DME_LocalTC0ReplayTimeOutVal		0xD042
 #define DME_LocalAFC0ReqTimeOutVal		0xD043
-
-/* PA power modes */
 enum {
 	FAST_MODE	= 1,
 	SLOW_MODE	= 2,
@@ -200,57 +163,45 @@ enum {
 	SLOWAUTO_MODE	= 5,
 	UNCHANGED	= 7,
 };
-
 #define PWRMODE_MASK		0xF
 #define PWRMODE_RX_OFFSET	4
-
-/* PA TX/RX Frequency Series */
 enum {
 	PA_HS_MODE_A	= 1,
 	PA_HS_MODE_B	= 2,
 };
-
 enum ufs_pwm_gear_tag {
-	UFS_PWM_DONT_CHANGE,	/* Don't change Gear */
-	UFS_PWM_G1,		/* PWM Gear 1 (default for reset) */
-	UFS_PWM_G2,		/* PWM Gear 2 */
-	UFS_PWM_G3,		/* PWM Gear 3 */
-	UFS_PWM_G4,		/* PWM Gear 4 */
-	UFS_PWM_G5,		/* PWM Gear 5 */
-	UFS_PWM_G6,		/* PWM Gear 6 */
-	UFS_PWM_G7,		/* PWM Gear 7 */
+	UFS_PWM_DONT_CHANGE,	 
+	UFS_PWM_G1,		 
+	UFS_PWM_G2,		 
+	UFS_PWM_G3,		 
+	UFS_PWM_G4,		 
+	UFS_PWM_G5,		 
+	UFS_PWM_G6,		 
+	UFS_PWM_G7,		 
 };
-
 enum ufs_hs_gear_tag {
-	UFS_HS_DONT_CHANGE,	/* Don't change Gear */
-	UFS_HS_G1,		/* HS Gear 1 (default for reset) */
-	UFS_HS_G2,		/* HS Gear 2 */
-	UFS_HS_G3,		/* HS Gear 3 */
-	UFS_HS_G4,		/* HS Gear 4 */
-	UFS_HS_G5		/* HS Gear 5 */
+	UFS_HS_DONT_CHANGE,	 
+	UFS_HS_G1,		 
+	UFS_HS_G2,		 
+	UFS_HS_G3,		 
+	UFS_HS_G4,		 
+	UFS_HS_G5		 
 };
-
 enum ufs_lanes {
-	UFS_LANE_DONT_CHANGE,	/* Don't change Lane */
-	UFS_LANE_1,		/* Lane 1 (default for reset) */
-	UFS_LANE_2,		/* Lane 2 */
+	UFS_LANE_DONT_CHANGE,	 
+	UFS_LANE_1,		 
+	UFS_LANE_2,		 
 };
-
 enum ufs_unipro_ver {
 	UFS_UNIPRO_VER_RESERVED = 0,
-	UFS_UNIPRO_VER_1_40 = 1, /* UniPro version 1.40 */
-	UFS_UNIPRO_VER_1_41 = 2, /* UniPro version 1.41 */
-	UFS_UNIPRO_VER_1_6  = 3, /* UniPro version 1.6 */
-	UFS_UNIPRO_VER_1_61 = 4, /* UniPro version 1.61 */
-	UFS_UNIPRO_VER_1_8  = 5, /* UniPro version 1.8 */
-	UFS_UNIPRO_VER_MAX  = 6, /* UniPro unsupported version */
-	/* UniPro version field mask in PA_LOCALVERINFO */
+	UFS_UNIPRO_VER_1_40 = 1,  
+	UFS_UNIPRO_VER_1_41 = 2,  
+	UFS_UNIPRO_VER_1_6  = 3,  
+	UFS_UNIPRO_VER_1_61 = 4,  
+	UFS_UNIPRO_VER_1_8  = 5,  
+	UFS_UNIPRO_VER_MAX  = 6,  
 	UFS_UNIPRO_VER_MASK = 0xF,
 };
-
-/*
- * Data Link Layer Attributes
- */
 #define DL_TXPREEMPTIONCAP	0x2000
 #define DL_TC0TXMAXSDUSIZE	0x2001
 #define DL_TC0RXINITCREDITVAL	0x2002
@@ -274,18 +225,10 @@ enum ufs_unipro_ver {
 #define DL_TC1OUTACKTHRESHOLD	0x2065
 #define DL_PEERTC1PRESENT	0x2066
 #define DL_PEERTC1RXINITCREVAL	0x2067
-
-/*
- * Network Layer Attributes
- */
 #define N_DEVICEID		0x3000
 #define N_DEVICEID_VALID	0x3001
 #define N_TC0TXMAXSDUSIZE	0x3020
 #define N_TC1TXMAXSDUSIZE	0x3021
-
-/*
- * Transport Layer Attributes
- */
 #define T_NUMCPORTS		0x4000
 #define T_NUMTESTFEATURES	0x4001
 #define T_CONNECTIONSTATE	0x4020
@@ -302,8 +245,6 @@ enum ufs_unipro_ver {
 #define T_CPORTMODE		0x402B
 #define T_TC0TXMAXSDUSIZE	0x4060
 #define T_TC1TXMAXSDUSIZE	0x4061
-
-/* CPort setting */
 #define E2EFC_ON	(1 << 0)
 #define E2EFC_OFF	(0 << 0)
 #define CSD_N_ON	(0 << 1)
@@ -311,11 +252,8 @@ enum ufs_unipro_ver {
 #define CSV_N_ON	(0 << 2)
 #define CSV_N_OFF	(1 << 2)
 #define CPORT_DEF_FLAGS	(CSV_N_OFF | CSD_N_OFF | E2EFC_OFF)
-
-/* CPort connection state */
 enum {
 	CPORT_IDLE = 0,
 	CPORT_CONNECTED,
 };
-
-#endif /* _UNIPRO_H_ */
+#endif  

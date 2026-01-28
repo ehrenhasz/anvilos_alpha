@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 MediaTek Inc.
- * Author: Zhiyong Tao <zhiyong.tao@mediatek.com>
- *
- */
 #ifndef PINCTRL_MTK_MT2712_H
 #define PINCTRL_MTK_MT2712_H
-
 #include <linux/pinctrl/pinctrl.h>
 #include "pinctrl-mtk-common.h"
-
 static const struct mtk_desc_pin mtk_pins_mt2712[] = {
 	MTK_PIN(PINCTRL_PIN(0, "EINT0"),
 		NULL, "mt2712",
@@ -1753,5 +1745,4 @@ static const struct mtk_desc_pin mtk_pins_mt2712[] = {
 		MTK_FUNCTION(1, "WAKE_EN_P1")
 	),
 };
-
-#endif /* __PINCTRL_MTK_MT2712_H */
+#endif  

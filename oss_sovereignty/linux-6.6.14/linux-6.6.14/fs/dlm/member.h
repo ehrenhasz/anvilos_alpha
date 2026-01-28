@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) 2005-2011 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
-
 #ifndef __MEMBER_DOT_H__
 #define __MEMBER_DOT_H__
-
 int dlm_ls_stop(struct dlm_ls *ls);
 int dlm_ls_start(struct dlm_ls *ls);
 void dlm_clear_members(struct dlm_ls *ls);
@@ -26,6 +15,4 @@ int dlm_slots_copy_in(struct dlm_ls *ls);
 int dlm_slots_assign(struct dlm_ls *ls, int *num_slots, int *slots_size,
 		     struct dlm_slot **slots_out, uint32_t *gen_out);
 void dlm_lsop_recover_done(struct dlm_ls *ls);
-
-#endif                          /* __MEMBER_DOT_H__ */
-
+#endif                           

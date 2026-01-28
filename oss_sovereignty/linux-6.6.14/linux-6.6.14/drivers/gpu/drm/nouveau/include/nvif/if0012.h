@@ -1,17 +1,13 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVIF_IF0012_H__
 #define __NVIF_IF0012_H__
-
 #include <drm/display/drm_dp.h>
-
 union nvif_outp_args {
 	struct nvif_outp_v0 {
 		__u8 version;
-		__u8 id;	/* DCB device index. */
+		__u8 id;	 
 		__u8 pad02[6];
 	} v0;
 };
-
 #define NVIF_OUTP_V0_LOAD_DETECT 0x00
 #define NVIF_OUTP_V0_ACQUIRE     0x01
 #define NVIF_OUTP_V0_RELEASE     0x02
@@ -20,16 +16,14 @@ union nvif_outp_args {
 #define NVIF_OUTP_V0_DP_AUX_PWR  0x05
 #define NVIF_OUTP_V0_DP_RETRAIN  0x06
 #define NVIF_OUTP_V0_DP_MST_VCPI 0x07
-
 union nvif_outp_load_detect_args {
 	struct nvif_outp_load_detect_v0 {
 		__u8  version;
 		__u8  load;
 		__u8  pad02[2];
-		__u32 data; /*TODO: move vbios loadval parsing into nvkm */
+		__u32 data;  
 	} v0;
 };
-
 union nvif_outp_acquire_args {
 	struct nvif_outp_acquire_v0 {
 		__u8 version;
@@ -60,8 +54,8 @@ union nvif_outp_acquire_args {
 				__u8 pad02[6];
 			} lvds;
 			struct {
-				__u8 link_nr; /* 0 = highest possible. */
-				__u8 link_bw; /* 0 = highest possible, DP BW code otherwise. */
+				__u8 link_nr;  
+				__u8 link_bw;  
 				__u8 hda;
 				__u8 mst;
 				__u8 pad04[4];
@@ -70,12 +64,10 @@ union nvif_outp_acquire_args {
 		};
 	} v0;
 };
-
 union nvif_outp_release_args {
 	struct nvif_outp_release_vn {
 	} vn;
 };
-
 union nvif_outp_infoframe_args {
 	struct nvif_outp_infoframe_v0 {
 		__u8 version;
@@ -87,7 +79,6 @@ union nvif_outp_infoframe_args {
 		__u8 data[];
 	} v0;
 };
-
 union nvif_outp_hda_eld_args {
 	struct nvif_outp_hda_eld_v0 {
 		__u8  version;
@@ -96,7 +87,6 @@ union nvif_outp_hda_eld_args {
 		__u8  data[];
 	} v0;
 };
-
 union nvif_outp_dp_aux_pwr_args {
 	struct nvif_outp_dp_aux_pwr_v0 {
 		__u8 version;
@@ -104,12 +94,10 @@ union nvif_outp_dp_aux_pwr_args {
 		__u8 pad02[6];
 	} v0;
 };
-
 union nvif_outp_dp_retrain_args {
 	struct nvif_outp_dp_retrain_vn {
 	} vn;
 };
-
 union nvif_outp_dp_mst_vcpi_args {
 	struct nvif_outp_dp_mst_vcpi_v0 {
 		__u8  version;

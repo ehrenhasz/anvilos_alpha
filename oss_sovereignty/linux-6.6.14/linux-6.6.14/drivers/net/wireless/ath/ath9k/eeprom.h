@@ -1,48 +1,20 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 #ifndef EEPROM_H
 #define EEPROM_H
-
 #define AR_EEPROM_MODAL_SPURS   5
-
 #include "../ath.h"
 #include <net/cfg80211.h>
 #include "ar9003_eeprom.h"
-
-/* helpers to swap EEPROM fields, which are stored as __le16 or __le32. Since
- * we are 100% sure about it we __force these to u16/u32 for the swab calls to
- * silence the sparse checks. These macros are used when we have a Big Endian
- * EEPROM (according to AR5416_EEPMISC_BIG_ENDIAN) and need to convert the
- * fields to __le16/__le32.
- */
 #define EEPROM_FIELD_SWAB16(field) \
 	(field = (__force __le16)swab16((__force u16)field))
 #define EEPROM_FIELD_SWAB32(field) \
 	(field = (__force __le32)swab32((__force u32)field))
-
 #ifdef __BIG_ENDIAN
 #define AR5416_EEPROM_MAGIC 0x5aa5
 #else
 #define AR5416_EEPROM_MAGIC 0xa55a
 #endif
-
 #define CTRY_DEBUG   0x1ff
 #define	CTRY_DEFAULT 0
-
 #define AR_EEPROM_EEPCAP_COMPRESS_DIS   0x0001
 #define AR_EEPROM_EEPCAP_AES_DIS        0x0002
 #define AR_EEPROM_EEPCAP_FASTFRAME_DIS  0x0004
@@ -52,25 +24,20 @@
 #define AR_EEPROM_EEPCAP_HEAVY_CLIP_EN  0x0200
 #define AR_EEPROM_EEPCAP_KC_ENTRIES     0xF000
 #define AR_EEPROM_EEPCAP_KC_ENTRIES_S   12
-
 #define AR_EEPROM_EEREGCAP_EN_FCC_MIDBAND   0x0040
 #define AR_EEPROM_EEREGCAP_EN_KK_U1_EVEN    0x0080
 #define AR_EEPROM_EEREGCAP_EN_KK_U2         0x0100
 #define AR_EEPROM_EEREGCAP_EN_KK_MIDBAND    0x0200
 #define AR_EEPROM_EEREGCAP_EN_KK_U1_ODD     0x0400
 #define AR_EEPROM_EEREGCAP_EN_KK_NEW_11A    0x0800
-
 #define AR_EEPROM_EEREGCAP_EN_KK_U1_ODD_PRE4_0  0x4000
 #define AR_EEPROM_EEREGCAP_EN_KK_NEW_11A_PRE4_0 0x8000
-
 #define AR5416_EEPROM_MAGIC_OFFSET  0x0
 #define AR5416_EEPROM_S             2
 #define AR5416_EEPROM_OFFSET        0x2000
 #define AR5416_EEPROM_MAX           0xae0
-
 #define AR5416_EEPROM_START_ADDR(_ah) \
 	(AR_SREV_9100(_ah)) ? 0x1fff1000 : 0x503f1200
-
 #define SD_NO_CTL               0xE0
 #define NO_CTL                  0xff
 #define CTL_MODE_M              0xf
@@ -81,54 +48,35 @@
 #define CTL_5GHT20              6
 #define CTL_2GHT40              7
 #define CTL_5GHT40              8
-
 #define EXT_ADDITIVE (0x8000)
 #define CTL_11A_EXT (CTL_11A | EXT_ADDITIVE)
 #define CTL_11G_EXT (CTL_11G | EXT_ADDITIVE)
 #define CTL_11B_EXT (CTL_11B | EXT_ADDITIVE)
-
 #define SUB_NUM_CTL_MODES_AT_5G_40 2
 #define SUB_NUM_CTL_MODES_AT_2G_40 3
-
-#define POWER_CORRECTION_FOR_TWO_CHAIN		6  /* 10*log10(2)*2 */
-#define POWER_CORRECTION_FOR_THREE_CHAIN	10 /* 10*log10(3)*2 */
-
-/*
- * For AR9285 and later chipsets, the following bits are not being programmed
- * in EEPROM and so need to be enabled always.
- *
- * Bit 0: en_fcc_mid
- * Bit 1: en_jap_mid
- * Bit 2: en_fcc_dfs_ht40
- * Bit 3: en_jap_ht40
- * Bit 4: en_jap_dfs_ht40
- */
+#define POWER_CORRECTION_FOR_TWO_CHAIN		6   
+#define POWER_CORRECTION_FOR_THREE_CHAIN	10  
 #define AR9285_RDEXT_DEFAULT    0x1F
-
 #define ATH9K_POW_SM(_r, _s)	(((_r) & 0x3f) << (_s))
 #define FREQ2FBIN(x, y)		(u8)((y) ? ((x) - 2300) : (((x) - 4800) / 5))
 #define FBIN2FREQ(x, y)		((y) ? (2300 + x) : (4800 + 5 * x))
 #define ath9k_hw_use_flash(_ah)	(!(_ah->ah_flags & AH_USE_EEPROM))
-
 #define OLC_FOR_AR9280_20_LATER(_ah) (AR_SREV_9280_20_OR_LATER(_ah) && \
 				 _ah->eep_ops->get_eeprom(_ah, EEP_OL_PWRCTRL))
 #define OLC_FOR_AR9287_10_LATER(_ah) (AR_SREV_9287_11_OR_LATER(_ah) && \
 				 _ah->eep_ops->get_eeprom(_ah, EEP_OL_PWRCTRL))
-
 #define EEP_RFSILENT_ENABLED        0x0001
 #define EEP_RFSILENT_ENABLED_S      0
 #define EEP_RFSILENT_POLARITY       0x0002
 #define EEP_RFSILENT_POLARITY_S     1
 #define EEP_RFSILENT_GPIO_SEL       ((AR_SREV_9462(ah) || AR_SREV_9565(ah)) ? 0x00fc : 0x001c)
 #define EEP_RFSILENT_GPIO_SEL_S     2
-
 #define AR5416_OPFLAGS_11A           0x01
 #define AR5416_OPFLAGS_11G           0x02
 #define AR5416_OPFLAGS_N_5G_HT40     0x04
 #define AR5416_OPFLAGS_N_2G_HT40     0x08
 #define AR5416_OPFLAGS_N_5G_HT20     0x10
 #define AR5416_OPFLAGS_N_2G_HT20     0x20
-
 #define AR5416_EEP_NO_BACK_VER       0x1
 #define AR5416_EEP_VER               0xE
 #define AR5416_EEP_VER_MAJOR_SHIFT   12
@@ -144,7 +92,6 @@
 #define AR5416_EEP_MINOR_VER_20      0x14
 #define AR5416_EEP_MINOR_VER_21      0x15
 #define AR5416_EEP_MINOR_VER_22      0x16
-
 #define AR5416_NUM_5G_CAL_PIERS         8
 #define AR5416_NUM_2G_CAL_PIERS         4
 #define AR5416_NUM_5G_20_TARGET_POWERS  8
@@ -163,19 +110,12 @@
 #define AR5416_MAX_CHAINS               3
 #define AR9300_MAX_CHAINS		3
 #define AR5416_PWR_TABLE_OFFSET_DB     -5
-
-/* Rx gain type values */
 #define AR5416_EEP_RXGAIN_23DB_BACKOFF     0
 #define AR5416_EEP_RXGAIN_13DB_BACKOFF     1
 #define AR5416_EEP_RXGAIN_ORIG             2
-
-/* Tx gain type values */
 #define AR5416_EEP_TXGAIN_ORIGINAL         0
 #define AR5416_EEP_TXGAIN_HIGH_POWER       1
-
-/* Endianness of EEPROM content */
 #define AR5416_EEPMISC_BIG_ENDIAN          0x01
-
 #define AR5416_EEP4K_START_LOC                64
 #define AR5416_EEP4K_NUM_2G_CAL_PIERS         3
 #define AR5416_EEP4K_NUM_2G_CCK_TARGET_POWERS 3
@@ -185,9 +125,7 @@
 #define AR5416_EEP4K_NUM_BAND_EDGES           4
 #define AR5416_EEP4K_NUM_PD_GAINS             2
 #define AR5416_EEP4K_MAX_CHAINS               1
-
 #define AR9280_TX_GAIN_TABLE_SIZE 22
-
 #define AR9287_EEP_VER               0xE
 #define AR9287_EEP_MINOR_VER_1       0x1
 #define AR9287_EEP_MINOR_VER_2       0x2
@@ -195,7 +133,6 @@
 #define AR9287_EEP_MINOR_VER         AR9287_EEP_MINOR_VER_3
 #define AR9287_EEP_MINOR_VER_b       AR9287_EEP_MINOR_VER
 #define AR9287_EEP_NO_BACK_VER       AR9287_EEP_MINOR_VER_1
-
 #define AR9287_EEP_START_LOC            128
 #define AR9287_HTC_EEP_START_LOC        256
 #define AR9287_NUM_2G_CAL_PIERS         3
@@ -208,16 +145,11 @@
 #define AR9287_EEPMISC_WOW              0x02
 #define AR9287_MAX_CHAINS               2
 #define AR9287_ANT_16S                  32
-
 #define AR9287_DATA_SZ                  32
-
 #define AR9287_PWR_TABLE_OFFSET_DB  -5
-
 #define AR9287_CHECKSUM_LOCATION (AR9287_EEP_START_LOC + 1)
-
 #define CTL_EDGE_TPOWER(_ctl) ((_ctl) & 0x3f)
 #define CTL_EDGE_FLAGS(_ctl) (((_ctl) >> 6) & 0x03)
-
 #define LNA_CTL_BUF_MODE	BIT(0)
 #define LNA_CTL_ISEL_LO		BIT(1)
 #define LNA_CTL_ISEL_HI		BIT(2)
@@ -226,7 +158,6 @@
 #define LNA_CTL_LOCAL_BIAS	BIT(5)
 #define LNA_CTL_FORCE_XPA	BIT(6)
 #define LNA_CTL_USE_ANT1	BIT(7)
-
 enum eeprom_param {
 	EEP_NFTHRESH_5,
 	EEP_NFTHRESH_2,
@@ -261,7 +192,6 @@ enum eeprom_param {
 	EEP_ANTENNA_GAIN_2G,
 	EEP_ANTENNA_GAIN_5G,
 };
-
 enum ar5416_rates {
 	rate6mb, rate9mb, rate12mb, rate18mb,
 	rate24mb, rate36mb, rate48mb, rate54mb,
@@ -274,12 +204,10 @@ enum ar5416_rates {
 	rateDupCck, rateDupOfdm, rateExtCck, rateExtOfdm,
 	Ar5416RateSize
 };
-
 enum ath9k_hal_freq_band {
 	ATH9K_HAL_FREQ_BAND_5GHZ = 0,
 	ATH9K_HAL_FREQ_BAND_2GHZ = 1
 };
-
 struct base_eep_header {
 	__le16 length;
 	__le16 checksum;
@@ -309,7 +237,6 @@ struct base_eep_header {
 	u8 frac_n_5g;
 	u8 futureBase_3[21];
 } __packed;
-
 struct base_eep_header_4k {
 	__le16 length;
 	__le16 checksum;
@@ -327,14 +254,11 @@ struct base_eep_header_4k {
 	u8 deviceType;
 	u8 txGainType;
 } __packed;
-
-
 struct spur_chan {
 	__le16 spurChan;
 	u8 spurRangeLow;
 	u8 spurRangeHigh;
 } __packed;
-
 struct modal_eep_header {
 	__le32 antCtrlChain[AR5416_MAX_CHAINS];
 	__le32 antCtrlCommon;
@@ -374,17 +298,14 @@ struct modal_eep_header {
 	u8 miscBits;
 	__le16 xpaBiasLvlFreq[3];
 	u8 futureModal[6];
-
 	struct spur_chan spurChans[AR_EEPROM_MODAL_SPURS];
 } __packed;
-
 struct calDataPerFreqOpLoop {
 	u8 pwrPdg[2][5];
 	u8 vpdPdg[2][5];
 	u8 pcdac[2][5];
 	u8 empty[2][5];
 } __packed;
-
 struct modal_eep_4k_header {
 	__le32 antCtrlChain[AR5416_EEP4K_MAX_CHAINS];
 	__le32 antCtrlCommon;
@@ -449,7 +370,6 @@ struct modal_eep_4k_header {
 	u8 futureModal[1];
 	struct spur_chan spurChans[AR_EEPROM_MODAL_SPURS];
 } __packed;
-
 struct base_eep_ar9287_header {
 	__le16 length;
 	__le16 checksum;
@@ -471,7 +391,6 @@ struct base_eep_ar9287_header {
 	int8_t tempSensSlopePalOn;
 	u8 futureBase[29];
 } __packed;
-
 struct modal_eep_ar9287_header {
 	__le32 antCtrlChain[AR9287_MAX_CHAINS];
 	__le32 antCtrlCommon;
@@ -507,64 +426,52 @@ struct modal_eep_ar9287_header {
 	u8 futureModal[30];
 	struct spur_chan spurChans[AR_EEPROM_MODAL_SPURS];
 } __packed;
-
 struct cal_data_per_freq {
 	u8 pwrPdg[AR5416_NUM_PD_GAINS][AR5416_PD_GAIN_ICEPTS];
 	u8 vpdPdg[AR5416_NUM_PD_GAINS][AR5416_PD_GAIN_ICEPTS];
 } __packed;
-
 struct cal_data_per_freq_4k {
 	u8 pwrPdg[AR5416_EEP4K_NUM_PD_GAINS][AR5416_PD_GAIN_ICEPTS];
 	u8 vpdPdg[AR5416_EEP4K_NUM_PD_GAINS][AR5416_PD_GAIN_ICEPTS];
 } __packed;
-
 struct cal_target_power_leg {
 	u8 bChannel;
 	u8 tPow2x[4];
 } __packed;
-
 struct cal_target_power_ht {
 	u8 bChannel;
 	u8 tPow2x[8];
 } __packed;
-
 struct cal_ctl_edges {
 	u8 bChannel;
 	u8 ctl;
 } __packed;
-
 struct cal_data_op_loop_ar9287 {
 	u8 pwrPdg[2][5];
 	u8 vpdPdg[2][5];
 	u8 pcdac[2][5];
 	u8 empty[2][5];
 } __packed;
-
 struct cal_data_per_freq_ar9287 {
 	u8 pwrPdg[AR5416_NUM_PD_GAINS][AR9287_PD_GAIN_ICEPTS];
 	u8 vpdPdg[AR5416_NUM_PD_GAINS][AR9287_PD_GAIN_ICEPTS];
 } __packed;
-
 union cal_data_per_freq_ar9287_u {
 	struct cal_data_op_loop_ar9287 calDataOpen;
 	struct cal_data_per_freq_ar9287 calDataClose;
 } __packed;
-
 struct cal_ctl_data_ar9287 {
 	struct cal_ctl_edges
 	ctlEdges[AR9287_MAX_CHAINS][AR9287_NUM_BAND_EDGES];
 } __packed;
-
 struct cal_ctl_data {
 	struct cal_ctl_edges
 	ctlEdges[AR5416_MAX_CHAINS][AR5416_NUM_BAND_EDGES];
 } __packed;
-
 struct cal_ctl_data_4k {
 	struct cal_ctl_edges
 	ctlEdges[AR5416_EEP4K_MAX_CHAINS][AR5416_EEP4K_NUM_BAND_EDGES];
 } __packed;
-
 struct ar5416_eeprom_def {
 	struct base_eep_header baseEepHeader;
 	u8 custData[64];
@@ -593,7 +500,6 @@ struct ar5416_eeprom_def {
 	struct cal_ctl_data ctlData[AR5416_NUM_CTLS];
 	u8 padding;
 } __packed;
-
 struct ar5416_eeprom_4k {
 	struct base_eep_header_4k baseEepHeader;
 	u8 custData[20];
@@ -613,7 +519,6 @@ struct ar5416_eeprom_4k {
 	struct cal_ctl_data_4k ctlData[AR5416_EEP4K_NUM_CTLS];
 	u8 padding;
 } __packed;
-
 struct ar9287_eeprom {
 	struct base_eep_ar9287_header baseEepHeader;
 	u8 custData[AR9287_DATA_SZ];
@@ -633,7 +538,6 @@ struct ar9287_eeprom {
 	struct cal_ctl_data_ar9287 ctlData[AR9287_NUM_CTLS];
 	u8 padding;
 } __packed;
-
 enum reg_ext_bitmap {
 	REG_EXT_FCC_MIDBAND = 0,
 	REG_EXT_JAPAN_MIDBAND = 1,
@@ -641,7 +545,6 @@ enum reg_ext_bitmap {
 	REG_EXT_JAPAN_NONDFS_HT40 = 3,
 	REG_EXT_JAPAN_DFS_HT40 = 4
 };
-
 struct ath9k_country_entry {
 	u16 countryCode;
 	u16 regDmnEnum;
@@ -650,7 +553,6 @@ struct ath9k_country_entry {
 	u8 isMultidomain;
 	u8 iso[3];
 };
-
 struct eeprom_ops {
 	int (*check_eeprom)(struct ath_hw *hw);
 	u32 (*get_eeprom)(struct ath_hw *hw, enum eeprom_param param);
@@ -667,7 +569,6 @@ struct eeprom_ops {
 	u16 (*get_spur_channel)(struct ath_hw *ah, u16 i, bool is2GHz);
 	u8 (*get_eepmisc)(struct ath_hw *ah);
 };
-
 void ath9k_hw_analog_shift_regwrite(struct ath_hw *ah, u32 reg, u32 val);
 void ath9k_hw_analog_shift_rmw(struct ath_hw *ah, u32 reg, u32 mask,
 			       u32 shift, u32 val);
@@ -703,7 +604,6 @@ u16 ath9k_hw_get_scaled_power(struct ath_hw *ah, u16 power_limit,
 			      u8 antenna_reduction);
 void ath9k_hw_update_regulatory_maxpower(struct ath_hw *ah);
 int ath9k_hw_eeprom_init(struct ath_hw *ah);
-
 void ath9k_hw_get_gain_boundaries_pdadcs(struct ath_hw *ah,
 				struct ath9k_channel *chan,
 				void *pRawDataSet,
@@ -711,23 +611,18 @@ void ath9k_hw_get_gain_boundaries_pdadcs(struct ath_hw *ah,
 				u16 tPdGainOverlap,
 				u16 *pPdGainBoundaries, u8 *pPDADCValues,
 				u16 numXpdGains);
-
 static inline u16 ath9k_hw_fbin2freq(u8 fbin, bool is2GHz)
 {
 	if (fbin == AR5416_BCHAN_UNUSED)
 		return fbin;
-
 	return (u16) ((is2GHz) ? (2300 + fbin) : (4800 + 5 * fbin));
 }
-
 #define ar5416_get_ntxchains(_txchainmask)			\
 	(((_txchainmask >> 2) & 1) +                            \
 	 ((_txchainmask >> 1) & 1) + (_txchainmask & 1))
-
 extern const struct eeprom_ops eep_def_ops;
 extern const struct eeprom_ops eep_4k_ops;
 extern const struct eeprom_ops eep_ar9287_ops;
 extern const struct eeprom_ops eep_ar9287_ops;
 extern const struct eeprom_ops eep_ar9300_ops;
-
-#endif /* EEPROM_H */
+#endif  

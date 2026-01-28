@@ -1,30 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * TerraTec Cinergy T2/qanu USB2 DVB-T adapter.
- *
- * Copyright (C) 2007 Tomi Orava (tomimo@ncircle.nullnet.fi)
- *
- * Based on the dvb-usb-framework code and the
- * original Terratec Cinergy T2 driver by:
- *
- * Copyright (C) 2004 Daniel Mack <daniel@qanu.de> and
- *                  Holger Waechtler <holger@qanu.de>
- *
- *  Protocol Spec published on http://qanu.de/specs/terratec_cinergyT2.pdf
- */
-
 #ifndef _DVB_USB_CINERGYT2_H_
 #define _DVB_USB_CINERGYT2_H_
-
 #include <linux/usb/input.h>
-
 #define DVB_USB_LOG_PREFIX "cinergyT2"
 #include "dvb-usb.h"
-
 #define DRIVER_NAME "TerraTec/qanu USB2.0 Highspeed DVB-T Receiver"
-
 extern int dvb_usb_cinergyt2_debug;
-
 #define deb_info(args...)  dprintk(dvb_usb_cinergyt2_debug,  0x001, args)
 #define deb_xfer(args...)  dprintk(dvb_usb_cinergyt2_debug,  0x002, args)
 #define deb_pll(args...)   dprintk(dvb_usb_cinergyt2_debug,  0x004, args)
@@ -34,9 +14,6 @@ extern int dvb_usb_cinergyt2_debug;
 #define deb_fw(args...)    dprintk(dvb_usb_cinergyt2_debug,  0x040, args)
 #define deb_mem(args...)   dprintk(dvb_usb_cinergyt2_debug,  0x080, args)
 #define deb_uxfer(args...) dprintk(dvb_usb_cinergyt2_debug,  0x100, args)
-
-
-
 enum cinergyt2_ep1_cmd {
 	CINERGYT2_EP1_PID_TABLE_RESET		= 0x01,
 	CINERGYT2_EP1_PID_SETUP			= 0x02,
@@ -49,8 +26,6 @@ enum cinergyt2_ep1_cmd {
 	CINERGYT2_EP1_SLEEP_MODE		= 0x09,
 	CINERGYT2_EP1_GET_FIRMWARE_VERSION	= 0x0A
 };
-
-
 struct dvbt_get_status_msg {
 	uint32_t freq;
 	uint8_t bandwidth;
@@ -64,8 +39,6 @@ struct dvbt_get_status_msg {
 	uint8_t lock_bits;
 	uint8_t prev_lock_bits;
 } __attribute__((packed));
-
-
 struct dvbt_set_parameters_msg {
 	uint8_t cmd;
 	__le32 freq;
@@ -73,9 +46,5 @@ struct dvbt_set_parameters_msg {
 	__le16 tps;
 	uint8_t flags;
 } __attribute__((packed));
-
-
 extern struct dvb_frontend *cinergyt2_fe_attach(struct dvb_usb_device *d);
-
-#endif /* _DVB_USB_CINERGYT2_H_ */
-
+#endif  

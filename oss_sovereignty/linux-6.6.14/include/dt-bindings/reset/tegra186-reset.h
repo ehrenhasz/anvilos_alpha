@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015, NVIDIA CORPORATION.  All rights reserved.
- */
-
 #ifndef _ABI_MACH_T186_RESET_T186_H_
 #define _ABI_MACH_T186_RESET_T186_H_
-
-
 #define TEGRA186_RESET_ACTMON			0
 #define TEGRA186_RESET_AFI			1
 #define TEGRA186_RESET_CEC			2
@@ -199,8 +192,6 @@
 #define TEGRA186_RESET_SCE_GTE			189
 #define TEGRA186_RESET_SCE_CFG			190
 #define TEGRA186_RESET_ADSP_ALL			191
-/** @brief controls the power up/down sequence of UFSHC PSW partition. Controls LP_PWR_READY, LP_ISOL_EN, and LP_RESET_N signals */
 #define TEGRA186_RESET_UFSHC_LP_SEQ		192
 #define TEGRA186_RESET_SIZE			193
-
 #endif

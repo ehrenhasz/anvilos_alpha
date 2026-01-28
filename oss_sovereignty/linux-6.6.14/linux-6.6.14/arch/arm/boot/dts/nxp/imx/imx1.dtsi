@@ -1,23 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
-
 #include "imx1-pinfunc.h"
-
 #include <dt-bindings/clock/imx1-clock.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/irq.h>
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
-	/*
-	 * The decompressor and also some bootloaders rely on a
-	 * pre-existing /chosen node to be available to insert the
-	 * command line and merge other ATAGS info.
-	 */
 	chosen {};
-
 	aliases {
 		gpio0 = &gpio1;
 		gpio1 = &gpio2;
@@ -30,18 +18,15 @@
 		spi0 = &cspi1;
 		spi1 = &cspi2;
 	};
-
 	aitc: aitc-interrupt-controller@223000 {
 		compatible = "fsl,imx1-aitc", "fsl,avic";
 		interrupt-controller;
 		#interrupt-cells = <1>;
 		reg = <0x00223000 0x1000>;
 	};
-
 	cpus {
 		#size-cells = <0>;
 		#address-cells = <1>;
-
 		cpu@0 {
 			device_type = "cpu";
 			reg = <0>;
@@ -52,7 +37,6 @@
 			voltage-tolerance = <5>;
 		};
 	};
-
 	clocks {
 		clk32 {
 			compatible = "fixed-clock";
@@ -60,21 +44,18 @@
 			clock-frequency = <32000>;
 		};
 	};
-
 	soc {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "simple-bus";
 		interrupt-parent = <&aitc>;
 		ranges;
-
 		aipi@200000 {
 			compatible = "fsl,aipi-bus", "simple-bus";
 			#address-cells = <1>;
 			#size-cells = <1>;
 			reg = <0x00200000 0x10000>;
 			ranges;
-
 			gpt1: timer@202000 {
 				compatible = "fsl,imx1-gpt";
 				reg = <0x00202000 0x1000>;
@@ -83,7 +64,6 @@
 					 <&clks IMX1_CLK_PER1>;
 				clock-names = "ipg", "per";
 			};
-
 			gpt2: timer@203000 {
 				compatible = "fsl,imx1-gpt";
 				reg = <0x00203000 0x1000>;
@@ -92,7 +72,6 @@
 					 <&clks IMX1_CLK_PER1>;
 				clock-names = "ipg", "per";
 			};
-
 			fb: fb@205000 {
 				compatible = "fsl,imx1-fb";
 				reg = <0x00205000 0x1000>;
@@ -103,7 +82,6 @@
 				clock-names = "ipg", "ahb", "per";
 				status = "disabled";
 			};
-
 			uart1: serial@206000 {
 				compatible = "fsl,imx1-uart";
 				reg = <0x00206000 0x1000>;
@@ -113,7 +91,6 @@
 				clock-names = "ipg", "per";
 				status = "disabled";
 			};
-
 			uart2: serial@207000 {
 				compatible = "fsl,imx1-uart";
 				reg = <0x00207000 0x1000>;
@@ -123,7 +100,6 @@
 				clock-names = "ipg", "per";
 				status = "disabled";
 			};
-
 			pwm: pwm@208000 {
 				#pwm-cells = <3>;
 				compatible = "fsl,imx1-pwm";
@@ -133,7 +109,6 @@
 					 <&clks IMX1_CLK_PER1>;
 				clock-names = "ipg", "per";
 			};
-
 			dma: dma@209000 {
 				compatible = "fsl,imx1-dma";
 				reg = <0x00209000 0x1000>;
@@ -143,7 +118,6 @@
 				clock-names = "ipg", "ahb";
 				#dma-cells = <1>;
 			};
-
 			uart3: serial@20a000 {
 				compatible = "fsl,imx1-uart";
 				reg = <0x0020a000 0x1000>;
@@ -154,14 +128,12 @@
 				status = "disabled";
 			};
 		};
-
 		aipi@210000 {
 			compatible = "fsl,aipi-bus", "simple-bus";
 			#address-cells = <1>;
 			#size-cells = <1>;
 			reg = <0x00210000 0x10000>;
 			ranges;
-
 			cspi1: spi@213000 {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -173,7 +145,6 @@
 				clock-names = "ipg", "per";
 				status = "disabled";
 			};
-
 			i2c: i2c@217000 {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -183,7 +154,6 @@
 				clocks = <&clks IMX1_CLK_HCLK>;
 				status = "disabled";
 			};
-
 			cspi2: spi@219000 {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -195,20 +165,17 @@
 				clock-names = "ipg", "per";
 				status = "disabled";
 			};
-
 			clks: ccm@21b000 {
 				compatible = "fsl,imx1-ccm";
 				reg = <0x0021b000 0x1000>;
 				#clock-cells = <1>;
 			};
-
 			iomuxc: iomuxc@21c000 {
 				compatible = "fsl,imx1-iomuxc";
 				reg = <0x0021c000 0x1000>;
 				#address-cells = <1>;
 				#size-cells = <1>;
 				ranges;
-
 				gpio1: gpio@21c000 {
 					compatible = "fsl,imx1-gpio";
 					reg = <0x0021c000 0x100>;
@@ -218,7 +185,6 @@
 					interrupt-controller;
 					#interrupt-cells = <2>;
 				};
-
 				gpio2: gpio@21c100 {
 					compatible = "fsl,imx1-gpio";
 					reg = <0x0021c100 0x100>;
@@ -228,7 +194,6 @@
 					interrupt-controller;
 					#interrupt-cells = <2>;
 				};
-
 				gpio3: gpio@21c200 {
 					compatible = "fsl,imx1-gpio";
 					reg = <0x0021c200 0x100>;
@@ -238,7 +203,6 @@
 					interrupt-controller;
 					#interrupt-cells = <2>;
 				};
-
 				gpio4: gpio@21c300 {
 					compatible = "fsl,imx1-gpio";
 					reg = <0x0021c300 0x100>;
@@ -250,7 +214,6 @@
 				};
 			};
 		};
-
 		weim: weim@220000 {
 			#address-cells = <2>;
 			#size-cells = <1>;
@@ -267,7 +230,6 @@
 			>;
 			status = "disabled";
 		};
-
 		esram: esram@300000 {
 			compatible = "mmio-sram";
 			reg = <0x00300000 0x20000>;

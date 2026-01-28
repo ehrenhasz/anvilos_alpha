@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #include <linux/uaccess.h>
 #include <asm/fpu.h>
 #include <asm/lbt.h>

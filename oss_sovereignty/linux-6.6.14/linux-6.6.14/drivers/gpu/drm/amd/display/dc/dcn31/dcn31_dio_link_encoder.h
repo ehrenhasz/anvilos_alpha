@@ -1,34 +1,6 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_LINK_ENCODER__DCN31_H__
 #define __DC_LINK_ENCODER__DCN31_H__
-
 #include "dcn30/dcn30_dio_link_encoder.h"
-
-
 #define LE_DCN31_REG_LIST(id)\
 	LE_DCN3_REG_LIST(id),\
 	SRI(DP_DPHY_INTERNAL_CTRL, DP, id), \
@@ -38,7 +10,6 @@
 	SR(DIO_LINKD_CNTL), \
 	SR(DIO_LINKE_CNTL), \
 	SR(DIO_LINKF_CNTL)
-
 #define LINK_ENCODER_MASK_SH_LIST_DCN31(mask_sh) \
 	LINK_ENCODER_MASK_SH_LIST_DCN10(mask_sh),\
 	LE_SF(DP0_DP_DPHY_CNTL, DPHY_FEC_EN, mask_sh),\
@@ -62,7 +33,6 @@
 	LE_SF(DIO_LINKA_CNTL, ENC_TYPE_SEL, mask_sh),\
 	LE_SF(DIO_LINKA_CNTL, HPO_DP_ENC_SEL, mask_sh),\
 	LE_SF(DIO_LINKA_CNTL, HPO_HDMI_ENC_SEL, mask_sh)
-
 #define DPCS_DCN31_REG_LIST(id) \
 	SRI(TMDS_CTL_BITS, DIG, id), \
 	SRI(RDPCSTX_PHY_CNTL3, RDPCSTX, id), \
@@ -92,7 +62,6 @@
 	SR(RDPCSTX0_RDPCSTX_SCRATCH), \
 	SRI(RDPCSTX_PHY_RX_LD_VAL, RDPCSTX, id),\
 	SRI(RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG, RDPCSTX, id)
-
 #define DPCS_DCN31_MASK_SH_LIST(mask_sh)\
 	LE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL3, RDPCS_PHY_DP_TX0_CLK_RDY, mask_sh),\
 	LE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL3, RDPCS_PHY_DP_TX0_DATA_EN, mask_sh),\
@@ -197,7 +166,6 @@
 	LE_SF(RDPCSTX0_RDPCSTX_PHY_FUSE3, RDPCS_PHY_DCO_RANGE, mask_sh),\
 	LE_SF(RDPCSTX0_RDPCSTX_PHY_FUSE3, RDPCS_PHY_DP_TX3_EQ_PRE, mask_sh),\
 	LE_SF(RDPCSTX0_RDPCSTX_PHY_FUSE3, RDPCS_PHY_DP_TX3_EQ_POST, mask_sh)
-
 #define DPCS_DCN314_REG_LIST(id) \
 	SRI(TMDS_CTL_BITS, DIG, id), \
 	SRI(RDPCSTX_PHY_CNTL3, RDPCSTX, id), \
@@ -225,7 +193,6 @@
 	SR(RDPCSTX0_RDPCSTX_SCRATCH), \
 	SRI(RDPCSTX_PHY_RX_LD_VAL, RDPCSTX, id),\
 	SRI(RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG, RDPCSTX, id)
-
 void dcn31_link_encoder_construct(
 	struct dcn20_link_encoder *enc20,
 	const struct encoder_init_data *init_data,
@@ -235,52 +202,29 @@ void dcn31_link_encoder_construct(
 	const struct dcn10_link_enc_hpd_registers *hpd_regs,
 	const struct dcn10_link_enc_shift *link_shift,
 	const struct dcn10_link_enc_mask *link_mask);
-
-/*
- * Create a minimal link encoder object with no dc_link object associated with it.
- */
 void dcn31_link_encoder_construct_minimal(
 	struct dcn20_link_encoder *enc20,
 	struct dc_context *ctx,
 	const struct encoder_feature_support *enc_features,
 	const struct dcn10_link_enc_registers *link_regs,
 	enum engine_id eng_id);
-
 void dcn31_link_encoder_set_dio_phy_mux(
 	struct link_encoder *enc,
 	enum encoder_type_select sel,
 	uint32_t hpo_inst);
-
-/*
- * Enable DP transmitter and its encoder.
- */
 void dcn31_link_encoder_enable_dp_output(
 	struct link_encoder *enc,
 	const struct dc_link_settings *link_settings,
 	enum clock_source_id clock_source);
-
-/*
- * Enable DP transmitter and its encoder in MST mode.
- */
 void dcn31_link_encoder_enable_dp_mst_output(
 	struct link_encoder *enc,
 	const struct dc_link_settings *link_settings,
 	enum clock_source_id clock_source);
-
-/*
- * Disable transmitter and its encoder.
- */
 void dcn31_link_encoder_disable_output(
 	struct link_encoder *enc,
 	enum signal_type signal);
-
-/*
- * Check whether USB-C DP Alt mode is disabled
- */
 bool dcn31_link_encoder_is_in_alt_mode(
 	struct link_encoder *enc);
-
 void dcn31_link_encoder_get_max_link_cap(struct link_encoder *enc,
 	struct dc_link_settings *link_settings);
-
-#endif /* __DC_LINK_ENCODER__DCN31_H__ */
+#endif  

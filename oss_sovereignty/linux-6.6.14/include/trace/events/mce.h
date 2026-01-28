@@ -1,20 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mce
-
 #if !defined(_TRACE_MCE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_MCE_H
-
 #include <linux/ktime.h>
 #include <linux/tracepoint.h>
 #include <asm/mce.h>
-
 TRACE_EVENT(mce_record,
-
 	TP_PROTO(struct mce *m),
-
 	TP_ARGS(m),
-
 	TP_STRUCT__entry(
 		__field(	u64,		mcgcap		)
 		__field(	u64,		mcgstatus	)
@@ -34,7 +27,6 @@ TRACE_EVENT(mce_record,
 		__field(	u8,		bank		)
 		__field(	u8,		cpuvendor	)
 	),
-
 	TP_fast_assign(
 		__entry->mcgcap		= m->mcgcap;
 		__entry->mcgstatus	= m->mcgstatus;
@@ -54,7 +46,6 @@ TRACE_EVENT(mce_record,
 		__entry->bank		= m->bank;
 		__entry->cpuvendor	= m->cpuvendor;
 	),
-
 	TP_printk("CPU: %d, MCGc/s: %llx/%llx, MC%d: %016Lx, IPID: %016Lx, ADDR/MISC/SYND: %016Lx/%016Lx/%016Lx, RIP: %02x:<%016Lx>, TSC: %llx, PROCESSOR: %u:%x, TIME: %llu, SOCKET: %u, APIC: %x",
 		__entry->cpu,
 		__entry->mcgcap, __entry->mcgstatus,
@@ -68,8 +59,5 @@ TRACE_EVENT(mce_record,
 		__entry->socketid,
 		__entry->apicid)
 );
-
-#endif /* _TRACE_MCE_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

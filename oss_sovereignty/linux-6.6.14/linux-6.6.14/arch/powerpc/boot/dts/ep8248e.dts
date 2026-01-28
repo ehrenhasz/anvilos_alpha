@@ -1,17 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Device Tree for the Embedded Planet EP8248E board running PlanetCore.
- *
- * Copyright 2007 Freescale Semiconductor Inc.
- */
-
 /dts-v1/;
 / {
 	model = "EP8248E";
 	compatible = "fsl,ep8248e";
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	aliases {
 		planetcore-SMC1 = &smc1;
 		planetcore-SCC1 = &scc1;
@@ -20,11 +12,9 @@
 		serial0 = &smc1;
 		serial1 = &scc1;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		PowerPC,8248@0 {
 			device_type = "cpu";
 			reg = <0>;
@@ -36,7 +26,6 @@
 			clock-frequency = <0>;
 		};
 	};
-
 	localbus@f0010100 {
 		compatible = "fsl,mpc8248-localbus",
 		             "fsl,pq2-localbus",
@@ -44,35 +33,29 @@
 		#address-cells = <2>;
 		#size-cells = <1>;
 		reg = <0xf0010100 0x40>;
-
 		ranges = <0 0 0xfc000000 0x04000000
 		          1 0 0xfa000000 0x00008000>;
-
 		flash@0,3800000 {
 			compatible = "cfi-flash";
 			reg = <0 0x3800000 0x800000>;
 			bank-width = <4>;
 			device-width = <2>;
 		};
-
 		bcsr@1,0 {
 			#address-cells = <2>;
 			#size-cells = <1>;
 			reg = <1 0 0x10>;
 			compatible = "fsl,ep8248e-bcsr";
 			ranges;
-
 			mdio {
 				compatible = "fsl,ep8248e-mdio-bitbang";
 				#address-cells = <1>;
 				#size-cells = <0>;
 				reg = <1 8 1>;
-
 				PHY0: ethernet-phy@0 {
 					interrupt-parent = <&PIC>;
 					reg = <0>;
 				};
-
 				PHY1: ethernet-phy@1 {
 					interrupt-parent = <&PIC>;
 					reg = <1>;
@@ -80,24 +63,17 @@
 			};
 		};
 	};
-
 	memory {
 		device_type = "memory";
 		reg = <0 0>;
 	};
-
 	soc@f0000000 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "fsl,mpc8248-immr", "fsl,pq2-soc", "simple-bus";
 		ranges = <0x00000000 0xf0000000 0x00053000>;
-
-		// Temporary until code stops depending on it.
 		device_type = "soc";
-
-		// Temporary -- will go away once kernel uses ranges for get_immrbase().
 		reg = <0xf0000000 0x00053000>;
-
 		cpm@119c0 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -106,26 +82,21 @@
 			             "simple-bus";
 			reg = <0x119c0 0x30>;
 			ranges;
-
 			muram {
 				#address-cells = <1>;
 				#size-cells = <1>;
 				ranges = <0 0 0x10000>;
-
 				data@0 {
 					compatible = "fsl,cpm-muram-data";
 					reg = <0 0x2000 0x9800 0x800>;
 				};
 			};
-
 			brg@119f0 {
 				compatible = "fsl,mpc8248-brg",
 				             "fsl,cpm2-brg",
 				             "fsl,cpm-brg";
 				reg = <0x119f0 0x10 0x115f0 0x10>;
 			};
-
-			/* Monitor port/SMC1 */
 			smc1: serial@11a80 {
 				device_type = "serial";
 				compatible = "fsl,mpc8248-smc-uart",
@@ -137,8 +108,6 @@
 				fsl,cpm-command = <0x1d000000>;
 				linux,planetcore-label = "SMC1";
 			};
-
-			/* "Serial" port/SCC1 */
 			scc1: serial@11a00 {
 				device_type = "serial";
 				compatible = "fsl,mpc8248-scc-uart",
@@ -150,7 +119,6 @@
 				fsl,cpm-command = <0x00800000>;
 				linux,planetcore-label = "SCC1";
 			};
-
 			eth0: ethernet@11300 {
 				device_type = "network";
 				compatible = "fsl,mpc8248-fcc-enet",
@@ -163,7 +131,6 @@
 				linux,network-index = <0>;
 				fsl,cpm-command = <0x12000300>;
 			};
-
 			eth1: ethernet@11320 {
 				device_type = "network";
 				compatible = "fsl,mpc8248-fcc-enet",
@@ -176,7 +143,6 @@
 				linux,network-index = <1>;
 				fsl,cpm-command = <0x16200300>;
 			};
-
 			usb@11b60 {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -188,7 +154,6 @@
 				fsl,cpm-command = <0x2e600000>;
 			};
 		};
-
 		PIC: interrupt-controller@10c00 {
 			#interrupt-cells = <2>;
 			interrupt-controller;

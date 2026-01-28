@@ -1,24 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Microsemi Switchtec PCIe Driver
- * Copyright (c) 2017, Microsemi Corporation
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- */
-
 #ifndef _UAPI_LINUX_SWITCHTEC_IOCTL_H
 #define _UAPI_LINUX_SWITCHTEC_IOCTL_H
-
 #include <linux/types.h>
-
 #define SWITCHTEC_IOCTL_PART_CFG0	0
 #define SWITCHTEC_IOCTL_PART_CFG1	1
 #define SWITCHTEC_IOCTL_PART_IMG0	2
@@ -38,29 +20,22 @@
 #define SWITCHTEC_IOCTL_PART_MAP_1	16
 #define SWITCHTEC_IOCTL_PART_KEY_0	17
 #define SWITCHTEC_IOCTL_PART_KEY_1	18
-
 #define SWITCHTEC_NUM_PARTITIONS_GEN3	13
 #define SWITCHTEC_NUM_PARTITIONS_GEN4	19
-
-/* obsolete: for compatibility with old userspace software */
 #define SWITCHTEC_IOCTL_NUM_PARTITIONS	SWITCHTEC_NUM_PARTITIONS_GEN3
-
 struct switchtec_ioctl_flash_info {
 	__u64 flash_length;
 	__u32 num_partitions;
 	__u32 padding;
 };
-
 #define SWITCHTEC_IOCTL_PART_ACTIVE  1
 #define SWITCHTEC_IOCTL_PART_RUNNING 2
-
 struct switchtec_ioctl_flash_part_info {
 	__u32 flash_partition;
 	__u32 address;
 	__u32 length;
 	__u32 active;
 };
-
 struct switchtec_ioctl_event_summary_legacy {
 	__u64 global;
 	__u64 part_bitmap;
@@ -69,7 +44,6 @@ struct switchtec_ioctl_event_summary_legacy {
 	__u32 part[48];
 	__u32 pff[48];
 };
-
 struct switchtec_ioctl_event_summary {
 	__u64 global;
 	__u64 part_bitmap;
@@ -78,7 +52,6 @@ struct switchtec_ioctl_event_summary {
 	__u32 part[48];
 	__u32 pff[255];
 };
-
 #define SWITCHTEC_IOCTL_EVENT_STACK_ERROR		0
 #define SWITCHTEC_IOCTL_EVENT_PPU_ERROR			1
 #define SWITCHTEC_IOCTL_EVENT_ISP_ERROR			2
@@ -112,10 +85,8 @@ struct switchtec_ioctl_event_summary {
 #define SWITCHTEC_IOCTL_EVENT_INTERCOMM_REQ_NOTIFY	30
 #define SWITCHTEC_IOCTL_EVENT_UEC			31
 #define SWITCHTEC_IOCTL_MAX_EVENTS			32
-
 #define SWITCHTEC_IOCTL_EVENT_LOCAL_PART_IDX -1
 #define SWITCHTEC_IOCTL_EVENT_IDX_ALL -2
-
 #define SWITCHTEC_IOCTL_EVENT_FLAG_CLEAR     (1 << 0)
 #define SWITCHTEC_IOCTL_EVENT_FLAG_EN_POLL   (1 << 1)
 #define SWITCHTEC_IOCTL_EVENT_FLAG_EN_LOG    (1 << 2)
@@ -126,7 +97,6 @@ struct switchtec_ioctl_event_summary {
 #define SWITCHTEC_IOCTL_EVENT_FLAG_DIS_CLI   (1 << 7)
 #define SWITCHTEC_IOCTL_EVENT_FLAG_DIS_FATAL (1 << 8)
 #define SWITCHTEC_IOCTL_EVENT_FLAG_UNUSED    (~0x1ff)
-
 struct switchtec_ioctl_event_ctl {
 	__u32 event_id;
 	__s32 index;
@@ -135,14 +105,12 @@ struct switchtec_ioctl_event_ctl {
 	__u32 count;
 	__u32 data[5];
 };
-
 #define SWITCHTEC_IOCTL_PFF_VEP 100
 struct switchtec_ioctl_pff_port {
 	__u32 pff;
 	__u32 partition;
 	__u32 port;
 };
-
 #define SWITCHTEC_IOCTL_FLASH_INFO \
 	_IOR('W', 0x40, struct switchtec_ioctl_flash_info)
 #define SWITCHTEC_IOCTL_FLASH_PART_INFO \
@@ -157,5 +125,4 @@ struct switchtec_ioctl_pff_port {
 	_IOWR('W', 0x44, struct switchtec_ioctl_pff_port)
 #define SWITCHTEC_IOCTL_PORT_TO_PFF \
 	_IOWR('W', 0x45, struct switchtec_ioctl_pff_port)
-
 #endif

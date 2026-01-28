@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright 2018-2022 Toradex
- */
-
 #include "imx6ull-colibri.dtsi"
-
 / {
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x80000000 0x20000000>;
 	};
-
 	wifi_pwrseq: sdio-pwrseq {
 		compatible = "mmc-pwrseq-simple";
 		pinctrl-names = "default";
@@ -18,11 +11,9 @@
 		reset-gpios = <&gpio5 11 GPIO_ACTIVE_LOW>;
 	};
 };
-
 &cpu0 {
 	clock-frequency = <792000000>;
 };
-
 &gpio1 {
 	gpio-line-names = "SODIMM_8",
 			  "SODIMM_6",
@@ -55,7 +46,6 @@
 			  "SODIMM_196",
 			  "SODIMM_194";
 };
-
 &gpio2 {
 	gpio-line-names = "SODIMM_55",
 			  "SODIMM_63",
@@ -80,7 +70,6 @@
 			  "SODIMM_51",
 			  "SODIMM_53";
 };
-
 &gpio3 {
 	gpio-line-names = "SODIMM_56",
 			  "SODIMM_44",
@@ -112,7 +101,6 @@
 			  "SODIMM_92",
 			  "SODIMM_90";
 };
-
 &gpio4 {
 	gpio-line-names = "",
 			  "",
@@ -144,7 +132,6 @@
 			  "SODIMM_85",
 			  "SODIMM_65";
 };
-
 &gpio5 {
 	gpio-line-names = "SODIMM_43",
 			  "SODIMM_45",
@@ -158,19 +145,15 @@
 			  "",
 			  "SODIMM_105";
 };
-
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gpio1 &pinctrl_gpio2 &pinctrl_gpio3
 		&pinctrl_gpio4 &pinctrl_gpio7>;
-
 };
-
 &iomuxc_snvs {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_snvs_gpio1>;
 };
-
 &usdhc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2>;

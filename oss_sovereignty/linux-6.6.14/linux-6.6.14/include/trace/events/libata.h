@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM libata
-
 #if !defined(_TRACE_LIBATA_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_LIBATA_H
-
 #include <linux/ata.h>
 #include <linux/libata.h>
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #define ata_opcode_name(opcode)	{ opcode, #opcode }
 #define show_opcode_name(val)					\
 	__print_symbolic(val,					\
@@ -106,7 +102,6 @@
 		 ata_opcode_name(ATA_CMD_READ_LONG_ONCE),	\
 		 ata_opcode_name(ATA_CMD_WRITE_LONG),		\
 		 ata_opcode_name(ATA_CMD_WRITE_LONG_ONCE))
-
 #define ata_error_name(result)	{ result, #result }
 #define show_error_name(val)				\
 	__print_symbolic(val,				\
@@ -118,7 +113,6 @@
 		ata_error_name(ATA_ABORTED),		\
 		ata_error_name(ATA_TRK0NF),		\
 		ata_error_name(ATA_AMNF))
-
 #define ata_protocol_name(proto)	{ proto, #proto }
 #define show_protocol_name(val)				\
 	__print_symbolic(val,				\
@@ -131,7 +125,6 @@
 		ata_protocol_name(ATAPI_PROT_NODATA),	\
 		ata_protocol_name(ATAPI_PROT_PIO),	\
 		ata_protocol_name(ATAPI_PROT_DMA))
-
 #define ata_class_name(class)	{ class, #class }
 #define show_class_name(val)				\
 	__print_symbolic(val,				\
@@ -147,7 +140,6 @@
 		ata_class_name(ATA_DEV_ZAC),		\
 		ata_class_name(ATA_DEV_ZAC_UNSUP),	\
 		ata_class_name(ATA_DEV_NONE))
-
 #define ata_sff_hsm_state_name(state)	{ state, #state }
 #define show_sff_hsm_state_name(val)				\
     __print_symbolic(val,				\
@@ -156,35 +148,24 @@
 		ata_sff_hsm_state_name(HSM_ST),		\
 		ata_sff_hsm_state_name(HSM_ST_LAST),	\
 		ata_sff_hsm_state_name(HSM_ST_ERR))
-
 const char *libata_trace_parse_status(struct trace_seq*, unsigned char);
 #define __parse_status(s) libata_trace_parse_status(p, s)
-
 const char *libata_trace_parse_host_stat(struct trace_seq *, unsigned char);
 #define __parse_host_stat(s) libata_trace_parse_host_stat(p, s)
-
 const char *libata_trace_parse_eh_action(struct trace_seq *, unsigned int);
 #define __parse_eh_action(a) libata_trace_parse_eh_action(p, a)
-
 const char *libata_trace_parse_eh_err_mask(struct trace_seq *, unsigned int);
 #define __parse_eh_err_mask(m) libata_trace_parse_eh_err_mask(p, m)
-
 const char *libata_trace_parse_qc_flags(struct trace_seq *, unsigned int);
 #define __parse_qc_flags(f) libata_trace_parse_qc_flags(p, f)
-
 const char *libata_trace_parse_tf_flags(struct trace_seq *, unsigned int);
 #define __parse_tf_flags(f) libata_trace_parse_tf_flags(p, f)
-
 const char *libata_trace_parse_subcmd(struct trace_seq *, unsigned char,
 				      unsigned char, unsigned char);
 #define __parse_subcmd(c,f,h) libata_trace_parse_subcmd(p, c, f, h)
-
 DECLARE_EVENT_CLASS(ata_qc_issue_template,
-
 	TP_PROTO(struct ata_queued_cmd *qc),
-
 	TP_ARGS(qc),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__field( unsigned int,	ata_dev	)
@@ -205,7 +186,6 @@ DECLARE_EVENT_CLASS(ata_qc_issue_template,
 		__field( unsigned char,	proto )
 		__field( unsigned long,	flags )
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= qc->ap->print_id;
 		__entry->ata_dev	= qc->dev->link->pmp + qc->dev->devno;
@@ -224,7 +204,6 @@ DECLARE_EVENT_CLASS(ata_qc_issue_template,
 		__entry->nsect		= qc->tf.nsect;
 		__entry->hob_nsect	= qc->tf.hob_nsect;
 	),
-
 	TP_printk("ata_port=%u ata_dev=%u tag=%d proto=%s cmd=%s%s " \
 		  " tf=(%02x/%02x:%02x:%02x:%02x:%02x/%02x:%02x:%02x:%02x:%02x/%02x)",
 		  __entry->ata_port, __entry->ata_dev, __entry->tag,
@@ -237,21 +216,15 @@ DECLARE_EVENT_CLASS(ata_qc_issue_template,
 		  __entry->hob_lbal, __entry->hob_lbam, __entry->hob_lbah,
 		  __entry->dev)
 );
-
 DEFINE_EVENT(ata_qc_issue_template, ata_qc_prep,
 	     TP_PROTO(struct ata_queued_cmd *qc),
 	     TP_ARGS(qc));
-
 DEFINE_EVENT(ata_qc_issue_template, ata_qc_issue,
 	     TP_PROTO(struct ata_queued_cmd *qc),
 	     TP_ARGS(qc));
-
 DECLARE_EVENT_CLASS(ata_qc_complete_template,
-
 	TP_PROTO(struct ata_queued_cmd *qc),
-
 	TP_ARGS(qc),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__field( unsigned int,	ata_dev	)
@@ -271,7 +244,6 @@ DECLARE_EVENT_CLASS(ata_qc_complete_template,
 		__field( unsigned char,	ctl )
 		__field( unsigned long,	flags )
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= qc->ap->print_id;
 		__entry->ata_dev	= qc->dev->link->pmp + qc->dev->devno;
@@ -290,7 +262,6 @@ DECLARE_EVENT_CLASS(ata_qc_complete_template,
 		__entry->hob_nsect	= qc->result_tf.hob_nsect;
 		__entry->flags		= qc->flags;
 	),
-
 	TP_printk("ata_port=%u ata_dev=%u tag=%d flags=%s status=%s " \
 		  " res=(%02x/%02x:%02x:%02x:%02x:%02x/%02x:%02x:%02x:%02x:%02x/%02x)",
 		  __entry->ata_port, __entry->ata_dev, __entry->tag,
@@ -302,25 +273,18 @@ DECLARE_EVENT_CLASS(ata_qc_complete_template,
 		  __entry->hob_lbal, __entry->hob_lbam, __entry->hob_lbah,
 		  __entry->dev)
 );
-
 DEFINE_EVENT(ata_qc_complete_template, ata_qc_complete_internal,
 	     TP_PROTO(struct ata_queued_cmd *qc),
 	     TP_ARGS(qc));
-
 DEFINE_EVENT(ata_qc_complete_template, ata_qc_complete_failed,
 	     TP_PROTO(struct ata_queued_cmd *qc),
 	     TP_ARGS(qc));
-
 DEFINE_EVENT(ata_qc_complete_template, ata_qc_complete_done,
 	     TP_PROTO(struct ata_queued_cmd *qc),
 	     TP_ARGS(qc));
-
 TRACE_EVENT(ata_tf_load,
-
 	TP_PROTO(struct ata_port *ap, const struct ata_taskfile *tf),
-
 	TP_ARGS(ap, tf),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__field( unsigned char,	cmd	)
@@ -337,7 +301,6 @@ TRACE_EVENT(ata_tf_load,
 		__field( unsigned char,	hob_feature )
 		__field( unsigned char,	proto	)
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= ap->print_id;
 		__entry->proto		= tf->protocol;
@@ -354,7 +317,6 @@ TRACE_EVENT(ata_tf_load,
 		__entry->nsect		= tf->nsect;
 		__entry->hob_nsect	= tf->hob_nsect;
 	),
-
 	TP_printk("ata_port=%u proto=%s cmd=%s%s " \
 		  " tf=(%02x/%02x:%02x:%02x:%02x:%02x/%02x:%02x:%02x:%02x:%02x/%02x)",
 		  __entry->ata_port,
@@ -367,13 +329,9 @@ TRACE_EVENT(ata_tf_load,
 		  __entry->hob_lbal, __entry->hob_lbam, __entry->hob_lbah,
 		  __entry->dev)
 );
-
 DECLARE_EVENT_CLASS(ata_exec_command_template,
-
 	TP_PROTO(struct ata_port *ap, const struct ata_taskfile *tf, unsigned int tag),
-
 	TP_ARGS(ap, tf, tag),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__field( unsigned int,	tag	)
@@ -382,7 +340,6 @@ DECLARE_EVENT_CLASS(ata_exec_command_template,
 		__field( unsigned char,	hob_nsect )
 		__field( unsigned char,	proto	)
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= ap->print_id;
 		__entry->tag		= tag;
@@ -391,84 +348,63 @@ DECLARE_EVENT_CLASS(ata_exec_command_template,
 		__entry->feature	= tf->feature;
 		__entry->hob_nsect	= tf->hob_nsect;
 	),
-
 	TP_printk("ata_port=%u tag=%d proto=%s cmd=%s%s",
 		  __entry->ata_port, __entry->tag,
 		  show_protocol_name(__entry->proto),
 		  show_opcode_name(__entry->cmd),
 		  __parse_subcmd(__entry->cmd, __entry->feature, __entry->hob_nsect))
 );
-
 DEFINE_EVENT(ata_exec_command_template, ata_exec_command,
 	     TP_PROTO(struct ata_port *ap, const struct ata_taskfile *tf, unsigned int tag),
 	     TP_ARGS(ap, tf, tag));
-
 DEFINE_EVENT(ata_exec_command_template, ata_bmdma_setup,
 	     TP_PROTO(struct ata_port *ap, const struct ata_taskfile *tf, unsigned int tag),
 	     TP_ARGS(ap, tf, tag));
-
 DEFINE_EVENT(ata_exec_command_template, ata_bmdma_start,
 	     TP_PROTO(struct ata_port *ap, const struct ata_taskfile *tf, unsigned int tag),
 	     TP_ARGS(ap, tf, tag));
-
 DEFINE_EVENT(ata_exec_command_template, ata_bmdma_stop,
 	     TP_PROTO(struct ata_port *ap, const struct ata_taskfile *tf, unsigned int tag),
 	     TP_ARGS(ap, tf, tag));
-
 TRACE_EVENT(ata_bmdma_status,
-
 	TP_PROTO(struct ata_port *ap, unsigned int host_stat),
-
 	TP_ARGS(ap, host_stat),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__field( unsigned int,	tag	)
 		__field( unsigned char,	host_stat )
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= ap->print_id;
 		__entry->host_stat	= host_stat;
 	),
-
 	TP_printk("ata_port=%u host_stat=%s",
 		  __entry->ata_port,
 		  __parse_host_stat(__entry->host_stat))
 );
-
 TRACE_EVENT(ata_eh_link_autopsy,
-
 	TP_PROTO(struct ata_device *dev, unsigned int eh_action, unsigned int eh_err_mask),
-
 	TP_ARGS(dev, eh_action, eh_err_mask),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__field( unsigned int,	ata_dev	)
 		__field( unsigned int,	eh_action )
 		__field( unsigned int,	eh_err_mask)
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= dev->link->ap->print_id;
 		__entry->ata_dev	= dev->link->pmp + dev->devno;
 		__entry->eh_action	= eh_action;
 		__entry->eh_err_mask	= eh_err_mask;
 	),
-
 	TP_printk("ata_port=%u ata_dev=%u eh_action=%s err_mask=%s",
 		  __entry->ata_port, __entry->ata_dev,
 		  __parse_eh_action(__entry->eh_action),
 		  __parse_eh_err_mask(__entry->eh_err_mask))
 );
-
 TRACE_EVENT(ata_eh_link_autopsy_qc,
-
 	TP_PROTO(struct ata_queued_cmd *qc),
-
 	TP_ARGS(qc),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__field( unsigned int,	ata_dev	)
@@ -476,7 +412,6 @@ TRACE_EVENT(ata_eh_link_autopsy_qc,
 		__field( unsigned int,	qc_flags )
 		__field( unsigned int,	eh_err_mask)
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= qc->ap->print_id;
 		__entry->ata_dev	= qc->dev->link->pmp + qc->dev->devno;
@@ -484,159 +419,117 @@ TRACE_EVENT(ata_eh_link_autopsy_qc,
 		__entry->qc_flags	= qc->flags;
 		__entry->eh_err_mask	= qc->err_mask;
 	),
-
 	TP_printk("ata_port=%u ata_dev=%u tag=%d flags=%s err_mask=%s",
 		  __entry->ata_port, __entry->ata_dev, __entry->tag,
 		  __parse_qc_flags(__entry->qc_flags),
 		  __parse_eh_err_mask(__entry->eh_err_mask))
 );
-
 DECLARE_EVENT_CLASS(ata_eh_action_template,
-
 	TP_PROTO(struct ata_link *link, unsigned int devno, unsigned int eh_action),
-
 	TP_ARGS(link, devno, eh_action),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__field( unsigned int,	ata_dev	)
 		__field( unsigned int,	eh_action )
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= link->ap->print_id;
 		__entry->ata_dev	= link->pmp + devno;
 		__entry->eh_action	= eh_action;
 	),
-
 	TP_printk("ata_port=%u ata_dev=%u eh_action=%s",
 		  __entry->ata_port, __entry->ata_dev,
 		  __parse_eh_action(__entry->eh_action))
 );
-
 DEFINE_EVENT(ata_eh_action_template, ata_eh_about_to_do,
 	     TP_PROTO(struct ata_link *link, unsigned int devno, unsigned int eh_action),
 	     TP_ARGS(link, devno, eh_action));
-
 DEFINE_EVENT(ata_eh_action_template, ata_eh_done,
 	     TP_PROTO(struct ata_link *link, unsigned int devno, unsigned int eh_action),
 	     TP_ARGS(link, devno, eh_action));
-
 DECLARE_EVENT_CLASS(ata_link_reset_begin_template,
-
 	TP_PROTO(struct ata_link *link, unsigned int *class, unsigned long deadline),
-
 	TP_ARGS(link, class, deadline),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__array( unsigned int,	class, 2 )
 		__field( unsigned long,	deadline )
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= link->ap->print_id;
 		memcpy(__entry->class, class, 2);
 		__entry->deadline	= deadline;
 	),
-
 	TP_printk("ata_port=%u deadline=%lu classes=[%s,%s]",
 		  __entry->ata_port, __entry->deadline,
 		  show_class_name(__entry->class[0]),
 		  show_class_name(__entry->class[1]))
 );
-
 DEFINE_EVENT(ata_link_reset_begin_template, ata_link_hardreset_begin,
 	     TP_PROTO(struct ata_link *link, unsigned int *class, unsigned long deadline),
 	     TP_ARGS(link, class, deadline));
-
 DEFINE_EVENT(ata_link_reset_begin_template, ata_slave_hardreset_begin,
 	     TP_PROTO(struct ata_link *link, unsigned int *class, unsigned long deadline),
 	     TP_ARGS(link, class, deadline));
-
 DEFINE_EVENT(ata_link_reset_begin_template, ata_link_softreset_begin,
 	     TP_PROTO(struct ata_link *link, unsigned int *class, unsigned long deadline),
 	     TP_ARGS(link, class, deadline));
-
 DECLARE_EVENT_CLASS(ata_link_reset_end_template,
-
 	TP_PROTO(struct ata_link *link, unsigned int *class, int rc),
-
 	TP_ARGS(link, class, rc),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__array( unsigned int,	class, 2 )
 		__field( int,		rc	)
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= link->ap->print_id;
 		memcpy(__entry->class, class, 2);
 		__entry->rc		= rc;
 	),
-
 	TP_printk("ata_port=%u rc=%d class=[%s,%s]",
 		  __entry->ata_port, __entry->rc,
 		  show_class_name(__entry->class[0]),
 		  show_class_name(__entry->class[1]))
 );
-
 DEFINE_EVENT(ata_link_reset_end_template, ata_link_hardreset_end,
 	     TP_PROTO(struct ata_link *link, unsigned int *class, int rc),
 	     TP_ARGS(link, class, rc));
-
 DEFINE_EVENT(ata_link_reset_end_template, ata_slave_hardreset_end,
 	     TP_PROTO(struct ata_link *link, unsigned int *class, int rc),
 	     TP_ARGS(link, class, rc));
-
 DEFINE_EVENT(ata_link_reset_end_template, ata_link_softreset_end,
 	     TP_PROTO(struct ata_link *link, unsigned int *class, int rc),
 	     TP_ARGS(link, class, rc));
-
 DEFINE_EVENT(ata_link_reset_end_template, ata_link_postreset,
 	     TP_PROTO(struct ata_link *link, unsigned int *class, int rc),
 	     TP_ARGS(link, class, rc));
-
 DEFINE_EVENT(ata_link_reset_end_template, ata_slave_postreset,
 	     TP_PROTO(struct ata_link *link, unsigned int *class, int rc),
 	     TP_ARGS(link, class, rc));
-
 DECLARE_EVENT_CLASS(ata_port_eh_begin_template,
-
 	TP_PROTO(struct ata_port *ap),
-
 	TP_ARGS(ap),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= ap->print_id;
 	),
-
 	TP_printk("ata_port=%u", __entry->ata_port)
 );
-
 DEFINE_EVENT(ata_port_eh_begin_template, ata_std_sched_eh,
 	     TP_PROTO(struct ata_port *ap),
 	     TP_ARGS(ap));
-
 DEFINE_EVENT(ata_port_eh_begin_template, ata_port_freeze,
 	     TP_PROTO(struct ata_port *ap),
 	     TP_ARGS(ap));
-
 DEFINE_EVENT(ata_port_eh_begin_template, ata_port_thaw,
 	     TP_PROTO(struct ata_port *ap),
 	     TP_ARGS(ap));
-
 DECLARE_EVENT_CLASS(ata_sff_hsm_template,
-
 	TP_PROTO(struct ata_queued_cmd *qc, unsigned char status),
-
 	TP_ARGS(qc, status),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__field( unsigned int,	ata_dev	)
@@ -646,7 +539,6 @@ DECLARE_EVENT_CLASS(ata_sff_hsm_template,
 		__field( unsigned int,	hsm_state )
 		__field( unsigned char,	dev_state )
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= qc->ap->print_id;
 		__entry->ata_dev	= qc->dev->link->pmp + qc->dev->devno;
@@ -656,7 +548,6 @@ DECLARE_EVENT_CLASS(ata_sff_hsm_template,
 		__entry->hsm_state	= qc->ap->hsm_task_state;
 		__entry->dev_state	= status;
 	),
-
 	TP_printk("ata_port=%u ata_dev=%u tag=%d proto=%s flags=%s task_state=%s dev_stat=0x%X",
 		  __entry->ata_port, __entry->ata_dev, __entry->tag,
 		  show_protocol_name(__entry->protocol),
@@ -664,25 +555,18 @@ DECLARE_EVENT_CLASS(ata_sff_hsm_template,
 		  show_sff_hsm_state_name(__entry->hsm_state),
 		  __entry->dev_state)
 );
-
 DEFINE_EVENT(ata_sff_hsm_template, ata_sff_hsm_state,
 	TP_PROTO(struct ata_queued_cmd *qc, unsigned char state),
 	TP_ARGS(qc, state));
-
 DEFINE_EVENT(ata_sff_hsm_template, ata_sff_hsm_command_complete,
 	TP_PROTO(struct ata_queued_cmd *qc, unsigned char state),
 	TP_ARGS(qc, state));
-
 DEFINE_EVENT(ata_sff_hsm_template, ata_sff_port_intr,
 	TP_PROTO(struct ata_queued_cmd *qc, unsigned char state),
 	TP_ARGS(qc, state));
-
 DECLARE_EVENT_CLASS(ata_transfer_data_template,
-
 	TP_PROTO(struct ata_queued_cmd *qc, unsigned int offset, unsigned int count),
-
 	TP_ARGS(qc, offset, count),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__field( unsigned int,	ata_dev	)
@@ -691,7 +575,6 @@ DECLARE_EVENT_CLASS(ata_transfer_data_template,
 		__field( unsigned int,	offset	)
 		__field( unsigned int,	bytes	)
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= qc->ap->print_id;
 		__entry->ata_dev	= qc->dev->link->pmp + qc->dev->devno;
@@ -700,51 +583,37 @@ DECLARE_EVENT_CLASS(ata_transfer_data_template,
 		__entry->offset		= offset;
 		__entry->bytes		= count;
 	),
-
 	TP_printk("ata_port=%u ata_dev=%u tag=%d flags=%s offset=%u bytes=%u",
 		  __entry->ata_port, __entry->ata_dev, __entry->tag,
 		  __parse_tf_flags(__entry->flags),
 		  __entry->offset, __entry->bytes)
 );
-
 DEFINE_EVENT(ata_transfer_data_template, ata_sff_pio_transfer_data,
 	     TP_PROTO(struct ata_queued_cmd *qc, unsigned int offset, unsigned int count),
 	     TP_ARGS(qc, offset, count));
-
 DEFINE_EVENT(ata_transfer_data_template, atapi_pio_transfer_data,
 	     TP_PROTO(struct ata_queued_cmd *qc, unsigned int offset, unsigned int count),
 	     TP_ARGS(qc, offset, count));
-
 DEFINE_EVENT(ata_transfer_data_template, atapi_send_cdb,
 	     TP_PROTO(struct ata_queued_cmd *qc, unsigned int offset, unsigned int count),
 	     TP_ARGS(qc, offset, count));
-
 DECLARE_EVENT_CLASS(ata_sff_template,
-
 	TP_PROTO(struct ata_port *ap),
-
 	TP_ARGS(ap),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	ata_port )
 		__field( unsigned char,	hsm_state )
 	),
-
 	TP_fast_assign(
 		__entry->ata_port	= ap->print_id;
 		__entry->hsm_state	= ap->hsm_task_state;
 	),
-
 	TP_printk("ata_port=%u task_state=%s",
 		  __entry->ata_port,
 		  show_sff_hsm_state_name(__entry->hsm_state))
 );
-
 DEFINE_EVENT(ata_sff_template, ata_sff_flush_pio_task,
 	     TP_PROTO(struct ata_port *ap),
 	     TP_ARGS(ap));
-
-#endif /*  _TRACE_LIBATA_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

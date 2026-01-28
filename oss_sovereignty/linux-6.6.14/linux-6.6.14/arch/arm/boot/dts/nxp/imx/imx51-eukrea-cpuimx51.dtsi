@@ -1,36 +1,25 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013 Eukréa Electromatique <denis@eukrea.com>
- */
-
 #include "imx51.dtsi"
-
 / {
 	model = "Eukrea CPUIMX51";
 	compatible = "eukrea,cpuimx51", "fsl,imx51";
-
 	memory@90000000 {
 		device_type = "memory";
-		reg = <0x90000000 0x10000000>; /* 256M */
+		reg = <0x90000000 0x10000000>;  
 	};
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec>;
 	status = "okay";
 };
-
 &i2c1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
-
 	pcf8563@51 {
 		compatible = "nxp,pcf8563";
 		reg = <0x51>;
 	};
-
 	tsc2007: tsc2007@49 {
 		compatible = "ti,tsc2007";
 		gpios = <&gpio4 0 1>;
@@ -42,7 +31,6 @@
 		ti,x-plate-ohms = <180>;
 	};
 };
-
 &iomuxc {
 	imx51-eukrea {
 		pinctrl_tsc2007_1: tsc2007grp-1 {
@@ -51,7 +39,6 @@
 				MX51_PAD_NANDF_D8__GPIO4_0 0x1f5
 			>;
 		};
-
 		pinctrl_fec: fecgrp {
 			fsl,pins = <
 				MX51_PAD_DI_GP3__FEC_TX_ER		0x80000000
@@ -74,7 +61,6 @@
 				MX51_PAD_DISP2_DAT15__FEC_TDATA0	0x80000000
 			>;
 		};
-
 		pinctrl_i2c1: i2c1grp {
 			fsl,pins = <
 				MX51_PAD_SD2_CMD__I2C1_SCL		0x400001ed
@@ -83,7 +69,6 @@
 		};
 	};
 };
-
 &nfc {
 	nand-bus-width = <8>;
 	nand-ecc-mode = "hw";

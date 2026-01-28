@@ -1,13 +1,7 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-
-# Return true if perf_event_paranoid is > $1 and not running as root.
 function ParanoidAndNotRoot()
 {
 	 [ "$(id -u)" != 0 ] && [ "$(cat /proc/sys/kernel/perf_event_paranoid)" -gt $1 ]
 }
-
-# $1 name $2 extra_opt
 check_no_args()
 {
         echo -n "Checking $1 output: no args "
@@ -15,7 +9,6 @@ check_no_args()
         commachecker --no-args
         echo "[Success]"
 }
-
 check_system_wide()
 {
 	echo -n "Checking $1 output: system wide "
@@ -28,7 +21,6 @@ check_system_wide()
 	commachecker --system-wide
 	echo "[Success]"
 }
-
 check_system_wide_no_aggr()
 {
 	echo -n "Checking $1 output: system wide no aggregation "
@@ -41,7 +33,6 @@ check_system_wide_no_aggr()
 	commachecker --system-wide-no-aggr
 	echo "[Success]"
 }
-
 check_interval()
 {
 	echo -n "Checking $1 output: interval "
@@ -49,7 +40,6 @@ check_interval()
 	commachecker --interval
 	echo "[Success]"
 }
-
 check_event()
 {
 	echo -n "Checking $1 output: event "
@@ -57,7 +47,6 @@ check_event()
 	commachecker --event
 	echo "[Success]"
 }
-
 check_per_core()
 {
 	echo -n "Checking $1 output: per core "
@@ -70,7 +59,6 @@ check_per_core()
 	commachecker --per-core
 	echo "[Success]"
 }
-
 check_per_thread()
 {
 	echo -n "Checking $1 output: per thread "
@@ -83,7 +71,6 @@ check_per_thread()
 	commachecker --per-thread
 	echo "[Success]"
 }
-
 check_per_cache_instance()
 {
 	echo -n "Checking $1 output: per cache instance "
@@ -96,7 +83,6 @@ check_per_cache_instance()
 	commachecker --per-cache
 	echo "[Success]"
 }
-
 check_per_die()
 {
 	echo -n "Checking $1 output: per die "
@@ -109,7 +95,6 @@ check_per_die()
 	commachecker --per-die
 	echo "[Success]"
 }
-
 check_per_node()
 {
 	echo -n "Checking $1 output: per node "
@@ -122,7 +107,6 @@ check_per_node()
 	commachecker --per-node
 	echo "[Success]"
 }
-
 check_per_socket()
 {
 	echo -n "Checking $1 output: per socket "
@@ -135,22 +119,8 @@ check_per_socket()
 	commachecker --per-socket
 	echo "[Success]"
 }
-
-# The perf stat options for per-socket, per-core, per-die
-# and -A ( no_aggr mode ) uses the info fetched from this
-# directory: "/sys/devices/system/cpu/cpu*/topology". For
-# example, socket value is fetched from "physical_package_id"
-# file in topology directory.
-# Reference: cpu__get_topology_int in util/cpumap.c
-# If the platform doesn't expose topology information, values
-# will be set to -1. For example, incase of pSeries platform
-# of powerpc, value for  "physical_package_id" is restricted
-# and set to -1. Check here validates the socket-id read from
-# topology file before proceeding further
-
 FILE_LOC="/sys/devices/system/cpu/cpu*/topology/"
 FILE_NAME="physical_package_id"
-
 function check_for_topology()
 {
 	if ! ParanoidAndNotRoot 0

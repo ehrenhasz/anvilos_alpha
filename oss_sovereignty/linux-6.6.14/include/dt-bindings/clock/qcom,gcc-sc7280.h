@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SC7280_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SC7280_H
-
-/* GCC clocks */
 #define GCC_GPLL0					0
 #define GCC_GPLL0_OUT_EVEN				1
 #define GCC_GPLL0_OUT_ODD				2
@@ -192,8 +185,6 @@
 #define GCC_WPSS_RSCP_CLK				182
 #define GCC_EDP_CLKREF_EN				183
 #define GCC_SEC_CTRL_CLK_SRC				184
-
-/* GCC power domains */
 #define GCC_PCIE_0_GDSC					0
 #define GCC_PCIE_1_GDSC					1
 #define GCC_UFS_PHY_GDSC				2
@@ -204,8 +195,6 @@
 #define HLOS1_VOTE_MMNOC_MMU_TBU_SF0_GDSC		7
 #define HLOS1_VOTE_TURING_MMU_TBU0_GDSC			8
 #define HLOS1_VOTE_TURING_MMU_TBU1_GDSC			9
-
-/* GCC resets */
 #define GCC_PCIE_0_BCR					0
 #define GCC_PCIE_0_PHY_BCR				1
 #define GCC_PCIE_1_BCR					2
@@ -222,5 +211,4 @@
 #define GCC_USB3_PHY_PRIM_BCR				13
 #define GCC_USB3PHY_PHY_PRIM_BCR			14
 #define GCC_USB_PHY_CFG_AHB2PHY_BCR			15
-
 #endif

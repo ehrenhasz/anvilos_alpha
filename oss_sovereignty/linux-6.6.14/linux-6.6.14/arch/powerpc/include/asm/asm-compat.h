@@ -1,13 +1,9 @@
 #ifndef _ASM_POWERPC_ASM_COMPAT_H
 #define _ASM_POWERPC_ASM_COMPAT_H
-
 #include <asm/asm-const.h>
 #include <asm/types.h>
 #include <asm/ppc-opcode.h>
-
 #ifdef __powerpc64__
-
-/* operations for longs and pointers */
 #define PPC_LL		stringify_in_c(ld)
 #define PPC_STL		stringify_in_c(std)
 #define PPC_STLU	stringify_in_c(stdu)
@@ -24,7 +20,6 @@
 #define PPC_SRL		stringify_in_c(srd)
 #define PPC_LR_STKOFF	16
 #define PPC_MIN_STKFRM	112
-
 #ifdef __BIG_ENDIAN__
 #define LHZX_BE	stringify_in_c(lhzx)
 #define LWZX_BE	stringify_in_c(lwzx)
@@ -38,10 +33,7 @@
 #define STWX_BE	stringify_in_c(stwbrx)
 #define STDX_BE	stringify_in_c(stdbrx)
 #endif
-
-#else /* 32-bit */
-
-/* operations for longs and pointers */
+#else  
 #define PPC_LL		stringify_in_c(lwz)
 #define PPC_STL		stringify_in_c(stw)
 #define PPC_STLU	stringify_in_c(stwu)
@@ -58,7 +50,5 @@
 #define PPC_SRL		stringify_in_c(srw)
 #define PPC_LR_STKOFF	4
 #define PPC_MIN_STKFRM	16
-
 #endif
-
-#endif /* _ASM_POWERPC_ASM_COMPAT_H */
+#endif  

@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * isar.h   ISAR (Siemens PSB 7110) specific defines
- *
- * Author Karsten Keil (keil@isdn4linux.de)
- *
- * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
- */
-
 #include "iohelper.h"
-
 struct isar_hw;
-
 struct isar_ch {
 	struct bchannel		bch;
 	struct isar_hw		*is;
@@ -27,11 +15,10 @@ struct isar_ch {
 	u8			try_mod;
 	u8			conmsg[16];
 };
-
 struct isar_hw {
 	struct	isar_ch	ch[2];
 	void		*hw;
-	spinlock_t	*hwlock;	/* lock HW access */
+	spinlock_t	*hwlock;	 
 	char		*name;
 	struct module	*owner;
 	read_reg_func	*read_reg;
@@ -52,7 +39,6 @@ struct isar_hw {
 	u8		buf[256];
 	u8		log[256];
 };
-
 #define ISAR_IRQMSK	0x04
 #define ISAR_IRQSTA	0x04
 #define ISAR_IRQBIT	0x75
@@ -65,7 +51,6 @@ struct isar_hw {
 #define ISAR_MBOX	0x4c
 #define ISAR_WADR	0x4a
 #define ISAR_RADR	0x48
-
 #define ISAR_HIS_VNR		0x14
 #define ISAR_HIS_DKEY		0x02
 #define ISAR_HIS_FIRM		0x1e
@@ -85,7 +70,6 @@ struct isar_hw {
 #define ISAR_HIS_DPS1		0x40
 #define ISAR_HIS_DPS2		0x80
 #define SET_DPS(x)		((x << 6) & 0xc0)
-
 #define ISAR_IIS_MSCMSD		0x3f
 #define ISAR_IIS_VNR		0x15
 #define ISAR_IIS_DKEY		0x03
@@ -100,16 +84,12 @@ struct isar_hw {
 #define ISAR_IIS_IOM2RSP	0x27
 #define ISAR_IIS_RDATA		0x20
 #define ISAR_IIS_INVMSG		0x3f
-
 #define ISAR_CTRL_SWVER	0x10
 #define ISAR_CTRL_STST	0x40
-
 #define ISAR_MSG_HWVER	0x20
-
 #define ISAR_DP1_USE	1
 #define ISAR_DP2_USE	2
 #define ISAR_RATE_REQ	3
-
 #define PMOD_DISABLE	0
 #define PMOD_FAX	1
 #define PMOD_DATAMODEM	2
@@ -118,7 +98,6 @@ struct isar_hw {
 #define PMOD_DTMF	5
 #define PMOD_DTMF_TRANS	6
 #define PMOD_BYPASS	7
-
 #define PCTRL_ORIG	0x80
 #define PV32P2_V23R	0x40
 #define PV32P2_V22A	0x20
@@ -126,8 +105,6 @@ struct isar_hw {
 #define PV32P2_V22C	0x08
 #define PV32P2_V21	0x02
 #define PV32P2_BEL	0x01
-
-/* LSB MSB in ISAR doc wrong !!! Arghhh */
 #define PV32P3_AMOD	0x80
 #define PV32P3_V32B	0x02
 #define PV32P3_V23B	0x01
@@ -153,10 +130,8 @@ struct isar_hw {
 #define PV32P5_UT144	0x0f
 #define PV32P6_CTN	0x01
 #define PV32P6_ATN	0x02
-
 #define PFAXP2_CTN	0x01
 #define PFAXP2_ATN	0x04
-
 #define PSEV_10MS_TIMER	0x02
 #define PSEV_CON_ON	0x18
 #define PSEV_CON_OFF	0x19
@@ -170,7 +145,6 @@ struct isar_hw {
 #define PSEV_REM_RET	0xcc
 #define PSEV_REM_REN	0xcd
 #define PSEV_GSTN_CLR	0xd4
-
 #define PSEV_RSP_READY	0xbc
 #define PSEV_LINE_TX_H	0xb3
 #define PSEV_LINE_TX_B	0xb2
@@ -182,9 +156,7 @@ struct isar_hw {
 #define PSEV_RSP_SILDET	0xbe
 #define PSEV_RSP_SILOFF	0xab
 #define PSEV_FLAGS_DET	0xba
-
 #define PCTRL_CMD_TDTMF	0x5a
-
 #define PCTRL_CMD_FTH	0xa7
 #define PCTRL_CMD_FRH	0xa5
 #define PCTRL_CMD_FTM	0xa8
@@ -194,16 +166,13 @@ struct isar_hw {
 #define PCTRL_CMD_ESC	0xa4
 #define PCTRL_CMD_SILOFF 0xab
 #define PCTRL_CMD_HALT	0xa9
-
 #define PCTRL_LOC_RET	0xcf
 #define PCTRL_LOC_REN	0xce
-
 #define SMODE_DISABLE	0
 #define SMODE_V14	2
 #define SMODE_HDLC	3
 #define SMODE_BINARY	4
 #define SMODE_FSK_V14	5
-
 #define SCTRL_HDMC_BOTH	0x00
 #define SCTRL_HDMC_DTX	0x80
 #define SCTRL_HDMC_DRX	0x40
@@ -216,17 +185,13 @@ struct isar_hw {
 #define S_P1_CHS_7	0x02
 #define S_P1_CHS_6	0x01
 #define S_P1_CHS_5	0x00
-
 #define S_P2_BFT_DEF	0x10
-
 #define IOM_CTRL_ENA	0x80
 #define IOM_CTRL_NOPCM	0x00
 #define IOM_CTRL_ALAW	0x02
 #define IOM_CTRL_ULAW	0x04
 #define IOM_CTRL_RCV	0x01
-
 #define IOM_P1_TXD	0x10
-
 #define HDLC_FED	0x40
 #define HDLC_FSD	0x20
 #define HDLC_FST	0x20
@@ -235,15 +200,12 @@ struct isar_hw {
 #define HDLC_ERR_RER	0x08
 #define HDLC_ERR_CER	0x04
 #define SART_NMD	0x01
-
 #define BSTAT_RDM0	0x1
 #define BSTAT_RDM1	0x2
 #define BSTAT_RDM2	0x4
 #define BSTAT_RDM3	0x8
 #define BSTEV_TBO	0x1f
 #define BSTEV_RBO	0x2f
-
-/* FAX State Machine */
 #define STFAX_NULL	0
 #define STFAX_READY	1
 #define STFAX_LINE	2
@@ -251,6 +213,5 @@ struct isar_hw {
 #define STFAX_ACTIV	4
 #define STFAX_ESCAPE	5
 #define STFAX_SILDET	6
-
 extern u32 mISDNisar_init(struct isar_hw *, void *);
 extern void mISDNisar_irq(struct isar_hw *);

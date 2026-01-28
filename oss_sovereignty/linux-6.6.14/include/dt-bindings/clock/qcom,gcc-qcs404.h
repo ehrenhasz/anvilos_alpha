@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_QCS404_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_QCS404_H
-
 #define GCC_APSS_AHB_CLK_SRC				0
 #define GCC_BLSP1_QUP0_I2C_APPS_CLK_SRC			1
 #define GCC_BLSP1_QUP0_SPI_APPS_CLK_SRC			2
@@ -152,7 +146,6 @@
 #define GCC_BIMC_CDSP_CLK				144
 #define GCC_CDSP_TBU_CLK				145
 #define GCC_CDSP_BIMC_CLK_SRC				146
-
 #define GCC_GENI_IR_BCR					0
 #define GCC_USB_HS_BCR					1
 #define GCC_USB2_HS_PHY_ONLY_BCR			2
@@ -176,9 +169,6 @@
 #define GCC_PCIE_0_SLEEP_ARES				20
 #define GCC_PCIE_0_PIPE_ARES				21
 #define GCC_WDSP_RESTART				22
-
-/* Indexes for GDSCs */
 #define MDSS_GDSC				0
 #define OXILI_GDSC				1
-
 #endif

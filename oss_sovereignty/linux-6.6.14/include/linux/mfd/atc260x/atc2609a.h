@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * ATC2609A PMIC register definitions
- *
- * Copyright (C) 2019 Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- */
-
 #ifndef __LINUX_MFD_ATC260X_ATC2609A_H
 #define __LINUX_MFD_ATC260X_ATC2609A_H
-
 enum atc2609a_irq_def {
 	ATC2609A_IRQ_AUDIO = 0,
 	ATC2609A_IRQ_OV,
@@ -21,8 +13,6 @@ enum atc2609a_irq_def {
 	ATC2609A_IRQ_REMCON,
 	ATC2609A_IRQ_POWER_IN,
 };
-
-/* PMU Registers */
 #define ATC2609A_PMU_SYS_CTL0			0x00
 #define ATC2609A_PMU_SYS_CTL1			0x01
 #define ATC2609A_PMU_SYS_CTL2			0x02
@@ -171,8 +161,6 @@ enum atc2609a_irq_def {
 #define ATC2609A_IRC_KDC			0x93
 #define ATC2609A_IRC_WK				0x94
 #define ATC2609A_IRC_RCC			0x95
-
-/* AUDIO_OUT Registers */
 #define ATC2609A_AUDIOINOUT_CTL			0xA0
 #define ATC2609A_AUDIO_DEBUGOUTCTL		0xA1
 #define ATC2609A_DAC_DIGITALCTL			0xA2
@@ -181,8 +169,6 @@ enum atc2609a_irq_def {
 #define ATC2609A_DAC_ANALOG1			0xA5
 #define ATC2609A_DAC_ANALOG2			0xA6
 #define ATC2609A_DAC_ANALOG3			0xA7
-
-/* AUDIO_IN Registers */
 #define ATC2609A_ADC_DIGITALCTL			0xA8
 #define ATC2609A_ADC_HPFCTL			0xA9
 #define ATC2609A_ADC_CTL			0xAA
@@ -191,21 +177,13 @@ enum atc2609a_irq_def {
 #define ATC2609A_AGC_CTL2			0xAD
 #define ATC2609A_ADC_ANALOG0			0xAE
 #define ATC2609A_ADC_ANALOG1			0xAF
-
-/* PCM_IF Registers */
 #define ATC2609A_PCM0_CTL			0xB0
 #define ATC2609A_PCM1_CTL			0xB1
 #define ATC2609A_PCM2_CTL			0xB2
 #define ATC2609A_PCMIF_CTL			0xB3
-
-/* CMU_CONTROL Registers */
 #define ATC2609A_CMU_DEVRST			0xC1
-
-/* INTS Registers */
 #define ATC2609A_INTS_PD			0xC8
 #define ATC2609A_INTS_MSK			0xC9
-
-/* MFP Registers */
 #define ATC2609A_MFP_CTL			0xD0
 #define ATC2609A_PAD_VSEL			0xD1
 #define ATC2609A_GPIO_OUTEN			0xD2
@@ -217,15 +195,9 @@ enum atc2609a_irq_def {
 #define ATC2609A_DEBUG_IE			0xD8
 #define ATC2609A_DEBUG_OE			0xD9
 #define ATC2609A_CHIP_VER			0xDC
-
-/* PWSI Registers */
 #define ATC2609A_PWSI_CTL			0xF0
 #define ATC2609A_PWSI_STATUS			0xF1
-
-/* TWSI Registers */
 #define ATC2609A_SADDR				0xFF
-
-/* PMU_SYS_CTL0 Register Mask Bits */
 #define ATC2609A_PMU_SYS_CTL0_IR_WK_EN			BIT(5)
 #define ATC2609A_PMU_SYS_CTL0_RESET_WK_EN		BIT(6)
 #define ATC2609A_PMU_SYS_CTL0_HDSW_WK_EN		BIT(7)
@@ -238,8 +210,6 @@ enum atc2609a_irq_def {
 #define ATC2609A_PMU_SYS_CTL0_WALL_WK_EN		BIT(14)
 #define ATC2609A_PMU_SYS_CTL0_USB_WK_EN			BIT(15)
 #define ATC2609A_PMU_SYS_CTL0_WK_ALL			(GENMASK(15, 5) & (~BIT(10)))
-
-/* PMU_SYS_CTL1 Register Mask Bits */
 #define ATC2609A_PMU_SYS_CTL1_EN_S1			BIT(0)
 #define ATC2609A_PMU_SYS_CTL1_LB_S4_EN			BIT(2)
 #define ATC2609A_PMU_SYS_CTL1_LB_S4			GENMASK(4, 3)
@@ -255,8 +225,6 @@ enum atc2609a_irq_def {
 #define ATC2609A_PMU_SYS_CTL1_ONOFF_LONG_WK_FLAG	BIT(13)
 #define ATC2609A_PMU_SYS_CTL1_WALL_WK_FLAG		BIT(14)
 #define ATC2609A_PMU_SYS_CTL1_USB_WK_FLAG		BIT(15)
-
-/* PMU_SYS_CTL2 Register Mask Bits */
 #define ATC2609A_PMU_SYS_CTL2_PMU_A_EN			BIT(0)
 #define ATC2609A_PMU_SYS_CTL2_ONOFF_PRESS_INT_EN	BIT(1)
 #define ATC2609A_PMU_SYS_CTL2_ONOFF_PRESS_PD		BIT(2)
@@ -269,22 +237,16 @@ enum atc2609a_irq_def {
 #define ATC2609A_PMU_SYS_CTL2_ONOFF_LONG_PRESS		BIT(13)
 #define ATC2609A_PMU_SYS_CTL2_ONOFF_SHORT_PRESS		BIT(14)
 #define ATC2609A_PMU_SYS_CTL2_ONOFF_PRESS		BIT(15)
-
-/* PMU_SYS_CTL3 Register Mask Bits */
 #define ATC2609A_PMU_SYS_CTL3_S2S3TOS1_TIMER		GENMASK(8, 7)
 #define ATC2609A_PMU_SYS_CTL3_S2S3TOS1_TIMER_EN		BIT(9)
 #define ATC2609A_PMU_SYS_CTL3_S3_TIMER			GENMASK(12, 10)
 #define ATC2609A_PMU_SYS_CTL3_S3_TIMER_EN		BIT(13)
 #define ATC2609A_PMU_SYS_CTL3_EN_S3			BIT(14)
 #define ATC2609A_PMU_SYS_CTL3_EN_S2			BIT(15)
-
-/* PMU_SYS_CTL5 Register Mask Bits */
 #define ATC2609A_PMU_SYS_CTL5_WALLWKDTEN		BIT(7)
 #define ATC2609A_PMU_SYS_CTL5_VBUSWKDTEN		BIT(8)
 #define ATC2609A_PMU_SYS_CTL5_REMCON_DECT_EN		BIT(9)
 #define ATC2609A_PMU_SYS_CTL5_ONOFF_8S_SEL		BIT(10)
-
-/* INTS_MSK Register Mask Bits */
 #define ATC2609A_INTS_MSK_AUDIO				BIT(0)
 #define ATC2609A_INTS_MSK_OV				BIT(1)
 #define ATC2609A_INTS_MSK_OC				BIT(2)
@@ -296,13 +258,8 @@ enum atc2609a_irq_def {
 #define ATC2609A_INTS_MSK_IR				BIT(8)
 #define ATC2609A_INTS_MSK_REMCON			BIT(9)
 #define ATC2609A_INTS_MSK_POWERIN			BIT(10)
-
-/* CMU_DEVRST Register Mask Bits */
 #define ATC2609A_CMU_DEVRST_AUDIO			BIT(0)
 #define ATC2609A_CMU_DEVRST_MFP				BIT(1)
 #define ATC2609A_CMU_DEVRST_INTS			BIT(2)
-
-/* PAD_EN Register Mask Bits */
 #define ATC2609A_PAD_EN_EXTIRQ				BIT(0)
-
-#endif /* __LINUX_MFD_ATC260X_ATC2609A_H */
+#endif  

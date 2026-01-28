@@ -1,37 +1,3 @@
-/*
- * Copyright (c) 2008, 2009, 2010 QLogic Corporation. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
-/* This file is mechanically generated from RTL. Any hand-edits will be lost! */
-
 #define QIB_7322_Revision_OFFS 0x0
 #define QIB_7322_Revision_DEF 0x0000000002010601
 #define QIB_7322_Revision_R_Simulator_LSB 0x3F
@@ -58,7 +24,6 @@
 #define QIB_7322_Revision_R_ChipRevMinor_LSB 0x0
 #define QIB_7322_Revision_R_ChipRevMinor_MSB 0x7
 #define QIB_7322_Revision_R_ChipRevMinor_RMASK 0xFF
-
 #define QIB_7322_Control_OFFS 0x8
 #define QIB_7322_Control_DEF 0x0000000000000000
 #define QIB_7322_Control_PCIECplQDiagEn_LSB 0x6
@@ -79,25 +44,18 @@
 #define QIB_7322_Control_SyncReset_LSB 0x0
 #define QIB_7322_Control_SyncReset_MSB 0x0
 #define QIB_7322_Control_SyncReset_RMASK 0x1
-
 #define QIB_7322_PageAlign_OFFS 0x10
 #define QIB_7322_PageAlign_DEF 0x0000000000001000
-
 #define QIB_7322_ContextCnt_OFFS 0x18
 #define QIB_7322_ContextCnt_DEF 0x0000000000000012
-
 #define QIB_7322_Scratch_OFFS 0x20
 #define QIB_7322_Scratch_DEF 0x0000000000000000
-
 #define QIB_7322_CntrRegBase_OFFS 0x28
 #define QIB_7322_CntrRegBase_DEF 0x0000000000011000
-
 #define QIB_7322_SendRegBase_OFFS 0x30
 #define QIB_7322_SendRegBase_DEF 0x0000000000003000
-
 #define QIB_7322_UserRegBase_OFFS 0x38
 #define QIB_7322_UserRegBase_DEF 0x0000000000200000
-
 #define QIB_7322_IntMask_OFFS 0x68
 #define QIB_7322_IntMask_DEF 0x0000000000000000
 #define QIB_7322_IntMask_SDmaIntMask_1_LSB 0x3F
@@ -253,7 +211,6 @@
 #define QIB_7322_IntMask_RcvAvail0IntMask_LSB 0x0
 #define QIB_7322_IntMask_RcvAvail0IntMask_MSB 0x0
 #define QIB_7322_IntMask_RcvAvail0IntMask_RMASK 0x1
-
 #define QIB_7322_IntStatus_OFFS 0x70
 #define QIB_7322_IntStatus_DEF 0x0000000000000000
 #define QIB_7322_IntStatus_SDmaInt_1_LSB 0x3F
@@ -409,7 +366,6 @@
 #define QIB_7322_IntStatus_RcvAvail0_LSB 0x0
 #define QIB_7322_IntStatus_RcvAvail0_MSB 0x0
 #define QIB_7322_IntStatus_RcvAvail0_RMASK 0x1
-
 #define QIB_7322_IntClear_OFFS 0x78
 #define QIB_7322_IntClear_DEF 0x0000000000000000
 #define QIB_7322_IntClear_SDmaIntClear_1_LSB 0x3F
@@ -565,7 +521,6 @@
 #define QIB_7322_IntClear_RcvAvail0IntClear_LSB 0x0
 #define QIB_7322_IntClear_RcvAvail0IntClear_MSB 0x0
 #define QIB_7322_IntClear_RcvAvail0IntClear_RMASK 0x1
-
 #define QIB_7322_ErrMask_OFFS 0x80
 #define QIB_7322_ErrMask_DEF 0x0000000000000000
 #define QIB_7322_ErrMask_ResetNegatedMask_LSB 0x3F
@@ -610,7 +565,6 @@
 #define QIB_7322_ErrMask_RcvEgrFullErrMask_LSB 0xC
 #define QIB_7322_ErrMask_RcvEgrFullErrMask_MSB 0xC
 #define QIB_7322_ErrMask_RcvEgrFullErrMask_RMASK 0x1
-
 #define QIB_7322_ErrStatus_OFFS 0x88
 #define QIB_7322_ErrStatus_DEF 0x0000000000000000
 #define QIB_7322_ErrStatus_ResetNegated_LSB 0x3F
@@ -655,7 +609,6 @@
 #define QIB_7322_ErrStatus_RcvEgrFullErr_LSB 0xC
 #define QIB_7322_ErrStatus_RcvEgrFullErr_MSB 0xC
 #define QIB_7322_ErrStatus_RcvEgrFullErr_RMASK 0x1
-
 #define QIB_7322_ErrClear_OFFS 0x90
 #define QIB_7322_ErrClear_DEF 0x0000000000000000
 #define QIB_7322_ErrClear_ResetNegatedClear_LSB 0x3F
@@ -700,7 +653,6 @@
 #define QIB_7322_ErrClear_RcvEgrFullErrClear_LSB 0xC
 #define QIB_7322_ErrClear_RcvEgrFullErrClear_MSB 0xC
 #define QIB_7322_ErrClear_RcvEgrFullErrClear_RMASK 0x1
-
 #define QIB_7322_HwErrMask_OFFS 0x98
 #define QIB_7322_HwErrMask_DEF 0x0000000000000000
 #define QIB_7322_HwErrMask_IBSerdesPClkNotDetectMask_1_LSB 0x3F
@@ -754,7 +706,6 @@
 #define QIB_7322_HwErrMask_LATriggeredMask_LSB 0xB
 #define QIB_7322_HwErrMask_LATriggeredMask_MSB 0xB
 #define QIB_7322_HwErrMask_LATriggeredMask_RMASK 0x1
-
 #define QIB_7322_HwErrStatus_OFFS 0xA0
 #define QIB_7322_HwErrStatus_DEF 0x0000000000000000
 #define QIB_7322_HwErrStatus_IBSerdesPClkNotDetect_1_LSB 0x3F
@@ -808,7 +759,6 @@
 #define QIB_7322_HwErrStatus_LATriggered_LSB 0xB
 #define QIB_7322_HwErrStatus_LATriggered_MSB 0xB
 #define QIB_7322_HwErrStatus_LATriggered_RMASK 0x1
-
 #define QIB_7322_HwErrClear_OFFS 0xA8
 #define QIB_7322_HwErrClear_DEF 0x0000000000000000
 #define QIB_7322_HwErrClear_IBSerdesPClkNotDetectClear_1_LSB 0x3F
@@ -862,7 +812,6 @@
 #define QIB_7322_HwErrClear_LATriggeredClear_LSB 0xB
 #define QIB_7322_HwErrClear_LATriggeredClear_MSB 0xB
 #define QIB_7322_HwErrClear_LATriggeredClear_RMASK 0x1
-
 #define QIB_7322_HwDiagCtrl_OFFS 0xB0
 #define QIB_7322_HwDiagCtrl_DEF 0x0000000000000000
 #define QIB_7322_HwDiagCtrl_Diagnostic_LSB 0x3F
@@ -889,7 +838,6 @@
 #define QIB_7322_HwDiagCtrl_ForceIBCBusToSPCParityErr_0_LSB 0xC
 #define QIB_7322_HwDiagCtrl_ForceIBCBusToSPCParityErr_0_MSB 0xC
 #define QIB_7322_HwDiagCtrl_ForceIBCBusToSPCParityErr_0_RMASK 0x1
-
 #define QIB_7322_EXTStatus_OFFS 0xC0
 #define QIB_7322_EXTStatus_DEF 0x000000000000X000
 #define QIB_7322_EXTStatus_GPIOIn_LSB 0x30
@@ -901,7 +849,6 @@
 #define QIB_7322_EXTStatus_MemBISTEndTest_LSB 0xE
 #define QIB_7322_EXTStatus_MemBISTEndTest_MSB 0xE
 #define QIB_7322_EXTStatus_MemBISTEndTest_RMASK 0x1
-
 #define QIB_7322_EXTCtrl_OFFS 0xC8
 #define QIB_7322_EXTCtrl_DEF 0x0000000000000000
 #define QIB_7322_EXTCtrl_GPIOOe_LSB 0x30
@@ -922,19 +869,14 @@
 #define QIB_7322_EXTCtrl_LEDPort0YellowOn_LSB 0x0
 #define QIB_7322_EXTCtrl_LEDPort0YellowOn_MSB 0x0
 #define QIB_7322_EXTCtrl_LEDPort0YellowOn_RMASK 0x1
-
 #define QIB_7322_GPIOOut_OFFS 0xE0
 #define QIB_7322_GPIOOut_DEF 0x0000000000000000
-
 #define QIB_7322_GPIOMask_OFFS 0xE8
 #define QIB_7322_GPIOMask_DEF 0x0000000000000000
-
 #define QIB_7322_GPIOStatus_OFFS 0xF0
 #define QIB_7322_GPIOStatus_DEF 0x0000000000000000
-
 #define QIB_7322_GPIOClear_OFFS 0xF8
 #define QIB_7322_GPIOClear_DEF 0x0000000000000000
-
 #define QIB_7322_RcvCtrl_OFFS 0x100
 #define QIB_7322_RcvCtrl_DEF 0x0000000000000000
 #define QIB_7322_RcvCtrl_TidReDirect_LSB 0x30
@@ -958,43 +900,30 @@
 #define QIB_7322_RcvCtrl_dontDropRHQFull_LSB 0x0
 #define QIB_7322_RcvCtrl_dontDropRHQFull_MSB 0x11
 #define QIB_7322_RcvCtrl_dontDropRHQFull_RMASK 0x3FFFF
-
 #define QIB_7322_RcvHdrSize_OFFS 0x110
 #define QIB_7322_RcvHdrSize_DEF 0x0000000000000000
-
 #define QIB_7322_RcvHdrCnt_OFFS 0x118
 #define QIB_7322_RcvHdrCnt_DEF 0x0000000000000000
-
 #define QIB_7322_RcvHdrEntSize_OFFS 0x120
 #define QIB_7322_RcvHdrEntSize_DEF 0x0000000000000000
-
 #define QIB_7322_RcvTIDBase_OFFS 0x128
 #define QIB_7322_RcvTIDBase_DEF 0x0000000000050000
-
 #define QIB_7322_RcvTIDCnt_OFFS 0x130
 #define QIB_7322_RcvTIDCnt_DEF 0x0000000000000200
-
 #define QIB_7322_RcvEgrBase_OFFS 0x138
 #define QIB_7322_RcvEgrBase_DEF 0x0000000000014000
-
 #define QIB_7322_RcvEgrCnt_OFFS 0x140
 #define QIB_7322_RcvEgrCnt_DEF 0x0000000000001000
-
 #define QIB_7322_RcvBufBase_OFFS 0x148
 #define QIB_7322_RcvBufBase_DEF 0x0000000000080000
-
 #define QIB_7322_RcvBufSize_OFFS 0x150
 #define QIB_7322_RcvBufSize_DEF 0x0000000000005000
-
 #define QIB_7322_RxIntMemBase_OFFS 0x158
 #define QIB_7322_RxIntMemBase_DEF 0x0000000000077000
-
 #define QIB_7322_RxIntMemSize_OFFS 0x160
 #define QIB_7322_RxIntMemSize_DEF 0x0000000000007000
-
 #define QIB_7322_feature_mask_OFFS 0x190
 #define QIB_7322_feature_mask_DEF 0x00000000000000XX
-
 #define QIB_7322_active_feature_mask_OFFS 0x198
 #define QIB_7322_active_feature_mask_DEF 0x00000000000000XX
 #define QIB_7322_active_feature_mask_Port1_QDR_Enabled_LSB 0x5
@@ -1015,7 +944,6 @@
 #define QIB_7322_active_feature_mask_Port0_SDR_Enabled_LSB 0x0
 #define QIB_7322_active_feature_mask_Port0_SDR_Enabled_MSB 0x0
 #define QIB_7322_active_feature_mask_Port0_SDR_Enabled_RMASK 0x1
-
 #define QIB_7322_SendCtrl_OFFS 0x1C0
 #define QIB_7322_SendCtrl_DEF 0x0000000000000000
 #define QIB_7322_SendCtrl_Disarm_LSB 0x1F
@@ -1039,7 +967,6 @@
 #define QIB_7322_SendCtrl_SendIntBufAvail_LSB 0x1
 #define QIB_7322_SendCtrl_SendIntBufAvail_MSB 0x1
 #define QIB_7322_SendCtrl_SendIntBufAvail_RMASK 0x1
-
 #define QIB_7322_SendBufBase_OFFS 0x1C8
 #define QIB_7322_SendBufBase_DEF 0x0018000000100000
 #define QIB_7322_SendBufBase_BaseAddr_LargePIO_LSB 0x20
@@ -1048,7 +975,6 @@
 #define QIB_7322_SendBufBase_BaseAddr_SmallPIO_LSB 0x0
 #define QIB_7322_SendBufBase_BaseAddr_SmallPIO_MSB 0x14
 #define QIB_7322_SendBufBase_BaseAddr_SmallPIO_RMASK 0x1FFFFF
-
 #define QIB_7322_SendBufSize_OFFS 0x1D0
 #define QIB_7322_SendBufSize_DEF 0x0000108000000880
 #define QIB_7322_SendBufSize_Size_LargePIO_LSB 0x20
@@ -1057,7 +983,6 @@
 #define QIB_7322_SendBufSize_Size_SmallPIO_LSB 0x0
 #define QIB_7322_SendBufSize_Size_SmallPIO_MSB 0xB
 #define QIB_7322_SendBufSize_Size_SmallPIO_RMASK 0xFFF
-
 #define QIB_7322_SendBufCnt_OFFS 0x1D8
 #define QIB_7322_SendBufCnt_DEF 0x0000002000000080
 #define QIB_7322_SendBufCnt_Num_LargeBuffers_LSB 0x20
@@ -1066,37 +991,31 @@
 #define QIB_7322_SendBufCnt_Num_SmallBuffers_LSB 0x0
 #define QIB_7322_SendBufCnt_Num_SmallBuffers_MSB 0x8
 #define QIB_7322_SendBufCnt_Num_SmallBuffers_RMASK 0x1FF
-
 #define QIB_7322_SendBufAvailAddr_OFFS 0x1E0
 #define QIB_7322_SendBufAvailAddr_DEF 0x0000000000000000
 #define QIB_7322_SendBufAvailAddr_SendBufAvailAddr_LSB 0x6
 #define QIB_7322_SendBufAvailAddr_SendBufAvailAddr_MSB 0x27
 #define QIB_7322_SendBufAvailAddr_SendBufAvailAddr_RMASK 0x3FFFFFFFF
-
 #define QIB_7322_SendBufErr0_OFFS 0x240
 #define QIB_7322_SendBufErr0_DEF 0x0000000000000000
 #define QIB_7322_SendBufErr0_SendBufErr_63_0_LSB 0x0
 #define QIB_7322_SendBufErr0_SendBufErr_63_0_MSB 0x3F
 #define QIB_7322_SendBufErr0_SendBufErr_63_0_RMASK 0x0
-
 #define QIB_7322_AvailUpdCount_OFFS 0x268
 #define QIB_7322_AvailUpdCount_DEF 0x0000000000000000
 #define QIB_7322_AvailUpdCount_AvailUpdCount_LSB 0x0
 #define QIB_7322_AvailUpdCount_AvailUpdCount_MSB 0x4
 #define QIB_7322_AvailUpdCount_AvailUpdCount_RMASK 0x1F
-
 #define QIB_7322_RcvHdrAddr0_OFFS 0x280
 #define QIB_7322_RcvHdrAddr0_DEF 0x0000000000000000
 #define QIB_7322_RcvHdrAddr0_RcvHdrAddr_LSB 0x2
 #define QIB_7322_RcvHdrAddr0_RcvHdrAddr_MSB 0x27
 #define QIB_7322_RcvHdrAddr0_RcvHdrAddr_RMASK 0x3FFFFFFFFF
-
 #define QIB_7322_RcvHdrTailAddr0_OFFS 0x340
 #define QIB_7322_RcvHdrTailAddr0_DEF 0x0000000000000000
 #define QIB_7322_RcvHdrTailAddr0_RcvHdrTailAddr_LSB 0x2
 #define QIB_7322_RcvHdrTailAddr0_RcvHdrTailAddr_MSB 0x27
 #define QIB_7322_RcvHdrTailAddr0_RcvHdrTailAddr_RMASK 0x3FFFFFFFFF
-
 #define QIB_7322_ahb_access_ctrl_OFFS 0x460
 #define QIB_7322_ahb_access_ctrl_DEF 0x0000000000000000
 #define QIB_7322_ahb_access_ctrl_sw_sel_ahb_trgt_LSB 0x1
@@ -1105,7 +1024,6 @@
 #define QIB_7322_ahb_access_ctrl_sw_ahb_sel_LSB 0x0
 #define QIB_7322_ahb_access_ctrl_sw_ahb_sel_MSB 0x0
 #define QIB_7322_ahb_access_ctrl_sw_ahb_sel_RMASK 0x1
-
 #define QIB_7322_ahb_transaction_reg_OFFS 0x468
 #define QIB_7322_ahb_transaction_reg_DEF 0x0000000080000000
 #define QIB_7322_ahb_transaction_reg_ahb_data_LSB 0x20
@@ -1123,7 +1041,6 @@
 #define QIB_7322_ahb_transaction_reg_ahb_address_LSB 0x10
 #define QIB_7322_ahb_transaction_reg_ahb_address_MSB 0x1A
 #define QIB_7322_ahb_transaction_reg_ahb_address_RMASK 0x7FF
-
 #define QIB_7322_SPC_JTAG_ACCESS_REG_OFFS 0x470
 #define QIB_7322_SPC_JTAG_ACCESS_REG_DEF 0x0000000000000001
 #define QIB_7322_SPC_JTAG_ACCESS_REG_SPC_JTAG_ACCESS_EN_LSB 0xA
@@ -1144,25 +1061,21 @@
 #define QIB_7322_SPC_JTAG_ACCESS_REG_rdy_LSB 0x0
 #define QIB_7322_SPC_JTAG_ACCESS_REG_rdy_MSB 0x0
 #define QIB_7322_SPC_JTAG_ACCESS_REG_rdy_RMASK 0x1
-
 #define QIB_7322_SendCheckMask0_OFFS 0x4C0
 #define QIB_7322_SendCheckMask0_DEF 0x0000000000000000
 #define QIB_7322_SendCheckMask0_SendCheckMask_63_32_LSB 0x0
 #define QIB_7322_SendCheckMask0_SendCheckMask_63_32_MSB 0x3F
 #define QIB_7322_SendCheckMask0_SendCheckMask_63_32_RMASK 0x0
-
 #define QIB_7322_SendGRHCheckMask0_OFFS 0x4E0
 #define QIB_7322_SendGRHCheckMask0_DEF 0x0000000000000000
 #define QIB_7322_SendGRHCheckMask0_SendGRHCheckMask_63_32_LSB 0x0
 #define QIB_7322_SendGRHCheckMask0_SendGRHCheckMask_63_32_MSB 0x3F
 #define QIB_7322_SendGRHCheckMask0_SendGRHCheckMask_63_32_RMASK 0x0
-
 #define QIB_7322_SendIBPacketMask0_OFFS 0x500
 #define QIB_7322_SendIBPacketMask0_DEF 0x0000000000000000
 #define QIB_7322_SendIBPacketMask0_SendIBPacketMask_63_32_LSB 0x0
 #define QIB_7322_SendIBPacketMask0_SendIBPacketMask_63_32_MSB 0x3F
 #define QIB_7322_SendIBPacketMask0_SendIBPacketMask_63_32_RMASK 0x0
-
 #define QIB_7322_IntRedirect0_OFFS 0x540
 #define QIB_7322_IntRedirect0_DEF 0x0000000000000000
 #define QIB_7322_IntRedirect0_vec11_LSB 0x37
@@ -1201,13 +1114,10 @@
 #define QIB_7322_IntRedirect0_vec0_LSB 0x0
 #define QIB_7322_IntRedirect0_vec0_MSB 0x4
 #define QIB_7322_IntRedirect0_vec0_RMASK 0x1F
-
 #define QIB_7322_Int_Granted_OFFS 0x570
 #define QIB_7322_Int_Granted_DEF 0x0000000000000000
-
 #define QIB_7322_vec_clr_without_int_OFFS 0x578
 #define QIB_7322_vec_clr_without_int_DEF 0x0000000000000000
-
 #define QIB_7322_DCACtrlA_OFFS 0x580
 #define QIB_7322_DCACtrlA_DEF 0x0000000000000000
 #define QIB_7322_DCACtrlA_SendDMAHead1DCAEnable_LSB 0x4
@@ -1225,7 +1135,6 @@
 #define QIB_7322_DCACtrlA_RcvHdrqDCAEnable_LSB 0x0
 #define QIB_7322_DCACtrlA_RcvHdrqDCAEnable_MSB 0x0
 #define QIB_7322_DCACtrlA_RcvHdrqDCAEnable_RMASK 0x1
-
 #define QIB_7322_DCACtrlB_OFFS 0x588
 #define QIB_7322_DCACtrlB_DEF 0x0000000000000000
 #define QIB_7322_DCACtrlB_RcvHdrq3DCAXfrCnt_LSB 0x36
@@ -1252,7 +1161,6 @@
 #define QIB_7322_DCACtrlB_RcvHdrq0DCAOPH_LSB 0x0
 #define QIB_7322_DCACtrlB_RcvHdrq0DCAOPH_MSB 0x7
 #define QIB_7322_DCACtrlB_RcvHdrq0DCAOPH_RMASK 0xFF
-
 #define QIB_7322_DCACtrlC_OFFS 0x590
 #define QIB_7322_DCACtrlC_DEF 0x0000000000000000
 #define QIB_7322_DCACtrlC_RcvHdrq7DCAXfrCnt_LSB 0x36
@@ -1279,7 +1187,6 @@
 #define QIB_7322_DCACtrlC_RcvHdrq4DCAOPH_LSB 0x0
 #define QIB_7322_DCACtrlC_RcvHdrq4DCAOPH_MSB 0x7
 #define QIB_7322_DCACtrlC_RcvHdrq4DCAOPH_RMASK 0xFF
-
 #define QIB_7322_DCACtrlD_OFFS 0x598
 #define QIB_7322_DCACtrlD_DEF 0x0000000000000000
 #define QIB_7322_DCACtrlD_RcvHdrq11DCAXfrCnt_LSB 0x36
@@ -1306,7 +1213,6 @@
 #define QIB_7322_DCACtrlD_RcvHdrq8DCAOPH_LSB 0x0
 #define QIB_7322_DCACtrlD_RcvHdrq8DCAOPH_MSB 0x7
 #define QIB_7322_DCACtrlD_RcvHdrq8DCAOPH_RMASK 0xFF
-
 #define QIB_7322_DCACtrlE_OFFS 0x5A0
 #define QIB_7322_DCACtrlE_DEF 0x0000000000000000
 #define QIB_7322_DCACtrlE_RcvHdrq15DCAXfrCnt_LSB 0x36
@@ -1333,7 +1239,6 @@
 #define QIB_7322_DCACtrlE_RcvHdrq12DCAOPH_LSB 0x0
 #define QIB_7322_DCACtrlE_RcvHdrq12DCAOPH_MSB 0x7
 #define QIB_7322_DCACtrlE_RcvHdrq12DCAOPH_RMASK 0xFF
-
 #define QIB_7322_DCACtrlF_OFFS 0x5A8
 #define QIB_7322_DCACtrlF_DEF 0x0000000000000000
 #define QIB_7322_DCACtrlF_SendDma1DCAOPH_LSB 0x28
@@ -1354,7 +1259,6 @@
 #define QIB_7322_DCACtrlF_RcvHdrq16DCAOPH_LSB 0x0
 #define QIB_7322_DCACtrlF_RcvHdrq16DCAOPH_MSB 0x7
 #define QIB_7322_DCACtrlF_RcvHdrq16DCAOPH_RMASK 0xFF
-
 #define QIB_7322_RcvAvailTimeOut0_OFFS 0xC00
 #define QIB_7322_RcvAvailTimeOut0_DEF 0x0000000000000000
 #define QIB_7322_RcvAvailTimeOut0_RcvAvailTOCount_LSB 0x10
@@ -1363,10 +1267,8 @@
 #define QIB_7322_RcvAvailTimeOut0_RcvAvailTOReload_LSB 0x0
 #define QIB_7322_RcvAvailTimeOut0_RcvAvailTOReload_MSB 0xF
 #define QIB_7322_RcvAvailTimeOut0_RcvAvailTOReload_RMASK 0xFFFF
-
 #define QIB_7322_CntrRegBase_0_OFFS 0x1028
 #define QIB_7322_CntrRegBase_0_DEF 0x0000000000012000
-
 #define QIB_7322_ErrMask_0_OFFS 0x1080
 #define QIB_7322_ErrMask_0_DEF 0x0000000000000000
 #define QIB_7322_ErrMask_0_IBStatusChangedMask_LSB 0x3A
@@ -1486,7 +1388,6 @@
 #define QIB_7322_ErrMask_0_RcvFormatErrMask_LSB 0x0
 #define QIB_7322_ErrMask_0_RcvFormatErrMask_MSB 0x0
 #define QIB_7322_ErrMask_0_RcvFormatErrMask_RMASK 0x1
-
 #define QIB_7322_ErrStatus_0_OFFS 0x1088
 #define QIB_7322_ErrStatus_0_DEF 0x0000000000000000
 #define QIB_7322_ErrStatus_0_IBStatusChanged_LSB 0x3A
@@ -1606,7 +1507,6 @@
 #define QIB_7322_ErrStatus_0_RcvFormatErr_LSB 0x0
 #define QIB_7322_ErrStatus_0_RcvFormatErr_MSB 0x0
 #define QIB_7322_ErrStatus_0_RcvFormatErr_RMASK 0x1
-
 #define QIB_7322_ErrClear_0_OFFS 0x1090
 #define QIB_7322_ErrClear_0_DEF 0x0000000000000000
 #define QIB_7322_ErrClear_0_IBStatusChangedClear_LSB 0x3A
@@ -1726,7 +1626,6 @@
 #define QIB_7322_ErrClear_0_RcvFormatErrClear_LSB 0x0
 #define QIB_7322_ErrClear_0_RcvFormatErrClear_MSB 0x0
 #define QIB_7322_ErrClear_0_RcvFormatErrClear_RMASK 0x1
-
 #define QIB_7322_TXEStatus_0_OFFS 0x10B8
 #define QIB_7322_TXEStatus_0_DEF 0x0000000XC00080FF
 #define QIB_7322_TXEStatus_0_TXE_IBC_Idle_LSB 0x1F
@@ -1762,7 +1661,6 @@
 #define QIB_7322_TXEStatus_0_LaFifoEmpty_VL0_LSB 0x0
 #define QIB_7322_TXEStatus_0_LaFifoEmpty_VL0_MSB 0x0
 #define QIB_7322_TXEStatus_0_LaFifoEmpty_VL0_RMASK 0x1
-
 #define QIB_7322_RcvCtrl_0_OFFS 0x1100
 #define QIB_7322_RcvCtrl_0_DEF 0x0000000000000000
 #define QIB_7322_RcvCtrl_0_RcvResetCredit_LSB 0x2A
@@ -1783,13 +1681,11 @@
 #define QIB_7322_RcvCtrl_0_ContextEnableKernel_LSB 0x0
 #define QIB_7322_RcvCtrl_0_ContextEnableKernel_MSB 0x0
 #define QIB_7322_RcvCtrl_0_ContextEnableKernel_RMASK 0x1
-
 #define QIB_7322_RcvBTHQP_0_OFFS 0x1108
 #define QIB_7322_RcvBTHQP_0_DEF 0x0000000000000000
 #define QIB_7322_RcvBTHQP_0_RcvBTHQP_LSB 0x0
 #define QIB_7322_RcvBTHQP_0_RcvBTHQP_MSB 0x17
 #define QIB_7322_RcvBTHQP_0_RcvBTHQP_RMASK 0xFFFFFF
-
 #define QIB_7322_RcvQPMapTableA_0_OFFS 0x1110
 #define QIB_7322_RcvQPMapTableA_0_DEF 0x0000000000000000
 #define QIB_7322_RcvQPMapTableA_0_RcvQPMapContext5_LSB 0x19
@@ -1810,7 +1706,6 @@
 #define QIB_7322_RcvQPMapTableA_0_RcvQPMapContext0_LSB 0x0
 #define QIB_7322_RcvQPMapTableA_0_RcvQPMapContext0_MSB 0x4
 #define QIB_7322_RcvQPMapTableA_0_RcvQPMapContext0_RMASK 0x1F
-
 #define QIB_7322_RcvQPMapTableB_0_OFFS 0x1118
 #define QIB_7322_RcvQPMapTableB_0_DEF 0x0000000000000000
 #define QIB_7322_RcvQPMapTableB_0_RcvQPMapContext11_LSB 0x19
@@ -1831,7 +1726,6 @@
 #define QIB_7322_RcvQPMapTableB_0_RcvQPMapContext6_LSB 0x0
 #define QIB_7322_RcvQPMapTableB_0_RcvQPMapContext6_MSB 0x4
 #define QIB_7322_RcvQPMapTableB_0_RcvQPMapContext6_RMASK 0x1F
-
 #define QIB_7322_RcvQPMapTableC_0_OFFS 0x1120
 #define QIB_7322_RcvQPMapTableC_0_DEF 0x0000000000000000
 #define QIB_7322_RcvQPMapTableC_0_RcvQPMapContext17_LSB 0x19
@@ -1852,7 +1746,6 @@
 #define QIB_7322_RcvQPMapTableC_0_RcvQPMapContext12_LSB 0x0
 #define QIB_7322_RcvQPMapTableC_0_RcvQPMapContext12_MSB 0x4
 #define QIB_7322_RcvQPMapTableC_0_RcvQPMapContext12_RMASK 0x1F
-
 #define QIB_7322_RcvQPMapTableD_0_OFFS 0x1128
 #define QIB_7322_RcvQPMapTableD_0_DEF 0x0000000000000000
 #define QIB_7322_RcvQPMapTableD_0_RcvQPMapContext23_LSB 0x19
@@ -1873,7 +1766,6 @@
 #define QIB_7322_RcvQPMapTableD_0_RcvQPMapContext18_LSB 0x0
 #define QIB_7322_RcvQPMapTableD_0_RcvQPMapContext18_MSB 0x4
 #define QIB_7322_RcvQPMapTableD_0_RcvQPMapContext18_RMASK 0x1F
-
 #define QIB_7322_RcvQPMapTableE_0_OFFS 0x1130
 #define QIB_7322_RcvQPMapTableE_0_DEF 0x0000000000000000
 #define QIB_7322_RcvQPMapTableE_0_RcvQPMapContext29_LSB 0x19
@@ -1894,7 +1786,6 @@
 #define QIB_7322_RcvQPMapTableE_0_RcvQPMapContext24_LSB 0x0
 #define QIB_7322_RcvQPMapTableE_0_RcvQPMapContext24_MSB 0x4
 #define QIB_7322_RcvQPMapTableE_0_RcvQPMapContext24_RMASK 0x1F
-
 #define QIB_7322_RcvQPMapTableF_0_OFFS 0x1138
 #define QIB_7322_RcvQPMapTableF_0_DEF 0x0000000000000000
 #define QIB_7322_RcvQPMapTableF_0_RcvQPMapContext31_LSB 0x5
@@ -1903,16 +1794,12 @@
 #define QIB_7322_RcvQPMapTableF_0_RcvQPMapContext30_LSB 0x0
 #define QIB_7322_RcvQPMapTableF_0_RcvQPMapContext30_MSB 0x4
 #define QIB_7322_RcvQPMapTableF_0_RcvQPMapContext30_RMASK 0x1F
-
 #define QIB_7322_PSStat_0_OFFS 0x1140
 #define QIB_7322_PSStat_0_DEF 0x0000000000000000
-
 #define QIB_7322_PSStart_0_OFFS 0x1148
 #define QIB_7322_PSStart_0_DEF 0x0000000000000000
-
 #define QIB_7322_PSInterval_0_OFFS 0x1150
 #define QIB_7322_PSInterval_0_DEF 0x0000000000000000
-
 #define QIB_7322_RcvStatus_0_OFFS 0x1160
 #define QIB_7322_RcvStatus_0_DEF 0x0000000000000000
 #define QIB_7322_RcvStatus_0_DmaeqBlockingContext_LSB 0x1
@@ -1921,16 +1808,13 @@
 #define QIB_7322_RcvStatus_0_RxPktInProgress_LSB 0x0
 #define QIB_7322_RcvStatus_0_RxPktInProgress_MSB 0x0
 #define QIB_7322_RcvStatus_0_RxPktInProgress_RMASK 0x1
-
 #define QIB_7322_RcvPartitionKey_0_OFFS 0x1168
 #define QIB_7322_RcvPartitionKey_0_DEF 0x0000000000000000
-
 #define QIB_7322_RcvQPMulticastContext_0_OFFS 0x1170
 #define QIB_7322_RcvQPMulticastContext_0_DEF 0x0000000000000000
 #define QIB_7322_RcvQPMulticastContext_0_RcvQpMcContext_LSB 0x0
 #define QIB_7322_RcvQPMulticastContext_0_RcvQpMcContext_MSB 0x4
 #define QIB_7322_RcvQPMulticastContext_0_RcvQpMcContext_RMASK 0x1F
-
 #define QIB_7322_RcvPktLEDCnt_0_OFFS 0x1178
 #define QIB_7322_RcvPktLEDCnt_0_DEF 0x0000000000000000
 #define QIB_7322_RcvPktLEDCnt_0_ONperiod_LSB 0x20
@@ -1939,25 +1823,21 @@
 #define QIB_7322_RcvPktLEDCnt_0_OFFperiod_LSB 0x0
 #define QIB_7322_RcvPktLEDCnt_0_OFFperiod_MSB 0x1F
 #define QIB_7322_RcvPktLEDCnt_0_OFFperiod_RMASK 0xFFFFFFFF
-
 #define QIB_7322_SendDmaIdleCnt_0_OFFS 0x1180
 #define QIB_7322_SendDmaIdleCnt_0_DEF 0x0000000000000000
 #define QIB_7322_SendDmaIdleCnt_0_SendDmaIdleCnt_LSB 0x0
 #define QIB_7322_SendDmaIdleCnt_0_SendDmaIdleCnt_MSB 0xF
 #define QIB_7322_SendDmaIdleCnt_0_SendDmaIdleCnt_RMASK 0xFFFF
-
 #define QIB_7322_SendDmaReloadCnt_0_OFFS 0x1188
 #define QIB_7322_SendDmaReloadCnt_0_DEF 0x0000000000000000
 #define QIB_7322_SendDmaReloadCnt_0_SendDmaReloadCnt_LSB 0x0
 #define QIB_7322_SendDmaReloadCnt_0_SendDmaReloadCnt_MSB 0xF
 #define QIB_7322_SendDmaReloadCnt_0_SendDmaReloadCnt_RMASK 0xFFFF
-
 #define QIB_7322_SendDmaDescCnt_0_OFFS 0x1190
 #define QIB_7322_SendDmaDescCnt_0_DEF 0x0000000000000000
 #define QIB_7322_SendDmaDescCnt_0_SendDmaDescCnt_LSB 0x0
 #define QIB_7322_SendDmaDescCnt_0_SendDmaDescCnt_MSB 0xF
 #define QIB_7322_SendDmaDescCnt_0_SendDmaDescCnt_RMASK 0xFFFF
-
 #define QIB_7322_SendCtrl_0_OFFS 0x11C0
 #define QIB_7322_SendCtrl_0_DEF 0x0000000000000000
 #define QIB_7322_SendCtrl_0_IBVLArbiterEn_LSB 0xF
@@ -1996,13 +1876,11 @@
 #define QIB_7322_SendCtrl_0_TxeAbortIbc_LSB 0x0
 #define QIB_7322_SendCtrl_0_TxeAbortIbc_MSB 0x0
 #define QIB_7322_SendCtrl_0_TxeAbortIbc_RMASK 0x1
-
 #define QIB_7322_SendDmaBase_0_OFFS 0x11F8
 #define QIB_7322_SendDmaBase_0_DEF 0x0000000000000000
 #define QIB_7322_SendDmaBase_0_SendDmaBase_LSB 0x0
 #define QIB_7322_SendDmaBase_0_SendDmaBase_MSB 0x2F
 #define QIB_7322_SendDmaBase_0_SendDmaBase_RMASK 0xFFFFFFFFFFFF
-
 #define QIB_7322_SendDmaLenGen_0_OFFS 0x1200
 #define QIB_7322_SendDmaLenGen_0_DEF 0x0000000000000000
 #define QIB_7322_SendDmaLenGen_0_Generation_LSB 0x10
@@ -2011,13 +1889,11 @@
 #define QIB_7322_SendDmaLenGen_0_Length_LSB 0x0
 #define QIB_7322_SendDmaLenGen_0_Length_MSB 0xF
 #define QIB_7322_SendDmaLenGen_0_Length_RMASK 0xFFFF
-
 #define QIB_7322_SendDmaTail_0_OFFS 0x1208
 #define QIB_7322_SendDmaTail_0_DEF 0x0000000000000000
 #define QIB_7322_SendDmaTail_0_SendDmaTail_LSB 0x0
 #define QIB_7322_SendDmaTail_0_SendDmaTail_MSB 0xF
 #define QIB_7322_SendDmaTail_0_SendDmaTail_RMASK 0xFFFF
-
 #define QIB_7322_SendDmaHead_0_OFFS 0x1210
 #define QIB_7322_SendDmaHead_0_DEF 0x0000000000000000
 #define QIB_7322_SendDmaHead_0_InternalSendDmaHead_LSB 0x20
@@ -2026,19 +1902,16 @@
 #define QIB_7322_SendDmaHead_0_SendDmaHead_LSB 0x0
 #define QIB_7322_SendDmaHead_0_SendDmaHead_MSB 0xF
 #define QIB_7322_SendDmaHead_0_SendDmaHead_RMASK 0xFFFF
-
 #define QIB_7322_SendDmaHeadAddr_0_OFFS 0x1218
 #define QIB_7322_SendDmaHeadAddr_0_DEF 0x0000000000000000
 #define QIB_7322_SendDmaHeadAddr_0_SendDmaHeadAddr_LSB 0x0
 #define QIB_7322_SendDmaHeadAddr_0_SendDmaHeadAddr_MSB 0x2F
 #define QIB_7322_SendDmaHeadAddr_0_SendDmaHeadAddr_RMASK 0xFFFFFFFFFFFF
-
 #define QIB_7322_SendDmaBufMask0_0_OFFS 0x1220
 #define QIB_7322_SendDmaBufMask0_0_DEF 0x0000000000000000
 #define QIB_7322_SendDmaBufMask0_0_BufMask_63_0_LSB 0x0
 #define QIB_7322_SendDmaBufMask0_0_BufMask_63_0_MSB 0x3F
 #define QIB_7322_SendDmaBufMask0_0_BufMask_63_0_RMASK 0x0
-
 #define QIB_7322_SendDmaStatus_0_OFFS 0x1238
 #define QIB_7322_SendDmaStatus_0_DEF 0x0000000042000000
 #define QIB_7322_SendDmaStatus_0_ScoreBoardDrainInProg_LSB 0x3F
@@ -2089,13 +1962,11 @@
 #define QIB_7322_SendDmaStatus_0_SplFifoDescIndex_LSB 0x0
 #define QIB_7322_SendDmaStatus_0_SplFifoDescIndex_MSB 0xF
 #define QIB_7322_SendDmaStatus_0_SplFifoDescIndex_RMASK 0xFFFF
-
 #define QIB_7322_SendDmaPriorityThld_0_OFFS 0x1258
 #define QIB_7322_SendDmaPriorityThld_0_DEF 0x0000000000000000
 #define QIB_7322_SendDmaPriorityThld_0_PriorityThreshold_LSB 0x0
 #define QIB_7322_SendDmaPriorityThld_0_PriorityThreshold_MSB 0x3
 #define QIB_7322_SendDmaPriorityThld_0_PriorityThreshold_RMASK 0xF
-
 #define QIB_7322_SendHdrErrSymptom_0_OFFS 0x1260
 #define QIB_7322_SendHdrErrSymptom_0_DEF 0x0000000000000000
 #define QIB_7322_SendHdrErrSymptom_0_NonKeyPacket_LSB 0x6
@@ -2119,7 +1990,6 @@
 #define QIB_7322_SendHdrErrSymptom_0_PacketTooSmall_LSB 0x0
 #define QIB_7322_SendHdrErrSymptom_0_PacketTooSmall_MSB 0x0
 #define QIB_7322_SendHdrErrSymptom_0_PacketTooSmall_RMASK 0x1
-
 #define QIB_7322_RxCreditVL0_0_OFFS 0x1280
 #define QIB_7322_RxCreditVL0_0_DEF 0x0000000000000000
 #define QIB_7322_RxCreditVL0_0_RxBufrConsumedVL_LSB 0x10
@@ -2128,13 +1998,11 @@
 #define QIB_7322_RxCreditVL0_0_RxMaxCreditVL_LSB 0x0
 #define QIB_7322_RxCreditVL0_0_RxMaxCreditVL_MSB 0xB
 #define QIB_7322_RxCreditVL0_0_RxMaxCreditVL_RMASK 0xFFF
-
 #define QIB_7322_SendDmaBufUsed0_0_OFFS 0x1480
 #define QIB_7322_SendDmaBufUsed0_0_DEF 0x0000000000000000
 #define QIB_7322_SendDmaBufUsed0_0_BufUsed_63_0_LSB 0x0
 #define QIB_7322_SendDmaBufUsed0_0_BufUsed_63_0_MSB 0x3F
 #define QIB_7322_SendDmaBufUsed0_0_BufUsed_63_0_RMASK 0x0
-
 #define QIB_7322_SendCheckControl_0_OFFS 0x14A8
 #define QIB_7322_SendCheckControl_0_DEF 0x0000000000000000
 #define QIB_7322_SendCheckControl_0_PKey_En_LSB 0x4
@@ -2152,19 +2020,16 @@
 #define QIB_7322_SendCheckControl_0_PacketTooSmall_En_LSB 0x0
 #define QIB_7322_SendCheckControl_0_PacketTooSmall_En_MSB 0x0
 #define QIB_7322_SendCheckControl_0_PacketTooSmall_En_RMASK 0x1
-
 #define QIB_7322_SendIBSLIDMask_0_OFFS 0x14B0
 #define QIB_7322_SendIBSLIDMask_0_DEF 0x0000000000000000
 #define QIB_7322_SendIBSLIDMask_0_SendIBSLIDMask_15_0_LSB 0x0
 #define QIB_7322_SendIBSLIDMask_0_SendIBSLIDMask_15_0_MSB 0xF
 #define QIB_7322_SendIBSLIDMask_0_SendIBSLIDMask_15_0_RMASK 0xFFFF
-
 #define QIB_7322_SendIBSLIDAssign_0_OFFS 0x14B8
 #define QIB_7322_SendIBSLIDAssign_0_DEF 0x0000000000000000
 #define QIB_7322_SendIBSLIDAssign_0_SendIBSLIDAssign_15_0_LSB 0x0
 #define QIB_7322_SendIBSLIDAssign_0_SendIBSLIDAssign_15_0_MSB 0xF
 #define QIB_7322_SendIBSLIDAssign_0_SendIBSLIDAssign_15_0_RMASK 0xFFFF
-
 #define QIB_7322_IBCStatusA_0_OFFS 0x1540
 #define QIB_7322_IBCStatusA_0_DEF 0x0000000000000X02
 #define QIB_7322_IBCStatusA_0_TxCreditOk_VL7_LSB 0x27
@@ -2224,7 +2089,6 @@
 #define QIB_7322_IBCStatusA_0_LinkTrainingState_LSB 0x0
 #define QIB_7322_IBCStatusA_0_LinkTrainingState_MSB 0x4
 #define QIB_7322_IBCStatusA_0_LinkTrainingState_RMASK 0x1F
-
 #define QIB_7322_IBCStatusB_0_OFFS 0x1548
 #define QIB_7322_IBCStatusB_0_DEF 0x00000000XXXXXXXX
 #define QIB_7322_IBCStatusB_0_ibsd_adaptation_timer_debug_LSB 0x27
@@ -2251,7 +2115,6 @@
 #define QIB_7322_IBCStatusB_0_LinkRoundTripLatency_LSB 0x0
 #define QIB_7322_IBCStatusB_0_LinkRoundTripLatency_MSB 0x19
 #define QIB_7322_IBCStatusB_0_LinkRoundTripLatency_RMASK 0x3FFFFFF
-
 #define QIB_7322_IBCCtrlA_0_OFFS 0x1560
 #define QIB_7322_IBCCtrlA_0_DEF 0x0000000000000000
 #define QIB_7322_IBCCtrlA_0_Loopback_LSB 0x3F
@@ -2290,7 +2153,6 @@
 #define QIB_7322_IBCCtrlA_0_FlowCtrlPeriod_LSB 0x0
 #define QIB_7322_IBCCtrlA_0_FlowCtrlPeriod_MSB 0x7
 #define QIB_7322_IBCCtrlA_0_FlowCtrlPeriod_RMASK 0xFF
-
 #define QIB_7322_IBCCtrlB_0_OFFS 0x1568
 #define QIB_7322_IBCCtrlB_0_DEF 0x00000000000305FF
 #define QIB_7322_IBCCtrlB_0_IB_DLID_MASK_LSB 0x30
@@ -2350,7 +2212,6 @@
 #define QIB_7322_IBCCtrlB_0_IB_ENHANCED_MODE_LSB 0x0
 #define QIB_7322_IBCCtrlB_0_IB_ENHANCED_MODE_MSB 0x0
 #define QIB_7322_IBCCtrlB_0_IB_ENHANCED_MODE_RMASK 0x1
-
 #define QIB_7322_IBCCtrlC_0_OFFS 0x1570
 #define QIB_7322_IBCCtrlC_0_DEF 0x0000000000000301
 #define QIB_7322_IBCCtrlC_0_IB_BACK_PORCH_LSB 0x5
@@ -2359,10 +2220,8 @@
 #define QIB_7322_IBCCtrlC_0_IB_FRONT_PORCH_LSB 0x0
 #define QIB_7322_IBCCtrlC_0_IB_FRONT_PORCH_MSB 0x4
 #define QIB_7322_IBCCtrlC_0_IB_FRONT_PORCH_RMASK 0x1F
-
 #define QIB_7322_HRTBT_GUID_0_OFFS 0x1588
 #define QIB_7322_HRTBT_GUID_0_DEF 0x0000000000000000
-
 #define QIB_7322_IB_SDTEST_IF_TX_0_OFFS 0x1590
 #define QIB_7322_IB_SDTEST_IF_TX_0_DEF 0x0000000000000000
 #define QIB_7322_IB_SDTEST_IF_TX_0_TS_TX_RX_CFG_LSB 0x30
@@ -2389,7 +2248,6 @@
 #define QIB_7322_IB_SDTEST_IF_TX_0_TS_T_TX_VALID_LSB 0x0
 #define QIB_7322_IB_SDTEST_IF_TX_0_TS_T_TX_VALID_MSB 0x0
 #define QIB_7322_IB_SDTEST_IF_TX_0_TS_T_TX_VALID_RMASK 0x1
-
 #define QIB_7322_IB_SDTEST_IF_RX_0_OFFS 0x1598
 #define QIB_7322_IB_SDTEST_IF_RX_0_DEF 0x0000000000000000
 #define QIB_7322_IB_SDTEST_IF_RX_0_TS_RX_RX_CFG_LSB 0x30
@@ -2410,7 +2268,6 @@
 #define QIB_7322_IB_SDTEST_IF_RX_0_TS_T_RX_VALID_LSB 0x0
 #define QIB_7322_IB_SDTEST_IF_RX_0_TS_T_RX_VALID_MSB 0x0
 #define QIB_7322_IB_SDTEST_IF_RX_0_TS_T_RX_VALID_RMASK 0x1
-
 #define QIB_7322_IBNCModeCtrl_0_OFFS 0x15B8
 #define QIB_7322_IBNCModeCtrl_0_DEF 0x0000000000000000
 #define QIB_7322_IBNCModeCtrl_0_ScrambleCapRemoteForce_LSB 0x22
@@ -2437,10 +2294,8 @@
 #define QIB_7322_IBNCModeCtrl_0_TSMEnable_send_TS1_LSB 0x0
 #define QIB_7322_IBNCModeCtrl_0_TSMEnable_send_TS1_MSB 0x0
 #define QIB_7322_IBNCModeCtrl_0_TSMEnable_send_TS1_RMASK 0x1
-
 #define QIB_7322_IBSerdesStatus_0_OFFS 0x15D0
 #define QIB_7322_IBSerdesStatus_0_DEF 0x0000000000000000
-
 #define QIB_7322_IBPCSConfig_0_OFFS 0x15D8
 #define QIB_7322_IBPCSConfig_0_DEF 0x0000000000000007
 #define QIB_7322_IBPCSConfig_0_link_sync_mask_LSB 0x9
@@ -2455,7 +2310,6 @@
 #define QIB_7322_IBPCSConfig_0_tx_rx_reset_LSB 0x0
 #define QIB_7322_IBPCSConfig_0_tx_rx_reset_MSB 0x0
 #define QIB_7322_IBPCSConfig_0_tx_rx_reset_RMASK 0x1
-
 #define QIB_7322_IBSerdesCtrl_0_OFFS 0x15E0
 #define QIB_7322_IBSerdesCtrl_0_DEF 0x0000000000FFA00F
 #define QIB_7322_IBSerdesCtrl_0_DISABLE_RXLATOFF_QDR_LSB 0x1A
@@ -2497,7 +2351,6 @@
 #define QIB_7322_IBSerdesCtrl_0_CMODE_LSB 0x0
 #define QIB_7322_IBSerdesCtrl_0_CMODE_MSB 0x6
 #define QIB_7322_IBSerdesCtrl_0_CMODE_RMASK 0x7F
-
 #define QIB_7322_IBSD_TX_DEEMPHASIS_OVERRIDE_0_OFFS 0x1600
 #define QIB_7322_IBSD_TX_DEEMPHASIS_OVERRIDE_0_DEF 0x0000000000000000
 #define QIB_7322_IBSD_TX_DEEMPHASIS_OVERRIDE_0_tx_override_deemphasis_select_LSB 0x1F
@@ -2521,7 +2374,6 @@
 #define QIB_7322_IBSD_TX_DEEMPHASIS_OVERRIDE_0_txcn1_ena_LSB 0x0
 #define QIB_7322_IBSD_TX_DEEMPHASIS_OVERRIDE_0_txcn1_ena_MSB 0x2
 #define QIB_7322_IBSD_TX_DEEMPHASIS_OVERRIDE_0_txcn1_ena_RMASK 0x7
-
 #define QIB_7322_ADAPT_DISABLE_STATIC_SDR_0_OFFS 0x1640
 #define QIB_7322_ADAPT_DISABLE_STATIC_SDR_0_DEF 0x0000000000000000
 #define QIB_7322_ADAPT_DISABLE_STATIC_SDR_0_static_disable_rxenagain_sdr_ch3_LSB 0x27
@@ -2560,7 +2412,6 @@
 #define QIB_7322_ADAPT_DISABLE_STATIC_SDR_0_static_disable_rxenadfe_sdr_ch0_LSB 0x0
 #define QIB_7322_ADAPT_DISABLE_STATIC_SDR_0_static_disable_rxenadfe_sdr_ch0_MSB 0x7
 #define QIB_7322_ADAPT_DISABLE_STATIC_SDR_0_static_disable_rxenadfe_sdr_ch0_RMASK 0xFF
-
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_SDR_0_OFFS 0x1648
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_SDR_0_DEF 0x0000000000000000
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_SDR_0_dyn_disable_rxenagain_sdr_ch3_LSB 0x27
@@ -2599,7 +2450,6 @@
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_SDR_0_dyn_disable_rxenadfe_sdr_ch0_LSB 0x0
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_SDR_0_dyn_disable_rxenadfe_sdr_ch0_MSB 0x7
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_SDR_0_dyn_disable_rxenadfe_sdr_ch0_RMASK 0xFF
-
 #define QIB_7322_ADAPT_DISABLE_STATIC_DDR_0_OFFS 0x1650
 #define QIB_7322_ADAPT_DISABLE_STATIC_DDR_0_DEF 0x0000000000000000
 #define QIB_7322_ADAPT_DISABLE_STATIC_DDR_0_static_disable_rxenagain_ddr_ch3_LSB 0x27
@@ -2638,7 +2488,6 @@
 #define QIB_7322_ADAPT_DISABLE_STATIC_DDR_0_static_disable_rxenadfe_ddr_ch0_LSB 0x0
 #define QIB_7322_ADAPT_DISABLE_STATIC_DDR_0_static_disable_rxenadfe_ddr_ch0_MSB 0x7
 #define QIB_7322_ADAPT_DISABLE_STATIC_DDR_0_static_disable_rxenadfe_ddr_ch0_RMASK 0xFF
-
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_DDR_0_OFFS 0x1658
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_DDR_0_DEF 0x0000000000000000
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_DDR_0_dyn_disable_rxenagain_ddr_ch3_LSB 0x27
@@ -2677,7 +2526,6 @@
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_DDR_0_dyn_disable_rxenadfe_ddr_ch0_LSB 0x0
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_DDR_0_dyn_disable_rxenadfe_ddr_ch0_MSB 0x7
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_DDR_0_dyn_disable_rxenadfe_ddr_ch0_RMASK 0xFF
-
 #define QIB_7322_ADAPT_DISABLE_STATIC_QDR_0_OFFS 0x1660
 #define QIB_7322_ADAPT_DISABLE_STATIC_QDR_0_DEF 0x0000000000000000
 #define QIB_7322_ADAPT_DISABLE_STATIC_QDR_0_static_disable_rxenagain_qdr_ch3_LSB 0x27
@@ -2716,7 +2564,6 @@
 #define QIB_7322_ADAPT_DISABLE_STATIC_QDR_0_static_disable_rxenadfe_qdr_ch0_LSB 0x0
 #define QIB_7322_ADAPT_DISABLE_STATIC_QDR_0_static_disable_rxenadfe_qdr_ch0_MSB 0x7
 #define QIB_7322_ADAPT_DISABLE_STATIC_QDR_0_static_disable_rxenadfe_qdr_ch0_RMASK 0xFF
-
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_QDR_0_OFFS 0x1668
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_QDR_0_DEF 0x0000000000000000
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_QDR_0_dyn_disable_rxenagain_qdr_ch3_LSB 0x27
@@ -2755,16 +2602,13 @@
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_QDR_0_dyn_disable_rxenadfe_qdr_ch0_LSB 0x0
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_QDR_0_dyn_disable_rxenadfe_qdr_ch0_MSB 0x7
 #define QIB_7322_ADAPT_DISABLE_DYNAMIC_QDR_0_dyn_disable_rxenadfe_qdr_ch0_RMASK 0xFF
-
 #define QIB_7322_ADAPT_DISABLE_TIMER_THRESHOLD_0_OFFS 0x1670
 #define QIB_7322_ADAPT_DISABLE_TIMER_THRESHOLD_0_DEF 0x0000000000000000
-
 #define QIB_7322_HighPriorityLimit_0_OFFS 0x1BC0
 #define QIB_7322_HighPriorityLimit_0_DEF 0x0000000000000000
 #define QIB_7322_HighPriorityLimit_0_Limit_LSB 0x0
 #define QIB_7322_HighPriorityLimit_0_Limit_MSB 0x7
 #define QIB_7322_HighPriorityLimit_0_Limit_RMASK 0xFF
-
 #define QIB_7322_LowPriority0_0_OFFS 0x1C00
 #define QIB_7322_LowPriority0_0_DEF 0x0000000000000000
 #define QIB_7322_LowPriority0_0_VirtualLane_LSB 0x10
@@ -2773,7 +2617,6 @@
 #define QIB_7322_LowPriority0_0_Weight_LSB 0x0
 #define QIB_7322_LowPriority0_0_Weight_MSB 0x7
 #define QIB_7322_LowPriority0_0_Weight_RMASK 0xFF
-
 #define QIB_7322_HighPriority0_0_OFFS 0x1E00
 #define QIB_7322_HighPriority0_0_DEF 0x0000000000000000
 #define QIB_7322_HighPriority0_0_VirtualLane_LSB 0x10
@@ -2782,320 +2625,215 @@
 #define QIB_7322_HighPriority0_0_Weight_LSB 0x0
 #define QIB_7322_HighPriority0_0_Weight_MSB 0x7
 #define QIB_7322_HighPriority0_0_Weight_RMASK 0xFF
-
 #define QIB_7322_CntrRegBase_1_OFFS 0x2028
 #define QIB_7322_CntrRegBase_1_DEF 0x0000000000013000
-
 #define QIB_7322_RcvQPMulticastContext_1_OFFS 0x2170
-
 #define QIB_7322_SendCtrl_1_OFFS 0x21C0
-
 #define QIB_7322_SendBufAvail0_OFFS 0x3000
 #define QIB_7322_SendBufAvail0_DEF 0x0000000000000000
 #define QIB_7322_SendBufAvail0_SendBuf_31_0_LSB 0x0
 #define QIB_7322_SendBufAvail0_SendBuf_31_0_MSB 0x3F
 #define QIB_7322_SendBufAvail0_SendBuf_31_0_RMASK 0x0
-
 #define QIB_7322_MsixTable_OFFS 0x8000
 #define QIB_7322_MsixTable_DEF 0x0000000000000000
-
 #define QIB_7322_MsixPba_OFFS 0x9000
 #define QIB_7322_MsixPba_DEF 0x0000000000000000
-
 #define QIB_7322_LAMemory_OFFS 0xA000
 #define QIB_7322_LAMemory_DEF 0x0000000000000000
-
 #define QIB_7322_LBIntCnt_OFFS 0x11000
 #define QIB_7322_LBIntCnt_DEF 0x0000000000000000
-
 #define QIB_7322_LBFlowStallCnt_OFFS 0x11008
 #define QIB_7322_LBFlowStallCnt_DEF 0x0000000000000000
-
 #define QIB_7322_RxTIDFullErrCnt_OFFS 0x110D0
 #define QIB_7322_RxTIDFullErrCnt_DEF 0x0000000000000000
-
 #define QIB_7322_RxTIDValidErrCnt_OFFS 0x110D8
 #define QIB_7322_RxTIDValidErrCnt_DEF 0x0000000000000000
-
 #define QIB_7322_RxP0HdrEgrOvflCnt_OFFS 0x110E8
 #define QIB_7322_RxP0HdrEgrOvflCnt_DEF 0x0000000000000000
-
 #define QIB_7322_PcieRetryBufDiagQwordCnt_OFFS 0x111A0
 #define QIB_7322_PcieRetryBufDiagQwordCnt_DEF 0x0000000000000000
-
 #define QIB_7322_RxTidFlowDropCnt_OFFS 0x111E0
 #define QIB_7322_RxTidFlowDropCnt_DEF 0x0000000000000000
-
 #define QIB_7322_LBIntCnt_0_OFFS 0x12000
 #define QIB_7322_LBIntCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_TxCreditUpToDateTimeOut_0_OFFS 0x12008
 #define QIB_7322_TxCreditUpToDateTimeOut_0_DEF 0x0000000000000000
-
 #define QIB_7322_TxSDmaDescCnt_0_OFFS 0x12010
 #define QIB_7322_TxSDmaDescCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_TxUnsupVLErrCnt_0_OFFS 0x12018
 #define QIB_7322_TxUnsupVLErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_TxDataPktCnt_0_OFFS 0x12020
 #define QIB_7322_TxDataPktCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_TxFlowPktCnt_0_OFFS 0x12028
 #define QIB_7322_TxFlowPktCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_TxDwordCnt_0_OFFS 0x12030
 #define QIB_7322_TxDwordCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_TxLenErrCnt_0_OFFS 0x12038
 #define QIB_7322_TxLenErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_TxMaxMinLenErrCnt_0_OFFS 0x12040
 #define QIB_7322_TxMaxMinLenErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_TxUnderrunCnt_0_OFFS 0x12048
 #define QIB_7322_TxUnderrunCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_TxFlowStallCnt_0_OFFS 0x12050
 #define QIB_7322_TxFlowStallCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_TxDroppedPktCnt_0_OFFS 0x12058
 #define QIB_7322_TxDroppedPktCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxDroppedPktCnt_0_OFFS 0x12060
 #define QIB_7322_RxDroppedPktCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxDataPktCnt_0_OFFS 0x12068
 #define QIB_7322_RxDataPktCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxFlowPktCnt_0_OFFS 0x12070
 #define QIB_7322_RxFlowPktCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxDwordCnt_0_OFFS 0x12078
 #define QIB_7322_RxDwordCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxLenErrCnt_0_OFFS 0x12080
 #define QIB_7322_RxLenErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxMaxMinLenErrCnt_0_OFFS 0x12088
 #define QIB_7322_RxMaxMinLenErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxICRCErrCnt_0_OFFS 0x12090
 #define QIB_7322_RxICRCErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxVCRCErrCnt_0_OFFS 0x12098
 #define QIB_7322_RxVCRCErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxFlowCtrlViolCnt_0_OFFS 0x120A0
 #define QIB_7322_RxFlowCtrlViolCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxVersionErrCnt_0_OFFS 0x120A8
 #define QIB_7322_RxVersionErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxLinkMalformCnt_0_OFFS 0x120B0
 #define QIB_7322_RxLinkMalformCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxEBPCnt_0_OFFS 0x120B8
 #define QIB_7322_RxEBPCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxLPCRCErrCnt_0_OFFS 0x120C0
 #define QIB_7322_RxLPCRCErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxBufOvflCnt_0_OFFS 0x120C8
 #define QIB_7322_RxBufOvflCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxLenTruncateCnt_0_OFFS 0x120D0
 #define QIB_7322_RxLenTruncateCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxPKeyMismatchCnt_0_OFFS 0x120E0
 #define QIB_7322_RxPKeyMismatchCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_IBLinkDownedCnt_0_OFFS 0x12180
 #define QIB_7322_IBLinkDownedCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_IBSymbolErrCnt_0_OFFS 0x12188
 #define QIB_7322_IBSymbolErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_IBStatusChangeCnt_0_OFFS 0x12190
 #define QIB_7322_IBStatusChangeCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_IBLinkErrRecoveryCnt_0_OFFS 0x12198
 #define QIB_7322_IBLinkErrRecoveryCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_ExcessBufferOvflCnt_0_OFFS 0x121A8
 #define QIB_7322_ExcessBufferOvflCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_LocalLinkIntegrityErrCnt_0_OFFS 0x121B0
 #define QIB_7322_LocalLinkIntegrityErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxVlErrCnt_0_OFFS 0x121B8
 #define QIB_7322_RxVlErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxDlidFltrCnt_0_OFFS 0x121C0
 #define QIB_7322_RxDlidFltrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxVL15DroppedPktCnt_0_OFFS 0x121C8
 #define QIB_7322_RxVL15DroppedPktCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxOtherLocalPhyErrCnt_0_OFFS 0x121D0
 #define QIB_7322_RxOtherLocalPhyErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_RxQPInvalidContextCnt_0_OFFS 0x121D8
 #define QIB_7322_RxQPInvalidContextCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_TxHeadersErrCnt_0_OFFS 0x121F8
 #define QIB_7322_TxHeadersErrCnt_0_DEF 0x0000000000000000
-
 #define QIB_7322_PSRcvDataCount_0_OFFS 0x12218
 #define QIB_7322_PSRcvDataCount_0_DEF 0x0000000000000000
-
 #define QIB_7322_PSRcvPktsCount_0_OFFS 0x12220
 #define QIB_7322_PSRcvPktsCount_0_DEF 0x0000000000000000
-
 #define QIB_7322_PSXmitDataCount_0_OFFS 0x12228
 #define QIB_7322_PSXmitDataCount_0_DEF 0x0000000000000000
-
 #define QIB_7322_PSXmitPktsCount_0_OFFS 0x12230
 #define QIB_7322_PSXmitPktsCount_0_DEF 0x0000000000000000
-
 #define QIB_7322_PSXmitWaitCount_0_OFFS 0x12238
 #define QIB_7322_PSXmitWaitCount_0_DEF 0x0000000000000000
-
 #define QIB_7322_LBIntCnt_1_OFFS 0x13000
 #define QIB_7322_LBIntCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_TxCreditUpToDateTimeOut_1_OFFS 0x13008
 #define QIB_7322_TxCreditUpToDateTimeOut_1_DEF 0x0000000000000000
-
 #define QIB_7322_TxSDmaDescCnt_1_OFFS 0x13010
 #define QIB_7322_TxSDmaDescCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_TxUnsupVLErrCnt_1_OFFS 0x13018
 #define QIB_7322_TxUnsupVLErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_TxDataPktCnt_1_OFFS 0x13020
 #define QIB_7322_TxDataPktCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_TxFlowPktCnt_1_OFFS 0x13028
 #define QIB_7322_TxFlowPktCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_TxDwordCnt_1_OFFS 0x13030
 #define QIB_7322_TxDwordCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_TxLenErrCnt_1_OFFS 0x13038
 #define QIB_7322_TxLenErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_TxMaxMinLenErrCnt_1_OFFS 0x13040
 #define QIB_7322_TxMaxMinLenErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_TxUnderrunCnt_1_OFFS 0x13048
 #define QIB_7322_TxUnderrunCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_TxFlowStallCnt_1_OFFS 0x13050
 #define QIB_7322_TxFlowStallCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_TxDroppedPktCnt_1_OFFS 0x13058
 #define QIB_7322_TxDroppedPktCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxDroppedPktCnt_1_OFFS 0x13060
 #define QIB_7322_RxDroppedPktCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxDataPktCnt_1_OFFS 0x13068
 #define QIB_7322_RxDataPktCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxFlowPktCnt_1_OFFS 0x13070
 #define QIB_7322_RxFlowPktCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxDwordCnt_1_OFFS 0x13078
 #define QIB_7322_RxDwordCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxLenErrCnt_1_OFFS 0x13080
 #define QIB_7322_RxLenErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxMaxMinLenErrCnt_1_OFFS 0x13088
 #define QIB_7322_RxMaxMinLenErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxICRCErrCnt_1_OFFS 0x13090
 #define QIB_7322_RxICRCErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxVCRCErrCnt_1_OFFS 0x13098
 #define QIB_7322_RxVCRCErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxFlowCtrlViolCnt_1_OFFS 0x130A0
 #define QIB_7322_RxFlowCtrlViolCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxVersionErrCnt_1_OFFS 0x130A8
 #define QIB_7322_RxVersionErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxLinkMalformCnt_1_OFFS 0x130B0
 #define QIB_7322_RxLinkMalformCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxEBPCnt_1_OFFS 0x130B8
 #define QIB_7322_RxEBPCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxLPCRCErrCnt_1_OFFS 0x130C0
 #define QIB_7322_RxLPCRCErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxBufOvflCnt_1_OFFS 0x130C8
 #define QIB_7322_RxBufOvflCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxLenTruncateCnt_1_OFFS 0x130D0
 #define QIB_7322_RxLenTruncateCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxPKeyMismatchCnt_1_OFFS 0x130E0
 #define QIB_7322_RxPKeyMismatchCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_IBLinkDownedCnt_1_OFFS 0x13180
 #define QIB_7322_IBLinkDownedCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_IBSymbolErrCnt_1_OFFS 0x13188
 #define QIB_7322_IBSymbolErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_IBStatusChangeCnt_1_OFFS 0x13190
 #define QIB_7322_IBStatusChangeCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_IBLinkErrRecoveryCnt_1_OFFS 0x13198
 #define QIB_7322_IBLinkErrRecoveryCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_ExcessBufferOvflCnt_1_OFFS 0x131A8
 #define QIB_7322_ExcessBufferOvflCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_LocalLinkIntegrityErrCnt_1_OFFS 0x131B0
 #define QIB_7322_LocalLinkIntegrityErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxVlErrCnt_1_OFFS 0x131B8
 #define QIB_7322_RxVlErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxDlidFltrCnt_1_OFFS 0x131C0
 #define QIB_7322_RxDlidFltrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxVL15DroppedPktCnt_1_OFFS 0x131C8
 #define QIB_7322_RxVL15DroppedPktCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxOtherLocalPhyErrCnt_1_OFFS 0x131D0
 #define QIB_7322_RxOtherLocalPhyErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_RxQPInvalidContextCnt_1_OFFS 0x131D8
 #define QIB_7322_RxQPInvalidContextCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_TxHeadersErrCnt_1_OFFS 0x131F8
 #define QIB_7322_TxHeadersErrCnt_1_DEF 0x0000000000000000
-
 #define QIB_7322_PSRcvDataCount_1_OFFS 0x13218
 #define QIB_7322_PSRcvDataCount_1_DEF 0x0000000000000000
-
 #define QIB_7322_PSRcvPktsCount_1_OFFS 0x13220
 #define QIB_7322_PSRcvPktsCount_1_DEF 0x0000000000000000
-
 #define QIB_7322_PSXmitDataCount_1_OFFS 0x13228
 #define QIB_7322_PSXmitDataCount_1_DEF 0x0000000000000000
-
 #define QIB_7322_PSXmitPktsCount_1_OFFS 0x13230
 #define QIB_7322_PSXmitPktsCount_1_DEF 0x0000000000000000
-
 #define QIB_7322_PSXmitWaitCount_1_OFFS 0x13238
 #define QIB_7322_PSXmitWaitCount_1_DEF 0x0000000000000000
-
 #define QIB_7322_RcvEgrArray_OFFS 0x14000
 #define QIB_7322_RcvEgrArray_DEF 0x0000000000000000
 #define QIB_7322_RcvEgrArray_RT_BufSize_LSB 0x25
@@ -3104,7 +2842,6 @@
 #define QIB_7322_RcvEgrArray_RT_Addr_LSB 0x0
 #define QIB_7322_RcvEgrArray_RT_Addr_MSB 0x24
 #define QIB_7322_RcvEgrArray_RT_Addr_RMASK 0x1FFFFFFFFF
-
 #define QIB_7322_RcvTIDArray0_OFFS 0x50000
 #define QIB_7322_RcvTIDArray0_DEF 0x0000000000000000
 #define QIB_7322_RcvTIDArray0_RT_BufSize_LSB 0x25
@@ -3113,13 +2850,10 @@
 #define QIB_7322_RcvTIDArray0_RT_Addr_LSB 0x0
 #define QIB_7322_RcvTIDArray0_RT_Addr_MSB 0x24
 #define QIB_7322_RcvTIDArray0_RT_Addr_RMASK 0x1FFFFFFFFF
-
 #define QIB_7322_IBSD_DDS_MAP_TABLE_0_OFFS 0xD0000
 #define QIB_7322_IBSD_DDS_MAP_TABLE_0_DEF 0x0000000000000000
-
 #define QIB_7322_RcvHdrTail0_OFFS 0x200000
 #define QIB_7322_RcvHdrTail0_DEF 0x0000000000000000
-
 #define QIB_7322_RcvHdrHead0_OFFS 0x200008
 #define QIB_7322_RcvHdrHead0_DEF 0x0000000000000000
 #define QIB_7322_RcvHdrHead0_counter_LSB 0x20
@@ -3128,13 +2862,10 @@
 #define QIB_7322_RcvHdrHead0_RcvHeadPointer_LSB 0x0
 #define QIB_7322_RcvHdrHead0_RcvHeadPointer_MSB 0x1F
 #define QIB_7322_RcvHdrHead0_RcvHeadPointer_RMASK 0xFFFFFFFF
-
 #define QIB_7322_RcvEgrIndexTail0_OFFS 0x200010
 #define QIB_7322_RcvEgrIndexTail0_DEF 0x0000000000000000
-
 #define QIB_7322_RcvEgrIndexHead0_OFFS 0x200018
 #define QIB_7322_RcvEgrIndexHead0_DEF 0x0000000000000000
-
 #define QIB_7322_RcvTIDFlowTable0_OFFS 0x201000
 #define QIB_7322_RcvTIDFlowTable0_DEF 0x0000000000000000
 #define QIB_7322_RcvTIDFlowTable0_GenMismatch_LSB 0x1C

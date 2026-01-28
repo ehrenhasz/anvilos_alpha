@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #if !defined(_VISL_TRACE_H264_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _VISL_TRACE_H264_H_
-
 #include <linux/tracepoint.h>
 #include "visl.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM visl_h264_controls
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_h264_sps_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_h264_sps *s),
 	TP_ARGS(s),
@@ -66,7 +62,6 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_h264_sps_tmpl,
 		  {V4L2_H264_SPS_FLAG_DIRECT_8X8_INFERENCE, "DIRECT_8X8_INFERENCE"}
 		  ))
 );
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_h264_pps_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_h264_pps *p),
 	TP_ARGS(p),
@@ -104,7 +99,6 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_h264_pps_tmpl,
 		  {V4L2_H264_PPS_FLAG_SCALING_MATRIX_PRESENT, "SCALING_MATRIX_PRESENT"}
 		  ))
 );
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_h264_scaling_matrix_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_h264_scaling_matrix *s),
 	TP_ARGS(s),
@@ -121,7 +115,6 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_h264_scaling_matrix_tmpl,
 				   false)
 	)
 );
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_h264_pred_weights_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_h264_pred_weights *p),
 	TP_ARGS(p),
@@ -169,7 +162,6 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_h264_pred_weights_tmpl,
 				   false)
 	)
 );
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_h264_slice_params_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_h264_slice_params *s),
 	TP_ARGS(s),
@@ -212,7 +204,6 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_h264_slice_params_tmpl,
 		  {V4L2_H264_SLICE_FLAG_SP_FOR_SWITCH, "SP_FOR_SWITCH"})
 	)
 );
-
 DECLARE_EVENT_CLASS(v4l2_h264_reference_tmpl,
 	TP_PROTO(const struct v4l2_h264_reference *r, int i),
 	TP_ARGS(r, i),
@@ -228,7 +219,6 @@ DECLARE_EVENT_CLASS(v4l2_h264_reference_tmpl,
 		  __entry->r.index
 	)
 );
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_h264_decode_params_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_h264_decode_params *d),
 	TP_ARGS(d),
@@ -267,7 +257,6 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_h264_decode_params_tmpl,
 		  {V4L2_H264_DECODE_PARAM_FLAG_BFRAME, "BFRAME"})
 	)
 );
-
 DECLARE_EVENT_CLASS(v4l2_h264_dpb_entry_tmpl,
 	TP_PROTO(const struct v4l2_h264_dpb_entry *e, int i),
 	TP_ARGS(e, i),
@@ -291,57 +280,45 @@ DECLARE_EVENT_CLASS(v4l2_h264_dpb_entry_tmpl,
 		  {V4L2_H264_DPB_ENTRY_FLAG_ACTIVE, "ACTIVE"},
 		  {V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM, "LONG_TERM"},
 		  {V4L2_H264_DPB_ENTRY_FLAG_FIELD, "FIELD"})
-
 	)
 );
-
 DEFINE_EVENT(v4l2_ctrl_h264_sps_tmpl, v4l2_ctrl_h264_sps,
 	TP_PROTO(const struct v4l2_ctrl_h264_sps *s),
 	TP_ARGS(s)
 );
-
 DEFINE_EVENT(v4l2_ctrl_h264_pps_tmpl, v4l2_ctrl_h264_pps,
 	TP_PROTO(const struct v4l2_ctrl_h264_pps *p),
 	TP_ARGS(p)
 );
-
 DEFINE_EVENT(v4l2_ctrl_h264_scaling_matrix_tmpl, v4l2_ctrl_h264_scaling_matrix,
 	TP_PROTO(const struct v4l2_ctrl_h264_scaling_matrix *s),
 	TP_ARGS(s)
 );
-
 DEFINE_EVENT(v4l2_ctrl_h264_pred_weights_tmpl, v4l2_ctrl_h264_pred_weights,
 	TP_PROTO(const struct v4l2_ctrl_h264_pred_weights *p),
 	TP_ARGS(p)
 );
-
 DEFINE_EVENT(v4l2_ctrl_h264_slice_params_tmpl, v4l2_ctrl_h264_slice_params,
 	TP_PROTO(const struct v4l2_ctrl_h264_slice_params *s),
 	TP_ARGS(s)
 );
-
 DEFINE_EVENT(v4l2_h264_reference_tmpl, v4l2_h264_ref_pic_list0,
 	TP_PROTO(const struct v4l2_h264_reference *r, int i),
 	TP_ARGS(r, i)
 );
-
 DEFINE_EVENT(v4l2_h264_reference_tmpl, v4l2_h264_ref_pic_list1,
 	TP_PROTO(const struct v4l2_h264_reference *r, int i),
 	TP_ARGS(r, i)
 );
-
 DEFINE_EVENT(v4l2_ctrl_h264_decode_params_tmpl, v4l2_ctrl_h264_decode_params,
 	TP_PROTO(const struct v4l2_ctrl_h264_decode_params *d),
 	TP_ARGS(d)
 );
-
 DEFINE_EVENT(v4l2_h264_dpb_entry_tmpl, v4l2_h264_dpb_entry,
 	TP_PROTO(const struct v4l2_h264_dpb_entry *e, int i),
 	TP_ARGS(e, i)
 );
-
 #endif
-
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH ../../drivers/media/test-drivers/visl

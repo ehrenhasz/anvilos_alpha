@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2015 - 2020 Intel Corporation */
 #ifndef IRDMA_HMC_H
 #define IRDMA_HMC_H
-
 #include "defs.h"
-
 #define IRDMA_HMC_MAX_BP_COUNT			512
 #define IRDMA_MAX_SD_ENTRIES			11
 #define IRDMA_HW_DBG_HMC_INVALID_BP_MARK	0xca
@@ -16,7 +12,6 @@
 #define IRDMA_HMC_PD_BP_BUF_ALIGNMENT		4096
 #define IRDMA_FIRST_VF_FPM_ID			8
 #define FPM_MULTIPLIER				1024
-
 enum irdma_hmc_rsrc_type {
 	IRDMA_HMC_IW_QP		 = 0,
 	IRDMA_HMC_IW_CQ		 = 1,
@@ -39,36 +34,31 @@ enum irdma_hmc_rsrc_type {
 	IRDMA_HMC_IW_MD		 = 18,
 	IRDMA_HMC_IW_OOISC       = 19,
 	IRDMA_HMC_IW_OOISCFFL    = 20,
-	IRDMA_HMC_IW_MAX, /* Must be last entry */
+	IRDMA_HMC_IW_MAX,  
 };
-
 enum irdma_sd_entry_type {
 	IRDMA_SD_TYPE_INVALID = 0,
 	IRDMA_SD_TYPE_PAGED   = 1,
 	IRDMA_SD_TYPE_DIRECT  = 2,
 };
-
 struct irdma_hmc_obj_info {
 	u64 base;
 	u32 max_cnt;
 	u32 cnt;
 	u64 size;
 };
-
 struct irdma_hmc_bp {
 	enum irdma_sd_entry_type entry_type;
 	struct irdma_dma_mem addr;
 	u32 sd_pd_index;
 	u32 use_cnt;
 };
-
 struct irdma_hmc_pd_entry {
 	struct irdma_hmc_bp bp;
 	u32 sd_index;
 	bool rsrc_pg:1;
 	bool valid:1;
 };
-
 struct irdma_hmc_pd_table {
 	struct irdma_dma_mem pd_page_addr;
 	struct irdma_hmc_pd_entry *pd_entry;
@@ -76,7 +66,6 @@ struct irdma_hmc_pd_table {
 	u32 use_cnt;
 	u32 sd_index;
 };
-
 struct irdma_hmc_sd_entry {
 	enum irdma_sd_entry_type entry_type;
 	bool valid;
@@ -85,14 +74,12 @@ struct irdma_hmc_sd_entry {
 		struct irdma_hmc_bp bp;
 	} u;
 };
-
 struct irdma_hmc_sd_table {
 	struct irdma_virt_mem addr;
 	u32 sd_cnt;
 	u32 use_cnt;
 	struct irdma_hmc_sd_entry *sd_entry;
 };
-
 struct irdma_hmc_info {
 	u32 signature;
 	u8 hmc_fn_id;
@@ -102,24 +89,20 @@ struct irdma_hmc_info {
 	struct irdma_hmc_sd_table sd_table;
 	u16 sd_indexes[IRDMA_HMC_MAX_SD_COUNT];
 };
-
 struct irdma_update_sd_entry {
 	u64 cmd;
 	u64 data;
 };
-
 struct irdma_update_sds_info {
 	u32 cnt;
 	u8 hmc_fn_id;
 	struct irdma_update_sd_entry entry[IRDMA_MAX_SD_ENTRIES];
 };
-
 struct irdma_ccq_cqe_info;
 struct irdma_hmc_fcn_info {
 	u32 vf_id;
 	u8 free_fcn;
 };
-
 struct irdma_hmc_create_obj_info {
 	struct irdma_hmc_info *hmc_info;
 	struct irdma_virt_mem add_sd_virt_mem;
@@ -130,7 +113,6 @@ struct irdma_hmc_create_obj_info {
 	enum irdma_sd_entry_type entry_type;
 	bool privileged;
 };
-
 struct irdma_hmc_del_obj_info {
 	struct irdma_hmc_info *hmc_info;
 	struct irdma_virt_mem del_sd_virt_mem;
@@ -140,7 +122,6 @@ struct irdma_hmc_del_obj_info {
 	u32 del_sd_cnt;
 	bool privileged;
 };
-
 int irdma_copy_dma_mem(struct irdma_hw *hw, void *dest_buf,
 		       struct irdma_dma_mem *src_mem, u64 src_offset, u64 size);
 int irdma_sc_create_hmc_obj(struct irdma_sc_dev *dev,
@@ -166,4 +147,4 @@ int irdma_remove_pd_bp(struct irdma_sc_dev *dev,
 		       struct irdma_hmc_info *hmc_info, u32 idx);
 int irdma_prep_remove_sd_bp(struct irdma_hmc_info *hmc_info, u32 idx);
 int irdma_prep_remove_pd_page(struct irdma_hmc_info *hmc_info, u32 idx);
-#endif /* IRDMA_HMC_H */
+#endif  

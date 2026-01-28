@@ -1,23 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * amdtp-motu-trace.h - tracepoint definitions to dump a part of packet data
- *
- * Copyright (c) 2017 Takashi Sakamoto
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM		snd_firewire_motu
-
 #if !defined(_SND_FIREWIRE_MOTU_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _SND_FIREWIRE_MOTU_TRACE_H
-
 #include <linux/tracepoint.h>
-
 static void copy_sph(u32 *frame, __be32 *buffer, unsigned int data_blocks,
 		     unsigned int data_block_quadlets);
 static void copy_message(u64 *frames, __be32 *buffer, unsigned int data_blocks,
 			 unsigned int data_block_quadlets);
-
 TRACE_EVENT(data_block_sph,
 	TP_PROTO(struct amdtp_stream *s, unsigned int data_blocks, __be32 *buffer),
 	TP_ARGS(s, data_blocks, buffer),
@@ -46,7 +35,6 @@ TRACE_EVENT(data_block_sph,
 		__print_array(__get_dynamic_array(tstamps), __entry->data_blocks, 4)
 	)
 );
-
 TRACE_EVENT(data_block_message,
 	TP_PROTO(struct amdtp_stream *s, unsigned int data_blocks, __be32 *buffer),
 	TP_ARGS(s, data_blocks, buffer),
@@ -75,9 +63,7 @@ TRACE_EVENT(data_block_message,
 		__print_array(__get_dynamic_array(messages), __entry->data_blocks, 8)
 	)
 );
-
 #endif
-
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH	.
 #undef TRACE_INCLUDE_FILE

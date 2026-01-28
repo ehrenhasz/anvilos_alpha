@@ -1,32 +1,7 @@
-/*
- * Copyright (c) 1993-2020, NVIDIA CORPORATION. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
-
 #ifndef _clC57d_h_
 #define _clC57d_h_
-
-// class methods
 #define NVC57D_SET_CONTEXT_DMA_NOTIFIER                                         (0x00000208)
 #define NVC57D_SET_CONTEXT_DMA_NOTIFIER_HANDLE                                  31:0
-
 #define NVC57D_WINDOW_SET_WINDOW_FORMAT_USAGE_BOUNDS(a)                         (0x00001004 + (a)*0x00000080)
 #define NVC57D_WINDOW_SET_WINDOW_FORMAT_USAGE_BOUNDS_RGB_PACKED1BPP             0:0
 #define NVC57D_WINDOW_SET_WINDOW_FORMAT_USAGE_BOUNDS_RGB_PACKED1BPP_FALSE       (0x00000000)
@@ -145,7 +120,6 @@
 #define NVC57D_WINDOW_SET_WINDOW_USAGE_BOUNDS_UPSCALING_ALLOWED                 24:24
 #define NVC57D_WINDOW_SET_WINDOW_USAGE_BOUNDS_UPSCALING_ALLOWED_FALSE           (0x00000000)
 #define NVC57D_WINDOW_SET_WINDOW_USAGE_BOUNDS_UPSCALING_ALLOWED_TRUE            (0x00000001)
-
 #define NVC57D_HEAD_SET_PROCAMP(a)                                              (0x00002000 + (a)*0x00000400)
 #define NVC57D_HEAD_SET_PROCAMP_COLOR_SPACE                                     1:0
 #define NVC57D_HEAD_SET_PROCAMP_COLOR_SPACE_RGB                                 (0x00000000)
@@ -352,4 +326,4 @@
 #define NVC57D_HEAD_SET_CONTEXT_DMA_OLUT_HANDLE                                 31:0
 #define NVC57D_HEAD_SET_OFFSET_OLUT(a)                                          (0x0000228C + (a)*0x00000400)
 #define NVC57D_HEAD_SET_OFFSET_OLUT_ORIGIN                                      31:0
-#endif // _clC57d_h
+#endif  

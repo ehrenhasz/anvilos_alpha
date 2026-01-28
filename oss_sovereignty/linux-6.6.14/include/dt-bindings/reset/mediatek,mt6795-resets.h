@@ -1,20 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022 Collabora Ltd.
- * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
-
 #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT6795
 #define _DT_BINDINGS_RESET_CONTROLLER_MT6795
-
-/* INFRACFG resets */
 #define MT6795_INFRA_RST0_SCPSYS_RST		0
 #define MT6795_INFRA_RST0_PMIC_WRAP_RST		1
 #define MT6795_INFRA_RST1_MIPI_DSI_RST		2
 #define MT6795_INFRA_RST1_MIPI_CSI_RST		3
 #define MT6795_INFRA_RST1_MM_IOMMU_RST		4
-
-/* MMSYS resets */
 #define MT6795_MMSYS_SW0_RST_B_SMI_COMMON	0
 #define MT6795_MMSYS_SW0_RST_B_SMI_LARB		1
 #define MT6795_MMSYS_SW0_RST_B_CAM_MDP		2
@@ -29,13 +19,9 @@
 #define MT6795_MMSYS_SW0_RST_B_MDP_WROT0	11
 #define MT6795_MMSYS_SW0_RST_B_MDP_WROT1	12
 #define MT6795_MMSYS_SW0_RST_B_MDP_CROP		13
-
-/*  PERICFG resets */
 #define MT6795_PERI_NFI_SW_RST			0
 #define MT6795_PERI_THERM_SW_RST		1
 #define MT6795_PERI_MSDC1_SW_RST		2
-
-/* TOPRGU resets */
 #define MT6795_TOPRGU_INFRA_SW_RST		0
 #define MT6795_TOPRGU_MM_SW_RST			1
 #define MT6795_TOPRGU_MFG_SW_RST		2
@@ -49,5 +35,4 @@
 #define MT6795_TOPRGU_APMIXED_SW_RST		10
 #define MT6795_TOPRGU_PWRAP_SPI_CTL_RST		11
 #define MT6795_TOPRGU_SW_RST_NUM		12
-
-#endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT6795 */
+#endif   

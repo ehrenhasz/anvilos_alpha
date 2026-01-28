@@ -1,32 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *
- *	Generic internet FLOW.
- *
- */
-
 #ifndef _NET_FLOW_H
 #define _NET_FLOW_H
-
 #include <linux/in6.h>
 #include <linux/atomic.h>
 #include <linux/container_of.h>
 #include <linux/uidgid.h>
-
 struct flow_keys;
-
-/*
- * ifindex generation is per-net namespace, and loopback is
- * always the 1st device in ns (see net_dev_init), thus any
- * loopback device should get ifindex 1
- */
-
 #define LOOPBACK_IFINDEX	1
-
 struct flowi_tunnel {
 	__be64			tun_id;
 };
-
 struct flowi_common {
 	int	flowic_oif;
 	int	flowic_iif;
@@ -43,25 +25,20 @@ struct flowi_common {
 	__u32		flowic_multipath_hash;
 	struct flowi_tunnel flowic_tun_key;
 };
-
 union flowi_uli {
 	struct {
 		__be16	dport;
 		__be16	sport;
 	} ports;
-
 	struct {
 		__u8	type;
 		__u8	code;
 	} icmpt;
-
 	__be32		gre_key;
-
 	struct {
 		__u8	type;
 	} mht;
 };
-
 struct flowi4 {
 	struct flowi_common	__fl_common;
 #define flowi4_oif		__fl_common.flowic_oif
@@ -76,11 +53,8 @@ struct flowi4 {
 #define flowi4_tun_key		__fl_common.flowic_tun_key
 #define flowi4_uid		__fl_common.flowic_uid
 #define flowi4_multipath_hash	__fl_common.flowic_multipath_hash
-
-	/* (saddr,daddr) must be grouped, same order as in IP header */
 	__be32			saddr;
 	__be32			daddr;
-
 	union flowi_uli		uli;
 #define fl4_sport		uli.ports.sport
 #define fl4_dport		uli.ports.dport
@@ -89,7 +63,6 @@ struct flowi4 {
 #define fl4_mh_type		uli.mht.type
 #define fl4_gre_key		uli.gre_key
 } __attribute__((__aligned__(BITS_PER_LONG/8)));
-
 static inline void flowi4_init_output(struct flowi4 *fl4, int oif,
 				      __u32 mark, __u8 tos, __u8 scope,
 				      __u8 proto, __u8 flags,
@@ -114,8 +87,6 @@ static inline void flowi4_init_output(struct flowi4 *fl4, int oif,
 	fl4->fl4_sport = sport;
 	fl4->flowi4_multipath_hash = 0;
 }
-
-/* Reset some input parameters after previous lookup */
 static inline void flowi4_update_output(struct flowi4 *fl4, int oif,
 					__be32 daddr, __be32 saddr)
 {
@@ -123,8 +94,6 @@ static inline void flowi4_update_output(struct flowi4 *fl4, int oif,
 	fl4->daddr = daddr;
 	fl4->saddr = saddr;
 }
-
-
 struct flowi6 {
 	struct flowi_common	__fl_common;
 #define flowi6_oif		__fl_common.flowic_oif
@@ -139,7 +108,6 @@ struct flowi6 {
 #define flowi6_uid		__fl_common.flowic_uid
 	struct in6_addr		daddr;
 	struct in6_addr		saddr;
-	/* Note: flowi6_tos is encoded in flowlabel, too. */
 	__be32			flowlabel;
 	union flowi_uli		uli;
 #define fl6_sport		uli.ports.sport
@@ -150,7 +118,6 @@ struct flowi6 {
 #define fl6_gre_key		uli.gre_key
 	__u32			mp_hash;
 } __attribute__((__aligned__(BITS_PER_LONG/8)));
-
 struct flowi {
 	union {
 		struct flowi_common	__fl_common;
@@ -169,27 +136,21 @@ struct flowi {
 #define flowi_tun_key	u.__fl_common.flowic_tun_key
 #define flowi_uid	u.__fl_common.flowic_uid
 } __attribute__((__aligned__(BITS_PER_LONG/8)));
-
 static inline struct flowi *flowi4_to_flowi(struct flowi4 *fl4)
 {
 	return container_of(fl4, struct flowi, u.ip4);
 }
-
 static inline struct flowi_common *flowi4_to_flowi_common(struct flowi4 *fl4)
 {
 	return &(fl4->__fl_common);
 }
-
 static inline struct flowi *flowi6_to_flowi(struct flowi6 *fl6)
 {
 	return container_of(fl6, struct flowi, u.ip6);
 }
-
 static inline struct flowi_common *flowi6_to_flowi_common(struct flowi6 *fl6)
 {
 	return &(fl6->__fl_common);
 }
-
 __u32 __get_hash_from_flowi6(const struct flowi6 *fl6, struct flow_keys *keys);
-
 #endif

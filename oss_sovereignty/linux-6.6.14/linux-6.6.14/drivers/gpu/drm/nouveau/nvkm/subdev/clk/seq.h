@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_CLK_SEQ_H__
 #define __NVKM_CLK_SEQ_H__
 #include <subdev/bus/hwsq.h>
-
 #define clk_init(s,p)       hwsq_init(&(s)->base, (p))
 #define clk_exec(s,e)       hwsq_exec(&(s)->base, (e))
 #define clk_have(s,r)       ((s)->r_##r.addr != 0x000000)

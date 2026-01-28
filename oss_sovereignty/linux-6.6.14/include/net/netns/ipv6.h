@@ -1,17 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ipv6 in net namespaces
- */
-
 #include <net/inet_frag.h>
-
 #ifndef __NETNS_IPV6_H__
 #define __NETNS_IPV6_H__
 #include <net/dst_ops.h>
 #include <uapi/linux/icmpv6.h>
-
 struct ctl_table_header;
-
 struct netns_sysctl_ipv6 {
 #ifdef CONFIG_SYSCTL
 	struct ctl_table_header *hdr;
@@ -57,11 +49,8 @@ struct netns_sysctl_ipv6 {
 	u8 fib_notify_on_flag_change;
 	u8 icmpv6_error_anycast_as_unicast;
 };
-
 struct netns_ipv6 {
-	/* Keep ip6_dst_ops at the beginning of netns_sysctl_ipv6 */
 	struct dst_ops		ip6_dst_ops;
-
 	struct netns_sysctl_ipv6 sysctl;
 	struct ipv6_devconf	*devconf_all;
 	struct ipv6_devconf	*devconf_dflt;
@@ -94,11 +83,9 @@ struct netns_ipv6 {
 	struct sock             *tcp_sk;
 	struct sock             *igmp_sk;
 	struct sock		*mc_autojoin_sk;
-
 	struct hlist_head	*inet6_addr_lst;
 	spinlock_t		addrconf_hash_lock;
 	struct delayed_work	addr_chk_work;
-
 #ifdef CONFIG_IPV6_MROUTE
 #ifndef CONFIG_IPV6_MROUTE_MULTIPLE_TABLES
 	struct mr_table		*mrt6;
@@ -112,7 +99,7 @@ struct netns_ipv6 {
 	struct seg6_pernet_data *seg6_data;
 	struct fib_notifier_ops	*notifier_ops;
 	struct fib_notifier_ops	*ip6mr_notifier_ops;
-	unsigned int ipmr_seq; /* protected by rtnl_mutex */
+	unsigned int ipmr_seq;  
 	struct {
 		struct hlist_head head;
 		spinlock_t	lock;
@@ -120,11 +107,9 @@ struct netns_ipv6 {
 	} ip6addrlbl_table;
 	struct ioam6_pernet_data *ioam6_data;
 };
-
 #if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
 struct netns_nf_frag {
 	struct fqdir	*fqdir;
 };
 #endif
-
 #endif

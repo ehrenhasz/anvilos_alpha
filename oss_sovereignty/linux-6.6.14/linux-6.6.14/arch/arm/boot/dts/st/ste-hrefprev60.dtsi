@@ -1,32 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 ST-Ericsson AB
- *
- * Device Tree for the HREF+ prior to the v60 variant.
- */
-
 #include "ste-href-ab8500.dtsi"
 #include "ste-href.dtsi"
-
 / {
 	gpio_keys {
 		button@1 {
 			gpios = <&tc3589x_gpio 7 GPIO_ACTIVE_HIGH>;
 		};
 	};
-
 	soc {
-		/* Enable UART1 on this board */
 		serial@80121000 {
 			status = "okay";
 		};
-
 		i2c@80004000 {
 			tps61052@33 {
 				compatible = "ti,tps61052";
 				reg = <0x33>;
 			};
-
 			tc35892@42 {
 				compatible = "toshiba,tc35892";
 				reg = <0x42>;
@@ -34,14 +22,11 @@
 				interrupts = <25 IRQ_TYPE_EDGE_RISING>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&tc35892_hrefprev60_mode>;
-
 				interrupt-controller;
 				#interrupt-cells = <1>;
-
 				tc3589x_gpio: tc3589x_gpio {
 					compatible = "tc3589x-gpio";
 					interrupts = <0>;
-
 					interrupt-controller;
 					#interrupt-cells = <2>;
 					gpio-controller;
@@ -49,27 +34,17 @@
 				};
 			};
 		};
-
 		spi@80002000 {
-			/*
-			 * On the first generation boards, this SSP/SPI port was connected
-			 * to the AB8500.
-			 */
 			pinctrl-names = "default";
 			pinctrl-0 = <&ssp0_hrefprev60_mode>;
 			status = "okay";
 		};
-
-		// External Micro SD slot
 		mmc@80126000 {
 			cd-gpios  = <&tc3589x_gpio 3 GPIO_ACTIVE_HIGH>;
 		};
-
 		pinctrl {
-			/* Set this up using hogs */
 			pinctrl-names = "default";
 			pinctrl-0 = <&ipgpio_hrefprev60_mode>;
-
 			ssp0 {
 				ssp0_hrefprev60_mode: ssp0_hrefprev60_default {
 					hrefprev60_mux {
@@ -77,24 +52,21 @@
 						groups = "ssp0_a_1";
 					};
 					hrefprev60_cfg1 {
-						pins = "GPIO145_C13"; /* RXD */
+						pins = "GPIO145_C13";  
 						ste,config = <&in_pd>;
 					};
-
 				};
 			};
 			sdi0 {
-				/* This additional pin needed on early MOP500 and HREFs previous to v60 */
 				sdi0_default_mode: sdi0_default {
 					hrefprev60_mux {
 						function = "mc0";
 						groups = "mc0dat31dir_a_1";
 					};
 					hrefprev60_cfg1 {
-						pins = "GPIO21_AB3"; /* DAT31DIR */
+						pins = "GPIO21_AB3";  
 						ste,config = <&out_hi>;
 					};
-
 				};
 			};
 			tc35892 {

@@ -1,12 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef _DT_BINDINGS_CLK_MT6765_H
 #define _DT_BINDINGS_CLK_MT6765_H
-
-/* FIX Clks */
 #define CLK_TOP_CLK26M			0
-
-/* APMIXEDSYS */
 #define CLK_APMIXED_ARMPLL_L		0
 #define CLK_APMIXED_ARMPLL		1
 #define CLK_APMIXED_CCIPLL		2
@@ -30,8 +24,6 @@
 #define CLK_APMIXED_CLKSQ_LVPLL_26M	20
 #define CLK_APMIXED_MIPID0_26M		21
 #define CLK_APMIXED_NR_CLK		22
-
-/* TOPCKGEN */
 #define CLK_TOP_SYSPLL			0
 #define CLK_TOP_SYSPLL_D2		1
 #define CLK_TOP_SYSPLL1_D2		2
@@ -159,8 +151,6 @@
 #define CLK_TOP_PWRAP_ULPOSC_SEL	124
 #define CLK_TOP_CAMTM_SEL		125
 #define CLK_TOP_NR_CLK			126
-
-/* INFRACFG */
 #define CLK_IFR_ICUSB			0
 #define CLK_IFR_GCE			1
 #define CLK_IFR_THERM			2
@@ -226,8 +216,6 @@
 #define CLK_IFR_CCIF3_AP		62
 #define CLK_IFR_CCIF3_MD		63
 #define CLK_IFR_NR_CLK			64
-
-/* AUDIO */
 #define CLK_AUDIO_AFE			0
 #define CLK_AUDIO_22M			1
 #define CLK_AUDIO_APLL_TUNER		2
@@ -240,14 +228,8 @@
 #define CLK_AUDIO_I2S3_BCLK		9
 #define CLK_AUDIO_I2S4_BCLK		10
 #define CLK_AUDIO_NR_CLK		11
-
-/* MIPI_RX_ANA_CSI0A */
-
 #define CLK_MIPI0A_CSR_CSI_EN_0A	0
 #define CLK_MIPI0A_NR_CLK		1
-
-/* MMSYS_CONFIG */
-
 #define CLK_MM_MDP_RDMA0		0
 #define CLK_MM_MDP_CCORR0		1
 #define CLK_MM_MDP_RSZ0			2
@@ -279,26 +261,17 @@
 #define CLK_MM_DIG_DSI			28
 #define CLK_MM_F26M_HRTWT		29
 #define CLK_MM_NR_CLK			30
-
-/* IMGSYS */
-
 #define CLK_IMG_LARB2			0
 #define CLK_IMG_DIP			1
 #define CLK_IMG_FDVT			2
 #define CLK_IMG_DPE			3
 #define CLK_IMG_RSC			4
 #define CLK_IMG_NR_CLK			5
-
-/* VENCSYS */
-
 #define CLK_VENC_SET0_LARB		0
 #define CLK_VENC_SET1_VENC		1
 #define CLK_VENC_SET2_JPGENC		2
 #define CLK_VENC_SET3_VDEC		3
 #define CLK_VENC_NR_CLK			4
-
-/* CAMSYS */
-
 #define CLK_CAM_LARB3			0
 #define CLK_CAM_DFP_VAD			1
 #define CLK_CAM				2
@@ -309,5 +282,4 @@
 #define CLK_CAMSV2			7
 #define CLK_CAM_CCU			8
 #define CLK_CAM_NR_CLK			9
-
-#endif /* _DT_BINDINGS_CLK_MT6765_H */
+#endif  

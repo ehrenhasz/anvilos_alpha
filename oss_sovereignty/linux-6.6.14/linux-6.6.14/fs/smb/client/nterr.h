@@ -1,39 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-   Unix SMB/Netbios implementation.
-   Version 1.9.
-   NT error code constants
-   Copyright (C) Andrew Tridgell              1992-2000
-   Copyright (C) John H Terpstra              1996-2000
-   Copyright (C) Luke Kenneth Casson Leighton 1996-2000
-   Copyright (C) Paul Ashton                  1998-2000
-
-*/
-
-
-
 #ifndef _NTERR_H
 #define _NTERR_H
-
 struct nt_err_code_struct {
 	char *nt_errstr;
 	__u32 nt_errcode;
 };
-
 extern const struct nt_err_code_struct nt_errs[];
-
-/* Win32 Status codes. */
 #define NT_STATUS_MORE_ENTRIES         0x0105
 #define NT_ERROR_INVALID_PARAMETER     0x0057
 #define NT_ERROR_INSUFFICIENT_BUFFER   0x007a
 #define NT_STATUS_1804                 0x070c
 #define NT_STATUS_NOTIFY_ENUM_DIR      0x010c
-
-/*
- * Win32 Error codes extracted using a loop in smbclient then printing a netmon
- * sniff to a file.
- */
-
 #define NT_STATUS_OK                   0x0000
 #define NT_STATUS_SOME_UNMAPPED        0x0107
 #define NT_STATUS_BUFFER_OVERFLOW  0x80000005
@@ -546,6 +522,5 @@ extern const struct nt_err_code_struct nt_errs[];
 #define NT_STATUS_TOO_MANY_LINKS 0xC0000000 | 0x0265
 #define NT_STATUS_QUOTA_LIST_INCONSISTENT 0xC0000000 | 0x0266
 #define NT_STATUS_FILE_IS_OFFLINE 0xC0000000 | 0x0267
-#define NT_STATUS_NO_SUCH_JOB 0xC0000000 | 0xEDE	/* scheduler */
-
-#endif				/* _NTERR_H */
+#define NT_STATUS_NO_SUCH_JOB 0xC0000000 | 0xEDE	 
+#endif				 

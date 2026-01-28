@@ -1,25 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * Copyright Novell Inc. 2010
- *
- * Authors: Alexander Graf <agraf@suse.de>
- */
-
 #ifndef __ASM_KVM_FPU_H__
 #define __ASM_KVM_FPU_H__
-
 #include <linux/types.h>
-
 extern void fps_fres(u64 *fpscr, u32 *dst, u32 *src1);
 extern void fps_frsqrte(u64 *fpscr, u32 *dst, u32 *src1);
 extern void fps_fsqrts(u64 *fpscr, u32 *dst, u32 *src1);
-
 extern void fps_fadds(u64 *fpscr, u32 *dst, u32 *src1, u32 *src2);
 extern void fps_fdivs(u64 *fpscr, u32 *dst, u32 *src1, u32 *src2);
 extern void fps_fmuls(u64 *fpscr, u32 *dst, u32 *src1, u32 *src2);
 extern void fps_fsubs(u64 *fpscr, u32 *dst, u32 *src1, u32 *src2);
-
 extern void fps_fmadds(u64 *fpscr, u32 *dst, u32 *src1, u32 *src2,
 		       u32 *src3);
 extern void fps_fmsubs(u64 *fpscr, u32 *dst, u32 *src1, u32 *src2,
@@ -30,17 +18,14 @@ extern void fps_fnmsubs(u64 *fpscr, u32 *dst, u32 *src1, u32 *src2,
 		        u32 *src3);
 extern void fps_fsel(u64 *fpscr, u32 *dst, u32 *src1, u32 *src2,
 		     u32 *src3);
-
 #define FPD_ONE_IN(name) extern void fpd_ ## name(u64 *fpscr, u32 *cr, \
 				u64 *dst, u64 *src1);
 #define FPD_TWO_IN(name) extern void fpd_ ## name(u64 *fpscr, u32 *cr, \
 				u64 *dst, u64 *src1, u64 *src2);
 #define FPD_THREE_IN(name) extern void fpd_ ## name(u64 *fpscr, u32 *cr, \
 				u64 *dst, u64 *src1, u64 *src2, u64 *src3);
-
 extern void fpd_fcmpu(u64 *fpscr, u32 *cr, u64 *src1, u64 *src2);
 extern void fpd_fcmpo(u64 *fpscr, u32 *cr, u64 *src1, u64 *src2);
-
 FPD_ONE_IN(fsqrts)
 FPD_ONE_IN(frsqrtes)
 FPD_ONE_IN(fres)
@@ -70,8 +55,6 @@ FPD_THREE_IN(fmsub)
 FPD_THREE_IN(fmadd)
 FPD_THREE_IN(fnmsub)
 FPD_THREE_IN(fnmadd)
-
 extern void kvm_cvt_fd(u32 *from, u64 *to);
 extern void kvm_cvt_df(u64 *from, u32 *to);
-
 #endif

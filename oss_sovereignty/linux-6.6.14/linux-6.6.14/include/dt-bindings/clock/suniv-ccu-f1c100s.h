@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT)
- *
- * Copyright (c) 2018 Icenowy Zheng <icenowy@aosc.xyz>
- *
- */
-
 #ifndef _DT_BINDINGS_CLK_SUNIV_F1C100S_H_
 #define _DT_BINDINGS_CLK_SUNIV_F1C100S_H_
-
 #define CLK_CPU			11
-
 #define CLK_BUS_DMA		14
 #define CLK_BUS_MMC0		15
 #define CLK_BUS_MMC1		16
@@ -36,7 +28,6 @@
 #define CLK_BUS_UART0		38
 #define CLK_BUS_UART1		39
 #define CLK_BUS_UART2		40
-
 #define CLK_MMC0		41
 #define CLK_MMC0_SAMPLE		42
 #define CLK_MMC0_OUTPUT		43
@@ -45,16 +36,13 @@
 #define CLK_MMC1_OUTPUT		46
 #define CLK_I2S			47
 #define CLK_SPDIF		48
-
 #define CLK_USB_PHY0		49
-
 #define CLK_DRAM_VE		50
 #define CLK_DRAM_CSI		51
 #define CLK_DRAM_DEINTERLACE	52
 #define CLK_DRAM_TVD		53
 #define CLK_DRAM_DE_FE		54
 #define CLK_DRAM_DE_BE		55
-
 #define CLK_DE_BE		56
 #define CLK_DE_FE		57
 #define CLK_TCON		58
@@ -66,7 +54,5 @@
 #define CLK_VE			64
 #define CLK_CODEC		65
 #define CLK_AVS			66
-
 #define CLK_IR			67
-
 #endif

@@ -1,21 +1,16 @@
 #ifndef __MTK_WED_H
 #define __MTK_WED_H
-
 #include <linux/kernel.h>
 #include <linux/rcupdate.h>
 #include <linux/regmap.h>
 #include <linux/pci.h>
 #include <linux/skbuff.h>
 #include <linux/netdevice.h>
-
 #define MTK_WED_TX_QUEUES		2
 #define MTK_WED_RX_QUEUES		2
-
 #define WED_WO_STA_REC			0x6
-
 struct mtk_wed_hw;
 struct mtk_wdma_desc;
-
 enum mtk_wed_wo_cmd {
 	MTK_WED_WO_CMD_WED_CFG,
 	MTK_WED_WO_CMD_WED_RX_STAT,
@@ -44,17 +39,14 @@ enum mtk_wed_wo_cmd {
 	MTK_WED_WO_CMD_CCIF_RING_DUMP,
 	MTK_WED_WO_CMD_WED_END
 };
-
 struct mtk_rxbm_desc {
 	__le32 buf0;
 	__le32 token;
 } __packed __aligned(4);
-
 enum mtk_wed_bus_tye {
 	MTK_WED_BUS_PCIE,
 	MTK_WED_BUS_AXI,
 };
-
 #define MTK_WED_RING_CONFIGURED		BIT(0)
 struct mtk_wed_ring {
 	struct mtk_wdma_desc *desc;
@@ -62,11 +54,9 @@ struct mtk_wed_ring {
 	u32 desc_size;
 	int size;
 	u32 flags;
-
 	u32 reg_base;
 	void __iomem *wpdma;
 };
-
 struct mtk_wed_wo_rx_stats {
 	__le16 wlan_idx;
 	__le16 tid;
@@ -75,7 +65,6 @@ struct mtk_wed_wo_rx_stats {
 	__le32 rx_err_cnt;
 	__le32 rx_drop_cnt;
 };
-
 struct mtk_wed_device {
 #ifdef CONFIG_NET_MEDIATEK_SOC_WED
 	const struct mtk_wed_ops *ops;
@@ -85,36 +74,28 @@ struct mtk_wed_device {
 	int wdma_idx;
 	int irq;
 	u8 version;
-
-	/* used by wlan driver */
 	u32 rev_id;
-
 	struct mtk_wed_ring tx_ring[MTK_WED_TX_QUEUES];
 	struct mtk_wed_ring rx_ring[MTK_WED_RX_QUEUES];
 	struct mtk_wed_ring txfree_ring;
 	struct mtk_wed_ring tx_wdma[MTK_WED_TX_QUEUES];
 	struct mtk_wed_ring rx_wdma[MTK_WED_RX_QUEUES];
-
 	struct {
 		int size;
 		void **pages;
 		struct mtk_wdma_desc *desc;
 		dma_addr_t desc_phys;
 	} tx_buf_ring;
-
 	struct {
 		int size;
 		struct mtk_rxbm_desc *desc;
 		dma_addr_t desc_phys;
 	} rx_buf_ring;
-
 	struct {
 		struct mtk_wed_ring ring;
 		dma_addr_t miod_phys;
 		dma_addr_t fdbk_phys;
 	} rro;
-
-	/* filled by driver: */
 	struct {
 		union {
 			struct platform_device *platform_dev;
@@ -123,7 +104,6 @@ struct mtk_wed_device {
 		enum mtk_wed_bus_tye bus_type;
 		void __iomem *base;
 		u32 phy_base;
-
 		u32 wpdma_phys;
 		u32 wpdma_int;
 		u32 wpdma_mask;
@@ -131,19 +111,15 @@ struct mtk_wed_device {
 		u32 wpdma_txfree;
 		u32 wpdma_rx_glo;
 		u32 wpdma_rx;
-
 		bool wcid_512;
-
 		u16 token_start;
 		unsigned int nbuf;
 		unsigned int rx_nbuf;
 		unsigned int rx_npkt;
 		unsigned int rx_size;
-
 		u8 tx_tbit[MTK_WED_TX_QUEUES];
 		u8 rx_tbit[MTK_WED_RX_QUEUES];
 		u8 txfree_tbit;
-
 		u32 (*init_buf)(void *ptr, dma_addr_t phys, int token_id);
 		int (*offload_enable)(struct mtk_wed_device *wed);
 		void (*offload_disable)(struct mtk_wed_device *wed);
@@ -156,7 +132,6 @@ struct mtk_wed_device {
 	} wlan;
 #endif
 };
-
 struct mtk_wed_ops {
 	int (*attach)(struct mtk_wed_device *dev);
 	int (*tx_ring_setup)(struct mtk_wed_device *dev, int ring,
@@ -170,27 +145,21 @@ struct mtk_wed_ops {
 	void (*detach)(struct mtk_wed_device *dev);
 	void (*ppe_check)(struct mtk_wed_device *dev, struct sk_buff *skb,
 			  u32 reason, u32 hash);
-
 	void (*stop)(struct mtk_wed_device *dev);
 	void (*start)(struct mtk_wed_device *dev, u32 irq_mask);
 	void (*reset_dma)(struct mtk_wed_device *dev);
-
 	u32 (*reg_read)(struct mtk_wed_device *dev, u32 reg);
 	void (*reg_write)(struct mtk_wed_device *dev, u32 reg, u32 val);
-
 	u32 (*irq_get)(struct mtk_wed_device *dev, u32 mask);
 	void (*irq_set_mask)(struct mtk_wed_device *dev, u32 mask);
 	int (*setup_tc)(struct mtk_wed_device *wed, struct net_device *dev,
 			enum tc_setup_type type, void *type_data);
 };
-
 extern const struct mtk_wed_ops __rcu *mtk_soc_wed_ops;
-
 static inline int
 mtk_wed_device_attach(struct mtk_wed_device *dev)
 {
 	int ret = -ENODEV;
-
 #ifdef CONFIG_NET_MEDIATEK_SOC_WED
 	rcu_read_lock();
 	dev->ops = rcu_dereference(mtk_soc_wed_ops);
@@ -198,14 +167,11 @@ mtk_wed_device_attach(struct mtk_wed_device *dev)
 		ret = dev->ops->attach(dev);
 	else
 		rcu_read_unlock();
-
 	if (ret)
 		dev->ops = NULL;
 #endif
-
 	return ret;
 }
-
 static inline bool
 mtk_wed_get_rx_capa(struct mtk_wed_device *dev)
 {
@@ -215,7 +181,6 @@ mtk_wed_get_rx_capa(struct mtk_wed_device *dev)
 	return false;
 #endif
 }
-
 #ifdef CONFIG_NET_MEDIATEK_SOC_WED
 #define mtk_wed_device_active(_dev) !!(_dev)->ops
 #define mtk_wed_device_detach(_dev) (_dev)->ops->detach(_dev)
@@ -262,5 +227,4 @@ static inline bool mtk_wed_device_active(struct mtk_wed_device *dev)
 #define mtk_wed_device_dma_reset(_dev) do {} while (0)
 #define mtk_wed_device_setup_tc(_dev, _netdev, _type, _type_data) -EOPNOTSUPP
 #endif
-
 #endif

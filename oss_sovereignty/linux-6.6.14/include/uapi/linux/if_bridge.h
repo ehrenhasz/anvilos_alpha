@@ -1,31 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- */
-
 #ifndef _UAPI_LINUX_IF_BRIDGE_H
 #define _UAPI_LINUX_IF_BRIDGE_H
-
 #include <linux/types.h>
 #include <linux/if_ether.h>
 #include <linux/in6.h>
-
 #define SYSFS_BRIDGE_ATTR	"bridge"
 #define SYSFS_BRIDGE_FDB	"brforward"
 #define SYSFS_BRIDGE_PORT_SUBDIR "brif"
 #define SYSFS_BRIDGE_PORT_ATTR	"brport"
 #define SYSFS_BRIDGE_PORT_LINK	"bridge"
-
 #define BRCTL_VERSION 1
-
 #define BRCTL_GET_VERSION 0
 #define BRCTL_GET_BRIDGES 1
 #define BRCTL_ADD_BRIDGE 2
@@ -45,13 +28,11 @@
 #define BRCTL_SET_PORT_PRIORITY 16
 #define BRCTL_SET_PATH_COST 17
 #define BRCTL_GET_FDB_ENTRIES 18
-
 #define BR_STATE_DISABLED 0
 #define BR_STATE_LISTENING 1
 #define BR_STATE_LEARNING 2
 #define BR_STATE_FORWARDING 3
 #define BR_STATE_BLOCKING 4
-
 struct __bridge_info {
 	__u64 designated_root;
 	__u64 bridge_id;
@@ -73,7 +54,6 @@ struct __bridge_info {
 	__u32 topology_change_timer_value;
 	__u32 gc_timer_value;
 };
-
 struct __port_info {
 	__u64 designated_root;
 	__u64 designated_bridge;
@@ -89,7 +69,6 @@ struct __port_info {
 	__u32 forward_delay_timer_value;
 	__u32 hold_timer_value;
 };
-
 struct __fdb_entry {
 	__u8 mac_addr[ETH_ALEN];
 	__u8 port_no;
@@ -99,22 +78,11 @@ struct __fdb_entry {
 	__u8 pad0;
 	__u16 unused;
 };
-
-/* Bridge Flags */
-#define BRIDGE_FLAGS_MASTER	1	/* Bridge command to/from master */
-#define BRIDGE_FLAGS_SELF	2	/* Bridge command to/from lowerdev */
-
-#define BRIDGE_MODE_VEB		0	/* Default loopback mode */
-#define BRIDGE_MODE_VEPA	1	/* 802.1Qbg defined VEPA mode */
-#define BRIDGE_MODE_UNDEF	0xFFFF  /* mode undefined */
-
-/* Bridge management nested attributes
- * [IFLA_AF_SPEC] = {
- *     [IFLA_BRIDGE_FLAGS]
- *     [IFLA_BRIDGE_MODE]
- *     [IFLA_BRIDGE_VLAN_INFO]
- * }
- */
+#define BRIDGE_FLAGS_MASTER	1	 
+#define BRIDGE_FLAGS_SELF	2	 
+#define BRIDGE_MODE_VEB		0	 
+#define BRIDGE_MODE_VEPA	1	 
+#define BRIDGE_MODE_UNDEF	0xFFFF   
 enum {
 	IFLA_BRIDGE_FLAGS,
 	IFLA_BRIDGE_MODE,
@@ -126,20 +94,17 @@ enum {
 	__IFLA_BRIDGE_MAX,
 };
 #define IFLA_BRIDGE_MAX (__IFLA_BRIDGE_MAX - 1)
-
-#define BRIDGE_VLAN_INFO_MASTER	(1<<0)	/* Operate on Bridge device as well */
-#define BRIDGE_VLAN_INFO_PVID	(1<<1)	/* VLAN is PVID, ingress untagged */
-#define BRIDGE_VLAN_INFO_UNTAGGED	(1<<2)	/* VLAN egresses untagged */
-#define BRIDGE_VLAN_INFO_RANGE_BEGIN	(1<<3) /* VLAN is start of vlan range */
-#define BRIDGE_VLAN_INFO_RANGE_END	(1<<4) /* VLAN is end of vlan range */
-#define BRIDGE_VLAN_INFO_BRENTRY	(1<<5) /* Global bridge VLAN entry */
-#define BRIDGE_VLAN_INFO_ONLY_OPTS	(1<<6) /* Skip create/delete/flags */
-
+#define BRIDGE_VLAN_INFO_MASTER	(1<<0)	 
+#define BRIDGE_VLAN_INFO_PVID	(1<<1)	 
+#define BRIDGE_VLAN_INFO_UNTAGGED	(1<<2)	 
+#define BRIDGE_VLAN_INFO_RANGE_BEGIN	(1<<3)  
+#define BRIDGE_VLAN_INFO_RANGE_END	(1<<4)  
+#define BRIDGE_VLAN_INFO_BRENTRY	(1<<5)  
+#define BRIDGE_VLAN_INFO_ONLY_OPTS	(1<<6)  
 struct bridge_vlan_info {
 	__u16 flags;
 	__u16 vid;
 };
-
 enum {
 	IFLA_BRIDGE_VLAN_TUNNEL_UNSPEC,
 	IFLA_BRIDGE_VLAN_TUNNEL_ID,
@@ -147,9 +112,7 @@ enum {
 	IFLA_BRIDGE_VLAN_TUNNEL_FLAGS,
 	__IFLA_BRIDGE_VLAN_TUNNEL_MAX,
 };
-
 #define IFLA_BRIDGE_VLAN_TUNNEL_MAX (__IFLA_BRIDGE_VLAN_TUNNEL_MAX - 1)
-
 struct bridge_vlan_xstats {
 	__u64 rx_bytes;
 	__u64 rx_packets;
@@ -159,7 +122,6 @@ struct bridge_vlan_xstats {
 	__u16 flags;
 	__u32 pad2;
 };
-
 enum {
 	IFLA_BRIDGE_MRP_UNSPEC,
 	IFLA_BRIDGE_MRP_INSTANCE,
@@ -174,9 +136,7 @@ enum {
 	IFLA_BRIDGE_MRP_START_IN_TEST,
 	__IFLA_BRIDGE_MRP_MAX,
 };
-
 #define IFLA_BRIDGE_MRP_MAX (__IFLA_BRIDGE_MRP_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_MRP_INSTANCE_UNSPEC,
 	IFLA_BRIDGE_MRP_INSTANCE_RING_ID,
@@ -185,43 +145,33 @@ enum {
 	IFLA_BRIDGE_MRP_INSTANCE_PRIO,
 	__IFLA_BRIDGE_MRP_INSTANCE_MAX,
 };
-
 #define IFLA_BRIDGE_MRP_INSTANCE_MAX (__IFLA_BRIDGE_MRP_INSTANCE_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_MRP_PORT_STATE_UNSPEC,
 	IFLA_BRIDGE_MRP_PORT_STATE_STATE,
 	__IFLA_BRIDGE_MRP_PORT_STATE_MAX,
 };
-
 #define IFLA_BRIDGE_MRP_PORT_STATE_MAX (__IFLA_BRIDGE_MRP_PORT_STATE_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_MRP_PORT_ROLE_UNSPEC,
 	IFLA_BRIDGE_MRP_PORT_ROLE_ROLE,
 	__IFLA_BRIDGE_MRP_PORT_ROLE_MAX,
 };
-
 #define IFLA_BRIDGE_MRP_PORT_ROLE_MAX (__IFLA_BRIDGE_MRP_PORT_ROLE_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_MRP_RING_STATE_UNSPEC,
 	IFLA_BRIDGE_MRP_RING_STATE_RING_ID,
 	IFLA_BRIDGE_MRP_RING_STATE_STATE,
 	__IFLA_BRIDGE_MRP_RING_STATE_MAX,
 };
-
 #define IFLA_BRIDGE_MRP_RING_STATE_MAX (__IFLA_BRIDGE_MRP_RING_STATE_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_MRP_RING_ROLE_UNSPEC,
 	IFLA_BRIDGE_MRP_RING_ROLE_RING_ID,
 	IFLA_BRIDGE_MRP_RING_ROLE_ROLE,
 	__IFLA_BRIDGE_MRP_RING_ROLE_MAX,
 };
-
 #define IFLA_BRIDGE_MRP_RING_ROLE_MAX (__IFLA_BRIDGE_MRP_RING_ROLE_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_MRP_START_TEST_UNSPEC,
 	IFLA_BRIDGE_MRP_START_TEST_RING_ID,
@@ -231,9 +181,7 @@ enum {
 	IFLA_BRIDGE_MRP_START_TEST_MONITOR,
 	__IFLA_BRIDGE_MRP_START_TEST_MAX,
 };
-
 #define IFLA_BRIDGE_MRP_START_TEST_MAX (__IFLA_BRIDGE_MRP_START_TEST_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_MRP_INFO_UNSPEC,
 	IFLA_BRIDGE_MRP_INFO_RING_ID,
@@ -252,18 +200,14 @@ enum {
 	IFLA_BRIDGE_MRP_INFO_IN_TEST_MAX_MISS,
 	__IFLA_BRIDGE_MRP_INFO_MAX,
 };
-
 #define IFLA_BRIDGE_MRP_INFO_MAX (__IFLA_BRIDGE_MRP_INFO_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_MRP_IN_STATE_UNSPEC,
 	IFLA_BRIDGE_MRP_IN_STATE_IN_ID,
 	IFLA_BRIDGE_MRP_IN_STATE_STATE,
 	__IFLA_BRIDGE_MRP_IN_STATE_MAX,
 };
-
 #define IFLA_BRIDGE_MRP_IN_STATE_MAX (__IFLA_BRIDGE_MRP_IN_STATE_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_MRP_IN_ROLE_UNSPEC,
 	IFLA_BRIDGE_MRP_IN_ROLE_RING_ID,
@@ -272,9 +216,7 @@ enum {
 	IFLA_BRIDGE_MRP_IN_ROLE_I_IFINDEX,
 	__IFLA_BRIDGE_MRP_IN_ROLE_MAX,
 };
-
 #define IFLA_BRIDGE_MRP_IN_ROLE_MAX (__IFLA_BRIDGE_MRP_IN_ROLE_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_MRP_START_IN_TEST_UNSPEC,
 	IFLA_BRIDGE_MRP_START_IN_TEST_IN_ID,
@@ -283,26 +225,21 @@ enum {
 	IFLA_BRIDGE_MRP_START_IN_TEST_PERIOD,
 	__IFLA_BRIDGE_MRP_START_IN_TEST_MAX,
 };
-
 #define IFLA_BRIDGE_MRP_START_IN_TEST_MAX (__IFLA_BRIDGE_MRP_START_IN_TEST_MAX - 1)
-
 struct br_mrp_instance {
 	__u32 ring_id;
 	__u32 p_ifindex;
 	__u32 s_ifindex;
 	__u16 prio;
 };
-
 struct br_mrp_ring_state {
 	__u32 ring_id;
 	__u32 ring_state;
 };
-
 struct br_mrp_ring_role {
 	__u32 ring_id;
 	__u32 ring_role;
 };
-
 struct br_mrp_start_test {
 	__u32 ring_id;
 	__u32 interval;
@@ -310,26 +247,22 @@ struct br_mrp_start_test {
 	__u32 period;
 	__u32 monitor;
 };
-
 struct br_mrp_in_state {
 	__u32 in_state;
 	__u16 in_id;
 };
-
 struct br_mrp_in_role {
 	__u32 ring_id;
 	__u32 in_role;
 	__u32 i_ifindex;
 	__u16 in_id;
 };
-
 struct br_mrp_start_in_test {
 	__u32 interval;
 	__u32 max_miss;
 	__u32 period;
 	__u16 in_id;
 };
-
 enum {
 	IFLA_BRIDGE_CFM_UNSPEC,
 	IFLA_BRIDGE_CFM_MEP_CREATE,
@@ -350,9 +283,7 @@ enum {
 	IFLA_BRIDGE_CFM_CC_PEER_STATUS_INFO,
 	__IFLA_BRIDGE_CFM_MAX,
 };
-
 #define IFLA_BRIDGE_CFM_MAX (__IFLA_BRIDGE_CFM_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_CFM_MEP_CREATE_UNSPEC,
 	IFLA_BRIDGE_CFM_MEP_CREATE_INSTANCE,
@@ -361,17 +292,13 @@ enum {
 	IFLA_BRIDGE_CFM_MEP_CREATE_IFINDEX,
 	__IFLA_BRIDGE_CFM_MEP_CREATE_MAX,
 };
-
 #define IFLA_BRIDGE_CFM_MEP_CREATE_MAX (__IFLA_BRIDGE_CFM_MEP_CREATE_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_CFM_MEP_DELETE_UNSPEC,
 	IFLA_BRIDGE_CFM_MEP_DELETE_INSTANCE,
 	__IFLA_BRIDGE_CFM_MEP_DELETE_MAX,
 };
-
 #define IFLA_BRIDGE_CFM_MEP_DELETE_MAX (__IFLA_BRIDGE_CFM_MEP_DELETE_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_CFM_MEP_CONFIG_UNSPEC,
 	IFLA_BRIDGE_CFM_MEP_CONFIG_INSTANCE,
@@ -380,9 +307,7 @@ enum {
 	IFLA_BRIDGE_CFM_MEP_CONFIG_MEPID,
 	__IFLA_BRIDGE_CFM_MEP_CONFIG_MAX,
 };
-
 #define IFLA_BRIDGE_CFM_MEP_CONFIG_MAX (__IFLA_BRIDGE_CFM_MEP_CONFIG_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_CFM_CC_CONFIG_UNSPEC,
 	IFLA_BRIDGE_CFM_CC_CONFIG_INSTANCE,
@@ -391,27 +316,21 @@ enum {
 	IFLA_BRIDGE_CFM_CC_CONFIG_EXP_MAID,
 	__IFLA_BRIDGE_CFM_CC_CONFIG_MAX,
 };
-
 #define IFLA_BRIDGE_CFM_CC_CONFIG_MAX (__IFLA_BRIDGE_CFM_CC_CONFIG_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_CFM_CC_PEER_MEP_UNSPEC,
 	IFLA_BRIDGE_CFM_CC_PEER_MEP_INSTANCE,
 	IFLA_BRIDGE_CFM_CC_PEER_MEPID,
 	__IFLA_BRIDGE_CFM_CC_PEER_MEP_MAX,
 };
-
 #define IFLA_BRIDGE_CFM_CC_PEER_MEP_MAX (__IFLA_BRIDGE_CFM_CC_PEER_MEP_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_CFM_CC_RDI_UNSPEC,
 	IFLA_BRIDGE_CFM_CC_RDI_INSTANCE,
 	IFLA_BRIDGE_CFM_CC_RDI_RDI,
 	__IFLA_BRIDGE_CFM_CC_RDI_MAX,
 };
-
 #define IFLA_BRIDGE_CFM_CC_RDI_MAX (__IFLA_BRIDGE_CFM_CC_RDI_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_CFM_CC_CCM_TX_UNSPEC,
 	IFLA_BRIDGE_CFM_CC_CCM_TX_INSTANCE,
@@ -424,9 +343,7 @@ enum {
 	IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV_VALUE,
 	__IFLA_BRIDGE_CFM_CC_CCM_TX_MAX,
 };
-
 #define IFLA_BRIDGE_CFM_CC_CCM_TX_MAX (__IFLA_BRIDGE_CFM_CC_CCM_TX_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_CFM_MEP_STATUS_UNSPEC,
 	IFLA_BRIDGE_CFM_MEP_STATUS_INSTANCE,
@@ -435,9 +352,7 @@ enum {
 	IFLA_BRIDGE_CFM_MEP_STATUS_RX_LEVEL_LOW_SEEN,
 	__IFLA_BRIDGE_CFM_MEP_STATUS_MAX,
 };
-
 #define IFLA_BRIDGE_CFM_MEP_STATUS_MAX (__IFLA_BRIDGE_CFM_MEP_STATUS_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_CFM_CC_PEER_STATUS_UNSPEC,
 	IFLA_BRIDGE_CFM_CC_PEER_STATUS_INSTANCE,
@@ -451,16 +366,13 @@ enum {
 	IFLA_BRIDGE_CFM_CC_PEER_STATUS_SEQ_UNEXP_SEEN,
 	__IFLA_BRIDGE_CFM_CC_PEER_STATUS_MAX,
 };
-
 #define IFLA_BRIDGE_CFM_CC_PEER_STATUS_MAX (__IFLA_BRIDGE_CFM_CC_PEER_STATUS_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_MST_UNSPEC,
 	IFLA_BRIDGE_MST_ENTRY,
 	__IFLA_BRIDGE_MST_MAX,
 };
 #define IFLA_BRIDGE_MST_MAX (__IFLA_BRIDGE_MST_MAX - 1)
-
 enum {
 	IFLA_BRIDGE_MST_ENTRY_UNSPEC,
 	IFLA_BRIDGE_MST_ENTRY_MSTI,
@@ -468,7 +380,6 @@ enum {
 	__IFLA_BRIDGE_MST_ENTRY_MAX,
 };
 #define IFLA_BRIDGE_MST_ENTRY_MAX (__IFLA_BRIDGE_MST_ENTRY_MAX - 1)
-
 struct bridge_stp_xstats {
 	__u64 transition_blk;
 	__u64 transition_fwd;
@@ -477,36 +388,20 @@ struct bridge_stp_xstats {
 	__u64 rx_tcn;
 	__u64 tx_tcn;
 };
-
-/* Bridge vlan RTM header */
 struct br_vlan_msg {
 	__u8 family;
 	__u8 reserved1;
 	__u16 reserved2;
 	__u32 ifindex;
 };
-
 enum {
 	BRIDGE_VLANDB_DUMP_UNSPEC,
 	BRIDGE_VLANDB_DUMP_FLAGS,
 	__BRIDGE_VLANDB_DUMP_MAX,
 };
 #define BRIDGE_VLANDB_DUMP_MAX (__BRIDGE_VLANDB_DUMP_MAX - 1)
-
-/* flags used in BRIDGE_VLANDB_DUMP_FLAGS attribute to affect dumps */
-#define BRIDGE_VLANDB_DUMPF_STATS	(1 << 0) /* Include stats in the dump */
-#define BRIDGE_VLANDB_DUMPF_GLOBAL	(1 << 1) /* Dump global vlan options only */
-
-/* Bridge vlan RTM attributes
- * [BRIDGE_VLANDB_ENTRY] = {
- *     [BRIDGE_VLANDB_ENTRY_INFO]
- *     ...
- * }
- * [BRIDGE_VLANDB_GLOBAL_OPTIONS] = {
- *     [BRIDGE_VLANDB_GOPTS_ID]
- *     ...
- * }
- */
+#define BRIDGE_VLANDB_DUMPF_STATS	(1 << 0)  
+#define BRIDGE_VLANDB_DUMPF_GLOBAL	(1 << 1)  
 enum {
 	BRIDGE_VLANDB_UNSPEC,
 	BRIDGE_VLANDB_ENTRY,
@@ -514,7 +409,6 @@ enum {
 	__BRIDGE_VLANDB_MAX,
 };
 #define BRIDGE_VLANDB_MAX (__BRIDGE_VLANDB_MAX - 1)
-
 enum {
 	BRIDGE_VLANDB_ENTRY_UNSPEC,
 	BRIDGE_VLANDB_ENTRY_INFO,
@@ -529,14 +423,6 @@ enum {
 	__BRIDGE_VLANDB_ENTRY_MAX,
 };
 #define BRIDGE_VLANDB_ENTRY_MAX (__BRIDGE_VLANDB_ENTRY_MAX - 1)
-
-/* [BRIDGE_VLANDB_ENTRY] = {
- *     [BRIDGE_VLANDB_ENTRY_TUNNEL_INFO] = {
- *         [BRIDGE_VLANDB_TINFO_ID]
- *         ...
- *     }
- * }
- */
 enum {
 	BRIDGE_VLANDB_TINFO_UNSPEC,
 	BRIDGE_VLANDB_TINFO_ID,
@@ -544,15 +430,6 @@ enum {
 	__BRIDGE_VLANDB_TINFO_MAX,
 };
 #define BRIDGE_VLANDB_TINFO_MAX (__BRIDGE_VLANDB_TINFO_MAX - 1)
-
-/* [BRIDGE_VLANDB_ENTRY] = {
- *     [BRIDGE_VLANDB_ENTRY_STATS] = {
- *         [BRIDGE_VLANDB_STATS_RX_BYTES]
- *         ...
- *     }
- *     ...
- * }
- */
 enum {
 	BRIDGE_VLANDB_STATS_UNSPEC,
 	BRIDGE_VLANDB_STATS_RX_BYTES,
@@ -563,7 +440,6 @@ enum {
 	__BRIDGE_VLANDB_STATS_MAX,
 };
 #define BRIDGE_VLANDB_STATS_MAX (__BRIDGE_VLANDB_STATS_MAX - 1)
-
 enum {
 	BRIDGE_VLANDB_GOPTS_UNSPEC,
 	BRIDGE_VLANDB_GOPTS_ID,
@@ -587,23 +463,6 @@ enum {
 	__BRIDGE_VLANDB_GOPTS_MAX
 };
 #define BRIDGE_VLANDB_GOPTS_MAX (__BRIDGE_VLANDB_GOPTS_MAX - 1)
-
-/* Bridge multicast database attributes
- * [MDBA_MDB] = {
- *     [MDBA_MDB_ENTRY] = {
- *         [MDBA_MDB_ENTRY_INFO] {
- *		struct br_mdb_entry
- *		[MDBA_MDB_EATTR attributes]
- *         }
- *     }
- * }
- * [MDBA_ROUTER] = {
- *    [MDBA_ROUTER_PORT] = {
- *        u32 ifindex
- *        [MDBA_ROUTER_PATTR attributes]
- *    }
- * }
- */
 enum {
 	MDBA_UNSPEC,
 	MDBA_MDB,
@@ -611,22 +470,18 @@ enum {
 	__MDBA_MAX,
 };
 #define MDBA_MAX (__MDBA_MAX - 1)
-
 enum {
 	MDBA_MDB_UNSPEC,
 	MDBA_MDB_ENTRY,
 	__MDBA_MDB_MAX,
 };
 #define MDBA_MDB_MAX (__MDBA_MDB_MAX - 1)
-
 enum {
 	MDBA_MDB_ENTRY_UNSPEC,
 	MDBA_MDB_ENTRY_INFO,
 	__MDBA_MDB_ENTRY_MAX,
 };
 #define MDBA_MDB_ENTRY_MAX (__MDBA_MDB_ENTRY_MAX - 1)
-
-/* per mdb entry additional attributes */
 enum {
 	MDBA_MDB_EATTR_UNSPEC,
 	MDBA_MDB_EATTR_TIMER,
@@ -642,18 +497,12 @@ enum {
 	__MDBA_MDB_EATTR_MAX
 };
 #define MDBA_MDB_EATTR_MAX (__MDBA_MDB_EATTR_MAX - 1)
-
-/* per mdb entry source */
 enum {
 	MDBA_MDB_SRCLIST_UNSPEC,
 	MDBA_MDB_SRCLIST_ENTRY,
 	__MDBA_MDB_SRCLIST_MAX
 };
 #define MDBA_MDB_SRCLIST_MAX (__MDBA_MDB_SRCLIST_MAX - 1)
-
-/* per mdb entry per source attributes
- * these are embedded in MDBA_MDB_SRCLIST_ENTRY
- */
 enum {
 	MDBA_MDB_SRCATTR_UNSPEC,
 	MDBA_MDB_SRCATTR_ADDRESS,
@@ -661,23 +510,18 @@ enum {
 	__MDBA_MDB_SRCATTR_MAX
 };
 #define MDBA_MDB_SRCATTR_MAX (__MDBA_MDB_SRCATTR_MAX - 1)
-
-/* multicast router types */
 enum {
 	MDB_RTR_TYPE_DISABLED,
 	MDB_RTR_TYPE_TEMP_QUERY,
 	MDB_RTR_TYPE_PERM,
 	MDB_RTR_TYPE_TEMP
 };
-
 enum {
 	MDBA_ROUTER_UNSPEC,
 	MDBA_ROUTER_PORT,
 	__MDBA_ROUTER_MAX,
 };
 #define MDBA_ROUTER_MAX (__MDBA_ROUTER_MAX - 1)
-
-/* router port attributes */
 enum {
 	MDBA_ROUTER_PATTR_UNSPEC,
 	MDBA_ROUTER_PATTR_TIMER,
@@ -688,12 +532,10 @@ enum {
 	__MDBA_ROUTER_PATTR_MAX
 };
 #define MDBA_ROUTER_PATTR_MAX (__MDBA_ROUTER_PATTR_MAX - 1)
-
 struct br_port_msg {
 	__u8  family;
 	__u32 ifindex;
 };
-
 struct br_mdb_entry {
 	__u32 ifindex;
 #define MDB_TEMPORARY 0
@@ -714,7 +556,6 @@ struct br_mdb_entry {
 		__be16		proto;
 	} addr;
 };
-
 enum {
 	MDBA_SET_ENTRY_UNSPEC,
 	MDBA_SET_ENTRY,
@@ -722,12 +563,6 @@ enum {
 	__MDBA_SET_ENTRY_MAX,
 };
 #define MDBA_SET_ENTRY_MAX (__MDBA_SET_ENTRY_MAX - 1)
-
-/* [MDBA_SET_ENTRY_ATTRS] = {
- *    [MDBE_ATTR_xxx]
- *    ...
- * }
- */
 enum {
 	MDBE_ATTR_UNSPEC,
 	MDBE_ATTR_SOURCE,
@@ -742,26 +577,18 @@ enum {
 	__MDBE_ATTR_MAX,
 };
 #define MDBE_ATTR_MAX (__MDBE_ATTR_MAX - 1)
-
-/* per mdb entry source */
 enum {
 	MDBE_SRC_LIST_UNSPEC,
 	MDBE_SRC_LIST_ENTRY,
 	__MDBE_SRC_LIST_MAX,
 };
 #define MDBE_SRC_LIST_MAX (__MDBE_SRC_LIST_MAX - 1)
-
-/* per mdb entry per source attributes
- * these are embedded in MDBE_SRC_LIST_ENTRY
- */
 enum {
 	MDBE_SRCATTR_UNSPEC,
 	MDBE_SRCATTR_ADDRESS,
 	__MDBE_SRCATTR_MAX,
 };
 #define MDBE_SRCATTR_MAX (__MDBE_SRCATTR_MAX - 1)
-
-/* Embedded inside LINK_XSTATS_TYPE_BRIDGE */
 enum {
 	BRIDGE_XSTATS_UNSPEC,
 	BRIDGE_XSTATS_VLAN,
@@ -771,14 +598,11 @@ enum {
 	__BRIDGE_XSTATS_MAX
 };
 #define BRIDGE_XSTATS_MAX (__BRIDGE_XSTATS_MAX - 1)
-
 enum {
 	BR_MCAST_DIR_RX,
 	BR_MCAST_DIR_TX,
 	BR_MCAST_DIR_SIZE
 };
-
-/* IGMP/MLD statistics */
 struct br_mcast_stats {
 	__u64 igmp_v1queries[BR_MCAST_DIR_SIZE];
 	__u64 igmp_v2queries[BR_MCAST_DIR_SIZE];
@@ -788,42 +612,25 @@ struct br_mcast_stats {
 	__u64 igmp_v2reports[BR_MCAST_DIR_SIZE];
 	__u64 igmp_v3reports[BR_MCAST_DIR_SIZE];
 	__u64 igmp_parse_errors;
-
 	__u64 mld_v1queries[BR_MCAST_DIR_SIZE];
 	__u64 mld_v2queries[BR_MCAST_DIR_SIZE];
 	__u64 mld_leaves[BR_MCAST_DIR_SIZE];
 	__u64 mld_v1reports[BR_MCAST_DIR_SIZE];
 	__u64 mld_v2reports[BR_MCAST_DIR_SIZE];
 	__u64 mld_parse_errors;
-
 	__u64 mcast_bytes[BR_MCAST_DIR_SIZE];
 	__u64 mcast_packets[BR_MCAST_DIR_SIZE];
 };
-
-/* bridge boolean options
- * BR_BOOLOPT_NO_LL_LEARN - disable learning from link-local packets
- * BR_BOOLOPT_MCAST_VLAN_SNOOPING - control vlan multicast snooping
- *
- * IMPORTANT: if adding a new option do not forget to handle
- *            it in br_boolopt_toggle/get and bridge sysfs
- */
 enum br_boolopt_id {
 	BR_BOOLOPT_NO_LL_LEARN,
 	BR_BOOLOPT_MCAST_VLAN_SNOOPING,
 	BR_BOOLOPT_MST_ENABLE,
 	BR_BOOLOPT_MAX
 };
-
-/* struct br_boolopt_multi - change multiple bridge boolean options
- *
- * @optval: new option values (bit per option)
- * @optmask: options to change (bit per option)
- */
 struct br_boolopt_multi {
 	__u32 optval;
 	__u32 optmask;
 };
-
 enum {
 	BRIDGE_QUERIER_UNSPEC,
 	BRIDGE_QUERIER_IP_ADDRESS,
@@ -836,4 +643,4 @@ enum {
 	__BRIDGE_QUERIER_MAX
 };
 #define BRIDGE_QUERIER_MAX (__BRIDGE_QUERIER_MAX - 1)
-#endif /* _UAPI_LINUX_IF_BRIDGE_H */
+#endif  

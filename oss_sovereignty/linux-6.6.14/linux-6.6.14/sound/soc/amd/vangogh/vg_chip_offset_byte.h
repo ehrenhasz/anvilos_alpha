@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * AMD ACP 5.x Register Documentation
- *
- * Copyright 2021 Advanced Micro Devices, Inc.
- */
-
 #ifndef _acp_ip_OFFSET_HEADER
 #define _acp_ip_OFFSET_HEADER
-
-/* Registers from ACP_DMA block */
 #define ACP_DMA_CNTL_0                                0x1240000
 #define ACP_DMA_CNTL_1                                0x1240004
 #define ACP_DMA_CNTL_2                                0x1240008
@@ -70,8 +61,6 @@
 #define ACP_DMA_CH_STS                                0x12400E8
 #define ACP_DMA_CH_GROUP                              0x12400EC
 #define ACP_DMA_CH_RST_STS                            0x12400F0
-
-/* Registers from ACP_AXI2AXIATU block */
 #define ACPAXI2AXI_ATU_PAGE_SIZE_GRP_1                0x1240C00
 #define ACPAXI2AXI_ATU_BASE_ADDR_GRP_1                0x1240C04
 #define ACPAXI2AXI_ATU_PAGE_SIZE_GRP_2                0x1240C08
@@ -89,14 +78,10 @@
 #define ACPAXI2AXI_ATU_PAGE_SIZE_GRP_8                0x1240C38
 #define ACPAXI2AXI_ATU_BASE_ADDR_GRP_8                0x1240C3C
 #define ACPAXI2AXI_ATU_CTRL                           0x1240C40
-
-/*  Registers from ACP_CLKRST block */
 #define ACP_SOFT_RESET                                0x1241000
 #define ACP_CONTROL                                   0x1241004
 #define ACP_STATUS                                    0x1241008
 #define ACP_DYNAMIC_CG_MASTER_CONTROL                 0x1241010
-
-/* Registers from ACP_MISC block */
 #define ACP_EXTERNAL_INTR_ENB                         0x1241800
 #define ACP_EXTERNAL_INTR_CNTL                        0x1241804
 #define ACP_EXTERNAL_INTR_STAT                        0x1241808
@@ -105,8 +90,6 @@
 #define ACP_MEM_PG_STS                                0x12418CC
 #define ACP_PGMEM_DEEP_SLEEP_CTRL                     0x12418D0
 #define ACP_PGMEM_SHUT_DOWN_CTRL                      0x12418D4
-
-/* Registers from ACP_PGFSM block */
 #define ACP_PIN_CONFIG                                0x1241400
 #define ACP_PAD_PULLUP_CTRL                           0x1241404
 #define ACP_PAD_PULLDOWN_CTRL                         0x1241408
@@ -124,8 +107,6 @@
 #define ACP_INTR_URGENCY_TIMER                        0x1241438
 #define AZ_INTR_URGENCY_TIMER                         0x124143C
 #define ACP_AON_SW_INTR_TRIG                          0x1241440
-
-/* Registers from ACP_SCRATCH block */
 #define ACP_SCRATCH_REG_0                             0x1250000
 #define ACP_SCRATCH_REG_1                             0x1250004
 #define ACP_SCRATCH_REG_2                             0x1250008
@@ -255,8 +236,6 @@
 #define ACP_SCRATCH_REG_126                           0x12501F8
 #define ACP_SCRATCH_REG_127                           0x12501FC
 #define ACP_SCRATCH_REG_128                           0x1250200
-
-/* Registers from ACP_AUDIO_BUFFERS block */
 #define ACP_I2S_RX_RINGBUFADDR                        0x1242000
 #define ACP_I2S_RX_RINGBUFSIZE                        0x1242004
 #define ACP_I2S_RX_LINKPOSITIONCNTR                   0x1242008
@@ -311,8 +290,6 @@
 #define ACP_HS_TX_LINEARPOSCNTR_HIGH                  0x12420CC
 #define ACP_HS_TX_LINEARPOSCNTR_LOW                   0x12420D0
 #define ACP_HS_TX_INTR_WATERMARK_SIZE                 0x12420D4
-
-/* Registers from ACP_I2S_TDM block */
 #define ACP_I2STDM_IER                                0x1242400
 #define ACP_I2STDM_IRER                               0x1242404
 #define ACP_I2STDM_RXFRMT                             0x1242408
@@ -322,8 +299,6 @@
 #define ACP_I2STDM1_MSTRCLKGEN                        0x1242418
 #define ACP_I2STDM2_MSTRCLKGEN                        0x124241C
 #define ACP_I2STDM_REFCLKGEN                          0x1242420
-
-/* Registers from ACP_BT_TDM block */
 #define ACP_BTTDM_IER                                 0x1242800
 #define ACP_BTTDM_IRER                                0x1242804
 #define ACP_BTTDM_RXFRMT                              0x1242808

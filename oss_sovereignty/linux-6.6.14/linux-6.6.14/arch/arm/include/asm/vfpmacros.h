@@ -1,18 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * arch/arm/include/asm/vfpmacros.h
- *
- * Assembler-only file containing VFP macros and register definitions.
- */
 #include <asm/hwcap.h>
-
 #include <asm/vfp.h>
-
 #ifdef CONFIG_AS_VFP_VMRS_FPINST
 	.macro	VFPFMRX, rd, sysreg, cond
 	vmrs\cond	\rd, \sysreg
 	.endm
-
 	.macro	VFPFMXR, sysreg, rd, cond
 	vmsr\cond	\sysreg, \rd
 	.endm
@@ -21,12 +12,10 @@
 	.macro	VFPFMRX, rd, sysreg, cond
 	MRC\cond	p10, 7, \rd, \sysreg, cr0, 0	@ FMRX	\rd, \sysreg
 	.endm
-
 	.macro	VFPFMXR, sysreg, rd, cond
 	MCR\cond	p10, 7, \rd, \sysreg, cr0, 0	@ FMXR	\sysreg, \rd
 	.endm
 #endif
-
 	@ read all the working registers back into the VFP
 	.macro	VFPFLDMIA, base, tmp
 	.fpu	vfpv2
@@ -52,7 +41,6 @@
 #endif
 #endif
 	.endm
-
 	@ write all the working registers out of the VFP
 	.macro	VFPFSTMIA, base, tmp
 #if __LINUX_ARM_ARCH__ < 6

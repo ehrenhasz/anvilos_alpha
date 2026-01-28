@@ -1,24 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef __ASM_GDB_XML_H_
 #define __ASM_GDB_XML_H_
-
 const char riscv_gdb_stub_feature[64] =
 			"PacketSize=800;qXfer:features:read+;";
-
 static const char gdb_xfer_read_target[31] = "qXfer:features:read:target.xml:";
-
 #ifdef CONFIG_64BIT
 static const char gdb_xfer_read_cpuxml[39] =
 			"qXfer:features:read:riscv-64bit-cpu.xml";
-
 static const char riscv_gdb_stub_target_desc[256] =
 "l<?xml version=\"1.0\"?>"
 "<!DOCTYPE target SYSTEM \"gdb-target.dtd\">"
 "<target>"
 "<xi:include href=\"riscv-64bit-cpu.xml\"/>"
 "</target>";
-
 static const char riscv_gdb_stub_cpuxml[2048] =
 "l<?xml version=\"1.0\"?>"
 "<!DOCTYPE feature SYSTEM \"gdb-target.dtd\">"
@@ -63,14 +56,12 @@ static const char riscv_gdb_stub_cpuxml[2048] =
 #else
 static const char gdb_xfer_read_cpuxml[39] =
 			"qXfer:features:read:riscv-32bit-cpu.xml";
-
 static const char riscv_gdb_stub_target_desc[256] =
 "l<?xml version=\"1.0\"?>"
 "<!DOCTYPE target SYSTEM \"gdb-target.dtd\">"
 "<target>"
 "<xi:include href=\"riscv-32bit-cpu.xml\"/>"
 "</target>";
-
 static const char riscv_gdb_stub_cpuxml[2048] =
 "l<?xml version=\"1.0\"?>"
 "<!DOCTYPE feature SYSTEM \"gdb-target.dtd\">"

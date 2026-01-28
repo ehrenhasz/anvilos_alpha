@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DPU_6_0_SM8250_H
 #define _DPU_6_0_SM8250_H
-
 static const struct dpu_caps sm8250_dpu_caps = {
 	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
 	.max_mixer_blendstages = 0xb,
@@ -18,7 +11,6 @@ static const struct dpu_caps sm8250_dpu_caps = {
 	.max_linewidth = 4096,
 	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
 };
-
 static const struct dpu_mdp_cfg sm8250_mdp = {
 	.name = "top_0",
 	.base = 0x0, .len = 0x494,
@@ -35,8 +27,6 @@ static const struct dpu_mdp_cfg sm8250_mdp = {
 		[DPU_CLK_CTRL_WB2] = { .reg_off = 0x2bc, .bit_off = 16 },
 	},
 };
-
-/* FIXME: get rid of DPU_CTL_SPLIT_DISPLAY in favour of proper ACTIVE_CTL support */
 static const struct dpu_ctl_cfg sm8250_ctl[] = {
 	{
 		.name = "ctl_0", .id = CTL_0,
@@ -70,7 +60,6 @@ static const struct dpu_ctl_cfg sm8250_ctl[] = {
 		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 23),
 	},
 };
-
 static const struct dpu_sspp_cfg sm8250_sspp[] = {
 	{
 		.name = "sspp_0", .id = SSPP_VIG0,
@@ -138,7 +127,6 @@ static const struct dpu_sspp_cfg sm8250_sspp[] = {
 		.clk_ctrl = DPU_CLK_CTRL_DMA3,
 	},
 };
-
 static const struct dpu_lm_cfg sm8250_lm[] = {
 	{
 		.name = "lm_0", .id = LM_0,
@@ -186,7 +174,6 @@ static const struct dpu_lm_cfg sm8250_lm[] = {
 		.pingpong = PINGPONG_5,
 	},
 };
-
 static const struct dpu_dspp_cfg sm8250_dspp[] = {
 	{
 		.name = "dspp_0", .id = DSPP_0,
@@ -210,7 +197,6 @@ static const struct dpu_dspp_cfg sm8250_dspp[] = {
 		.sblk = &sdm845_dspp_sblk,
 	},
 };
-
 static const struct dpu_pingpong_cfg sm8250_pp[] = {
 	{
 		.name = "pingpong_0", .id = PINGPONG_0,
@@ -262,7 +248,6 @@ static const struct dpu_pingpong_cfg sm8250_pp[] = {
 		.intr_rdptr = -1,
 	},
 };
-
 static const struct dpu_merge_3d_cfg sm8250_merge_3d[] = {
 	{
 		.name = "merge_3d_0", .id = MERGE_3D_0,
@@ -275,7 +260,6 @@ static const struct dpu_merge_3d_cfg sm8250_merge_3d[] = {
 		.base = 0x83200, .len = 0x8,
 	},
 };
-
 static const struct dpu_dsc_cfg sm8250_dsc[] = {
 	{
 		.name = "dsc_0", .id = DSC_0,
@@ -295,7 +279,6 @@ static const struct dpu_dsc_cfg sm8250_dsc[] = {
 		.features = BIT(DPU_DSC_OUTPUT_CTRL),
 	},
 };
-
 static const struct dpu_intf_cfg sm8250_intf[] = {
 	{
 		.name = "intf_0", .id = INTF_0,
@@ -339,7 +322,6 @@ static const struct dpu_intf_cfg sm8250_intf[] = {
 		.intr_tear_rd_ptr = -1,
 	},
 };
-
 static const struct dpu_wb_cfg sm8250_wb[] = {
 	{
 		.name = "wb_2", .id = WB_2,
@@ -354,7 +336,6 @@ static const struct dpu_wb_cfg sm8250_wb[] = {
 		.intr_wb_done = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 4),
 	},
 };
-
 static const struct dpu_perf_cfg sm8250_perf_data = {
 	.max_bw_low = 13700000,
 	.max_bw_high = 16600000,
@@ -374,7 +355,6 @@ static const struct dpu_perf_cfg sm8250_perf_data = {
 		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
 		.entries = sc7180_qos_nrt
 		},
-		/* TODO: macrotile-qseed is different from macrotile */
 	},
 	.cdp_cfg = {
 		{.rd_enable = 1, .wr_enable = 1},
@@ -383,12 +363,10 @@ static const struct dpu_perf_cfg sm8250_perf_data = {
 	.clk_inefficiency_factor = 105,
 	.bw_inefficiency_factor = 120,
 };
-
 static const struct dpu_mdss_version sm8250_mdss_ver = {
 	.core_major_ver = 6,
 	.core_minor_ver = 0,
 };
-
 const struct dpu_mdss_cfg dpu_sm8250_cfg = {
 	.mdss_ver = &sm8250_mdss_ver,
 	.caps = &sm8250_dpu_caps,
@@ -415,5 +393,4 @@ const struct dpu_mdss_cfg dpu_sm8250_cfg = {
 	.wb = sm8250_wb,
 	.perf = &sm8250_perf_data,
 };
-
 #endif

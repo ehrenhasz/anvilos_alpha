@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
 #ifndef __RTL8712_DEBUGCTRL_REGDEF_H__
 #define __RTL8712_DEBUGCTRL_REGDEF_H__
-
 #define BIST			(RTL8712_DEBUGCTRL_ + 0x00)
 #define DBS			(RTL8712_DEBUGCTRL_ + 0x04)
 #define LMS			(RTL8712_DEBUGCTRL_ + 0x05)
@@ -27,6 +20,4 @@
 #define TRXPKTBUF_DBG_DATA	(RTL8712_DEBUGCTRL_ + 0x30)
 #define TRXPKTBUF_DBG_CTRL	(RTL8712_DEBUGCTRL_ + 0x38)
 #define DPLL_MON		(RTL8712_DEBUGCTRL_ + 0x3A)
-
-#endif /* __RTL8712_DEBUGCTRL_REGDEF_H__ */
-
+#endif  

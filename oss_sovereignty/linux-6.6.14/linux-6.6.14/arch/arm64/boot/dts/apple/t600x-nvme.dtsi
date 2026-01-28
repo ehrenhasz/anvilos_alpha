@@ -1,10 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0+ OR MIT
-/*
- * NVMe related devices for Apple T600x SoCs.
- *
- * Copyright The Asahi Linux Contributors
- */
-
 	DIE_NODE(ans_mbox): mbox@38f408000 {
 		compatible = "apple,t6000-asc-mailbox", "apple,asc-mailbox-v4";
 		reg = <0x3 0x8f408000 0x0 0x4000>;
@@ -18,19 +11,16 @@
 		power-domains = <&DIE_NODE(ps_ans2)>;
 		#mbox-cells = <0>;
 	};
-
 	DIE_NODE(sart): sart@393c50000 {
 		compatible = "apple,t6000-sart";
 		reg = <0x3 0x93c50000 0x0 0x10000>;
 		power-domains = <&DIE_NODE(ps_ans2)>;
 	};
-
 	DIE_NODE(nvme): nvme@393cc0000 {
 		compatible = "apple,t6000-nvme-ans2", "apple,nvme-ans2";
 		reg = <0x3 0x93cc0000 0x0 0x40000>, <0x3 0x8f400000 0x0 0x4000>;
 		reg-names = "nvme", "ans";
 		interrupt-parent = <&aic>;
-		/* The NVME interrupt is always routed to die */
 		interrupts = <AIC_IRQ 0 1613 IRQ_TYPE_LEVEL_HIGH>;
 		mboxes = <&DIE_NODE(ans_mbox)>;
 		apple,sart = <&DIE_NODE(sart)>;

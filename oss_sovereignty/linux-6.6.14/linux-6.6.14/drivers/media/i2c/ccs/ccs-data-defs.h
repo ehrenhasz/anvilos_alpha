@@ -1,54 +1,35 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * CCS static data binary format definitions
- *
- * Copyright 2019--2020 Intel Corporation
- */
-
 #ifndef __CCS_DATA_DEFS_H__
 #define __CCS_DATA_DEFS_H__
-
 #include "ccs-data.h"
-
 #define CCS_STATIC_DATA_VERSION	0
-
 enum __ccs_data_length_specifier_id {
 	CCS_DATA_LENGTH_SPECIFIER_1 = 0,
 	CCS_DATA_LENGTH_SPECIFIER_2 = 1,
 	CCS_DATA_LENGTH_SPECIFIER_3 = 2
 };
-
 #define CCS_DATA_LENGTH_SPECIFIER_SIZE_SHIFT	6
-
 struct __ccs_data_length_specifier {
 	u8 length;
 } __packed;
-
 struct __ccs_data_length_specifier2 {
 	u8 length[2];
 } __packed;
-
 struct __ccs_data_length_specifier3 {
 	u8 length[3];
 } __packed;
-
 struct __ccs_data_block {
 	u8 id;
 	struct __ccs_data_length_specifier length;
 } __packed;
-
 #define CCS_DATA_BLOCK_HEADER_ID_VERSION_SHIFT	5
-
 struct __ccs_data_block3 {
 	u8 id;
 	struct __ccs_data_length_specifier2 length;
 } __packed;
-
 struct __ccs_data_block4 {
 	u8 id;
 	struct __ccs_data_length_specifier3 length;
 } __packed;
-
 enum __ccs_data_block_id {
 	CCS_DATA_BLOCK_ID_DUMMY	= 1,
 	CCS_DATA_BLOCK_ID_DATA_VERSION = 2,
@@ -63,7 +44,6 @@ enum __ccs_data_block_id {
 	CCS_DATA_BLOCK_ID_LICENSE = 40,
 	CCS_DATA_BLOCK_ID_END = 127,
 };
-
 struct __ccs_data_block_version {
 	u8 static_data_version_major[2];
 	u8 static_data_version_minor[2];
@@ -71,38 +51,30 @@ struct __ccs_data_block_version {
 	u8 month;
 	u8 day;
 } __packed;
-
 struct __ccs_data_block_regs {
 	u8 reg_len;
 } __packed;
-
 #define CCS_DATA_BLOCK_REGS_ADDR_MASK		0x07
 #define CCS_DATA_BLOCK_REGS_LEN_SHIFT		3
 #define CCS_DATA_BLOCK_REGS_LEN_MASK		0x38
 #define CCS_DATA_BLOCK_REGS_SEL_SHIFT		6
-
 enum ccs_data_block_regs_sel {
 	CCS_DATA_BLOCK_REGS_SEL_REGS = 0,
 	CCS_DATA_BLOCK_REGS_SEL_REGS2 = 1,
 	CCS_DATA_BLOCK_REGS_SEL_REGS3 = 2,
 };
-
 struct __ccs_data_block_regs2 {
 	u8 reg_len;
 	u8 addr;
 } __packed;
-
 #define CCS_DATA_BLOCK_REGS_2_ADDR_MASK		0x01
 #define CCS_DATA_BLOCK_REGS_2_LEN_SHIFT		1
 #define CCS_DATA_BLOCK_REGS_2_LEN_MASK		0x3e
-
 struct __ccs_data_block_regs3 {
 	u8 reg_len;
 	u8 addr[2];
 } __packed;
-
 #define CCS_DATA_BLOCK_REGS_3_LEN_MASK		0x3f
-
 enum __ccs_data_ffd_pixelcode {
 	CCS_DATA_BLOCK_FFD_PIXELCODE_EMBEDDED = 1,
 	CCS_DATA_BLOCK_FFD_PIXELCODE_DUMMY = 2,
@@ -137,18 +109,15 @@ enum __ccs_data_ffd_pixelcode {
 	CCS_DATA_BLOCK_FFD_PIXELCODE_ORIGINAL_ORDER_PDAF = 41,
 	CCS_DATA_BLOCK_FFD_PIXELCODE_VENDOR_PDAF = 41,
 };
-
 struct __ccs_data_block_ffd_entry {
 	u8 pixelcode;
 	u8 reserved;
 	u8 value[2];
 } __packed;
-
 struct __ccs_data_block_ffd {
 	u8 num_column_descs;
 	u8 num_row_descs;
 } __packed;
-
 enum __ccs_data_block_rule_id {
 	CCS_DATA_BLOCK_RULE_ID_IF = 1,
 	CCS_DATA_BLOCK_RULE_ID_READ_ONLY_REGS = 2,
@@ -156,34 +125,28 @@ enum __ccs_data_block_rule_id {
 	CCS_DATA_BLOCK_RULE_ID_MSR = 4,
 	CCS_DATA_BLOCK_RULE_ID_PDAF_READOUT = 5,
 };
-
 struct __ccs_data_block_rule_if {
 	u8 addr[2];
 	u8 value;
 	u8 mask;
 } __packed;
-
 enum __ccs_data_block_pdaf_readout_order {
 	CCS_DATA_BLOCK_PDAF_READOUT_ORDER_ORIGINAL = 1,
 	CCS_DATA_BLOCK_PDAF_READOUT_ORDER_SEPARATE_WITHIN_LINE = 2,
 	CCS_DATA_BLOCK_PDAF_READOUT_ORDER_SEPARATE_TYPES_SEPARATE_LINES = 3,
 };
-
 struct __ccs_data_block_pdaf_readout {
 	u8 pdaf_readout_info_reserved;
 	u8 pdaf_readout_info_order;
 } __packed;
-
 struct __ccs_data_block_pdaf_pix_loc_block_desc {
 	u8 block_type_id;
 	u8 repeat_x[2];
 } __packed;
-
 struct __ccs_data_block_pdaf_pix_loc_block_desc_group {
 	u8 num_block_descs[2];
 	u8 repeat_y;
 } __packed;
-
 enum __ccs_data_block_pdaf_pix_loc_pixel_type {
 	CCS_DATA_PDAF_PIXEL_TYPE_LEFT_SEPARATED = 0,
 	CCS_DATA_PDAF_PIXEL_TYPE_RIGHT_SEPARATED = 1,
@@ -198,13 +161,11 @@ enum __ccs_data_block_pdaf_pix_loc_pixel_type {
 	CCS_DATA_PDAF_PIXEL_TYPE_BOTTOM_LEFT = 10,
 	CCS_DATA_PDAF_PIXEL_TYPE_BOTTOM_RIGHT = 11,
 };
-
 struct __ccs_data_block_pdaf_pix_loc_pixel_desc {
 	u8 pixel_type;
 	u8 small_offset_x;
 	u8 small_offset_y;
 } __packed;
-
 struct __ccs_data_block_pdaf_pix_loc {
 	u8 main_offset_x[2];
 	u8 main_offset_y[2];
@@ -213,9 +174,7 @@ struct __ccs_data_block_pdaf_pix_loc {
 	u8 block_height;
 	u8 num_block_desc_groups[2];
 } __packed;
-
 struct __ccs_data_block_end {
 	u8 crc[4];
 } __packed;
-
-#endif /* __CCS_DATA_DEFS_H__ */
+#endif  

@@ -1,10 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  arch/arm/mach-rpc/include/mach/irqs.h
- *
- *  Copyright (C) 1996 Russell King
- */
-
 #define IRQ_PRINTER		0
 #define IRQ_BATLOW		1
 #define IRQ_FLOPPYINDEX		2
@@ -20,23 +13,16 @@
 #define IRQ_EXPANSIONCARD	13
 #define IRQ_KEYBOARDTX		14
 #define IRQ_KEYBOARDRX		15
-
 #define IRQ_DMA0		16
 #define IRQ_DMA1		17
 #define IRQ_DMA2		18
 #define IRQ_DMA3		19
 #define IRQ_DMAS0		20
 #define IRQ_DMAS1		21
-
 #define FIQ_FLOPPYDATA		0
 #define FIQ_ECONET		2
 #define FIQ_SERIALPORT		4
 #define FIQ_EXPANSIONCARD	6
 #define FIQ_FORCE		7
-
-/*
- * This is the offset of the FIQ "IRQ" numbers
- */
 #define FIQ_START		64
-
 #define NR_IRQS			128

@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _SPARC_KGDB_H
 #define _SPARC_KGDB_H
-
 #ifdef CONFIG_SPARC32
 #define BUFMAX			2048
 #else
 #define BUFMAX			4096
 #endif
-
 enum regnames {
 	GDB_G0, GDB_G1, GDB_G2, GDB_G3, GDB_G4, GDB_G5, GDB_G6, GDB_G7,
 	GDB_O0, GDB_O1, GDB_O2, GDB_O3, GDB_O4, GDB_O5, GDB_SP, GDB_O7,
@@ -24,19 +21,14 @@ enum regnames {
 	GDB_PC, GDB_NPC, GDB_STATE, GDB_FSR, GDB_FPRS, GDB_Y,
 #endif
 };
-
 #ifdef CONFIG_SPARC32
 #define NUMREGBYTES		((GDB_CSR + 1) * 4)
 #else
 #define NUMREGBYTES		((GDB_Y + 1) * 8)
 #endif
-
 struct pt_regs;
 asmlinkage void kgdb_trap(unsigned long trap_level, struct pt_regs *regs);
-
 void arch_kgdb_breakpoint(void);
-
 #define BREAK_INSTR_SIZE	4
 #define CACHE_FLUSH_IS_SAFE	1
-
-#endif /* _SPARC_KGDB_H */
+#endif  

@@ -1,26 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2014-2018, The Linux Foundation. All rights reserved.
- */
-
 #if !defined(_DPU_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _DPU_TRACE_H_
-
 #include <linux/stringify.h>
 #include <linux/types.h>
 #include <linux/tracepoint.h>
-
 #include <drm/drm_rect.h>
 #include "dpu_crtc.h"
 #include "dpu_encoder_phys.h"
 #include "dpu_hw_mdss.h"
 #include "dpu_hw_vbif.h"
 #include "dpu_plane.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM dpu
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE dpu_trace
-
 TRACE_EVENT(dpu_perf_set_qos_luts,
 	TP_PROTO(u32 pnum, u32 fmt, bool rt, u32 fl,
 		u32 lut, u32 lut_usage),
@@ -46,7 +38,6 @@ TRACE_EVENT(dpu_perf_set_qos_luts,
 			__entry->rt, __entry->fl,
 			__entry->lut, __entry->lut_usage)
 );
-
 TRACE_EVENT(dpu_perf_set_danger_luts,
 	TP_PROTO(u32 pnum, u32 fmt, u32 mode, u32 danger_lut,
 		u32 safe_lut),
@@ -70,7 +61,6 @@ TRACE_EVENT(dpu_perf_set_danger_luts,
 			__entry->mode, __entry->danger_lut,
 			__entry->safe_lut)
 );
-
 TRACE_EVENT(dpu_perf_set_ot,
 	TP_PROTO(u32 pnum, u32 xin_id, u32 rd_lim, u32 vbif_idx),
 	TP_ARGS(pnum, xin_id, rd_lim, vbif_idx),
@@ -90,7 +80,6 @@ TRACE_EVENT(dpu_perf_set_ot,
 			__entry->pnum, __entry->xin_id, __entry->rd_lim,
 			__entry->vbif_idx)
 )
-
 TRACE_EVENT(dpu_cmd_release_bw,
 	TP_PROTO(u32 crtc_id),
 	TP_ARGS(crtc_id),
@@ -102,7 +91,6 @@ TRACE_EVENT(dpu_cmd_release_bw,
 	),
 	TP_printk("crtc:%d", __entry->crtc_id)
 );
-
 TRACE_EVENT(tracing_mark_write,
 	TP_PROTO(int pid, const char *name, bool trace_begin),
 	TP_ARGS(pid, name, trace_begin),
@@ -119,7 +107,6 @@ TRACE_EVENT(tracing_mark_write,
 	TP_printk("%s|%d|%s", __entry->trace_begin ? "B" : "E",
 		__entry->pid, __get_str(trace_name))
 )
-
 TRACE_EVENT(dpu_trace_counter,
 	TP_PROTO(int pid, char *name, int value),
 	TP_ARGS(pid, name, value),
@@ -136,7 +123,6 @@ TRACE_EVENT(dpu_trace_counter,
 	TP_printk("%d|%s|%d", __entry->pid,
 			__get_str(counter_name), __entry->value)
 )
-
 TRACE_EVENT(dpu_perf_crtc_update,
 	TP_PROTO(u32 crtc, u64 bw_ctl, u32 core_clk_rate,
 			bool stop_req, bool update_bus, bool update_clk),
@@ -166,7 +152,6 @@ TRACE_EVENT(dpu_perf_crtc_update,
 			__entry->update_bus,
 			__entry->update_clk)
 );
-
 DECLARE_EVENT_CLASS(dpu_irq_template,
 	TP_PROTO(int irq_idx),
 	TP_ARGS(irq_idx),
@@ -186,7 +171,6 @@ DEFINE_EVENT(dpu_irq_template, dpu_irq_unregister_success,
 	TP_PROTO(int irq_idx),
 	TP_ARGS(irq_idx)
 );
-
 TRACE_EVENT(dpu_enc_irq_wait_success,
 	TP_PROTO(uint32_t drm_id, void *func,
 		 int irq_idx, enum dpu_pingpong pp_idx, int atomic_cnt),
@@ -209,7 +193,6 @@ TRACE_EVENT(dpu_enc_irq_wait_success,
 		  __entry->drm_id, __entry->func,
 		  __entry->irq_idx, __entry->pp_idx, __entry->atomic_cnt)
 );
-
 DECLARE_EVENT_CLASS(dpu_drm_obj_template,
 	TP_PROTO(uint32_t drm_id),
 	TP_ARGS(drm_id),
@@ -269,7 +252,6 @@ DEFINE_EVENT(dpu_drm_obj_template, dpu_crtc_runtime_resume,
 	TP_PROTO(uint32_t drm_id),
 	TP_ARGS(drm_id)
 );
-
 TRACE_EVENT(dpu_enc_enable,
 	TP_PROTO(uint32_t drm_id, int hdisplay, int vdisplay),
 	TP_ARGS(drm_id, hdisplay, vdisplay),
@@ -286,7 +268,6 @@ TRACE_EVENT(dpu_enc_enable,
 	TP_printk("id=%u, mode=%dx%d",
 		  __entry->drm_id, __entry->hdisplay, __entry->vdisplay)
 );
-
 DECLARE_EVENT_CLASS(dpu_enc_keyval_template,
 	TP_PROTO(uint32_t drm_id, int val),
 	TP_ARGS(drm_id, val),
@@ -308,7 +289,6 @@ DEFINE_EVENT(dpu_enc_keyval_template, dpu_enc_trigger_start,
 	TP_PROTO(uint32_t drm_id, int ctl_idx),
 	TP_ARGS(drm_id, ctl_idx)
 );
-
 TRACE_EVENT(dpu_enc_atomic_check_flags,
 	TP_PROTO(uint32_t drm_id, unsigned int flags),
 	TP_ARGS(drm_id, flags),
@@ -323,7 +303,6 @@ TRACE_EVENT(dpu_enc_atomic_check_flags,
 	TP_printk("id=%u, flags=%u",
 		  __entry->drm_id, __entry->flags)
 );
-
 DECLARE_EVENT_CLASS(dpu_enc_id_enable_template,
 	TP_PROTO(uint32_t drm_id, bool enable),
 	TP_ARGS(drm_id, enable),
@@ -354,7 +333,6 @@ DEFINE_EVENT(dpu_enc_id_enable_template, dpu_enc_phys_cmd_connect_te,
 	TP_PROTO(uint32_t drm_id, bool enable),
 	TP_ARGS(drm_id, enable)
 );
-
 TRACE_EVENT(dpu_enc_rc,
 	TP_PROTO(uint32_t drm_id, u32 sw_event, bool idle_pc_supported,
 		 int rc_state, const char *stage),
@@ -378,7 +356,6 @@ TRACE_EVENT(dpu_enc_rc,
 		  __entry->idle_pc_supported ? "true" : "false",
 		  __entry->rc_state)
 );
-
 TRACE_EVENT(dpu_enc_frame_done_cb_not_busy,
 	TP_PROTO(uint32_t drm_id, u32 event, char *intf_mode, enum dpu_intf intf_idx,
 			enum dpu_wb wb_idx),
@@ -401,7 +378,6 @@ TRACE_EVENT(dpu_enc_frame_done_cb_not_busy,
 			__entry->event, __get_str(intf_mode_str),
 			__entry->intf_idx, __entry->wb_idx)
 );
-
 TRACE_EVENT(dpu_enc_frame_done_cb,
 	TP_PROTO(uint32_t drm_id, unsigned int idx,
 		 unsigned long frame_busy_mask),
@@ -419,7 +395,6 @@ TRACE_EVENT(dpu_enc_frame_done_cb,
 	TP_printk("id=%u, idx=%u, frame_busy_mask=%lx", __entry->drm_id,
 		  __entry->idx, __entry->frame_busy_mask)
 );
-
 TRACE_EVENT(dpu_enc_trigger_flush,
 	TP_PROTO(uint32_t drm_id, char *intf_mode, enum dpu_intf intf_idx, enum dpu_wb wb_idx,
 		 int pending_kickoff_cnt, int ctl_idx, u32 extra_flush_bits,
@@ -452,7 +427,6 @@ TRACE_EVENT(dpu_enc_trigger_flush,
 		  __entry->pending_kickoff_cnt, __entry->ctl_idx,
 		  __entry->extra_flush_bits, __entry->pending_flush_ret)
 );
-
 DECLARE_EVENT_CLASS(dpu_id_event_template,
 	TP_PROTO(uint32_t drm_id, u32 event),
 	TP_ARGS(drm_id, event),
@@ -482,7 +456,6 @@ DEFINE_EVENT(dpu_id_event_template, dpu_crtc_frame_event_more_pending,
 	TP_PROTO(uint32_t drm_id, u32 event),
 	TP_ARGS(drm_id, event)
 );
-
 TRACE_EVENT(dpu_enc_wait_event_timeout,
 	TP_PROTO(uint32_t drm_id, int irq_idx, int rc, s64 time,
 		 s64 expected_time, int atomic_cnt),
@@ -507,7 +480,6 @@ TRACE_EVENT(dpu_enc_wait_event_timeout,
 		  __entry->drm_id, __entry->irq_idx, __entry->rc, __entry->time,
 		  __entry->expected_time, __entry->atomic_cnt)
 );
-
 TRACE_EVENT(dpu_enc_phys_cmd_irq_ctrl,
 	TP_PROTO(uint32_t drm_id, enum dpu_pingpong pp, bool enable,
 		 int refcnt),
@@ -528,7 +500,6 @@ TRACE_EVENT(dpu_enc_phys_cmd_irq_ctrl,
 		  __entry->pp, __entry->enable ? "true" : "false",
 		  __entry->refcnt)
 );
-
 TRACE_EVENT(dpu_enc_phys_cmd_pp_tx_done,
 	TP_PROTO(uint32_t drm_id, enum dpu_pingpong pp, int new_count,
 		 u32 event),
@@ -548,7 +519,6 @@ TRACE_EVENT(dpu_enc_phys_cmd_pp_tx_done,
 	TP_printk("id=%u, pp=%d, new_count=%d, event=%u", __entry->drm_id,
 		  __entry->pp, __entry->new_count, __entry->event)
 );
-
 TRACE_EVENT(dpu_enc_phys_cmd_pdone_timeout,
 	TP_PROTO(uint32_t drm_id, enum dpu_pingpong pp, int timeout_count,
 		 int kickoff_count, u32 event),
@@ -571,7 +541,6 @@ TRACE_EVENT(dpu_enc_phys_cmd_pdone_timeout,
 		  __entry->drm_id, __entry->pp, __entry->timeout_count,
 		  __entry->kickoff_count, __entry->event)
 );
-
 TRACE_EVENT(dpu_enc_phys_vid_post_kickoff,
 	TP_PROTO(uint32_t drm_id, enum dpu_intf intf_idx),
 	TP_ARGS(drm_id, intf_idx),
@@ -585,7 +554,6 @@ TRACE_EVENT(dpu_enc_phys_vid_post_kickoff,
 	),
 	TP_printk("id=%u, intf_idx=%d", __entry->drm_id, __entry->intf_idx)
 );
-
 TRACE_EVENT(dpu_enc_phys_vid_irq_ctrl,
 	TP_PROTO(uint32_t drm_id, enum dpu_intf intf_idx, bool enable,
 		 int refcnt),
@@ -606,7 +574,6 @@ TRACE_EVENT(dpu_enc_phys_vid_irq_ctrl,
 		  __entry->intf_idx, __entry->enable ? "true" : "false",
 		  __entry->drm_id)
 );
-
 TRACE_EVENT(dpu_crtc_setup_mixer,
 	TP_PROTO(uint32_t crtc_id, uint32_t plane_id,
 		 struct drm_plane_state *state, struct dpu_plane_state *pstate,
@@ -653,7 +620,6 @@ TRACE_EVENT(dpu_crtc_setup_mixer,
 		  __entry->multirect_idx, __entry->multirect_mode,
 		  __entry->pixel_format, __entry->modifier)
 );
-
 TRACE_EVENT(dpu_crtc_setup_lm_bounds,
 	TP_PROTO(uint32_t drm_id, int mixer, struct drm_rect *bounds),
 	TP_ARGS(drm_id, mixer, bounds),
@@ -670,7 +636,6 @@ TRACE_EVENT(dpu_crtc_setup_lm_bounds,
 	TP_printk("id:%u mixer:%d bounds:" DRM_RECT_FMT, __entry->drm_id,
 		  __entry->mixer, DRM_RECT_ARG(&__entry->bounds))
 );
-
 TRACE_EVENT(dpu_crtc_vblank_enable,
 	TP_PROTO(uint32_t drm_id, uint32_t enc_id, bool enable,
 		 struct dpu_crtc *crtc),
@@ -692,7 +657,6 @@ TRACE_EVENT(dpu_crtc_vblank_enable,
 		  __entry->enable ? "true" : "false",
 		  __entry->enabled ? "true" : "false")
 );
-
 DECLARE_EVENT_CLASS(dpu_crtc_enable_template,
 	TP_PROTO(uint32_t drm_id, bool enable, struct dpu_crtc *crtc),
 	TP_ARGS(drm_id, enable, crtc),
@@ -722,7 +686,6 @@ DEFINE_EVENT(dpu_crtc_enable_template, dpu_crtc_vblank,
 	TP_PROTO(uint32_t drm_id, bool enable, struct dpu_crtc *crtc),
 	TP_ARGS(drm_id, enable, crtc)
 );
-
 TRACE_EVENT(dpu_crtc_disable_frame_pending,
 	TP_PROTO(uint32_t drm_id, int frame_pending),
 	TP_ARGS(drm_id, frame_pending),
@@ -737,7 +700,6 @@ TRACE_EVENT(dpu_crtc_disable_frame_pending,
 	TP_printk("id:%u frame_pending:%d", __entry->drm_id,
 		  __entry->frame_pending)
 );
-
 TRACE_EVENT(dpu_plane_set_scanout,
 	TP_PROTO(struct dpu_sw_pipe *pipe, struct dpu_hw_fmt_layout *layout),
 	TP_ARGS(pipe, layout),
@@ -762,7 +724,6 @@ TRACE_EVENT(dpu_plane_set_scanout,
 		  __entry->layout.plane_addr[3],
 		  __entry->layout.plane_size[3], __entry->multirect_index)
 );
-
 TRACE_EVENT(dpu_plane_disable,
 	TP_PROTO(uint32_t drm_id, bool is_virtual, uint32_t multirect_mode),
 	TP_ARGS(drm_id, is_virtual, multirect_mode),
@@ -780,7 +741,6 @@ TRACE_EVENT(dpu_plane_disable,
 		  __entry->is_virtual ? "true" : "false",
 		  __entry->multirect_mode)
 );
-
 DECLARE_EVENT_CLASS(dpu_rm_iter_template,
 	TP_PROTO(uint32_t id, uint32_t enc_id),
 	TP_ARGS(id, enc_id),
@@ -802,7 +762,6 @@ DEFINE_EVENT(dpu_rm_iter_template, dpu_rm_reserve_ctls,
 	TP_PROTO(uint32_t id, uint32_t enc_id),
 	TP_ARGS(id, enc_id)
 );
-
 TRACE_EVENT(dpu_rm_reserve_lms,
 	TP_PROTO(uint32_t id, uint32_t enc_id, uint32_t pp_id),
 	TP_ARGS(id, enc_id, pp_id),
@@ -819,7 +778,6 @@ TRACE_EVENT(dpu_rm_reserve_lms,
 	TP_printk("id:%d enc_id:%u pp_id:%u", __entry->id,
 		  __entry->enc_id, __entry->pp_id)
 );
-
 TRACE_EVENT(dpu_vbif_wait_xin_halt_fail,
 	TP_PROTO(enum dpu_vbif index, u32 xin_id),
 	TP_ARGS(index, xin_id),
@@ -833,7 +791,6 @@ TRACE_EVENT(dpu_vbif_wait_xin_halt_fail,
 	),
 	TP_printk("index:%d xin_id:%u", __entry->index, __entry->xin_id)
 );
-
 TRACE_EVENT(dpu_pp_connect_ext_te,
 	TP_PROTO(enum dpu_pingpong pp, u32 cfg),
 	TP_ARGS(pp, cfg),
@@ -847,7 +804,6 @@ TRACE_EVENT(dpu_pp_connect_ext_te,
 	),
 	TP_printk("pp:%d cfg:%u", __entry->pp, __entry->cfg)
 );
-
 TRACE_EVENT(dpu_intf_connect_ext_te,
 	TP_PROTO(enum dpu_intf intf, u32 cfg),
 	TP_ARGS(intf, cfg),
@@ -861,7 +817,6 @@ TRACE_EVENT(dpu_intf_connect_ext_te,
 	),
 	TP_printk("intf:%d cfg:%u", __entry->intf, __entry->cfg)
 );
-
 TRACE_EVENT(dpu_core_irq_register_callback,
 	TP_PROTO(int irq_idx, void *callback),
 	TP_ARGS(irq_idx, callback),
@@ -876,7 +831,6 @@ TRACE_EVENT(dpu_core_irq_register_callback,
 	TP_printk("irq_idx:%d callback:%ps", __entry->irq_idx,
 		  __entry->callback)
 );
-
 TRACE_EVENT(dpu_core_irq_unregister_callback,
 	TP_PROTO(int irq_idx),
 	TP_ARGS(irq_idx),
@@ -888,7 +842,6 @@ TRACE_EVENT(dpu_core_irq_unregister_callback,
 	),
 	TP_printk("irq_idx:%d", __entry->irq_idx)
 );
-
 TRACE_EVENT(dpu_core_perf_update_clk,
 	TP_PROTO(struct drm_device *dev, bool stop_req, u64 clk_rate),
 	TP_ARGS(dev, stop_req, clk_rate),
@@ -905,7 +858,6 @@ TRACE_EVENT(dpu_core_perf_update_clk,
 	TP_printk("dev:%s stop_req:%s clk_rate:%llu", __get_str(dev_name),
 		  __entry->stop_req ? "true" : "false", __entry->clk_rate)
 );
-
 TRACE_EVENT(dpu_hw_ctl_update_pending_flush,
 	TP_PROTO(u32 new_bits, u32 pending_mask),
 	TP_ARGS(new_bits, pending_mask),
@@ -920,7 +872,6 @@ TRACE_EVENT(dpu_hw_ctl_update_pending_flush,
 	TP_printk("new=%x existing=%x", __entry->new_bits,
 		  __entry->pending_mask)
 );
-
 DECLARE_EVENT_CLASS(dpu_hw_ctl_pending_flush_template,
 	TP_PROTO(u32 pending_mask, u32 ctl_flush),
 	TP_ARGS(pending_mask, ctl_flush),
@@ -952,17 +903,12 @@ DEFINE_EVENT(dpu_hw_ctl_pending_flush_template, dpu_hw_ctl_trigger_start,
 	TP_PROTO(u32 pending_mask, u32 ctl_flush),
 	TP_ARGS(pending_mask, ctl_flush)
 );
-
 #define DPU_ATRACE_END(name) trace_tracing_mark_write(current->tgid, name, 0)
 #define DPU_ATRACE_BEGIN(name) trace_tracing_mark_write(current->tgid, name, 1)
 #define DPU_ATRACE_FUNC() DPU_ATRACE_BEGIN(__func__)
-
 #define DPU_ATRACE_INT(name, value) \
 	trace_dpu_trace_counter(current->tgid, name, value)
-
-#endif /* _DPU_TRACE_H_ */
-
-/* This part must be outside protection */
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #include <trace/define_trace.h>

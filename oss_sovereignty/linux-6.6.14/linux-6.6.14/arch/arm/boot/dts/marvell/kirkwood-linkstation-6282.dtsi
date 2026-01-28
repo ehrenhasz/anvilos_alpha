@@ -1,15 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Device Tree common file for kirkwood-6282 based Buffalo Linkstation
- *
- * Copyright (C) 2015, 2016
- * Roger Shimizu <rogershimizu@gmail.com>
- */
-
 #include "kirkwood.dtsi"
 #include "kirkwood-6282.dtsi"
 #include "kirkwood-linkstation.dtsi"
-
 / {
 	ocp@f1000000 {
 		pinctrl: pin-controller@10000 {
@@ -67,88 +58,70 @@
 			};
 		};
 	};
-
 	gpio_keys {
 		function-button {
 			gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;
 		};
-
 		power-on-switch {
 			gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
 		};
-
 		power-auto-switch {
 			gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
 		};
 	};
-
 	gpio_leds {
 		red-alarm-led {
 			label = "linkstation:red:alarm";
 			gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
 		};
-
 		red-function-led {
 			label = "linkstation:red:function";
 			gpios = <&gpio1 5 GPIO_ACTIVE_HIGH>;
 		};
-
 		amber-info-led {
 			label = "linkstation:amber:info";
 			gpios = <&gpio1 6 GPIO_ACTIVE_HIGH>;
 		};
-
 		blue-function-led {
 			label = "linkstation:blue:function";
 			gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
 		};
-
 		blue-power-led {
 			label = "linkstation:blue:power";
 			gpios = <&gpio1 8 GPIO_ACTIVE_LOW>;
 			default-state = "keep";
 		};
 	};
-
 	gpio_fan {
 		compatible = "gpio-fan";
 		pinctrl-0 = <&pmx_fan_low &pmx_fan_high &pmx_fan_lock>;
 		pinctrl-names = "default";
-
 		gpios = <&gpio0 17 GPIO_ACTIVE_LOW
 			 &gpio0 16 GPIO_ACTIVE_LOW>;
-
 		gpio-fan,speed-map = <0 3
 				1500 2
 				3250 1
 				5000 0>;
-
 		alarm-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
 	};
-
 	regulators {
 		usb_power: regulator@1 {
 			gpio = <&gpio0 12 GPIO_ACTIVE_HIGH>;
 		};
-
 		hdd_power0: regulator@2 {
 			gpio = <&gpio0 8 GPIO_ACTIVE_HIGH>;
 		};
 	};
 };
-
 &mdio {
 	status = "okay";
-
 	ethphy0: ethernet-phy@0 {
 		device_type = "ethernet-phy";
 		reg = <0>;
 	};
 };
-
 &eth0 {
 	status = "okay";
-
 	ethernet0-port@0 {
 		phy-handle = <&ethphy0>;
 	};

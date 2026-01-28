@@ -1,14 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015 Broadcom Corporation
- */
-
 #define BCM2835_PLLA			0
 #define BCM2835_PLLB			1
 #define BCM2835_PLLC			2
 #define BCM2835_PLLD			3
 #define BCM2835_PLLH			4
-
 #define BCM2835_PLLA_CORE		5
 #define BCM2835_PLLA_PER		6
 #define BCM2835_PLLB_ARM		7
@@ -21,7 +15,6 @@
 #define BCM2835_PLLH_RCAL		14
 #define BCM2835_PLLH_AUX		15
 #define BCM2835_PLLH_PIX		16
-
 #define BCM2835_CLOCK_TIMER		17
 #define BCM2835_CLOCK_OTP		18
 #define BCM2835_CLOCK_UART		19
@@ -37,12 +30,10 @@
 #define BCM2835_CLOCK_PERI_IMAGE	29
 #define BCM2835_CLOCK_PWM		30
 #define BCM2835_CLOCK_PCM		31
-
 #define BCM2835_PLLA_DSI0		32
 #define BCM2835_PLLA_CCP2		33
 #define BCM2835_PLLD_DSI0		34
 #define BCM2835_PLLD_DSI1		35
-
 #define BCM2835_CLOCK_AVEO		36
 #define BCM2835_CLOCK_DFT		37
 #define BCM2835_CLOCK_GP0		38
@@ -58,5 +49,4 @@
 #define BCM2835_CLOCK_DSI1E		48
 #define BCM2835_CLOCK_DSI0P		49
 #define BCM2835_CLOCK_DSI1P		50
-
 #define BCM2711_CLOCK_EMMC2		51

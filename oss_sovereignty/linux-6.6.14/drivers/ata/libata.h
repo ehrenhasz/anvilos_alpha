@@ -1,37 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  libata.h - helper library for ATA
- *
- *  Copyright 2003-2004 Red Hat, Inc.  All rights reserved.
- *  Copyright 2003-2004 Jeff Garzik
- *
- *  libata documentation is available via 'make {ps|pdf}docs',
- *  as Documentation/driver-api/libata.rst
- */
-
 #ifndef __LIBATA_H__
 #define __LIBATA_H__
-
 #define DRV_NAME	"libata"
-#define DRV_VERSION	"3.00"	/* must be exactly four chars */
-
-/* libata-core.c */
+#define DRV_VERSION	"3.00"	 
 enum {
-	/* flags for ata_dev_read_id() */
-	ATA_READID_POSTRESET	= (1 << 0), /* reading ID after reset */
-
-	/* selector for ata_down_xfermask_limit() */
-	ATA_DNXFER_PIO		= 0,	/* speed down PIO */
-	ATA_DNXFER_DMA		= 1,	/* speed down DMA */
-	ATA_DNXFER_40C		= 2,	/* apply 40c cable limit */
-	ATA_DNXFER_FORCE_PIO	= 3,	/* force PIO */
-	ATA_DNXFER_FORCE_PIO0	= 4,	/* force PIO0 */
-
+	ATA_READID_POSTRESET	= (1 << 0),  
+	ATA_DNXFER_PIO		= 0,	 
+	ATA_DNXFER_DMA		= 1,	 
+	ATA_DNXFER_40C		= 2,	 
+	ATA_DNXFER_FORCE_PIO	= 3,	 
+	ATA_DNXFER_FORCE_PIO0	= 4,	 
 	ATA_DNXFER_QUIET	= (1 << 31),
 };
-
 #define ATA_PORT_TYPE_NAME	"ata_port"
-
 extern atomic_t ata_print_id;
 extern int atapi_passthru16;
 extern int libata_fua;
@@ -84,10 +64,7 @@ extern struct ata_port *ata_port_alloc(struct ata_host *host);
 extern const char *sata_spd_string(unsigned int spd);
 extern unsigned int ata_read_log_page(struct ata_device *dev, u8 log,
 				      u8 page, void *buf, unsigned int sectors);
-
 #define to_ata_port(d) container_of(d, struct ata_port, tdev)
-
-/* libata-acpi.c */
 #ifdef CONFIG_ATA_ACPI
 extern unsigned int ata_acpi_gtf_filter;
 extern void ata_acpi_dissociate(struct ata_host *host);
@@ -108,8 +85,6 @@ static inline void ata_acpi_set_state(struct ata_port *ap,
 static inline void ata_acpi_bind_port(struct ata_port *ap) {}
 static inline void ata_acpi_bind_dev(struct ata_device *dev) {}
 #endif
-
-/* libata-scsi.c */
 extern struct ata_device *ata_scsi_find_dev(struct ata_port *ap,
 					    const struct scsi_device *scsidev);
 extern int ata_scsi_add_hosts(struct ata_host *host,
@@ -131,8 +106,6 @@ extern int ata_scsi_user_scan(struct Scsi_Host *shost, unsigned int channel,
 void ata_scsi_sdev_config(struct scsi_device *sdev);
 int ata_scsi_dev_config(struct scsi_device *sdev, struct ata_device *dev);
 int __ata_scsi_queuecmd(struct scsi_cmnd *scmd, struct ata_device *dev);
-
-/* libata-eh.c */
 extern unsigned int ata_internal_cmd_timeout(struct ata_device *dev, u8 cmd);
 extern void ata_internal_cmd_timed_out(struct ata_device *dev, u8 cmd);
 extern void ata_eh_acquire(struct ata_port *ap);
@@ -164,44 +137,37 @@ extern int ata_ering_map(struct ata_ering *ering,
 extern unsigned int atapi_eh_tur(struct ata_device *dev, u8 *r_sense_key);
 extern unsigned int atapi_eh_request_sense(struct ata_device *dev,
 					   u8 *sense_buf, u8 dfl_sense_key);
-
-/* libata-pmp.c */
 #ifdef CONFIG_SATA_PMP
 extern int sata_pmp_scr_read(struct ata_link *link, int reg, u32 *val);
 extern int sata_pmp_scr_write(struct ata_link *link, int reg, u32 val);
 extern int sata_pmp_set_lpm(struct ata_link *link, enum ata_lpm_policy policy,
 			    unsigned hints);
 extern int sata_pmp_attach(struct ata_device *dev);
-#else /* CONFIG_SATA_PMP */
+#else  
 static inline int sata_pmp_scr_read(struct ata_link *link, int reg, u32 *val)
 {
 	return -EINVAL;
 }
-
 static inline int sata_pmp_scr_write(struct ata_link *link, int reg, u32 val)
 {
 	return -EINVAL;
 }
-
 static inline int sata_pmp_set_lpm(struct ata_link *link,
 				   enum ata_lpm_policy policy, unsigned hints)
 {
 	return -EINVAL;
 }
-
 static inline int sata_pmp_attach(struct ata_device *dev)
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_SATA_PMP */
-
-/* libata-sff.c */
+#endif  
 #ifdef CONFIG_ATA_SFF
 extern void ata_sff_flush_pio_task(struct ata_port *ap);
 extern void ata_sff_port_init(struct ata_port *ap);
 extern int ata_sff_init(void);
 extern void ata_sff_exit(void);
-#else /* CONFIG_ATA_SFF */
+#else  
 static inline void ata_sff_flush_pio_task(struct ata_port *ap)
 { }
 static inline void ata_sff_port_init(struct ata_port *ap)
@@ -210,9 +176,7 @@ static inline int ata_sff_init(void)
 { return 0; }
 static inline void ata_sff_exit(void)
 { }
-#endif /* CONFIG_ATA_SFF */
-
-/* libata-zpodd.c */
+#endif  
 #ifdef CONFIG_SATA_ZPODD
 void zpodd_init(struct ata_device *dev);
 void zpodd_exit(struct ata_device *dev);
@@ -225,7 +189,7 @@ bool zpodd_zpready(struct ata_device *dev);
 void zpodd_enable_run_wake(struct ata_device *dev);
 void zpodd_disable_run_wake(struct ata_device *dev);
 void zpodd_post_poweron(struct ata_device *dev);
-#else /* CONFIG_SATA_ZPODD */
+#else  
 static inline void zpodd_init(struct ata_device *dev) {}
 static inline void zpodd_exit(struct ata_device *dev) {}
 static inline bool zpodd_dev_enabled(struct ata_device *dev) { return false; }
@@ -234,6 +198,5 @@ static inline bool zpodd_zpready(struct ata_device *dev) { return false; }
 static inline void zpodd_enable_run_wake(struct ata_device *dev) {}
 static inline void zpodd_disable_run_wake(struct ata_device *dev) {}
 static inline void zpodd_post_poweron(struct ata_device *dev) {}
-#endif /* CONFIG_SATA_ZPODD */
-
-#endif /* __LIBATA_H__ */
+#endif  
+#endif  

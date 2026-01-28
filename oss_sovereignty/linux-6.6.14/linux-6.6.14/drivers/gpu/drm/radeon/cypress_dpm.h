@@ -1,36 +1,11 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef __CYPRESS_DPM_H__
 #define __CYPRESS_DPM_H__
-
 #include "rv770_dpm.h"
 #include "evergreen_smc.h"
-
 struct evergreen_mc_reg_entry {
 	u32 mclk_max;
 	u32 mc_data[SMC_EVERGREEN_MC_REGISTER_ARRAY_SIZE];
 };
-
 struct evergreen_mc_reg_table {
 	u8 last;
 	u8 num_entries;
@@ -38,30 +13,24 @@ struct evergreen_mc_reg_table {
 	struct evergreen_mc_reg_entry mc_reg_table_entry[MAX_AC_TIMING_ENTRIES];
 	SMC_Evergreen_MCRegisterAddress mc_reg_address[SMC_EVERGREEN_MC_REGISTER_ARRAY_SIZE];
 };
-
 struct evergreen_ulv_param {
 	bool supported;
 	struct rv7xx_pl *pl;
 };
-
 struct evergreen_arb_registers {
 	u32 mc_arb_dram_timing;
 	u32 mc_arb_dram_timing2;
 	u32 mc_arb_rfsh_rate;
 	u32 mc_arb_burst_time;
 };
-
 struct at {
 	u32 rlp;
 	u32 rmp;
 	u32 lhp;
 	u32 lmp;
 };
-
 struct evergreen_power_info {
-	/* must be first! */
 	struct rv7xx_power_info rv7xx;
-	/* flags */
 	bool vddci_control;
 	bool dynamic_ac_timing;
 	bool abm;
@@ -75,7 +44,6 @@ struct evergreen_power_info {
 	bool ls_clock_gating;
 	bool smu_uvd_hs;
 	bool uvd_enabled;
-	/* stored values */
 	u16 acpi_vddci;
 	u8 mvdd_high_index;
 	u8 mvdd_low_index;
@@ -86,14 +54,12 @@ struct evergreen_power_info {
 	struct evergreen_arb_registers bootup_arb_registers;
 	struct evergreen_ulv_param ulv;
 	struct at ats[2];
-	/* smc offsets */
 	u16 mc_reg_table_start;
 	struct radeon_ps current_rps;
 	struct rv7xx_ps current_ps;
 	struct radeon_ps requested_rps;
 	struct rv7xx_ps requested_ps;
 };
-
 #define CYPRESS_HASI_DFLT                               400000
 #define CYPRESS_MGCGTTLOCAL0_DFLT                       0x00000000
 #define CYPRESS_MGCGTTLOCAL1_DFLT                       0x00000000
@@ -103,13 +69,11 @@ struct evergreen_power_info {
 #define REDWOOD_MGCGCGTSSMCTRL_DFLT                     0x6e944040
 #define CEDAR_MGCGCGTSSMCTRL_DFLT                       0x46944040
 #define CYPRESS_VRC_DFLT                                0xC00033
-
 #define PCIE_PERF_REQ_REMOVE_REGISTRY   0
 #define PCIE_PERF_REQ_FORCE_LOWPOWER    1
 #define PCIE_PERF_REQ_PECI_GEN1         2
 #define PCIE_PERF_REQ_PECI_GEN2         3
 #define PCIE_PERF_REQ_PECI_GEN3         4
-
 int cypress_convert_power_level_to_smc(struct radeon_device *rdev,
 				       struct rv7xx_pl *pl,
 				       RV770_SMC_HW_PERFORMANCE_LEVEL *level,
@@ -156,5 +120,4 @@ u32 cypress_map_clkf_to_ibias(struct radeon_device *rdev, u32 clkf);
 u8 cypress_get_mclk_frequency_ratio(struct radeon_device *rdev,
 				    u32 memory_clock, bool strobe_mode);
 u8 cypress_get_strobe_mode_settings(struct radeon_device *rdev, u32 mclk);
-
 #endif

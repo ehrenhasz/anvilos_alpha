@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
- /***************************************************************************
- *
- * Copyright (C) 2007-2010 SMSC
- *
- *****************************************************************************/
-
 #ifndef _SMSC75XX_H
 #define _SMSC75XX_H
-
-/* Tx command words */
 #define TX_CMD_A_LSO			(0x08000000)
 #define TX_CMD_A_IPE			(0x04000000)
 #define TX_CMD_A_TPE			(0x02000000)
@@ -16,13 +7,10 @@
 #define TX_CMD_A_RVTG			(0x00800000)
 #define TX_CMD_A_FCS			(0x00400000)
 #define TX_CMD_A_LEN			(0x000FFFFF)
-
 #define TX_CMD_B_MSS			(0x3FFF0000)
 #define TX_CMD_B_MSS_SHIFT		(16)
 #define TX_MSS_MIN			((u16)8)
 #define TX_CMD_B_VTAG			(0x0000FFFF)
-
-/* Rx command words */
 #define RX_CMD_A_ICE			(0x80000000)
 #define RX_CMD_A_TCE			(0x40000000)
 #define RX_CMD_A_IPV			(0x20000000)
@@ -45,18 +33,12 @@
 #define RX_CMD_A_UAM			(0x00008000)
 #define RX_CMD_A_LCSM			(0x00004000)
 #define RX_CMD_A_LEN			(0x00003FFF)
-
 #define RX_CMD_B_CSUM			(0xFFFF0000)
 #define RX_CMD_B_CSUM_SHIFT		(16)
 #define RX_CMD_B_VTAG			(0x0000FFFF)
-
-/* SCSRs */
 #define ID_REV				(0x0000)
-
 #define FPGA_REV			(0x0004)
-
 #define BOND_CTL			(0x0008)
-
 #define INT_STS				(0x000C)
 #define INT_STS_RDFO_INT		(0x00400000)
 #define INT_STS_TXE_INT			(0x00200000)
@@ -69,7 +51,6 @@
 #define INT_STS_TDFO			(0x00002000)
 #define INT_STS_GPIOS			(0x00000FFF)
 #define INT_STS_CLEAR_ALL		(0xFFFFFFFF)
-
 #define HW_CFG				(0x0010)
 #define HW_CFG_SMDET_STS		(0x00008000)
 #define HW_CFG_SMDET_EN			(0x00004000)
@@ -90,7 +71,6 @@
 #define HW_CFG_BCE			(0x00000004)
 #define HW_CFG_LRST			(0x00000002)
 #define HW_CFG_SRST			(0x00000001)
-
 #define PMT_CTL				(0x0014)
 #define PMT_CTL_PHY_PWRUP		(0x00000400)
 #define PMT_CTL_RES_CLR_WKP_EN		(0x00000100)
@@ -108,7 +88,6 @@
 #define PMT_CTL_WUPS_ED			(0x00000001)
 #define PMT_CTL_WUPS_WOL		(0x00000002)
 #define PMT_CTL_WUPS_MULTI		(0x00000003)
-
 #define LED_GPIO_CFG			(0x0018)
 #define LED_GPIO_CFG_LED2_FUN_SEL	(0x80000000)
 #define LED_GPIO_CFG_LED10_FUN_SEL	(0x40000000)
@@ -132,20 +111,17 @@
 #define LED_GPIO_CFG_GPDATA_1		(0x00000002)
 #define LED_GPIO_CFG_GPDATA_2		(0x00000004)
 #define LED_GPIO_CFG_GPDATA_3		(0x00000008)
-
 #define GPIO_CFG			(0x001C)
 #define GPIO_CFG_SHIFT			(24)
 #define GPIO_CFG_GPEN			(0xFF000000)
 #define GPIO_CFG_GPBUF			(0x00FF0000)
 #define GPIO_CFG_GPDIR			(0x0000FF00)
 #define GPIO_CFG_GPDATA			(0x000000FF)
-
 #define GPIO_WAKE			(0x0020)
 #define GPIO_WAKE_PHY_LINKUP_EN		(0x80000000)
 #define GPIO_WAKE_POL			(0x0FFF0000)
 #define GPIO_WAKE_POL_SHIFT		(16)
 #define GPIO_WAKE_WK			(0x00000FFF)
-
 #define DP_SEL				(0x0024)
 #define DP_SEL_DPRDY			(0x80000000)
 #define DP_SEL_RSEL			(0x0000000F)
@@ -158,18 +134,13 @@
 #define DP_SEL_FCT_TX			(0x00000004)
 #define DP_SEL_DESCRIPTOR		(0x00000005)
 #define DP_SEL_WOL			(0x00000006)
-
 #define DP_CMD				(0x0028)
 #define DP_CMD_WRITE			(0x01)
 #define DP_CMD_READ			(0x00)
-
 #define DP_ADDR				(0x002C)
-
 #define DP_DATA				(0x0030)
-
 #define BURST_CAP			(0x0034)
 #define BURST_CAP_MASK			(0x0000000F)
-
 #define INT_EP_CTL			(0x0038)
 #define INT_EP_CTL_INTEP_ON		(0x80000000)
 #define INT_EP_CTL_RDFO_EN		(0x00400000)
@@ -183,10 +154,8 @@
 #define INT_EP_CTL_TDFO_EN		(0x00002000)
 #define INT_EP_CTL_RX_FIFO_EN		(0x00001000)
 #define INT_EP_CTL_GPIOX_EN		(0x00000FFF)
-
 #define BULK_IN_DLY			(0x003C)
 #define BULK_IN_DLY_MASK		(0xFFFF)
-
 #define E2P_CMD				(0x0040)
 #define E2P_CMD_BUSY			(0x80000000)
 #define E2P_CMD_MASK			(0x70000000)
@@ -201,12 +170,9 @@
 #define E2P_CMD_TIMEOUT			(0x00000400)
 #define E2P_CMD_LOADED			(0x00000200)
 #define E2P_CMD_ADDR			(0x000001FF)
-
 #define MAX_EEPROM_SIZE			(512)
-
 #define E2P_DATA			(0x0044)
 #define E2P_DATA_MASK_			(0x000000FF)
-
 #define RFE_CTL				(0x0060)
 #define RFE_CTL_TCPUDP_CKM		(0x00001000)
 #define RFE_CTL_IP_CKM			(0x00000800)
@@ -221,10 +187,8 @@
 #define RFE_CTL_DHF			(0x00000004)
 #define RFE_CTL_DPF			(0x00000002)
 #define RFE_CTL_RST_RF			(0x00000001)
-
 #define VLAN_TYPE			(0x0064)
 #define VLAN_TYPE_MASK			(0x0000FFFF)
-
 #define FCT_RX_CTL			(0x0090)
 #define FCT_RX_CTL_EN			(0x80000000)
 #define FCT_RX_CTL_RST			(0x40000000)
@@ -235,7 +199,6 @@
 #define FCT_RX_CTL_RX_EMPTY		(0x00200000)
 #define FCT_RX_CTL_RX_DISABLED		(0x00100000)
 #define FCT_RX_CTL_RXUSED		(0x0000FFFF)
-
 #define FCT_TX_CTL			(0x0094)
 #define FCT_TX_CTL_EN			(0x80000000)
 #define FCT_TX_CTL_RST			(0x40000000)
@@ -243,19 +206,14 @@
 #define FCT_TX_CTL_TX_EMPTY		(0x00200000)
 #define FCT_TX_CTL_TX_DISABLED		(0x00100000)
 #define FCT_TX_CTL_TXUSED		(0x0000FFFF)
-
 #define FCT_RX_FIFO_END			(0x0098)
 #define FCT_RX_FIFO_END_MASK		(0x0000007F)
-
 #define FCT_TX_FIFO_END			(0x009C)
 #define FCT_TX_FIFO_END_MASK		(0x0000003F)
-
 #define FCT_FLOW			(0x00A0)
 #define FCT_FLOW_THRESHOLD_OFF		(0x00007F00)
 #define FCT_FLOW_THRESHOLD_OFF_SHIFT	(8)
 #define FCT_FLOW_THRESHOLD_ON		(0x0000007F)
-
-/* MAC CSRs */
 #define MAC_CR				(0x100)
 #define MAC_CR_ADP			(0x00002000)
 #define MAC_CR_ADD			(0x00001000)
@@ -268,7 +226,6 @@
 #define MAC_CR_CFG_100			(0x00000002)
 #define MAC_CR_CFG_1000			(0x00000004)
 #define MAC_CR_RST			(0x00000001)
-
 #define MAC_RX				(0x104)
 #define MAC_RX_MAX_SIZE			(0x3FFF0000)
 #define MAC_RX_MAX_SIZE_SHIFT		(16)
@@ -276,22 +233,18 @@
 #define MAC_RX_FSE			(0x00000004)
 #define MAC_RX_RXD			(0x00000002)
 #define MAC_RX_RXEN			(0x00000001)
-
 #define MAC_TX				(0x108)
 #define MAC_TX_BFCS			(0x00000004)
 #define MAC_TX_TXD			(0x00000002)
 #define MAC_TX_TXEN			(0x00000001)
-
 #define FLOW				(0x10C)
 #define FLOW_FORCE_FC			(0x80000000)
 #define FLOW_TX_FCEN			(0x40000000)
 #define FLOW_RX_FCEN			(0x20000000)
 #define FLOW_FPF			(0x10000000)
 #define FLOW_PAUSE_TIME			(0x0000FFFF)
-
 #define RAND_SEED			(0x110)
 #define RAND_SEED_MASK			(0x0000FFFF)
-
 #define ERR_STS				(0x114)
 #define ERR_STS_FCS_ERR			(0x00000100)
 #define ERR_STS_LFRM_ERR		(0x00000080)
@@ -299,12 +252,9 @@
 #define ERR_STS_COLLISION_ERR		(0x00000010)
 #define ERR_STS_ALIGN_ERR		(0x00000008)
 #define ERR_STS_URUN_ERR		(0x00000004)
-
 #define RX_ADDRH			(0x118)
 #define RX_ADDRH_MASK			(0x0000FFFF)
-
 #define RX_ADDRL			(0x11C)
-
 #define MII_ACCESS			(0x120)
 #define MII_ACCESS_PHY_ADDR		(0x0000F800)
 #define MII_ACCESS_PHY_ADDR_SHIFT	(11)
@@ -313,10 +263,8 @@
 #define MII_ACCESS_READ			(0x00000000)
 #define MII_ACCESS_WRITE		(0x00000002)
 #define MII_ACCESS_BUSY			(0x00000001)
-
 #define MII_DATA			(0x124)
 #define MII_DATA_MASK			(0x0000FFFF)
-
 #define WUCSR				(0x140)
 #define WUCSR_PFDA_FR			(0x00000080)
 #define WUCSR_WUFR			(0x00000040)
@@ -326,7 +274,6 @@
 #define WUCSR_WUEN			(0x00000004)
 #define WUCSR_MPEN			(0x00000002)
 #define WUCSR_BCST_EN			(0x00000001)
-
 #define WUF_CFGX			(0x144)
 #define WUF_CFGX_EN			(0x80000000)
 #define WUF_CFGX_ATYPE			(0x03000000)
@@ -337,17 +284,14 @@
 #define WUF_CFGX_PATTERN_OFFSET_SHIFT	(16)
 #define WUF_CFGX_CRC16			(0x0000FFFF)
 #define WUF_NUM				(8)
-
 #define WUF_MASKX			(0x170)
 #define WUF_MASKX_AVALID		(0x80000000)
 #define WUF_MASKX_ATYPE			(0x40000000)
-
 #define ADDR_FILTX			(0x300)
 #define ADDR_FILTX_FB_VALID		(0x80000000)
 #define ADDR_FILTX_FB_TYPE		(0x40000000)
 #define ADDR_FILTX_FB_ADDRHI		(0x0000FFFF)
 #define ADDR_FILTX_SB_ADDRLO		(0xFFFFFFFF)
-
 #define WUCSR2				(0x500)
 #define WUCSR2_NS_RCD			(0x00000040)
 #define WUCSR2_ARP_RCD			(0x00000020)
@@ -355,28 +299,18 @@
 #define WUCSR2_NS_OFFLOAD		(0x00000004)
 #define WUCSR2_ARP_OFFLOAD		(0x00000002)
 #define WUCSR2_TCPSYN_OFFLOAD		(0x00000001)
-
 #define WOL_FIFO_STS			(0x504)
-
 #define IPV6_ADDRX			(0x510)
-
 #define IPV4_ADDRX			(0x590)
-
-
-/* Vendor-specific PHY Definitions */
-
-/* Mode Control/Status Register */
 #define PHY_MODE_CTRL_STS		(17)
 #define MODE_CTRL_STS_EDPWRDOWN		((u16)0x2000)
 #define MODE_CTRL_STS_ENERGYON		((u16)0x0002)
-
 #define PHY_INT_SRC			(29)
 #define PHY_INT_SRC_ENERGY_ON		((u16)0x0080)
 #define PHY_INT_SRC_ANEG_COMP		((u16)0x0040)
 #define PHY_INT_SRC_REMOTE_FAULT	((u16)0x0020)
 #define PHY_INT_SRC_LINK_DOWN		((u16)0x0010)
 #define PHY_INT_SRC_CLEAR_ALL		((u16)0xffff)
-
 #define PHY_INT_MASK			(30)
 #define PHY_INT_MASK_ENERGY_ON		((u16)0x0080)
 #define PHY_INT_MASK_ANEG_COMP		((u16)0x0040)
@@ -384,20 +318,15 @@
 #define PHY_INT_MASK_LINK_DOWN		((u16)0x0010)
 #define PHY_INT_MASK_DEFAULT		(PHY_INT_MASK_ANEG_COMP | \
 					 PHY_INT_MASK_LINK_DOWN)
-
 #define PHY_SPECIAL			(31)
 #define PHY_SPECIAL_SPD			((u16)0x001C)
 #define PHY_SPECIAL_SPD_10HALF		((u16)0x0004)
 #define PHY_SPECIAL_SPD_10FULL		((u16)0x0014)
 #define PHY_SPECIAL_SPD_100HALF		((u16)0x0008)
 #define PHY_SPECIAL_SPD_100FULL		((u16)0x0018)
-
-/* USB Vendor Requests */
 #define USB_VENDOR_REQUEST_WRITE_REGISTER	0xA0
 #define USB_VENDOR_REQUEST_READ_REGISTER	0xA1
 #define USB_VENDOR_REQUEST_GET_STATS		0xA2
-
-/* Interrupt Endpoint status word bitfields */
 #define INT_ENP_RDFO_INT		((u32)BIT(22))
 #define INT_ENP_TXE_INT			((u32)BIT(21))
 #define INT_ENP_TX_DIS_INT		((u32)BIT(19))
@@ -405,5 +334,4 @@
 #define INT_ENP_PHY_INT			((u32)BIT(17))
 #define INT_ENP_MAC_ERR_INT		((u32)BIT(15))
 #define INT_ENP_RX_FIFO_DATA_INT	((u32)BIT(12))
-
-#endif /* _SMSC75XX_H */
+#endif  

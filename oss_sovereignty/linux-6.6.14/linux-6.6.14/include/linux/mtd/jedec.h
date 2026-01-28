@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright © 2000-2010 David Woodhouse <dwmw2@infradead.org>
- *			 Steven J. Hill <sjhill@realitydiluted.com>
- *			 Thomas Gleixner <tglx@linutronix.de>
- *
- * Contains all JEDEC related definitions
- */
-
 #ifndef __LINUX_MTD_JEDEC_H
 #define __LINUX_MTD_JEDEC_H
-
 struct jedec_ecc_info {
 	u8 ecc_bits;
 	u8 codeword_size;
@@ -17,16 +7,9 @@ struct jedec_ecc_info {
 	__le16 block_endurance;
 	u8 reserved[2];
 } __packed;
-
-/* JEDEC features */
 #define JEDEC_FEATURE_16_BIT_BUS	(1 << 0)
-
-/* JEDEC Optional Commands */
 #define JEDEC_OPT_CMD_READ_CACHE	BIT(1)
-
 struct nand_jedec_params {
-	/* rev info and features block */
-	/* 'J' 'E' 'S' 'D'  */
 	u8 sig[4];
 	__le16 revision;
 	__le16 features;
@@ -34,14 +17,10 @@ struct nand_jedec_params {
 	__le16 sec_cmd;
 	u8 num_of_param_pages;
 	u8 reserved0[18];
-
-	/* manufacturer information block */
 	char manufacturer[12];
 	char model[20];
 	u8 jedec_id[6];
 	u8 reserved1[10];
-
-	/* memory organization block */
 	__le32 byte_per_page;
 	__le16 spare_bytes_per_page;
 	u8 reserved2[6];
@@ -54,8 +33,6 @@ struct nand_jedec_params {
 	u8 multi_plane_addr;
 	u8 multi_plane_op_attr;
 	u8 reserved3[38];
-
-	/* electrical parameter block */
 	__le16 async_sdr_speed_grade;
 	__le16 toggle_ddr_speed_grade;
 	__le16 sync_ddr_speed_grade;
@@ -73,22 +50,13 @@ struct nand_jedec_params {
 	u8 driver_strength_support;
 	__le16 t_adl;
 	u8 reserved4[36];
-
-	/* ECC and endurance block */
 	u8 guaranteed_good_blocks;
 	__le16 guaranteed_block_endurance;
 	struct jedec_ecc_info ecc_info[4];
 	u8 reserved5[29];
-
-	/* reserved */
 	u8 reserved6[148];
-
-	/* vendor */
 	__le16 vendor_rev_num;
 	u8 reserved7[88];
-
-	/* CRC for Parameter Page */
 	__le16 crc;
 } __packed;
-
-#endif /* __LINUX_MTD_JEDEC_H */
+#endif  

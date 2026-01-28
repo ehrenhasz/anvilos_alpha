@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Abilis Systems TB10X SOC device tree
- *
- * Copyright (C) Abilis Systems 2013
- *
- * Author: Christian Ruppert <christian.ruppert@abilis.com>
- */
-
-
 / {
 	compatible		= "abilis,arc-tb10x";
 	#address-cells		= <1>;
 	#size-cells		= <1>;
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -22,21 +11,16 @@
 			reg = <0>;
 		};
 	};
-
-	/* TIMER0 with interrupt for clockevent */
 	timer0 {
 		compatible = "snps,arc-timer";
 		interrupts = <3>;
 		interrupt-parent = <&intc>;
 		clocks = <&cpu_clk>;
 	};
-
-	/* TIMER1 for free running clocksource */
 	timer1 {
 		compatible = "snps,arc-timer";
 		clocks = <&cpu_clk>;
 	};
-
 	soc100 {
 		#address-cells	= <1>;
 		#size-cells	= <1>;
@@ -44,7 +28,6 @@
 		ranges		= <0xfe000000 0xfe000000 0x02000000
 				0x000f0000 0x000f0000 0x00010000>;
 		compatible	= "abilis,tb10x", "simple-bus";
-
 		pll0: oscillator {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
@@ -62,13 +45,11 @@
 			clocks = <&pll0>;
 			clock-output-names = "ahb_clk";
 		};
-
 		iomux: iomux@ff10601c {
 			compatible = "abilis,tb10x-iomux";
 			#gpio-range-cells = <3>;
 			reg = <0xff10601c 0x4>;
 		};
-
 		intc: interrupt-controller {
 			compatible = "snps,arc700-intc";
 			interrupt-controller;
@@ -83,7 +64,6 @@
 			interrupts = <5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
 					20 21 22 23 24 25 26 27 28 29 30 31>;
 		};
-
 		uart@ff100000 {
 			compatible = "snps,dw-apb-uart";
 			reg = <0xff100000 0x100>;
@@ -119,7 +99,6 @@
 			clock-names = "hclk";
 			multi-block = <1 1 1 1 1 1>;
 		};
-
 		i2c0: i2c@ff120000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -165,7 +144,6 @@
 			interrupts = <12 8>;
 			clocks = <&ahb_clk>;
 		};
-
 		spi0: spi@fe010000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -188,7 +166,6 @@
 			interrupts = <10 8>;
 			clocks = <&ahb_clk>;
 		};
-
 		tb10x_tsm: tb10x-tsm@ff316000 {
 			compatible = "abilis,tb100-tsm";
 			reg = <0xff316000 0x400>;

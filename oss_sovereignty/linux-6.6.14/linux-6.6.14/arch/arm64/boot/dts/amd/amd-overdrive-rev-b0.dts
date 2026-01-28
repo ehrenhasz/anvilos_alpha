@@ -1,62 +1,39 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DTS file for AMD Seattle Overdrive Development Board
- * Note: For Seattle Rev.B0
- *
- * Copyright (C) 2015 Advanced Micro Devices, Inc.
- */
-
 /dts-v1/;
-
 /include/ "amd-seattle-soc.dtsi"
 /include/ "amd-seattle-cpus.dtsi"
-
 / {
 	model = "AMD Seattle (Rev.B0) Development Board (Overdrive)";
 	compatible = "amd,seattle-overdrive", "amd,seattle";
-
 	chosen {
 		stdout-path = &serial0;
 	};
-
 	psci {
 		compatible = "arm,psci-0.2";
 		method = "smc";
 	};
 };
-
 &ccp0 {
 	status = "okay";
 	amd,zlib-support = <1>;
 };
-
-/**
- * NOTE: In Rev.B, gpio0 is reserved.
- */
 &gpio1 {
 	status = "okay";
 };
-
 &gpio4 {
 	status = "okay";
 };
-
 &i2c0 {
 	status = "okay";
 };
-
 &i2c1 {
 	status = "okay";
 };
-
 &pcie0 {
 	status = "okay";
 };
-
 &spi0 {
 	status = "okay";
 };
-
 &spi1 {
 	status = "okay";
 	sdcard0: sdcard@0 {
@@ -71,7 +48,6 @@
 		pl022,tx-level-trig = <0>;
 	};
 };
-
 &smb0 {
 	/include/ "amd-seattle-xgbe-b.dtsi"
 };

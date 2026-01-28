@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2015 Regents of the University of California
- */
-
 #ifndef _ASM_RISCV_ASM_H
 #define _ASM_RISCV_ASM_H
-
 #ifdef __ASSEMBLY__
 #define __ASM_STR(x)	x
 #else
 #define __ASM_STR(x)	#x
 #endif
-
 #if __riscv_xlen == 64
 #define __REG_SEL(a, b)	__ASM_STR(a)
 #elif __riscv_xlen == 32
@@ -19,7 +12,6 @@
 #else
 #error "Unexpected __riscv_xlen"
 #endif
-
 #define REG_L		__REG_SEL(ld, lw)
 #define REG_S		__REG_SEL(sd, sw)
 #define REG_SC		__REG_SEL(sc.d, sc.w)
@@ -27,7 +19,6 @@
 #define REG_ASM		__REG_SEL(.dword, .word)
 #define SZREG		__REG_SEL(8, 4)
 #define LGREG		__REG_SEL(3, 2)
-
 #if __SIZEOF_POINTER__ == 8
 #ifdef __ASSEMBLY__
 #define RISCV_PTR		.dword
@@ -51,7 +42,6 @@
 #else
 #error "Unexpected __SIZEOF_POINTER__"
 #endif
-
 #if (__SIZEOF_INT__ == 4)
 #define RISCV_INT		__ASM_STR(.word)
 #define RISCV_SZINT		__ASM_STR(4)
@@ -59,7 +49,6 @@
 #else
 #error "Unexpected __SIZEOF_INT__"
 #endif
-
 #if (__SIZEOF_SHORT__ == 2)
 #define RISCV_SHORT		__ASM_STR(.half)
 #define RISCV_SZSHORT		__ASM_STR(2)
@@ -67,28 +56,19 @@
 #else
 #error "Unexpected __SIZEOF_SHORT__"
 #endif
-
 #ifdef __ASSEMBLY__
 #include <asm/asm-offsets.h>
-
-/* Common assembly source macros */
-
-/*
- * NOP sequence
- */
 .macro	nops, num
 	.rept	\num
 	nop
 	.endr
 .endm
-
 #ifdef CONFIG_SMP
 #ifdef CONFIG_32BIT
 #define PER_CPU_OFFSET_SHIFT 2
 #else
 #define PER_CPU_OFFSET_SHIFT 3
 #endif
-
 .macro asm_per_cpu dst sym tmp
 	REG_L \tmp, TASK_TI_CPU_NUM(tp)
 	slli  \tmp, \tmp, PER_CPU_OFFSET_SHIFT
@@ -98,13 +78,11 @@
 	la    \dst, \sym
 	add   \dst, \dst, \tmp
 .endm
-#else /* CONFIG_SMP */
+#else  
 .macro asm_per_cpu dst sym tmp
 	la    \dst, \sym
 .endm
-#endif /* CONFIG_SMP */
-
-	/* save all GPs except x1 ~ x5 */
+#endif  
 	.macro save_from_x6_to_x31
 	REG_S x6,  PT_T1(sp)
 	REG_S x7,  PT_T2(sp)
@@ -133,8 +111,6 @@
 	REG_S x30, PT_T5(sp)
 	REG_S x31, PT_T6(sp)
 	.endm
-
-	/* restore all GPs except x1 ~ x5 */
 	.macro restore_from_x6_to_x31
 	REG_L x6,  PT_T1(sp)
 	REG_L x7,  PT_T2(sp)
@@ -163,7 +139,5 @@
 	REG_L x30, PT_T5(sp)
 	REG_L x31, PT_T6(sp)
 	.endm
-
-#endif /* __ASSEMBLY__ */
-
-#endif /* _ASM_RISCV_ASM_H */
+#endif  
+#endif  

@@ -1,39 +1,26 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * NVM Express device driver tracepoints
- * Copyright (c) 2018 Johannes Thumshirn, SUSE Linux GmbH
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM nvme
-
 #if !defined(_TRACE_NVME_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_NVME_H
-
 #include <linux/nvme.h>
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #include "nvme.h"
-
 const char *nvme_trace_parse_admin_cmd(struct trace_seq *p, u8 opcode,
 		u8 *cdw10);
 const char *nvme_trace_parse_nvm_cmd(struct trace_seq *p, u8 opcode,
 		u8 *cdw10);
 const char *nvme_trace_parse_fabrics_cmd(struct trace_seq *p, u8 fctype,
 		u8 *spc);
-
 #define parse_nvme_cmd(qid, opcode, fctype, cdw10)			\
 	((opcode) == nvme_fabrics_command ?				\
 	 nvme_trace_parse_fabrics_cmd(p, fctype, cdw10) :		\
 	((qid) ?							\
 	 nvme_trace_parse_nvm_cmd(p, opcode, cdw10) :			\
 	 nvme_trace_parse_admin_cmd(p, opcode, cdw10)))
-
 const char *nvme_trace_disk_name(struct trace_seq *p, char *name);
 #define __print_disk_name(name)				\
 	nvme_trace_disk_name(p, name)
-
 #ifndef TRACE_HEADER_MULTI_READ
 static inline void __assign_disk_name(char *name, struct gendisk *disk)
 {
@@ -43,7 +30,6 @@ static inline void __assign_disk_name(char *name, struct gendisk *disk)
 		memset(name, 0, DISK_NAME_LEN);
 }
 #endif
-
 TRACE_EVENT(nvme_setup_cmd,
 	    TP_PROTO(struct request *req, struct nvme_command *cmd),
 	    TP_ARGS(req, cmd),
@@ -81,7 +67,6 @@ TRACE_EVENT(nvme_setup_cmd,
 		      parse_nvme_cmd(__entry->qid, __entry->opcode,
 				__entry->fctype, __entry->cdw10))
 );
-
 TRACE_EVENT(nvme_complete_rq,
 	    TP_PROTO(struct request *req),
 	    TP_ARGS(req),
@@ -109,11 +94,8 @@ TRACE_EVENT(nvme_complete_rq,
 		      __entry->ctrl_id, __print_disk_name(__entry->disk),
 		      __entry->qid, __entry->cid, __entry->result,
 		      __entry->retries, __entry->flags, __entry->status)
-
 );
-
 #define aer_name(aer) { aer, #aer }
-
 TRACE_EVENT(nvme_async_event,
 	TP_PROTO(struct nvme_ctrl *ctrl, u32 result),
 	TP_ARGS(ctrl, result),
@@ -135,9 +117,7 @@ TRACE_EVENT(nvme_async_event,
 			aer_name(NVME_AER_VS))
 	)
 );
-
 #undef aer_name
-
 TRACE_EVENT(nvme_sq,
 	TP_PROTO(struct request *req, __le16 sq_head, int sq_tail),
 	TP_ARGS(req, sq_head, sq_tail),
@@ -160,13 +140,9 @@ TRACE_EVENT(nvme_sq,
 		__entry->qid, __entry->sq_head, __entry->sq_tail
 	)
 );
-
-#endif /* _TRACE_NVME_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
-
-/* This part must be outside protection */
 #include <trace/define_trace.h>

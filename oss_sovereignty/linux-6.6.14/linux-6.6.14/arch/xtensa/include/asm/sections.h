@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef _XTENSA_SECTIONS_H
 #define _XTENSA_SECTIONS_H
-
 #include <asm-generic/sections.h>
-
 #ifdef CONFIG_VECTORS_ADDR
 extern char _WindowVectors_text_start[];
 extern char _WindowVectors_text_end[];
@@ -41,5 +37,4 @@ extern char _xip_text_end[];
 extern char _xip_start[];
 extern char _xip_end[];
 #endif
-
 #endif

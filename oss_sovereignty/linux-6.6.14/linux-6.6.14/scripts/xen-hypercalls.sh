@@ -1,9 +1,6 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0
 out="$1"
 shift
 in="$@"
-
 for i in $in; do
 	eval $CPP $LINUXINCLUDE -dD -imacros "$i" -x c /dev/null
 done | \

@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tas2552.h - ALSA SoC Texas Instruments TAS2552 Mono Audio Amplifier
- *
- * Copyright (C) 2014 Texas Instruments Incorporated -  https://www.ti.com
- *
- * Author: Dan Murphy <dmurphy@ti.com>
- */
-
 #ifndef __TAS2552_H__
 #define __TAS2552_H__
-
-/* Register Address Map */
 #define TAS2552_DEVICE_STATUS		0x00
 #define TAS2552_CFG_1			0x01
 #define TAS2552_CFG_2			0x02
@@ -35,8 +24,6 @@
 #define TAS2552_VER_NUM			0x16
 #define TAS2552_VBAT_DATA		0x19
 #define TAS2552_MAX_REG			TAS2552_VBAT_DATA
-
-/* CFG1 Register Masks */
 #define TAS2552_DEV_RESET		(1 << 0)
 #define TAS2552_SWS			(1 << 1)
 #define TAS2552_MUTE			(1 << 2)
@@ -45,16 +32,12 @@
 #define TAS2552_PLL_SRC_IVCLKIN		(0x2 << 4)
 #define TAS2552_PLL_SRC_1_8_FIXED 	(0x3 << 4)
 #define TAS2552_PLL_SRC_MASK	 	TAS2552_PLL_SRC_1_8_FIXED
-
-/* CFG2 Register Masks */
 #define TAS2552_CLASSD_EN		(1 << 7)
 #define TAS2552_BOOST_EN		(1 << 6)
 #define TAS2552_APT_EN			(1 << 5)
 #define TAS2552_PLL_ENABLE		(1 << 3)
 #define TAS2552_LIM_EN			(1 << 2)
 #define TAS2552_IVSENSE_EN		(1 << 1)
-
-/* CFG3 Register Masks */
 #define TAS2552_WCLK_FREQ_8KHZ		(0x0 << 0)
 #define TAS2552_WCLK_FREQ_11_12KHZ	(0x1 << 0)
 #define TAS2552_WCLK_FREQ_16KHZ		(0x2 << 0)
@@ -71,11 +54,7 @@
 #define TAS2552_PDM_IN_SEL		(1 << 5)
 #define TAS2552_I2S_OUT_SEL		(1 << 6)
 #define TAS2552_ANALOG_IN_SEL		(1 << 7)
-
-/* DOUT Register Masks */
 #define TAS2552_SDOUT_TRISTATE		(1 << 2)
-
-/* Serial Interface Control Register Masks */
 #define TAS2552_WORDLENGTH_16BIT	(0x0 << 0)
 #define TAS2552_WORDLENGTH_20BIT	(0x1 << 0)
 #define TAS2552_WORDLENGTH_24BIT	(0x2 << 0)
@@ -93,8 +72,6 @@
 #define TAS2552_CLKSPERFRAME_MASK	TAS2552_CLKSPERFRAME_256
 #define TAS2552_BCLKDIR			(1 << 6)
 #define TAS2552_WCLKDIR			(1 << 7)
-
-/* OUTPUT_DATA register */
 #define TAS2552_DATA_OUT_I_DATA		(0x0)
 #define TAS2552_DATA_OUT_V_DATA		(0x1)
 #define TAS2552_DATA_OUT_VBAT_DATA	(0x2)
@@ -110,16 +87,12 @@
 #define TAS2552_PDM_DATA_SEL_I_V	(0x2 << 6)
 #define TAS2552_PDM_DATA_SEL_V_I	(0x3 << 6)
 #define TAS2552_PDM_DATA_SEL_MASK	TAS2552_PDM_DATA_SEL_V_I
-
-/* PDM CFG Register */
 #define TAS2552_PDM_CLK_SEL_PLL		(0x0 << 0)
 #define TAS2552_PDM_CLK_SEL_IVCLKIN	(0x1 << 0)
 #define TAS2552_PDM_CLK_SEL_BCLK	(0x2 << 0)
 #define TAS2552_PDM_CLK_SEL_MCLK	(0x3 << 0)
 #define TAS2552_PDM_CLK_SEL_MASK	TAS2552_PDM_CLK_SEL_MCLK
 #define TAS2552_PDM_DATA_ES	 	(1 << 2)
-
-/* Boost Auto-pass through register */
 #define TAS2552_APT_DELAY_50		(0x0 << 0)
 #define TAS2552_APT_DELAY_75		(0x1 << 0)
 #define TAS2552_APT_DELAY_125		(0x2 << 0)
@@ -128,11 +101,8 @@
 #define TAS2552_APT_THRESH_10_07	(0x1 << 2)
 #define TAS2552_APT_THRESH_14_11	(0x2 << 2)
 #define TAS2552_APT_THRESH_20_17	(0x3 << 2)
-
-/* PLL Control Register */
 #define TAS2552_PLL_J_MASK		0x7f
 #define TAS2552_PLL_D_UPPER(x)		(((x) >> 8) & 0x3f)
 #define TAS2552_PLL_D_LOWER(x)		((x) & 0xff)
 #define TAS2552_PLL_BYPASS		(1 << 7)
-
 #endif

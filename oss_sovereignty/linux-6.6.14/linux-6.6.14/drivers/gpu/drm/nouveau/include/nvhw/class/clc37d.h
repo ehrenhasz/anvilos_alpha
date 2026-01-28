@@ -1,29 +1,5 @@
-/*
- * Copyright (c) 1993-2017, NVIDIA CORPORATION. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
-
-
 #ifndef _clC37d_h_
 #define _clC37d_h_
-
 #define NV_DISP_NOTIFIER                                                             0x00000000
 #define NV_DISP_NOTIFIER_SIZEOF                                                      0x00000010
 #define NV_DISP_NOTIFIER__0                                                          0x00000000
@@ -45,9 +21,6 @@
 #define NV_DISP_NOTIFIER__2_TIMESTAMP_LO                                             31:0
 #define NV_DISP_NOTIFIER__3                                                          0x00000003
 #define NV_DISP_NOTIFIER__3_TIMESTAMP_HI                                             31:0
-
-
-// class methods
 #define NVC37D_UPDATE                                                           (0x00000200)
 #define NVC37D_UPDATE_SPECIAL_HANDLING                                          21:20
 #define NVC37D_UPDATE_SPECIAL_HANDLING_NONE                                     (0x00000000)
@@ -200,7 +173,6 @@
 #define NVC37D_SET_WINDOW_INTERLOCK_FLAGS_INTERLOCK_WITH_WINDOW31               31:31
 #define NVC37D_SET_WINDOW_INTERLOCK_FLAGS_INTERLOCK_WITH_WINDOW31_DISABLE       (0x00000000)
 #define NVC37D_SET_WINDOW_INTERLOCK_FLAGS_INTERLOCK_WITH_WINDOW31_ENABLE        (0x00000001)
-
 #define NVC37D_SOR_SET_CONTROL(a)                                               (0x00000300 + (a)*0x00000020)
 #define NVC37D_SOR_SET_CONTROL_OWNER_MASK                                       7:0
 #define NVC37D_SOR_SET_CONTROL_OWNER_MASK_NONE                                  (0x00000000)
@@ -228,7 +200,6 @@
 #define NVC37D_SOR_SET_CONTROL_PIXEL_REPLICATE_MODE_OFF                         (0x00000000)
 #define NVC37D_SOR_SET_CONTROL_PIXEL_REPLICATE_MODE_X2                          (0x00000001)
 #define NVC37D_SOR_SET_CONTROL_PIXEL_REPLICATE_MODE_X4                          (0x00000002)
-
 #define NVC37D_WINDOW_SET_CONTROL(a)                                            (0x00001000 + (a)*0x00000080)
 #define NVC37D_WINDOW_SET_CONTROL_OWNER                                         3:0
 #define NVC37D_WINDOW_SET_CONTROL_OWNER_HEAD(i)                                 (0x00000000 +(i))
@@ -358,7 +329,6 @@
 #define NVC37D_WINDOW_SET_WINDOW_USAGE_BOUNDS_UPSCALING_ALLOWED                 24:24
 #define NVC37D_WINDOW_SET_WINDOW_USAGE_BOUNDS_UPSCALING_ALLOWED_FALSE           (0x00000000)
 #define NVC37D_WINDOW_SET_WINDOW_USAGE_BOUNDS_UPSCALING_ALLOWED_TRUE            (0x00000001)
-
 #define NVC37D_HEAD_SET_PROCAMP(a)                                              (0x00002000 + (a)*0x00000400)
 #define NVC37D_HEAD_SET_PROCAMP_COLOR_SPACE                                     1:0
 #define NVC37D_HEAD_SET_PROCAMP_COLOR_SPACE_RGB                                 (0x00000000)
@@ -564,4 +534,4 @@
 #define NVC37D_HEAD_SET_CRC_CONTROL_CRC_DURING_SNOOZE                           9:9
 #define NVC37D_HEAD_SET_CRC_CONTROL_CRC_DURING_SNOOZE_DISABLE                   (0x00000000)
 #define NVC37D_HEAD_SET_CRC_CONTROL_CRC_DURING_SNOOZE_ENABLE                    (0x00000001)
-#endif // _clC37d_h
+#endif  

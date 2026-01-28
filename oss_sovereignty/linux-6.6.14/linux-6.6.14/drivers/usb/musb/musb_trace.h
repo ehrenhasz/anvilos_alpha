@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * musb_trace.h - MUSB Controller Trace Support
- *
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com
- *
- * Author: Bin Liu <b-liu@ti.com>
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM musb
-
 #if !defined(__MUSB_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __MUSB_TRACE_H
-
 #include <linux/types.h>
 #include <linux/tracepoint.h>
 #include <linux/usb.h>
@@ -20,9 +9,7 @@
 #ifdef CONFIG_USB_TI_CPPI41_DMA
 #include "cppi_dma.h"
 #endif
-
 #define MUSB_MSG_MAX   500
-
 TRACE_EVENT(musb_log,
 	TP_PROTO(struct musb *musb, struct va_format *vaf),
 	TP_ARGS(musb, vaf),
@@ -36,7 +23,6 @@ TRACE_EVENT(musb_log,
 	),
 	TP_printk("%s: %s", __get_str(name), __get_str(msg))
 );
-
 TRACE_EVENT(musb_state,
 	TP_PROTO(struct musb *musb, u8 devctl, const char *desc),
 	TP_ARGS(musb, devctl, desc),
@@ -53,7 +39,6 @@ TRACE_EVENT(musb_state,
 	TP_printk("%s: devctl: %02x %s", __get_str(name), __entry->devctl,
 		  __get_str(desc))
 );
-
 DECLARE_EVENT_CLASS(musb_regb,
 	TP_PROTO(void *caller, const void  __iomem *addr,
 		 unsigned int offset, u8 data),
@@ -73,19 +58,16 @@ DECLARE_EVENT_CLASS(musb_regb,
 	TP_printk("%pS: %p + %04x: %02x",
 		__entry->caller, __entry->addr, __entry->offset, __entry->data)
 );
-
 DEFINE_EVENT(musb_regb, musb_readb,
 	TP_PROTO(void *caller, const void __iomem *addr,
 		 unsigned int offset, u8 data),
 	TP_ARGS(caller, addr, offset, data)
 );
-
 DEFINE_EVENT(musb_regb, musb_writeb,
 	TP_PROTO(void *caller, const void __iomem *addr,
 		 unsigned int offset, u8 data),
 	TP_ARGS(caller, addr, offset, data)
 );
-
 DECLARE_EVENT_CLASS(musb_regw,
 	TP_PROTO(void *caller, const void __iomem *addr,
 		 unsigned int offset, u16 data),
@@ -105,19 +87,16 @@ DECLARE_EVENT_CLASS(musb_regw,
 	TP_printk("%pS: %p + %04x: %04x",
 		__entry->caller, __entry->addr, __entry->offset, __entry->data)
 );
-
 DEFINE_EVENT(musb_regw, musb_readw,
 	TP_PROTO(void *caller, const void __iomem *addr,
 		 unsigned int offset, u16 data),
 	TP_ARGS(caller, addr, offset, data)
 );
-
 DEFINE_EVENT(musb_regw, musb_writew,
 	TP_PROTO(void *caller, const void __iomem *addr,
 		 unsigned int offset, u16 data),
 	TP_ARGS(caller, addr, offset, data)
 );
-
 DECLARE_EVENT_CLASS(musb_regl,
 	TP_PROTO(void *caller, const void __iomem *addr,
 		 unsigned int offset, u32 data),
@@ -137,19 +116,16 @@ DECLARE_EVENT_CLASS(musb_regl,
 	TP_printk("%pS: %p + %04x: %08x",
 		__entry->caller, __entry->addr, __entry->offset, __entry->data)
 );
-
 DEFINE_EVENT(musb_regl, musb_readl,
 	TP_PROTO(void *caller, const void __iomem *addr,
 		 unsigned int offset, u32 data),
 	TP_ARGS(caller, addr, offset, data)
 );
-
 DEFINE_EVENT(musb_regl, musb_writel,
 	TP_PROTO(void *caller, const void __iomem *addr,
 		 unsigned int offset, u32 data),
 	TP_ARGS(caller, addr, offset, data)
 );
-
 TRACE_EVENT(musb_isr,
 	TP_PROTO(struct musb *musb),
 	TP_ARGS(musb),
@@ -170,7 +146,6 @@ TRACE_EVENT(musb_isr,
 		__entry->int_tx, __entry->int_rx
 	)
 );
-
 DECLARE_EVENT_CLASS(musb_urb,
 	TP_PROTO(struct musb *musb, struct urb *urb),
 	TP_ARGS(musb, urb),
@@ -202,37 +177,30 @@ DECLARE_EVENT_CLASS(musb_urb,
 			__entry->status
 	)
 );
-
 DEFINE_EVENT(musb_urb, musb_urb_start,
 	TP_PROTO(struct musb *musb, struct urb *urb),
 	TP_ARGS(musb, urb)
 );
-
 DEFINE_EVENT(musb_urb, musb_urb_gb,
 	TP_PROTO(struct musb *musb, struct urb *urb),
 	TP_ARGS(musb, urb)
 );
-
 DEFINE_EVENT(musb_urb, musb_urb_rx,
 	TP_PROTO(struct musb *musb, struct urb *urb),
 	TP_ARGS(musb, urb)
 );
-
 DEFINE_EVENT(musb_urb, musb_urb_tx,
 	TP_PROTO(struct musb *musb, struct urb *urb),
 	TP_ARGS(musb, urb)
 );
-
 DEFINE_EVENT(musb_urb, musb_urb_enq,
 	TP_PROTO(struct musb *musb, struct urb *urb),
 	TP_ARGS(musb, urb)
 );
-
 DEFINE_EVENT(musb_urb, musb_urb_deq,
 	TP_PROTO(struct musb *musb, struct urb *urb),
 	TP_ARGS(musb, urb)
 );
-
 DECLARE_EVENT_CLASS(musb_req,
 	TP_PROTO(struct musb_request *req),
 	TP_ARGS(req),
@@ -268,47 +236,38 @@ DECLARE_EVENT_CLASS(musb_req,
 			__entry->status
 	)
 );
-
 DEFINE_EVENT(musb_req, musb_req_gb,
 	TP_PROTO(struct musb_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(musb_req, musb_req_tx,
 	TP_PROTO(struct musb_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(musb_req, musb_req_rx,
 	TP_PROTO(struct musb_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(musb_req, musb_req_alloc,
 	TP_PROTO(struct musb_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(musb_req, musb_req_free,
 	TP_PROTO(struct musb_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(musb_req, musb_req_start,
 	TP_PROTO(struct musb_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(musb_req, musb_req_enq,
 	TP_PROTO(struct musb_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(musb_req, musb_req_deq,
 	TP_PROTO(struct musb_request *req),
 	TP_ARGS(req)
 );
-
 #ifdef CONFIG_USB_TI_CPPI41_DMA
 DECLARE_EVENT_CLASS(musb_cppi41,
 	TP_PROTO(struct cppi41_dma_channel *ch),
@@ -339,51 +298,38 @@ DECLARE_EVENT_CLASS(musb_cppi41,
 			__entry->prog_len, __entry->xferred, __entry->len
 	)
 );
-
 DEFINE_EVENT(musb_cppi41, musb_cppi41_done,
 	TP_PROTO(struct cppi41_dma_channel *ch),
 	TP_ARGS(ch)
 );
-
 DEFINE_EVENT(musb_cppi41, musb_cppi41_gb,
 	TP_PROTO(struct cppi41_dma_channel *ch),
 	TP_ARGS(ch)
 );
-
 DEFINE_EVENT(musb_cppi41, musb_cppi41_config,
 	TP_PROTO(struct cppi41_dma_channel *ch),
 	TP_ARGS(ch)
 );
-
 DEFINE_EVENT(musb_cppi41, musb_cppi41_cont,
 	TP_PROTO(struct cppi41_dma_channel *ch),
 	TP_ARGS(ch)
 );
-
 DEFINE_EVENT(musb_cppi41, musb_cppi41_alloc,
 	TP_PROTO(struct cppi41_dma_channel *ch),
 	TP_ARGS(ch)
 );
-
 DEFINE_EVENT(musb_cppi41, musb_cppi41_abort,
 	TP_PROTO(struct cppi41_dma_channel *ch),
 	TP_ARGS(ch)
 );
-
 DEFINE_EVENT(musb_cppi41, musb_cppi41_free,
 	TP_PROTO(struct cppi41_dma_channel *ch),
 	TP_ARGS(ch)
 );
-#endif /* CONFIG_USB_TI_CPPI41_DMA */
-
-#endif /* __MUSB_TRACE_H */
-
-/* this part has to be here */
-
+#endif  
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
-
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE musb_trace
-
 #include <trace/define_trace.h>

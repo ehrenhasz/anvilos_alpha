@@ -1,17 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM xen
-
 #if !defined(_TRACE_XEN_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_XEN_H
-
 #include <linux/tracepoint.h>
 #include <asm/xen/hypervisor.h>
 #include <asm/xen/trace_types.h>
-
 struct multicall_entry;
-
-/* Multicalls */
 DECLARE_EVENT_CLASS(xen_mc__batch,
 	    TP_PROTO(enum xen_lazy_mode mode),
 	    TP_ARGS(mode),
@@ -27,12 +21,9 @@ DECLARE_EVENT_CLASS(xen_mc__batch,
 	DEFINE_EVENT(xen_mc__batch, name,		\
 		TP_PROTO(enum xen_lazy_mode mode),	\
 		     TP_ARGS(mode))
-
 DEFINE_XEN_MC_BATCH(xen_mc_batch);
 DEFINE_XEN_MC_BATCH(xen_mc_issue);
-
 TRACE_DEFINE_SIZEOF(ulong);
-
 TRACE_EVENT(xen_mc_entry,
 	    TP_PROTO(struct multicall_entry *mc, unsigned nargs),
 	    TP_ARGS(mc, nargs),
@@ -51,7 +42,6 @@ TRACE_EVENT(xen_mc_entry,
 		      __entry->args[0], __entry->args[1], __entry->args[2],
 		      __entry->args[3], __entry->args[4], __entry->args[5])
 	);
-
 TRACE_EVENT(xen_mc_entry_alloc,
 	    TP_PROTO(size_t args),
 	    TP_ARGS(args),
@@ -61,15 +51,10 @@ TRACE_EVENT(xen_mc_entry_alloc,
 	    TP_fast_assign(__entry->args = args),
 	    TP_printk("alloc entry %zu arg bytes", __entry->args)
 	);
-
 TRACE_EVENT(xen_mc_callback,
 	    TP_PROTO(xen_mc_callback_fn_t fn, void *data),
 	    TP_ARGS(fn, data),
 	    TP_STRUCT__entry(
-		    /*
-		     * Use field_struct to avoid is_signed_type()
-		     * comparison of a function pointer.
-		     */
 		    __field_struct(xen_mc_callback_fn_t, fn)
 		    __field(void *, data)
 		    ),
@@ -80,7 +65,6 @@ TRACE_EVENT(xen_mc_callback,
 	    TP_printk("callback %ps, data %p",
 		      __entry->fn, __entry->data)
 	);
-
 TRACE_EVENT(xen_mc_flush_reason,
 	    TP_PROTO(enum xen_mc_flush_reason reason),
 	    TP_ARGS(reason),
@@ -94,7 +78,6 @@ TRACE_EVENT(xen_mc_flush_reason,
 		      (__entry->reason == XEN_MC_FL_ARGS) ? "ARGS" :
 		      (__entry->reason == XEN_MC_FL_CALLBACK) ? "CALLBACK" : "??")
 	);
-
 TRACE_EVENT(xen_mc_flush,
 	    TP_PROTO(unsigned mcidx, unsigned argidx, unsigned cbidx),
 	    TP_ARGS(mcidx, argidx, cbidx),
@@ -109,7 +92,6 @@ TRACE_EVENT(xen_mc_flush,
 	    TP_printk("flushing %u hypercalls, %u arg bytes, %u callbacks",
 		      __entry->mcidx, __entry->argidx, __entry->cbidx)
 	);
-
 TRACE_EVENT(xen_mc_extend_args,
 	    TP_PROTO(unsigned long op, size_t args, enum xen_mc_extend_args res),
 	    TP_ARGS(op, args, res),
@@ -128,9 +110,7 @@ TRACE_EVENT(xen_mc_extend_args,
 		      __entry->res == XEN_MC_XE_BAD_OP ? "BAD_OP" :
 		      __entry->res == XEN_MC_XE_NO_SPACE ? "NO_SPACE" : "???")
 	);
-
 TRACE_DEFINE_SIZEOF(pteval_t);
-/* mmu */
 DECLARE_EVENT_CLASS(xen_mmu__set_pte,
 	    TP_PROTO(pte_t *ptep, pte_t pteval),
 	    TP_ARGS(ptep, pteval),
@@ -145,16 +125,12 @@ DECLARE_EVENT_CLASS(xen_mmu__set_pte,
 		      (int)sizeof(pteval_t) * 2, (unsigned long long)pte_val(native_make_pte(__entry->pteval)),
 		      (int)sizeof(pteval_t) * 2, (unsigned long long)__entry->pteval)
 	);
-
 #define DEFINE_XEN_MMU_SET_PTE(name)				\
 	DEFINE_EVENT(xen_mmu__set_pte, name,			\
 		     TP_PROTO(pte_t *ptep, pte_t pteval),	\
 		     TP_ARGS(ptep, pteval))
-
 DEFINE_XEN_MMU_SET_PTE(xen_mmu_set_pte);
-
 TRACE_DEFINE_SIZEOF(pmdval_t);
-
 TRACE_EVENT(xen_mmu_set_pmd,
 	    TP_PROTO(pmd_t *pmdp, pmd_t pmdval),
 	    TP_ARGS(pmdp, pmdval),
@@ -169,10 +145,8 @@ TRACE_EVENT(xen_mmu_set_pmd,
 		      (int)sizeof(pmdval_t) * 2, (unsigned long long)pmd_val(native_make_pmd(__entry->pmdval)),
 		      (int)sizeof(pmdval_t) * 2, (unsigned long long)__entry->pmdval)
 	);
-
 #ifdef CONFIG_X86_PAE
 DEFINE_XEN_MMU_SET_PTE(xen_mmu_set_pte_atomic);
-
 TRACE_EVENT(xen_mmu_pte_clear,
 	    TP_PROTO(struct mm_struct *mm, unsigned long addr, pte_t *ptep),
 	    TP_ARGS(mm, addr, ptep),
@@ -187,7 +161,6 @@ TRACE_EVENT(xen_mmu_pte_clear,
 	    TP_printk("mm %p addr %lx ptep %p",
 		      __entry->mm, __entry->addr, __entry->ptep)
 	);
-
 TRACE_EVENT(xen_mmu_pmd_clear,
 	    TP_PROTO(pmd_t *pmdp),
 	    TP_ARGS(pmdp),
@@ -198,11 +171,8 @@ TRACE_EVENT(xen_mmu_pmd_clear,
 	    TP_printk("pmdp %p", __entry->pmdp)
 	);
 #endif
-
 #if CONFIG_PGTABLE_LEVELS >= 4
-
 TRACE_DEFINE_SIZEOF(pudval_t);
-
 TRACE_EVENT(xen_mmu_set_pud,
 	    TP_PROTO(pud_t *pudp, pud_t pudval),
 	    TP_ARGS(pudp, pudval),
@@ -217,9 +187,7 @@ TRACE_EVENT(xen_mmu_set_pud,
 		      (int)sizeof(pudval_t) * 2, (unsigned long long)pud_val(native_make_pud(__entry->pudval)),
 		      (int)sizeof(pudval_t) * 2, (unsigned long long)__entry->pudval)
 	);
-
 TRACE_DEFINE_SIZEOF(p4dval_t);
-
 TRACE_EVENT(xen_mmu_set_p4d,
 	    TP_PROTO(p4d_t *p4dp, p4d_t *user_p4dp, p4d_t p4dval),
 	    TP_ARGS(p4dp, user_p4dp, p4dval),
@@ -237,7 +205,6 @@ TRACE_EVENT(xen_mmu_set_p4d,
 		      (int)sizeof(p4dval_t) * 2, (unsigned long long)__entry->p4dval)
 	);
 #else
-
 TRACE_EVENT(xen_mmu_set_pud,
 	    TP_PROTO(pud_t *pudp, pud_t pudval),
 	    TP_ARGS(pudp, pudval),
@@ -252,9 +219,7 @@ TRACE_EVENT(xen_mmu_set_pud,
 		      (int)sizeof(pudval_t) * 2, (unsigned long long)pgd_val(native_make_pgd(__entry->pudval)),
 		      (int)sizeof(pudval_t) * 2, (unsigned long long)__entry->pudval)
 	);
-
 #endif
-
 DECLARE_EVENT_CLASS(xen_mmu_ptep_modify_prot,
 	    TP_PROTO(struct mm_struct *mm, unsigned long addr,
 		     pte_t *ptep, pte_t pteval),
@@ -279,10 +244,8 @@ DECLARE_EVENT_CLASS(xen_mmu_ptep_modify_prot,
 		     TP_PROTO(struct mm_struct *mm, unsigned long addr,	\
 			      pte_t *ptep, pte_t pteval),		\
 		     TP_ARGS(mm, addr, ptep, pteval))
-
 DEFINE_XEN_MMU_PTEP_MODIFY_PROT(xen_mmu_ptep_modify_prot_start);
 DEFINE_XEN_MMU_PTEP_MODIFY_PROT(xen_mmu_ptep_modify_prot_commit);
-
 TRACE_EVENT(xen_mmu_alloc_ptpage,
 	    TP_PROTO(struct mm_struct *mm, unsigned long pfn, unsigned level, bool pinned),
 	    TP_ARGS(mm, pfn, level, pinned),
@@ -300,7 +263,6 @@ TRACE_EVENT(xen_mmu_alloc_ptpage,
 		      __entry->mm, __entry->pfn, __entry->level,
 		      __entry->pinned ? "" : "un")
 	);
-
 TRACE_EVENT(xen_mmu_release_ptpage,
 	    TP_PROTO(unsigned long pfn, unsigned level, bool pinned),
 	    TP_ARGS(pfn, level, pinned),
@@ -316,7 +278,6 @@ TRACE_EVENT(xen_mmu_release_ptpage,
 		      __entry->pfn, __entry->level,
 		      __entry->pinned ? "" : "un")
 	);
-
 DECLARE_EVENT_CLASS(xen_mmu_pgd,
 	    TP_PROTO(struct mm_struct *mm, pgd_t *pgd),
 	    TP_ARGS(mm, pgd),
@@ -332,10 +293,8 @@ DECLARE_EVENT_CLASS(xen_mmu_pgd,
 	DEFINE_EVENT(xen_mmu_pgd, name,				\
 		TP_PROTO(struct mm_struct *mm, pgd_t *pgd),	\
 		     TP_ARGS(mm, pgd))
-
 DEFINE_XEN_MMU_PGD_EVENT(xen_mmu_pgd_pin);
 DEFINE_XEN_MMU_PGD_EVENT(xen_mmu_pgd_unpin);
-
 TRACE_EVENT(xen_mmu_flush_tlb_one_user,
 	    TP_PROTO(unsigned long addr),
 	    TP_ARGS(addr),
@@ -345,7 +304,6 @@ TRACE_EVENT(xen_mmu_flush_tlb_one_user,
 	    TP_fast_assign(__entry->addr = addr),
 	    TP_printk("addr %lx", __entry->addr)
 	);
-
 TRACE_EVENT(xen_mmu_flush_tlb_multi,
 	    TP_PROTO(const struct cpumask *cpus, struct mm_struct *mm,
 		     unsigned long addr, unsigned long end),
@@ -363,7 +321,6 @@ TRACE_EVENT(xen_mmu_flush_tlb_multi,
 	    TP_printk("ncpus %d mm %p addr %lx, end %lx",
 		      __entry->ncpus, __entry->mm, __entry->addr, __entry->end)
 	);
-
 TRACE_EVENT(xen_mmu_write_cr3,
 	    TP_PROTO(bool kernel, unsigned long cr3),
 	    TP_ARGS(kernel, cr3),
@@ -376,9 +333,6 @@ TRACE_EVENT(xen_mmu_write_cr3,
 	    TP_printk("%s cr3 %lx",
 		      __entry->kernel ? "kernel" : "user", __entry->cr3)
 	);
-
-
-/* CPU */
 TRACE_EVENT(xen_cpu_write_ldt_entry,
 	    TP_PROTO(struct desc_struct *dt, int entrynum, u64 desc),
 	    TP_ARGS(dt, entrynum, desc),
@@ -395,7 +349,6 @@ TRACE_EVENT(xen_cpu_write_ldt_entry,
 		      __entry->dt, __entry->entrynum,
 		      (unsigned long long)__entry->desc)
 	);
-
 TRACE_EVENT(xen_cpu_write_idt_entry,
 	    TP_PROTO(gate_desc *dt, int entrynum, const gate_desc *ent),
 	    TP_ARGS(dt, entrynum, ent),
@@ -409,7 +362,6 @@ TRACE_EVENT(xen_cpu_write_idt_entry,
 	    TP_printk("dt %p  entrynum %d",
 		      __entry->dt, __entry->entrynum)
 	);
-
 TRACE_EVENT(xen_cpu_load_idt,
 	    TP_PROTO(const struct desc_ptr *desc),
 	    TP_ARGS(desc),
@@ -419,7 +371,6 @@ TRACE_EVENT(xen_cpu_load_idt,
 	    TP_fast_assign(__entry->addr = desc->address),
 	    TP_printk("addr %lx", __entry->addr)
 	);
-
 TRACE_EVENT(xen_cpu_write_gdt_entry,
 	    TP_PROTO(struct desc_struct *dt, int entrynum, const void *desc, int type),
 	    TP_ARGS(dt, entrynum, desc, type),
@@ -438,7 +389,6 @@ TRACE_EVENT(xen_cpu_write_gdt_entry,
 		      __entry->dt, __entry->entrynum, __entry->type,
 		      (unsigned long long)__entry->desc)
 	);
-
 TRACE_EVENT(xen_cpu_set_ldt,
 	    TP_PROTO(const void *addr, unsigned entries),
 	    TP_ARGS(addr, entries),
@@ -451,9 +401,5 @@ TRACE_EVENT(xen_cpu_set_ldt,
 	    TP_printk("addr %p  entries %u",
 		      __entry->addr, __entry->entries)
 	);
-
-
-#endif /*  _TRACE_XEN_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

@@ -1,21 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* moxart-uc7112lx.dts - Device Tree file for MOXA UC-7112-LX
- *
- * Copyright (C) 2013 Jonas Jensen <jonas.jensen@gmail.com>
- */
-
 /dts-v1/;
 #include "moxart.dtsi"
-
 / {
 	model = "MOXA UC-7112-LX";
 	compatible = "moxa,moxart-uc-7112-lx", "moxa,moxart";
-
 	memory {
 		device_type = "memory";
 		reg = <0x0 0x2000000>;
 	};
-
 	clocks {
 		ref12: ref12M {
 			compatible = "fixed-clock";
@@ -23,7 +14,6 @@
 			clock-frequency = <12000000>;
 		};
 	};
-
 	flash@80000000,0 {
 		compatible = "numonyx,js28f128", "cfi-flash";
 		reg = <0x80000000 0x1000000>;
@@ -47,7 +37,6 @@
 			reg = <0xa00000 0x600000>;
 		};
 	};
-
 	leds {
 		compatible = "gpio-leds";
 		user-led {
@@ -57,7 +46,6 @@
 			linux,default-trigger = "default-on";
 		};
 	};
-
 	gpio_keys_polled {
 		compatible = "gpio-keys-polled";
 		#address-cells = <1>;
@@ -69,48 +57,38 @@
 			gpios = <&gpio 25 1>;
 		};
 	};
-
 	chosen {
 		bootargs = "console=ttyS0,115200n8 earlyprintk root=/dev/mmcblk0p1 rw rootwait";
 	};
 };
-
 &clk_pll {
 	clocks = <&ref12>;
 };
-
 &mmc {
 	status = "okay";
 };
-
 &mdio0 {
 	status = "okay";
-
 	ethphy0: ethernet-phy@1 {
 		device_type = "ethernet-phy";
 		compatible = "moxa,moxart-rtl8201cp", "ethernet-phy-ieee802.3-c22";
 		reg = <1>;
 	};
 };
-
 &mdio1 {
 	status = "okay";
-
 	ethphy1: ethernet-phy@1 {
 		device_type = "ethernet-phy";
 		compatible = "moxa,moxart-rtl8201cp", "ethernet-phy-ieee802.3-c22";
 		reg = <1>;
 	};
 };
-
 &mac0 {
 	status = "okay";
 };
-
 &mac1 {
 	status = "okay";
 };
-
 &uart0 {
 	status = "okay";
 };

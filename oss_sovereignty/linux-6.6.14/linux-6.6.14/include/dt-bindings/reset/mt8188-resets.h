@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)*/
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Runyang Chen <runyang.chen@mediatek.com>
- */
-
 #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT8188
 #define _DT_BINDINGS_RESET_CONTROLLER_MT8188
-
 #define MT8188_TOPRGU_CONN_MCU_SW_RST          0
 #define MT8188_TOPRGU_INFRA_GRST_SW_RST        1
 #define MT8188_TOPRGU_IPU0_SW_RST              2
@@ -30,12 +23,8 @@
 #define MT8188_TOPRGU_ADSPSYS_SW_RST           21
 #define MT8188_TOPRGU_DPTX_SW_RST              22
 #define MT8188_TOPRGU_SPMI_MST_SW_RST          23
-
 #define MT8188_TOPRGU_SW_RST_NUM               24
-
-/* INFRA resets */
 #define MT8188_INFRA_RST1_THERMAL_MCU_RST          0
 #define MT8188_INFRA_RST1_THERMAL_CTRL_RST         1
 #define MT8188_INFRA_RST3_PTP_CTRL_RST             2
-
-#endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT8188 */
+#endif   

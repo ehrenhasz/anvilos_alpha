@@ -1,37 +1,9 @@
-/*
-* Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef DAL_DC_DCN21_DCN21_HUBP_H_
 #define DAL_DC_DCN21_DCN21_HUBP_H_
-
 #include "../dcn20/dcn20_hubp.h"
 #include "../dcn10/dcn10_hubp.h"
-
 #define TO_DCN21_HUBP(hubp)\
 	container_of(hubp, struct dcn21_hubp, base)
-
 #define HUBP_REG_LIST_DCN21(id)\
 	HUBP_REG_LIST_DCN2_COMMON(id),\
 	SRI(FLIP_PARAMETERS_3, HUBPREQ, id),\
@@ -40,7 +12,6 @@
 	SRI(FLIP_PARAMETERS_6, HUBPREQ, id),\
 	SRI(VBLANK_PARAMETERS_5, HUBPREQ, id),\
 	SRI(VBLANK_PARAMETERS_6, HUBPREQ, id)
-
 #define HUBP_MASK_SH_LIST_DCN21_COMMON(mask_sh)\
 	HUBP_MASK_SH_LIST_DCN_SHARE_COMMON(mask_sh),\
 	HUBP_MASK_SH_LIST_DCN_VM(mask_sh),\
@@ -96,12 +67,9 @@
 	HUBP_SF(HUBPREQ0_VBLANK_PARAMETERS_5, REFCYC_PER_VM_GROUP_VBLANK, mask_sh),\
 	HUBP_SF(HUBPREQ0_VBLANK_PARAMETERS_6, REFCYC_PER_VM_REQ_VBLANK, mask_sh),\
 	HUBP_SF(HUBP0_DCHUBP_REQ_SIZE_CONFIG, VM_GROUP_SIZE, mask_sh)
-
 #define HUBP_MASK_SH_LIST_DCN21(mask_sh)\
 	HUBP_MASK_SH_LIST_DCN21_COMMON(mask_sh),\
 	HUBP_SF(HUBP0_DCSURF_TILING_CONFIG, RB_ALIGNED, mask_sh)
-
-
 struct dcn21_hubp {
 	struct hubp base;
 	struct dcn_hubp_state state;
@@ -110,7 +78,6 @@ struct dcn21_hubp {
 	const struct dcn_hubp2_mask *hubp_mask;
 	int PLAT_54186_wa_chroma_addr_offset;
 };
-
 bool hubp21_construct(
 	struct dcn21_hubp *hubp21,
 	struct dc_context *ctx,
@@ -118,17 +85,14 @@ bool hubp21_construct(
 	const struct dcn_hubp2_registers *hubp_regs,
 	const struct dcn_hubp2_shift *hubp_shift,
 	const struct dcn_hubp2_mask *hubp_mask);
-
 void apply_DEDCN21_142_wa_for_hostvm_deadline(
 		struct hubp *hubp,
 		struct _vcs_dpi_display_dlg_regs_st *dlg_attr);
-
 void hubp21_program_deadline(
 		struct hubp *hubp,
 		struct _vcs_dpi_display_dlg_regs_st *dlg_attr,
 		struct _vcs_dpi_display_ttu_regs_st *ttu_attr);
-
 void hubp21_program_requestor(
 		struct hubp *hubp,
 		struct _vcs_dpi_display_rq_regs_st *rq_regs);
-#endif /* DAL_DC_DCN21_DCN21_HUBP_H_ */
+#endif  

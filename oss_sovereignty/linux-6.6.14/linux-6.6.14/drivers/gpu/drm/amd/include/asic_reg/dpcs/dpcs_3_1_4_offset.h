@@ -1,34 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-
 #ifndef _dpcs_3_1_4_OFFSET_HEADER
 #define _dpcs_3_1_4_OFFSET_HEADER
-
-
-
-// addressBlock: dpcssys_cr0_rdpcstxcrind
-// base address: 0x0
 #define ixDPCSSYS_CR0_SUP_DIG_IDCODE_LO                                                                0x0000
 #define ixDPCSSYS_CR0_SUP_DIG_IDCODE_HI                                                                0x0001
 #define ixDPCSSYS_CR0_SUP_DIG_REFCLK_OVRD_IN                                                           0x0002
@@ -2091,10 +2062,6 @@
 #define ixDPCSSYS_CR0_RAWLANEX_DIG_PCS_XF_ATE_RX_OVRD_IN_3                                             0xe0c6
 #define ixDPCSSYS_CR0_RAWLANEX_DIG_PCS_XF_RX_OVRD_OUT_2                                                0xe0c7
 #define ixDPCSSYS_CR0_RAWLANEX_DIG_PCS_XF_TX_OVRD_IN_2                                                 0xe0c8
-
-
-// addressBlock: dpcssys_cr1_rdpcstxcrind
-// base address: 0x0
 #define ixDPCSSYS_CR1_SUP_DIG_IDCODE_LO                                                                0x0000
 #define ixDPCSSYS_CR1_SUP_DIG_IDCODE_HI                                                                0x0001
 #define ixDPCSSYS_CR1_SUP_DIG_REFCLK_OVRD_IN                                                           0x0002
@@ -4157,10 +4124,6 @@
 #define ixDPCSSYS_CR1_RAWLANEX_DIG_PCS_XF_ATE_RX_OVRD_IN_3                                             0xe0c6
 #define ixDPCSSYS_CR1_RAWLANEX_DIG_PCS_XF_RX_OVRD_OUT_2                                                0xe0c7
 #define ixDPCSSYS_CR1_RAWLANEX_DIG_PCS_XF_TX_OVRD_IN_2                                                 0xe0c8
-
-
-// addressBlock: dpcssys_cr2_rdpcstxcrind
-// base address: 0x0
 #define ixDPCSSYS_CR2_SUP_DIG_IDCODE_LO                                                                0x0000
 #define ixDPCSSYS_CR2_SUP_DIG_IDCODE_HI                                                                0x0001
 #define ixDPCSSYS_CR2_SUP_DIG_REFCLK_OVRD_IN                                                           0x0002
@@ -6223,10 +6186,6 @@
 #define ixDPCSSYS_CR2_RAWLANEX_DIG_PCS_XF_ATE_RX_OVRD_IN_3                                             0xe0c6
 #define ixDPCSSYS_CR2_RAWLANEX_DIG_PCS_XF_RX_OVRD_OUT_2                                                0xe0c7
 #define ixDPCSSYS_CR2_RAWLANEX_DIG_PCS_XF_TX_OVRD_IN_2                                                 0xe0c8
-
-
-// addressBlock: dpcssys_dcio_dcio_dispdec
-// base address: 0x0
 #define regDC_GENERICA                                                                                  0x2868
 #define regDC_GENERICA_BASE_IDX                                                                         2
 #define regDC_GENERICB                                                                                  0x2869
@@ -6265,10 +6224,6 @@
 #define regDCIO_GSL_SWAPLOCK_PAD_CNTL_BASE_IDX                                                          2
 #define regDCIO_SOFT_RESET                                                                              0x289e
 #define regDCIO_SOFT_RESET_BASE_IDX                                                                     2
-
-
-// addressBlock: dpcssys_dcio_dcio_chip_dispdec
-// base address: 0x0
 #define regDC_GPIO_GENERIC_MASK                                                                         0x28c8
 #define regDC_GPIO_GENERIC_MASK_BASE_IDX                                                                2
 #define regDC_GPIO_GENERIC_A                                                                            0x28c9
@@ -6371,14 +6326,6 @@
 #define regDC_GPIO_AUX_CTRL_5_BASE_IDX                                                                  2
 #define regAUXI2C_PAD_ALL_PWR_OK                                                                        0x291e
 #define regAUXI2C_PAD_ALL_PWR_OK_BASE_IDX                                                               2
-
-
-// addressBlock: dpcssys_dcio_dcio_uniphy0_dispdec
-// base address: 0x0
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx0_dispdec
-// base address: 0x0
 #define regRDPCSTX0_RDPCSTX_CNTL                                                                        0x2930
 #define regRDPCSTX0_RDPCSTX_CNTL_BASE_IDX                                                               2
 #define regRDPCSTX0_RDPCSTX_CLOCK_CNTL                                                                  0x2931
@@ -6459,18 +6406,10 @@
 #define regRDPCSTX0_RDPCS_TX_PLL_UPDATE_ADDR_OVRRD_BASE_IDX                                             2
 #define regRDPCSTX0_RDPCS_TX_PLL_UPDATE_DATA_OVRRD                                                      0x295e
 #define regRDPCSTX0_RDPCS_TX_PLL_UPDATE_DATA_OVRRD_BASE_IDX                                             2
-
-
-// addressBlock: dpcssys_dpcssys_cr0_dispdec
-// base address: 0x0
 #define regDPCSSYS_CR0_DPCSSYS_CR_ADDR                                                                  0x2934
 #define regDPCSSYS_CR0_DPCSSYS_CR_ADDR_BASE_IDX                                                         2
 #define regDPCSSYS_CR0_DPCSSYS_CR_DATA                                                                  0x2935
 #define regDPCSSYS_CR0_DPCSSYS_CR_DATA_BASE_IDX                                                         2
-
-
-// addressBlock: dpcssys_dcio_dcio_uniphy1_dispdec
-// base address: 0x360
 #define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED0                                                     0x2a00
 #define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED0_BASE_IDX                                            2
 #define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED1                                                     0x2a01
@@ -6587,10 +6526,6 @@
 #define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED56_BASE_IDX                                           2
 #define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED57                                                    0x2a39
 #define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED57_BASE_IDX                                           2
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx1_dispdec
-// base address: 0x360
 #define regRDPCSTX1_RDPCSTX_CNTL                                                                        0x2a08
 #define regRDPCSTX1_RDPCSTX_CNTL_BASE_IDX                                                               2
 #define regRDPCSTX1_RDPCSTX_CLOCK_CNTL                                                                  0x2a09
@@ -6671,24 +6606,12 @@
 #define regRDPCSTX1_RDPCS_TX_PLL_UPDATE_ADDR_OVRRD_BASE_IDX                                             2
 #define regRDPCSTX1_RDPCS_TX_PLL_UPDATE_DATA_OVRRD                                                      0x2a36
 #define regRDPCSTX1_RDPCS_TX_PLL_UPDATE_DATA_OVRRD_BASE_IDX                                             2
-
-
-// addressBlock: dpcssys_dpcssys_cr1_dispdec
-// base address: 0x360
 #define regDPCSSYS_CR1_DPCSSYS_CR_ADDR                                                                  0x2a0c
 #define regDPCSSYS_CR1_DPCSSYS_CR_ADDR_BASE_IDX                                                         2
 #define regDPCSSYS_CR1_DPCSSYS_CR_DATA                                                                  0x2a0d
 #define regDPCSSYS_CR1_DPCSSYS_CR_DATA_BASE_IDX                                                         2
-
-
-// addressBlock: dpcssys_dpcs0_rdpcspipe0_dispdec
-// base address: 0x6c0
 #define regRDPCSPIPE0_RDPCSPIPE_PHY_CNTL6                                                               0x2aeb
 #define regRDPCSPIPE0_RDPCSPIPE_PHY_CNTL6_BASE_IDX                                                      2
-
-
-// addressBlock: dpcssys_dcio_dcio_uniphy2_dispdec
-// base address: 0x6c0
 #define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED0                                                     0x2ad8
 #define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED0_BASE_IDX                                            2
 #define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED1                                                     0x2ad9
@@ -6805,16 +6728,8 @@
 #define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED56_BASE_IDX                                           2
 #define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED57                                                    0x2b11
 #define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED57_BASE_IDX                                           2
-
-
-// addressBlock: dpcssys_dpcs0_rdpcspipe1_dispdec
-// base address: 0xa20
 #define regRDPCSPIPE1_RDPCSPIPE_PHY_CNTL6                                                               0x2bc3
 #define regRDPCSPIPE1_RDPCSPIPE_PHY_CNTL6_BASE_IDX                                                      2
-
-
-// addressBlock: dpcssys_dcio_dcio_uniphy3_dispdec
-// base address: 0xa20
 #define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED0                                                     0x2bb0
 #define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED0_BASE_IDX                                            2
 #define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED1                                                     0x2bb1
@@ -6931,10 +6846,6 @@
 #define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED56_BASE_IDX                                           2
 #define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED57                                                    0x2be9
 #define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED57_BASE_IDX                                           2
-
-
-// addressBlock: dpcssys_dcio_dcio_uniphy4_dispdec
-// base address: 0xd80
 #define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED0                                                     0x2c88
 #define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED0_BASE_IDX                                            2
 #define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED1                                                     0x2c89
@@ -7051,10 +6962,6 @@
 #define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED56_BASE_IDX                                           2
 #define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED57                                                    0x2cc1
 #define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED57_BASE_IDX                                           2
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx2_dispdec
-// base address: 0xd80
 #define regRDPCSTX2_RDPCSTX_CNTL                                                                        0x2c90
 #define regRDPCSTX2_RDPCSTX_CNTL_BASE_IDX                                                               2
 #define regRDPCSTX2_RDPCSTX_CLOCK_CNTL                                                                  0x2c91
@@ -7135,18 +7042,10 @@
 #define regRDPCSTX2_RDPCS_TX_PLL_UPDATE_ADDR_OVRRD_BASE_IDX                                             2
 #define regRDPCSTX2_RDPCS_TX_PLL_UPDATE_DATA_OVRRD                                                      0x2cbe
 #define regRDPCSTX2_RDPCS_TX_PLL_UPDATE_DATA_OVRRD_BASE_IDX                                             2
-
-
-// addressBlock: dpcssys_dpcssys_cr2_dispdec
-// base address: 0xd80
 #define regDPCSSYS_CR2_DPCSSYS_CR_ADDR                                                                  0x2c94
 #define regDPCSSYS_CR2_DPCSSYS_CR_ADDR_BASE_IDX                                                         2
 #define regDPCSSYS_CR2_DPCSSYS_CR_DATA                                                                  0x2c95
 #define regDPCSSYS_CR2_DPCSSYS_CR_DATA_BASE_IDX                                                         2
-
-
-// addressBlock: dpcssys_pwrseq0_dispdec_pwrseq_dispdec
-// base address: 0x0
 #define regPWRSEQ0_DC_GPIO_PWRSEQ_EN                                                                    0x2f10
 #define regPWRSEQ0_DC_GPIO_PWRSEQ_EN_BASE_IDX                                                           2
 #define regPWRSEQ0_DC_GPIO_PWRSEQ_CTRL                                                                  0x2f11
@@ -7177,10 +7076,6 @@
 #define regPWRSEQ0_PANEL_PWRSEQ_REF_DIV2_BASE_IDX                                                       2
 #define regPWRSEQ0_PWRSEQ_SPARE                                                                         0x2f21
 #define regPWRSEQ0_PWRSEQ_SPARE_BASE_IDX                                                                2
-
-
-// addressBlock: dpcssys_pwrseq1_dispdec_pwrseq_dispdec
-// base address: 0x1b0
 #define regPWRSEQ1_DC_GPIO_PWRSEQ_EN                                                                    0x2f7c
 #define regPWRSEQ1_DC_GPIO_PWRSEQ_EN_BASE_IDX                                                           2
 #define regPWRSEQ1_DC_GPIO_PWRSEQ_CTRL                                                                  0x2f7d
@@ -7211,5 +7106,4 @@
 #define regPWRSEQ1_PANEL_PWRSEQ_REF_DIV2_BASE_IDX                                                       2
 #define regPWRSEQ1_PWRSEQ_SPARE                                                                         0x2f8d
 #define regPWRSEQ1_PWRSEQ_SPARE_BASE_IDX                                                                2
-
 #endif

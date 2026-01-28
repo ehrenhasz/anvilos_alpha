@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __MACH_SSI_H
 #define __MACH_SSI_H
-
 struct snd_ac97;
-
 extern unsigned char imx_ssi_fiq_start, imx_ssi_fiq_end;
 extern unsigned long imx_ssi_fiq_base, imx_ssi_fiq_tx_buffer, imx_ssi_fiq_rx_buffer;
-
 struct imx_ssi_platform_data {
 	unsigned int flags;
 #define IMX_SSI_DMA            (1 << 0)
@@ -17,8 +13,5 @@ struct imx_ssi_platform_data {
 	void (*ac97_reset) (struct snd_ac97 *ac97);
 	void (*ac97_warm_reset)(struct snd_ac97 *ac97);
 };
-
 extern int mxc_set_irq_fiq(unsigned int irq, unsigned int type);
-
-#endif /* __MACH_SSI_H */
-
+#endif  

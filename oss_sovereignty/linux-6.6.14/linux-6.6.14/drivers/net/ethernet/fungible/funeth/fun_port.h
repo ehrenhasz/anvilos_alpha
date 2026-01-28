@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-
 #ifndef _FUN_PORT_H
 #define _FUN_PORT_H
-
 enum port_mac_rx_stats {
 	PORT_MAC_RX_etherStatsOctets = 0x0,
 	PORT_MAC_RX_OctetsReceivedOK = 0x1,
@@ -49,7 +46,6 @@ enum port_mac_rx_stats {
 	PORT_MAC_RX_MACControlFramesReceived = 0x2a,
 	PORT_MAC_RX_STATS_MAX = 0x2b,
 };
-
 enum port_mac_tx_stats {
 	PORT_MAC_TX_etherStatsOctets = 0x0,
 	PORT_MAC_TX_OctetsTransmittedOK = 0x1,
@@ -87,11 +83,9 @@ enum port_mac_tx_stats {
 	PORT_MAC_TX_etherStatsPkts = 0x21,
 	PORT_MAC_TX_STATS_MAX = 0x22,
 };
-
 enum port_mac_fec_stats {
 	PORT_MAC_FEC_Correctable = 0x0,
 	PORT_MAC_FEC_Uncorrectable = 0x1,
 	PORT_MAC_FEC_STATS_MAX = 0x2,
 };
-
-#endif /* _FUN_PORT_H */
+#endif  

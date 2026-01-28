@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022 Collabora Ltd.
- * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_MT6795_H
 #define _DT_BINDINGS_CLK_MT6795_H
-
-/* TOPCKGEN */
 #define CLK_TOP_ADSYS_26M		0
 #define CLK_TOP_CLKPH_MCK_O		1
 #define CLK_TOP_USB_SYSPLL_125M		2
@@ -136,8 +128,6 @@
 #define CLK_TOP_APLL2_DIV4		125
 #define CLK_TOP_APLL2_DIV5		126
 #define CLK_TOP_NR_CLK			127
-
-/* APMIXED_SYS */
 #define CLK_APMIXED_ARMCA53PLL		0
 #define CLK_APMIXED_MAINPLL		1
 #define CLK_APMIXED_UNIVPLL		2
@@ -151,8 +141,6 @@
 #define CLK_APMIXED_APLL2		10
 #define CLK_APMIXED_REF2USB_TX		11
 #define CLK_APMIXED_NR_CLK		12
-
-/* INFRA_SYS */
 #define CLK_INFRA_DBGCLK		0
 #define CLK_INFRA_SMI			1
 #define CLK_INFRA_AUDIO			2
@@ -170,8 +158,6 @@
 #define CLK_INFRA_CA53_C0_SEL		14
 #define CLK_INFRA_CA53_C1_SEL		15
 #define CLK_INFRA_NR_CLK		16
-
-/* PERI_SYS */
 #define CLK_PERI_NFI			0
 #define CLK_PERI_THERM			1
 #define CLK_PERI_PWM1			2
@@ -207,15 +193,11 @@
 #define CLK_PERI_UART2_SEL		32
 #define CLK_PERI_UART3_SEL		33
 #define CLK_PERI_NR_CLK			34
-
-/* MFG */
 #define CLK_MFG_BAXI			0
 #define CLK_MFG_BMEM			1
 #define CLK_MFG_BG3D			2
 #define CLK_MFG_B26M			3
 #define CLK_MFG_NR_CLK			4
-
-/* MM_SYS */
 #define CLK_MM_SMI_COMMON		0
 #define CLK_MM_SMI_LARB0		1
 #define CLK_MM_CAM_MDP			2
@@ -259,17 +241,12 @@
 #define CLK_MM_DPI_PIXEL		40
 #define CLK_MM_DPI_ENGINE		41
 #define CLK_MM_NR_CLK			42
-
-/* VDEC_SYS */
 #define CLK_VDEC_CKEN			0
 #define CLK_VDEC_LARB_CKEN		1
 #define CLK_VDEC_NR_CLK			2
-
-/* VENC_SYS */
 #define CLK_VENC_LARB			0
 #define CLK_VENC_VENC			1
 #define CLK_VENC_JPGENC			2
 #define CLK_VENC_JPGDEC			3
 #define CLK_VENC_NR_CLK			4
-
-#endif /* _DT_BINDINGS_CLK_MT6795_H */
+#endif  

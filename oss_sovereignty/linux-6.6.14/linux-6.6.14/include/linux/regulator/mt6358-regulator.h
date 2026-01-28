@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 MediaTek Inc.
- */
-
 #ifndef __LINUX_REGULATOR_MT6358_H
 #define __LINUX_REGULATOR_MT6358_H
-
 enum {
 	MT6358_ID_VDRAM1 = 0,
 	MT6358_ID_VCORE,
@@ -49,7 +43,6 @@ enum {
 	MT6358_ID_VSIM2,
 	MT6358_ID_RG_MAX,
 };
-
 enum {
 	MT6366_ID_VDRAM1 = 0,
 	MT6366_ID_VCORE,
@@ -88,8 +81,6 @@ enum {
 	MT6366_ID_VSIM2,
 	MT6366_ID_RG_MAX,
 };
-
 #define MT6358_MAX_REGULATOR	MT6358_ID_RG_MAX
 #define MT6366_MAX_REGULATOR	MT6366_ID_RG_MAX
-
-#endif /* __LINUX_REGULATOR_MT6358_H */
+#endif  

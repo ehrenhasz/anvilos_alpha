@@ -1,32 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0
- * Copyright(c) 2020 Intel Corporation.
- */
-
 #ifndef XSKXCEIVER_H_
 #define XSKXCEIVER_H_
-
 #include "xsk_xdp_progs.skel.h"
-
 #ifndef SOL_XDP
 #define SOL_XDP 283
 #endif
-
 #ifndef AF_XDP
 #define AF_XDP 44
 #endif
-
 #ifndef PF_XDP
 #define PF_XDP AF_XDP
 #endif
-
 #ifndef SO_BUSY_POLL_BUDGET
 #define SO_BUSY_POLL_BUDGET 70
 #endif
-
 #ifndef SO_PREFER_BUSY_POLL
 #define SO_PREFER_BUSY_POLL 69
 #endif
-
 #define TEST_PASS 0
 #define TEST_FAILURE -1
 #define TEST_CONTINUE 1
@@ -36,7 +25,7 @@
 #define MAX_SOCKETS 2
 #define MAX_TEST_NAME_SIZE 32
 #define MAX_TEARDOWN_ITER 10
-#define PKT_HDR_SIZE (sizeof(struct ethhdr) + 2) /* Just to align the data in the packet */
+#define PKT_HDR_SIZE (sizeof(struct ethhdr) + 2)  
 #define MIN_PKT_SIZE 64
 #define MAX_ETH_PKT_SIZE 1518
 #define MAX_ETH_JUMBO_SIZE 9000
@@ -56,16 +45,13 @@
 #define XSK_DESC__MAX_SKB_FRAGS 18
 #define HUGEPAGE_SIZE (2 * 1024 * 1024)
 #define PKT_DUMP_NB_TO_PRINT 16
-
 #define print_verbose(x...) do { if (opt_verbose) ksft_print_msg(x); } while (0)
-
 enum test_mode {
 	TEST_MODE_SKB,
 	TEST_MODE_DRV,
 	TEST_MODE_ZC,
 	TEST_MODE_MAX
 };
-
 enum test_type {
 	TEST_TYPE_RUN_TO_COMPLETION,
 	TEST_TYPE_RUN_TO_COMPLETION_2K_FRAME,
@@ -97,9 +83,7 @@ enum test_type {
 	TEST_TYPE_TOO_MANY_FRAGS,
 	TEST_TYPE_MAX
 };
-
 static bool opt_verbose;
-
 struct xsk_umem_info {
 	struct xsk_ring_prod fq;
 	struct xsk_ring_cons cq;
@@ -112,7 +96,6 @@ struct xsk_umem_info {
 	u32 base_addr;
 	bool unaligned_mode;
 };
-
 struct xsk_socket_info {
 	struct xsk_ring_cons rx;
 	struct xsk_ring_prod tx;
@@ -121,7 +104,6 @@ struct xsk_socket_info {
 	u32 outstanding_tx;
 	u32 rxqsize;
 };
-
 struct pkt {
 	int offset;
 	u32 len;
@@ -129,7 +111,6 @@ struct pkt {
 	bool valid;
 	u16 options;
 };
-
 struct pkt_stream {
 	u32 nb_pkts;
 	u32 current_pkt_nb;
@@ -137,11 +118,9 @@ struct pkt_stream {
 	u32 max_pkt_len;
 	bool verbatim;
 };
-
 struct ifobject;
 typedef int (*validation_func_t)(struct ifobject *ifobj);
 typedef void *(*thread_func_t)(void *arg);
-
 struct ifobject {
 	char ifname[MAX_INTERFACE_NAME_CHARS];
 	struct xsk_socket_info *xsk;
@@ -172,7 +151,6 @@ struct ifobject {
 	u8 dst_mac[ETH_ALEN];
 	u8 src_mac[ETH_ALEN];
 };
-
 struct test_spec {
 	struct ifobject *ifobj_tx;
 	struct ifobject *ifobj_rx;
@@ -190,10 +168,7 @@ struct test_spec {
 	enum test_mode mode;
 	char name[MAX_TEST_NAME_SIZE];
 };
-
 pthread_barrier_t barr;
 pthread_mutex_t pacing_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 int pkts_in_flight;
-
-#endif				/* XSKXCEIVER_H_ */
+#endif				 

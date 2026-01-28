@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* DMA controller registers */
 #define REG8_1(a0) ((const u16[8]) { a0, a0 + 1, a0 + 2, a0 + 3, \
 				     a0 + 4, a0 + 5, a0 + 6, a0 + 7})
 #define REG8_2(a0) ((const u16[8]) { a0, a0 + 2, a0 + 4, a0 + 6,	\
@@ -42,7 +40,7 @@
 #define MD_CONF			REG8_1(0x60)
 #define MD_INIT			REG8_1(0x68)
 #define MD_MAP0			REG8_1(0x70)
-#define VDMA_P_ADDR		REG8_8(0x80) /* not used in DMA SG mode */
+#define VDMA_P_ADDR		REG8_8(0x80)  
 #define VDMA_WHP		REG8_8(0x81)
 #define VDMA_B_ADDR		REG8_8(0x82)
 #define VDMA_F2_P_ADDR		REG8_8(0x84)
@@ -50,8 +48,6 @@
 #define VDMA_F2_B_ADDR		REG8_8(0x86)
 #define EP_REG_ADDR		0xfe
 #define EP_REG_DATA		0xff
-
-/* Video decoder registers */
 #define VDREG8(a0) ((const u16[8]) { \
 	a0 + 0x000, a0 + 0x010, a0 + 0x020, a0 + 0x030,	\
 	a0 + 0x100, a0 + 0x110, a0 + 0x120, a0 + 0x130})
@@ -71,7 +67,6 @@
 #define STATUS2			VDREG8(0x10d)
 #define SDT			VDREG8(0x10e)
 #define SDT_EN			VDREG8(0x10f)
-
 #define VSCALE_LO		VDREG8(0x144)
 #define SCALE_HI		VDREG8(0x145)
 #define HSCALE_LO		VDREG8(0x146)
@@ -84,7 +79,6 @@
 #define F2SCALE_HI		VDREG8(0x14d)
 #define F2HSCALE_LO		VDREG8(0x14e)
 #define F2CNT			VDREG8(0x14f)
-
 #define VDREG2(a0) ((const u16[2]) { a0, a0 + 0x100 })
 #define SRST			VDREG2(0x180)
 #define ACNTL			VDREG2(0x181)
@@ -99,23 +93,19 @@
 #define MISC1			VDREG2(0x194)
 #define LOOP			VDREG2(0x195)
 #define MISC2			VDREG2(0x196)
-
 #define CLMD			VDREG2(0x197)
 #define ANPWRDOWN		VDREG2(0x1ce)
 #define AIGAIN			((const u16[8]) { 0x1d0, 0x1d1, 0x1d2, 0x1d3, \
 						  0x2d0, 0x2d1, 0x2d2, 0x2d3 })
-
 #define SYS_MODE_DMA_SHIFT	13
 #define AUDIO_DMA_SIZE_SHIFT	19
 #define AUDIO_DMA_SIZE_MIN	SZ_512
 #define AUDIO_DMA_SIZE_MAX	SZ_4K
 #define AUDIO_DMA_SIZE_MASK	(SZ_8K - 1)
-
 #define DMA_CMD_ENABLE		BIT(31)
 #define INT_STATUS_DMA_TOUT	BIT(17)
 #define TW686X_VIDSTAT_HLOCK	BIT(6)
 #define TW686X_VIDSTAT_VDLOSS	BIT(7)
-
 #define TW686X_STD_NTSC_M	0
 #define TW686X_STD_PAL		1
 #define TW686X_STD_SECAM	2
@@ -123,10 +113,7 @@
 #define TW686X_STD_PAL_M	4
 #define TW686X_STD_PAL_CN	5
 #define TW686X_STD_PAL_60	6
-
 #define TW686X_FIELD_MODE	0x3
 #define TW686X_FRAME_MODE	0x2
-/* 0x1 is reserved */
 #define TW686X_SG_MODE		0x0
-
 #define TW686X_FIFO_ERROR(x)	(x & ~(0xff))

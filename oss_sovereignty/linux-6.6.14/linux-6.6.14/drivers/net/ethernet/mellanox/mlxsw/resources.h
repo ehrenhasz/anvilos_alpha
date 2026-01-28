@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2016-2018 Mellanox Technologies. All rights reserved */
-
 #ifndef _MLXSW_RESOURCES_H
 #define _MLXSW_RESOURCES_H
-
 #include <linux/kernel.h>
 #include <linux/types.h>
-
 enum mlxsw_res_id {
 	MLXSW_RES_ID_KVD_SIZE,
 	MLXSW_RES_ID_KVD_SINGLE_MIN_SIZE,
@@ -57,17 +52,11 @@ enum mlxsw_res_id {
 	MLXSW_RES_ID_MAX_LPM_TREES,
 	MLXSW_RES_ID_MAX_NVE_MC_ENTRIES_IPV4,
 	MLXSW_RES_ID_MAX_NVE_MC_ENTRIES_IPV6,
-
-	/* Internal resources.
-	 * Determined by the SW, not queried from the HW.
-	 */
 	MLXSW_RES_ID_KVD_SINGLE_SIZE,
 	MLXSW_RES_ID_KVD_DOUBLE_SIZE,
 	MLXSW_RES_ID_KVD_LINEAR_SIZE,
-
 	__MLXSW_RES_ID_MAX,
 };
-
 static u16 mlxsw_res_ids[] = {
 	[MLXSW_RES_ID_KVD_SIZE] = 0x1001,
 	[MLXSW_RES_ID_KVD_SINGLE_MIN_SIZE] = 0x1002,
@@ -88,9 +77,9 @@ static u16 mlxsw_res_ids[] = {
 	[MLXSW_RES_ID_FID] = 0x2512,
 	[MLXSW_RES_ID_MAX_LAG] = 0x2520,
 	[MLXSW_RES_ID_MAX_LAG_MEMBERS] = 0x2521,
-	[MLXSW_RES_ID_GUARANTEED_SHARED_BUFFER] = 0x2805,	/* Bytes */
-	[MLXSW_RES_ID_CELL_SIZE] = 0x2803,	/* Bytes */
-	[MLXSW_RES_ID_MAX_HEADROOM_SIZE] = 0x2811,	/* Bytes */
+	[MLXSW_RES_ID_GUARANTEED_SHARED_BUFFER] = 0x2805,	 
+	[MLXSW_RES_ID_CELL_SIZE] = 0x2803,	 
+	[MLXSW_RES_ID_MAX_HEADROOM_SIZE] = 0x2811,	 
 	[MLXSW_RES_ID_ACL_MAX_TCAM_REGIONS] = 0x2901,
 	[MLXSW_RES_ID_ACL_MAX_TCAM_RULES] = 0x2902,
 	[MLXSW_RES_ID_ACL_MAX_REGIONS] = 0x2903,
@@ -119,21 +108,17 @@ static u16 mlxsw_res_ids[] = {
 	[MLXSW_RES_ID_MAX_NVE_MC_ENTRIES_IPV4] = 0x2E02,
 	[MLXSW_RES_ID_MAX_NVE_MC_ENTRIES_IPV6] = 0x2E03,
 };
-
 struct mlxsw_res {
 	bool valid[__MLXSW_RES_ID_MAX];
 	u64 values[__MLXSW_RES_ID_MAX];
 };
-
 static inline bool mlxsw_res_valid(struct mlxsw_res *res,
 				   enum mlxsw_res_id res_id)
 {
 	return res->valid[res_id];
 }
-
 #define MLXSW_RES_VALID(res, short_res_id)			\
 	mlxsw_res_valid(res, MLXSW_RES_ID_##short_res_id)
-
 static inline u64 mlxsw_res_get(struct mlxsw_res *res,
 				enum mlxsw_res_id res_id)
 {
@@ -141,24 +126,19 @@ static inline u64 mlxsw_res_get(struct mlxsw_res *res,
 		return 0;
 	return res->values[res_id];
 }
-
 #define MLXSW_RES_GET(res, short_res_id)			\
 	mlxsw_res_get(res, MLXSW_RES_ID_##short_res_id)
-
 static inline void mlxsw_res_set(struct mlxsw_res *res,
 				 enum mlxsw_res_id res_id, u64 value)
 {
 	res->valid[res_id] = true;
 	res->values[res_id] = value;
 }
-
 #define MLXSW_RES_SET(res, short_res_id, value)			\
 	mlxsw_res_set(res, MLXSW_RES_ID_##short_res_id, value)
-
 static inline void mlxsw_res_parse(struct mlxsw_res *res, u16 id, u64 value)
 {
 	int i;
-
 	for (i = 0; i < ARRAY_SIZE(mlxsw_res_ids); i++) {
 		if (mlxsw_res_ids[i] == id) {
 			mlxsw_res_set(res, i, value);
@@ -166,5 +146,4 @@ static inline void mlxsw_res_parse(struct mlxsw_res *res, u16 id, u64 value)
 		}
 	}
 }
-
 #endif

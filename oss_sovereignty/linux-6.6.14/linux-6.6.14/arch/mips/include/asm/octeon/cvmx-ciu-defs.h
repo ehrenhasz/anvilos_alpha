@@ -1,18 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Octeon CIU definitions
- *
- * Copyright (C) 2003-2018 Cavium, Inc.
- */
-
 #ifndef __CVMX_CIU_DEFS_H__
 #define __CVMX_CIU_DEFS_H__
-
 #include <asm/bitfield.h>
-
 #define CVMX_CIU_ADDR(addr, coreid, coremask, offset)			       \
 	(CVMX_ADD_IO_SEG(0x0001070000000000ull + addr##ull) +		       \
 	(((coreid) & (coremask)) * offset))
-
 #define CVMX_CIU_EN2_PPX_IP4(c)		CVMX_CIU_ADDR(0xA400, c, 0x0F, 8)
 #define CVMX_CIU_EN2_PPX_IP4_W1C(c)	CVMX_CIU_ADDR(0xCC00, c, 0x0F, 8)
 #define CVMX_CIU_EN2_PPX_IP4_W1S(c)	CVMX_CIU_ADDR(0xAC00, c, 0x0F, 8)
@@ -41,7 +32,6 @@
 #define CVMX_CIU_SUM2_PPX_IP4(c)	CVMX_CIU_ADDR(0x8C00, c, 0x0F, 8)
 #define CVMX_CIU_TIM_MULTI_CAST		CVMX_CIU_ADDR(0xC200, 0, 0x00, 0)
 #define CVMX_CIU_TIMX(c)		CVMX_CIU_ADDR(0x0480, c, 0x0F, 8)
-
 static inline uint64_t CVMX_CIU_MBOX_CLRX(unsigned int coreid)
 {
 	if (cvmx_get_octeon_family() == (OCTEON_CN68XX & OCTEON_FAMILY_MASK))
@@ -49,7 +39,6 @@ static inline uint64_t CVMX_CIU_MBOX_CLRX(unsigned int coreid)
 	else
 		return CVMX_CIU_ADDR(0x000000680, coreid, 0x0F, 8);
 }
-
 static inline uint64_t CVMX_CIU_MBOX_SETX(unsigned int coreid)
 {
 	if (cvmx_get_octeon_family() == (OCTEON_CN68XX & OCTEON_FAMILY_MASK))
@@ -57,7 +46,6 @@ static inline uint64_t CVMX_CIU_MBOX_SETX(unsigned int coreid)
 	else
 		return CVMX_CIU_ADDR(0x000000600, coreid, 0x0F, 8);
 }
-
 static inline uint64_t CVMX_CIU_PP_POKEX(unsigned int coreid)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -72,7 +60,6 @@ static inline uint64_t CVMX_CIU_PP_POKEX(unsigned int coreid)
 		return CVMX_CIU_ADDR(0x000000580, coreid, 0x0F, 8);
 	}
 }
-
 static inline uint64_t CVMX_CIU_WDOGX(unsigned int coreid)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -87,8 +74,6 @@ static inline uint64_t CVMX_CIU_WDOGX(unsigned int coreid)
 		return CVMX_CIU_ADDR(0x000000500, coreid, 0x0F, 8);
 	}
 }
-
-
 union cvmx_ciu_qlm {
 	uint64_t u64;
 	struct cvmx_ciu_qlm_s {
@@ -108,7 +93,6 @@ union cvmx_ciu_qlm {
 		;)))))))))))))
 	} s;
 };
-
 union cvmx_ciu_qlm_jtgc {
 	uint64_t u64;
 	struct cvmx_ciu_qlm_jtgc_s {
@@ -122,7 +106,6 @@ union cvmx_ciu_qlm_jtgc {
 		;)))))))
 	} s;
 };
-
 union cvmx_ciu_qlm_jtgd {
 	uint64_t u64;
 	struct cvmx_ciu_qlm_jtgd_s {
@@ -137,7 +120,6 @@ union cvmx_ciu_qlm_jtgd {
 		;))))))))
 	} s;
 };
-
 union cvmx_ciu_soft_prst {
 	uint64_t u64;
 	struct cvmx_ciu_soft_prst_s {
@@ -148,7 +130,6 @@ union cvmx_ciu_soft_prst {
 		;))))
 	} s;
 };
-
 union cvmx_ciu_timx {
 	uint64_t u64;
 	struct cvmx_ciu_timx_s {
@@ -158,7 +139,6 @@ union cvmx_ciu_timx {
 		;)))
 	} s;
 };
-
 union cvmx_ciu_wdogx {
 	uint64_t u64;
 	struct cvmx_ciu_wdogx_s {
@@ -172,5 +152,4 @@ union cvmx_ciu_wdogx {
 		;)))))))
 	} s;
 };
-
-#endif /* __CVMX_CIU_DEFS_H__ */
+#endif  

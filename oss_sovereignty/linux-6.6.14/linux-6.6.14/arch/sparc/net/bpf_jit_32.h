@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _BPF_JIT_H
 #define _BPF_JIT_H
-
-/* Conventions:
- *  %g1 : temporary
- *  %g2 : Secondary temporary used by SKB data helper stubs.
- *  %g3 : packet offset passed into SKB data helper stubs.
- *  %o0 : pointer to skb (first argument given to JIT function)
- *  %o1 : BPF A accumulator
- *  %o2 : BPF X accumulator
- *  %o3 : Holds saved %o7 so we can call helper functions without needing
- *        to allocate a register window.
- *  %o4 : skb->len - skb->data_len
- *  %o5 : skb->data
- */
-
 #ifndef __ASSEMBLER__
 #define G0		0x00
 #define G1		0x01
@@ -29,7 +14,6 @@
 #define SP		0x0e
 #define O7		0x0f
 #define FP		0x1e
-
 #define r_SKB		O0
 #define r_A		O1
 #define r_X		O2
@@ -39,8 +23,6 @@
 #define r_TMP		G1
 #define r_TMP2		G2
 #define r_OFF		G3
-
-/* assembly code in arch/sparc/net/bpf_jit_asm_32.S */
 extern u32 bpf_jit_load_word[];
 extern u32 bpf_jit_load_half[];
 extern u32 bpf_jit_load_byte[];
@@ -53,7 +35,6 @@ extern u32 bpf_jit_load_word_negative_offset[];
 extern u32 bpf_jit_load_half_negative_offset[];
 extern u32 bpf_jit_load_byte_negative_offset[];
 extern u32 bpf_jit_load_byte_msh_negative_offset[];
-
 #else
 #define r_SKB		%o0
 #define r_A		%o1
@@ -65,5 +46,4 @@ extern u32 bpf_jit_load_byte_msh_negative_offset[];
 #define r_TMP2		%g2
 #define r_OFF		%g3
 #endif
-
-#endif /* _BPF_JIT_H */
+#endif  

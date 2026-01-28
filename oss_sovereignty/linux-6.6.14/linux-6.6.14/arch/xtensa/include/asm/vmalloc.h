@@ -1,4 +1,3 @@
 #ifndef _ASM_XTENSA_VMALLOC_H
 #define _ASM_XTENSA_VMALLOC_H
-
-#endif /* _ASM_XTENSA_VMALLOC_H */
+#endif  

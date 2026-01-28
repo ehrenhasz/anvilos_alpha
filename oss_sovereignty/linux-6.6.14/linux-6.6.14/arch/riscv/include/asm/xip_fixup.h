@@ -1,12 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * XIP fixup macros, only useful in assembly.
- */
 #ifndef _ASM_RISCV_XIP_FIXUP_H
 #define _ASM_RISCV_XIP_FIXUP_H
-
 #include <linux/pgtable.h>
-
 #ifdef CONFIG_XIP_KERNEL
 .macro XIP_FIXUP_OFFSET reg
         REG_L t0, _xip_fixup
@@ -18,7 +12,6 @@
 	sub \reg, \reg, t1
 	add \reg, \reg, t0
 .endm
-
 _xip_fixup: .dword CONFIG_PHYS_RAM_BASE - CONFIG_XIP_PHYS_ADDR - XIP_OFFSET
 _xip_phys_offset: .dword CONFIG_XIP_PHYS_ADDR + XIP_OFFSET
 #else
@@ -26,6 +19,5 @@ _xip_phys_offset: .dword CONFIG_XIP_PHYS_ADDR + XIP_OFFSET
 .endm
 .macro XIP_FIXUP_FLASH_OFFSET reg
 .endm
-#endif /* CONFIG_XIP_KERNEL */
-
+#endif  
 #endif

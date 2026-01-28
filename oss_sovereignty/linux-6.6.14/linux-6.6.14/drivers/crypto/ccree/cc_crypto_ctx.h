@@ -1,25 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
-
 #ifndef _CC_CRYPTO_CTX_H_
 #define _CC_CRYPTO_CTX_H_
-
 #include <linux/types.h>
-
 #define CC_DRV_DES_IV_SIZE 8
 #define CC_DRV_DES_BLOCK_SIZE 8
-
 #define CC_DRV_DES_ONE_KEY_SIZE 8
 #define CC_DRV_DES_DOUBLE_KEY_SIZE 16
 #define CC_DRV_DES_TRIPLE_KEY_SIZE 24
 #define CC_DRV_DES_KEY_SIZE_MAX CC_DRV_DES_TRIPLE_KEY_SIZE
-
 #define CC_AES_IV_SIZE 16
 #define CC_AES_IV_SIZE_WORDS (CC_AES_IV_SIZE >> 2)
-
 #define CC_AES_BLOCK_SIZE 16
 #define CC_AES_BLOCK_SIZE_WORDS 4
-
 #define CC_AES_128_BIT_KEY_SIZE 16
 #define CC_AES_128_BIT_KEY_SIZE_WORDS	(CC_AES_128_BIT_KEY_SIZE >> 2)
 #define CC_AES_192_BIT_KEY_SIZE 24
@@ -28,7 +19,6 @@
 #define CC_AES_256_BIT_KEY_SIZE_WORDS	(CC_AES_256_BIT_KEY_SIZE >> 2)
 #define CC_AES_KEY_SIZE_MAX			CC_AES_256_BIT_KEY_SIZE
 #define CC_AES_KEY_SIZE_WORDS_MAX		(CC_AES_KEY_SIZE_MAX >> 2)
-
 #define CC_MD5_DIGEST_SIZE	16
 #define CC_SHA1_DIGEST_SIZE	20
 #define CC_SHA224_DIGEST_SIZE	28
@@ -36,7 +26,6 @@
 #define CC_SHA256_DIGEST_SIZE_IN_WORDS 8
 #define CC_SHA384_DIGEST_SIZE	48
 #define CC_SHA512_DIGEST_SIZE	64
-
 #define CC_SHA1_BLOCK_SIZE 64
 #define CC_SHA1_BLOCK_SIZE_IN_WORDS 16
 #define CC_MD5_BLOCK_SIZE 64
@@ -47,22 +36,16 @@
 #define CC_SHA1_224_256_BLOCK_SIZE 64
 #define CC_SHA384_BLOCK_SIZE 128
 #define CC_SHA512_BLOCK_SIZE 128
-
 #define CC_DIGEST_SIZE_MAX CC_SHA512_DIGEST_SIZE
-#define CC_HASH_BLOCK_SIZE_MAX CC_SHA512_BLOCK_SIZE /*1024b*/
-
+#define CC_HASH_BLOCK_SIZE_MAX CC_SHA512_BLOCK_SIZE  
 #define CC_HMAC_BLOCK_SIZE_MAX CC_HASH_BLOCK_SIZE_MAX
-
 #define CC_DRV_ALG_MAX_BLOCK_SIZE CC_HASH_BLOCK_SIZE_MAX
-
 #define CC_CPP_NUM_SLOTS	8
 #define CC_CPP_NUM_ALGS		2
-
 enum cc_cpp_alg {
 	CC_CPP_SM4 = 1,
 	CC_CPP_AES = 0
 };
-
 enum drv_engine_type {
 	DRV_ENGINE_NULL = 0,
 	DRV_ENGINE_AES = 1,
@@ -72,7 +55,6 @@ enum drv_engine_type {
 	DRV_ENGINE_DOUT = 5,
 	DRV_ENGINE_RESERVE32B = S32_MAX,
 };
-
 enum drv_crypto_alg {
 	DRV_CRYPTO_ALG_NULL = -1,
 	DRV_CRYPTO_ALG_AES  = 0,
@@ -85,7 +67,6 @@ enum drv_crypto_alg {
 	DRV_CRYPTO_ALG_NUM = 7,
 	DRV_CRYPTO_ALG_RESERVE32B = S32_MAX
 };
-
 enum drv_crypto_direction {
 	DRV_CRYPTO_DIRECTION_NULL = -1,
 	DRV_CRYPTO_DIRECTION_ENCRYPT = 0,
@@ -93,7 +74,6 @@ enum drv_crypto_direction {
 	DRV_CRYPTO_DIRECTION_DECRYPT_ENCRYPT = 3,
 	DRV_CRYPTO_DIRECTION_RESERVE32B = S32_MAX
 };
-
 enum drv_cipher_mode {
 	DRV_CIPHER_NULL_MODE = -1,
 	DRV_CIPHER_ECB = 0,
@@ -110,7 +90,6 @@ enum drv_cipher_mode {
 	DRV_CIPHER_ESSIV = 13,
 	DRV_CIPHER_RESERVE32B = S32_MAX
 };
-
 enum drv_hash_mode {
 	DRV_HASH_NULL = -1,
 	DRV_HASH_SHA1 = 0,
@@ -126,7 +105,6 @@ enum drv_hash_mode {
 	DRV_HASH_MODE_NUM = 10,
 	DRV_HASH_RESERVE32B = S32_MAX
 };
-
 enum drv_hash_hw_mode {
 	DRV_HASH_HW_MD5 = 0,
 	DRV_HASH_HW_SHA1 = 1,
@@ -138,5 +116,4 @@ enum drv_hash_hw_mode {
 	DRV_HASH_HW_SM3 = 14,
 	DRV_HASH_HW_RESERVE32B = S32_MAX
 };
-
-#endif /* _CC_CRYPTO_CTX_H_ */
+#endif  

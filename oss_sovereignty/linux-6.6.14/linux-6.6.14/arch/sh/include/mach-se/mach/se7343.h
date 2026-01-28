@@ -1,40 +1,23 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_SH_HITACHI_SE7343_H
 #define __ASM_SH_HITACHI_SE7343_H
-
-/*
- * include/asm-sh/se/se7343.h
- *
- * Copyright (C) 2003 Takashi Kusuda <kusuda-takashi@hitachi-ul.co.jp>
- *
- * SH-Mobile SolutionEngine 7343 support
- */
 #include <linux/sh_intc.h>
-
-/* Box specific addresses.  */
-
-/* Area 0 */
-#define PA_ROM		0x00000000	/* EPROM */
-#define PA_ROM_SIZE	0x00400000	/* EPROM size 4M byte(Actually 2MB) */
-#define PA_FROM		0x00400000	/* Flash ROM */
-#define PA_FROM_SIZE	0x00400000	/* Flash size 4M byte */
-#define PA_SRAM		0x00800000	/* SRAM */
-#define PA_FROM_SIZE	0x00400000	/* SRAM size 4M byte */
-/* Area 1 */
+#define PA_ROM		0x00000000	 
+#define PA_ROM_SIZE	0x00400000	 
+#define PA_FROM		0x00400000	 
+#define PA_FROM_SIZE	0x00400000	 
+#define PA_SRAM		0x00800000	 
+#define PA_FROM_SIZE	0x00400000	 
 #define PA_EXT1		0x04000000
 #define PA_EXT1_SIZE	0x04000000
-/* Area 2 */
 #define PA_EXT2		0x08000000
 #define PA_EXT2_SIZE	0x04000000
-/* Area 3 */
 #define PA_SDRAM	0x0c000000
 #define PA_SDRAM_SIZE	0x04000000
-/* Area 4 */
-#define PA_PCIC		0x10000000	/* MR-SHPC-01 PCMCIA */
-#define PA_MRSHPC       0xb03fffe0      /* MR-SHPC-01 PCMCIA controller */
-#define PA_MRSHPC_MW1   0xb0400000      /* MR-SHPC-01 memory window base */
-#define PA_MRSHPC_MW2   0xb0500000      /* MR-SHPC-01 attribute window base */
-#define PA_MRSHPC_IO    0xb0600000      /* MR-SHPC-01 I/O window base */
+#define PA_PCIC		0x10000000	 
+#define PA_MRSHPC       0xb03fffe0       
+#define PA_MRSHPC_MW1   0xb0400000       
+#define PA_MRSHPC_MW2   0xb0500000       
+#define PA_MRSHPC_IO    0xb0600000       
 #define MRSHPC_OPTION   (PA_MRSHPC + 6)
 #define MRSHPC_CSR      (PA_MRSHPC + 8)
 #define MRSHPC_ISR      (PA_MRSHPC + 10)
@@ -48,16 +31,13 @@
 #define MRSHPC_IOWCR2   (PA_MRSHPC + 26)
 #define MRSHPC_CDCR     (PA_MRSHPC + 28)
 #define MRSHPC_PCIC_INFO (PA_MRSHPC + 30)
-#define PA_LED		0xb0C00000	/* LED */
+#define PA_LED		0xb0C00000	 
 #define LED_SHIFT       0
-#define PA_DIPSW	0xb0900000	/* Dip switch 31 */
-/* Area 5 */
+#define PA_DIPSW	0xb0900000	 
 #define PA_EXT5		0x14000000
 #define PA_EXT5_SIZE	0x04000000
-/* Area 6 */
 #define PA_LCD1		0xb8000000
 #define PA_LCD2		0xb8800000
-
 #define PORT_PACR	0xA4050100
 #define PORT_PBCR	0xA4050102
 #define PORT_PCCR	0xA4050104
@@ -80,19 +60,15 @@
 #define PORT_PWCR	0xA4050146
 #define PORT_PYCR	0xA4050148
 #define PORT_PZCR	0xA405014A
-
 #define PORT_PSELA	0xA405014C
 #define PORT_PSELB	0xA405014E
 #define PORT_PSELC	0xA4050150
 #define PORT_PSELD	0xA4050152
 #define PORT_PSELE	0xA4050154
-
 #define PORT_HIZCRA	0xA4050156
 #define PORT_HIZCRB	0xA4050158
 #define PORT_HIZCRC	0xA405015C
-
 #define PORT_DRVCR	0xA4050180
-
 #define PORT_PADR	0xA4050120
 #define PORT_PBDR	0xA4050122
 #define PORT_PCDR	0xA4050124
@@ -113,31 +89,22 @@
 #define PORT_PVDR	0xA4050164
 #define PORT_PWDR	0xA4050166
 #define PORT_PYDR	0xA4050168
-
 #define FPGA_IN		0xb1400000
 #define FPGA_OUT	0xb1400002
-
 #define IRQ0_IRQ        evt2irq(0x600)
 #define IRQ1_IRQ        evt2irq(0x620)
 #define IRQ4_IRQ        evt2irq(0x680)
 #define IRQ5_IRQ        evt2irq(0x6a0)
-
 #define SE7343_FPGA_IRQ_MRSHPC0	0
 #define SE7343_FPGA_IRQ_MRSHPC1	1
 #define SE7343_FPGA_IRQ_MRSHPC2	2
 #define SE7343_FPGA_IRQ_MRSHPC3	3
-#define SE7343_FPGA_IRQ_SMC	6	/* EXT_IRQ2 */
+#define SE7343_FPGA_IRQ_SMC	6	 
 #define SE7343_FPGA_IRQ_USB	8
 #define SE7343_FPGA_IRQ_UARTA	10
 #define SE7343_FPGA_IRQ_UARTB	11
-
 #define SE7343_FPGA_IRQ_NR	12
-
 struct irq_domain;
-
-/* arch/sh/boards/se/7343/irq.c */
 extern struct irq_domain *se7343_irq_domain;
-
 void init_7343se_IRQ(void);
-
-#endif  /* __ASM_SH_HITACHI_SE7343_H */
+#endif   

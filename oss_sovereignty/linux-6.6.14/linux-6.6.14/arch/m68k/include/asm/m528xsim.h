@@ -1,106 +1,59 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/****************************************************************************/
-
-/*
- *	m528xsim.h -- ColdFire 5280/5282 System Integration Module support.
- *
- *	(C) Copyright 2003, Greg Ungerer (gerg@snapgear.com)
- */
-
-/****************************************************************************/
 #ifndef	m528xsim_h
 #define	m528xsim_h
-/****************************************************************************/
-
 #define	CPU_NAME		"COLDFIRE(m528x)"
 #define	CPU_INSTR_PER_JIFFY	3
 #define	MCF_BUSCLK		MCF_CLK
-
 #include <asm/m52xxacr.h>
-
-/*
- *	Define the 5280/5282 SIM register set addresses.
- */
-#define	MCFICM_INTC0		(MCF_IPSBAR + 0x0c00)	/* Base for Interrupt Ctrl 0 */
-#define	MCFICM_INTC1		(MCF_IPSBAR + 0x0d00)	/* Base for Interrupt Ctrl 0 */
-
-#define	MCFINTC_IPRH		0x00		/* Interrupt pending 32-63 */
-#define	MCFINTC_IPRL		0x04		/* Interrupt pending 1-31 */
-#define	MCFINTC_IMRH		0x08		/* Interrupt mask 32-63 */
-#define	MCFINTC_IMRL		0x0c		/* Interrupt mask 1-31 */
-#define	MCFINTC_INTFRCH		0x10		/* Interrupt force 32-63 */
-#define	MCFINTC_INTFRCL		0x14		/* Interrupt force 1-31 */
-#define	MCFINTC_IRLR		0x18		/* */
-#define	MCFINTC_IACKL		0x19		/* */
-#define	MCFINTC_ICR0		0x40		/* Base ICR register */
-
-#define	MCFINT_VECBASE		64		/* Vector base number */
-#define	MCFINT_UART0		13		/* Interrupt number for UART0 */
-#define	MCFINT_UART1		14		/* Interrupt number for UART1 */
-#define	MCFINT_UART2		15		/* Interrupt number for UART2 */
-#define	MCFINT_I2C0		17		/* Interrupt number for I2C */
-#define	MCFINT_QSPI		18		/* Interrupt number for QSPI */
-#define	MCFINT_FECRX0		23		/* Interrupt number for FEC */
-#define	MCFINT_FECTX0		27		/* Interrupt number for FEC */
-#define	MCFINT_FECENTC0		29		/* Interrupt number for FEC */
-#define	MCFINT_PIT1		55		/* Interrupt number for PIT1 */
-
+#define	MCFICM_INTC0		(MCF_IPSBAR + 0x0c00)	 
+#define	MCFICM_INTC1		(MCF_IPSBAR + 0x0d00)	 
+#define	MCFINTC_IPRH		0x00		 
+#define	MCFINTC_IPRL		0x04		 
+#define	MCFINTC_IMRH		0x08		 
+#define	MCFINTC_IMRL		0x0c		 
+#define	MCFINTC_INTFRCH		0x10		 
+#define	MCFINTC_INTFRCL		0x14		 
+#define	MCFINTC_IRLR		0x18		 
+#define	MCFINTC_IACKL		0x19		 
+#define	MCFINTC_ICR0		0x40		 
+#define	MCFINT_VECBASE		64		 
+#define	MCFINT_UART0		13		 
+#define	MCFINT_UART1		14		 
+#define	MCFINT_UART2		15		 
+#define	MCFINT_I2C0		17		 
+#define	MCFINT_QSPI		18		 
+#define	MCFINT_FECRX0		23		 
+#define	MCFINT_FECTX0		27		 
+#define	MCFINT_FECENTC0		29		 
+#define	MCFINT_PIT1		55		 
 #define	MCF_IRQ_UART0	        (MCFINT_VECBASE + MCFINT_UART0)
 #define	MCF_IRQ_UART1	        (MCFINT_VECBASE + MCFINT_UART1)
 #define	MCF_IRQ_UART2	        (MCFINT_VECBASE + MCFINT_UART2)
-
 #define	MCF_IRQ_FECRX0		(MCFINT_VECBASE + MCFINT_FECRX0)
 #define	MCF_IRQ_FECTX0		(MCFINT_VECBASE + MCFINT_FECTX0)
 #define	MCF_IRQ_FECENTC0	(MCFINT_VECBASE + MCFINT_FECENTC0)
-
 #define	MCF_IRQ_QSPI		(MCFINT_VECBASE + MCFINT_QSPI)
 #define MCF_IRQ_PIT1		(MCFINT_VECBASE + MCFINT_PIT1)
 #define	MCF_IRQ_I2C0		(MCFINT_VECBASE + MCFINT_I2C0)
-
-/*
- *	SDRAM configuration registers.
- */
-#define	MCFSIM_DCR		(MCF_IPSBAR + 0x00000044) /* Control */
-#define	MCFSIM_DACR0		(MCF_IPSBAR + 0x00000048) /* Base address 0 */
-#define	MCFSIM_DMR0		(MCF_IPSBAR + 0x0000004c) /* Address mask 0 */
-#define	MCFSIM_DACR1		(MCF_IPSBAR + 0x00000050) /* Base address 1 */
-#define	MCFSIM_DMR1		(MCF_IPSBAR + 0x00000054) /* Address mask 1 */
-
-/*
- *	DMA unit base addresses.
- */
+#define	MCFSIM_DCR		(MCF_IPSBAR + 0x00000044)  
+#define	MCFSIM_DACR0		(MCF_IPSBAR + 0x00000048)  
+#define	MCFSIM_DMR0		(MCF_IPSBAR + 0x0000004c)  
+#define	MCFSIM_DACR1		(MCF_IPSBAR + 0x00000050)  
+#define	MCFSIM_DMR1		(MCF_IPSBAR + 0x00000054)  
 #define	MCFDMA_BASE0		(MCF_IPSBAR + 0x00000100)
 #define	MCFDMA_BASE1		(MCF_IPSBAR + 0x00000140)
 #define	MCFDMA_BASE2		(MCF_IPSBAR + 0x00000180)
 #define	MCFDMA_BASE3		(MCF_IPSBAR + 0x000001C0)
-
-/*
- *	UART module.
- */
 #define	MCFUART_BASE0		(MCF_IPSBAR + 0x00000200)
 #define	MCFUART_BASE1		(MCF_IPSBAR + 0x00000240)
 #define	MCFUART_BASE2		(MCF_IPSBAR + 0x00000280)
-
-/*
- *	FEC ethernet module.
- */
 #define	MCFFEC_BASE0		(MCF_IPSBAR + 0x00001000)
 #define	MCFFEC_SIZE0		0x800
-
-/*
- *	QSPI module.
- */
 #define	MCFQSPI_BASE		(MCF_IPSBAR + 0x340)
 #define	MCFQSPI_SIZE		0x40
-
 #define	MCFQSPI_CS0		147
 #define	MCFQSPI_CS1		148
 #define	MCFQSPI_CS2		149
 #define	MCFQSPI_CS3		150
-
-/*
- * 	GPIO registers
- */
 #define MCFGPIO_PODR_A		(MCF_IPSBAR + 0x00100000)
 #define MCFGPIO_PODR_B		(MCF_IPSBAR + 0x00100001)
 #define MCFGPIO_PODR_C		(MCF_IPSBAR + 0x00100002)
@@ -119,7 +72,6 @@
 #define MCFGPIO_PODR_TC		(MCF_IPSBAR + 0x0010000F)
 #define MCFGPIO_PODR_TD		(MCF_IPSBAR + 0x00100010)
 #define MCFGPIO_PODR_UA		(MCF_IPSBAR + 0x00100011)
-
 #define MCFGPIO_PDDR_A		(MCF_IPSBAR + 0x00100014)
 #define MCFGPIO_PDDR_B		(MCF_IPSBAR + 0x00100015)
 #define MCFGPIO_PDDR_C		(MCF_IPSBAR + 0x00100016)
@@ -138,7 +90,6 @@
 #define MCFGPIO_PDDR_TC		(MCF_IPSBAR + 0x00100023)
 #define MCFGPIO_PDDR_TD		(MCF_IPSBAR + 0x00100024)
 #define MCFGPIO_PDDR_UA		(MCF_IPSBAR + 0x00100025)
-
 #define MCFGPIO_PPDSDR_A	(MCF_IPSBAR + 0x00100028)
 #define MCFGPIO_PPDSDR_B	(MCF_IPSBAR + 0x00100029)
 #define MCFGPIO_PPDSDR_C	(MCF_IPSBAR + 0x0010002A)
@@ -157,7 +108,6 @@
 #define MCFGPIO_PPDSDR_TC	(MCF_IPSBAR + 0x00100037)
 #define MCFGPIO_PPDSDR_TD	(MCF_IPSBAR + 0x00100038)
 #define MCFGPIO_PPDSDR_UA	(MCF_IPSBAR + 0x00100039)
-
 #define MCFGPIO_PCLRR_A		(MCF_IPSBAR + 0x0010003C)
 #define MCFGPIO_PCLRR_B		(MCF_IPSBAR + 0x0010003D)
 #define MCFGPIO_PCLRR_C		(MCF_IPSBAR + 0x0010003E)
@@ -176,7 +126,6 @@
 #define MCFGPIO_PCLRR_TC	(MCF_IPSBAR + 0x0010004B)
 #define MCFGPIO_PCLRR_TD	(MCF_IPSBAR + 0x0010004C)
 #define MCFGPIO_PCLRR_UA	(MCF_IPSBAR + 0x0010004D)
-
 #define MCFGPIO_PBCDPAR		(MCF_IPSBAR + 0x00100050)
 #define MCFGPIO_PFPAR		(MCF_IPSBAR + 0x00100051)
 #define MCFGPIO_PEPAR		(MCF_IPSBAR + 0x00100052)
@@ -188,69 +137,36 @@
 #define MCFGPIO_PTCPAR		(MCF_IPSBAR + 0x0010005A)
 #define MCFGPIO_PTDPAR		(MCF_IPSBAR + 0x0010005B)
 #define MCFGPIO_PUAPAR		(MCF_IPSBAR + 0x0010005C)
-
-/*
- * PIT timer base addresses.
- */
 #define	MCFPIT_BASE1		(MCF_IPSBAR + 0x00150000)
 #define	MCFPIT_BASE2		(MCF_IPSBAR + 0x00160000)
 #define	MCFPIT_BASE3		(MCF_IPSBAR + 0x00170000)
 #define	MCFPIT_BASE4		(MCF_IPSBAR + 0x00180000)
-
-/*
- * 	Edge Port registers
- */
 #define MCFEPORT_EPPAR		(MCF_IPSBAR + 0x00130000)
 #define MCFEPORT_EPDDR		(MCF_IPSBAR + 0x00130002)
 #define MCFEPORT_EPIER		(MCF_IPSBAR + 0x00130003)
 #define MCFEPORT_EPDR		(MCF_IPSBAR + 0x00130004)
 #define MCFEPORT_EPPDR		(MCF_IPSBAR + 0x00130005)
 #define MCFEPORT_EPFR		(MCF_IPSBAR + 0x00130006)
-
-/*
- * 	Queued ADC registers
- */
 #define MCFQADC_PORTQA		(MCF_IPSBAR + 0x00190006)
 #define MCFQADC_PORTQB		(MCF_IPSBAR + 0x00190007)
 #define MCFQADC_DDRQA		(MCF_IPSBAR + 0x00190008)
 #define MCFQADC_DDRQB		(MCF_IPSBAR + 0x00190009)
-
-/*
- * 	General Purpose Timers registers
- */
 #define MCFGPTA_GPTPORT		(MCF_IPSBAR + 0x001A001D)
 #define MCFGPTA_GPTDDR		(MCF_IPSBAR + 0x001A001E)
 #define MCFGPTB_GPTPORT		(MCF_IPSBAR + 0x001B001D)
 #define MCFGPTB_GPTDDR		(MCF_IPSBAR + 0x001B001E)
-/*
- *
- * definitions for generic gpio support
- *
- */
-#define MCFGPIO_PODR		MCFGPIO_PODR_A	/* port output data */
-#define MCFGPIO_PDDR		MCFGPIO_PDDR_A	/* port data direction */
-#define MCFGPIO_PPDR		MCFGPIO_PPDSDR_A/* port pin data */
-#define MCFGPIO_SETR		MCFGPIO_PPDSDR_A/* set output */
-#define MCFGPIO_CLRR		MCFGPIO_PCLRR_A	/* clr output */
-
+#define MCFGPIO_PODR		MCFGPIO_PODR_A	 
+#define MCFGPIO_PDDR		MCFGPIO_PDDR_A	 
+#define MCFGPIO_PPDR		MCFGPIO_PPDSDR_A 
+#define MCFGPIO_SETR		MCFGPIO_PPDSDR_A 
+#define MCFGPIO_CLRR		MCFGPIO_PCLRR_A	 
 #define MCFGPIO_IRQ_MAX		8
 #define MCFGPIO_IRQ_VECBASE	MCFINT_VECBASE
 #define MCFGPIO_PIN_MAX		180
-
-/*
- *  Reset Control Unit (relative to IPSBAR).
- */
 #define	MCF_RCR			(MCF_IPSBAR + 0x110000)
 #define	MCF_RSR			(MCF_IPSBAR + 0x110001)
-
-#define	MCF_RCR_SWRESET		0x80		/* Software reset bit */
-#define	MCF_RCR_FRCSTOUT	0x40		/* Force external reset */
-
-/*
- * I2C module
- */
+#define	MCF_RCR_SWRESET		0x80		 
+#define	MCF_RCR_FRCSTOUT	0x40		 
 #define	MCFI2C_BASE0		(MCF_IPSBAR + 0x300)
 #define	MCFI2C_SIZE0		0x40
-
-/****************************************************************************/
-#endif	/* m528xsim_h */
+#endif	 

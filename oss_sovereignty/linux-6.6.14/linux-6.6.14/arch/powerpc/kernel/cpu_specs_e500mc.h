@@ -1,11 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (C) 2001 Ben. Herrenschmidt (benh@kernel.crashing.org)
- *
- *  Modifications for ppc64:
- *      Copyright (C) 2003 Dave Engebretsen <engebret@us.ibm.com>
- */
-
 #ifdef CONFIG_PPC64
 #define COMMON_USER_BOOKE	(PPC_FEATURE_32 | PPC_FEATURE_HAS_MMU | \
 				 PPC_FEATURE_HAS_FPU | PPC_FEATURE_64)
@@ -13,10 +5,9 @@
 #define COMMON_USER_BOOKE	(PPC_FEATURE_32 | PPC_FEATURE_HAS_MMU | \
 				 PPC_FEATURE_BOOKE)
 #endif
-
 static struct cpu_spec cpu_specs[] __initdata = {
 #ifdef CONFIG_PPC32
-	{	/* e500mc */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x80230000,
 		.cpu_name		= "e500mc",
@@ -32,8 +23,8 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.platform		= "ppce500mc",
 		.cpu_down_flush		= cpu_down_flush_e500mc,
 	},
-#endif /* CONFIG_PPC32 */
-	{	/* e5500 */
+#endif  
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x80240000,
 		.cpu_name		= "e5500",
@@ -52,7 +43,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.platform		= "ppce5500",
 		.cpu_down_flush		= cpu_down_flush_e5500,
 	},
-	{	/* e6500 */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x80400000,
 		.cpu_name		= "e6500",

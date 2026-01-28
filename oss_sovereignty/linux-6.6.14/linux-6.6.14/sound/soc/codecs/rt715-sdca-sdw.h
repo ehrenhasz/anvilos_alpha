@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt715-sdca-sdw.h -- RT715 ALSA SoC audio driver header
- *
- * Copyright(c) 2020 Realtek Semiconductor Corp.
- */
-
 #ifndef __RT715_SDW_SDCA_H__
 #define __RT715_SDW_SDCA_H__
-
 #include <linux/soundwire/sdw_registers.h>
-
 static const struct reg_default rt715_reg_defaults_sdca[] = {
 	{ 0x201a, 0x00 },
 	{ 0x201e, 0x00 },
@@ -107,7 +98,6 @@ static const struct reg_default rt715_reg_defaults_sdca[] = {
 	{ SDW_SDCA_CTL(FUN_MIC_ARRAY, RT715_SDCA_FU_ADC7_27_VOL,
 		RT715_SDCA_FU_MUTE_CTRL, CH_02), 0x01 },
 };
-
 static const struct reg_default rt715_mbq_reg_defaults_sdca[] = {
 	{ 0x200002b, 0x0420 },
 	{ 0x2000036, 0x0000 },
@@ -168,4 +158,4 @@ static const struct reg_default rt715_mbq_reg_defaults_sdca[] = {
 	{ SDW_SDCA_CTL(FUN_MIC_ARRAY, RT715_SDCA_FU_DMIC_GAIN_EN,
 		RT715_SDCA_FU_DMIC_GAIN_CTRL, CH_08), 0x00 },
 };
-#endif /* __RT715_SDW_SDCA_H__ */
+#endif  

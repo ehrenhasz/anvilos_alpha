@@ -1,20 +1,4 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0
-
-# Author: Matthias May <matthias.may@westermo.com>
-#
-# This script evaluates ip tunnels that are capable of carrying L2 traffic
-# if they inherit or set the inheritable fields.
-# Namely these tunnels are: 'gretap', 'vxlan' and 'geneve'.
-# Checked inheritable fields are: TOS and TTL.
-# The outer tunnel protocol of 'IPv4' or 'IPv6' is verified-
-# As payload frames of type 'IPv4', 'IPv6' and 'other'(ARP) are verified.
-# In addition this script also checks if forcing a specific field in the
-# outer header is working.
-
-# Return 4 by default (Kselftest SKIP code)
 ERR=4
-
 if [ "$(id -u)" != "0" ]; then
 	echo "Please run as root."
 	exit $ERR
@@ -23,28 +7,20 @@ if ! which tcpdump > /dev/null 2>&1; then
 	echo "No tcpdump found. Required for this test."
 	exit $ERR
 fi
-
 expected_tos="0x00"
 expected_ttl="0"
 failed=false
-
 readonly NS0=$(mktemp -u ns0-XXXXXXXX)
 readonly NS1=$(mktemp -u ns1-XXXXXXXX)
-
 RUN_NS0="ip netns exec ${NS0}"
-
 get_random_tos() {
-	# Get a random hex tos value between 0x00 and 0xfc, a multiple of 4
 	echo "0x$(tr -dc '0-9a-f' < /dev/urandom | head -c 1)\
 $(tr -dc '048c' < /dev/urandom | head -c 1)"
 }
 get_random_ttl() {
-	# Get a random dec value between 0 and 255
 	printf "%d" "0x$(tr -dc '0-9a-f' < /dev/urandom | head -c 2)"
 }
 get_field() {
-	# Expects to get the 'head -n 1' of a captured frame by tcpdump.
-	# Parses this first line and returns the specified field.
 	local field="$1"
 	local input="$2"
 	local found=false
@@ -54,7 +30,6 @@ get_field() {
 			echo "$input_field"
 			return
 		fi
-		# The next field that we iterate over is the looked for value
 		if [ "$input_field" = "$field" ]; then
 			found=true
 		fi
@@ -69,9 +44,6 @@ setup() {
 	local vlan="$5"
 	local test_tos="0x00"
 	local test_ttl="0"
-
-	# We don't want a test-tos of 0x00,
-	# because this is the value that we get when no tos is set.
 	expected_tos="$(get_random_tos)"
 	while [ "$expected_tos" = "0x00" ]; do
 		expected_tos="$(get_random_tos)"
@@ -83,14 +55,10 @@ setup() {
 		test_tos="$tos_ttl"
 		tos="inherit $expected_tos"
 	fi
-
-	# We don't want a test-ttl of 64 or 0,
-	# because 64 is when no ttl is set and 0 is not a valid ttl.
 	expected_ttl="$(get_random_ttl)"
 	while [ "$expected_ttl" = "64" ] || [ "$expected_ttl" = "0" ]; do
 		expected_ttl="$(get_random_ttl)"
 	done
-
 	if [ "$tos_ttl" = "random" ]; then
 		test_ttl="$expected_ttl"
 		ttl="fixed $test_ttl"
@@ -100,8 +68,6 @@ setup() {
 	fi
 	printf "│%7s │%6s │%6s │%13s │%13s │%6s │" \
 	"$type" "$outer" "$inner" "$tos" "$ttl" "$vlan"
-
-	# Create netns NS0 and NS1 and connect them with a veth pair
 	ip netns add "${NS0}"
 	ip netns add "${NS1}"
 	ip link add name veth0 netns "${NS0}" type veth \
@@ -110,7 +76,6 @@ setup() {
 	ip -netns "${NS1}" link set dev veth1 up
 	ip -netns "${NS0}" address flush dev veth0
 	ip -netns "${NS1}" address flush dev veth1
-
 	local local_addr1=""
 	local local_addr2=""
 	if [ "$type" = "gre" ] || [ "$type" = "vxlan" ]; then
@@ -130,7 +95,6 @@ setup() {
 	if [ "$type" = "geneve" ]; then
 		geneve="vni 100"
 	fi
-	# Create tunnel and assign outer IPv4/IPv6 addresses
 	if [ "$outer" = "4" ]; then
 		if [ "$type" = "gre" ]; then
 			type="gretap"
@@ -158,8 +122,6 @@ setup() {
 			remote fdd1:ced0:5d88:3fce::1 tos $test_tos           \
 			ttl $test_ttl $vxlan $geneve
 	fi
-
-	# Bring L2-tunnel link up and create VLAN on top
 	ip -netns "${NS0}" link set tep0 up
 	ip -netns "${NS1}" link set tep1 up
 	ip -netns "${NS0}" address flush dev tep0
@@ -178,8 +140,6 @@ setup() {
 	else
 		parent="tep"
 	fi
-
-	# Assign inner IPv4/IPv6 addresses
 	if [ "$inner" = "4" ] || [ "$inner" = "other" ]; then
 		ip -netns "${NS0}" address add 198.19.0.1/24 brd + dev ${parent}0
 		ip -netns "${NS1}" address add 198.19.0.2/24 brd + dev ${parent}1
@@ -190,22 +150,19 @@ setup() {
 			dev ${parent}1 nodad
 	fi
 }
-
 verify() {
 	local outer="$1"
 	local inner="$2"
 	local tos_ttl="$3"
 	local vlan="$4"
-
 	local ping_pid out captured_tos captured_ttl result
-
 	local ping_dst
 	if [ "$inner" = "4" ]; then
 		ping_dst="198.19.0.2"
 	elif [ "$inner" = "6" ]; then
 		ping_dst="fdd4:96cf:4eae:443b::2"
 	elif [ "$inner" = "other" ]; then
-		ping_dst="198.19.0.3" # Generates ARPs which are not IPv4/IPv6
+		ping_dst="198.19.0.3" 
 	fi
 	if [ "$tos_ttl" = "inherit" ]; then
 		${RUN_NS0} ping -i 0.1 $ping_dst -Q "$expected_tos"          \
@@ -360,7 +317,6 @@ verify() {
 			result="OK"
 		fi
 	fi
-
 	printf "%7s │\n" "$result"
 	if [ "$result" = "FAIL" ]; then
 		failed=true
@@ -377,37 +333,22 @@ verify() {
 		printf "│%71s│\n" " "
 	fi
 }
-
 cleanup() {
 	ip netns del "${NS0}" 2>/dev/null
 	ip netns del "${NS1}" 2>/dev/null
 }
-
 exit_handler() {
-	# Don't exit immediately if one of the intermediate commands fails.
-	# We might be called at the end of the script, when the network
-	# namespaces have already been deleted. So cleanup() may fail, but we
-	# still need to run until 'exit $ERR' or the script won't return the
-	# correct error code.
 	set +e
-
 	cleanup
-
 	exit $ERR
 }
-
-# Restore the default SIGINT handler (just in case) and exit.
-# The exit handler will take care of cleaning everything up.
 interrupted() {
 	trap - INT
-
 	exit $ERR
 }
-
 set -e
 trap exit_handler EXIT
 trap interrupted INT
-
 printf "┌────────┬───────┬───────┬──────────────┬"
 printf "──────────────┬───────┬────────┐\n"
 for type in gre vxlan geneve; do
@@ -436,9 +377,6 @@ for type in gre vxlan geneve; do
 done
 printf "└────────┴───────┴───────┴──────────────┴"
 printf "──────────────┴───────┴────────┘\n"
-
-# All tests done.
-# Set ERR appropriately: it will be returned by the exit handler.
 if $failed; then
 	ERR=1
 else

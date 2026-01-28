@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * u_ether_configfs.h
- *
- * Utility definitions for configfs support in USB Ethernet functions
- *
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>
- */
-
 #ifndef __U_ETHER_CONFIGFS_H
 #define __U_ETHER_CONFIGFS_H
-
 #define USB_ETHERNET_CONFIGFS_ITEM(_f_)					\
 	static void _f_##_attr_release(struct config_item *item)	\
 	{								\
@@ -24,7 +11,6 @@
 	static struct configfs_item_operations _f_##_item_ops = {	\
 		.release	= _f_##_attr_release,			\
 	}
-
 #define USB_ETHERNET_CONFIGFS_ITEM_ATTR_DEV_ADDR(_f_)			\
 	static ssize_t _f_##_opts_dev_addr_show(struct config_item *item, \
 						char *page)		\
@@ -59,7 +45,6 @@
 	}								\
 									\
 	CONFIGFS_ATTR(_f_##_opts_, dev_addr)
-
 #define USB_ETHERNET_CONFIGFS_ITEM_ATTR_HOST_ADDR(_f_)			\
 	static ssize_t _f_##_opts_host_addr_show(struct config_item *item, \
 						 char *page)		\
@@ -94,7 +79,6 @@
 	}								\
 									\
 	CONFIGFS_ATTR(_f_##_opts_, host_addr)
-
 #define USB_ETHERNET_CONFIGFS_ITEM_ATTR_QMULT(_f_)			\
 	static ssize_t _f_##_opts_qmult_show(struct config_item *item,	\
 					     char *page)		\
@@ -133,7 +117,6 @@ out:									\
 	}								\
 									\
 	CONFIGFS_ATTR(_f_##_opts_, qmult)
-
 #define USB_ETHERNET_CONFIGFS_ITEM_ATTR_IFNAME(_f_)			\
 	static ssize_t _f_##_opts_ifname_show(struct config_item *item, \
 					      char *page)		\
@@ -162,7 +145,6 @@ out:									\
 	}								\
 									\
 	CONFIGFS_ATTR(_f_##_opts_, ifname)
-
 #define USB_ETHER_CONFIGFS_ITEM_ATTR_U8_RW(_f_, _n_)			\
 	static ssize_t _f_##_opts_##_n_##_show(struct config_item *item,\
 					       char *page)		\
@@ -196,5 +178,4 @@ out:									\
 	}								\
 									\
 	CONFIGFS_ATTR(_f_##_opts_, _n_)
-
-#endif /* __U_ETHER_CONFIGFS_H */
+#endif  

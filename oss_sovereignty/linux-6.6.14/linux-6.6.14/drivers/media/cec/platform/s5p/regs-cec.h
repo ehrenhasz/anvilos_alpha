@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* drivers/media/platform/s5p-cec/regs-cec.h
- *
- * Copyright (c) 2010 Samsung Electronics
- *		http://www.samsung.com/
- *
- *  register header file for Samsung TVOUT driver
- */
-
 #ifndef __EXYNOS_REGS__H
 #define __EXYNOS_REGS__H
-
-/*
- * Register part
- */
 #define S5P_CEC_STATUS_0			(0x0000)
 #define S5P_CEC_STATUS_1			(0x0004)
 #define S5P_CEC_STATUS_2			(0x0008)
@@ -24,7 +11,6 @@
 #define S5P_CEC_DIVISOR_1			(0x0034)
 #define S5P_CEC_DIVISOR_2			(0x0038)
 #define S5P_CEC_DIVISOR_3			(0x003C)
-
 #define S5P_CEC_TX_CTRL				(0x0040)
 #define S5P_CEC_TX_BYTES			(0x0044)
 #define S5P_CEC_TX_STAT0			(0x0060)
@@ -45,7 +31,6 @@
 #define S5P_CEC_TX_BUFF13			(0x00B4)
 #define S5P_CEC_TX_BUFF14			(0x00B8)
 #define S5P_CEC_TX_BUFF15			(0x00BC)
-
 #define S5P_CEC_RX_CTRL				(0x00C0)
 #define S5P_CEC_RX_STAT0			(0x00E0)
 #define S5P_CEC_RX_STAT1			(0x00E4)
@@ -65,29 +50,18 @@
 #define S5P_CEC_RX_BUFF13			(0x0134)
 #define S5P_CEC_RX_BUFF14			(0x0138)
 #define S5P_CEC_RX_BUFF15			(0x013C)
-
 #define S5P_CEC_RX_FILTER_CTRL			(0x0180)
 #define S5P_CEC_RX_FILTER_TH			(0x0184)
-
-/*
- * Bit definition part
- */
 #define S5P_CEC_IRQ_TX_DONE			(1<<0)
 #define S5P_CEC_IRQ_TX_ERROR			(1<<1)
 #define S5P_CEC_IRQ_RX_DONE			(1<<4)
 #define S5P_CEC_IRQ_RX_ERROR			(1<<5)
-
 #define S5P_CEC_TX_CTRL_START			(1<<0)
 #define S5P_CEC_TX_CTRL_BCAST			(1<<1)
 #define S5P_CEC_TX_CTRL_RETRY			(0x04<<4)
 #define S5P_CEC_TX_CTRL_RESET			(1<<7)
-
 #define S5P_CEC_RX_CTRL_ENABLE			(1<<0)
 #define S5P_CEC_RX_CTRL_RESET			(1<<7)
-
 #define S5P_CEC_LOGIC_ADDR_MASK			(0xF)
-
-/* PMU Registers for PHY */
 #define EXYNOS_HDMI_PHY_CONTROL			0x700
-
-#endif	/* __EXYNOS_REGS__H	*/
+#endif	 

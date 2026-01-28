@@ -1,27 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt5663.h  --  RT5663 ALSA SoC audio driver
- *
- * Copyright 2016 Realtek Microelectronics
- * Author: Jack Yu <jack.yu@realtek.com>
- */
-
 #ifndef __RT5663_H__
 #define __RT5663_H__
-
 #include <sound/rt5663.h>
-
-/* Info */
 #define RT5663_RESET				0x0000
 #define RT5663_VENDOR_ID			0x00fd
 #define RT5663_VENDOR_ID_1			0x00fe
 #define RT5663_VENDOR_ID_2			0x00ff
-
 #define RT5663_LOUT_CTRL			0x0001
 #define RT5663_HP_AMP_2				0x0003
 #define RT5663_MONO_OUT				0x0004
 #define RT5663_MONO_GAIN			0x0007
-
 #define RT5663_AEC_BST				0x000b
 #define RT5663_IN1_IN2				0x000c
 #define RT5663_IN3_IN4				0x000d
@@ -31,8 +18,6 @@
 #define RT5663_CBJ_TYPE_4			0x0013
 #define RT5663_CBJ_TYPE_5			0x0014
 #define RT5663_CBJ_TYPE_8			0x0017
-
-/* I/O - ADC/DAC/DMIC */
 #define RT5663_DAC3_DIG_VOL			0x001a
 #define RT5663_DAC3_CTRL			0x001b
 #define RT5663_MONO_ADC_DIG_VOL			0x001d
@@ -40,7 +25,6 @@
 #define RT5663_MONO_ADC_BST_GAIN		0x0020
 #define RT5663_STO2_ADC_BST_GAIN		0x0021
 #define RT5663_SIDETONE_CTRL			0x0024
-/* Mixer - D-D */
 #define RT5663_MONO1_ADC_MIXER			0x0027
 #define RT5663_STO2_ADC_MIXER			0x0028
 #define RT5663_MONO_DAC_MIXER			0x002b
@@ -52,8 +36,6 @@
 #define RT5663_PDM_I2C_DATA_CTL2		0x0033
 #define RT5663_PDM_I2C_DATA_CTL3		0x0034
 #define RT5663_PDM_I2C_DATA_CTL4		0x0035
-
-/*Mixer - Analog*/
 #define RT5663_RECMIX1_NEW			0x003a
 #define RT5663_RECMIX1L_0			0x003b
 #define RT5663_RECMIX1L				0x003c
@@ -72,15 +54,10 @@
 #define RT5663_OUT_RMIX_IN_GAIN			0x004f
 #define RT5663_OUT_RMIX_IN_GAIN1		0x0050
 #define RT5663_LOUT_MIXER_CTRL			0x0052
-/* Power */
 #define RT5663_PWR_VOL				0x0067
-
 #define RT5663_ADCDAC_RST			0x006d
-/* Format - ADC/DAC */
 #define RT5663_I2S34_SDP			0x0071
 #define RT5663_I2S5_SDP				0x0072
-
-/* Function - Analog */
 #define RT5663_ASRC_3				0x0085
 #define RT5663_ASRC_6				0x0088
 #define RT5663_ASRC_7				0x0089
@@ -90,8 +67,6 @@
 #define RT5663_FDIV_I2S34_M_CLK2		0x00a2
 #define RT5663_FDIV_I2S5_M_CLK			0x00a3
 #define RT5663_FDIV_I2S5_M_CLK2			0x00a4
-
-/* Function - Digital */
 #define RT5663_V2_IRQ_4				0x00b9
 #define RT5663_GPIO_3				0x00c2
 #define RT5663_GPIO_4				0x00c3
@@ -104,15 +79,12 @@
 #define RT5663_SOF_VOL_ZC2			0x00da
 #define RT5663_ADC_STO2_ADJ1			0x00ee
 #define RT5663_ADC_STO2_ADJ2			0x00ef
-/* General Control */
 #define RT5663_A_JD_CTRL			0x00f0
 #define RT5663_JD1_TRES_CTRL			0x00f1
 #define RT5663_JD2_TRES_CTRL			0x00f2
 #define RT5663_V2_JD_CTRL2			0x00f7
 #define RT5663_DUM_REG_2			0x00fb
 #define RT5663_DUM_REG_3			0x00fc
-
-
 #define RT5663_DACADC_DIG_VOL2			0x0101
 #define RT5663_DIG_IN_PIN2			0x0133
 #define RT5663_PAD_DRV_CTL1			0x0136
@@ -218,26 +190,16 @@
 #define RT5663_VID_CUSTOMER			0x03ff
 #define RT5663_SCAN_MODE			0x07f0
 #define RT5663_I2C_BYPA				0x07fa
-
-/* Headphone Amp Control 2 (0x0003) */
 #define RT5663_EN_DAC_HPO_MASK			(0x1 << 14)
 #define RT5663_EN_DAC_HPO_SHIFT			14
 #define RT5663_EN_DAC_HPO_DIS			(0x0 << 14)
 #define RT5663_EN_DAC_HPO_EN			(0x1 << 14)
-
-/*Headphone Amp L/R Analog Gain and Digital NG2 Gain Control (0x0005 0x0006)*/
 #define RT5663_GAIN_HP				(0x1f << 8)
 #define RT5663_GAIN_HP_SHIFT			8
-
-/* AEC BST Control (0x000b) */
 #define RT5663_GAIN_CBJ_MASK			(0xf << 8)
 #define RT5663_GAIN_CBJ_SHIFT			8
-
-/* IN1 Control / MIC GND REF (0x000c) */
 #define RT5663_IN1_DF_MASK			(0x1 << 15)
 #define RT5663_IN1_DF_SHIFT			15
-
-/* Combo Jack and Type Detection Control 1 (0x0010) */
 #define RT5663_CBJ_DET_MASK			(0x1 << 15)
 #define RT5663_CBJ_DET_SHIFT			15
 #define RT5663_CBJ_DET_DIS			(0x0 << 15)
@@ -250,24 +212,16 @@
 #define RT5663_VREF_BIAS_SHIFT			6
 #define RT5663_VREF_BIAS_FSM			(0x0 << 6)
 #define RT5663_VREF_BIAS_REG			(0x1 << 6)
-
-/* REC Left Mixer Control 2 (0x003c) */
 #define RT5663_RECMIX1L_BST1_CBJ		(0x1 << 7)
 #define RT5663_RECMIX1L_BST1_CBJ_SHIFT		7
 #define RT5663_RECMIX1L_BST2			(0x1 << 4)
 #define RT5663_RECMIX1L_BST2_SHIFT		4
-
-/* REC Right Mixer Control 2 (0x003e) */
 #define RT5663_RECMIX1R_BST2			(0x1 << 4)
 #define RT5663_RECMIX1R_BST2_SHIFT		4
-
-/* DAC1 Digital Volume (0x0019) */
 #define RT5663_DAC_L1_VOL_MASK			(0xff << 8)
 #define RT5663_DAC_L1_VOL_SHIFT			8
 #define RT5663_DAC_R1_VOL_MASK			(0xff)
 #define RT5663_DAC_R1_VOL_SHIFT			0
-
-/* ADC Digital Volume Control (0x001c) */
 #define RT5663_ADC_L_MUTE_MASK			(0x1 << 15)
 #define RT5663_ADC_L_MUTE_SHIFT			15
 #define RT5663_ADC_L_VOL_MASK			(0x7f << 8)
@@ -276,8 +230,6 @@
 #define RT5663_ADC_R_MUTE_SHIFT			7
 #define RT5663_ADC_R_VOL_MASK			(0x7f)
 #define RT5663_ADC_R_VOL_SHIFT			0
-
-/* Stereo ADC Mixer Control (0x0026) */
 #define RT5663_M_STO1_ADC_L1			(0x1 << 15)
 #define RT5663_M_STO1_ADC_L1_SHIFT		15
 #define RT5663_M_STO1_ADC_L2			(0x1 << 14)
@@ -298,8 +250,6 @@
 #define RT5663_STO1_ADC_R2_SRC_SHIFT		4
 #define RT5663_STO1_ADC_R_SRC			(0x3 << 2)
 #define RT5663_STO1_ADC_R_SRC_SHIFT		2
-
-/* ADC Mixer to DAC Mixer Control (0x0029) */
 #define RT5663_M_ADCMIX_L			(0x1 << 15)
 #define RT5663_M_ADCMIX_L_SHIFT			15
 #define RT5663_M_DAC1_L				(0x1 << 14)
@@ -308,8 +258,6 @@
 #define RT5663_M_ADCMIX_R_SHIFT			7
 #define RT5663_M_DAC1_R				(0x1 << 6)
 #define RT5663_M_DAC1_R_SHIFT			6
-
-/* Stereo DAC Mixer Control (0x002a) */
 #define RT5663_M_DAC_L1_STO_L			(0x1 << 15)
 #define RT5663_M_DAC_L1_STO_L_SHIFT		15
 #define RT5663_M_DAC_R1_STO_L			(0x1 << 13)
@@ -318,8 +266,6 @@
 #define RT5663_M_DAC_L1_STO_R_SHIFT		7
 #define RT5663_M_DAC_R1_STO_R			(0x1 << 5)
 #define RT5663_M_DAC_R1_STO_R_SHIFT		5
-
-/* Power Management for Digital 1 (0x0061) */
 #define RT5663_PWR_I2S1				(0x1 << 15)
 #define RT5663_PWR_I2S1_SHIFT			15
 #define RT5663_PWR_DAC_L1			(0x1 << 11)
@@ -335,14 +281,10 @@
 #define RT5663_PWR_ADC_L1_SHIFT			4
 #define RT5663_PWR_ADC_R1			(0x1 << 3)
 #define RT5663_PWR_ADC_R1_SHIFT			3
-
-/* Power Management for Digital 2 (0x0062) */
 #define RT5663_PWR_ADC_S1F			(0x1 << 15)
 #define RT5663_PWR_ADC_S1F_SHIFT		15
 #define RT5663_PWR_DAC_S1F			(0x1 << 10)
 #define RT5663_PWR_DAC_S1F_SHIFT		10
-
-/* Power Management for Analog 1 (0x0063) */
 #define RT5663_PWR_VREF1			(0x1 << 15)
 #define RT5663_PWR_VREF1_MASK			(0x1 << 15)
 #define RT5663_PWR_VREF1_SHIFT			15
@@ -369,8 +311,6 @@
 #define RT5663_LDO1_DVO_1_0V			(0x1)
 #define RT5663_LDO1_DVO_1_2V			(0x2)
 #define RT5663_LDO1_DVO_1_4V			(0x3)
-
-/* Power Management for Analog 2 (0x0064) */
 #define RT5663_PWR_BST1				(0x1 << 15)
 #define RT5663_PWR_BST1_MASK			(0x1 << 15)
 #define RT5663_PWR_BST1_SHIFT			15
@@ -396,8 +336,6 @@
 #define RT5663_PWR_RECMIX1_SHIFT		1
 #define RT5663_PWR_RECMIX2			(0x1)
 #define RT5663_PWR_RECMIX2_SHIFT		0
-
-/* Power Management for Analog 3 (0x0065) */
 #define RT5663_PWR_CBJ_MASK			(0x1 << 9)
 #define RT5663_PWR_CBJ_SHIFT			9
 #define RT5663_PWR_CBJ_OFF			(0x0 << 9)
@@ -406,12 +344,8 @@
 #define RT5663_PWR_PLL_SHIFT			6
 #define RT5663_PWR_LDO2				(0x1 << 2)
 #define RT5663_PWR_LDO2_SHIFT			2
-
-/* Power Management for Volume (0x0067) */
 #define RT5663_V2_PWR_MIC_DET			(0x1 << 5)
 #define RT5663_V2_PWR_MIC_DET_SHIFT		5
-
-/* MCLK and System Clock Detection Control (0x006b) */
 #define RT5663_EN_ANA_CLK_DET_MASK		(0x1 << 15)
 #define RT5663_EN_ANA_CLK_DET_SHIFT		15
 #define RT5663_EN_ANA_CLK_DET_DIS		(0x0 << 15)
@@ -420,8 +354,6 @@
 #define RT5663_PWR_CLK_DET_SHIFT		0
 #define RT5663_PWR_CLK_DET_DIS			(0x0)
 #define RT5663_PWR_CLK_DET_EN			(0x1)
-
-/* I2S1 Audio Serial Data Port Control (0x0070) */
 #define RT5663_I2S_MS_MASK			(0x1 << 15)
 #define RT5663_I2S_MS_SHIFT			15
 #define RT5663_I2S_MS_M				(0x0 << 15)
@@ -444,8 +376,6 @@
 #define RT5663_I2S_DF_PCM_B			(0x3)
 #define RT5663_I2S_DF_PCM_A_N			(0x6)
 #define RT5663_I2S_DF_PCM_B_N			(0x7)
-
-/* ADC/DAC Clock Control 1 (0x0073) */
 #define RT5663_I2S_PD1_MASK			(0x7 << 12)
 #define RT5663_I2S_PD1_SHIFT			12
 #define RT5663_M_I2S_DIV_MASK			(0x7 << 8)
@@ -465,8 +395,6 @@
 #define RT5663_ADC_OSR_128			(0x0)
 #define RT5663_ADC_OSR_64			(0x1)
 #define RT5663_ADC_OSR_32			(0x2)
-
-/* TDM1 control 1 (0x0078) */
 #define RT5663_TDM_MODE_MASK			(0x1 << 15)
 #define RT5663_TDM_MODE_SHIFT			15
 #define RT5663_TDM_MODE_I2S			(0x0 << 15)
@@ -495,8 +423,6 @@
 #define RT5663_TDM_OUT_LEN_20			(0x1 << 4)
 #define RT5663_TDM_OUT_LEN_24			(0x2 << 4)
 #define RT5663_TDM_OUT_LEN_32			(0x3 << 4)
-
-/* Global Clock Control (0x0080) */
 #define RT5663_SCLK_SRC_MASK			(0x3 << 14)
 #define RT5663_SCLK_SRC_SHIFT			14
 #define RT5663_SCLK_SRC_MCLK			(0x0 << 14)
@@ -512,45 +438,33 @@
 #define RT5663_V2_PLL1_SRC_BCLK1		(0x1 << 8)
 #define RT5663_PLL1_PD_MASK			(0x1 << 4)
 #define RT5663_PLL1_PD_SHIFT			4
-
 #define RT5663_PLL_INP_MAX			40000000
 #define RT5663_PLL_INP_MIN			256000
-/* PLL M/N/K Code Control 1 (0x0081) */
 #define RT5663_PLL_N_MAX			0x001ff
 #define RT5663_PLL_N_MASK			(RT5663_PLL_N_MAX << 7)
 #define RT5663_PLL_N_SHIFT			7
 #define RT5663_PLL_K_MAX			0x001f
 #define RT5663_PLL_K_MASK			(RT5663_PLL_K_MAX)
 #define RT5663_PLL_K_SHIFT			0
-
-/* PLL M/N/K Code Control 2 (0x0082) */
 #define RT5663_PLL_M_MAX			0x00f
 #define RT5663_PLL_M_MASK			(RT5663_PLL_M_MAX << 12)
 #define RT5663_PLL_M_SHIFT			12
 #define RT5663_PLL_M_BP				(0x1 << 11)
 #define RT5663_PLL_M_BP_SHIFT			11
-
-/* PLL tracking mode 1 (0x0083) */
 #define RT5663_V2_I2S1_ASRC_MASK			(0x1 << 13)
 #define RT5663_V2_I2S1_ASRC_SHIFT			13
 #define RT5663_V2_DAC_STO1_ASRC_MASK		(0x1 << 12)
 #define RT5663_V2_DAC_STO1_ASRC_SHIFT		12
 #define RT5663_V2_ADC_STO1_ASRC_MASK		(0x1 << 4)
 #define RT5663_V2_ADC_STO1_ASRC_SHIFT		4
-
-/* PLL tracking mode 2 (0x0084)*/
 #define RT5663_DA_STO1_TRACK_MASK		(0x7 << 12)
 #define RT5663_DA_STO1_TRACK_SHIFT		12
 #define RT5663_DA_STO1_TRACK_SYSCLK		(0x0 << 12)
 #define RT5663_DA_STO1_TRACK_I2S1		(0x1 << 12)
-
-/* PLL tracking mode 3 (0x0085)*/
 #define RT5663_V2_AD_STO1_TRACK_MASK		(0x7 << 12)
 #define RT5663_V2_AD_STO1_TRACK_SHIFT		12
 #define RT5663_V2_AD_STO1_TRACK_SYSCLK		(0x0 << 12)
 #define RT5663_V2_AD_STO1_TRACK_I2S1		(0x1 << 12)
-
-/* HPOUT Charge pump control 1 (0x0091) */
 #define RT5663_OSW_HP_L_MASK			(0x1 << 11)
 #define RT5663_OSW_HP_L_SHIFT			11
 #define RT5663_OSW_HP_L_EN			(0x1 << 11)
@@ -569,8 +483,6 @@
 #define RT5663_OVCD_HP_SHIFT			2
 #define RT5663_OVCD_HP_EN			(0x1 << 2)
 #define RT5663_OVCD_HP_DIS			(0x0 << 2)
-
-/* RC Clock Control (0x0094) */
 #define RT5663_DIG_25M_CLK_MASK			(0x1 << 9)
 #define RT5663_DIG_25M_CLK_SHIFT		9
 #define RT5663_DIG_25M_CLK_DIS			(0x0 << 9)
@@ -579,8 +491,6 @@
 #define RT5663_DIG_1M_CLK_SHIFT			8
 #define RT5663_DIG_1M_CLK_DIS			(0x0 << 8)
 #define RT5663_DIG_1M_CLK_EN			(0x1 << 8)
-
-/* Auto Turn On 1M RC CLK (0x009f) */
 #define RT5663_IRQ_POW_SAV_MASK			(0x1 << 15)
 #define RT5663_IRQ_POW_SAV_SHIFT		15
 #define RT5663_IRQ_POW_SAV_DIS			(0x0 << 15)
@@ -593,46 +503,32 @@
 #define RT5663_IRQ_MANUAL_SHIFT			8
 #define RT5663_IRQ_MANUAL_DIS			(0x0 << 8)
 #define RT5663_IRQ_MANUAL_EN			(0x1 << 8)
-
-/* IRQ Control 1 (0x00b6) */
 #define RT5663_EN_CB_JD_MASK			(0x1 << 3)
 #define RT5663_EN_CB_JD_SHIFT			3
 #define RT5663_EN_CB_JD_EN			(0x1 << 3)
 #define RT5663_EN_CB_JD_DIS			(0x0 << 3)
-
-/* IRQ Control 3 (0x00b8) */
 #define RT5663_V2_EN_IRQ_INLINE_MASK		(0x1 << 6)
 #define RT5663_V2_EN_IRQ_INLINE_SHIFT		6
 #define RT5663_V2_EN_IRQ_INLINE_BYP		(0x0 << 6)
 #define RT5663_V2_EN_IRQ_INLINE_NOR		(0x1 << 6)
-
-/* GPIO Control 1 (0x00c0) */
 #define RT5663_GP1_PIN_MASK			(0x1 << 15)
 #define RT5663_GP1_PIN_SHIFT			15
 #define RT5663_GP1_PIN_GPIO1			(0x0 << 15)
 #define RT5663_GP1_PIN_IRQ			(0x1 << 15)
-
-/* GPIO Control 2 (0x00c1) */
 #define RT5663_GP4_PIN_CONF_MASK		(0x1 << 5)
 #define RT5663_GP4_PIN_CONF_SHIFT		5
 #define RT5663_GP4_PIN_CONF_INPUT		(0x0 << 5)
 #define RT5663_GP4_PIN_CONF_OUTPUT		(0x1 << 5)
-
-/* GPIO Control 2 (0x00c2) */
 #define RT5663_GP8_PIN_CONF_MASK		(0x1 << 13)
 #define RT5663_GP8_PIN_CONF_SHIFT		13
 #define RT5663_GP8_PIN_CONF_INPUT		(0x0 << 13)
 #define RT5663_GP8_PIN_CONF_OUTPUT		(0x1 << 13)
-
-/* 4 Buttons Inline Command Function 1 (0x00df) */
 #define RT5663_4BTN_CLK_DEB_MASK		(0x3 << 2)
 #define RT5663_4BTN_CLK_DEB_SHIFT		2
 #define RT5663_4BTN_CLK_DEB_8MS			(0x0 << 2)
 #define RT5663_4BTN_CLK_DEB_16MS		(0x1 << 2)
 #define RT5663_4BTN_CLK_DEB_32MS		(0x2 << 2)
 #define RT5663_4BTN_CLK_DEB_65MS		(0x3 << 2)
-
-/* Inline Command Function 6 (0x00e0) */
 #define RT5663_EN_4BTN_INL_MASK			(0x1 << 15)
 #define RT5663_EN_4BTN_INL_SHIFT		15
 #define RT5663_EN_4BTN_INL_DIS			(0x0 << 15)
@@ -641,34 +537,24 @@
 #define RT5663_RESET_4BTN_INL_SHIFT		14
 #define RT5663_RESET_4BTN_INL_RESET		(0x0 << 14)
 #define RT5663_RESET_4BTN_INL_NOR		(0x1 << 14)
-
-/* Digital Misc Control (0x00fa) */
 #define RT5663_DIG_GATE_CTRL_MASK		0x1
 #define RT5663_DIG_GATE_CTRL_SHIFT		(0)
 #define RT5663_DIG_GATE_CTRL_DIS		0x0
 #define RT5663_DIG_GATE_CTRL_EN			0x1
-
-/* Chopper and Clock control for DAC L (0x013a)*/
 #define RT5663_CKXEN_DAC1_MASK			(0x1 << 13)
 #define RT5663_CKXEN_DAC1_SHIFT			13
 #define RT5663_CKGEN_DAC1_MASK			(0x1 << 12)
 #define RT5663_CKGEN_DAC1_SHIFT			12
-
-/* Chopper and Clock control for ADC (0x013b)*/
 #define RT5663_CKXEN_ADCC_MASK			(0x1 << 13)
 #define RT5663_CKXEN_ADCC_SHIFT			13
 #define RT5663_CKGEN_ADCC_MASK			(0x1 << 12)
 #define RT5663_CKGEN_ADCC_SHIFT			12
-
-/* HP Behavior Logic Control 2 (0x01db) */
 #define RT5663_HP_SIG_SRC1_MASK			(0x3)
 #define RT5663_HP_SIG_SRC1_SHIFT		0
 #define RT5663_HP_SIG_SRC1_HP_DC		(0x0)
 #define RT5663_HP_SIG_SRC1_HP_CALIB		(0x1)
 #define RT5663_HP_SIG_SRC1_REG			(0x2)
 #define RT5663_HP_SIG_SRC1_SILENCE		(0x3)
-
-/* RT5663 specific register */
 #define RT5663_HP_OUT_EN			0x0002
 #define RT5663_HP_LCH_DRE			0x0005
 #define RT5663_HP_RCH_DRE			0x0006
@@ -926,44 +812,32 @@
 #define RT5663_ADC_EQ_PRE_VOL_R			0x03f1
 #define RT5663_ADC_EQ_POST_VOL_L		0x03f2
 #define RT5663_ADC_EQ_POST_VOL_R		0x03f3
-
-/* RECMIX Control (0x0010) */
 #define RT5663_RECMIX1_BST1_MASK		(0x1)
 #define RT5663_RECMIX1_BST1_SHIFT		0
 #define RT5663_RECMIX1_BST1_ON			(0x0)
 #define RT5663_RECMIX1_BST1_OFF			(0x1)
-
-/* Bypass Stereo1 DAC Mixer Control (0x002d) */
 #define RT5663_DACL1_SRC_MASK			(0x1 << 3)
 #define RT5663_DACL1_SRC_SHIFT			3
 #define RT5663_DACR1_SRC_MASK			(0x1 << 2)
 #define RT5663_DACR1_SRC_SHIFT			2
-
-/* TDM control 2 (0x0078) */
 #define RT5663_DATA_SWAP_ADCDAT1_MASK		(0x3 << 14)
 #define RT5663_DATA_SWAP_ADCDAT1_SHIFT		14
 #define RT5663_DATA_SWAP_ADCDAT1_LR		(0x0 << 14)
 #define RT5663_DATA_SWAP_ADCDAT1_RL		(0x1 << 14)
 #define RT5663_DATA_SWAP_ADCDAT1_LL		(0x2 << 14)
 #define RT5663_DATA_SWAP_ADCDAT1_RR		(0x3 << 14)
-
-/* TDM control 5 (0x007b) */
 #define RT5663_TDM_LENGTN_MASK			(0x3)
 #define RT5663_TDM_LENGTN_SHIFT			0
 #define RT5663_TDM_LENGTN_16			(0x0)
 #define RT5663_TDM_LENGTN_20			(0x1)
 #define RT5663_TDM_LENGTN_24			(0x2)
 #define RT5663_TDM_LENGTN_32			(0x3)
-
-/* PLL tracking mode 1 (0x0083) */
 #define RT5663_I2S1_ASRC_MASK			(0x1 << 11)
 #define RT5663_I2S1_ASRC_SHIFT			11
 #define RT5663_DAC_STO1_ASRC_MASK		(0x1 << 10)
 #define RT5663_DAC_STO1_ASRC_SHIFT		10
 #define RT5663_ADC_STO1_ASRC_MASK		(0x1 << 3)
 #define RT5663_ADC_STO1_ASRC_SHIFT		3
-
-/* PLL tracking mode 2 (0x0084)*/
 #define RT5663_DA_STO1_TRACK_MASK		(0x7 << 12)
 #define RT5663_DA_STO1_TRACK_SHIFT		12
 #define RT5663_DA_STO1_TRACK_SYSCLK		(0x0 << 12)
@@ -972,32 +846,22 @@
 #define RT5663_AD_STO1_TRACK_SHIFT		0
 #define RT5663_AD_STO1_TRACK_SYSCLK		(0x0)
 #define RT5663_AD_STO1_TRACK_I2S1		(0x1)
-
-/* HPOUT Charge pump control 1 (0x0091) */
 #define RT5663_SI_HP_MASK			(0x1 << 12)
 #define RT5663_SI_HP_SHIFT			12
 #define RT5663_SI_HP_EN				(0x1 << 12)
 #define RT5663_SI_HP_DIS			(0x0 << 12)
-
-/* GPIO Control 2 (0x00b6) */
 #define RT5663_GP1_PIN_CONF_MASK		(0x1 << 2)
 #define RT5663_GP1_PIN_CONF_SHIFT		2
 #define RT5663_GP1_PIN_CONF_OUTPUT		(0x1 << 2)
 #define RT5663_GP1_PIN_CONF_INPUT		(0x0 << 2)
-
-/* GPIO Control 2 (0x00b7) */
 #define RT5663_EN_IRQ_INLINE_MASK		(0x1 << 3)
 #define RT5663_EN_IRQ_INLINE_SHIFT		3
 #define RT5663_EN_IRQ_INLINE_NOR		(0x1 << 3)
 #define RT5663_EN_IRQ_INLINE_BYP		(0x0 << 3)
-
-/* GPIO Control 1 (0x00c0) */
 #define RT5663_GPIO1_TYPE_MASK			(0x1 << 15)
 #define RT5663_GPIO1_TYPE_SHIFT			15
 #define RT5663_GPIO1_TYPE_EN			(0x1 << 15)
 #define RT5663_GPIO1_TYPE_DIS			(0x0 << 15)
-
-/* IRQ Control 1 (0x00c1) */
 #define RT5663_EN_IRQ_JD1_MASK			(0x1 << 6)
 #define RT5663_EN_IRQ_JD1_SHIFT			6
 #define RT5663_EN_IRQ_JD1_EN			(0x1 << 6)
@@ -1006,14 +870,10 @@
 #define RT5663_SEL_GPIO1_SHIFT			6
 #define RT5663_SEL_GPIO1_EN			(0x1 << 2)
 #define RT5663_SEL_GPIO1_DIS			(0x0 << 2)
-
-/* Inline Command Function 2 (0x00dc) */
 #define RT5663_PWR_MIC_DET_MASK			(0x1)
 #define RT5663_PWR_MIC_DET_SHIFT		0
 #define RT5663_PWR_MIC_DET_ON			(0x1)
 #define RT5663_PWR_MIC_DET_OFF			(0x0)
-
-/* Embeeded Jack and Type Detection Control 1 (0x00e6)*/
 #define RT5663_CBJ_DET_MASK			(0x1 << 15)
 #define RT5663_CBJ_DET_SHIFT			15
 #define RT5663_CBJ_DET_DIS			(0x0 << 15)
@@ -1030,18 +890,12 @@
 #define RT5663_EM_JD_SHIFT			7
 #define RT5663_EM_JD_NOR			(0x1 << 7)
 #define RT5663_EM_JD_RST			(0x0 << 7)
-
-/* DACREF LDO Control (0x0112)*/
 #define RT5663_PWR_LDO_DACREFL_MASK		(0x1 << 9)
 #define RT5663_PWR_LDO_DACREFL_SHIFT		9
 #define RT5663_PWR_LDO_DACREFR_MASK		(0x1 << 1)
 #define RT5663_PWR_LDO_DACREFR_SHIFT		1
-
-/* Stereo Dynamic Range Enhancement Control 9 (0x0168, 0x0169)*/
 #define RT5663_DRE_GAIN_HP_MASK			(0x1f)
 #define RT5663_DRE_GAIN_HP_SHIFT		0
-
-/* Combo Jack Control (0x0250) */
 #define RT5663_INBUF_CBJ_BST1_MASK		(0x1 << 11)
 #define RT5663_INBUF_CBJ_BST1_SHIFT		11
 #define RT5663_INBUF_CBJ_BST1_ON		(0x1 << 11)
@@ -1050,12 +904,8 @@
 #define RT5663_CBJ_SENSE_BST1_SHIFT		10
 #define RT5663_CBJ_SENSE_BST1_L			(0x1 << 10)
 #define RT5663_CBJ_SENSE_BST1_R			(0x0 << 10)
-
-/* Combo Jack Control (0x0251) */
 #define RT5663_GAIN_BST1_MASK			(0xf)
 #define RT5663_GAIN_BST1_SHIFT			0
-
-/* Dummy register 1 (0x02fa) */
 #define RT5663_EMB_CLK_MASK			(0x1 << 9)
 #define RT5663_EMB_CLK_SHIFT			9
 #define RT5663_EMB_CLK_EN			(0x1 << 9)
@@ -1090,39 +940,27 @@
 #define RT5663_DUMMY_BIAS_4_2			(0x5)
 #define RT5663_DUMMY_BIAS_6			(0x6)
 #define RT5663_DUMMY_BIAS_8			(0x7)
-
-
-/* System Clock Source */
 enum {
 	RT5663_SCLK_S_MCLK,
 	RT5663_SCLK_S_PLL1,
 	RT5663_SCLK_S_RCCLK,
 };
-
-/* PLL1 Source */
 enum {
 	RT5663_PLL1_S_MCLK,
 	RT5663_PLL1_S_BCLK1,
 };
-
 enum {
 	RT5663_AIF,
 	RT5663_AIFS,
 };
-
-/* asrc clock source */
 enum {
 	RT5663_CLK_SEL_SYS = 0x0,
 	RT5663_CLK_SEL_I2S1_ASRC = 0x1,
 };
-
-/* filter mask */
 enum {
 	RT5663_DA_STEREO_FILTER = 0x1,
 	RT5663_AD_STEREO_FILTER = 0x2,
 };
-
 int rt5663_sel_asrc_clk_src(struct snd_soc_component *component,
 	unsigned int filter_mask, unsigned int clk_src);
-
-#endif /* __RT5663_H__ */
+#endif  

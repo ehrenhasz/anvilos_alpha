@@ -1,22 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
 #ifndef _TSTYPE_H_
 #define _TSTYPE_H_
 #include "rtl819x_Qos.h"
 #define TS_ADDBA_DELAY		60
-
 #define TOTAL_TS_NUM		16
 #define TCLAS_NUM		4
-
 enum tr_select {
 	TX_DIR = 0,
 	RX_DIR = 1,
 };
-
 struct ts_common_info {
 	struct list_head		List;
 	u8				Addr[ETH_ALEN];
@@ -25,7 +16,6 @@ struct ts_common_info {
 	u8				TClasProc;
 	u8				TClasNum;
 };
-
 struct tx_ts_record {
 	struct ts_common_info TsCommonInfo;
 	u16				TxCurSeq;
@@ -38,7 +28,6 @@ struct tx_ts_record {
 	struct timer_list		TsAddBaTimer;
 	u8				num;
 };
-
 struct rx_ts_record {
 	struct ts_common_info ts_common_info;
 	u16 rx_indicate_seq;
@@ -50,5 +39,4 @@ struct rx_ts_record {
 	u8 rx_last_frag_num;
 	u8 num;
 };
-
 #endif

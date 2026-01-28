@@ -1,11 +1,6 @@
-#!/usr/bin/python
-# SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-# Basic sanity check of perf JSON output as specified in the man page.
-
 import argparse
 import sys
 import json
-
 ap = argparse.ArgumentParser()
 ap.add_argument('--no-args', action='store_true')
 ap.add_argument('--interval', action='store_true')
@@ -20,27 +15,21 @@ ap.add_argument('--per-node', action='store_true')
 ap.add_argument('--per-socket', action='store_true')
 ap.add_argument('--file', type=argparse.FileType('r'), default=sys.stdin)
 args = ap.parse_args()
-
 Lines = args.file.readlines()
-
 def isfloat(num):
   try:
     float(num)
     return True
   except ValueError:
     return False
-
-
 def isint(num):
   try:
     int(num)
     return True
   except ValueError:
     return False
-
 def is_counter_value(num):
   return isfloat(num) or num == '<not counted>' or num == '<not supported>'
-
 def check_json_output(expected_items):
   checks = {
       'aggregate-number': lambda x: isfloat(x),
@@ -67,9 +56,6 @@ def check_json_output(expected_items):
     if expected_items != -1:
       count = len(item)
       if count != expected_items and count >= 1 and count <= 6 and 'metric-value' in item:
-        # Events that generate >1 metric may have isolated metric
-        # values and possibly other prefixes like interval, core,
-        # aggregate-number, or event-runtime/pcnt-running from multiplexing.
         pass
       elif count != expected_items and count >= 1 and count <= 5 and 'metricgroup' in item:
         pass
@@ -81,8 +67,6 @@ def check_json_output(expected_items):
         raise RuntimeError(f'Unexpected key: key={key} value={value}')
       if not checks[key](value):
         raise RuntimeError(f'Check failed for: key={key} value={value}')
-
-
 try:
   if args.no_args or args.system_wide or args.event:
     expected_items = 7
@@ -91,7 +75,6 @@ try:
   elif args.per_core or args.per_socket or args.per_node or args.per_die or args.per_cache:
     expected_items = 9
   else:
-    # If no option is specified, don't check the number of items.
     expected_items = -1
   check_json_output(expected_items)
 except:

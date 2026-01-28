@@ -1,36 +1,24 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright (C) 2021 StarFive Technology Co., Ltd.
- * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
- */
-
 /dts-v1/;
 #include "jh7100.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/pinctrl/pinctrl-starfive-jh7100.h>
-
 / {
 	aliases {
 		serial0 = &uart3;
 	};
-
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
-
 	cpus {
 		timebase-frequency = <6250000>;
 	};
-
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x0 0x80000000 0x2 0x0>;
 	};
-
 	leds {
 		compatible = "gpio-leds";
-
 		led-ack {
 			gpios = <&gpio 43 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_GREEN>;
@@ -40,7 +28,6 @@
 		};
 	};
 };
-
 &gpio {
 	i2c0_pins: i2c0-0 {
 		i2c-pins {
@@ -50,12 +37,11 @@
 				 <GPIOMUX(61, GPO_LOW,
 				  GPO_I2C0_PAD_SDA_OEN,
 				  GPI_I2C0_PAD_SDA_IN)>;
-			bias-disable; /* external pull-up */
+			bias-disable;  
 			input-enable;
 			input-schmitt-enable;
 		};
 	};
-
 	i2c1_pins: i2c1-0 {
 		i2c-pins {
 			pinmux = <GPIOMUX(47, GPO_LOW,
@@ -69,7 +55,6 @@
 			input-schmitt-enable;
 		};
 	};
-
 	i2c2_pins: i2c2-0 {
 		i2c-pins {
 			pinmux = <GPIOMUX(60, GPO_LOW,
@@ -78,12 +63,11 @@
 				 <GPIOMUX(59, GPO_LOW,
 				  GPO_I2C2_PAD_SDA_OEN,
 				  GPI_I2C2_PAD_SDA_IN)>;
-			bias-disable; /* external pull-up */
+			bias-disable;  
 			input-enable;
 			input-schmitt-enable;
 		};
 	};
-
 	uart3_pins: uart3-0 {
 		rx-pins {
 			pinmux = <GPIOMUX(13, GPO_LOW, GPO_DISABLE,
@@ -105,7 +89,6 @@
 		};
 	};
 };
-
 &i2c0 {
 	clock-frequency = <100000>;
 	i2c-sda-hold-time-ns = <300>;
@@ -114,18 +97,15 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c0_pins>;
 	status = "okay";
-
 	pmic@5e {
 		compatible = "ti,tps65086";
 		reg = <0x5e>;
 		gpio-controller;
 		#gpio-cells = <2>;
-
 		regulators {
 		};
 	};
 };
-
 &i2c1 {
 	clock-frequency = <400000>;
 	i2c-sda-hold-time-ns = <300>;
@@ -135,7 +115,6 @@
 	pinctrl-0 = <&i2c1_pins>;
 	status = "okay";
 };
-
 &i2c2 {
 	clock-frequency = <100000>;
 	i2c-sda-hold-time-ns = <300>;
@@ -145,15 +124,12 @@
 	pinctrl-0 = <&i2c2_pins>;
 	status = "okay";
 };
-
 &osc_sys {
 	clock-frequency = <25000000>;
 };
-
 &osc_aud {
 	clock-frequency = <27000000>;
 };
-
 &uart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart3_pins>;

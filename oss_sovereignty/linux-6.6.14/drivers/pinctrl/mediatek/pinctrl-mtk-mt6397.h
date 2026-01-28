@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __PINCTRL_MTK_MT6397_H
 #define __PINCTRL_MTK_MT6397_H
-
 #include <linux/pinctrl/pinctrl.h>
 #include "pinctrl-mtk-common.h"
-
 static const struct mtk_desc_pin mtk_pins_mt6397[] = {
 	MTK_PIN(PINCTRL_PIN(0, "INT"),
 		"N2", "mt6397",
@@ -380,5 +377,4 @@ static const struct mtk_desc_pin mtk_pins_mt6397[] = {
 		MTK_FUNCTION(7, "TEST_OUT31")
 	),
 };
-
-#endif /* __PINCTRL_MTK_MT6397_H */
+#endif  

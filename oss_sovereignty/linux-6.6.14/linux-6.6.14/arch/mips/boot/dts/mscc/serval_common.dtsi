@@ -1,10 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2020 Microsemi Corporation
- */
-
 #include "serval.dtsi"
-
 / {
 	aliases {
 		serial0 = &uart0;
@@ -15,11 +9,9 @@
 		i2c108  = &i2c108;
 		i2c109  = &i2c109;
 	};
-
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
-
 	i2c0_imux: i2c0-imux {
 		compatible = "i2c-mux-pinctrl";
 		#address-cells = <1>;
@@ -66,20 +58,16 @@
 			#size-cells = <0>;
 		};
 };
-
 };
-
 &uart0 {
 	status = "okay";
 };
-
 &uart2 {
 	status = "okay";
 };
-
 &gpio {
 	i2c_pins: i2c-pins {
-		pins = "GPIO_7"; /* No "default" scl for i2c0 */
+		pins = "GPIO_7";  
 		function = "twi";
 	};
 	i2cmux_pins_i: i2cmux-pins {
@@ -119,9 +107,7 @@
 		output-high;
 	};
 };
-
 &i2c0 {
 	status = "okay";
 	i2c-sda-hold-time-ns = <300>;
 };
-

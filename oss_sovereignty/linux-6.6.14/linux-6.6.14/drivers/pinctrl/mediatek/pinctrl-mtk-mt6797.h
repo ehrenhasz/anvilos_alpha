@@ -1,19 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Based on pinctrl-mtk-mt6765.h
- *
- * Copyright (C) 2018 MediaTek Inc.
- *
- * Author: ZH Chen <zh.chen@mediatek.com>
- *
- * Copyright (c) 2018 Manivannan Sadhasivam
- */
-
 #ifndef __PINCTRL_MTK_MT6797_H
 #define __PINCTRL_MTK_MT6797_H
-
 #include "pinctrl-paris.h"
-
 static const struct mtk_pin_desc mtk_pins_mt6797[] = {
 	MTK_PIN(
 		0, "GPIO0",
@@ -2425,5 +2412,4 @@ static const struct mtk_pin_desc mtk_pins_mt6797[] = {
 		MTK_FUNCTION(7, "C2K_DM_JTINTP")
 	),
 };
-
-#endif /* __PINCTRL_MTK_MT6797_H */
+#endif  

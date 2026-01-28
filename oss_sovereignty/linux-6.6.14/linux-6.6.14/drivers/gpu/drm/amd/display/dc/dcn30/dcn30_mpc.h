@@ -1,47 +1,15 @@
-/* Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_MPCC_DCN30_H__
 #define __DC_MPCC_DCN30_H__
-
 #include "dcn20/dcn20_mpc.h"
-
 #define MAX_RMU 3
-
 #define TO_DCN30_MPC(mpc_base) \
 	container_of(mpc_base, struct dcn30_mpc, base)
-
 #ifdef SRII_MPC_RMU
 #undef SRII_MPC_RMU
-
 #define SRII_MPC_RMU(reg_name, block, id)\
 	.RMU##_##reg_name[id] = BASE(mm ## block ## id ## _ ## reg_name ## _BASE_IDX) + \
 					mm ## block ## id ## _ ## reg_name
-
 #endif
-
-
 #define MPC_REG_LIST_DCN3_0(inst)\
 	MPC_COMMON_REG_LIST_DCN1_0(inst),\
 	SRII(MPCC_TOP_GAIN, MPCC, inst),\
@@ -98,7 +66,6 @@
 	SRII(MPCC_OGAM_RAMB_START_BASE_CNTL_R, MPCC_OGAM, inst),\
 	SRII(MPCC_OGAM_CONTROL, MPCC_OGAM, inst),\
 	SRII(MPCC_OGAM_LUT_CONTROL, MPCC_OGAM, inst)
-
 #define MPC_OUT_MUX_REG_LIST_DCN3_0(inst) \
 	MPC_OUT_MUX_COMMON_REG_LIST_DCN1_0(inst),\
 	SRII(CSC_MODE, MPC_OUT, inst),\
@@ -110,11 +77,9 @@
 	SRII(DENORM_CLAMP_G_Y, MPC_OUT, inst),\
 	SRII(DENORM_CLAMP_B_CB, MPC_OUT, inst), \
 	SR(MPC_OUT_CSC_COEF_FORMAT)
-
 #define MPC_RMU_GLOBAL_REG_LIST_DCN3AG \
 	SR(MPC_RMU_CONTROL),\
 	SR(MPC_RMU_MEM_PWR_CTRL)
-
 #define MPC_RMU_REG_LIST_DCN3AG(inst) \
 	SRII(SHAPER_CONTROL, MPC_RMU, inst),\
 	SRII(SHAPER_OFFSET_R, MPC_RMU, inst),\
@@ -180,11 +145,8 @@
 	SRII_MPC_RMU(3DLUT_OUT_OFFSET_R, MPC_RMU, inst),\
 	SRII_MPC_RMU(3DLUT_OUT_OFFSET_G, MPC_RMU, inst),\
 	SRII_MPC_RMU(3DLUT_OUT_OFFSET_B, MPC_RMU, inst)
-
-
 #define MPC_DWB_MUX_REG_LIST_DCN3_0(inst) \
 	SRII_DWB(DWB_MUX, MUX, MPC_DWB, inst)
-
 #define MPC_REG_VARIABLE_LIST_DCN3_0 \
 	MPC_REG_VARIABLE_LIST_DCN2_0 \
 	uint32_t DWB_MUX[MAX_DWB]; \
@@ -281,7 +243,6 @@
 	uint32_t MPCC_OGAM_RAMB_START_BASE_CNTL_G[MAX_MPCC]; \
 	uint32_t MPCC_OGAM_RAMB_START_BASE_CNTL_R[MAX_MPCC]; \
 	uint32_t MPC_OUT_CSC_COEF_FORMAT
-
 #define MPC_REG_VARIABLE_LIST_DCN32 \
 	uint32_t MPCC_MOVABLE_CM_LOCATION_CONTROL[MAX_MPCC]; \
 	uint32_t MPCC_MCM_SHAPER_CONTROL[MAX_MPCC]; \
@@ -423,7 +384,6 @@
 	uint32_t MPCC_MCM_1DLUT_RAMB_REGION_30_31[MAX_MPCC]; \
 	uint32_t MPCC_MCM_1DLUT_RAMB_REGION_32_33[MAX_MPCC]; \
 	uint32_t MPCC_MCM_MEM_PWR_CTRL[MAX_MPCC]
-
 #define MPC_COMMON_MASK_SH_LIST_DCN3_0(mask_sh) \
 	MPC_COMMON_MASK_SH_LIST_DCN1_0(mask_sh),\
 	SF(MPCC0_MPCC_CONTROL, MPCC_BG_BPC, mask_sh),\
@@ -529,8 +489,6 @@
 	SF(MPC_RMU_MEM_PWR_CTRL, MPC_RMU1_SHAPER_MEM_PWR_STATE, mask_sh),\
 	SF(MPC_RMU_MEM_PWR_CTRL, MPC_RMU1_3DLUT_MEM_PWR_STATE, mask_sh),\
 	SF(CUR_VUPDATE_LOCK_SET0, CUR_VUPDATE_LOCK_SET, mask_sh)
-
-
 #define MPC_COMMON_MASK_SH_LIST_DCN30(mask_sh) \
 	MPC_COMMON_MASK_SH_LIST_DCN1_0(mask_sh),\
 	SF(MPCC0_MPCC_CONTROL, MPCC_BG_BPC, mask_sh),\
@@ -593,22 +551,22 @@
 	SF(MPCC_OGAM0_MPCC_OGAM_LUT_CONTROL, MPCC_OGAM_LUT_READ_DBG, mask_sh),\
 	SF(MPCC_OGAM0_MPCC_OGAM_LUT_CONTROL, MPCC_OGAM_LUT_HOST_SEL, mask_sh),\
 	SF(MPCC_OGAM0_MPCC_OGAM_LUT_CONTROL, MPCC_OGAM_LUT_CONFIG_MODE, mask_sh),\
-	/*SF(MPCC_OGAM0_MPCC_OGAM_LUT_CONTROL, MPCC_OGAM_LUT_STATUS, mask_sh),*/\
+	 \
 	SF(MPCC_OGAM0_MPCC_OGAM_LUT_DATA, MPCC_OGAM_LUT_DATA, mask_sh),\
 	SF(MPC_RMU0_3DLUT_MODE, MPC_RMU_3DLUT_MODE, mask_sh),\
 	SF(MPC_RMU0_3DLUT_MODE, MPC_RMU_3DLUT_SIZE, mask_sh),\
-	/*SF(MPC_RMU0_3DLUT_MODE, MPC_RMU_3DLUT_MODE_CURRENT, mask_sh),*/\
+	 \
 	SF(MPC_RMU0_3DLUT_READ_WRITE_CONTROL, MPC_RMU_3DLUT_WRITE_EN_MASK, mask_sh),\
 	SF(MPC_RMU0_3DLUT_READ_WRITE_CONTROL, MPC_RMU_3DLUT_RAM_SEL, mask_sh),\
 	SF(MPC_RMU0_3DLUT_READ_WRITE_CONTROL, MPC_RMU_3DLUT_30BIT_EN, mask_sh),\
-	/*SF(MPC_RMU0_3DLUT_READ_WRITE_CONTROL, MPC_RMU_3DLUT_CONFIG_STATUS, mask_sh),*/\
+	 \
 	SF(MPC_RMU0_3DLUT_READ_WRITE_CONTROL, MPC_RMU_3DLUT_READ_SEL, mask_sh),\
 	SF(MPC_RMU0_3DLUT_INDEX, MPC_RMU_3DLUT_INDEX, mask_sh),\
 	SF(MPC_RMU0_3DLUT_DATA, MPC_RMU_3DLUT_DATA0, mask_sh),\
 	SF(MPC_RMU0_3DLUT_DATA, MPC_RMU_3DLUT_DATA1, mask_sh),\
 	SF(MPC_RMU0_3DLUT_DATA_30BIT, MPC_RMU_3DLUT_DATA_30BIT, mask_sh),\
 	SF(MPC_RMU0_SHAPER_CONTROL, MPC_RMU_SHAPER_LUT_MODE, mask_sh),\
-	/*SF(MPC_RMU0_SHAPER_CONTROL, MPC_RMU_SHAPER_LUT_MODE_CURRENT, mask_sh),*/\
+	 \
 	SF(MPC_RMU0_SHAPER_OFFSET_R, MPC_RMU_SHAPER_OFFSET_R, mask_sh),\
 	SF(MPC_RMU0_SHAPER_OFFSET_G, MPC_RMU_SHAPER_OFFSET_G, mask_sh),\
 	SF(MPC_RMU0_SHAPER_OFFSET_B, MPC_RMU_SHAPER_OFFSET_B, mask_sh),\
@@ -619,7 +577,7 @@
 	SF(MPC_RMU0_SHAPER_LUT_DATA, MPC_RMU_SHAPER_LUT_DATA, mask_sh),\
 	SF(MPC_RMU0_SHAPER_LUT_WRITE_EN_MASK, MPC_RMU_SHAPER_LUT_WRITE_EN_MASK, mask_sh),\
 	SF(MPC_RMU0_SHAPER_LUT_WRITE_EN_MASK, MPC_RMU_SHAPER_LUT_WRITE_SEL, mask_sh),\
-	/*SF(MPC_RMU0_SHAPER_LUT_WRITE_EN_MASK, MPC_RMU_SHAPER_CONFIG_STATUS, mask_sh),*/\
+	 \
 	SF(MPC_RMU0_SHAPER_RAMA_START_CNTL_B, MPC_RMU_SHAPER_RAMA_EXP_REGION_START_B, mask_sh),\
 	SF(MPC_RMU0_SHAPER_RAMA_START_CNTL_B, MPC_RMU_SHAPER_RAMA_EXP_REGION_START_SEGMENT_B, mask_sh),\
 	SF(MPC_RMU0_SHAPER_RAMA_END_CNTL_B, MPC_RMU_SHAPER_RAMA_EXP_REGION_END_B, mask_sh),\
@@ -640,8 +598,6 @@
 	SF(MPC_RMU_MEM_PWR_CTRL, MPC_RMU1_MEM_LOW_PWR_MODE, mask_sh),\
 	SF(MPC_RMU0_SHAPER_CONTROL, MPC_RMU_SHAPER_MODE_CURRENT, mask_sh),\
 	SF(CUR_VUPDATE_LOCK_SET0, CUR_VUPDATE_LOCK_SET, mask_sh)
-
-
 #define MPC_REG_FIELD_LIST_DCN3_0(type) \
 	MPC_REG_FIELD_LIST_DCN2_0(type) \
 	type MPC_DWB0_MUX;\
@@ -721,7 +677,6 @@
 	type MPC_RMU_SHAPER_RAMA_EXP_REGION1_LUT_OFFSET;\
 	type MPC_RMU_SHAPER_RAMA_EXP_REGION1_NUM_SEGMENTS;\
 	type MPC_RMU_SHAPER_MODE_CURRENT
-
 #define MPC_REG_FIELD_LIST_DCN32(type) \
 	type MPCC_MOVABLE_CM_LOCATION_CNTL;\
 	type MPCC_MOVABLE_CM_LOCATION_CNTL_CURRENT;\
@@ -796,8 +751,6 @@
 	type MPCC_MCM_1DLUT_RAMA_EXP_REGION0_NUM_SEGMENTS;\
 	type MPCC_MCM_1DLUT_RAMA_EXP_REGION1_LUT_OFFSET;\
 	type MPCC_MCM_1DLUT_RAMA_EXP_REGION1_NUM_SEGMENTS
-
-
 #define MPC_COMMON_MASK_SH_LIST_DCN303(mask_sh) \
 	MPC_COMMON_MASK_SH_LIST_DCN1_0(mask_sh),\
 	SF(MPCC0_MPCC_CONTROL, MPCC_BG_BPC, mask_sh),\
@@ -858,22 +811,22 @@
 	SF(MPCC_OGAM0_MPCC_OGAM_LUT_CONTROL, MPCC_OGAM_LUT_READ_DBG, mask_sh),\
 	SF(MPCC_OGAM0_MPCC_OGAM_LUT_CONTROL, MPCC_OGAM_LUT_HOST_SEL, mask_sh),\
 	SF(MPCC_OGAM0_MPCC_OGAM_LUT_CONTROL, MPCC_OGAM_LUT_CONFIG_MODE, mask_sh),\
-	/*SF(MPCC_OGAM0_MPCC_OGAM_LUT_CONTROL, MPCC_OGAM_LUT_STATUS, mask_sh),*/\
+	 \
 	SF(MPCC_OGAM0_MPCC_OGAM_LUT_DATA, MPCC_OGAM_LUT_DATA, mask_sh),\
 	SF(MPC_RMU0_3DLUT_MODE, MPC_RMU_3DLUT_MODE, mask_sh),\
 	SF(MPC_RMU0_3DLUT_MODE, MPC_RMU_3DLUT_SIZE, mask_sh),\
-	/*SF(MPC_RMU0_3DLUT_MODE, MPC_RMU_3DLUT_MODE_CURRENT, mask_sh),*/\
+	 \
 	SF(MPC_RMU0_3DLUT_READ_WRITE_CONTROL, MPC_RMU_3DLUT_WRITE_EN_MASK, mask_sh),\
 	SF(MPC_RMU0_3DLUT_READ_WRITE_CONTROL, MPC_RMU_3DLUT_RAM_SEL, mask_sh),\
 	SF(MPC_RMU0_3DLUT_READ_WRITE_CONTROL, MPC_RMU_3DLUT_30BIT_EN, mask_sh),\
-	/*SF(MPC_RMU0_3DLUT_READ_WRITE_CONTROL, MPC_RMU_3DLUT_CONFIG_STATUS, mask_sh),*/\
+	 \
 	SF(MPC_RMU0_3DLUT_READ_WRITE_CONTROL, MPC_RMU_3DLUT_READ_SEL, mask_sh),\
 	SF(MPC_RMU0_3DLUT_INDEX, MPC_RMU_3DLUT_INDEX, mask_sh),\
 	SF(MPC_RMU0_3DLUT_DATA, MPC_RMU_3DLUT_DATA0, mask_sh),\
 	SF(MPC_RMU0_3DLUT_DATA, MPC_RMU_3DLUT_DATA1, mask_sh),\
 	SF(MPC_RMU0_3DLUT_DATA_30BIT, MPC_RMU_3DLUT_DATA_30BIT, mask_sh),\
 	SF(MPC_RMU0_SHAPER_CONTROL, MPC_RMU_SHAPER_LUT_MODE, mask_sh),\
-	/*SF(MPC_RMU0_SHAPER_CONTROL, MPC_RMU_SHAPER_LUT_MODE_CURRENT, mask_sh),*/\
+	 \
 	SF(MPC_RMU0_SHAPER_OFFSET_R, MPC_RMU_SHAPER_OFFSET_R, mask_sh),\
 	SF(MPC_RMU0_SHAPER_OFFSET_G, MPC_RMU_SHAPER_OFFSET_G, mask_sh),\
 	SF(MPC_RMU0_SHAPER_OFFSET_B, MPC_RMU_SHAPER_OFFSET_B, mask_sh),\
@@ -884,7 +837,7 @@
 	SF(MPC_RMU0_SHAPER_LUT_DATA, MPC_RMU_SHAPER_LUT_DATA, mask_sh),\
 	SF(MPC_RMU0_SHAPER_LUT_WRITE_EN_MASK, MPC_RMU_SHAPER_LUT_WRITE_EN_MASK, mask_sh),\
 	SF(MPC_RMU0_SHAPER_LUT_WRITE_EN_MASK, MPC_RMU_SHAPER_LUT_WRITE_SEL, mask_sh),\
-	/*SF(MPC_RMU0_SHAPER_LUT_WRITE_EN_MASK, MPC_RMU_SHAPER_CONFIG_STATUS, mask_sh),*/\
+	 \
 	SF(MPC_RMU0_SHAPER_RAMA_START_CNTL_B, MPC_RMU_SHAPER_RAMA_EXP_REGION_START_B, mask_sh),\
 	SF(MPC_RMU0_SHAPER_RAMA_START_CNTL_B, MPC_RMU_SHAPER_RAMA_EXP_REGION_START_SEGMENT_B, mask_sh),\
 	SF(MPC_RMU0_SHAPER_RAMA_END_CNTL_B, MPC_RMU_SHAPER_RAMA_EXP_REGION_END_B, mask_sh),\
@@ -900,7 +853,6 @@
 	SF(MPC_RMU_MEM_PWR_CTRL, MPC_RMU0_MEM_LOW_PWR_MODE, mask_sh),\
 	SF(MPC_RMU0_SHAPER_CONTROL, MPC_RMU_SHAPER_MODE_CURRENT, mask_sh),\
 	SF(CUR_VUPDATE_LOCK_SET0, CUR_VUPDATE_LOCK_SET, mask_sh)
-
 #define MPC_REG_FIELD_LIST_DCN3_03(type) \
 	MPC_REG_FIELD_LIST_DCN2_0(type) \
 	type MPC_DWB0_MUX;\
@@ -973,25 +925,20 @@
 	type MPC_RMU_SHAPER_RAMA_EXP_REGION1_LUT_OFFSET;\
 	type MPC_RMU_SHAPER_RAMA_EXP_REGION1_NUM_SEGMENTS;\
 	type MPC_RMU_SHAPER_MODE_CURRENT
-
 struct dcn30_mpc_registers {
 	MPC_REG_VARIABLE_LIST_DCN3_0;
 	MPC_REG_VARIABLE_LIST_DCN32;
 };
-
 struct dcn30_mpc_shift {
 	MPC_REG_FIELD_LIST_DCN3_0(uint8_t);
 	MPC_REG_FIELD_LIST_DCN32(uint8_t);
 };
-
 struct dcn30_mpc_mask {
 	MPC_REG_FIELD_LIST_DCN3_0(uint32_t);
 	MPC_REG_FIELD_LIST_DCN32(uint32_t);
 };
-
 struct dcn30_mpc {
 	struct mpc base;
-
 	int mpcc_in_use_mask;
 	int num_mpcc;
 	const struct dcn30_mpc_registers *mpc_regs;
@@ -999,7 +946,6 @@ struct dcn30_mpc {
 	const struct dcn30_mpc_mask *mpc_mask;
 	int num_rmu;
 };
-
 void dcn30_mpc_construct(struct dcn30_mpc *mpc30,
 	struct dc_context *ctx,
 	const struct dcn30_mpc_registers *mpc_regs,
@@ -1007,89 +953,70 @@ void dcn30_mpc_construct(struct dcn30_mpc *mpc30,
 	const struct dcn30_mpc_mask *mpc_mask,
 	int num_mpcc,
 	int num_rmu);
-
 bool mpc3_program_shaper(
 		struct mpc *mpc,
 		const struct pwl_params *params,
 		uint32_t rmu_idx);
-
 bool mpc3_program_3dlut(
 		struct mpc *mpc,
 		const struct tetrahedral_params *params,
 		int rmu_idx);
-
 uint32_t mpcc3_acquire_rmu(struct mpc *mpc,
 		int mpcc_id, int rmu_idx);
-
 void mpc3_set_denorm(
 	struct mpc *mpc,
 	int opp_id,
 	enum dc_color_depth output_depth);
-
 void mpc3_set_denorm_clamp(
 	struct mpc *mpc,
 	int opp_id,
 	struct mpc_denorm_clamp denorm_clamp);
-
 void mpc3_set_output_csc(
 	struct mpc *mpc,
 	int opp_id,
 	const uint16_t *regval,
 	enum mpc_output_csc_mode ocsc_mode);
-
 void mpc3_set_ocsc_default(
 	struct mpc *mpc,
 	int opp_id,
 	enum dc_color_space color_space,
 	enum mpc_output_csc_mode ocsc_mode);
-
 void mpc3_set_output_gamma(
 	struct mpc *mpc,
 	int mpcc_id,
 	const struct pwl_params *params);
-
 uint32_t mpc3_get_rmu_mux_status(
 	struct mpc *mpc,
 	int rmu_idx);
-
 void mpc3_set_gamut_remap(
 	struct mpc *mpc,
 	int mpcc_id,
 	const struct mpc_grph_gamut_adjustment *adjust);
-
 void mpc3_set_rmu_mux(
 	struct mpc *mpc,
 	int rmu_idx,
 	int value);
-
 void mpc3_set_dwb_mux(
 	struct mpc *mpc,
 	int dwb_id,
 	int mpcc_id);
-
 void mpc3_disable_dwb_mux(
 	struct mpc *mpc,
 	int dwb_id);
-
 bool mpc3_is_dwb_idle(
 	struct mpc *mpc,
 	int dwb_id);
-
 void mpc3_set_out_rate_control(
 	struct mpc *mpc,
 	int opp_id,
 	bool enable,
 	bool rate_2x_mode,
 	struct mpc_dwb_flow_control *flow_control);
-
 void mpc3_power_on_ogam_lut(
 	struct mpc *mpc, int mpcc_id,
 	bool power_on);
-
 void mpc3_init_mpcc(struct mpcc *mpcc, int mpcc_inst);
-
 enum dc_lut_mode mpc3_get_ogam_current(
 	struct mpc *mpc,
 	int mpcc_id);
-
 #endif

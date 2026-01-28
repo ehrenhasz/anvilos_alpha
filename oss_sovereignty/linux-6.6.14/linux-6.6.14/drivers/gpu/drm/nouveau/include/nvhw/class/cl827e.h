@@ -1,29 +1,5 @@
-/*
- * Copyright (c) 1993-2014, NVIDIA CORPORATION. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
-
-
 #ifndef _cl827e_h_
 #define _cl827e_h_
-
 #define NV_DISP_NOTIFICATION_1                                                       0x00000000
 #define NV_DISP_NOTIFICATION_1_SIZEOF                                                0x00000010
 #define NV_DISP_NOTIFICATION_1_TIME_STAMP_0                                          0x00000000
@@ -39,9 +15,6 @@
 #define NV_DISP_NOTIFICATION_1__3_STATUS_NOT_BEGUN                                   0x00008000
 #define NV_DISP_NOTIFICATION_1__3_STATUS_BEGUN                                       0x0000FFFF
 #define NV_DISP_NOTIFICATION_1__3_STATUS_FINISHED                                    0x00000000
-
-
-// class methods
 #define NV827E_SET_PRESENT_CONTROL                                              (0x00000084)
 #define NV827E_SET_PRESENT_CONTROL_BEGIN_MODE                                   1:0
 #define NV827E_SET_PRESENT_CONTROL_BEGIN_MODE_ASAP                              (0x00000000)
@@ -54,7 +27,6 @@
 #define NV827E_SET_COMPOSITION_CONTROL_MODE_SOURCE_COLOR_VALUE_KEYING           (0x00000000)
 #define NV827E_SET_COMPOSITION_CONTROL_MODE_DESTINATION_COLOR_VALUE_KEYING      (0x00000001)
 #define NV827E_SET_COMPOSITION_CONTROL_MODE_OPAQUE_SUSPEND_BASE                 (0x00000002)
-
 #define NV827E_SURFACE_SET_OFFSET                                               (0x00000800)
 #define NV827E_SURFACE_SET_OFFSET_ORIGIN                                        31:0
 #define NV827E_SURFACE_SET_SIZE                                                 (0x00000808)
@@ -85,4 +57,4 @@
 #define NV827E_SURFACE_SET_PARAMS_COLOR_SPACE_YUV_709                           (0x00000002)
 #define NV827E_SURFACE_SET_PARAMS_RESERVED0                                     22:16
 #define NV827E_SURFACE_SET_PARAMS_RESERVED1                                     24:24
-#endif // _cl827e_h
+#endif  

@@ -1,21 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2019 Hardkernel Co., Ltd
- * Copyright (c) 2020 Theobroma Systems Design und Consulting GmbH
- * Copyright (c) 2022 Maya Matuszczyk <maccraft123mc@gmail.com>
- */
-
 /dts-v1/;
 #include "rk3326-odroid-go.dtsi"
-
 / {
 	model = "ODROID-GO Advance Black Edition";
 	compatible = "hardkernel,rk3326-odroid-go2-v11", "rockchip,rk3326";
-
 	aliases {
 		mmc1 = &sdio;
 	};
-
 	analog_sticks: adc-joystick {
 		compatible = "adc-joystick";
 		io-channels = <&saradc 1>,
@@ -23,7 +13,6 @@
 		poll-interval = <60>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		axis@0 {
 			reg = <0>;
 			abs-flat = <10>;
@@ -31,7 +20,6 @@
 			abs-range = <172 772>;
 			linux,code = <ABS_X>;
 			};
-
 		axis@1 {
 			reg = <1>;
 			abs-flat = <10>;
@@ -40,7 +28,6 @@
 			linux,code = <ABS_Y>;
 		};
 	};
-
 	battery: battery {
 		compatible = "simple-battery";
 		charge-full-design-microamp-hours = <3000000>;
@@ -50,7 +37,6 @@
 		factory-internal-resistance-micro-ohms = <180000>;
 		voltage-max-design-microvolt = <4100000>;
 		voltage-min-design-microvolt = <3500000>;
-
 		ocv-capacity-celsius = <20>;
 		ocv-capacity-table-0 =  <4046950 100>, <4001920 95>, <3967900 90>, <3919950 85>,
 					<3888450 80>, <3861850 75>, <3831540 70>, <3799130 65>,
@@ -59,7 +45,6 @@
 					<3649470 20>, <3635260 15>, <3616920 10>, <3592440 5>,
 					<3574170 0>;
 	};
-
 	wifi_pwrseq: wifi-pwrseq {
 		compatible = "mmc-pwrseq-simple";
 		pinctrl-names = "default";
@@ -67,7 +52,6 @@
 		reset-gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_LOW>;
 	};
 };
-
 &builtin_gamepad {
 	button-sw20 {
 		gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
@@ -80,20 +64,17 @@
 		linux,code = <BTN_TR2>;
 	};
 };
-
 &internal_display {
 	compatible = "elida,kd35t133";
 	iovcc-supply = <&vcc_lcd>;
 	vdd-supply = <&vcc_lcd>;
 };
-
 &rk817 {
 	regulators {
 		vcc_wifi: LDO_REG9 {
 			regulator-name = "vcc_wifi";
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
-
 			regulator-state-mem {
 				regulator-on-in-suspend;
 				regulator-suspend-microvolt = <3300000>;
@@ -101,11 +82,9 @@
 		};
 	};
 };
-
 &rk817_charger {
 	monitored-battery = <&battery>;
 };
-
 &sdio {
 	bus-width = <4>;
 	cap-sd-highspeed;
@@ -118,13 +97,11 @@
 	#address-cells = <1>;
 	#size-cells = <0>;
 	status = "okay";
-
 	esp8089: wifi@1 {
 		compatible = "esp,esp8089";
 		reg = <1>;
 	};
 };
-
 &pinctrl {
 	btns {
 		btn_pins: btn-pins {
@@ -148,7 +125,6 @@
 					<3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
-
 	wifi {
 		wifi_pwrseq_pins: wifi-pwrseq-pins {
 			rockchip,pins = <3 RK_PB1 RK_FUNC_GPIO &pcfg_pull_up>,

@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8195-audsys-clkid.h  --  Mediatek 8195 audsys clock id definition
- *
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Trevor Wu <trevor.wu@mediatek.com>
- */
-
 #ifndef _MT8195_AUDSYS_CLKID_H_
 #define _MT8195_AUDSYS_CLKID_H_
-
 enum{
 	CLK_AUD_AFE,
 	CLK_AUD_LRCK_CNT,
@@ -89,5 +80,4 @@ enum{
 	CLK_AUD_GASRC19,
 	CLK_AUD_NR_CLK,
 };
-
 #endif

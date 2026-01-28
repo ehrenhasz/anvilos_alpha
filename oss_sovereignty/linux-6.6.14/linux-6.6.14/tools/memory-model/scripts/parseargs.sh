@@ -1,20 +1,5 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0+
-#
-# Parse arguments common to the various scripts.
-#
-# . scripts/parseargs.sh
-#
-# Include into other Linux kernel tools/memory-model scripts.
-#
-# Copyright IBM Corporation, 2018
-#
-# Author: Paul E. McKenney <paulmck@linux.ibm.com>
-
 T=/tmp/parseargs.sh.$$
 mkdir $T
-
-# Initialize one parameter: initparam name default
 initparam () {
 	echo if test -z '"$'$1'"' > $T/s
 	echo then >> $T/s
@@ -24,16 +9,13 @@ initparam () {
 	echo $1_DEF='$'$1  >> $T/s
 	. $T/s
 }
-
 initparam LKMM_DESTDIR "."
 initparam LKMM_HERD_OPTIONS "-conf linux-kernel.cfg"
 initparam LKMM_HW_MAP_FILE ""
 initparam LKMM_JOBS `getconf _NPROCESSORS_ONLN`
 initparam LKMM_PROCS "3"
 initparam LKMM_TIMEOUT "1m"
-
 scriptname=$0
-
 usagehelp () {
 	echo "Usage $scriptname [ arguments ]"
 	echo "      --destdir path (place for .litmus.out, default by .litmus)"
@@ -45,12 +27,9 @@ usagehelp () {
 	echo "Defaults: --destdir '$LKMM_DESTDIR_DEF' --herdopts '$LKMM_HERD_OPTIONS_DEF' --hw '$LKMM_HW_MAP_FILE' --jobs '$LKMM_JOBS_DEF' --procs '$LKMM_PROCS_DEF' --timeout '$LKMM_TIMEOUT_DEF'"
 	exit 1
 }
-
 usage () {
 	usagehelp 1>&2
 }
-
-# checkarg --argname argtype $# arg mustmatch cannotmatch
 checkarg () {
 	if test $3 -le 1
 	then
@@ -70,8 +49,7 @@ checkarg () {
 		usage
 	fi
 }
-
-while test $# -gt 0
+while test $
 do
 	case "$1" in
 	--destdir)

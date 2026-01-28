@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2009-2011, Intel Corporation.
- */
-
 #ifndef __INTEL_DRV_H__
 #define __INTEL_DRV_H__
-
 #include <linux/i2c.h>
 #include <linux/i2c-algo-bit.h>
 #include <drm/drm_crtc.h>
@@ -13,15 +7,7 @@
 #include <drm/drm_probe_helper.h>
 #include <drm/drm_vblank.h>
 #include "gma_display.h"
-
-/*
- * Display related stuff
- */
-
-/* maximum connectors per crtcs in the mode set */
 #define INTELFB_CONN_LIMIT 4
-
-/* Intel Pipe Clone Bit */
 #define INTEL_HDMIB_CLONE_BIT 1
 #define INTEL_HDMIC_CLONE_BIT 2
 #define INTEL_HDMID_CLONE_BIT 3
@@ -39,9 +25,6 @@
 #define INTEL_DVO_TMDS_CLONE_BIT 15
 #define INTEL_DVO_LVDS_CLONE_BIT 16
 #define INTEL_EDP_CLONE_BIT 17
-
-/* these are outputs from the chip - integrated only
- * external chips are via DVO or SDVO output */
 #define INTEL_OUTPUT_UNUSED 0
 #define INTEL_OUTPUT_ANALOG 1
 #define INTEL_OUTPUT_DVO 2
@@ -53,40 +36,22 @@
 #define INTEL_OUTPUT_MIPI2 8
 #define INTEL_OUTPUT_DISPLAYPORT 9
 #define INTEL_OUTPUT_EDP 10
-
-/*
- * Hold information useally put on the device driver privates here,
- * since it needs to be shared across multiple of devices drivers privates.
- */
 struct psb_intel_mode_device {
-
-	/*
-	 * Abstracted memory manager operations
-	 */
 	 size_t(*bo_offset) (struct drm_device *dev, void *bo);
-
-	/*
-	 * LVDS info
-	 */
-	int backlight_duty_cycle;	/* restore backlight to this value */
+	int backlight_duty_cycle;	 
 	bool panel_wants_dither;
 	struct drm_display_mode *panel_fixed_mode;
 	struct drm_display_mode *panel_fixed_mode2;
-	struct drm_display_mode *vbt_mode;	/* if any */
-
+	struct drm_display_mode *vbt_mode;	 
 	uint32_t saveBLC_PWM_CTL;
 };
-
 struct gma_i2c_chan {
 	struct i2c_adapter base;
 	struct i2c_algo_bit_data algo;
 	u8 slave_addr;
-
-	/* for getting at dev. private (mmio etc.) */
 	struct drm_device *drm_dev;
-	u32 reg; /* GPIO reg */
+	u32 reg;  
 };
-
 struct gma_encoder {
 	struct drm_encoder base;
 	int type;
@@ -94,26 +59,20 @@ struct gma_encoder {
 	void (*hot_plug)(struct gma_encoder *);
 	int crtc_mask;
 	int clone_mask;
-	u32 ddi_select;	/* Channel info */
+	u32 ddi_select;	 
 #define DDI0_SELECT	0x01
 #define DDI1_SELECT	0x02
 #define DP_MASK		0x8000
 #define DDI_MASK	0x03
-	void *dev_priv; /* For sdvo_priv, lvds_priv, etc... */
-
-	/* FIXME: Either make SDVO and LVDS store it's i2c here or give CDV it's
-	   own set of output privates */
+	void *dev_priv;  
 	struct gma_i2c_chan *i2c_bus;
 };
-
 struct gma_connector {
 	struct drm_connector base;
 	struct gma_encoder *encoder;
-
 	void (*save)(struct drm_connector *connector);
 	void (*restore)(struct drm_connector *connector);
 };
-
 struct psb_intel_crtc_state {
 	uint32_t saveDSPCNTR;
 	uint32_t savePIPECONF;
@@ -133,7 +92,6 @@ struct psb_intel_crtc_state {
 	uint32_t saveDSPBASE;
 	uint32_t savePalette[256];
 };
-
 struct gma_crtc {
 	struct drm_crtc base;
 	int pipe;
@@ -142,30 +100,17 @@ struct gma_crtc {
 	struct psb_gem_object *cursor_pobj;
 	u8 lut_adj[256];
 	struct psb_intel_framebuffer *fbdev_fb;
-	/* a mode_set for fbdev users on this crtc */
 	struct drm_mode_set mode_set;
-
-	/* GEM object that holds our cursor */
 	struct drm_gem_object *cursor_obj;
-
 	struct drm_display_mode saved_mode;
 	struct drm_display_mode saved_adjusted_mode;
-
 	struct psb_intel_mode_device *mode_dev;
-
-	/*crtc mode setting flags*/
 	u32 mode_flags;
-
 	bool active;
-
-	/* Saved Crtc HW states */
 	struct psb_intel_crtc_state *crtc_state;
-
 	const struct gma_clock_funcs *clock_funcs;
-
 	struct drm_pending_vblank_event *page_flip_event;
 };
-
 #define to_gma_crtc(x)	\
 		container_of(x, struct gma_crtc, base)
 #define to_gma_connector(x) \
@@ -176,14 +121,12 @@ struct gma_crtc {
 		container_of(x, struct psb_intel_framebuffer, base)
 #define to_gma_i2c_chan(x)	\
 		container_of(x, struct gma_i2c_chan, base)
-
 struct gma_i2c_chan *gma_i2c_create(struct drm_device *dev, const u32 reg,
 				    const char *name);
 void gma_i2c_destroy(struct gma_i2c_chan *chan);
 int psb_intel_ddc_get_modes(struct drm_connector *connector,
 			    struct i2c_adapter *adapter);
 extern bool psb_intel_ddc_probe(struct i2c_adapter *adapter);
-
 extern void psb_intel_crtc_init(struct drm_device *dev, int pipe,
 			    struct psb_intel_mode_device *mode_dev);
 extern void psb_intel_crt_init(struct drm_device *dev);
@@ -199,17 +142,14 @@ extern void oaktrail_wait_for_INTR_PKT_SENT(struct drm_device *dev);
 struct gma_i2c_chan *oaktrail_lvds_i2c_init(struct drm_device *dev);
 extern void mid_dsi_init(struct drm_device *dev,
 		    struct psb_intel_mode_device *mode_dev, int dsi_num);
-
 extern struct drm_encoder *gma_best_encoder(struct drm_connector *connector);
 extern void gma_connector_attach_encoder(struct gma_connector *connector,
 					 struct gma_encoder *encoder);
-
 static inline struct gma_encoder *gma_attached_encoder(
 						struct drm_connector *connector)
 {
 	return to_gma_connector(connector)->encoder;
 }
-
 extern struct drm_display_mode *psb_intel_crtc_mode_get(struct drm_device *dev,
 						    struct drm_crtc *crtc);
 extern struct drm_crtc *psb_intel_get_crtc_from_pipe(struct drm_device *dev,
@@ -228,28 +168,20 @@ extern int psb_intel_lvds_set_property(struct drm_connector *connector,
 					struct drm_property *property,
 					uint64_t value);
 extern void psb_intel_lvds_destroy(struct drm_connector *connector);
-
-/* intel_gmbus.c */
 extern void gma_intel_i2c_reset(struct drm_device *dev);
 extern int gma_intel_setup_gmbus(struct drm_device *dev);
 extern void gma_intel_gmbus_set_speed(struct i2c_adapter *adapter, int speed);
 extern void gma_intel_gmbus_force_bit(struct i2c_adapter *adapter, bool force_bit);
 extern void gma_intel_teardown_gmbus(struct drm_device *dev);
-
-/* DP support */
 extern void cdv_intel_dp_init(struct drm_device *dev, struct psb_intel_mode_device *mode_dev, int output_reg);
 extern void cdv_intel_dp_set_m_n(struct drm_crtc *crtc,
 					struct drm_display_mode *mode,
 					struct drm_display_mode *adjusted_mode);
-
 extern void psb_intel_attach_force_audio_property(struct drm_connector *connector);
 extern void psb_intel_attach_broadcast_rgb_property(struct drm_connector *connector);
-
 extern int cdv_sb_read(struct drm_device *dev, u32 reg, u32 *val);
 extern int cdv_sb_write(struct drm_device *dev, u32 reg, u32 val);
 extern void cdv_sb_reset(struct drm_device *dev);
-
 extern void cdv_intel_attach_force_audio_property(struct drm_connector *connector);
 extern void cdv_intel_attach_broadcast_rgb_property(struct drm_connector *connector);
-
-#endif				/* __INTEL_DRV_H__ */
+#endif				 

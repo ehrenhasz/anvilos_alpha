@@ -1,29 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Abilis Systems TB100 Development Kit PCB device tree
- *
- * Copyright (C) Abilis Systems 2013
- *
- * Author: Christian Ruppert <christian.ruppert@abilis.com>
- */
-
 /dts-v1/;
-
 /include/ "abilis_tb100.dtsi"
-
 / {
 	model = "abilis,tb100";
 	chosen {
 		bootargs = "earlycon=uart8250,mmio32,0xff100000,9600n8 console=ttyS0,9600n8";
 	};
-
 	aliases { };
-
 	memory {
 		device_type = "memory";
-		reg = <0x80000000 0x08000000>;	/* 128M */
+		reg = <0x80000000 0x08000000>;	 
 	};
-
 	soc100 {
 		uart@ff100000 {
 			pinctrl-names = "default";
@@ -32,7 +18,6 @@
 		ethernet@fe100000 {
 			phy-mode = "rgmii";
 		};
-
 		i2c0: i2c@ff120000 {
 			i2c-sda-hold-time-ns = <432>;
 		};
@@ -48,7 +33,6 @@
 		i2c4: i2c@ff124000 {
 			i2c-sda-hold-time-ns = <432>;
 		};
-
 		leds {
 			compatible = "gpio-leds";
 			power {

@@ -1,17 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
 /dts-v1/;
-
 #include <dt-bindings/input/input.h>
 #include "tegra210-p2530.dtsi"
-
 / {
 	model = "NVIDIA Tegra210 P2571 reference design";
 	compatible = "nvidia,p2571", "nvidia,tegra210";
-
 	pinmux: pinmux@700008d4 {
 		pinctrl-names = "boot";
 		pinctrl-0 = <&state_boot>;
-
 		state_boot: pinmux {
 			pex_l0_rst_n_pa0 {
 				nvidia,pins = "pex_l0_rst_n_pa0";

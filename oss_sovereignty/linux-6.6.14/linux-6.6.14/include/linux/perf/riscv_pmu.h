@@ -1,52 +1,26 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 SiFive
- * Copyright (C) 2018 Andes Technology Corporation
- * Copyright (C) 2021 Western Digital Corporation or its affiliates.
- *
- */
-
 #ifndef _RISCV_PMU_H
 #define _RISCV_PMU_H
-
 #include <linux/perf_event.h>
 #include <linux/ptrace.h>
 #include <linux/interrupt.h>
-
 #ifdef CONFIG_RISCV_PMU
-
-/*
- * The RISCV_MAX_COUNTERS parameter should be specified.
- */
-
 #define RISCV_MAX_COUNTERS	64
 #define RISCV_OP_UNSUPP		(-EOPNOTSUPP)
 #define RISCV_PMU_SBI_PDEV_NAME	"riscv-pmu-sbi"
 #define RISCV_PMU_LEGACY_PDEV_NAME	"riscv-pmu-legacy"
-
 #define RISCV_PMU_STOP_FLAG_RESET 1
-
 #define RISCV_PMU_CONFIG1_GUEST_EVENTS 0x1
-
 struct cpu_hw_events {
-	/* currently enabled events */
 	int			n_events;
-	/* Counter overflow interrupt */
 	int		irq;
-	/* currently enabled events */
 	struct perf_event	*events[RISCV_MAX_COUNTERS];
-	/* currently enabled hardware counters */
 	DECLARE_BITMAP(used_hw_ctrs, RISCV_MAX_COUNTERS);
-	/* currently enabled firmware counters */
 	DECLARE_BITMAP(used_fw_ctrs, RISCV_MAX_COUNTERS);
 };
-
 struct riscv_pmu {
 	struct pmu	pmu;
 	char		*name;
-
 	irqreturn_t	(*handle_irq)(int irq_num, void *dev);
-
 	unsigned long	cmask;
 	u64		(*ctr_read)(struct perf_event *event);
 	int		(*ctr_get_idx)(struct perf_event *event);
@@ -59,14 +33,11 @@ struct riscv_pmu {
 	void		(*event_mapped)(struct perf_event *event, struct mm_struct *mm);
 	void		(*event_unmapped)(struct perf_event *event, struct mm_struct *mm);
 	uint8_t		(*csr_index)(struct perf_event *event);
-
 	struct cpu_hw_events	__percpu *hw_events;
 	struct hlist_node	node;
 	struct notifier_block   riscv_pm_nb;
 };
-
 #define to_riscv_pmu(p) (container_of(p, struct riscv_pmu, pmu))
-
 void riscv_pmu_start(struct perf_event *event, int flags);
 void riscv_pmu_stop(struct perf_event *event, int flags);
 unsigned long riscv_pmu_ctr_read_csr(unsigned long csr);
@@ -82,7 +53,5 @@ struct riscv_pmu *riscv_pmu_alloc(void);
 #ifdef CONFIG_RISCV_PMU_SBI
 int riscv_pmu_get_hpm_info(u32 *hw_ctr_width, u32 *num_hw_ctr);
 #endif
-
-#endif /* CONFIG_RISCV_PMU */
-
-#endif /* _RISCV_PMU_H */
+#endif  
+#endif  

@@ -1,19 +1,10 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd
- */
-
 #include "rk322x.dtsi"
-
 / {
 	compatible = "rockchip,rk3229";
-
 	/delete-node/ opp-table0;
-
 	cpu0_opp_table: opp-table-0 {
 		compatible = "operating-points-v2";
 		opp-shared;
-
 		opp-408000000 {
 			opp-hz = /bits/ 64 <408000000>;
 			opp-microvolt = <950000>;

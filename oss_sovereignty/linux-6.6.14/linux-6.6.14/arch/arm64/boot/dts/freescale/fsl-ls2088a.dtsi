@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Device Tree Include file for Freescale Layerscape-2088A family SoC.
- *
- * Copyright 2016 Freescale Semiconductor, Inc.
- * Copyright 2017 NXP
- *
- * Abhimanyu Saini <abhimanyu.saini@nxp.com>
- *
- */
-
 #include <dt-bindings/clock/fsl,qoriq-clockgen.h>
 #include "fsl-ls208xa.dtsi"
-
 &cpu {
 	cpu0: cpu@0 {
 		device_type = "cpu";
@@ -22,7 +10,6 @@
 		next-level-cache = <&cluster0_l2>;
 		#cooling-cells = <2>;
 	};
-
 	cpu1: cpu@1 {
 		device_type = "cpu";
 		compatible = "arm,cortex-a72";
@@ -32,7 +19,6 @@
 		next-level-cache = <&cluster0_l2>;
 		#cooling-cells = <2>;
 	};
-
 	cpu2: cpu@100 {
 		device_type = "cpu";
 		compatible = "arm,cortex-a72";
@@ -42,7 +28,6 @@
 		next-level-cache = <&cluster1_l2>;
 		#cooling-cells = <2>;
 	};
-
 	cpu3: cpu@101 {
 		device_type = "cpu";
 		compatible = "arm,cortex-a72";
@@ -52,7 +37,6 @@
 		next-level-cache = <&cluster1_l2>;
 		#cooling-cells = <2>;
 	};
-
 	cpu4: cpu@200 {
 		device_type = "cpu";
 		compatible = "arm,cortex-a72";
@@ -62,7 +46,6 @@
 		cpu-idle-states = <&CPU_PW20>;
 		#cooling-cells = <2>;
 	};
-
 	cpu5: cpu@201 {
 		device_type = "cpu";
 		compatible = "arm,cortex-a72";
@@ -72,7 +55,6 @@
 		next-level-cache = <&cluster2_l2>;
 		#cooling-cells = <2>;
 	};
-
 	cpu6: cpu@300 {
 		device_type = "cpu";
 		compatible = "arm,cortex-a72";
@@ -82,7 +64,6 @@
 		next-level-cache = <&cluster3_l2>;
 		#cooling-cells = <2>;
 	};
-
 	cpu7: cpu@301 {
 		device_type = "cpu";
 		compatible = "arm,cortex-a72";
@@ -92,31 +73,26 @@
 		next-level-cache = <&cluster3_l2>;
 		#cooling-cells = <2>;
 	};
-
 	cluster0_l2: l2-cache0 {
 		compatible = "cache";
 		cache-level = <2>;
 		cache-unified;
 	};
-
 	cluster1_l2: l2-cache1 {
 		compatible = "cache";
 		cache-level = <2>;
 		cache-unified;
 	};
-
 	cluster2_l2: l2-cache2 {
 		compatible = "cache";
 		cache-level = <2>;
 		cache-unified;
 	};
-
 	cluster3_l2: l2-cache3 {
 		compatible = "cache";
 		cache-level = <2>;
 		cache-unified;
 	};
-
 	CPU_PW20: cpu-pw20 {
 		compatible = "arm,idle-state";
 		idle-state-name = "PW20";
@@ -126,39 +102,31 @@
 		min-residency-us = <6000>;
 	};
 };
-
 &pcie1 {
 	compatible = "fsl,ls2088a-pcie";
-	reg = <0x00 0x03400000 0x0 0x00100000>, /* controller registers */
-	      <0x20 0x00000000 0x0 0x00002000>; /* configuration space */
-
+	reg = <0x00 0x03400000 0x0 0x00100000>,  
+	      <0x20 0x00000000 0x0 0x00002000>;  
 	ranges = <0x81000000 0x0 0x00000000 0x20 0x00010000 0x0 0x00010000
 		  0x82000000 0x0 0x40000000 0x20 0x40000000 0x0 0x40000000>;
 };
-
 &pcie2 {
 	compatible = "fsl,ls2088a-pcie";
-	reg = <0x00 0x03500000 0x0 0x00100000>, /* controller registers */
-	      <0x28 0x00000000 0x0 0x00002000>; /* configuration space */
-
+	reg = <0x00 0x03500000 0x0 0x00100000>,  
+	      <0x28 0x00000000 0x0 0x00002000>;  
 	ranges = <0x81000000 0x0 0x00000000 0x28 0x00010000 0x0 0x00010000
 		  0x82000000 0x0 0x40000000 0x28 0x40000000 0x0 0x40000000>;
 };
-
 &pcie3 {
 	compatible = "fsl,ls2088a-pcie";
-	reg = <0x00 0x03600000 0x0 0x00100000>, /* controller registers */
-	      <0x30 0x00000000 0x0 0x00002000>; /* configuration space */
-
+	reg = <0x00 0x03600000 0x0 0x00100000>,  
+	      <0x30 0x00000000 0x0 0x00002000>;  
 	ranges = <0x81000000 0x0 0x00000000 0x30 0x00010000 0x0 0x00010000
 		  0x82000000 0x0 0x40000000 0x30 0x40000000 0x0 0x40000000>;
 };
-
 &pcie4 {
 	compatible = "fsl,ls2088a-pcie";
-	reg = <0x00 0x03700000 0x0 0x00100000>, /* controller registers */
-	      <0x38 0x00000000 0x0 0x00002000>; /* configuration space */
-
+	reg = <0x00 0x03700000 0x0 0x00100000>,  
+	      <0x38 0x00000000 0x0 0x00002000>;  
 	ranges = <0x81000000 0x0 0x00000000 0x38 0x00010000 0x0 0x00010000
 		  0x82000000 0x0 0x40000000 0x38 0x40000000 0x0 0x40000000>;
 };

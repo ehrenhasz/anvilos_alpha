@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2013 Greg Ungerer <gerg@uclinux.org>
- */
-
 #ifndef __DTS_IMX50_PINFUNC_H
 #define __DTS_IMX50_PINFUNC_H
-
-/*
- * The pin function ID is a tuple of
- * <mux_reg conf_reg input_reg mux_mode input_val>
- */
 #define MX50_PAD_KEY_COL0__KPP_COL_0				0x020 0x2cc 0x000 0x0 0x0
 #define MX50_PAD_KEY_COL0__GPIO4_0				0x020 0x2cc 0x000 0x1 0x0
 #define MX50_PAD_KEY_COL0__EIM_NANDF_CLE			0x020 0x2cc 0x000 0x2 0x0
@@ -915,5 +905,4 @@
 #define MX50_PAD_EIM_LBA__TESTER_ACK				0x2c4 0x660 0x000 0x7 0x0
 #define MX50_PAD_EIM_CRE__EIM_WEIM_CRE				0x2c8 0x664 0x000 0x0 0x0
 #define MX50_PAD_EIM_CRE__GPIO1_27				0x2c8 0x664 0x000 0x1 0x0
-
-#endif /* __DTS_IMX50_PINFUNC_H */
+#endif  

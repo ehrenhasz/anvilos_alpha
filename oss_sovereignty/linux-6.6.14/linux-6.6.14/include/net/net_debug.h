@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_NET_DEBUG_H
 #define _LINUX_NET_DEBUG_H
-
 #include <linux/bug.h>
 #include <linux/kern_levels.h>
-
 struct net_device;
-
 __printf(3, 4) __cold
 void netdev_printk(const char *level, const struct net_device *dev,
 		   const char *format, ...);
@@ -24,7 +20,6 @@ __printf(2, 3) __cold
 void netdev_notice(const struct net_device *dev, const char *format, ...);
 __printf(2, 3) __cold
 void netdev_info(const struct net_device *dev, const char *format, ...);
-
 #define netdev_level_once(level, dev, fmt, ...)			\
 do {								\
 	static bool __section(".data.once") __print_once;	\
@@ -34,7 +29,6 @@ do {								\
 		netdev_printk(level, dev, fmt, ##__VA_ARGS__);	\
 	}							\
 } while (0)
-
 #define netdev_emerg_once(dev, fmt, ...) \
 	netdev_level_once(KERN_EMERG, dev, fmt, ##__VA_ARGS__)
 #define netdev_alert_once(dev, fmt, ...) \
@@ -49,7 +43,6 @@ do {								\
 	netdev_level_once(KERN_NOTICE, dev, fmt, ##__VA_ARGS__)
 #define netdev_info_once(dev, fmt, ...) \
 	netdev_level_once(KERN_INFO, dev, fmt, ##__VA_ARGS__)
-
 #if defined(CONFIG_DYNAMIC_DEBUG) || \
 	(defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
 #define netdev_dbg(__dev, format, args...)			\
@@ -66,11 +59,9 @@ do {								\
 		netdev_printk(KERN_DEBUG, __dev, format, ##args); \
 })
 #endif
-
 #if defined(VERBOSE_DEBUG)
 #define netdev_vdbg	netdev_dbg
 #else
-
 #define netdev_vdbg(dev, format, args...)			\
 ({								\
 	if (0)							\
@@ -78,21 +69,16 @@ do {								\
 	0;							\
 })
 #endif
-
-/* netif printk helpers, similar to netdev_printk */
-
 #define netif_printk(priv, type, level, dev, fmt, args...)	\
 do {					  			\
 	if (netif_msg_##type(priv))				\
 		netdev_printk(level, (dev), fmt, ##args);	\
 } while (0)
-
 #define netif_level(level, priv, type, dev, fmt, args...)	\
 do {								\
 	if (netif_msg_##type(priv))				\
 		netdev_##level(dev, fmt, ##args);		\
 } while (0)
-
 #define netif_emerg(priv, type, dev, fmt, args...)		\
 	netif_level(emerg, priv, type, dev, fmt, ##args)
 #define netif_alert(priv, type, dev, fmt, args...)		\
@@ -107,7 +93,6 @@ do {								\
 	netif_level(notice, priv, type, dev, fmt, ##args)
 #define netif_info(priv, type, dev, fmt, args...)		\
 	netif_level(info, priv, type, dev, fmt, ##args)
-
 #if defined(CONFIG_DYNAMIC_DEBUG) || \
 	(defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
 #define netif_dbg(priv, type, netdev, format, args...)		\
@@ -126,8 +111,6 @@ do {								\
 	0;								\
 })
 #endif
-
-/* if @cond then downgrade to debug, else print at @level */
 #define netif_cond_dbg(priv, type, netdev, cond, level, fmt, args...)     \
 	do {                                                              \
 		if (cond)                                                 \
@@ -135,7 +118,6 @@ do {								\
 		else                                                      \
 			netif_ ## level(priv, type, netdev, fmt, ##args); \
 	} while (0)
-
 #if defined(VERBOSE_DEBUG)
 #define netif_vdbg	netif_dbg
 #else
@@ -146,12 +128,9 @@ do {								\
 	0;							\
 })
 #endif
-
-
 #if defined(CONFIG_DEBUG_NET)
 #define DEBUG_NET_WARN_ON_ONCE(cond) (void)WARN_ON_ONCE(cond)
 #else
 #define DEBUG_NET_WARN_ON_ONCE(cond) BUILD_BUG_ON_INVALID(cond)
 #endif
-
-#endif	/* _LINUX_NET_DEBUG_H */
+#endif	 

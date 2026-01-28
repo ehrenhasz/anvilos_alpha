@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #if !defined(_VISL_TRACE_VP8_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _VISL_TRACE_VP8_H_
-
 #include <linux/tracepoint.h>
 #include "visl.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM visl_vp8_controls
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_vp8_entropy_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_vp8_frame *f),
 	TP_ARGS(f),
@@ -33,7 +29,6 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_vp8_entropy_tmpl,
 				   false)
 		  )
 )
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_vp8_frame_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_vp8_frame *f),
 	TP_ARGS(f),
@@ -136,19 +131,15 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_vp8_frame_tmpl,
 		  {V4L2_VP8_FRAME_FLAG_SIGN_BIAS_ALT, "SIGN_BIAS_ALT"})
 		  )
 );
-
 DEFINE_EVENT(v4l2_ctrl_vp8_frame_tmpl, v4l2_ctrl_vp8_frame,
 	TP_PROTO(const struct v4l2_ctrl_vp8_frame *f),
 	TP_ARGS(f)
 );
-
 DEFINE_EVENT(v4l2_ctrl_vp8_entropy_tmpl, v4l2_ctrl_vp8_entropy,
 	TP_PROTO(const struct v4l2_ctrl_vp8_frame *f),
 	TP_ARGS(f)
 );
-
 #endif
-
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH ../../drivers/media/test-drivers/visl

@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __MSM_DSI_CFG_H__
 #define __MSM_DSI_CFG_H__
-
 #include "dsi.h"
-
 #define MSM_DSI_VER_MAJOR_V2	0x02
 #define MSM_DSI_VER_MAJOR_6G	0x03
 #define MSM_DSI_6G_VER_MINOR_V1_0	0x10000000
@@ -28,14 +21,9 @@
 #define MSM_DSI_6G_VER_MINOR_V2_5_0	0x20050000
 #define MSM_DSI_6G_VER_MINOR_V2_6_0	0x20060000
 #define MSM_DSI_6G_VER_MINOR_V2_7_0	0x20070000
-
 #define MSM_DSI_V2_VER_MINOR_8064	0x0
-
 #define DSI_6G_REG_SHIFT	4
-
-/* Maximum number of configurations matched against the same hw revision */
 #define VARIANTS_MAX			2
-
 struct msm_dsi_config {
 	u32 io_offset;
 	const struct regulator_bulk_data *regulator_data;
@@ -44,7 +32,6 @@ struct msm_dsi_config {
 	const int num_bus_clks;
 	const resource_size_t io_start[VARIANTS_MAX][DSI_MAX];
 };
-
 struct msm_dsi_host_cfg_ops {
 	int (*link_clk_set_rate)(struct msm_dsi_host *msm_host);
 	int (*link_clk_enable)(struct msm_dsi_host *msm_host);
@@ -56,15 +43,11 @@ struct msm_dsi_host_cfg_ops {
 	int (*dma_base_get)(struct msm_dsi_host *msm_host, uint64_t *iova);
 	int (*calc_clk_rate)(struct msm_dsi_host *msm_host, bool is_bonded_dsi);
 };
-
 struct msm_dsi_cfg_handler {
 	u32 major;
 	u32 minor;
 	const struct msm_dsi_config *cfg;
 	const struct msm_dsi_host_cfg_ops *ops;
 };
-
 const struct msm_dsi_cfg_handler *msm_dsi_cfg_get(u32 major, u32 minor);
-
-#endif /* __MSM_DSI_CFG_H__ */
-
+#endif  

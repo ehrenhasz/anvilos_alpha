@@ -1,21 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Device Tree defines for Lochnagar pinctrl
- *
- * Copyright (c) 2018 Cirrus Logic, Inc. and
- *                    Cirrus Logic International Semiconductor Ltd.
- *
- * Author: Charles Keepax <ckeepax@opensource.cirrus.com>
- */
-
 #ifndef DT_BINDINGS_PINCTRL_LOCHNAGAR_H
 #define DT_BINDINGS_PINCTRL_LOCHNAGAR_H
-
 #define LOCHNAGAR1_PIN_CDC_RESET		0
 #define LOCHNAGAR1_PIN_DSP_RESET		1
 #define LOCHNAGAR1_PIN_CDC_CIF1MODE		2
 #define LOCHNAGAR1_PIN_NUM_GPIOS		3
-
 #define LOCHNAGAR2_PIN_CDC_RESET		0
 #define LOCHNAGAR2_PIN_DSP_RESET		1
 #define LOCHNAGAR2_PIN_CDC_CIF1MODE		2
@@ -128,5 +116,4 @@
 #define LOCHNAGAR2_PIN_GF_GPIO5			109
 #define LOCHNAGAR2_PIN_DSP_GPIO20		110
 #define LOCHNAGAR2_PIN_NUM_GPIOS		111
-
 #endif

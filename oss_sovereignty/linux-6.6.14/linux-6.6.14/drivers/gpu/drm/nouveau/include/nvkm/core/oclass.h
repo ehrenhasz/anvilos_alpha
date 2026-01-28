@@ -4,7 +4,6 @@
 #include <core/debug.h>
 struct nvkm_oclass;
 struct nvkm_object;
-
 struct nvkm_sclass {
 	int minver;
 	int maxver;
@@ -13,7 +12,6 @@ struct nvkm_sclass {
 	int (*ctor)(const struct nvkm_oclass *, void *data, u32 size,
 		    struct nvkm_object **);
 };
-
 struct nvkm_oclass {
 	int (*ctor)(const struct nvkm_oclass *, void *data, u32 size,
 		    struct nvkm_object **);

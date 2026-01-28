@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/* industrial I/O data types needed both in and out of kernel
- *
- * Copyright (c) 2008 Jonathan Cameron
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-
 #ifndef _UAPI_IIO_TYPES_H_
 #define _UAPI_IIO_TYPES_H_
-
 enum iio_chan_type {
 	IIO_VOLTAGE,
 	IIO_CURRENT,
@@ -48,7 +37,6 @@ enum iio_chan_type {
 	IIO_PHASE,
 	IIO_MASSCONCENTRATION,
 };
-
 enum iio_modifier {
 	IIO_NO_MOD,
 	IIO_MOD_X,
@@ -102,7 +90,6 @@ enum iio_modifier {
 	IIO_MOD_YAW,
 	IIO_MOD_ROLL,
 };
-
 enum iio_event_type {
 	IIO_EV_TYPE_THRESH,
 	IIO_EV_TYPE_MAG,
@@ -113,7 +100,6 @@ enum iio_event_type {
 	IIO_EV_TYPE_MAG_REFERENCED,
 	IIO_EV_TYPE_GESTURE,
 };
-
 enum iio_event_direction {
 	IIO_EV_DIR_EITHER,
 	IIO_EV_DIR_RISING,
@@ -122,5 +108,4 @@ enum iio_event_direction {
 	IIO_EV_DIR_SINGLETAP,
 	IIO_EV_DIR_DOUBLETAP,
 };
-
-#endif /* _UAPI_IIO_TYPES_H_ */
+#endif  

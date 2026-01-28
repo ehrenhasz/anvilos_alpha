@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Jie Qiu <jie.qiu@mediatek.com>
- */
 #ifndef _MTK_HDMI_REGS_H
 #define _MTK_HDMI_REGS_H
-
 #define GRL_INT_MASK		0x18
 #define GRL_IFM_PORT		0x188
 #define GRL_CH_SWAP		0x198
@@ -193,7 +187,6 @@
 #define VIDEO_SOURCE_SEL		BIT(7)
 #define NORMAL_PATH			(1 << 7)
 #define GEN_RGB				(0 << 7)
-
 #define HDMI_SYS_CFG1C		0x000
 #define HDMI_ON				BIT(0)
 #define HDMI_RST			BIT(1)
@@ -225,6 +218,5 @@
 #define MHL_PP_MODE			BIT(29)
 #define MHL_SYNC_AUTO_EN		BIT(30)
 #define HDMI_PCLK_FREE_RUN		BIT(31)
-
 #define MTK_SIP_SET_AUTHORIZED_SECURE_REG 0x82000001
 #endif

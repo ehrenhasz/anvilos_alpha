@@ -1,44 +1,30 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020-2023, Linaro Ltd.
- *
- */
-
 /dts-v1/;
-
 #include "msm8939.dtsi"
 #include "msm8939-pm8916.dtsi"
 #include <dt-bindings/arm/qcom,ids.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
 #include <dt-bindings/sound/apq8016-lpass.h>
-
 / {
 	model = "Square, Inc. T2 Devkit";
 	compatible = "square,apq8039-t2", "qcom,msm8939";
-
 	qcom,board-id = <0x53 0x54>;
 	qcom,msm-id = <QCOM_ID_APQ8039 0x30000>;
-
 	aliases {
 		mmc0 = &sdhc_1;
 		mmc1 = &sdhc_2;
 		serial0 = &blsp_uart1;
 		serial1 = &blsp_uart2;
 	};
-
 	bl: backlight {
 		compatible = "gpio-backlight";
 		pinctrl-0 = <&pinctrl_backlight>;
 		pinctrl-names = "default";
 		gpios = <&tlmm 98 GPIO_ACTIVE_HIGH>;
 	};
-
 	chosen {
 		stdout-path = "serial1:115200n8";
 	};
-
 	vreg_lcd_avdd_reg: lcd-avdd-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "lcd_avdd";
@@ -50,7 +36,6 @@
 		startup-delay-us = <300>;
 		enable-active-high;
 	};
-
 	vreg_lcd_avee_reg: lcd-avee-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "lcd_avee";
@@ -62,7 +47,6 @@
 		startup-delay-us = <300>;
 		enable-active-high;
 	};
-
 	vreg_lcd_iovcc_reg: lcd-iovcc-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "lcd_iovcc";
@@ -75,33 +59,25 @@
 		enable-active-high;
 	};
 };
-
 &blsp_i2c1 {
 	status = "okay";
 };
-
 &blsp_i2c2 {
 	status = "okay";
 };
-
 &blsp_i2c3 {
 	status = "okay";
-
 	typec_pd: usb-pd@38 {
 		compatible = "ti,tps6598x";
 		reg = <0x38>;
-
 		interrupt-parent = <&tlmm>;
 		interrupts = <107 IRQ_TYPE_LEVEL_LOW>;
 		interrupt-names = "irq";
-
 		pinctrl-names = "default";
 		pinctrl-0 = <&typec_irq>;
-
 		typec_con: connector {
 			compatible = "usb-c-connector";
 			label = "USB-C";
-
 			port {
 				typec_ep: endpoint {
 					remote-endpoint = <&otg_ep>;
@@ -110,65 +86,52 @@
 		};
 	};
 };
-
 &blsp_i2c5 {
 	status = "okay";
 };
-
 &blsp_uart1 {
 	status = "okay";
 };
-
 &blsp_uart1_default {
 	pins = "gpio0", "gpio1";
 };
-
 &blsp_uart1_sleep {
 	pins = "gpio0", "gpio1";
 };
-
 &blsp_uart2 {
 	status = "okay";
 };
-
 &lpass {
 	status = "okay";
 };
-
 &lpass_codec {
 	status = "okay";
 };
-
 &mdss {
 	status = "okay";
 };
-
 &pm8916_codec {
 	qcom,hphl-jack-type-normally-open;
 	qcom,mbhc-vthreshold-low = <75 150 237 450 500>;
 	qcom,mbhc-vthreshold-high = <75 150 237 450 500>;
 	status = "okay";
 };
-
 &pm8916_gpios {
 	gpio-line-names =
-		"PM_GPIO1",     /* WIFI_GPIO1_PRE */
-		"PM_GPIO2",     /* WIFI_GPIO2_PRE */
+		"PM_GPIO1",      
+		"PM_GPIO2",      
 		"PM_GPIO3",
 		"PM_GPIO4";
 };
-
 &sdhc_1 {
 	status = "okay";
 };
-
 &sound {
 	model = "apq8039-square-sndcard";
 	audio-routing = "AMIC2", "MIC BIAS Internal2";
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&cdc_pdm_default>;
 	pinctrl-1 = <&cdc_pdm_sleep>;
-
 	internal-codec-playback-dai-link {
 		link-name = "WCD";
 		cpu {
@@ -178,7 +141,6 @@
 			sound-dai = <&lpass_codec 0>, <&pm8916_codec 0>;
 		};
 	};
-
 	internal-codec-capture-dai-link {
 		link-name = "WCD-Capture";
 		cpu {
@@ -189,14 +151,9 @@
 		};
 	};
 };
-
-/*
- * Line names are taken from the schematic of T2, Ver X03.
- * July 14, 2018. Page 4 in particular.
- */
 &tlmm {
 	gpio-line-names =
-		"APQ_UART1_TX",		/* GPIO_0 */
+		"APQ_UART1_TX",		 
 		"APQ_UART1_RX",
 		"APQ_I2C1_SDA",
 		"APQ_I2C1_SCL",
@@ -206,7 +163,7 @@
 		"APQ_I2C2_SCL",
 		"NC",
 		"APQ_LCD_IOVCC_EN",
-		"APQ_I2C3_SDA",		/* GPIO_10 */
+		"APQ_I2C3_SDA",		 
 		"APQ_I2C3_SCL",
 		"TOUCH_RST_1V8_L",
 		"NC",
@@ -216,7 +173,7 @@
 		"USB_DISCONNECT",
 		"APQ_I2C5_SDA",
 		"APQ_I2C5_SCL",
-		"APQ_USBC_SPI_MOSI",	/* GPIO_20 */
+		"APQ_USBC_SPI_MOSI",	 
 		"APQ_USBC_SPI_MISO",
 		"APQ_USBC_SPI_SS_L",
 		"APQ_USBC_SPI_CLK",
@@ -226,7 +183,7 @@
 		"NC",
 		"ACCELEROMETER_INT1",
 		"APQ_CAM_I2C0_SDA",
-		"APQ_CAM_I2C0_SCL",	/* GPIO_30 */
+		"APQ_CAM_I2C0_SCL",	 
 		"ACCELEROMETER_INT2",
 		"NC",
 		"NC",
@@ -236,7 +193,7 @@
 		"APQ_EDL_1V8",
 		"TP145",
 		"BT_SSBI",
-		"NC",			/* GPIO_40 */
+		"NC",			 
 		"NC",
 		"NC",
 		"NC",
@@ -246,7 +203,7 @@
 		"BT_CTRL",
 		"BT_DAT",
 		"PWR_GPIO_IN",
-		"PWR_GPIO_OUT",		/* GPIO_50 */
+		"PWR_GPIO_OUT",		 
 		"CARD_DET_MLB_L",
 		"HALL_SENSOR",
 		"TP63",
@@ -256,7 +213,7 @@
 		"NC",
 		"NC",
 		"NC",
-		"NC",			/* GPIO_60 */
+		"NC",			 
 		"NC",
 		"APQ_K21_GPIO0_1V8",
 		"CDC_PDM_CLK",
@@ -266,7 +223,7 @@
 		"CDC_PDM_RX1",
 		"CDC_PDM_RX2",
 		"APQ_K21_GPIO1_1V8",
-		"NC",			/* GPIO_70 */
+		"NC",			 
 		"APQ_HUB_SEL_1V8",
 		"APQ_K21_GPIO2_1V8",
 		"APQ_K21_GPIO3_1V8",
@@ -276,7 +233,7 @@
 		"APQ_ID3",
 		"APQ_ID4",
 		"APQ_HUB_SUSP_IND",
-		"BOOT_CONFIG_0",	/* GPIO_80 */
+		"BOOT_CONFIG_0",	 
 		"BOOT_CONFIG_1",
 		"BOOT_CONFIG_2",
 		"BOOT_CONFIG_3",
@@ -286,7 +243,7 @@
 		"APQ_LCD_AVEE_EN",
 		"TP70",
 		"NC",
-		"APQ_DEBUG0",		/* GPIO_90 */
+		"APQ_DEBUG0",		 
 		"APQ_DEBUG1",
 		"APQ_DEBUG2",
 		"APQ_DEBUG3",
@@ -296,7 +253,7 @@
 		"NC",
 		"APQ_LCD_BL_EN",
 		"NC",
-		"APQ_LCD_ID0",		/* GPIO_100 */
+		"APQ_LCD_ID0",		 
 		"APQ_LCD_ID1",
 		"USBC_GPIO5_1V8",
 		"NC",
@@ -306,7 +263,7 @@
 		"USBC_I2C_IRQ_1V8_L",
 		"SPE_PWR_EN",
 		"NC",
-		"APQ_USB_ID",		/* GPIO_110 */
+		"APQ_USB_ID",		 
 		"APQ_EXT_BUCK_VSEL",
 		"APQ_USB_ID_OUT",
 		"NC",
@@ -316,59 +273,49 @@
 		"CHG_BACKPWR_EN",
 		"CHG_PROCHOT_L",
 		"NC",
-		"USBC_GPIO7_1V8",	/* GPIO_120 */
+		"USBC_GPIO7_1V8",	 
 		"NC";
-
 	pinctrl_backlight: backlight-state {
 		pins = "gpio98";
 		function = "gpio";
 	};
-
 	pinctrl_lcd_avdd_reg: lcd-avdd-reg-state {
 		pins = "gpio86";
 		function = "gpio";
 	};
-
 	pinctrl_lcd_avee_reg: lcd-avee-reg-state {
 		pins = "gpio87";
 		function = "gpio";
 	};
-
 	pinctrl_lcd_iovcc_reg: lcd-iovcc-reg-state {
 		pins = "gpio9";
 		function = "gpio";
 	};
-
 	pinctrl_lcd_rst: lcd-rst-state {
 		pins = "gpio25";
 		function = "gpio";
 	};
-
 	pinctrl_otg_default: otg-default-state {
 		function = "gpio";
 		pins = "gpio17";
 		output-high;
 	};
-
 	pinctrl_otg_device: otg-device-state {
 		function = "gpio";
 		pins = "gpio17";
 		output-low;
 	};
-
 	pinctrl_otg_host: otg-host-state {
 		function = "gpio";
 		pins = "gpio17";
 		output-low;
 	};
-
 	typec_irq: typec-irq-state {
 		function = "gpio";
 		pins = "gpio107";
 		bias-pull-up;
 	};
 };
-
 &usb {
 	pinctrl-names = "default", "host", "device";
 	pinctrl-0 = <&pinctrl_otg_default>;
@@ -376,18 +323,15 @@
 	pinctrl-2 = <&pinctrl_otg_device>;
 	usb-role-switch;
 	status = "okay";
-
 	port {
 		otg_ep: endpoint {
 			remote-endpoint = <&typec_ep>;
 		};
 	};
 };
-
 &wcnss {
 	status = "okay";
 };
-
 &wcnss_iris {
 	compatible = "qcom,wcn3680";
 };

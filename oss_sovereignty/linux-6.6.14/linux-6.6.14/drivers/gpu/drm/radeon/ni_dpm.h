@@ -1,32 +1,8 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef __NI_DPM_H__
 #define __NI_DPM_H__
-
 #include "cypress_dpm.h"
 #include "btc_dpm.h"
 #include "nislands_smc.h"
-
 struct ni_clock_registers {
 	u32 cg_spll_func_cntl;
 	u32 cg_spll_func_cntl_2;
@@ -43,12 +19,10 @@ struct ni_clock_registers {
 	u32 mpll_ss1;
 	u32 mpll_ss2;
 };
-
 struct ni_mc_reg_entry {
 	u32 mclk_max;
 	u32 mc_data[SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE];
 };
-
 struct ni_mc_reg_table {
 	u8 last;
 	u8 num_entries;
@@ -56,9 +30,7 @@ struct ni_mc_reg_table {
 	struct ni_mc_reg_entry mc_reg_table_entry[MAX_AC_TIMING_ENTRIES];
 	SMC_NIslands_MCRegisterAddress mc_reg_address[SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE];
 };
-
 #define NISLANDS_MCREGISTERTABLE_FIRST_DRIVERSTATE_SLOT 2
-
 enum ni_dc_cac_level
 {
 	NISLANDS_DCCAC_LEVEL_0 = 0,
@@ -71,7 +43,6 @@ enum ni_dc_cac_level
 	NISLANDS_DCCAC_LEVEL_7,
 	NISLANDS_DCCAC_MAX_LEVELS
 };
-
 struct ni_leakage_coeffients
 {
 	u32 at;
@@ -82,7 +53,6 @@ struct ni_leakage_coeffients
 	s32 t_intercept;
 	u32 t_ref;
 };
-
 struct ni_cac_data
 {
 	struct ni_leakage_coeffients leakage_coefficients;
@@ -99,7 +69,6 @@ struct ni_cac_data
 	u8 l2num_win_tdp;
 	u8 lts_truncate_n;
 };
-
 struct ni_cac_weights
 {
 	u32 weight_tcp_sig0;
@@ -168,20 +137,16 @@ struct ni_cac_weights
 	u32 pcie_cac[SMC_NISLANDS_BIF_LUT_NUM_OF_ENTRIES];
 	bool enable_power_containment_by_default;
 };
-
 struct ni_ps {
 	u16 performance_level_count;
 	bool dc_compatible;
 	struct rv7xx_pl performance_levels[NISLANDS_MAX_SMC_PERFORMANCE_LEVELS_PER_SWSTATE];
 };
-
 struct ni_power_info {
-	/* must be first! */
 	struct evergreen_power_info eg;
 	struct ni_clock_registers clock_registers;
 	struct ni_mc_reg_table mc_reg_table;
 	u32 mclk_rtt_mode_threshold;
-	/* flags */
 	bool use_power_boost_limit;
 	bool support_cac_long_term_average;
 	bool cac_enabled;
@@ -191,12 +156,10 @@ struct ni_power_info {
 	bool enable_power_containment;
 	bool enable_cac;
 	bool enable_sq_ramping;
-	/* smc offsets */
 	u16 arb_table_start;
 	u16 fan_table_start;
 	u16 cac_table_start;
 	u16 spll_table_start;
-	/* CAC stuff */
 	struct ni_cac_data cac_data;
 	u32 dc_cac_table[NISLANDS_DCCAC_MAX_LEVELS];
 	const struct ni_cac_weights *cac_weights;
@@ -204,50 +167,38 @@ struct ni_power_info {
 	u8 lts_truncate;
 	struct ni_ps current_ps;
 	struct ni_ps requested_ps;
-	/* scratch structs */
 	SMC_NIslands_MCRegisters smc_mc_reg_table;
 	NISLANDS_SMC_STATETABLE smc_statetable;
 };
-
 #define NISLANDS_INITIAL_STATE_ARB_INDEX    0
 #define NISLANDS_ACPI_STATE_ARB_INDEX       1
 #define NISLANDS_ULV_STATE_ARB_INDEX        2
 #define NISLANDS_DRIVER_STATE_ARB_INDEX     3
-
 #define NISLANDS_DPM2_MAX_PULSE_SKIP        256
-
 #define NISLANDS_DPM2_NEAR_TDP_DEC          10
 #define NISLANDS_DPM2_ABOVE_SAFE_INC        5
 #define NISLANDS_DPM2_BELOW_SAFE_INC        20
-
 #define NISLANDS_DPM2_TDP_SAFE_LIMIT_PERCENT            80
-
 #define NISLANDS_DPM2_MAXPS_PERCENT_H                   90
 #define NISLANDS_DPM2_MAXPS_PERCENT_M                   0
-
 #define NISLANDS_DPM2_SQ_RAMP_MAX_POWER                 0x3FFF
 #define NISLANDS_DPM2_SQ_RAMP_MIN_POWER                 0x12
 #define NISLANDS_DPM2_SQ_RAMP_MAX_POWER_DELTA           0x15
 #define NISLANDS_DPM2_SQ_RAMP_STI_SIZE                  0x1E
 #define NISLANDS_DPM2_SQ_RAMP_LTI_RATIO                 0xF
-
 int ni_copy_and_switch_arb_sets(struct radeon_device *rdev,
 				u32 arb_freq_src, u32 arb_freq_dest);
 void ni_update_current_ps(struct radeon_device *rdev,
 			  struct radeon_ps *rps);
 void ni_update_requested_ps(struct radeon_device *rdev,
 			    struct radeon_ps *rps);
-
 void ni_set_uvd_clock_before_set_eng_clock(struct radeon_device *rdev,
 					   struct radeon_ps *new_ps,
 					   struct radeon_ps *old_ps);
 void ni_set_uvd_clock_after_set_eng_clock(struct radeon_device *rdev,
 					  struct radeon_ps *new_ps,
 					  struct radeon_ps *old_ps);
-
 bool ni_dpm_vblank_too_short(struct radeon_device *rdev);
-
 struct ni_power_info *ni_get_pi(struct radeon_device *rdev);
 struct ni_ps *ni_get_ps(struct radeon_ps *rps);
-
 #endif

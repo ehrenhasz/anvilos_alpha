@@ -1,8 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Traceprobe fetch helper inlines
- */
-
 static nokprobe_inline void
 fetch_store_raw(unsigned long val, struct fetch_insn *code, void *buf)
 {
@@ -17,14 +12,12 @@ fetch_store_raw(unsigned long val, struct fetch_insn *code, void *buf)
 		*(u32 *)buf = (u32)val;
 		break;
 	case 8:
-		//TBD: 32bit signed
 		*(u64 *)buf = (u64)val;
 		break;
 	default:
 		*(unsigned long *)buf = val;
 	}
 }
-
 static nokprobe_inline void
 fetch_apply_bitfield(struct fetch_insn *code, void *buf)
 {
@@ -47,12 +40,6 @@ fetch_apply_bitfield(struct fetch_insn *code, void *buf)
 		break;
 	}
 }
-
-/*
- * These functions must be defined for each callsite.
- * Return consumed dynamic data size (>= 0), or error (< 0).
- * If dest is NULL, don't store result and return required dynamic data size.
- */
 static int
 process_fetch_insn(struct fetch_insn *code, void *rec,
 		   void *dest, void *base);
@@ -66,39 +53,26 @@ static nokprobe_inline int
 probe_mem_read(void *dest, void *src, size_t size);
 static nokprobe_inline int
 probe_mem_read_user(void *dest, void *src, size_t size);
-
 static nokprobe_inline int
 fetch_store_symstrlen(unsigned long addr)
 {
 	char namebuf[KSYM_SYMBOL_LEN];
 	int ret;
-
 	ret = sprint_symbol(namebuf, addr);
 	if (ret < 0)
 		return 0;
-
 	return ret + 1;
 }
-
-/*
- * Fetch a null-terminated symbol string + offset. Caller MUST set *(u32 *)buf
- * with max length and relative data location.
- */
 static nokprobe_inline int
 fetch_store_symstring(unsigned long addr, void *dest, void *base)
 {
 	int maxlen = get_loc_len(*(u32 *)dest);
 	void *__dest;
-
 	if (unlikely(!maxlen))
 		return -ENOMEM;
-
 	__dest = get_loc_data(dest, base);
-
 	return sprint_symbol(__dest, addr);
 }
-
-/* common part of process_fetch_insn*/
 static nokprobe_inline int
 process_common_fetch_insn(struct fetch_insn *code, unsigned long *val)
 {
@@ -117,8 +91,6 @@ process_common_fetch_insn(struct fetch_insn *code, unsigned long *val)
 	}
 	return 0;
 }
-
-/* From the 2nd stage, routine is same */
 static nokprobe_inline int
 process_fetch_insn_bottom(struct fetch_insn *code, unsigned long val,
 			   void *dest, void *base)
@@ -127,9 +99,7 @@ process_fetch_insn_bottom(struct fetch_insn *code, unsigned long val,
 	int total = 0, ret = 0, i = 0;
 	u32 loc = 0;
 	unsigned long lval = val;
-
 stage2:
-	/* 2nd stage: dereference memory if needed */
 	do {
 		if (code->op == FETCH_OP_DEREF) {
 			lval = val;
@@ -145,10 +115,8 @@ stage2:
 			return ret;
 		code++;
 	} while (1);
-
 	s3 = code;
 stage3:
-	/* 3rd stage: store value to buffer */
 	if (unlikely(!dest)) {
 		switch (code->op) {
 		case FETCH_OP_ST_STRING:
@@ -167,7 +135,6 @@ stage3:
 			return -EILSEQ;
 		}
 	}
-
 	switch (code->op) {
 	case FETCH_OP_ST_RAW:
 		fetch_store_raw(val, code, dest);
@@ -194,15 +161,11 @@ stage3:
 		return -EILSEQ;
 	}
 	code++;
-
-	/* 4th stage: modify stored value if needed */
 	if (code->op == FETCH_OP_MOD_BF) {
 		fetch_apply_bitfield(code, dest);
 		code++;
 	}
-
 array:
-	/* the last stage: Loop on array */
 	if (code->op == FETCH_OP_LP_ARRAY) {
 		if (ret < 0)
 			ret = 0;
@@ -226,17 +189,13 @@ array:
 		code++;
 		ret = total;
 	}
-
 	return code->op == FETCH_OP_END ? ret : -EILSEQ;
 }
-
-/* Sum up total data length for dynamic arrays (strings) */
 static nokprobe_inline int
 __get_data_size(struct trace_probe *tp, struct pt_regs *regs)
 {
 	struct probe_arg *arg;
 	int i, len, ret = 0;
-
 	for (i = 0; i < tp->nr_args; i++) {
 		arg = tp->args + i;
 		if (unlikely(arg->dynamic)) {
@@ -245,11 +204,8 @@ __get_data_size(struct trace_probe *tp, struct pt_regs *regs)
 				ret += len;
 		}
 	}
-
 	return ret;
 }
-
-/* Store the value of each argument */
 static nokprobe_inline void
 store_trace_args(void *data, struct trace_probe *tp, void *rec,
 		 int header_size, int maxlen)
@@ -257,13 +213,11 @@ store_trace_args(void *data, struct trace_probe *tp, void *rec,
 	struct probe_arg *arg;
 	void *base = data - header_size;
 	void *dyndata = data + tp->size;
-	u32 *dl;	/* Data location */
+	u32 *dl;	 
 	int ret, i;
-
 	for (i = 0; i < tp->nr_args; i++) {
 		arg = tp->args + i;
 		dl = data + arg->offset;
-		/* Point the dynamic data area if needed */
 		if (unlikely(arg->dynamic))
 			*dl = make_data_loc(maxlen, dyndata - base);
 		ret = process_fetch_insn(arg->code, rec, dl, base);

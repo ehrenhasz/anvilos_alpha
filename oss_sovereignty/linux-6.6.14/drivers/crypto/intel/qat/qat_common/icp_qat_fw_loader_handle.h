@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2020 Intel Corporation */
 #ifndef __ICP_QAT_FW_LOADER_HANDLE_H__
 #define __ICP_QAT_FW_LOADER_HANDLE_H__
 #include "icp_qat_uclo.h"
-
 struct icp_qat_fw_loader_ae_data {
 	unsigned int state;
 	unsigned int ustore_size;
@@ -11,7 +8,6 @@ struct icp_qat_fw_loader_ae_data {
 	unsigned int free_size;
 	unsigned int live_ctx_mask;
 };
-
 struct icp_qat_fw_loader_hal_handle {
 	struct icp_qat_fw_loader_ae_data aes[ICP_QAT_UCLO_MAX_AE];
 	unsigned int ae_mask;
@@ -22,7 +18,6 @@ struct icp_qat_fw_loader_hal_handle {
 	unsigned int upc_mask;
 	unsigned int max_ustore;
 };
-
 struct icp_qat_fw_loader_chip_info {
 	int mmp_sram_size;
 	bool nn;
@@ -43,7 +38,6 @@ struct icp_qat_fw_loader_chip_info {
 	u32 fcu_loaded_ae_csr;
 	u8 fcu_loaded_ae_pos;
 };
-
 struct icp_qat_fw_loader_handle {
 	struct icp_qat_fw_loader_hal_handle *hal_handle;
 	struct icp_qat_fw_loader_chip_info *chip_info;
@@ -58,7 +52,6 @@ struct icp_qat_fw_loader_handle {
 	void __iomem *hal_cap_ae_local_csr_addr_v;
 	void __iomem *hal_ep_csr_addr_v;
 };
-
 struct icp_firml_dram_desc {
 	void __iomem *dram_base_addr;
 	void *dram_base_addr_v;

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2020 Advanced Micro Devices, Inc.
- *
- * Authors: AMD
- */
-
 #ifndef _dpcs_3_0_0_OFFSET_HEADER
 #define _dpcs_3_0_0_OFFSET_HEADER
-
-
-
-// addressBlock: dpcssys_dpcs0_dpcstx0_dispdec
-// base address: 0x0
 #define mmDPCSTX0_DPCSTX_TX_CLOCK_CNTL                                                                 0x2928
 #define mmDPCSTX0_DPCSTX_TX_CLOCK_CNTL_BASE_IDX                                                        2
 #define mmDPCSTX0_DPCSTX_TX_CNTL                                                                       0x2929
@@ -24,10 +12,6 @@
 #define mmDPCSTX0_DPCSTX_PLL_UPDATE_ADDR_BASE_IDX                                                      2
 #define mmDPCSTX0_DPCSTX_PLL_UPDATE_DATA                                                               0x292d
 #define mmDPCSTX0_DPCSTX_PLL_UPDATE_DATA_BASE_IDX                                                      2
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx0_dispdec
-// base address: 0x0
 #define mmRDPCSTX0_RDPCSTX_CNTL                                                                        0x2930
 #define mmRDPCSTX0_RDPCSTX_CNTL_BASE_IDX                                                               2
 #define mmRDPCSTX0_RDPCSTX_CLOCK_CNTL                                                                  0x2931
@@ -96,18 +80,10 @@
 #define mmRDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL6_BASE_IDX                                               2
 #define mmRDPCSTX0_RDPCSTX_DPALT_CONTROL_REG                                                           0x2956
 #define mmRDPCSTX0_RDPCSTX_DPALT_CONTROL_REG_BASE_IDX                                                  2
-
-
-// addressBlock: dpcssys_dpcssys_cr0_dispdec
-// base address: 0x0
 #define mmDPCSSYS_CR0_DPCSSYS_CR_ADDR                                                                  0x2934
 #define mmDPCSSYS_CR0_DPCSSYS_CR_ADDR_BASE_IDX                                                         2
 #define mmDPCSSYS_CR0_DPCSSYS_CR_DATA                                                                  0x2935
 #define mmDPCSSYS_CR0_DPCSSYS_CR_DATA_BASE_IDX                                                         2
-
-
-// addressBlock: dpcssys_dpcs0_dpcstx1_dispdec
-// base address: 0x360
 #define mmDPCSTX1_DPCSTX_TX_CLOCK_CNTL                                                                 0x2a00
 #define mmDPCSTX1_DPCSTX_TX_CLOCK_CNTL_BASE_IDX                                                        2
 #define mmDPCSTX1_DPCSTX_TX_CNTL                                                                       0x2a01
@@ -120,10 +96,6 @@
 #define mmDPCSTX1_DPCSTX_PLL_UPDATE_ADDR_BASE_IDX                                                      2
 #define mmDPCSTX1_DPCSTX_PLL_UPDATE_DATA                                                               0x2a05
 #define mmDPCSTX1_DPCSTX_PLL_UPDATE_DATA_BASE_IDX                                                      2
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx1_dispdec
-// base address: 0x360
 #define mmRDPCSTX1_RDPCSTX_CNTL                                                                        0x2a08
 #define mmRDPCSTX1_RDPCSTX_CNTL_BASE_IDX                                                               2
 #define mmRDPCSTX1_RDPCSTX_CLOCK_CNTL                                                                  0x2a09
@@ -192,18 +164,10 @@
 #define mmRDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL6_BASE_IDX                                               2
 #define mmRDPCSTX1_RDPCSTX_DPALT_CONTROL_REG                                                           0x2a2e
 #define mmRDPCSTX1_RDPCSTX_DPALT_CONTROL_REG_BASE_IDX                                                  2
-
-
-// addressBlock: dpcssys_dpcssys_cr1_dispdec
-// base address: 0x360
 #define mmDPCSSYS_CR1_DPCSSYS_CR_ADDR                                                                  0x2a0c
 #define mmDPCSSYS_CR1_DPCSSYS_CR_ADDR_BASE_IDX                                                         2
 #define mmDPCSSYS_CR1_DPCSSYS_CR_DATA                                                                  0x2a0d
 #define mmDPCSSYS_CR1_DPCSSYS_CR_DATA_BASE_IDX                                                         2
-
-
-// addressBlock: dpcssys_dpcs0_dpcstx2_dispdec
-// base address: 0x6c0
 #define mmDPCSTX2_DPCSTX_TX_CLOCK_CNTL                                                                 0x2ad8
 #define mmDPCSTX2_DPCSTX_TX_CLOCK_CNTL_BASE_IDX                                                        2
 #define mmDPCSTX2_DPCSTX_TX_CNTL                                                                       0x2ad9
@@ -216,10 +180,6 @@
 #define mmDPCSTX2_DPCSTX_PLL_UPDATE_ADDR_BASE_IDX                                                      2
 #define mmDPCSTX2_DPCSTX_PLL_UPDATE_DATA                                                               0x2add
 #define mmDPCSTX2_DPCSTX_PLL_UPDATE_DATA_BASE_IDX                                                      2
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx2_dispdec
-// base address: 0x6c0
 #define mmRDPCSTX2_RDPCSTX_CNTL                                                                        0x2ae0
 #define mmRDPCSTX2_RDPCSTX_CNTL_BASE_IDX                                                               2
 #define mmRDPCSTX2_RDPCSTX_CLOCK_CNTL                                                                  0x2ae1
@@ -288,18 +248,10 @@
 #define mmRDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL6_BASE_IDX                                               2
 #define mmRDPCSTX2_RDPCSTX_DPALT_CONTROL_REG                                                           0x2b06
 #define mmRDPCSTX2_RDPCSTX_DPALT_CONTROL_REG_BASE_IDX                                                  2
-
-
-// addressBlock: dpcssys_dpcssys_cr2_dispdec
-// base address: 0x6c0
 #define mmDPCSSYS_CR2_DPCSSYS_CR_ADDR                                                                  0x2ae4
 #define mmDPCSSYS_CR2_DPCSSYS_CR_ADDR_BASE_IDX                                                         2
 #define mmDPCSSYS_CR2_DPCSSYS_CR_DATA                                                                  0x2ae5
 #define mmDPCSSYS_CR2_DPCSSYS_CR_DATA_BASE_IDX                                                         2
-
-
-// addressBlock: dpcssys_dpcs0_dpcstx3_dispdec
-// base address: 0xa20
 #define mmDPCSTX3_DPCSTX_TX_CLOCK_CNTL                                                                 0x2bb0
 #define mmDPCSTX3_DPCSTX_TX_CLOCK_CNTL_BASE_IDX                                                        2
 #define mmDPCSTX3_DPCSTX_TX_CNTL                                                                       0x2bb1
@@ -312,10 +264,6 @@
 #define mmDPCSTX3_DPCSTX_PLL_UPDATE_ADDR_BASE_IDX                                                      2
 #define mmDPCSTX3_DPCSTX_PLL_UPDATE_DATA                                                               0x2bb5
 #define mmDPCSTX3_DPCSTX_PLL_UPDATE_DATA_BASE_IDX                                                      2
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx3_dispdec
-// base address: 0xa20
 #define mmRDPCSTX3_RDPCSTX_CNTL                                                                        0x2bb8
 #define mmRDPCSTX3_RDPCSTX_CNTL_BASE_IDX                                                               2
 #define mmRDPCSTX3_RDPCSTX_CLOCK_CNTL                                                                  0x2bb9
@@ -384,18 +332,10 @@
 #define mmRDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL6_BASE_IDX                                               2
 #define mmRDPCSTX3_RDPCSTX_DPALT_CONTROL_REG                                                           0x2bde
 #define mmRDPCSTX3_RDPCSTX_DPALT_CONTROL_REG_BASE_IDX                                                  2
-
-
-// addressBlock: dpcssys_dpcssys_cr3_dispdec
-// base address: 0xa20
 #define mmDPCSSYS_CR3_DPCSSYS_CR_ADDR                                                                  0x2bbc
 #define mmDPCSSYS_CR3_DPCSSYS_CR_ADDR_BASE_IDX                                                         2
 #define mmDPCSSYS_CR3_DPCSSYS_CR_DATA                                                                  0x2bbd
 #define mmDPCSSYS_CR3_DPCSSYS_CR_DATA_BASE_IDX                                                         2
-
-
-// addressBlock: dpcssys_dpcs0_dpcstx4_dispdec
-// base address: 0xd80
 #define mmDPCSTX4_DPCSTX_TX_CLOCK_CNTL                                                                 0x2c88
 #define mmDPCSTX4_DPCSTX_TX_CLOCK_CNTL_BASE_IDX                                                        2
 #define mmDPCSTX4_DPCSTX_TX_CNTL                                                                       0x2c89
@@ -408,10 +348,6 @@
 #define mmDPCSTX4_DPCSTX_PLL_UPDATE_ADDR_BASE_IDX                                                      2
 #define mmDPCSTX4_DPCSTX_PLL_UPDATE_DATA                                                               0x2c8d
 #define mmDPCSTX4_DPCSTX_PLL_UPDATE_DATA_BASE_IDX                                                      2
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx4_dispdec
-// base address: 0xd80
 #define mmRDPCSTX4_RDPCSTX_CNTL                                                                        0x2c90
 #define mmRDPCSTX4_RDPCSTX_CNTL_BASE_IDX                                                               2
 #define mmRDPCSTX4_RDPCSTX_CLOCK_CNTL                                                                  0x2c91
@@ -480,18 +416,10 @@
 #define mmRDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL6_BASE_IDX                                               2
 #define mmRDPCSTX4_RDPCSTX_DPALT_CONTROL_REG                                                           0x2cb6
 #define mmRDPCSTX4_RDPCSTX_DPALT_CONTROL_REG_BASE_IDX                                                  2
-
-
-// addressBlock: dpcssys_dpcssys_cr4_dispdec
-// base address: 0xd80
 #define mmDPCSSYS_CR4_DPCSSYS_CR_ADDR                                                                  0x2c94
 #define mmDPCSSYS_CR4_DPCSSYS_CR_ADDR_BASE_IDX                                                         2
 #define mmDPCSSYS_CR4_DPCSSYS_CR_DATA                                                                  0x2c95
 #define mmDPCSSYS_CR4_DPCSSYS_CR_DATA_BASE_IDX                                                         2
-
-
-// addressBlock: dpcssys_dpcs0_dpcstx5_dispdec
-// base address: 0x10e0
 #define mmDPCSTX5_DPCSTX_TX_CLOCK_CNTL                                                                 0x2d60
 #define mmDPCSTX5_DPCSTX_TX_CLOCK_CNTL_BASE_IDX                                                        2
 #define mmDPCSTX5_DPCSTX_TX_CNTL                                                                       0x2d61
@@ -504,10 +432,6 @@
 #define mmDPCSTX5_DPCSTX_PLL_UPDATE_ADDR_BASE_IDX                                                      2
 #define mmDPCSTX5_DPCSTX_PLL_UPDATE_DATA                                                               0x2d65
 #define mmDPCSTX5_DPCSTX_PLL_UPDATE_DATA_BASE_IDX                                                      2
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx5_dispdec
-// base address: 0x10e0
 #define mmRDPCSTX5_RDPCSTX_CNTL                                                                        0x2d68
 #define mmRDPCSTX5_RDPCSTX_CNTL_BASE_IDX                                                               2
 #define mmRDPCSTX5_RDPCSTX_CLOCK_CNTL                                                                  0x2d69
@@ -576,5 +500,4 @@
 #define mmRDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL6_BASE_IDX                                               2
 #define mmRDPCSTX5_RDPCSTX_DPALT_CONTROL_REG                                                           0x2d8e
 #define mmRDPCSTX5_RDPCSTX_DPALT_CONTROL_REG_BASE_IDX                                                  2
-
 #endif

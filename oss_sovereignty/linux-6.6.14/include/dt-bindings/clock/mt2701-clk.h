@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Shunli Wang <shunli.wang@mediatek.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_MT2701_H
 #define _DT_BINDINGS_CLK_MT2701_H
-
-/* TOPCKGEN */
 #define CLK_TOP_SYSPLL				1
 #define CLK_TOP_SYSPLL_D2			2
 #define CLK_TOP_SYSPLL_D3			3
@@ -83,7 +75,6 @@
 #define CLK_TOP_VENCPLL				73
 #define CLK_TOP_MIPIPLL				74
 #define CLK_TOP_ARMPLL_1P3G			75
-
 #define CLK_TOP_MM_SEL				76
 #define CLK_TOP_DDRPHYCFG_SEL			77
 #define CLK_TOP_MEM_SEL				78
@@ -156,7 +147,6 @@
 #define CLK_TOP_AUD_I2S6_MCLK			145
 #define CLK_TOP_AUD_48K_TIMING			146
 #define CLK_TOP_AUD_44K_TIMING			147
-
 #define CLK_TOP_32K_INTERNAL			148
 #define CLK_TOP_32K_EXTERNAL			149
 #define CLK_TOP_CLK26M_D8			150
@@ -169,9 +159,6 @@
 #define CLK_TOP_NFI1X_PAD			157
 #define CLK_TOP_AXISEL_D4			158
 #define CLK_TOP_NR				159
-
-/* APMIXEDSYS */
-
 #define CLK_APMIXED_ARMPLL			1
 #define CLK_APMIXED_MAINPLL			2
 #define CLK_APMIXED_UNIVPLL			3
@@ -187,14 +174,8 @@
 #define CLK_APMIXED_TVD2PLL			13
 #define CLK_APMIXED_HDMI_REF			14
 #define CLK_APMIXED_NR				15
-
-/* DDRPHY */
-
 #define CLK_DDRPHY_VENCPLL			1
 #define CLK_DDRPHY_NR				2
-
-/* INFRACFG */
-
 #define CLK_INFRA_DBG				1
 #define CLK_INFRA_SMI				2
 #define CLK_INFRA_QAXI_CM4			3
@@ -216,9 +197,6 @@
 #define CLK_INFRA_CLK_13M			19
 #define CLK_INFRA_CPUSEL                        20
 #define CLK_INFRA_NR				21
-
-/* PERICFG */
-
 #define CLK_PERI_NFI				1
 #define CLK_PERI_THERM				2
 #define CLK_PERI_PWM1				3
@@ -251,7 +229,6 @@
 #define CLK_PERI_SPI0				30
 #define CLK_PERI_ETH				31
 #define CLK_PERI_USB0_MCU			32
-
 #define CLK_PERI_USB1_MCU			33
 #define CLK_PERI_USB_SLV			34
 #define CLK_PERI_GCPU				35
@@ -264,15 +241,11 @@
 #define CLK_PERI_SPI1				42
 #define CLK_PERI_SPI2				43
 #define CLK_PERI_FCI				44
-
 #define CLK_PERI_UART0_SEL			45
 #define CLK_PERI_UART1_SEL			46
 #define CLK_PERI_UART2_SEL			47
 #define CLK_PERI_UART3_SEL			48
 #define CLK_PERI_NR				49
-
-/* AUDIO */
-
 #define CLK_AUD_AFE				1
 #define CLK_AUD_LRCK_DETECT			2
 #define CLK_AUD_I2S				3
@@ -284,7 +257,6 @@
 #define CLK_AUD_TML				9
 #define CLK_AUD_AHB_IDLE_EXT			10
 #define CLK_AUD_AHB_IDLE_INT			11
-
 #define CLK_AUD_I2SIN1				12
 #define CLK_AUD_I2SIN2				13
 #define CLK_AUD_I2SIN3				14
@@ -310,7 +282,6 @@
 #define CLK_AUD_AFE_CONN			34
 #define CLK_AUD_AFE_PCMIF			35
 #define CLK_AUD_AFE_MRGIF			36
-
 #define CLK_AUD_MMIF_UL1			37
 #define CLK_AUD_MMIF_UL2			38
 #define CLK_AUD_MMIF_UL3			39
@@ -328,7 +299,6 @@
 #define CLK_AUD_MMIF_AWB1			51
 #define CLK_AUD_MMIF_AWB2			52
 #define CLK_AUD_MMIF_DAI			53
-
 #define CLK_AUD_DMIC1				54
 #define CLK_AUD_DMIC2				55
 #define CLK_AUD_ASRCI3				56
@@ -347,9 +317,6 @@
 #define CLK_AUD_DSD_ENC				69
 #define CLK_AUD_ASRC_BRG			70
 #define CLK_AUD_NR				71
-
-/* MMSYS */
-
 #define CLK_MM_SMI_COMMON			1
 #define CLK_MM_SMI_LARB0			2
 #define CLK_MM_CMDQ				3
@@ -371,7 +338,6 @@
 #define CLK_MM_MUTEX_32K			19
 #define CLK_MM_DISP_RDMA1			20
 #define CLK_MM_DISP_UFOE			21
-
 #define CLK_MM_DSI_ENGINE			22
 #define CLK_MM_DSI_DIG				23
 #define CLK_MM_DPI_DIGL				24
@@ -386,9 +352,6 @@
 #define CLK_MM_HDMI_SPDIF			33
 #define CLK_MM_TVE_FMM				34
 #define CLK_MM_NR				35
-
-/* IMGSYS */
-
 #define CLK_IMG_SMI_COMM			1
 #define CLK_IMG_RESZ				2
 #define CLK_IMG_JPGDEC_SMI			3
@@ -396,23 +359,15 @@
 #define CLK_IMG_VENC_LT				5
 #define CLK_IMG_VENC				6
 #define CLK_IMG_NR				7
-
-/* VDEC */
-
 #define CLK_VDEC_CKGEN				1
 #define CLK_VDEC_LARB				2
 #define CLK_VDEC_NR				3
-
-/* HIFSYS */
-
 #define CLK_HIFSYS_USB0PHY			1
 #define CLK_HIFSYS_USB1PHY			2
 #define CLK_HIFSYS_PCIE0			3
 #define CLK_HIFSYS_PCIE1			4
 #define CLK_HIFSYS_PCIE2			5
 #define CLK_HIFSYS_NR				6
-
-/* ETHSYS */
 #define CLK_ETHSYS_HSDMA			1
 #define CLK_ETHSYS_ESW				2
 #define CLK_ETHSYS_GP2				3
@@ -422,13 +377,8 @@
 #define CLK_ETHSYS_I2S				7
 #define CLK_ETHSYS_CRYPTO			8
 #define CLK_ETHSYS_NR				9
-
-/* G3DSYS */
 #define CLK_G3DSYS_CORE				1
 #define CLK_G3DSYS_NR				2
-
-/* BDP */
-
 #define CLK_BDP_BRG_BA				1
 #define CLK_BDP_BRG_DRAM			2
 #define CLK_BDP_LARB_DRAM			3
@@ -461,7 +411,6 @@
 #define CLK_BDP_NR_PXL				30
 #define CLK_BDP_NR_DRAM				31
 #define CLK_BDP_NR_B				32
-
 #define CLK_BDP_RX_F				33
 #define CLK_BDP_RX_X				34
 #define CLK_BDP_RXPDT				35
@@ -480,5 +429,4 @@
 #define CLK_BDP_TMDS_SYN			48
 #define CLK_BDP_HDMI_MON			49
 #define CLK_BDP_NR				50
-
-#endif /* _DT_BINDINGS_CLK_MT2701_H */
+#endif  

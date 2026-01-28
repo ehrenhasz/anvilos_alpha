@@ -1,13 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #if !defined(__BNO055_SERDEV_TRACE_H__) || defined(TRACE_HEADER_MULTI_READ)
 #define __BNO055_SERDEV_TRACE_H__
-
 #include <linux/tracepoint.h>
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM bno055_ser
-
 TRACE_EVENT(send_chunk,
 	    TP_PROTO(int len, const u8 *data),
 	    TP_ARGS(len, data),
@@ -24,7 +19,6 @@ TRACE_EVENT(send_chunk,
 		      __entry->len, __entry->len, __get_dynamic_array(chunk)
 	    )
 );
-
 TRACE_EVENT(cmd_retry,
 	    TP_PROTO(bool read, int addr, int retry),
 	    TP_ARGS(read, addr, retry),
@@ -43,7 +37,6 @@ TRACE_EVENT(cmd_retry,
 		      __entry->addr, __entry->retry
 	    )
 );
-
 TRACE_EVENT(write_reg,
 	    TP_PROTO(u8 addr, u8 value),
 	    TP_ARGS(addr, value),
@@ -59,7 +52,6 @@ TRACE_EVENT(write_reg,
 		      __entry->addr, __entry->value
 	    )
 );
-
 TRACE_EVENT(read_reg,
 	    TP_PROTO(int addr, size_t len),
 	    TP_ARGS(addr, len),
@@ -75,7 +67,6 @@ TRACE_EVENT(read_reg,
 		      __entry->addr, __entry->len
 	    )
 );
-
 TRACE_EVENT(recv,
 	    TP_PROTO(size_t len, const unsigned char *buf),
 	    TP_ARGS(len, buf),
@@ -92,13 +83,9 @@ TRACE_EVENT(recv,
 		      __entry->len, (int)__entry->len, __get_dynamic_array(buf)
 	    )
 );
-
-#endif /* __BNO055_SERDEV_TRACE_H__ || TRACE_HEADER_MULTI_READ */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE bno055_ser_trace
-
-/* This part must be outside protection */
 #include <trace/define_trace.h>

@@ -1,19 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019 Pengutronix, Michael Tretter <kernel@pengutronix.de>
- *
- * Convert NAL units between raw byte sequence payloads (RBSP) and C structs.
- */
-
 #ifndef __NAL_HEVC_H__
 #define __NAL_HEVC_H__
-
 #include <linux/errno.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/v4l2-controls.h>
 #include <linux/videodev2.h>
-
 struct nal_hevc_profile_tier_level {
 	unsigned int general_profile_space;
 	unsigned int general_tier_flag;
@@ -44,7 +35,6 @@ struct nal_hevc_profile_tier_level {
 		};
 		struct {
 			unsigned int general_reserved_zero_7bits;
-			/* unsigned int general_one_picture_only_constraint_flag; */
 			unsigned int general_reserved_zero_35bits;
 		};
 		unsigned int general_reserved_zero_43bits;
@@ -55,13 +45,6 @@ struct nal_hevc_profile_tier_level {
 	};
 	unsigned int general_level_idc;
 };
-
-/*
- * struct nal_hevc_vps - Video parameter set
- *
- * C struct representation of the video parameter set NAL unit as defined by
- * Rec. ITU-T H.265 (02/2018) 7.3.2.1 Video parameter set RBSP syntax
- */
 struct nal_hevc_vps {
 	unsigned int video_parameter_set_id;
 	unsigned int base_layer_internal_flag;
@@ -90,18 +73,15 @@ struct nal_hevc_vps {
 			unsigned int hrd_layer_set_idx[0];
 			unsigned int cprms_present_flag[0];
 		};
-		/* hrd_parameters( cprms_present_flag[ i ], max_sub_layers_minus1 ) */
 	};
 	unsigned int extension_flag;
 	unsigned int extension_data_flag;
 };
-
 struct nal_hevc_sub_layer_hrd_parameters {
 	unsigned int bit_rate_value_minus1[1];
 	unsigned int cpb_size_value_minus1[1];
 	unsigned int cbr_flag[1];
 };
-
 struct nal_hevc_hrd_parameters {
 	unsigned int nal_hrd_parameters_present_flag;
 	unsigned int vcl_hrd_parameters_present_flag;
@@ -130,13 +110,6 @@ struct nal_hevc_hrd_parameters {
 		struct nal_hevc_sub_layer_hrd_parameters vcl_hrd[1];
 	};
 };
-
-/*
- * struct nal_hevc_vui_parameters - VUI parameters
- *
- * C struct representation of the VUI parameters as defined by Rec. ITU-T
- * H.265 (02/2018) E.2.1 VUI parameters syntax.
- */
 struct nal_hevc_vui_parameters {
 	unsigned int aspect_ratio_info_present_flag;
 	struct {
@@ -193,13 +166,6 @@ struct nal_hevc_vui_parameters {
 		unsigned int log2_max_mv_length_vertical;
 	};
 };
-
-/*
- * struct nal_hevc_sps - Sequence parameter set
- *
- * C struct representation of the video parameter set NAL unit as defined by
- * Rec. ITU-T H.265 (02/2018) 7.3.2.2 Sequence parameter set RBSP syntax
- */
 struct nal_hevc_sps {
 	unsigned int video_parameter_set_id;
 	unsigned int max_sub_layers_minus1;
@@ -217,7 +183,6 @@ struct nal_hevc_sps {
 		unsigned int conf_win_top_offset;
 		unsigned int conf_win_bottom_offset;
 	};
-
 	unsigned int bit_depth_luma_minus8;
 	unsigned int bit_depth_chroma_minus8;
 	unsigned int log2_max_pic_order_cnt_lsb_minus4;
@@ -233,7 +198,6 @@ struct nal_hevc_sps {
 	unsigned int log2_diff_max_min_luma_transform_block_size;
 	unsigned int max_transform_hierarchy_depth_inter;
 	unsigned int max_transform_hierarchy_depth_intra;
-
 	unsigned int scaling_list_enabled_flag;
 	unsigned int scaling_list_data_present_flag;
 	unsigned int amp_enabled_flag;
@@ -246,7 +210,6 @@ struct nal_hevc_sps {
 		unsigned int log2_diff_max_min_pcm_luma_coding_block_size;
 		unsigned int pcm_loop_filter_disabled_flag;
 	};
-
 	unsigned int num_short_term_ref_pic_sets;
 	unsigned int long_term_ref_pics_present_flag;
 	unsigned int sps_temporal_mvp_enabled_flag;
@@ -262,7 +225,6 @@ struct nal_hevc_sps {
 		unsigned int sps_extension_4bits;
 	};
 };
-
 struct nal_hevc_pps {
 	unsigned int pps_pic_parameter_set_id;
 	unsigned int pps_seq_parameter_set_id;
@@ -319,16 +281,6 @@ struct nal_hevc_pps {
 		unsigned int pps_extension_4bits;
 	};
 };
-
-/**
- * nal_hevc_profile() - Get profile_idc for v4l2 hevc profile
- * @profile: the profile as &enum v4l2_mpeg_video_hevc_profile
- *
- * Convert the &enum v4l2_mpeg_video_hevc_profile to profile_idc as specified
- * in Rec. ITU-T H.265 (02/2018) A.3.
- *
- * Return: the profile_idc for the passed level
- */
 static inline int nal_hevc_profile(enum v4l2_mpeg_video_hevc_profile profile)
 {
 	switch (profile) {
@@ -342,16 +294,6 @@ static inline int nal_hevc_profile(enum v4l2_mpeg_video_hevc_profile profile)
 		return -EINVAL;
 	}
 }
-
-/**
- * nal_hevc_tier() - Get tier_flag for v4l2 hevc tier
- * @tier: the tier as &enum v4l2_mpeg_video_hevc_tier
- *
- * Convert the &enum v4l2_mpeg_video_hevc_tier to tier_flag as specified
- * in Rec. ITU-T H.265 (02/2018) A.4.1.
- *
- * Return: the tier_flag for the passed tier
- */
 static inline int nal_hevc_tier(enum v4l2_mpeg_video_hevc_tier tier)
 {
 	switch (tier) {
@@ -363,25 +305,9 @@ static inline int nal_hevc_tier(enum v4l2_mpeg_video_hevc_tier tier)
 		return -EINVAL;
 	}
 }
-
-/**
- * nal_hevc_level() - Get level_idc for v4l2 hevc level
- * @level: the level as &enum v4l2_mpeg_video_hevc_level
- *
- * Convert the &enum v4l2_mpeg_video_hevc_level to level_idc as specified in
- * Rec. ITU-T H.265 (02/2018) A.4.1.
- *
- * Return: the level_idc for the passed level
- */
 static inline int nal_hevc_level(enum v4l2_mpeg_video_hevc_level level)
 {
-	/*
-	 * T-Rec-H.265 p. 280: general_level_idc and sub_layer_level_idc[ i ]
-	 * shall be set equal to a value of 30 times the level number
-	 * specified in Table A.6.
-	 */
 	int factor = 30 / 10;
-
 	switch (level) {
 	case V4L2_MPEG_VIDEO_HEVC_LEVEL_1:
 		return factor * 10;
@@ -413,7 +339,6 @@ static inline int nal_hevc_level(enum v4l2_mpeg_video_hevc_level level)
 		return -EINVAL;
 	}
 }
-
 static inline int nal_hevc_full_range(enum v4l2_quantization quantization)
 {
 	switch (quantization) {
@@ -424,10 +349,8 @@ static inline int nal_hevc_full_range(enum v4l2_quantization quantization)
 	default:
 		break;
 	}
-
 	return 0;
 }
-
 static inline int nal_hevc_color_primaries(enum v4l2_colorspace colorspace)
 {
 	switch (colorspace) {
@@ -453,13 +376,11 @@ static inline int nal_hevc_color_primaries(enum v4l2_colorspace colorspace)
 		return 2;
 	}
 }
-
 static inline int nal_hevc_transfer_characteristics(enum v4l2_colorspace colorspace,
 						    enum v4l2_xfer_func xfer_func)
 {
 	if (xfer_func == V4L2_XFER_FUNC_DEFAULT)
 		xfer_func = V4L2_MAP_XFER_FUNC_DEFAULT(colorspace);
-
 	switch (xfer_func) {
 	case V4L2_XFER_FUNC_709:
 		return 6;
@@ -474,13 +395,11 @@ static inline int nal_hevc_transfer_characteristics(enum v4l2_colorspace colorsp
 		return 2;
 	}
 }
-
 static inline int nal_hevc_matrix_coeffs(enum v4l2_colorspace colorspace,
 					 enum v4l2_ycbcr_encoding ycbcr_encoding)
 {
 	if (ycbcr_encoding == V4L2_YCBCR_ENC_DEFAULT)
 		ycbcr_encoding = V4L2_MAP_YCBCR_ENC_DEFAULT(colorspace);
-
 	switch (ycbcr_encoding) {
 	case V4L2_YCBCR_ENC_601:
 	case V4L2_YCBCR_ENC_XV601:
@@ -497,23 +416,18 @@ static inline int nal_hevc_matrix_coeffs(enum v4l2_colorspace colorspace,
 		return 2;
 	}
 }
-
 ssize_t nal_hevc_write_vps(const struct device *dev,
 			   void *dest, size_t n, struct nal_hevc_vps *vps);
 ssize_t nal_hevc_read_vps(const struct device *dev,
 			  struct nal_hevc_vps *vps, void *src, size_t n);
-
 ssize_t nal_hevc_write_sps(const struct device *dev,
 			   void *dest, size_t n, struct nal_hevc_sps *sps);
 ssize_t nal_hevc_read_sps(const struct device *dev,
 			  struct nal_hevc_sps *sps, void *src, size_t n);
-
 ssize_t nal_hevc_write_pps(const struct device *dev,
 			   void *dest, size_t n, struct nal_hevc_pps *pps);
 ssize_t nal_hevc_read_pps(const struct device *dev,
 			  struct nal_hevc_pps *pps, void *src, size_t n);
-
 ssize_t nal_hevc_write_filler(const struct device *dev, void *dest, size_t n);
 ssize_t nal_hevc_read_filler(const struct device *dev, void *src, size_t n);
-
-#endif /* __NAL_HEVC_H__ */
+#endif  

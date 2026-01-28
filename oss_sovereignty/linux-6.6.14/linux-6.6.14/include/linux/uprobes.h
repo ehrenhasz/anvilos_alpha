@@ -1,38 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef _LINUX_UPROBES_H
 #define _LINUX_UPROBES_H
-/*
- * User-space Probes (UProbes)
- *
- * Copyright (C) IBM Corporation, 2008-2012
- * Authors:
- *	Srikar Dronamraju
- *	Jim Keniston
- * Copyright (C) 2011-2012 Red Hat, Inc., Peter Zijlstra
- */
-
 #include <linux/errno.h>
 #include <linux/rbtree.h>
 #include <linux/types.h>
 #include <linux/wait.h>
-
 struct vm_area_struct;
 struct mm_struct;
 struct inode;
 struct notifier_block;
 struct page;
-
 #define UPROBE_HANDLER_REMOVE		1
 #define UPROBE_HANDLER_MASK		1
-
 #define MAX_URETPROBE_DEPTH		64
-
 enum uprobe_filter_ctx {
 	UPROBE_FILTER_REGISTER,
 	UPROBE_FILTER_UNREGISTER,
 	UPROBE_FILTER_MMAP,
 };
-
 struct uprobe_consumer {
 	int (*handler)(struct uprobe_consumer *self, struct pt_regs *regs);
 	int (*ret_handler)(struct uprobe_consumer *self,
@@ -41,67 +25,50 @@ struct uprobe_consumer {
 	bool (*filter)(struct uprobe_consumer *self,
 				enum uprobe_filter_ctx ctx,
 				struct mm_struct *mm);
-
 	struct uprobe_consumer *next;
 };
-
 #ifdef CONFIG_UPROBES
 #include <asm/uprobes.h>
-
 enum uprobe_task_state {
 	UTASK_RUNNING,
 	UTASK_SSTEP,
 	UTASK_SSTEP_ACK,
 	UTASK_SSTEP_TRAPPED,
 };
-
-/*
- * uprobe_task: Metadata of a task while it singlesteps.
- */
 struct uprobe_task {
 	enum uprobe_task_state		state;
-
 	union {
 		struct {
 			struct arch_uprobe_task	autask;
 			unsigned long		vaddr;
 		};
-
 		struct {
 			struct callback_head	dup_xol_work;
 			unsigned long		dup_xol_addr;
 		};
 	};
-
 	struct uprobe			*active_uprobe;
 	unsigned long			xol_vaddr;
-
 	struct return_instance		*return_instances;
 	unsigned int			depth;
 };
-
 struct return_instance {
 	struct uprobe		*uprobe;
 	unsigned long		func;
-	unsigned long		stack;		/* stack pointer */
-	unsigned long		orig_ret_vaddr; /* original return address */
-	bool			chained;	/* true, if instance is nested */
-
-	struct return_instance	*next;		/* keep as stack */
+	unsigned long		stack;		 
+	unsigned long		orig_ret_vaddr;  
+	bool			chained;	 
+	struct return_instance	*next;		 
 };
-
 enum rp_check {
 	RP_CHECK_CALL,
 	RP_CHECK_CHAIN_CALL,
 	RP_CHECK_RET,
 };
-
 struct xol_area;
-
 struct uprobes_state {
 	struct xol_area		*xol_area;
 };
-
 extern void __init uprobes_init(void);
 extern int set_swbp(struct arch_uprobe *aup, struct mm_struct *mm, unsigned long vaddr);
 extern int set_orig_insn(struct arch_uprobe *aup, struct mm_struct *mm, unsigned long vaddr);
@@ -138,16 +105,13 @@ extern bool arch_uretprobe_is_alive(struct return_instance *ret, enum rp_check c
 extern bool arch_uprobe_ignore(struct arch_uprobe *aup, struct pt_regs *regs);
 extern void arch_uprobe_copy_ixol(struct page *page, unsigned long vaddr,
 					 void *src, unsigned long len);
-#else /* !CONFIG_UPROBES */
+#else  
 struct uprobes_state {
 };
-
 static inline void uprobes_init(void)
 {
 }
-
 #define uprobe_get_trap_addr(regs)	instruction_pointer(regs)
-
 static inline int
 uprobe_register(struct inode *inode, loff_t offset, struct uprobe_consumer *uc)
 {
@@ -200,5 +164,5 @@ static inline void uprobe_copy_process(struct task_struct *t, unsigned long flag
 static inline void uprobe_clear_state(struct mm_struct *mm)
 {
 }
-#endif /* !CONFIG_UPROBES */
-#endif	/* _LINUX_UPROBES_H */
+#endif  
+#endif	 

@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _AF_NETLINK_H
 #define _AF_NETLINK_H
-
 #include <linux/rhashtable.h>
 #include <linux/atomic.h>
 #include <linux/workqueue.h>
 #include <net/sock.h>
-
-/* flags */
 enum {
 	NETLINK_F_KERNEL_SOCKET,
 	NETLINK_F_RECV_PKTINFO,
@@ -18,12 +14,9 @@ enum {
 	NETLINK_F_EXT_ACK,
 	NETLINK_F_STRICT_CHK,
 };
-
 #define NLGRPSZ(x)	(ALIGN(x, sizeof(unsigned long) * 8) / 8)
 #define NLGRPLONGS(x)	(NLGRPSZ(x)/sizeof(unsigned long))
-
 struct netlink_sock {
-	/* struct sock has to be the first member of netlink_sock */
 	struct sock		sk;
 	unsigned long		flags;
 	u32			portid;
@@ -47,19 +40,15 @@ struct netlink_sock {
 	void			(*netlink_release)(struct sock *sk,
 						   unsigned long *groups);
 	struct module		*module;
-
 	struct rhash_head	node;
 	struct rcu_head		rcu;
 	struct work_struct	work;
 };
-
 static inline struct netlink_sock *nlk_sk(struct sock *sk)
 {
 	return container_of(sk, struct netlink_sock, sk);
 }
-
 #define nlk_test_bit(nr, sk) test_bit(NETLINK_F_##nr, &nlk_sk(sk)->flags)
-
 struct netlink_table {
 	struct rhashtable	hash;
 	struct hlist_head	mc_list;
@@ -74,8 +63,6 @@ struct netlink_table {
 					   unsigned long *groups);
 	int			registered;
 };
-
 extern struct netlink_table *nl_table;
 extern rwlock_t nl_table_lock;
-
 #endif

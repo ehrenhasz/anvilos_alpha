@@ -1,8 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Berlin2 BG2Q clock tree IDs
- */
-
 #define CLKID_SYS		0
 #define CLKID_DRMFIGO		1
 #define CLKID_CFG		2

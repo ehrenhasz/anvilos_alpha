@@ -1,37 +1,9 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_HUBBUB_DCN10_H__
 #define __DC_HUBBUB_DCN10_H__
-
 #include "core_types.h"
 #include "dchubbub.h"
-
 #define TO_DCN10_HUBBUB(hubbub)\
 	container_of(hubbub, struct dcn10_hubbub, base)
-
 #define HUBBUB_REG_LIST_DCN_COMMON()\
 	SR(DCHUBBUB_ARB_DATA_URGENCY_WATERMARK_A),\
 	SR(DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_A),\
@@ -49,13 +21,11 @@
 	SR(DCHUBBUB_TEST_DEBUG_INDEX), \
 	SR(DCHUBBUB_TEST_DEBUG_DATA),\
 	SR(DCHUBBUB_SOFT_RESET)
-
 #define HUBBUB_VM_REG_LIST() \
 	SR(DCHUBBUB_ARB_PTE_META_URGENCY_WATERMARK_A),\
 	SR(DCHUBBUB_ARB_PTE_META_URGENCY_WATERMARK_B),\
 	SR(DCHUBBUB_ARB_PTE_META_URGENCY_WATERMARK_C),\
 	SR(DCHUBBUB_ARB_PTE_META_URGENCY_WATERMARK_D)
-
 #define HUBBUB_SR_WATERMARK_REG_LIST()\
 	SR(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_A),\
 	SR(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_A),\
@@ -65,7 +35,6 @@
 	SR(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_C),\
 	SR(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_D),\
 	SR(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_D)
-
 #define HUBBUB_REG_LIST_DCN10(id)\
 	HUBBUB_REG_LIST_DCN_COMMON(), \
 	HUBBUB_VM_REG_LIST(), \
@@ -76,7 +45,6 @@
 	SR(DCHUBBUB_SDPIF_AGP_BASE),\
 	SR(DCHUBBUB_SDPIF_AGP_BOT),\
 	SR(DCHUBBUB_SDPIF_AGP_TOP)
-
 struct dcn_hubbub_registers {
 	uint32_t DCHUBBUB_ARB_DATA_URGENCY_WATERMARK_A;
 	uint32_t DCHUBBUB_ARB_PTE_META_URGENCY_WATERMARK_A;
@@ -177,7 +145,6 @@ struct dcn_hubbub_registers {
 	uint32_t DCHUBBUB_CLOCK_CNTL;
 	uint32_t DCHUBBUB_MEM_PWR_MODE_CTRL;
 };
-
 #define HUBBUB_REG_FIELD_LIST_DCN32(type) \
 		type DCHUBBUB_ARB_ALLOW_USR_RETRAINING_FORCE_VALUE;\
 		type DCHUBBUB_ARB_ALLOW_USR_RETRAINING_FORCE_ENABLE;\
@@ -195,11 +162,8 @@ struct dcn_hubbub_registers {
 		type DCHUBBUB_ARB_FCLK_PSTATE_CHANGE_WATERMARK_B;\
 		type DCHUBBUB_ARB_FCLK_PSTATE_CHANGE_WATERMARK_C;\
 		type DCHUBBUB_ARB_FCLK_PSTATE_CHANGE_WATERMARK_D
-
-/* set field name */
 #define HUBBUB_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
-
 #define HUBBUB_MASK_SH_LIST_DCN_COMMON(mask_sh)\
 		HUBBUB_SF(DCHUBBUB_GLOBAL_TIMER_CNTL, DCHUBBUB_GLOBAL_TIMER_ENABLE, mask_sh), \
 		HUBBUB_SF(DCHUBBUB_SOFT_RESET, DCHUBBUB_GLOBAL_SOFT_RESET, mask_sh), \
@@ -219,7 +183,6 @@ struct dcn_hubbub_registers {
 		HUBBUB_SF(DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_B, DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_B, mask_sh), \
 		HUBBUB_SF(DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_C, DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_C, mask_sh), \
 		HUBBUB_SF(DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_D, DCHUBBUB_ARB_ALLOW_DRAM_CLK_CHANGE_WATERMARK_D, mask_sh)
-
 #define HUBBUB_MASK_SH_LIST_STUTTER(mask_sh) \
 		HUBBUB_SF(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_A, DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_A, mask_sh), \
 		HUBBUB_SF(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_B, DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_B, mask_sh), \
@@ -229,7 +192,6 @@ struct dcn_hubbub_registers {
 		HUBBUB_SF(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_B, DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_B, mask_sh), \
 		HUBBUB_SF(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_C, DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_C, mask_sh), \
 		HUBBUB_SF(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_D, DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_D, mask_sh)
-
 #define HUBBUB_MASK_SH_LIST_DCN10(mask_sh)\
 		HUBBUB_MASK_SH_LIST_DCN_COMMON(mask_sh), \
 		HUBBUB_MASK_SH_LIST_STUTTER(mask_sh), \
@@ -239,7 +201,6 @@ struct dcn_hubbub_registers {
 		HUBBUB_SF(DCHUBBUB_SDPIF_AGP_BASE, SDPIF_AGP_BASE, mask_sh), \
 		HUBBUB_SF(DCHUBBUB_SDPIF_AGP_BOT, SDPIF_AGP_BOT, mask_sh), \
 		HUBBUB_SF(DCHUBBUB_SDPIF_AGP_TOP, SDPIF_AGP_TOP, mask_sh)
-
 #define DCN_HUBBUB_REG_FIELD_LIST(type) \
 		type DCHUBBUB_GLOBAL_TIMER_ENABLE; \
 		type DCHUBBUB_ARB_WATERMARK_CHANGE_REQUEST;\
@@ -286,7 +247,6 @@ struct dcn_hubbub_registers {
 		type DCN_VM_ERROR_TABLE_LEVEL;\
 		type DCN_VM_ERROR_PIPE;\
 		type DCN_VM_ERROR_INTERRUPT_STATUS
-
 #define HUBBUB_STUTTER_REG_FIELD_LIST(type) \
 		type DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_A;\
 		type DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_B;\
@@ -296,7 +256,6 @@ struct dcn_hubbub_registers {
 		type DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_B;\
 		type DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_C;\
 		type DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_D
-
 #define HUBBUB_HVM_REG_FIELD_LIST(type) \
 		type DCHUBBUB_ARB_MIN_REQ_OUTSTAND_COMMIT_THRESHOLD;\
 		type DCHUBBUB_ARB_VM_ROW_URGENCY_WATERMARK_A;\
@@ -342,7 +301,6 @@ struct dcn_hubbub_registers {
 		type HOSTVM_POWERSTATUS; \
 		type RIOMMU_ACTIVE; \
 		type HOSTVM_PREFETCH_DONE
-
 #define HUBBUB_RET_REG_FIELD_LIST(type) \
 		type DET_DEPTH;\
 		type DET0_SIZE;\
@@ -373,8 +331,6 @@ struct dcn_hubbub_registers {
 		type DCHUBBUB_ARB_MAX_REQ_OUTSTAND;\
 		type SDPIF_PORT_CONTROL;\
 		type DET_MEM_PWR_LS_MODE
-
-
 struct dcn_hubbub_shift {
 	DCN_HUBBUB_REG_FIELD_LIST(uint8_t);
 	HUBBUB_STUTTER_REG_FIELD_LIST(uint8_t);
@@ -382,7 +338,6 @@ struct dcn_hubbub_shift {
 	HUBBUB_RET_REG_FIELD_LIST(uint8_t);
 	HUBBUB_REG_FIELD_LIST_DCN32(uint8_t);
 };
-
 struct dcn_hubbub_mask {
 	DCN_HUBBUB_REG_FIELD_LIST(uint32_t);
 	HUBBUB_STUTTER_REG_FIELD_LIST(uint32_t);
@@ -390,9 +345,7 @@ struct dcn_hubbub_mask {
 	HUBBUB_RET_REG_FIELD_LIST(uint32_t);
 	HUBBUB_REG_FIELD_LIST_DCN32(uint32_t);
 };
-
 struct dc;
-
 struct dcn10_hubbub {
 	struct hubbub base;
 	const struct dcn_hubbub_registers *regs;
@@ -401,39 +354,29 @@ struct dcn10_hubbub {
 	unsigned int debug_test_index_pstate;
 	struct dcn_watermark_set watermarks;
 };
-
 void hubbub1_update_dchub(
 	struct hubbub *hubbub,
 	struct dchub_init_data *dh_data);
-
 bool hubbub1_verify_allow_pstate_change_high(
 	struct hubbub *hubbub);
-
 void hubbub1_wm_change_req_wa(struct hubbub *hubbub);
-
 bool hubbub1_program_watermarks(
 		struct hubbub *hubbub,
 		struct dcn_watermark_set *watermarks,
 		unsigned int refclk_mhz,
 		bool safe_to_lower);
-
 void hubbub1_allow_self_refresh_control(struct hubbub *hubbub, bool allow);
-
 bool hubbub1_is_allow_self_refresh_enabled(struct hubbub *hubub);
-
 void hubbub1_toggle_watermark_change_req(
 		struct hubbub *hubbub);
-
 void hubbub1_wm_read_state(struct hubbub *hubbub,
 		struct dcn_hubbub_wm *wm);
-
 void hubbub1_soft_reset(struct hubbub *hubbub, bool reset);
 void hubbub1_construct(struct hubbub *hubbub,
 	struct dc_context *ctx,
 	const struct dcn_hubbub_registers *hubbub_regs,
 	const struct dcn_hubbub_shift *hubbub_shift,
 	const struct dcn_hubbub_mask *hubbub_mask);
-
 bool hubbub1_program_urgent_watermarks(
 		struct hubbub *hubbub,
 		struct dcn_watermark_set *watermarks,
@@ -449,5 +392,4 @@ bool hubbub1_program_pstate_watermarks(
 		struct dcn_watermark_set *watermarks,
 		unsigned int refclk_mhz,
 		bool safe_to_lower);
-
 #endif

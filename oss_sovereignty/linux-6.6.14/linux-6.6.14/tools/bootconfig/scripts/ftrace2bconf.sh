@@ -1,12 +1,8 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0-only
-
 usage() {
 	echo "Dump boot-time tracing bootconfig from ftrace"
 	echo "Usage: $0 [--debug] [ > BOOTCONFIG-FILE]"
 	exit 1
 }
-
 DEBUG=
 while [ x"$1" != x ]; do
 	case "$1" in
@@ -18,11 +14,9 @@ while [ x"$1" != x ]; do
 	esac
 	shift 1
 done
-
 if [ x"$DEBUG" != x ]; then
 	set -x
 fi
-
 TRACEFS=`grep -m 1 -w tracefs /proc/mounts | cut -f 2 -d " "`
 if [ -z "$TRACEFS" ]; then
 	if ! grep -wq debugfs /proc/mounts; then
@@ -35,78 +29,59 @@ if [ -z "$TRACEFS" ]; then
 		exit 1
 	fi
 fi
-
-######## main #########
-
 set -e
-
-emit_kv() { # key =|+= value
+emit_kv() { 
 	echo "$@"
 }
-
 global_options() {
 	val=`cat $TRACEFS/max_graph_depth`
 	[ $val != 0 ] && emit_kv kernel.fgraph_max_depth = $val
 	if grep -qv "^#" $TRACEFS/set_graph_function $TRACEFS/set_graph_notrace ; then
 		cat 1>&2 << EOF
-# WARN: kernel.fgraph_filters and kernel.fgraph_notrace are not supported, since the wild card expression was expanded and lost from memory.
 EOF
 	fi
 }
-
 kprobe_event_options() {
 	cat $TRACEFS/kprobe_events | while read p args; do
 		case $p in
 		r*)
 		cat 1>&2 << EOF
-# WARN: A return probe found but it is not supported by bootconfig. Skip it.
 EOF
 		continue;;
 		esac
-		p=${p#*:}
-		event=${p#*/}
+		p=${p
+		event=${p
 		group=${p%/*}
 		if [ $group != "kprobes" ]; then
 			cat 1>&2 << EOF
-# WARN: kprobes group name $group is changed to "kprobes" for bootconfig.
 EOF
 		fi
 		emit_kv $PREFIX.event.kprobes.$event.probes += $args
 	done
 }
-
 synth_event_options() {
 	cat $TRACEFS/synthetic_events | while read event fields; do
 		emit_kv $PREFIX.event.synthetic.$event.fields = `echo $fields | sed "s/;/,/g"`
 	done
 }
-
-# Variables resolver
 DEFINED_VARS=
 UNRESOLVED_EVENTS=
-
-defined_vars() { # event-dir
+defined_vars() { 
 	grep "^hist" $1/trigger | grep -o ':[a-zA-Z0-9]*='
 }
 referred_vars() {
 	grep "^hist" $1/trigger | grep -o '$[a-zA-Z0-9]*'
 }
-
-event_is_enabled() { # enable-file
+event_is_enabled() { 
 	test -f $1 && grep -q "1" $1
 }
-
-per_event_options() { # event-dir
+per_event_options() { 
 	evdir=$1
-	# Check the special event which has no filter and no trigger
 	[ ! -f $evdir/filter ] && return
-
 	if grep -q "^hist:" $evdir/trigger; then
-		# hist action can refer the undefined variables
 		__vars=`defined_vars $evdir`
 		for v in `referred_vars $evdir`; do
-			if echo $DEFINED_VARS $__vars | grep -vqw ${v#$}; then
-				# $v is not defined yet, defer it
+			if echo $DEFINED_VARS $__vars | grep -vqw ${v
 				UNRESOLVED_EVENTS="$UNRESOLVED_EVENTS $evdir"
 				return;
 			fi
@@ -116,7 +91,6 @@ per_event_options() { # event-dir
 	grep -v "^#" $evdir/trigger | while read action active; do
 		emit_kv $PREFIX.event.$group.$event.actions += \'$action\'
 	done
-
 	if [ $GROUP_ENABLED -eq 0 ] && event_is_enabled $evdir/enable; then
 		emit_kv $PREFIX.event.$group.$event.enable
 	fi
@@ -125,21 +99,17 @@ per_event_options() { # event-dir
 		emit_kv $PREFIX.event.$group.$event.filter = "$val"
 	fi
 }
-
 retry_unresolved() {
 	unresolved=$UNRESOLVED_EVENTS
 	UNRESOLVED_EVENTS=
 	for evdir in $unresolved; do
-		event=${evdir##*/}
-		group=${evdir%/*}; group=${group##*/}
+		event=${evdir
+		group=${evdir%/*}; group=${group
 		per_event_options $evdir
 	done
 }
-
 event_options() {
-	# PREFIX and INSTANCE must be set
 	if [ $PREFIX = "ftrace" ]; then
-		# define the dynamic events
 		kprobe_event_options
 		synth_event_options
 	fi
@@ -172,8 +142,7 @@ event_options() {
 EOF
 	fi
 }
-
-is_default_trace_option() { # option
+is_default_trace_option() { 
 grep -qw $1 << EOF
 print-parent
 nosym-offset
@@ -206,9 +175,8 @@ notest_nop_accept
 notest_nop_refuse
 EOF
 }
-
-instance_options() { # [instance-name]
-	if [ $# -eq 0 ]; then
+instance_options() { 
+	if [ $
 		PREFIX="ftrace"
 		INSTANCE=$TRACEFS
 	else
@@ -224,7 +192,7 @@ instance_options() { # [instance-name]
 	val="local"
 	for i in `cat $INSTANCE/trace_clock` ; do
 		[ "${i#*]}" ] && continue
-		i=${i%]}; val=${i#[}
+		i=${i%]}; val=${i
 	done
 	[ $val != "local" ] && emit_kv $PREFIX.trace_clock = $val
 	val=`cat $INSTANCE/buffer_size_kb`
@@ -242,17 +210,14 @@ instance_options() { # [instance-name]
 	if [ "$val" = "0" ]; then
 		emit_kv $PREFIX.tracing_on = 0
 	fi
-
 	val=`cat $INSTANCE/current_tracer`
 	[ $val != nop ] && emit_kv $PREFIX.tracer = $val
 	if grep -qv "^#" $INSTANCE/set_ftrace_filter $INSTANCE/set_ftrace_notrace; then
 		cat 1>&2 << EOF
-# WARN: kernel.ftrace.filters and kernel.ftrace.notrace are not supported, since the wild card expression was expanded and lost from memory.
 EOF
 	fi
 	event_options
 }
-
 global_options
 instance_options
 for i in `ls $TRACEFS/instances` ; do

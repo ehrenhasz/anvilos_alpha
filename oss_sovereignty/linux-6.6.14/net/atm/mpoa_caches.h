@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef MPOA_CACHES_H
 #define MPOA_CACHES_H
-
 #include <linux/time64.h>
 #include <linux/netdevice.h>
 #include <linux/types.h>
@@ -9,11 +7,8 @@
 #include <linux/atmdev.h>
 #include <linux/atmmpc.h>
 #include <linux/refcount.h>
-
 struct mpoa_client;
-
 void atm_mpoa_init_cache(struct mpoa_client *mpc);
-
 typedef struct in_cache_entry {
 	struct in_cache_entry *next;
 	struct in_cache_entry *prev;
@@ -30,7 +25,6 @@ typedef struct in_cache_entry {
 	struct   in_ctrl_info ctrl_info;
 	refcount_t use;
 } in_cache_entry;
-
 struct in_cache_ops{
 	in_cache_entry *(*add_entry)(__be32 dst_ip,
 				      struct mpoa_client *client);
@@ -50,7 +44,6 @@ struct in_cache_ops{
 	void            (*refresh)(struct mpoa_client *client);
 	void            (*destroy_cache)(struct mpoa_client *mpc);
 };
-
 typedef struct eg_cache_entry{
 	struct               eg_cache_entry *next;
 	struct               eg_cache_entry *prev;
@@ -59,11 +52,10 @@ typedef struct eg_cache_entry{
 	struct atm_vcc       *shortcut;
 	uint32_t             packets_rcvd;
 	uint16_t             entry_state;
-	__be32             latest_ip_addr;    /* The src IP address of the last packet */
+	__be32             latest_ip_addr;     
 	struct eg_ctrl_info  ctrl_info;
 	refcount_t             use;
 } eg_cache_entry;
-
 struct eg_cache_ops{
 	eg_cache_entry *(*add_entry)(struct k_message *msg, struct mpoa_client *client);
 	eg_cache_entry *(*get_by_cache_id)(__be32 cache_id, struct mpoa_client *client);
@@ -76,24 +68,13 @@ struct eg_cache_ops{
 	void            (*clear_expired)(struct mpoa_client *client);
 	void            (*destroy_cache)(struct mpoa_client *mpc);
 };
-
-
-/* Ingress cache entry states */
-
 #define INGRESS_REFRESHING 3
 #define INGRESS_RESOLVED   2
 #define INGRESS_RESOLVING  1
 #define INGRESS_INVALID    0
-
-/* VCC states */
-
 #define OPEN   1
 #define CLOSED 0
-
-/* Egress cache entry states */
-
 #define EGRESS_RESOLVED 2
 #define EGRESS_PURGE    1
 #define EGRESS_INVALID  0
-
 #endif

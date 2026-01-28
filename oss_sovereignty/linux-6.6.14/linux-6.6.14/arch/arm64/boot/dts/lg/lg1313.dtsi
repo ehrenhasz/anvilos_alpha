@@ -1,24 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dts file for lg1313 SoC
- *
- * Copyright (C) 2016, LG Electronics
- */
-
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
-
 / {
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	compatible = "lge,lg1313";
 	interrupt-parent = <&gic>;
-
 	cpus {
 		#address-cells = <2>;
 		#size-cells = <0>;
-
 		cpu0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -52,7 +41,6 @@
 			cache-unified;
 		};
 	};
-
 	psci {
 		compatible = "arm,psci-0.2", "arm,psci";
 		method = "smc";
@@ -60,7 +48,6 @@
 		cpu_off = <0x84000002>;
 		cpu_on = <0x84000003>;
 	};
-
 	gic: interrupt-controller@c0001000 {
 		#interrupt-cells = <3>;
 		compatible = "arm,gic-400";
@@ -70,7 +57,6 @@
 		      <0x0 0xc0004000 0x2000>,
 		      <0x0 0xc0006000 0x2000>;
 	};
-
 	pmu {
 		compatible = "arm,cortex-a53-pmu";
 		interrupts = <GIC_SPI 149 IRQ_TYPE_LEVEL_HIGH>,
@@ -82,7 +68,6 @@
 				     <&cpu2>,
 				     <&cpu3>;
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_RAW(0x0f) |
@@ -94,23 +79,18 @@
 			     <GIC_PPI 10 (GIC_CPU_MASK_RAW(0x0f) |
 			      IRQ_TYPE_LEVEL_LOW)>;
 	};
-
 	clk_bus: clk_bus {
 		#clock-cells = <0>;
-
 		compatible = "fixed-clock";
 		clock-frequency = <198000000>;
 		clock-output-names = "BUSCLK";
 	};
-
 	soc {
 		#address-cells = <2>;
 		#size-cells = <1>;
-
 		compatible = "simple-bus";
 		interrupt-parent = <&gic>;
 		ranges;
-
 		eth0: ethernet@c3700000 {
 			compatible = "cdns,gem";
 			reg = <0x0 0xc3700000 0x1000>;
@@ -118,20 +98,16 @@
 			clocks = <&clk_bus>, <&clk_bus>;
 			clock-names = "hclk", "pclk";
 			phy-mode = "rmii";
-			/* Filled in by boot */
 			mac-address = [ 00 00 00 00 00 00 ];
 		};
 	};
-
 	amba {
 		#address-cells = <2>;
 		#size-cells = <1>;
 		#interrupt-cells = <3>;
-
 		compatible = "simple-bus";
 		interrupt-parent = <&gic>;
 		ranges;
-
 		timers: timer@fd100000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0x0 0xfd100000 0x1000>;

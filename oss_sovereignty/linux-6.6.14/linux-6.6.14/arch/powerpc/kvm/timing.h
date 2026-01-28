@@ -1,29 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * Copyright IBM Corp. 2008
- *
- * Authors: Christian Ehrhardt <ehrhardt@linux.vnet.ibm.com>
- */
-
 #ifndef __POWERPC_KVM_EXITTIMING_H__
 #define __POWERPC_KVM_EXITTIMING_H__
-
 #include <linux/kvm_host.h>
-
 #ifdef CONFIG_KVM_EXIT_TIMING
 void kvmppc_init_timing_stats(struct kvm_vcpu *vcpu);
 void kvmppc_update_timing_stats(struct kvm_vcpu *vcpu);
 int kvmppc_create_vcpu_debugfs_e500(struct kvm_vcpu *vcpu,
 				    struct dentry *debugfs_dentry);
-
 static inline void kvmppc_set_exit_type(struct kvm_vcpu *vcpu, int type)
 {
 	vcpu->arch.last_exit_type = type;
 }
-
 #else
-/* if exit timing is not configured there is no need to build the c file */
 static inline void kvmppc_init_timing_stats(struct kvm_vcpu *vcpu) {}
 static inline void kvmppc_update_timing_stats(struct kvm_vcpu *vcpu) {}
 static inline int kvmppc_create_vcpu_debugfs_e500(struct kvm_vcpu *vcpu,
@@ -32,17 +19,9 @@ static inline int kvmppc_create_vcpu_debugfs_e500(struct kvm_vcpu *vcpu,
 	return 0;
 }
 static inline void kvmppc_set_exit_type(struct kvm_vcpu *vcpu, int type) {}
-#endif /* CONFIG_KVM_EXIT_TIMING */
-
-/* account the exit in kvm_stats */
+#endif  
 static inline void kvmppc_account_exit_stat(struct kvm_vcpu *vcpu, int type)
 {
-	/* type has to be known at build time for optimization */
-
-	/* The BUILD_BUG_ON below breaks in funny ways, commented out
-	 * for now ... -BenH
-	BUILD_BUG_ON(!__builtin_constant_p(type));
-	*/
 	switch (type) {
 	case EXT_INTR_EXITS:
 		vcpu->stat.ext_intr_exits++;
@@ -88,12 +67,9 @@ static inline void kvmppc_account_exit_stat(struct kvm_vcpu *vcpu, int type)
 		break;
 	}
 }
-
-/* wrapper to set exit time and account for it in kvm_stats */
 static inline void kvmppc_account_exit(struct kvm_vcpu *vcpu, int type)
 {
 	kvmppc_set_exit_type(vcpu, type);
 	kvmppc_account_exit_stat(vcpu, type);
 }
-
-#endif /* __POWERPC_KVM_EXITTIMING_H__ */
+#endif  

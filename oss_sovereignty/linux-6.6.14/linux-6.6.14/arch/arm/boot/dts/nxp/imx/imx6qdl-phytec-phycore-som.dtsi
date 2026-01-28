@@ -1,32 +1,18 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (C) 2018 PHYTEC Messtechnik GmbH
- * Author: Christian Hemp <c.hemp@phytec.de>
- */
-
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/regulator/dlg,da9063-regulator.h>
-
 / {
 	aliases {
 		rtc1 = &da9062_rtc;
 		rtc2 = &snvs_rtc;
 	};
-
-	/*
-	 * Set the minimum memory size here and
-	 * let the bootloader set the real size.
-	 */
 	memory@10000000 {
 		device_type = "memory";
 		reg = <0x10000000 0x8000000>;
 	};
-
 	gpio_leds_som: somleds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpioleds_som>;
-
 		som-led-green {
 			label = "phycore:green";
 			gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
@@ -34,13 +20,11 @@
 		};
 	};
 };
-
 &ecspi1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi1>;
 	cs-gpios = <&gpio3 19 GPIO_ACTIVE_LOW>;
 	status = "okay";
-
 	m25p80: flash@0 {
 		compatible = "jedec,spi-nor";
 		spi-max-frequency = <20000000>;
@@ -48,7 +32,6 @@
 		status = "disabled";
 	};
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet>;
@@ -57,11 +40,9 @@
 	phy-supply = <&vdd_eth_io>;
 	phy-reset-gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
 	status = "disabled";
-
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		ethphy: ethernet-phy@3 {
 			reg = <3>;
 			txc-skew-ps = <1680>;
@@ -69,14 +50,12 @@
 		};
 	};
 };
-
 &gpmi {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gpmi_nand>;
 	nand-on-flash-bbt;
 	status = "disabled";
 };
-
 &i2c3 {
 	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c3>;
@@ -85,13 +64,11 @@
 	sda-gpios = <&gpio1 6 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	clock-frequency = <400000>;
 	status = "okay";
-
 	eeprom@50 {
 		compatible = "st,24c32", "atmel,24c32";
 		pagesize = <32>;
 		reg = <0x50>;
 	};
-
 	pmic: pmic@58 {
 		compatible = "dlg,da9062";
 		pinctrl-names = "default";
@@ -102,30 +79,24 @@
 		interrupt-controller;
 		gpio-controller;
 		#gpio-cells = <2>;
-
 		da9062_rtc: rtc {
 			compatible = "dlg,da9062-rtc";
 		};
-
 		da9062_onkey: onkey {
 			compatible = "dlg,da9062-onkey";
 		};
-
 		watchdog {
 			compatible = "dlg,da9062-watchdog";
 			dlg,use-sw-pm;
 		};
-
 		thermal {
 			compatible = "dlg,da9062-thermal";
 			status = "disabled";
 		};
-
 		gpio {
 			compatible = "dlg,da9062-gpio";
 			status = "disabled";
 		};
-
 		regulators {
 			vdd_arm: buck1 {
 				regulator-name = "vdd_arm";
@@ -134,7 +105,6 @@
 				regulator-initial-mode = <DA9063_BUCK_MODE_SYNC>;
 				regulator-always-on;
 			};
-
 			vdd_soc: buck2 {
 				regulator-name = "vdd_soc";
 				regulator-min-microvolt = <1150000>;
@@ -142,7 +112,6 @@
 				regulator-initial-mode = <DA9063_BUCK_MODE_SYNC>;
 				regulator-always-on;
 			};
-
 			vdd_ddr3_1p5: buck3 {
 				regulator-name = "vdd_ddr3";
 				regulator-min-microvolt = <1500000>;
@@ -150,7 +119,6 @@
 				regulator-initial-mode = <DA9063_BUCK_MODE_SYNC>;
 				regulator-always-on;
 			};
-
 			vdd_eth_1p2: buck4 {
 				regulator-name = "vdd_eth";
 				regulator-min-microvolt = <1200000>;
@@ -158,27 +126,23 @@
 				regulator-initial-mode = <DA9063_BUCK_MODE_SYNC>;
 				regulator-always-on;
 			};
-
 			vdd_snvs: ldo1 {
 				regulator-name = "vdd_snvs";
 				regulator-min-microvolt = <3000000>;
 				regulator-max-microvolt = <3000000>;
 				regulator-always-on;
 			};
-
 			vdd_high: ldo2 {
 				regulator-name = "vdd_high";
 				regulator-min-microvolt = <3000000>;
 				regulator-max-microvolt = <3000000>;
 				regulator-always-on;
 			};
-
 			vdd_eth_io: ldo3 {
 				regulator-name = "vdd_eth_io";
 				regulator-min-microvolt = <2500000>;
 				regulator-max-microvolt = <2500000>;
 			};
-
 			vdd_emmc_1p8: ldo4 {
 				regulator-name = "vdd_emmc";
 				regulator-min-microvolt = <1800000>;
@@ -187,23 +151,18 @@
 		};
 	};
 };
-
 &reg_arm {
 	vin-supply = <&vdd_arm>;
 };
-
 &reg_pu {
 	vin-supply = <&vdd_soc>;
 };
-
 &reg_soc {
 	vin-supply = <&vdd_soc>;
 };
-
 &snvs_poweroff {
 	status = "okay";
 };
-
 &usdhc4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc4>;
@@ -211,7 +170,6 @@
 	non-removable;
 	status = "disabled";
 };
-
 &iomuxc {
 	pinctrl_enet: enetgrp {
 		fsl,pins = <
@@ -234,13 +192,11 @@
 			MX6QDL_PAD_SD2_DAT1__GPIO1_IO14		0x1b0b0
 		>;
 	};
-
 	pinctrl_gpioleds_som: gpioledssomgrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_4__GPIO1_IO04		0x1b0b0
 		>;
 	};
-
 	pinctrl_gpmi_nand: gpminandgrp {
 		fsl,pins = <
 			MX6QDL_PAD_NANDF_CLE__NAND_CLE		0xb0b1
@@ -264,21 +220,18 @@
 			MX6QDL_PAD_SD4_DAT0__NAND_DQS		0x00b1
 		>;
 	};
-
 	pinctrl_i2c3: i2c3grp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_6__I2C3_SDA		0x4001b8b1
 			MX6QDL_PAD_GPIO_5__I2C3_SCL		0x4001b8b1
 		>;
 	};
-
 	pinctrl_i2c3_gpio: i2c3gpiogrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_6__GPIO1_IO06	0x4001b8b1
 			MX6QDL_PAD_GPIO_5__GPIO1_IO05	0x4001b8b1
 		>;
 	};
-
 	pinctrl_ecspi1: ecspi1grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D16__ECSPI1_SCLK		0x100b1
@@ -287,13 +240,11 @@
 			MX6QDL_PAD_EIM_D19__GPIO3_IO19		0x1b0b0
 		>;
 	};
-
 	pinctrl_pmic: pmicgrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_2__GPIO1_IO02		0x1b0b0
 		>;
 	};
-
 	pinctrl_usdhc4: usdhc4grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD4_CMD__SD4_CMD		0x17059
@@ -309,11 +260,6 @@
 		>;
 	};
 };
-
 &wdog1 {
-	/*
-	 * Rely on PMIC reboot handler. Internal i.MX6 watchdog, that is also
-	 * used for reboot, does not reset all external PMIC voltages on reset.
-	 */
 	status = "disabled";
 };

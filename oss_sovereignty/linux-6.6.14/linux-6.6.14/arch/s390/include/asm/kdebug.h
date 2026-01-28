@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _S390_KDEBUG_H
 #define _S390_KDEBUG_H
-
-/*
- * Feb 2006 Ported to s390 <grundym@us.ibm.com>
- */
-
 struct pt_regs;
-
 enum die_val {
 	DIE_OOPS = 1,
 	DIE_BPT,
@@ -22,7 +15,5 @@ enum die_val {
 	DIE_CALL,
 	DIE_NMI_IPI,
 };
-
 extern void __noreturn die(struct pt_regs *, const char *);
-
 #endif

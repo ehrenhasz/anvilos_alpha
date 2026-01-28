@@ -1,19 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef BTRFS_TREE_MOD_LOG_H
 #define BTRFS_TREE_MOD_LOG_H
-
 #include "ctree.h"
-
-/* Represents a tree mod log user. */
 struct btrfs_seq_list {
 	struct list_head list;
 	u64 seq;
 };
-
 #define BTRFS_SEQ_LIST_INIT(name) { .list = LIST_HEAD_INIT((name).list), .seq = 0 }
 #define BTRFS_SEQ_LAST            ((u64)-1)
-
 enum btrfs_mod_log_op {
 	BTRFS_MOD_LOG_KEY_REPLACE,
 	BTRFS_MOD_LOG_KEY_ADD,
@@ -23,7 +16,6 @@ enum btrfs_mod_log_op {
 	BTRFS_MOD_LOG_MOVE_KEYS,
 	BTRFS_MOD_LOG_ROOT_REPLACE,
 };
-
 u64 btrfs_get_tree_mod_seq(struct btrfs_fs_info *fs_info,
 			   struct btrfs_seq_list *elem);
 void btrfs_put_tree_mod_seq(struct btrfs_fs_info *fs_info,
@@ -49,5 +41,4 @@ int btrfs_tree_mod_log_insert_move(struct extent_buffer *eb,
 				   int dst_slot, int src_slot,
 				   int nr_items);
 u64 btrfs_tree_mod_log_lowest_seq(struct btrfs_fs_info *fs_info);
-
 #endif

@@ -1,39 +1,10 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_RNM_DEFS_H__
 #define __CVMX_RNM_DEFS_H__
-
 #define CVMX_RNM_BIST_STATUS (CVMX_ADD_IO_SEG(0x0001180040000008ull))
 #define CVMX_RNM_CTL_STATUS (CVMX_ADD_IO_SEG(0x0001180040000000ull))
 #define CVMX_RNM_EER_DBG (CVMX_ADD_IO_SEG(0x0001180040000018ull))
 #define CVMX_RNM_EER_KEY (CVMX_ADD_IO_SEG(0x0001180040000010ull))
 #define CVMX_RNM_SERIAL_NUM (CVMX_ADD_IO_SEG(0x0001180040000020ull))
-
 union cvmx_rnm_bist_status {
 	uint64_t u64;
 	struct cvmx_rnm_bist_status_s {
@@ -48,7 +19,6 @@ union cvmx_rnm_bist_status {
 #endif
 	} s;
 };
-
 union cvmx_rnm_ctl_status {
 	uint64_t u64;
 	struct cvmx_rnm_ctl_status_s {
@@ -134,7 +104,6 @@ union cvmx_rnm_ctl_status {
 #endif
 	} cn63xx;
 };
-
 union cvmx_rnm_eer_dbg {
 	uint64_t u64;
 	struct cvmx_rnm_eer_dbg_s {
@@ -145,7 +114,6 @@ union cvmx_rnm_eer_dbg {
 #endif
 	} s;
 };
-
 union cvmx_rnm_eer_key {
 	uint64_t u64;
 	struct cvmx_rnm_eer_key_s {
@@ -156,7 +124,6 @@ union cvmx_rnm_eer_key {
 #endif
 	} s;
 };
-
 union cvmx_rnm_serial_num {
 	uint64_t u64;
 	struct cvmx_rnm_serial_num_s {
@@ -167,5 +134,4 @@ union cvmx_rnm_serial_num {
 #endif
 	} s;
 };
-
 #endif

@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017 Facebook Inc.
 /dts-v1/;
-
 #include "aspeed-g5.dtsi"
 #include <dt-bindings/gpio/aspeed-gpio.h>
-
 / {
 	model = "Portwell Neptune BMC";
 	compatible = "portwell,neptune-bmc", "aspeed,ast2500";
@@ -16,11 +12,9 @@
 		stdout-path = &uart5;
 		bootargs = "console=ttyS4,115200 earlycon";
 	};
-
 	memory@80000000 {
 		reg = <0x80000000 0x20000000>;
 	};
-
 	leds {
 		compatible = "gpio-leds";
 		postcode0 {
@@ -37,10 +31,8 @@
 			label = "FAULT";
 			gpios = <&gpio ASPEED_GPIO(H, 2) GPIO_ACTIVE_HIGH>;
 		};
-		// postcode3-7 are GPIOH3-H7
 	};
 };
-
 &fmc {
 	status = "okay";
 	flash@0 {
@@ -49,7 +41,6 @@
 #include "openbmc-flash-layout.dtsi"
 	};
 };
-
 &spi1 {
 	status = "okay";
 	pinctrl-names = "default";
@@ -60,23 +51,17 @@
 		label = "pnor";
 	};
 };
-
 &uart1 {
-	// Host Console
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_txd1_default
 		     &pinctrl_rxd1_default>;
 };
-
 &uart5 {
-	// BMC Console
 	status = "okay";
 };
-
 &mac0 {
 	status = "okay";
-
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_rmii1_default
 		     &pinctrl_mdio1_default>;
@@ -84,7 +69,6 @@
 		 <&syscon ASPEED_CLK_MAC1RCLK>;
 	clock-names = "MACCLK", "RCLK";
 };
-
 &mac1 {
 	status = "okay";
 	pinctrl-names = "default";
@@ -94,30 +78,20 @@
 	clock-names = "MACCLK", "RCLK";
 	use-ncsi;
 };
-
 &i2c1 {
 	status = "okay";
-	// To PCIe slot SMBUS
 };
-
 &i2c2 {
 	status = "okay";
-	// To LAN I210
 };
-
 &i2c3 {
 	status = "okay";
-	// SMBus to COMe AB
 };
-
 &i2c4 {
 	status = "okay";
-	// I2C to COMe AB
 };
-
 &i2c5 {
 	status = "okay";
-// 	USB Debug card
 	pca9555@27 {
 		compatible = "nxp,pca9555";
 		reg = <0x27>;
@@ -125,7 +99,6 @@
 		#gpio-cells = <2>;
 	};
 };
-
 &i2c6 {
 	status = "okay";
 	tpm@20 {
@@ -141,7 +114,6 @@
 		reg = <0x4f>;
 	};
 };
-
 &i2c8 {
 	status = "okay";
 	eeprom@51 {
@@ -150,7 +122,6 @@
 		pagesize = <32>;
 	};
 };
-
 &pwm_tacho {
 	status = "okay";
 	pinctrl-names = "default";
@@ -159,7 +130,6 @@
 		reg = <0x00>;
 		aspeed,fan-tach-ch = /bits/ 8 <0x00>;
 	};
-
 	fan@1 {
 		reg = <0x00>;
 		aspeed,fan-tach-ch = /bits/ 8 <0x01>;

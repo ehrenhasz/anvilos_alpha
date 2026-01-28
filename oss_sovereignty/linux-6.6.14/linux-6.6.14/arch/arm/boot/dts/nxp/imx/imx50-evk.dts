@@ -1,48 +1,35 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2013 Greg Ungerer <gerg@uclinux.org>
-// Copyright 2011 Freescale Semiconductor, Inc.
-// Copyright 2011 Linaro Ltd.
-
 /dts-v1/;
 #include "imx50.dtsi"
-
 / {
 	model = "Freescale i.MX50 Evaluation Kit";
 	compatible = "fsl,imx50-evk", "fsl,imx50";
-
 	memory@70000000 {
 		device_type = "memory";
 		reg = <0x70000000 0x80000000>;
 	};
 };
-
 &cspi {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_cspi>;
 	cs-gpios = <&gpio4 11 GPIO_ACTIVE_LOW>, <&gpio4 13 GPIO_ACTIVE_LOW>;
 	status = "okay";
-
 	flash: flash@1 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "m25p32", "jedec,spi-nor";
 		spi-max-frequency = <25000000>;
 		reg = <1>;
-
 		partition@0 {
 			label = "bootloader";
 			reg = <0x0 0x100000>;
 			read-only;
 		};
-
 		partition@100000 {
 			label = "kernel";
 			reg = <0x100000 0x300000>;
 		};
 	};
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec>;
@@ -50,7 +37,6 @@
 	phy-reset-gpios = <&gpio4 12 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &iomuxc {
 	imx50-evk {
 		pinctrl_cspi: cspigrp {
@@ -62,7 +48,6 @@
 				MX50_PAD_ECSPI1_MOSI__GPIO4_13		0x84
 			>;
 		};
-
 		pinctrl_fec: fecgrp {
 			fsl,pins = <
 				MX50_PAD_SSI_RXFS__FEC_MDC		0x80
@@ -77,7 +62,6 @@
 				MX50_PAD_DISP_D7__FEC_TDATA_0		0x80
 			>;
 		};
-
 		pinctrl_uart1: uart1grp {
 			fsl,pins = <
 				MX50_PAD_UART1_TXD__UART1_TXD_MUX	0x1e4
@@ -88,17 +72,14 @@
 		};
 	};
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
 };
-
 &usbh1 {
 	status = "okay";
 };
-
 &usbotg {
 	status = "okay";
 };

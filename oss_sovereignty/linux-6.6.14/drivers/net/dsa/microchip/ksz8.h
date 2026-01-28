@@ -1,17 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Microchip KSZ8XXX series register access
- *
- * Copyright (C) 2020 Pengutronix, Michael Grzeschik <kernel@pengutronix.de>
- */
-
 #ifndef __KSZ8XXX_H
 #define __KSZ8XXX_H
-
 #include <linux/types.h>
 #include <net/dsa.h>
 #include "ksz_common.h"
-
 int ksz8_setup(struct dsa_switch *ds);
 u32 ksz8_get_port_addr(int port, int offset);
 void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member);
@@ -56,5 +47,4 @@ int ksz8_reset_switch(struct ksz_device *dev);
 int ksz8_switch_init(struct ksz_device *dev);
 void ksz8_switch_exit(struct ksz_device *dev);
 int ksz8_change_mtu(struct ksz_device *dev, int port, int mtu);
-
 #endif

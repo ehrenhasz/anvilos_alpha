@@ -1,10 +1,5 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-
 source ./benchs/run_common.sh
-
 set -eufo pipefail
-
 header "Bloom filter map"
 for v in 2 4 8 16 40; do
 for t in 1 4 8 12 16; do
@@ -26,7 +21,6 @@ subtitle "value_size: $v bytes, # threads: $t, # hashes: $h"
 done
 done
 done
-
 header "Hashmap without bloom filter vs. hashmap with bloom filter (throughput, 8 threads)"
 for v in 2 4 8 16 40; do
 for h in {1..10}; do

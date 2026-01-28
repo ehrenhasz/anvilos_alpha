@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (C) 2001 Ben. Herrenschmidt (benh@kernel.crashing.org)
- */
-
 #define COMMON_USER_BOOKE	(PPC_FEATURE_32 | PPC_FEATURE_HAS_MMU | \
 				 PPC_FEATURE_BOOKE)
-
 static struct cpu_spec cpu_specs[] __initdata = {
 	{
 		.pvr_mask		= 0xf0000fff,
@@ -19,7 +13,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc440",
 	},
-	{ /* Use logical PVR for 440EP (logical pvr = pvr | 0x8) */
+	{  
 		.pvr_mask		= 0xf0000fff,
 		.pvr_value		= 0x40000858,
 		.cpu_name		= "440EP Rev. A",
@@ -44,7 +38,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc440",
 	},
-	{ /* Matches both physical and logical PVR for 440EP (logical pvr = pvr | 0x8) */
+	{  
 		.pvr_mask		= 0xf0000ff7,
 		.pvr_value		= 0x400008d4,
 		.cpu_name		= "440EP Rev. C",
@@ -57,7 +51,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc440",
 	},
-	{ /* Use logical PVR for 440EP (logical pvr = pvr | 0x8) */
+	{  
 		.pvr_mask		= 0xf0000fff,
 		.pvr_value		= 0x400008db,
 		.cpu_name		= "440EP Rev. B",
@@ -70,7 +64,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc440",
 	},
-	{ /* 440GRX */
+	{  
 		.pvr_mask		= 0xf0000ffb,
 		.pvr_value		= 0x200008D0,
 		.cpu_name		= "440GRX",
@@ -83,7 +77,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{ /* Use logical PVR for 440EPx (logical pvr = pvr | 0x8) */
+	{  
 		.pvr_mask		= 0xf0000ffb,
 		.pvr_value		= 0x200008D8,
 		.cpu_name		= "440EPX",
@@ -96,7 +90,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{	/* 440GP Rev. B */
+	{	 
 		.pvr_mask		= 0xf0000fff,
 		.pvr_value		= 0x40000440,
 		.cpu_name		= "440GP Rev. B",
@@ -108,7 +102,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc440gp",
 	},
-	{	/* 440GP Rev. C */
+	{	 
 		.pvr_mask		= 0xf0000fff,
 		.pvr_value		= 0x40000481,
 		.cpu_name		= "440GP Rev. C",
@@ -120,7 +114,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc440gp",
 	},
-	{ /* 440GX Rev. A */
+	{  
 		.pvr_mask		= 0xf0000fff,
 		.pvr_value		= 0x50000850,
 		.cpu_name		= "440GX Rev. A",
@@ -133,7 +127,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{ /* 440GX Rev. B */
+	{  
 		.pvr_mask		= 0xf0000fff,
 		.pvr_value		= 0x50000851,
 		.cpu_name		= "440GX Rev. B",
@@ -146,7 +140,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{ /* 440GX Rev. C */
+	{  
 		.pvr_mask		= 0xf0000fff,
 		.pvr_value		= 0x50000892,
 		.cpu_name		= "440GX Rev. C",
@@ -159,7 +153,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{ /* 440GX Rev. F */
+	{  
 		.pvr_mask		= 0xf0000fff,
 		.pvr_value		= 0x50000894,
 		.cpu_name		= "440GX Rev. F",
@@ -172,7 +166,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{ /* 440SP Rev. A */
+	{  
 		.pvr_mask		= 0xfff00fff,
 		.pvr_value		= 0x53200891,
 		.cpu_name		= "440SP Rev. A",
@@ -184,7 +178,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc440",
 	},
-	{ /* 440SPe Rev. A */
+	{  
 		.pvr_mask               = 0xfff00fff,
 		.pvr_value              = 0x53400890,
 		.cpu_name               = "440SPe Rev. A",
@@ -197,7 +191,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform               = "ppc440",
 	},
-	{ /* 440SPe Rev. B */
+	{  
 		.pvr_mask		= 0xfff00fff,
 		.pvr_value		= 0x53400891,
 		.cpu_name		= "440SPe Rev. B",
@@ -210,7 +204,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{ /* 460EX */
+	{  
 		.pvr_mask		= 0xffff0006,
 		.pvr_value		= 0x13020002,
 		.cpu_name		= "460EX",
@@ -223,7 +217,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{ /* 460EX Rev B */
+	{  
 		.pvr_mask		= 0xffff0007,
 		.pvr_value		= 0x13020004,
 		.cpu_name		= "460EX Rev. B",
@@ -236,7 +230,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{ /* 460GT */
+	{  
 		.pvr_mask		= 0xffff0006,
 		.pvr_value		= 0x13020000,
 		.cpu_name		= "460GT",
@@ -249,7 +243,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{ /* 460GT Rev B */
+	{  
 		.pvr_mask		= 0xffff0007,
 		.pvr_value		= 0x13020005,
 		.cpu_name		= "460GT Rev. B",
@@ -262,7 +256,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{ /* 460SX */
+	{  
 		.pvr_mask		= 0xffffff00,
 		.pvr_value		= 0x13541800,
 		.cpu_name		= "460SX",
@@ -275,7 +269,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{ /* 464 in APM821xx */
+	{  
 		.pvr_mask		= 0xfffffff0,
 		.pvr_value		= 0x12C41C80,
 		.cpu_name		= "APM821XX",
@@ -289,7 +283,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_440A,
 		.platform		= "ppc440",
 	},
-	{	/* default match */
+	{	 
 		.pvr_mask		= 0x00000000,
 		.pvr_value		= 0x00000000,
 		.cpu_name		= "(generic 44x PPC)",

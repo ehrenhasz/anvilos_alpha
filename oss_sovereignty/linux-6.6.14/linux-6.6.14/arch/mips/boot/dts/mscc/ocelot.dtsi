@@ -1,15 +1,10 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Copyright (c) 2017 Microsemi Corporation */
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
 	compatible = "mscc,ocelot";
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu@0 {
 			compatible = "mips,mips24KEc";
 			device_type = "cpu";
@@ -17,24 +12,20 @@
 			reg = <0>;
 		};
 	};
-
 	aliases {
 		serial0 = &uart0;
 	};
-
 	cpuintc: interrupt-controller {
 		#address-cells = <0>;
 		#interrupt-cells = <1>;
 		interrupt-controller;
 		compatible = "mti,cpu-interrupt-controller";
 	};
-
 	cpu_clk: cpu-clock {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <500000000>;
 	};
-
 	ahb_clk: ahb-clk {
 		compatible = "fixed-factor-clock";
 		#clock-cells = <0>;
@@ -42,20 +33,16 @@
 		clock-div = <2>;
 		clock-mult = <1>;
 	};
-
 	ahb@70000000 {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <0 0x70000000 0x2000000>;
-
 		interrupt-parent = <&intc>;
-
 		cpu_ctrl: syscon@0 {
 			compatible = "mscc,ocelot-cpu-syscon", "syscon";
 			reg = <0x0 0x2c>;
 		};
-
 		intc: interrupt-controller@70 {
 			compatible = "mscc,ocelot-icpu-intr";
 			reg = <0x70 0x70>;
@@ -64,7 +51,6 @@
 			interrupt-parent = <&cpuintc>;
 			interrupts = <2>;
 		};
-
 		uart0: serial@100000 {
 			pinctrl-0 = <&uart_pins>;
 			pinctrl-names = "default";
@@ -74,10 +60,8 @@
 			clocks = <&ahb_clk>;
 			reg-io-width = <4>;
 			reg-shift = <2>;
-
 			status = "disabled";
 		};
-
 		i2c: i2c@100400 {
 			compatible = "mscc,ocelot-i2c", "snps,designware-i2c";
 			pinctrl-0 = <&i2c_pins>;
@@ -87,10 +71,8 @@
 			#size-cells = <0>;
 			interrupts = <8>;
 			clocks = <&ahb_clk>;
-
 			status = "disabled";
 		};
-
 		uart2: serial@100800 {
 			pinctrl-0 = <&uart2_pins>;
 			pinctrl-names = "default";
@@ -100,10 +82,8 @@
 			clocks = <&ahb_clk>;
 			reg-io-width = <4>;
 			reg-shift = <2>;
-
 			status = "disabled";
 		};
-
 		spi: spi@101000 {
 			compatible = "mscc,ocelot-spi", "snps,dw-apb-ssi";
 			#address-cells = <1>;
@@ -111,10 +91,8 @@
 			reg = <0x101000 0x100>, <0x3c 0x18>;
 			interrupts = <9>;
 			clocks = <&ahb_clk>;
-
 			status = "disabled";
 		};
-
 		switch@1010000 {
 			compatible = "mscc,vsc7514-switch";
 			reg = <0x1010000 0x10000>,
@@ -144,11 +122,9 @@
 				    "ana", "s0", "s1", "s2", "fdma";
 			interrupts = <18 21 22 16>;
 			interrupt-names = "ptp_rdy", "xtr", "inj", "fdma";
-
 			ethernet-ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port0: port@0 {
 					reg = <0>;
 					status = "disabled";
@@ -195,12 +171,10 @@
 				};
 			};
 		};
-
 		reset@1070008 {
 			compatible = "mscc,ocelot-chip-reset";
 			reg = <0x1070008 0x4>;
 		};
-
 		gpio: pinctrl@1070034 {
 			compatible = "mscc,ocelot-pinctrl";
 			reg = <0x1070034 0x68>;
@@ -210,29 +184,23 @@
 			interrupt-controller;
 			interrupts = <13>;
 			#interrupt-cells = <2>;
-
 			i2c_pins: i2c-pins {
 				pins = "GPIO_16", "GPIO_17";
 				function = "twi";
 			};
-
 			uart_pins: uart-pins {
 				pins = "GPIO_6", "GPIO_7";
 				function = "uart";
 			};
-
 			uart2_pins: uart2-pins {
 				pins = "GPIO_12", "GPIO_13";
 				function = "uart2";
 			};
-
 			miim1_pins: miim1-pins {
 				pins = "GPIO_14", "GPIO_15";
 				function = "miim";
 			};
-
 		};
-
 		mdio0: mdio@107009c {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -240,7 +208,6 @@
 			reg = <0x107009c 0x24>, <0x10700f0 0x8>;
 			interrupts = <14>;
 			status = "disabled";
-
 			phy0: ethernet-phy@0 {
 				reg = <0>;
 			};
@@ -254,7 +221,6 @@
 				reg = <3>;
 			};
 		};
-
 		mdio1: mdio@10700c0 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -265,11 +231,9 @@
 			pinctrl-0 = <&miim1_pins>;
 			status = "disabled";
 		};
-
 		hsio: syscon@10d0000 {
 			compatible = "mscc,ocelot-hsio", "syscon", "simple-mfd";
 			reg = <0x10d0000 0x10000>;
-
 			serdes: serdes {
 				compatible = "mscc,vsc7514-serdes";
 				#phy-cells = <2>;

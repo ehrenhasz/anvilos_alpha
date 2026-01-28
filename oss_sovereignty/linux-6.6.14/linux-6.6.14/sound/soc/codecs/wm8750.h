@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2005 Openedhand Ltd.
- *
- * Author: Richard Purdie <richard@openedhand.com>
- *
- * Based on WM8753.h
- */
-
 #ifndef _WM8750_H
 #define _WM8750_H
-
-/* WM8750 register space */
-
 #define WM8750_LINVOL    0x00
 #define WM8750_RINVOL    0x01
 #define WM8750_LOUT1V    0x02
@@ -48,9 +36,6 @@
 #define WM8750_LOUT2V    0x28
 #define WM8750_ROUT2V    0x29
 #define WM8750_MOUTV     0x2a
-
 #define WM8750_CACHE_REGNUM 0x2a
-
 #define WM8750_SYSCLK	0
-
 #endif

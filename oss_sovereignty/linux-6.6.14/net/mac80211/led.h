@@ -1,15 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2006, Johannes Berg <johannes@sipsolutions.net>
- */
-
 #include <linux/list.h>
 #include <linux/spinlock.h>
 #include <linux/leds.h>
 #include "ieee80211_i.h"
-
-#define MAC80211_BLINK_DELAY 50 /* ms */
-
+#define MAC80211_BLINK_DELAY 50  
 static inline void ieee80211_led_rx(struct ieee80211_local *local)
 {
 #ifdef CONFIG_MAC80211_LEDS
@@ -18,7 +11,6 @@ static inline void ieee80211_led_rx(struct ieee80211_local *local)
 	led_trigger_blink_oneshot(&local->rx_led, MAC80211_BLINK_DELAY, MAC80211_BLINK_DELAY, 0);
 #endif
 }
-
 static inline void ieee80211_led_tx(struct ieee80211_local *local)
 {
 #ifdef CONFIG_MAC80211_LEDS
@@ -27,7 +19,6 @@ static inline void ieee80211_led_tx(struct ieee80211_local *local)
 	led_trigger_blink_oneshot(&local->tx_led, MAC80211_BLINK_DELAY, MAC80211_BLINK_DELAY, 0);
 #endif
 }
-
 #ifdef CONFIG_MAC80211_LEDS
 void ieee80211_led_assoc(struct ieee80211_local *local,
 			 bool associated);
@@ -66,7 +57,6 @@ static inline void ieee80211_mod_tpt_led_trig(struct ieee80211_local *local,
 {
 }
 #endif
-
 static inline void
 ieee80211_tpt_led_trig_tx(struct ieee80211_local *local, int bytes)
 {
@@ -75,7 +65,6 @@ ieee80211_tpt_led_trig_tx(struct ieee80211_local *local, int bytes)
 		local->tpt_led_trigger->tx_bytes += bytes;
 #endif
 }
-
 static inline void
 ieee80211_tpt_led_trig_rx(struct ieee80211_local *local, int bytes)
 {

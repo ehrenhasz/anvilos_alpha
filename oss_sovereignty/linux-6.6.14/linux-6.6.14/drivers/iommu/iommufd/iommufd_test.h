@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES.
- */
 #ifndef _UAPI_IOMMUFD_TEST_H
 #define _UAPI_IOMMUFD_TEST_H
-
 #include <linux/types.h>
 #include <linux/iommufd.h>
-
 enum {
 	IOMMU_TEST_OP_ADD_RESERVED = 1,
 	IOMMU_TEST_OP_MOCK_DOMAIN,
@@ -20,26 +15,21 @@ enum {
 	IOMMU_TEST_OP_MOCK_DOMAIN_REPLACE,
 	IOMMU_TEST_OP_ACCESS_REPLACE_IOAS,
 };
-
 enum {
 	MOCK_APERTURE_START = 1UL << 24,
 	MOCK_APERTURE_LAST = (1UL << 31) - 1,
 };
-
 enum {
 	MOCK_FLAGS_ACCESS_WRITE = 1 << 0,
 	MOCK_FLAGS_ACCESS_SYZ = 1 << 16,
 };
-
 enum {
 	MOCK_ACCESS_RW_WRITE = 1 << 0,
 	MOCK_ACCESS_RW_SLOW_PATH = 1 << 2,
 };
-
 enum {
 	MOCK_FLAGS_ACCESS_CREATE_NEEDS_PIN_PAGES = 1 << 0,
 };
-
 struct iommu_test_cmd {
 	__u32 size;
 	__u32 op;
@@ -53,7 +43,6 @@ struct iommu_test_cmd {
 		struct {
 			__u32 out_stdev_id;
 			__u32 out_hwpt_id;
-			/* out_idev_id is the standard iommufd_bind object */
 			__u32 out_idev_id;
 		} mock_domain;
 		struct {
@@ -99,14 +88,10 @@ struct iommu_test_cmd {
 	__u32 last;
 };
 #define IOMMU_TEST_CMD _IO(IOMMUFD_TYPE, IOMMUFD_CMD_BASE + 32)
-
-/* Mock structs for IOMMU_DEVICE_GET_HW_INFO ioctl */
 #define IOMMU_HW_INFO_TYPE_SELFTEST	0xfeedbeef
 #define IOMMU_HW_INFO_SELFTEST_REGVAL	0xdeadbeef
-
 struct iommu_test_hw_info {
 	__u32 flags;
 	__u32 test_reg;
 };
-
 #endif

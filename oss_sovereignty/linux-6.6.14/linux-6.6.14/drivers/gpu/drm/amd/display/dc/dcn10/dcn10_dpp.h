@@ -1,46 +1,14 @@
-/* Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DAL_DPP_DCN10_H__
 #define __DAL_DPP_DCN10_H__
-
 #include "dpp.h"
-
 #define TO_DCN10_DPP(dpp)\
 	container_of(dpp, struct dcn10_dpp, base)
-
-/* TODO: Use correct number of taps. Using polaris values for now */
 #define LB_TOTAL_NUMBER_OF_ENTRIES 5124
 #define LB_BITS_PER_ENTRY 144
-
 #define TF_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
-
-//Used to resolve corner case
 #define TF2_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## _ ## field_name ## post_fix
-
 #define TF_REG_LIST_DCN(id) \
 	SRI(CM_GAMUT_REMAP_CONTROL, CM, id),\
 	SRI(CM_GAMUT_REMAP_C11_C12, CM, id),\
@@ -125,9 +93,6 @@
 	SRI(CURSOR0_FP_SCALE_BIAS, CNVC_CUR, id), \
 	SRI(DPP_CONTROL, DPP_TOP, id), \
 	SRI(CM_HDR_MULT_COEF, CM, id)
-
-
-
 #define TF_REG_LIST_DCN10(id) \
 	TF_REG_LIST_DCN(id), \
 	SRI(CM_COMA_C11_C12, CM, id),\
@@ -179,8 +144,6 @@
 	SRI(CM_IGAM_LUT_SEQ_COLOR, CM, id), \
 	SRI(CURSOR_CONTROL, CURSOR, id), \
 	SRI(CM_CMOUT_CONTROL, CM, id)
-
-
 #define TF_REG_LIST_SH_MASK_DCN(mask_sh)\
 	TF_SF(CM0_CM_GAMUT_REMAP_CONTROL, CM_GAMUT_REMAP_MODE, mask_sh),\
 	TF_SF(CM0_CM_GAMUT_REMAP_C11_C12, CM_GAMUT_REMAP_C11, mask_sh),\
@@ -335,7 +298,6 @@
 	TF_SF(CNVC_CUR0_CURSOR0_FP_SCALE_BIAS, CUR0_FP_SCALE, mask_sh), \
 	TF_SF(DPP_TOP0_DPP_CONTROL, DPP_CLOCK_ENABLE, mask_sh), \
 	TF_SF(CM0_CM_HDR_MULT_COEF, CM_HDR_MULT_COEF, mask_sh)
-
 #define TF_REG_LIST_SH_MASK_DCN10(mask_sh)\
 	TF_REG_LIST_SH_MASK_DCN(mask_sh),\
 	TF_SF(DSCL0_LB_DATA_FORMAT, PIXEL_DEPTH, mask_sh),\
@@ -440,42 +402,12 @@
 	TF_SF(CURSOR0_CURSOR_CONTROL, CURSOR_LINES_PER_CHUNK, mask_sh), \
 	TF_SF(CURSOR0_CURSOR_CONTROL, CURSOR_ENABLE, mask_sh), \
 	TF_SF(DPP_TOP0_DPP_CONTROL, DPPCLK_RATE_CONTROL, mask_sh)
-
-/*
- *
-	DCN1 CM debug status register definition
-
-	register :ID9_CM_STATUS do
-	implement_ref :cm
-	map to:  :cmdebugind, at: j
-	width 32
-	disclosure   NEVER
-
-		field :ID9_VUPDATE_CFG, [0], R
-		field :ID9_IGAM_LUT_MODE, [2..1], R
-		field :ID9_BNS_BYPASS, [3], R
-		field :ID9_ICSC_MODE, [5..4], R
-		field :ID9_DGAM_LUT_MODE, [8..6], R
-		field :ID9_HDR_BYPASS, [9], R
-		field :ID9_GAMUT_REMAP_MODE, [11..10], R
-		field :ID9_RGAM_LUT_MODE, [14..12], R
-		#1 free bit
-		field :ID9_OCSC_MODE, [18..16], R
-		field :ID9_DENORM_MODE, [21..19], R
-		field :ID9_ROUND_TRUNC_MODE, [25..22], R
-		field :ID9_DITHER_EN, [26], R
-		field :ID9_DITHER_MODE, [28..27], R
-	end
-*/
-
 #define TF_DEBUG_REG_LIST_SH_DCN10 \
 	.CM_TEST_DEBUG_DATA_ID9_ICSC_MODE = 4, \
 	.CM_TEST_DEBUG_DATA_ID9_OCSC_MODE = 16
-
 #define TF_DEBUG_REG_LIST_MASK_DCN10 \
 	.CM_TEST_DEBUG_DATA_ID9_ICSC_MODE = 0x30, \
 	.CM_TEST_DEBUG_DATA_ID9_OCSC_MODE = 0x70000
-
 #define TF_REG_FIELD_LIST(type) \
 	type EXT_OVERSCAN_LEFT; \
 	type EXT_OVERSCAN_RIGHT; \
@@ -1091,15 +1023,12 @@
 	type CM_HDR_MULT_COEF; \
 	type CUR0_FP_BIAS; \
 	type CUR0_FP_SCALE;
-
 struct dcn_dpp_shift {
 	TF_REG_FIELD_LIST(uint8_t)
 };
-
 struct dcn_dpp_mask {
 	TF_REG_FIELD_LIST(uint32_t)
 };
-
 #define DPP_COMMON_REG_VARIABLE_LIST \
 	uint32_t DSCL_EXT_OVERSCAN_LEFT_RIGHT; \
 	uint32_t DSCL_EXT_OVERSCAN_TOP_BOTTOM; \
@@ -1348,18 +1277,14 @@ struct dcn_dpp_mask {
 	uint32_t DPP_CONTROL; \
 	uint32_t CM_HDR_MULT_COEF; \
 	uint32_t CURSOR0_FP_SCALE_BIAS;
-
 struct dcn_dpp_registers {
 	DPP_COMMON_REG_VARIABLE_LIST
 };
-
 struct dcn10_dpp {
 	struct dpp base;
-
 	const struct dcn_dpp_registers *tf_regs;
 	const struct dcn_dpp_shift *tf_shift;
 	const struct dcn_dpp_mask *tf_mask;
-
 	const uint16_t *filter_v;
 	const uint16_t *filter_h;
 	const uint16_t *filter_v_c;
@@ -1371,128 +1296,97 @@ struct dcn10_dpp {
 	struct scaler_data scl_data;
 	struct pwl_params pwl_data;
 };
-
 enum dcn10_input_csc_select {
 	INPUT_CSC_SELECT_BYPASS = 0,
 	INPUT_CSC_SELECT_ICSC = 1,
 	INPUT_CSC_SELECT_COMA = 2
 };
-
 void dpp1_set_cursor_attributes(
 		struct dpp *dpp_base,
 		struct dc_cursor_attributes *cursor_attributes);
-
 void dpp1_set_cursor_position(
 		struct dpp *dpp_base,
 		const struct dc_cursor_position *pos,
 		const struct dc_cursor_mi_param *param,
 		uint32_t width,
 		uint32_t height);
-
 void dpp1_cnv_set_optional_cursor_attributes(
 			struct dpp *dpp_base,
 			struct dpp_cursor_attributes *attr);
-
 bool dpp1_dscl_is_lb_conf_valid(
 		int ceil_vratio,
 		int num_partitions,
 		int vtaps);
-
 void dpp1_dscl_calc_lb_num_partitions(
 		const struct scaler_data *scl_data,
 		enum lb_memory_config lb_config,
 		int *num_part_y,
 		int *num_part_c);
-
 void dpp1_degamma_ram_select(
 		struct dpp *dpp_base,
 							bool use_ram_a);
-
 void dpp1_program_degamma_luta_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params);
-
 void dpp1_program_degamma_lutb_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params);
-
 void dpp1_program_degamma_lut(
 		struct dpp *dpp_base,
 		const struct pwl_result_data *rgb,
 		uint32_t num,
 		bool is_ram_a);
-
 void dpp1_power_on_degamma_lut(
 		struct dpp *dpp_base,
 	bool power_on);
-
 void dpp1_program_input_csc(
 		struct dpp *dpp_base,
 		enum dc_color_space color_space,
 		enum dcn10_input_csc_select select,
 		const struct out_csc_color_matrix *tbl_entry);
-
 void dpp1_program_bias_and_scale(
 		struct dpp *dpp_base,
 		struct dc_bias_and_scale *params);
-
 void dpp1_program_input_lut(
 		struct dpp *dpp_base,
 		const struct dc_gamma *gamma);
-
 void dpp1_full_bypass(struct dpp *dpp_base);
-
 void dpp1_set_degamma(
 		struct dpp *dpp_base,
 		enum ipp_degamma_mode mode);
-
 void dpp1_set_degamma_pwl(struct dpp *dpp_base,
 		const struct pwl_params *params);
-
-
 void dpp_read_state(struct dpp *dpp_base,
 		struct dcn_dpp_state *s);
-
 void dpp_reset(struct dpp *dpp_base);
-
 void dpp1_cm_program_regamma_lut(
 		struct dpp *dpp_base,
 		const struct pwl_result_data *rgb,
 		uint32_t num);
-
 void dpp1_cm_power_on_regamma_lut(
 	struct dpp *dpp_base,
 	bool power_on);
-
 void dpp1_cm_configure_regamma_lut(
 		struct dpp *dpp_base,
 		bool is_ram_a);
-
-/*program re gamma RAM A*/
 void dpp1_cm_program_regamma_luta_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params);
-
-/*program re gamma RAM B*/
 void dpp1_cm_program_regamma_lutb_settings(
 		struct dpp *dpp_base,
 		const struct pwl_params *params);
 void dpp1_cm_set_output_csc_adjustment(
 		struct dpp *dpp_base,
 		const uint16_t *regval);
-
 void dpp1_cm_set_output_csc_default(
 		struct dpp *dpp_base,
 		enum dc_color_space colorspace);
-
 void dpp1_cm_set_gamut_remap(
 	struct dpp *dpp,
 	const struct dpp_grph_csc_adjustment *adjust);
-
 void dpp1_dscl_set_scaler_manual_scale(
 	struct dpp *dpp_base,
 	const struct scaler_data *scl_data);
-
 void dpp1_cnv_setup (
 		struct dpp *dpp_base,
 		enum surface_pixel_format format,
@@ -1500,21 +1394,17 @@ void dpp1_cnv_setup (
 		struct dc_csc_transform input_csc_color_matrix,
 		enum dc_color_space input_color_space,
 		struct cnv_alpha_2bit_lut *alpha_2bit_lut);
-
 void dpp1_dppclk_control(
 		struct dpp *dpp_base,
 		bool dppclk_div,
 		bool enable);
-
 void dpp1_set_hdr_multiplier(
 		struct dpp *dpp_base,
 		uint32_t multiplier);
-
 bool dpp1_get_optimal_number_of_taps(
 		struct dpp *dpp,
 		struct scaler_data *scl_data,
 		const struct scaling_taps *in_taps);
-
 void dpp1_construct(struct dcn10_dpp *dpp1,
 	struct dc_context *ctx,
 	uint32_t inst,

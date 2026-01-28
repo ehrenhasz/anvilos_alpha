@@ -1,53 +1,35 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016 PHYTEC Messtechnik GmbH
- * Author: Christian Hemp <c.hemp@phytec.de>
- */
-
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/pwm/pwm.h>
-
 / {
 	model = "PHYTEC phyCORE-i.MX6 UltraLite";
 	compatible = "phytec,imx6ul-pcl063", "fsl,imx6ul";
-
 	chosen {
 		stdout-path = &uart1;
 	};
-
-	/*
-	 * Set the minimum memory size here and
-	 * let the bootloader set the real size.
-	 */
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x80000000 0x8000000>;
 	};
-
 	gpio_leds_som: leds {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpioleds_som>;
 		compatible = "gpio-leds";
-
 		led-phycore-green {
 			gpios = <&gpio5 4 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "heartbeat";
 		};
 	};
 };
-
 &fec1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet1>;
 	phy-mode = "rmii";
 	phy-handle = <&ethphy1>;
 	status = "disabled";
-
 	mdio: mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		ethphy1: ethernet-phy@1 {
 			reg = <1>;
 			interrupt-parent = <&gpio1>;
@@ -59,14 +41,12 @@
 		};
 	};
 };
-
 &gpmi {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gpmi_nand>;
 	nand-on-flash-bbt;
 	status = "disabled";
 };
-
 &i2c1 {
 	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c1>;
@@ -75,24 +55,20 @@
 	sda-gpios = <&gpio1 29 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	clock-frequency = <100000>;
 	status = "okay";
-
 	eeprom@52 {
 		compatible = "catalyst,24c32", "atmel,24c32";
 		pagesize = <32>;
 		reg = <0x52>;
 	};
 };
-
 &snvs_poweroff {
 	status = "okay";
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
 };
-
 &usdhc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2>;
@@ -101,11 +77,9 @@
 	non-removable;
 	status = "disabled";
 };
-
 &wdog1 {
 	fsl,suspend-in-wait;
 };
-
 &iomuxc {
 	pinctrl_enet1: enet1grp {
 		fsl,pins = <
@@ -122,11 +96,9 @@
 			MX6UL_PAD_GPIO1_IO02__GPIO1_IO02	0x17059
 		>;
 	};
-
 	pinctrl_gpioleds_som: gpioledssomgrp {
 		fsl,pins = <MX6UL_PAD_SNVS_TAMPER4__GPIO5_IO04	0x0b0b0>;
 	};
-
 	pinctrl_gpmi_nand: gpminandgrp {
 		fsl,pins = <
 			MX6UL_PAD_NAND_CLE__RAWNAND_CLE		0x0b0b1
@@ -146,28 +118,24 @@
 			MX6UL_PAD_NAND_DATA07__RAWNAND_DATA07	0x0b0b1
 		>;
 	};
-
 	pinctrl_i2c1: i2cgrp {
 		fsl,pins = <
 			MX6UL_PAD_UART4_TX_DATA__I2C1_SCL	0x4001b8b0
 			MX6UL_PAD_UART4_RX_DATA__I2C1_SDA	0x4001b8b0
 		>;
 	};
-
 	pinctrl_i2c1_gpio: i2cgpiogrp {
 		fsl,pins = <
 			MX6UL_PAD_UART4_TX_DATA__GPIO1_IO28	0x4001b8b0
 			MX6UL_PAD_UART4_RX_DATA__GPIO1_IO29	0x4001b8b0
 		>;
 	};
-
 	pinctrl_uart1: uart1grp {
 		fsl,pins = <
 			MX6UL_PAD_UART1_TX_DATA__UART1_DCE_TX	0x1b0b1
 			MX6UL_PAD_UART1_RX_DATA__UART1_DCE_RX	0x1b0b1
 		>;
 	};
-
 	pinctrl_usdhc2: usdhc2grp {
 		fsl,pins = <
 			MX6UL_PAD_NAND_WE_B__USDHC2_CMD		0x170f9
@@ -182,5 +150,4 @@
 			MX6UL_PAD_NAND_DATA07__USDHC2_DATA7	0x170f9
 		>;
 	};
-
 };

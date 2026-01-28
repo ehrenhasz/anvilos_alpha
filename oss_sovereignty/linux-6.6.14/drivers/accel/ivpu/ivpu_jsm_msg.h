@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
-
 #ifndef __IVPU_JSM_MSG_H__
 #define __IVPU_JSM_MSG_H__
-
 #include "vpu_jsm_api.h"
-
 int ivpu_jsm_register_db(struct ivpu_device *vdev, u32 ctx_id, u32 db_id,
 			 u64 jobq_base, u32 jobq_size);
 int ivpu_jsm_unregister_db(struct ivpu_device *vdev, u32 db_id);

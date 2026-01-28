@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2023 Advanced Micro Devices, Inc. All rights reserved.
- */
-
 #ifndef __AMD_MANAGER_H
 #define __AMD_MANAGER_H
-
 #include <linux/soundwire/sdw_amd.h>
-
 #define SDW_MANAGER_REG_OFFSET				0xc00
 #define AMD_SDW_DEFAULT_ROWS				50
 #define AMD_SDW_DEFAULT_COLUMNS				10
@@ -19,7 +12,6 @@
 #define ACP_EXTERNAL_INTR_CNTL(i)			(ACP_EXTERNAL_INTR_CNTL0 + ((i) * 4))
 #define ACP_EXTERNAL_INTR_STAT(i)			(ACP_EXTERNAL_INTR_STAT0 + ((i) * 4))
 #define ACP_SW_WAKE_EN(i)				(ACP_SW0_WAKE_EN + ((i) * 8))
-
 #define ACP_SW_EN					0x0003000
 #define ACP_SW_EN_STATUS				0x0003004
 #define ACP_SW_FRAMESIZE				0x0003008
@@ -114,15 +106,12 @@
 #define ACP_SW_CLK_FREQUENCY_CTRL			0x000326c
 #define ACP_SW_ERROR_INTR_MASK				0x0003270
 #define ACP_SW_PHY_TEST_MODE_DATA_OFF			0x0003274
-
 #define ACP_DELAY_US					10
 #define AMD_SDW_TIMEOUT					1000
 #define AMD_SDW_DEFAULT_CLK_FREQ			12000000
-
 #define AMD_SDW_MCP_RESP_ACK				BIT(0)
 #define AMD_SDW_MCP_RESP_NACK				BIT(1)
 #define AMD_SDW_MCP_RESP_RDATA				GENMASK(14, 7)
-
 #define AMD_SDW_MCP_CMD_SSP_TAG				BIT(31)
 #define AMD_SDW_MCP_CMD_COMMAND				GENMASK(14, 12)
 #define AMD_SDW_MCP_CMD_DEV_ADDR			GENMASK(11, 8)
@@ -136,10 +125,8 @@
 #define AMD_SDW_MCP_SLAVE_STATUS_8TO_11			GENMASK_ULL(15, 0)
 #define AMD_SDW_MCP_SLAVE_STATUS_VALID_MASK(x)		BIT(((x) * 4))
 #define AMD_SDW_MCP_SLAVE_STAT_SHIFT_MASK(x)		(((x) * 4) + 1)
-
 #define AMD_SDW_MASTER_SUSPEND_DELAY_MS			2000
 #define AMD_SDW_QUIRK_MASK_BUS_ENABLE			BIT(0)
-
 #define AMD_SDW_IMM_RES_VALID		1
 #define AMD_SDW_IMM_CMD_BUSY		2
 #define AMD_SDW_ENABLE			1
@@ -148,7 +135,6 @@
 #define AMD_SDW_BUS_RESET_REQ		1
 #define AMD_SDW_BUS_RESET_DONE		2
 #define AMD_SDW_BUS_BASE_FREQ		24000000
-
 #define AMD_SDW0_EXT_INTR_MASK		0x200000
 #define AMD_SDW1_EXT_INTR_MASK		4
 #define AMD_SDW_IRQ_MASK_0TO7		0x77777777
@@ -163,7 +149,6 @@
 #define AMD_SDW1_MAX_DAI		2
 #define AMD_SDW_SLAVE_0_ATTACHED	5
 #define AMD_SDW_SSP_COUNTER_VAL		3
-
 #define AMD_DPN_FRAME_FMT_PFM				GENMASK(1, 0)
 #define AMD_DPN_FRAME_FMT_PDM				GENMASK(3, 2)
 #define AMD_DPN_FRAME_FMT_BLK_PKG_MODE			BIT(4)
@@ -190,11 +175,9 @@
 #define AMD_SDW_CLK_RESUME_REQ				2
 #define AMD_SDW_CLK_RESUME_DONE				3
 #define AMD_SDW_WAKE_STAT_MASK				BIT(16)
-
 static u32 amd_sdw_freq_tbl[AMD_SDW_MAX_FREQ_NUM] = {
 	AMD_SDW_DEFAULT_CLK_FREQ,
 };
-
 struct sdw_manager_dp_reg {
 	u32 frame_fmt_reg;
 	u32 sample_int_reg;
@@ -202,25 +185,6 @@ struct sdw_manager_dp_reg {
 	u32 offset_reg;
 	u32 lane_ctrl_ch_en_reg;
 };
-
-/*
- * SDW0 Manager instance registers  6 CPU DAI (3 TX & 3 RX Ports)
- * whereas SDW1  Manager Instance registers 2 CPU DAI (one TX & one RX port)
- * Below is the CPU DAI <->Manager port number mapping
- * i.e SDW0 Pin0 -> port number 0 -> AUDIO0 TX
- *     SDW0 Pin1 -> Port number 1 -> AUDIO1 TX
- *     SDW0 Pin2 -> Port number 2 -> AUDIO2 TX
- *     SDW0 Pin3 -> port number 3 -> AUDIO0 RX
- *     SDW0 Pin4 -> Port number 4 -> AUDIO1 RX
- *     SDW0 Pin5 -> Port number 5 -> AUDIO2 RX
- *  Whereas for SDW1 instance
- *  SDW1 Pin0 -> port number 0 -> AUDIO1 TX
- *  SDW1 Pin1 -> Port number 1 -> AUDIO1 RX
- *  Same mapping should be used for programming DMA controller registers in SoundWire DMA driver.
- * i.e if AUDIO0 TX channel is selected then we need to use AUDIO0 TX registers for DMA programming
- * in SoundWire DMA driver.
- */
-
 static struct sdw_manager_dp_reg sdw0_manager_dp_reg[AMD_SDW0_MAX_DAI] =  {
 	{ACP_SW_AUDIO0_TX_FRAME_FORMAT, ACP_SW_AUDIO0_TX_SAMPLEINTERVAL, ACP_SW_AUDIO0_TX_HCTRL_DP0,
 	 ACP_SW_AUDIO0_TX_OFFSET_DP0, ACP_SW_AUDIO0_TX_CHANNEL_ENABLE_DP0},
@@ -235,14 +199,12 @@ static struct sdw_manager_dp_reg sdw0_manager_dp_reg[AMD_SDW0_MAX_DAI] =  {
 	{ACP_SW_AUDIO2_RX_FRAME_FORMAT, ACP_SW_AUDIO2_RX_SAMPLEINTERVAL, ACP_SW_AUDIO2_RX_HCTRL,
 	 ACP_SW_AUDIO2_RX_OFFSET, ACP_SW_AUDIO2_RX_CHANNEL_ENABLE_DP0},
 };
-
 static struct sdw_manager_dp_reg sdw1_manager_dp_reg[AMD_SDW1_MAX_DAI] =  {
 	{ACP_SW_AUDIO1_TX_FRAME_FORMAT, ACP_SW_AUDIO1_TX_SAMPLEINTERVAL, ACP_SW_AUDIO1_TX_HCTRL,
 	 ACP_SW_AUDIO1_TX_OFFSET, ACP_SW_AUDIO1_TX_CHANNEL_ENABLE_DP0},
 	{ACP_SW_AUDIO1_RX_FRAME_FORMAT, ACP_SW_AUDIO1_RX_SAMPLEINTERVAL, ACP_SW_AUDIO1_RX_HCTRL,
 	 ACP_SW_AUDIO1_RX_OFFSET, ACP_SW_AUDIO1_RX_CHANNEL_ENABLE_DP0}
 };
-
 static struct sdw_manager_reg_mask sdw_manager_reg_mask_array[2] =  {
 	{
 		AMD_SDW0_PAD_KEEPER_EN_MASK,

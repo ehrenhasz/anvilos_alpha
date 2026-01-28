@@ -1,44 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  linux/drivers/message/fusion/mptdebug.h
- *      For use with LSI PCI chip/adapter(s)
- *      running LSI Fusion MPT (Message Passing Technology) firmware.
- *
- *  Copyright (c) 1999-2008 LSI Corporation
- *  (mailto:DL-MPTFusionLinux@lsi.com)
- *
- */
-/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
-
 #ifndef MPTDEBUG_H_INCLUDED
 #define MPTDEBUG_H_INCLUDED
-
-/*
- * debug level can be programmed on the fly via SysFS (hex values)
- *
- * Example:  (programming for MPT_DEBUG_EVENTS on host 5)
- *
- * echo 8 > /sys/class/scsi_host/host5/debug_level
- *
- * --------------------------------------------------------
- * mpt_debug_level - command line parameter
- * this allow enabling debug at driver load time (for all iocs)
- *
- * Example  (programming for MPT_DEBUG_EVENTS)
- *
- * insmod mptbase.ko mpt_debug_level=8
- *
- * --------------------------------------------------------
- * CONFIG_FUSION_LOGGING - enables compiling debug into driver
- * this can be enabled in the driver Makefile
- *
- *
- * --------------------------------------------------------
- * Please note most debug prints are set to logging priority = debug
- * This is the lowest level, and most verbose.  Please refer to manual
- * pages for syslogd or syslogd-ng on how to configure this.
- */
-
 #define MPT_DEBUG			0x00000001
 #define MPT_DEBUG_MSG_FRAME		0x00000002
 #define MPT_DEBUG_SG			0x00000004
@@ -60,11 +21,6 @@
 #define MPT_DEBUG_SAS			0x00100000
 #define MPT_DEBUG_SAS_WIDE		0x00200000
 #define MPT_DEBUG_36GB_MEM              0x00400000
-
-/*
- * CONFIG_FUSION_LOGGING - enabled in Kconfig
- */
-
 #ifdef CONFIG_FUSION_LOGGING
 #define MPT_CHECK_LOGGING(IOC, CMD, BITS)			\
 do {								\
@@ -75,82 +31,51 @@ do {								\
 #define MPT_CHECK_LOGGING(IOC, CMD, BITS)			\
 do { } while (0)
 #endif
-
-
-/*
- * debug macros
- */
-
 #define dprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG)
-
 #define dsgprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_SG)
-
 #define devtprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_EVENTS)
-
 #define devtverboseprintk(IOC, CMD)		\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_VERBOSE_EVENTS)
-
 #define dinitprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_INIT)
-
 #define dexitprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_EXIT)
-
 #define dfailprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_FAIL)
-
 #define dtmprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_TM)
-
 #define ddvprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_DV)
-
 #define dreplyprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_REPLY)
-
 #define dhsprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_HANDSHAKE)
-
 #define dcprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_CONFIG)
-
 #define ddlprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_DL)
-
 #define drsprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_RESET)
-
 #define dsprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_SCSI)
-
 #define dctlprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_IOCTL)
-
 #define dfcprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_FC)
-
 #define dsasprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_SAS)
-
 #define dsaswideprintk(IOC, CMD)		\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_SAS_WIDE)
-
 #define d36memprintk(IOC, CMD)		\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_36GB_MEM)
-
-
-/*
- * Verbose logging
- */
 #if defined(MPT_DEBUG_VERBOSE) && defined(CONFIG_FUSION_LOGGING)
 static inline void
 DBG_DUMP_FW_DOWNLOAD(MPT_ADAPTER *ioc, u32  *mfp, int numfrags)
 {
 	int i;
-
 	if (!(ioc->debug_level & MPT_DEBUG))
 		return;
 	printk(KERN_DEBUG "F/W download request:\n");
@@ -158,12 +83,10 @@ DBG_DUMP_FW_DOWNLOAD(MPT_ADAPTER *ioc, u32  *mfp, int numfrags)
 		printk(" %08x", le32_to_cpu(mfp[i]));
 	printk("\n");
 }
-
 static inline void
 DBG_DUMP_PUT_MSG_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 {
 	int	 ii, n;
-
 	if (!(ioc->debug_level & MPT_DEBUG_MSG_FRAME))
 		return;
 	printk(KERN_DEBUG "%s: About to Put msg frame @ %p:\n",
@@ -178,12 +101,10 @@ DBG_DUMP_PUT_MSG_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 	}
 	printk("\n");
 }
-
 static inline void
 DBG_DUMP_FW_REQUEST_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 {
 	int  i, n;
-
 	if (!(ioc->debug_level & MPT_DEBUG_MSG_FRAME))
 		return;
 	n = 10;
@@ -192,12 +113,10 @@ DBG_DUMP_FW_REQUEST_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 		printk(" %08x", le32_to_cpu(mfp[i]));
 	printk("\n");
 }
-
 static inline void
 DBG_DUMP_REQUEST_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 {
 	int  i, n;
-
 	if (!(ioc->debug_level & MPT_DEBUG_MSG_FRAME))
 		return;
 	n = 24;
@@ -208,12 +127,10 @@ DBG_DUMP_REQUEST_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 	}
 	printk("\n");
 }
-
 static inline void
 DBG_DUMP_REPLY_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 {
 	int  i, n;
-
 	if (!(ioc->debug_level & MPT_DEBUG_MSG_FRAME))
 		return;
 	n = (le32_to_cpu(mfp[0]) & 0x00FF0000) >> 16;
@@ -222,12 +139,10 @@ DBG_DUMP_REPLY_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 		printk(" %08x", le32_to_cpu(mfp[i]));
 	printk("\n");
 }
-
 static inline void
 DBG_DUMP_REQUEST_FRAME_HDR(MPT_ADAPTER *ioc, u32 *mfp)
 {
 	int  i, n;
-
 	if (!(ioc->debug_level & MPT_DEBUG_MSG_FRAME))
 		return;
 	n = 3;
@@ -236,12 +151,10 @@ DBG_DUMP_REQUEST_FRAME_HDR(MPT_ADAPTER *ioc, u32 *mfp)
 		printk(" %08x", le32_to_cpu(mfp[i]));
 	printk("\n");
 }
-
 static inline void
 DBG_DUMP_TM_REQUEST_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 {
 	int  i, n;
-
 	if (!(ioc->debug_level & MPT_DEBUG_TM))
 		return;
 	n = 13;
@@ -253,12 +166,10 @@ DBG_DUMP_TM_REQUEST_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 	}
 	printk("\n");
 }
-
 static inline void
 DBG_DUMP_TM_REPLY_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 {
 	int  i, n;
-
 	if (!(ioc->debug_level & MPT_DEBUG_TM))
 		return;
 	n = (le32_to_cpu(mfp[0]) & 0x00FF0000) >> 16;
@@ -270,12 +181,9 @@ DBG_DUMP_TM_REPLY_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 	}
 	printk("\n");
 }
-
 #define dmfprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_MSG_FRAME)
-
-# else /* ifdef MPT_DEBUG_MF */
-
+# else  
 #define DBG_DUMP_FW_DOWNLOAD(IOC, mfp, numfrags)
 #define DBG_DUMP_PUT_MSG_FRAME(IOC, mfp)
 #define DBG_DUMP_FW_REQUEST_FRAME(IOC, mfp)
@@ -284,10 +192,7 @@ DBG_DUMP_TM_REPLY_FRAME(MPT_ADAPTER *ioc, u32 *mfp)
 #define DBG_DUMP_REQUEST_FRAME_HDR(IOC, mfp)
 #define DBG_DUMP_TM_REQUEST_FRAME(IOC, mfp)
 #define DBG_DUMP_TM_REPLY_FRAME(IOC, mfp)
-
 #define dmfprintk(IOC, CMD)			\
 	MPT_CHECK_LOGGING(IOC, CMD, MPT_DEBUG_MSG_FRAME)
-
-#endif /* defined(MPT_DEBUG_VERBOSE) && defined(CONFIG_FUSION_LOGGING) */
-
-#endif /* ifndef MPTDEBUG_H_INCLUDED */
+#endif  
+#endif  

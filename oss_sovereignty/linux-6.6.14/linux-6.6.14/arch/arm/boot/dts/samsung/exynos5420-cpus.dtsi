@@ -1,27 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Samsung Exynos5420 SoC cpu device tree source
- *
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * This file provides desired ordering for Exynos5420 and Exynos5800
- * boards: CPU[0123] being the A15.
- *
- * The Exynos5420, 5422 and 5800 actually share the same CPU configuration
- * but particular boards choose different booting order.
- *
- * Exynos5420 and Exynos5800 always boot from Cortex-A15. On Exynos5422
- * booting cluster (big or LITTLE) is chosen by IROM code by reading
- * the gpg2-1 GPIO. By default all Exynos5422 based boards choose booting
- * from the LITTLE: Cortex-A7.
- */
-
 / {
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu-map {
 			cluster0 {
 				core0 {
@@ -37,7 +17,6 @@
 					cpu = <&cpu3>;
 				};
 			};
-
 			cluster1 {
 				core0 {
 					cpu = <&cpu4>;
@@ -53,7 +32,6 @@
 				};
 			};
 		};
-
 		cpu0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
@@ -62,10 +40,9 @@
 			clock-frequency = <1800000000>;
 			cci-control-port = <&cci_control1>;
 			operating-points-v2 = <&cluster_a15_opp_table>;
-			#cooling-cells = <2>; /* min followed by max */
+			#cooling-cells = <2>;  
 			capacity-dmips-mhz = <1024>;
 		};
-
 		cpu1: cpu@1 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
@@ -74,10 +51,9 @@
 			clock-frequency = <1800000000>;
 			cci-control-port = <&cci_control1>;
 			operating-points-v2 = <&cluster_a15_opp_table>;
-			#cooling-cells = <2>; /* min followed by max */
+			#cooling-cells = <2>;  
 			capacity-dmips-mhz = <1024>;
 		};
-
 		cpu2: cpu@2 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
@@ -86,10 +62,9 @@
 			clock-frequency = <1800000000>;
 			cci-control-port = <&cci_control1>;
 			operating-points-v2 = <&cluster_a15_opp_table>;
-			#cooling-cells = <2>; /* min followed by max */
+			#cooling-cells = <2>;  
 			capacity-dmips-mhz = <1024>;
 		};
-
 		cpu3: cpu@3 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
@@ -98,10 +73,9 @@
 			clock-frequency = <1800000000>;
 			cci-control-port = <&cci_control1>;
 			operating-points-v2 = <&cluster_a15_opp_table>;
-			#cooling-cells = <2>; /* min followed by max */
+			#cooling-cells = <2>;  
 			capacity-dmips-mhz = <1024>;
 		};
-
 		cpu4: cpu@100 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a7";
@@ -110,10 +84,9 @@
 			clock-frequency = <1000000000>;
 			cci-control-port = <&cci_control0>;
 			operating-points-v2 = <&cluster_a7_opp_table>;
-			#cooling-cells = <2>; /* min followed by max */
+			#cooling-cells = <2>;  
 			capacity-dmips-mhz = <539>;
 		};
-
 		cpu5: cpu@101 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a7";
@@ -122,10 +95,9 @@
 			clock-frequency = <1000000000>;
 			cci-control-port = <&cci_control0>;
 			operating-points-v2 = <&cluster_a7_opp_table>;
-			#cooling-cells = <2>; /* min followed by max */
+			#cooling-cells = <2>;  
 			capacity-dmips-mhz = <539>;
 		};
-
 		cpu6: cpu@102 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a7";
@@ -134,10 +106,9 @@
 			clock-frequency = <1000000000>;
 			cci-control-port = <&cci_control0>;
 			operating-points-v2 = <&cluster_a7_opp_table>;
-			#cooling-cells = <2>; /* min followed by max */
+			#cooling-cells = <2>;  
 			capacity-dmips-mhz = <539>;
 		};
-
 		cpu7: cpu@103 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a7";
@@ -146,17 +117,15 @@
 			clock-frequency = <1000000000>;
 			cci-control-port = <&cci_control0>;
 			operating-points-v2 = <&cluster_a7_opp_table>;
-			#cooling-cells = <2>; /* min followed by max */
+			#cooling-cells = <2>;  
 			capacity-dmips-mhz = <539>;
 		};
 	};
 };
-
 &arm_a7_pmu {
 	interrupt-affinity = <&cpu4>, <&cpu5>, <&cpu6>, <&cpu7>;
 	status = "okay";
 };
-
 &arm_a15_pmu {
 	interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
 	status = "okay";

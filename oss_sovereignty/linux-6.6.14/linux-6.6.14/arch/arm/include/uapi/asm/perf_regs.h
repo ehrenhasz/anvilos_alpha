@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _ASM_ARM_PERF_REGS_H
 #define _ASM_ARM_PERF_REGS_H
-
 enum perf_event_arm_regs {
 	PERF_REG_ARM_R0,
 	PERF_REG_ARM_R1,
@@ -21,4 +19,4 @@ enum perf_event_arm_regs {
 	PERF_REG_ARM_PC,
 	PERF_REG_ARM_MAX,
 };
-#endif /* _ASM_ARM_PERF_REGS_H */
+#endif  

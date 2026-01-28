@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_M68K_UNISTD_H_
 #define _ASM_M68K_UNISTD_H_
-
 #include <uapi/asm/unistd.h>
-
 #define NR_syscalls	__NR_syscalls
-
 #define __ARCH_WANT_NEW_STAT
 #define __ARCH_WANT_OLD_READDIR
 #define __ARCH_WANT_OLD_STAT
@@ -31,5 +27,4 @@
 #define __ARCH_WANT_SYS_FORK
 #define __ARCH_WANT_SYS_VFORK
 #define __ARCH_WANT_SYS_CLONE3
-
-#endif /* _ASM_M68K_UNISTD_H_ */
+#endif  

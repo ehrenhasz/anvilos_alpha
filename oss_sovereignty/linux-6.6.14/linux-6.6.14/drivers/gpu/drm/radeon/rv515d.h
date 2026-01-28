@@ -1,36 +1,5 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
 #ifndef __RV515D_H__
 #define __RV515D_H__
-
-/*
- * RV515 registers
- */
 #define PCIE_INDEX			0x0030
 #define PCIE_DATA			0x0034
 #define	MC_IND_INDEX			0x0070
@@ -137,8 +106,6 @@
 #define		LB_D2_MAX_REQ_OUTSTANDING_SHIFT		16
 #define D2MODE_PRIORITY_A_CNT		0x6D48
 #define D2MODE_PRIORITY_B_CNT		0x6D4C
-
-/* ix[MC] registers */
 #define MC_FB_LOCATION			0x01
 #define		MC_FB_START_MASK			0x0000FFFF
 #define		MC_FB_START_SHIFT			0
@@ -166,11 +133,6 @@
 #define		MC_E2R_INIT_LAT_MASK			0x00F00000
 #define		SAME_PAGE_PRIO_MASK			0x0F000000
 #define		MC_GLOBW_INIT_LAT_MASK			0xF0000000
-
-
-/*
- * PM4 packet
- */
 #define CP_PACKET0			0x00000000
 #define		PACKET0_BASE_INDEX_SHIFT	0
 #define		PACKET0_BASE_INDEX_MASK		(0x1ffff << 0)
@@ -185,7 +147,6 @@
 #define		PACKET3_IT_OPCODE_MASK		(0xff << 8)
 #define		PACKET3_COUNT_SHIFT		16
 #define		PACKET3_COUNT_MASK		(0x3fff << 16)
-/* PACKET3 op code */
 #define		PACKET3_NOP			0x10
 #define		PACKET3_3D_DRAW_VBUF		0x28
 #define		PACKET3_3D_DRAW_IMMD		0x29
@@ -196,7 +157,6 @@
 #define		PACKET3_3D_DRAW_IMMD_2		0x35
 #define		PACKET3_3D_DRAW_INDX_2		0x36
 #define		PACKET3_BITBLT_MULTI		0x9B
-
 #define PACKET0(reg, n)	(CP_PACKET0 |					\
 			 REG_SET(PACKET0_BASE_INDEX, (reg) >> 2) |	\
 			 REG_SET(PACKET0_COUNT, (n)))
@@ -204,8 +164,6 @@
 #define PACKET3(op, n)	(CP_PACKET3 |					\
 			 REG_SET(PACKET3_IT_OPCODE, (op)) |		\
 			 REG_SET(PACKET3_COUNT, (n)))
-
-/* Registers */
 #define R_0000F0_RBBM_SOFT_RESET                     0x0000F0
 #define   S_0000F0_SOFT_RESET_CP(x)                    (((x) & 0x1) << 0)
 #define   G_0000F0_SOFT_RESET_CP(x)                    (((x) >> 0) & 0x1)
@@ -515,8 +473,6 @@
 #define   S_006918_D2GRPH_SECONDARY_SURFACE_ADDRESS(x) (((x) & 0xFFFFFFFF) << 0)
 #define   G_006918_D2GRPH_SECONDARY_SURFACE_ADDRESS(x) (((x) >> 0) & 0xFFFFFFFF)
 #define   C_006918_D2GRPH_SECONDARY_SURFACE_ADDRESS    0x00000000
-
-
 #define R_000001_MC_FB_LOCATION                      0x000001
 #define   S_000001_MC_FB_START(x)                      (((x) & 0xFFFF) << 0)
 #define   G_000001_MC_FB_START(x)                      (((x) >> 0) & 0xFFFF)
@@ -539,8 +495,6 @@
 #define   S_000004_AGP_BASE_ADDR_2(x)                  (((x) & 0xF) << 0)
 #define   G_000004_AGP_BASE_ADDR_2(x)                  (((x) >> 0) & 0xF)
 #define   C_000004_AGP_BASE_ADDR_2                     0xFFFFFFF0
-
-
 #define R_00000F_CP_DYN_CNTL                         0x00000F
 #define   S_00000F_CP_FORCEON(x)                       (((x) & 0x1) << 0)
 #define   G_00000F_CP_FORCEON(x)                       (((x) >> 0) & 0x1)
@@ -634,5 +588,4 @@
 #define   S_000013_IDCT_NORMAL_POWER_BUSY(x)           (((x) & 0xFF) << 24)
 #define   G_000013_IDCT_NORMAL_POWER_BUSY(x)           (((x) >> 24) & 0xFF)
 #define   C_000013_IDCT_NORMAL_POWER_BUSY              0x00FFFFFF
-
 #endif

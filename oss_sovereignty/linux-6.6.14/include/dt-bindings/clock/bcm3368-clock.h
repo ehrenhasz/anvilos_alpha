@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef __DT_BINDINGS_CLOCK_BCM3368_H
 #define __DT_BINDINGS_CLOCK_BCM3368_H
-
 #define BCM3368_CLK_MAC 	3
 #define BCM3368_CLK_TC         	5
 #define BCM3368_CLK_US_TOP	6
@@ -20,5 +17,4 @@
 #define BCM3368_CLK_ENET1       19
 #define BCM3368_CLK_USBSU       20
 #define BCM3368_CLK_EPHY        21
-
-#endif /* __DT_BINDINGS_CLOCK_BCM3368_H */
+#endif  

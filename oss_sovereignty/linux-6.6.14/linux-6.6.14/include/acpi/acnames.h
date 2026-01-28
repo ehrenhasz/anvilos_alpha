@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/******************************************************************************
- *
- * Name: acnames.h - Global names and strings
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
-
 #ifndef __ACNAMES_H__
 #define __ACNAMES_H__
-
-/* Method names - these methods can appear anywhere in the namespace */
-
 #define METHOD_NAME__ADR        "_ADR"
 #define METHOD_NAME__AEI        "_AEI"
 #define METHOD_NAME__BBN        "_BBN"
@@ -41,24 +29,14 @@
 #define METHOD_NAME__STA        "_STA"
 #define METHOD_NAME__SUB        "_SUB"
 #define METHOD_NAME__UID        "_UID"
-
-/* Method names - these methods must appear at the namespace root */
-
 #define METHOD_PATHNAME__PTS    "\\_PTS"
 #define METHOD_PATHNAME__SST    "\\_SI._SST"
 #define METHOD_PATHNAME__WAK    "\\_WAK"
-
-/* Definitions of the predefined namespace names  */
-
-#define ACPI_UNKNOWN_NAME       (u32) 0x3F3F3F3F	/* Unknown name is "????" */
-#define ACPI_PREFIX_MIXED       (u32) 0x69706341	/* "Acpi" */
-#define ACPI_PREFIX_LOWER       (u32) 0x69706361	/* "acpi" */
-
-/* Root name stuff */
-
-#define ACPI_ROOT_NAME          (u32) 0x5F5F5F5C	/* Root name is    "\___" */
+#define ACPI_UNKNOWN_NAME       (u32) 0x3F3F3F3F	 
+#define ACPI_PREFIX_MIXED       (u32) 0x69706341	 
+#define ACPI_PREFIX_LOWER       (u32) 0x69706361	 
+#define ACPI_ROOT_NAME          (u32) 0x5F5F5F5C	 
 #define ACPI_ROOT_PATHNAME      "\\___"
 #define ACPI_NAMESPACE_ROOT     "Namespace Root"
 #define ACPI_NS_ROOT_PATH       "\\"
-
-#endif				/* __ACNAMES_H__  */
+#endif				 

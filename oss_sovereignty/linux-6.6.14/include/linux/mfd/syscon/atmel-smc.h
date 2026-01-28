@@ -1,20 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Atmel SMC (Static Memory Controller) register offsets and bit definitions.
- *
- * Copyright (C) 2014 Atmel
- * Copyright (C) 2014 Free Electrons
- *
- * Author: Boris Brezillon <boris.brezillon@free-electrons.com>
- */
-
 #ifndef _LINUX_MFD_SYSCON_ATMEL_SMC_H_
 #define _LINUX_MFD_SYSCON_ATMEL_SMC_H_
-
 #include <linux/kernel.h>
 #include <linux/of.h>
 #include <linux/regmap.h>
-
 #define ATMEL_SMC_SETUP(cs)			(((cs) * 0x10))
 #define ATMEL_HSMC_SETUP(layout, cs)		\
 	((layout)->timing_regs_offset + ((cs) * 0x14))
@@ -28,7 +16,6 @@
 #define ATMEL_SMC_NCS_WR_SHIFT			8
 #define ATMEL_SMC_NRD_SHIFT			16
 #define ATMEL_SMC_NCS_RD_SHIFT			24
-
 #define ATMEL_SMC_MODE(cs)			(((cs) * 0x10) + 0xc)
 #define ATMEL_HSMC_MODE(layout, cs)			\
 	((layout)->timing_regs_offset + ((cs) * 0x14) + 0x10)
@@ -60,7 +47,6 @@
 #define ATMEL_SMC_MODE_PS_8			(1 << 28)
 #define ATMEL_SMC_MODE_PS_16			(2 << 28)
 #define ATMEL_SMC_MODE_PS_32			(3 << 28)
-
 #define ATMEL_HSMC_TIMINGS(layout, cs)			\
 	((layout)->timing_regs_offset + ((cs) * 0x14) + 0xc)
 #define ATMEL_HSMC_TIMINGS_OCMS			BIT(12)
@@ -71,20 +57,9 @@
 #define ATMEL_HSMC_TIMINGS_TAR_SHIFT		8
 #define ATMEL_HSMC_TIMINGS_TRR_SHIFT		16
 #define ATMEL_HSMC_TIMINGS_TWB_SHIFT		24
-
 struct atmel_hsmc_reg_layout {
 	unsigned int timing_regs_offset;
 };
-
-/**
- * struct atmel_smc_cs_conf - SMC CS config as described in the datasheet.
- * @setup: NCS/NWE/NRD setup timings (not applicable to at91rm9200)
- * @pulse: NCS/NWE/NRD pulse timings (not applicable to at91rm9200)
- * @cycle: NWE/NRD cycle timings (not applicable to at91rm9200)
- * @timings: advanced NAND related timings (only applicable to HSMC)
- * @mode: all kind of config parameters (see the fields definition above).
- *	  The mode fields are different on at91rm9200
- */
 struct atmel_smc_cs_conf {
 	u32 setup;
 	u32 pulse;
@@ -92,7 +67,6 @@ struct atmel_smc_cs_conf {
 	u32 timings;
 	u32 mode;
 };
-
 void atmel_smc_cs_conf_init(struct atmel_smc_cs_conf *conf);
 int atmel_smc_cs_conf_set_timing(struct atmel_smc_cs_conf *conf,
 				 unsigned int shift,
@@ -115,5 +89,4 @@ void atmel_hsmc_cs_conf_get(struct regmap *regmap,
 			    int cs, struct atmel_smc_cs_conf *conf);
 const struct atmel_hsmc_reg_layout *
 atmel_hsmc_get_reg_layout(struct device_node *np);
-
-#endif /* _LINUX_MFD_SYSCON_ATMEL_SMC_H_ */
+#endif  

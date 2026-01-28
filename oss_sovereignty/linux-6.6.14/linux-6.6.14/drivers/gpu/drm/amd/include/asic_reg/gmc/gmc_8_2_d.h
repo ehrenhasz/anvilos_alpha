@@ -1,29 +1,5 @@
-/*
- * GMC_8_2 Register documentation
- *
- * Copyright (C) 2014  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 #ifndef GMC_8_2_D_H
 #define GMC_8_2_D_H
-
 #define mmMC_CONFIG                                                             0x800
 #define mmMC_ARB_ATOMIC                                                         0x9be
 #define mmMC_ARB_AGE_CNTL                                                       0x9bf
@@ -906,5 +882,4 @@
 #define mmMCIF_WB0_MCIF_WB_HVVMID_CONTROL                                       0x5e99
 #define mmMCIF_WB1_MCIF_WB_HVVMID_CONTROL                                       0x5ed9
 #define mmMCIF_WB2_MCIF_WB_HVVMID_CONTROL                                       0x5f19
-
-#endif /* GMC_8_2_D_H */
+#endif  

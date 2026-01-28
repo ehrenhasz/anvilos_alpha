@@ -1,38 +1,8 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DCN314_DCCG_H__
 #define __DCN314_DCCG_H__
-
 #include "dcn31/dcn31_dccg.h"
-
 #define DCCG_SFII(block, reg_name, field_prefix, field_name, inst, post_fix)\
 	.field_prefix ## _ ## field_name[inst] = block ## inst ## _ ## reg_name ## __ ## field_prefix ## inst ## _ ## field_name ## post_fix
-
-
 #define DCCG_REG_LIST_DCN314() \
 	SR(DPPCLK_DTO_CTRL),\
 	DCCG_SRII(DTO_PARAM, DPPCLK, 0),\
@@ -76,7 +46,6 @@
 	SR(OTG_PIXEL_RATE_DIV),\
 	SR(DTBCLK_P_CNTL),\
 	SR(DCCG_AUDIO_DTO_SOURCE)
-
 #define DCCG_MASK_SH_LIST_DCN314_COMMON(mask_sh) \
 	DCCG_SFI(DPPCLK_DTO_CTRL, DTO_DB_EN, DPPCLK, 0, mask_sh),\
 	DCCG_SFI(DPPCLK_DTO_CTRL, DTO_DB_EN, DPPCLK, 1, mask_sh),\
@@ -166,7 +135,6 @@
 	DCCG_SF(DCCG_GATE_DISABLE_CNTL3, SYMCLK32_LE1_GATE_DISABLE, mask_sh),\
 	DCCG_SF(HDMISTREAMCLK0_DTO_PARAM, HDMISTREAMCLK0_DTO_PHASE, mask_sh),\
 	DCCG_SF(HDMISTREAMCLK0_DTO_PARAM, HDMISTREAMCLK0_DTO_MODULO, mask_sh)
-
 #define DCCG_MASK_SH_LIST_DCN314(mask_sh) \
 	DCCG_MASK_SH_LIST_DCN314_COMMON(mask_sh),\
 	DCCG_SFI(DPPCLK_DTO_CTRL, DTO_ENABLE, DPPCLK, 0, mask_sh),\
@@ -196,11 +164,9 @@
 	DCCG_SF(HDMISTREAMCLK0_DTO_PARAM, HDMISTREAMCLK0_DTO_MODULO, mask_sh),\
 	DCCG_SF(DENTIST_DISPCLK_CNTL, DENTIST_DISPCLK_RDIVIDER, mask_sh),\
 	DCCG_SF(DENTIST_DISPCLK_CNTL, DENTIST_DISPCLK_WDIVIDER, mask_sh)
-
 struct dccg *dccg314_create(
 	struct dc_context *ctx,
 	const struct dccg_registers *regs,
 	const struct dccg_shift *dccg_shift,
 	const struct dccg_mask *dccg_mask);
-
-#endif //__DCN314_DCCG_H__
+#endif  

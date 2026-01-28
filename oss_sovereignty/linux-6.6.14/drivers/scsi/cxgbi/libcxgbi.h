@@ -1,19 +1,5 @@
-/*
- * libcxgbi.h: Chelsio common library for T3/T4 iSCSI driver.
- *
- * Copyright (c) 2010-2015 Chelsio Communications, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- * Written by: Karen Xie (kxie@chelsio.com)
- * Written by: Rakesh Ranjan (rranjan@chelsio.com)
- */
-
 #ifndef	__LIBCXGBI_H__
 #define	__LIBCXGBI_H__
-
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -26,26 +12,21 @@
 #include <linux/vmalloc.h>
 #include <scsi/scsi_device.h>
 #include <scsi/libiscsi_tcp.h>
-
 #include <libcxgb_ppm.h>
-
 enum cxgbi_dbg_flag {
 	CXGBI_DBG_ISCSI,
 	CXGBI_DBG_DDP,
 	CXGBI_DBG_TOE,
 	CXGBI_DBG_SOCK,
-
 	CXGBI_DBG_PDU_TX,
 	CXGBI_DBG_PDU_RX,
 	CXGBI_DBG_DEV,
 };
-
 #define log_debug(level, fmt, ...)	\
 	do {	\
 		if (dbg_level & (level)) \
 			pr_info(fmt, ##__VA_ARGS__); \
 	} while (0)
-
 #define pr_info_ipaddr(fmt_trail,					\
 			addr1, addr2, args_trail...)			\
 do {									\
@@ -54,64 +35,35 @@ do {									\
 	pr_info("%pISpc - %pISpc, " fmt_trail,				\
 		addr1, addr2, args_trail);				\
 } while (0)
-
-/* max. connections per adapter */
 #define CXGBI_MAX_CONN		16384
-
-/* always allocate rooms for AHS */
 #define SKB_TX_ISCSI_PDU_HEADER_MAX	\
 	(sizeof(struct iscsi_hdr) + ISCSI_MAX_AHS_SIZE)
-
-#define	ISCSI_PDU_NONPAYLOAD_LEN	312 /* bhs(48) + ahs(256) + digest(8)*/
-
-/*
- * align pdu size to multiple of 512 for better performance
- */
+#define	ISCSI_PDU_NONPAYLOAD_LEN	312  
 #define cxgbi_align_pdu_size(n) do { n = (n) & (~511); } while (0)
-
 #define ULP2_MODE_ISCSI		2
-
 #define ULP2_MAX_PKT_SIZE	16224
 #define ULP2_MAX_PDU_PAYLOAD	\
 	(ULP2_MAX_PKT_SIZE - ISCSI_PDU_NONPAYLOAD_LEN)
-
 #define CXGBI_ULP2_MAX_ISO_PAYLOAD	65535
-
 #define CXGBI_MAX_ISO_DATA_IN_SKB	\
 	min_t(u32, MAX_SKB_FRAGS << PAGE_SHIFT, CXGBI_ULP2_MAX_ISO_PAYLOAD)
-
 #define cxgbi_is_iso_config(csk)	((csk)->cdev->skb_iso_txhdr)
 #define cxgbi_is_iso_disabled(csk)	((csk)->disable_iso)
-
-/*
- * For iscsi connections HW may inserts digest bytes into the pdu. Those digest
- * bytes are not sent by the host but are part of the TCP payload and therefore
- * consume TCP sequence space.
- */
 static const unsigned int ulp2_extra_len[] = { 0, 4, 4, 8 };
 static inline unsigned int cxgbi_ulp_extra_len(int submode)
 {
 	return ulp2_extra_len[submode & 3];
 }
-
-#define CPL_RX_DDP_STATUS_DDP_SHIFT	16 /* ddp'able */
-#define CPL_RX_DDP_STATUS_PAD_SHIFT	19 /* pad error */
-#define CPL_RX_DDP_STATUS_HCRC_SHIFT	20 /* hcrc error */
-#define CPL_RX_DDP_STATUS_DCRC_SHIFT	21 /* dcrc error */
-
-/*
- * sge_opaque_hdr -
- * Opaque version of structure the SGE stores at skb->head of TX_DATA packets
- * and for which we must reserve space.
- */
+#define CPL_RX_DDP_STATUS_DDP_SHIFT	16  
+#define CPL_RX_DDP_STATUS_PAD_SHIFT	19  
+#define CPL_RX_DDP_STATUS_HCRC_SHIFT	20  
+#define CPL_RX_DDP_STATUS_DCRC_SHIFT	21  
 struct sge_opaque_hdr {
 	void *dev;
 	dma_addr_t addr[MAX_SKB_FRAGS + 1];
 };
-
 struct cxgbi_sock {
 	struct cxgbi_device *cdev;
-
 	int tid;
 	int atid;
 	unsigned long flags;
@@ -132,7 +84,6 @@ struct cxgbi_sock {
 #endif
 	unsigned char hcrc_len;
 	unsigned char dcrc_len;
-
 	void *l2t;
 	struct sk_buff *wr_pending_head;
 	struct sk_buff *wr_pending_tail;
@@ -160,7 +111,6 @@ struct cxgbi_sock {
 	int err;
 	rwlock_t callback_lock;
 	void *user_data;
-
 	u32 rcv_nxt;
 	u32 copied_seq;
 	u32 rcv_wup;
@@ -169,15 +119,10 @@ struct cxgbi_sock {
 	u32 write_seq;
 	u32 snd_win;
 	u32 rcv_win;
-
 	bool disable_iso;
 	u32 no_tx_credits;
 	unsigned long prev_iso_ts;
 };
-
-/*
- * connection states
- */
 enum cxgbi_sock_states{
 	CTP_CLOSED,
 	CTP_CONNECTING,
@@ -189,27 +134,21 @@ enum cxgbi_sock_states{
 	CTP_CLOSE_WAIT_2,
 	CTP_ABORTING,
 };
-
-/*
- * Connection flags -- many to track some close related events.
- */
 enum cxgbi_sock_flags {
-	CTPF_ABORT_RPL_RCVD,	/*received one ABORT_RPL_RSS message */
-	CTPF_ABORT_REQ_RCVD,	/*received one ABORT_REQ_RSS message */
-	CTPF_ABORT_RPL_PENDING,	/* expecting an abort reply */
-	CTPF_TX_DATA_SENT,	/* already sent a TX_DATA WR */
-	CTPF_ACTIVE_CLOSE_NEEDED,/* need to be closed */
-	CTPF_HAS_ATID,		/* reserved atid */
-	CTPF_HAS_TID,		/* reserved hw tid */
-	CTPF_OFFLOAD_DOWN,	/* offload function off */
-	CTPF_LOGOUT_RSP_RCVD,   /* received logout response */
+	CTPF_ABORT_RPL_RCVD,	 
+	CTPF_ABORT_REQ_RCVD,	 
+	CTPF_ABORT_RPL_PENDING,	 
+	CTPF_TX_DATA_SENT,	 
+	CTPF_ACTIVE_CLOSE_NEEDED, 
+	CTPF_HAS_ATID,		 
+	CTPF_HAS_TID,		 
+	CTPF_OFFLOAD_DOWN,	 
+	CTPF_LOGOUT_RSP_RCVD,    
 };
-
 struct cxgbi_skb_rx_cb {
 	__u32 ddigest;
 	__u32 pdulen;
 };
-
 struct cxgbi_skb_tx_cb {
 	void *handle;
 	void *arp_err_handler;
@@ -217,23 +156,21 @@ struct cxgbi_skb_tx_cb {
 	u16 iscsi_hdr_len;
 	u8 ulp_mode;
 };
-
 enum cxgbi_skcb_flags {
-	SKCBF_TX_NEED_HDR,	/* packet needs a header */
-	SKCBF_TX_MEM_WRITE,     /* memory write */
-	SKCBF_TX_FLAG_COMPL,    /* wr completion flag */
-	SKCBF_RX_COALESCED,	/* received whole pdu */
-	SKCBF_RX_HDR,		/* received pdu header */
-	SKCBF_RX_DATA,		/* received pdu payload */
-	SKCBF_RX_STATUS,	/* received ddp status */
-	SKCBF_RX_ISCSI_COMPL,   /* received iscsi completion */
-	SKCBF_RX_DATA_DDPD,	/* pdu payload ddp'd */
-	SKCBF_RX_HCRC_ERR,	/* header digest error */
-	SKCBF_RX_DCRC_ERR,	/* data digest error */
-	SKCBF_RX_PAD_ERR,	/* padding byte error */
-	SKCBF_TX_ISO,		/* iso cpl in tx skb */
+	SKCBF_TX_NEED_HDR,	 
+	SKCBF_TX_MEM_WRITE,      
+	SKCBF_TX_FLAG_COMPL,     
+	SKCBF_RX_COALESCED,	 
+	SKCBF_RX_HDR,		 
+	SKCBF_RX_DATA,		 
+	SKCBF_RX_STATUS,	 
+	SKCBF_RX_ISCSI_COMPL,    
+	SKCBF_RX_DATA_DDPD,	 
+	SKCBF_RX_HCRC_ERR,	 
+	SKCBF_RX_DCRC_ERR,	 
+	SKCBF_RX_PAD_ERR,	 
+	SKCBF_TX_ISO,		 
 };
-
 struct cxgbi_skb_cb {
 	union {
 		struct cxgbi_skb_rx_cb rx;
@@ -242,7 +179,6 @@ struct cxgbi_skb_cb {
 	unsigned long flags;
 	unsigned int seq;
 };
-
 #define CXGBI_SKB_CB(skb)	((struct cxgbi_skb_cb *)&((skb)->cb[0]))
 #define cxgbi_skcb_flags(skb)		(CXGBI_SKB_CB(skb)->flags)
 #define cxgbi_skcb_tcp_seq(skb)		(CXGBI_SKB_CB(skb)->seq)
@@ -251,25 +187,21 @@ struct cxgbi_skb_cb {
 #define cxgbi_skcb_tx_wr_next(skb)	(CXGBI_SKB_CB(skb)->tx.wr_next)
 #define cxgbi_skcb_tx_iscsi_hdrlen(skb)	(CXGBI_SKB_CB(skb)->tx.iscsi_hdr_len)
 #define cxgbi_skcb_tx_ulp_mode(skb)	(CXGBI_SKB_CB(skb)->tx.ulp_mode)
-
 static inline void cxgbi_skcb_set_flag(struct sk_buff *skb,
 					enum cxgbi_skcb_flags flag)
 {
 	__set_bit(flag, &(cxgbi_skcb_flags(skb)));
 }
-
 static inline void cxgbi_skcb_clear_flag(struct sk_buff *skb,
 					enum cxgbi_skcb_flags flag)
 {
 	__clear_bit(flag, &(cxgbi_skcb_flags(skb)));
 }
-
 static inline int cxgbi_skcb_test_flag(const struct sk_buff *skb,
 				       enum cxgbi_skcb_flags flag)
 {
 	return test_bit(flag, &(cxgbi_skcb_flags(skb)));
 }
-
 static inline void cxgbi_sock_set_flag(struct cxgbi_sock *csk,
 					enum cxgbi_sock_flags flag)
 {
@@ -278,7 +210,6 @@ static inline void cxgbi_sock_set_flag(struct cxgbi_sock *csk,
 		"csk 0x%p,%u,0x%lx, bit %d.\n",
 		csk, csk->state, csk->flags, flag);
 }
-
 static inline void cxgbi_sock_clear_flag(struct cxgbi_sock *csk,
 					enum cxgbi_sock_flags flag)
 {
@@ -287,7 +218,6 @@ static inline void cxgbi_sock_clear_flag(struct cxgbi_sock *csk,
 		"csk 0x%p,%u,0x%lx, bit %d.\n",
 		csk, csk->state, csk->flags, flag);
 }
-
 static inline int cxgbi_sock_flag(struct cxgbi_sock *csk,
 				enum cxgbi_sock_flags flag)
 {
@@ -295,7 +225,6 @@ static inline int cxgbi_sock_flag(struct cxgbi_sock *csk,
 		return 0;
 	return test_bit(flag, &csk->flags);
 }
-
 static inline void cxgbi_sock_set_state(struct cxgbi_sock *csk, int state)
 {
 	log_debug(1 << CXGBI_DBG_SOCK,
@@ -303,7 +232,6 @@ static inline void cxgbi_sock_set_state(struct cxgbi_sock *csk, int state)
 		csk, csk->state, csk->flags, state);
 	csk->state = state;
 }
-
 static inline void cxgbi_sock_free(struct kref *kref)
 {
 	struct cxgbi_sock *csk = container_of(kref,
@@ -316,7 +244,6 @@ static inline void cxgbi_sock_free(struct kref *kref)
 		kfree(csk);
 	}
 }
-
 static inline void __cxgbi_sock_put(const char *fn, struct cxgbi_sock *csk)
 {
 	log_debug(1 << CXGBI_DBG_SOCK,
@@ -325,7 +252,6 @@ static inline void __cxgbi_sock_put(const char *fn, struct cxgbi_sock *csk)
 	kref_put(&csk->refcnt, cxgbi_sock_free);
 }
 #define cxgbi_sock_put(csk)	__cxgbi_sock_put(__func__, csk)
-
 static inline void __cxgbi_sock_get(const char *fn, struct cxgbi_sock *csk)
 {
 	log_debug(1 << CXGBI_DBG_SOCK,
@@ -334,38 +260,30 @@ static inline void __cxgbi_sock_get(const char *fn, struct cxgbi_sock *csk)
 	kref_get(&csk->refcnt);
 }
 #define cxgbi_sock_get(csk)	__cxgbi_sock_get(__func__, csk)
-
 static inline int cxgbi_sock_is_closing(struct cxgbi_sock *csk)
 {
 	return csk->state >= CTP_ACTIVE_CLOSE;
 }
-
 static inline int cxgbi_sock_is_established(struct cxgbi_sock *csk)
 {
 	return csk->state == CTP_ESTABLISHED;
 }
-
 static inline void cxgbi_sock_purge_write_queue(struct cxgbi_sock *csk)
 {
 	struct sk_buff *skb;
-
 	while ((skb = __skb_dequeue(&csk->write_queue)))
 		__kfree_skb(skb);
 }
-
 static inline unsigned int cxgbi_sock_compute_wscale(unsigned int win)
 {
 	unsigned int wscale = 0;
-
 	while (wscale < 14 && (65535 << wscale) < win)
 		wscale++;
 	return wscale;
 }
-
 static inline struct sk_buff *alloc_wr(int wrlen, int dlen, gfp_t gfp)
 {
 	struct sk_buff *skb = alloc_skb(wrlen + dlen, gfp);
-
 	if (skb) {
 		__skb_put(skb, wrlen);
 		memset(skb->head, 0, wrlen + dlen);
@@ -373,66 +291,45 @@ static inline struct sk_buff *alloc_wr(int wrlen, int dlen, gfp_t gfp)
 		pr_info("alloc cpl wr skb %u+%u, OOM.\n", wrlen, dlen);
 	return skb;
 }
-
-
-/*
- * The number of WRs needed for an skb depends on the number of fragments
- * in the skb and whether it has any payload in its main body.  This maps the
- * length of the gather list represented by an skb into the # of necessary WRs.
- * The extra two fragments are for iscsi bhs and payload padding.
- */
 #define SKB_WR_LIST_SIZE	 (MAX_SKB_FRAGS + 2)
-
 static inline void cxgbi_sock_reset_wr_list(struct cxgbi_sock *csk)
 {
 	csk->wr_pending_head = csk->wr_pending_tail = NULL;
 }
-
 static inline void cxgbi_sock_enqueue_wr(struct cxgbi_sock *csk,
 					  struct sk_buff *skb)
 {
 	cxgbi_skcb_tx_wr_next(skb) = NULL;
-	/*
-	 * We want to take an extra reference since both us and the driver
-	 * need to free the packet before it's really freed.
-	 */
 	skb_get(skb);
-
 	if (!csk->wr_pending_head)
 		csk->wr_pending_head = skb;
 	else
 		cxgbi_skcb_tx_wr_next(csk->wr_pending_tail) = skb;
 	csk->wr_pending_tail = skb;
 }
-
 static inline int cxgbi_sock_count_pending_wrs(const struct cxgbi_sock *csk)
 {
 	int n = 0;
 	const struct sk_buff *skb = csk->wr_pending_head;
-
 	while (skb) {
 		n += skb->csum;
 		skb = cxgbi_skcb_tx_wr_next(skb);
 	}
 	return n;
 }
-
 static inline struct sk_buff *cxgbi_sock_peek_wr(const struct cxgbi_sock *csk)
 {
 	return csk->wr_pending_head;
 }
-
 static inline struct sk_buff *cxgbi_sock_dequeue_wr(struct cxgbi_sock *csk)
 {
 	struct sk_buff *skb = csk->wr_pending_head;
-
 	if (likely(skb)) {
 		csk->wr_pending_head = cxgbi_skcb_tx_wr_next(skb);
 		cxgbi_skcb_tx_wr_next(skb) = NULL;
 	}
 	return skb;
 }
-
 void cxgbi_sock_check_wr_invariants(const struct cxgbi_sock *);
 void cxgbi_sock_purge_wr_queue(struct cxgbi_sock *);
 void cxgbi_sock_skb_entail(struct cxgbi_sock *, struct sk_buff *);
@@ -447,16 +344,14 @@ void cxgbi_sock_rcv_wr_ack(struct cxgbi_sock *, unsigned int, unsigned int,
 				int);
 unsigned int cxgbi_sock_select_mss(struct cxgbi_sock *, unsigned int);
 void cxgbi_sock_free_cpl_skbs(struct cxgbi_sock *);
-
 struct cxgbi_hba {
 	struct net_device *ndev;
-	struct net_device *vdev;	/* vlan dev */
+	struct net_device *vdev;	 
 	struct Scsi_Host *shost;
 	struct cxgbi_device *cdev;
 	__be32 ipv4addr;
 	unsigned char port_id;
 };
-
 struct cxgbi_ports_map {
 	unsigned int max_connect;
 	unsigned int used;
@@ -465,7 +360,6 @@ struct cxgbi_ports_map {
 	unsigned int next;
 	struct cxgbi_sock **port_csk;
 };
-
 #define CXGBI_FLAG_DEV_T3		0x1
 #define CXGBI_FLAG_DEV_T4		0x2
 #define CXGBI_FLAG_ADAPTER_RESET	0x4
@@ -473,7 +367,6 @@ struct cxgbi_ports_map {
 #define CXGBI_FLAG_USE_PPOD_OFLDQ       0x40
 #define CXGBI_FLAG_DDP_OFF		0x100
 #define CXGBI_FLAG_DEV_ISO_OFF		0x400
-
 struct cxgbi_device {
 	struct list_head list_head;
 	struct list_head rcu_node;
@@ -488,17 +381,15 @@ struct cxgbi_device {
 	struct dentry *debugfs_root;
 	struct iscsi_transport *itp;
 	struct module *owner;
-
 	unsigned int pfvf;
 	unsigned int rx_credit_thres;
 	unsigned int skb_tx_rsvd;
 	u32 skb_iso_txhdr;
-	unsigned int skb_rx_extra;	/* for msg coalesced mode */
+	unsigned int skb_rx_extra;	 
 	unsigned int tx_max_size;
 	unsigned int rx_max_size;
 	unsigned int rxq_idx_cntr;
 	struct cxgbi_ports_map pmap;
-
 	void (*dev_ddp_cleanup)(struct cxgbi_device *);
 	struct cxgbi_ppm* (*cdev2ppm)(struct cxgbi_device *);
 	int (*csk_ddp_set_map)(struct cxgbi_ppm *, struct cxgbi_sock *,
@@ -510,7 +401,6 @@ struct cxgbi_device {
 				    unsigned int, int, int);
 	int (*csk_ddp_setup_pgidx)(struct cxgbi_sock *,
 				   unsigned int, int);
-
 	void (*csk_release_offload_resources)(struct cxgbi_sock *);
 	int (*csk_rx_pdu_ready)(struct cxgbi_sock *, struct sk_buff *);
 	u32 (*csk_send_rx_credits)(struct cxgbi_sock *, u32);
@@ -519,11 +409,9 @@ struct cxgbi_device {
 	void (*csk_send_close_req)(struct cxgbi_sock *);
 	int (*csk_alloc_cpls)(struct cxgbi_sock *);
 	int (*csk_init_act_open)(struct cxgbi_sock *);
-
 	void *dd_data;
 };
 #define cxgbi_cdev_priv(cdev)	((cdev)->dd_data)
-
 struct cxgbi_conn {
 	struct cxgbi_endpoint *cep;
 	struct iscsi_conn *iconn;
@@ -532,13 +420,11 @@ struct cxgbi_conn {
 	unsigned int ddp_full;
 	unsigned int ddp_tag_full;
 };
-
 struct cxgbi_endpoint {
 	struct cxgbi_conn *cconn;
 	struct cxgbi_hba *chba;
 	struct cxgbi_sock *csk;
 };
-
 struct cxgbi_task_data {
 #define CXGBI_TASK_SGL_CHECKED	0x1
 #define CXGBI_TASK_SGL_COPY	0x2
@@ -557,7 +443,6 @@ struct cxgbi_task_data {
 };
 #define iscsi_task_cxgbi_data(task) \
 	((task)->dd_data + sizeof(struct iscsi_tcp_task))
-
 struct cxgbi_iso_info {
 #define CXGBI_ISO_INFO_FSLICE		0x1
 #define CXGBI_ISO_INFO_LSLICE		0x2
@@ -573,7 +458,6 @@ struct cxgbi_iso_info {
 	u32 datasn_offset;
 	u32 buffer_offset;
 };
-
 static inline void cxgbi_set_iscsi_ipv4(struct cxgbi_hba *chba, __be32 ipaddr)
 {
 	if (chba->cdev->flags & CXGBI_FLAG_IPV4_SET)
@@ -582,7 +466,6 @@ static inline void cxgbi_set_iscsi_ipv4(struct cxgbi_hba *chba, __be32 ipaddr)
 		pr_info("set iscsi ipv4 NOT supported, using %s ipv4.\n",
 			chba->ndev->name);
 }
-
 struct cxgbi_device *cxgbi_device_register(unsigned int, unsigned int);
 void cxgbi_device_unregister(struct cxgbi_device *);
 void cxgbi_device_unregister_all(unsigned int flag);
@@ -594,19 +477,15 @@ int cxgbi_hbas_add(struct cxgbi_device *, u64, unsigned int,
 			const struct scsi_host_template *,
 			struct scsi_transport_template *);
 void cxgbi_hbas_remove(struct cxgbi_device *);
-
 int cxgbi_device_portmap_create(struct cxgbi_device *cdev, unsigned int base,
 			unsigned int max_conn);
 void cxgbi_device_portmap_cleanup(struct cxgbi_device *cdev);
-
 void cxgbi_conn_tx_open(struct cxgbi_sock *);
 void cxgbi_conn_pdu_ready(struct cxgbi_sock *);
 int cxgbi_conn_alloc_pdu(struct iscsi_task *, u8);
 int cxgbi_conn_init_pdu(struct iscsi_task *, unsigned int , unsigned int);
 int cxgbi_conn_xmit_pdu(struct iscsi_task *);
-
 void cxgbi_cleanup_task(struct iscsi_task *task);
-
 umode_t cxgbi_attr_is_visible(int param_type, int param);
 void cxgbi_get_conn_stats(struct iscsi_cls_conn *, struct iscsi_stats *);
 int cxgbi_set_conn_param(struct iscsi_cls_conn *,
@@ -625,7 +504,6 @@ struct iscsi_endpoint *cxgbi_ep_connect(struct Scsi_Host *,
 			struct sockaddr *, int);
 int cxgbi_ep_poll(struct iscsi_endpoint *, int);
 void cxgbi_ep_disconnect(struct iscsi_endpoint *);
-
 int cxgbi_iscsi_init(struct iscsi_transport *,
 			struct scsi_transport_template **);
 void cxgbi_iscsi_cleanup(struct iscsi_transport *,
@@ -643,4 +521,4 @@ int cxgbi_ddp_ppm_setup(void **ppm_pp, struct cxgbi_device *cdev,
 			unsigned int iscsi_size, unsigned int llimit,
 			unsigned int start, unsigned int rsvd_factor,
 			unsigned int edram_start, unsigned int edram_size);
-#endif	/*__LIBCXGBI_H__*/
+#endif	 

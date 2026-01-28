@@ -1,24 +1,5 @@
-/*
- * @section LICENSE
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- */
-
 #ifndef __RSI_SDIO_INTF__
 #define __RSI_SDIO_INTF__
-
 #include <linux/mmc/card.h>
 #include <linux/mmc/mmc.h>
 #include <linux/mmc/host.h>
@@ -27,7 +8,6 @@
 #include <linux/mmc/sd.h>
 #include <linux/mmc/sdio_ids.h>
 #include "rsi_main.h"
-
 enum sdio_interrupt_type {
 	BUFFER_FULL         = 0x0,
 	BUFFER_AVAILABLE    = 0x2,
@@ -35,26 +15,19 @@ enum sdio_interrupt_type {
 	MSDU_PACKET_PENDING = 0x4,
 	UNKNOWN_INT         = 0XE
 };
-
-/* Buffer status register related info */
 #define PKT_BUFF_SEMI_FULL                      0
 #define PKT_BUFF_FULL                           1
 #define PKT_MGMT_BUFF_FULL                      2
 #define MSDU_PKT_PENDING                        3
 #define RECV_NUM_BLOCKS                         4
-/* Interrupt Bit Related Macros */
 #define PKT_BUFF_AVAILABLE                      1
 #define FW_ASSERT_IND                           2
-
 #define RSI_MASTER_REG_BUF_SIZE			12
-
 #define RSI_DEVICE_BUFFER_STATUS_REGISTER       0xf3
 #define RSI_FN1_INT_REGISTER                    0xf9
 #define RSI_INT_ENABLE_REGISTER			0x04
 #define RSI_INT_ENABLE_MASK			0xfc
 #define RSI_SD_REQUEST_MASTER                   0x10000
-
-/* FOR SD CARD ONLY */
 #define SDIO_RX_NUM_BLOCKS_REG                  0x000F1
 #define SDIO_FW_STATUS_REG                      0x000F2
 #define SDIO_NXT_RD_DELAY2                      0x000F5
@@ -66,7 +39,6 @@ enum sdio_interrupt_type {
 #define SDIO_WAKEUP_REG				0x000FF
 #define SDIO_FUN1_INTR_CLR_REG                  0x0008
 #define SDIO_REG_HIGH_SPEED                     0x0013
-
 #define RSI_GET_SDIO_INTERRUPT_TYPE(_I, TYPE)      \
 	{					   \
 		TYPE =                             \
@@ -77,13 +49,10 @@ enum sdio_interrupt_type {
 		(_I & (1 << FW_ASSERT_IND)) ?      \
 		FIRMWARE_ASSERT_IND : UNKNOWN_INT; \
 	}
-
-/* common registers in SDIO function1 */
 #define TA_SOFT_RESET_REG            0x0004
 #define TA_TH0_PC_REG                0x0400
 #define TA_HOLD_THREAD_REG           0x0844
 #define TA_RELEASE_THREAD_REG        0x0848
-
 #define TA_SOFT_RST_CLR              0
 #define TA_SOFT_RST_SET              BIT(0)
 #define TA_PC_ZERO                   0
@@ -91,7 +60,6 @@ enum sdio_interrupt_type {
 #define TA_RELEASE_THREAD_VALUE      0xF
 #define TA_BASE_ADDR                 0x2200
 #define MISC_CFG_BASE_ADDR           0x4105
-
 struct receive_info {
 	bool buffer_full;
 	bool semi_buffer_full;
@@ -106,7 +74,6 @@ struct receive_info {
 	u32 buf_full_counter;
 	u32 buf_available_counter;
 };
-
 struct rsi_91x_sdiodev {
 	struct sdio_func *pfunction;
 	struct task_struct *sdio_irq_task;
@@ -122,7 +89,6 @@ struct rsi_91x_sdiodev {
 	struct rsi_thread rx_thread;
 	u8 pktbuffer[8192] __aligned(4);
 };
-
 int rsi_init_sdio_slave_regs(struct rsi_hw *adapter);
 int rsi_sdio_read_register(struct rsi_hw *adapter, u32 addr, u8 *data);
 int rsi_sdio_host_intf_read_pkt(struct rsi_hw *adapter, u8 *pkt, u32 length);

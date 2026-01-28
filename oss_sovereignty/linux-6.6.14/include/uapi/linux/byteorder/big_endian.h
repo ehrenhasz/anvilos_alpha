@@ -1,18 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI_LINUX_BYTEORDER_BIG_ENDIAN_H
 #define _UAPI_LINUX_BYTEORDER_BIG_ENDIAN_H
-
 #ifndef __BIG_ENDIAN
 #define __BIG_ENDIAN 4321
 #endif
 #ifndef __BIG_ENDIAN_BITFIELD
 #define __BIG_ENDIAN_BITFIELD
 #endif
-
 #include <linux/stddef.h>
 #include <linux/types.h>
 #include <linux/swab.h>
-
 #define __constant_htonl(x) ((__force __be32)(__u32)(x))
 #define __constant_ntohl(x) ((__force __u32)(__be32)(x))
 #define __constant_htons(x) ((__force __be16)(__u16)(x))
@@ -41,7 +37,6 @@
 #define __be32_to_cpu(x) ((__force __u32)(__be32)(x))
 #define __cpu_to_be16(x) ((__force __be16)(__u16)(x))
 #define __be16_to_cpu(x) ((__force __u16)(__be16)(x))
-
 static __always_inline __le64 __cpu_to_le64p(const __u64 *p)
 {
 	return (__force __le64)__swab64p(p);
@@ -102,6 +97,4 @@ static __always_inline __u16 __be16_to_cpup(const __be16 *p)
 #define __be32_to_cpus(x) do { (void)(x); } while (0)
 #define __cpu_to_be16s(x) do { (void)(x); } while (0)
 #define __be16_to_cpus(x) do { (void)(x); } while (0)
-
-
-#endif /* _UAPI_LINUX_BYTEORDER_BIG_ENDIAN_H */
+#endif  

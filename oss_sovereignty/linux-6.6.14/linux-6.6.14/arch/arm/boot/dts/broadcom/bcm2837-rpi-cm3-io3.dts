@@ -1,21 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
 /dts-v1/;
 #include "bcm2837-rpi-cm3.dtsi"
 #include "bcm283x-rpi-usb-host.dtsi"
-
 / {
 	compatible = "raspberrypi,3-compute-module", "brcm,bcm2837";
 	model = "Raspberry Pi Compute Module 3 IO board V3.0";
 };
-
 &gpio {
-	/*
-	 * This is based on the official GPU firmware DT blob.
-	 *
-	 * Legend:
-	 * "FOO" = GPIO line named "FOO" on the schematic
-	 * "FOO_N" = GPIO line named "FOO" on schematic, active low
-	 */
 	gpio-line-names = "GPIO0",
 			  "GPIO1",
 			  "GPIO2",
@@ -64,31 +54,26 @@
 			  "GPIO45",
 			  "SMPS_SCL",
 			  "SMPS_SDA",
-			  /* Used by eMMC */
 			  "SD_CLK_R",
 			  "SD_CMD_R",
 			  "SD_DATA0_R",
 			  "SD_DATA1_R",
 			  "SD_DATA2_R",
 			  "SD_DATA3_R";
-
 	pinctrl-names = "default";
 	pinctrl-0 = <&gpioout &alt0>;
 };
-
 &hdmi {
 	hpd-gpios = <&expgpio 1 GPIO_ACTIVE_LOW>;
 	power-domains = <&power RPI_POWER_DOMAIN_HDMI>;
 	status = "okay";
 };
-
 &sdhost {
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdhost_gpio48>;
 	bus-width = <4>;
 	status = "okay";
 };
-
 &uart0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart0_gpio14>;

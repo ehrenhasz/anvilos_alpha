@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef BTRFS_ROOT_TREE_H
 #define BTRFS_ROOT_TREE_H
-
 int btrfs_subvolume_reserve_metadata(struct btrfs_root *root,
 				     struct btrfs_block_rsv *rsv,
 				     int nitems, bool use_global_rsv);
@@ -30,5 +27,4 @@ void btrfs_set_root_node(struct btrfs_root_item *item,
 			 struct extent_buffer *node);
 void btrfs_check_and_init_root_item(struct btrfs_root_item *item);
 void btrfs_update_root_times(struct btrfs_trans_handle *trans, struct btrfs_root *root);
-
 #endif

@@ -1,14 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (C) 2001 Ben. Herrenschmidt (benh@kernel.crashing.org)
- */
-
 #define COMMON_USER	(PPC_FEATURE_32 | PPC_FEATURE_HAS_FPU | \
 			 PPC_FEATURE_HAS_MMU)
-
 static struct cpu_spec cpu_specs[] __initdata = {
 #ifdef CONFIG_PPC_BOOK3S_603
-	{	/* 603 */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x00030000,
 		.cpu_name		= "603",
@@ -21,7 +15,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc603",
 	},
-	{	/* 603e */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x00060000,
 		.cpu_name		= "603e",
@@ -34,7 +28,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc603",
 	},
-	{	/* 603ev */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x00070000,
 		.cpu_name		= "603ev",
@@ -47,7 +41,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc603",
 	},
-	{	/* 82xx (8240, 8245, 8260 are all 603e cores) */
+	{	 
 		.pvr_mask		= 0x7fff0000,
 		.pvr_value		= 0x00810000,
 		.cpu_name		= "82xx",
@@ -60,7 +54,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc603",
 	},
-	{	/* All G2_LE (603e core, plus some) have the same pvr */
+	{	 
 		.pvr_mask		= 0x7fff0000,
 		.pvr_value		= 0x00820000,
 		.cpu_name		= "G2_LE",
@@ -74,7 +68,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.platform		= "ppc603",
 	},
 #ifdef CONFIG_PPC_83xx
-	{	/* e300c1 (a 603e core, plus some) on 83xx */
+	{	 
 		.pvr_mask		= 0x7fff0000,
 		.pvr_value		= 0x00830000,
 		.cpu_name		= "e300c1",
@@ -87,7 +81,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_83xx,
 		.platform		= "ppc603",
 	},
-	{	/* e300c2 (an e300c1 core, plus some, minus FPU) on 83xx */
+	{	 
 		.pvr_mask		= 0x7fff0000,
 		.pvr_value		= 0x00840000,
 		.cpu_name		= "e300c2",
@@ -100,7 +94,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_83xx,
 		.platform		= "ppc603",
 	},
-	{	/* e300c3 (e300c1, plus one IU, half cache size) on 83xx */
+	{	 
 		.pvr_mask		= 0x7fff0000,
 		.pvr_value		= 0x00850000,
 		.cpu_name		= "e300c3",
@@ -114,7 +108,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.num_pmcs		= 4,
 		.platform		= "ppc603",
 	},
-	{	/* e300c4 (e300c1, plus one IU) */
+	{	 
 		.pvr_mask		= 0x7fff0000,
 		.pvr_value		= 0x00860000,
 		.cpu_name		= "e300c4",
@@ -129,9 +123,9 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.platform		= "ppc603",
 	},
 #endif
-#endif /* CONFIG_PPC_BOOK3S_603 */
+#endif  
 #ifdef CONFIG_PPC_BOOK3S_604
-	{	/* 604 */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x00040000,
 		.cpu_name		= "604",
@@ -145,7 +139,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc604",
 	},
-	{	/* 604e */
+	{	 
 		.pvr_mask		= 0xfffff000,
 		.pvr_value		= 0x00090000,
 		.cpu_name		= "604e",
@@ -159,7 +153,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc604",
 	},
-	{	/* 604r */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x00090000,
 		.cpu_name		= "604r",
@@ -173,7 +167,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc604",
 	},
-	{	/* 604ev */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x000a0000,
 		.cpu_name		= "604ev",
@@ -187,7 +181,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc604",
 	},
-	{	/* 740/750 (0x4202, don't support TAU ?) */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x00084202,
 		.cpu_name		= "740/750",
@@ -201,7 +195,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc750",
 	},
-	{	/* 750CX (80100 and 8010x?) */
+	{	 
 		.pvr_mask		= 0xfffffff0,
 		.pvr_value		= 0x00080100,
 		.cpu_name		= "750CX",
@@ -215,7 +209,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc750",
 	},
-	{	/* 750CX (82201 and 82202) */
+	{	 
 		.pvr_mask		= 0xfffffff0,
 		.pvr_value		= 0x00082200,
 		.cpu_name		= "750CX",
@@ -230,7 +224,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc750",
 	},
-	{	/* 750CXe (82214) */
+	{	 
 		.pvr_mask		= 0xfffffff0,
 		.pvr_value		= 0x00082210,
 		.cpu_name		= "750CXe",
@@ -245,7 +239,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc750",
 	},
-	{	/* 750CXe "Gekko" (83214) */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x00083214,
 		.cpu_name		= "750CXe",
@@ -260,7 +254,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc750",
 	},
-	{	/* 750CL (and "Broadway") */
+	{	 
 		.pvr_mask		= 0xfffff0e0,
 		.pvr_value		= 0x00087000,
 		.cpu_name		= "750CL",
@@ -275,7 +269,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc750",
 	},
-	{	/* 745/755 */
+	{	 
 		.pvr_mask		= 0xfffff000,
 		.pvr_value		= 0x00083000,
 		.cpu_name		= "745/755",
@@ -290,7 +284,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc750",
 	},
-	{	/* 750FX rev 1.x */
+	{	 
 		.pvr_mask		= 0xffffff00,
 		.pvr_value		= 0x70000100,
 		.cpu_name		= "750FX",
@@ -305,7 +299,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc750",
 	},
-	{	/* 750FX rev 2.0 must disable HID0[DPM] */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x70000200,
 		.cpu_name		= "750FX",
@@ -320,7 +314,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc750",
 	},
-	{	/* 750FX (All revs except 2.0) */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x70000000,
 		.cpu_name		= "750FX",
@@ -335,7 +329,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc750",
 	},
-	{	/* 750GX */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x70020000,
 		.cpu_name		= "750GX",
@@ -350,7 +344,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc750",
 	},
-	{	/* 740/750 (L2CR bit need fixup for 740) */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x00080000,
 		.cpu_name		= "740/750",
@@ -365,7 +359,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc750",
 	},
-	{	/* 7400 rev 1.1 ? (no TAU) */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x000c1101,
 		.cpu_name		= "7400 (1.1)",
@@ -381,7 +375,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7400",
 	},
-	{	/* 7400 */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x000c0000,
 		.cpu_name		= "7400",
@@ -397,7 +391,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7400",
 	},
-	{	/* 7410 */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x800c0000,
 		.cpu_name		= "7410",
@@ -413,7 +407,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7400",
 	},
-	{	/* 7450 2.0 - no doze/nap */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x80000200,
 		.cpu_name		= "7450",
@@ -429,7 +423,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7450",
 	},
-	{	/* 7450 2.1 */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x80000201,
 		.cpu_name		= "7450",
@@ -445,7 +439,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7450",
 	},
-	{	/* 7450 2.3 and newer */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x80000000,
 		.cpu_name		= "7450",
@@ -461,7 +455,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7450",
 	},
-	{	/* 7455 rev 1.x */
+	{	 
 		.pvr_mask		= 0xffffff00,
 		.pvr_value		= 0x80010100,
 		.cpu_name		= "7455",
@@ -477,7 +471,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7450",
 	},
-	{	/* 7455 rev 2.0 */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x80010200,
 		.cpu_name		= "7455",
@@ -493,7 +487,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7450",
 	},
-	{	/* 7455 others */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x80010000,
 		.cpu_name		= "7455",
@@ -509,7 +503,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7450",
 	},
-	{	/* 7447/7457 Rev 1.0 */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x80020100,
 		.cpu_name		= "7447/7457",
@@ -525,7 +519,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7450",
 	},
-	{	/* 7447/7457 Rev 1.1 */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x80020101,
 		.cpu_name		= "7447/7457",
@@ -541,7 +535,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7450",
 	},
-	{	/* 7447/7457 Rev 1.2 and later */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x80020000,
 		.cpu_name		= "7447/7457",
@@ -557,7 +551,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7450",
 	},
-	{	/* 7447A */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x80030000,
 		.cpu_name		= "7447A",
@@ -573,7 +567,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7450",
 	},
-	{	/* 7448 */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x80040000,
 		.cpu_name		= "7448",
@@ -589,7 +583,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc7450",
 	},
-	{	/* default match, we assume split I/D cache & TB (non-601)... */
+	{	 
 		.pvr_mask		= 0x00000000,
 		.pvr_value		= 0x00000000,
 		.cpu_name		= "(generic PPC)",
@@ -601,5 +595,5 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_generic,
 		.platform		= "ppc603",
 	},
-#endif /* CONFIG_PPC_BOOK3S_604 */
+#endif  
 };

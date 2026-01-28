@@ -1,34 +1,7 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_MCIF_WB_DCN20_H__
 #define __DC_MCIF_WB_DCN20_H__
-
 #define TO_DCN20_MMHUBBUB(mcif_wb_base) \
 	container_of(mcif_wb_base, struct dcn20_mmhubbub, base)
-
 #define MCIF_WB_COMMON_REG_LIST_DCN2_0(inst) \
 	SRI(MCIF_WB_BUFMGR_SW_CONTROL, MCIF_WB, inst),\
 	SRI(MCIF_WB_BUFMGR_CUR_LINE_R, MCIF_WB, inst),\
@@ -86,7 +59,6 @@
 	SRI(MCIF_WB_BUF_3_RESOLUTION, MCIF_WB, inst),\
 	SRI(MCIF_WB_BUF_4_RESOLUTION, MCIF_WB, inst),\
 	SRI(SMU_WM_CONTROL, WBIF, inst)
-
 #define MCIF_WB_COMMON_MASK_SH_LIST_DCN2_0(mask_sh) \
 	SF(MCIF_WB0_MCIF_WB_BUFMGR_SW_CONTROL, MCIF_WB_BUFMGR_ENABLE, mask_sh),\
 	SF(MCIF_WB0_MCIF_WB_BUFMGR_SW_CONTROL, MCIF_WB_BUFMGR_SW_INT_EN, mask_sh),\
@@ -248,7 +220,6 @@
 	SF(WBIF0_SMU_WM_CONTROL, MCIF_WB0_WM_CHG_REQ, mask_sh),\
 	SF(WBIF0_SMU_WM_CONTROL, MCIF_WB0_WM_CHG_ACK_INT_DIS, mask_sh),\
 	SF(WBIF0_SMU_WM_CONTROL, MCIF_WB0_WM_CHG_ACK_INT_STATUS, mask_sh)
-
 #define MCIF_WB_REG_FIELD_LIST_DCN2_0(type) \
 	type MCIF_WB_BUFMGR_ENABLE;\
 	type MCIF_WB_BUFMGR_SW_INT_EN;\
@@ -410,7 +381,6 @@
 	type MCIF_WB0_WM_CHG_REQ;\
 	type MCIF_WB0_WM_CHG_ACK_INT_DIS;\
 	type MCIF_WB0_WM_CHG_ACK_INT_STATUS
-
 #define MCIF_WB_REG_VARIABLE_LIST_DCN2_0 \
 	uint32_t MCIF_WB_BUFMGR_SW_CONTROL;\
 	uint32_t MCIF_WB_BUFMGR_CUR_LINE_R;\
@@ -468,34 +438,25 @@
 	uint32_t MCIF_WB_BUF_3_RESOLUTION;\
 	uint32_t MCIF_WB_BUF_4_RESOLUTION;\
 	uint32_t SMU_WM_CONTROL
-
 struct dcn20_mmhubbub_registers {
 	MCIF_WB_REG_VARIABLE_LIST_DCN2_0;
 };
-
-
 struct dcn20_mmhubbub_mask {
 	MCIF_WB_REG_FIELD_LIST_DCN2_0(uint32_t);
 };
-
 struct dcn20_mmhubbub_shift {
 	MCIF_WB_REG_FIELD_LIST_DCN2_0(uint8_t);
 };
-
 struct dcn20_mmhubbub {
 	struct mcif_wb base;
 	const struct dcn20_mmhubbub_registers *mcif_wb_regs;
 	const struct dcn20_mmhubbub_shift *mcif_wb_shift;
 	const struct dcn20_mmhubbub_mask *mcif_wb_mask;
 };
-
 void mmhubbub2_config_mcif_irq(struct mcif_wb *mcif_wb,
 	struct mcif_irq_params *params);
-
 void mmhubbub2_enable_mcif(struct mcif_wb *mcif_wb);
-
 void mmhubbub2_disable_mcif(struct mcif_wb *mcif_wb);
-
 void mcifwb2_dump_frame(struct mcif_wb *mcif_wb,
 	struct mcif_buf_params *mcif_params,
 	enum dwb_scaler_mode out_format,
@@ -506,12 +467,10 @@ void mcifwb2_dump_frame(struct mcif_wb *mcif_wb,
 	unsigned char *chroma_buffer,
 	unsigned char *dest_luma_buffer,
 	unsigned char *dest_chroma_buffer);
-
 void dcn20_mmhubbub_construct(struct dcn20_mmhubbub *mcif_wb20,
 	struct dc_context *ctx,
 	const struct dcn20_mmhubbub_registers *mcif_wb_regs,
 	const struct dcn20_mmhubbub_shift *mcif_wb_shift,
 	const struct dcn20_mmhubbub_mask *mcif_wb_mask,
 	int inst);
-
 #endif

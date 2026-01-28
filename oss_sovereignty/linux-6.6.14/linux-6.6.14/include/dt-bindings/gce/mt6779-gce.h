@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: Dennis-YC Hsieh <dennis-yc.hsieh@mediatek.com>
- */
-
 #ifndef _DT_BINDINGS_GCE_MT6779_H
 #define _DT_BINDINGS_GCE_MT6779_H
-
 #define CMDQ_NO_TIMEOUT		0xffffffff
-
-/* GCE HW thread priority */
 #define CMDQ_THR_PRIO_LOWEST	0
 #define CMDQ_THR_PRIO_1		1
 #define CMDQ_THR_PRIO_2		2
@@ -18,8 +9,6 @@
 #define CMDQ_THR_PRIO_5		5
 #define CMDQ_THR_PRIO_6		6
 #define CMDQ_THR_PRIO_HIGHEST	7
-
-/* GCE subsys table */
 #define SUBSYS_1300XXXX		0
 #define SUBSYS_1400XXXX		1
 #define SUBSYS_1401XXXX		2
@@ -51,8 +40,6 @@
 #define SUBSYS_180aXXXX		28
 #define SUBSYS_180bXXXX		29
 #define CMDQ_SUBSYS_OFF		32
-
-/* GCE hardware events */
 #define CMDQ_EVENT_DISP_RDMA0_SOF		0
 #define CMDQ_EVENT_DISP_RDMA1_SOF		1
 #define CMDQ_EVENT_MDP_RDMA0_SOF		2
@@ -218,5 +205,4 @@
 #define CMDQ_EVENT_DVS_DONE_ASYNC_SHOT		452
 #define CMDQ_EVENT_DVP_DONE_ASYNC_SHOT		453
 #define CMDQ_EVENT_DSI0_TE_INFRA		898
-
 #endif

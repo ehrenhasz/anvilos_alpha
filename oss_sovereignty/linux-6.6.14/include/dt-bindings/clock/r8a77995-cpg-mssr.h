@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0+
- *
- * Copyright (C) 2017 Glider bvba
- */
 #ifndef __DT_BINDINGS_CLOCK_R8A77995_CPG_MSSR_H__
 #define __DT_BINDINGS_CLOCK_R8A77995_CPG_MSSR_H__
-
 #include <dt-bindings/clock/renesas-cpg-mssr.h>
-
-/* r8a77995 CPG Core Clocks */
 #define R8A77995_CLK_Z2			0
 #define R8A77995_CLK_ZG			1
 #define R8A77995_CLK_ZTR		2
@@ -35,8 +28,6 @@
 #define R8A77995_CLK_CRD2		24
 #define R8A77995_CLK_SD0H		25
 #define R8A77995_CLK_SD0		26
-/* CLK_SSP2 was removed */
-/* CLK_SSP1 was removed */
 #define R8A77995_CLK_RPC		29
 #define R8A77995_CLK_RPCD2		30
 #define R8A77995_CLK_ZA2		31
@@ -50,5 +41,4 @@
 #define R8A77995_CLK_LV1		39
 #define R8A77995_CLK_CP			40
 #define R8A77995_CLK_CPEX		41
-
-#endif /* __DT_BINDINGS_CLOCK_R8A77995_CPG_MSSR_H__ */
+#endif  

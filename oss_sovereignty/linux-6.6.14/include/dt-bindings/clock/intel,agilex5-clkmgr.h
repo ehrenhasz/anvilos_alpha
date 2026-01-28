@@ -1,18 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause */
-/*
- * Copyright (C) 2023, Intel Corporation
- */
-
 #ifndef __DT_BINDINGS_INTEL_AGILEX5_CLKMGR_H
 #define __DT_BINDINGS_INTEL_AGILEX5_CLKMGR_H
-
-/* fixed rate clocks */
 #define AGILEX5_OSC1			0
 #define AGILEX5_CB_INTOSC_HS_DIV2_CLK	1
 #define AGILEX5_CB_INTOSC_LS_CLK	2
 #define AGILEX5_F2S_FREE_CLK		3
-
-/* PLL clocks */
 #define AGILEX5_MAIN_PLL_CLK		4
 #define AGILEX5_MAIN_PLL_C0_CLK		5
 #define AGILEX5_MAIN_PLL_C1_CLK		6
@@ -29,8 +20,6 @@
 #define AGILEX5_CORE3_FREE_CLK		17
 #define AGILEX5_DSU_FREE_CLK		18
 #define AGILEX5_BOOT_CLK		19
-
-/* fixed factor clocks */
 #define AGILEX5_L3_MAIN_FREE_CLK	20
 #define AGILEX5_NOC_FREE_CLK		21
 #define AGILEX5_S2F_USR0_CLK		22
@@ -43,8 +32,6 @@
 #define AGILEX5_S2F_USER1_FREE_CLK	29
 #define AGILEX5_PSI_REF_FREE_CLK	30
 #define AGILEX5_USB31_FREE_CLK		31
-
-/* Gate clocks */
 #define AGILEX5_CORE0_CLK		32
 #define AGILEX5_CORE1_CLK		33
 #define AGILEX5_CORE2_CLK		34
@@ -96,5 +83,4 @@
 #define AGILEX5_SOFTPHY_PHY_CLK		80
 #define AGILEX5_SOFTPHY_CTRL_CLK	81
 #define AGILEX5_NUM_CLKS		82
-
-#endif	/* __DT_BINDINGS_INTEL_AGILEX5_CLKMGR_H */
+#endif	 

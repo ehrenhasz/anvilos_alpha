@@ -1,18 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
- */
-
 /dts-v1/;
 #include "sparx5_pcb_common.dtsi"
-
 /{
 	gpio-restart {
 		compatible = "gpio-restart";
 		gpios = <&gpio 37 GPIO_ACTIVE_LOW>;
 		priority = <200>;
 	};
-
 	leds {
 		compatible = "gpio-leds";
 		led@0 {
@@ -249,7 +242,6 @@
 		};
 	};
 };
-
 &sgpio0 {
 	status = "okay";
 	microchip,sgpio-port-ranges = <8 15>;
@@ -260,7 +252,6 @@
 		ngpios = <64>;
 	};
 };
-
 &sgpio1 {
 	status = "okay";
 	microchip,sgpio-port-ranges = <24 31>;
@@ -271,7 +262,6 @@
 		ngpios = <64>;
 	};
 };
-
 &spi0 {
 	status = "okay";
 	flash@0 {
@@ -280,7 +270,6 @@
 		reg = <0>;
 	};
 };
-
 &spi0 {
 	status = "okay";
 	spi@0 {
@@ -288,15 +277,14 @@
 		mux-controls = <&mux>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-		reg = <0>;	/* CS0 */
+		reg = <0>;	 
 		flash@9 {
 			compatible = "jedec,spi-nor";
 			spi-max-frequency = <8000000>;
-			reg = <0x9>;	/* SPI */
+			reg = <0x9>;	 
 		};
 	};
 };
-
 &sgpio0 {
 	status = "okay";
 	microchip,sgpio-port-ranges = <8 15>;
@@ -307,7 +295,6 @@
 		ngpios = <64>;
 	};
 };
-
 &sgpio1 {
 	status = "okay";
 	microchip,sgpio-port-ranges = <24 31>;
@@ -318,12 +305,10 @@
 		ngpios = <64>;
 	};
 };
-
 &sgpio2 {
 	status = "okay";
 	microchip,sgpio-port-ranges = <0 0>, <11 31>;
 };
-
 &gpio {
 	i2cmux_pins_i: i2cmux-pins {
 	       pins = "GPIO_16", "GPIO_17", "GPIO_18", "GPIO_19",
@@ -393,7 +378,6 @@
 		output-high;
 	};
 };
-
 &axi {
 	i2c0_imux: i2c0-imux@0 {
 		compatible = "i2c-mux-pinctrl";
@@ -408,7 +392,6 @@
 		i2c-parent = <&i2c0>;
 	};
 };
-
 &i2c0_imux {
 	pinctrl-names =
 		"i2c_sfp1", "i2c_sfp2", "i2c_sfp3", "i2c_sfp4",
@@ -488,7 +471,6 @@
 		#size-cells = <0>;
 	};
 };
-
 &i2c0_emux {
 	mux-gpios = <&gpio 55 GPIO_ACTIVE_HIGH
 		     &gpio 60 GPIO_ACTIVE_HIGH
@@ -536,14 +518,12 @@
 		#size-cells = <0>;
 	};
 };
-
 &mdio3 {
 	status = "okay";
 	phy64: ethernet-phy@64 {
 		reg = <28>;
 	};
 };
-
 &axi {
 	sfp_eth12: sfp-eth12 {
 		compatible = "sff,sfp";
@@ -706,13 +686,10 @@
 		tx-fault-gpios = <&sgpio_in2 31 0 GPIO_ACTIVE_HIGH>;
 	};
 };
-
 &switch {
 	ethernet-ports {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
-		/* 10G SFPs */
 		port12: port@12 {
 			reg = <12>;
 			microchip,bandwidth = <10000>;
@@ -724,7 +701,6 @@
 		};
 		port13: port@13 {
 			reg = <13>;
-			/* Example: CU SFP, 1G speed */
 			microchip,bandwidth = <10000>;
 			phys = <&serdes 14>;
 			phy-mode = "10gbase-r";
@@ -822,7 +798,6 @@
 			microchip,sd-sgpio = <345>;
 			managed = "in-band-status";
 		};
-		/* 25G SFPs */
 		port56: port@56 {
 			reg = <56>;
 			microchip,bandwidth = <10000>;
@@ -895,7 +870,6 @@
 			microchip,sd-sgpio = <377>;
 			managed = "in-band-status";
 		};
-		/* Finally the Management interface */
 		port64: port@64 {
 			reg = <64>;
 			microchip,bandwidth = <1000>;

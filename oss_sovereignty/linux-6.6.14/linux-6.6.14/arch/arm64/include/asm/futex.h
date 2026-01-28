@@ -1,17 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 ARM Ltd.
- */
 #ifndef __ASM_FUTEX_H
 #define __ASM_FUTEX_H
-
 #include <linux/futex.h>
 #include <linux/uaccess.h>
-
 #include <asm/errno.h>
-
-#define FUTEX_MAX_LOOPS	128 /* What's the largest number you can think of? */
-
+#define FUTEX_MAX_LOOPS	128  
 #define __futex_atomic_op(insn, ret, oldval, uaddr, tmp, oparg)		\
 do {									\
 	unsigned int loops = FUTEX_MAX_LOOPS;				\
@@ -36,16 +28,13 @@ do {									\
 	: "memory");							\
 	uaccess_disable_privileged();					\
 } while (0)
-
 static inline int
 arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *_uaddr)
 {
 	int oldval = 0, ret, tmp;
 	u32 __user *uaddr = __uaccess_mask_ptr(_uaddr);
-
 	if (!access_ok(_uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	switch (op) {
 	case FUTEX_OP_SET:
 		__futex_atomic_op("mov	%w3, %w5",
@@ -70,13 +59,10 @@ arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *_uaddr)
 	default:
 		ret = -ENOSYS;
 	}
-
 	if (!ret)
 		*oval = oldval;
-
 	return ret;
 }
-
 static inline int
 futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *_uaddr,
 			      u32 oldval, u32 newval)
@@ -85,10 +71,8 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *_uaddr,
 	unsigned int loops = FUTEX_MAX_LOOPS;
 	u32 val, tmp;
 	u32 __user *uaddr;
-
 	if (!access_ok(_uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	uaddr = __uaccess_mask_ptr(_uaddr);
 	uaccess_enable_privileged();
 	asm volatile("// futex_atomic_cmpxchg_inatomic\n"
@@ -110,11 +94,8 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *_uaddr,
 	: "r" (oldval), "r" (newval), "Ir" (-EAGAIN)
 	: "memory");
 	uaccess_disable_privileged();
-
 	if (!ret)
 		*uval = val;
-
 	return ret;
 }
-
-#endif /* __ASM_FUTEX_H */
+#endif  

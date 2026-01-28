@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm SDM845 interconnect IDs
- *
- * Copyright (c) 2018, Linaro Ltd.
- * Author: Georgi Djakov <georgi.djakov@linaro.org>
- */
-
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SDM845_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SDM845_H
-
 #define MASTER_A1NOC_CFG		0
 #define MASTER_TSIF			1
 #define MASTER_SDCC_2			2
@@ -20,7 +11,6 @@
 #define SLAVE_SERVICE_A1NOC		8
 #define SLAVE_ANOC_PCIE_A1NOC_SNOC	9
 #define MASTER_QUP_1			10
-
 #define MASTER_A2NOC_CFG		0
 #define MASTER_QDSS_BAM			1
 #define MASTER_CNOC_A2NOC		2
@@ -34,7 +24,6 @@
 #define SLAVE_ANOC_PCIE_SNOC		10
 #define SLAVE_SERVICE_A2NOC		11
 #define MASTER_QUP_2			12
-
 #define MASTER_SPDM			0
 #define MASTER_TIC			1
 #define MASTER_SNOC_CNOC		2
@@ -82,17 +71,14 @@
 #define SLAVE_VSENSE_CTRL_CFG		44
 #define SLAVE_CNOC_A2NOC		45
 #define SLAVE_SERVICE_CNOC		46
-
 #define MASTER_CNOC_DC_NOC		0
 #define SLAVE_LLCC_CFG			1
 #define SLAVE_MEM_NOC_CFG		2
-
 #define MASTER_APPSS_PROC		0
 #define MASTER_GNOC_CFG			1
 #define SLAVE_GNOC_SNOC			2
 #define SLAVE_GNOC_MEM_NOC		3
 #define SLAVE_SERVICE_GNOC		4
-
 #define MASTER_TCU_0			0
 #define MASTER_MEM_NOC_CFG		1
 #define MASTER_GNOC_MEM_NOC		2
@@ -108,7 +94,6 @@
 #define SLAVE_SERVICE_MEM_NOC		12
 #define MASTER_LLCC			13
 #define SLAVE_EBI1			14
-
 #define MASTER_CNOC_MNOC_CFG		0
 #define MASTER_CAMNOC_HF0		1
 #define MASTER_CAMNOC_HF1		2
@@ -126,7 +111,6 @@
 #define MASTER_CAMNOC_HF1_UNCOMP	14
 #define MASTER_CAMNOC_SF_UNCOMP		15
 #define SLAVE_CAMNOC_UNCOMP		16
-
 #define MASTER_SNOC_CFG			0
 #define MASTER_A1NOC_SNOC		1
 #define MASTER_A2NOC_SNOC		2
@@ -146,5 +130,4 @@
 #define SLAVE_SERVICE_SNOC		16
 #define SLAVE_QDSS_STM			17
 #define SLAVE_TCU			18
-
 #endif

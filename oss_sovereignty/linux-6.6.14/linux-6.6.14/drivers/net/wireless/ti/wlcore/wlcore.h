@@ -1,39 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wlcore
- *
- * Copyright (C) 2011 Texas Instruments Inc.
- */
-
 #ifndef __WLCORE_H__
 #define __WLCORE_H__
-
 #include <linux/platform_device.h>
-
 #include "wlcore_i.h"
 #include "event.h"
 #include "boot.h"
-
-/* The maximum number of Tx descriptors in all chip families */
 #define WLCORE_MAX_TX_DESCRIPTORS 32
-
-/*
- * We always allocate this number of mac addresses. If we don't
- * have enough allocated addresses, the LAA bit is used
- */
 #define WLCORE_NUM_MAC_ADDRESSES 3
-
-/* wl12xx/wl18xx maximum transmission power (in dBm) */
 #define WLCORE_MAX_TXPWR        25
-
-/* Texas Instruments pre assigned OUI */
 #define WLCORE_TI_OUI_ADDRESS 0x080028
-
-/* forward declaration */
 struct wl1271_tx_hw_descr;
 enum wl_rx_buf_align;
 struct wl1271_rx_descriptor;
-
 struct wlcore_ops {
 	int (*setup)(struct wl1271 *wl);
 	int (*identify_chip)(struct wl1271 *wl);
@@ -116,7 +93,6 @@ struct wlcore_ops {
 		       bool start);
 	int (*dfs_master_restart)(struct wl1271 *wl, struct wl12xx_vif *wlvif);
 };
-
 enum wlcore_partitions {
 	PART_DOWN,
 	PART_WORK,
@@ -124,24 +100,19 @@ enum wlcore_partitions {
 	PART_DRPW,
 	PART_TOP_PRCM_ELP_SOC,
 	PART_PHY_INIT,
-
 	PART_TABLE_LEN,
 };
-
 struct wlcore_partition {
 	u32 size;
 	u32 start;
 };
-
 struct wlcore_partition_set {
 	struct wlcore_partition mem;
 	struct wlcore_partition reg;
 	struct wlcore_partition mem2;
 	struct wlcore_partition mem3;
 };
-
 enum wlcore_registers {
-	/* register addresses, used with partition translation */
 	REG_ECPU_CONTROL,
 	REG_INTERRUPT_NO_CLEAR,
 	REG_INTERRUPT_ACK,
@@ -152,46 +123,31 @@ enum wlcore_registers {
 	REG_PC_ON_RECOVERY,
 	REG_CHIP_ID_B,
 	REG_CMD_MBOX_ADDRESS,
-
-	/* data access memory addresses, used with partition translation */
 	REG_SLV_MEM_DATA,
 	REG_SLV_REG_DATA,
-
-	/* raw data access memory addresses */
 	REG_RAW_FW_STATUS_ADDR,
-
 	REG_TABLE_LEN,
 };
-
 struct wl1271_stats {
 	void *fw_stats;
 	unsigned long fw_stats_update;
 	size_t fw_stats_len;
-
 	unsigned int retry_count;
 	unsigned int excessive_retries;
 };
-
 struct wl1271 {
 	bool initialized;
 	struct ieee80211_hw *hw;
 	bool mac80211_registered;
-
 	struct device *dev;
 	struct platform_device *pdev;
-
 	void *if_priv;
-
 	struct wl1271_if_operations *if_ops;
-
 	int irq;
 	int wakeirq;
-
 	int irq_flags;
 	int wakeirq_flags;
-
 	spinlock_t wl_lock;
-
 	enum wlcore_state state;
 	enum wl12xx_fw_type fw_type;
 	bool plt;
@@ -199,31 +155,20 @@ struct wl1271 {
 	u8 fem_manuf;
 	u8 last_vif_count;
 	struct mutex mutex;
-
 	unsigned long flags;
-
 	struct wlcore_partition_set curr_part;
-
 	struct wl1271_chip chip;
-
 	int cmd_box_addr;
-
 	u8 *fw;
 	size_t fw_len;
 	void *nvs;
 	size_t nvs_len;
-
 	s8 hw_pg_ver;
-
-	/* address read from the fuse ROM */
 	u32 fuse_oui_addr;
 	u32 fuse_nic_addr;
-
-	/* we have up to 2 MAC addresses */
 	struct mac_address addresses[WLCORE_NUM_MAC_ADDRESSES];
 	int channel;
 	u8 system_hlid;
-
 	unsigned long links_map[BITS_TO_LONGS(WLCORE_MAX_LINKS)];
 	unsigned long roles_map[BITS_TO_LONGS(WL12XX_MAX_ROLES)];
 	unsigned long roc_map[BITS_TO_LONGS(WL12XX_MAX_ROLES)];
@@ -231,271 +176,121 @@ struct wl1271 {
 			BITS_TO_LONGS(WL12XX_MAX_RATE_POLICIES)];
 	unsigned long klv_templates_map[
 			BITS_TO_LONGS(WLCORE_MAX_KLV_TEMPLATES)];
-
 	u8 session_ids[WLCORE_MAX_LINKS];
-
 	struct list_head wlvif_list;
-
 	u8 sta_count;
 	u8 ap_count;
-
 	struct wl1271_acx_mem_map *target_mem_map;
-
-	/* Accounting for allocated / available TX blocks on HW */
 	u32 tx_blocks_freed;
 	u32 tx_blocks_available;
 	u32 tx_allocated_blocks;
 	u32 tx_results_count;
-
-	/* Accounting for allocated / available Tx packets in HW */
 	u32 tx_pkts_freed[NUM_TX_QUEUES];
 	u32 tx_allocated_pkts[NUM_TX_QUEUES];
-
-	/* Transmitted TX packets counter for chipset interface */
 	u32 tx_packets_count;
-
-	/* Time-offset between host and chipset clocks */
 	s64 time_offset;
-
-	/* Frames scheduled for transmission, not handled yet */
 	int tx_queue_count[NUM_TX_QUEUES];
 	unsigned long queue_stop_reasons[
 				NUM_TX_QUEUES * WLCORE_NUM_MAC_ADDRESSES];
-
-	/* Frames received, not handled yet by mac80211 */
 	struct sk_buff_head deferred_rx_queue;
-
-	/* Frames sent, not returned yet to mac80211 */
 	struct sk_buff_head deferred_tx_queue;
-
 	struct work_struct tx_work;
 	struct workqueue_struct *freezable_wq;
-
-	/* Pending TX frames */
 	unsigned long tx_frames_map[BITS_TO_LONGS(WLCORE_MAX_TX_DESCRIPTORS)];
 	struct sk_buff *tx_frames[WLCORE_MAX_TX_DESCRIPTORS];
 	int tx_frames_cnt;
-
-	/* FW Rx counter */
 	u32 rx_counter;
-
-	/* Intermediate buffer, used for packet aggregation */
 	u8 *aggr_buf;
 	u32 aggr_buf_size;
-
-	/* Reusable dummy packet template */
 	struct sk_buff *dummy_packet;
-
-	/* Network stack work  */
 	struct work_struct netstack_work;
-
-	/* FW log buffer */
 	u8 *fwlog;
-
-	/* Number of valid bytes in the FW log buffer */
 	ssize_t fwlog_size;
-
-	/* FW log end marker */
 	u32 fwlog_end;
-
-	/* FW memory block size */
 	u32 fw_mem_block_size;
-
-	/* Hardware recovery work */
 	struct work_struct recovery_work;
 	bool watchdog_recovery;
-
-	/* Reg domain last configuration */
 	DECLARE_BITMAP(reg_ch_conf_last, 64);
-	/* Reg domain pending configuration */
 	DECLARE_BITMAP(reg_ch_conf_pending, 64);
-
-	/* Pointer that holds DMA-friendly block for the mailbox */
 	void *mbox;
-
-	/* The mbox event mask */
 	u32 event_mask;
-	/* events to unmask only when ap interface is up */
 	u32 ap_event_mask;
-
-	/* Mailbox pointers */
 	u32 mbox_size;
 	u32 mbox_ptr[2];
-
-	/* Are we currently scanning */
 	struct wl12xx_vif *scan_wlvif;
 	struct wl1271_scan scan;
 	struct delayed_work scan_complete_work;
-
 	struct ieee80211_vif *roc_vif;
 	struct delayed_work roc_complete_work;
-
 	struct wl12xx_vif *sched_vif;
-
-	/* The current band */
 	enum nl80211_band band;
-
 	struct completion *elp_compl;
-
-	/* in dBm */
 	int power_level;
-
 	struct wl1271_stats stats;
-
 	__le32 *buffer_32;
 	u32 buffer_cmd;
 	u32 buffer_busyword[WL1271_BUSY_WORD_CNT];
-
 	void *raw_fw_status;
 	struct wl_fw_status *fw_status;
 	struct wl1271_tx_hw_res_if *tx_res_if;
-
-	/* Current chipset configuration */
 	struct wlcore_conf conf;
-
 	bool sg_enabled;
-
 	bool enable_11a;
-
 	int recovery_count;
-
-	/* Most recently reported noise in dBm */
 	s8 noise;
-
-	/* bands supported by this instance of wl12xx */
 	struct ieee80211_supported_band bands[WLCORE_NUM_BANDS];
-
-	/*
-	 * wowlan trigger was configured during suspend.
-	 * (currently, only "ANY" trigger is supported)
-	 */
 	bool wow_enabled;
 	bool irq_wake_enabled;
-
-	/*
-	 * AP-mode - links indexed by HLID. The global and broadcast links
-	 * are always active.
-	 */
 	struct wl1271_link links[WLCORE_MAX_LINKS];
-
-	/* number of currently active links */
 	int active_link_count;
-
-	/* Fast/slow links bitmap according to FW */
 	unsigned long fw_fast_lnk_map;
-
-	/* AP-mode - a bitmap of links currently in PS mode according to FW */
 	unsigned long ap_fw_ps_map;
-
-	/* AP-mode - a bitmap of links currently in PS mode in mac80211 */
 	unsigned long ap_ps_map;
-
-	/* Quirks of specific hardware revisions */
 	unsigned int quirks;
-
-	/* number of currently active RX BA sessions */
 	int ba_rx_session_count;
-
-	/* Maximum number of supported RX BA sessions */
 	int ba_rx_session_count_max;
-
-	/* AP-mode - number of currently connected stations */
 	int active_sta_count;
-
-	/* Flag determining whether AP should broadcast OFDM-only rates */
 	bool ofdm_only_ap;
-
-	/* last wlvif we transmitted from */
 	struct wl12xx_vif *last_wlvif;
-
-	/* work to fire when Tx is stuck */
 	struct delayed_work tx_watchdog_work;
-
 	struct wlcore_ops *ops;
-	/* pointer to the lower driver partition table */
 	const struct wlcore_partition_set *ptable;
-	/* pointer to the lower driver register table */
 	const int *rtable;
-	/* name of the firmwares to load - for PLT, single role, multi-role */
 	const char *plt_fw_name;
 	const char *sr_fw_name;
 	const char *mr_fw_name;
-
 	u8 scan_templ_id_2_4;
 	u8 scan_templ_id_5;
 	u8 sched_scan_templ_id_2_4;
 	u8 sched_scan_templ_id_5;
 	u8 max_channels_5;
-
-	/* per-chip-family private structure */
 	void *priv;
-
-	/* number of TX descriptors the HW supports. */
 	u32 num_tx_desc;
-	/* number of RX descriptors the HW supports. */
 	u32 num_rx_desc;
-	/* number of links the HW supports */
 	u8 num_links;
-	/* max stations a single AP can support */
 	u8 max_ap_stations;
-
-	/* translate HW Tx rates to standard rate-indices */
 	const u8 **band_rate_to_idx;
-
-	/* size of table for HW rates that can be received from chip */
 	u8 hw_tx_rate_tbl_size;
-
-	/* this HW rate and below are considered HT rates for this chip */
 	u8 hw_min_ht_rate;
-
-	/* HW HT (11n) capabilities */
 	struct ieee80211_sta_ht_cap ht_cap[WLCORE_NUM_BANDS];
-
-	/* the current dfs region */
 	enum nl80211_dfs_regions dfs_region;
 	bool radar_debug_mode;
-
-	/* size of the private FW status data */
 	size_t fw_status_len;
 	size_t fw_status_priv_len;
-
-	/* RX Data filter rule state - enabled/disabled */
 	unsigned long rx_filter_enabled[BITS_TO_LONGS(WL1271_MAX_RX_FILTERS)];
-
-	/* size of the private static data */
 	size_t static_data_priv_len;
-
-	/* the current channel type */
 	enum nl80211_channel_type channel_type;
-
-	/* mutex for protecting the tx_flush function */
 	struct mutex flush_mutex;
-
-	/* sleep auth value currently configured to FW */
 	int sleep_auth;
-
-	/* the number of allocated MAC addresses in this chip */
 	int num_mac_addr;
-
-	/* minimum FW version required for the driver to work in single-role */
 	unsigned int min_sr_fw_ver[NUM_FW_VER];
-
-	/* minimum FW version required for the driver to work in multi-role */
 	unsigned int min_mr_fw_ver[NUM_FW_VER];
-
 	struct completion nvs_loading_complete;
-
-	/* interface combinations supported by the hw */
 	const struct ieee80211_iface_combination *iface_combinations;
 	u8 n_iface_combinations;
-
-	/* dynamic fw traces */
 	u32 dynamic_fw_traces;
-
-	/* time sync zone master */
 	u8 zone_master_mac_addr[ETH_ALEN];
 };
-
 int wlcore_probe(struct wl1271 *wl, struct platform_device *pdev);
 int wlcore_remove(struct platform_device *pdev);
 struct ieee80211_hw *wlcore_alloc_hw(size_t priv_size, u32 aggr_buf_size,
@@ -508,17 +303,13 @@ int wlcore_set_key(struct wl1271 *wl, enum set_key_cmd cmd,
 void wlcore_regdomain_config(struct wl1271 *wl);
 void wlcore_update_inconn_sta(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 			      struct wl1271_station *wl_sta, bool in_conn);
-
 static inline void
 wlcore_set_ht_cap(struct wl1271 *wl, enum nl80211_band band,
 		  struct ieee80211_sta_ht_cap *ht_cap)
 {
 	memcpy(&wl->ht_cap[band], ht_cap, sizeof(*ht_cap));
 }
-
-/* Tell wlcore not to care about this element when checking the version */
 #define WLCORE_FW_VER_IGNORE	-1
-
 static inline void
 wlcore_set_min_fw_ver(struct wl1271 *wl, unsigned int chip,
 		      unsigned int iftype_sr, unsigned int major_sr,
@@ -531,110 +322,38 @@ wlcore_set_min_fw_ver(struct wl1271 *wl, unsigned int chip,
 	wl->min_sr_fw_ver[FW_VER_MAJOR] = major_sr;
 	wl->min_sr_fw_ver[FW_VER_SUBTYPE] = subtype_sr;
 	wl->min_sr_fw_ver[FW_VER_MINOR] = minor_sr;
-
 	wl->min_mr_fw_ver[FW_VER_CHIP] = chip;
 	wl->min_mr_fw_ver[FW_VER_IF_TYPE] = iftype_mr;
 	wl->min_mr_fw_ver[FW_VER_MAJOR] = major_mr;
 	wl->min_mr_fw_ver[FW_VER_SUBTYPE] = subtype_mr;
 	wl->min_mr_fw_ver[FW_VER_MINOR] = minor_mr;
 }
-
-/* Firmware image load chunk size */
 #define CHUNK_SIZE	16384
-
-/* Quirks */
-
-/* Each RX/TX transaction requires an end-of-transaction transfer */
 #define WLCORE_QUIRK_END_OF_TRANSACTION		BIT(0)
-
-/* wl127x and SPI don't support SDIO block size alignment */
 #define WLCORE_QUIRK_TX_BLOCKSIZE_ALIGN		BIT(2)
-
-/* means aggregated Rx packets are aligned to a SDIO block */
 #define WLCORE_QUIRK_RX_BLOCKSIZE_ALIGN		BIT(3)
-
-/* Older firmwares did not implement the FW logger over bus feature */
 #define WLCORE_QUIRK_FWLOG_NOT_IMPLEMENTED	BIT(4)
-
-/* Older firmwares use an old NVS format */
 #define WLCORE_QUIRK_LEGACY_NVS			BIT(5)
-
-/* pad only the last frame in the aggregate buffer */
 #define WLCORE_QUIRK_TX_PAD_LAST_FRAME		BIT(7)
-
-/* extra header space is required for TKIP */
 #define WLCORE_QUIRK_TKIP_HEADER_SPACE		BIT(8)
-
-/* Some firmwares not support sched scans while connected */
 #define WLCORE_QUIRK_NO_SCHED_SCAN_WHILE_CONN	BIT(9)
-
-/* separate probe response templates for one-shot and sched scans */
 #define WLCORE_QUIRK_DUAL_PROBE_TMPL		BIT(10)
-
-/* Firmware requires reg domain configuration for active calibration */
 #define WLCORE_QUIRK_REGDOMAIN_CONF		BIT(11)
-
-/* The FW only support a zero session id for AP */
 #define WLCORE_QUIRK_AP_ZERO_SESSION_ID		BIT(12)
-
-/* TODO: move all these common registers and values elsewhere */
 #define HW_ACCESS_ELP_CTRL_REG		0x1FFFC
-
-/* ELP register commands */
 #define ELPCTRL_WAKE_UP             0x1
 #define ELPCTRL_WAKE_UP_WLAN_READY  0x5
 #define ELPCTRL_SLEEP               0x0
-/* ELP WLAN_READY bit */
 #define ELPCTRL_WLAN_READY          0x2
-
-/*************************************************************************
-
-    Interrupt Trigger Register (Host -> WiLink)
-
-**************************************************************************/
-
-/* Hardware to Embedded CPU Interrupts - first 32-bit register set */
-
-/*
- * The host sets this bit to inform the Wlan
- * FW that a TX packet is in the XFER
- * Buffer #0.
- */
 #define INTR_TRIG_TX_PROC0 BIT(2)
-
-/*
- * The host sets this bit to inform the FW
- * that it read a packet from RX XFER
- * Buffer #0.
- */
 #define INTR_TRIG_RX_PROC0 BIT(3)
-
 #define INTR_TRIG_DEBUG_ACK BIT(4)
-
 #define INTR_TRIG_STATE_CHANGED BIT(5)
-
-/* Hardware to Embedded CPU Interrupts - second 32-bit register set */
-
-/*
- * The host sets this bit to inform the FW
- * that it read a packet from RX XFER
- * Buffer #1.
- */
 #define INTR_TRIG_RX_PROC1 BIT(17)
-
-/*
- * The host sets this bit to inform the Wlan
- * hardware that a TX packet is in the XFER
- * Buffer #1.
- */
 #define INTR_TRIG_TX_PROC1 BIT(18)
-
 #define ACX_SLV_SOFT_RESET_BIT	BIT(1)
 #define SOFT_RESET_MAX_TIME	1000000
 #define SOFT_RESET_STALL_TIME	1000
-
 #define ECPU_CONTROL_HALT	0x00000101
-
 #define WELP_ARM_COMMAND_VAL	0x4
-
-#endif /* __WLCORE_H__ */
+#endif  

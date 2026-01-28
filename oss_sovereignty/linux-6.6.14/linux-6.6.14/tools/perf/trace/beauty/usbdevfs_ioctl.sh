@@ -1,11 +1,4 @@
-#!/bin/sh
-# SPDX-License-Identifier: LGPL-2.1
-
-[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/include/uapi/linux/
-
-# also as:
-# #define USBDEVFS_CONNINFO_EX(len)  _IOC(_IOC_READ, 'U', 32, len)
-
+[ $
 printf "static const char *usbdevfs_ioctl_cmds[] = {\n"
 regex="^#[[:space:]]*define[[:space:]]+USBDEVFS_(\w+)(\(\w+\))?[[:space:]]+_IO[CWR]{0,2}\([[:space:]]*(_IOC_\w+,[[:space:]]*)?'U'[[:space:]]*,[[:space:]]*([[:digit:]]+).*"
 grep -E "$regex" ${header_dir}/usbdevice_fs.h | grep -E -v 'USBDEVFS_\w+32[[:space:]]' | \

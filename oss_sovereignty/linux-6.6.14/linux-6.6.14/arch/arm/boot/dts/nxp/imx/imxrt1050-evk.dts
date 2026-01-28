@@ -1,21 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (C) 2019
- * Author(s): Giulio Benetti <giulio.benetti@benettiengineering.com>
- */
-
 /dts-v1/;
 #include "imxrt1050.dtsi"
 #include "imxrt1050-pinfunc.h"
-
 / {
 	model = "NXP IMXRT1050-evk board";
 	compatible = "fsl,imxrt1050-evk", "fsl,imxrt1050";
-
 	chosen {
 		stdout-path = &lpuart1;
 	};
-
 	aliases {
 		gpio0 = &gpio1;
 		gpio1 = &gpio2;
@@ -25,19 +16,16 @@
 		mmc0 = &usdhc1;
 		serial0 = &lpuart1;
 	};
-
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x80000000 0x2000000>;
 	};
 };
-
 &lpuart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lpuart1>;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl_lpuart1: lpuart1grp {
@@ -46,7 +34,6 @@
 			MXRT1050_IOMUXC_GPIO_AD_B0_13_LPUART1_RXD	0xf1
 		>;
 	};
-
 	pinctrl_usdhc0: usdhc0grp {
 		fsl,pins = <
 			MXRT1050_IOMUXC_GPIO_B1_12_USDHC1_CD_B		0x1B000
@@ -60,7 +47,6 @@
 		>;
 	};
 };
-
 &usdhc1 {
 	pinctrl-names = "default", "state_100mhz", "state_200mhz", "sleep";
 	pinctrl-0 = <&pinctrl_usdhc0>;

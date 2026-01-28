@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* pci_sun4v.h: SUN4V specific PCI controller support.
- *
- * Copyright (C) 2006 David S. Miller (davem@davemloft.net)
- */
-
 #ifndef _PCI_SUN4V_H
 #define _PCI_SUN4V_H
-
 long pci_sun4v_iommu_map(unsigned long devhandle,
 			 unsigned long tsbid,
 			 unsigned long num_ttes,
@@ -28,7 +21,6 @@ int pci_sun4v_config_put(unsigned long devhandle,
 			 unsigned long config_offset,
 			 unsigned long size,
 			 unsigned long data);
-
 unsigned long pci_sun4v_msiq_conf(unsigned long devhandle,
 					 unsigned long msiqid,
 					 unsigned long msiq_paddr,
@@ -89,8 +81,6 @@ unsigned long pci_sun4v_msg_getvalid(unsigned long devhandle,
 unsigned long pci_sun4v_msg_setvalid(unsigned long devhandle,
 				     unsigned long msinum,
 				     unsigned long valid);
-
-/* Sun4v HV IOMMU v2 APIs */
 unsigned long pci_sun4v_iotsb_conf(unsigned long devhandle,
 				   unsigned long ra,
 				   unsigned long table_size,
@@ -111,4 +101,4 @@ unsigned long pci_sun4v_iotsb_demap(unsigned long devhandle,
 				    unsigned long iotsb_index,
 				    unsigned long iottes,
 				    unsigned long *demapped);
-#endif /* !(_PCI_SUN4V_H) */
+#endif  

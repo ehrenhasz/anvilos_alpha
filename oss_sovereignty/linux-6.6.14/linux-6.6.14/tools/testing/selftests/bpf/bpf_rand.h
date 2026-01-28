@@ -1,23 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __BPF_RAND__
 #define __BPF_RAND__
-
 #include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
-
 static inline uint64_t bpf_rand_mask(uint64_t mask)
 {
 	return (((uint64_t)(uint32_t)rand()) |
 	        ((uint64_t)(uint32_t)rand() << 32)) & mask;
 }
-
 #define bpf_rand_ux(x, m)			\
 static inline uint64_t bpf_rand_u##x(int shift)	\
 {						\
 	return bpf_rand_mask((m)) << shift;	\
 }
-
 bpf_rand_ux( 8,               0xffULL)
 bpf_rand_ux(16,             0xffffULL)
 bpf_rand_ux(24,           0xffffffULL)
@@ -26,12 +21,10 @@ bpf_rand_ux(40,       0xffffffffffULL)
 bpf_rand_ux(48,     0xffffffffffffULL)
 bpf_rand_ux(56,   0xffffffffffffffULL)
 bpf_rand_ux(64, 0xffffffffffffffffULL)
-
 static inline void bpf_semi_rand_init(void)
 {
 	srand(time(NULL));
 }
-
 static inline uint64_t bpf_semi_rand_get(void)
 {
 	switch (rand() % 39) {
@@ -76,5 +69,4 @@ static inline uint64_t bpf_semi_rand_get(void)
 	default: return bpf_rand_u64(0);
 	}
 }
-
-#endif /* __BPF_RAND__ */
+#endif  

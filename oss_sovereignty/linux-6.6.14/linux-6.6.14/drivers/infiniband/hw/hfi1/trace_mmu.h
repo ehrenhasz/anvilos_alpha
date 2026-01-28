@@ -1,19 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2017 Intel Corporation.
- */
-
 #if !defined(__HFI1_TRACE_MMU_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __HFI1_TRACE_MMU_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #include "hfi.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hfi1_mmu
-
 DECLARE_EVENT_CLASS(hfi1_mmu_rb_template,
 		    TP_PROTO(struct mmu_rb_node *node),
 		    TP_ARGS(node),
@@ -31,11 +22,9 @@ DECLARE_EVENT_CLASS(hfi1_mmu_rb_template,
 			      __entry->refcount
 			    )
 );
-
 DEFINE_EVENT(hfi1_mmu_rb_template, hfi1_mmu_rb_insert,
 	     TP_PROTO(struct mmu_rb_node *node),
 	     TP_ARGS(node));
-
 TRACE_EVENT(hfi1_mmu_rb_search,
 	    TP_PROTO(unsigned long addr, unsigned long len),
 	    TP_ARGS(addr, len),
@@ -50,21 +39,16 @@ TRACE_EVENT(hfi1_mmu_rb_search,
 		      __entry->len
 		    )
 );
-
 DEFINE_EVENT(hfi1_mmu_rb_template, hfi1_mmu_mem_invalidate,
 	     TP_PROTO(struct mmu_rb_node *node),
 	     TP_ARGS(node));
-
 DEFINE_EVENT(hfi1_mmu_rb_template, hfi1_mmu_rb_evict,
 	     TP_PROTO(struct mmu_rb_node *node),
 	     TP_ARGS(node));
-
 DEFINE_EVENT(hfi1_mmu_rb_template, hfi1_mmu_release_node,
 	     TP_PROTO(struct mmu_rb_node *node),
 	     TP_ARGS(node));
-
-#endif /* __HFI1_TRACE_RC_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH .

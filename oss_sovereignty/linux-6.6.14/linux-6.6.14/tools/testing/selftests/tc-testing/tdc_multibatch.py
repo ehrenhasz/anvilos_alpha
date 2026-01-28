@@ -1,15 +1,10 @@
-#!/usr/bin/env python3
-# SPDX-License-Identifier: GPL-2.0
 """
 tdc_multibatch.py - a thin wrapper over tdc_batch.py to generate multiple batch
 files
-
 Copyright (C) 2019 Vlad Buslov <vladbu@mellanox.com>
 """
-
 import argparse
 import os
-
 parser = argparse.ArgumentParser(
     description='TC multiple batch file generator')
 parser.add_argument("device", help="device name")
@@ -46,7 +41,6 @@ parser.add_argument(
     help="add this value to third byte of source MAC address of flower filter"
     "(default: 0)")
 args = parser.parse_args()
-
 device = args.device
 dir = args.dir
 file_prefix = args.file_prefix + args.operation + "_"
@@ -56,7 +50,6 @@ operation = args.operation
 duplicate_handles = args.duplicate_handles
 handle = args.handle_start
 mac_prefix = args.mac_prefix
-
 for i in range(num_files):
     file = dir + '/' + file_prefix + str(i)
     os.system("./tdc_batch.py -n {} -a {} -e {} -m {} {} {}".format(

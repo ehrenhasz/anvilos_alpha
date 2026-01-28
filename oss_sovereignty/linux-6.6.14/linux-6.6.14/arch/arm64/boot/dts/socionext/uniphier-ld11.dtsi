@@ -1,24 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+ OR MIT
-//
-// Device Tree Source for UniPhier LD11 SoC
-//
-// Copyright (C) 2016 Socionext Inc.
-//   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
-
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/gpio/uniphier-gpio.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
-
 / {
 	compatible = "socionext,uniphier-ld11";
 	#address-cells = <2>;
 	#size-cells = <2>;
 	interrupt-parent = <&gic>;
-
 	cpus {
 		#address-cells = <2>;
 		#size-cells = <0>;
-
 		cpu-map {
 			cluster0 {
 				core0 {
@@ -29,7 +19,6 @@
 				};
 			};
 		};
-
 		cpu0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -39,7 +28,6 @@
 			next-level-cache = <&l2>;
 			operating-points-v2 = <&cluster0_opp>;
 		};
-
 		cpu1: cpu@1 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -49,16 +37,13 @@
 			next-level-cache = <&l2>;
 			operating-points-v2 = <&cluster0_opp>;
 		};
-
 		l2: l2-cache {
 			compatible = "cache";
 		};
 	};
-
 	cluster0_opp: opp-table {
 		compatible = "operating-points-v2";
 		opp-shared;
-
 		opp-245000000 {
 			opp-hz = /bits/ 64 <245000000>;
 			clock-latency-ns = <300>;
@@ -88,12 +73,10 @@
 			clock-latency-ns = <300>;
 		};
 	};
-
 	psci {
 		compatible = "arm,psci-1.0";
 		method = "smc";
 	};
-
 	clocks {
 		refclk: ref {
 			compatible = "fixed-clock";
@@ -101,12 +84,10 @@
 			clock-frequency = <25000000>;
 		};
 	};
-
 	emmc_pwrseq: emmc-pwrseq {
 		compatible = "mmc-pwrseq-emmc";
 		reset-gpios = <&gpio UNIPHIER_GPIO_PORT(3, 2) GPIO_ACTIVE_LOW>;
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH>,
@@ -114,24 +95,20 @@
 			     <GIC_PPI 11 IRQ_TYPE_LEVEL_HIGH>,
 			     <GIC_PPI 10 IRQ_TYPE_LEVEL_HIGH>;
 	};
-
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		secure-memory@81000000 {
 			reg = <0x0 0x81000000 0x0 0x01000000>;
 			no-map;
 		};
 	};
-
 	soc@0 {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <0 0 0 0xffffffff>;
-
 		spi0: spi@54006000 {
 			compatible = "socionext,uniphier-scssi";
 			status = "disabled";
@@ -144,7 +121,6 @@
 			clocks = <&peri_clk 11>;
 			resets = <&peri_rst 11>;
 		};
-
 		spi1: spi@54006100 {
 			compatible = "socionext,uniphier-scssi";
 			status = "disabled";
@@ -157,7 +133,6 @@
 			clocks = <&peri_clk 12>;
 			resets = <&peri_rst 12>;
 		};
-
 		serial0: serial@54006800 {
 			compatible = "socionext,uniphier-uart";
 			status = "disabled";
@@ -168,7 +143,6 @@
 			clocks = <&peri_clk 0>;
 			resets = <&peri_rst 0>;
 		};
-
 		serial1: serial@54006900 {
 			compatible = "socionext,uniphier-uart";
 			status = "disabled";
@@ -179,7 +153,6 @@
 			clocks = <&peri_clk 1>;
 			resets = <&peri_rst 1>;
 		};
-
 		serial2: serial@54006a00 {
 			compatible = "socionext,uniphier-uart";
 			status = "disabled";
@@ -190,7 +163,6 @@
 			clocks = <&peri_clk 2>;
 			resets = <&peri_rst 2>;
 		};
-
 		serial3: serial@54006b00 {
 			compatible = "socionext,uniphier-uart";
 			status = "disabled";
@@ -201,7 +173,6 @@
 			clocks = <&peri_clk 3>;
 			resets = <&peri_rst 3>;
 		};
-
 		gpio: gpio@55000000 {
 			compatible = "socionext,uniphier-gpio";
 			reg = <0x55000000 0x200>;
@@ -226,7 +197,6 @@
 			socionext,interrupt-ranges = <0 48 16>, <16 154 5>,
 						     <21 217 3>;
 		};
-
 		audio@56000000 {
 			compatible = "socionext,uniphier-ld11-aio";
 			reg = <0x56000000 0x80000>;
@@ -240,57 +210,47 @@
 			resets = <&sys_rst 40>;
 			#sound-dai-cells = <1>;
 			socionext,syscon = <&soc_glue>;
-
 			i2s_port0: port@0 {
 				i2s_hdmi: endpoint {
 				};
 			};
-
 			i2s_port1: port@1 {
 				i2s_pcmin2: endpoint {
 				};
 			};
-
 			i2s_port2: port@2 {
 				i2s_line: endpoint {
 					dai-format = "i2s";
 					remote-endpoint = <&evea_line>;
 				};
 			};
-
 			i2s_port3: port@3 {
 				i2s_hpcmout1: endpoint {
 				};
 			};
-
 			i2s_port4: port@4 {
 				i2s_hp: endpoint {
 					dai-format = "i2s";
 					remote-endpoint = <&evea_hp>;
 				};
 			};
-
 			spdif_port0: port@5 {
 				spdif_hiecout1: endpoint {
 				};
 			};
-
 			src_port0: port@6 {
 				i2s_epcmout2: endpoint {
 				};
 			};
-
 			src_port1: port@7 {
 				i2s_epcmout3: endpoint {
 				};
 			};
-
 			comp_spdif_port0: port@8 {
 				comp_spdif_hiecout1: endpoint {
 				};
 			};
 		};
-
 		codec@57900000 {
 			compatible = "socionext,uniphier-evea";
 			reg = <0x57900000 0x1000>;
@@ -299,31 +259,26 @@
 			reset-names = "evea", "exiv", "adamv";
 			resets = <&sys_rst 41>, <&sys_rst 42>, <&adamv_rst 0>;
 			#sound-dai-cells = <1>;
-
 			port@0 {
 				evea_line: endpoint {
 					remote-endpoint = <&i2s_line>;
 				};
 			};
-
 			port@1 {
 				evea_hp: endpoint {
 					remote-endpoint = <&i2s_hp>;
 				};
 			};
 		};
-
 		syscon@57920000 {
 			compatible = "socionext,uniphier-ld11-adamv",
 				     "simple-mfd", "syscon";
 			reg = <0x57920000 0x1000>;
-
 			adamv_rst: reset-controller {
 				compatible = "socionext,uniphier-ld11-adamv-reset";
 				#reset-cells = <1>;
 			};
 		};
-
 		i2c0: i2c@58780000 {
 			compatible = "socionext,uniphier-fi2c";
 			status = "disabled";
@@ -337,7 +292,6 @@
 			resets = <&peri_rst 4>;
 			clock-frequency = <100000>;
 		};
-
 		i2c1: i2c@58781000 {
 			compatible = "socionext,uniphier-fi2c";
 			status = "disabled";
@@ -351,7 +305,6 @@
 			resets = <&peri_rst 5>;
 			clock-frequency = <100000>;
 		};
-
 		i2c2: i2c@58782000 {
 			compatible = "socionext,uniphier-fi2c";
 			reg = <0x58782000 0x80>;
@@ -362,7 +315,6 @@
 			resets = <&peri_rst 6>;
 			clock-frequency = <400000>;
 		};
-
 		i2c3: i2c@58783000 {
 			compatible = "socionext,uniphier-fi2c";
 			status = "disabled";
@@ -376,7 +328,6 @@
 			resets = <&peri_rst 7>;
 			clock-frequency = <100000>;
 		};
-
 		i2c4: i2c@58784000 {
 			compatible = "socionext,uniphier-fi2c";
 			status = "disabled";
@@ -390,7 +341,6 @@
 			resets = <&peri_rst 8>;
 			clock-frequency = <100000>;
 		};
-
 		i2c5: i2c@58785000 {
 			compatible = "socionext,uniphier-fi2c";
 			reg = <0x58785000 0x80>;
@@ -401,7 +351,6 @@
 			resets = <&peri_rst 9>;
 			clock-frequency = <400000>;
 		};
-
 		system_bus: system-bus@58c00000 {
 			compatible = "socionext,uniphier-system-bus";
 			status = "disabled";
@@ -411,39 +360,32 @@
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_system_bus>;
 		};
-
 		smpctrl@59801000 {
 			compatible = "socionext,uniphier-smpctrl";
 			reg = <0x59801000 0x400>;
 		};
-
 		syscon@59810000 {
 			compatible = "socionext,uniphier-ld11-sdctrl",
 				     "simple-mfd", "syscon";
 			reg = <0x59810000 0x400>;
-
 			sd_rst: reset-controller {
 				compatible = "socionext,uniphier-ld11-sd-reset";
 				#reset-cells = <1>;
 			};
 		};
-
 		syscon@59820000 {
 			compatible = "socionext,uniphier-ld11-perictrl",
 				     "simple-mfd", "syscon";
 			reg = <0x59820000 0x200>;
-
 			peri_clk: clock-controller {
 				compatible = "socionext,uniphier-ld11-peri-clock";
 				#clock-cells = <1>;
 			};
-
 			peri_rst: reset-controller {
 				compatible = "socionext,uniphier-ld11-peri-reset";
 				#reset-cells = <1>;
 			};
 		};
-
 		emmc: mmc@5a000000 {
 			compatible = "socionext,uniphier-sd4hc", "cdns,sd4hc";
 			reg = <0x5a000000 0x400>;
@@ -462,7 +404,6 @@
 			cdns,phy-dll-delay-sdclk = <21>;
 			cdns,phy-dll-delay-sdclk-hsmmc = <21>;
 		};
-
 		usb0: usb@5a800100 {
 			compatible = "socionext,uniphier-ehci", "generic-ehci";
 			status = "disabled";
@@ -478,7 +419,6 @@
 			phys = <&usb_phy0>;
 			has-transaction-translator;
 		};
-
 		usb1: usb@5a810100 {
 			compatible = "socionext,uniphier-ehci", "generic-ehci";
 			status = "disabled";
@@ -494,7 +434,6 @@
 			phys = <&usb_phy1>;
 			has-transaction-translator;
 		};
-
 		usb2: usb@5a820100 {
 			compatible = "socionext,uniphier-ehci", "generic-ehci";
 			status = "disabled";
@@ -510,55 +449,45 @@
 			phys = <&usb_phy2>;
 			has-transaction-translator;
 		};
-
 		syscon@5b3e0000 {
 			compatible = "socionext,uniphier-ld11-mioctrl",
 				     "simple-mfd", "syscon";
 			reg = <0x5b3e0000 0x800>;
-
 			mio_clk: clock-controller {
 				compatible = "socionext,uniphier-ld11-mio-clock";
 				#clock-cells = <1>;
 			};
-
 			mio_rst: reset-controller {
 				compatible = "socionext,uniphier-ld11-mio-reset";
 				#reset-cells = <1>;
 				resets = <&sys_rst 7>;
 			};
 		};
-
 		soc_glue: syscon@5f800000 {
 			compatible = "socionext,uniphier-ld11-soc-glue",
 				     "simple-mfd", "syscon";
 			reg = <0x5f800000 0x2000>;
-
 			pinctrl: pinctrl {
 				compatible = "socionext,uniphier-ld11-pinctrl";
 			};
-
 			usb-hub {
 				compatible = "socionext,uniphier-ld11-usb2-phy";
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				usb_phy0: phy@0 {
 					reg = <0>;
 					#phy-cells = <0>;
 				};
-
 				usb_phy1: phy@1 {
 					reg = <1>;
 					#phy-cells = <0>;
 				};
-
 				usb_phy2: phy@2 {
 					reg = <2>;
 					#phy-cells = <0>;
 				};
 			};
 		};
-
 		syscon@5f900000 {
 			compatible = "socionext,uniphier-ld11-soc-glue-debug",
 				     "simple-mfd", "syscon";
@@ -566,18 +495,15 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0x5f900000 0x2000>;
-
 			efuse@100 {
 				compatible = "socionext,uniphier-efuse";
 				reg = <0x100 0x28>;
 			};
-
 			efuse@200 {
 				compatible = "socionext,uniphier-efuse";
 				reg = <0x200 0x68>;
 			};
 		};
-
 		xdmac: dma-controller@5fc10000 {
 			compatible = "socionext,uniphier-xdmac";
 			reg = <0x5fc10000 0x5300>;
@@ -585,43 +511,36 @@
 			dma-channels = <16>;
 			#dma-cells = <2>;
 		};
-
 		aidet: interrupt-controller@5fc20000 {
 			compatible = "socionext,uniphier-ld11-aidet";
 			reg = <0x5fc20000 0x200>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		gic: interrupt-controller@5fe00000 {
 			compatible = "arm,gic-v3";
-			reg = <0x5fe00000 0x10000>,	/* GICD */
-			      <0x5fe40000 0x80000>;	/* GICR */
+			reg = <0x5fe00000 0x10000>,	 
+			      <0x5fe40000 0x80000>;	 
 			interrupt-controller;
 			#interrupt-cells = <3>;
 			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		syscon@61840000 {
 			compatible = "socionext,uniphier-ld11-sysctrl",
 				     "simple-mfd", "syscon";
 			reg = <0x61840000 0x10000>;
-
 			sys_clk: clock-controller {
 				compatible = "socionext,uniphier-ld11-clock";
 				#clock-cells = <1>;
 			};
-
 			sys_rst: reset-controller {
 				compatible = "socionext,uniphier-ld11-reset";
 				#reset-cells = <1>;
 			};
-
 			watchdog {
 				compatible = "socionext,uniphier-wdt";
 			};
 		};
-
 		eth: ethernet@65000000 {
 			compatible = "socionext,uniphier-ld11-ave4";
 			status = "disabled";
@@ -634,13 +553,11 @@
 			phy-mode = "internal";
 			local-mac-address = [00 00 00 00 00 00];
 			socionext,syscon-phy-mode = <&soc_glue 0>;
-
 			mdio: mdio {
 				#address-cells = <1>;
 				#size-cells = <0>;
 			};
 		};
-
 		nand: nand-controller@68000000 {
 			compatible = "socionext,uniphier-denali-nand-v5b";
 			status = "disabled";
@@ -658,14 +575,11 @@
 		};
 	};
 };
-
 #include "uniphier-pinctrl.dtsi"
-
 &pinctrl_aoutiec1 {
-	drive-strength = <4>;	/* default: 4mA */
-
+	drive-strength = <4>;	 
 	ao1arc {
 		pins = "AO1ARC";
-		drive-strength = <8>;	/* 8mA */
+		drive-strength = <8>;	 
 	};
 };

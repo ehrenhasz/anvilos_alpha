@@ -1,43 +1,17 @@
-/*
- * Copyright 2019 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
 #ifndef __NVIF_PUSH_H__
 #define __NVIF_PUSH_H__
 #include <nvif/mem.h>
 #include <nvif/printf.h>
-
 #include <nvhw/drf.h>
-
 struct nvif_push {
 	int (*wait)(struct nvif_push *push, u32 size);
 	void (*kick)(struct nvif_push *push);
-
 	struct nvif_mem mem;
-
 	u32 *bgn;
 	u32 *cur;
 	u32 *seg;
 	u32 *end;
 };
-
 static inline __must_check int
 PUSH_WAIT(struct nvif_push *push, u32 size)
 {
@@ -51,14 +25,12 @@ PUSH_WAIT(struct nvif_push *push, u32 size)
 #endif
 	return 0;
 }
-
 static inline int
 PUSH_KICK(struct nvif_push *push)
 {
 	push->kick(push);
 	return 0;
 }
-
 #ifdef CONFIG_NOUVEAU_DEBUG_PUSH
 #define PUSH_PRINTF(p,f,a...) do {                              \
 	struct nvif_push *_ppp = (p);                           \
@@ -71,14 +43,12 @@ PUSH_KICK(struct nvif_push *push)
 #define PUSH_PRINTF(p,f,a...)
 #define PUSH_ASSERT_ON(a, b)
 #endif
-
 #define PUSH_ASSERT(a,b) do {                                             \
 	static_assert(                                                    \
 		__builtin_choose_expr(__builtin_constant_p(a), (a), 1), b \
 	);                                                                \
 	PUSH_ASSERT_ON(!(a), b);                                          \
 } while(0)
-
 #define PUSH_DATA__(p,d,f,a...) do {                       \
 	struct nvif_push *_p = (p);                        \
 	u32 _d = (d);                                      \
@@ -87,18 +57,14 @@ PUSH_KICK(struct nvif_push *push)
 	PUSH_PRINTF(_p, "%08x"f, _d, ##a);                 \
 	*_p->cur++ = _d;                                   \
 } while(0)
-
 #define PUSH_DATA_(X,p,m,i0,i1,d,s,f,a...) PUSH_DATA__((p), (d), "-> "#m f, ##a)
 #define PUSH_DATA(p,d) PUSH_DATA__((p), (d), " data - %s", __func__)
-
-//XXX: error-check this against *real* pushbuffer end?
 #define PUSH_RSVD(p,d) do {          \
 	struct nvif_push *__p = (p); \
 	__p->seg++;                  \
 	__p->end++;                  \
 	d;                           \
 } while(0)
-
 #ifdef CONFIG_NOUVEAU_DEBUG_PUSH
 #define PUSH_DATAp(X,p,m,i,o,d,s,f,a...) do {                                     \
 	struct nvif_push *_pp = (p);                                              \
@@ -122,7 +88,6 @@ PUSH_KICK(struct nvif_push *push)
 	_p->cur += _s;                                           \
 } while(0)
 #endif
-
 #define PUSH_1(X,f,ds,n,o,p,s,mA,dA) do {                             \
 	PUSH_##o##_HDR((p), s, mA, (ds)+(n));                         \
 	PUSH_##f(X, (p), X##mA, 1, o, (dA), ds, "");                  \
@@ -172,7 +137,6 @@ PUSH_KICK(struct nvif_push *push)
 	PUSH_9(X, DATA_, 1, (ds) + (n), o, (p), s, X##mA, (dA), ##a); \
 	PUSH_##f(X, (p), X##mB, 0, o, (dB), ds, "");                  \
 } while(0)
-
 #define PUSH_1D(X,o,p,s,mA,dA)                         \
 	PUSH_1(X, DATA_, 1, 0, o, (p), s, X##mA, (dA))
 #define PUSH_2D(X,o,p,s,mA,dA,mB,dB)                   \
@@ -238,7 +202,6 @@ PUSH_KICK(struct nvif_push *push)
 					   X##mC, (dC),                               \
 					   X##mB, (dB),                               \
 					   X##mA, (dA))
-
 #define PUSH_1P(X,o,p,s,mA,dp,ds)                       \
 	PUSH_1(X, DATAp, ds, 0, o, (p), s, X##mA, (dp))
 #define PUSH_2P(X,o,p,s,mA,dA,mB,dp,ds)                 \
@@ -248,7 +211,6 @@ PUSH_KICK(struct nvif_push *push)
 	PUSH_3(X, DATAp, ds, 0, o, (p), s, X##mC, (dp), \
 					   X##mB, (dB), \
 					   X##mA, (dA))
-
 #define PUSH_(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,IMPL,...) IMPL
 #define PUSH(A...) PUSH_(A, PUSH_10P, PUSH_10D,          \
 			    PUSH_9P , PUSH_9D,           \
@@ -260,7 +222,6 @@ PUSH_KICK(struct nvif_push *push)
 			    PUSH_3P , PUSH_3D,           \
 			    PUSH_2P , PUSH_2D,           \
 			    PUSH_1P , PUSH_1D)(, ##A)
-
 #define PUSH_NVIM(p,c,m,d) do {             \
 	struct nvif_push *__p = (p);        \
 	u32 __d = (d);                      \
@@ -272,8 +233,6 @@ PUSH_KICK(struct nvif_push *push)
 #define PUSH_NVSQ(A...) PUSH(MTHD, ##A)
 #define PUSH_NV1I(A...) PUSH(1INC, ##A)
 #define PUSH_NVNI(A...) PUSH(NINC, ##A)
-
-
 #define PUSH_NV_1(X,o,p,c,mA,d...) \
        PUSH_##o(p,c,c##_##mA,d)
 #define PUSH_NV_2(X,o,p,c,mA,dA,mB,d...) \
@@ -339,7 +298,6 @@ PUSH_KICK(struct nvif_push *push)
 		    c##_##mH,dH,                                                          \
 		    c##_##mI,dI,                                                          \
 		    c##_##mJ,d)
-
 #define PUSH_NV_(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,IMPL,...) IMPL
 #define PUSH_NV(A...) PUSH_NV_(A, PUSH_NV_10, PUSH_NV_10,       \
 				  PUSH_NV_9 , PUSH_NV_9,        \
@@ -351,7 +309,6 @@ PUSH_KICK(struct nvif_push *push)
 				  PUSH_NV_3 , PUSH_NV_3,        \
 				  PUSH_NV_2 , PUSH_NV_2,        \
 				  PUSH_NV_1 , PUSH_NV_1)(, ##A)
-
 #define PUSH_IMMD(A...) PUSH_NV(NVIM, ##A)
 #define PUSH_MTHD(A...) PUSH_NV(NVSQ, ##A)
 #define PUSH_1INC(A...) PUSH_NV(NV1I, ##A)

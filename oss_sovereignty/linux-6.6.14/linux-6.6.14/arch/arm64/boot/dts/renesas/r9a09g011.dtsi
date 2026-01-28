@@ -1,30 +1,17 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/*
- * Device Tree Source for the RZ/V2M SoC
- *
- * Copyright (C) 2022 Renesas Electronics Corp.
- */
-
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/clock/r9a09g011-cpg.h>
-
 / {
 	compatible = "renesas,r9a09g011";
 	#address-cells = <2>;
 	#size-cells = <2>;
-
-	/* clock can be either from exclk or crystal oscillator (XIN/XOUT) */
 	extal_clk: extal {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
-		/* This value must be overridden by the board */
 		clock-frequency = <0>;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu-map {
 			cluster0 {
 				core0 {
@@ -32,7 +19,6 @@
 				};
 			};
 		};
-
 		cpu0: cpu@0 {
 			compatible = "arm,cortex-a53";
 			reg = <0>;
@@ -40,21 +26,18 @@
 			next-level-cache = <&L2_CA53>;
 			clocks = <&cpg CPG_MOD R9A09G011_CA53_CLK>;
 		};
-
 		L2_CA53: cache-controller-0 {
 			compatible = "cache";
 			cache-unified;
 			cache-level = <2>;
 		};
 	};
-
 	soc: soc {
 		compatible = "simple-bus";
 		interrupt-parent = <&gic>;
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		gic: interrupt-controller@82010000 {
 			compatible = "arm,gic-400";
 			#interrupt-cells = <3>;
@@ -68,7 +51,6 @@
 			clocks = <&cpg CPG_MOD R9A09G011_GIC_CLK>;
 			clock-names = "clk";
 		};
-
 		sdhi0: mmc@85000000 {
 			compatible = "renesas,sdhi-r9a09g011",
 				     "renesas,rcar-gen3-sdhi";
@@ -84,7 +66,6 @@
 			power-domains = <&cpg>;
 			status = "disabled";
 		};
-
 		sdhi1: mmc@85010000  {
 			compatible = "renesas,sdhi-r9a09g011",
 				     "renesas,rcar-gen3-sdhi";
@@ -100,7 +81,6 @@
 			power-domains = <&cpg>;
 			status = "disabled";
 		};
-
 		emmc: mmc@85020000  {
 			compatible = "renesas,sdhi-r9a09g011",
 				     "renesas,rcar-gen3-sdhi";
@@ -116,7 +96,6 @@
 			power-domains = <&cpg>;
 			status = "disabled";
 		};
-
 		usb3drd: usb3drd@85070400 {
 			compatible = "renesas,r9a09g011-usb3drd",
 				     "renesas,rzv2m-usb3drd";
@@ -134,7 +113,6 @@
 			#address-cells = <2>;
 			#size-cells = <2>;
 			status = "disabled";
-
 			usb3host: usb@85060000 {
 				compatible = "renesas,r9a09g011-xhci",
 					     "renesas,rzv2m-xhci";
@@ -147,7 +125,6 @@
 				power-domains = <&cpg>;
 				status = "disabled";
 			};
-
 			usb3peri: usb3peri@85070000 {
 				compatible = "renesas,r9a09g011-usb3-peri",
 					     "renesas,rzv2m-usb3-peri";
@@ -161,12 +138,11 @@
 				status = "disabled";
 			};
 		};
-
 		avb: ethernet@a3300000 {
 			compatible = "renesas,etheravb-r9a09g011","renesas,etheravb-rzv2m";
 			reg = <0 0xa3300000 0 0x800>;
-			interrupts = <GIC_SPI 251 IRQ_TYPE_LEVEL_HIGH>, /* ch0: Rx0 BE */
-				     <GIC_SPI 252 IRQ_TYPE_LEVEL_HIGH>, /* ch1: Rx1 NC */
+			interrupts = <GIC_SPI 251 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 252 IRQ_TYPE_LEVEL_HIGH>,  
 				     <GIC_SPI 253 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 254 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 255 IRQ_TYPE_LEVEL_HIGH>,
@@ -183,17 +159,17 @@
 				     <GIC_SPI 266 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 267 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>,
-				     <GIC_SPI 269 IRQ_TYPE_LEVEL_HIGH>, /* ch18: Tx0 BE */
-				     <GIC_SPI 270 IRQ_TYPE_LEVEL_HIGH>, /* ch19: Tx1 NC */
+				     <GIC_SPI 269 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 270 IRQ_TYPE_LEVEL_HIGH>,  
 				     <GIC_SPI 271 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 272 IRQ_TYPE_LEVEL_HIGH>,
-				     <GIC_SPI 273 IRQ_TYPE_LEVEL_HIGH>, /* DiA */
-				     <GIC_SPI 274 IRQ_TYPE_LEVEL_HIGH>, /* DiB */
-				     <GIC_SPI 275 IRQ_TYPE_LEVEL_HIGH>, /* Line1_A */
-				     <GIC_SPI 276 IRQ_TYPE_LEVEL_HIGH>, /* Line1_B */
-				     <GIC_SPI 277 IRQ_TYPE_LEVEL_HIGH>, /* Line2_A */
-				     <GIC_SPI 278 IRQ_TYPE_LEVEL_HIGH>, /* Line2_B */
-				     <GIC_SPI 279 IRQ_TYPE_LEVEL_HIGH>; /* Line3 MAC */
+				     <GIC_SPI 273 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 274 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 275 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 276 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 277 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 278 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 279 IRQ_TYPE_LEVEL_HIGH>;  
 			interrupt-names = "ch0", "ch1", "ch2", "ch3",
 					  "ch4", "ch5", "ch6", "ch7",
 					  "ch8", "ch9", "ch10", "ch11",
@@ -212,7 +188,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		cpg: clock-controller@a3500000 {
 			compatible = "renesas,r9a09g011-cpg";
 			reg = <0 0xa3500000 0 0x1000>;
@@ -222,7 +197,6 @@
 			#reset-cells = <1>;
 			#power-domain-cells = <0>;
 		};
-
 		pwc: pwc@a3700000 {
 			compatible = "renesas,r9a09g011-pwc", "renesas,rzv2m-pwc";
 			reg = <0 0xa3700000 0 0x800>;
@@ -230,12 +204,10 @@
 			#gpio-cells = <2>;
 			status = "disabled";
 		};
-
 		sys: system-controller@a3f03000 {
 			compatible = "renesas,r9a09g011-sys";
 			reg = <0 0xa3f03000 0 0x400>;
 		};
-
 		csi0: spi@a4020000 {
 			compatible = "renesas,rzv2m-csi";
 			reg = <0 0xa4020000 0 0x80>;
@@ -249,7 +221,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		csi4: spi@a4020200 {
 			compatible = "renesas,rzv2m-csi";
 			reg = <0 0xa4020200 0 0x80>;
@@ -263,7 +234,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		i2c0: i2c@a4030000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -277,7 +247,6 @@
 			power-domains = <&cpg>;
 			status = "disabled";
 		};
-
 		i2c2: i2c@a4030100 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -291,7 +260,6 @@
 			power-domains = <&cpg>;
 			status = "disabled";
 		};
-
 		uart0: serial@a4040000 {
 			compatible = "renesas,r9a09g011-uart", "renesas,em-uart";
 			reg = <0 0xa4040000 0 0x80>;
@@ -301,7 +269,6 @@
 			clock-names = "sclk", "pclk";
 			status = "disabled";
 		};
-
 		wdt0: watchdog@a4050000 {
 			compatible = "renesas,r9a09g011-wdt",
 				     "renesas,rzv2m-wdt";
@@ -314,7 +281,6 @@
 			power-domains = <&cpg>;
 			status = "disabled";
 		};
-
 		pinctrl: pinctrl@b6250000 {
 			compatible = "renesas,r9a09g011-pinctrl";
 			reg = <0 0xb6250000 0 0x800>;
@@ -365,7 +331,6 @@
 			resets = <&cpg R9A09G011_PFC_PRESETN>;
 		};
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts-extended = <&gic GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,

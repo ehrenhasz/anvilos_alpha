@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants for MPC512x clock specs in DT bindings.
- */
-
 #ifndef _DT_BINDINGS_CLOCK_MPC512x_CLOCK_H
 #define _DT_BINDINGS_CLOCK_MPC512x_CLOCK_H
-
 #define MPC512x_CLK_DUMMY		0
 #define MPC512x_CLK_REF			1
 #define MPC512x_CLK_SYS			2
@@ -71,7 +65,5 @@
 #define MPC512x_CLK_OUT2_CLK		62
 #define MPC512x_CLK_OUT3_CLK		63
 #define MPC512x_CLK_CAN_CLK_IN		64
-
 #define MPC512x_CLK_LAST_PUBLIC		64
-
 #endif

@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef __LINUX_BRIDGE_EBT_ARP_H
 #define __LINUX_BRIDGE_EBT_ARP_H
-
 #include <linux/types.h>
 #include <linux/if_ether.h>
-
 #define EBT_ARP_OPCODE 0x01
 #define EBT_ARP_HTYPE 0x02
 #define EBT_ARP_PTYPE 0x04
@@ -17,7 +14,6 @@
    EBT_ARP_SRC_IP | EBT_ARP_DST_IP | EBT_ARP_SRC_MAC | EBT_ARP_DST_MAC | \
    EBT_ARP_GRAT)
 #define EBT_ARP_MATCH "arp"
-
 struct ebt_arp_info
 {
 	__be16 htype;
@@ -34,5 +30,4 @@ struct ebt_arp_info
 	__u8  bitmask;
 	__u8  invflags;
 };
-
 #endif

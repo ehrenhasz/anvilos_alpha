@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt6351.h  --  mt6351 ALSA SoC audio codec driver
- *
- * Copyright (c) 2018 MediaTek Inc.
- * Author: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
- */
-
 #ifndef __MT6351_H__
 #define __MT6351_H__
-
 #define MT6351_AFE_UL_DL_CON0               (0x2000 + 0x0000)
 #define MT6351_AFE_DL_SRC2_CON0_H           (0x2000 + 0x0002)
 #define MT6351_AFE_DL_SRC2_CON0_L           (0x2000 + 0x0004)
@@ -52,27 +43,22 @@
 #define MT6351_AFE_HPANC_CFG0               (0x2000 + 0x0094)
 #define MT6351_AFE_NCP_CFG0                 (0x2000 + 0x0096)
 #define MT6351_AFE_NCP_CFG1                 (0x2000 + 0x0098)
-
 #define MT6351_TOP_CKPDN_CON0      0x023A
 #define MT6351_TOP_CKPDN_CON0_SET  0x023C
 #define MT6351_TOP_CKPDN_CON0_CLR  0x023E
-
 #define MT6351_TOP_CLKSQ           0x029A
 #define MT6351_TOP_CLKSQ_SET       0x029C
 #define MT6351_TOP_CLKSQ_CLR       0x029E
-
 #define MT6351_ZCD_CON0            0x0800
 #define MT6351_ZCD_CON1            0x0802
 #define MT6351_ZCD_CON2            0x0804
 #define MT6351_ZCD_CON3            0x0806
 #define MT6351_ZCD_CON4            0x0808
 #define MT6351_ZCD_CON5            0x080A
-
 #define MT6351_LDO_VA18_CON0       0x0A00
 #define MT6351_LDO_VA18_CON1       0x0A02
 #define MT6351_LDO_VUSB33_CON0     0x0A16
 #define MT6351_LDO_VUSB33_CON1     0x0A18
-
 #define MT6351_AUDDEC_ANA_CON0     0x0CF2
 #define MT6351_AUDDEC_ANA_CON1     0x0CF4
 #define MT6351_AUDDEC_ANA_CON2     0x0CF6
@@ -84,7 +70,6 @@
 #define MT6351_AUDDEC_ANA_CON8     0x0D02
 #define MT6351_AUDDEC_ANA_CON9     0x0D04
 #define MT6351_AUDDEC_ANA_CON10    0x0D06
-
 #define MT6351_AUDENC_ANA_CON0     0x0D08
 #define MT6351_AUDENC_ANA_CON1     0x0D0A
 #define MT6351_AUDENC_ANA_CON2     0x0D0C

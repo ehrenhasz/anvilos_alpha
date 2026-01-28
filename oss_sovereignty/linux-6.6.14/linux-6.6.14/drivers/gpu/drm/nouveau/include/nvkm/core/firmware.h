@@ -1,10 +1,8 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_FIRMWARE_H__
 #define __NVKM_FIRMWARE_H__
 #include <core/memory.h>
 #include <core/option.h>
 #include <core/subdev.h>
-
 struct nvkm_firmware {
 	const struct nvkm_firmware_func {
 		enum nvkm_firmware_type {
@@ -14,31 +12,25 @@ struct nvkm_firmware {
 	} *func;
 	const char *name;
 	struct nvkm_device *device;
-
 	int len;
 	u8 *img;
 	u64 phys;
-
 	struct nvkm_firmware_mem {
 		struct nvkm_memory memory;
 		struct scatterlist sgl;
 	} mem;
 };
-
 int nvkm_firmware_ctor(const struct nvkm_firmware_func *, const char *name, struct nvkm_device *,
 		       const void *ptr, int len, struct nvkm_firmware *);
 void nvkm_firmware_dtor(struct nvkm_firmware *);
-
 int nvkm_firmware_get(const struct nvkm_subdev *, const char *fwname, int ver,
 		      const struct firmware **);
 void nvkm_firmware_put(const struct firmware *);
-
 int nvkm_firmware_load_blob(const struct nvkm_subdev *subdev, const char *path,
 			    const char *name, int ver, struct nvkm_blob *);
 int nvkm_firmware_load_name(const struct nvkm_subdev *subdev, const char *path,
 			    const char *name, int ver,
 			    const struct firmware **);
-
 #define nvkm_firmware_load(s,l,o,p...) ({                                      \
 	struct nvkm_subdev *_s = (s);                                          \
 	const char *_opts = (o);                                               \

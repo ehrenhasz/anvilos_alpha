@@ -1,39 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*  *********************************************************************
-    *  SB1250 Board Support Package
-    *
-    *  Interrupt Mapper definitions		File: sb1250_int.h
-    *
-    *  This module contains constants for manipulating the SB1250's
-    *  interrupt mapper and definitions for the interrupt sources.
-    *
-    *  SB1250 specification level:  User's manual 1/02/02
-    *
-    *********************************************************************
-    *
-    *  Copyright 2000, 2001, 2002, 2003
-    *  Broadcom Corporation. All rights reserved.
-    *
-    ********************************************************************* */
-
-
 #ifndef _SB1250_INT_H
 #define _SB1250_INT_H
-
 #include <asm/sibyte/sb1250_defs.h>
-
-/*  *********************************************************************
-    *  Interrupt Mapper Constants
-    ********************************************************************* */
-
-/*
- * Interrupt sources (Table 4-8, UM 0.2)
- *
- * First, the interrupt numbers.
- */
-
 #define K_INT_SOURCES		    64
-
 #define K_INT_WATCHDOG_TIMER_0	    0
 #define K_INT_WATCHDOG_TIMER_1	    1
 #define K_INT_TIMER_0		    2
@@ -67,7 +35,7 @@
 #if SIBYTE_HDR_FEATURE(1250, PASS2) || SIBYTE_HDR_FEATURE(112x, PASS1)
 #define K_INT_CYCLE_CP0_INT	    30
 #define K_INT_CYCLE_CP1_INT	    31
-#endif /* 1250 PASS2 || 112x PASS1 */
+#endif  
 #define K_INT_GPIO_0		    32
 #define K_INT_GPIO_1		    33
 #define K_INT_GPIO_2		    34
@@ -101,12 +69,7 @@
 #define K_INT_MAC_0_CH1		    61
 #define K_INT_MAC_1_CH1		    62
 #define K_INT_MAC_2_CH1		    63
-#endif /* 1250 PASS2 || 112x PASS1 */
-
-/*
- * Mask values for each interrupt
- */
-
+#endif  
 #define M_INT_WATCHDOG_TIMER_0	    _SB_MAKEMASK1(K_INT_WATCHDOG_TIMER_0)
 #define M_INT_WATCHDOG_TIMER_1	    _SB_MAKEMASK1(K_INT_WATCHDOG_TIMER_1)
 #define M_INT_TIMER_0		    _SB_MAKEMASK1(K_INT_TIMER_0)
@@ -141,7 +104,7 @@
 #if SIBYTE_HDR_FEATURE(1250, PASS2) || SIBYTE_HDR_FEATURE(112x, PASS1)
 #define M_INT_CYCLE_CP0_INT	    _SB_MAKEMASK1(K_INT_CYCLE_CP0_INT)
 #define M_INT_CYCLE_CP1_INT	    _SB_MAKEMASK1(K_INT_CYCLE_CP1_INT)
-#endif /* 1250 PASS2 || 112x PASS1 */
+#endif  
 #define M_INT_GPIO_0		    _SB_MAKEMASK1(K_INT_GPIO_0)
 #define M_INT_GPIO_1		    _SB_MAKEMASK1(K_INT_GPIO_1)
 #define M_INT_GPIO_2		    _SB_MAKEMASK1(K_INT_GPIO_2)
@@ -175,30 +138,19 @@
 #define M_INT_MAC_0_CH1		    _SB_MAKEMASK1(K_INT_MAC_0_CH1)
 #define M_INT_MAC_1_CH1		    _SB_MAKEMASK1(K_INT_MAC_1_CH1)
 #define M_INT_MAC_2_CH1		    _SB_MAKEMASK1(K_INT_MAC_2_CH1)
-#endif /* 1250 PASS2 || 112x PASS1 */
-
-/*
- * Interrupt mappings
- */
-
-#define K_INT_MAP_I0	0		/* interrupt pins on processor */
+#endif  
+#define K_INT_MAP_I0	0		 
 #define K_INT_MAP_I1	1
 #define K_INT_MAP_I2	2
 #define K_INT_MAP_I3	3
 #define K_INT_MAP_I4	4
 #define K_INT_MAP_I5	5
-#define K_INT_MAP_NMI	6		/* nonmaskable */
-#define K_INT_MAP_DINT	7		/* debug interrupt */
-
-/*
- * LDT Interrupt Set Register (table 4-5)
- */
-
+#define K_INT_MAP_NMI	6		 
+#define K_INT_MAP_DINT	7		 
 #define S_INT_LDT_INTMSG	      0
 #define M_INT_LDT_INTMSG	      _SB_MAKEMASK(3, S_INT_LDT_INTMSG)
 #define V_INT_LDT_INTMSG(x)	      _SB_MAKEVALUE(x, S_INT_LDT_INTMSG)
 #define G_INT_LDT_INTMSG(x)	      _SB_GETVALUE(x, S_INT_LDT_INTMSG, M_INT_LDT_INTMSG)
-
 #define K_INT_LDT_INTMSG_FIXED	      0
 #define K_INT_LDT_INTMSG_ARBITRATED   1
 #define K_INT_LDT_INTMSG_SMI	      2
@@ -207,29 +159,18 @@
 #define K_INT_LDT_INTMSG_STARTUP      5
 #define K_INT_LDT_INTMSG_EXTINT	      6
 #define K_INT_LDT_INTMSG_RESERVED     7
-
 #define M_INT_LDT_EDGETRIGGER	      0
 #define M_INT_LDT_LEVELTRIGGER	      _SB_MAKEMASK1(3)
-
 #define M_INT_LDT_PHYSICALDEST	      0
 #define M_INT_LDT_LOGICALDEST	      _SB_MAKEMASK1(4)
-
 #define S_INT_LDT_INTDEST	      5
 #define M_INT_LDT_INTDEST	      _SB_MAKEMASK(10, S_INT_LDT_INTDEST)
 #define V_INT_LDT_INTDEST(x)	      _SB_MAKEVALUE(x, S_INT_LDT_INTDEST)
 #define G_INT_LDT_INTDEST(x)	      _SB_GETVALUE(x, S_INT_LDT_INTDEST, M_INT_LDT_INTDEST)
-
 #define S_INT_LDT_VECTOR	      13
 #define M_INT_LDT_VECTOR	      _SB_MAKEMASK(8, S_INT_LDT_VECTOR)
 #define V_INT_LDT_VECTOR(x)	      _SB_MAKEVALUE(x, S_INT_LDT_VECTOR)
 #define G_INT_LDT_VECTOR(x)	      _SB_GETVALUE(x, S_INT_LDT_VECTOR, M_INT_LDT_VECTOR)
-
-/*
- * Vector format (Table 4-6)
- */
-
 #define M_LDTVECT_RAISEINT		0x00
 #define M_LDTVECT_RAISEMBOX		0x40
-
-
-#endif	/* 1250/112x */
+#endif	 

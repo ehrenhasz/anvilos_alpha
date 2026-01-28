@@ -1,16 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * (c) Copyright 2002-2010, Ralink Technology, Inc.
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- * Copyright (C) 2018 Stanislaw Gruszka <stf_xl@wp.pl>
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
-
 #ifndef __MT76X0U_INITVALS_INIT_H
 #define __MT76X0U_INITVALS_INIT_H
-
 #include "phy.h"
-
 static const struct mt76_reg_pair common_mac_reg_table[] = {
 	{ MT_BCN_OFFSET(0),		0xf8f0e8e0 },
 	{ MT_BCN_OFFSET(1),		0x6f77d0c8 },
@@ -44,7 +34,6 @@ static const struct mt76_reg_pair common_mac_reg_table[] = {
 	{ MT_XIFS_TIME_CFG,		0x33a41010 },
 	{ MT_PWR_PIN_CFG,		0x00000000 },
 };
-
 static const struct mt76_reg_pair mt76x0_mac_reg_table[] = {
 	{ MT_IOCFG_6,			0xa0040080 },
 	{ MT_PBF_SYS_CTRL,		0x00080c00 },
@@ -82,7 +71,6 @@ static const struct mt76_reg_pair mt76x0_mac_reg_table[] = {
 	{ MT_TX_PROT_CFG8,		0xe3f42104 },
 	{ MT_VHT_HT_FBK_CFG1,		0xedcba980 },
 };
-
 static const struct mt76_reg_pair mt76x0_bbp_init_tab[] = {
 	{ MT_BBP(CORE, 1),	0x00000002 },
 	{ MT_BBP(CORE, 4),	0x00000000 },
@@ -143,7 +131,6 @@ static const struct mt76_reg_pair mt76x0_bbp_init_tab[] = {
 	{ MT_BBP(RXO, 24),	0x00000006 },
 	{ MT_BBP(RXO, 28),	0x0000003F },
 };
-
 static const struct mt76_reg_pair mt76x0_dcoc_tab[] = {
 	{ MT_BBP(CAL, 47), 0x000010F0 },
 	{ MT_BBP(CAL, 48), 0x00008080 },
@@ -155,5 +142,4 @@ static const struct mt76_reg_pair mt76x0_dcoc_tab[] = {
 	{ MT_BBP(CAL, 54), 0x00002828 },
 	{ MT_BBP(CAL, 55), 0x00005050 },
 };
-
 #endif

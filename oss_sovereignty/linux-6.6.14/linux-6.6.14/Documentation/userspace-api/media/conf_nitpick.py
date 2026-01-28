@@ -1,24 +1,6 @@
-# -*- coding: utf-8; mode: python -*-
-
-# SPDX-License-Identifier: GPL-2.0
-
 project = 'Linux Media Subsystem Documentation'
-
-# It is possible to run Sphinx in nickpick mode with:
 nitpicky = True
-
-# within nit-picking build, do not refer to any intersphinx object
 intersphinx_mapping = {}
-
-# In nickpick mode, it will complain about lots of missing references that
-#
-# 1) are just typedefs like: bool, __u32, etc;
-# 2) It will complain for things like: enum, NULL;
-# 3) It will complain for symbols that should be on different
-#    books (but currently aren't ported to ReST)
-#
-# The list below has a list of such symbols to be ignored in nitpick mode
-#
 nitpick_ignore = [
     ("c:func", "clock_gettime"),
     ("c:func", "close"),
@@ -45,7 +27,6 @@ nitpick_ignore = [
     ("c:func", "wait_finish"),
     ("c:func", "wait_prepare"),
     ("c:func", "write"),
-
     ("c:type", "atomic_t"),
     ("c:type", "bool"),
     ("c:type", "boolean"),
@@ -104,8 +85,5 @@ nitpick_ignore = [
     ("c:type", "v4l2_std_id"),
     ("c:type", "video_system_t"),
     ("c:type", "vm_area_struct"),
-
-    # Opaque structures
-
     ("c:type", "v4l2_m2m_dev"),
 ]

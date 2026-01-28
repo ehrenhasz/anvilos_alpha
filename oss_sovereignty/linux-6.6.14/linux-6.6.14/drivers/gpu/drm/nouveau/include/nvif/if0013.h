@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVIF_IF0013_H__
 #define __NVIF_IF0013_H__
-
 union nvif_head_args {
 	struct nvif_head_v0 {
 		__u8 version;
@@ -9,14 +7,11 @@ union nvif_head_args {
 		__u8 pad02[6];
 	} v0;
 };
-
 union nvif_head_event_args {
 	struct nvif_head_event_vn {
 	} vn;
 };
-
 #define NVIF_HEAD_V0_SCANOUTPOS 0x00
-
 union nvif_head_scanoutpos_args {
 	struct nvif_head_scanoutpos_v0 {
 		__u8  version;

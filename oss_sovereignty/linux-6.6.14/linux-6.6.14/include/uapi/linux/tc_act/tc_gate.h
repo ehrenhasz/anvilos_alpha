@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/* Copyright 2020 NXP */
-
 #ifndef __LINUX_TC_GATE_H
 #define __LINUX_TC_GATE_H
-
 #include <linux/pkt_cls.h>
-
 struct tc_gate {
 	tc_gen;
 };
-
 enum {
 	TCA_GATE_ENTRY_UNSPEC,
 	TCA_GATE_ENTRY_INDEX,
@@ -20,14 +14,12 @@ enum {
 	__TCA_GATE_ENTRY_MAX,
 };
 #define TCA_GATE_ENTRY_MAX (__TCA_GATE_ENTRY_MAX - 1)
-
 enum {
 	TCA_GATE_ONE_ENTRY_UNSPEC,
 	TCA_GATE_ONE_ENTRY,
 	__TCA_GATE_ONE_ENTRY_MAX,
 };
 #define TCA_GATE_ONE_ENTRY_MAX (__TCA_GATE_ONE_ENTRY_MAX - 1)
-
 enum {
 	TCA_GATE_UNSPEC,
 	TCA_GATE_TM,
@@ -43,5 +35,4 @@ enum {
 	__TCA_GATE_MAX,
 };
 #define TCA_GATE_MAX (__TCA_GATE_MAX - 1)
-
 #endif

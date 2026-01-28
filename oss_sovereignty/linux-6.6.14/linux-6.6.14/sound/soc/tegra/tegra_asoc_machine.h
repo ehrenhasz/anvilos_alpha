@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef __TEGRA_ASOC_MACHINE_H__
 #define __TEGRA_ASOC_MACHINE_H__
-
 struct clk;
 struct gpio_desc;
 struct snd_soc_card;
@@ -10,7 +7,6 @@ struct snd_soc_jack;
 struct platform_device;
 struct snd_soc_jack_gpio;
 struct snd_soc_pcm_runtime;
-
 struct tegra_asoc_data {
 	unsigned int (*mclk_rate)(unsigned int srate);
 	const char *codec_dev_name;
@@ -26,7 +22,6 @@ struct tegra_asoc_data {
 	bool add_hp_jack;
 	bool set_ac97;
 };
-
 struct tegra_machine {
 	struct clk *clk_pll_a_out0;
 	struct clk *clk_pll_a;
@@ -44,8 +39,6 @@ struct tegra_machine {
 	struct snd_soc_jack *mic_jack;
 	struct snd_soc_jack_gpio *hp_jack_gpio;
 };
-
 int tegra_asoc_machine_probe(struct platform_device *pdev);
 int tegra_asoc_machine_init(struct snd_soc_pcm_runtime *rtd);
-
 #endif

@@ -1,42 +1,23 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2016, Avago Technologies
- */
-
 #ifndef _NVME_FC_TRANSPORT_H
 #define _NVME_FC_TRANSPORT_H 1
-
-
-/*
- * Common definitions between the nvme_fc (host) transport and
- * nvmet_fc (target) transport implementation.
- */
-
-/*
- * ******************  FC-NVME LS HANDLING ******************
- */
-
 union nvmefc_ls_requests {
 	struct fcnvme_ls_rqst_w0		w0;
 	struct fcnvme_ls_cr_assoc_rqst		rq_cr_assoc;
 	struct fcnvme_ls_cr_conn_rqst		rq_cr_conn;
 	struct fcnvme_ls_disconnect_assoc_rqst	rq_dis_assoc;
 	struct fcnvme_ls_disconnect_conn_rqst	rq_dis_conn;
-} __aligned(128);	/* alignment for other things alloc'd with */
-
+} __aligned(128);	 
 union nvmefc_ls_responses {
 	struct fcnvme_ls_rjt			rsp_rjt;
 	struct fcnvme_ls_cr_assoc_acc		rsp_cr_assoc;
 	struct fcnvme_ls_cr_conn_acc		rsp_cr_conn;
 	struct fcnvme_ls_disconnect_assoc_acc	rsp_dis_assoc;
 	struct fcnvme_ls_disconnect_conn_acc	rsp_dis_conn;
-} __aligned(128);	/* alignment for other things alloc'd with */
-
+} __aligned(128);	 
 static inline void
 nvme_fc_format_rsp_hdr(void *buf, u8 ls_cmd, __be32 desc_len, u8 rqst_ls_cmd)
 {
 	struct fcnvme_ls_acc_hdr *acc = buf;
-
 	acc->w0.ls_cmd = ls_cmd;
 	acc->desc_list_len = desc_len;
 	acc->rqst.desc_tag = cpu_to_be32(FCNVME_LSDESC_RQST);
@@ -44,13 +25,11 @@ nvme_fc_format_rsp_hdr(void *buf, u8 ls_cmd, __be32 desc_len, u8 rqst_ls_cmd)
 			fcnvme_lsdesc_len(sizeof(struct fcnvme_lsdesc_rqst));
 	acc->rqst.w0.ls_cmd = rqst_ls_cmd;
 }
-
 static inline int
 nvme_fc_format_rjt(void *buf, u16 buflen, u8 ls_cmd,
 			u8 reason, u8 explanation, u8 vendor)
 {
 	struct fcnvme_ls_rjt *rjt = buf;
-
 	nvme_fc_format_rsp_hdr(buf, FCNVME_LSDESC_RQST,
 			fcnvme_lsdesc_len(sizeof(struct fcnvme_ls_rjt)),
 			ls_cmd);
@@ -59,11 +38,8 @@ nvme_fc_format_rjt(void *buf, u16 buflen, u8 ls_cmd,
 	rjt->rjt.reason_code = reason;
 	rjt->rjt.reason_explanation = explanation;
 	rjt->rjt.vendor = vendor;
-
 	return sizeof(struct fcnvme_ls_rjt);
 }
-
-/* Validation Error indexes into the string table below */
 enum {
 	VERR_NO_ERROR		= 0,
 	VERR_CR_ASSOC_LEN	= 1,
@@ -104,7 +80,6 @@ enum {
 	VERR_DISCONN		= 36,
 	VERR_DISCONN_ACC_LEN	= 37,
 };
-
 static char *validation_errors[] = {
 	"OK",
 	"Bad CR_ASSOC Length",
@@ -145,9 +120,7 @@ static char *validation_errors[] = {
 	"Not Disconnect Rqst",
 	"Bad Disconnect ACC Length",
 };
-
 #define NVME_FC_LAST_LS_CMD_VALUE	FCNVME_LS_DISCONNECT_CONN
-
 static char *nvmefc_ls_names[] = {
 	"Reserved (0)",
 	"RJT (1)",
@@ -157,7 +130,6 @@ static char *nvmefc_ls_names[] = {
 	"Disconnect Association",
 	"Disconnect Connection",
 };
-
 static inline void
 nvmefc_fmt_lsreq_discon_assoc(struct nvmefc_ls_req *lsreq,
 	struct fcnvme_ls_disconnect_assoc_rqst *discon_rqst,
@@ -169,32 +141,26 @@ nvmefc_fmt_lsreq_discon_assoc(struct nvmefc_ls_req *lsreq,
 	lsreq->rspaddr = discon_acc;
 	lsreq->rsplen = sizeof(*discon_acc);
 	lsreq->timeout = NVME_FC_LS_TIMEOUT_SEC;
-
 	discon_rqst->w0.ls_cmd = FCNVME_LS_DISCONNECT_ASSOC;
 	discon_rqst->desc_list_len = cpu_to_be32(
 				sizeof(struct fcnvme_lsdesc_assoc_id) +
 				sizeof(struct fcnvme_lsdesc_disconn_cmd));
-
 	discon_rqst->associd.desc_tag = cpu_to_be32(FCNVME_LSDESC_ASSOC_ID);
 	discon_rqst->associd.desc_len =
 			fcnvme_lsdesc_len(
 				sizeof(struct fcnvme_lsdesc_assoc_id));
-
 	discon_rqst->associd.association_id = cpu_to_be64(association_id);
-
 	discon_rqst->discon_cmd.desc_tag = cpu_to_be32(
 						FCNVME_LSDESC_DISCONN_CMD);
 	discon_rqst->discon_cmd.desc_len =
 			fcnvme_lsdesc_len(
 				sizeof(struct fcnvme_lsdesc_disconn_cmd));
 }
-
 static inline int
 nvmefc_vldt_lsreq_discon_assoc(u32 rqstlen,
 	struct fcnvme_ls_disconnect_assoc_rqst *rqst)
 {
 	int ret = 0;
-
 	if (rqstlen < sizeof(struct fcnvme_ls_disconnect_assoc_rqst))
 		ret = VERR_DISCONN_LEN;
 	else if (rqst->desc_list_len !=
@@ -214,14 +180,8 @@ nvmefc_vldt_lsreq_discon_assoc(u32 rqstlen,
 			fcnvme_lsdesc_len(
 				sizeof(struct fcnvme_lsdesc_disconn_cmd)))
 		ret = VERR_DISCONN_CMD_LEN;
-	/*
-	 * As the standard changed on the LS, check if old format and scope
-	 * something other than Association (e.g. 0).
-	 */
 	else if (rqst->discon_cmd.rsvd8[0])
 		ret = VERR_DISCONN_SCOPE;
-
 	return ret;
 }
-
-#endif /* _NVME_FC_TRANSPORT_H */
+#endif  

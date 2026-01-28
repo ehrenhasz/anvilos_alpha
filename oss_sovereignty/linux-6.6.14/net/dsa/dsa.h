@@ -1,20 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-
 #ifndef __DSA_H
 #define __DSA_H
-
 #include <linux/list.h>
 #include <linux/types.h>
-
 struct dsa_db;
 struct dsa_device_ops;
 struct dsa_lag;
 struct dsa_switch_tree;
 struct net_device;
 struct work_struct;
-
 extern struct list_head dsa_tree_list;
-
 bool dsa_db_equal(const struct dsa_db *a, const struct dsa_db *b);
 bool dsa_schedule_work(struct work_struct *work);
 void dsa_lag_map(struct dsa_switch_tree *dst, struct dsa_lag *lag);
@@ -36,5 +30,4 @@ void dsa_bridge_num_put(const struct net_device *bridge_dev,
 			unsigned int bridge_num);
 struct dsa_bridge *dsa_tree_bridge_find(struct dsa_switch_tree *dst,
 					const struct net_device *br);
-
 #endif

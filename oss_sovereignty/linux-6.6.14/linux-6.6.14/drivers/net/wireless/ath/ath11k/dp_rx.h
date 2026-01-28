@@ -1,16 +1,9 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- */
 #ifndef ATH11K_DP_RX_H
 #define ATH11K_DP_RX_H
-
 #include "core.h"
 #include "rx_desc.h"
 #include "debug.h"
-
 #define DP_MAX_NWIFI_HDR_LEN	30
-
 #define DP_RX_MPDU_ERR_FCS			BIT(0)
 #define DP_RX_MPDU_ERR_DECRYPT			BIT(1)
 #define DP_RX_MPDU_ERR_TKIP_MIC			BIT(2)
@@ -19,20 +12,17 @@
 #define DP_RX_MPDU_ERR_MSDU_LEN			BIT(5)
 #define DP_RX_MPDU_ERR_MPDU_LEN			BIT(6)
 #define DP_RX_MPDU_ERR_UNENCRYPTED_FRAME	BIT(7)
-
 enum dp_rx_decap_type {
 	DP_RX_DECAP_TYPE_RAW,
 	DP_RX_DECAP_TYPE_NATIVE_WIFI,
 	DP_RX_DECAP_TYPE_ETHERNET2_DIX,
 	DP_RX_DECAP_TYPE_8023,
 };
-
 struct ath11k_dp_amsdu_subframe_hdr {
 	u8 dst[ETH_ALEN];
 	u8 src[ETH_ALEN];
 	__be16 len;
 } __packed;
-
 struct ath11k_dp_rfc1042_hdr {
 	u8 llc_dsap;
 	u8 llc_ssap;
@@ -40,7 +30,6 @@ struct ath11k_dp_rfc1042_hdr {
 	u8 snap_oui[3];
 	__be16 snap_type;
 } __packed;
-
 int ath11k_dp_rx_ampdu_start(struct ath11k *ar,
 			     struct ieee80211_ampdu_params *params);
 int ath11k_dp_rx_ampdu_stop(struct ath11k *ar,
@@ -91,8 +80,6 @@ int ath11k_dp_rx_mon_status_bufs_replenish(struct ath11k_base *ab, int mac_id,
 int ath11k_dp_rx_pdev_mon_detach(struct ath11k *ar);
 int ath11k_dp_rx_pdev_mon_attach(struct ath11k *ar);
 int ath11k_peer_rx_frag_setup(struct ath11k *ar, const u8 *peer_mac, int vdev_id);
-
 int ath11k_dp_rx_pktlog_start(struct ath11k_base *ab);
 int ath11k_dp_rx_pktlog_stop(struct ath11k_base *ab, bool stop_timer);
-
-#endif /* ATH11K_DP_RX_H */
+#endif  

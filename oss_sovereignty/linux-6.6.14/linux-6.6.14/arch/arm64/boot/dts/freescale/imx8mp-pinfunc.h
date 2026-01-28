@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2019 NXP
- */
-
 #ifndef __DTS_IMX8MP_PINFUNC_H
 #define __DTS_IMX8MP_PINFUNC_H
-
-/*
- * The pin function ID is a tuple of
- * <mux_reg conf_reg input_reg mux_mode input_val>
- */
 #define MX8MP_IOMUXC_GPIO1_IO00__GPIO1_IO00                          0x014 0x274 0x000 0x0 0x0
 #define MX8MP_IOMUXC_GPIO1_IO00__CCM_ENET_PHY_REF_CLK_ROOT           0x014 0x274 0x000 0x1 0x0
 #define MX8MP_IOMUXC_GPIO1_IO00__ISP_FL_TRIG_0                       0x014 0x274 0x5D4 0x3 0x0
@@ -795,5 +785,4 @@
 #define MX8MP_IOMUXC_HDMI_HPD__I2C6_SDA                              0x24C 0x4AC 0x5D0 0x3 0x3
 #define MX8MP_IOMUXC_HDMI_HPD__CAN2_RX                               0x24C 0x4AC 0x550 0x4 0x3
 #define MX8MP_IOMUXC_HDMI_HPD__GPIO3_IO29                            0x24C 0x4AC 0x000 0x5 0x0
-
-#endif /* __DTS_IMX8MP_PINFUNC_H */
+#endif  

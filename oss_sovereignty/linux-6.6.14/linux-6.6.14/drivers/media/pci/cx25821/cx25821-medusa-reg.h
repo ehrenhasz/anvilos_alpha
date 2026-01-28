@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Driver for the Conexant CX25821 PCIe bridge
- *
- *  Copyright (C) 2009 Conexant Systems Inc.
- *  Authors  <shu.lin@conexant.com>, <hiep.huynh@conexant.com>
- */
-
 #ifndef __MEDUSA_REGISTERS__
 #define __MEDUSA_REGISTERS__
-
-/* Serial Slave Registers */
 #define	HOST_REGISTER1				0x0000
 #define	HOST_REGISTER2				0x0001
-
-/* Chip Configuration Registers */
 #define	CHIP_CTRL				0x0100
 #define	AFE_AB_CTRL				0x0104
 #define	AFE_CD_CTRL				0x0108
@@ -77,8 +65,6 @@
 #define	ABIST_CLAMP_D				0x01F0
 #define	ABIST_CLAMP_E				0x01F4
 #define	ABIST_CLAMP_F				0x01F8
-
-/* Digital Video Encoder A Registers */
 #define	DENC_A_REG_1				0x0200
 #define	DENC_A_REG_2				0x0204
 #define	DENC_A_REG_3				0x0208
@@ -87,8 +73,6 @@
 #define	DENC_A_REG_6				0x0214
 #define	DENC_A_REG_7				0x0218
 #define	DENC_A_REG_8				0x021C
-
-/* Digital Video Encoder B Registers */
 #define	DENC_B_REG_1				0x0300
 #define	DENC_B_REG_2				0x0304
 #define	DENC_B_REG_3				0x0308
@@ -97,8 +81,6 @@
 #define	DENC_B_REG_6				0x0314
 #define	DENC_B_REG_7				0x0318
 #define	DENC_B_REG_8				0x031C
-
-/* Video Decoder A Registers */
 #define	MODE_CTRL				0x1000
 #define	OUT_CTRL1				0x1004
 #define	OUT_CTRL_NS				0x1008
@@ -138,8 +120,6 @@
 #define	COMB_FLAT_NOISE_CTRL			0x1090
 #define	VERSION					0x11F8
 #define	SOFT_RST_CTRL				0x11FC
-
-/* Video Decoder B Registers */
 #define	VDEC_B_MODE_CTRL			0x1200
 #define	VDEC_B_OUT_CTRL1			0x1204
 #define	VDEC_B_OUT_CTRL_NS			0x1208
@@ -179,8 +159,6 @@
 #define	VDEC_B_COMB_FLAT_NOISE_CTRL		0x1290
 #define	VDEC_B_VERSION				0x13F8
 #define	VDEC_B_SOFT_RST_CTRL			0x13FC
-
-/* Video Decoder C Registers */
 #define	VDEC_C_MODE_CTRL			0x1400
 #define	VDEC_C_OUT_CTRL1			0x1404
 #define	VDEC_C_OUT_CTRL_NS			0x1408
@@ -220,8 +198,6 @@
 #define	VDEC_C_COMB_FLAT_NOISE_CTRL		0x1490
 #define	VDEC_C_VERSION				0x15F8
 #define	VDEC_C_SOFT_RST_CTRL			0x15FC
-
-/* Video Decoder D Registers */
 #define VDEC_D_MODE_CTRL			0x1600
 #define VDEC_D_OUT_CTRL1			0x1604
 #define VDEC_D_OUT_CTRL_NS			0x1608
@@ -261,8 +237,6 @@
 #define VDEC_D_COMB_FLAT_NOISE_CTRL		0x1690
 #define VDEC_D_VERSION				0x17F8
 #define VDEC_D_SOFT_RST_CTRL			0x17FC
-
-/* Video Decoder E Registers */
 #define	VDEC_E_MODE_CTRL			0x1800
 #define	VDEC_E_OUT_CTRL1			0x1804
 #define	VDEC_E_OUT_CTRL_NS			0x1808
@@ -302,8 +276,6 @@
 #define	VDEC_E_COMB_FLAT_NOISE_CTRL		0x1890
 #define	VDEC_E_VERSION				0x19F8
 #define	VDEC_E_SOFT_RST_CTRL			0x19FC
-
-/* Video Decoder F Registers */
 #define	VDEC_F_MODE_CTRL			0x1A00
 #define	VDEC_F_OUT_CTRL1			0x1A04
 #define	VDEC_F_OUT_CTRL_NS			0x1A08
@@ -343,8 +315,6 @@
 #define	VDEC_F_COMB_FLAT_NOISE_CTRL		0x1A90
 #define	VDEC_F_VERSION				0x1BF8
 #define	VDEC_F_SOFT_RST_CTRL			0x1BFC
-
-/* Video Decoder G Registers */
 #define	VDEC_G_MODE_CTRL			0x1C00
 #define	VDEC_G_OUT_CTRL1			0x1C04
 #define	VDEC_G_OUT_CTRL_NS			0x1C08
@@ -384,8 +354,6 @@
 #define	VDEC_G_COMB_FLAT_NOISE_CTRL		0x1C90
 #define	VDEC_G_VERSION				0x1DF8
 #define	VDEC_G_SOFT_RST_CTRL			0x1DFC
-
-/* Video Decoder H Registers  */
 #define	VDEC_H_MODE_CTRL			0x1E00
 #define	VDEC_H_OUT_CTRL1			0x1E04
 #define	VDEC_H_OUT_CTRL_NS			0x1E08
@@ -425,17 +393,10 @@
 #define	VDEC_H_COMB_FLAT_NOISE_CTRL		0x1E90
 #define	VDEC_H_VERSION				0x1FF8
 #define	VDEC_H_SOFT_RST_CTRL			0x1FFC
-
-/*****************************************************************************/
-/* LUMA_CTRL register fields */
 #define VDEC_A_BRITE_CTRL			0x1014
 #define VDEC_A_CNTRST_CTRL			0x1015
 #define VDEC_A_PEAK_SEL				0x1016
-
-/*****************************************************************************/
-/* CHROMA_CTRL register fields */
 #define VDEC_A_USAT_CTRL			0x1018
 #define VDEC_A_VSAT_CTRL			0x1019
 #define VDEC_A_HUE_CTRL				0x101A
-
 #endif

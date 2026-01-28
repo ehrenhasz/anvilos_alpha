@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
-
 #ifndef __RTW_REGD_H_
 #define __RTW_REGD_H_
-
 #define IEEE80211_CHAN_NO_IBSS IEEE80211_CHAN_NO_IR
 #define IEEE80211_CHAN_PASSIVE_SCAN IEEE80211_CHAN_NO_IR
 enum rtw_chplan_id {
@@ -38,12 +33,10 @@ enum rtw_chplan_id {
 	RTW_CHPLAN_FCC2_FCC11 = 0x76,
 	RTW_CHPLAN_REALTEK_DEFINE = 0x7f,
 };
-
 struct country_code_to_enum_rd {
 	u16 countrycode;
 	const char *iso_name;
 };
-
 enum country_code_type {
 	COUNTRY_CODE_FCC = 0,
 	COUNTRY_CODE_IC = 1,
@@ -59,11 +52,8 @@ enum country_code_type {
 	COUNTRY_CODE_WORLD_WIDE_13 = 11,
 	COUNTRY_CODE_TELEC_NETGEAR = 12,
 	COUNTRY_CODE_WORLD_WIDE_13_5G_ALL = 13,
-
-	/* new channel plan above this */
 	COUNTRY_CODE_MAX
 };
-
 int rtw_regd_init(struct rtw_dev *rtwdev);
 int rtw_regd_hint(struct rtw_dev *rtwdev);
 u8 rtw_regd_get(struct rtw_dev *rtwdev);

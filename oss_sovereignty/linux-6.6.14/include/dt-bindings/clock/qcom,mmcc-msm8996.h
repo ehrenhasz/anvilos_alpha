@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_MMCC_8996_H
 #define _DT_BINDINGS_CLK_MSM_MMCC_8996_H
-
 #define MMPLL0_EARLY					0
 #define MMPLL0_PLL					1
 #define MMPLL1_EARLY					2
@@ -212,7 +206,6 @@
 #define MMSS_SPDM_JPEG0_CLK				203
 #define MMSS_SPDM_RM_AXI_CLK				204
 #define MMSS_SPDM_RM_MAXI_CLK				205
-
 #define MMAGICAHB_BCR					0
 #define MMAGIC_CFG_BCR					1
 #define MISC_BCR					2
@@ -273,8 +266,6 @@
 #define CAMSS_ISPIF_BCR					57
 #define FD_BCR						58
 #define MMSS_SPDM_RM_BCR				59
-
-/* Indexes for GDSCs */
 #define MMAGIC_VIDEO_GDSC	0
 #define MMAGIC_MDSS_GDSC	1
 #define MMAGIC_CAMSS_GDSC	2
@@ -291,5 +282,4 @@
 #define MDSS_GDSC		13
 #define GPU_GX_GDSC		14
 #define MMAGIC_BIMC_GDSC	15
-
 #endif

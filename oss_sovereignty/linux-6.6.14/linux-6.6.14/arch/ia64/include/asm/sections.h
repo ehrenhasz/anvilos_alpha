@@ -1,19 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_IA64_SECTIONS_H
 #define _ASM_IA64_SECTIONS_H
-
-/*
- * Copyright (C) 1998-2003 Hewlett-Packard Co
- *	David Mosberger-Tang <davidm@hpl.hp.com>
- */
-
 #include <linux/elf.h>
 #include <linux/uaccess.h>
-
 typedef struct fdesc func_desc_t;
-
 #include <asm-generic/sections.h>
-
 extern char __phys_per_cpu_start[];
 #ifdef	CONFIG_SMP
 extern char __cpu0_per_cpu[];
@@ -29,5 +19,4 @@ extern char __start_gate_fsyscall_patchlist[], __end_gate_fsyscall_patchlist[];
 extern char __start_gate_brl_fsys_bubble_down_patchlist[], __end_gate_brl_fsys_bubble_down_patchlist[];
 extern char __start_unwind[], __end_unwind[];
 extern char __start_ivt_text[], __end_ivt_text[];
-
-#endif /* _ASM_IA64_SECTIONS_H */
+#endif  

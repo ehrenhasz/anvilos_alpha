@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * DW100 Hardware dewarper
- *
- * Copyright 2022 NXP
- * Author: Xavier Roumegue (xavier.roumegue@oss.nxp.com)
- */
-
 #ifndef _DW100_REGS_H_
 #define _DW100_REGS_H_
-
-/* AHB register offset */
 #define DW100_DEWARP_ID			0x00
 #define DW100_DEWARP_CTRL		0x04
 #define DW100_DEWARP_CTRL_ENABLE			BIT(0)
@@ -32,7 +22,6 @@
 #define DW100_DEWARP_CTRL_PREFETCH_MODE_AUTO		(2UL << 16)
 #define DW100_DEWARP_CTRL_PREFETCH_THRESHOLD_MASK	GENMASK(24, 18)
 #define DW100_DEWARP_CTRL_PREFETCH_THRESHOLD(x)		((x) << 18)
-
 #define DW100_MAP_LUT_ADDR		0x08
 #define DW100_MAP_LUT_ADDR_ADDR(addr)	(((addr) >> 4) & GENMASK(29, 0))
 #define DW100_MAP_LUT_SIZE		0x0c
@@ -45,7 +34,6 @@
 #define DW100_SRC_IMG_SIZE		0x18
 #define DW100_IMG_SIZE_WIDTH(w)		(((w) & GENMASK(12, 0)) << 0)
 #define DW100_IMG_SIZE_HEIGHT(h)	(((h) & GENMASK(12, 0)) << 16)
-
 #define DW100_SRC_IMG_STRIDE		0x1c
 #define DW100_MAP_LUT_ADDR2		0x20
 #define DW100_MAP_LUT_SIZE2		0x24
@@ -86,7 +74,6 @@
 #define DW100_BOUNDARY_PIXEL_V(v)	(((v) & GENMASK(7, 0)) << 0)
 #define DW100_BOUNDARY_PIXEL_U(u)	(((u) & GENMASK(7, 0)) << 8)
 #define DW100_BOUNDARY_PIXEL_Y(y)	(((y) & GENMASK(7, 0)) << 16)
-
 #define DW100_INTERRUPT_STATUS		0x70
 #define DW100_INTERRUPT_STATUS_INT_FRAME_DONE		BIT(0)
 #define DW100_INTERRUPT_STATUS_INT_ERR_TIME_OUT		BIT(1)
@@ -98,7 +85,6 @@
 #define DW100_INTERRUPT_STATUS_INT_ERR_FRAME_DONE	BIT(7)
 #define DW100_INTERRUPT_STATUS_INT_ERR_STATUS(x)	(((x) >> 1) & 0x7f)
 #define DW100_INTERRUPT_STATUS_INT_STATUS(x)		((x) & 0xff)
-
 #define DW100_INTERRUPT_STATUS_INT_ENABLE_MASK		GENMASK(15, 8)
 #define DW100_INTERRUPT_STATUS_INT_ENABLE(x)		(((x) & GENMASK(7, 0)) << 8)
 #define DW100_INTERRUPT_STATUS_FRAME_BUSY		BIT(16)
@@ -113,5 +99,4 @@
 #define DW100_DST_IMG_UV_SIZE1		0x84
 #define DW100_DST_IMG_Y_SIZE2		0x88
 #define DW100_DST_IMG_UV_SIZE2		0x8c
-
-#endif /* _DW100_REGS_H_ */
+#endif  

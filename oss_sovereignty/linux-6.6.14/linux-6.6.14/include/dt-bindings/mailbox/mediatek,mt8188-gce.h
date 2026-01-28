@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- *
- */
 #ifndef _DT_BINDINGS_GCE_MT8188_H
 #define _DT_BINDINGS_GCE_MT8188_H
-
 #define CMDQ_THR_PRIO_LOWEST		0
 #define CMDQ_THR_PRIO_1			1
 #define CMDQ_THR_PRIO_2			2
@@ -14,7 +8,6 @@
 #define CMDQ_THR_PRIO_5			5
 #define CMDQ_THR_PRIO_6			6
 #define CMDQ_THR_PRIO_HIGHEST		7
-
 #define SUBSYS_1400XXXX                 0
 #define SUBSYS_1401XXXX			1
 #define SUBSYS_1402XXXX			2
@@ -42,7 +35,6 @@
 #define SUBSYS_1c50XXXX			24
 #define SUBSYS_1c60XXXX			25
 #define SUBSYS_NO_SUPPORT		99
-
 #define CMDQ_EVENT_IMG_SOF				0
 #define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_0		1
 #define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_1		2
@@ -841,7 +833,6 @@
 #define CMDQ_EVENT_TPR_TIMEOUT_15	1009
 #define CMDQ_EVENT_OUTPIN_0		1018
 #define CMDQ_EVENT_OUTPIN_1		1019
-
 #define CMDQ_SYNC_TOKEN_IMGSYS_WPE_EIS			124
 #define CMDQ_SYNC_TOKEN_IMGSYS_WPE_TNR			125
 #define CMDQ_SYNC_TOKEN_IMGSYS_WPE_LITE			126
@@ -963,5 +954,4 @@
 #define CMDQ_SYNC_RESOURCE_WROT1			890
 #define CMDQ_SYNC_TOKEN_DISP_VA_START			1012
 #define CMDQ_SYNC_TOKEN_DISP_VA_END			1013
-
 #endif

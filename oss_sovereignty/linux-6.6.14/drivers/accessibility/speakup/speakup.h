@@ -1,19 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _SPEAKUP_H
 #define _SPEAKUP_H
-
 #include "spk_types.h"
 #include "i18n.h"
-
 #define SPEAKUP_VERSION "3.1.6"
 #define KEY_MAP_VER 119
 #define SHIFT_TBL_SIZE 64
 #define MAX_DESC_LEN 72
-
 #define TOGGLE_0 .u.n = {NULL, 0, 0, 1, 0, 0, NULL }
 #define TOGGLE_1 .u.n = {NULL, 1, 0, 1, 0, 0, NULL }
 #define MAXVARLEN 15
-
 #define SYNTH_OK 0x0001
 #define B_ALPHA 0x0002
 #define ALPHA 0x0003
@@ -34,12 +29,9 @@
 #define A_CTL (B_CTL + SYNTH_OK)
 #define B_SYM 0x0800
 #define B_CAPSYM (B_CAP | B_SYM)
-
-/* FIXME: u16 */
 #define IS_WDLM(x) (spk_chartab[((u_char)x)] & B_WDLM)
 #define IS_CHAR(x, type) (spk_chartab[((u_char)x)] & type)
 #define IS_TYPE(x, type) ((spk_chartab[((u_char)x)] & type) == type)
-
 int speakup_thread(void *data);
 void spk_reset_default_chars(void);
 void spk_reset_default_chartab(void);
@@ -65,7 +57,6 @@ extern special_func spk_special_handler;
 int spk_handle_help(struct vc_data *vc, u_char type, u_char ch, u_short key);
 int synth_init(char *name);
 void synth_release(void);
-
 void spk_do_flush(void);
 void speakup_start_ttys(void);
 void synth_buffer_add(u16 ch);
@@ -78,16 +69,12 @@ void speakup_register_devsynth(void);
 void speakup_unregister_devsynth(void);
 void synth_write(const char *buf, size_t count);
 int synth_supports_indexing(void);
-
 extern struct vc_data *spk_sel_cons;
-extern unsigned short spk_xs, spk_ys, spk_xe, spk_ye; /* our region points */
-
+extern unsigned short spk_xs, spk_ys, spk_xe, spk_ye;  
 extern wait_queue_head_t speakup_event;
 extern struct kobject *speakup_kobj;
 extern struct task_struct *speakup_task;
 extern const u_char spk_key_defaults[];
-
-/* Protect speakup synthesizer list */
 extern struct mutex spk_mutex;
 extern struct st_spk_t *speakup_console[];
 extern struct spk_synth *synth;
@@ -111,11 +98,8 @@ extern short spk_pitch_shift, synth_flags;
 extern bool spk_quiet_boot;
 extern char *synth_name;
 extern struct bleep spk_unprocessed_sound;
-
-/* Prototypes from fakekey.c. */
 int speakup_add_virtual_keyboard(void);
 void speakup_remove_virtual_keyboard(void);
 void speakup_fake_down_arrow(void);
 bool speakup_fake_key_pressed(void);
-
 #endif

@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Qualcomm MSM8996 interconnect IDs
- *
- * Copyright (c) 2021 Yassine Oudjana <y.oudjana@protonmail.com>
- */
-
 #ifndef __DRIVERS_INTERCONNECT_QCOM_MSM8996_H__
 #define __DRIVERS_INTERCONNECT_QCOM_MSM8996_H__
-
 #define MSM8996_MASTER_PCIE_0				1
 #define MSM8996_MASTER_PCIE_1				2
 #define MSM8996_MASTER_PCIE_2				3
@@ -51,7 +43,6 @@
 #define MSM8996_MASTER_A1NOC_SNOC			41
 #define MSM8996_MASTER_A2NOC_SNOC			42
 #define MSM8996_MASTER_QDSS_ETR				43
-
 #define MSM8996_SLAVE_A0NOC_SNOC			44
 #define MSM8996_SLAVE_A1NOC_SNOC			45
 #define MSM8996_SLAVE_A2NOC_SNOC			46
@@ -145,5 +136,4 @@
 #define MSM8996_SLAVE_PCIE_1				134
 #define MSM8996_SLAVE_PCIE_2				135
 #define MSM8996_SLAVE_SERVICE_SNOC			136
-
-#endif /* __DRIVERS_INTERCONNECT_QCOM_MSM8996_H__ */
+#endif  

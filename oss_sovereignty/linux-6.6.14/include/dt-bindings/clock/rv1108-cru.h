@@ -1,19 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2016 Rockchip Electronics Co. Ltd.
- * Author: Shawn Lin <shawn.lin@rock-chips.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_RV1108_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_RV1108_H
-
-/* pll id */
 #define PLL_APLL			0
 #define PLL_DPLL			1
 #define PLL_GPLL			2
 #define ARMCLK				3
-
-/* sclk gates (special clocks) */
 #define SCLK_SPI0			65
 #define SCLK_NANDC			67
 #define SCLK_SDMMC			68
@@ -77,12 +67,9 @@
 #define SCLK_UART0_SRC			127
 #define SCLK_UART1_SRC			128
 #define SCLK_UART2_SRC			129
-
 #define DCLK_VOP_SRC			185
 #define DCLK_HDMIPHY			186
 #define DCLK_VOP			187
-
-/* aclk gates */
 #define ACLK_DMAC			192
 #define ACLK_PRE			193
 #define ACLK_CORE			194
@@ -102,8 +89,6 @@
 #define ACLK_CIF3			208
 #define ACLK_PERI			209
 #define ACLK_GMAC			210
-
-/* pclk gates */
 #define PCLK_GPIO1			256
 #define PCLK_GPIO2			257
 #define PCLK_GPIO3			258
@@ -134,8 +119,6 @@
 #define PCLK_EFUSE1			283
 #define PCLK_WDT			284
 #define PCLK_GMAC			285
-
-/* hclk gates */
 #define HCLK_I2S0_8CH			320
 #define HCLK_I2S1_2CH			321
 #define HCLK_I2S2_2CH			322
@@ -162,10 +145,7 @@
 #define HCLK_CIF3			343
 #define HCLK_BUS			344
 #define HCLK_VPU			345
-
 #define CLK_NR_CLKS			(HCLK_VPU + 1)
-
-/* reset id */
 #define SRST_CORE_PO_AD			0
 #define SRST_CORE_AD			1
 #define SRST_L2_AD			2
@@ -178,7 +158,6 @@
 #define RST_DAP				10
 #define PRST_DBG_NIU			11
 #define ARST_STRC_SYS_AD		15
-
 #define SRST_DDRPHY_CLKDIV		16
 #define SRST_DDRPHY			17
 #define PRST_DDRPHY			18
@@ -195,7 +174,6 @@
 #define ARST_DMAC			29
 #define SRST_MSCH_NIU			30
 #define PRST_MSCH_NIU			31
-
 #define PRST_DDRUPCTL			32
 #define NRST_DDRUPCTL			33
 #define PRST_DDRMON			34
@@ -212,7 +190,6 @@
 #define PRST_UART0			45
 #define PRST_UART1			46
 #define PRST_UART2			47
-
 #define SRST_UART0			48
 #define SRST_UART1			49
 #define SRST_UART2			50
@@ -227,7 +204,6 @@
 #define PRST_WDT			61
 #define PRST_GPIO1			62
 #define PRST_GPIO2			63
-
 #define PRST_GPIO3			64
 #define PRST_GRF			65
 #define PRST_EFUSE			66
@@ -241,7 +217,6 @@
 #define SRST_SARADC			74
 #define HRST_SYSBUS			75
 #define PRST_USBGRF			76
-
 #define ARST_PERIPH_NIU			80
 #define HRST_PERIPH_NIU			81
 #define PRST_PERIPH_NIU			82
@@ -258,7 +233,6 @@
 #define SRST_OTG			93
 #define SRST_OTG_ADP			94
 #define HRST_HOST0			95
-
 #define HRST_HOST0_AUX			96
 #define HRST_HOST0_ARB			97
 #define SRST_HOST0_EHCIPHY		98
@@ -266,7 +240,6 @@
 #define SRST_USBPOR			100
 #define SRST_UTMI0			101
 #define SRST_UTMI1			102
-
 #define ARST_VIO0_NIU			102
 #define ARST_VIO1_NIU			103
 #define HRST_VIO_NIU			104
@@ -283,7 +256,6 @@
 #define PRST_HDMI			115
 #define SRST_HDMI			116
 #define PRST_MIPI_DSI			117
-
 #define ARST_ISP_NIU			118
 #define HRST_ISP_NIU			119
 #define HRST_ISP			120
@@ -300,11 +272,9 @@
 #define ARST_VIP3			121
 #define HRST_VIP3			122
 #define PRST_VIP4			123
-
 #define PRST_CIF1TO4			124
 #define SRST_CVBS_CLK			125
 #define HRST_CVBS			126
-
 #define ARST_VPU_NIU			140
 #define HRST_VPU_NIU			141
 #define ARST_VPU			142
@@ -320,7 +290,6 @@
 #define ARST_RKVENC			152
 #define HRST_RKVENC			153
 #define SRST_RKVENC_CORE		154
-
 #define SRST_DSP_CORE			156
 #define SRST_DSP_SYS			157
 #define SRST_DSP_GLOBAL			158
@@ -336,7 +305,6 @@
 #define PRST_DSP_PFM_MON		169
 #define SRST_DSP_PFM_MON		170
 #define ARST_DSP_EDAP_NIU		171
-
 #define SRST_PMU			172
 #define SRST_PMU_I2C0			173
 #define PRST_PMU_I2C0			174
@@ -349,5 +317,4 @@
 #define SRST_PMU_PVTM			181
 #define ARST_DSP_EDP_PERF		184
 #define ARST_DSP_EPP_PERF		185
-
-#endif /* _DT_BINDINGS_CLK_ROCKCHIP_RV1108_H */
+#endif  

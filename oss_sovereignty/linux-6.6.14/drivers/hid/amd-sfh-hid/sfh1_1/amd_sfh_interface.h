@@ -1,18 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * AMD MP2 1.1 communication interfaces
- *
- * Copyright (c) 2022, Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Author: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
- */
-
 #ifndef AMD_SFH_INTERFACE_H
 #define AMD_SFH_INTERFACE_H
-
 #include "../amd_sfh_common.h"
-
 #define SENSOR_DATA_MEM_SIZE_DEFAULT		256
 #define TOTAL_STATIC_MEM_DEFAULT		1024
 #define OFFSET_SFH_INFO_BASE_DEFAULT		0
@@ -26,7 +14,6 @@ enum sensor_index {
 	HPD_IDX = 5,
 	MAX_IDX = 15,
 };
-
 struct sfh_cmd_base {
 	union {
 		u32 ul;
@@ -40,7 +27,6 @@ struct sfh_cmd_base {
 		} cmd;
 	};
 };
-
 struct sfh_cmd_response {
 	union {
 		u32 resp;
@@ -53,7 +39,6 @@ struct sfh_cmd_response {
 		} response;
 	};
 };
-
 struct sfh_platform_info {
 	union {
 		u32 pi;
@@ -65,7 +50,6 @@ struct sfh_platform_info {
 		} pinfo;
 	};
 };
-
 struct sfh_firmware_info {
 	union {
 		u32 fw_ver;
@@ -77,7 +61,6 @@ struct sfh_firmware_info {
 		} fver;
 	};
 };
-
 struct sfh_sensor_list {
 	union {
 		u32 slist;
@@ -87,7 +70,6 @@ struct sfh_sensor_list {
 		} sl;
 	};
 };
-
 struct sfh_base_info {
 	union {
 		u32 sfh_base[24];
@@ -98,7 +80,6 @@ struct sfh_base_info {
 		} sbase;
 	};
 };
-
 struct sfh_common_data {
 	u64 timestamp;
 	u32 intr_cnt;
@@ -106,36 +87,30 @@ struct sfh_common_data {
 	u32 rsvd		: 13;
 	u32 sensor_state	: 3;
 };
-
 struct sfh_float32 {
 	u32 x;
 	u32 y;
 	u32 z;
 };
-
 struct sfh_accel_data {
 	struct sfh_common_data commondata;
 	struct sfh_float32 acceldata;
 	u32 accelstatus;
 };
-
 struct sfh_gyro_data {
 	struct sfh_common_data commondata;
 	struct sfh_float32 gyrodata;
 	u32 result;
 };
-
 struct sfh_mag_data {
 	struct sfh_common_data commondata;
 	struct sfh_float32 magdata;
 	u32 accuracy;
 };
-
 struct sfh_als_data {
 	struct sfh_common_data commondata;
 	u32 lux;
 };
-
 struct hpd_status {
 	union {
 		struct {
@@ -148,7 +123,6 @@ struct hpd_status {
 		u32 val;
 	};
 };
-
 void sfh_interface_init(struct amd_mp2_dev *mp2);
 void amd_sfh1_1_set_desc_ops(struct amd_mp2_ops *mp2_ops);
 #endif

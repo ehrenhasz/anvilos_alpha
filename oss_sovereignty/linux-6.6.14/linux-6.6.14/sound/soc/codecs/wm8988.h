@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2005 Openedhand Ltd.
- *
- * Author: Richard Purdie <richard@openedhand.com>
- *
- * Based on WM8753.h
- */
-
 #ifndef _WM8988_H
 #define _WM8988_H
-
-/* WM8988 register space */
-
 #define WM8988_LINVOL    0x00
 #define WM8988_RINVOL    0x01
 #define WM8988_LOUT1V    0x02
@@ -47,7 +35,5 @@
 #define WM8988_ROUT2V    0x29
 #define WM8988_LPPB      0x43
 #define WM8988_NUM_REG   0x44
-
 #define WM8988_SYSCLK	0
-
 #endif

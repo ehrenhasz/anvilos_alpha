@@ -1,20 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Marek Lindner, Simon Wunderlich, Antonio Quartulli
- */
-
 #ifndef _NET_BATMAN_ADV_TRANSLATION_TABLE_H_
 #define _NET_BATMAN_ADV_TRANSLATION_TABLE_H_
-
 #include "main.h"
-
 #include <linux/kref.h>
 #include <linux/netdevice.h>
 #include <linux/netlink.h>
 #include <linux/skbuff.h>
 #include <linux/types.h>
-
 int batadv_tt_init(struct batadv_priv *bat_priv);
 bool batadv_tt_local_add(struct net_device *soft_iface, const u8 *addr,
 			 unsigned short vid, int ifindex, u32 mark);
@@ -52,23 +43,14 @@ bool batadv_tt_add_temporary_global_entry(struct batadv_priv *bat_priv,
 					  unsigned short vid);
 bool batadv_tt_global_is_isolated(struct batadv_priv *bat_priv,
 				  const u8 *addr, unsigned short vid);
-
 int batadv_tt_cache_init(void);
 void batadv_tt_cache_destroy(void);
-
-/**
- * batadv_tt_global_entry_put() - decrement the tt_global_entry refcounter and
- *  possibly release it
- * @tt_global_entry: tt_global_entry to be free'd
- */
 static inline void
 batadv_tt_global_entry_put(struct batadv_tt_global_entry *tt_global_entry)
 {
 	if (!tt_global_entry)
 		return;
-
 	kref_put(&tt_global_entry->common.refcount,
 		 batadv_tt_global_entry_release);
 }
-
-#endif /* _NET_BATMAN_ADV_TRANSLATION_TABLE_H_ */
+#endif  

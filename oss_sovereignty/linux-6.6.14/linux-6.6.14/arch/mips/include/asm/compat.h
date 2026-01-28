@@ -1,37 +1,24 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_COMPAT_H
 #define _ASM_COMPAT_H
-/*
- * Architecture specific compatibility types
- */
 #include <linux/thread_info.h>
 #include <linux/types.h>
 #include <asm/page.h>
 #include <asm/ptrace.h>
-
 #define __compat_uid_t	__compat_uid_t
 typedef s32		__compat_uid_t;
 typedef s32		__compat_gid_t;
-
 typedef __compat_uid_t	__compat_uid32_t;
 typedef __compat_gid_t	__compat_gid32_t;
 #define __compat_uid32_t __compat_uid32_t
-
 #define compat_statfs		compat_statfs
 #define compat_ipc64_perm	compat_ipc64_perm
-
-#define _COMPAT_NSIG		128		/* Don't ask !$@#% ...	*/
+#define _COMPAT_NSIG		128		 
 #define _COMPAT_NSIG_BPW	32
 typedef u32		compat_sigset_word;
-
 #define COMPAT_RLIM_INFINITY	0x7fffffffUL
-
 #include <asm-generic/compat.h>
-
 #define COMPAT_UTS_MACHINE	"mips\0\0\0"
-
 typedef u32		compat_nlink_t;
-
 struct compat_stat {
 	compat_dev_t	st_dev;
 	s32		st_pad1[3];
@@ -54,10 +41,8 @@ struct compat_stat {
 	s32		st_blocks;
 	s32		st_pad4[14];
 };
-
 #define __ARCH_COMPAT_FLOCK_EXTRA_SYSID		s32 l_sysid;
 #define __ARCH_COMPAT_FLOCK_PAD			s32 pad[4];
-
 struct compat_statfs {
 	int		f_type;
 	int		f_bsize;
@@ -72,7 +57,6 @@ struct compat_statfs {
 	int		f_flags;
 	int		f_spare[5];
 };
-
 struct compat_ipc64_perm {
 	compat_key_t key;
 	__compat_uid32_t uid;
@@ -85,7 +69,6 @@ struct compat_ipc64_perm {
 	compat_ulong_t __unused1;
 	compat_ulong_t __unused2;
 };
-
 struct compat_semid64_ds {
 	struct compat_ipc64_perm sem_perm;
 	compat_ulong_t	sem_otime;
@@ -94,7 +77,6 @@ struct compat_semid64_ds {
 	compat_ulong_t	sem_otime_high;
 	compat_ulong_t	sem_ctime_high;
 };
-
 struct compat_msqid64_ds {
 	struct compat_ipc64_perm msg_perm;
 #ifndef CONFIG_CPU_LITTLE_ENDIAN
@@ -126,7 +108,6 @@ struct compat_msqid64_ds {
 	compat_ulong_t	__unused4;
 	compat_ulong_t	__unused5;
 };
-
 struct compat_shmid64_ds {
 	struct compat_ipc64_perm shm_perm;
 	compat_size_t	shm_segsz;
@@ -141,18 +122,14 @@ struct compat_shmid64_ds {
 	compat_ushort_t	shm_ctime_high;
 	compat_ushort_t	__unused2;
 };
-
-/* MIPS has unusual order of fields in stack_t */
 typedef struct compat_sigaltstack {
 	compat_uptr_t			ss_sp;
 	compat_size_t			ss_size;
 	int				ss_flags;
 } compat_stack_t;
 #define compat_sigaltstack compat_sigaltstack
-
 static inline int is_compat_task(void)
 {
 	return test_thread_flag(TIF_32BIT_ADDR);
 }
-
-#endif /* _ASM_COMPAT_H */
+#endif  

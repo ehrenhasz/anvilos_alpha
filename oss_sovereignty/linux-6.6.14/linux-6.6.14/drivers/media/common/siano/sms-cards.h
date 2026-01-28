@@ -1,18 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Card-specific functions for the Siano SMS1xxx USB dongle
- *
- *  Copyright (c) 2008 Michael Krufky <mkrufky@linuxtv.org>
- */
-
 #ifndef __SMS_CARDS_H__
 #define __SMS_CARDS_H__
-
 #include "smscoreapi.h"
-
 #include <linux/usb.h>
 #include "smsir.h"
-
 #define SMS_BOARD_UNKNOWN 0
 #define SMS1XXX_BOARD_SIANO_STELLAR 1
 #define SMS1XXX_BOARD_SIANO_NOVA_A  2
@@ -35,7 +25,6 @@
 #define SMS1XXX_BOARD_SIANO_DENVER_1530	19
 #define SMS1XXX_BOARD_SIANO_DENVER_2160 20
 #define SMS1XXX_BOARD_PCTV_77E		21
-
 struct sms_board_gpio_cfg {
 	int lna_vhf_exist;
 	int lna_vhf_ctrl;
@@ -61,34 +50,27 @@ struct sms_board_gpio_cfg {
 	int eeprom_wp;
 	int mrc_sense;
 	int mrc_pdn_resetn;
-	int mrc_gp0; /* mrcs spi int */
+	int mrc_gp0;  
 	int mrc_gp1;
 	int mrc_gp2;
 	int mrc_gp3;
 	int mrc_gp4;
 	int host_spi_gsp_ts_int;
 };
-
 struct sms_board {
 	enum sms_device_type_st type;
 	char *name, *fw[DEVICE_MODE_MAX];
 	struct sms_board_gpio_cfg board_cfg;
-	char *rc_codes;				/* Name of IR codes table */
-
-	/* gpios */
+	char *rc_codes;				 
 	int led_power, led_hi, led_lo, lna_ctrl, rf_switch;
-
 	char intf_num;
 	int default_mode;
 	unsigned int mtu;
 	unsigned int crystal;
 	struct sms_antenna_config_ST *antenna_config;
 };
-
 struct sms_board *sms_get_board(unsigned id);
-
 extern struct smscore_device_t *coredev;
-
 enum SMS_BOARD_EVENTS {
 	BOARD_EVENT_POWER_INIT,
 	BOARD_EVENT_POWER_SUSPEND,
@@ -109,19 +91,14 @@ enum SMS_BOARD_EVENTS {
 	BOARD_EVENT_MULTIPLEX_OK,
 	BOARD_EVENT_MULTIPLEX_ERRORS
 };
-
 int sms_board_event(struct smscore_device_t *coredev,
 		enum SMS_BOARD_EVENTS gevent);
-
 int sms_board_setup(struct smscore_device_t *coredev);
-
 #define SMS_LED_OFF 0
 #define SMS_LED_LO  1
 #define SMS_LED_HI  2
 int sms_board_led_feedback(struct smscore_device_t *coredev, int led);
 int sms_board_power(struct smscore_device_t *coredev, int onoff);
 int sms_board_lna_control(struct smscore_device_t *coredev, int onoff);
-
 extern int sms_board_load_modules(int id);
-
-#endif /* __SMS_CARDS_H__ */
+#endif  

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2023, Linaro Limited
- */
-
 #ifndef QCOM_PHY_QMP_PCS_UFS_V6_H_
 #define QCOM_PHY_QMP_PCS_UFS_V6_H_
-
-/* Only for QMP V6 PHY - UFS PCS registers */
 #define QPHY_V6_PCS_UFS_PHY_START			0x000
 #define QPHY_V6_PCS_UFS_POWER_DOWN_CONTROL		0x004
 #define QPHY_V6_PCS_UFS_SW_RESET			0x008
@@ -27,5 +20,4 @@
 #define QPHY_V6_PCS_UFS_READY_STATUS			0x1a8
 #define QPHY_V6_PCS_UFS_TX_MID_TERM_CTRL1		0x1f4
 #define QPHY_V6_PCS_UFS_MULTI_LANE_CTRL1		0x1fc
-
 #endif

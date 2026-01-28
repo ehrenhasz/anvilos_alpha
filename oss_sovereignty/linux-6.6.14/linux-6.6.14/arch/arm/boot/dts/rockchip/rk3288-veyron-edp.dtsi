@@ -1,10 +1,3 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Google Veyron (and derivatives) fragment for the edp displays
- *
- * Copyright 2019 Google LLC
- */
-
 / {
 	backlight_regulator: backlight-regulator {
 		compatible = "regulator-fixed";
@@ -16,7 +9,6 @@
 		vin-supply = <&vcc33_sys>;
 		startup-delay-us = <15000>;
 	};
-
 	panel_regulator: panel-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -26,7 +18,6 @@
 		regulator-name = "panel_regulator";
 		vin-supply = <&vcc33_sys>;
 	};
-
 	vcc18_lcd: vcc18-lcd {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -38,7 +29,6 @@
 		regulator-boot-on;
 		vin-supply = <&vcc18_wl>;
 	};
-
 	backlight: backlight {
 		compatible = "pwm-backlight";
 		brightness-levels = <0 255>;
@@ -52,13 +42,11 @@
 		pwm-off-delay-ms = <10>;
 		power-supply = <&backlight_regulator>;
 	};
-
 	panel: panel {
 		compatible = "innolux,n116bge";
 		status = "okay";
 		power-supply = <&panel_regulator>;
 		backlight = <&backlight>;
-
 		panel-timing {
 			clock-frequency = <74250000>;
 			hactive = <1366>;
@@ -72,7 +60,6 @@
 			vsync-len = <12>;
 			vsync-active = <0>;
 		};
-
 		ports {
 			panel_in: port {
 				panel_in_edp: endpoint {
@@ -82,13 +69,10 @@
 		};
 	};
 };
-
 &edp {
 	status = "okay";
-
 	pinctrl-names = "default";
 	pinctrl-0 = <&edp_hpd>;
-
 	ports {
 		edp_out: port@1 {
 			reg = <1>;
@@ -101,39 +85,31 @@
 		};
 	};
 };
-
 &edp_phy {
 	status = "okay";
 };
-
 &pwm0 {
 	status = "okay";
 };
-
 &vopl {
 	status = "okay";
 };
-
 &vopl_mmu {
 	status = "okay";
 };
-
 &pinctrl {
 	backlight {
 		bl_pwr_en: bl_pwr_en {
 			rockchip,pins = <2 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
-
 		bl_en: bl-en {
 			rockchip,pins = <7 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	lcd {
 		lcd_enable_h: lcd-en {
 			rockchip,pins = <7 RK_PB6 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
-
 		avdd_1v8_disp_en: avdd-1v8-disp-en {
 			rockchip,pins = <2 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};

@@ -1,9 +1,3 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (C) 2018 PHYTEC Messtechnik
- * Author: Christian Hemp <c.hemp@phytec.de>
- */
-
 / {
 	display: display0 {
 		#address-cells = <1>;
@@ -13,24 +7,19 @@
 		pinctrl-0 = <&pinctrl_disp0>;
 		interface-pix-fmt = "rgb24";
 		status = "disabled";
-
 		port@0 {
 			reg = <0>;
-
 			display0_in: endpoint {
 				remote-endpoint = <&ipu1_di0_disp0>;
 			};
 		};
-
 		port@1 {
 			reg = <1>;
-
 			display0_out: endpoint {
 				remote-endpoint = <&peb_panel_lcd_in>;
 			};
 		};
 	};
-
 	panel-lcd {
 		compatible = "edt,etm0700g0edh6";
 		pinctrl-names = "default";
@@ -39,14 +28,12 @@
 		enable-gpios = <&gpio3 22 GPIO_ACTIVE_HIGH>;
 		backlight = <&backlight>;
 		status = "disabled";
-
 		port {
 			peb_panel_lcd_in: endpoint {
 				remote-endpoint = <&display0_out>;
 			};
 		};
 	};
-
 	reg_display: regulator-peb-display {
 		compatible = "regulator-fixed";
 		regulator-name = "peb-display";
@@ -54,7 +41,6 @@
 		regulator-max-microvolt = <3300000>;
 	};
 };
-
 &i2c1 {
 	edt_ft5x06: touchscreen@38 {
 		compatible = "edt,edt-ft5406";
@@ -66,11 +52,9 @@
 		status = "disabled";
 	};
 };
-
 &ipu1_di0_disp0 {
 	remote-endpoint = <&display0_in>;
 };
-
 &iomuxc {
 	pinctrl_disp0: disp0grp {
 		fsl,pins = <
@@ -104,13 +88,11 @@
 			MX6QDL_PAD_DISP0_DAT23__IPU1_DISP0_DATA23	0x10
 		>;
 	};
-
 	pinctrl_disp0_pwr: disp0pwrgrp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D22__GPIO3_IO22			0x1b0b0
 		>;
 	};
-
 	pinctrl_edt_ft5x06: edtft5x06grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_DA2__GPIO3_IO02			0xb0b1

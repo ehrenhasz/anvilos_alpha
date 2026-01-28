@@ -1,18 +1,10 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
-
 #ifndef __INTEL_COLOR_H__
 #define __INTEL_COLOR_H__
-
 #include <linux/types.h>
-
 struct intel_crtc_state;
 struct intel_crtc;
 struct drm_i915_private;
 struct drm_property_blob;
-
 void intel_color_init_hooks(struct drm_i915_private *i915);
 int intel_color_init(struct drm_i915_private *i915);
 void intel_color_crtc_init(struct intel_crtc *crtc);
@@ -29,5 +21,4 @@ bool intel_color_lut_equal(const struct intel_crtc_state *crtc_state,
 			   const struct drm_property_blob *blob2,
 			   bool is_pre_csc_lut);
 void intel_color_assert_luts(const struct intel_crtc_state *crtc_state);
-
-#endif /* __INTEL_COLOR_H__ */
+#endif  

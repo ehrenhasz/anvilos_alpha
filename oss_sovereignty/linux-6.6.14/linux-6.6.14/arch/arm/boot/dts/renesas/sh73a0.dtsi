@@ -1,24 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device Tree Source for the SH-Mobile AG5 (R8A73A00/SH73A0) SoC
- *
- * Copyright (C) 2012 Renesas Solutions Corp.
- */
-
 #include <dt-bindings/clock/sh73a0-clock.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/interrupt-controller/irq.h>
-
 / {
 	compatible = "renesas,sh73a0";
 	interrupt-parent = <&gic>;
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a9";
@@ -38,21 +28,18 @@
 			next-level-cache = <&L2>;
 		};
 	};
-
 	timer@f0000200 {
 		compatible = "arm,cortex-a9-global-timer";
 		reg = <0xf0000200 0x100>;
 		interrupts = <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_EDGE_RISING)>;
 		clocks = <&periph_clk>;
 	};
-
 	timer@f0000600 {
 		compatible = "arm,cortex-a9-twd-timer";
 		reg = <0xf0000600 0x20>;
 		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_EDGE_RISING)>;
 		clocks = <&periph_clk>;
 	};
-
 	gic: interrupt-controller@f0001000 {
 		compatible = "arm,cortex-a9-gic";
 		#interrupt-cells = <3>;
@@ -60,7 +47,6 @@
 		reg = <0xf0001000 0x1000>,
 		      <0xf0000100 0x100>;
 	};
-
 	L2: cache-controller@f0100000 {
 		compatible = "arm,pl310-cache";
 		reg = <0xf0100000 0x1000>;
@@ -72,7 +58,6 @@
 		cache-unified;
 		cache-level = <2>;
 	};
-
 	sbsc2: memory-controller@fb400000 {
 		compatible = "renesas,sbsc-sh73a0";
 		reg = <0xfb400000 0x400>;
@@ -81,7 +66,6 @@
 		interrupt-names = "sec", "temp";
 		power-domains = <&pd_a4bc1>;
 	};
-
 	sbsc1: memory-controller@fe400000 {
 		compatible = "renesas,sbsc-sh73a0";
 		reg = <0xfe400000 0x400>;
@@ -90,14 +74,12 @@
 		interrupt-names = "sec", "temp";
 		power-domains = <&pd_a4bc0>;
 	};
-
 	pmu {
 		compatible = "arm,cortex-a9-pmu";
 		interrupts = <GIC_SPI 55 IRQ_TYPE_LEVEL_HIGH>,
 			     <GIC_SPI 56 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-affinity = <&cpu0>, <&cpu1>;
 	};
-
 	cmt1: timer@e6138000 {
 		compatible = "renesas,sh73a0-cmt1";
 		reg = <0xe6138000 0x200>;
@@ -107,7 +89,6 @@
 		power-domains = <&pd_c5>;
 		status = "disabled";
 	};
-
 	irqpin0: interrupt-controller@e6900000 {
 		compatible = "renesas,intc-irqpin-sh73a0", "renesas,intc-irqpin";
 		#interrupt-cells = <2>;
@@ -129,7 +110,6 @@
 		power-domains = <&pd_a4s>;
 		control-parent;
 	};
-
 	irqpin1: interrupt-controller@e6900004 {
 		compatible = "renesas,intc-irqpin-sh73a0", "renesas,intc-irqpin";
 		#interrupt-cells = <2>;
@@ -151,7 +131,6 @@
 		power-domains = <&pd_a4s>;
 		control-parent;
 	};
-
 	irqpin2: interrupt-controller@e6900008 {
 		compatible = "renesas,intc-irqpin-sh73a0", "renesas,intc-irqpin";
 		#interrupt-cells = <2>;
@@ -173,7 +152,6 @@
 		power-domains = <&pd_a4s>;
 		control-parent;
 	};
-
 	irqpin3: interrupt-controller@e690000c {
 		compatible = "renesas,intc-irqpin-sh73a0", "renesas,intc-irqpin";
 		#interrupt-cells = <2>;
@@ -195,7 +173,6 @@
 		power-domains = <&pd_a4s>;
 		control-parent;
 	};
-
 	i2c0: i2c@e6820000 {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -209,7 +186,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	i2c1: i2c@e6822000 {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -223,7 +199,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	i2c2: i2c@e6824000 {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -237,7 +212,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	i2c3: i2c@e6826000 {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -251,7 +225,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	i2c4: i2c@e6828000 {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -265,7 +238,6 @@
 		power-domains = <&pd_c5>;
 		status = "disabled";
 	};
-
 	mmcif: mmc@e6bd0000 {
 		compatible = "renesas,mmcif-sh73a0", "renesas,sh-mmcif";
 		reg = <0xe6bd0000 0x100>;
@@ -276,7 +248,6 @@
 		reg-io-width = <4>;
 		status = "disabled";
 	};
-
 	msiof0: spi@e6e20000 {
 		compatible = "renesas,msiof-sh73a0", "renesas,sh-mobile-msiof";
 		reg = <0xe6e20000 0x0064>;
@@ -287,7 +258,6 @@
 		#size-cells = <0>;
 		status = "disabled";
 	};
-
 	msiof1: spi@e6e10000 {
 		compatible = "renesas,msiof-sh73a0", "renesas,sh-mobile-msiof";
 		reg = <0xe6e10000 0x0064>;
@@ -298,7 +268,6 @@
 		#size-cells = <0>;
 		status = "disabled";
 	};
-
 	msiof2: spi@e6e00000 {
 		compatible = "renesas,msiof-sh73a0", "renesas,sh-mobile-msiof";
 		reg = <0xe6e00000 0x0064>;
@@ -309,7 +278,6 @@
 		#size-cells = <0>;
 		status = "disabled";
 	};
-
 	msiof3: spi@e6c90000 {
 		compatible = "renesas,msiof-sh73a0", "renesas,sh-mobile-msiof";
 		reg = <0xe6c90000 0x0064>;
@@ -320,7 +288,6 @@
 		#size-cells = <0>;
 		status = "disabled";
 	};
-
 	sdhi0: mmc@ee100000 {
 		compatible = "renesas,sdhi-sh73a0";
 		reg = <0xee100000 0x100>;
@@ -332,8 +299,6 @@
 		cap-sd-highspeed;
 		status = "disabled";
 	};
-
-	/* SDHI1 and SDHI2 have no CD pins, no need for CD IRQ */
 	sdhi1: mmc@ee120000 {
 		compatible = "renesas,sdhi-sh73a0";
 		reg = <0xee120000 0x100>;
@@ -345,7 +310,6 @@
 		cap-sd-highspeed;
 		status = "disabled";
 	};
-
 	sdhi2: mmc@ee140000 {
 		compatible = "renesas,sdhi-sh73a0";
 		reg = <0xee140000 0x100>;
@@ -357,7 +321,6 @@
 		cap-sd-highspeed;
 		status = "disabled";
 	};
-
 	scifa0: serial@e6c40000 {
 		compatible = "renesas,scifa-sh73a0", "renesas,scifa";
 		reg = <0xe6c40000 0x100>;
@@ -367,7 +330,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	scifa1: serial@e6c50000 {
 		compatible = "renesas,scifa-sh73a0", "renesas,scifa";
 		reg = <0xe6c50000 0x100>;
@@ -377,7 +339,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	scifa2: serial@e6c60000 {
 		compatible = "renesas,scifa-sh73a0", "renesas,scifa";
 		reg = <0xe6c60000 0x100>;
@@ -387,7 +348,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	scifa3: serial@e6c70000 {
 		compatible = "renesas,scifa-sh73a0", "renesas,scifa";
 		reg = <0xe6c70000 0x100>;
@@ -397,7 +357,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	scifa4: serial@e6c80000 {
 		compatible = "renesas,scifa-sh73a0", "renesas,scifa";
 		reg = <0xe6c80000 0x100>;
@@ -407,7 +366,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	scifa5: serial@e6cb0000 {
 		compatible = "renesas,scifa-sh73a0", "renesas,scifa";
 		reg = <0xe6cb0000 0x100>;
@@ -417,7 +375,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	scifa6: serial@e6cc0000 {
 		compatible = "renesas,scifa-sh73a0", "renesas,scifa";
 		reg = <0xe6cc0000 0x100>;
@@ -427,7 +384,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	scifa7: serial@e6cd0000 {
 		compatible = "renesas,scifa-sh73a0", "renesas,scifa";
 		reg = <0xe6cd0000 0x100>;
@@ -437,7 +393,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	scifb: serial@e6c30000 {
 		compatible = "renesas,scifb-sh73a0", "renesas,scifb";
 		reg = <0xe6c30000 0x100>;
@@ -447,7 +402,6 @@
 		power-domains = <&pd_a3sp>;
 		status = "disabled";
 	};
-
 	pfc: pinctrl@e6050000 {
 		compatible = "renesas,pfc-sh73a0";
 		reg = <0xe6050000 0x8000>,
@@ -468,76 +422,62 @@
 			<&irqpin3 4 0>, <&irqpin3 5 0>, <&irqpin3 6 0>, <&irqpin3 7 0>;
 		power-domains = <&pd_c5>;
 	};
-
 	sysc: system-controller@e6180000 {
 		compatible = "renesas,sysc-sh73a0", "renesas,sysc-rmobile";
 		reg = <0xe6180000 0x8000>, <0xe6188000 0x8000>;
-
 		pm-domains {
 			pd_c5: c5 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				#power-domain-cells = <0>;
-
 				pd_c4: c4@0 {
 					reg = <0>;
 					#power-domain-cells = <0>;
 				};
-
 				pd_d4: d4@1 {
 					reg = <1>;
 					#power-domain-cells = <0>;
 				};
-
 				pd_a4bc0: a4bc0@4 {
 					reg = <4>;
 					#power-domain-cells = <0>;
 				};
-
 				pd_a4bc1: a4bc1@5 {
 					reg = <5>;
 					#power-domain-cells = <0>;
 				};
-
 				pd_a4lc0: a4lc0@6 {
 					reg = <6>;
 					#power-domain-cells = <0>;
 				};
-
 				pd_a4lc1: a4lc1@7 {
 					reg = <7>;
 					#power-domain-cells = <0>;
 				};
-
 				pd_a4mp: a4mp@8 {
 					reg = <8>;
 					#address-cells = <1>;
 					#size-cells = <0>;
 					#power-domain-cells = <0>;
-
 					pd_a3mp: a3mp@9 {
 						reg = <9>;
 						#power-domain-cells = <0>;
 					};
-
 					pd_a3vc: a3vc@10 {
 						reg = <10>;
 						#power-domain-cells = <0>;
 					};
 				};
-
 				pd_a4rm: a4rm@12 {
 					reg = <12>;
 					#address-cells = <1>;
 					#size-cells = <0>;
 					#power-domain-cells = <0>;
-
 					pd_a3r: a3r@13 {
 						reg = <13>;
 						#address-cells = <1>;
 						#size-cells = <0>;
 						#power-domain-cells = <0>;
-
 						pd_a2rv: a2rv@14 {
 							reg = <14>;
 							#address-cells = <1>;
@@ -546,29 +486,24 @@
 						};
 					};
 				};
-
 				pd_a4s: a4s@16 {
 					reg = <16>;
 					#address-cells = <1>;
 					#size-cells = <0>;
 					#power-domain-cells = <0>;
-
 					pd_a3sp: a3sp@17 {
 						reg = <17>;
 						#power-domain-cells = <0>;
 					};
-
 					pd_a3sg: a3sg@18 {
 						reg = <18>;
 						#power-domain-cells = <0>;
 					};
-
 					pd_a3sm: a3sm@19 {
 						reg = <19>;
 						#address-cells = <1>;
 						#size-cells = <0>;
 						#power-domain-cells = <0>;
-
 						pd_a2sl: a2sl@20 {
 							reg = <20>;
 							#power-domain-cells = <0>;
@@ -578,7 +513,6 @@
 			};
 		};
 	};
-
 	sh_fsi2: sound@ec230000 {
 		#sound-dai-cells = <1>;
 		compatible = "renesas,fsi2-sh73a0", "renesas,sh_fsi2";
@@ -588,7 +522,6 @@
 		power-domains = <&pd_a4mp>;
 		status = "disabled";
 	};
-
 	bsc: bus@fec10000 {
 		compatible = "renesas,bsc-sh73a0", "renesas,bsc",
 			     "simple-pm-bus";
@@ -600,13 +533,10 @@
 		clocks = <&zb_clk>;
 		power-domains = <&pd_a4s>;
 	};
-
 	clocks {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
-
-		/* External root clocks */
 		extalr_clk: extalr {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
@@ -620,29 +550,23 @@
 		extal2_clk: extal2 {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
-			/* This value must be overridden by the board. */
 			clock-frequency = <0>;
 		};
 		extcki_clk: extcki {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
-			/* This value can be overridden by the board. */
 			clock-frequency = <0>;
 		};
 		fsiack_clk: fsiack {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
-			/* This value can be overridden by the board. */
 			clock-frequency = <0>;
 		};
 		fsibck_clk: fsibck {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
-			/* This value can be overridden by the board. */
 			clock-frequency = <0>;
 		};
-
-		/* Special CPG clocks */
 		cpg_clocks: cpg_clocks@e6150000 {
 			compatible = "renesas,sh73a0-cpg-clocks";
 			reg = <0xe6150000 0x10000>;
@@ -653,8 +577,6 @@
 					     "zg", "m3", "b", "m1", "m2",
 					     "z", "zx", "hp";
 		};
-
-		/* Variable factor clocks (DIV6) */
 		vclk1_clk: vclk1@e6150008 {
 			compatible = "renesas,sh73a0-div6-clock", "renesas,cpg-div6-clock";
 			reg = <0xe6150008 4>;
@@ -796,8 +718,6 @@
 				 <&extcki_clk>, <0>, <0>, <0>;
 			#clock-cells = <0>;
 		};
-
-		/* Fixed factor clocks */
 		main_div2_clk: main_div2 {
 			compatible = "fixed-factor-clock";
 			clocks = <&cpg_clocks SH73A0_CLK_MAIN>;
@@ -833,8 +753,6 @@
 			clock-div = <4>;
 			clock-mult = <1>;
 		};
-
-		/* Gate clocks */
 		mstp0_clks: mstp0_clks@e6150130 {
 			compatible = "renesas,sh73a0-mstp-clocks", "renesas,cpg-mstp-clocks";
 			reg = <0xe6150130 4>, <0xe6150030 4>;

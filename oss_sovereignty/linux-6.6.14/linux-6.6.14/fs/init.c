@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Routines that mimic syscalls, but don't use the user address space or file
- * descriptors.  Only for init/ and related early init code.
- */
 #include <linux/init.h>
 #include <linux/mount.h>
 #include <linux/namei.h>
@@ -12,13 +7,11 @@
 #include <linux/init_syscalls.h>
 #include <linux/security.h>
 #include "internal.h"
-
 int __init init_mount(const char *dev_name, const char *dir_name,
 		const char *type_page, unsigned long flags, void *data_page)
 {
 	struct path path;
 	int ret;
-
 	ret = kern_path(dir_name, LOOKUP_FOLLOW, &path);
 	if (ret)
 		return ret;
@@ -26,13 +19,11 @@ int __init init_mount(const char *dev_name, const char *dir_name,
 	path_put(&path);
 	return ret;
 }
-
 int __init init_umount(const char *name, int flags)
 {
 	int lookup_flags = LOOKUP_MOUNTPOINT;
 	struct path path;
 	int ret;
-
 	if (!(flags & UMOUNT_NOFOLLOW))
 		lookup_flags |= LOOKUP_FOLLOW;
 	ret = kern_path(name, lookup_flags, &path);
@@ -40,12 +31,10 @@ int __init init_umount(const char *name, int flags)
 		return ret;
 	return path_umount(&path, flags);
 }
-
 int __init init_chdir(const char *filename)
 {
 	struct path path;
 	int error;
-
 	error = kern_path(filename, LOOKUP_FOLLOW | LOOKUP_DIRECTORY, &path);
 	if (error)
 		return error;
@@ -55,12 +44,10 @@ int __init init_chdir(const char *filename)
 	path_put(&path);
 	return error;
 }
-
 int __init init_chroot(const char *filename)
 {
 	struct path path;
 	int error;
-
 	error = kern_path(filename, LOOKUP_FOLLOW | LOOKUP_DIRECTORY, &path);
 	if (error)
 		return error;
@@ -78,13 +65,11 @@ dput_and_out:
 	path_put(&path);
 	return error;
 }
-
 int __init init_chown(const char *filename, uid_t user, gid_t group, int flags)
 {
 	int lookup_flags = (flags & AT_SYMLINK_NOFOLLOW) ? 0 : LOOKUP_FOLLOW;
 	struct path path;
 	int error;
-
 	error = kern_path(filename, lookup_flags, &path);
 	if (error)
 		return error;
@@ -96,12 +81,10 @@ int __init init_chown(const char *filename, uid_t user, gid_t group, int flags)
 	path_put(&path);
 	return error;
 }
-
 int __init init_chmod(const char *filename, umode_t mode)
 {
 	struct path path;
 	int error;
-
 	error = kern_path(filename, LOOKUP_FOLLOW, &path);
 	if (error)
 		return error;
@@ -109,12 +92,10 @@ int __init init_chmod(const char *filename, umode_t mode)
 	path_put(&path);
 	return error;
 }
-
 int __init init_eaccess(const char *filename)
 {
 	struct path path;
 	int error;
-
 	error = kern_path(filename, LOOKUP_FOLLOW, &path);
 	if (error)
 		return error;
@@ -122,13 +103,11 @@ int __init init_eaccess(const char *filename)
 	path_put(&path);
 	return error;
 }
-
 int __init init_stat(const char *filename, struct kstat *stat, int flags)
 {
 	int lookup_flags = (flags & AT_SYMLINK_NOFOLLOW) ? 0 : LOOKUP_FOLLOW;
 	struct path path;
 	int error;
-
 	error = kern_path(filename, lookup_flags, &path);
 	if (error)
 		return error;
@@ -137,22 +116,18 @@ int __init init_stat(const char *filename, struct kstat *stat, int flags)
 	path_put(&path);
 	return error;
 }
-
 int __init init_mknod(const char *filename, umode_t mode, unsigned int dev)
 {
 	struct dentry *dentry;
 	struct path path;
 	int error;
-
 	if (S_ISFIFO(mode) || S_ISSOCK(mode))
 		dev = 0;
 	else if (!(S_ISBLK(mode) || S_ISCHR(mode)))
 		return -EINVAL;
-
 	dentry = kern_path_create(AT_FDCWD, filename, &path, 0);
 	if (IS_ERR(dentry))
 		return PTR_ERR(dentry);
-
 	if (!IS_POSIXACL(path.dentry->d_inode))
 		mode &= ~current_umask();
 	error = security_path_mknod(&path, dentry, mode, dev);
@@ -162,23 +137,19 @@ int __init init_mknod(const char *filename, umode_t mode, unsigned int dev)
 	done_path_create(&path, dentry);
 	return error;
 }
-
 int __init init_link(const char *oldname, const char *newname)
 {
 	struct dentry *new_dentry;
 	struct path old_path, new_path;
 	struct mnt_idmap *idmap;
 	int error;
-
 	error = kern_path(oldname, 0, &old_path);
 	if (error)
 		return error;
-
 	new_dentry = kern_path_create(AT_FDCWD, newname, &new_path, 0);
 	error = PTR_ERR(new_dentry);
 	if (IS_ERR(new_dentry))
 		goto out;
-
 	error = -EXDEV;
 	if (old_path.mnt != new_path.mnt)
 		goto out_dput;
@@ -197,13 +168,11 @@ out:
 	path_put(&old_path);
 	return error;
 }
-
 int __init init_symlink(const char *oldname, const char *newname)
 {
 	struct dentry *dentry;
 	struct path path;
 	int error;
-
 	dentry = kern_path_create(AT_FDCWD, newname, &path, 0);
 	if (IS_ERR(dentry))
 		return PTR_ERR(dentry);
@@ -214,18 +183,15 @@ int __init init_symlink(const char *oldname, const char *newname)
 	done_path_create(&path, dentry);
 	return error;
 }
-
 int __init init_unlink(const char *pathname)
 {
 	return do_unlinkat(AT_FDCWD, getname_kernel(pathname));
 }
-
 int __init init_mkdir(const char *pathname, umode_t mode)
 {
 	struct dentry *dentry;
 	struct path path;
 	int error;
-
 	dentry = kern_path_create(AT_FDCWD, pathname, &path, LOOKUP_DIRECTORY);
 	if (IS_ERR(dentry))
 		return PTR_ERR(dentry);
@@ -238,17 +204,14 @@ int __init init_mkdir(const char *pathname, umode_t mode)
 	done_path_create(&path, dentry);
 	return error;
 }
-
 int __init init_rmdir(const char *pathname)
 {
 	return do_rmdir(AT_FDCWD, getname_kernel(pathname));
 }
-
 int __init init_utimes(char *filename, struct timespec64 *ts)
 {
 	struct path path;
 	int error;
-
 	error = kern_path(filename, 0, &path);
 	if (error)
 		return error;
@@ -256,11 +219,9 @@ int __init init_utimes(char *filename, struct timespec64 *ts)
 	path_put(&path);
 	return error;
 }
-
 int __init init_dup(struct file *file)
 {
 	int fd;
-
 	fd = get_unused_fd_flags(0);
 	if (fd < 0)
 		return fd;

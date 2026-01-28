@@ -1,23 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- *  S390 version
- *
- *  Derived from "include/asm-i386/statfs.h"
- */
-
 #ifndef _S390_STATFS_H
 #define _S390_STATFS_H
-
-/*
- * We can't use <asm-generic/statfs.h> because in 64-bit mode
- * we mix ints of different sizes in our struct statfs.
- */
-
 #ifndef __KERNEL_STRICT_NAMES
 #include <linux/types.h>
 typedef __kernel_fsid_t	fsid_t;
 #endif
-
 struct statfs {
 	unsigned int	f_type;
 	unsigned int	f_bsize;
@@ -32,7 +18,6 @@ struct statfs {
 	unsigned int	f_flags;
 	unsigned int	f_spare[5];
 };
-
 struct statfs64 {
 	unsigned int	f_type;
 	unsigned int	f_bsize;
@@ -47,5 +32,4 @@ struct statfs64 {
 	unsigned int	f_flags;
 	unsigned int	f_spare[5];
 };
-
 #endif

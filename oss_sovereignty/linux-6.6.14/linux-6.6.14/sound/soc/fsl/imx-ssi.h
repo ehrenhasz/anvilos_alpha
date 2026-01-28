@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef _IMX_SSI_H
 #define _IMX_SSI_H
-
 #define SSI_STX0	0x00
 #define SSI_STX1	0x04
 #define SSI_SRX0	0x08
 #define SSI_SRX1	0x0c
-
 #define SSI_SCR		0x10
 #define SSI_SCR_CLK_IST		(1 << 9)
 #define SSI_SCR_CLK_IST_SHIFT	9
@@ -22,7 +18,6 @@
 #define SSI_SCR_RE		(1 << 2)
 #define SSI_SCR_TE		(1 << 1)
 #define SSI_SCR_SSIEN		(1 << 0)
-
 #define SSI_SISR	0x14
 #define SSI_SISR_MASK		((1 << 19) - 1)
 #define SSI_SISR_CMDAU		(1 << 18)
@@ -44,7 +39,6 @@
 #define SSI_SISR_RFF0		(1 << 2)
 #define SSI_SISR_TFE1		(1 << 1)
 #define SSI_SISR_TFE0		(1 << 0)
-
 #define SSI_SIER	0x18
 #define SSI_SIER_RDMAE		(1 << 22)
 #define SSI_SIER_RIE		(1 << 21)
@@ -69,7 +63,6 @@
 #define SSI_SIER_RFF0_EN	(1 << 2)
 #define SSI_SIER_TFE1_EN	(1 << 1)
 #define SSI_SIER_TFE0_EN	(1 << 0)
-
 #define SSI_STCR	0x1c
 #define SSI_STCR_TXBIT0		(1 << 9)
 #define SSI_STCR_TFEN1		(1 << 8)
@@ -82,7 +75,6 @@
 #define SSI_STCR_TFSI		(1 << 2)
 #define SSI_STCR_TFSL		(1 << 1)
 #define SSI_STCR_TEFS		(1 << 0)
-
 #define SSI_SRCR	0x20
 #define SSI_SRCR_RXBIT0		(1 << 9)
 #define SSI_SRCR_RFEN1		(1 << 8)
@@ -95,7 +87,6 @@
 #define SSI_SRCR_RFSI		(1 << 2)
 #define SSI_SRCR_RFSL		(1 << 1)
 #define SSI_SRCR_REFS		(1 << 0)
-
 #define SSI_SRCCR		0x28
 #define SSI_SRCCR_DIV2		(1 << 18)
 #define SSI_SRCCR_PSR		(1 << 17)
@@ -105,7 +96,6 @@
 #define SSI_SRCCR_WL_MASK	(0xf << 13)
 #define SSI_SRCCR_DC_MASK	(0x1f << 8)
 #define SSI_SRCCR_PM_MASK	(0xff << 0)
-
 #define SSI_STCCR		0x24
 #define SSI_STCCR_DIV2		(1 << 18)
 #define SSI_STCCR_PSR		(1 << 17)
@@ -115,7 +105,6 @@
 #define SSI_STCCR_WL_MASK	(0xf << 13)
 #define SSI_STCCR_DC_MASK	(0x1f << 8)
 #define SSI_STCCR_PM_MASK	(0xff << 0)
-
 #define SSI_SFCSR	0x2c
 #define SSI_SFCSR_RFCNT1(x)	(((x) & 0xf) << 28)
 #define SSI_RX_FIFO_1_COUNT_SHIFT 28
@@ -131,7 +120,6 @@
 #define SSI_SFCSR_TFWM0(x)	(((x) & 0xf) <<  0)
 #define SSI_SFCSR_RFWM0_MASK	(0xf <<  4)
 #define SSI_SFCSR_TFWM0_MASK	(0xf <<  0)
-
 #define SSI_STR		0x30
 #define SSI_STR_TEST		(1 << 15)
 #define SSI_STR_RCK2TCK		(1 << 14)
@@ -141,7 +129,6 @@
 #define SSI_STR_TCK2RCK		(1 <<  6)
 #define SSI_STR_TFS2RFS		(1 <<  5)
 #define SSI_STR_TXSTATE(x)	(((x) & 0xf) << 0)
-
 #define SSI_SOR		0x34
 #define SSI_SOR_CLKOFF		(1 << 6)
 #define SSI_SOR_RX_CLR		(1 << 5)
@@ -150,7 +137,6 @@
 #define SSI_SOR_WAIT(x)		(((x) & 0x3) << 1)
 #define SSI_SOR_WAIT_MASK	(0x3 << 1)
 #define SSI_SOR_SYNRST		(1 << 0)
-
 #define SSI_SACNT	0x38
 #define SSI_SACNT_FRDIV(x)	(((x) & 0x3f) << 5)
 #define SSI_SACNT_WR		(1 << 4)
@@ -158,7 +144,6 @@
 #define SSI_SACNT_TIF		(1 << 2)
 #define SSI_SACNT_FV		(1 << 1)
 #define SSI_SACNT_AC97EN	(1 << 0)
-
 #define SSI_SACADD	0x3c
 #define SSI_SACDAT	0x40
 #define SSI_SATAG	0x44
@@ -167,48 +152,35 @@
 #define SSI_SACCST	0x50
 #define SSI_SACCEN	0x54
 #define SSI_SACCDIS	0x58
-
-/* SSI clock sources */
 #define IMX_SSP_SYS_CLK		0
-
-/* SSI audio dividers */
 #define IMX_SSI_TX_DIV_2	0
 #define IMX_SSI_TX_DIV_PSR	1
 #define IMX_SSI_TX_DIV_PM	2
 #define IMX_SSI_RX_DIV_2	3
 #define IMX_SSI_RX_DIV_PSR	4
 #define IMX_SSI_RX_DIV_PM	5
-
 #define DRV_NAME "imx-ssi"
-
 #include <linux/dmaengine.h>
 #include <linux/dma/imx-dma.h>
 #include <sound/dmaengine_pcm.h>
 #include "imx-pcm.h"
-
 struct imx_ssi {
 	struct platform_device *ac97_dev;
-
 	struct snd_soc_dai *imx_ac97;
 	struct clk *clk;
 	void __iomem *base;
 	int irq;
 	int fiq_enable;
 	unsigned int offset;
-
 	unsigned int flags;
-
 	void (*ac97_reset) (struct snd_ac97 *ac97);
 	void (*ac97_warm_reset)(struct snd_ac97 *ac97);
-
 	struct snd_dmaengine_dai_dma_data dma_params_rx;
 	struct snd_dmaengine_dai_dma_data dma_params_tx;
 	struct imx_dma_data filter_data_tx;
 	struct imx_dma_data filter_data_rx;
 	struct imx_pcm_fiq_params fiq_params;
-
 	int fiq_init;
 	int dma_init;
 };
-
-#endif /* _IMX_SSI_H */
+#endif  

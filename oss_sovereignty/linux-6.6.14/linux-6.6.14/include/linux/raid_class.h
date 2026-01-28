@@ -1,22 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * raid_class.h - a generic raid visualisation class
- *
- * Copyright (c) 2005 - James Bottomley <James.Bottomley@steeleye.com>
- */
 #include <linux/transport_class.h>
-
 struct raid_template {
 	struct transport_container raid_attrs;
 };
-
 struct raid_function_template {
 	const void *cookie;
 	int (*is_raid)(struct device *);
 	void (*get_resync)(struct device *);
 	void (*get_state)(struct device *);
 };
-
 enum raid_state {
 	RAID_STATE_UNKNOWN = 0,
 	RAID_STATE_ACTIVE,
@@ -24,7 +15,6 @@ enum raid_state {
 	RAID_STATE_RESYNCING,
 	RAID_STATE_OFFLINE,
 };
-
 enum raid_level {
 	RAID_LEVEL_UNKNOWN = 0,
 	RAID_LEVEL_LINEAR,
@@ -39,7 +29,6 @@ enum raid_level {
 	RAID_LEVEL_6,
 	RAID_LEVEL_JBOD,
 };
-
 struct raid_data {
 	struct list_head component_list;
 	int component_count;
@@ -47,10 +36,7 @@ struct raid_data {
 	enum raid_state state;
 	int resync;
 };
-
-/* resync complete goes from 0 to this */
 #define RAID_MAX_RESYNC		(10000)
-
 #define DEFINE_RAID_ATTRIBUTE(type, attr)				      \
 static inline void							      \
 raid_set_##attr(struct raid_template *r, struct device *dev, type value) {    \
@@ -70,10 +56,8 @@ raid_get_##attr(struct raid_template *r, struct device *dev) {		      \
 	rd = dev_get_drvdata(device);					      \
 	return rd->attr;						      \
 }
-
 DEFINE_RAID_ATTRIBUTE(enum raid_level, level)
 DEFINE_RAID_ATTRIBUTE(int, resync)
 DEFINE_RAID_ATTRIBUTE(enum raid_state, state)
-	
 struct raid_template *raid_class_attach(struct raid_function_template *);
 void raid_class_release(struct raid_template *);

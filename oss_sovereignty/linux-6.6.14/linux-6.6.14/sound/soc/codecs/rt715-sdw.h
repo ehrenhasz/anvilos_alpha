@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rt715-sdw.h -- RT715 ALSA SoC audio driver header
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- */
-
 #ifndef __RT715_SDW_H__
 #define __RT715_SDW_H__
-
 static const struct reg_default rt715_reg_defaults[] = {
 	{ 0x0000, 0x00 },
 	{ 0x0001, 0x00 },
@@ -333,5 +325,4 @@ static const struct reg_default rt715_reg_defaults[] = {
 	{ 0x83a9, 0x00 },
 	{ 0x752039, 0xa500 },
 };
-
-#endif /* __RT715_H__ */
+#endif  

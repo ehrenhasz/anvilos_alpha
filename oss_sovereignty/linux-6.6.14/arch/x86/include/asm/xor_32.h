@@ -1,33 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef _ASM_X86_XOR_32_H
 #define _ASM_X86_XOR_32_H
-
-/*
- * Optimized RAID-5 checksumming functions for MMX.
- */
-
-/*
- * High-speed RAID5 checksumming functions utilizing MMX instructions.
- * Copyright (C) 1998 Ingo Molnar.
- */
-
 #define LD(x, y)	"       movq   8*("#x")(%1), %%mm"#y"   ;\n"
 #define ST(x, y)	"       movq %%mm"#y",   8*("#x")(%1)   ;\n"
 #define XO1(x, y)	"       pxor   8*("#x")(%2), %%mm"#y"   ;\n"
 #define XO2(x, y)	"       pxor   8*("#x")(%3), %%mm"#y"   ;\n"
 #define XO3(x, y)	"       pxor   8*("#x")(%4), %%mm"#y"   ;\n"
 #define XO4(x, y)	"       pxor   8*("#x")(%5), %%mm"#y"   ;\n"
-
 #include <asm/fpu/api.h>
-
 static void
 xor_pII_mmx_2(unsigned long bytes, unsigned long * __restrict p1,
 	      const unsigned long * __restrict p2)
 {
 	unsigned long lines = bytes >> 7;
-
 	kernel_fpu_begin();
-
 	asm volatile(
 #undef BLOCK
 #define BLOCK(i)				\
@@ -43,15 +28,12 @@ xor_pII_mmx_2(unsigned long bytes, unsigned long * __restrict p1,
 			ST(i + 2, 2)		\
 				XO1(i + 3, 3)	\
 				ST(i + 3, 3)
-
 	" .align 32			;\n"
 	" 1:                            ;\n"
-
 	BLOCK(0)
 	BLOCK(4)
 	BLOCK(8)
 	BLOCK(12)
-
 	"       addl $128, %1         ;\n"
 	"       addl $128, %2         ;\n"
 	"       decl %0               ;\n"
@@ -60,19 +42,15 @@ xor_pII_mmx_2(unsigned long bytes, unsigned long * __restrict p1,
 	  "+r" (p1), "+r" (p2)
 	:
 	: "memory");
-
 	kernel_fpu_end();
 }
-
 static void
 xor_pII_mmx_3(unsigned long bytes, unsigned long * __restrict p1,
 	      const unsigned long * __restrict p2,
 	      const unsigned long * __restrict p3)
 {
 	unsigned long lines = bytes >> 7;
-
 	kernel_fpu_begin();
-
 	asm volatile(
 #undef BLOCK
 #define BLOCK(i)				\
@@ -92,15 +70,12 @@ xor_pII_mmx_3(unsigned long bytes, unsigned long * __restrict p1,
 			ST(i + 2, 2)		\
 				XO2(i + 3, 3)	\
 				ST(i + 3, 3)
-
 	" .align 32			;\n"
 	" 1:                            ;\n"
-
 	BLOCK(0)
 	BLOCK(4)
 	BLOCK(8)
 	BLOCK(12)
-
 	"       addl $128, %1         ;\n"
 	"       addl $128, %2         ;\n"
 	"       addl $128, %3         ;\n"
@@ -110,10 +85,8 @@ xor_pII_mmx_3(unsigned long bytes, unsigned long * __restrict p1,
 	  "+r" (p1), "+r" (p2), "+r" (p3)
 	:
 	: "memory");
-
 	kernel_fpu_end();
 }
-
 static void
 xor_pII_mmx_4(unsigned long bytes, unsigned long * __restrict p1,
 	      const unsigned long * __restrict p2,
@@ -121,9 +94,7 @@ xor_pII_mmx_4(unsigned long bytes, unsigned long * __restrict p1,
 	      const unsigned long * __restrict p4)
 {
 	unsigned long lines = bytes >> 7;
-
 	kernel_fpu_begin();
-
 	asm volatile(
 #undef BLOCK
 #define BLOCK(i)				\
@@ -147,15 +118,12 @@ xor_pII_mmx_4(unsigned long bytes, unsigned long * __restrict p1,
 			ST(i + 2, 2)		\
 				XO3(i + 3, 3)	\
 				ST(i + 3, 3)
-
 	" .align 32			;\n"
 	" 1:                            ;\n"
-
 	BLOCK(0)
 	BLOCK(4)
 	BLOCK(8)
 	BLOCK(12)
-
 	"       addl $128, %1         ;\n"
 	"       addl $128, %2         ;\n"
 	"       addl $128, %3         ;\n"
@@ -166,11 +134,8 @@ xor_pII_mmx_4(unsigned long bytes, unsigned long * __restrict p1,
 	  "+r" (p1), "+r" (p2), "+r" (p3), "+r" (p4)
 	:
 	: "memory");
-
 	kernel_fpu_end();
 }
-
-
 static void
 xor_pII_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 	      const unsigned long * __restrict p2,
@@ -179,17 +144,8 @@ xor_pII_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 	      const unsigned long * __restrict p5)
 {
 	unsigned long lines = bytes >> 7;
-
 	kernel_fpu_begin();
-
-	/* Make sure GCC forgets anything it knows about p4 or p5,
-	   such that it won't pass to the asm volatile below a
-	   register that is shared with any other variable.  That's
-	   because we modify p4 and p5 there, but we can't mark them
-	   as read/write, otherwise we'd overflow the 10-asm-operands
-	   limit of GCC < 3.1.  */
 	asm("" : "+r" (p4), "+r" (p5));
-
 	asm volatile(
 #undef BLOCK
 #define BLOCK(i)				\
@@ -217,15 +173,12 @@ xor_pII_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 			ST(i + 2, 2)		\
 				XO4(i + 3, 3)	\
 				ST(i + 3, 3)
-
 	" .align 32			;\n"
 	" 1:                            ;\n"
-
 	BLOCK(0)
 	BLOCK(4)
 	BLOCK(8)
 	BLOCK(12)
-
 	"       addl $128, %1         ;\n"
 	"       addl $128, %2         ;\n"
 	"       addl $128, %3         ;\n"
@@ -237,15 +190,9 @@ xor_pII_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 	  "+r" (p1), "+r" (p2), "+r" (p3)
 	: "r" (p4), "r" (p5)
 	: "memory");
-
-	/* p4 and p5 were modified, and now the variables are dead.
-	   Clobber them just to be sure nobody does something stupid
-	   like assuming they have some legal value.  */
 	asm("" : "=r" (p4), "=r" (p5));
-
 	kernel_fpu_end();
 }
-
 #undef LD
 #undef XO1
 #undef XO2
@@ -253,15 +200,12 @@ xor_pII_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 #undef XO4
 #undef ST
 #undef BLOCK
-
 static void
 xor_p5_mmx_2(unsigned long bytes, unsigned long * __restrict p1,
 	     const unsigned long * __restrict p2)
 {
 	unsigned long lines = bytes >> 6;
-
 	kernel_fpu_begin();
-
 	asm volatile(
 	" .align 32	             ;\n"
 	" 1:                         ;\n"
@@ -289,7 +233,6 @@ xor_p5_mmx_2(unsigned long bytes, unsigned long * __restrict p1,
 	"       pxor 56(%2), %%mm7   ;\n"
 	"       movq %%mm6, 48(%1)   ;\n"
 	"       movq %%mm7, 56(%1)   ;\n"
-
 	"       addl $64, %1         ;\n"
 	"       addl $64, %2         ;\n"
 	"       decl %0              ;\n"
@@ -298,19 +241,15 @@ xor_p5_mmx_2(unsigned long bytes, unsigned long * __restrict p1,
 	  "+r" (p1), "+r" (p2)
 	:
 	: "memory");
-
 	kernel_fpu_end();
 }
-
 static void
 xor_p5_mmx_3(unsigned long bytes, unsigned long * __restrict p1,
 	     const unsigned long * __restrict p2,
 	     const unsigned long * __restrict p3)
 {
 	unsigned long lines = bytes >> 6;
-
 	kernel_fpu_begin();
-
 	asm volatile(
 	" .align 32,0x90             ;\n"
 	" 1:                         ;\n"
@@ -346,7 +285,6 @@ xor_p5_mmx_3(unsigned long bytes, unsigned long * __restrict p1,
 	"       pxor 56(%3), %%mm7   ;\n"
 	"       movq %%mm6, 48(%1)   ;\n"
 	"       movq %%mm7, 56(%1)   ;\n"
-
 	"       addl $64, %1         ;\n"
 	"       addl $64, %2         ;\n"
 	"       addl $64, %3         ;\n"
@@ -356,10 +294,8 @@ xor_p5_mmx_3(unsigned long bytes, unsigned long * __restrict p1,
 	  "+r" (p1), "+r" (p2), "+r" (p3)
 	:
 	: "memory" );
-
 	kernel_fpu_end();
 }
-
 static void
 xor_p5_mmx_4(unsigned long bytes, unsigned long * __restrict p1,
 	     const unsigned long * __restrict p2,
@@ -367,9 +303,7 @@ xor_p5_mmx_4(unsigned long bytes, unsigned long * __restrict p1,
 	     const unsigned long * __restrict p4)
 {
 	unsigned long lines = bytes >> 6;
-
 	kernel_fpu_begin();
-
 	asm volatile(
 	" .align 32,0x90             ;\n"
 	" 1:                         ;\n"
@@ -413,7 +347,6 @@ xor_p5_mmx_4(unsigned long bytes, unsigned long * __restrict p1,
 	"       pxor 56(%4), %%mm7   ;\n"
 	"       movq %%mm6, 48(%1)   ;\n"
 	"       movq %%mm7, 56(%1)   ;\n"
-
 	"       addl $64, %1         ;\n"
 	"       addl $64, %2         ;\n"
 	"       addl $64, %3         ;\n"
@@ -424,10 +357,8 @@ xor_p5_mmx_4(unsigned long bytes, unsigned long * __restrict p1,
 	  "+r" (p1), "+r" (p2), "+r" (p3), "+r" (p4)
 	:
 	: "memory");
-
 	kernel_fpu_end();
 }
-
 static void
 xor_p5_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 	     const unsigned long * __restrict p2,
@@ -436,17 +367,8 @@ xor_p5_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 	     const unsigned long * __restrict p5)
 {
 	unsigned long lines = bytes >> 6;
-
 	kernel_fpu_begin();
-
-	/* Make sure GCC forgets anything it knows about p4 or p5,
-	   such that it won't pass to the asm volatile below a
-	   register that is shared with any other variable.  That's
-	   because we modify p4 and p5 there, but we can't mark them
-	   as read/write, otherwise we'd overflow the 10-asm-operands
-	   limit of GCC < 3.1.  */
 	asm("" : "+r" (p4), "+r" (p5));
-
 	asm volatile(
 	" .align 32,0x90             ;\n"
 	" 1:                         ;\n"
@@ -498,7 +420,6 @@ xor_p5_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 	"       pxor 56(%5), %%mm7   ;\n"
 	"       movq %%mm6, 48(%1)   ;\n"
 	"       movq %%mm7, 56(%1)   ;\n"
-
 	"       addl $64, %1         ;\n"
 	"       addl $64, %2         ;\n"
 	"       addl $64, %3         ;\n"
@@ -510,15 +431,9 @@ xor_p5_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 	  "+r" (p1), "+r" (p2), "+r" (p3)
 	: "r" (p4), "r" (p5)
 	: "memory");
-
-	/* p4 and p5 were modified, and now the variables are dead.
-	   Clobber them just to be sure nobody does something stupid
-	   like assuming they have some legal value.  */
 	asm("" : "=r" (p4), "=r" (p5));
-
 	kernel_fpu_end();
 }
-
 static struct xor_block_template xor_block_pII_mmx = {
 	.name = "pII_mmx",
 	.do_2 = xor_pII_mmx_2,
@@ -526,7 +441,6 @@ static struct xor_block_template xor_block_pII_mmx = {
 	.do_4 = xor_pII_mmx_4,
 	.do_5 = xor_pII_mmx_5,
 };
-
 static struct xor_block_template xor_block_p5_mmx = {
 	.name = "p5_mmx",
 	.do_2 = xor_p5_mmx_2,
@@ -534,7 +448,6 @@ static struct xor_block_template xor_block_p5_mmx = {
 	.do_4 = xor_p5_mmx_4,
 	.do_5 = xor_p5_mmx_5,
 };
-
 static struct xor_block_template xor_block_pIII_sse = {
 	.name = "pIII_sse",
 	.do_2 = xor_sse_2,
@@ -542,16 +455,8 @@ static struct xor_block_template xor_block_pIII_sse = {
 	.do_4 = xor_sse_4,
 	.do_5 = xor_sse_5,
 };
-
-/* Also try the AVX routines */
 #include <asm/xor_avx.h>
-
-/* Also try the generic routines.  */
 #include <asm-generic/xor.h>
-
-/* We force the use of the SSE xor block because it can write around L2.
-   We may also be able to load into the L1 only depending on how the cpu
-   deals with a load to a line that is being prefetched.  */
 #undef XOR_TRY_TEMPLATES
 #define XOR_TRY_TEMPLATES				\
 do {							\
@@ -569,5 +474,4 @@ do {							\
 		xor_speed(&xor_block_32regs_p);		\
 	}						\
 } while (0)
-
-#endif /* _ASM_X86_XOR_32_H */
+#endif  

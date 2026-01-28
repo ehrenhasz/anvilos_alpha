@@ -1,31 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
 #ifndef	__CUSTOM_OID_H
 #define __CUSTOM_OID_H
-
-/* 0xFF818000 - 0xFF81802F		RTL8180 Mass Production Kit
- * 0xFF818500 - 0xFF81850F		RTL8185 Setup Utility
- * 0xFF818580 - 0xFF81858F		RTL8185 Phy Status Utility
- *
- * by Owen for Production Kit
- * For Production Kit with Agilent Equipments
- * in order to make our custom oids hopefully somewhat unique
- * we will use 0xFF (indicating implementation specific OID)
- *	 81(first byte of non zero Realtek unique identifier)
- *	 80 (second byte of non zero Realtek unique identifier)
- *	 XX (the custom OID number - providing 255 possible custom oids)
- */
 #define OID_RT_PRO_RESET_DUT				0xFF818000
 #define OID_RT_PRO_SET_DATA_RATE			0xFF818001
 #define OID_RT_PRO_START_TEST				0xFF818002
@@ -37,7 +11,6 @@
 #define OID_RT_PRO_SET_CHANNEL_DIRECT_CALL		0xFF818008
 #define OID_RT_PRO_SET_SLEEP_MODE_DIRECT_CALL		0xFF818009
 #define OID_RT_PRO_SET_WAKE_MODE_DIRECT_CALL		0xFF81800A
-
 #define OID_RT_PRO_SET_TX_ANTENNA_BB			0xFF81800D
 #define OID_RT_PRO_SET_ANTENNA_BB			0xFF81800E
 #define OID_RT_PRO_SET_CR_SCRAMBLER			0xFF81800F
@@ -196,7 +169,6 @@
 #define OID_RT_PRO8711_PKT_LOSS				0xFF87110B
 #define OID_RT_RD_ATTRIB_MEM				0xFF87110C
 #define OID_RT_WR_ATTRIB_MEM				0xFF87110D
-/*Method 2 for H2C/C2H*/
 #define OID_RT_PRO_H2C_CMD_MODE				0xFF871110
 #define OID_RT_PRO_H2C_CMD_RSP_MODE			0xFF871111
 #define OID_RT_PRO_H2C_CMD_EVENT_MODE			0xFF871112
@@ -220,7 +192,6 @@
 #define OID_RT_PRO_SET_POWER_TRACKING			0xFF871124
 #define OID_RT_PRO_QRY_PWRSTATE				0xFF871150
 #define OID_RT_PRO_SET_PWRSTATE				0xFF871151
-/*Method 2 , using workitem */
 #define OID_RT_SET_READ_REG				0xFF871181
 #define OID_RT_SET_WRITE_REG				0xFF871182
 #define OID_RT_SET_BURST_READ_REG			0xFF871183
@@ -229,59 +200,38 @@
 #define OID_RT_SET_READ16_EEPROM			0xFF871186
 #define OID_RT_SET_WRITE16_EEPROM			0xFF871187
 #define OID_RT_QRY_POLL_WKITEM				0xFF871188
-
-/*For SDIO INTERFACE only*/
 #define OID_RT_PRO_SYNCPAGERW_SRAM			0xFF8711A0
 #define OID_RT_PRO_871X_DRV_EXT				0xFF8711A1
-
-/*For USB INTERFACE only*/
 #define OID_RT_PRO_USB_VENDOR_REQ			0xFF8711B0
 #define OID_RT_PRO_SCSI_AUTO_TEST			0xFF8711B1
 #define OID_RT_PRO_USB_MAC_AC_FIFO_WRITE		0xFF8711B2
 #define OID_RT_PRO_USB_MAC_RX_FIFO_READ			0xFF8711B3
 #define OID_RT_PRO_USB_MAC_RX_FIFO_POLLING		0xFF8711B4
-
 #define OID_RT_PRO_H2C_SET_RATE_TABLE			0xFF8711FB
 #define OID_RT_PRO_H2C_GET_RATE_TABLE			0xFF8711FC
 #define OID_RT_PRO_H2C_C2H_LBK_TEST			0xFF8711FE
-
 #define OID_RT_PRO_ENCRYPTION_CTRL			0xFF871200
 #define OID_RT_PRO_ADD_STA_INFO				0xFF871201
 #define OID_RT_PRO_DELE_STA_INFO			0xFF871202
 #define OID_RT_PRO_QUERY_DR_VARIABLE			0xFF871203
-
 #define OID_RT_PRO_RX_PACKET_TYPE			0xFF871204
-
 #define OID_RT_PRO_READ_EFUSE				0xFF871205
 #define OID_RT_PRO_WRITE_EFUSE				0xFF871206
 #define OID_RT_PRO_RW_EFUSE_PGPKT			0xFF871207
 #define OID_RT_GET_EFUSE_CURRENT_SIZE			0xFF871208
-
 #define OID_RT_SET_BANDWIDTH				0xFF871209
 #define OID_RT_SET_CRYSTAL_CAP				0xFF87120A
-
 #define OID_RT_SET_RX_PACKET_TYPE			0xFF87120B
-
 #define OID_RT_GET_EFUSE_MAX_SIZE			0xFF87120C
-
 #define OID_RT_PRO_SET_TX_AGC_OFFSET			0xFF87120D
-
 #define OID_RT_PRO_SET_PKT_TEST_MODE			0xFF87120E
-
 #define OID_RT_PRO_FOR_EVM_TEST_SETTING			0xFF87120F
-
 #define OID_RT_PRO_GET_THERMAL_METER			0xFF871210
-
 #define OID_RT_RESET_PHY_RX_PACKET_COUNT		0xFF871211
 #define OID_RT_GET_PHY_RX_PACKET_RECEIVED		0xFF871212
 #define OID_RT_GET_PHY_RX_PACKET_CRC32_ERROR		0xFF871213
-
 #define OID_RT_SET_POWER_DOWN				0xFF871214
-
 #define OID_RT_GET_POWER_MODE				0xFF871215
-
 #define OID_RT_PRO_EFUSE				0xFF871216
 #define OID_RT_PRO_EFUSE_MAP				0xFF871217
-
-#endif /*#ifndef __CUSTOM_OID_H */
-
+#endif  

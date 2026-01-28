@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
-
-/* File aq_nic.h: Declaration of common code for NIC. */
-
 #ifndef AQ_NIC_H
 #define AQ_NIC_H
-
 #include <linux/ethtool.h>
 #include <net/xdp.h>
 #include <linux/bpf.h>
-
 #include "aq_common.h"
 #include "aq_rss.h"
 #include "aq_hw.h"
-
 struct aq_ring_s;
 struct aq_hw_ops;
 struct aq_fw_s;
@@ -25,25 +13,22 @@ struct aq_vec_s;
 struct aq_macsec_cfg;
 struct aq_ptp_s;
 enum aq_rx_filter_type;
-
 enum aq_fc_mode {
 	AQ_NIC_FC_OFF = 0,
 	AQ_NIC_FC_TX,
 	AQ_NIC_FC_RX,
 	AQ_NIC_FC_FULL,
 };
-
 struct aq_fc_info {
 	enum aq_fc_mode req;
 	enum aq_fc_mode cur;
 };
-
 struct aq_nic_cfg_s {
 	const struct aq_hw_caps_s *aq_hw_caps;
 	u64 features;
-	u32 rxds;		/* rx ring size, descriptors # */
-	u32 txds;		/* tx ring size, descriptors # */
-	u32 vecs;		/* allocated rx/tx vectors */
+	u32 rxds;		 
+	u32 txds;		 
+	u32 vecs;		 
 	u32 link_irq_vec;
 	u32 irq_type;
 	u32 itr;
@@ -78,7 +63,6 @@ struct aq_nic_cfg_s {
 	struct aq_rss_parameters aq_rss;
 	u32 eee_speeds;
 };
-
 #define AQ_NIC_FLAG_STARTED     0x00000004U
 #define AQ_NIC_FLAG_STOPPING    0x00000008U
 #define AQ_NIC_FLAG_RESETTING   0x00000010U
@@ -87,43 +71,33 @@ struct aq_nic_cfg_s {
 #define AQ_NIC_LINK_DOWN        0x04000000U
 #define AQ_NIC_FLAG_ERR_UNPLUG  0x40000000U
 #define AQ_NIC_FLAG_ERR_HW      0x80000000U
-
 #define AQ_NIC_QUIRK_BAD_PTP    BIT(0)
-
 #define AQ_NIC_WOL_MODES        (WAKE_MAGIC |\
 				 WAKE_PHY)
-
 #define AQ_NIC_CFG_RING_PER_TC(_NIC_CFG_) \
 	(((_NIC_CFG_)->tc_mode == AQ_TC_MODE_4TCS) ? 8 : 4)
-
 #define AQ_NIC_CFG_TCVEC2RING(_NIC_CFG_, _TC_, _VEC_) \
 	((_TC_) * AQ_NIC_CFG_RING_PER_TC(_NIC_CFG_) + (_VEC_))
-
 #define AQ_NIC_RING2QMAP(_NIC_, _ID_) \
 	((_ID_) / AQ_NIC_CFG_RING_PER_TC(&(_NIC_)->aq_nic_cfg) * \
 		(_NIC_)->aq_vecs + \
 	((_ID_) % AQ_NIC_CFG_RING_PER_TC(&(_NIC_)->aq_nic_cfg)))
-
 struct aq_hw_rx_fl2 {
 	struct aq_rx_filter_vlan aq_vlans[AQ_VLAN_MAX_FILTERS];
 };
-
 struct aq_hw_rx_fl3l4 {
 	u8 active_ipv4;
 	u8 active_ipv6:2;
 	u8 is_ipv6;
 	u8 reserved_count;
 };
-
 struct aq_hw_rx_fltrs_s {
 	struct hlist_head     filter_list;
 	u16                   active_filters;
 	struct aq_hw_rx_fl2   fl2;
 	struct aq_hw_rx_fl3l4 fl3l4;
-	/* filter ether type */
 	u8 fet_reserved_count;
 };
-
 struct aq_nic_s {
 	atomic_t flags;
 	u32 msg_enable;
@@ -147,29 +121,22 @@ struct aq_nic_s {
 		u32 count;
 		u8 ar[AQ_HW_MULTICAST_ADDRESS_MAX][ETH_ALEN];
 	} mc_list;
-	/* Bitmask of currently assigned vlans from linux */
 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
-
 	struct pci_dev *pdev;
 	unsigned int msix_entry_mask;
 	u32 irqvecs;
-	/* mutex to serialize FW interface access operations */
 	struct mutex fwreq_mutex;
 #if IS_ENABLED(CONFIG_MACSEC)
 	struct aq_macsec_cfg *macsec_cfg;
-	/* mutex to protect data in macsec_cfg */
 	struct mutex macsec_mutex;
 #endif
-	/* PTP support */
 	struct aq_ptp_s *aq_ptp;
 	struct aq_hw_rx_fltrs_s aq_hw_rx_fltrs;
 };
-
 static inline struct device *aq_nic_get_dev(struct aq_nic_s *self)
 {
 	return self->ndev->dev.parent;
 }
-
 void aq_nic_ndev_init(struct aq_nic_s *self);
 struct aq_nic_s *aq_nic_alloc_hot(struct net_device *ndev);
 void aq_nic_set_tx_ring(struct aq_nic_s *self, unsigned int idx,
@@ -218,4 +185,4 @@ int aq_nic_setup_tc_max_rate(struct aq_nic_s *self, const unsigned int tc,
 			     const u32 max_rate);
 int aq_nic_setup_tc_min_rate(struct aq_nic_s *self, const unsigned int tc,
 			     const u32 min_rate);
-#endif /* AQ_NIC_H */
+#endif  

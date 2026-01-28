@@ -1,34 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (C) 2019 Romain Dolbeau. All rights reserved.
- *           <romain.dolbeau@european-processor-initiative.eu>
- */
-
 #include <sys/types.h>
 #include <sys/simd.h>
-
 #define	_REG_CNT(_0, _1, _2, _3, _4, _5, _6, _7, N, ...) N
 #define	REG_CNT(r...) _REG_CNT(r, 8, 7, 6, 5, 4, 3, 2, 1)
-
 #define	VR0_(REG, ...) "%[w"#REG"]"
 #define	VR1_(_1, REG, ...) "%[w"#REG"]"
 #define	VR2_(_1, _2, REG, ...) "%[w"#REG"]"
@@ -37,16 +10,6 @@
 #define	VR5_(_1, _2, _3, _4, _5, REG, ...) "%[w"#REG"]"
 #define	VR6_(_1, _2, _3, _4, _5, _6, REG, ...) "%[w"#REG"]"
 #define	VR7_(_1, _2, _3, _4, _5, _6, _7, REG, ...) "%[w"#REG"]"
-
-/*
- * Here we need registers not used otherwise.
- * They will be used in unused ASM for the case
- * with more registers than required... but GCC
- * will still need to make sure the constraints
- * are correct, and duplicate constraints are illegal
- * ... and we use the "register" number as a name
- */
-
 #define	VR0(r...) VR0_(r)
 #define	VR1(r...) VR1_(r)
 #define	VR2(r...) VR2_(r, 36)
@@ -55,9 +18,7 @@
 #define	VR5(r...) VR5_(r, 36, 35, 34, 33, 32)
 #define	VR6(r...) VR6_(r, 36, 35, 34, 33, 32, 31)
 #define	VR7(r...) VR7_(r, 36, 35, 34, 33, 32, 31, 30)
-
 #define	VR(X) "%[w"#X"]"
-
 #define	RVR0_(REG, ...) [w##REG] "v" (w##REG)
 #define	RVR1_(_1, REG, ...) [w##REG] "v" (w##REG)
 #define	RVR2_(_1, _2, REG, ...) [w##REG] "v" (w##REG)
@@ -66,7 +27,6 @@
 #define	RVR5_(_1, _2, _3, _4, _5, REG, ...) [w##REG] "v" (w##REG)
 #define	RVR6_(_1, _2, _3, _4, _5, _6, REG, ...) [w##REG] "v" (w##REG)
 #define	RVR7_(_1, _2, _3, _4, _5, _6, _7, REG, ...) [w##REG] "v" (w##REG)
-
 #define	RVR0(r...) RVR0_(r)
 #define	RVR1(r...) RVR1_(r)
 #define	RVR2(r...) RVR2_(r, 36)
@@ -75,9 +35,7 @@
 #define	RVR5(r...) RVR5_(r, 36, 35, 34, 33, 32)
 #define	RVR6(r...) RVR6_(r, 36, 35, 34, 33, 32, 31)
 #define	RVR7(r...) RVR7_(r, 36, 35, 34, 33, 32, 31, 30)
-
 #define	RVR(X) [w##X] "v" (w##X)
-
 #define	WVR0_(REG, ...) [w##REG] "=v" (w##REG)
 #define	WVR1_(_1, REG, ...) [w##REG] "=v" (w##REG)
 #define	WVR2_(_1, _2, REG, ...) [w##REG] "=v" (w##REG)
@@ -86,7 +44,6 @@
 #define	WVR5_(_1, _2, _3, _4, _5, REG, ...) [w##REG] "=v" (w##REG)
 #define	WVR6_(_1, _2, _3, _4, _5, _6, REG, ...) [w##REG] "=v" (w##REG)
 #define	WVR7_(_1, _2, _3, _4, _5, _6, _7, REG, ...) [w##REG] "=v" (w##REG)
-
 #define	WVR0(r...) WVR0_(r)
 #define	WVR1(r...) WVR1_(r)
 #define	WVR2(r...) WVR2_(r, 36)
@@ -95,9 +52,7 @@
 #define	WVR5(r...) WVR5_(r, 36, 35, 34, 33, 32)
 #define	WVR6(r...) WVR6_(r, 36, 35, 34, 33, 32, 31)
 #define	WVR7(r...) WVR7_(r, 36, 35, 34, 33, 32, 31, 30)
-
 #define	WVR(X) [w##X] "=v" (w##X)
-
 #define	UVR0_(REG, ...) [w##REG] "+&v" (w##REG)
 #define	UVR1_(_1, REG, ...) [w##REG] "+&v" (w##REG)
 #define	UVR2_(_1, _2, REG, ...) [w##REG] "+&v" (w##REG)
@@ -106,7 +61,6 @@
 #define	UVR5_(_1, _2, _3, _4, _5, REG, ...) [w##REG] "+&v" (w##REG)
 #define	UVR6_(_1, _2, _3, _4, _5, _6, REG, ...) [w##REG] "+&v" (w##REG)
 #define	UVR7_(_1, _2, _3, _4, _5, _6, _7, REG, ...) [w##REG] "+&v" (w##REG)
-
 #define	UVR0(r...) UVR0_(r)
 #define	UVR1(r...) UVR1_(r)
 #define	UVR2(r...) UVR2_(r, 36)
@@ -115,25 +69,17 @@
 #define	UVR5(r...) UVR5_(r, 36, 35, 34, 33, 32)
 #define	UVR6(r...) UVR6_(r, 36, 35, 34, 33, 32, 31)
 #define	UVR7(r...) UVR7_(r, 36, 35, 34, 33, 32, 31, 30)
-
 #define	UVR(X) [w##X] "+&v" (w##X)
-
 #define	R_01(REG1, REG2, ...) REG1, REG2
 #define	_R_23(_0, _1, REG2, REG3, ...) REG2, REG3
 #define	R_23(REG...) _R_23(REG, 1, 2, 3)
-
 #define	ZFS_ASM_BUG()	ASSERT(0)
-
 #define	OFFSET(ptr, val)	(((unsigned char *)(ptr))+val)
-
 extern const uint8_t gf_clmul_mod_lt[4*256][16];
-
 #define	ELEM_SIZE 16
-
 typedef struct v {
 	uint8_t b[ELEM_SIZE] __attribute__((aligned(ELEM_SIZE)));
 } v_t;
-
 #define	XOR_ACC(src, r...)					\
 {								\
 	switch (REG_CNT(r)) {					\
@@ -199,7 +145,6 @@ typedef struct v {
 		ZFS_ASM_BUG();					\
 	}							\
 }
-
 #define	XOR(r...)						\
 {								\
 	switch (REG_CNT(r)) {					\
@@ -223,7 +168,6 @@ typedef struct v {
 		ZFS_ASM_BUG();					\
 	}							\
 }
-
 #define	ZERO(r...)						\
 {								\
 	switch (REG_CNT(r)) {					\
@@ -258,7 +202,6 @@ typedef struct v {
 		ZFS_ASM_BUG();					\
 	}							\
 }
-
 #define	COPY(r...)						\
 {								\
 	switch (REG_CNT(r)) {					\
@@ -282,7 +225,6 @@ typedef struct v {
 		ZFS_ASM_BUG();					\
 	}							\
 }
-
 #define	LOAD(src, r...)						\
 {								\
 	switch (REG_CNT(r)) {					\
@@ -331,7 +273,6 @@ typedef struct v {
 		ZFS_ASM_BUG();					\
 	}							\
 }
-
 #define	STORE(dst, r...)					\
 {								\
 	switch (REG_CNT(r)) {					\
@@ -382,18 +323,10 @@ typedef struct v {
 		ZFS_ASM_BUG();					\
 	}							\
 }
-
-/*
- * Unfortunately cannot use the macro, because GCC
- * will try to use the macro name and not value
- * later on...
- * Kept as a reference to what a numbered variable is
- */
 #define	_00	"17"
 #define	_1d	"16"
 #define	_temp0	"19"
 #define	_temp1	"18"
-
 #define	MUL2_SETUP()						\
 {								\
 	__asm__ __volatile__(					\
@@ -403,7 +336,6 @@ typedef struct v {
 		"vxor " VR(17) "," VR(17) "," VR(17) "\n"	\
 		:	WVR(16), WVR(17));			\
 }
-
 #define	MUL2(r...)						\
 {								\
 	switch (REG_CNT(r)) {					\
@@ -447,21 +379,11 @@ typedef struct v {
 		ZFS_ASM_BUG();					\
 	}							\
 }
-
 #define	MUL4(r...)						\
 {								\
 	MUL2(r);						\
 	MUL2(r);						\
 }
-
-/*
- * Unfortunately cannot use the macro, because GCC
- * will try to use the macro name and not value
- * later on...
- * Kept as a reference to what a register is
- * (here we're using actual registers for the
- * clobbered ones)
- */
 #define	_0f		"15"
 #define	_a_save		"14"
 #define	_b_save		"13"
@@ -469,17 +391,16 @@ typedef struct v {
 #define	_lt_clmul_a	"11"
 #define	_lt_mod_b	"10"
 #define	_lt_clmul_b	"15"
-
 #define	_MULx2(c, r...)						\
 {								\
 	switch (REG_CNT(r)) {					\
 	case 2:							\
 		__asm__ __volatile__(				\
-		/* lts for upper part */			\
+		 			\
 		"vspltisb 15,15\n"				\
 		"lvx 10,0,%[lt0]\n"				\
 		"lvx 11,0,%[lt1]\n"				\
-		/* upper part */				\
+		 				\
 		"vand 14," VR0(r) ",15\n"			\
 		"vand 13," VR1(r) ",15\n"			\
 		"vspltisb 15,4\n"				\
@@ -493,10 +414,10 @@ typedef struct v {
 								\
 		"vxor " VR0(r) ",15,12\n"			\
 		"vxor " VR1(r) ",11,10\n"			\
-		/* lts for lower part */			\
+		 			\
 		"lvx 10,0,%[lt2]\n"				\
 		"lvx 15,0,%[lt3]\n"				\
-		/* lower part */				\
+		 				\
 		"vperm 12,10,10,14\n"				\
 		"vperm 10,10,10,13\n"				\
 		"vperm 11,15,15,14\n"				\
@@ -517,7 +438,6 @@ typedef struct v {
 		ZFS_ASM_BUG();					\
 	}							\
 }
-
 #define	MUL(c, r...)						\
 {								\
 	switch (REG_CNT(r)) {					\
@@ -532,12 +452,9 @@ typedef struct v {
 		ZFS_ASM_BUG();					\
 	}							\
 }
-
 #define	raidz_math_begin()	kfpu_begin()
 #define	raidz_math_end()	kfpu_end()
-
-/* Overkill... */
-#if 0 // defined(_KERNEL)
+#if 0  
 #define	GEN_X_DEFINE_0_3()	\
 register unsigned char w0 asm("0") __attribute__((vector_size(16)));	\
 register unsigned char w1 asm("1") __attribute__((vector_size(16)));	\

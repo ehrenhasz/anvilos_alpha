@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm SC7180 interconnect IDs
- *
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SC7180_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SC7180_H
-
 #define MASTER_A1NOC_CFG			0
 #define MASTER_QSPI			1
 #define MASTER_QUP_0			2
@@ -16,7 +8,6 @@
 #define MASTER_UFS_MEM			5
 #define SLAVE_A1NOC_SNOC			6
 #define SLAVE_SERVICE_A1NOC			7
-
 #define MASTER_A2NOC_CFG			0
 #define MASTER_QDSS_BAM			1
 #define MASTER_QUP_1			2
@@ -26,16 +17,13 @@
 #define MASTER_QDSS_ETR			6
 #define SLAVE_A2NOC_SNOC			7
 #define SLAVE_SERVICE_A2NOC			8
-
 #define MASTER_CAMNOC_HF0_UNCOMP			0
 #define MASTER_CAMNOC_HF1_UNCOMP			1
 #define MASTER_CAMNOC_SF_UNCOMP			2
 #define SLAVE_CAMNOC_UNCOMP			3
-
 #define MASTER_NPU			0
 #define MASTER_NPU_PROC			1
 #define SLAVE_CDSP_GEM_NOC			2
-
 #define MASTER_SNOC_CNOC			0
 #define MASTER_QDSS_DAP			1
 #define SLAVE_A1NOC_CFG			2
@@ -89,11 +77,9 @@
 #define SLAVE_VENUS_THROTTLE_CFG			50
 #define SLAVE_VSENSE_CTRL_CFG			51
 #define SLAVE_SERVICE_CNOC			52
-
 #define MASTER_CNOC_DC_NOC			0
 #define SLAVE_GEM_NOC_CFG			1
 #define SLAVE_LLCC_CFG			2
-
 #define MASTER_APPSS_PROC		0
 #define MASTER_SYS_TCU			1
 #define MASTER_GEM_NOC_CFG			2
@@ -107,10 +93,8 @@
 #define SLAVE_GEM_NOC_SNOC			10
 #define SLAVE_LLCC			11
 #define SLAVE_SERVICE_GEM_NOC			12
-
 #define MASTER_LLCC			0
 #define SLAVE_EBI1			1
-
 #define MASTER_CNOC_MNOC_CFG			0
 #define MASTER_CAMNOC_HF0			1
 #define MASTER_CAMNOC_HF1			2
@@ -122,7 +106,6 @@
 #define SLAVE_MNOC_HF_MEM_NOC			8
 #define SLAVE_MNOC_SF_MEM_NOC			9
 #define SLAVE_SERVICE_MNOC			10
-
 #define MASTER_NPU_SYS			0
 #define MASTER_NPU_NOC_CFG			1
 #define SLAVE_NPU_CAL_DP0			2
@@ -134,12 +117,10 @@
 #define SLAVE_NPU_TCM			8
 #define SLAVE_NPU_COMPUTE_NOC			9
 #define SLAVE_SERVICE_NPU_NOC			10
-
 #define MASTER_QUP_CORE_0			0
 #define MASTER_QUP_CORE_1			1
 #define SLAVE_QUP_CORE_0			2
 #define SLAVE_QUP_CORE_1			3
-
 #define MASTER_SNOC_CFG			0
 #define MASTER_A1NOC_SNOC			1
 #define MASTER_A2NOC_SNOC			2
@@ -154,5 +135,4 @@
 #define SLAVE_SERVICE_SNOC			11
 #define SLAVE_QDSS_STM			12
 #define SLAVE_TCU			13
-
 #endif

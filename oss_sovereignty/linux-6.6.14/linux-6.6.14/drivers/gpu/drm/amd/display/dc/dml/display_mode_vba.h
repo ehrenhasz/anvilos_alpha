@@ -1,38 +1,8 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
-
 #ifndef __DML2_DISPLAY_MODE_VBA_H__
 #define __DML2_DISPLAY_MODE_VBA_H__
-
 struct display_mode_lib;
-
 void ModeSupportAndSystemConfiguration(struct display_mode_lib *mode_lib);
-
 #define dml_get_attr_decl(attr) double get_##attr(struct display_mode_lib *mode_lib, const display_e2e_pipe_params_st *pipes, unsigned int num_pipes)
-
 dml_get_attr_decl(clk_dcf_deepsleep);
 dml_get_attr_decl(wm_urgent);
 dml_get_attr_decl(wm_memory_trip);
@@ -71,9 +41,7 @@ dml_get_attr_decl(comp_buffer_reserved_space_kbytes);
 dml_get_attr_decl(comp_buffer_reserved_space_64bytes);
 dml_get_attr_decl(comp_buffer_reserved_space_zs);
 dml_get_attr_decl(unbounded_request_enabled);
-
 #define dml_get_pipe_attr_decl(attr) double get_##attr(struct display_mode_lib *mode_lib, const display_e2e_pipe_params_st *pipes, unsigned int num_pipes, unsigned int which_pipe)
-
 dml_get_pipe_attr_decl(dsc_delay);
 dml_get_pipe_attr_decl(dppclk_calculated);
 dml_get_pipe_attr_decl(dscclk_calculated);
@@ -134,7 +102,6 @@ dml_get_pipe_attr_decl(refcyc_per_meta_chunk_vblank_l_in_us);
 dml_get_pipe_attr_decl(refcyc_per_meta_chunk_vblank_c_in_us);
 dml_get_pipe_attr_decl(refcyc_per_meta_chunk_flip_l_in_us);
 dml_get_pipe_attr_decl(refcyc_per_meta_chunk_flip_c_in_us);
-
 dml_get_pipe_attr_decl(vstartup);
 dml_get_pipe_attr_decl(vupdate_offset);
 dml_get_pipe_attr_decl(vupdate_width);
@@ -144,7 +111,6 @@ dml_get_pipe_attr_decl(min_dst_y_next_start);
 dml_get_pipe_attr_decl(vstartup_calculated);
 dml_get_pipe_attr_decl(subviewport_lines_needed_in_mall);
 dml_get_pipe_attr_decl(surface_size_in_mall);
-
 double get_total_immediate_flip_bytes(
 		struct display_mode_lib *mode_lib,
 		const display_e2e_pipe_params_st *pipes,
@@ -161,18 +127,15 @@ unsigned int dml_get_voltage_level(
 		struct display_mode_lib *mode_lib,
 		const display_e2e_pipe_params_st *pipes,
 		unsigned int num_pipes);
-
 unsigned int get_total_surface_size_in_mall_bytes(
 		struct display_mode_lib *mode_lib,
 		const display_e2e_pipe_params_st *pipes,
 		unsigned int num_pipes);
-
 bool get_is_phantom_pipe(struct display_mode_lib *mode_lib,
 		const display_e2e_pipe_params_st *pipes,
 		unsigned int num_pipes,
 		unsigned int pipe_idx);
 void PixelClockAdjustmentForProgressiveToInterlaceUnit(struct display_mode_lib *mode_lib);
-
 void Calculate256BBlockSizes(
 		enum source_format_class SourcePixelFormat,
 		enum dm_swizzle_mode SurfaceTiling,
@@ -182,7 +145,6 @@ void Calculate256BBlockSizes(
 		unsigned int *BlockHeight256BytesC,
 		unsigned int *BlockWidth256BytesY,
 		unsigned int *BlockWidth256BytesC);
-
 struct DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation {
 	unsigned int dummy_integer_array[2][DC__NUM_DPP__MAX];
 	double dummy_single_array[2][DC__NUM_DPP__MAX];
@@ -205,7 +167,6 @@ struct DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCal
 	enum dm_fclock_change_support dummy_fclkchange_support;
 	bool dummy_USRRetrainingSupport;
 };
-
 struct dml32_ModeSupportAndSystemConfigurationFull {
 	unsigned int dummy_integer_array[22][DC__NUM_DPP__MAX];
 	double dummy_double_array[2][DC__NUM_DPP__MAX];
@@ -249,20 +210,16 @@ struct dml32_ModeSupportAndSystemConfigurationFull {
 	double HostVMInefficiencyFactor;
 	bool dummy_boolean[2];
 };
-
 struct dummy_vars {
 	struct DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation
 	DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation;
 	struct dml32_ModeSupportAndSystemConfigurationFull dml32_ModeSupportAndSystemConfigurationFull;
 };
-
 struct vba_vars_st {
 	ip_params_st ip;
 	soc_bounding_box_st soc;
-
 	int maxMpcComb;
 	bool UseMaximumVStartup;
-
 	double MaxVRatioPre;
 	double WritebackDISPCLK;
 	double DPPCLKUsingSingleDPPLuma;
@@ -288,51 +245,44 @@ struct vba_vars_st {
 	double NextMaxVStartup;
 	double VBlankTime;
 	double SmallestVBlank;
-	enum dm_prefetch_modes AllowForPStateChangeOrStutterInVBlankFinal; // Mode Support only
+	enum dm_prefetch_modes AllowForPStateChangeOrStutterInVBlankFinal;  
 	double DCFCLKDeepSleepPerPlane[DC__NUM_DPP__MAX];
 	double EffectiveDETPlusLBLinesLuma;
 	double EffectiveDETPlusLBLinesChroma;
 	double UrgentLatencySupportUsLuma;
 	double UrgentLatencySupportUsChroma;
 	unsigned int DSCFormatFactor;
-
 	bool DummyPStateCheck;
 	bool DRAMClockChangeSupportsVActive;
 	bool PrefetchModeSupported;
 	bool PrefetchAndImmediateFlipSupported;
-	enum self_refresh_affinity AllowDRAMSelfRefreshOrDRAMClockChangeInVblank; // Mode Support only
+	enum self_refresh_affinity AllowDRAMSelfRefreshOrDRAMClockChangeInVblank;  
 	double XFCRemoteSurfaceFlipDelay;
 	double TInitXFill;
 	double TslvChk;
 	double SrcActiveDrainRate;
 	bool ImmediateFlipSupported;
-	enum mpc_combine_affinity WhenToDoMPCCombine; // Mode Support only
-
+	enum mpc_combine_affinity WhenToDoMPCCombine;  
 	bool PrefetchERROR;
-
 	unsigned int VStartupLines;
 	unsigned int ActiveDPPs;
 	unsigned int LBLatencyHidingSourceLinesY;
 	unsigned int LBLatencyHidingSourceLinesC;
-	double ActiveDRAMClockChangeLatencyMarginPerState[DC__VOLTAGE_STATES][2][DC__NUM_DPP__MAX];// DML doesn't save active margin per state
+	double ActiveDRAMClockChangeLatencyMarginPerState[DC__VOLTAGE_STATES][2][DC__NUM_DPP__MAX]; 
 	double ActiveDRAMClockChangeLatencyMargin[DC__NUM_DPP__MAX];
-	double CachedActiveDRAMClockChangeLatencyMargin[DC__NUM_DPP__MAX]; // Cache in dml_get_voltage_level for debug purposes only
+	double CachedActiveDRAMClockChangeLatencyMargin[DC__NUM_DPP__MAX];  
 	double MinActiveDRAMClockChangeMargin;
 	double InitFillLevel;
 	double FinalFillMargin;
 	double FinalFillLevel;
 	double RemainingFillLevel;
 	double TFinalxFill;
-
-	//
-	// SOC Bounding Box Parameters
-	//
 	double SRExitTime;
 	double SREnterPlusExitTime;
 	double UrgentLatencyPixelDataOnly;
 	double UrgentLatencyPixelMixedWithVMData;
 	double UrgentLatencyVMDataOnly;
-	double UrgentLatency; // max of the above three
+	double UrgentLatency;  
 	double USRRetrainingLatency;
 	double SMNLatency;
 	double FCLKChangeLatency;
@@ -341,11 +291,11 @@ struct vba_vars_st {
 	double MaxAveragePercentOfIdealDRAMBWDisplayCanUseInNormalSystemOperationSTROBE;
 	double PercentOfIdealDRAMBWReceivedAfterUrgLatencySTROBE;
 	double WritebackLatency;
-	double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelDataOnly; // Mode Support
-	double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData; // Mode Support
-	double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly; // Mode Support
-	double MaxAveragePercentOfIdealSDPPortBWDisplayCanUseInNormalSystemOperation; // Mode Support
-	double MaxAveragePercentOfIdealDRAMBWDisplayCanUseInNormalSystemOperation; // Mode Support
+	double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelDataOnly;  
+	double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData;  
+	double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly;  
+	double MaxAveragePercentOfIdealSDPPortBWDisplayCanUseInNormalSystemOperation;  
+	double MaxAveragePercentOfIdealDRAMBWDisplayCanUseInNormalSystemOperation;  
 	double NumberOfChannels;
 	double DRAMChannelWidth;
 	double FabricDatapathToDCNDataReturn;
@@ -363,10 +313,6 @@ struct vba_vars_st {
 	double XFCBusTransportTime;
 	bool UseUrgentBurstBandwidth;
 	double XFCXBUFLatencyTolerance;
-
-	//
-	// IP Parameters
-	//
 	unsigned int ROBBufferSizeInKByte;
 	unsigned int DETBufferSizeInKByte[DC__NUM_DPP__MAX];
 	double DETBufferSizeInTime;
@@ -420,16 +366,6 @@ struct vba_vars_st {
 	unsigned int AlphaPixelChunkSizeInKByte;
 	double MinPixelChunkSizeBytes;
 	unsigned int DCCMetaBufferSizeBytes;
-	// Pipe/Plane Parameters
-
-	/** @VoltageLevel:
-	 * Every ASIC has a fixed number of DPM states, and some devices might
-	 * have some particular voltage configuration that does not map
-	 * directly to the DPM states. This field tells how many states the
-	 * target device supports; even though this field combines the DPM and
-	 * special SOC voltages, it mostly matches the total number of DPM
-	 * states.
-	 */
 	int VoltageLevel;
 	double FabricClock;
 	double DRAMSpeed;
@@ -453,7 +389,6 @@ struct vba_vars_st {
 	bool PteBufferMode[DC__NUM_DPP__MAX];
 	enum dm_output_type OutputType[DC__NUM_DPP__MAX];
 	enum dm_output_rate OutputRate[DC__NUM_DPP__MAX];
-
 	unsigned int NumberOfActivePlanes;
 	unsigned int NumberOfDSCSlices[DC__NUM_DPP__MAX];
 	unsigned int ViewportWidth[DC__NUM_DPP__MAX];
@@ -519,8 +454,6 @@ struct vba_vars_st {
 	bool ScalerEnabled[DC__NUM_DPP__MAX];
 	unsigned int VBlankNom[DC__NUM_DPP__MAX];
 	bool DisableUnboundRequestIfCompBufReservedSpaceNeedAdjustment;
-
-	// Intermediates/Informational
 	bool ImmediateFlipSupport;
 	unsigned int DETBufferSizeY[DC__NUM_DPP__MAX];
 	unsigned int DETBufferSizeC[DC__NUM_DPP__MAX];
@@ -541,9 +474,6 @@ struct vba_vars_st {
 	double MaxVStartup;
 	bool IgnoreViewportPositioning;
 	bool ErrorResult[DC__NUM_DPP__MAX];
-	//
-	// Calculated dml_ml->vba.Outputs
-	//
 	double DCFCLKDeepSleep;
 	double UrgentWatermark;
 	double UrgentExtraLatency;
@@ -566,30 +496,19 @@ struct vba_vars_st {
 	unsigned int CompBufReservedSpace64B;
 	unsigned int CompBufReservedSpaceZs;
 	bool CompBufReservedSpaceNeedAdjustment;
-
-	// These are the clocks calcuated by the library but they are not actually
-	// used explicitly. They are fetched by tests and then possibly used. The
-	// ultimate values to use are the ones specified by the parameters to DML
 	double DISPCLK_calculated;
 	double DPPCLK_calculated[DC__NUM_DPP__MAX];
-
 	bool ImmediateFlipSupportedSurface[DC__NUM_DPP__MAX];
-
 	bool Use_One_Row_For_Frame[DC__NUM_DPP__MAX];
 	bool Use_One_Row_For_Frame_Flip[DC__NUM_DPP__MAX];
 	unsigned int VUpdateOffsetPix[DC__NUM_DPP__MAX];
 	double VUpdateWidthPix[DC__NUM_DPP__MAX];
 	double VReadyOffsetPix[DC__NUM_DPP__MAX];
-
 	unsigned int TotImmediateFlipBytes;
 	double TCalc;
-
 	display_e2e_pipe_params_st cache_pipes[DC__NUM_DPP__MAX];
 	unsigned int cache_num_pipes;
 	unsigned int pipe_plane[DC__NUM_DPP__MAX];
-
-	/* vba mode support */
-	/*inputs*/
 	bool SupportGFX7CompatibleTilingIn32bppAnd64bpp;
 	double MaxHSCLRatio;
 	double MaxVSCLRatio;
@@ -608,8 +527,6 @@ struct vba_vars_st {
 	double MaxDispclk[DC__VOLTAGE_STATES];
 	int VoltageOverrideLevel;
 	double PHYCLKD32PerState[DC__VOLTAGE_STATES];
-
-	/*outputs*/
 	bool ScaleRatioAndTapsSupport;
 	bool SourceFormatPixelAndScanSupport;
 	double TotalBandwidthConsumedGBytePerSecond;
@@ -630,8 +547,6 @@ struct vba_vars_st {
 	bool CursorSupport;
 	bool PitchSupport;
 	enum dm_validation_status ValidationStatus[DC__VOLTAGE_STATES];
-
-	/* Mode Support Reason */
 	bool P2IWith420;
 	bool DSCOnlyIfNecessaryWithBPP;
 	bool DSC422NativeNotSupported;
@@ -642,12 +557,10 @@ struct vba_vars_st {
 	bool MSOOrODMSplitWithNonDPLink;
 	bool NotEnoughLanesForMSO;
 	bool ViewportExceedsSurface;
-
 	bool ImmediateFlipRequiredButTheRequirementForEachSurfaceIsNotSpecified;
 	bool ImmediateFlipOrHostVMAndPStateWithMALLFullFrameOrPhantomPipe;
 	bool InvalidCombinationOfMALLUseForPStateAndStaticScreen;
 	bool InvalidCombinationOfMALLUseForPState;
-
 	enum dm_output_link_dp_rate OutputLinkDPRate[DC__NUM_DPP__MAX];
 	double PrefetchLinesYThisState[DC__NUM_DPP__MAX];
 	double PrefetchLinesCThisState[DC__NUM_DPP__MAX];
@@ -660,7 +573,6 @@ struct vba_vars_st {
 	bool use_one_row_for_frame_flip[DC__VOLTAGE_STATES][2][DC__NUM_DPP__MAX];
 	bool use_one_row_for_frame_this_state[DC__NUM_DPP__MAX];
 	bool use_one_row_for_frame_flip_this_state[DC__NUM_DPP__MAX];
-
 	unsigned int OutputTypeAndRatePerState[DC__VOLTAGE_STATES][DC__NUM_DPP__MAX];
 	double RequiredDISPCLKPerSurface[DC__VOLTAGE_STATES][2][DC__NUM_DPP__MAX];
 	unsigned int MacroTileHeightY[DC__NUM_DPP__MAX];
@@ -690,10 +602,9 @@ struct vba_vars_st {
 	double CursorChunkSize;
 	unsigned int Mode;
 	double OutputLinkDPLanes[DC__NUM_DPP__MAX];
-	double ForcedOutputLinkBPP[DC__NUM_DPP__MAX]; // Mode Support only
+	double ForcedOutputLinkBPP[DC__NUM_DPP__MAX];  
 	double ImmediateFlipBW[DC__NUM_DPP__MAX];
 	double MaxMaxVStartup[DC__VOLTAGE_STATES][2];
-
 	double WritebackLumaVExtra;
 	double WritebackChromaVExtra;
 	double WritebackRequiredDISPCLK;
@@ -734,9 +645,7 @@ struct vba_vars_st {
 	double total_dcn_read_bw_with_flip;
 	double total_dcn_read_bw_with_flip_no_urgent_burst;
 	double FractionOfUrgentBandwidth;
-	double FractionOfUrgentBandwidthImmediateFlip; // Mode Support debugging output
-
-	/* ms locals */
+	double FractionOfUrgentBandwidthImmediateFlip;  
 	double IdealSDPPortBandwidthPerState[DC__VOLTAGE_STATES][2];
 	unsigned int NoOfDPP[DC__VOLTAGE_STATES][2][DC__NUM_DPP__MAX];
 	int NoOfDPPThisState[DC__NUM_DPP__MAX];
@@ -769,7 +678,6 @@ struct vba_vars_st {
 	bool DTBCLKRequiredMoreThanSupported[DC__VOLTAGE_STATES];
 	double UrgentRoundTripAndOutOfOrderLatencyPerState[DC__VOLTAGE_STATES];
 	bool ROBSupport[DC__VOLTAGE_STATES][2];
-	//based on rev 99: Dim DCCMetaBufferSizeSupport(NumberOfStates, 1) As Boolean
 	bool DCCMetaBufferSizeSupport[DC__VOLTAGE_STATES][2];
 	bool PTEBufferSizeNotExceeded[DC__VOLTAGE_STATES][2];
 	bool TotalVerticalActiveBandwidthSupport[DC__VOLTAGE_STATES][2];
@@ -840,8 +748,8 @@ struct vba_vars_st {
 	bool ImmediateFlipSupportedForPipe[DC__NUM_DPP__MAX];
 	double meta_row_bw[DC__NUM_DPP__MAX];
 	double dpte_row_bw[DC__NUM_DPP__MAX];
-	double DisplayPipeLineDeliveryTimeLuma[DC__NUM_DPP__MAX];                     // WM
-	double DisplayPipeLineDeliveryTimeChroma[DC__NUM_DPP__MAX];                     // WM
+	double DisplayPipeLineDeliveryTimeLuma[DC__NUM_DPP__MAX];                      
+	double DisplayPipeLineDeliveryTimeChroma[DC__NUM_DPP__MAX];                      
 	double DisplayPipeRequestDeliveryTimeLuma[DC__NUM_DPP__MAX];
 	double DisplayPipeRequestDeliveryTimeChroma[DC__NUM_DPP__MAX];
 	enum clock_change_support DRAMClockChangeSupport[DC__VOLTAGE_STATES][2];
@@ -851,8 +759,6 @@ struct vba_vars_st {
 	double UrgentBurstFactorLumaPre[DC__NUM_DPP__MAX];
 	double UrgentBurstFactorChroma[DC__NUM_DPP__MAX];
 	double UrgentBurstFactorChromaPre[DC__NUM_DPP__MAX];
-
-
 	bool           MPCCombine[DC__VOLTAGE_STATES][2][DC__NUM_DPP__MAX];
 	double         SwathWidthCSingleDPP[DC__NUM_DPP__MAX];
 	double         MaximumSwathWidthInLineBufferLuma;
@@ -880,7 +786,6 @@ struct vba_vars_st {
 	unsigned int        dummyinteger10;
 	unsigned int        dummyinteger11;
 	unsigned int        dummy_integer_array[8][DC__NUM_DPP__MAX];
-
 	bool           dummysinglestring;
 	bool           SingleDPPViewportSizeSupportPerPlane[DC__NUM_DPP__MAX];
 	double         PlaneRequiredDISPCLKWithODMCombine2To1;
@@ -893,20 +798,15 @@ struct vba_vars_st {
 	bool           ViewportSizeSupportPerPlane[DC__NUM_DPP__MAX];
 	double         AlignedDCCMetaPitchY[DC__NUM_DPP__MAX];
 	double         AlignedDCCMetaPitchC[DC__NUM_DPP__MAX];
-
 	unsigned int NotEnoughUrgentLatencyHiding[DC__VOLTAGE_STATES][2];
 	unsigned int NotEnoughUrgentLatencyHidingPre;
 	int PTEBufferSizeInRequestsForLuma;
 	int PTEBufferSizeInRequestsForChroma;
-
-	// Missing from VBA
 	int dpte_group_bytes_chroma;
 	unsigned int vm_group_bytes_chroma;
 	double dst_x_after_scaler;
 	double dst_y_after_scaler;
 	unsigned int VStartupRequiredWhenNotEnoughTimeForDynamicMetadata;
-
-	/* perf locals*/
 	double PrefetchBandwidth[DC__NUM_DPP__MAX];
 	double VInitPreFillY[DC__NUM_DPP__MAX];
 	double VInitPreFillC[DC__NUM_DPP__MAX];
@@ -966,8 +866,8 @@ struct vba_vars_st {
 	double XFCPrefetchMargin[DC__NUM_DPP__MAX];
 	unsigned int dpte_row_width_luma_ub[DC__NUM_DPP__MAX];
 	unsigned int dpte_row_width_chroma_ub[DC__NUM_DPP__MAX];
-	double FullDETBufferingTimeY[DC__NUM_DPP__MAX];                     // WM
-	double FullDETBufferingTimeC[DC__NUM_DPP__MAX];                     // WM
+	double FullDETBufferingTimeY[DC__NUM_DPP__MAX];                      
+	double FullDETBufferingTimeC[DC__NUM_DPP__MAX];                      
 	double DST_Y_PER_PTE_ROW_NOM_L[DC__NUM_DPP__MAX];
 	double DST_Y_PER_PTE_ROW_NOM_C[DC__NUM_DPP__MAX];
 	double DST_Y_PER_META_ROW_NOM_L[DC__NUM_DPP__MAX];
@@ -1001,7 +901,6 @@ struct vba_vars_st {
 	double SwathWidthYCriticalPlane;
 	double LinesInDETY[DC__NUM_DPP__MAX];
 	double LinesInDETYRoundedDownToSwath[DC__NUM_DPP__MAX];
-
 	double SwathWidthSingleDPPC[DC__NUM_DPP__MAX];
 	double SwathWidthC[DC__NUM_DPP__MAX];
 	unsigned int BytePerPixelY[DC__NUM_DPP__MAX];
@@ -1022,8 +921,6 @@ struct vba_vars_st {
 	unsigned int DCCCMaxCompressedBlock[DC__NUM_DPP__MAX];
 	double VStartupMargin;
 	bool NotEnoughTimeForDynamicMetadata[DC__NUM_DPP__MAX];
-
-	/* Missing from VBA */
 	unsigned int MaximumMaxVStartupLines;
 	double FabricAndDRAMBandwidth;
 	double LinesInDETLuma;
@@ -1040,10 +937,8 @@ struct vba_vars_st {
 	double qual_row_bw[DC__NUM_DPP__MAX];
 	double prefetch_row_bw[DC__NUM_DPP__MAX];
 	double prefetch_vm_bw[DC__NUM_DPP__MAX];
-
 	double PTEGroupSize;
 	unsigned int PDEProcessingBufIn64KBReqs;
-
 	double MaxTotalVActiveRDBandwidth;
 	bool DoUrgentLatencyAdjustment;
 	double UrgentLatencyAdjustmentFabricClockComponent;
@@ -1053,16 +948,13 @@ struct vba_vars_st {
 	double AverageReadBandwidthGBytePerSecond;
 	bool   FirstMainPlane;
 	bool NotEnoughDETSwathFillLatencyHiding;
-
 	unsigned int ViewportWidthChroma[DC__NUM_DPP__MAX];
 	unsigned int ViewportHeightChroma[DC__NUM_DPP__MAX];
 	double HRatioChroma[DC__NUM_DPP__MAX];
 	double VRatioChroma[DC__NUM_DPP__MAX];
 	int WritebackSourceWidth[DC__NUM_DPP__MAX];
-
 	bool ModeIsSupported;
 	bool ODMCombine4To1Supported;
-
 	unsigned int SurfaceWidthY[DC__NUM_DPP__MAX];
 	unsigned int SurfaceWidthC[DC__NUM_DPP__MAX];
 	unsigned int SurfaceHeightY[DC__NUM_DPP__MAX];
@@ -1070,29 +962,22 @@ struct vba_vars_st {
 	unsigned int WritebackHTaps[DC__NUM_DPP__MAX];
 	unsigned int WritebackVTaps[DC__NUM_DPP__MAX];
 	bool DSCEnable[DC__NUM_DPP__MAX];
-
 	double DRAMClockChangeLatencyOverride;
-
 	double GPUVMMinPageSize;
 	double HostVMMinPageSize;
-
 	bool   MPCCombineEnable[DC__NUM_DPP__MAX];
 	unsigned int HostVMMaxNonCachedPageTableLevels;
 	bool   DynamicMetadataVMEnabled;
 	double       WritebackInterfaceBufferSize;
 	double       WritebackLineBufferSize;
-
 	double DCCRateLuma[DC__NUM_DPP__MAX];
 	double DCCRateChroma[DC__NUM_DPP__MAX];
-
 	double PHYCLKD18PerState[DC__VOLTAGE_STATES];
-
 	bool WritebackSupportInterleaveAndUsingWholeBufferForASingleStream;
 	bool NumberOfHDMIFRLSupport;
 	unsigned int MaxNumHDMIFRLOutputs;
 	int    AudioSampleRate[DC__NUM_DPP__MAX];
 	int    AudioSampleLayout[DC__NUM_DPP__MAX];
-
 	int PercentMarginOverMinimumRequiredDCFCLK;
 	bool DynamicMetadataSupported[DC__VOLTAGE_STATES][2];
 	enum immediate_flip_requirement ImmediateFlipRequirement[DC__NUM_DPP__MAX];
@@ -1144,7 +1029,6 @@ struct vba_vars_st {
 	bool UseMinimumRequiredDCFCLK;
 	bool ClampMinDCFCLK;
 	bool AllowDramClockChangeOneDisplayVactive;
-
 	double MaxAveragePercentOfIdealFabricAndSDPPortBWDisplayCanUseInNormalSystemOperation;
 	double PercentOfIdealFabricAndSDPPortBWReceivedAfterUrgLatency;
 	double PercentOfIdealDRAMBWReceivedAfterUrgLatencyPixelMixedWithVMData;
@@ -1223,8 +1107,8 @@ struct vba_vars_st {
 	bool UsesMALLForStaticScreen[DC__NUM_DPP__MAX];
 	double MaxActiveDRAMClockChangeLatencySupported[DC__NUM_DPP__MAX];
 	double WritebackAllowFCLKChangeEndPosition[DC__NUM_DPP__MAX];
-	bool PTEBufferSizeNotExceededPerState[DC__NUM_DPP__MAX]; // new in DML32
-	bool DCCMetaBufferSizeNotExceededPerState[DC__NUM_DPP__MAX]; // new in DML32
+	bool PTEBufferSizeNotExceededPerState[DC__NUM_DPP__MAX];  
+	bool DCCMetaBufferSizeNotExceededPerState[DC__NUM_DPP__MAX];  
 	bool NotEnoughDSCSlices[DC__VOLTAGE_STATES];
 	bool PixelsPerLinePerDSCUnitSupport[DC__VOLTAGE_STATES];
 	bool DCCMetaBufferSizeNotExceeded[DC__VOLTAGE_STATES][2];
@@ -1239,12 +1123,10 @@ struct vba_vars_st {
 	bool NotEnoughDETSwathFillLatencyHidingPerState[DC__VOLTAGE_STATES][2];
 	struct dummy_vars dummy_vars;
 };
-
 bool CalculateMinAndMaxPrefetchMode(
 		enum self_refresh_affinity AllowDRAMSelfRefreshOrDRAMClockChangeInVblank,
 		unsigned int *MinPrefetchMode,
 		unsigned int *MaxPrefetchMode);
-
 double CalculateWriteBackDISPCLK(
 		enum source_format_class WritebackPixelFormat,
 		double PixelClock,
@@ -1257,5 +1139,4 @@ double CalculateWriteBackDISPCLK(
 		double WritebackDestinationWidth,
 		unsigned int HTotal,
 		unsigned int WritebackChromaLineBufferWidth);
-
-#endif /* _DML2_DISPLAY_MODE_VBA_H_ */
+#endif  

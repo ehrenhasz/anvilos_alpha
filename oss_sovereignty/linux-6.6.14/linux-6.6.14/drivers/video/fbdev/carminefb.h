@@ -1,25 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef CARMINE_CARMINE_H
 #define CARMINE_CARMINE_H
-
 #define CARMINE_MEMORY_BAR	2
 #define CARMINE_CONFIG_BAR	3
-
 #define MAX_DISPLAY	2
 #define CARMINE_DISPLAY_MEM	(800 * 600 * 4)
 #define CARMINE_TOTAL_DIPLAY_MEM	(CARMINE_DISPLAY_MEM * MAX_DISPLAY)
-
 #define CARMINE_USE_DISPLAY0	(1 << 0)
 #define CARMINE_USE_DISPLAY1	(1 << 1)
-
-/*
- * This values work on the eval card. Custom boards may use different timings,
- * here an example :)
- */
-
-/* DRAM initialization values */
 #ifdef CONFIG_FB_CARMINE_DRAM_EVAL
-
 #define CARMINE_DFLT_IP_CLOCK_ENABLE		(0x03ff)
 #define CARMINE_DFLT_IP_DCTL_ADD		(0x05c3)
 #define CARMINE_DFLT_IP_DCTL_MODE		(0x0121)
@@ -39,9 +27,7 @@
 #define CARMINE_DFLT_IP_DCTL_IO_CONT1		(0x0555)
 #define CARMINE_DCTL_DLL_RESET			(1)
 #endif
-
 #ifdef CONFIG_CARMINE_DRAM_CUSTOM
-
 #define CARMINE_DFLT_IP_CLOCK_ENABLE		(0x03ff)
 #define CARMINE_DFLT_IP_DCTL_ADD		(0x03b2)
 #define CARMINE_DFLT_IP_DCTL_MODE		(0x0161)
@@ -61,5 +47,4 @@
 #define CARMINE_DFLT_IP_DCTL_IO_CONT1		(0x0555)
 #define CARMINE_DCTL_DLL_RESET			(1)
 #endif
-
 #endif

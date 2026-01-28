@@ -1,15 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright (c) 2021 Protonic Holland
- */
-
 / {
 	gpio-keys {
 		compatible = "gpio-keys";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpiokeys>;
 		autorepeat;
-
 		power-button {
 			label = "Power Button";
 			gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
@@ -17,12 +11,10 @@
 			wakeup-source;
 		};
 	};
-
 	panel {
 		compatible = "kyo,tcg121xglp";
 		backlight = <&backlight_lcd>;
 		power-supply = <&reg_3v3>;
-
 		port {
 			panel_in: endpoint {
 				remote-endpoint = <&lvds0_out>;
@@ -30,19 +22,15 @@
 		};
 	};
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet>;
 	phy-mode = "rgmii-id";
 	phy-handle = <&rgmii_phy>;
 	status = "okay";
-
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
-		/* Microchip KSZ9031RNX PHY */
 		rgmii_phy: ethernet-phy@0 {
 			reg = <0>;
 			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
@@ -52,7 +40,6 @@
 		};
 	};
 };
-
 &gpio1 {
 	gpio-line-names =
 		"CAN1_TERM", "SD1_CD", "ITU656_RESET", "CAM1_MIRROR",
@@ -62,7 +49,6 @@
 			"SD1_DATA3", "ETH_MDIO", "",
 		"", "ETH_RESET", "", "", "ETH_INT", "", "", "ETH_MDC";
 };
-
 &gpio4 {
 	gpio-line-names =
 		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
@@ -73,7 +59,6 @@
 		"LIGHT_ON", "", "", "CONTACT_IN", "BL_EN", "BL_PWM", "",
 			"ISB_LED";
 };
-
 &gpio5 {
 	gpio-line-names =
 		"", "", "", "", "", "", "", "",
@@ -83,7 +68,6 @@
 		"I2S_LRCLK", "I2S_DIN", "I2C1_SDA", "I2C1_SCL", "YACO_AUX_RX",
 			"YACO_AUX_TX", "ITU656_D0", "ITU656_D1";
 };
-
 &gpio6 {
 	gpio-line-names =
 		"ITU656_D2", "ITU656_D3", "ITU656_D4", "ITU656_D5",
@@ -94,7 +78,6 @@
 		"RGMII_RX_CTL", "RGMII_RD0", "RGMII_TX_CTL", "RGMII_RD1",
 			"RGMII_RD2", "RGMII_RD3", "", "";
 };
-
 &iomuxc {
 	pinctrl_enet: enetgrp {
 		fsl,pins = <
@@ -113,15 +96,12 @@
 			MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK		0x10030
 			MX6QDL_PAD_ENET_MDIO__ENET_MDIO			0x10030
 			MX6QDL_PAD_ENET_MDC__ENET_MDC			0x10030
-			/* Phy reset */
 			MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25		0x1b0b0
 			MX6QDL_PAD_ENET_TX_EN__GPIO1_IO28		0x1b0b1
 		>;
 	};
-
 	pinctrl_gpiokeys: gpiokeygrp {
 		fsl,pins = <
-			/* nON_SWITCH */
 			MX6QDL_PAD_EIM_CS0__GPIO2_IO23			0x1b0b0
 		>;
 	};

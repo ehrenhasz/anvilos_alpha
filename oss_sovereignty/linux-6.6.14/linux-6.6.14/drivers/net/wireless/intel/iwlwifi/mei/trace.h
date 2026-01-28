@@ -1,25 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2021        Intel Corporation
- */
-
 #if !defined(CONFIG_IWLWIFI_DEVICE_TRACING)
-
 #define trace_iwlmei_sap_cmd(...)
 #define trace_iwlmei_me_msg(...)
-
 #else
-
 #if !defined(__IWLWIFI_DEVICE_TRACE_IWLWIFI_SAP_CMD) || defined(TRACE_HEADER_MULTI_READ)
 #define __IWLWIFI_DEVICE_TRACE_IWLWIFI_SAP_CMD
-
 #include <linux/tracepoint.h>
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM iwlmei_sap_cmd
-
 #include "mei/sap.h"
-
 TRACE_EVENT(iwlmei_sap_cmd,
 	TP_PROTO(const struct iwl_sap_hdr *sap_cmd, bool tx),
 	TP_ARGS(sap_cmd, tx),
@@ -42,7 +30,6 @@ TRACE_EVENT(iwlmei_sap_cmd,
 	TP_printk("sap_cmd %s: type %d len %d seq %d", __entry->tx ? "Tx" : "Rx",
 		  __entry->type, __entry->len, __entry->seq)
 );
-
 TRACE_EVENT(iwlmei_me_msg,
 	TP_PROTO(const struct iwl_sap_me_msg_hdr *hdr, bool tx),
 	TP_ARGS(hdr, tx),
@@ -59,18 +46,10 @@ TRACE_EVENT(iwlmei_me_msg,
 	TP_printk("ME message: %s: type %d seq %d", __entry->tx ? "Tx" : "Rx",
 		  __entry->type, __entry->seq_num)
 );
-
-/*
- * If you add something here, add a stub in case
- * !defined(CONFIG_IWLWIFI_DEVICE_TRACING)
- */
-
-#endif /* __IWLWIFI_DEVICE_TRACE_IWLWIFI_SAP_CMD */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 #include <trace/define_trace.h>
-
-#endif /* CONFIG_IWLWIFI_DEVICE_TRACING */
+#endif  

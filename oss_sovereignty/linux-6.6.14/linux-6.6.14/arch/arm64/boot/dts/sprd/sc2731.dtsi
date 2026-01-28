@@ -1,11 +1,3 @@
-/*
- * Spreadtrum SC2731 PMIC dts file
- *
- * Copyright (C) 2018, Spreadtrum Communications Inc.
- *
- * SPDX-License-Identifier: (GPL-2.0+ OR MIT)
- */
-
 &adi_bus {
 	sc2731_pmic: pmic@0 {
 		compatible = "sprd,sc2731";
@@ -16,42 +8,35 @@
 		#interrupt-cells = <1>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		charger@0 {
 			compatible = "sprd,sc2731-charger";
 			reg = <0x0>;
 			monitored-battery = <&bat>;
 		};
-
 		led-controller@200 {
 			compatible = "sprd,sc2731-bltc";
 			reg = <0x200>;
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			led@0 {
 				label = "red";
 				reg = <0x0>;
 			};
-
 			led@1 {
 				label = "green";
 				reg = <0x1>;
 			};
-
 			led@2 {
 				label = "blue";
 				reg = <0x2>;
 			};
 		};
-
 		rtc@280 {
 			compatible = "sprd,sc2731-rtc";
 			reg = <0x280>;
 			interrupt-parent = <&sc2731_pmic>;
 			interrupts = <2>;
 		};
-
 		pmic_eic: gpio@300 {
 			compatible = "sprd,sc2731-eic";
 			reg = <0x300>;
@@ -62,28 +47,23 @@
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		efuse@380 {
 			compatible = "sprd,sc2731-efuse";
 			reg = <0x380>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 			hwlocks = <&hwlock 12>;
-
 			fgu_calib: calib@6 {
 				reg = <0x6 0x2>;
 				bits = <0 9>;
 			};
-
 			adc_big_scale: calib@24 {
 				reg = <0x24 0x2>;
 			};
-
 			adc_small_scale: calib@26 {
 				reg = <0x26 0x2>;
 			};
 		};
-
 		pmic_adc: adc@480 {
 			compatible = "sprd,sc2731-adc";
 			reg = <0x480>;
@@ -94,7 +74,6 @@
 			nvmem-cell-names = "big_scale_calib", "small_scale_calib";
 			nvmem-cells = <&adc_big_scale>, <&adc_small_scale>;
 		};
-
 		fgu@a00 {
 			compatible = "sprd,sc2731-fgu";
 			reg = <0xa00>;
@@ -107,15 +86,12 @@
 			interrupt-parent = <&sc2731_pmic>;
 			interrupts = <4>;
 		};
-
 		vibrator@ec8 {
 			compatible = "sprd,sc2731-vibrator";
 			reg = <0xec8>;
 		};
-
 		regulators {
 			compatible = "sprd,sc2731-regulator";
-
 			vddarm0: BUCK_CPU0 {
 				regulator-name = "vddarm0";
 				regulator-min-microvolt = <400000>;
@@ -123,7 +99,6 @@
 				regulator-ramp-delay = <25000>;
 				regulator-always-on;
 			};
-
 			vddarm1: BUCK_CPU1 {
 				regulator-name = "vddarm1";
 				regulator-min-microvolt = <400000>;
@@ -131,7 +106,6 @@
 				regulator-ramp-delay = <25000>;
 				regulator-always-on;
 			};
-
 			dcdcrf: BUCK_RF {
 				regulator-name = "dcdcrf";
 				regulator-min-microvolt = <600000>;
@@ -140,14 +114,12 @@
 				regulator-enable-ramp-delay = <100>;
 				regulator-always-on;
 			};
-
 			vddcama0: LDO_CAMA0 {
 				regulator-name = "vddcama0";
 				regulator-min-microvolt = <1200000>;
 				regulator-max-microvolt = <3750000>;
 				regulator-enable-ramp-delay = <100>;
 			};
-
 			vddcama1: LDO_CAMA1 {
 				regulator-name = "vddcama1";
 				regulator-min-microvolt = <1200000>;
@@ -155,7 +127,6 @@
 				regulator-enable-ramp-delay = <100>;
 				regulator-ramp-delay = <25000>;
 			};
-
 			vddcammot: LDO_CAMMOT {
 				regulator-name = "vddcammot";
 				regulator-min-microvolt = <1200000>;
@@ -163,7 +134,6 @@
 				regulator-enable-ramp-delay = <100>;
 				regulator-ramp-delay = <25000>;
 			};
-
 			vddvldo: LDO_VLDO {
 				regulator-name = "vddvldo";
 				regulator-min-microvolt = <1200000>;
@@ -171,7 +141,6 @@
 				regulator-enable-ramp-delay = <100>;
 				regulator-ramp-delay = <25000>;
 			};
-
 			vddemmccore: LDO_EMMCCORE {
 				regulator-name = "vddemmccore";
 				regulator-min-microvolt = <1200000>;
@@ -180,7 +149,6 @@
 				regulator-ramp-delay = <25000>;
 				regulator-boot-on;
 			};
-
 			vddsdcore: LDO_SDCORE {
 				regulator-name = "vddsdcore";
 				regulator-min-microvolt = <1200000>;
@@ -188,7 +156,6 @@
 				regulator-enable-ramp-delay = <100>;
 				regulator-ramp-delay = <25000>;
 			};
-
 			vddsdio: LDO_SDIO {
 				regulator-name = "vddsdio";
 				regulator-min-microvolt = <1200000>;
@@ -196,7 +163,6 @@
 				regulator-enable-ramp-delay = <100>;
 				regulator-ramp-delay = <25000>;
 			};
-
 			vddwifipa: LDO_WIFIPA {
 				regulator-name = "vddwifipa";
 				regulator-min-microvolt = <1200000>;
@@ -204,7 +170,6 @@
 				regulator-enable-ramp-delay = <100>;
 				regulator-ramp-delay = <25000>;
 			};
-
 			vddusb33: LDO_USB33 {
 				regulator-name = "vddusb33";
 				regulator-min-microvolt = <1200000>;
@@ -212,7 +177,6 @@
 				regulator-enable-ramp-delay = <100>;
 				regulator-ramp-delay = <25000>;
 			};
-
 			vddcamd0: LDO_CAMD0 {
 				regulator-name = "vddcamd0";
 				regulator-min-microvolt = <1000000>;
@@ -220,7 +184,6 @@
 				regulator-enable-ramp-delay = <100>;
 				regulator-ramp-delay = <25000>;
 			};
-
 			vddcamd1: LDO_CAMD1 {
 				regulator-name = "vddcamd1";
 				regulator-min-microvolt = <1000000>;
@@ -228,7 +191,6 @@
 				regulator-enable-ramp-delay = <100>;
 				regulator-ramp-delay = <25000>;
 			};
-
 			vddcon: LDO_CON {
 				regulator-name = "vddcon";
 				regulator-min-microvolt = <1000000>;
@@ -236,7 +198,6 @@
 				regulator-enable-ramp-delay = <100>;
 				regulator-ramp-delay = <25000>;
 			};
-
 			vddcamio: LDO_CAMIO {
 				regulator-name = "vddcamio";
 				regulator-min-microvolt = <1000000>;
@@ -244,7 +205,6 @@
 				regulator-enable-ramp-delay = <100>;
 				regulator-ramp-delay = <25000>;
 			};
-
 			vddsram: LDO_SRAM {
 				regulator-name = "vddsram";
 				regulator-min-microvolt = <1000000>;

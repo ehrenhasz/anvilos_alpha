@@ -1,23 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/**
- * mtu3_trace.h - trace support
- *
- * Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mtu3
-
 #if !defined(__MTU3_TRACE_H__) || defined(TRACE_HEADER_MULTI_READ)
 #define __MTU3_TRACE_H__
-
 #include <linux/types.h>
 #include <linux/tracepoint.h>
-
 #include "mtu3.h"
-
 TRACE_EVENT(mtu3_log,
 	TP_PROTO(struct device *dev, struct va_format *vaf),
 	TP_ARGS(dev, vaf),
@@ -31,7 +18,6 @@ TRACE_EVENT(mtu3_log,
 	),
 	TP_printk("%s: %s", __get_str(name), __get_str(msg))
 );
-
 TRACE_EVENT(mtu3_u3_ltssm_isr,
 	TP_PROTO(u32 intr),
 	TP_ARGS(intr),
@@ -50,7 +36,6 @@ TRACE_EVENT(mtu3_u3_ltssm_isr,
 		__entry->intr & VBUS_FALL_INTR ? "VBUS_FALL" : ""
 	)
 );
-
 TRACE_EVENT(mtu3_u2_common_isr,
 	TP_PROTO(u32 intr),
 	TP_ARGS(intr),
@@ -66,7 +51,6 @@ TRACE_EVENT(mtu3_u2_common_isr,
 		__entry->intr & RESET_INTR ? "RESET" : ""
 	)
 );
-
 TRACE_EVENT(mtu3_qmu_isr,
 	TP_PROTO(u32 done_intr, u32 exp_intr),
 	TP_ARGS(done_intr, exp_intr),
@@ -84,7 +68,6 @@ TRACE_EVENT(mtu3_qmu_isr,
 		__entry->exp_intr
 	)
 );
-
 DECLARE_EVENT_CLASS(mtu3_log_setup,
 	TP_PROTO(struct usb_ctrlrequest *setup),
 	TP_ARGS(setup),
@@ -107,12 +90,10 @@ DECLARE_EVENT_CLASS(mtu3_log_setup,
 		__entry->wValue, __entry->wIndex, __entry->wLength
 	)
 );
-
 DEFINE_EVENT(mtu3_log_setup, mtu3_handle_setup,
 	TP_PROTO(struct usb_ctrlrequest *setup),
 	TP_ARGS(setup)
 );
-
 DECLARE_EVENT_CLASS(mtu3_log_request,
 	TP_PROTO(struct mtu3_request *mreq),
 	TP_ARGS(mreq),
@@ -144,32 +125,26 @@ DECLARE_EVENT_CLASS(mtu3_log_request,
 		__entry->status
 	)
 );
-
 DEFINE_EVENT(mtu3_log_request, mtu3_alloc_request,
 	TP_PROTO(struct mtu3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(mtu3_log_request, mtu3_free_request,
 	TP_PROTO(struct mtu3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(mtu3_log_request, mtu3_gadget_queue,
 	TP_PROTO(struct mtu3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(mtu3_log_request, mtu3_gadget_dequeue,
 	TP_PROTO(struct mtu3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(mtu3_log_request, mtu3_req_complete,
 	TP_PROTO(struct mtu3_request *req),
 	TP_ARGS(req)
 );
-
 DECLARE_EVENT_CLASS(mtu3_log_gpd,
 	TP_PROTO(struct mtu3_ep *mep, struct qmu_gpd *gpd),
 	TP_ARGS(mep, gpd),
@@ -195,22 +170,18 @@ DECLARE_EVENT_CLASS(mtu3_log_gpd,
 		__entry->dw2, __entry->dw3
 	)
 );
-
 DEFINE_EVENT(mtu3_log_gpd, mtu3_prepare_gpd,
 	TP_PROTO(struct mtu3_ep *mep, struct qmu_gpd *gpd),
 	TP_ARGS(mep, gpd)
 );
-
 DEFINE_EVENT(mtu3_log_gpd, mtu3_complete_gpd,
 	TP_PROTO(struct mtu3_ep *mep, struct qmu_gpd *gpd),
 	TP_ARGS(mep, gpd)
 );
-
 DEFINE_EVENT(mtu3_log_gpd, mtu3_zlp_exp_gpd,
 	TP_PROTO(struct mtu3_ep *mep, struct qmu_gpd *gpd),
 	TP_ARGS(mep, gpd)
 );
-
 DECLARE_EVENT_CLASS(mtu3_log_ep,
 	TP_PROTO(struct mtu3_ep *mep),
 	TP_ARGS(mep),
@@ -248,30 +219,21 @@ DECLARE_EVENT_CLASS(mtu3_log_ep,
 		__entry->direction ? '<' : '>'
 	)
 );
-
 DEFINE_EVENT(mtu3_log_ep, mtu3_gadget_ep_enable,
 	TP_PROTO(struct mtu3_ep *mep),
 	TP_ARGS(mep)
 );
-
 DEFINE_EVENT(mtu3_log_ep, mtu3_gadget_ep_disable,
 	TP_PROTO(struct mtu3_ep *mep),
 	TP_ARGS(mep)
 );
-
 DEFINE_EVENT(mtu3_log_ep, mtu3_gadget_ep_set_halt,
 	TP_PROTO(struct mtu3_ep *mep),
 	TP_ARGS(mep)
 );
-
-#endif /* __MTU3_TRACE_H__ */
-
-/* this part has to be here */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
-
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE mtu3_trace
-
 #include <trace/define_trace.h>

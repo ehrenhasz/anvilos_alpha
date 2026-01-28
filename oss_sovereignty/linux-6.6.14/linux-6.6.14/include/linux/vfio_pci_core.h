@@ -1,13 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- *
- * Derived from original vfio:
- * Copyright 2010 Cisco Systems, Inc.  All rights reserved.
- * Author: Tom Lyon, pugs@cisco.com
- */
-
 #include <linux/mutex.h>
 #include <linux/pci.h>
 #include <linux/vfio.h>
@@ -15,18 +5,14 @@
 #include <linux/types.h>
 #include <linux/uuid.h>
 #include <linux/notifier.h>
-
 #ifndef VFIO_PCI_CORE_H
 #define VFIO_PCI_CORE_H
-
 #define VFIO_PCI_OFFSET_SHIFT   40
 #define VFIO_PCI_OFFSET_TO_INDEX(off)	(off >> VFIO_PCI_OFFSET_SHIFT)
 #define VFIO_PCI_INDEX_TO_OFFSET(index)	((u64)(index) << VFIO_PCI_OFFSET_SHIFT)
 #define VFIO_PCI_OFFSET_MASK	(((u64)(1) << VFIO_PCI_OFFSET_SHIFT) - 1)
-
 struct vfio_pci_core_device;
 struct vfio_pci_region;
-
 struct vfio_pci_regops {
 	ssize_t (*rw)(struct vfio_pci_core_device *vdev, char __user *buf,
 		      size_t count, loff_t *ppos, bool iswrite);
@@ -39,7 +25,6 @@ struct vfio_pci_regops {
 				  struct vfio_pci_region *region,
 				  struct vfio_info_cap *caps);
 };
-
 struct vfio_pci_region {
 	u32				type;
 	u32				subtype;
@@ -48,7 +33,6 @@ struct vfio_pci_region {
 	size_t				size;
 	u32				flags;
 };
-
 struct vfio_pci_core_device {
 	struct vfio_device	vdev;
 	struct pci_dev		*pdev;
@@ -97,8 +81,6 @@ struct vfio_pci_core_device {
 	struct list_head	vma_list;
 	struct rw_semaphore	memory_lock;
 };
-
-/* Will be exported for vfio pci drivers usage */
 int vfio_pci_core_register_dev_region(struct vfio_pci_core_device *vdev,
 				      unsigned int type, unsigned int subtype,
 				      const struct vfio_pci_regops *ops,
@@ -129,5 +111,4 @@ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev);
 void vfio_pci_core_finish_enable(struct vfio_pci_core_device *vdev);
 pci_ers_result_t vfio_pci_core_aer_err_detected(struct pci_dev *pdev,
 						pci_channel_state_t state);
-
-#endif /* VFIO_PCI_CORE_H */
+#endif  

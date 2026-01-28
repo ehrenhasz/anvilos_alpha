@@ -1,16 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright (C) 2019 Zodiac Inflight Innovations
- */
-
 /dts-v1/;
-
 #include "imx8mq-zii-ultra.dtsi"
-
 / {
 	model = "ZII Ultra RMB3 Board";
 	compatible = "zii,imx8mq-ultra-rmb3", "zii,imx8mq-ultra", "fsl,imx8mq";
-
 	sound1 {
 		compatible = "simple-audio-card";
 		simple-audio-card,name = "front";
@@ -25,17 +17,14 @@
 			"HPA1 LEFTIN", "HPL",
 			"HPA1 RIGHTIN", "HPR";
 		simple-audio-card,aux-devs = <&hpa1>;
-
 		sound1_cpu: simple-audio-card,cpu {
 			sound-dai = <&sai2>;
 		};
-
 		sound1_codec: simple-audio-card,codec {
 			sound-dai = <&codec1>;
 			clocks = <&cs2000>;
 		};
 	};
-
 	sound2 {
 		compatible = "simple-audio-card";
 		simple-audio-card,name = "periph";
@@ -50,18 +39,15 @@
 			"HPA1 LEFTIN", "HPL",
 			"HPA1 RIGHTIN", "HPR";
 		simple-audio-card,aux-devs = <&hpa2>;
-
 		sound2_cpu: simple-audio-card,cpu {
 			sound-dai = <&sai3>;
 		};
-
 		sound2_codec: simple-audio-card,codec {
 			sound-dai = <&codec2>;
 			clocks = <&cs2000>;
 		};
 	};
 };
-
 &ecspi1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi1>;
@@ -69,18 +55,15 @@
 	status = "okay";
 	#address-cells = <1>;
 	#size-cells = <0>;
-
 	nor_flash: flash@0 {
 		compatible = "st,n25q128a13", "jedec,spi-nor";
 		spi-max-frequency = <20000000>;
 		reg = <0>;
 	};
 };
-
 &hpa2 {
 	sound-name-prefix = "HPA1";
 };
-
 &i2c1 {
 	codec2: codec@18 {
 		compatible = "ti,tlv320dac3100";
@@ -97,14 +80,12 @@
 		reset-gpios = <&gpio3 4 GPIO_ACTIVE_HIGH>;
 	};
 };
-
 &i2c2 {
 	temp-sense@48 {
 		compatible = "national,lm75";
 		reg = <0x48>;
 	};
 };
-
 &i2c4 {
 	touchscreen@20 {
 		compatible = "syna,rmi4-i2c";
@@ -113,15 +94,12 @@
 		reg = <0x20>;
 		interrupt-parent = <&gpio1>;
 		interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
-
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		rmi4-f01@1 {
 			reg = <0x1>;
 			syna,nosleep-mode = <2>;
 		};
-
 		rmi4-f11@11 {
 			reg = <0x11>;
 			touchscreen-inverted-x;
@@ -130,7 +108,6 @@
 			syna,delta-x-threshold = <5>;
 			syna,delta-y-threshold = <10>;
 		};
-
 		rmi4-f12@12 {
 			reg = <0x12>;
 			touchscreen-inverted-x;
@@ -138,7 +115,6 @@
 			syna,sensor-type = <1>;
 		};
 	};
-
 	touchscreen@2a {
 		compatible = "eeti,exc3000";
 		pinctrl-names = "default";
@@ -151,24 +127,20 @@
 		status = "disabled";
 	};
 };
-
 &sai3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_sai3>;
 	status = "okay";
 };
-
 &usbhub {
 	swap-dx-lanes = <0>;
 };
-
 &iomuxc {
 	pinctrl_codec2: dac2grp {
 		fsl,pins = <
 			MX8MQ_IOMUXC_NAND_CE3_B_GPIO3_IO4		0x41
 		>;
 	};
-
 	pinctrl_ecspi1: ecspi1grp {
 		fsl,pins = <
 			MX8MQ_IOMUXC_ECSPI1_SS0_GPIO5_IO9	0x19
@@ -177,7 +149,6 @@
 			MX8MQ_IOMUXC_ECSPI1_MOSI_ECSPI1_MOSI	0x82
 		>;
 	};
-
 	pinctrl_sai3: sai3grp {
 		fsl,pins = <
 			MX8MQ_IOMUXC_SAI3_TXFS_SAI3_TX_SYNC		0xd6

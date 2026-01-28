@@ -1,71 +1,40 @@
-/*
-** asm-m68k/pcmcia.h -- Amiga Linux PCMCIA Definitions
-**
-** Copyright 1997 by Alain Malek
-**
-** This file is subject to the terms and conditions of the GNU General Public
-** License.  See the file COPYING in the main directory of this archive
-** for more details.
-**
-** Created: 12/10/97 by Alain Malek
-*/
-
 #ifndef __AMIGA_PCMCIA_H__
 #define __AMIGA_PCMCIA_H__
-
 #include <asm/amigayle.h>
-
-/* prototypes */
-
 void pcmcia_reset(void);
 int pcmcia_copy_tuple(unsigned char tuple_id, void *tuple, int max_len);
 void pcmcia_program_voltage(int voltage);
 void pcmcia_access_speed(int speed);
 void pcmcia_write_enable(void);
 void pcmcia_write_disable(void);
-
 static inline u_char pcmcia_read_status(void)
 {
 	return (gayle.cardstatus & 0x7c);
 }
-
 static inline u_char pcmcia_get_intreq(void)
 {
 	return (gayle.intreq);
 }
-
 static inline void pcmcia_ack_int(u_char intreq)
 {
 	gayle.intreq = 0xf8;
 }
-
 static inline void pcmcia_enable_irq(void)
 {
 	gayle.inten |= GAYLE_IRQ_IRQ;
 }
-
 static inline void pcmcia_disable_irq(void)
 {
 	gayle.inten &= ~GAYLE_IRQ_IRQ;
 }
-
 #define PCMCIA_INSERTED	(gayle.cardstatus & GAYLE_CS_CCDET)
-
-/* valid voltages for pcmcia_ProgramVoltage */
-
 #define PCMCIA_0V	0
 #define PCMCIA_5V	5
 #define PCMCIA_12V	12
-
-/* valid speeds for pcmcia_AccessSpeed */
-
 #define PCMCIA_SPEED_100NS	100
 #define PCMCIA_SPEED_150NS	150
 #define PCMCIA_SPEED_250NS	250
 #define PCMCIA_SPEED_720NS	720
-
-/* PCMCIA Tuple codes */
-
 #define CISTPL_NULL		0x00
 #define CISTPL_DEVICE		0x01
 #define CISTPL_LONGLINK_CB	0x02
@@ -94,9 +63,6 @@ static inline void pcmcia_disable_irq(void)
 #define CISTPL_FUNCE		0x22
 #define CISTPL_SWIL		0x23
 #define CISTPL_END		0xff
-
-/* FUNCID */
-
 #define CISTPL_FUNCID_MULTI	0x00
 #define CISTPL_FUNCID_MEMORY	0x01
 #define CISTPL_FUNCID_SERIAL	0x02
@@ -106,5 +72,4 @@ static inline void pcmcia_disable_irq(void)
 #define CISTPL_FUNCID_NETWORK	0x06
 #define CISTPL_FUNCID_AIMS	0x07
 #define CISTPL_FUNCID_SCSI	0x08
-
 #endif

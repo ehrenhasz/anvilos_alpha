@@ -1,30 +1,5 @@
-/*
- * Copyright (C) 2017  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 #ifndef _uvd_7_0_OFFSET_HEADER
 #define _uvd_7_0_OFFSET_HEADER
-
-
-
-// addressBlock: uvd0_uvd_pg_dec
-// base address: 0x1fb00
 #define mmUVD_POWER_STATUS                                                                             0x00c4
 #define mmUVD_POWER_STATUS_BASE_IDX                                                                    1
 #define mmUVD_DPG_RBC_RB_CNTL                                                                          0x00cb
@@ -45,10 +20,6 @@
 #define mmUVD_DPG_LMI_VCPU_CACHE_64BIT_BAR_HIGH_BASE_IDX                                               1
 #define mmUVD_DPG_VCPU_CACHE_OFFSET0                                                                   0x00e7
 #define mmUVD_DPG_VCPU_CACHE_OFFSET0_BASE_IDX                                                          1
-
-
-// addressBlock: uvd0_uvdnpdec
-// base address: 0x20000
 #define mmUVD_JPEG_ADDR_CONFIG                                                                         0x021f
 #define mmUVD_JPEG_ADDR_CONFIG_BASE_IDX                                                                1
 #define mmUVD_GPCOM_VCPU_CMD                                                                           0x03c3
@@ -115,10 +86,6 @@
 #define mmUVD_LMI_RBC_RB_64BIT_BAR_HIGH_BASE_IDX                                                       1
 #define mmUVD_LMI_RBC_RB_64BIT_BAR_LOW                                                                 0x0469
 #define mmUVD_LMI_RBC_RB_64BIT_BAR_LOW_BASE_IDX                                                        1
-
-
-// addressBlock: uvd0_uvddec
-// base address: 0x20c00
 #define mmUVD_SEMA_CNTL                                                                                0x0500
 #define mmUVD_SEMA_CNTL_BASE_IDX                                                                       1
 #define mmUVD_LMI_JRBC_RB_64BIT_BAR_LOW                                                                0x0503
@@ -219,7 +186,4 @@
 #define mmUVD_CONTEXT_ID_BASE_IDX                                                                      1
 #define mmUVD_CONTEXT_ID2                                                                              0x05bf
 #define mmUVD_CONTEXT_ID2_BASE_IDX                                                                     1
-
-
-
 #endif

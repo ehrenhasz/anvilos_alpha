@@ -1,35 +1,13 @@
-/*
- * B53 common definitions
- *
- * Copyright (C) 2011-2013 Jonas Gorski <jogo@openwrt.org>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 #ifndef __B53_PRIV_H
 #define __B53_PRIV_H
-
 #include <linux/kernel.h>
 #include <linux/mutex.h>
 #include <linux/phylink.h>
 #include <linux/etherdevice.h>
 #include <net/dsa.h>
-
 #include "b53_regs.h"
-
 struct b53_device;
 struct net_device;
-
 struct b53_io_ops {
 	int (*read8)(struct b53_device *dev, u8 page, u8 reg, u8 *value);
 	int (*read16)(struct b53_device *dev, u8 page, u8 reg, u16 *value);
@@ -55,9 +33,7 @@ struct b53_io_ops {
 				unsigned int mode, phy_interface_t interface,
 				bool link_up);
 };
-
 #define B53_INVALID_LANE	0xff
-
 enum {
 	BCM4908_DEVICE_ID = 0x4908,
 	BCM5325_DEVICE_ID = 0x25,
@@ -82,39 +58,31 @@ enum {
 	BCM7278_DEVICE_ID = 0x7278,
 	BCM53134_DEVICE_ID = 0x5075,
 };
-
 struct b53_pcs {
 	struct phylink_pcs pcs;
 	struct b53_device *dev;
 	u8 lane;
 };
-
 #define B53_N_PORTS	9
 #define B53_N_PORTS_25	6
 #define B53_N_PCS	2
-
 struct b53_port {
 	u16		vlan_ctl_mask;
 	struct ethtool_eee eee;
 };
-
 struct b53_vlan {
 	u16 members;
 	u16 untag;
 	bool valid;
 };
-
 struct b53_device {
 	struct dsa_switch *ds;
 	struct b53_platform_data *pdata;
 	const char *name;
-
 	struct mutex reg_mutex;
 	struct mutex stats_mutex;
 	struct mutex arl_mutex;
 	const struct b53_io_ops *ops;
-
-	/* chip specific data */
 	u32 chip_id;
 	u8 core_rev;
 	u8 vta_regs[3];
@@ -125,43 +93,28 @@ struct b53_device {
 	u8 num_arl_bins;
 	u16 num_arl_buckets;
 	enum dsa_tag_protocol tag_protocol;
-
-	/* used ports mask */
 	u16 enabled_ports;
 	unsigned int imp_port;
-
-	/* connect specific data */
 	u8 current_page;
 	struct device *dev;
 	u8 serdes_lane;
-
-	/* Master MDIO bus we got probed from */
 	struct mii_bus *bus;
-
 	void *priv;
-
-	/* run time configuration */
 	bool enable_jumbo;
-
 	unsigned int num_vlans;
 	struct b53_vlan *vlans;
 	bool vlan_enabled;
 	unsigned int num_ports;
 	struct b53_port *ports;
-
 	struct b53_pcs pcs[B53_N_PCS];
 };
-
 #define b53_for_each_port(dev, i) \
 	for (i = 0; i < B53_N_PORTS; i++) \
 		if (dev->enabled_ports & BIT(i))
-
-
 static inline int is5325(struct b53_device *dev)
 {
 	return dev->chip_id == BCM5325_DEVICE_ID;
 }
-
 static inline int is5365(struct b53_device *dev)
 {
 #ifdef CONFIG_BCM47XX
@@ -170,20 +123,17 @@ static inline int is5365(struct b53_device *dev)
 	return 0;
 #endif
 }
-
 static inline int is5397_98(struct b53_device *dev)
 {
 	return dev->chip_id == BCM5397_DEVICE_ID ||
 		dev->chip_id == BCM5398_DEVICE_ID;
 }
-
 static inline int is539x(struct b53_device *dev)
 {
 	return dev->chip_id == BCM5395_DEVICE_ID ||
 		dev->chip_id == BCM5397_DEVICE_ID ||
 		dev->chip_id == BCM5398_DEVICE_ID;
 }
-
 static inline int is531x5(struct b53_device *dev)
 {
 	return dev->chip_id == BCM53115_DEVICE_ID ||
@@ -191,18 +141,15 @@ static inline int is531x5(struct b53_device *dev)
 		dev->chip_id == BCM53128_DEVICE_ID ||
 		dev->chip_id == BCM53134_DEVICE_ID;
 }
-
 static inline int is63xx(struct b53_device *dev)
 {
 	return dev->chip_id == BCM63XX_DEVICE_ID ||
 		dev->chip_id == BCM63268_DEVICE_ID;
 }
-
 static inline int is63268(struct b53_device *dev)
 {
 	return dev->chip_id == BCM63268_DEVICE_ID;
 }
-
 static inline int is5301x(struct b53_device *dev)
 {
 	return dev->chip_id == BCM53010_DEVICE_ID ||
@@ -211,7 +158,6 @@ static inline int is5301x(struct b53_device *dev)
 		dev->chip_id == BCM53018_DEVICE_ID ||
 		dev->chip_id == BCM53019_DEVICE_ID;
 }
-
 static inline int is58xx(struct b53_device *dev)
 {
 	return dev->chip_id == BCM58XX_DEVICE_ID ||
@@ -220,34 +166,26 @@ static inline int is58xx(struct b53_device *dev)
 		dev->chip_id == BCM7278_DEVICE_ID ||
 		dev->chip_id == BCM53134_DEVICE_ID;
 }
-
 #define B53_63XX_RGMII0	4
 #define B53_CPU_PORT_25	5
 #define B53_CPU_PORT	8
-
 static inline unsigned int b53_max_arl_entries(struct b53_device *dev)
 {
 	return dev->num_arl_buckets * dev->num_arl_bins;
 }
-
 struct b53_device *b53_switch_alloc(struct device *base,
 				    const struct b53_io_ops *ops,
 				    void *priv);
-
 int b53_switch_detect(struct b53_device *dev);
-
 int b53_switch_register(struct b53_device *dev);
-
 static inline void b53_switch_remove(struct b53_device *dev)
 {
 	dsa_unregister_switch(dev->ds);
 }
-
 static inline void b53_switch_shutdown(struct b53_device *dev)
 {
 	dsa_switch_shutdown(dev->ds);
 }
-
 #define b53_build_op(type_op_size, val_type)				\
 static inline int b53_##type_op_size(struct b53_device *dev, u8 page,	\
 				     u8 reg, val_type val)		\
@@ -260,19 +198,16 @@ static inline int b53_##type_op_size(struct b53_device *dev, u8 page,	\
 									\
 	return ret;							\
 }
-
 b53_build_op(read8, u8 *);
 b53_build_op(read16, u16 *);
 b53_build_op(read32, u32 *);
 b53_build_op(read48, u64 *);
 b53_build_op(read64, u64 *);
-
 b53_build_op(write8, u8);
 b53_build_op(write16, u16);
 b53_build_op(write32, u32);
 b53_build_op(write48, u64);
 b53_build_op(write64, u64);
-
 struct b53_arl_entry {
 	u16 port;
 	u8 mac[ETH_ALEN];
@@ -281,7 +216,6 @@ struct b53_arl_entry {
 	u8 is_age:1;
 	u8 is_static:1;
 };
-
 static inline void b53_arl_to_entry(struct b53_arl_entry *ent,
 				    u64 mac_vid, u32 fwd_entry)
 {
@@ -293,7 +227,6 @@ static inline void b53_arl_to_entry(struct b53_arl_entry *ent,
 	u64_to_ether_addr(mac_vid, ent->mac);
 	ent->vid = mac_vid >> ARLTBL_VID_S;
 }
-
 static inline void b53_arl_from_entry(u64 *mac_vid, u32 *fwd_entry,
 				      const struct b53_arl_entry *ent)
 {
@@ -307,15 +240,12 @@ static inline void b53_arl_from_entry(u64 *mac_vid, u32 *fwd_entry,
 	if (ent->is_age)
 		*fwd_entry |= ARLTBL_AGE;
 }
-
 #ifdef CONFIG_BCM47XX
-
 #include <linux/bcm47xx_nvram.h>
 #include <bcm47xx_board.h>
 static inline int b53_switch_get_reset_gpio(struct b53_device *dev)
 {
 	enum bcm47xx_board board = bcm47xx_board_get();
-
 	switch (board) {
 	case BCM47XX_BOARD_LINKSYS_WRT300NV11:
 	case BCM47XX_BOARD_LINKSYS_WRT310NV1:
@@ -330,8 +260,6 @@ static inline int b53_switch_get_reset_gpio(struct b53_device *dev)
 	return -ENOENT;
 }
 #endif
-
-/* Exported functions towards other drivers */
 void b53_imp_vlan_setup(struct dsa_switch *ds, int cpu_port);
 int b53_configure_vlan(struct dsa_switch *ds);
 void b53_get_strings(struct dsa_switch *ds, int port, u32 stringset,
@@ -399,5 +327,4 @@ void b53_eee_enable_set(struct dsa_switch *ds, int port, bool enable);
 int b53_eee_init(struct dsa_switch *ds, int port, struct phy_device *phy);
 int b53_get_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *e);
 int b53_set_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *e);
-
 #endif

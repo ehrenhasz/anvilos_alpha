@@ -1,13 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2017 - 2021 Intel Corporation */
 #ifndef IRDMA_H
 #define IRDMA_H
-
 #define IRDMA_WQEALLOC_WQE_DESC_INDEX GENMASK(31, 20)
-
 #define IRDMA_CQPTAIL_WQTAIL GENMASK(10, 0)
 #define IRDMA_CQPTAIL_CQP_OP_ERR BIT(31)
-
 #define IRDMA_CQPERRCODES_CQP_MINOR_CODE GENMASK(15, 0)
 #define IRDMA_CQPERRCODES_CQP_MAJOR_CODE GENMASK(31, 16)
 #define IRDMA_GLPCI_LBARCTRL_PE_DB_SIZE GENMASK(5, 4)
@@ -31,7 +26,6 @@
 #define IRDMA_PFHMC_SDDATALOW_PMSDBPCOUNT GENMASK(11, 2)
 #define IRDMA_PFHMC_SDDATALOW_PMSDDATALOW GENMASK(31, 12)
 #define IRDMA_PFHMC_SDCMD_PMSDWR BIT(31)
-
 #define IRDMA_INVALID_CQ_IDX			0xffffffff
 enum irdma_registers {
 	IRDMA_CQPTAIL,
@@ -57,9 +51,8 @@ enum irdma_registers {
 	IRDMA_GLHMC_VFPDINV,
 	IRDMA_GLPE_CRITERR,
 	IRDMA_GLINT_RATE,
-	IRDMA_MAX_REGS, /* Must be last entry */
+	IRDMA_MAX_REGS,  
 };
-
 enum irdma_shifts {
 	IRDMA_CCQPSTATUS_CCQP_DONE_S,
 	IRDMA_CCQPSTATUS_CCQP_ERR_S,
@@ -69,7 +62,6 @@ enum irdma_shifts {
 	IRDMA_COMMIT_FPM_CQCNT_S,
 	IRDMA_MAX_SHIFTS,
 };
-
 enum irdma_masks {
 	IRDMA_CCQPSTATUS_CCQP_DONE_M,
 	IRDMA_CCQPSTATUS_CCQP_ERR_M,
@@ -77,18 +69,15 @@ enum irdma_masks {
 	IRDMA_CQPSQ_CQ_CEQID_M,
 	IRDMA_CQPSQ_CQ_CQID_M,
 	IRDMA_COMMIT_FPM_CQCNT_M,
-	IRDMA_MAX_MASKS, /* Must be last entry */
+	IRDMA_MAX_MASKS,  
 };
-
 #define IRDMA_MAX_MGS_PER_CTX	8
-
 struct irdma_mcast_grp_ctx_entry_info {
 	u32 qp_id;
 	bool valid_entry;
 	u16 dest_port;
 	u32 use_cnt;
 };
-
 struct irdma_mcast_grp_info {
 	u8 dest_mac_addr[ETH_ALEN];
 	u16 vlan_id;
@@ -102,13 +91,11 @@ struct irdma_mcast_grp_info {
 	struct irdma_dma_mem dma_mem_mc;
 	struct irdma_mcast_grp_ctx_entry_info mg_ctx_info[IRDMA_MAX_MGS_PER_CTX];
 };
-
 enum irdma_vers {
 	IRDMA_GEN_RSVD,
 	IRDMA_GEN_1,
 	IRDMA_GEN_2,
 };
-
 struct irdma_uk_attrs {
 	u64 feature_flags;
 	u32 max_hw_wq_frags;
@@ -122,7 +109,6 @@ struct irdma_uk_attrs {
 	u16 min_hw_wq_size;
 	u8 hw_rev;
 };
-
 struct irdma_hw_attrs {
 	struct irdma_uk_attrs uk_attrs;
 	u64 max_hw_outbound_msg_size;
@@ -150,7 +136,6 @@ struct irdma_hw_attrs {
 	u16 max_stat_inst;
 	u16 max_stat_idx;
 };
-
 void i40iw_init_hw(struct irdma_sc_dev *dev);
 void icrdma_init_hw(struct irdma_sc_dev *dev);
-#endif /* IRDMA_H*/
+#endif  

@@ -1,20 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * as3722 definitions
- *
- * Copyright (C) 2013 ams
- * Copyright (c) 2013, NVIDIA Corporation. All rights reserved.
- *
- * Author: Florian Lobmaier <florian.lobmaier@ams.com>
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
-
 #ifndef __LINUX_MFD_AS3722_H__
 #define __LINUX_MFD_AS3722_H__
-
 #include <linux/regmap.h>
-
-/* AS3722 registers */
 #define AS3722_SD0_VOLTAGE_REG				0x00
 #define AS3722_SD1_VOLTAGE_REG				0x01
 #define AS3722_SD2_VOLTAGE_REG				0x02
@@ -139,7 +125,6 @@
 #define AS3722_LOCK_REG					0x9E
 #define AS3722_FUSE7_REG				0xA7
 #define AS3722_MAX_REGISTER				0xF4
-
 #define AS3722_SD0_EXT_ENABLE_MASK			0x03
 #define AS3722_SD1_EXT_ENABLE_MASK			0x0C
 #define AS3722_SD2_EXT_ENABLE_MASK			0x30
@@ -158,20 +143,16 @@
 #define AS3722_LDO9_EXT_ENABLE_MASK			0x0C
 #define AS3722_LDO10_EXT_ENABLE_MASK			0x30
 #define AS3722_LDO11_EXT_ENABLE_MASK			0xC0
-
 #define AS3722_OVCURRENT_SD0_ALARM_MASK			0x07
 #define AS3722_OVCURRENT_SD0_ALARM_SHIFT		0x01
 #define AS3722_OVCURRENT_SD0_TRIP_MASK			0x18
 #define AS3722_OVCURRENT_SD0_TRIP_SHIFT			0x03
 #define AS3722_OVCURRENT_SD1_TRIP_MASK			0x60
 #define AS3722_OVCURRENT_SD1_TRIP_SHIFT			0x05
-
 #define AS3722_OVCURRENT_SD6_ALARM_MASK			0x07
 #define AS3722_OVCURRENT_SD6_ALARM_SHIFT		0x01
 #define AS3722_OVCURRENT_SD6_TRIP_MASK			0x18
 #define AS3722_OVCURRENT_SD6_TRIP_SHIFT			0x03
-
-/* AS3722 register bits and bit masks */
 #define AS3722_LDO_ILIMIT_MASK				BIT(7)
 #define AS3722_LDO_ILIMIT_BIT				BIT(7)
 #define AS3722_LDO0_VSEL_MASK				0x1F
@@ -189,7 +170,6 @@
 #define AS3722_LDO_VSEL_DNU_MIN				0x25
 #define AS3722_LDO_VSEL_DNU_MAX				0x3F
 #define AS3722_LDO_NUM_VOLT				0x80
-
 #define AS3722_LDO0_CTRL				BIT(0)
 #define AS3722_LDO1_CTRL				BIT(1)
 #define AS3722_LDO2_CTRL				BIT(2)
@@ -201,23 +181,19 @@
 #define AS3722_LDO9_CTRL				BIT(1)
 #define AS3722_LDO10_CTRL				BIT(2)
 #define AS3722_LDO11_CTRL				BIT(3)
-
 #define AS3722_LDO3_MODE_MASK				(3 << 6)
 #define AS3722_LDO3_MODE_VAL(n)				(((n) & 0x3) << 6)
 #define AS3722_LDO3_MODE_PMOS				AS3722_LDO3_MODE_VAL(0)
 #define AS3722_LDO3_MODE_PMOS_TRACKING			AS3722_LDO3_MODE_VAL(1)
 #define AS3722_LDO3_MODE_NMOS				AS3722_LDO3_MODE_VAL(2)
 #define AS3722_LDO3_MODE_SWITCH				AS3722_LDO3_MODE_VAL(3)
-
 #define AS3722_SD_VSEL_MASK				0x7F
 #define AS3722_SD0_VSEL_MIN				0x01
 #define AS3722_SD0_VSEL_MAX				0x5A
 #define AS3722_SD0_VSEL_LOW_VOL_MAX			0x6E
 #define AS3722_SD2_VSEL_MIN				0x01
 #define AS3722_SD2_VSEL_MAX				0x7F
-
 #define AS3722_SDn_CTRL(n)				BIT(n)
-
 #define AS3722_SD0_MODE_FAST				BIT(4)
 #define AS3722_SD1_MODE_FAST				BIT(4)
 #define AS3722_SD2_MODE_FAST				BIT(2)
@@ -225,9 +201,7 @@
 #define AS3722_SD4_MODE_FAST				BIT(2)
 #define AS3722_SD5_MODE_FAST				BIT(2)
 #define AS3722_SD6_MODE_FAST				BIT(4)
-
 #define AS3722_POWER_OFF				BIT(1)
-
 #define AS3722_INTERRUPT_MASK1_LID			BIT(0)
 #define AS3722_INTERRUPT_MASK1_ACOK			BIT(1)
 #define AS3722_INTERRUPT_MASK1_ENABLE1			BIT(2)
@@ -236,7 +210,6 @@
 #define AS3722_INTERRUPT_MASK1_ONKEY			BIT(5)
 #define AS3722_INTERRUPT_MASK1_OVTMP			BIT(6)
 #define AS3722_INTERRUPT_MASK1_LOWBAT			BIT(7)
-
 #define AS3722_INTERRUPT_MASK2_SD0_LV			BIT(0)
 #define AS3722_INTERRUPT_MASK2_SD1_LV			BIT(1)
 #define AS3722_INTERRUPT_MASK2_SD2345_LV		BIT(2)
@@ -245,7 +218,6 @@
 #define AS3722_INTERRUPT_MASK2_ENABLE2			BIT(5)
 #define AS3722_INTERRUPT_MASK2_SD6_LV			BIT(6)
 #define AS3722_INTERRUPT_MASK2_RTC_REP			BIT(7)
-
 #define AS3722_INTERRUPT_MASK3_RTC_ALARM		BIT(0)
 #define AS3722_INTERRUPT_MASK3_GPIO1			BIT(1)
 #define AS3722_INTERRUPT_MASK3_GPIO2			BIT(2)
@@ -254,7 +226,6 @@
 #define AS3722_INTERRUPT_MASK3_GPIO5			BIT(5)
 #define AS3722_INTERRUPT_MASK3_WATCHDOG			BIT(6)
 #define AS3722_INTERRUPT_MASK3_ENABLE3			BIT(7)
-
 #define AS3722_INTERRUPT_MASK4_TEMP_SD0_SHUTDOWN	BIT(0)
 #define AS3722_INTERRUPT_MASK4_TEMP_SD1_SHUTDOWN	BIT(1)
 #define AS3722_INTERRUPT_MASK4_TEMP_SD6_SHUTDOWN	BIT(2)
@@ -263,28 +234,21 @@
 #define AS3722_INTERRUPT_MASK4_TEMP_SD6_ALARM		BIT(5)
 #define AS3722_INTERRUPT_MASK4_OCCUR_ALARM_SD6		BIT(6)
 #define AS3722_INTERRUPT_MASK4_ADC			BIT(7)
-
 #define AS3722_ADC1_INTERVAL_TIME			BIT(0)
 #define AS3722_ADC1_INT_MODE_ON				BIT(1)
 #define AS3722_ADC_BUF_ON				BIT(2)
 #define AS3722_ADC1_LOW_VOLTAGE_RANGE			BIT(5)
 #define AS3722_ADC1_INTEVAL_SCAN			BIT(6)
 #define AS3722_ADC1_INT_MASK				BIT(7)
-
 #define AS3722_ADC_MSB_VAL_MASK				0x7F
 #define AS3722_ADC_LSB_VAL_MASK				0x07
-
 #define AS3722_ADC0_CONV_START				BIT(7)
 #define AS3722_ADC0_CONV_NOTREADY			BIT(7)
 #define AS3722_ADC0_SOURCE_SELECT_MASK			0x1F
-
 #define AS3722_ADC1_CONV_START				BIT(7)
 #define AS3722_ADC1_CONV_NOTREADY			BIT(7)
 #define AS3722_ADC1_SOURCE_SELECT_MASK			0x1F
-
 #define AS3722_CTRL_SEQU1_AC_OK_PWR_ON			BIT(0)
-
-/* GPIO modes */
 #define AS3722_GPIO_MODE_MASK				0x07
 #define AS3722_GPIO_MODE_INPUT				0x00
 #define AS3722_GPIO_MODE_OUTPUT_VDDH			0x01
@@ -295,7 +259,6 @@
 #define AS3722_GPIO_MODE_IO_OPEN_DRAIN_PULL_UP		0x06
 #define AS3722_GPIO_MODE_OUTPUT_VDDL			0x07
 #define AS3722_GPIO_MODE_VAL(n)			((n) & AS3722_GPIO_MODE_MASK)
-
 #define AS3722_GPIO_INV					BIT(7)
 #define AS3722_GPIO_IOSF_MASK				0x78
 #define AS3722_GPIO_IOSF_VAL(n)				(((n) & 0xF) << 3)
@@ -313,29 +276,22 @@
 #define AS3722_GPIO_IOSF_PWM_OUT			AS3722_GPIO_IOSF_VAL(12)
 #define AS3722_GPIO_IOSF_VSUP_LOW_DEB_OUT		AS3722_GPIO_IOSF_VAL(13)
 #define AS3722_GPIO_IOSF_SD6_LOW_VOLT_LOW		AS3722_GPIO_IOSF_VAL(14)
-
 #define AS3722_GPIOn_SIGNAL(n)				BIT(n)
 #define AS3722_GPIOn_CONTROL_REG(n)		(AS3722_GPIO0_CONTROL_REG + n)
 #define AS3722_I2C_PULL_UP				BIT(4)
 #define AS3722_INT_PULL_UP				BIT(5)
-
 #define AS3722_RTC_REP_WAKEUP_EN			BIT(0)
 #define AS3722_RTC_ALARM_WAKEUP_EN			BIT(1)
 #define AS3722_RTC_ON					BIT(2)
 #define AS3722_RTC_IRQMODE				BIT(3)
 #define AS3722_RTC_CLK32K_OUT_EN			BIT(5)
-
 #define AS3722_WATCHDOG_TIMER_MAX			0x7F
 #define AS3722_WATCHDOG_ON				BIT(0)
 #define AS3722_WATCHDOG_SW_SIG				BIT(0)
-
 #define AS3722_EXT_CONTROL_ENABLE1			0x1
 #define AS3722_EXT_CONTROL_ENABLE2			0x2
 #define AS3722_EXT_CONTROL_ENABLE3			0x3
-
 #define AS3722_FUSE7_SD0_LOW_VOLTAGE			BIT(4)
-
-/* Interrupt IDs */
 enum as3722_irq {
 	AS3722_IRQ_LID,
 	AS3722_IRQ_ACOK,
@@ -371,7 +327,6 @@ enum as3722_irq {
 	AS3722_IRQ_ADC,
 	AS3722_IRQ_MAX,
 };
-
 struct as3722 {
 	struct device *dev;
 	struct regmap *regmap;
@@ -382,37 +337,31 @@ struct as3722 {
 	bool en_ac_ok_pwr_on;
 	struct regmap_irq_chip_data *irq_data;
 };
-
 static inline int as3722_read(struct as3722 *as3722, u32 reg, u32 *dest)
 {
 	return regmap_read(as3722->regmap, reg, dest);
 }
-
 static inline int as3722_write(struct as3722 *as3722, u32 reg, u32 value)
 {
 	return regmap_write(as3722->regmap, reg, value);
 }
-
 static inline int as3722_block_read(struct as3722 *as3722, u32 reg,
 		int count, u8 *buf)
 {
 	return regmap_bulk_read(as3722->regmap, reg, buf, count);
 }
-
 static inline int as3722_block_write(struct as3722 *as3722, u32 reg,
 		int count, u8 *data)
 {
 	return regmap_bulk_write(as3722->regmap, reg, data, count);
 }
-
 static inline int as3722_update_bits(struct as3722 *as3722, u32 reg,
 		u32 mask, u8 val)
 {
 	return regmap_update_bits(as3722->regmap, reg, mask, val);
 }
-
 static inline int as3722_irq_get_virq(struct as3722 *as3722, int irq)
 {
 	return regmap_irq_get_virq(as3722->irq_data, irq);
 }
-#endif /* __LINUX_MFD_AS3722_H__ */
+#endif  

@@ -1,36 +1,8 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-
 #ifndef __SMU_V11_5_0_PMFW_H__
 #define __SMU_V11_5_0_PMFW_H__
-
 #include "smu11_driver_if_vangogh.h"
-
 #pragma pack(push, 1)
-
 #define ENABLE_DEBUG_FEATURES
-
-// Feature Control Defines
 #define FEATURE_CCLK_DPM_BIT           0
 #define FEATURE_FAN_CONTROLLER_BIT     1
 #define FEATURE_DATA_CALCULATION_BIT   2
@@ -92,15 +64,12 @@
 #define FEATURE_CC6_BIT               58
 #define FEATURE_GFX_EDC_BIT           59
 #define NUM_FEATURES                  60
-
 typedef struct {
-  // MP1_EXT_SCRATCH0
   uint32_t DpmHandlerID         : 8;
   uint32_t ActivityMonitorID    : 8;
   uint32_t DpmTimerID           : 8;
   uint32_t DpmHubID             : 4;
   uint32_t DpmHubTask           : 4;
-  // MP1_EXT_SCRATCH1
   uint32_t GfxStatus            : 2;
   uint32_t GfxoffStatus         : 8;
   uint32_t CpuOff               : 1;
@@ -109,15 +78,7 @@ typedef struct {
   uint32_t InS0i2               : 2;
   uint32_t InWhisperMode        : 1;
   uint32_t spare1               : 16;
-  // MP1_EXT_SCRATCH2
   uint32_t P2JobHandler			: 32;
-  // MP1_EXT_SCRATCH3: used for postcodes
-
-  // MP1_EXT_SCRATCH4:6 are used by Kernel
-  // MP1_EXT_SCRATCH7: used by HW
 } FwStatus_t;
-
-
 #pragma pack(pop)
-
 #endif

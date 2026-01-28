@@ -1,34 +1,7 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM amdgpu_dm
-
 #if !defined(_AMDGPU_DM_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _AMDGPU_DM_TRACE_H_
-
 #include <linux/tracepoint.h>
 #include <drm/drm_connector.h>
 #include <drm/drm_crtc.h>
@@ -38,37 +11,29 @@
 #include <drm/drm_encoder.h>
 #include <drm/drm_atomic.h>
 #include "dcn10/dcn10_optc.h"
-
 #include "dc/inc/core_types.h"
-
 DECLARE_EVENT_CLASS(amdgpu_dc_reg_template,
 		    TP_PROTO(unsigned long *count, uint32_t reg, uint32_t value),
 		    TP_ARGS(count, reg, value),
-
 		    TP_STRUCT__entry(
 				     __field(uint32_t, reg)
 				     __field(uint32_t, value)
 		    ),
-
 		    TP_fast_assign(
 				   __entry->reg = reg;
 				   __entry->value = value;
 				   *count = *count + 1;
 		    ),
-
 		    TP_printk("reg=0x%08lx, value=0x%08lx",
 			      (unsigned long)__entry->reg,
 			      (unsigned long)__entry->value)
 );
-
 DEFINE_EVENT(amdgpu_dc_reg_template, amdgpu_dc_rreg,
 	     TP_PROTO(unsigned long *count, uint32_t reg, uint32_t value),
 	     TP_ARGS(count, reg, value));
-
 DEFINE_EVENT(amdgpu_dc_reg_template, amdgpu_dc_wreg,
 	     TP_PROTO(unsigned long *count, uint32_t reg, uint32_t value),
 	     TP_ARGS(count, reg, value));
-
 TRACE_EVENT(amdgpu_dc_performance,
 	TP_PROTO(unsigned long read_count, unsigned long write_count,
 		unsigned long *last_read, unsigned long *last_write,
@@ -99,11 +64,9 @@ TRACE_EVENT(amdgpu_dc_performance,
 			(unsigned long)__entry->write_delta,
 			(unsigned long)__entry->writes)
 );
-
 TRACE_EVENT(amdgpu_dm_connector_atomic_check,
 	    TP_PROTO(const struct drm_connector_state *state),
 	    TP_ARGS(state),
-
 	    TP_STRUCT__entry(
 			     __field(uint32_t, conn_id)
 			     __field(const struct drm_connector_state *, conn_state)
@@ -122,7 +85,6 @@ TRACE_EVENT(amdgpu_dm_connector_atomic_check,
 			     __field(u8, max_requested_bpc)
 			     __field(u8, max_bpc)
 	    ),
-
 	    TP_fast_assign(
 			   __entry->conn_id = state->connector->base.id;
 			   __entry->conn_state = state;
@@ -142,7 +104,6 @@ TRACE_EVENT(amdgpu_dm_connector_atomic_check,
 			   __entry->max_requested_bpc = state->max_requested_bpc;
 			   __entry->max_bpc = state->max_bpc;
 	    ),
-
 	    TP_printk("conn_id=%u conn_state=%p state=%p commit=%p crtc_id=%u "
 		      "best_encoder_id=%u link_status=%d self_refresh_aware=%d "
 		      "picture_aspect_ratio=%d content_type=%u "
@@ -156,11 +117,9 @@ TRACE_EVENT(amdgpu_dm_connector_atomic_check,
 		      __entry->scaling_mode, __entry->colorspace,
 		      __entry->max_requested_bpc, __entry->max_bpc)
 );
-
 TRACE_EVENT(amdgpu_dm_crtc_atomic_check,
 	    TP_PROTO(const struct drm_crtc_state *state),
 	    TP_ARGS(state),
-
 	    TP_STRUCT__entry(
 			     __field(const struct drm_atomic_state *, state)
 			     __field(const struct drm_crtc_state *, crtc_state)
@@ -182,7 +141,6 @@ TRACE_EVENT(amdgpu_dm_crtc_atomic_check,
 			     __field(u32, connector_mask)
 			     __field(u32, encoder_mask)
 	    ),
-
 	    TP_fast_assign(
 			   __entry->state = state->state;
 			   __entry->crtc_state = state;
@@ -204,7 +162,6 @@ TRACE_EVENT(amdgpu_dm_crtc_atomic_check,
 			   __entry->connector_mask = state->connector_mask;
 			   __entry->encoder_mask = state->encoder_mask;
 	    ),
-
 	    TP_printk("crtc_id=%u crtc_state=%p state=%p commit=%p changed("
 		      "planes=%d mode=%d active=%d conn=%d zpos=%d color_mgmt=%d) "
 		      "state(enable=%d active=%d async_flip=%d vrr_enabled=%d "
@@ -220,7 +177,6 @@ TRACE_EVENT(amdgpu_dm_crtc_atomic_check,
 		      __entry->plane_mask, __entry->connector_mask,
 		      __entry->encoder_mask)
 );
-
 DECLARE_EVENT_CLASS(amdgpu_dm_plane_state_template,
 	    TP_PROTO(const struct drm_plane_state *state),
 	    TP_ARGS(state),
@@ -252,7 +208,6 @@ DECLARE_EVENT_CLASS(amdgpu_dm_plane_state_template,
 			     __field(enum drm_color_range, color_range)
 			     __field(bool, visible)
 	    ),
-
 	    TP_fast_assign(
 			   __entry->plane_id = state->plane->base.id;
 			   __entry->plane_type = state->plane->type;
@@ -281,7 +236,6 @@ DECLARE_EVENT_CLASS(amdgpu_dm_plane_state_template,
 			   __entry->color_range = state->color_range;
 			   __entry->visible = state->visible;
 	    ),
-
 	    TP_printk("plane_id=%u plane_type=%d plane_state=%p state=%p "
 		      "crtc_id=%u fb(id=%u fmt=%c%c%c%c planes=%u mod=%llu) "
 		      "fence=%p crtc_x=%d crtc_y=%d crtc_w=%u crtc_h=%u "
@@ -304,19 +258,15 @@ DECLARE_EVENT_CLASS(amdgpu_dm_plane_state_template,
 		      __entry->color_encoding, __entry->color_range,
 		      __entry->visible)
 );
-
 DEFINE_EVENT(amdgpu_dm_plane_state_template, amdgpu_dm_plane_atomic_check,
 	     TP_PROTO(const struct drm_plane_state *state),
 	     TP_ARGS(state));
-
 DEFINE_EVENT(amdgpu_dm_plane_state_template, amdgpu_dm_atomic_update_cursor,
 	     TP_PROTO(const struct drm_plane_state *state),
 	     TP_ARGS(state));
-
 TRACE_EVENT(amdgpu_dm_atomic_state_template,
 	    TP_PROTO(const struct drm_atomic_state *state),
 	    TP_ARGS(state),
-
 	    TP_STRUCT__entry(
 			     __field(const struct drm_atomic_state *, state)
 			     __field(bool, allow_modeset)
@@ -326,7 +276,6 @@ TRACE_EVENT(amdgpu_dm_atomic_state_template,
 			     __field(int, num_connector)
 			     __field(int, num_private_objs)
 	    ),
-
 	    TP_fast_assign(
 			   __entry->state = state;
 			   __entry->allow_modeset = state->allow_modeset;
@@ -336,7 +285,6 @@ TRACE_EVENT(amdgpu_dm_atomic_state_template,
 			   __entry->num_connector = state->num_connector;
 			   __entry->num_private_objs = state->num_private_objs;
 	    ),
-
 	    TP_printk("state=%p allow_modeset=%d legacy_cursor_update=%d "
 		      "async_update=%d duplicated=%d num_connector=%d "
 		      "num_private_objs=%d",
@@ -344,49 +292,40 @@ TRACE_EVENT(amdgpu_dm_atomic_state_template,
 		      __entry->async_update, __entry->duplicated, __entry->num_connector,
 		      __entry->num_private_objs)
 );
-
 DEFINE_EVENT(amdgpu_dm_atomic_state_template, amdgpu_dm_atomic_commit_tail_begin,
 	     TP_PROTO(const struct drm_atomic_state *state),
 	     TP_ARGS(state));
-
 DEFINE_EVENT(amdgpu_dm_atomic_state_template, amdgpu_dm_atomic_commit_tail_finish,
 	     TP_PROTO(const struct drm_atomic_state *state),
 	     TP_ARGS(state));
-
 DEFINE_EVENT(amdgpu_dm_atomic_state_template, amdgpu_dm_atomic_check_begin,
 	     TP_PROTO(const struct drm_atomic_state *state),
 	     TP_ARGS(state));
-
 TRACE_EVENT(amdgpu_dm_atomic_check_finish,
 	    TP_PROTO(const struct drm_atomic_state *state, int res),
 	    TP_ARGS(state, res),
-
 	    TP_STRUCT__entry(
 			     __field(const struct drm_atomic_state *, state)
 			     __field(int, res)
 			     __field(bool, async_update)
 			     __field(bool, allow_modeset)
 	    ),
-
 	    TP_fast_assign(
 			   __entry->state = state;
 			   __entry->res = res;
 			   __entry->async_update = state->async_update;
 			   __entry->allow_modeset = state->allow_modeset;
 	    ),
-
 	    TP_printk("state=%p res=%d async_update=%d allow_modeset=%d",
 		      __entry->state, __entry->res,
 		      __entry->async_update, __entry->allow_modeset)
 );
-
 TRACE_EVENT(amdgpu_dm_dc_pipe_state,
 	    TP_PROTO(int pipe_idx, const struct dc_plane_state *plane_state,
 		     const struct dc_stream_state *stream,
 		     const struct plane_resource *plane_res,
 		     int update_flags),
 	    TP_ARGS(pipe_idx, plane_state, stream, plane_res, update_flags),
-
 	    TP_STRUCT__entry(
 			     __field(int, pipe_idx)
 			     __field(const void *, stream)
@@ -418,7 +357,6 @@ TRACE_EVENT(amdgpu_dm_dc_pipe_state,
 			     __field(int, swizzle)
 			     __field(unsigned int, update_flags)
 	),
-
 	TP_fast_assign(
 		       __entry->pipe_idx = pipe_idx;
 		       __entry->stream = stream;
@@ -485,11 +423,9 @@ TRACE_EVENT(amdgpu_dm_dc_pipe_state,
 		  __entry->update_flags
 	)
 );
-
 TRACE_EVENT(amdgpu_dm_dc_clocks_state,
 	    TP_PROTO(const struct dc_clocks *clk),
 	    TP_ARGS(clk),
-
 	    TP_STRUCT__entry(
 			     __field(int, dispclk_khz)
 			     __field(int, dppclk_khz)
@@ -554,11 +490,9 @@ TRACE_EVENT(amdgpu_dm_dc_clocks_state,
 		      __entry->bw_dispclk_khz
 	    )
 );
-
 TRACE_EVENT(amdgpu_dm_dce_clocks_state,
 	    TP_PROTO(const struct dce_bw_output *clk),
 	    TP_ARGS(clk),
-
 	    TP_STRUCT__entry(
 			     __field(bool, cpuc_state_change_enable)
 			     __field(bool, cpup_state_change_enable)
@@ -598,7 +532,6 @@ TRACE_EVENT(amdgpu_dm_dce_clocks_state,
 		      __entry->blackout_recovery_time_us
 	    )
 );
-
 TRACE_EVENT(amdgpu_dmub_trace_high_irq,
 	TP_PROTO(uint32_t trace_code, uint32_t tick_count, uint32_t param0,
 		 uint32_t param1),
@@ -619,7 +552,6 @@ TRACE_EVENT(amdgpu_dmub_trace_high_irq,
 		  __entry->trace_code, __entry->tick_count,
 		  __entry->param0, __entry->param1)
 );
-
 TRACE_EVENT(amdgpu_refresh_rate_track,
 	TP_PROTO(int crtc_index, ktime_t refresh_rate_ns, uint32_t refresh_rate_hz),
 	TP_ARGS(crtc_index, refresh_rate_ns, refresh_rate_hz),
@@ -638,11 +570,9 @@ TRACE_EVENT(amdgpu_refresh_rate_track,
 		  __entry->refresh_rate_hz,
 		  __entry->refresh_rate_ns)
 );
-
 TRACE_EVENT(dcn_fpu,
 	    TP_PROTO(bool begin, const char *function, const int line, const int recursion_depth),
 	    TP_ARGS(begin, function, line, recursion_depth),
-
 	    TP_STRUCT__entry(
 			     __field(bool, begin)
 			     __field(const char *, function)
@@ -662,11 +592,9 @@ TRACE_EVENT(dcn_fpu,
 		      __entry->line
 	    )
 );
-
 TRACE_EVENT(dcn_optc_lock_unlock_state,
 	    TP_PROTO(const struct optc *optc_state, int instance, bool lock, const char *function, const int line),
 	    TP_ARGS(optc_state, instance, lock, function, line),
-
 	    TP_STRUCT__entry(
 			     __field(const char *, function)
 			     __field(int, instance)
@@ -725,9 +653,7 @@ TRACE_EVENT(dcn_optc_lock_unlock_state,
 		      __entry->vready_offset
 	    )
 );
-
-#endif /* _AMDGPU_DM_TRACE_H_ */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE amdgpu_dm_trace

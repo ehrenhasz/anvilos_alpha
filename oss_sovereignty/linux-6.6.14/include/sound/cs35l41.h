@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * linux/sound/cs35l41.h -- Platform data for CS35L41
- *
- * Copyright (c) 2017-2021 Cirrus Logic Inc.
- *
- * Author: David Rhodes	<david.rhodes@cirrus.com>
- */
-
 #ifndef __CS35L41_H
 #define __CS35L41_H
-
 #include <linux/regmap.h>
 #include <linux/firmware/cirrus/cs_dsp.h>
-
 #define CS35L41_FIRSTREG		0x00000000
 #define CS35L41_LASTREG			0x03804FE8
 #define CS35L41_DEVID			0x00000000
@@ -491,13 +480,9 @@
 #define CS35L41_DSP1_YMEM_UNPACK24_2045	0x03401FF4
 #define CS35L41_DSP1_PMEM_0		0x03800000
 #define CS35L41_DSP1_PMEM_5114		0x03804FE8
-
-/*test regs for emulation bringup*/
 #define CS35L41_PLL_OVR			0x00003018
 #define CS35L41_BST_TEST_DUTY		0x00003900
 #define CS35L41_DIGPWM_IOCTRL		0x0000706C
-
-/*registers populated by OTP*/
 #define CS35L41_OTP_TRIM_1		0x0000208c
 #define CS35L41_OTP_TRIM_2		0x00002090
 #define CS35L41_OTP_TRIM_3		0x00003010
@@ -534,12 +519,9 @@
 #define CS35L41_OTP_TRIM_34		0x0000410C
 #define CS35L41_OTP_TRIM_35		0x0000400C
 #define CS35L41_OTP_TRIM_36		0x00002030
-
 #define CS35L41_MAX_CACHE_REG		36
 #define CS35L41_OTP_SIZE_WORDS		32
-
 #define CS35L41_NUM_SUPPLIES            2
-
 #define CS35L41_SCLK_MSTR_MASK		0x10
 #define CS35L41_SCLK_MSTR_SHIFT		4
 #define CS35L41_LRCLK_MSTR_MASK		0x01
@@ -552,11 +534,9 @@
 #define CS35L41_SCLK_FRC_SHIFT		5
 #define CS35L41_LRCLK_FRC_MASK		0x02
 #define CS35L41_LRCLK_FRC_SHIFT		1
-
 #define CS35L41_AMP_GAIN_PCM_MASK	0x3E0
 #define CS35L41_AMP_GAIN_ZC_MASK	0x0400
 #define CS35L41_AMP_GAIN_ZC_SHIFT	10
-
 #define CS35L41_BST_CTL_MASK		0xFF
 #define CS35L41_BST_CTL_SEL_MASK	0x03
 #define CS35L41_BST_CTL_SEL_REG		0x00
@@ -573,12 +553,10 @@
 #define CS35L41_BST_SLOPE_SHIFT		8
 #define CS35L41_BST_LBST_VAL_MASK	0x00000003
 #define CS35L41_BST_LBST_VAL_SHIFT	0
-
 #define CS35L41_TEMP_THLD_MASK		0x03
 #define CS35L41_VMON_IMON_VOL_MASK	0x07FF07FF
 #define CS35L41_PDM_MODE_MASK		0x01
 #define CS35L41_PDM_MODE_SHIFT		0
-
 #define CS35L41_CH_MEM_DEPTH_MASK	0x07
 #define CS35L41_CH_MEM_DEPTH_SHIFT	0
 #define CS35L41_CH_HDRM_CTL_MASK	0x007F0000
@@ -589,21 +567,18 @@
 #define CS35L41_CH_WKFET_DLY_SHIFT	2
 #define CS35L41_CH_WKFET_THLD_MASK	0x0F00
 #define CS35L41_CH_WKFET_THLD_SHIFT	8
-
 #define CS35L41_HW_NG_SEL_MASK		0x3F00
 #define CS35L41_HW_NG_SEL_SHIFT		8
 #define CS35L41_HW_NG_DLY_MASK		0x0070
 #define CS35L41_HW_NG_DLY_SHIFT		4
 #define CS35L41_HW_NG_THLD_MASK		0x0007
 #define CS35L41_HW_NG_THLD_SHIFT	0
-
 #define CS35L41_DSP_NG_ENABLE_MASK	0x00010000
 #define CS35L41_DSP_NG_ENABLE_SHIFT	16
 #define CS35L41_DSP_NG_THLD_MASK	0x7
 #define CS35L41_DSP_NG_THLD_SHIFT	0
 #define CS35L41_DSP_NG_DELAY_MASK	0x0F00
 #define CS35L41_DSP_NG_DELAY_SHIFT	8
-
 #define CS35L41_ASP_FMT_MASK		0x0700
 #define CS35L41_ASP_FMT_SHIFT		8
 #define CS35L41_ASP_DOUT_HIZ_MASK	0x03
@@ -624,7 +599,6 @@
 #define CS35L41_ASP_RX_WL_SHIFT		0
 #define CS35L41_ASP_TX_WL_SHIFT		0
 #define CS35L41_ASP_SOURCE_MASK		0x7F
-
 #define CS35L41_INPUT_SRC_ASPRX1	0x08
 #define CS35L41_INPUT_SRC_ASPRX2	0x09
 #define CS35L41_INPUT_SRC_VMON		0x18
@@ -636,9 +610,7 @@
 #define CS35L41_INPUT_SRC_RSVD		0x3B
 #define CS35L41_INPUT_DSP_TX1		0x32
 #define CS35L41_INPUT_DSP_TX2		0x33
-
 #define CS35L41_WR_PEND_STS_MASK	0x2
-
 #define CS35L41_PLL_CLK_SEL_MASK	0x07
 #define CS35L41_PLL_CLK_SEL_SHIFT	0
 #define CS35L41_PLL_CLK_EN_MASK		0x10
@@ -653,10 +625,8 @@
 #define CS35L41_PLLSRC_SWIRE		7
 #define CS35L41_REFCLK_FREQ_MASK	0x7E0
 #define CS35L41_REFCLK_FREQ_SHIFT	5
-
 #define CS35L41_GLOBAL_FS_MASK		0x1F
 #define CS35L41_GLOBAL_FS_SHIFT		0
-
 #define CS35L41_GLOBAL_EN_MASK		0x01
 #define CS35L41_GLOBAL_EN_SHIFT		0
 #define CS35L41_BST_EN_MASK		0x0030
@@ -669,16 +639,13 @@
 #define CS35L41_VMON_EN_SHIFT		12
 #define CS35L41_IMON_EN_MASK		0x2000
 #define CS35L41_IMON_EN_SHIFT		13
-
 #define CS35L41_PDN_DONE_MASK		0x00800000
 #define CS35L41_PDN_DONE_SHIFT		23
 #define CS35L41_PUP_DONE_MASK		0x01000000
 #define CS35L41_PUP_DONE_SHIFT		24
-
 #define CS35L36_PUP_DONE_IRQ_UNMASK	0x5F
 #define CS35L36_PUP_DONE_IRQ_MASK	0xBF
 #define CS35L41_SYNC_EN_MASK		BIT(8)
-
 #define CS35L41_AMP_SHORT_ERR		0x80000000
 #define CS35L41_BST_SHORT_ERR		0x0100
 #define CS35L41_TEMP_WARN		0x8000
@@ -689,27 +656,23 @@
 #define CS35L41_PLL_UNLOCK		0x10
 #define CS35L41_PLL_LOCK		BIT(1)
 #define CS35L41_OTP_BOOT_ERR		0x80000000
-
 #define CS35L41_AMP_SHORT_ERR_RLS	0x02
 #define CS35L41_BST_SHORT_ERR_RLS	0x04
 #define CS35L41_BST_OVP_ERR_RLS		0x08
 #define CS35L41_BST_UVP_ERR_RLS		0x10
 #define CS35L41_TEMP_WARN_ERR_RLS	0x20
 #define CS35L41_TEMP_ERR_RLS		0x40
-
 #define CS35L41_AMP_SHORT_ERR_RLS_SHIFT	1
 #define CS35L41_BST_SHORT_ERR_RLS_SHIFT	2
 #define CS35L41_BST_OVP_ERR_RLS_SHIFT	3
 #define CS35L41_BST_UVP_ERR_RLS_SHIFT	4
 #define CS35L41_TEMP_WARN_ERR_RLS_SHIFT	5
 #define CS35L41_TEMP_ERR_RLS_SHIFT	6
-
 #define CS35L41_INT1_MASK_DEFAULT	0x7FFCFE3F
 #define CS35L41_INT1_UNMASK_PUP		0xFEFFFFFF
 #define CS35L41_INT1_UNMASK_PDN		0xFF7FFFFF
 #define CS35L41_INT3_PLL_LOCK_SHIFT	1
 #define CS35L41_INT3_PLL_LOCK_MASK	BIT(CS35L41_INT3_PLL_LOCK_SHIFT)
-
 #define CS35L41_GPIO_DIR_MASK		0x80000000
 #define CS35L41_GPIO_DIR_SHIFT		31
 #define CS35L41_GPIO1_CTRL_MASK		0x00030000
@@ -720,46 +683,35 @@
 #define CS35L41_GPIO_LVL_MASK		BIT(CS35L41_GPIO_LVL_SHIFT)
 #define CS35L41_GPIO_POL_MASK		0x1000
 #define CS35L41_GPIO_POL_SHIFT		12
-
 #define CS35L41_AMP_INV_PCM_SHIFT	14
 #define CS35L41_AMP_INV_PCM_MASK	BIT(CS35L41_AMP_INV_PCM_SHIFT)
 #define CS35L41_AMP_PCM_VOL_SHIFT	3
 #define CS35L41_AMP_PCM_VOL_MASK	(0x7FF << 3)
 #define CS35L41_AMP_PCM_VOL_MUTE	0x4CF
-
 #define CS35L41_CHIP_ID			0x35a40
 #define CS35L41R_CHIP_ID		0x35b40
 #define CS35L41_MTLREVID_MASK		0x0F
 #define CS35L41_REVID_A0		0xA0
 #define CS35L41_REVID_B0		0xB0
 #define CS35L41_REVID_B2		0xB2
-
 #define CS35L41_HALO_CORE_RESET		0x00000200
-
 #define CS35L41_FS1_WINDOW_MASK		0x000007FF
 #define CS35L41_FS2_WINDOW_MASK		0x00FFF800
 #define CS35L41_FS2_WINDOW_SHIFT	12
-
 #define CS35L41_SPI_MAX_FREQ		4000000
 #define CS35L41_REGSTRIDE		4
-
 enum cs35l41_boost_type {
 	CS35L41_INT_BOOST,
 	CS35L41_EXT_BOOST,
 	CS35L41_SHD_BOOST_ACTV,
 	CS35L41_SHD_BOOST_PASS,
-
-	// Not present in Binding Documentation, so no system should use this value.
-	// This value is only used in CLSA0100 Laptop
 	CS35L41_EXT_BOOST_NO_VSPK_SWITCH,
 };
-
 enum cs35l41_clk_ids {
 	CS35L41_CLKID_SCLK = 0,
 	CS35L41_CLKID_LRCLK = 1,
 	CS35L41_CLKID_MCLK = 4,
 };
-
 enum cs35l41_gpio1_func {
 	CS35L41_GPIO1_HIZ,
 	CS35L41_GPIO1_GPIO,
@@ -768,7 +720,6 @@ enum cs35l41_gpio1_func {
 	CS35L41_GPIO1_PDM_CLK,
 	CS35L41_GPIO1_PDM_DATA,
 };
-
 enum cs35l41_gpio2_func {
 	CS35L41_GPIO2_HIZ,
 	CS35L41_GPIO2_GPIO,
@@ -779,14 +730,12 @@ enum cs35l41_gpio2_func {
 	CS35L41_GPIO2_PDM_CLK,
 	CS35L41_GPIO2_PDM_DATA,
 };
-
 struct cs35l41_gpio_cfg {
 	bool valid;
 	bool pol_inv;
 	bool out_en;
 	unsigned int func;
 };
-
 struct cs35l41_hw_cfg {
 	bool valid;
 	int bst_ind;
@@ -796,16 +745,13 @@ struct cs35l41_hw_cfg {
 	struct cs35l41_gpio_cfg gpio1;
 	struct cs35l41_gpio_cfg gpio2;
 	unsigned int spk_pos;
-
 	enum cs35l41_boost_type bst_type;
 };
-
 struct cs35l41_otp_packed_element_t {
 	u32 reg;
 	u8 shift;
 	u8 size;
 };
-
 struct cs35l41_otp_map_element_t {
 	u32 id;
 	u32 num_elements;
@@ -813,13 +759,11 @@ struct cs35l41_otp_map_element_t {
 	u32 bit_offset;
 	u32 word_offset;
 };
-
 enum cs35l41_cspl_mbox_status {
 	CSPL_MBOX_STS_RUNNING = 0,
 	CSPL_MBOX_STS_PAUSED = 1,
 	CSPL_MBOX_STS_RDY_FOR_REINIT = 2,
 };
-
 enum cs35l41_cspl_mbox_cmd {
 	CSPL_MBOX_CMD_NONE = 0,
 	CSPL_MBOX_CMD_PAUSE = 1,
@@ -832,30 +776,22 @@ enum cs35l41_cspl_mbox_cmd {
 	CSPL_MBOX_CMD_UNKNOWN_CMD = -1,
 	CSPL_MBOX_CMD_INVALID_SEQUENCE = -2,
 };
-
-/*
- * IRQs
- */
 #define CS35L41_IRQ(_irq, _name, _hand)		\
 	{					\
 		.irq = CS35L41_ ## _irq ## _IRQ,\
 		.name = _name,			\
 		.handler = _hand,		\
 	}
-
 struct cs35l41_irq {
 	int irq;
 	const char *name;
 	irqreturn_t (*handler)(int irq, void *data);
 };
-
 #define CS35L41_REG_IRQ(_reg, _irq)					\
 	[CS35L41_ ## _irq ## _IRQ] = {					\
 		.reg_offset = (CS35L41_ ## _reg) - CS35L41_IRQ1_STATUS1,\
 		.mask = CS35L41_ ## _irq ## _MASK			\
 	}
-
-/* (0x0000E010) CS35L41_IRQ1_STATUS1 */
 #define CS35L41_BST_OVP_ERR_SHIFT		6
 #define CS35L41_BST_OVP_ERR_MASK		BIT(CS35L41_BST_OVP_ERR_SHIFT)
 #define CS35L41_BST_DCM_UVP_ERR_SHIFT		7
@@ -868,7 +804,6 @@ struct cs35l41_irq {
 #define CS35L41_TEMP_ERR_MASK			BIT(CS35L41_TEMP_ERR_SHIFT)
 #define CS35L41_AMP_SHORT_ERR_SHIFT		31
 #define CS35L41_AMP_SHORT_ERR_MASK		BIT(CS35L41_AMP_SHORT_ERR_SHIFT)
-
 enum cs35l41_irq_list {
 	CS35L41_BST_OVP_ERR_IRQ,
 	CS35L41_BST_DCM_UVP_ERR_IRQ,
@@ -876,13 +811,10 @@ enum cs35l41_irq_list {
 	CS35L41_TEMP_WARN_IRQ,
 	CS35L41_TEMP_ERR_IRQ,
 	CS35L41_AMP_SHORT_ERR_IRQ,
-
 	CS35L41_NUM_IRQ
 };
-
 extern struct regmap_config cs35l41_regmap_i2c;
 extern struct regmap_config cs35l41_regmap_spi;
-
 int cs35l41_test_key_unlock(struct device *dev, struct regmap *regmap);
 int cs35l41_test_key_lock(struct device *dev, struct regmap *regmap);
 int cs35l41_otp_unpack(struct device *dev, struct regmap *regmap);
@@ -904,5 +836,4 @@ bool cs35l41_safe_reset(struct regmap *regmap, enum cs35l41_boost_type b_type);
 int cs35l41_mdsync_up(struct regmap *regmap);
 int cs35l41_global_enable(struct device *dev, struct regmap *regmap, enum cs35l41_boost_type b_type,
 			  int enable, bool firmware_running);
-
-#endif /* __CS35L41_H */
+#endif  

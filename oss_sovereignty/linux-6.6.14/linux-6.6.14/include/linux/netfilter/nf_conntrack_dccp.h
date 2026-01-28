@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _NF_CONNTRACK_DCCP_H
 #define _NF_CONNTRACK_DCCP_H
-
-/* Exposed to userspace over nfnetlink */
 enum ct_dccp_states {
 	CT_DCCP_NONE,
 	CT_DCCP_REQUEST,
@@ -17,16 +14,13 @@ enum ct_dccp_states {
 	__CT_DCCP_MAX
 };
 #define CT_DCCP_MAX		(__CT_DCCP_MAX - 1)
-
 enum ct_dccp_roles {
 	CT_DCCP_ROLE_CLIENT,
 	CT_DCCP_ROLE_SERVER,
 	__CT_DCCP_ROLE_MAX
 };
 #define CT_DCCP_ROLE_MAX	(__CT_DCCP_ROLE_MAX - 1)
-
 #include <linux/netfilter/nf_conntrack_tuple_common.h>
-
 struct nf_ct_dccp {
 	u_int8_t	role[IP_CT_DIR_MAX];
 	u_int8_t	state;
@@ -34,5 +28,4 @@ struct nf_ct_dccp {
 	u_int8_t	last_dir;
 	u_int64_t	handshake_seq;
 };
-
-#endif /* _NF_CONNTRACK_DCCP_H */
+#endif  

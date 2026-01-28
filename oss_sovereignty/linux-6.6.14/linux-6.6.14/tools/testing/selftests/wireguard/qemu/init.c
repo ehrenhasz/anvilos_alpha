@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
-
 #define _GNU_SOURCE
 #include <unistd.h>
 #include <errno.h>
@@ -25,7 +20,6 @@
 #include <sys/random.h>
 #include <linux/random.h>
 #include <linux/version.h>
-
 __attribute__((noreturn)) static void poweroff(void)
 {
 	fflush(stdout);
@@ -35,31 +29,24 @@ __attribute__((noreturn)) static void poweroff(void)
 	fprintf(stderr, "\x1b[37m\x1b[41m\x1b[1mFailed to power off!!!\x1b[0m\n");
 	exit(1);
 }
-
 static void panic(const char *what)
 {
 	fprintf(stderr, "\n\n\x1b[37m\x1b[41m\x1b[1mSOMETHING WENT HORRIBLY WRONG\x1b[0m\n\n    \x1b[31m\x1b[1m%s: %s\x1b[0m\n\n\x1b[37m\x1b[44m\x1b[1mPower off...\x1b[0m\n\n", what, strerror(errno));
 	poweroff();
 }
-
 #define pretty_message(msg) puts("\x1b[32m\x1b[1m" msg "\x1b[0m")
-
 static void print_banner(void)
 {
 	struct utsname utsname;
 	int len;
-
 	if (uname(&utsname) < 0)
 		panic("uname");
-
 	len = strlen("    WireGuard Test Suite on       ") + strlen(utsname.sysname) + strlen(utsname.release) + strlen(utsname.machine);
 	printf("\x1b[45m\x1b[33m\x1b[1m%*.s\x1b[0m\n\x1b[45m\x1b[33m\x1b[1m    WireGuard Test Suite on %s %s %s    \x1b[0m\n\x1b[45m\x1b[33m\x1b[1m%*.s\x1b[0m\n\n", len, "", utsname.sysname, utsname.release, utsname.machine, len, "");
 }
-
 static void seed_rng(void)
 {
 	int bits = 256, fd;
-
 	if (!getrandom(NULL, 0, GRND_NONBLOCK))
 		return;
 	pretty_message("[+] Fake seeding RNG...");
@@ -70,7 +57,6 @@ static void seed_rng(void)
 		panic("ioctl(RNDADDTOENTCNT)");
 	close(fd);
 }
-
 static void set_time(void)
 {
 	if (time(NULL))
@@ -79,7 +65,6 @@ static void set_time(void)
 	if (stime(&(time_t){1433512680}) < 0)
 		panic("settimeofday()");
 }
-
 static void mount_filesystems(void)
 {
 	pretty_message("[+] Mounting filesystems...");
@@ -100,13 +85,12 @@ static void mount_filesystems(void)
 	if (mount("none", "/run", "tmpfs", 0, NULL))
 		panic("tmpfs mount");
 	if (mount("none", "/sys/kernel/debug", "debugfs", 0, NULL))
-		; /* Not a problem if it fails.*/
+		;  
 	if (symlink("/run", "/var/run"))
 		panic("run symlink");
 	if (symlink("/proc/self/fd", "/dev/fd"))
 		panic("fd symlink");
 }
-
 static void enable_logging(void)
 {
 	int fd;
@@ -124,7 +108,6 @@ static void enable_logging(void)
 		close(fd);
 	}
 }
-
 static void kmod_selftests(void)
 {
 	FILE *file;
@@ -157,13 +140,11 @@ static void kmod_selftests(void)
 		poweroff();
 	}
 }
-
 static void launch_tests(void)
 {
 	char cmdline[4096], *success_dev;
 	int status, fd;
 	pid_t pid;
-
 	pretty_message("[+] Launching tests...");
 	pid = fork();
 	if (pid == -1)
@@ -191,7 +172,6 @@ static void launch_tests(void)
 		}
 		if (!success_dev || !strlen(success_dev))
 			panic("Unable to find success device");
-
 		fd = open(success_dev, O_WRONLY);
 		if (fd < 0)
 			panic("open(success_dev)");
@@ -201,7 +181,6 @@ static void launch_tests(void)
 	} else {
 		const char *why = "unknown cause";
 		int what = -1;
-
 		if (WIFEXITED(status)) {
 			why = "exit code";
 			what = WEXITSTATUS(status);
@@ -212,7 +191,6 @@ static void launch_tests(void)
 		printf("\x1b[31m\x1b[1m[-] Tests failed with %s %d! \u2639\x1b[0m\n", why, what);
 	}
 }
-
 static void ensure_console(void)
 {
 	for (unsigned int i = 0; i < 1000; ++i) {
@@ -230,11 +208,9 @@ static void ensure_console(void)
 	}
 	panic("Unable to open console device");
 }
-
 static void clear_leaks(void)
 {
 	int fd;
-
 	fd = open("/sys/kernel/debug/kmemleak", O_WRONLY);
 	if (fd < 0)
 		return;
@@ -242,19 +218,16 @@ static void clear_leaks(void)
 	write(fd, "clear\n", 5);
 	close(fd);
 }
-
 static void check_leaks(void)
 {
 	int fd;
-
 	fd = open("/sys/kernel/debug/kmemleak", O_WRONLY);
 	if (fd < 0)
 		return;
 	pretty_message("[+] Scanning for memory leaks...");
-	sleep(2); /* Wait for any grace periods. */
+	sleep(2);  
 	write(fd, "scan\n", 5);
 	close(fd);
-
 	fd = open("/sys/kernel/debug/kmemleak", O_RDONLY);
 	if (fd < 0)
 		return;
@@ -262,7 +235,6 @@ static void check_leaks(void)
 		panic("Memory leaks encountered");
 	close(fd);
 }
-
 int main(int argc, char *argv[])
 {
 	ensure_console();

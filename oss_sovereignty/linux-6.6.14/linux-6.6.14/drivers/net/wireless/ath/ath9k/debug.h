@@ -1,29 +1,10 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 #ifndef DEBUG_H
 #define DEBUG_H
-
 #include "hw.h"
 #include "dfs_debug.h"
-
 struct ath_txq;
 struct ath_buf;
 struct fft_sample_tlv;
-
 #ifdef CONFIG_ATH9K_DEBUGFS
 #define TX_STAT_INC(sc, q, c)	 do { (sc)->debug.stats.txstats[q].c++; } while (0)
 #define RX_STAT_INC(sc, c)	 do { (sc)->debug.stats.rxstats.c++; } while (0)
@@ -37,7 +18,6 @@ struct fft_sample_tlv;
 #define ANT_STAT_INC(sc, i, c)	 do { (void)(sc); } while (0)
 #define ANT_LNA_INC(sc, i, c)	 do { (void)(sc); } while (0)
 #endif
-
 enum ath_reset_type {
 	RESET_TYPE_USER,
 	RESET_TYPE_BB_HANG,
@@ -55,39 +35,7 @@ enum ath_reset_type {
 	RESET_RX_DMA_ERROR,
 	__RESET_TYPE_MAX
 };
-
 #ifdef CONFIG_ATH9K_DEBUGFS
-
-/**
- * struct ath_interrupt_stats - Contains statistics about interrupts
- * @total: Total no. of interrupts generated so far
- * @rxok: RX with no errors
- * @rxlp: RX with low priority RX
- * @rxhp: RX with high priority, uapsd only
- * @rxeol: RX with no more RXDESC available
- * @rxorn: RX FIFO overrun
- * @txok: TX completed at the requested rate
- * @txurn: TX FIFO underrun
- * @mib: MIB regs reaching its threshold
- * @rxphyerr: RX with phy errors
- * @rx_keycache_miss: RX with key cache misses
- * @swba: Software Beacon Alert
- * @bmiss: Beacon Miss
- * @bnr: Beacon Not Ready
- * @cst: Carrier Sense TImeout
- * @gtt: Global TX Timeout
- * @tim: RX beacon TIM occurrence
- * @cabend: RX End of CAB traffic
- * @dtimsync: DTIM sync lossage
- * @dtim: RX Beacon with DTIM
- * @bb_watchdog: Baseband watchdog
- * @tsfoor: TSF out of range, indicates that the corrected TSF received
- * from a beacon differs from the PCU's internal TSF by more than a
- * (programmable) threshold
- * @local_timeout: Internal bus timeout.
- * @mci: MCI interrupt, specific to MCI based BTCOEX chipsets
- * @gen_timer: Generic hardware timer interrupt
- */
 struct ath_interrupt_stats {
 	u32 total;
 	u32 rxok;
@@ -114,8 +62,6 @@ struct ath_interrupt_stats {
 	u32 tsfoor;
 	u32 mci;
 	u32 gen_timer;
-
-	/* Sync-cause stats */
 	u32 sync_cause_all;
 	u32 sync_rtc_irq;
 	u32 sync_mac_irq;
@@ -136,36 +82,6 @@ struct ath_interrupt_stats {
 	u32 mac_asleep;
 	u32 mac_sleep_access;
 };
-
-
-/**
- * struct ath_tx_stats - Statistics about TX
- * @tx_pkts_all:  No. of total frames transmitted, including ones that
-	may have had errors.
- * @tx_bytes_all:  No. of total bytes transmitted, including ones that
-	may have had errors.
- * @queued: Total MPDUs (non-aggr) queued
- * @completed: Total MPDUs (non-aggr) completed
- * @a_aggr: Total no. of aggregates queued
- * @a_queued_hw: Total AMPDUs queued to hardware
- * @a_completed: Total AMPDUs completed
- * @a_retries: No. of AMPDUs retried (SW)
- * @a_xretries: No. of AMPDUs dropped due to xretries
- * @txerr_filtered: No. of frames with TXERR_FILT flag set.
- * @fifo_underrun: FIFO underrun occurrences
-	Valid only for:
-		- non-aggregate condition.
-		- first packet of aggregate.
- * @xtxop: No. of frames filtered because of TXOP limit
- * @timer_exp: Transmit timer expiry
- * @desc_cfg_err: Descriptor configuration errors
- * @data_urn: TX data underrun errors
- * @delim_urn: TX delimiter underrun errors
- * @puttxbuf: Number of times hardware was given txbuf to write.
- * @txstart:  Number of times hardware was told to start tx.
- * @txprocdesc:  Number of times tx descriptor was processed
- * @txfailed:  Out-of-memory or other errors in xmit path.
- */
 struct ath_tx_stats {
 	u32 tx_pkts_all;
 	u32 tx_bytes_all;
@@ -189,10 +105,6 @@ struct ath_tx_stats {
 	u32 txprocdesc;
 	u32 txfailed;
 };
-
-/*
- * Various utility macros to print TX/Queue counters.
- */
 #define PR_QNUM(_n) sc->tx.txq_map[_n]->axq_qnum
 #define TXSTATS sc->debug.stats.txstats
 #define PR(str, elem)							\
@@ -203,7 +115,6 @@ struct ath_tx_stats {
 			   TXSTATS[PR_QNUM(IEEE80211_AC_VI)].elem,\
 			   TXSTATS[PR_QNUM(IEEE80211_AC_VO)].elem); \
 	} while(0)
-
 struct ath_rx_rate_stats {
 	struct {
 		u32 ht20_cnt;
@@ -211,32 +122,26 @@ struct ath_rx_rate_stats {
 		u32 sgi_cnt;
 		u32 lgi_cnt;
 	} ht_stats[24];
-
 	struct {
 		u32 ofdm_cnt;
 	} ofdm_stats[8];
-
 	struct {
 		u32 cck_lp_cnt;
 		u32 cck_sp_cnt;
 	} cck_stats[4];
 };
-
 struct ath_airtime_stats {
 	u32 rx_airtime;
 	u32 tx_airtime;
 };
-
 #define ANT_MAIN 0
 #define ANT_ALT  1
-
 struct ath_antenna_stats {
 	u32 recv_cnt;
 	u32 rssi_avg;
 	u32 lna_recv_cnt[4];
 	u32 lna_attempt_cnt[4];
 };
-
 struct ath_stats {
 	struct ath_interrupt_stats istats;
 	struct ath_tx_stats txstats[ATH9K_NUM_TX_QUEUES];
@@ -245,16 +150,13 @@ struct ath_stats {
 	struct ath_antenna_stats ant_stats[2];
 	u32 reset[__RESET_TYPE_MAX];
 };
-
 struct ath9k_debug {
 	struct dentry *debugfs_phy;
 	u32 regidx;
 	struct ath_stats stats;
 };
-
 int ath9k_init_debug(struct ath_hw *ah);
 void ath9k_deinit_debug(struct ath_softc *sc);
-
 void ath_debug_stat_interrupt(struct ath_softc *sc, enum ath9k_int status);
 void ath_debug_stat_tx(struct ath_softc *sc, struct ath_buf *bf,
 		       struct ath_tx_status *ts, struct ath_txq *txq,
@@ -276,14 +178,11 @@ void ath9k_debug_stat_ant(struct ath_softc *sc,
 			  struct ath_hw_antcomb_conf *div_ant_conf,
 			  int main_rssi_avg, int alt_rssi_avg);
 void ath9k_debug_sync_cause(struct ath_softc *sc, u32 sync_cause);
-
 #else
-
 static inline int ath9k_init_debug(struct ath_hw *ah)
 {
 	return 0;
 }
-
 static inline void ath9k_deinit_debug(struct ath_softc *sc)
 {
 }
@@ -306,16 +205,12 @@ static inline void ath9k_debug_stat_ant(struct ath_softc *sc,
 					struct ath_hw_antcomb_conf *div_ant_conf,
 					int main_rssi_avg, int alt_rssi_avg)
 {
-
 }
-
 static inline void
 ath9k_debug_sync_cause(struct ath_softc *sc, u32 sync_cause)
 {
 }
-
-#endif /* CONFIG_ATH9K_DEBUGFS */
-
+#endif  
 #ifdef CONFIG_ATH9K_STATION_STATISTICS
 void ath_debug_rate_stats(struct ath_softc *sc,
 			  struct ath_rx_status *rs,
@@ -326,6 +221,5 @@ static inline void ath_debug_rate_stats(struct ath_softc *sc,
 					struct sk_buff *skb)
 {
 }
-#endif /* CONFIG_ATH9K_STATION_STATISTICS */
-
-#endif /* DEBUG_H */
+#endif  
+#endif  

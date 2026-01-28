@@ -1,31 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright 2022 Toradex
- */
-
 /dts-v1/;
-
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include "imx6dl.dtsi"
 #include "imx6qdl-colibri.dtsi"
-
 / {
 	model = "Toradex Colibri iMX6DL/S on Colibri Aster Board";
 	compatible = "toradex,colibri_imx6dl-aster", "toradex,colibri_imx6dl",
 		     "fsl,imx6dl";
-
 	aliases {
 		i2c0 = &i2c2;
 		i2c1 = &i2c3;
 	};
-
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
 };
-
-/* Colibri SSP */
 &ecspi4 {
 	cs-gpios = <
 		&gpio5 2 GPIO_ACTIVE_HIGH
@@ -35,12 +24,9 @@
 	pinctrl-0 = <&pinctrl_ecspi4 &pinctrl_csi_gpio_2>;
 	status = "okay";
 };
-
-/* Colibri I2C: I2C3_SDA/SCL on SODIMM 194/196 */
 &i2c3 {
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <
@@ -51,7 +37,6 @@
 		&pinctrl_usbc_id_1
 		&pinctrl_weim_gpio_5
 	>;
-
 	pinctrl_gpio_aster: gpioaster {
 		fsl,pins = <
 			MX6QDL_PAD_KEY_COL2__GPIO4_IO10		0x1b0b0
@@ -65,50 +50,38 @@
 		>;
 	};
 };
-
 &pwm1 {
 	status = "okay";
 };
-
 &pwm2 {
 	status = "okay";
 };
-
 &pwm3 {
 	status = "okay";
 };
-
 &pwm4 {
 	status = "okay";
 };
-
 &reg_usb_host_vbus {
 	status = "okay";
 };
-
 &uart1 {
 	status = "okay";
 };
-
 &uart2 {
 	status = "okay";
 };
-
 &uart3 {
 	status = "okay";
 };
-
 &usbh1 {
 	disable-over-current;
 	status = "okay";
 };
-
 &usbotg {
 	disable-over-current;
 	status = "okay";
 };
-
-/* Colibri MMC */
 &usdhc1 {
 	status = "okay";
 };

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018, NVIDIA CORPORATION. All rights reserved. */
-
 #ifndef __ABI_MACH_T194_RESET_H
 #define __ABI_MACH_T194_RESET_H
-
 #define TEGRA194_RESET_ACTMON			1
 #define TEGRA194_RESET_ADSP_ALL			2
 #define TEGRA194_RESET_AFI			3
@@ -148,5 +144,4 @@
 #define TEGRA194_RESET_PEX_USB_UPHY_PLL1	160
 #define TEGRA194_RESET_PEX_USB_UPHY_PLL2	161
 #define TEGRA194_RESET_PEX_USB_UPHY_PLL3	162
-
 #endif

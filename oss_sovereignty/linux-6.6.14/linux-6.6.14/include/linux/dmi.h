@@ -1,13 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __DMI_H__
 #define __DMI_H__
-
 #include <linux/list.h>
 #include <linux/kobject.h>
 #include <linux/mod_devicetable.h>
-
-/* enum dmi_field is in mod_devicetable.h */
-
 enum dmi_device_type {
 	DMI_DEV_TYPE_ANY = 0,
 	DMI_DEV_TYPE_OTHER,
@@ -25,7 +20,6 @@ enum dmi_device_type {
 	DMI_DEV_TYPE_DEV_ONBOARD = -3,
 	DMI_DEV_TYPE_DEV_SLOT = -4,
 };
-
 enum dmi_entry_type {
 	DMI_ENTRY_BIOS = 0,
 	DMI_ENTRY_SYSTEM,
@@ -72,22 +66,18 @@ enum dmi_entry_type {
 	DMI_ENTRY_INACTIVE = 126,
 	DMI_ENTRY_END_OF_TABLE = 127,
 };
-
 struct dmi_header {
 	u8 type;
 	u8 length;
 	u16 handle;
 } __packed;
-
 struct dmi_device {
 	struct list_head list;
 	int type;
 	const char *name;
-	void *device_data;	/* Type specific data */
+	void *device_data;	 
 };
-
 #ifdef CONFIG_DMI
-
 struct dmi_dev_onboard {
 	struct dmi_device dev;
 	int instance;
@@ -95,7 +85,6 @@ struct dmi_dev_onboard {
 	int bus;
 	int devfn;
 };
-
 extern struct kobject *dmi_kobj;
 extern int dmi_check_system(const struct dmi_system_id *list);
 const struct dmi_system_id *dmi_first_match(const struct dmi_system_id *list);
@@ -115,9 +104,7 @@ extern void dmi_memdev_name(u16 handle, const char **bank, const char **device);
 extern u64 dmi_memdev_size(u16 handle);
 extern u8 dmi_memdev_type(u16 handle);
 extern u16 dmi_memdev_handle(int slot);
-
 #else
-
 static inline int dmi_check_system(const struct dmi_system_id *list) { return 0; }
 static inline const char * dmi_get_system_info(int field) { return NULL; }
 static inline const struct dmi_device * dmi_find_device(int type, const char *name,
@@ -148,7 +135,5 @@ static inline u8 dmi_memdev_type(u16 handle) { return 0x0; }
 static inline u16 dmi_memdev_handle(int slot) { return 0xffff; }
 static inline const struct dmi_system_id *
 	dmi_first_match(const struct dmi_system_id *list) { return NULL; }
-
 #endif
-
-#endif	/* __DMI_H__ */
+#endif	 

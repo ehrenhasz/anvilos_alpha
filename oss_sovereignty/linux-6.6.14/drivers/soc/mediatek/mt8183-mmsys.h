@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef __SOC_MEDIATEK_MT8183_MMSYS_H
 #define __SOC_MEDIATEK_MT8183_MMSYS_H
-
 #define MT8183_DISP_OVL0_MOUT_EN		0xf00
 #define MT8183_DISP_OVL0_2L_MOUT_EN		0xf04
 #define MT8183_DISP_OVL1_2L_MOUT_EN		0xf08
@@ -12,7 +9,6 @@
 #define MT8183_DISP_DPI0_SEL_IN			0xf30
 #define MT8183_DISP_RDMA0_SOUT_SEL_IN		0xf50
 #define MT8183_DISP_RDMA1_SOUT_SEL_IN		0xf54
-
 #define MT8183_OVL0_MOUT_EN_OVL0_2L		BIT(4)
 #define MT8183_OVL0_2L_MOUT_EN_DISP_PATH0	BIT(0)
 #define MT8183_OVL1_2L_MOUT_EN_RDMA1		BIT(4)
@@ -24,9 +20,7 @@
 #define MT8183_DPI0_SEL_IN_RDMA1		0x2
 #define MT8183_RDMA0_SOUT_COLOR0		0x1
 #define MT8183_RDMA1_SOUT_DSI0			0x1
-
 #define MT8183_MMSYS_SW0_RST_B			0x140
-
 static const struct mtk_mmsys_routes mmsys_mt8183_routing_table[] = {
 	{
 		DDP_COMPONENT_OVL0, DDP_COMPONENT_OVL_2L0,
@@ -58,6 +52,4 @@ static const struct mtk_mmsys_routes mmsys_mt8183_routing_table[] = {
 		MT8183_RDMA0_SOUT_COLOR0
 	}
 };
-
-#endif /* __SOC_MEDIATEK_MT8183_MMSYS_H */
-
+#endif  

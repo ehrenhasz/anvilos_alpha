@@ -1,11 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2013 Sascha Hauer, Pengutronix
- *
- * Copyright 2013-2021 TQ-Systems GmbH
- * Author: Markus Niebel <Markus.Niebel@tq-group.com>
- */
-
 &ethphy {
 	rxdv-skew-ps = <180>;
 	txen-skew-ps = <0>;

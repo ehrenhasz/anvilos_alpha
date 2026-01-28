@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* Copyright 2021 Marvell. All rights reserved. */
-
 #ifndef _QED_NVMETCP_H
 #define _QED_NVMETCP_H
-
 #include <linux/types.h>
 #include <linux/list.h>
 #include <linux/slab.h>
@@ -15,29 +11,23 @@
 #include "qed_hsi.h"
 #include "qed_mcp.h"
 #include "qed_sp.h"
-
 #define QED_NVMETCP_FW_CQ_SIZE (4 * 1024)
-
-/* tcp parameters */
 #define QED_TCP_FLOW_LABEL 0
 #define QED_TCP_TWO_MSL_TIMER 4000
 #define QED_TCP_HALF_WAY_CLOSE_TIMEOUT 10
 #define QED_TCP_MAX_FIN_RT 2
 #define QED_TCP_SWS_TIMER 5000
-
 struct qed_nvmetcp_info {
-	spinlock_t lock; /* Connection resources. */
+	spinlock_t lock;  
 	struct list_head free_list;
 	u16 max_num_outstanding_tasks;
 	void *event_context;
 	nvmetcp_event_cb_t event_cb;
 };
-
 struct qed_hash_nvmetcp_con {
 	struct hlist_node node;
 	struct qed_nvmetcp_conn *con;
 };
-
 struct qed_nvmetcp_conn {
 	struct list_head list_entry;
 	bool free_on_delete;
@@ -83,21 +73,16 @@ struct qed_nvmetcp_conn {
 	u16 nvmetcp_cccid_max_range;
 	dma_addr_t nvmetcp_cccid_itid_table_addr;
 };
-
 #if IS_ENABLED(CONFIG_QED_NVMETCP)
 int qed_nvmetcp_alloc(struct qed_hwfn *p_hwfn);
 void qed_nvmetcp_setup(struct qed_hwfn *p_hwfn);
 void qed_nvmetcp_free(struct qed_hwfn *p_hwfn);
-
-#else /* IS_ENABLED(CONFIG_QED_NVMETCP) */
+#else  
 static inline int qed_nvmetcp_alloc(struct qed_hwfn *p_hwfn)
 {
 	return -EINVAL;
 }
-
 static inline void qed_nvmetcp_setup(struct qed_hwfn *p_hwfn) {}
 static inline void qed_nvmetcp_free(struct qed_hwfn *p_hwfn) {}
-
-#endif /* IS_ENABLED(CONFIG_QED_NVMETCP) */
-
+#endif  
 #endif

@@ -1,38 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2014 QLogic Corporation
- */
-
 #ifndef __QLA_NX2_H
 #define __QLA_NX2_H
-
 #define QSNT_ACK_TOV				30
 #define INTENT_TO_RECOVER			0x01
 #define PROCEED_TO_RECOVER			0x02
 #define IDC_LOCK_RECOVERY_OWNER_MASK		0x3C
 #define IDC_LOCK_RECOVERY_STATE_MASK		0x3
 #define IDC_LOCK_RECOVERY_STATE_SHIFT_BITS	2
-
 #define QLA8044_DRV_LOCK_MSLEEP		200
 #define QLA8044_ADDR_DDR_NET		(0x0000000000000000ULL)
 #define QLA8044_ADDR_DDR_NET_MAX	(0x000000000fffffffULL)
-
 #define MD_MIU_TEST_AGT_WRDATA_LO		0x410000A0
 #define MD_MIU_TEST_AGT_WRDATA_HI		0x410000A4
 #define MD_MIU_TEST_AGT_WRDATA_ULO		0x410000B0
 #define MD_MIU_TEST_AGT_WRDATA_UHI		0x410000B4
-
-/* MIU_TEST_AGT_CTRL flags. work for SIU as well */
 #define MIU_TA_CTL_WRITE_ENABLE	(MIU_TA_CTL_WRITE | MIU_TA_CTL_ENABLE)
 #define MIU_TA_CTL_WRITE_START	(MIU_TA_CTL_WRITE | MIU_TA_CTL_ENABLE |	\
 				 MIU_TA_CTL_START)
 #define MIU_TA_CTL_START_ENABLE	(MIU_TA_CTL_START | MIU_TA_CTL_ENABLE)
-
-/* Imbus address bit used to indicate a host address. This bit is
- * eliminated by the pcie bar and bar select before presentation
- * over pcie. */
-/* host memory via IMBUS */
 #define QLA8044_P2_ADDR_PCIE	(0x0000000800000000ULL)
 #define QLA8044_P3_ADDR_PCIE	(0x0000008000000000ULL)
 #define QLA8044_ADDR_PCIE_MAX	(0x0000000FFFFFFFFFULL)
@@ -51,14 +35,10 @@
 #define QLA8044_PCI_DDR_NET		((unsigned long)0x00000000)
 #define QLA8044_PCI_QDR_NET		((unsigned long)0x04000000)
 #define QLA8044_PCI_QDR_NET_MAX		((unsigned long)0x043fffff)
-
-/*  PCI Windowing for DDR regions.  */
 static inline bool addr_in_range(u64 addr, u64 low, u64 high)
 {
 	return addr <= high && addr >= low;
 }
-
-/* Indirectly Mapped Registers */
 #define QLA8044_FLASH_SPI_STATUS	0x2808E010
 #define QLA8044_FLASH_SPI_CONTROL	0x2808E014
 #define QLA8044_FLASH_STATUS		0x42100004
@@ -68,23 +48,15 @@ static inline bool addr_in_range(u64 addr, u64 low, u64 high)
 #define QLA8044_FLASH_RDDATA		0x42110018
 #define QLA8044_FLASH_DIRECT_WINDOW	0x42110030
 #define QLA8044_FLASH_DIRECT_DATA(DATA) (0x42150000 | (0x0000FFFF&DATA))
-
-/* Flash access regs */
 #define QLA8044_FLASH_LOCK		0x3850
 #define QLA8044_FLASH_UNLOCK		0x3854
 #define QLA8044_FLASH_LOCK_ID		0x3500
-
-/* Driver Lock regs */
 #define QLA8044_DRV_LOCK		0x3868
 #define QLA8044_DRV_UNLOCK		0x386C
 #define QLA8044_DRV_LOCK_ID		0x3504
 #define QLA8044_DRV_LOCKRECOVERY	0x379C
-
-/* IDC version */
 #define QLA8044_IDC_VER_MAJ_VALUE       0x1
 #define QLA8044_IDC_VER_MIN_VALUE       0x0
-
-/* IDC Registers : Driver Coexistence Defines */
 #define QLA8044_CRB_IDC_VER_MAJOR	0x3780
 #define QLA8044_CRB_IDC_VER_MINOR	0x3798
 #define QLA8044_IDC_DRV_AUDIT		0x3794
@@ -97,17 +69,15 @@ static inline bool addr_in_range(u64 addr, u64 low, u64 high)
 #define QLA8044_PORT1_RXB_TC_STATS	0x0B20139C
 #define QLA8044_PORT2_IFB_PAUSE_THRS	0x0B200704
 #define QLA8044_PORT3_IFB_PAUSE_THRS	0x0B201704
-
-/* set value to pause threshold value */
 #define QLA8044_SET_PAUSE_VAL		0x0
 #define QLA8044_SET_TC_MAX_CELL_VAL	0x03FF03FF
 #define QLA8044_PEG_HALT_STATUS1	0x34A8
 #define QLA8044_PEG_HALT_STATUS2	0x34AC
-#define QLA8044_PEG_ALIVE_COUNTER	0x34B0 /* FW_HEARTBEAT */
+#define QLA8044_PEG_ALIVE_COUNTER	0x34B0  
 #define QLA8044_FW_CAPABILITIES		0x3528
-#define QLA8044_CRB_DRV_ACTIVE		0x3788 /* IDC_DRV_PRESENCE */
-#define QLA8044_CRB_DEV_STATE		0x3784 /* IDC_DEV_STATE */
-#define QLA8044_CRB_DRV_STATE		0x378C /* IDC_DRV_ACK */
+#define QLA8044_CRB_DRV_ACTIVE		0x3788  
+#define QLA8044_CRB_DEV_STATE		0x3784  
+#define QLA8044_CRB_DRV_STATE		0x378C  
 #define QLA8044_CRB_DRV_SCRATCH		0x3548
 #define QLA8044_CRB_DEV_PART_INFO1	0x37E0
 #define QLA8044_CRB_DEV_PART_INFO2	0x37E4
@@ -131,8 +101,6 @@ static inline bool addr_in_range(u64 addr, u64 low, u64 high)
 #define QLA8044_MAX_LINK_SPEED(f)       (0x36F0+(((f) / 4) * 4))
 #define QLA8044_LINK_SPEED_FACTOR	10
 #define QLA8044_FUN7_ACTIVE_INDEX	0x80
-
-/* FLASH API Defines */
 #define QLA8044_FLASH_MAX_WAIT_USEC	100
 #define QLA8044_FLASH_LOCK_TIMEOUT	10000
 #define QLA8044_FLASH_SECTOR_SIZE	65536
@@ -158,27 +126,18 @@ static inline bool addr_in_range(u64 addr, u64 low, u64 high)
 #define QLA8044_FW_IMAGE_ADDR		0x3564
 #define QLA8044_MBX_INTR_ENABLE		0x1000
 #define QLA8044_MBX_INTR_MASK		0x1200
-
-/* IDC Control Register bit defines */
 #define DONTRESET_BIT0		0x1
 #define GRACEFUL_RESET_BIT1	0x2
-
-/* ISP8044 PEG_HALT_STATUS1 bits */
 #define QLA8044_HALT_STATUS_INFORMATIONAL (0x1 << 29)
 #define QLA8044_HALT_STATUS_FW_RESET	  (0x2 << 29)
 #define QLA8044_HALT_STATUS_UNRECOVERABLE (0x4 << 29)
-
-/* Firmware image definitions */
 #define QLA8044_BOOTLOADER_FLASH_ADDR	0x10000
 #define QLA8044_BOOT_FROM_FLASH		0
 #define QLA8044_IDC_PARAM_ADDR		0x3e8020
-
-/* FLASH related definitions */
 #define QLA8044_OPTROM_BURST_SIZE		0x100
 #define QLA8044_MAX_OPTROM_BURST_DWORDS		(QLA8044_OPTROM_BURST_SIZE / 4)
 #define QLA8044_MIN_OPTROM_BURST_DWORDS		2
 #define QLA8044_SECTOR_SIZE			(64 * 1024)
-
 #define QLA8044_FLASH_SPI_CTL			0x4
 #define QLA8044_FLASH_FIRST_TEMP_VAL		0x00800000
 #define QLA8044_FLASH_SECOND_TEMP_VAL		0x00800001
@@ -189,14 +148,10 @@ static inline bool addr_in_range(u64 addr, u64 low, u64 high)
 #define QLA8044_FLASH_SECOND_ERASE_MS_VAL	0x5
 #define QLA8044_FLASH_ERASE_SIG			0xFD0300
 #define QLA8044_FLASH_LAST_ERASE_MS_VAL		0x3D
-
-/* Reset template definitions */
 #define QLA8044_MAX_RESET_SEQ_ENTRIES	16
 #define QLA8044_RESTART_TEMPLATE_SIZE	0x2000
 #define QLA8044_RESET_TEMPLATE_ADDR	0x4F0000
 #define QLA8044_RESET_SEQ_VERSION	0x0101
-
-/* Reset template entry opcodes */
 #define OPCODE_NOP			0x0000
 #define OPCODE_WRITE_LIST		0x0001
 #define OPCODE_READ_WRITE_LIST		0x0002
@@ -207,14 +162,10 @@ static inline bool addr_in_range(u64 addr, u64 low, u64 high)
 #define OPCODE_SEQ_END			0x0040
 #define OPCODE_TMPL_END			0x0080
 #define OPCODE_POLL_READ_LIST		0x0100
-
-/* Template Header */
 #define RESET_TMPLT_HDR_SIGNATURE	0xCAFE
 #define QLA8044_IDC_DRV_CTRL            0x3790
-#define AF_8044_NO_FW_DUMP              27 /* 0x08000000 */
-
+#define AF_8044_NO_FW_DUMP              27  
 #define MINIDUMP_SIZE_36K		36864
-
 struct qla8044_reset_template_hdr {
 	uint16_t	version;
 	uint16_t	signature;
@@ -225,22 +176,16 @@ struct qla8044_reset_template_hdr {
 	uint16_t	init_seq_offset;
 	uint16_t	start_seq_offset;
 } __packed;
-
-/* Common Entry Header. */
 struct qla8044_reset_entry_hdr {
 	uint16_t cmd;
 	uint16_t size;
 	uint16_t count;
 	uint16_t delay;
 } __packed;
-
-/* Generic poll entry type. */
 struct qla8044_poll {
 	uint32_t  test_mask;
 	uint32_t  test_value;
 } __packed;
-
-/* Read modify write entry type. */
 struct qla8044_rmw {
 	uint32_t test_mask;
 	uint32_t xor_value;
@@ -250,21 +195,16 @@ struct qla8044_rmw {
 	uint8_t index_a;
 	uint8_t rsvd;
 } __packed;
-
-/* Generic Entry Item with 2 DWords. */
 struct qla8044_entry {
 	uint32_t arg1;
 	uint32_t arg2;
 } __packed;
-
-/* Generic Entry Item with 4 DWords.*/
 struct qla8044_quad_entry {
 	uint32_t dr_addr;
 	uint32_t dr_value;
 	uint32_t ar_addr;
 	uint32_t ar_value;
 } __packed;
-
 struct qla8044_reset_template {
 	int seq_index;
 	int seq_error;
@@ -278,10 +218,6 @@ struct qla8044_reset_template {
 	uint8_t seq_end;
 	uint8_t template_end;
 };
-
-/* Driver_code is for driver to write some info about the entry
- * currently not used.
- */
 struct qla8044_minidump_entry_hdr {
 	uint32_t entry_type;
 	uint32_t entry_size;
@@ -293,8 +229,6 @@ struct qla8044_minidump_entry_hdr {
 		uint8_t driver_flags;
 	} d_ctrl;
 } __packed;
-
-/*  Read CRB entry header */
 struct qla8044_minidump_entry_crb {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t addr;
@@ -305,19 +239,16 @@ struct qla8044_minidump_entry_crb {
 	} crb_strd;
 	uint32_t data_size;
 	uint32_t op_count;
-
 	struct {
 		uint8_t opcode;
 		uint8_t state_index_v;
 		uint8_t shl;
 		uint8_t shr;
 	} crb_ctrl;
-
 	uint32_t value_1;
 	uint32_t value_2;
 	uint32_t value_3;
 } __packed;
-
 struct qla8044_minidump_entry_cache {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t tag_reg_addr;
@@ -340,8 +271,6 @@ struct qla8044_minidump_entry_cache {
 		uint16_t rsvd_1;
 	} read_ctrl;
 } __packed;
-
-/* Read OCM */
 struct qla8044_minidump_entry_rdocm {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t rsvd_0;
@@ -353,16 +282,12 @@ struct qla8044_minidump_entry_rdocm {
 	uint32_t read_addr;
 	uint32_t read_addr_stride;
 } __packed;
-
-/* Read Memory */
 struct qla8044_minidump_entry_rdmem {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t rsvd[6];
 	uint32_t read_addr;
 	uint32_t read_data_size;
 };
-
-/* Read Memory: For Pex-DMA */
 struct qla8044_minidump_entry_rdmem_pex_dma {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t desc_card_addr;
@@ -373,16 +298,12 @@ struct qla8044_minidump_entry_rdmem_pex_dma {
 	uint32_t read_addr;
 	uint32_t read_data_size;
 } __packed;
-
-/* Read ROM */
 struct qla8044_minidump_entry_rdrom {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t rsvd[6];
 	uint32_t read_addr;
 	uint32_t read_data_size;
 } __packed;
-
-/* Mux entry */
 struct qla8044_minidump_entry_mux {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t select_addr;
@@ -394,8 +315,6 @@ struct qla8044_minidump_entry_mux {
 	uint32_t read_addr;
 	uint32_t rsvd_1;
 } __packed;
-
-/* Queue entry */
 struct qla8044_minidump_entry_queue {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t select_addr;
@@ -414,8 +333,6 @@ struct qla8044_minidump_entry_queue {
 		uint16_t rsvd_3;
 	} rd_strd;
 } __packed;
-
-/* POLLRD Entry */
 struct qla8044_minidump_entry_pollrd {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t select_addr;
@@ -428,7 +345,6 @@ struct qla8044_minidump_entry_pollrd {
 	uint32_t data_size;
 	uint32_t rsvd_1;
 } __packed;
-
 struct qla8044_minidump_entry_rddfe {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t addr_1;
@@ -441,12 +357,9 @@ struct qla8044_minidump_entry_rddfe {
 	uint32_t modify_mask;
 	uint32_t data_size;
 	uint32_t rsvd;
-
 } __packed;
-
 struct qla8044_minidump_entry_rdmdio {
 	struct qla8044_minidump_entry_hdr h;
-
 	uint32_t addr_1;
 	uint32_t addr_2;
 	uint32_t value_1;
@@ -457,9 +370,7 @@ struct qla8044_minidump_entry_rdmdio {
 	uint32_t mask;
 	uint32_t value_2;
 	uint32_t data_size;
-
 } __packed;
-
 struct qla8044_minidump_entry_pollwr {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t addr_1;
@@ -470,10 +381,7 @@ struct qla8044_minidump_entry_pollwr {
 	uint32_t mask;
 	uint32_t data_size;
 	uint32_t rsvd;
-
 }  __packed;
-
-/* RDMUX2 Entry */
 struct qla8044_minidump_entry_rdmux2 {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t select_addr_1;
@@ -487,8 +395,6 @@ struct qla8044_minidump_entry_rdmux2 {
 	uint8_t data_size;
 	uint8_t rsvd[2];
 } __packed;
-
-/* POLLRDMWR Entry */
 struct qla8044_minidump_entry_pollrdmwr {
 	struct qla8044_minidump_entry_hdr h;
 	uint32_t addr_1;
@@ -500,15 +406,12 @@ struct qla8044_minidump_entry_pollrdmwr {
 	uint32_t modify_mask;
 	uint32_t data_size;
 } __packed;
-
-/* IDC additional information */
 struct qla8044_idc_information {
-	uint32_t request_desc;  /* IDC request descriptor */
-	uint32_t info1; /* IDC additional info */
-	uint32_t info2; /* IDC additional info */
-	uint32_t info3; /* IDC additional info */
+	uint32_t request_desc;   
+	uint32_t info1;  
+	uint32_t info2;  
+	uint32_t info3;  
 } __packed;
-
 enum qla_regs {
 	QLA8044_PEG_HALT_STATUS1_INDEX = 0,
 	QLA8044_PEG_HALT_STATUS2_INDEX,
@@ -525,16 +428,9 @@ enum qla_regs {
 	QLA8044_CRB_CMDPEG_STATE_INDEX,
 	QLA8044_CRB_TEMP_STATE_INDEX,
 } __packed;
-
 #define CRB_REG_INDEX_MAX	14
 #define CRB_CMDPEG_CHECK_RETRY_COUNT    60
 #define CRB_CMDPEG_CHECK_DELAY          500
-
-/* MiniDump Structures */
-
-/* Driver_code is for driver to write some info about the entry
- * currently not used.
- */
 #define QLA8044_SS_OCM_WNDREG_INDEX             3
 #define QLA8044_DBG_STATE_ARRAY_LEN             16
 #define QLA8044_DBG_CAP_SIZE_ARRAY_LEN          8
@@ -544,7 +440,6 @@ enum qla_regs {
 #define QLA8044_RDDFE          38
 #define QLA8044_RDMDIO         39
 #define QLA8044_POLLWR         40
-
 struct qla8044_minidump_template_hdr {
 	uint32_t entry_type;
 	uint32_t first_entry_offset;
@@ -554,26 +449,22 @@ struct qla8044_minidump_template_hdr {
 	uint32_t version;
 	uint32_t driver_timestamp;
 	uint32_t checksum;
-
 	uint32_t driver_capture_mask;
 	uint32_t driver_info_word2;
 	uint32_t driver_info_word3;
 	uint32_t driver_info_word4;
-
 	uint32_t saved_state_array[QLA8044_DBG_STATE_ARRAY_LEN];
 	uint32_t capture_size_array[QLA8044_DBG_CAP_SIZE_ARRAY_LEN];
 	uint32_t ocm_window_reg[QLA8044_DBG_OCM_WNDREG_ARRAY_LEN];
 };
-
 struct qla8044_pex_dma_descriptor {
 	struct {
-		uint32_t read_data_size; /* 0-23: size, 24-31: rsvd */
+		uint32_t read_data_size;  
 		uint8_t rsvd[2];
 		uint16_t dma_desc_cmd;
 	} cmd;
 	uint64_t src_addr;
-	uint64_t dma_bus_addr; /*0-3: desc-cmd, 4-7: pci-func, 8-15: desc-cmd*/
+	uint64_t dma_bus_addr;  
 	uint8_t rsvd[24];
 } __packed;
-
 #endif

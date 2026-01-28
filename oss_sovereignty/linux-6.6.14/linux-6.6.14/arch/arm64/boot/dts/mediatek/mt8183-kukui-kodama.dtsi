@@ -1,50 +1,34 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright 2021 Google LLC
- */
-
 /dts-v1/;
 #include "mt8183-kukui.dtsi"
 #include "mt8183-kukui-audio-ts3a227e-max98357a.dtsi"
-
 / {
 	ppvarn_lcd: ppvarn-lcd {
 		compatible = "regulator-fixed";
 		regulator-name = "ppvarn_lcd";
 		pinctrl-names = "default";
 		pinctrl-0 = <&ppvarn_lcd_en>;
-
 		enable-active-high;
-
 		gpio = <&pio 66 GPIO_ACTIVE_HIGH>;
 	};
-
 	ppvarp_lcd: ppvarp-lcd {
 		compatible = "regulator-fixed";
 		regulator-name = "ppvarp_lcd";
 		pinctrl-names = "default";
 		pinctrl-0 = <&ppvarp_lcd_en>;
-
 		enable-active-high;
-
 		gpio = <&pio 166 GPIO_ACTIVE_HIGH>;
 	};
-
 	pp1800_lcd: pp1800-lcd {
 		compatible = "regulator-fixed";
 		regulator-name = "pp1800_lcd";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pp1800_lcd_en>;
-
 		enable-active-high;
-
 		gpio = <&pio 36 GPIO_ACTIVE_HIGH>;
 	};
 };
-
 &i2c0 {
 	status = "okay";
-
 	touchscreen: touchscreen@10 {
 		compatible = "hid-over-i2c";
 		reg = <0x10>;
@@ -52,19 +36,16 @@
 		interrupts = <155 IRQ_TYPE_LEVEL_LOW>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&touch_default>;
-
 		post-power-on-delay-ms = <10>;
 		hid-descr-addr = <0x0001>;
 	};
 };
-
 &i2c2 {
         pinctrl-names = "default";
 	pinctrl-0 = <&i2c2_pins>;
 	status = "okay";
 	clock-frequency = <400000>;
 	vbus-supply = <&mt6358_vcamio_reg>;
-
 	eeprom@58 {
 		compatible = "atmel,24c64";
 		reg = <0x58>;
@@ -72,14 +53,12 @@
 		vcc-supply = <&mt6358_vcamio_reg>;
 	};
 };
-
 &i2c4 {
         pinctrl-names = "default";
 	pinctrl-0 = <&i2c4_pins>;
 	status = "okay";
 	clock-frequency = <400000>;
 	vbus-supply = <&mt6358_vcn18_reg>;
-
 	eeprom@54 {
 		compatible = "atmel,24c64";
 		reg = <0x54>;
@@ -87,14 +66,11 @@
 		vcc-supply = <&mt6358_vcn18_reg>;
 	};
 };
-
 &mt6358_vcama2_reg {
 	regulator-min-microvolt = <2800000>;
 	regulator-max-microvolt = <2800000>;
 };
-
 &pio {
-	/* 192 lines */
 	gpio-line-names =
 		"SPI_AP_EC_CS_L",
 		"SPI_AP_EC_MOSI",
@@ -246,10 +222,6 @@
 		"",
 		"",
 		"",
-		/*
-		 * AP_FLASH_WP_L is crossystem ABI. Rev1 schematics
-		 * call it BIOS_FLASH_WP_R_L.
-		 */
 		"AP_FLASH_WP_L",
 		"EC_AP_INT_ODL",
 		"IT6505_INT_ODL",
@@ -292,63 +264,44 @@
 		"",
 		"",
 		"";
-
 	ppvarp_lcd_en: ppvarp-lcd-en {
 		pins1 {
 			pinmux = <PINMUX_GPIO66__FUNC_GPIO66>;
 			output-low;
 		};
 	};
-
 	ppvarn_lcd_en: ppvarn-lcd-en {
 		pins1 {
 			pinmux = <PINMUX_GPIO166__FUNC_GPIO166>;
 			output-low;
 		};
 	};
-
 	pp1800_lcd_en: pp1800-lcd-en {
 		pins1 {
 			pinmux = <PINMUX_GPIO36__FUNC_GPIO36>;
 			output-low;
 		};
 	};
-
 	touch_default: touchdefault {
 		pin_irq {
 			pinmux = <PINMUX_GPIO155__FUNC_GPIO155>;
 			input-enable;
 			bias-pull-up;
 		};
-
 		touch_pin_reset: pin_reset {
 			pinmux = <PINMUX_GPIO156__FUNC_GPIO156>;
-
-			/*
-			 * The touchscreen driver doesn't currently support driving
-			 * this reset line.  By specifying output-high here
-			 * we're relying on the fact that this pin has a default
-			 * pulldown at boot (which makes sure the controller was in
-			 * reset if it was powered) and then we set it high here
-			 * to take it out of reset.  Better would be if the touchscreen
-			 * driver could control this and we could remove
-			 * "output-high" here.
-			 */
 			output-high;
 		};
 	};
 };
-
 &cros_ec {
 	keyboard-controller {
 		compatible = "google,cros-ec-keyb-switches";
 	};
 };
-
 &qca_wifi {
 	qcom,ath10k-calibration-variant = "GO_KODAMA";
 };
-
 &i2c_tunnel {
         google,remote-bus = <2>;
 };

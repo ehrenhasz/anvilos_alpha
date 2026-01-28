@@ -1,20 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ARCH_M68K_CMPXCHG__
 #define __ARCH_M68K_CMPXCHG__
-
 #include <linux/irqflags.h>
-
 #define __xg(type, x) ((volatile type *)(x))
-
 extern unsigned long __invalid_xchg_size(unsigned long, volatile void *, int);
-
 #ifndef CONFIG_RMW_INSNS
 static inline unsigned long __arch_xchg(unsigned long x, volatile void * ptr, int size)
 {
 	unsigned long flags, tmp;
-
 	local_irq_save(flags);
-
 	switch (size) {
 	case 1:
 		tmp = *(u8 *)ptr;
@@ -35,7 +28,6 @@ static inline unsigned long __arch_xchg(unsigned long x, volatile void * ptr, in
 		tmp = __invalid_xchg_size(x, ptr, size);
 		break;
 	}
-
 	local_irq_restore(flags);
 	return x;
 }
@@ -74,23 +66,12 @@ static inline unsigned long __arch_xchg(unsigned long x, volatile void * ptr, in
 	return x;
 }
 #endif
-
 #define arch_xchg(ptr,x) ({(__typeof__(*(ptr)))__arch_xchg((unsigned long)(x),(ptr),sizeof(*(ptr)));})
-
 #include <asm-generic/cmpxchg-local.h>
-
 #define arch_cmpxchg64_local(ptr, o, n) __generic_cmpxchg64_local((ptr), (o), (n))
-
 extern unsigned long __invalid_cmpxchg_size(volatile void *,
 					    unsigned long, unsigned long, int);
-
-/*
- * Atomic compare and exchange.  Compare OLD with MEM, if identical,
- * store NEW in MEM.  Return the initial value in MEM.  Success is
- * indicated by comparing RETURN with OLD.
- */
 #ifdef CONFIG_RMW_INSNS
-
 static inline unsigned long __cmpxchg(volatile void *p, unsigned long old,
 				      unsigned long new, int size)
 {
@@ -116,20 +97,14 @@ static inline unsigned long __cmpxchg(volatile void *p, unsigned long old,
 	}
 	return old;
 }
-
 #define arch_cmpxchg(ptr, o, n)						    \
 	({(__typeof__(*(ptr)))__cmpxchg((ptr), (unsigned long)(o),	    \
 			(unsigned long)(n), sizeof(*(ptr)));})
 #define arch_cmpxchg_local(ptr, o, n)					    \
 	({(__typeof__(*(ptr)))__cmpxchg((ptr), (unsigned long)(o),	    \
 			(unsigned long)(n), sizeof(*(ptr)));})
-
 #define arch_cmpxchg64(ptr, o, n)	arch_cmpxchg64_local((ptr), (o), (n))
-
 #else
-
 #include <asm-generic/cmpxchg.h>
-
 #endif
-
-#endif /* __ARCH_M68K_CMPXCHG__ */
+#endif  

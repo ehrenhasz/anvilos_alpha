@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Device Tree file for LX2160A Clearfog CX board
-//
-// Copyright 2019 SolidRun Ltd.
-
 /dts-v1/;
-
 #include "fsl-lx2160a-clearfog-itx.dtsi"
-
 / {
 	model = "SolidRun LX2160A Clearfog CX";
 	compatible = "solidrun,clearfog-cx",

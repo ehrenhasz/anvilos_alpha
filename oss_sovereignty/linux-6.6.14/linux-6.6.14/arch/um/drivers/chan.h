@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* 
- * Copyright (C) 2000, 2001 Jeff Dike (jdike@karaya.com)
- */
-
 #ifndef __CHAN_KERN_H__
 #define __CHAN_KERN_H__
-
 #include <linux/tty.h>
 #include <linux/list.h>
 #include <linux/console.h>
 #include "chan_user.h"
 #include "line.h"
-
 struct chan {
 	struct list_head list;
 	struct list_head free_list;
@@ -26,7 +19,6 @@ struct chan {
 	const struct chan_ops *ops;
 	void *data;
 };
-
 extern void chan_interrupt(struct line *line, int irq);
 extern int parse_chan_pair(char *str, struct line *line, int device,
 			   const struct chan_opts *opts, char **error_out);
@@ -44,5 +36,4 @@ extern int chan_window_size(struct line *line,
 			     unsigned short *cols_out);
 extern int chan_config_string(struct line *line, char *str, int size,
 			      char **error_out);
-
 #endif

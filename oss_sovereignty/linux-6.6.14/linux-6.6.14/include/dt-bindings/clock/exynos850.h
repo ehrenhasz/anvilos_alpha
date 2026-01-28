@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (C) 2021 Linaro Ltd.
- * Author: Sam Protsenko <semen.protsenko@linaro.org>
- *
- * Device Tree binding constants for Exynos850 clock controller.
- */
-
 #ifndef _DT_BINDINGS_CLOCK_EXYNOS_850_H
 #define _DT_BINDINGS_CLOCK_EXYNOS_850_H
-
-/* CMU_TOP */
 #define CLK_FOUT_SHARED0_PLL		1
 #define CLK_FOUT_SHARED1_PLL		2
 #define CLK_FOUT_MMC_PLL		3
@@ -88,8 +78,6 @@
 #define CLK_MOUT_G3D_SWITCH		76
 #define CLK_GOUT_G3D_SWITCH		77
 #define CLK_DOUT_G3D_SWITCH		78
-
-/* CMU_APM */
 #define CLK_RCO_I3C_PMIC		1
 #define OSCCLK_RCO_APM			2
 #define CLK_RCO_APM__ALV		3
@@ -114,8 +102,6 @@
 #define CLK_GOUT_GPIO_ALIVE_PCLK	22
 #define CLK_GOUT_PMU_ALIVE_PCLK		23
 #define CLK_GOUT_SYSREG_APM_PCLK	24
-
-/* CMU_AUD */
 #define CLK_DOUT_AUD_AUDIF		1
 #define CLK_DOUT_AUD_BUSD		2
 #define CLK_DOUT_AUD_BUSP		3
@@ -177,8 +163,6 @@
 #define IOCLK_AUDIOCDCLK6		59
 #define TICK_USB			60
 #define CLK_GOUT_AUD_CMU_AUD_PCLK	61
-
-/* CMU_CMGP */
 #define CLK_RCO_CMGP			1
 #define CLK_MOUT_CMGP_ADC		2
 #define CLK_MOUT_CMGP_USI0		3
@@ -194,8 +178,6 @@
 #define CLK_GOUT_CMGP_USI1_IPCLK	13
 #define CLK_GOUT_CMGP_USI1_PCLK		14
 #define CLK_GOUT_SYSREG_CMGP_PCLK	15
-
-/* CMU_G3D */
 #define CLK_FOUT_G3D_PLL		1
 #define CLK_MOUT_G3D_PLL		2
 #define CLK_MOUT_G3D_SWITCH_USER	3
@@ -208,8 +190,6 @@
 #define CLK_GOUT_G3D_BUSD_CLK		10
 #define CLK_GOUT_G3D_BUSP_CLK		11
 #define CLK_GOUT_G3D_SYSREG_PCLK	12
-
-/* CMU_HSI */
 #define CLK_MOUT_HSI_BUS_USER		1
 #define CLK_MOUT_HSI_MMC_CARD_USER	2
 #define CLK_MOUT_HSI_USB20DRD_USER	3
@@ -226,8 +206,6 @@
 #define CLK_GOUT_HSI_PPMU_ACLK		14
 #define CLK_GOUT_HSI_PPMU_PCLK		15
 #define CLK_GOUT_HSI_CMU_HSI_PCLK	16
-
-/* CMU_IS */
 #define CLK_MOUT_IS_BUS_USER		1
 #define CLK_MOUT_IS_ITP_USER		2
 #define CLK_MOUT_IS_VRA_USER		3
@@ -251,8 +229,6 @@
 #define CLK_GOUT_IS_SYSMMU_IS0_CLK	21
 #define CLK_GOUT_IS_SYSMMU_IS1_CLK	22
 #define CLK_GOUT_IS_SYSREG_PCLK		23
-
-/* CMU_MFCMSCL */
 #define CLK_MOUT_MFCMSCL_MFC_USER		1
 #define CLK_MOUT_MFCMSCL_M2M_USER		2
 #define CLK_MOUT_MFCMSCL_MCSC_USER		3
@@ -268,8 +244,6 @@
 #define CLK_GOUT_MFCMSCL_PPMU_PCLK		13
 #define CLK_GOUT_MFCMSCL_SYSMMU_CLK		14
 #define CLK_GOUT_MFCMSCL_SYSREG_PCLK		15
-
-/* CMU_PERI */
 #define CLK_MOUT_PERI_BUS_USER		1
 #define CLK_MOUT_PERI_UART_USER		2
 #define CLK_MOUT_PERI_HSI2C_USER	3
@@ -304,8 +278,6 @@
 #define CLK_GOUT_UART_PCLK		32
 #define CLK_GOUT_WDT0_PCLK		33
 #define CLK_GOUT_WDT1_PCLK		34
-
-/* CMU_CORE */
 #define CLK_MOUT_CORE_BUS_USER		1
 #define CLK_MOUT_CORE_CCI_USER		2
 #define CLK_MOUT_CORE_MMC_EMBD_USER	3
@@ -320,8 +292,6 @@
 #define CLK_GOUT_SSS_PCLK		12
 #define CLK_GOUT_GPIO_CORE_PCLK		13
 #define CLK_GOUT_SYSREG_CORE_PCLK	14
-
-/* CMU_DPU */
 #define CLK_MOUT_DPU_USER		1
 #define CLK_DOUT_DPU_BUSP		2
 #define CLK_GOUT_DPU_CMU_DPU_PCLK	3
@@ -333,5 +303,4 @@
 #define CLK_GOUT_DPU_SMMU_CLK		9
 #define CLK_GOUT_DPU_SYSREG_PCLK	10
 #define DPU_NR_CLK			11
-
-#endif /* _DT_BINDINGS_CLOCK_EXYNOS_850_H */
+#endif  

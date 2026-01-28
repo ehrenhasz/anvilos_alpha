@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef _LINUX_ASN1_ENCODER_H
 #define _LINUX_ASN1_ENCODER_H
-
 #include <linux/types.h>
 #include <linux/asn1.h>
 #include <linux/asn1_ber_bytecode.h>
 #include <linux/bug.h>
-
 #define asn1_oid_len(oid) (sizeof(oid)/sizeof(u32))
 unsigned char *
 asn1_encode_integer(unsigned char *data, const unsigned char *end_data,
@@ -28,5 +24,4 @@ asn1_encode_sequence(unsigned char *data, const unsigned char *end_data,
 unsigned char *
 asn1_encode_boolean(unsigned char *data, const unsigned char *end_data,
 		    bool val);
-
 #endif

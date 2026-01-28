@@ -1,22 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/**
-  * This header file contains global constant/enum definitions,
-  * global variable declaration.
-  */
 #ifndef _LBS_DEB_DEFS_H_
 #define _LBS_DEB_DEFS_H_
-
 #ifndef DRV_NAME
 #define DRV_NAME "libertas_tf"
 #endif
-
 #include <linux/spinlock.h>
-
 #ifdef CONFIG_LIBERTAS_THINFIRM_DEBUG
 #define DEBUG
 #define PROC_DEBUG
 #endif
-
 #define LBTF_DEB_ENTER	0x00000001
 #define LBTF_DEB_LEAVE	0x00000002
 #define LBTF_DEB_MAIN	0x00000004
@@ -41,10 +32,7 @@
 #define LBTF_DEB_HEX	0x00200000
 #define LBTF_DEB_SDIO	0x00400000
 #define LBTF_DEB_MACOPS	0x00800000
-
 extern unsigned int lbtf_debug;
-
-
 #ifdef DEBUG
 #define LBTF_DEB_LL(grp, grpnam, fmt, args...) \
 do { if ((lbtf_debug & (grp)) == (grp)) \
@@ -52,7 +40,6 @@ do { if ((lbtf_debug & (grp)) == (grp)) \
 #else
 #define LBTF_DEB_LL(grp, grpnam, fmt, args...) do {} while (0)
 #endif
-
 #define lbtf_deb_enter(grp) \
   LBTF_DEB_LL(grp | LBTF_DEB_ENTER, " enter", "%s()\n", __func__);
 #define lbtf_deb_enter_args(grp, fmt, args...) \
@@ -84,12 +71,10 @@ do { if ((lbtf_debug & (grp)) == (grp)) \
 #define lbtf_deb_thread(fmt, args...)    LBTF_DEB_LL(LBTF_DEB_THREAD, " thread", fmt, ##args)
 #define lbtf_deb_sdio(fmt, args...)      LBTF_DEB_LL(LBTF_DEB_SDIO, " thread", fmt, ##args)
 #define lbtf_deb_macops(fmt, args...)      LBTF_DEB_LL(LBTF_DEB_MACOPS, " thread", fmt, ##args)
-
 #ifdef DEBUG
 static inline void lbtf_deb_hex(unsigned int grp, const char *prompt, u8 *buf, int len)
 {
 	char newprompt[32];
-
 	if (len &&
 	    (lbtf_debug & LBTF_DEB_HEX) &&
 	    (lbtf_debug & grp))	{
@@ -100,5 +85,4 @@ static inline void lbtf_deb_hex(unsigned int grp, const char *prompt, u8 *buf, i
 #else
 #define lbtf_deb_hex(grp, prompt, buf, len)	do {} while (0)
 #endif
-
 #endif

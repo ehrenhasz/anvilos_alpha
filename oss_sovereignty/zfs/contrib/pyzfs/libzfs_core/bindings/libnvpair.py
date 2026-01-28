@@ -1,29 +1,10 @@
-#
-# Copyright 2015 ClusterHQ
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 """
 Python bindings for ``libnvpair``.
 """
 from __future__ import absolute_import, division, print_function
-
 CDEF = """
     typedef ... nvlist_t;
     typedef ... nvpair_t;
-
-
     typedef enum {
         DATA_TYPE_UNKNOWN = 0,
         DATA_TYPE_BOOLEAN,
@@ -54,18 +35,13 @@ CDEF = """
         DATA_TYPE_UINT8_ARRAY
     } data_type_t;
     typedef enum { B_FALSE, B_TRUE } boolean_t;
-
     typedef unsigned char uchar_t;
     typedef unsigned int uint_t;
-
     int nvlist_alloc(nvlist_t **, uint_t, int);
     void nvlist_free(nvlist_t *);
-
     int nvlist_unpack(char *, size_t, nvlist_t **, int);
-
     void dump_nvlist(nvlist_t *, int);
     int nvlist_dup(nvlist_t *, nvlist_t **, int);
-
     int nvlist_add_boolean(nvlist_t *, const char *);
     int nvlist_add_boolean_value(nvlist_t *, const char *, boolean_t);
     int nvlist_add_byte(nvlist_t *, const char *, uchar_t);
@@ -103,7 +79,6 @@ CDEF = """
         const char * const *, uint_t);
     int nvlist_add_nvlist_array(nvlist_t *, const char *,
         const nvlist_t * const *, uint_t);
-
     nvpair_t *nvlist_next_nvpair(nvlist_t *, nvpair_t *);
     nvpair_t *nvlist_prev_nvpair(nvlist_t *, nvpair_t *);
     char *nvpair_name(nvpair_t *);
@@ -134,11 +109,6 @@ CDEF = """
     int nvpair_value_string_array(nvpair_t *, char ***, uint_t *);
     int nvpair_value_nvlist_array(nvpair_t *, nvlist_t ***, uint_t *);
 """
-
 SOURCE = """
-#include <libzfs/sys/nvpair.h>
 """
-
 LIBRARY = "nvpair"
-
-# vim: softtabstop=4 tabstop=4 expandtab shiftwidth=4

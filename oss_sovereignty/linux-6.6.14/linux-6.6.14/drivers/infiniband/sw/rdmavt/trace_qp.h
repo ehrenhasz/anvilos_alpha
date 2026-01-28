@@ -1,19 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2016 Intel Corporation.
- */
 #if !defined(__RVT_TRACE_QP_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __RVT_TRACE_QP_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #include <rdma/ib_verbs.h>
 #include <rdma/rdmavt_qp.h>
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rvt_qp
-
 DECLARE_EVENT_CLASS(rvt_qphash_template,
 	TP_PROTO(struct rvt_qp *qp, u32 bucket),
 	TP_ARGS(qp, bucket),
@@ -34,15 +26,12 @@ DECLARE_EVENT_CLASS(rvt_qphash_template,
 		__entry->bucket
 	)
 );
-
 DEFINE_EVENT(rvt_qphash_template, rvt_qpinsert,
 	TP_PROTO(struct rvt_qp *qp, u32 bucket),
 	TP_ARGS(qp, bucket));
-
 DEFINE_EVENT(rvt_qphash_template, rvt_qpremove,
 	TP_PROTO(struct rvt_qp *qp, u32 bucket),
 	TP_ARGS(qp, bucket));
-
 DECLARE_EVENT_CLASS(
 	rvt_rnrnak_template,
 	TP_PROTO(struct rvt_qp *qp, u32 to),
@@ -70,27 +59,21 @@ DECLARE_EVENT_CLASS(
 		__entry->to
 	)
 );
-
 DEFINE_EVENT(
 	rvt_rnrnak_template, rvt_rnrnak_add,
 	TP_PROTO(struct rvt_qp *qp, u32 to),
 	TP_ARGS(qp, to));
-
 DEFINE_EVENT(
 	rvt_rnrnak_template, rvt_rnrnak_timeout,
 	TP_PROTO(struct rvt_qp *qp, u32 to),
 	TP_ARGS(qp, to));
-
 DEFINE_EVENT(
 	rvt_rnrnak_template, rvt_rnrnak_stop,
 	TP_PROTO(struct rvt_qp *qp, u32 to),
 	TP_ARGS(qp, to));
-
-#endif /* __RVT_TRACE_QP_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE trace_qp
 #include <trace/define_trace.h>
-

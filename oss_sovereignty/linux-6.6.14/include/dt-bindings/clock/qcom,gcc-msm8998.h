@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_GCC_COBALT_H
 #define _DT_BINDINGS_CLK_MSM_GCC_COBALT_H
-
 #define BLSP1_QUP1_I2C_APPS_CLK_SRC				0
 #define BLSP1_QUP1_SPI_APPS_CLK_SRC				1
 #define BLSP1_QUP2_I2C_APPS_CLK_SRC				2
@@ -193,11 +187,9 @@
 #define GCC_MMSS_GPLL0_DIV_CLK					184
 #define GCC_GPU_GPLL0_DIV_CLK					185
 #define GCC_GPU_GPLL0_CLK					186
-
 #define PCIE_0_GDSC						0
 #define UFS_GDSC						1
 #define USB_30_GDSC						2
-
 #define GCC_BLSP1_QUP1_BCR					0
 #define GCC_BLSP1_QUP2_BCR					1
 #define GCC_BLSP1_QUP3_BCR					2
@@ -307,5 +299,4 @@
 #define GCC_QUSB2PHY_PRIM_BCR					106
 #define GCC_QUSB2PHY_SEC_BCR					107
 #define GCC_MSS_RESTART						108
-
 #endif

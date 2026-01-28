@@ -1,20 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * MPC85xx cpu type detection
- *
- * Copyright 2011-2012 Freescale Semiconductor, Inc.
- */
-
 #ifndef __ASM_PPC_MPC85XX_H
 #define __ASM_PPC_MPC85XX_H
-
-#define SVR_REV(svr)	((svr) & 0xFF)		/* SOC design resision */
-#define SVR_MAJ(svr)	(((svr) >>  4) & 0xF)	/* Major revision field*/
-#define SVR_MIN(svr)	(((svr) >>  0) & 0xF)	/* Minor revision field*/
-
-/* Some parts define SVR[0:23] as the SOC version */
-#define SVR_SOC_VER(svr) (((svr) >> 8) & 0xFFF7FF)	/* SOC Version fields */
-
+#define SVR_REV(svr)	((svr) & 0xFF)		 
+#define SVR_MAJ(svr)	(((svr) >>  4) & 0xF)	 
+#define SVR_MIN(svr)	(((svr) >>  0) & 0xF)	 
+#define SVR_SOC_VER(svr) (((svr) >> 8) & 0xFFF7FF)	 
 #define SVR_8533	0x803400
 #define SVR_8535	0x803701
 #define SVR_8536	0x803700
@@ -76,16 +65,12 @@
 #define SVR_T1022	0x852102
 #define SVR_T2080	0x853000
 #define SVR_T2081	0x853100
-
 #define SVR_8610	0x80A000
 #define SVR_8641	0x809000
 #define SVR_8641D	0x809001
-
 #define SVR_9130	0x860001
 #define SVR_9131	0x860000
 #define SVR_9132	0x861000
 #define SVR_9232	0x861400
-
 #define SVR_Unknown	0xFFFFFF
-
 #endif

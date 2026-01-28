@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI_ASM_HWCAP_H
 #define _UAPI_ASM_HWCAP_H
-
-/* HWCAP flags */
 #define HWCAP_LOONGARCH_CPUCFG		(1 << 0)
 #define HWCAP_LOONGARCH_LAM		(1 << 1)
 #define HWCAP_LOONGARCH_UAL		(1 << 2)
@@ -17,5 +14,4 @@
 #define HWCAP_LOONGARCH_LBT_ARM		(1 << 11)
 #define HWCAP_LOONGARCH_LBT_MIPS	(1 << 12)
 #define HWCAP_LOONGARCH_PTW		(1 << 13)
-
-#endif /* _UAPI_ASM_HWCAP_H */
+#endif  

@@ -1,16 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * xattr.h
- *
- * Copyright (C) 2004, 2008 Oracle.  All rights reserved.
- */
-
 #ifndef OCFS2_XATTR_H
 #define OCFS2_XATTR_H
-
 #include <linux/init.h>
 #include <linux/xattr.h>
-
 enum ocfs2_xattr_type {
 	OCFS2_XATTR_INDEX_USER = 1,
 	OCFS2_XATTR_INDEX_POSIX_ACL_ACCESS,
@@ -19,19 +10,16 @@ enum ocfs2_xattr_type {
 	OCFS2_XATTR_INDEX_SECURITY,
 	OCFS2_XATTR_MAX
 };
-
 struct ocfs2_security_xattr_info {
 	int enable;
 	const char *name;
 	void *value;
 	size_t value_len;
 };
-
 extern const struct xattr_handler ocfs2_xattr_user_handler;
 extern const struct xattr_handler ocfs2_xattr_trusted_handler;
 extern const struct xattr_handler ocfs2_xattr_security_handler;
 extern const struct xattr_handler *ocfs2_xattr_handlers[];
-
 ssize_t ocfs2_listxattr(struct dentry *, char *, size_t);
 int ocfs2_xattr_get_nolock(struct inode *, struct buffer_head *, int,
 			   const char *, void *, size_t);
@@ -58,20 +46,11 @@ int ocfs2_calc_security_init(struct inode *,
 int ocfs2_calc_xattr_init(struct inode *, struct buffer_head *,
 			  umode_t, struct ocfs2_security_xattr_info *,
 			  int *, int *, int *);
-
-/*
- * xattrs can live inside an inode, as part of an external xattr block,
- * or inside an xattr bucket, which is the leaf of a tree rooted in an
- * xattr block.  Some of the xattr calls, especially the value setting
- * functions, want to treat each of these locations as equal.  Let's wrap
- * them in a structure that we can pass around instead of raw buffer_heads.
- */
 struct ocfs2_xattr_value_buf {
 	struct buffer_head		*vb_bh;
 	ocfs2_journal_access_func	vb_access;
 	struct ocfs2_xattr_value_root	*vb_xv;
 };
-
 int ocfs2_xattr_attach_refcount_tree(struct inode *inode,
 				     struct buffer_head *fe_bh,
 				     struct ocfs2_caching_info *ref_ci,
@@ -85,4 +64,4 @@ int ocfs2_reflink_xattrs(struct inode *old_inode,
 int ocfs2_init_security_and_acl(struct inode *dir,
 				struct inode *inode,
 				const struct qstr *qstr);
-#endif /* OCFS2_XATTR_H */
+#endif  

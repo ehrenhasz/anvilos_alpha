@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014 Mahesh Bandewar <maheshb@google.com>
- */
 #ifndef __IPVLAN_H
 #define __IPVLAN_H
-
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/module.h>
@@ -26,26 +21,20 @@
 #include <net/route.h>
 #include <net/addrconf.h>
 #include <net/l3mdev.h>
-
 #define IPVLAN_DRV	"ipvlan"
 #define IPV_DRV_VER	"0.1"
-
 #define IPVLAN_HASH_SIZE	(1 << BITS_PER_BYTE)
 #define IPVLAN_HASH_MASK	(IPVLAN_HASH_SIZE - 1)
-
 #define IPVLAN_MAC_FILTER_BITS	8
 #define IPVLAN_MAC_FILTER_SIZE	(1 << IPVLAN_MAC_FILTER_BITS)
 #define IPVLAN_MAC_FILTER_MASK	(IPVLAN_MAC_FILTER_SIZE - 1)
-
 #define IPVLAN_QBACKLOG_LIMIT	1000
-
 typedef enum {
 	IPVL_IPV6 = 0,
 	IPVL_ICMPV6,
 	IPVL_IPV4,
 	IPVL_ARP,
 } ipvl_hdr_type;
-
 struct ipvl_pcpu_stats {
 	u64_stats_t		rx_pkts;
 	u64_stats_t		rx_bytes;
@@ -56,9 +45,7 @@ struct ipvl_pcpu_stats {
 	u32			rx_errs;
 	u32			tx_drps;
 };
-
 struct ipvl_port;
-
 struct ipvl_dev {
 	struct net_device	*dev;
 	struct list_head	pnode;
@@ -71,21 +58,19 @@ struct ipvl_dev {
 	u32			msg_enable;
 	spinlock_t		addrs_lock;
 };
-
 struct ipvl_addr {
-	struct ipvl_dev		*master; /* Back pointer to master */
+	struct ipvl_dev		*master;  
 	union {
-		struct in6_addr	ip6;	 /* IPv6 address on logical interface */
-		struct in_addr	ip4;	 /* IPv4 address on logical interface */
+		struct in6_addr	ip6;	  
+		struct in_addr	ip4;	  
 	} ipu;
 #define ip6addr	ipu.ip6
 #define ip4addr ipu.ip4
-	struct hlist_node	hlnode;  /* Hash-table linkage */
-	struct list_head	anode;   /* logical-interface linkage */
+	struct hlist_node	hlnode;   
+	struct list_head	anode;    
 	ipvl_hdr_type		atype;
 	struct rcu_head		rcu;
 };
-
 struct ipvl_port {
 	struct net_device	*dev;
 	possible_net_t		pnet;
@@ -100,57 +85,46 @@ struct ipvl_port {
 	struct ida		ida;
 	netdevice_tracker	dev_tracker;
 };
-
 struct ipvl_skb_cb {
 	bool tx_pkt;
 };
 #define IPVL_SKB_CB(_skb) ((struct ipvl_skb_cb *)&((_skb)->cb[0]))
-
 static inline struct ipvl_port *ipvlan_port_get_rcu(const struct net_device *d)
 {
 	return rcu_dereference(d->rx_handler_data);
 }
-
 static inline struct ipvl_port *ipvlan_port_get_rcu_bh(const struct net_device *d)
 {
 	return rcu_dereference_bh(d->rx_handler_data);
 }
-
 static inline struct ipvl_port *ipvlan_port_get_rtnl(const struct net_device *d)
 {
 	return rtnl_dereference(d->rx_handler_data);
 }
-
 static inline bool ipvlan_is_private(const struct ipvl_port *port)
 {
 	return !!(port->flags & IPVLAN_F_PRIVATE);
 }
-
 static inline void ipvlan_mark_private(struct ipvl_port *port)
 {
 	port->flags |= IPVLAN_F_PRIVATE;
 }
-
 static inline void ipvlan_clear_private(struct ipvl_port *port)
 {
 	port->flags &= ~IPVLAN_F_PRIVATE;
 }
-
 static inline bool ipvlan_is_vepa(const struct ipvl_port *port)
 {
 	return !!(port->flags & IPVLAN_F_VEPA);
 }
-
 static inline void ipvlan_mark_vepa(struct ipvl_port *port)
 {
 	port->flags |= IPVLAN_F_VEPA;
 }
-
 static inline void ipvlan_clear_vepa(struct ipvl_port *port)
 {
 	port->flags &= ~IPVLAN_F_VEPA;
 }
-
 void ipvlan_init_secret(void);
 unsigned int ipvlan_mac_hash(const unsigned char *addr);
 rx_handler_result_t ipvlan_handle_frame(struct sk_buff **pskb);
@@ -183,29 +157,23 @@ static inline int ipvlan_l3s_register(struct ipvl_port *port)
 {
 	return -ENOTSUPP;
 }
-
 static inline void ipvlan_l3s_unregister(struct ipvl_port *port)
 {
 }
-
 static inline void ipvlan_migrate_l3s_hook(struct net *oldnet,
 					   struct net *newnet)
 {
 }
-
 static inline int ipvlan_l3s_init(void)
 {
 	return 0;
 }
-
 static inline void ipvlan_l3s_cleanup(void)
 {
 }
-#endif /* CONFIG_IPVLAN_L3S */
-
+#endif  
 static inline bool netif_is_ipvlan_port(const struct net_device *dev)
 {
 	return rcu_access_pointer(dev->rx_handler) == ipvlan_handle_frame;
 }
-
-#endif /* __IPVLAN_H */
+#endif  

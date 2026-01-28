@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright (C) 2023 Jisheng Zhang <jszhang@kernel.org>
- */
-
 #include "th1520-lichee-module-4a.dtsi"
-
 / {
 	model = "Sipeed Lichee Pi 4A";
 	compatible = "sipeed,lichee-pi-4a", "sipeed,lichee-module-4a", "thead,th1520";
-
 	aliases {
 		gpio0 = &gpio0;
 		gpio1 = &gpio1;
@@ -21,12 +14,10 @@
 		serial4 = &uart4;
 		serial5 = &uart5;
 	};
-
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
 };
-
 &uart0 {
 	status = "okay";
 };

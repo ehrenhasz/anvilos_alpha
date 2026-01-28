@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVIF_UNPACK_H__
 #define __NVIF_UNPACK_H__
-
 #define nvif_unvers(r,d,s,m) ({                                                \
 	void **_data = (d); __u32 *_size = (s); int _ret = (r);                \
 	if (_ret == -ENOSYS && *_size == sizeof(m)) {                          \
@@ -10,7 +8,6 @@
 	}                                                                      \
 	_ret;                                                                  \
 })
-
 #define nvif_unpack(r,d,s,m,vl,vh,x) ({                                        \
 	void **_data = (d); __u32 *_size = (s);                                \
 	int _ret = (r), _vl = (vl), _vh = (vh);                                \

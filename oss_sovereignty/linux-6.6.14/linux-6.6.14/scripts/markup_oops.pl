@@ -1,23 +1,9 @@
-#!/usr/bin/env perl
-# SPDX-License-Identifier: GPL-2.0-only
-
 use File::Basename;
 use Math::BigInt;
 use Getopt::Long;
-
-# Copyright 2008, Intel Corporation
-#
-# This file is part of the Linux kernel
-#
-# Authors:
-# 	Arjan van de Ven <arjan@linux.intel.com>
-
-
 my $cross_compile = "";
 my $vmlinux_name = "";
 my $modulefile = "";
-
-# Get options
 Getopt::Long::GetOptions(
 	'cross-compile|c=s'	=> \$cross_compile,
 	'module|m=s'		=> \$modulefile,
@@ -31,18 +17,12 @@ if (!defined($vmlinux_name)) {
 	print "No vmlinux specified, assuming $vmlinux_name\n";
 }
 my $filename = $vmlinux_name;
-
-# Parse the oops to find the EIP value
-
 my $target = "0";
 my $function;
 my $module = "";
 my $func_offset = 0;
 my $vmaoffset = 0;
-
 my %regs;
-
-
 sub parse_x86_regs
 {
 	my ($line) = @_;
@@ -82,7 +62,6 @@ sub parse_x86_regs
 		$regs{"%r15"} = $3;
 	}
 }
-
 sub reg_name
 {
 	my ($reg) = @_;
@@ -91,38 +70,24 @@ sub reg_name
 	$reg =~ s/r(.)p/e\1p/;
 	return $reg;
 }
-
 sub process_x86_regs
 {
 	my ($line, $cntr) = @_;
 	my $str = "";
 	if (length($line) < 40) {
-		return ""; # not an asm istruction
+		return ""; 
 	}
-
-	# find the arguments to the instruction
 	if ($line =~ /([0-9a-zA-Z\,\%\(\)\-\+]+)$/) {
 		$lastword = $1;
 	} else {
 		return "";
 	}
-
-	# we need to find the registers that get clobbered,
-	# since their value is no longer relevant for previous
-	# instructions in the stream.
-
 	$clobber = $lastword;
-	# first, remove all memory operands, they're read only
 	$clobber =~ s/\([a-z0-9\%\,]+\)//g;
-	# then, remove everything before the comma, thats the read part
 	$clobber =~ s/.*\,//g;
-
-	# if this is the instruction that faulted, we haven't actually done
-	# the write yet... nothing is clobbered.
 	if ($cntr == 0) {
 		$clobber = "";
 	}
-
 	foreach $reg (keys(%regs)) {
 		my $clobberprime = reg_name($clobber);
 		my $lastwordprime = reg_name($lastword);
@@ -132,9 +97,6 @@ sub process_x86_regs
 		} else {
 			$val =~ s/^0*//;
 		}
-
-		# first check if we're clobbering this register; if we do
-		# we print it with a =>, and then delete its value
 		if ($clobber =~ /$reg/ || $clobberprime =~ /$reg/) {
 			if (length($val) > 0) {
 				$str = $str . " $reg => $val ";
@@ -142,7 +104,6 @@ sub process_x86_regs
 			$regs{$reg} = "";
 			$val = "";
 		}
-		# now check if we're reading this register
 		if ($lastword =~ /$reg/ || $lastwordprime =~ /$reg/) {
 			if (length($val) > 0) {
 				$str = $str . " $reg = $val ";
@@ -151,8 +112,6 @@ sub process_x86_regs
 	}
 	return $str;
 }
-
-# parse the oops
 while (<STDIN>) {
 	my $line = $_;
 	if ($line =~ /EIP: 0060:\[\<([a-z0-9]+)\>\]/) {
@@ -169,8 +128,6 @@ while (<STDIN>) {
 		$function = $1;
 		$func_offset = $2;
 	}
-
-	# check if it's a module
 	if ($line =~ /EIP is at ([a-zA-Z0-9\_]+)\+(0x[0-9a-f]+)\/0x[a-f0-9]+\W\[([a-zA-Z0-9\_\-]+)\]/) {
 		$module = $3;
 	}
@@ -179,15 +136,12 @@ while (<STDIN>) {
 	}
 	parse_x86_regs($line);
 }
-
 my $decodestart = Math::BigInt->from_hex("0x$target") - Math::BigInt->from_hex("0x$func_offset");
 my $decodestop = Math::BigInt->from_hex("0x$target") + 8192;
 if ($target eq "0") {
 	print "No oops found!\n";
 	usage();
 }
-
-# if it's a module, we need to find the .ko file and calculate a load offset
 if ($module ne "") {
 	if ($modulefile eq "") {
 		$modulefile = `modinfo -F filename $module`;
@@ -198,7 +152,6 @@ if ($module ne "") {
 		print "Module .ko file for $module not found. Aborting\n";
 		exit;
 	}
-	# ok so we found the module, now we need to calculate the vma offset
 	open(FILE, $cross_compile."objdump -dS $filename |") || die "Cannot start objdump";
 	while (<FILE>) {
 		if ($_ =~ /^([0-9a-f]+) \<$function\>\:/) {
@@ -208,32 +161,22 @@ if ($module ne "") {
 	}
 	close(FILE);
 }
-
 my $counter = 0;
 my $state   = 0;
 my $center  = -1;
 my @lines;
 my @reglines;
-
 sub InRange {
 	my ($address, $target) = @_;
 	my $ad = "0x".$address;
 	my $ta = "0x".$target;
 	my $delta = Math::BigInt->from_hex($ad) - Math::BigInt->from_hex($ta);
-
 	if (($delta > -4096) && ($delta < 4096)) {
 		return 1;
 	}
 	return 0;
 }
-
-
-
-# first, parse the input into the lines array, but to keep size down,
-# we only do this for 4Kb around the sweet spot
-
 open(FILE, $cross_compile."objdump -dS --adjust-vma=$vmaoffset --start-address=$decodestart --stop-address=$decodestop $filename |") || die "Cannot start objdump";
-
 while (<FILE>) {
 	my $line = $_;
 	chomp($line);
@@ -255,31 +198,23 @@ while (<FILE>) {
 			}
 		}
 		$lines[$counter] = $line;
-
 		$counter = $counter + 1;
 	}
 }
-
 close(FILE);
-
 if ($counter == 0) {
 	print "No matching code found \n";
 	exit;
 }
-
 if ($center == -1) {
 	print "No matching code found \n";
 	exit;
 }
-
 my $start;
 my $finish;
 my $codelines = 0;
 my $binarylines = 0;
-# now we go up and down in the array to find how much we want to print
-
 $start = $center;
-
 while ($start > 1) {
 	$start = $start - 1;
 	my $line = $lines[$start];
@@ -295,8 +230,6 @@ while ($start > 1) {
 		last;
 	}
 }
-
-
 $finish = $center;
 $codelines = 0;
 $binarylines = 0;
@@ -315,22 +248,12 @@ while ($finish < $counter) {
 		last;
 	}
 }
-
-
 my $i;
-
-
-# start annotating the registers in the asm.
-# this goes from the oopsing point back, so that the annotator
-# can track (opportunistically) which registers got written and
-# whos value no longer is relevant.
-
 $i = $center;
 while ($i >= $start) {
 	$reglines[$i] = process_x86_regs($lines[$i], $center - $i);
 	$i = $i - 1;
 }
-
 $i = $start;
 while ($i < $finish) {
 	my $line;
@@ -351,12 +274,10 @@ while ($i < $finish) {
 	print "\n";
 	$i = $i +1;
 }
-
 sub usage {
 	print <<EOT;
 Usage:
   dmesg | perl $0 [OPTION] [VMLINUX]
-
 OPTION:
   -c, --cross-compile CROSS_COMPILE	Specify the prefix used for toolchain.
   -m, --module MODULE_DIRNAME		Specify the module filename.

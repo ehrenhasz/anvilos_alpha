@@ -1,24 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * trace.h - DesignWare USB3 DRD Controller Trace Support
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - https://www.ti.com
- *
- * Author: Felipe Balbi <balbi@ti.com>
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM dwc3
-
 #if !defined(__DWC3_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __DWC3_TRACE_H
-
 #include <linux/types.h>
 #include <linux/tracepoint.h>
 #include <asm/byteorder.h>
 #include "core.h"
 #include "debug.h"
-
 DECLARE_EVENT_CLASS(dwc3_log_io,
 	TP_PROTO(void *base, u32 offset, u32 value),
 	TP_ARGS(base, offset, value),
@@ -37,17 +25,14 @@ DECLARE_EVENT_CLASS(dwc3_log_io,
 		__entry->offset,
 		__entry->value)
 );
-
 DEFINE_EVENT(dwc3_log_io, dwc3_readl,
 	TP_PROTO(void __iomem *base, u32 offset, u32 value),
 	TP_ARGS(base, offset, value)
 );
-
 DEFINE_EVENT(dwc3_log_io, dwc3_writel,
 	TP_PROTO(void __iomem *base, u32 offset, u32 value),
 	TP_ARGS(base, offset, value)
 );
-
 DECLARE_EVENT_CLASS(dwc3_log_event,
 	TP_PROTO(u32 event, struct dwc3 *dwc),
 	TP_ARGS(event, dwc),
@@ -63,12 +48,10 @@ DECLARE_EVENT_CLASS(dwc3_log_event,
 			dwc3_decode_event(__get_buf(DWC3_MSG_MAX), DWC3_MSG_MAX,
 					__entry->event, __entry->ep0state))
 );
-
 DEFINE_EVENT(dwc3_log_event, dwc3_event,
 	TP_PROTO(u32 event, struct dwc3 *dwc),
 	TP_ARGS(event, dwc)
 );
-
 DECLARE_EVENT_CLASS(dwc3_log_ctrl,
 	TP_PROTO(struct usb_ctrlrequest *ctrl),
 	TP_ARGS(ctrl),
@@ -92,12 +75,10 @@ DECLARE_EVENT_CLASS(dwc3_log_ctrl,
 					__entry->wIndex, __entry->wLength)
 	)
 );
-
 DEFINE_EVENT(dwc3_log_ctrl, dwc3_ctrl_req,
 	TP_PROTO(struct usb_ctrlrequest *ctrl),
 	TP_ARGS(ctrl)
 );
-
 DECLARE_EVENT_CLASS(dwc3_log_request,
 	TP_PROTO(struct dwc3_request *req),
 	TP_ARGS(req),
@@ -129,32 +110,26 @@ DECLARE_EVENT_CLASS(dwc3_log_request,
 		__entry->status
 	)
 );
-
 DEFINE_EVENT(dwc3_log_request, dwc3_alloc_request,
 	TP_PROTO(struct dwc3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(dwc3_log_request, dwc3_free_request,
 	TP_PROTO(struct dwc3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(dwc3_log_request, dwc3_ep_queue,
 	TP_PROTO(struct dwc3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(dwc3_log_request, dwc3_ep_dequeue,
 	TP_PROTO(struct dwc3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(dwc3_log_request, dwc3_gadget_giveback,
 	TP_PROTO(struct dwc3_request *req),
 	TP_ARGS(req)
 );
-
 DECLARE_EVENT_CLASS(dwc3_log_generic_cmd,
 	TP_PROTO(unsigned int cmd, u32 param, int status),
 	TP_ARGS(cmd, param, status),
@@ -174,12 +149,10 @@ DECLARE_EVENT_CLASS(dwc3_log_generic_cmd,
 		dwc3_gadget_generic_cmd_status_string(__entry->status)
 	)
 );
-
 DEFINE_EVENT(dwc3_log_generic_cmd, dwc3_gadget_generic_cmd,
 	TP_PROTO(unsigned int cmd, u32 param, int status),
 	TP_ARGS(cmd, param, status)
 );
-
 DECLARE_EVENT_CLASS(dwc3_log_gadget_ep_cmd,
 	TP_PROTO(struct dwc3_ep *dep, unsigned int cmd,
 		struct dwc3_gadget_ep_cmd_params *params, int cmd_status),
@@ -207,13 +180,11 @@ DECLARE_EVENT_CLASS(dwc3_log_gadget_ep_cmd,
 		dwc3_ep_cmd_status_string(__entry->cmd_status)
 	)
 );
-
 DEFINE_EVENT(dwc3_log_gadget_ep_cmd, dwc3_gadget_ep_cmd,
 	TP_PROTO(struct dwc3_ep *dep, unsigned int cmd,
 		struct dwc3_gadget_ep_cmd_params *params, int cmd_status),
 	TP_ARGS(dep, cmd, params, cmd_status)
 );
-
 DECLARE_EVENT_CLASS(dwc3_log_trb,
 	TP_PROTO(struct dwc3_ep *dep, struct dwc3_trb *trb),
 	TP_ARGS(dep, trb),
@@ -244,7 +215,6 @@ DECLARE_EVENT_CLASS(dwc3_log_trb,
 		__entry->dequeue, __entry->bph, __entry->bpl,
 		({char *s;
 		int pcm = ((__entry->size >> 24) & 3) + 1;
-
 		switch (__entry->type) {
 		case USB_ENDPOINT_XFER_INT:
 		case USB_ENDPOINT_XFER_ISOC:
@@ -275,17 +245,14 @@ DECLARE_EVENT_CLASS(dwc3_log_trb,
 		  dwc3_trb_type_string(DWC3_TRBCTL_TYPE(__entry->ctrl))
 	)
 );
-
 DEFINE_EVENT(dwc3_log_trb, dwc3_prepare_trb,
 	TP_PROTO(struct dwc3_ep *dep, struct dwc3_trb *trb),
 	TP_ARGS(dep, trb)
 );
-
 DEFINE_EVENT(dwc3_log_trb, dwc3_complete_trb,
 	TP_PROTO(struct dwc3_ep *dep, struct dwc3_trb *trb),
 	TP_ARGS(dep, trb)
 );
-
 DECLARE_EVENT_CLASS(dwc3_log_ep,
 	TP_PROTO(struct dwc3_ep *dep),
 	TP_ARGS(dep),
@@ -324,25 +291,17 @@ DECLARE_EVENT_CLASS(dwc3_log_ep,
 		__entry->direction ? '<' : '>'
 	)
 );
-
 DEFINE_EVENT(dwc3_log_ep, dwc3_gadget_ep_enable,
 	TP_PROTO(struct dwc3_ep *dep),
 	TP_ARGS(dep)
 );
-
 DEFINE_EVENT(dwc3_log_ep, dwc3_gadget_ep_disable,
 	TP_PROTO(struct dwc3_ep *dep),
 	TP_ARGS(dep)
 );
-
-#endif /* __DWC3_TRACE_H */
-
-/* this part has to be here */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
-
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
-
 #include <trace/define_trace.h>

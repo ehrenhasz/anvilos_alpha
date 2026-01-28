@@ -1,29 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright (c) 2010-2012 Broadcom. All rights reserved. */
-
 #ifndef VCHIQ_H
 #define VCHIQ_H
-
 #define VCHIQ_MAKE_FOURCC(x0, x1, x2, x3) \
 			(((x0) << 24) | ((x1) << 16) | ((x2) << 8) | (x3))
-
 enum vchiq_reason {
-	VCHIQ_SERVICE_OPENED,         /* service, -, -             */
-	VCHIQ_SERVICE_CLOSED,         /* service, -, -             */
-	VCHIQ_MESSAGE_AVAILABLE,      /* service, header, -        */
-	VCHIQ_BULK_TRANSMIT_DONE,     /* service, -, bulk_userdata */
-	VCHIQ_BULK_RECEIVE_DONE,      /* service, -, bulk_userdata */
-	VCHIQ_BULK_TRANSMIT_ABORTED,  /* service, -, bulk_userdata */
-	VCHIQ_BULK_RECEIVE_ABORTED    /* service, -, bulk_userdata */
+	VCHIQ_SERVICE_OPENED,          
+	VCHIQ_SERVICE_CLOSED,          
+	VCHIQ_MESSAGE_AVAILABLE,       
+	VCHIQ_BULK_TRANSMIT_DONE,      
+	VCHIQ_BULK_RECEIVE_DONE,       
+	VCHIQ_BULK_TRANSMIT_ABORTED,   
+	VCHIQ_BULK_RECEIVE_ABORTED     
 };
-
 enum vchiq_bulk_mode {
 	VCHIQ_BULK_MODE_CALLBACK,
 	VCHIQ_BULK_MODE_BLOCKING,
 	VCHIQ_BULK_MODE_NOCALLBACK,
-	VCHIQ_BULK_MODE_WAITING		/* Reserved for internal use */
+	VCHIQ_BULK_MODE_WAITING		 
 };
-
 enum vchiq_service_option {
 	VCHIQ_SERVICE_OPTION_AUTOCLOSE,
 	VCHIQ_SERVICE_OPTION_SLOT_QUOTA,
@@ -31,24 +24,16 @@ enum vchiq_service_option {
 	VCHIQ_SERVICE_OPTION_SYNCHRONOUS,
 	VCHIQ_SERVICE_OPTION_TRACE
 };
-
 struct vchiq_header {
-	/* The message identifier - opaque to applications. */
 	int msgid;
-
-	/* Size of message data. */
 	unsigned int size;
-
-	char data[];           /* message */
+	char data[];            
 };
-
 struct vchiq_element {
 	const void __user *data;
 	unsigned int size;
 };
-
 struct vchiq_instance;
-
 struct vchiq_service_base {
 	int fourcc;
 	int (*callback)(struct vchiq_instance *instance,
@@ -58,14 +43,12 @@ struct vchiq_service_base {
 			void *bulk_userdata);
 	void *userdata;
 };
-
 struct vchiq_completion_data_kernel {
 	enum vchiq_reason reason;
 	struct vchiq_header *header;
 	void *service_userdata;
 	void *bulk_userdata;
 };
-
 struct vchiq_service_params_kernel {
 	int fourcc;
 	int (*callback)(struct vchiq_instance *instance,
@@ -74,10 +57,9 @@ struct vchiq_service_params_kernel {
 			unsigned int handle,
 			void *bulk_userdata);
 	void *userdata;
-	short version;       /* Increment for non-trivial changes */
-	short version_min;   /* Update for incompatible changes */
+	short version;        
+	short version_min;    
 };
-
 extern int vchiq_initialise(struct vchiq_instance **pinstance);
 extern int vchiq_shutdown(struct vchiq_instance *instance);
 extern int vchiq_connect(struct vchiq_instance *instance);
@@ -105,5 +87,4 @@ extern void *vchiq_get_service_userdata(struct vchiq_instance *instance, unsigne
 extern int vchiq_get_peer_version(struct vchiq_instance *instance, unsigned int handle,
 				  short *peer_version);
 extern struct vchiq_header *vchiq_msg_hold(struct vchiq_instance *instance, unsigned int handle);
-
-#endif /* VCHIQ_H */
+#endif  

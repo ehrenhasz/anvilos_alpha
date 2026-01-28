@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2016 Intel Corporation.
- */
-
 #ifndef DEF_RVTQP_H
 #define DEF_RVTQP_H
-
 #include <rdma/rdmavt_qp.h>
-
 int rvt_driver_qp_init(struct rvt_dev_info *rdi);
 void rvt_qp_exit(struct rvt_dev_info *rdi);
 int rvt_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *init_attr,
@@ -27,4 +20,4 @@ int rvt_wss_init(struct rvt_dev_info *rdi);
 void rvt_wss_exit(struct rvt_dev_info *rdi);
 int rvt_alloc_rq(struct rvt_rq *rq, u32 size, int node,
 		 struct ib_udata *udata);
-#endif          /* DEF_RVTQP_H */
+#endif           

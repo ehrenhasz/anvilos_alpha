@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rt1011.h -- RT1011 ALSA SoC amplifier component driver header
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- */
-
 #ifndef _RT1011_H_
 #define _RT1011_H_
-
 #define RT1011_DEVICE_ID_NUM 0x1011
-
 #define RT1011_RESET				0x0000
 #define RT1011_CLK_1				0x0002
 #define RT1011_CLK_2				0x0004
@@ -175,7 +166,6 @@
 #define RT1011_BQ_PRE_GAIN_15_0		0x0711
 #define RT1011_BQ_POST_GAIN_28_16	0x0712
 #define RT1011_BQ_POST_GAIN_15_0	0x0713
-
 #define RT1011_BQ_H0_28_16					0x0720
 #define RT1011_BQ_A2_15_0						0x0729
 #define RT1011_BQ_1_H0_28_16					0x0730
@@ -298,9 +288,6 @@
 #define RT1011_EFUSE_READ_R0_3_15_0		0x1803
 #define RT1011_MAX_REG				0x1803
 #define RT1011_REG_DISP_LEN 23
-
-
-/* CLOCK-2 (0x0004) */
 #define RT1011_FS_SYS_PRE_MASK			(0x3 << 14)
 #define RT1011_FS_SYS_PRE_SFT			14
 #define RT1011_FS_SYS_PRE_MCLK			(0x0 << 14)
@@ -321,8 +308,6 @@
 #define RT1011_SRCIN_DIV_SFT			8
 #define RT1011_FS_SYS_DIV_MASK			(0x7 << 4)
 #define RT1011_FS_SYS_DIV_SFT			4
-
-/* PLL-1 (0x000a) */
 #define RT1011_PLL1_QM_MASK			(0xf << 12)
 #define RT1011_PLL1_QM_SFT			12
 #define RT1011_PLL1_BPM_MASK			(0x1 << 11)
@@ -330,34 +315,22 @@
 #define RT1011_PLL1_BPM			(0x1 << 11)
 #define RT1011_PLL1_QN_MASK			(0x1ff << 0)
 #define RT1011_PLL1_QN_SFT			0
-
-/* PLL-2 (0x000c) */
 #define RT1011_PLL2_BPK_MASK			(0x1 << 5)
 #define RT1011_PLL2_BPK_SFT			5
 #define RT1011_PLL2_BPK			(0x1 << 5)
 #define RT1011_PLL2_QK_MASK			(0x1f << 0)
 #define RT1011_PLL2_QK_SFT			0
-
-/* Clock Detect (0x0020) */
 #define RT1011_EN_MCLK_DET_MASK			(0x1 << 15)
 #define RT1011_EN_MCLK_DET_SFT			15
 #define RT1011_EN_MCLK_DET			(0x1 << 15)
-
-/* DAC Setting-2 (0x0104) */
 #define RT1011_EN_CKGEN_DAC_MASK			(0x1 << 13)
 #define RT1011_EN_CKGEN_DAC_SFT			13
 #define RT1011_EN_CKGEN_DAC			(0x1 << 13)
-
-/* DAC Setting-3 (0x0106) */
 #define RT1011_DA_MUTE_EN_MASK			(0x1 << 15)
 #define RT1011_DA_MUTE_EN_SFT			15
-
-/* ADC Setting-5 (0x0110) */
 #define RT1011_AD_EN_CKGEN_ADC_MASK			(0x1 << 9)
 #define RT1011_AD_EN_CKGEN_ADC_SFT			9
 #define RT1011_AD_EN_CKGEN_ADC			(0x1 << 9)
-
-/* TDM Total Setting (0x0111) */
 #define RT1011_I2S_TDM_MS_MASK			(0x1 << 14)
 #define RT1011_I2S_TDM_MS_SFT			14
 #define RT1011_I2S_TDM_MS_S			(0x0 << 14)
@@ -390,8 +363,6 @@
 #define RT1011_I2S_TDM_DF_PCM_B			(0x3)
 #define RT1011_I2S_TDM_DF_PCM_A_N			(0x6)
 #define RT1011_I2S_TDM_DF_PCM_B_N			(0x7)
-
-/* TDM_tcon Setting (0x0112) */
 #define RT1011_TCON_DF_MASK			(0x7 << 13)
 #define RT1011_TCON_DF_SFT			13
 #define RT1011_TCON_DF_I2S			(0x0 << 13)
@@ -415,8 +386,6 @@
 #define RT1011_TCON_BCLK_MST_MASK			(0x1 << 4)
 #define RT1011_TCON_BCLK_MST_SFT			4
 #define RT1011_TCON_BCLK_MST_INV		(0x1 << 4)
-
-/* TDM1 Setting-1 (0x0114) */
 #define RT1011_TDM_INV_BCLK_MASK			(0x1 << 15)
 #define RT1011_TDM_INV_BCLK_SFT			15
 #define RT1011_TDM_INV_BCLK		(0x1 << 15)
@@ -450,8 +419,6 @@
 #define RT1011_I2S_CH_RX_LEN_24B			(0x2 << 0)
 #define RT1011_I2S_CH_RX_LEN_32B			(0x3 << 0)
 #define RT1011_I2S_CH_RX_LEN_8B			(0x4 << 0)
-
-/* TDM1 Setting-2 (0x0116) */
 #define RT1011_TDM_I2S_DOCK_ADCDAT_LEN_1_MASK			(0x7 << 13)
 #define RT1011_TDM_I2S_DOCK_ADCDAT_2CH			(0x1 << 13)
 #define RT1011_TDM_I2S_DOCK_ADCDAT_4CH			(0x3 << 13)
@@ -461,8 +428,6 @@
 #define RT1011_TDM_I2S_DOCK_EN_1_SFT			3
 #define RT1011_TDM_I2S_DOCK_EN_1		(0x1 << 3)
 #define RT1011_TDM_ADCDAT1_DATA_LOCATION			(0x7 << 0)
-
-/* TDM1 Setting-3 (0x0118) */
 #define RT1011_TDM_I2S_RX_ADC1_1_MASK			(0x3 << 6)
 #define RT1011_TDM_I2S_RX_ADC2_1_MASK			(0x3 << 4)
 #define RT1011_TDM_I2S_RX_ADC3_1_MASK			(0x3 << 2)
@@ -471,20 +436,14 @@
 #define RT1011_TDM_I2S_RX_ADC2_1_LL			(0x2 << 4)
 #define RT1011_TDM_I2S_RX_ADC3_1_LL			(0x2 << 2)
 #define RT1011_TDM_I2S_RX_ADC4_1_LL			(0x2 << 0)
-
-/* TDM1 Setting-4 (0x011a) */
 #define RT1011_TDM_I2S_TX_L_DAC1_1_MASK			(0x7 << 12)
 #define RT1011_TDM_I2S_TX_R_DAC1_1_MASK			(0x7 << 8)
 #define RT1011_TDM_I2S_TX_L_DAC1_1_SFT 12
 #define RT1011_TDM_I2S_TX_R_DAC1_1_SFT 8
-
-/* TDM2 Setting-2 (0x0120) */
 #define RT1011_TDM_I2S_DOCK_ADCDAT_LEN_2_MASK			(0x7 << 13)
 #define RT1011_TDM_I2S_DOCK_EN_2_MASK			(0x1 << 3)
 #define RT1011_TDM_I2S_DOCK_EN_2_SFT			3
 #define RT1011_TDM_I2S_DOCK_EN_2		(0x1 << 3)
-
-/* MIXER 1 (0x0300) */
 #define RT1011_MIXER_MUTE_MIX_I_MASK			(0x1 << 15)
 #define RT1011_MIXER_MUTE_MIX_I_SFT			15
 #define RT1011_MIXER_MUTE_MIX_I		(0x1 << 15)
@@ -497,12 +456,8 @@
 #define RT1011_MIXER_MUTE_SUM_V_MASK			(0x1 << 6)
 #define RT1011_MIXER_MUTE_SUM_V_SFT			6
 #define RT1011_MIXER_MUTE_SUM_V		(0x1 << 6)
-
-/* Analog Temperature Sensor (0x0316) */
 #define RT1011_POW_TEMP_REG				(0x1 << 2)
 #define RT1011_POW_TEMP_REG_BIT			2
-
-/* POWER-1 (0x0322) */
 #define RT1011_POW_LDO2				(0x1 << 15)
 #define RT1011_POW_LDO2_BIT			15
 #define RT1011_POW_DAC				(0x1 << 14)
@@ -519,16 +474,12 @@
 #define RT1011_POW_VSENSE_SPK_BIT			5
 #define RT1011_POW_TWO_BATTERY_SPK				(0x1 << 4)
 #define RT1011_POW_TWO_BATTERY_SPK_BIT			4
-
-/* POWER-2 (0x0324) */
 #define RT1011_PLLEN				(0x1 << 2)
 #define RT1011_PLLEN_BIT			2
 #define RT1011_POW_BG				(0x1 << 1)
 #define RT1011_POW_BG_BIT			1
 #define RT1011_POW_BG_MBIAS_LV				(0x1 << 0)
 #define RT1011_POW_BG_MBIAS_LV_BIT		0
-
-/* POWER-3 (0x0326) */
 #define RT1011_POW_DET_SPKVDD			(0x1 << 15)
 #define RT1011_POW_DET_SPKVDD_BIT		15
 #define RT1011_POW_DET_VBAT				(0x1 << 14)
@@ -559,16 +510,12 @@
 #define RT1011_BYPASS_MIX_T_BIT			1
 #define RT1011_POW_VREF_LV				(0x1 << 0)
 #define RT1011_POW_VREF_LV_BIT			0
-
-/* POWER-4 (0x0328) */
 #define RT1011_POW_EN_SWR			(0x1 << 12)
 #define RT1011_POW_EN_SWR_BIT		12
 #define RT1011_POW_EN_PASS_BGOK_SWR			(0x1 << 10)
 #define RT1011_POW_EN_PASS_BGOK_SWR_BIT		10
 #define RT1011_POW_EN_PASS_VPOK_SWR			(0x1 << 9)
 #define RT1011_POW_EN_PASS_VPOK_SWR_BIT		9
-
-/* POWER-9 (0x032d) */
 #define RT1011_POW_SDB_REG_MASK			(0x1 << 9)
 #define RT1011_POW_SDB_REG_BIT		9
 #define RT1011_POW_SDB_REG		(0x1 << 9)
@@ -578,89 +525,64 @@
 #define RT1011_POW_MNL_SDB_MASK			(0x1 << 5)
 #define RT1011_POW_MNL_SDB_BIT		5
 #define RT1011_POW_MNL_SDB		(0x1 << 5)
-
-/* SPK Protection-Temperature Protection (0x050c) */
 #define RT1011_STP_EN_MASK			(0x1 << 15)
 #define RT1011_STP_EN_BIT		15
 #define RT1011_STP_EN		(0x1 << 15)
 #define RT1011_STP_RS_CLB_EN_MASK			(0x1 << 14)
 #define RT1011_STP_RS_CLB_EN_BIT		14
 #define RT1011_STP_RS_CLB_EN		(0x1 << 14)
-
-/* SPK Protection-Temperature Protection-4 (0x0510) */
 #define RT1011_STP_R0_SELECT_MASK			(0x3 << 6)
 #define RT1011_STP_R0_SELECT_EFUSE			(0x0 << 6)
 #define RT1011_STP_R0_SELECT_START_VAL	(0x1 << 6)
 #define RT1011_STP_R0_SELECT_REG			(0x2 << 6)
 #define RT1011_STP_R0_SELECT_FORCE_ZERO	(0x3 << 6)
-
-/* SPK Protection-Temperature Protection-6 (0x0512) */
 #define RT1011_STP_R0_EN_MASK			(0x1 << 7)
 #define RT1011_STP_R0_EN_BIT		7
 #define RT1011_STP_R0_EN		(0x1 << 7)
 #define RT1011_STP_T0_EN_MASK			(0x1 << 6)
 #define RT1011_STP_T0_EN_BIT		6
 #define RT1011_STP_T0_EN		(0x1 << 6)
-
-/* Cross Biquad Setting-1 (0x0702) */
 #define RT1011_MONO_LR_SEL_MASK			(0x3 << 5)
 #define RT1011_MONO_L_CHANNEL			(0x0 << 5)
 #define RT1011_MONO_R_CHANNEL			(0x1 << 5)
 #define RT1011_MONO_LR_MIX_CHANNEL			(0x2 << 5)
-
-/* ClassD Internal Setting-1 (0x1300) */
 #define RT1011_DRIVER_READY_SPK			(0x1 << 12)
 #define RT1011_DRIVER_READY_SPK_BIT		12
 #define RT1011_RECV_MODE_SPK_MASK			(0x1 << 5)
 #define RT1011_SPK_MODE			(0x0 << 5)
 #define RT1011_RECV_MODE			(0x1 << 5)
 #define RT1011_RECV_MODE_SPK_BIT		5
-
-/* ClassD Internal Setting-3 (0x1304) */
 #define RT1011_REG_GAIN_CLASSD_RI_SPK_MASK			(0x7 << 12)
 #define RT1011_REG_GAIN_CLASSD_RI_410K (0x0 << 12)
 #define RT1011_REG_GAIN_CLASSD_RI_95K (0x1 << 12)
 #define RT1011_REG_GAIN_CLASSD_RI_82P5K (0x2 << 12)
 #define RT1011_REG_GAIN_CLASSD_RI_72P5K (0x3 << 12)
 #define RT1011_REG_GAIN_CLASSD_RI_62P5K (0x4 << 12)
-
-/* ClassD Internal Setting-8 (0x130c) */
 #define RT1011_TM_PORPVDD_SPK		(0x1 << 1)
 #define RT1011_TM_PORPVDD_SPK_BIT		1
-
-/* SPK Protection-Temperature Protection-SINE_GEN_REG-1 (0x1500) */
 #define RT1011_STP_SIN_GEN_EN_MASK (0x1 << 13)
 #define RT1011_STP_SIN_GEN_EN		(0x1 << 13)
 #define RT1011_STP_SIN_GEN_EN_BIT		13
-
-
-/* System Clock Source */
 enum {
 	RT1011_FS_SYS_PRE_S_MCLK,
 	RT1011_FS_SYS_PRE_S_BCLK,
 	RT1011_FS_SYS_PRE_S_PLL1,
-	RT1011_FS_SYS_PRE_S_RCCLK,	/* 12M Hz */
+	RT1011_FS_SYS_PRE_S_RCCLK,	 
 };
-
-/* PLL Source 1/2 */
 enum {
 	RT1011_PLL1_S_BCLK,
 	RT1011_PLL2_S_MCLK,
-	RT1011_PLL2_S_RCCLK,	/* 12M Hz */
+	RT1011_PLL2_S_RCCLK,	 
 };
-
 enum {
 	RT1011_AIF1,
 	RT1011_AIFS
 };
-
 enum {
 	RT1011_I2S_REF_NONE,
 	RT1011_I2S_REF_LEFT_CH,
 	RT1011_I2S_REF_RIGHT_CH,
 };
-
-/* BiQual & DRC related settings */
 #define RT1011_BQ_DRC_NUM 128
 struct rt1011_bq_drc_params {
 	unsigned short val;
@@ -677,28 +599,23 @@ enum {
 	RT1011_ADVMODE_SMARTBOOST_COEFF,
 	RT1011_ADVMODE_NUM,
 };
-
 struct rt1011_priv {
 	struct snd_soc_component *component;
 	struct regmap *regmap;
 	struct work_struct cali_work;
 	struct rt1011_bq_drc_params **bq_drc_params;
-
 	int sysclk;
 	int sysclk_src;
 	int lrck;
 	int bclk;
 	int id;
-
 	int pll_src;
 	int pll_in;
 	int pll_out;
-
 	int bq_drc_set;
 	unsigned int r0_reg, cali_done;
 	unsigned int r0_calib, temperature_calib;
 	int recv_spk_mode;
 	int i2s_ref;
 };
-
-#endif		/* end of _RT1011_H_ */
+#endif		 

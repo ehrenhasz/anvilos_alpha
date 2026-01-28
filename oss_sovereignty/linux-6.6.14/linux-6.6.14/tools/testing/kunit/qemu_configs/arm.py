@@ -1,5 +1,4 @@
 from ..qemu_config import QemuArchParams
-
 QEMU_ARCH = QemuArchParams(linux_arch='arm',
 			   kconfig='''
 CONFIG_ARCH_VIRT=y

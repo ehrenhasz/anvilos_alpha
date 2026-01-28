@@ -1,20 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2011 Zhang, Keguang <keguang.zhang@gmail.com>
- *
- * Register mappings for Loongson 1
- */
-
 #ifndef __ASM_MACH_LOONGSON32_LOONGSON1_H
 #define __ASM_MACH_LOONGSON32_LOONGSON1_H
-
 #if defined(CONFIG_LOONGSON1_LS1B)
-#define DEFAULT_MEMSIZE			64	/* If no memsize provided */
+#define DEFAULT_MEMSIZE			64	 
 #elif defined(CONFIG_LOONGSON1_LS1C)
 #define DEFAULT_MEMSIZE			32
 #endif
-
-/* Loongson 1 Register Bases */
 #define LS1X_MUX_BASE			0x1fd00420
 #define LS1X_INTC_BASE			0x1fd01040
 #define LS1X_GPIO0_BASE			0x1fd010c0
@@ -25,7 +15,6 @@
 #define LS1X_OHCI_BASE			0x1fe08000
 #define LS1X_GMAC0_BASE			0x1fe10000
 #define LS1X_GMAC1_BASE			0x1fe20000
-
 #define LS1X_UART0_BASE			0x1fe40000
 #define LS1X_UART1_BASE			0x1fe44000
 #define LS1X_UART2_BASE			0x1fe48000
@@ -44,7 +33,5 @@
 #define LS1X_AC97_BASE			0x1fe74000
 #define LS1X_NAND_BASE			0x1fe78000
 #define LS1X_CLK_BASE			0x1fe78030
-
 #include <regs-mux.h>
-
-#endif /* __ASM_MACH_LOONGSON32_LOONGSON1_H */
+#endif  

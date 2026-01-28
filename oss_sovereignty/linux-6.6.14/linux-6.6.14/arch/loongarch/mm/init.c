@@ -1,7 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
- */
 #include <linux/init.h>
 #include <linux/export.h>
 #include <linux/signal.h>
@@ -24,7 +20,6 @@
 #include <linux/gfp.h>
 #include <linux/hugetlb.h>
 #include <linux/mmzone.h>
-
 #include <asm/asm-offsets.h>
 #include <asm/bootinfo.h>
 #include <asm/cpu.h>
@@ -34,36 +29,28 @@
 #include <asm/pgtable.h>
 #include <asm/pgalloc.h>
 #include <asm/tlb.h>
-
 unsigned long empty_zero_page[PAGE_SIZE / sizeof(unsigned long)] __page_aligned_bss;
 EXPORT_SYMBOL(empty_zero_page);
-
 void copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
 {
 	void *vfrom, *vto;
-
 	vfrom = kmap_local_page(from);
 	vto = kmap_local_page(to);
 	copy_page(vto, vfrom);
 	kunmap_local(vfrom);
 	kunmap_local(vto);
-	/* Make sure this page is cleared on other CPU's too before using it */
 	smp_wmb();
 }
-
 int __ref page_is_ram(unsigned long pfn)
 {
 	unsigned long addr = PFN_PHYS(pfn);
-
 	return memblock_is_memory(addr) && !memblock_is_reserved(addr);
 }
-
 #ifndef CONFIG_NUMA
 void __init paging_init(void)
 {
 	unsigned long max_zone_pfns[MAX_NR_ZONES];
-
 #ifdef CONFIG_ZONE_DMA
 	max_zone_pfns[ZONE_DMA] = MAX_DMA_PFN;
 #endif
@@ -71,52 +58,40 @@ void __init paging_init(void)
 	max_zone_pfns[ZONE_DMA32] = MAX_DMA32_PFN;
 #endif
 	max_zone_pfns[ZONE_NORMAL] = max_low_pfn;
-
 	free_area_init(max_zone_pfns);
 }
-
 void __init mem_init(void)
 {
 	max_mapnr = max_low_pfn;
 	high_memory = (void *) __va(max_low_pfn << PAGE_SHIFT);
-
 	memblock_free_all();
 }
-#endif /* !CONFIG_NUMA */
-
+#endif  
 void __ref free_initmem(void)
 {
 	free_initmem_default(POISON_FREE_INITMEM);
 }
-
 #ifdef CONFIG_MEMORY_HOTPLUG
 int arch_add_memory(int nid, u64 start, u64 size, struct mhp_params *params)
 {
 	unsigned long start_pfn = start >> PAGE_SHIFT;
 	unsigned long nr_pages = size >> PAGE_SHIFT;
 	int ret;
-
 	ret = __add_pages(nid, start_pfn, nr_pages, params);
-
 	if (ret)
 		pr_warn("%s: Problem encountered in __add_pages() as ret=%d\n",
 				__func__,  ret);
-
 	return ret;
 }
-
 void arch_remove_memory(u64 start, u64 size, struct vmem_altmap *altmap)
 {
 	unsigned long start_pfn = start >> PAGE_SHIFT;
 	unsigned long nr_pages = size >> PAGE_SHIFT;
 	struct page *page = pfn_to_page(start_pfn);
-
-	/* With altmap the first mapped page is offset from @start */
 	if (altmap)
 		page += vmem_altmap_offset(altmap);
 	__remove_pages(start_pfn, nr_pages, altmap);
 }
-
 #ifdef CONFIG_NUMA
 int memory_add_physaddr_to_nid(u64 start)
 {
@@ -125,29 +100,23 @@ int memory_add_physaddr_to_nid(u64 start)
 EXPORT_SYMBOL_GPL(memory_add_physaddr_to_nid);
 #endif
 #endif
-
 #ifdef CONFIG_SPARSEMEM_VMEMMAP
 void __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
 			       unsigned long addr, unsigned long next)
 {
 	pmd_t entry;
-
 	entry = pfn_pmd(virt_to_pfn(p), PAGE_KERNEL);
 	pmd_val(entry) |= _PAGE_HUGE | _PAGE_HGLOBAL;
 	set_pmd_at(&init_mm, addr, pmd, entry);
 }
-
 int __meminit vmemmap_check_pmd(pmd_t *pmd, int node,
 				unsigned long addr, unsigned long next)
 {
 	int huge = pmd_val(*pmd) & _PAGE_HUGE;
-
 	if (huge)
 		vmemmap_verify((pte_t *)pmd, node, addr, next);
-
 	return huge;
 }
-
 int __meminit vmemmap_populate(unsigned long start, unsigned long end,
 			       int node, struct vmem_altmap *altmap)
 {
@@ -157,21 +126,18 @@ int __meminit vmemmap_populate(unsigned long start, unsigned long end,
 	return vmemmap_populate_hugepages(start, end, node, NULL);
 #endif
 }
-
 #ifdef CONFIG_MEMORY_HOTPLUG
 void vmemmap_free(unsigned long start, unsigned long end, struct vmem_altmap *altmap)
 {
 }
 #endif
 #endif
-
 pte_t * __init populate_kernel_pte(unsigned long addr)
 {
 	pgd_t *pgd = pgd_offset_k(addr);
 	p4d_t *p4d = p4d_offset(pgd, addr);
 	pud_t *pud;
 	pmd_t *pmd;
-
 	if (p4d_none(*p4d)) {
 		pud = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
 		if (!pud)
@@ -181,7 +147,6 @@ pte_t * __init populate_kernel_pte(unsigned long addr)
 		pud_init(pud);
 #endif
 	}
-
 	pud = pud_offset(p4d, addr);
 	if (pud_none(*pud)) {
 		pmd = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
@@ -192,34 +157,27 @@ pte_t * __init populate_kernel_pte(unsigned long addr)
 		pmd_init(pmd);
 #endif
 	}
-
 	pmd = pmd_offset(pud, addr);
 	if (!pmd_present(*pmd)) {
 		pte_t *pte;
-
 		pte = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
 		if (!pte)
 			panic("%s: Failed to allocate memory\n", __func__);
 		pmd_populate_kernel(&init_mm, pmd, pte);
 	}
-
 	return pte_offset_kernel(pmd, addr);
 }
-
 void __init __set_fixmap(enum fixed_addresses idx,
 			       phys_addr_t phys, pgprot_t flags)
 {
 	unsigned long addr = __fix_to_virt(idx);
 	pte_t *ptep;
-
 	BUG_ON(idx <= FIX_HOLE || idx >= __end_of_fixed_addresses);
-
 	ptep = populate_kernel_pte(addr);
 	if (!pte_none(*ptep)) {
 		pte_ERROR(*ptep);
 		return;
 	}
-
 	if (pgprot_val(flags))
 		set_pte(ptep, pfn_pte(phys >> PAGE_SHIFT, flags));
 	else {
@@ -227,16 +185,7 @@ void __init __set_fixmap(enum fixed_addresses idx,
 		flush_tlb_kernel_range(addr, addr + PAGE_SIZE);
 	}
 }
-
-/*
- * Align swapper_pg_dir in to 64K, allows its address to be loaded
- * with a single LUI instruction in the TLB handlers.  If we used
- * __aligned(64K), its size would get rounded up to the alignment
- * size, and waste space.  So we place it in its own section and align
- * it in the linker script.
- */
 pgd_t swapper_pg_dir[_PTRS_PER_PGD] __section(".bss..swapper_pg_dir");
-
 pgd_t invalid_pg_dir[_PTRS_PER_PGD] __page_aligned_bss;
 #ifndef __PAGETABLE_PUD_FOLDED
 pud_t invalid_pud_table[PTRS_PER_PUD] __page_aligned_bss;

@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * intel_pt.h: Intel Processor Trace support
- * Copyright (c) 2013-2015, Intel Corporation.
- */
-
 #ifndef INCLUDE__PERF_INTEL_PT_H__
 #define INCLUDE__PERF_INTEL_PT_H__
-
 #define INTEL_PT_PMU_NAME "intel_pt"
-
 enum {
 	INTEL_PT_PMU_TYPE,
 	INTEL_PT_TIME_SHIFT,
@@ -29,19 +21,14 @@ enum {
 	INTEL_PT_FILTER_STR_LEN,
 	INTEL_PT_AUXTRACE_PRIV_MAX,
 };
-
 struct auxtrace_record;
 struct perf_tool;
 union perf_event;
 struct perf_session;
 struct perf_event_attr;
 struct perf_pmu;
-
 struct auxtrace_record *intel_pt_recording_init(int *err);
-
 int intel_pt_process_auxtrace_info(union perf_event *event,
 				   struct perf_session *session);
-
 struct perf_event_attr *intel_pt_pmu_default_config(struct perf_pmu *pmu);
-
 #endif

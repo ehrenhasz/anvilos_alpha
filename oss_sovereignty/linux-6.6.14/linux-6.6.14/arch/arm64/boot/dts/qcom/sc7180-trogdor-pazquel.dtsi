@@ -1,13 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Google Pazquel board device tree source
- *
- * Copyright 2021 Google LLC.
- */
-
-/* This file must be included after sc7180-trogdor.dtsi */
 #include <arm/cros-ec-keyboard.dtsi>
-
 &ap_sar_sensor {
 	compatible = "semtech,sx9324";
 	semtech,ph0-pin = <1 3 3>;
@@ -22,11 +13,9 @@
 	semtech,avg-pos-strength = <128>;
 	semtech,input-analog-gain = <0>;
 	semtech,cs-idle-sleep = "gnd";
-
 	/delete-property/ svdd-supply;
 	vdd-supply = <&pp1800_prox>;
 };
-
 /delete-node/&trackpad;
 &ap_tp_i2c {
 	status = "okay";
@@ -35,30 +24,26 @@
 		reg = <0x15>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&tp_int_odl>;
-
 		interrupt-parent = <&tlmm>;
 		interrupts = <0 IRQ_TYPE_EDGE_FALLING>;
-
 		vdd-supply = <&pp3300_fp_tp>;
 		post-power-on-delay-ms = <100>;
 		hid-descr-addr = <0x0001>;
-
 		wakeup-source;
 	};
 };
-
 &keyboard_controller {
 	function-row-physmap = <
-		MATRIX_KEY(0x00, 0x02, 0)	/* T1 */
-		MATRIX_KEY(0x03, 0x02, 0)	/* T2 */
-		MATRIX_KEY(0x02, 0x02, 0)	/* T3 */
-		MATRIX_KEY(0x01, 0x02, 0)	/* T4 */
-		MATRIX_KEY(0x03, 0x04, 0)	/* T5 */
-		MATRIX_KEY(0x02, 0x04, 0)	/* T6 */
-		MATRIX_KEY(0x01, 0x04, 0)	/* T7 */
-		MATRIX_KEY(0x02, 0x09, 0)	/* T8 */
-		MATRIX_KEY(0x01, 0x09, 0)	/* T9 */
-		MATRIX_KEY(0x00, 0x04, 0)	/* T10 */
+		MATRIX_KEY(0x00, 0x02, 0)	 
+		MATRIX_KEY(0x03, 0x02, 0)	 
+		MATRIX_KEY(0x02, 0x02, 0)	 
+		MATRIX_KEY(0x01, 0x02, 0)	 
+		MATRIX_KEY(0x03, 0x04, 0)	 
+		MATRIX_KEY(0x02, 0x04, 0)	 
+		MATRIX_KEY(0x01, 0x04, 0)	 
+		MATRIX_KEY(0x02, 0x09, 0)	 
+		MATRIX_KEY(0x01, 0x09, 0)	 
+		MATRIX_KEY(0x00, 0x04, 0)	 
 	>;
 	linux,keymap = <
 		MATRIX_KEY(0x00, 0x02, KEY_BACK)
@@ -74,21 +59,15 @@
 		CROS_STD_MAIN_KEYMAP
 	>;
 };
-
 &panel {
 	compatible = "edp-panel";
 };
-
 &pp3300_dx_edp {
 	gpio = <&tlmm 67 GPIO_ACTIVE_HIGH>;
 };
-
 &en_pp3300_dx_edp {
 	pins = "gpio67";
 };
-
-/* PINCTRL - board-specific pinctrl */
-
 &tlmm {
 	gpio-line-names = "TP_INT_ODL",
 			  "AP_RAM_ID0",
@@ -156,10 +135,6 @@
 			  "AP_SPI_CLK",
 			  "AP_SPI_MOSI",
 			  "AP_SPI_MISO",
-			  /*
-			   * AP_FLASH_WP_L is crossystem ABI. Schematics
-			   * call it BIOS_FLASH_WP_L.
-			   */
 			  "AP_FLASH_WP_L",
 			  "EN_PP3300_DX_EDP",
 			  "AP_SPI_CS0_L",

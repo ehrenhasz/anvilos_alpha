@@ -1,22 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2019 Akash Gajjar <Akash_Gajjar@mentor.com>
- * Copyright (c) 2019 Pragnesh Patel <Pragnesh_Patel@mentor.com>
- */
-
 /dts-v1/;
 #include "rk3399-rock-pi-4.dtsi"
 #include "rk3399-t-opp.dtsi"
-
 / {
 	model = "Radxa ROCK 4SE";
 	compatible = "radxa,rock-4se", "rockchip,rk3399";
-
 	aliases {
 		mmc2 = &sdio0;
 	};
 };
-
 &pinctrl {
 	usb2 {
 		vcc5v0_host_en: vcc5v0-host-en {
@@ -24,10 +15,8 @@
 		};
 	};
 };
-
 &sdio0 {
 	status = "okay";
-
 	brcmf: wifi@1 {
 		compatible = "brcm,bcm4329-fmac";
 		reg = <1>;
@@ -38,10 +27,8 @@
 		pinctrl-0 = <&wifi_host_wake_l>;
 	};
 };
-
 &uart0 {
 	status = "okay";
-
 	bluetooth {
 		compatible = "brcm,bcm4345c5";
 		clocks = <&rk808 1>;
@@ -56,7 +43,6 @@
 		vddio-supply = <&vcc_1v8>;
 	};
 };
-
 &vcc5v0_host {
 	enable-active-high;
 	gpio = <&gpio4 RK_PD1 GPIO_ACTIVE_HIGH>;

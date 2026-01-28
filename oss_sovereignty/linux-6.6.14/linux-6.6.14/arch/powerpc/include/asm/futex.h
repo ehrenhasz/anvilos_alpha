@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_POWERPC_FUTEX_H
 #define _ASM_POWERPC_FUTEX_H
-
 #ifdef __KERNEL__
-
 #include <linux/futex.h>
 #include <linux/uaccess.h>
 #include <asm/errno.h>
 #include <asm/synch.h>
-
 #define __futex_atomic_op(insn, ret, oldval, uaddr, oparg) \
   __asm__ __volatile ( \
 	PPC_ATOMIC_ENTRY_BARRIER \
@@ -27,15 +23,12 @@
 	: "=&r" (oldval), "=&r" (ret) \
 	: "b" (uaddr), "i" (-EFAULT), "r" (oparg) \
 	: "cr0", "memory")
-
 static inline int arch_futex_atomic_op_inuser(int op, int oparg, int *oval,
 		u32 __user *uaddr)
 {
 	int oldval = 0, ret;
-
 	if (!user_access_begin(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	switch (op) {
 	case FUTEX_OP_SET:
 		__futex_atomic_op("mr %1,%4\n", ret, oldval, uaddr, oparg);
@@ -56,22 +49,17 @@ static inline int arch_futex_atomic_op_inuser(int op, int oparg, int *oval,
 		ret = -ENOSYS;
 	}
 	user_access_end();
-
 	*oval = oldval;
-
 	return ret;
 }
-
 static inline int
 futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 			      u32 oldval, u32 newval)
 {
 	int ret = 0;
 	u32 prev;
-
 	if (!user_access_begin(uaddr, sizeof(u32)))
 		return -EFAULT;
-
         __asm__ __volatile__ (
         PPC_ATOMIC_ENTRY_BARRIER
 "1:     lwarx   %1,0,%3         # futex_atomic_cmpxchg_inatomic\n\
@@ -89,13 +77,9 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
         : "+r" (ret), "=&r" (prev), "+m" (*uaddr)
         : "r" (uaddr), "r" (oldval), "r" (newval), "i" (-EFAULT)
         : "cc", "memory");
-
 	user_access_end();
-
 	*uval = prev;
-
         return ret;
 }
-
-#endif /* __KERNEL__ */
-#endif /* _ASM_POWERPC_FUTEX_H */
+#endif  
+#endif  

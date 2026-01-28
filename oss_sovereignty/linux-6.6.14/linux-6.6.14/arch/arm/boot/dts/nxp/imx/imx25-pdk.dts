@@ -1,21 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2013 Freescale Semiconductor, Inc.
-
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include "imx25.dtsi"
-
 / {
 	model = "Freescale i.MX25 Product Development Kit";
 	compatible = "fsl,imx25-pdk", "fsl,imx25";
-
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x80000000 0x4000000>;
 	};
-
 	reg_fec_3v3: regulator-0 {
 		compatible = "regulator-fixed";
 		regulator-name = "fec-3v3";
@@ -24,21 +17,18 @@
 		gpio = <&gpio2 3 0>;
 		enable-active-high;
 	};
-
 	reg_2p5v: regulator-1 {
 		compatible = "regulator-fixed";
 		regulator-name = "2P5V";
 		regulator-min-microvolt = <2500000>;
 		regulator-max-microvolt = <2500000>;
 	};
-
 	reg_3p3v: regulator-2 {
 		compatible = "regulator-fixed";
 		regulator-name = "3P3V";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 	};
-
 	reg_can_3v3: regulator-3 {
 		compatible = "regulator-fixed";
 		regulator-name = "can-3v3";
@@ -46,7 +36,6 @@
 		regulator-max-microvolt = <3300000>;
 		gpio = <&gpio4 6 0>;
 	};
-
 	sound {
 		compatible = "fsl,imx25-pdk-sgtl5000",
 			     "fsl,imx-audio-sgtl5000";
@@ -60,7 +49,6 @@
 		mux-int-port = <1>;
 		mux-ext-port = <4>;
 	};
-
 	wvga: display {
 		model = "CLAA057VC01CW";
 		bits-per-pixel = <16>;
@@ -82,20 +70,17 @@
 		};
 	};
 };
-
 &audmux {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_audmux>;
 	status = "okay";
 };
-
 &can1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_can1>;
 	xceiver-supply = <&reg_can_3v3>;
 	status = "okay";
 };
-
 &esdhc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_esdhc1>;
@@ -103,7 +88,6 @@
 	wp-gpios = <&gpio2 0 GPIO_ACTIVE_HIGH>;
 	status = "okay";
 };
-
 &fec {
 	phy-mode = "rmii";
 	pinctrl-names = "default";
@@ -112,13 +96,11 @@
 	phy-reset-gpios = <&gpio4 8 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &i2c1 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
-
 	codec: sgtl5000@a {
 		compatible = "fsl,sgtl5000";
 		reg = <0x0a>;
@@ -127,7 +109,6 @@
 		VDDIO-supply = <&reg_3p3v>;
 	};
 };
-
 &iomuxc {
 	imx25-pdk {
 		pinctrl_audmux: audmuxgrp {
@@ -138,7 +119,6 @@
 				MX25_PAD_EB1__AUD4_RXD			0xe0
 			>;
 		};
-
 		pinctrl_can1: can1grp {
 			fsl,pins = <
 				MX25_PAD_GPIO_A__CAN1_TX		0x0
@@ -146,7 +126,6 @@
 				MX25_PAD_D14__GPIO_4_6 			0x80000000
 			>;
 		};
-
 		pinctrl_esdhc1: esdhc1grp {
 			fsl,pins = <
 				MX25_PAD_SD1_CMD__ESDHC1_CMD		0x80000000
@@ -159,7 +138,6 @@
 				MX25_PAD_A15__GPIO_2_1			0x80000000
 			>;
 		};
-
 		pinctrl_fec: fecgrp {
 			fsl,pins = <
 				MX25_PAD_FEC_MDC__FEC_MDC		0x80000000
@@ -175,14 +153,12 @@
 				MX25_PAD_D12__GPIO_4_8			0x80000000
 			>;
 		};
-
 		pinctrl_i2c1: i2c1grp {
 			fsl,pins = <
 				MX25_PAD_I2C1_CLK__I2C1_CLK		0x80000000
 				MX25_PAD_I2C1_DAT__I2C1_DAT		0x80000000
 			>;
 		};
-
 		pinctrl_kpp: kppgrp {
 			fsl,pins = <
 				MX25_PAD_KPP_ROW0__KPP_ROW0	0x80000000
@@ -195,7 +171,6 @@
 				MX25_PAD_KPP_COL3__KPP_COL3	0x80000000
 			>;
 		};
-
 		pinctrl_lcd: lcdgrp {
 			fsl,pins = <
 				MX25_PAD_LD0__LD0		0xe0
@@ -223,7 +198,6 @@
 				MX25_PAD_CONTRAST__CONTRAST	0xe0
 			>;
 		};
-
 		pinctrl_uart1: uart1grp {
 			fsl,pins = <
 				MX25_PAD_UART1_RTS__UART1_RTS		0xe0
@@ -234,7 +208,6 @@
 		};
 	};
 };
-
 &lcdc {
 	display = <&wvga>;
 	fsl,lpccr = <0x00a903ff>;
@@ -244,12 +217,10 @@
 	pinctrl-0 = <&pinctrl_lcd>;
 	status = "okay";
 };
-
 &nfc {
 	nand-on-flash-bbt;
 	status = "okay";
 };
-
 &kpp {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_kpp>;
@@ -273,30 +244,24 @@
 	>;
 	status = "okay";
 };
-
 &ssi1 {
 	status = "okay";
 };
-
 &tsc {
 	status = "okay";
 };
-
 &tscadc {
 	status = "okay";
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	uart-has-rtscts;
 	status = "okay";
 };
-
 &usbhost1 {
 	status = "okay";
 };
-
 &usbotg {
 	external-vbus-divider;
 	status = "okay";

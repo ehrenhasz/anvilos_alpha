@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2020 Intel Corporation */
 #ifndef ADF_ACCEL_DEVICES_H_
 #define ADF_ACCEL_DEVICES_H_
 #include <linux/interrupt.h>
@@ -9,7 +7,6 @@
 #include <linux/ratelimit.h>
 #include "adf_cfg_common.h"
 #include "adf_pfvf_msg.h"
-
 #define ADF_DH895XCC_DEVICE_NAME "dh895xcc"
 #define ADF_DH895XCCVF_DEVICE_NAME "dh895xccvf"
 #define ADF_C62X_DEVICE_NAME "c6xx"
@@ -31,7 +28,6 @@
 #define ADF_ETR_MAX_RINGS_PER_BANK 16
 #define ADF_MAX_MSIX_VECTOR_NAME 48
 #define ADF_DEVICE_NAME_PREFIX "qat_"
-
 enum adf_accel_capabilities {
 	ADF_ACCEL_CAPABILITIES_NULL = 0,
 	ADF_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC = 1,
@@ -42,23 +38,19 @@ enum adf_accel_capabilities {
 	ADF_ACCEL_CAPABILITIES_LZS_COMPRESSION = 64,
 	ADF_ACCEL_CAPABILITIES_RANDOM_NUMBER = 128
 };
-
 struct adf_bar {
 	resource_size_t base_addr;
 	void __iomem *virt_addr;
 	resource_size_t size;
 };
-
 struct adf_irq {
 	bool enabled;
 	char name[ADF_MAX_MSIX_VECTOR_NAME];
 };
-
 struct adf_accel_msix {
 	struct adf_irq *irqs;
 	u32 num_entries;
 };
-
 struct adf_accel_pci {
 	struct pci_dev *pci_dev;
 	struct adf_accel_msix msix_entries;
@@ -66,12 +58,10 @@ struct adf_accel_pci {
 	u8 revid;
 	u8 sku;
 };
-
 enum dev_state {
 	DEV_DOWN = 0,
 	DEV_UP
 };
-
 enum dev_sku_info {
 	DEV_SKU_1 = 0,
 	DEV_SKU_2,
@@ -80,7 +70,6 @@ enum dev_sku_info {
 	DEV_SKU_VF,
 	DEV_SKU_UNKNOWN,
 };
-
 static inline const char *get_sku_info(enum dev_sku_info info)
 {
 	switch (info) {
@@ -100,25 +89,21 @@ static inline const char *get_sku_info(enum dev_sku_info info)
 	}
 	return "Unknown SKU";
 }
-
 struct adf_hw_device_class {
 	const char *name;
 	const enum adf_device_type type;
 	u32 instances;
 };
-
 struct arb_info {
 	u32 arb_cfg;
 	u32 arb_offset;
 	u32 wt2sam_offset;
 };
-
 struct admin_info {
 	u32 admin_msg_ur;
 	u32 admin_msg_lr;
 	u32 mailbox_offset;
 };
-
 struct adf_hw_csr_ops {
 	u64 (*build_csr_ring_base_addr)(dma_addr_t addr, u32 size);
 	u32 (*read_csr_ring_head)(void __iomem *csr_base_addr, u32 bank,
@@ -146,12 +131,10 @@ struct adf_hw_csr_ops {
 	void (*write_csr_ring_srv_arb_en)(void __iomem *csr_base_addr, u32 bank,
 					  u32 value);
 };
-
 struct adf_cfg_device_data;
 struct adf_accel_dev;
 struct adf_etr_data;
 struct adf_etr_ring_data;
-
 struct adf_pfvf_ops {
 	int (*enable_comms)(struct adf_accel_dev *accel_dev);
 	u32 (*get_pf2vf_offset)(u32 i);
@@ -164,11 +147,9 @@ struct adf_pfvf_ops {
 	struct pfvf_message (*recv_msg)(struct adf_accel_dev *accel_dev,
 					u32 pfvf_offset, u8 compat_ver);
 };
-
 struct adf_dc_ops {
 	void (*build_deflate_ctx)(void *ctx);
 };
-
 struct adf_hw_device_data {
 	struct adf_hw_device_class *dev_class;
 	u32 (*get_accel_mask)(struct adf_hw_device_data *self);
@@ -237,14 +218,9 @@ struct adf_hw_device_data {
 	u8 num_engines;
 	u32 num_hb_ctrs;
 };
-
-/* CSR write macro */
 #define ADF_CSR_WR(csr_base, csr_offset, val) \
 	__raw_writel(val, csr_base + csr_offset)
-
-/* CSR read macro */
 #define ADF_CSR_RD(csr_base, csr_offset) __raw_readl(csr_base + csr_offset)
-
 #define ADF_CFG_NUM_SERVICES	4
 #define ADF_SRV_TYPE_BIT_LEN	3
 #define ADF_SRV_TYPE_MASK	0x7
@@ -253,7 +229,6 @@ struct adf_hw_device_data {
 #define ADF_NUM_PKE_STRAND	2
 #define ADF_AE_STRAND0_THREAD	8
 #define ADF_AE_STRAND1_THREAD	9
-
 #define GET_DEV(accel_dev) ((accel_dev)->accel_pci_dev.pci_dev->dev)
 #define GET_BARS(accel_dev) ((accel_dev)->accel_pci_dev.pci_bars)
 #define GET_HW_DATA(accel_dev) (accel_dev->hw_device)
@@ -268,7 +243,6 @@ struct adf_hw_device_data {
 #define GET_PFVF_OPS(accel_dev) (&(accel_dev)->hw_device->pfvf_ops)
 #define GET_DC_OPS(accel_dev) (&(accel_dev)->hw_device->dc_ops)
 #define accel_to_pci_dev(accel_ptr) accel_ptr->accel_pci_dev.pci_dev
-
 struct adf_admin_comms;
 struct icp_qat_fw_loader_handle;
 struct adf_fw_loader_data {
@@ -276,22 +250,19 @@ struct adf_fw_loader_data {
 	const struct firmware *uof_fw;
 	const struct firmware *mmp_fw;
 };
-
 struct adf_accel_vf_info {
 	struct adf_accel_dev *accel_dev;
-	struct mutex pf2vf_lock; /* protect CSR access for PF2VF messages */
+	struct mutex pf2vf_lock;  
 	struct ratelimit_state vf2pf_ratelimit;
 	u32 vf_nr;
 	bool init;
 	u8 vf_compat_ver;
 };
-
 struct adf_dc_data {
 	u8 *ovf_buff;
 	size_t ovf_buff_sz;
 	dma_addr_t ovf_buff_p;
 };
-
 struct adf_accel_dev {
 	struct adf_etr_data *transport;
 	struct adf_hw_device_data *hw_device;
@@ -312,22 +283,20 @@ struct adf_accel_dev {
 	struct adf_heartbeat *heartbeat;
 	union {
 		struct {
-			/* protects VF2PF interrupts access */
 			spinlock_t vf2pf_ints_lock;
-			/* vf_info is non-zero when SR-IOV is init'ed */
 			struct adf_accel_vf_info *vf_info;
 		} pf;
 		struct {
 			bool irq_enabled;
 			char irq_name[ADF_MAX_MSIX_VECTOR_NAME];
 			struct tasklet_struct pf2vf_bh_tasklet;
-			struct mutex vf2pf_lock; /* protect CSR access */
+			struct mutex vf2pf_lock;  
 			struct completion msg_received;
-			struct pfvf_message response; /* temp field holding pf2vf response */
+			struct pfvf_message response;  
 			u8 pf_compat_ver;
 		} vf;
 	};
-	struct mutex state_lock; /* protect state of the device */
+	struct mutex state_lock;  
 	bool is_vf;
 	u32 accel_id;
 };

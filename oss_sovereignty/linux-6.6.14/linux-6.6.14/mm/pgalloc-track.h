@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_PGALLOC_TRACK_H
 #define _LINUX_PGALLOC_TRACK_H
-
 #if defined(CONFIG_MMU)
 static inline p4d_t *p4d_alloc_track(struct mm_struct *mm, pgd_t *pgd,
 				     unsigned long address,
@@ -12,10 +10,8 @@ static inline p4d_t *p4d_alloc_track(struct mm_struct *mm, pgd_t *pgd,
 			return NULL;
 		*mod_mask |= PGTBL_PGD_MODIFIED;
 	}
-
 	return p4d_offset(pgd, address);
 }
-
 static inline pud_t *pud_alloc_track(struct mm_struct *mm, p4d_t *p4d,
 				     unsigned long address,
 				     pgtbl_mod_mask *mod_mask)
@@ -25,10 +21,8 @@ static inline pud_t *pud_alloc_track(struct mm_struct *mm, p4d_t *p4d,
 			return NULL;
 		*mod_mask |= PGTBL_P4D_MODIFIED;
 	}
-
 	return pud_offset(p4d, address);
 }
-
 static inline pmd_t *pmd_alloc_track(struct mm_struct *mm, pud_t *pud,
 				     unsigned long address,
 				     pgtbl_mod_mask *mod_mask)
@@ -38,14 +32,11 @@ static inline pmd_t *pmd_alloc_track(struct mm_struct *mm, pud_t *pud,
 			return NULL;
 		*mod_mask |= PGTBL_PUD_MODIFIED;
 	}
-
 	return pmd_offset(pud, address);
 }
-#endif /* CONFIG_MMU */
-
+#endif  
 #define pte_alloc_kernel_track(pmd, address, mask)			\
 	((unlikely(pmd_none(*(pmd))) &&					\
 	  (__pte_alloc_kernel(pmd) || ({*(mask)|=PGTBL_PMD_MODIFIED;0;})))?\
 		NULL: pte_offset_kernel(pmd, address))
-
-#endif /* _LINUX_PGALLOC_TRACK_H */
+#endif  

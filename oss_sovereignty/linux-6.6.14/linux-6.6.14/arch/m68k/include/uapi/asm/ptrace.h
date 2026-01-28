@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI_M68K_PTRACE_H
 #define _UAPI_M68K_PTRACE_H
-
 #define PT_D1	   0
 #define PT_D2	   1
 #define PT_D3	   2
@@ -21,12 +19,7 @@
 #define PT_ORIG_D0 16
 #define PT_SR	   17
 #define PT_PC	   18
-
 #ifndef __ASSEMBLY__
-
-/* this struct defines the way the registers are stored on the
-   stack during a system call. */
-
 struct pt_regs {
   long     d1;
   long     d2;
@@ -40,22 +33,17 @@ struct pt_regs {
   long     orig_d0;
   long     stkadj;
 #ifdef CONFIG_COLDFIRE
-  unsigned format :  4; /* frame format specifier */
-  unsigned vector : 12; /* vector offset */
+  unsigned format :  4;  
+  unsigned vector : 12;  
   unsigned short sr;
   unsigned long  pc;
 #else
   unsigned short sr;
   unsigned long  pc;
-  unsigned format :  4; /* frame format specifier */
-  unsigned vector : 12; /* vector offset */
+  unsigned format :  4;  
+  unsigned vector : 12;  
 #endif
 };
-
-/*
- * This is the extended stack used by signal handlers and the context
- * switcher: it's pushed after the normal "struct pt_regs".
- */
 struct switch_stack {
 	unsigned long  d6;
 	unsigned long  d7;
@@ -65,21 +53,14 @@ struct switch_stack {
 	unsigned long  a6;
 	unsigned long  retpc;
 };
-
-/* Arbitrarily choose the same ptrace numbers as used by the Sparc code. */
 #define PTRACE_GETREGS            12
 #define PTRACE_SETREGS            13
 #define PTRACE_GETFPREGS          14
 #define PTRACE_SETFPREGS          15
-
 #define PTRACE_GET_THREAD_AREA    25
-
 #define PTRACE_GETFDPIC	31
-
-#define PTRACE_SINGLEBLOCK	33	/* resume execution until next branch */
-
+#define PTRACE_SINGLEBLOCK	33	 
 #define PTRACE_GETFDPIC_EXEC	0
 #define PTRACE_GETFDPIC_INTERP	1
-
-#endif /* __ASSEMBLY__ */
-#endif /* _UAPI_M68K_PTRACE_H */
+#endif  
+#endif  

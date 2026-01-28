@@ -1,56 +1,37 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Texas Instruments Incorporated - https://www.ti.com/
- */
 /dts-v1/;
-
 #include "omap34xx.dtsi"
-
 / {
 	model = "TI OMAP3430 SDP";
 	compatible = "ti,omap3430-sdp", "ti,omap3430", "ti,omap3";
-
 	memory@80000000 {
 		device_type = "memory";
-		reg = <0x80000000 0x10000000>; /* 256 MB */
+		reg = <0x80000000 0x10000000>;  
 	};
 };
-
 &i2c1 {
 	clock-frequency = <2600000>;
-
 	twl: twl@48 {
 		reg = <0x48>;
-		interrupts = <7>; /* SYS_NIRQ cascaded to intc */
+		interrupts = <7>;  
 	};
 };
-
 #include "twl4030.dtsi"
 #include "twl4030_omap3.dtsi"
-
 &mmc1 {
 	vmmc-supply = <&vmmc1>;
 	vqmmc-supply = <&vsim>;
-	/*
-	 * S6-3 must be in ON position for 8 bit mode to function
-	 * Else, use 4 bit mode
-	 */
 	bus-width = <8>;
 };
-
 &mmc2 {
 	status = "disabled";
 };
-
 &mmc3 {
 	status = "disabled";
 };
-
 &gpmc {
 	ranges = <0 0 0x10000000 0x08000000>,
-		 <1 0 0x28000000 0x1000000>,	/* CS1: 16MB for NAND */
-		 <2 0 0x20000000 0x1000000>;	/* CS2: 16MB for OneNAND */
-
+		 <1 0 0x28000000 0x1000000>,	 
+		 <2 0 0x20000000 0x1000000>;	 
 	nor@0,0 {
 		compatible = "cfi-flash";
 		linux,mtd-name = "intel,pf48f6000m0y1be";
@@ -58,7 +39,6 @@
 		#size-cells = <1>;
 		reg = <0 0 0x08000000>;
 		bank-width = <2>;
-
 		gpmc,mux-add-data = <2>;
 		gpmc,cs-on-ns = <0>;
 		gpmc,cs-rd-off-ns = <186>;
@@ -80,7 +60,6 @@
 		gpmc,wr-access-ns = <186>;
 		gpmc,cycle2cycle-samecsen;
 		gpmc,cycle2cycle-diffcsen;
-
 		partition@0 {
 			label = "bootloader-nor";
 			reg = <0 0x40000>;
@@ -98,13 +77,12 @@
 			reg = <0x240000 0x7d80000>;
 		};
 	};
-
 	nand@1,0 {
 		compatible = "ti,omap2-nand";
-		reg = <1 0 4>; /* CS1, offset 0, IO size 4 */
+		reg = <1 0 4>;  
 		interrupt-parent = <&gpmc>;
-		interrupts = <0 IRQ_TYPE_NONE>, /* fifoevent */
-			     <1 IRQ_TYPE_NONE>;	/* termcount */
+		interrupts = <0 IRQ_TYPE_NONE>,  
+			     <1 IRQ_TYPE_NONE>;	 
 		linux,mtd-name = "micron,mt29f1g08abb";
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -124,7 +102,6 @@
 		gpmc,wr-cycle-ns = <72>;
 		gpmc,access-ns = <54>;
 		gpmc,wr-access-ns = <30>;
-
 		partition@0 {
 			label = "xloader-nand";
 			reg = <0 0x80000>;
@@ -146,14 +123,12 @@
 			reg = <0x780000 0x7880000>;
 		};
 	};
-
 	onenand@2,0 {
 		linux,mtd-name = "samsung,kfm2g16q2m-deb8";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "ti,omap2-onenand";
-		reg = <2 0 0x20000>;	/* CS2, offset 0, IO size 4 */
-
+		reg = <2 0 0x20000>;	 
 		gpmc,device-width = <2>;
 		gpmc,mux-add-data = <2>;
 		gpmc,cs-on-ns = <0>;
@@ -170,7 +145,6 @@
 		gpmc,wr-cycle-ns = <96>;
 		gpmc,access-ns = <78>;
 		gpmc,wr-data-mux-bus-ns = <30>;
-
 		partition@0 {
 			label = "xloader-onenand";
 			reg = <0 0x80000>;

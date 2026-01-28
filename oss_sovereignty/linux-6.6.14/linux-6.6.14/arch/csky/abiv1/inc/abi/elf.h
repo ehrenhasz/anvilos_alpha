@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __ABI_CSKY_ELF_H
 #define __ABI_CSKY_ELF_H
-
 #define ELF_CORE_COPY_REGS(pr_reg, regs) do {	\
 	pr_reg[0] = regs->pc;			\
 	pr_reg[1] = regs->regs[9];		\
@@ -23,4 +20,4 @@
 	pr_reg[16] = regs->regs[8];		\
 	pr_reg[17] = regs->lr;			\
 } while (0);
-#endif /* __ABI_CSKY_ELF_H */
+#endif  

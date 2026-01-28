@@ -1,40 +1,8 @@
-/*
- * RF Gain optimization
- *
- * Copyright (c) 2004-2009 Reyk Floeter <reyk@openbsd.org>
- * Copyright (c) 2006-2009 Nick Kossifidis <mickflemm@gmail.com>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- */
-
-/**
- * struct ath5k_ini_rfgain - RF Gain table
- * @rfg_register: RF Gain register address
- * @rfg_value: Register value for 5 and 2GHz
- *
- * Mode-specific RF Gain table (64bytes) for RF5111/5112
- * (RF5110 only comes with AR5210 and only supports a/turbo a mode so initial
- * RF Gain values are included in AR5K_AR5210_INI)
- */
 struct ath5k_ini_rfgain {
 	u16	rfg_register;
-	u32	rfg_value[2];	/* [freq (see below)] */
+	u32	rfg_value[2];	 
 };
-
-/* Initial RF Gain settings for RF5111 */
 static const struct ath5k_ini_rfgain rfgain_5111[] = {
-	/*			      5GHz	2GHz	*/
 	{ AR5K_RF_GAIN(0),	{ 0x000001a9, 0x00000000 } },
 	{ AR5K_RF_GAIN(1),	{ 0x000001e9, 0x00000040 } },
 	{ AR5K_RF_GAIN(2),	{ 0x00000029, 0x00000080 } },
@@ -100,10 +68,7 @@ static const struct ath5k_ini_rfgain rfgain_5111[] = {
 	{ AR5K_RF_GAIN(62),	{ 0x000000c6, 0x000000fd } },
 	{ AR5K_RF_GAIN(63),	{ 0x000000c6, 0x000000fd } },
 };
-
-/* Initial RF Gain settings for RF5112 */
 static const struct ath5k_ini_rfgain rfgain_5112[] = {
-	/*			      5GHz	2GHz	*/
 	{ AR5K_RF_GAIN(0),	{ 0x00000007, 0x00000007 } },
 	{ AR5K_RF_GAIN(1),	{ 0x00000047, 0x00000047 } },
 	{ AR5K_RF_GAIN(2),	{ 0x00000087, 0x00000087 } },
@@ -169,8 +134,6 @@ static const struct ath5k_ini_rfgain rfgain_5112[] = {
 	{ AR5K_RF_GAIN(62),	{ 0x000000fc, 0x000000fc } },
 	{ AR5K_RF_GAIN(63),	{ 0x000000fc, 0x000000fc } },
 };
-
-/* Initial RF Gain settings for RF2413 */
 static const struct ath5k_ini_rfgain rfgain_2413[] = {
 	{ AR5K_RF_GAIN(0),	{ 0x00000000, 0x00000000 } },
 	{ AR5K_RF_GAIN(1),	{ 0x00000000, 0x00000040 } },
@@ -237,8 +200,6 @@ static const struct ath5k_ini_rfgain rfgain_2413[] = {
 	{ AR5K_RF_GAIN(62),	{ 0x00000000, 0x000000f9 } },
 	{ AR5K_RF_GAIN(63),	{ 0x00000000, 0x000000f9 } },
 };
-
-/* Initial RF Gain settings for AR2316 */
 static const struct ath5k_ini_rfgain rfgain_2316[] = {
 	{ AR5K_RF_GAIN(0),	{ 0x00000000, 0x00000000 } },
 	{ AR5K_RF_GAIN(1),	{ 0x00000000, 0x00000040 } },
@@ -305,11 +266,7 @@ static const struct ath5k_ini_rfgain rfgain_2316[] = {
 	{ AR5K_RF_GAIN(62),	{ 0x00000000, 0x000000f0 } },
 	{ AR5K_RF_GAIN(63),	{ 0x00000000, 0x000000f0 } },
 };
-
-
-/* Initial RF Gain settings for RF5413 */
 static const struct ath5k_ini_rfgain rfgain_5413[] = {
-	/*			      5GHz	2GHz	*/
 	{ AR5K_RF_GAIN(0),	{ 0x00000000, 0x00000000 } },
 	{ AR5K_RF_GAIN(1),	{ 0x00000040, 0x00000040 } },
 	{ AR5K_RF_GAIN(2),	{ 0x00000080, 0x00000080 } },
@@ -375,9 +332,6 @@ static const struct ath5k_ini_rfgain rfgain_5413[] = {
 	{ AR5K_RF_GAIN(62),	{ 0x000000f9, 0x000000f9 } },
 	{ AR5K_RF_GAIN(63),	{ 0x000000f9, 0x000000f9 } },
 };
-
-
-/* Initial RF Gain settings for RF2425 */
 static const struct ath5k_ini_rfgain rfgain_2425[] = {
 	{ AR5K_RF_GAIN(0),	{ 0x00000000, 0x00000000 } },
 	{ AR5K_RF_GAIN(1),	{ 0x00000000, 0x00000040 } },
@@ -444,7 +398,6 @@ static const struct ath5k_ini_rfgain rfgain_2425[] = {
 	{ AR5K_RF_GAIN(62),	{ 0x00000000, 0x000000f9 } },
 	{ AR5K_RF_GAIN(63),	{ 0x00000000, 0x000000f9 } },
 };
-
 #define AR5K_GAIN_CRN_FIX_BITS_5111		4
 #define AR5K_GAIN_CRN_FIX_BITS_5112		7
 #define AR5K_GAIN_CRN_MAX_FIX_BITS		AR5K_GAIN_CRN_FIX_BITS_5112
@@ -453,43 +406,17 @@ static const struct ath5k_ini_rfgain rfgain_2425[] = {
 #define AR5K_GAIN_CCK_PROBE_CORR		5
 #define AR5K_GAIN_CCK_OFDM_GAIN_DELTA		15
 #define AR5K_GAIN_STEP_COUNT			10
-
-/* Check if our current measurement is inside our
- * current variable attenuation window */
 #define AR5K_GAIN_CHECK_ADJUST(_g)		\
 	((_g)->g_current <= (_g)->g_low || (_g)->g_current >= (_g)->g_high)
-
-/**
- * struct ath5k_gain_opt_step - An RF gain optimization step
- * @gos_param: Set of parameters
- * @gos_gain: Gain
- */
 struct ath5k_gain_opt_step {
 	s8				gos_param[AR5K_GAIN_CRN_MAX_FIX_BITS];
 	s8				gos_gain;
 };
-
-/**
- * struct ath5k_gain_opt - RF Gain optimization ladder
- * @go_default: The default step
- * @go_steps_count: How many optimization steps
- * @go_step: Array of &struct ath5k_gain_opt_step
- */
 struct ath5k_gain_opt {
 	u8				go_default;
 	u8				go_steps_count;
 	const struct ath5k_gain_opt_step	go_step[AR5K_GAIN_STEP_COUNT];
 };
-
-
-/*
- * RF5111
- * Parameters on gos_param:
- * 1) Tx clip PHY register
- * 2) PWD 90 RF register
- * 3) PWD 84 RF register
- * 4) RFGainSel RF register
- */
 static const struct ath5k_gain_opt rfgain_opt_5111 = {
 	4,
 	9,
@@ -505,18 +432,6 @@ static const struct ath5k_gain_opt rfgain_opt_5111 = {
 		{ { 2, 1, 1, 0 }, -6 }
 	}
 };
-
-/*
- * RF5112
- * Parameters on gos_param:
- * 1) Mixgain ovr RF register
- * 2) PWD 138 RF register
- * 3) PWD 137 RF register
- * 4) PWD 136 RF register
- * 5) PWD 132 RF register
- * 6) PWD 131 RF register
- * 7) PWD 130 RF register
- */
 static const struct ath5k_gain_opt rfgain_opt_5112 = {
 	1,
 	8,
@@ -531,4 +446,3 @@ static const struct ath5k_gain_opt rfgain_opt_5112 = {
 		{ { 0, 1, 0, 1, 1, 0, 1 }, -16 },
 	}
 };
-

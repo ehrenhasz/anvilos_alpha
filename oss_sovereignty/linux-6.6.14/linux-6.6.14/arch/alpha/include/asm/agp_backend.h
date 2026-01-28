@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ALPHA_AGP_BACKEND_H
 #define _ALPHA_AGP_BACKEND_H 1
-
 typedef	union _alpha_agp_mode {
 	struct {
 		u32 rate : 3;
@@ -16,7 +14,6 @@ typedef	union _alpha_agp_mode {
 	} bits;
 	u32 lw;
 } alpha_agp_mode;
-
 typedef struct _alpha_agp_info {
 	struct pci_controller *hose;
 	struct {
@@ -29,7 +26,6 @@ typedef struct _alpha_agp_info {
 	void *private;
 	struct alpha_agp_ops *ops;
 } alpha_agp_info;
-
 struct alpha_agp_ops {
 	int (*setup)(alpha_agp_info *);
 	void (*cleanup)(alpha_agp_info *);
@@ -38,6 +34,4 @@ struct alpha_agp_ops {
 	int (*unbind)(alpha_agp_info *, off_t, struct agp_memory *);
 	unsigned long (*translate)(alpha_agp_info *, dma_addr_t);
 };
-
-
-#endif /* _ALPHA_AGP_BACKEND_H */
+#endif  

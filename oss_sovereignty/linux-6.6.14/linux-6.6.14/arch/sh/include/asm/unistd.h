@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #include <asm/unistd_32.h>
-
 #define NR_syscalls	__NR_syscalls
-
 # define __ARCH_WANT_NEW_STAT
 # define __ARCH_WANT_OLD_READDIR
 # define __ARCH_WANT_OLD_STAT
@@ -27,5 +24,4 @@
 # define __ARCH_WANT_SYS_FORK
 # define __ARCH_WANT_SYS_VFORK
 # define __ARCH_WANT_SYS_CLONE
-
 #include <uapi/asm/unistd.h>

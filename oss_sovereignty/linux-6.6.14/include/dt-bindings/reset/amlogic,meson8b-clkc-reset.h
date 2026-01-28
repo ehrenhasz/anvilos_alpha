@@ -1,12 +1,5 @@
-/*
- * Copyright (c) 2017 Martin Blumenstingl <martin.blumenstingl@googlemail.com>.
- *
- * SPDX-License-Identifier: (GPL-2.0+ OR MIT)
- */
-
 #ifndef _DT_BINDINGS_AMLOGIC_MESON8B_CLKC_RESET_H
 #define _DT_BINDINGS_AMLOGIC_MESON8B_CLKC_RESET_H
-
 #define CLKC_RESET_L2_CACHE_SOFT_RESET				0
 #define CLKC_RESET_AXI_64_TO_128_BRIDGE_A5_SOFT_RESET		1
 #define CLKC_RESET_SCU_SOFT_RESET				2
@@ -23,5 +16,4 @@
 #define CLKC_RESET_VID_DIVIDER_CNTL_SOFT_RESET_PRE		13
 #define CLKC_RESET_VID_DIVIDER_CNTL_RESET_N_POST		14
 #define CLKC_RESET_VID_DIVIDER_CNTL_RESET_N_PRE			15
-
-#endif /* _DT_BINDINGS_AMLOGIC_MESON8B_CLKC_RESET_H */
+#endif  

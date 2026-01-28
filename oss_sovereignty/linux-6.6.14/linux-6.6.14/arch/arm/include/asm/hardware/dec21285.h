@@ -1,11 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  arch/arm/include/asm/hardware/dec21285.h
- *
- *  Copyright (C) 1998 Russell King
- *
- *  DC21285 registers
- */
 #define DC21285_PCI_IACK		0x79000000
 #define DC21285_ARMCSR_BASE		0x42000000
 #define DC21285_PCI_TYPE_0_CONFIG	0x7b000000
@@ -14,21 +6,13 @@
 #define DC21285_FLASH			0x41000000
 #define DC21285_PCI_IO			0x7c000000
 #define DC21285_PCI_MEM			0x80000000
-
 #ifndef __ASSEMBLY__
 #include <mach/hardware.h>
 #define DC21285_IO(x)		((volatile unsigned long *)(ARMCSR_BASE+(x)))
 #else
 #define DC21285_IO(x)		(x)
 #endif
-
-/*
- * The footbridge is programmed to expose the system RAM at 0xe0000000.
- * The requirement is that the RAM isn't placed at bus address 0, which
- * would clash with VGA cards.
- */
 #define BUS_OFFSET 0xe0000000
-
 #define CSR_PCICMD		DC21285_IO(0x0004)
 #define CSR_CLASSREV		DC21285_IO(0x0008)
 #define CSR_PCICACHELINESIZE	DC21285_IO(0x000c)
@@ -87,7 +71,6 @@
 #define SA110_CNTL_ROMTRISTATETIME(x)	((x)<<24)
 #define SA110_CNTL_XCSDIR(x)		((x)<<28)
 #define SA110_CNTL_PCICFN		(1 << 31)
-
 #define CSR_PCIADDR_EXTN	DC21285_IO(0x0140)
 #define CSR_PREFETCHMEMRANGE	DC21285_IO(0x0144)
 #define CSR_XBUS_CYCLE		DC21285_IO(0x0148)
@@ -127,12 +110,9 @@
 #define CSR_TIMER4_VALUE	DC21285_IO(0x0364)
 #define CSR_TIMER4_CNTL		DC21285_IO(0x0368)
 #define CSR_TIMER4_CLR		DC21285_IO(0x036c)
-
 #define TIMER_CNTL_ENABLE	(1 << 7)
 #define TIMER_CNTL_AUTORELOAD	(1 << 6)
 #define TIMER_CNTL_DIV1		(0)
 #define TIMER_CNTL_DIV16	(1 << 2)
 #define TIMER_CNTL_DIV256	(2 << 2)
 #define TIMER_CNTL_CNTEXT	(3 << 2)
-
-

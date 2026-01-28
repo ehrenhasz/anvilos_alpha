@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* eds1547.h Earda EDS-1547 tuner support
-*
-* Copyright (C) 2008 Igor M. Liplianin (liplianin@me.by)
-*
-* see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
-*/
-
 #ifndef EDS1547
 #define EDS1547
-
 static u8 stv0288_earda_inittab[] = {
 	0x01, 0x57,
 	0x02, 0x20,
@@ -120,11 +111,9 @@ static u8 stv0288_earda_inittab[] = {
 	0xf2, 0xc0,
 	0xff,0xff,
 };
-
 static struct stv0288_config earda_config = {
 	.demod_address = 0x68,
 	.min_delay_ms = 100,
 	.inittab = stv0288_earda_inittab,
 };
-
 #endif

@@ -1,26 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2015 - 2018 Intel Corporation.
- */
-
 #if !defined(__HFI1_TRACE_RX_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __HFI1_TRACE_RX_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #include "hfi.h"
-
 #define tidtype_name(type) { PT_##type, #type }
 #define show_tidtype(type)                   \
 __print_symbolic(type,                       \
 	tidtype_name(EXPECTED),              \
 	tidtype_name(EAGER),                 \
 	tidtype_name(INVALID))               \
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hfi1_rx
-
 TRACE_EVENT(hfi1_rcvhdr,
 	    TP_PROTO(struct hfi1_packet *packet),
 	    TP_ARGS(packet),
@@ -54,7 +44,6 @@ TRACE_EVENT(hfi1_rcvhdr,
 		__entry->etail
 		)
 );
-
 TRACE_EVENT(hfi1_receive_interrupt,
 	    TP_PROTO(struct hfi1_devdata *dd, struct hfi1_ctxtdata *rcd),
 	    TP_ARGS(dd, rcd),
@@ -75,7 +64,6 @@ TRACE_EVENT(hfi1_receive_interrupt,
 		      __entry->dma_rtail
 		      )
 );
-
 TRACE_EVENT(hfi1_mmu_invalidate,
 	    TP_PROTO(unsigned int ctxt, u16 subctxt, const char *type,
 		     unsigned long start, unsigned long end),
@@ -102,9 +90,7 @@ TRACE_EVENT(hfi1_mmu_invalidate,
 		      __entry->end
 		      )
 	    );
-
-#endif /* __HFI1_TRACE_RX_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH .

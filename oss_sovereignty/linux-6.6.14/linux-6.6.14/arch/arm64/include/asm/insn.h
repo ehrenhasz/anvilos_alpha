@@ -1,19 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 Huawei Ltd.
- * Author: Jiang Liu <liuj97@gmail.com>
- *
- * Copyright (C) 2014 Zi Shen Lim <zlim.lnx@gmail.com>
- */
 #ifndef	__ASM_INSN_H
 #define	__ASM_INSN_H
 #include <linux/build_bug.h>
 #include <linux/types.h>
-
 #include <asm/insn-def.h>
-
 #ifndef __ASSEMBLY__
-
 enum aarch64_insn_hint_cr_op {
 	AARCH64_INSN_HINT_NOP	= 0x0 << 5,
 	AARCH64_INSN_HINT_YIELD	= 0x1 << 5,
@@ -21,7 +11,6 @@ enum aarch64_insn_hint_cr_op {
 	AARCH64_INSN_HINT_WFI	= 0x3 << 5,
 	AARCH64_INSN_HINT_SEV	= 0x4 << 5,
 	AARCH64_INSN_HINT_SEVL	= 0x5 << 5,
-
 	AARCH64_INSN_HINT_XPACLRI    = 0x07 << 5,
 	AARCH64_INSN_HINT_PACIA_1716 = 0x08 << 5,
 	AARCH64_INSN_HINT_PACIB_1716 = 0x0A << 5,
@@ -35,19 +24,16 @@ enum aarch64_insn_hint_cr_op {
 	AARCH64_INSN_HINT_AUTIASP    = 0x1D << 5,
 	AARCH64_INSN_HINT_AUTIBZ     = 0x1E << 5,
 	AARCH64_INSN_HINT_AUTIBSP    = 0x1F << 5,
-
 	AARCH64_INSN_HINT_ESB  = 0x10 << 5,
 	AARCH64_INSN_HINT_PSB  = 0x11 << 5,
 	AARCH64_INSN_HINT_TSB  = 0x12 << 5,
 	AARCH64_INSN_HINT_CSDB = 0x14 << 5,
 	AARCH64_INSN_HINT_CLEARBHB = 0x16 << 5,
-
 	AARCH64_INSN_HINT_BTI   = 0x20 << 5,
 	AARCH64_INSN_HINT_BTIC  = 0x22 << 5,
 	AARCH64_INSN_HINT_BTIJ  = 0x24 << 5,
 	AARCH64_INSN_HINT_BTIJC = 0x26 << 5,
 };
-
 enum aarch64_insn_imm_type {
 	AARCH64_INSN_IMM_ADR,
 	AARCH64_INSN_IMM_26,
@@ -63,7 +49,6 @@ enum aarch64_insn_imm_type {
 	AARCH64_INSN_IMM_N,
 	AARCH64_INSN_IMM_MAX
 };
-
 enum aarch64_insn_register_type {
 	AARCH64_INSN_REGTYPE_RT,
 	AARCH64_INSN_REGTYPE_RN,
@@ -73,7 +58,6 @@ enum aarch64_insn_register_type {
 	AARCH64_INSN_REGTYPE_RA,
 	AARCH64_INSN_REGTYPE_RS,
 };
-
 enum aarch64_insn_register {
 	AARCH64_INSN_REG_0  = 0,
 	AARCH64_INSN_REG_1  = 1,
@@ -105,13 +89,12 @@ enum aarch64_insn_register {
 	AARCH64_INSN_REG_27 = 27,
 	AARCH64_INSN_REG_28 = 28,
 	AARCH64_INSN_REG_29 = 29,
-	AARCH64_INSN_REG_FP = 29, /* Frame pointer */
+	AARCH64_INSN_REG_FP = 29,  
 	AARCH64_INSN_REG_30 = 30,
-	AARCH64_INSN_REG_LR = 30, /* Link register */
-	AARCH64_INSN_REG_ZR = 31, /* Zero: as source register */
-	AARCH64_INSN_REG_SP = 31  /* Stack pointer: as load/store base reg */
+	AARCH64_INSN_REG_LR = 30,  
+	AARCH64_INSN_REG_ZR = 31,  
+	AARCH64_INSN_REG_SP = 31   
 };
-
 enum aarch64_insn_special_register {
 	AARCH64_INSN_SPCLREG_SPSR_EL1	= 0xC200,
 	AARCH64_INSN_SPCLREG_ELR_EL1	= 0xC201,
@@ -134,30 +117,27 @@ enum aarch64_insn_special_register {
 	AARCH64_INSN_SPCLREG_ELR_EL3	= 0xF201,
 	AARCH64_INSN_SPCLREG_SP_EL2	= 0xF210
 };
-
 enum aarch64_insn_variant {
 	AARCH64_INSN_VARIANT_32BIT,
 	AARCH64_INSN_VARIANT_64BIT
 };
-
 enum aarch64_insn_condition {
-	AARCH64_INSN_COND_EQ = 0x0, /* == */
-	AARCH64_INSN_COND_NE = 0x1, /* != */
-	AARCH64_INSN_COND_CS = 0x2, /* unsigned >= */
-	AARCH64_INSN_COND_CC = 0x3, /* unsigned < */
-	AARCH64_INSN_COND_MI = 0x4, /* < 0 */
-	AARCH64_INSN_COND_PL = 0x5, /* >= 0 */
-	AARCH64_INSN_COND_VS = 0x6, /* overflow */
-	AARCH64_INSN_COND_VC = 0x7, /* no overflow */
-	AARCH64_INSN_COND_HI = 0x8, /* unsigned > */
-	AARCH64_INSN_COND_LS = 0x9, /* unsigned <= */
-	AARCH64_INSN_COND_GE = 0xa, /* signed >= */
-	AARCH64_INSN_COND_LT = 0xb, /* signed < */
-	AARCH64_INSN_COND_GT = 0xc, /* signed > */
-	AARCH64_INSN_COND_LE = 0xd, /* signed <= */
-	AARCH64_INSN_COND_AL = 0xe, /* always */
+	AARCH64_INSN_COND_EQ = 0x0,  
+	AARCH64_INSN_COND_NE = 0x1,  
+	AARCH64_INSN_COND_CS = 0x2,  
+	AARCH64_INSN_COND_CC = 0x3,  
+	AARCH64_INSN_COND_MI = 0x4,  
+	AARCH64_INSN_COND_PL = 0x5,  
+	AARCH64_INSN_COND_VS = 0x6,  
+	AARCH64_INSN_COND_VC = 0x7,  
+	AARCH64_INSN_COND_HI = 0x8,  
+	AARCH64_INSN_COND_LS = 0x9,  
+	AARCH64_INSN_COND_GE = 0xa,  
+	AARCH64_INSN_COND_LT = 0xb,  
+	AARCH64_INSN_COND_GT = 0xc,  
+	AARCH64_INSN_COND_LE = 0xd,  
+	AARCH64_INSN_COND_AL = 0xe,  
 };
-
 enum aarch64_insn_branch_type {
 	AARCH64_INSN_BRANCH_NOLINK,
 	AARCH64_INSN_BRANCH_LINK,
@@ -165,14 +145,12 @@ enum aarch64_insn_branch_type {
 	AARCH64_INSN_BRANCH_COMP_ZERO,
 	AARCH64_INSN_BRANCH_COMP_NONZERO,
 };
-
 enum aarch64_insn_size_type {
 	AARCH64_INSN_SIZE_8,
 	AARCH64_INSN_SIZE_16,
 	AARCH64_INSN_SIZE_32,
 	AARCH64_INSN_SIZE_64,
 };
-
 enum aarch64_insn_ldst_type {
 	AARCH64_INSN_LDST_LOAD_REG_OFFSET,
 	AARCH64_INSN_LDST_STORE_REG_OFFSET,
@@ -189,32 +167,27 @@ enum aarch64_insn_ldst_type {
 	AARCH64_INSN_LDST_SIGNED_LOAD_IMM_OFFSET,
 	AARCH64_INSN_LDST_SIGNED_LOAD_REG_OFFSET,
 };
-
 enum aarch64_insn_adsb_type {
 	AARCH64_INSN_ADSB_ADD,
 	AARCH64_INSN_ADSB_SUB,
 	AARCH64_INSN_ADSB_ADD_SETFLAGS,
 	AARCH64_INSN_ADSB_SUB_SETFLAGS
 };
-
 enum aarch64_insn_movewide_type {
 	AARCH64_INSN_MOVEWIDE_ZERO,
 	AARCH64_INSN_MOVEWIDE_KEEP,
 	AARCH64_INSN_MOVEWIDE_INVERSE
 };
-
 enum aarch64_insn_bitfield_type {
 	AARCH64_INSN_BITFIELD_MOVE,
 	AARCH64_INSN_BITFIELD_MOVE_UNSIGNED,
 	AARCH64_INSN_BITFIELD_MOVE_SIGNED
 };
-
 enum aarch64_insn_data1_type {
 	AARCH64_INSN_DATA1_REVERSE_16,
 	AARCH64_INSN_DATA1_REVERSE_32,
 	AARCH64_INSN_DATA1_REVERSE_64,
 };
-
 enum aarch64_insn_data2_type {
 	AARCH64_INSN_DATA2_UDIV,
 	AARCH64_INSN_DATA2_SDIV,
@@ -223,12 +196,10 @@ enum aarch64_insn_data2_type {
 	AARCH64_INSN_DATA2_ASRV,
 	AARCH64_INSN_DATA2_RORV,
 };
-
 enum aarch64_insn_data3_type {
 	AARCH64_INSN_DATA3_MADD,
 	AARCH64_INSN_DATA3_MSUB,
 };
-
 enum aarch64_insn_logic_type {
 	AARCH64_INSN_LOGIC_AND,
 	AARCH64_INSN_LOGIC_BIC,
@@ -239,29 +210,24 @@ enum aarch64_insn_logic_type {
 	AARCH64_INSN_LOGIC_AND_SETFLAGS,
 	AARCH64_INSN_LOGIC_BIC_SETFLAGS
 };
-
 enum aarch64_insn_prfm_type {
 	AARCH64_INSN_PRFM_TYPE_PLD,
 	AARCH64_INSN_PRFM_TYPE_PLI,
 	AARCH64_INSN_PRFM_TYPE_PST,
 };
-
 enum aarch64_insn_prfm_target {
 	AARCH64_INSN_PRFM_TARGET_L1,
 	AARCH64_INSN_PRFM_TARGET_L2,
 	AARCH64_INSN_PRFM_TARGET_L3,
 };
-
 enum aarch64_insn_prfm_policy {
 	AARCH64_INSN_PRFM_POLICY_KEEP,
 	AARCH64_INSN_PRFM_POLICY_STRM,
 };
-
 enum aarch64_insn_adr_type {
 	AARCH64_INSN_ADR_TYPE_ADRP,
 	AARCH64_INSN_ADR_TYPE_ADR,
 };
-
 enum aarch64_insn_mem_atomic_op {
 	AARCH64_INSN_MEM_ATOMIC_ADD,
 	AARCH64_INSN_MEM_ATOMIC_CLR,
@@ -269,14 +235,12 @@ enum aarch64_insn_mem_atomic_op {
 	AARCH64_INSN_MEM_ATOMIC_SET,
 	AARCH64_INSN_MEM_ATOMIC_SWP,
 };
-
 enum aarch64_insn_mem_order_type {
 	AARCH64_INSN_MEM_ORDER_NONE,
 	AARCH64_INSN_MEM_ORDER_ACQ,
 	AARCH64_INSN_MEM_ORDER_REL,
 	AARCH64_INSN_MEM_ORDER_ACQREL,
 };
-
 enum aarch64_insn_mb_type {
 	AARCH64_INSN_MB_SY,
 	AARCH64_INSN_MB_ST,
@@ -291,7 +255,6 @@ enum aarch64_insn_mb_type {
 	AARCH64_INSN_MB_OSHST,
 	AARCH64_INSN_MB_OSHLD,
 };
-
 #define	__AARCH64_INSN_FUNCS(abbr, mask, val)				\
 static __always_inline bool aarch64_insn_is_##abbr(u32 code)		\
 {									\
@@ -302,24 +265,7 @@ static __always_inline u32 aarch64_insn_get_##abbr##_value(void)	\
 {									\
 	return (val);							\
 }
-
-/*
- * ARM Architecture Reference Manual for ARMv8 Profile-A, Issue A.a
- * Section C3.1 "A64 instruction index by encoding":
- * AArch64 main encoding table
- *  Bit position
- *   28 27 26 25	Encoding Group
- *   0  0  -  -		Unallocated
- *   1  0  0  -		Data processing, immediate
- *   1  0  1  -		Branch, exception generation and system instructions
- *   -  1  -  0		Loads and stores
- *   -  1  0  1		Data processing - register
- *   0  1  1  1		Data processing - SIMD and floating point
- *   1  1  1  1		Data processing - SIMD and floating point
- * "-" means "don't care"
- */
 __AARCH64_INSN_FUNCS(class_branch_sys,	0x1c000000, 0x14000000)
-
 __AARCH64_INSN_FUNCS(adr,	0x9F000000, 0x10000000)
 __AARCH64_INSN_FUNCS(adrp,	0x9F000000, 0x90000000)
 __AARCH64_INSN_FUNCS(prfm,	0x3FC00000, 0x39800000)
@@ -425,14 +371,11 @@ __AARCH64_INSN_FUNCS(clrex,	0xFFFFF0FF, 0xD503305F)
 __AARCH64_INSN_FUNCS(ssbb,	0xFFFFFFFF, 0xD503309F)
 __AARCH64_INSN_FUNCS(pssbb,	0xFFFFFFFF, 0xD503349F)
 __AARCH64_INSN_FUNCS(bti,	0xFFFFFF3F, 0xD503241f)
-
 #undef	__AARCH64_INSN_FUNCS
-
 static __always_inline bool aarch64_insn_is_steppable_hint(u32 insn)
 {
 	if (!aarch64_insn_is_hint(insn))
 		return false;
-
 	switch (insn & 0xFE0) {
 	case AARCH64_INSN_HINT_XPACLRI:
 	case AARCH64_INSN_HINT_PACIA_1716:
@@ -451,11 +394,8 @@ static __always_inline bool aarch64_insn_is_steppable_hint(u32 insn)
 		return false;
 	}
 }
-
 static __always_inline bool aarch64_insn_is_branch(u32 insn)
 {
-	/* b, bl, cb*, tb*, ret*, b.cond, br*, blr* */
-
 	return aarch64_insn_is_b(insn) ||
 	       aarch64_insn_is_bl(insn) ||
 	       aarch64_insn_is_cbz(insn) ||
@@ -470,7 +410,6 @@ static __always_inline bool aarch64_insn_is_branch(u32 insn)
 	       aarch64_insn_is_blr_auth(insn) ||
 	       aarch64_insn_is_bcond(insn);
 }
-
 static __always_inline bool aarch64_insn_is_branch_imm(u32 insn)
 {
 	return aarch64_insn_is_b(insn) ||
@@ -481,19 +420,16 @@ static __always_inline bool aarch64_insn_is_branch_imm(u32 insn)
 	       aarch64_insn_is_cbnz(insn) ||
 	       aarch64_insn_is_bcond(insn);
 }
-
 static __always_inline bool aarch64_insn_is_adr_adrp(u32 insn)
 {
 	return aarch64_insn_is_adr(insn) ||
 	       aarch64_insn_is_adrp(insn);
 }
-
 static __always_inline bool aarch64_insn_is_dsb(u32 insn)
 {
 	return aarch64_insn_is_dsb_base(insn) ||
 	       aarch64_insn_is_dsb_nxs(insn);
 }
-
 static __always_inline bool aarch64_insn_is_barrier(u32 insn)
 {
 	return aarch64_insn_is_dmb(insn) ||
@@ -504,45 +440,37 @@ static __always_inline bool aarch64_insn_is_barrier(u32 insn)
 	       aarch64_insn_is_ssbb(insn) ||
 	       aarch64_insn_is_pssbb(insn);
 }
-
 static __always_inline bool aarch64_insn_is_store_single(u32 insn)
 {
 	return aarch64_insn_is_store_imm(insn) ||
 	       aarch64_insn_is_store_pre(insn) ||
 	       aarch64_insn_is_store_post(insn);
 }
-
 static __always_inline bool aarch64_insn_is_store_pair(u32 insn)
 {
 	return aarch64_insn_is_stp(insn) ||
 	       aarch64_insn_is_stp_pre(insn) ||
 	       aarch64_insn_is_stp_post(insn);
 }
-
 static __always_inline bool aarch64_insn_is_load_single(u32 insn)
 {
 	return aarch64_insn_is_load_imm(insn) ||
 	       aarch64_insn_is_load_pre(insn) ||
 	       aarch64_insn_is_load_post(insn);
 }
-
 static __always_inline bool aarch64_insn_is_load_pair(u32 insn)
 {
 	return aarch64_insn_is_ldp(insn) ||
 	       aarch64_insn_is_ldp_pre(insn) ||
 	       aarch64_insn_is_ldp_post(insn);
 }
-
 static __always_inline bool aarch64_insn_uses_literal(u32 insn)
 {
-	/* ldr/ldrsw (literal), prfm */
-
 	return aarch64_insn_is_ldr_lit(insn) ||
 	       aarch64_insn_is_ldrsw_lit(insn) ||
 	       aarch64_insn_is_adr_adrp(insn) ||
 	       aarch64_insn_is_prfm_lit(insn);
 }
-
 enum aarch64_insn_encoding_class aarch64_get_insn_class(u32 insn);
 u64 aarch64_insn_decode_immediate(enum aarch64_insn_imm_type type, u32 insn);
 u32 aarch64_insn_encode_immediate(enum aarch64_insn_imm_type type,
@@ -557,18 +485,15 @@ u32 aarch64_insn_gen_comp_branch_imm(unsigned long pc, unsigned long addr,
 				     enum aarch64_insn_branch_type type);
 u32 aarch64_insn_gen_cond_branch_imm(unsigned long pc, unsigned long addr,
 				     enum aarch64_insn_condition cond);
-
 static __always_inline u32
 aarch64_insn_gen_hint(enum aarch64_insn_hint_cr_op op)
 {
 	return aarch64_insn_get_hint_value() | op;
 }
-
 static __always_inline u32 aarch64_insn_gen_nop(void)
 {
 	return aarch64_insn_gen_hint(AARCH64_INSN_HINT_NOP);
 }
-
 u32 aarch64_insn_gen_branch_reg(enum aarch64_insn_register reg,
 				enum aarch64_insn_branch_type type);
 u32 aarch64_insn_gen_load_store_reg(enum aarch64_insn_register reg,
@@ -674,7 +599,6 @@ u32 aarch64_insn_gen_atomic_ld_op(enum aarch64_insn_register result,
 {
 	return AARCH64_BREAK_FAULT;
 }
-
 static inline
 u32 aarch64_insn_gen_cas(enum aarch64_insn_register result,
 			 enum aarch64_insn_register address,
@@ -686,27 +610,19 @@ u32 aarch64_insn_gen_cas(enum aarch64_insn_register result,
 }
 #endif
 u32 aarch64_insn_gen_dmb(enum aarch64_insn_mb_type type);
-
 s32 aarch64_get_branch_offset(u32 insn);
 u32 aarch64_set_branch_offset(u32 insn, s32 offset);
-
 s32 aarch64_insn_adrp_get_offset(u32 insn);
 u32 aarch64_insn_adrp_set_offset(u32 insn, s32 offset);
-
 bool aarch32_insn_is_wide(u32 insn);
-
 #define A32_RN_OFFSET	16
 #define A32_RT_OFFSET	12
 #define A32_RT2_OFFSET	 0
-
 u32 aarch64_insn_extract_system_reg(u32 insn);
 u32 aarch32_insn_extract_reg_num(u32 insn, int offset);
 u32 aarch32_insn_mcr_extract_opc2(u32 insn);
 u32 aarch32_insn_mcr_extract_crm(u32 insn);
-
 typedef bool (pstate_check_t)(unsigned long);
 extern pstate_check_t * const aarch32_opcode_cond_checks[16];
-
-#endif /* __ASSEMBLY__ */
-
-#endif	/* __ASM_INSN_H */
+#endif  
+#endif	 

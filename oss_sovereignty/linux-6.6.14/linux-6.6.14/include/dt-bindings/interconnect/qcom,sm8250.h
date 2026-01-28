@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm SM8250 interconnect IDs
- *
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SM8250_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SM8250_H
-
 #define MASTER_A1NOC_CFG		0
 #define MASTER_QSPI_0			1
 #define MASTER_QUP_1			2
@@ -21,7 +13,6 @@
 #define A1NOC_SNOC_SLV			10
 #define SLAVE_ANOC_PCIE_GEM_NOC_1	11
 #define SLAVE_SERVICE_A1NOC		12
-
 #define MASTER_A2NOC_CFG		0
 #define MASTER_QDSS_BAM			1
 #define MASTER_QUP_0			2
@@ -36,10 +27,8 @@
 #define A2NOC_SNOC_SLV			11
 #define SLAVE_ANOC_PCIE_GEM_NOC		12
 #define SLAVE_SERVICE_A2NOC		13
-
 #define MASTER_NPU			0
 #define SLAVE_CDSP_MEM_NOC		1
-
 #define SNOC_CNOC_MAS			0
 #define MASTER_QDSS_DAP			1
 #define SLAVE_A1NOC_CFG			2
@@ -92,11 +81,9 @@
 #define SLAVE_VSENSE_CTRL_CFG		49
 #define SLAVE_CNOC_A2NOC		50
 #define SLAVE_SERVICE_CNOC		51
-
 #define MASTER_CNOC_DC_NOC		0
 #define SLAVE_LLCC_CFG			1
 #define SLAVE_GEM_NOC_CFG		2
-
 #define MASTER_GPU_TCU			0
 #define MASTER_SYS_TCU			1
 #define MASTER_AMPSS_M0			2
@@ -114,10 +101,8 @@
 #define SLAVE_SERVICE_GEM_NOC_1		14
 #define SLAVE_SERVICE_GEM_NOC_2		15
 #define SLAVE_SERVICE_GEM_NOC		16
-
 #define MASTER_LLCC			0
 #define SLAVE_EBI_CH0			1
-
 #define MASTER_CNOC_MNOC_CFG		0
 #define MASTER_CAMNOC_HF		1
 #define MASTER_CAMNOC_ICP		2
@@ -131,7 +116,6 @@
 #define SLAVE_MNOC_HF_MEM_NOC		10
 #define SLAVE_MNOC_SF_MEM_NOC		11
 #define SLAVE_SERVICE_MNOC		12
-
 #define MASTER_NPU_SYS			0
 #define MASTER_NPU_CDP			1
 #define MASTER_NPU_NOC_CFG		2
@@ -145,7 +129,6 @@
 #define SLAVE_NPU_TCM			10
 #define SLAVE_NPU_COMPUTE_NOC		11
 #define SLAVE_SERVICE_NPU_NOC		12
-
 #define MASTER_SNOC_CFG			0
 #define A1NOC_SNOC_MAS			1
 #define A2NOC_SNOC_MAS			2
@@ -165,12 +148,10 @@
 #define SLAVE_PCIE_2			16
 #define SLAVE_QDSS_STM			17
 #define SLAVE_TCU			18
-
 #define MASTER_QUP_CORE_0		0
 #define MASTER_QUP_CORE_1		1
 #define MASTER_QUP_CORE_2		2
 #define SLAVE_QUP_CORE_0		3
 #define SLAVE_QUP_CORE_1		4
 #define SLAVE_QUP_CORE_2		5
-
 #endif

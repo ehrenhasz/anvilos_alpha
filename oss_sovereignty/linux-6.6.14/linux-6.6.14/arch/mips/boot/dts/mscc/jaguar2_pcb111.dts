@@ -1,15 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2018 Microsemi Corporation
- */
-
 /dts-v1/;
 #include "jaguar2_common.dtsi"
-
 / {
 	model = "Jaguar2 Cu48 PCB111 Reference Board";
 	compatible = "mscc,jr2-pcb111", "mscc,jr2";
-
 	aliases {
 		i2c0    = &i2c0;
 		i2c149  = &i2c149;
@@ -18,7 +11,6 @@
 		i2c152  = &i2c152;
 		i2c203  = &i2c203;
 	};
-
 	i2c0_imux: i2c0-imux {
 		compatible = "i2c-mux-pinctrl";
 		#address-cells = <1>;
@@ -30,7 +22,7 @@
 		pinctrl-1 = <&i2cmux_1>;
 		pinctrl-2 = <&i2cmux_2>;
 		pinctrl-3 = <&i2cmux_3>;
-		pinctrl-4 = <&i2cmux_pins_i>; // Added by convention for PoE
+		pinctrl-4 = <&i2cmux_pins_i>;  
 		pinctrl-5 = <&i2cmux_pins_i>;
 		i2c149: i2c@0 {
 			reg = <0x0>;
@@ -59,25 +51,20 @@
 		};
 	};
 };
-
 &gpio {
 	synce_builtin_pins: synce-builtin-pins {
-		// GPIO 49 == SI_nCS13
 		pins = "GPIO_49";
 		function = "si";
 	};
 	cpld_pins: cpld-pins {
-		// GPIO 50 == SI_nCS14
 		pins = "GPIO_50";
 		function = "si";
 	};
 	cpld_fifo_pins: synce-builtin-pins {
-		// GPIO 51 == SI_nCS15
 		pins = "GPIO_51";
 		function = "si";
 	};
 };
-
 &gpio {
 	i2cmux_pins_i: i2cmux-pins {
 		pins = "GPIO_17", "GPIO_18";

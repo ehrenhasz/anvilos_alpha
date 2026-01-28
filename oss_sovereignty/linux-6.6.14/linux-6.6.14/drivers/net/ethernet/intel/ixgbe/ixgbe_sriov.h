@@ -1,17 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 1999 - 2018 Intel Corporation. */
-
 #ifndef _IXGBE_SRIOV_H_
 #define _IXGBE_SRIOV_H_
-
-/*  ixgbe driver limit the max number of VFs could be enabled to
- *  63 (IXGBE_MAX_VF_FUNCTIONS - 1)
- */
 #define IXGBE_MAX_VFS_DRV_LIMIT  (IXGBE_MAX_VF_FUNCTIONS - 1)
 #define IXGBE_MAX_VFS_1TC		IXGBE_MAX_VF_FUNCTIONS
 #define IXGBE_MAX_VFS_4TC		32
 #define IXGBE_MAX_VFS_8TC		16
-
 #ifdef CONFIG_PCI_IOV
 void ixgbe_restore_vf_multicasts(struct ixgbe_adapter *adapter);
 #endif
@@ -39,15 +31,11 @@ int ixgbe_disable_sriov(struct ixgbe_adapter *adapter);
 void ixgbe_enable_sriov(struct ixgbe_adapter *adapter, unsigned int max_vfs);
 #endif
 int ixgbe_pci_sriov_configure(struct pci_dev *dev, int num_vfs);
-
 static inline void ixgbe_set_vmvir(struct ixgbe_adapter *adapter,
 				   u16 vid, u16 qos, u32 vf)
 {
 	struct ixgbe_hw *hw = &adapter->hw;
 	u32 vmvir = vid | (qos << VLAN_PRIO_SHIFT) | IXGBE_VMVIR_VLANA_DEFAULT;
-
 	IXGBE_WRITE_REG(hw, IXGBE_VMVIR(vf), vmvir);
 }
-
-#endif /* _IXGBE_SRIOV_H_ */
-
+#endif  

@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*  $Id: aty128.h,v 1.1 1999/10/12 11:00:40 geert Exp $
- *  linux/drivers/video/aty128.h
- *  Register definitions for ATI Rage128 boards
- *
- *  Anthony Tong <atong@uiuc.edu>, 1999
- *  Brad Douglas <brad@neruo.com>, 2000
- */
-
 #ifndef REG_RAGE128_H
 #define REG_RAGE128_H
-
 #define CLOCK_CNTL_INDEX			0x0008
 #define CLOCK_CNTL_DATA				0x000c
 #define BIOS_0_SCRATCH				0x0010
@@ -123,14 +113,8 @@
 #define PM4_MICRO_CNTL				0x07fc
 #define CAP0_TRIG_CNTL				0x0950
 #define CAP1_TRIG_CNTL				0x09c0
-
-/******************************************************************************
- *                  GUI Block Memory Mapped Registers                         *
- *                     These registers are FIFOed.                            *
- *****************************************************************************/
 #define PM4_FIFO_DATA_EVEN			0x1000
 #define PM4_FIFO_DATA_ODD			0x1004
-
 #define DST_OFFSET				0x1404
 #define DST_PITCH				0x1408
 #define DST_WIDTH				0x140c
@@ -227,18 +211,13 @@
 #define DP_GUI_MASTER_CNTL_C			0x1c84
 #define SC_TOP_LEFT_C				0x1c88
 #define SC_BOTTOM_RIGHT_C			0x1c8c
-
 #define CLR_CMP_MASK_3D				0x1A28
 #define MISC_3D_STATE_CNTL_REG			0x1CA0
 #define MC_SRC1_CNTL				0x19D8
 #define TEX_CNTL				0x1800
-
-/* CONSTANTS */
 #define GUI_ACTIVE				0x80000000
 #define ENGINE_IDLE				0x0
-
 #define PLL_WR_EN				0x00000080
-
 #define CLK_PIN_CNTL				0x0001
 #define PPLL_CNTL				0x0002
 #define PPLL_REF_DIV				0x0003
@@ -261,7 +240,6 @@
 #define P2PLL_REF_DIV				0x002b
 #define P2PLL_DIV_0				0x002b
 #define POWER_MANAGEMENT			0x002f
-
 #define PPLL_RESET				0x01
 #define PPLL_ATOMIC_UPDATE_EN			0x10000
 #define PPLL_VGA_ATOMIC_UPDATE_EN		0x20000
@@ -274,10 +252,7 @@
 #define XCLK_SRC_SEL_MASK			0x7
 #define XPLL_FB_DIV_MASK			0xFF00
 #define X_MPLL_REF_DIV_MASK			0xFF
-
-/* CRTC control values (CRTC_GEN_CNTL) */
 #define CRTC_CSYNC_EN				0x00000010
-
 #define CRTC2_DBL_SCAN_EN			0x00000001
 #define CRTC2_DISPLAY_DIS			0x00800000
 #define CRTC2_FIFO_EXTSENSE			0x00200000
@@ -285,7 +260,6 @@
 #define CRTC2_CUR_EN				0x00010000
 #define CRTC2_EN				0x02000000
 #define CRTC2_DISP_REQ_EN_B			0x04000000
-
 #define CRTC_PIX_WIDTH_MASK			0x00000700
 #define CRTC_PIX_WIDTH_4BPP			0x00000100
 #define CRTC_PIX_WIDTH_8BPP			0x00000200
@@ -293,8 +267,6 @@
 #define CRTC_PIX_WIDTH_16BPP			0x00000400
 #define CRTC_PIX_WIDTH_24BPP			0x00000500
 #define CRTC_PIX_WIDTH_32BPP			0x00000600
-
-/* DAC_CNTL bit constants */
 #define DAC_8BIT_EN				0x00000100
 #define DAC_MASK				0xFF000000
 #define DAC_BLANKING				0x00000004
@@ -303,36 +275,24 @@
 #define DAC_PALETTE_ACCESS_CNTL			0x00000020
 #define DAC_PALETTE2_SNOOP_EN			0x00000040
 #define DAC_PDWN				0x00008000
-
-/* CRTC_EXT_CNTL */
 #define CRT_CRTC_ON				0x00008000
-
-/* GEN_RESET_CNTL bit constants */
 #define SOFT_RESET_GUI				0x00000001
 #define SOFT_RESET_VCLK				0x00000100
 #define SOFT_RESET_PCLK				0x00000200
 #define SOFT_RESET_ECP				0x00000400
 #define SOFT_RESET_DISPENG_XCLK			0x00000800
-
-/* PC_GUI_CTLSTAT bit constants */
 #define PC_BUSY_INIT				0x10000000
 #define PC_BUSY_GUI				0x20000000
 #define PC_BUSY_NGUI				0x40000000
 #define PC_BUSY					0x80000000
-
 #define BUS_MASTER_DIS				0x00000040
 #define PM4_BUFFER_CNTL_NONPM4			0x00000000
-
-/* DP_DATATYPE bit constants */
 #define DST_8BPP				0x00000002
 #define DST_15BPP				0x00000003
 #define DST_16BPP				0x00000004
 #define DST_24BPP				0x00000005
 #define DST_32BPP				0x00000006
-
 #define BRUSH_SOLIDCOLOR			0x00000d00
-
-/* DP_GUI_MASTER_CNTL bit constants */
 #define	GMC_SRC_PITCH_OFFSET_DEFAULT		0x00000000
 #define GMC_DST_PITCH_OFFSET_DEFAULT		0x00000000
 #define GMC_SRC_CLIP_DEFAULT			0x00000000
@@ -346,14 +306,9 @@
 #define GMC_DST_CLR_CMP_FCN_CLEAR		0x10000000
 #define GMC_WRITE_MASK_SET			0x40000000
 #define GMC_DP_CONVERSION_TEMP_6500		0x00000000
-
-/* DP_GUI_MASTER_CNTL ROP3 named constants */
 #define	ROP3_PATCOPY				0x00f00000
 #define ROP3_SRCCOPY				0x00cc0000
-
 #define SRC_DSTCOLOR				0x00030000
-
-/* DP_CNTL bit constants */
 #define DST_X_RIGHT_TO_LEFT			0x00000000
 #define DST_X_LEFT_TO_RIGHT			0x00000001
 #define DST_Y_BOTTOM_TO_TOP			0x00000000
@@ -372,13 +327,9 @@
 #define DST_POLYLINE_NONLAST			0x00008000
 #define DST_RASTER_STALL			0x00010000
 #define DST_POLY_EDGE				0x00040000
-
-/* DP_MIX bit constants */
 #define DP_SRC_RECT				0x00000200
 #define DP_SRC_HOST				0x00000300
 #define DP_SRC_HOST_BYTEALIGN			0x00000400
-
-/* LVDS_GEN_CNTL constants */
 #define LVDS_BL_MOD_LEVEL_MASK			0x0000ff00
 #define LVDS_BL_MOD_LEVEL_SHIFT			8
 #define LVDS_BL_MOD_EN				0x00010000
@@ -393,11 +344,7 @@
 #define LVDS_FRAME_MOD_4_LEVELS			0x00000020
 #define LVDS_RST_FM				0x00000040
 #define LVDS_EN					0x00000080
-
-/* CRTC2_GEN_CNTL constants */
 #define CRTC2_EN				0x02000000
-
-/* POWER_MANAGEMENT constants */
 #define PWR_MGT_ON				0x00000001
 #define PWR_MGT_MODE_MASK			0x00000006
 #define PWR_MGT_MODE_PIN			0x00000000
@@ -414,10 +361,6 @@
 #define PWR_MGT_TRISTATE_MEM_EN			0x00000800
 #define PWR_MGT_SELW4MS				0x00001000
 #define PWR_MGT_SLOWDOWN_MCLK			0x00002000
-
 #define PMI_PMSCR_REG				0x60
-
-/* used by ATI bug fix for hardware ROM */
 #define RAGE128_MPP_TB_CONFIG                   0x01c0
-
-#endif				/* REG_RAGE128_H */
+#endif				 

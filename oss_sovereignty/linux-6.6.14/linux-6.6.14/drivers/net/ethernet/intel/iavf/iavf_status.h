@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
-
 #ifndef _IAVF_STATUS_H_
 #define _IAVF_STATUS_H_
-
-/* Error Codes */
 enum iavf_status {
 	IAVF_SUCCESS				= 0,
 	IAVF_ERR_NVM				= -1,
@@ -74,5 +69,4 @@ enum iavf_status {
 	IAVF_ERR_FIRMWARE_API_VERSION		= -65,
 	IAVF_ERR_ADMIN_QUEUE_CRITICAL_ERROR	= -66,
 };
-
-#endif /* _IAVF_STATUS_H_ */
+#endif  

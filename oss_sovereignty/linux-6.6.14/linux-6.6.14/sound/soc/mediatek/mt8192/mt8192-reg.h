@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8192-reg.h  --  Mediatek 8192 audio driver reg definition
- *
- * Copyright (c) 2020 MediaTek Inc.
- * Author: Shane Chien <shane.chien@mediatek.com>
- */
-
 #ifndef _MT8192_REG_H_
 #define _MT8192_REG_H_
-
-/* reg bit enum */
 enum {
 	MT8192_MEMIF_PBUF_SIZE_32_BYTES,
 	MT8192_MEMIF_PBUF_SIZE_64_BYTES,
@@ -17,16 +7,9 @@ enum {
 	MT8192_MEMIF_PBUF_SIZE_256_BYTES,
 	MT8192_MEMIF_PBUF_SIZE_NUM,
 };
-
-/*****************************************************************************
- *                  R E G I S T E R       D E F I N I T I O N
- *****************************************************************************/
-/* AUDIO_TOP_CON3 */
 #define BCK_INVERSE_SFT                              3
 #define BCK_INVERSE_MASK                             0x1
 #define BCK_INVERSE_MASK_SFT                         (0x1 << 3)
-
-/* AFE_DAC_CON0 */
 #define VUL12_ON_SFT                                   31
 #define VUL12_ON_MASK                                  0x1
 #define VUL12_ON_MASK_SFT                              (0x1 << 31)
@@ -99,13 +82,9 @@ enum {
 #define AFE_ON_SFT                                     0
 #define AFE_ON_MASK                                    0x1
 #define AFE_ON_MASK_SFT                                (0x1 << 0)
-
-/* AFE_DAC_MON */
 #define AFE_ON_RETM_SFT                                0
 #define AFE_ON_RETM_MASK                               0x1
 #define AFE_ON_RETM_MASK_SFT                           (0x1 << 0)
-
-/* AFE_I2S_CON */
 #define BCK_NEG_EG_LATCH_SFT                           30
 #define BCK_NEG_EG_LATCH_MASK                          0x1
 #define BCK_NEG_EG_LATCH_MASK_SFT                      (0x1 << 30)
@@ -148,8 +127,6 @@ enum {
 #define I2S_EN_SFT                                     0
 #define I2S_EN_MASK                                    0x1
 #define I2S_EN_MASK_SFT                                (0x1 << 0)
-
-/* AFE_I2S_CON1 */
 #define I2S2_LR_SWAP_SFT                               31
 #define I2S2_LR_SWAP_MASK                              0x1
 #define I2S2_LR_SWAP_MASK_SFT                          (0x1 << 31)
@@ -183,8 +160,6 @@ enum {
 #define I2S2_EN_SFT                                    0
 #define I2S2_EN_MASK                                   0x1
 #define I2S2_EN_MASK_SFT                               (0x1 << 0)
-
-/* AFE_I2S_CON2 */
 #define I2S3_LR_SWAP_SFT                               31
 #define I2S3_LR_SWAP_MASK                              0x1
 #define I2S3_LR_SWAP_MASK_SFT                          (0x1 << 31)
@@ -221,8 +196,6 @@ enum {
 #define I2S3_EN_SFT                                    0
 #define I2S3_EN_MASK                                   0x1
 #define I2S3_EN_MASK_SFT                               (0x1 << 0)
-
-/* AFE_I2S_CON3 */
 #define I2S4_LR_SWAP_SFT                               31
 #define I2S4_LR_SWAP_MASK                              0x1
 #define I2S4_LR_SWAP_MASK_SFT                          (0x1 << 31)
@@ -250,8 +223,6 @@ enum {
 #define I2S4_EN_SFT                                    0
 #define I2S4_EN_MASK                                   0x1
 #define I2S4_EN_MASK_SFT                               (0x1 << 0)
-
-/* AFE_I2S_CON4 */
 #define I2S5_LR_SWAP_SFT                               31
 #define I2S5_LR_SWAP_MASK                              0x1
 #define I2S5_LR_SWAP_MASK_SFT                          (0x1 << 31)
@@ -282,8 +253,6 @@ enum {
 #define I2S5_EN_SFT                                    0
 #define I2S5_EN_MASK                                   0x1
 #define I2S5_EN_MASK_SFT                               (0x1 << 0)
-
-/* AFE_CONNSYS_I2S_CON */
 #define BCK_NEG_EG_LATCH_SFT                           30
 #define BCK_NEG_EG_LATCH_MASK                          0x1
 #define BCK_NEG_EG_LATCH_MASK_SFT                      (0x1 << 30)
@@ -323,8 +292,6 @@ enum {
 #define I2S_EN_SFT                                     0
 #define I2S_EN_MASK                                    0x1
 #define I2S_EN_MASK_SFT                                (0x1 << 0)
-
-/* AFE_I2S_CON6 */
 #define BCK_NEG_EG_LATCH_SFT                           30
 #define BCK_NEG_EG_LATCH_MASK                          0x1
 #define BCK_NEG_EG_LATCH_MASK_SFT                      (0x1 << 30)
@@ -361,8 +328,6 @@ enum {
 #define I2S6_EN_SFT                                    0
 #define I2S6_EN_MASK                                   0x1
 #define I2S6_EN_MASK_SFT                               (0x1 << 0)
-
-/* AFE_I2S_CON7 */
 #define I2S7_LR_SWAP_SFT                               31
 #define I2S7_LR_SWAP_MASK                              0x1
 #define I2S7_LR_SWAP_MASK_SFT                          (0x1 << 31)
@@ -390,8 +355,6 @@ enum {
 #define I2S7_EN_SFT                                    0
 #define I2S7_EN_MASK                                   0x1
 #define I2S7_EN_MASK_SFT                               (0x1 << 0)
-
-/* AFE_I2S_CON8 */
 #define BCK_NEG_EG_LATCH_SFT                           30
 #define BCK_NEG_EG_LATCH_MASK                          0x1
 #define BCK_NEG_EG_LATCH_MASK_SFT                      (0x1 << 30)
@@ -428,8 +391,6 @@ enum {
 #define I2S8_EN_SFT                                    0
 #define I2S8_EN_MASK                                   0x1
 #define I2S8_EN_MASK_SFT                               (0x1 << 0)
-
-/* AFE_I2S_CON9 */
 #define I2S9_LR_SWAP_SFT                               31
 #define I2S9_LR_SWAP_MASK                              0x1
 #define I2S9_LR_SWAP_MASK_SFT                          (0x1 << 31)
@@ -457,8 +418,6 @@ enum {
 #define I2S9_EN_SFT                                    0
 #define I2S9_EN_MASK                                   0x1
 #define I2S9_EN_MASK_SFT                               (0x1 << 0)
-
-/* AFE_ASRC_2CH_CON2 */
 #define CHSET_O16BIT_SFT                               19
 #define CHSET_O16BIT_MASK                              0x1
 #define CHSET_O16BIT_MASK_SFT                          (0x1 << 19)
@@ -486,8 +445,6 @@ enum {
 #define ASM_ON_SFT                                     0
 #define ASM_ON_MASK                                    0x1
 #define ASM_ON_MASK_SFT                                (0x1 << 0)
-
-/* AFE_GAIN1_CON0 */
 #define GAIN1_SAMPLE_PER_STEP_SFT                      8
 #define GAIN1_SAMPLE_PER_STEP_MASK                     0xff
 #define GAIN1_SAMPLE_PER_STEP_MASK_SFT                 (0xff << 8)
@@ -497,13 +454,9 @@ enum {
 #define GAIN1_ON_SFT                                   0
 #define GAIN1_ON_MASK                                  0x1
 #define GAIN1_ON_MASK_SFT                              (0x1 << 0)
-
-/* AFE_GAIN1_CON1 */
 #define GAIN1_TARGET_SFT                               0
 #define GAIN1_TARGET_MASK                              0xfffffff
 #define GAIN1_TARGET_MASK_SFT                          (0xfffffff << 0)
-
-/* AFE_GAIN2_CON0 */
 #define GAIN2_SAMPLE_PER_STEP_SFT                      8
 #define GAIN2_SAMPLE_PER_STEP_MASK                     0xff
 #define GAIN2_SAMPLE_PER_STEP_MASK_SFT                 (0xff << 8)
@@ -513,23 +466,15 @@ enum {
 #define GAIN2_ON_SFT                                   0
 #define GAIN2_ON_MASK                                  0x1
 #define GAIN2_ON_MASK_SFT                              (0x1 << 0)
-
-/* AFE_GAIN2_CON1 */
 #define GAIN2_TARGET_SFT                               0
 #define GAIN2_TARGET_MASK                              0xfffffff
 #define GAIN2_TARGET_MASK_SFT                          (0xfffffff << 0)
-
-/* AFE_GAIN1_CUR */
 #define AFE_GAIN1_CUR_SFT                              0
 #define AFE_GAIN1_CUR_MASK                             0xfffffff
 #define AFE_GAIN1_CUR_MASK_SFT                         (0xfffffff << 0)
-
-/* AFE_GAIN2_CUR */
 #define AFE_GAIN2_CUR_SFT                              0
 #define AFE_GAIN2_CUR_MASK                             0xfffffff
 #define AFE_GAIN2_CUR_MASK_SFT                         (0xfffffff << 0)
-
-/* PCM_INTF_CON1 */
 #define PCM_FIX_VALUE_SEL_SFT                          31
 #define PCM_FIX_VALUE_SEL_MASK                         0x1
 #define PCM_FIX_VALUE_SEL_MASK_SFT                     (0x1 << 31)
@@ -605,8 +550,6 @@ enum {
 #define PCM_EN_SFT                                     0
 #define PCM_EN_MASK                                    0x1
 #define PCM_EN_MASK_SFT                                (0x1 << 0)
-
-/* PCM_INTF_CON2 */
 #define PCM1_TX_FIFO_OV_SFT                            31
 #define PCM1_TX_FIFO_OV_MASK                           0x1
 #define PCM1_TX_FIFO_OV_MASK_SFT                       (0x1 << 31)
@@ -640,8 +583,6 @@ enum {
 #define TX_FIX_VALUE_SFT                               0
 #define TX_FIX_VALUE_MASK                              0xff
 #define TX_FIX_VALUE_MASK_SFT                          (0xff << 0)
-
-/* PCM2_INTF_CON */
 #define PCM2_TX_FIX_VALUE_SFT                          24
 #define PCM2_TX_FIX_VALUE_MASK                         0xff
 #define PCM2_TX_FIX_VALUE_MASK_SFT                     (0xff << 24)
@@ -705,8 +646,6 @@ enum {
 #define PCM2_EN_SFT                                    0
 #define PCM2_EN_MASK                                   0x1
 #define PCM2_EN_MASK_SFT                               (0x1 << 0)
-
-/* AFE_ADDA_MTKAIF_CFG0 */
 #define MTKAIF_RXIF_CLKINV_ADC_SFT                     31
 #define MTKAIF_RXIF_CLKINV_ADC_MASK                    0x1
 #define MTKAIF_RXIF_CLKINV_ADC_MASK_SFT                (0x1 << 31)
@@ -731,8 +670,6 @@ enum {
 #define MTKAIF_IF_LOOPBACK1_SFT                        0
 #define MTKAIF_IF_LOOPBACK1_MASK                       0x1
 #define MTKAIF_IF_LOOPBACK1_MASK_SFT                   (0x1 << 0)
-
-/* AFE_ADDA_MTKAIF_RX_CFG2 */
 #define MTKAIF_RXIF_DETECT_ON_PROTOCOL2_SFT            16
 #define MTKAIF_RXIF_DETECT_ON_PROTOCOL2_MASK           0x1
 #define MTKAIF_RXIF_DETECT_ON_PROTOCOL2_MASK_SFT       (0x1 << 16)
@@ -745,8 +682,6 @@ enum {
 #define MTKAIF_RXIF_FIFO_RSP_PROTOCOL2_SFT             4
 #define MTKAIF_RXIF_FIFO_RSP_PROTOCOL2_MASK            0x7
 #define MTKAIF_RXIF_FIFO_RSP_PROTOCOL2_MASK_SFT        (0x7 << 4)
-
-/* AFE_ADDA_DL_SRC2_CON0 */
 #define DL_2_INPUT_MODE_CTL_SFT                        28
 #define DL_2_INPUT_MODE_CTL_MASK                       0xf
 #define DL_2_INPUT_MODE_CTL_MASK_SFT                   (0xf << 28)
@@ -801,16 +736,12 @@ enum {
 #define DL_2_SRC_ON_TMP_CTL_PRE_SFT                    0
 #define DL_2_SRC_ON_TMP_CTL_PRE_MASK                   0x1
 #define DL_2_SRC_ON_TMP_CTL_PRE_MASK_SFT               (0x1 << 0)
-
-/* AFE_ADDA_DL_SRC2_CON1 */
 #define DL_2_GAIN_CTL_PRE_SFT                          16
 #define DL_2_GAIN_CTL_PRE_MASK                         0xffff
 #define DL_2_GAIN_CTL_PRE_MASK_SFT                     (0xffff << 16)
 #define DL_2_GAIN_MODE_CTL_SFT                         0
 #define DL_2_GAIN_MODE_CTL_MASK                        0x1
 #define DL_2_GAIN_MODE_CTL_MASK_SFT                    (0x1 << 0)
-
-/* AFE_ADDA_UL_SRC_CON0 */
 #define ULCF_CFG_EN_CTL_SFT                            31
 #define ULCF_CFG_EN_CTL_MASK                           0x1
 #define ULCF_CFG_EN_CTL_MASK_SFT                       (0x1 << 31)
@@ -859,8 +790,6 @@ enum {
 #define UL_SRC_ON_TMP_CTL_SFT                          0
 #define UL_SRC_ON_TMP_CTL_MASK                         0x1
 #define UL_SRC_ON_TMP_CTL_MASK_SFT                     (0x1 << 0)
-
-/* AFE_ADDA_UL_SRC_CON1 */
 #define C_DAC_EN_CTL_SFT                               27
 #define C_DAC_EN_CTL_MASK                              0x1
 #define C_DAC_EN_CTL_MASK_SFT                          (0x1 << 27)
@@ -888,8 +817,6 @@ enum {
 #define C_SINE_MODE_CH1_CTL_SFT                        0
 #define C_SINE_MODE_CH1_CTL_MASK                       0xf
 #define C_SINE_MODE_CH1_CTL_MASK_SFT                   (0xf << 0)
-
-/* AFE_ADDA_TOP_CON0 */
 #define C_LOOP_BACK_MODE_CTL_SFT                       12
 #define C_LOOP_BACK_MODE_CTL_MASK                      0xf
 #define C_LOOP_BACK_MODE_CTL_MASK_SFT                  (0xf << 12)
@@ -899,8 +826,6 @@ enum {
 #define C_EXT_ADC_CTL_SFT                              0
 #define C_EXT_ADC_CTL_MASK                             0x1
 #define C_EXT_ADC_CTL_MASK_SFT                         (0x1 << 0)
-
-/* AFE_ADDA_UL_DL_CON0 */
 #define AFE_ADDA_UL_LR_SWAP_SFT                        31
 #define AFE_ADDA_UL_LR_SWAP_MASK                       0x1
 #define AFE_ADDA_UL_LR_SWAP_MASK_SFT                   (0x1 << 31)
@@ -934,8 +859,6 @@ enum {
 #define ADDA_AFE_ON_SFT                                0
 #define ADDA_AFE_ON_MASK                               0x1
 #define ADDA_AFE_ON_MASK_SFT                           (0x1 << 0)
-
-/* AFE_SIDETONE_CON0 */
 #define R_RDY_SFT                                      30
 #define R_RDY_MASK                                     0x1
 #define R_RDY_MASK_SFT                                 (0x1 << 30)
@@ -957,13 +880,9 @@ enum {
 #define SIDE_TONE_COEFFICIENT_SFT                      0
 #define SIDE_TONE_COEFFICIENT_MASK                     0xffff
 #define SIDE_TONE_COEFFICIENT_MASK_SFT                 (0xffff << 0)
-
-/* AFE_SIDETONE_COEFF */
 #define SIDE_TONE_COEFF_SFT                            0
 #define SIDE_TONE_COEFF_MASK                           0xffff
 #define SIDE_TONE_COEFF_MASK_SFT                       (0xffff << 0)
-
-/* AFE_SIDETONE_CON1 */
 #define STF_BYPASS_MODE_SFT                            31
 #define STF_BYPASS_MODE_MASK                           0x1
 #define STF_BYPASS_MODE_MASK_SFT                       (0x1 << 31)
@@ -997,16 +916,12 @@ enum {
 #define SIDE_TONE_HALF_TAP_NUM_SFT                     0
 #define SIDE_TONE_HALF_TAP_NUM_MASK                    0x3f
 #define SIDE_TONE_HALF_TAP_NUM_MASK_SFT                (0x3f << 0)
-
-/* AFE_SIDETONE_GAIN */
 #define POSITIVE_GAIN_SFT                              16
 #define POSITIVE_GAIN_MASK                             0x7
 #define POSITIVE_GAIN_MASK_SFT                         (0x7 << 16)
 #define SIDE_TONE_GAIN_SFT                             0
 #define SIDE_TONE_GAIN_MASK                            0xffff
 #define SIDE_TONE_GAIN_MASK_SFT                        (0xffff << 0)
-
-/* AFE_ADDA_DL_SDM_DCCOMP_CON */
 #define USE_3RD_SDM_SFT                                28
 #define USE_3RD_SDM_MASK                               0x1
 #define USE_3RD_SDM_MASK_SFT                           (0x1 << 28)
@@ -1043,8 +958,6 @@ enum {
 #define ATTGAIN_CTL_SFT                                0
 #define ATTGAIN_CTL_MASK                               0x3f
 #define ATTGAIN_CTL_MASK_SFT                           (0x3f << 0)
-
-/* AFE_SINEGEN_CON0 */
 #define DAC_EN_SFT                                     26
 #define DAC_EN_MASK                                    0x1
 #define DAC_EN_MASK_SFT                                (0x1 << 26)
@@ -1072,21 +985,15 @@ enum {
 #define FREQ_DIV_CH1_SFT                               0
 #define FREQ_DIV_CH1_MASK                              0x1f
 #define FREQ_DIV_CH1_MASK_SFT                          (0x1f << 0)
-
-/* AFE_SINEGEN_CON2 */
 #define INNER_LOOP_BACK_MODE_SFT                       0
 #define INNER_LOOP_BACK_MODE_MASK                      0x3f
 #define INNER_LOOP_BACK_MODE_MASK_SFT                  (0x3f << 0)
-
-/* AFE_HD_ENGEN_ENABLE */
 #define AFE_24M_ON_SFT                                 1
 #define AFE_24M_ON_MASK                                0x1
 #define AFE_24M_ON_MASK_SFT                            (0x1 << 1)
 #define AFE_22M_ON_SFT                                 0
 #define AFE_22M_ON_MASK                                0x1
 #define AFE_22M_ON_MASK_SFT                            (0x1 << 0)
-
-/* AFE_ADDA_DL_NLE_FIFO_MON */
 #define DL_NLE_FIFO_WBIN_SFT                           8
 #define DL_NLE_FIFO_WBIN_MASK                          0xf
 #define DL_NLE_FIFO_WBIN_MASK_SFT                      (0xf << 8)
@@ -1105,8 +1012,6 @@ enum {
 #define DL_NLE_FIFO_WR_FULL_SFT                        0
 #define DL_NLE_FIFO_WR_FULL_MASK                       0x1
 #define DL_NLE_FIFO_WR_FULL_MASK_SFT                   (0x1 << 0)
-
-/* AFE_DL1_CON0 */
 #define DL1_MODE_SFT                                   24
 #define DL1_MODE_MASK                                  0xf
 #define DL1_MODE_MASK_SFT                              (0xf << 24)
@@ -1134,8 +1039,6 @@ enum {
 #define DL1_HD_MODE_SFT                                0
 #define DL1_HD_MODE_MASK                               0x3
 #define DL1_HD_MODE_MASK_SFT                           (0x3 << 0)
-
-/* AFE_DL2_CON0 */
 #define DL2_MODE_SFT                                   24
 #define DL2_MODE_MASK                                  0xf
 #define DL2_MODE_MASK_SFT                              (0xf << 24)
@@ -1163,8 +1066,6 @@ enum {
 #define DL2_HD_MODE_SFT                                0
 #define DL2_HD_MODE_MASK                               0x3
 #define DL2_HD_MODE_MASK_SFT                           (0x3 << 0)
-
-/* AFE_DL3_CON0 */
 #define DL3_MODE_SFT                                   24
 #define DL3_MODE_MASK                                  0xf
 #define DL3_MODE_MASK_SFT                              (0xf << 24)
@@ -1192,8 +1093,6 @@ enum {
 #define DL3_HD_MODE_SFT                                0
 #define DL3_HD_MODE_MASK                               0x3
 #define DL3_HD_MODE_MASK_SFT                           (0x3 << 0)
-
-/* AFE_DL4_CON0 */
 #define DL4_MODE_SFT                                   24
 #define DL4_MODE_MASK                                  0xf
 #define DL4_MODE_MASK_SFT                              (0xf << 24)
@@ -1221,8 +1120,6 @@ enum {
 #define DL4_HD_MODE_SFT                                0
 #define DL4_HD_MODE_MASK                               0x3
 #define DL4_HD_MODE_MASK_SFT                           (0x3 << 0)
-
-/* AFE_DL5_CON0 */
 #define DL5_MODE_SFT                                   24
 #define DL5_MODE_MASK                                  0xf
 #define DL5_MODE_MASK_SFT                              (0xf << 24)
@@ -1250,8 +1147,6 @@ enum {
 #define DL5_HD_MODE_SFT                                0
 #define DL5_HD_MODE_MASK                               0x3
 #define DL5_HD_MODE_MASK_SFT                           (0x3 << 0)
-
-/* AFE_DL6_CON0 */
 #define DL6_MODE_SFT                                   24
 #define DL6_MODE_MASK                                  0xf
 #define DL6_MODE_MASK_SFT                              (0xf << 24)
@@ -1279,8 +1174,6 @@ enum {
 #define DL6_HD_MODE_SFT                                0
 #define DL6_HD_MODE_MASK                               0x3
 #define DL6_HD_MODE_MASK_SFT                           (0x3 << 0)
-
-/* AFE_DL7_CON0 */
 #define DL7_MODE_SFT                                   24
 #define DL7_MODE_MASK                                  0xf
 #define DL7_MODE_MASK_SFT                              (0xf << 24)
@@ -1308,8 +1201,6 @@ enum {
 #define DL7_HD_MODE_SFT                                0
 #define DL7_HD_MODE_MASK                               0x3
 #define DL7_HD_MODE_MASK_SFT                           (0x3 << 0)
-
-/* AFE_DL8_CON0 */
 #define DL8_MODE_SFT                                   24
 #define DL8_MODE_MASK                                  0xf
 #define DL8_MODE_MASK_SFT                              (0xf << 24)
@@ -1337,8 +1228,6 @@ enum {
 #define DL8_HD_MODE_SFT                                0
 #define DL8_HD_MODE_MASK                               0x3
 #define DL8_HD_MODE_MASK_SFT                           (0x3 << 0)
-
-/* AFE_DL9_CON0 */
 #define DL9_MODE_SFT                                   24
 #define DL9_MODE_MASK                                  0xf
 #define DL9_MODE_MASK_SFT                              (0xf << 24)
@@ -1366,8 +1255,6 @@ enum {
 #define DL9_HD_MODE_SFT                                0
 #define DL9_HD_MODE_MASK                               0x3
 #define DL9_HD_MODE_MASK_SFT                           (0x3 << 0)
-
-/* AFE_DL12_CON0 */
 #define DL12_MODE_SFT                                  24
 #define DL12_MODE_MASK                                 0xf
 #define DL12_MODE_MASK_SFT                             (0xf << 24)
@@ -1398,8 +1285,6 @@ enum {
 #define DL12_HD_MODE_SFT                               0
 #define DL12_HD_MODE_MASK                              0x3
 #define DL12_HD_MODE_MASK_SFT                          (0x3 << 0)
-
-/* AFE_AWB_CON0 */
 #define AWB_MODE_SFT                                   24
 #define AWB_MODE_MASK                                  0xf
 #define AWB_MODE_MASK_SFT                              (0xf << 24)
@@ -1424,8 +1309,6 @@ enum {
 #define AWB_HD_MODE_SFT                                0
 #define AWB_HD_MODE_MASK                               0x3
 #define AWB_HD_MODE_MASK_SFT                           (0x3 << 0)
-
-/* AFE_AWB2_CON0 */
 #define AWB2_MODE_SFT                                  24
 #define AWB2_MODE_MASK                                 0xf
 #define AWB2_MODE_MASK_SFT                             (0xf << 24)
@@ -1450,8 +1333,6 @@ enum {
 #define AWB2_HD_MODE_SFT                               0
 #define AWB2_HD_MODE_MASK                              0x3
 #define AWB2_HD_MODE_MASK_SFT                          (0x3 << 0)
-
-/* AFE_VUL_CON0 */
 #define VUL_MODE_SFT                                   24
 #define VUL_MODE_MASK                                  0xf
 #define VUL_MODE_MASK_SFT                              (0xf << 24)
@@ -1476,8 +1357,6 @@ enum {
 #define VUL_HD_MODE_SFT                                0
 #define VUL_HD_MODE_MASK                               0x3
 #define VUL_HD_MODE_MASK_SFT                           (0x3 << 0)
-
-/* AFE_VUL12_CON0 */
 #define VUL12_MODE_SFT                                 24
 #define VUL12_MODE_MASK                                0xf
 #define VUL12_MODE_MASK_SFT                            (0xf << 24)
@@ -1505,8 +1384,6 @@ enum {
 #define VUL12_HD_MODE_SFT                              0
 #define VUL12_HD_MODE_MASK                             0x3
 #define VUL12_HD_MODE_MASK_SFT                         (0x3 << 0)
-
-/* AFE_VUL2_CON0 */
 #define VUL2_MODE_SFT                                  24
 #define VUL2_MODE_MASK                                 0xf
 #define VUL2_MODE_MASK_SFT                             (0xf << 24)
@@ -1531,8 +1408,6 @@ enum {
 #define VUL2_HD_MODE_SFT                               0
 #define VUL2_HD_MODE_MASK                              0x3
 #define VUL2_HD_MODE_MASK_SFT                          (0x3 << 0)
-
-/* AFE_VUL3_CON0 */
 #define VUL3_MODE_SFT                                  24
 #define VUL3_MODE_MASK                                 0xf
 #define VUL3_MODE_MASK_SFT                             (0xf << 24)
@@ -1557,8 +1432,6 @@ enum {
 #define VUL3_HD_MODE_SFT                               0
 #define VUL3_HD_MODE_MASK                              0x3
 #define VUL3_HD_MODE_MASK_SFT                          (0x3 << 0)
-
-/* AFE_VUL4_CON0 */
 #define VUL4_MODE_SFT                                  24
 #define VUL4_MODE_MASK                                 0xf
 #define VUL4_MODE_MASK_SFT                             (0xf << 24)
@@ -1583,8 +1456,6 @@ enum {
 #define VUL4_HD_MODE_SFT                               0
 #define VUL4_HD_MODE_MASK                              0x3
 #define VUL4_HD_MODE_MASK_SFT                          (0x3 << 0)
-
-/* AFE_VUL5_CON0 */
 #define VUL5_MODE_SFT                                  24
 #define VUL5_MODE_MASK                                 0xf
 #define VUL5_MODE_MASK_SFT                             (0xf << 24)
@@ -1609,8 +1480,6 @@ enum {
 #define VUL5_HD_MODE_SFT                               0
 #define VUL5_HD_MODE_MASK                              0x3
 #define VUL5_HD_MODE_MASK_SFT                          (0x3 << 0)
-
-/* AFE_VUL6_CON0 */
 #define VUL6_MODE_SFT                                  24
 #define VUL6_MODE_MASK                                 0xf
 #define VUL6_MODE_MASK_SFT                             (0xf << 24)
@@ -1635,8 +1504,6 @@ enum {
 #define VUL6_HD_MODE_SFT                               0
 #define VUL6_HD_MODE_MASK                              0x3
 #define VUL6_HD_MODE_MASK_SFT                          (0x3 << 0)
-
-/* AFE_DAI_CON0 */
 #define DAI_MODE_SFT                                   24
 #define DAI_MODE_MASK                                  0x3
 #define DAI_MODE_MASK_SFT                              (0x3 << 24)
@@ -1661,8 +1528,6 @@ enum {
 #define DAI_HD_MODE_SFT                                0
 #define DAI_HD_MODE_MASK                               0x3
 #define DAI_HD_MODE_MASK_SFT                           (0x3 << 0)
-
-/* AFE_MOD_DAI_CON0 */
 #define MOD_DAI_MODE_SFT                               24
 #define MOD_DAI_MODE_MASK                              0x3
 #define MOD_DAI_MODE_MASK_SFT                          (0x3 << 24)
@@ -1687,8 +1552,6 @@ enum {
 #define MOD_DAI_HD_MODE_SFT                            0
 #define MOD_DAI_HD_MODE_MASK                           0x3
 #define MOD_DAI_HD_MODE_MASK_SFT                       (0x3 << 0)
-
-/* AFE_DAI2_CON0 */
 #define DAI2_MODE_SFT                                  24
 #define DAI2_MODE_MASK                                 0xf
 #define DAI2_MODE_MASK_SFT                             (0xf << 24)
@@ -1713,8 +1576,6 @@ enum {
 #define DAI2_HD_MODE_SFT                               0
 #define DAI2_HD_MODE_MASK                              0x3
 #define DAI2_HD_MODE_MASK_SFT                          (0x3 << 0)
-
-/* AFE_MEMIF_CON0 */
 #define CPU_COMPACT_MODE_SFT                           2
 #define CPU_COMPACT_MODE_MASK                          0x1
 #define CPU_COMPACT_MODE_MASK_SFT                      (0x1 << 2)
@@ -1724,8 +1585,6 @@ enum {
 #define SYSRAM_SIGN_SFT                                0
 #define SYSRAM_SIGN_MASK                               0x1
 #define SYSRAM_SIGN_MASK_SFT                           (0x1 << 0)
-
-/* AFE_HDMI_OUT_CON0 */
 #define HDMI_CH_NUM_SFT                                24
 #define HDMI_CH_NUM_MASK                               0xf
 #define HDMI_CH_NUM_MASK_SFT                           (0xf << 24)
@@ -1750,8 +1609,6 @@ enum {
 #define HDMI_OUT_HD_MODE_SFT                           0
 #define HDMI_OUT_HD_MODE_MASK                          0x3
 #define HDMI_OUT_HD_MODE_MASK_SFT                      (0x3 << 0)
-
-/* AFE_IRQ_MCU_CON0 */
 #define IRQ31_MCU_ON_SFT                               31
 #define IRQ31_MCU_ON_MASK                              0x1
 #define IRQ31_MCU_ON_MASK_SFT                          (0x1 << 31)
@@ -1836,8 +1693,6 @@ enum {
 #define IRQ0_MCU_ON_SFT                                0
 #define IRQ0_MCU_ON_MASK                               0x1
 #define IRQ0_MCU_ON_MASK_SFT                           (0x1 << 0)
-
-/* AFE_IRQ_MCU_CON1 */
 #define IRQ7_MCU_MODE_SFT                              28
 #define IRQ7_MCU_MODE_MASK                             0xf
 #define IRQ7_MCU_MODE_MASK_SFT                         (0xf << 28)
@@ -1862,8 +1717,6 @@ enum {
 #define IRQ0_MCU_MODE_SFT                              0
 #define IRQ0_MCU_MODE_MASK                             0xf
 #define IRQ0_MCU_MODE_MASK_SFT                         (0xf << 0)
-
-/* AFE_IRQ_MCU_CON2 */
 #define IRQ15_MCU_MODE_SFT                             28
 #define IRQ15_MCU_MODE_MASK                            0xf
 #define IRQ15_MCU_MODE_MASK_SFT                        (0xf << 28)
@@ -1888,8 +1741,6 @@ enum {
 #define IRQ8_MCU_MODE_SFT                              0
 #define IRQ8_MCU_MODE_MASK                             0xf
 #define IRQ8_MCU_MODE_MASK_SFT                         (0xf << 0)
-
-/* AFE_IRQ_MCU_CON3 */
 #define IRQ23_MCU_MODE_SFT                             28
 #define IRQ23_MCU_MODE_MASK                            0xf
 #define IRQ23_MCU_MODE_MASK_SFT                        (0xf << 28)
@@ -1914,8 +1765,6 @@ enum {
 #define IRQ16_MCU_MODE_SFT                             0
 #define IRQ16_MCU_MODE_MASK                            0xf
 #define IRQ16_MCU_MODE_MASK_SFT                        (0xf << 0)
-
-/* AFE_IRQ_MCU_CON4 */
 #define IRQ26_MCU_MODE_SFT                             8
 #define IRQ26_MCU_MODE_MASK                            0xf
 #define IRQ26_MCU_MODE_MASK_SFT                        (0xf << 8)
@@ -1925,8 +1774,6 @@ enum {
 #define IRQ24_MCU_MODE_SFT                             0
 #define IRQ24_MCU_MODE_MASK                            0xf
 #define IRQ24_MCU_MODE_MASK_SFT                        (0xf << 0)
-
-/* AFE_IRQ_MCU_CLR */
 #define IRQ31_MCU_CLR_SFT                              31
 #define IRQ31_MCU_CLR_MASK                             0x1
 #define IRQ31_MCU_CLR_MASK_SFT                         (0x1 << 31)
@@ -2011,8 +1858,6 @@ enum {
 #define IRQ0_MCU_CLR_SFT                               0
 #define IRQ0_MCU_CLR_MASK                              0x1
 #define IRQ0_MCU_CLR_MASK_SFT                          (0x1 << 0)
-
-/* AFE_IRQ_MCU_EN */
 #define IRQ31_MCU_EN_SFT                               31
 #define IRQ30_MCU_EN_SFT                               30
 #define IRQ29_MCU_EN_SFT                               29
@@ -2045,8 +1890,6 @@ enum {
 #define IRQ2_MCU_EN_SFT                                2
 #define IRQ1_MCU_EN_SFT                                1
 #define IRQ0_MCU_EN_SFT                                0
-
-/* AFE_IRQ_MCU_SCP_EN */
 #define IRQ31_MCU_SCP_EN_SFT                           31
 #define IRQ30_MCU_SCP_EN_SFT                           30
 #define IRQ29_MCU_SCP_EN_SFT                           29
@@ -2079,8 +1922,6 @@ enum {
 #define IRQ2_MCU_SCP_EN_SFT                            2
 #define IRQ1_MCU_SCP_EN_SFT                            1
 #define IRQ0_MCU_SCP_EN_SFT                            0
-
-/* AFE_TDM_CON1 */
 #define TDM_EN_SFT                                     0
 #define TDM_EN_MASK                                    0x1
 #define TDM_EN_MASK_SFT                                (0x1 << 0)
@@ -2108,8 +1949,6 @@ enum {
 #define LRCK_TDM_WIDTH_SFT                             24
 #define LRCK_TDM_WIDTH_MASK                            0xff
 #define LRCK_TDM_WIDTH_MASK_SFT                        (0xff << 24)
-
-/* AFE_TDM_CON2 */
 #define ST_CH_PAIR_SOUT0_SFT                           0
 #define ST_CH_PAIR_SOUT0_MASK                          0x7
 #define ST_CH_PAIR_SOUT0_MASK_SFT                      (0x7 << 0)
@@ -2134,8 +1973,6 @@ enum {
 #define TDM_FIX_VALUE_SFT                              24
 #define TDM_FIX_VALUE_MASK                             0xff
 #define TDM_FIX_VALUE_MASK_SFT                         (0xff << 24)
-
-/* AFE_HDMI_CONN0 */
 #define HDMI_O_7_SFT                                   21
 #define HDMI_O_7_MASK                                  0x7
 #define HDMI_O_7_MASK_SFT                              (0x7 << 21)
@@ -2160,8 +1997,6 @@ enum {
 #define HDMI_O_0_SFT                                   0
 #define HDMI_O_0_MASK                                  0x7
 #define HDMI_O_0_MASK_SFT                              (0x7 << 0)
-
-/* AFE_AUD_PAD_TOP */
 #define AUD_PAD_TOP_MON_SFT                            15
 #define AUD_PAD_TOP_MON_MASK                           0x1ffff
 #define AUD_PAD_TOP_MON_MASK_SFT                       (0x1ffff << 15)
@@ -2177,13 +2012,9 @@ enum {
 #define RG_RX_FIFO_ON_SFT                              0
 #define RG_RX_FIFO_ON_MASK                             0x1
 #define RG_RX_FIFO_ON_MASK_SFT                         (0x1 << 0)
-
-/* AFE_ADDA_MTKAIF_SYNCWORD_CFG */
 #define RG_ADDA6_MTKAIF_RX_SYNC_WORD2_DISABLE_SFT      23
 #define RG_ADDA6_MTKAIF_RX_SYNC_WORD2_DISABLE_MASK     0x1
 #define RG_ADDA6_MTKAIF_RX_SYNC_WORD2_DISABLE_MASK_SFT (0x1 << 23)
-
-/* AFE_ADDA_MTKAIF_RX_CFG0 */
 #define MTKAIF_RXIF_VOICE_MODE_SFT                     20
 #define MTKAIF_RXIF_VOICE_MODE_MASK                    0xf
 #define MTKAIF_RXIF_VOICE_MODE_MASK_SFT                (0xf << 20)
@@ -2199,8 +2030,6 @@ enum {
 #define MTKAIF_RXIF_DATA_MODE_SFT                      0
 #define MTKAIF_RXIF_DATA_MODE_MASK                     0x1
 #define MTKAIF_RXIF_DATA_MODE_MASK_SFT                 (0x1 << 0)
-
-/* GENERAL_ASRC_MODE */
 #define GENERAL2_ASRCOUT_MODE_SFT                      12
 #define GENERAL2_ASRCOUT_MODE_MASK                     0xf
 #define GENERAL2_ASRCOUT_MODE_MASK_SFT                 (0xf << 12)
@@ -2213,16 +2042,12 @@ enum {
 #define GENERAL1_ASRCIN_MODE_SFT                       0
 #define GENERAL1_ASRCIN_MODE_MASK                      0xf
 #define GENERAL1_ASRCIN_MODE_MASK_SFT                  (0xf << 0)
-
-/* GENERAL_ASRC_EN_ON */
 #define GENERAL2_ASRC_EN_ON_SFT                        1
 #define GENERAL2_ASRC_EN_ON_MASK                       0x1
 #define GENERAL2_ASRC_EN_ON_MASK_SFT                   (0x1 << 1)
 #define GENERAL1_ASRC_EN_ON_SFT                        0
 #define GENERAL1_ASRC_EN_ON_MASK                       0x1
 #define GENERAL1_ASRC_EN_ON_MASK_SFT                   (0x1 << 0)
-
-/* AFE_GENERAL1_ASRC_2CH_CON0 */
 #define G_SRC_CHSET_STR_CLR_SFT                        4
 #define G_SRC_CHSET_STR_CLR_MASK                       0x1
 #define G_SRC_CHSET_STR_CLR_MASK_SFT                   (0x1 << 4)
@@ -2235,23 +2060,15 @@ enum {
 #define G_SRC_ASM_ON_SFT                               0
 #define G_SRC_ASM_ON_MASK                              0x1
 #define G_SRC_ASM_ON_MASK_SFT                          (0x1 << 0)
-
-/* AFE_GENERAL1_ASRC_2CH_CON3 */
 #define G_SRC_ASM_FREQ_4_SFT                           0
 #define G_SRC_ASM_FREQ_4_MASK                          0xffffff
 #define G_SRC_ASM_FREQ_4_MASK_SFT                      (0xffffff << 0)
-
-/* AFE_GENERAL1_ASRC_2CH_CON4 */
 #define G_SRC_ASM_FREQ_5_SFT                           0
 #define G_SRC_ASM_FREQ_5_MASK                          0xffffff
 #define G_SRC_ASM_FREQ_5_MASK_SFT                      (0xffffff << 0)
-
-/* AFE_GENERAL1_ASRC_2CH_CON13 */
 #define G_SRC_COEFF_SRAM_ADR_SFT                       0
 #define G_SRC_COEFF_SRAM_ADR_MASK                      0x3f
 #define G_SRC_COEFF_SRAM_ADR_MASK_SFT                  (0x3f << 0)
-
-/* AFE_GENERAL1_ASRC_2CH_CON2 */
 #define G_SRC_CHSET_O16BIT_SFT                         19
 #define G_SRC_CHSET_O16BIT_MASK                        0x1
 #define G_SRC_CHSET_O16BIT_MASK_SFT                    (0x1 << 19)
@@ -2279,18 +2096,12 @@ enum {
 #define G_SRC_ASM_ON_SFT                               0
 #define G_SRC_ASM_ON_MASK                              0x1
 #define G_SRC_ASM_ON_MASK_SFT                          (0x1 << 0)
-
-/* AFE_ADDA_DL_SDM_AUTO_RESET_CON */
 #define ADDA_SDM_AUTO_RESET_ONOFF_SFT                  31
 #define ADDA_SDM_AUTO_RESET_ONOFF_MASK                 0x1
 #define ADDA_SDM_AUTO_RESET_ONOFF_MASK_SFT             (0x1 << 31)
-
-/* AFE_ADDA_3RD_DAC_DL_SDM_AUTO_RESET_CON */
 #define ADDA_3RD_DAC_SDM_AUTO_RESET_ONOFF_SFT          31
 #define ADDA_3RD_DAC_SDM_AUTO_RESET_ONOFF_MASK         0x1
 #define ADDA_3RD_DAC_SDM_AUTO_RESET_ONOFF_MASK_SFT     (0x1 << 31)
-
-/* AFE_TINY_CONN0 */
 #define O_3_CFG_SFT                                    24
 #define O_3_CFG_MASK                                   0x1f
 #define O_3_CFG_MASK_SFT                               (0x1f << 24)
@@ -2303,8 +2114,6 @@ enum {
 #define O_0_CFG_SFT                                    0
 #define O_0_CFG_MASK                                   0x1f
 #define O_0_CFG_MASK_SFT                               (0x1f << 0)
-
-/* AFE_TINY_CONN5 */
 #define O_23_CFG_SFT                                    24
 #define O_23_CFG_MASK                                   0x1f
 #define O_23_CFG_MASK_SFT                               (0x1f << 24)
@@ -2317,8 +2126,6 @@ enum {
 #define O_20_CFG_SFT                                    0
 #define O_20_CFG_MASK                                   0x1f
 #define O_20_CFG_MASK_SFT                               (0x1f << 0)
-
-/* AFE_MEMIF_CONN */
 #define VUL6_USE_TINY_SFT                              8
 #define VUL6_USE_TINY_MASK                             1
 #define VUL6_USE_TINY_MASK_SFT                         (0x1 << 8)
@@ -2346,20 +2153,15 @@ enum {
 #define VUL1_USE_TINY_SFT                              0
 #define VUL1_USE_TINY_MASK                             1
 #define VUL1_USE_TINY_MASK_SFT                         (0x1 << 0)
-
-/* AFE_ASRC_2CH_CON0 */
 #define CON0_CHSET_STR_CLR_SFT                         4
 #define CON0_CHSET_STR_CLR_MASK                        1
 #define CON0_CHSET_STR_CLR_MASK_SFT                    (0x1 << 4)
 #define CON0_ASM_ON_SFT                                0
 #define CON0_ASM_ON_MASK                               1
 #define CON0_ASM_ON_MASK_SFT                           (0x1 << 0)
-
-/* AFE_ASRC_2CH_CON5 */
 #define CALI_EN_SFT                                    0
 #define CALI_EN_MASK                                   1
 #define CALI_EN_MASK_SFT                               (0x1 << 0)
-
 #define AUDIO_TOP_CON0                                 0x0000
 #define AUDIO_TOP_CON1                                 0x0004
 #define AUDIO_TOP_CON2                                 0x0008
@@ -3123,11 +2925,8 @@ enum {
 #define AFE_SECURE_MASK_TINY_CONN5                     0x1214
 #define AFE_SECURE_MASK_TINY_CONN6                     0x1218
 #define AFE_SECURE_MASK_TINY_CONN7                     0x121c
-
 #define AFE_MAX_REGISTER AFE_SECURE_MASK_TINY_CONN7
-
 #define AFE_IRQ_STATUS_BITS 0x87FFFFFF
 #define AFE_IRQ_CNT_SHIFT 0
 #define AFE_IRQ_CNT_MASK 0x3ffff
-
 #endif

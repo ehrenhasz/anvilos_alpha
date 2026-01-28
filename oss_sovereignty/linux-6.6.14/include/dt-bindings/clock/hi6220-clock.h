@@ -1,17 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015 Hisilicon Limited.
- *
- * Author: Bintian Wang <bintian.wang@huawei.com>
- */
-
 #ifndef __DT_BINDINGS_CLOCK_HI6220_H
 #define __DT_BINDINGS_CLOCK_HI6220_H
-
-/* clk in Hi6220 AO (always on) controller */
 #define HI6220_NONE_CLOCK	0
-
-/* fixed rate clocks */
 #define HI6220_REF32K		1
 #define HI6220_CLK_TCXO		2
 #define HI6220_MMC1_PAD		3
@@ -25,8 +14,6 @@
 #define HI6220_DDR_SRC		11
 #define HI6220_PLL_MEDIA	12
 #define HI6220_PLL_DDR		13
-
-/* fixed factor clocks */
 #define HI6220_300M		14
 #define HI6220_150M		15
 #define HI6220_PICOPHY_SRC	16
@@ -37,8 +24,6 @@
 #define HI6220_MMC0_SMP		21
 #define HI6220_MMC1_SMP		22
 #define HI6220_MMC2_SMP		23
-
-/* gate clocks */
 #define HI6220_WDT0_PCLK	24
 #define HI6220_WDT1_PCLK	25
 #define HI6220_WDT2_PCLK	26
@@ -55,9 +40,6 @@
 #define HI6220_RTC0_PCLK	37
 #define HI6220_RTC1_PCLK	38
 #define HI6220_AO_NR_CLKS	39
-
-/* clk in Hi6220 systrl */
-/* gate clock */
 #define HI6220_MMC0_CLK		1
 #define HI6220_MMC0_CIUCLK	2
 #define HI6220_MMC1_CLK		3
@@ -91,8 +73,6 @@
 #define HI6220_MEDIA_PLL_SRC	31
 #define HI6220_MMC2_SEL		32
 #define HI6220_CS_ATB_SYSPLL	33
-
-/* mux clocks */
 #define HI6220_MMC0_SRC		34
 #define HI6220_MMC0_SMP_IN	35
 #define HI6220_MMC1_SRC		36
@@ -110,8 +90,6 @@
 #define HI6220_MMC0_MUX1	48
 #define HI6220_MMC1_MUX1	49
 #define HI6220_MMC2_MUX1	50
-
-/* divider clocks */
 #define HI6220_CLK_BUS		51
 #define HI6220_MMC0_DIV		52
 #define HI6220_MMC1_DIV		53
@@ -120,14 +98,8 @@
 #define HI6220_BBPPLL0_DIV	56
 #define HI6220_CS_DAPB		57
 #define HI6220_CS_ATB_DIV	58
-
-/* gate clock */
 #define HI6220_DAPB_CLK		59
-
 #define HI6220_SYS_NR_CLKS	60
-
-/* clk in Hi6220 media controller */
-/* gate clocks */
 #define HI6220_DSI_PCLK		1
 #define HI6220_G3D_PCLK		2
 #define HI6220_ACLK_CODEC_VPU	3
@@ -141,13 +113,9 @@
 #define HI6220_ADE_CORE_GATE	11
 #define HI6220_CODEC_VPU_GATE	12
 #define HI6220_MED_SYSPLL	13
-
-/* mux clocks */
 #define HI6220_1440_1200	14
 #define HI6220_1000_1200	15
 #define HI6220_1000_1440	16
-
-/* divider clocks */
 #define HI6220_CODEC_JPEG	17
 #define HI6220_ISP_SCLK_SRC	18
 #define HI6220_ISP_SCLK1	19
@@ -155,24 +123,14 @@
 #define HI6220_ADE_PIX_SRC	21
 #define HI6220_G3D_CLK		22
 #define HI6220_CODEC_VPU_SRC	23
-
 #define HI6220_MEDIA_NR_CLKS	24
-
-/* clk in Hi6220 power controller */
-/* gate clocks */
 #define HI6220_PLL_GPU_GATE	1
 #define HI6220_PLL1_DDR_GATE	2
 #define HI6220_PLL_DDR_GATE	3
 #define HI6220_PLL_MEDIA_GATE	4
 #define HI6220_PLL0_BBP_GATE	5
-
-/* divider clocks */
 #define HI6220_DDRC_SRC		6
 #define HI6220_DDRC_AXI1	7
-
 #define HI6220_POWER_NR_CLKS	8
-
-/* clk in Hi6220 acpu sctrl */
 #define HI6220_ACPU_SFT_AT_S		0
-
 #endif

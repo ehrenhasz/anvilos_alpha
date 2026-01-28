@@ -1,37 +1,26 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
-
 #ifndef __RTW89_8852A_H__
 #define __RTW89_8852A_H__
-
 #include "core.h"
-
 #define RF_PATH_NUM_8852A 2
-
 enum rtw8852a_pmac_mode {
 	NONE_TEST,
 	PKTS_TX,
 	PKTS_RX,
 	CONT_TX
 };
-
 struct rtw8852au_efuse {
 	u8 rsvd[0x38];
 	u8 mac_addr[ETH_ALEN];
 };
-
 struct rtw8852ae_efuse {
 	u8 mac_addr[ETH_ALEN];
 };
-
 struct rtw8852a_tssi_offset {
 	u8 cck_tssi[TSSI_CCK_CH_GROUP_NUM];
 	u8 bw40_tssi[TSSI_MCS_2G_CH_GROUP_NUM];
 	u8 rsvd[7];
 	u8 bw40_1s_tssi_5g[TSSI_MCS_5G_CH_GROUP_NUM];
 } __packed;
-
 struct rtw8852a_efuse {
 	u8 rsvd[0x210];
 	struct rtw8852a_tssi_offset path_a_tssi;
@@ -80,7 +69,6 @@ struct rtw8852a_efuse {
 		struct rtw8852ae_efuse e;
 	};
 } __packed;
-
 struct rtw8852a_bb_pmac_info {
 	u8 en_pmac_tx:1;
 	u8 is_cck:1;
@@ -91,9 +79,7 @@ struct rtw8852a_bb_pmac_info {
 	u16 tx_time;
 	u8 duty_cycle;
 };
-
 extern const struct rtw89_chip_info rtw8852a_chip_info;
-
 void rtw8852a_bb_set_plcp_tx(struct rtw89_dev *rtwdev);
 void rtw8852a_bb_set_pmac_tx(struct rtw89_dev *rtwdev,
 			     struct rtw8852a_bb_pmac_info *tx_info,
@@ -106,5 +92,4 @@ void rtw8852a_bb_set_power(struct rtw89_dev *rtwdev, s16 pwr_dbm,
 void rtw8852a_bb_cfg_tx_path(struct rtw89_dev *rtwdev, u8 tx_path);
 void rtw8852a_bb_tx_mode_switch(struct rtw89_dev *rtwdev,
 				enum rtw89_phy_idx idx, u8 mode);
-
 #endif

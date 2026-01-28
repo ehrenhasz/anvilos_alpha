@@ -1,19 +1,6 @@
-/*
- *  This file is part of the Chelsio T4 Ethernet driver for Linux.
- *  Copyright (C) 2003-2014 Chelsio Communications.  All rights reserved.
- *
- *  Written by Deepak (deepak.s@chelsio.com)
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the LICENSE file included in this
- *  release for licensing terms and conditions.
- */
-
 #include <linux/refcount.h>
-
 struct clip_entry {
-	spinlock_t lock;	/* Hold while modifying clip reference */
+	spinlock_t lock;	 
 	refcount_t refcnt;
 	struct list_head list;
 	union {
@@ -21,7 +8,6 @@ struct clip_entry {
 		struct sockaddr_in6 addr6;
 	};
 };
-
 struct clip_tbl {
 	unsigned int clipt_start;
 	unsigned int clipt_size;
@@ -31,11 +17,9 @@ struct clip_tbl {
 	void *cl_list;
 	struct list_head hash_list[];
 };
-
 enum {
 	CLIPT_MIN_HASH_BUCKETS = 2,
 };
-
 struct clip_tbl *t4_init_clip_tbl(unsigned int clipt_start,
 				  unsigned int clipt_end);
 int cxgb4_clip_get(const struct net_device *dev, const u32 *lip, u8 v6);

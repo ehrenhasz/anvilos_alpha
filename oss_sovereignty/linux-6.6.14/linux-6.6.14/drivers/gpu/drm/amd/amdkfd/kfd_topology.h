@@ -1,36 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright 2014-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
-
 #ifndef __KFD_TOPOLOGY_H__
 #define __KFD_TOPOLOGY_H__
-
 #include <linux/types.h>
 #include <linux/list.h>
 #include <linux/kfd_sysfs.h>
 #include "kfd_crat.h"
-
 #define KFD_TOPOLOGY_PUBLIC_NAME_SIZE 32
-
 #define HSA_DBG_WATCH_ADDR_MASK_LO_BIT_GFX9	6
 #define HSA_DBG_WATCH_ADDR_MASK_LO_BIT_GFX9_4_3 7
 #define HSA_DBG_WATCH_ADDR_MASK_LO_BIT_GFX10	7
@@ -38,7 +12,6 @@
 			(29 << HSA_DBG_WATCH_ADDR_MASK_HI_BIT_SHIFT)
 #define HSA_DBG_WATCH_ADDR_MASK_HI_BIT_GFX9_4_3 \
 			(30 << HSA_DBG_WATCH_ADDR_MASK_HI_BIT_SHIFT)
-
 struct kfd_node_properties {
 	uint64_t hive_id;
 	uint32_t cpu_cores_count;
@@ -76,7 +49,6 @@ struct kfd_node_properties {
 	uint32_t num_cp_queues;
 	char name[KFD_TOPOLOGY_PUBLIC_NAME_SIZE];
 };
-
 struct kfd_mem_properties {
 	struct list_head	list;
 	uint32_t		heap_type;
@@ -88,9 +60,7 @@ struct kfd_mem_properties {
 	struct kobject		*kobj;
 	struct attribute	attr;
 };
-
 #define CACHE_SIBLINGMAP_SIZE 128
-
 struct kfd_cache_properties {
 	struct list_head	list;
 	uint32_t		processor_id_low;
@@ -107,7 +77,6 @@ struct kfd_cache_properties {
 	struct attribute	attr;
 	uint32_t		sibling_map_size;
 };
-
 struct kfd_iolink_properties {
 	struct list_head	list;
 	uint32_t		iolink_type;
@@ -126,14 +95,12 @@ struct kfd_iolink_properties {
 	struct kobject		*kobj;
 	struct attribute	attr;
 };
-
 struct kfd_perf_properties {
 	struct list_head	list;
 	char			block_name[16];
 	uint32_t		max_concurrent;
 	struct attribute_group	*attr_group;
 };
-
 struct kfd_topology_device {
 	struct list_head		list;
 	uint32_t			gpu_id;
@@ -158,9 +125,8 @@ struct kfd_topology_device {
 	uint8_t				oem_table_id[CRAT_OEMTABLEID_LENGTH];
 	uint32_t			oem_revision;
 };
-
 struct kfd_system_properties {
-	uint32_t		num_devices;     /* Number of H-NUMA nodes */
+	uint32_t		num_devices;      
 	uint32_t		generation_count;
 	uint64_t		platform_oem;
 	uint64_t		platform_id;
@@ -170,9 +136,7 @@ struct kfd_system_properties {
 	struct attribute	attr_genid;
 	struct attribute	attr_props;
 };
-
 struct kfd_topology_device *kfd_create_topology_device(
 		struct list_head *device_list);
 void kfd_release_topology_device_list(struct list_head *device_list);
-
-#endif /* __KFD_TOPOLOGY_H__ */
+#endif  

@@ -1,47 +1,34 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2016 Paweł Jarosz <paweljarosz3691@gmail.com>
- */
-
 /dts-v1/;
 #include <dt-bindings/input/input.h>
 #include "rk3066a.dtsi"
-
 / {
 	model = "Rikomagic MK808";
 	compatible = "rikomagic,mk808", "rockchip,rk3066a";
-
 	aliases {
 		mmc0 = &mmc0;
 		mmc1 = &mmc1;
 	};
-
 	chosen {
 		stdout-path = "serial2:115200n8";
 	};
-
 	memory@60000000 {
 		reg = <0x60000000 0x40000000>;
 		device_type = "memory";
 	};
-
 	adc-keys {
 		compatible = "adc-keys";
 		io-channels = <&saradc 1>;
 		io-channel-names = "buttons";
 		keyup-threshold-microvolt = <2500000>;
 		poll-interval = <100>;
-
 		button-recovery {
 			label = "recovery";
 			linux,code = <KEY_VENDOR>;
 			press-threshold-microvolt = <0>;
 		};
 	};
-
 	gpio-leds {
 		compatible = "gpio-leds";
-
 		blue_led: led-0 {
 			label = "mk808:blue:power";
 			gpios = <&gpio0 RK_PA3 GPIO_ACTIVE_HIGH>;
@@ -49,32 +36,27 @@
 			linux,default-trigger = "default-on";
 		};
 	};
-
 	hdmi_con {
 		compatible = "hdmi-connector";
 		type = "c";
-
 		port {
 			hdmi_con_in: endpoint {
 				remote-endpoint = <&hdmi_out_con>;
 			};
 		};
 	};
-
 	vcc_2v5: vcc-2v5 {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_2v5";
 		regulator-min-microvolt = <2500000>;
 		regulator-max-microvolt = <2500000>;
 	};
-
 	vcc_io: vcc-io {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_io";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 	};
-
 	vcc_host: usb-host-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -88,7 +70,6 @@
 		startup-delay-us = <100000>;
 		vin-supply = <&vcc_io>;
 	};
-
 	vcc_otg: usb-otg-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -102,7 +83,6 @@
 		startup-delay-us = <100000>;
 		vin-supply = <&vcc_io>;
 	};
-
 	vcc_sd: sdmmc-regulator {
 		compatible = "regulator-fixed";
 		gpio = <&gpio3 RK_PA7 GPIO_ACTIVE_LOW>;
@@ -114,7 +94,6 @@
 		startup-delay-us = <100000>;
 		vin-supply = <&vcc_io>;
 	};
-
 	vcc_wifi: sdio-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -128,21 +107,17 @@
 		vin-supply = <&vcc_io>;
 	};
 };
-
 &hdmi {
 	status = "okay";
 };
-
 &hdmi_in_vop1 {
 	status = "disabled";
 };
-
 &hdmi_out {
 	hdmi_out_con: endpoint {
 		remote-endpoint = <&hdmi_con_in>;
 	};
 };
-
 &mmc0 {
 	bus-width = <4>;
 	cap-mmc-highspeed;
@@ -150,7 +125,6 @@
 	vmmc-supply = <&vcc_sd>;
 	status = "okay";
 };
-
 &mmc1 {
 	bus-width = <4>;
 	non-removable;
@@ -160,18 +134,15 @@
 	#address-cells = <1>;
 	#size-cells = <0>;
 	status = "okay";
-
 	brcmf: wifi@1 {
 		compatible = "brcm,bcm4329-fmac";
 		reg = <1>;
 	};
 };
-
 &nfc {
 	#address-cells = <1>;
 	#size-cells = <0>;
 	status = "okay";
-
 	nand@0 {
 		reg = <0>;
 		label = "rk-nand";
@@ -184,58 +155,47 @@
 		rockchip,boot-ecc-strength = <24>;
 	};
 };
-
 &pinctrl {
 	usb-host {
 		host_drv: host-drv {
 			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_default>;
 		};
 	};
-
 	usb-otg {
 		otg_drv: otg-drv {
 			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_default>;
 		};
 	};
-
 	sdmmc {
 		sdmmc_pwr: sdmmc-pwr {
 			rockchip,pins = <3 RK_PA7 RK_FUNC_GPIO &pcfg_pull_default>;
 		};
 	};
-
 	sdio {
 		wifi_pwr: wifi-pwr {
 			rockchip,pins = <3 RK_PD0 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
-
 &saradc {
 	vref-supply = <&vcc_2v5>;
 	status = "okay";
 };
-
 &uart2 {
 	status = "okay";
 };
-
 &usb_host {
 	status = "okay";
 };
-
 &usb_otg {
 	status = "okay";
 };
-
 &usbphy {
 	status = "okay";
 };
-
 &vop0 {
 	status = "okay";
 };
-
 &wdt {
 	status = "okay";
 };

@@ -1,42 +1,32 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2014 Cisco Systems, Inc.  All rights reserved. */
-
 #ifndef _VNIC_DEV_H_
 #define _VNIC_DEV_H_
-
 #include "vnic_resource.h"
 #include "vnic_devcmd.h"
-
 #ifndef VNIC_PADDR_TARGET
 #define VNIC_PADDR_TARGET	0x0000000000000000ULL
 #endif
-
 #ifndef readq
 static inline u64 readq(void __iomem *reg)
 {
 	return ((u64)readl(reg + 0x4UL) << 32) | (u64)readl(reg);
 }
-
 static inline void writeq(u64 val, void __iomem *reg)
 {
 	writel(lower_32_bits(val), reg);
 	writel(upper_32_bits(val), reg + 0x4UL);
 }
 #endif
-
 enum vnic_dev_intr_mode {
 	VNIC_DEV_INTR_MODE_UNKNOWN,
 	VNIC_DEV_INTR_MODE_INTX,
 	VNIC_DEV_INTR_MODE_MSI,
 	VNIC_DEV_INTR_MODE_MSIX,
 };
-
 struct vnic_dev_bar {
 	void __iomem *vaddr;
 	dma_addr_t bus_addr;
 	unsigned long len;
 };
-
 struct vnic_dev_ring {
 	void *descs;
 	size_t size;
@@ -49,10 +39,8 @@ struct vnic_dev_ring {
 	unsigned int desc_count;
 	unsigned int desc_avail;
 };
-
 struct vnic_dev;
 struct vnic_stats;
-
 void *svnic_dev_priv(struct vnic_dev *vdev);
 unsigned int svnic_dev_get_res_count(struct vnic_dev *vdev,
 				    enum vnic_res_type type);
@@ -93,4 +81,4 @@ void svnic_dev_set_intr_mode(struct vnic_dev *vdev,
 enum vnic_dev_intr_mode svnic_dev_get_intr_mode(struct vnic_dev *vdev);
 void svnic_dev_unregister(struct vnic_dev *vdev);
 int svnic_dev_cmd_init(struct vnic_dev *vdev, int fallback);
-#endif /* _VNIC_DEV_H_ */
+#endif  

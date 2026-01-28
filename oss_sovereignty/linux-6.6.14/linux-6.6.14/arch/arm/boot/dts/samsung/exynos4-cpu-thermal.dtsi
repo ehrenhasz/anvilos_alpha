@@ -1,12 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device tree sources for Exynos4 thermal zone
- *
- * Copyright (c) 2014 Lukasz Majewski <l.majewski@samsung.com>
- */
-
 #include <dt-bindings/thermal/thermal.h>
-
 / {
 thermal-zones {
 	cpu_thermal: cpu-thermal {
@@ -15,23 +7,23 @@ thermal-zones {
 		polling-delay = <0>;
 		trips {
 			cpu_alert0: cpu-alert-0 {
-				temperature = <70000>; /* millicelsius */
-				hysteresis = <10000>; /* millicelsius */
+				temperature = <70000>;  
+				hysteresis = <10000>;  
 				type = "active";
 			};
 			cpu_alert1: cpu-alert-1 {
-				temperature = <95000>; /* millicelsius */
-				hysteresis = <10000>; /* millicelsius */
+				temperature = <95000>;  
+				hysteresis = <10000>;  
 				type = "active";
 			};
 			cpu_alert2: cpu-alert-2 {
-				temperature = <110000>; /* millicelsius */
-				hysteresis = <10000>; /* millicelsius */
+				temperature = <110000>;  
+				hysteresis = <10000>;  
 				type = "active";
 			};
 			cpu_crit0: cpu-crit-0 {
-				temperature = <120000>; /* millicelsius */
-				hysteresis = <0>; /* millicelsius */
+				temperature = <120000>;  
+				hysteresis = <0>;  
 				type = "critical";
 			};
 		};

@@ -1,40 +1,31 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __NET_TC_IFE_H
 #define __NET_TC_IFE_H
-
 #include <net/act_api.h>
 #include <linux/etherdevice.h>
 #include <linux/rtnetlink.h>
-
 struct module;
-
 struct tcf_ife_params {
 	u8 eth_dst[ETH_ALEN];
 	u8 eth_src[ETH_ALEN];
 	u16 eth_type;
 	u16 flags;
-
 	struct rcu_head rcu;
 };
-
 struct tcf_ife_info {
 	struct tc_action common;
 	struct tcf_ife_params __rcu *params;
-	/* list of metaids allowed */
 	struct list_head metalist;
 };
 #define to_ife(a) ((struct tcf_ife_info *)a)
-
 struct tcf_meta_info {
 	const struct tcf_meta_ops *ops;
 	void *metaval;
 	u16 metaid;
 	struct list_head metalist;
 };
-
 struct tcf_meta_ops {
-	u16 metaid; /*Maintainer provided ID */
-	u16 metatype; /*netlink attribute type (look at net/netlink.h) */
+	u16 metaid;  
+	u16 metatype;  
 	const char *name;
 	const char *synopsis;
 	struct list_head list;
@@ -47,9 +38,7 @@ struct tcf_meta_ops {
 	int	(*validate)(void *val, int len);
 	struct module	*owner;
 };
-
 #define MODULE_ALIAS_IFE_META(metan)   MODULE_ALIAS("ife-meta-" metan)
-
 int ife_get_meta_u32(struct sk_buff *skb, struct tcf_meta_info *mi);
 int ife_get_meta_u16(struct sk_buff *skb, struct tcf_meta_info *mi);
 int ife_alloc_meta_u32(struct tcf_meta_info *mi, void *metaval, gfp_t gfp);
@@ -63,5 +52,4 @@ int ife_encode_meta_u16(u16 metaval, void *skbdata, struct tcf_meta_info *mi);
 void ife_release_meta_gen(struct tcf_meta_info *mi);
 int register_ife_op(struct tcf_meta_ops *mops);
 int unregister_ife_op(struct tcf_meta_ops *mops);
-
-#endif /* __NET_TC_IFE_H */
+#endif  

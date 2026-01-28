@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM handshake
-
 #if !defined(_TRACE_HANDSHAKE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_HANDSHAKE_H
-
 #include <linux/net.h>
 #include <net/tls_prot.h>
 #include <linux/tracepoint.h>
 #include <trace/events/net_probe_common.h>
-
 #define TLS_RECORD_TYPE_LIST \
 	record_type(CHANGE_CIPHER_SPEC) \
 	record_type(ALERT) \
@@ -18,30 +14,23 @@
 	record_type(HEARTBEAT) \
 	record_type(TLS12_CID) \
 	record_type_end(ACK)
-
 #undef record_type
 #undef record_type_end
 #define record_type(x)		TRACE_DEFINE_ENUM(TLS_RECORD_TYPE_##x);
 #define record_type_end(x)	TRACE_DEFINE_ENUM(TLS_RECORD_TYPE_##x);
-
 TLS_RECORD_TYPE_LIST
-
 #undef record_type
 #undef record_type_end
 #define record_type(x)		{ TLS_RECORD_TYPE_##x, #x },
 #define record_type_end(x)	{ TLS_RECORD_TYPE_##x, #x }
-
 #define show_tls_content_type(type) \
 	__print_symbolic(type, TLS_RECORD_TYPE_LIST)
-
 TRACE_DEFINE_ENUM(TLS_ALERT_LEVEL_WARNING);
 TRACE_DEFINE_ENUM(TLS_ALERT_LEVEL_FATAL);
-
 #define show_tls_alert_level(level) \
 	__print_symbolic(level, \
 		{ TLS_ALERT_LEVEL_WARNING,	"Warning" }, \
 		{ TLS_ALERT_LEVEL_FATAL,	"Fatal" })
-
 #define TLS_ALERT_DESCRIPTION_LIST \
 	alert_description(CLOSE_NOTIFY) \
 	alert_description(UNEXPECTED_MESSAGE) \
@@ -71,22 +60,17 @@ TRACE_DEFINE_ENUM(TLS_ALERT_LEVEL_FATAL);
 	alert_description(UNKNOWN_PSK_IDENTITY) \
 	alert_description(CERTIFICATE_REQUIRED) \
 	alert_description_end(NO_APPLICATION_PROTOCOL)
-
 #undef alert_description
 #undef alert_description_end
 #define alert_description(x)		TRACE_DEFINE_ENUM(TLS_ALERT_DESC_##x);
 #define alert_description_end(x)	TRACE_DEFINE_ENUM(TLS_ALERT_DESC_##x);
-
 TLS_ALERT_DESCRIPTION_LIST
-
 #undef alert_description
 #undef alert_description_end
 #define alert_description(x)		{ TLS_ALERT_DESC_##x, #x },
 #define alert_description_end(x)	{ TLS_ALERT_DESC_##x, #x }
-
 #define show_tls_alert_description(desc) \
 	__print_symbolic(desc, TLS_ALERT_DESCRIPTION_LIST)
-
 DECLARE_EVENT_CLASS(handshake_event_class,
 	TP_PROTO(
 		const struct net *net,
@@ -116,7 +100,6 @@ DECLARE_EVENT_CLASS(handshake_event_class,
 			const struct sock *sk			\
 		),						\
 		TP_ARGS(net, req, sk))
-
 DECLARE_EVENT_CLASS(handshake_fd_class,
 	TP_PROTO(
 		const struct net *net,
@@ -150,7 +133,6 @@ DECLARE_EVENT_CLASS(handshake_fd_class,
 			int fd					\
 		),						\
 		TP_ARGS(net, req, sk, fd))
-
 DECLARE_EVENT_CLASS(handshake_error_class,
 	TP_PROTO(
 		const struct net *net,
@@ -184,7 +166,6 @@ DECLARE_EVENT_CLASS(handshake_error_class,
 			int err					\
 		),						\
 		TP_ARGS(net, req, sk, err))
-
 DECLARE_EVENT_CLASS(handshake_alert_class,
 	TP_PROTO(
 		const struct sock *sk,
@@ -193,7 +174,6 @@ DECLARE_EVENT_CLASS(handshake_alert_class,
 	),
 	TP_ARGS(sk, level, description),
 	TP_STRUCT__entry(
-		/* sockaddr_in6 is always bigger than sockaddr_in */
 		__array(__u8, saddr, sizeof(struct sockaddr_in6))
 		__array(__u8, daddr, sizeof(struct sockaddr_in6))
 		__field(unsigned int, netns_ino)
@@ -202,11 +182,9 @@ DECLARE_EVENT_CLASS(handshake_alert_class,
 	),
 	TP_fast_assign(
 		const struct inet_sock *inet = inet_sk(sk);
-
 		memset(__entry->saddr, 0, sizeof(struct sockaddr_in6));
 		memset(__entry->daddr, 0, sizeof(struct sockaddr_in6));
 		TP_STORE_ADDR_PORTS(__entry, inet, sk);
-
 		__entry->netns_ino = sock_net(sk)->ns.inum;
 		__entry->level = level;
 		__entry->description = description;
@@ -225,20 +203,12 @@ DECLARE_EVENT_CLASS(handshake_alert_class,
 			unsigned char description		\
 		),						\
 		TP_ARGS(sk, level, description))
-
-
-/*
- * Request lifetime events
- */
-
 DEFINE_HANDSHAKE_EVENT(handshake_submit);
 DEFINE_HANDSHAKE_ERROR(handshake_submit_err);
 DEFINE_HANDSHAKE_EVENT(handshake_cancel);
 DEFINE_HANDSHAKE_EVENT(handshake_cancel_none);
 DEFINE_HANDSHAKE_EVENT(handshake_cancel_busy);
 DEFINE_HANDSHAKE_EVENT(handshake_destruct);
-
-
 TRACE_EVENT(handshake_complete,
 	TP_PROTO(
 		const struct net *net,
@@ -263,21 +233,11 @@ TRACE_EVENT(handshake_complete,
 		__entry->req, __entry->sk, __entry->status
 	)
 );
-
-/*
- * Netlink events
- */
-
 DEFINE_HANDSHAKE_ERROR(handshake_notify_err);
 DEFINE_HANDSHAKE_FD_EVENT(handshake_cmd_accept);
 DEFINE_HANDSHAKE_ERROR(handshake_cmd_accept_err);
 DEFINE_HANDSHAKE_FD_EVENT(handshake_cmd_done);
 DEFINE_HANDSHAKE_ERROR(handshake_cmd_done_err);
-
-/*
- * TLS Record events
- */
-
 TRACE_EVENT(tls_contenttype,
 	TP_PROTO(
 		const struct sock *sk,
@@ -285,7 +245,6 @@ TRACE_EVENT(tls_contenttype,
 	),
 	TP_ARGS(sk, type),
 	TP_STRUCT__entry(
-		/* sockaddr_in6 is always bigger than sockaddr_in */
 		__array(__u8, saddr, sizeof(struct sockaddr_in6))
 		__array(__u8, daddr, sizeof(struct sockaddr_in6))
 		__field(unsigned int, netns_ino)
@@ -293,11 +252,9 @@ TRACE_EVENT(tls_contenttype,
 	),
 	TP_fast_assign(
 		const struct inet_sock *inet = inet_sk(sk);
-
 		memset(__entry->saddr, 0, sizeof(struct sockaddr_in6));
 		memset(__entry->daddr, 0, sizeof(struct sockaddr_in6));
 		TP_STORE_ADDR_PORTS(__entry, inet, sk);
-
 		__entry->netns_ino = sock_net(sk)->ns.inum;
 		__entry->type = type;
 	),
@@ -306,14 +263,7 @@ TRACE_EVENT(tls_contenttype,
 		show_tls_content_type(__entry->type)
 	)
 );
-
-/*
- * TLS Alert events
- */
-
 DEFINE_HANDSHAKE_ALERT(tls_alert_send);
 DEFINE_HANDSHAKE_ALERT(tls_alert_recv);
-
-#endif /* _TRACE_HANDSHAKE_H */
-
+#endif  
 #include <trace/define_trace.h>

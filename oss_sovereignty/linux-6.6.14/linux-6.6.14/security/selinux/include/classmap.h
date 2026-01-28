@@ -1,22 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #include <linux/capability.h>
 #include <linux/socket.h>
-
 #define COMMON_FILE_SOCK_PERMS "ioctl", "read", "write", "create", \
     "getattr", "setattr", "lock", "relabelfrom", "relabelto", "append", "map"
-
 #define COMMON_FILE_PERMS COMMON_FILE_SOCK_PERMS, "unlink", "link", \
     "rename", "execute", "quotaon", "mounton", "audit_access", \
 	"open", "execmod", "watch", "watch_mount", "watch_sb", \
 	"watch_with_perm", "watch_reads"
-
 #define COMMON_SOCK_PERMS COMMON_FILE_SOCK_PERMS, "bind", "connect", \
     "listen", "accept", "getopt", "setopt", "shutdown", "recvfrom",  \
     "sendto", "name_bind"
-
 #define COMMON_IPC_PERMS "create", "destroy", "getattr", "setattr", "read", \
 	    "write", "associate", "unix_read", "unix_write"
-
 #define COMMON_CAP_PERMS  "chown", "dac_override", "dac_read_search", \
 	    "fowner", "fsetid", "kill", "setgid", "setuid", "setpcap", \
 	    "linux_immutable", "net_bind_service", "net_broadcast", \
@@ -25,19 +19,12 @@
 	    "sys_boot", "sys_nice", "sys_resource", "sys_time", \
 	    "sys_tty_config", "mknod", "lease", "audit_write", \
 	    "audit_control", "setfcap"
-
 #define COMMON_CAP2_PERMS  "mac_override", "mac_admin", "syslog", \
 		"wake_alarm", "block_suspend", "audit_read", "perfmon", "bpf", \
 		"checkpoint_restore"
-
 #if CAP_LAST_CAP > CAP_CHECKPOINT_RESTORE
 #error New capability defined, please update COMMON_CAP2_PERMS.
 #endif
-
-/*
- * Note: The name for any socket class should be suffixed by "socket",
- *	 and doesn't contain more than one substr of "socket".
- */
 const struct security_class_mapping secclass_map[] = {
 	{ "security",
 	  { "compute_av", "compute_create", "compute_member",
@@ -258,7 +245,6 @@ const struct security_class_mapping secclass_map[] = {
 	  { "create", NULL } },
 	{ NULL }
   };
-
 #if PF_MAX > 46
 #error New address family defined, please update secclass_map.
 #endif

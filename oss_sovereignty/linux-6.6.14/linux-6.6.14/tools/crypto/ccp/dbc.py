@@ -1,13 +1,8 @@
-#!/usr/bin/python3
-# SPDX-License-Identifier: GPL-2.0
-
 import ctypes
 import os
-
 DBC_UID_SIZE = 16
 DBC_NONCE_SIZE = 16
 DBC_SIG_SIZE = 32
-
 PARAM_GET_FMAX_CAP = (0x3,)
 PARAM_SET_FMAX_CAP = (0x4,)
 PARAM_GET_PWR_CAP = (0x5,)
@@ -20,16 +15,10 @@ PARAM_GET_FMAX_MIN = (0xB,)
 PARAM_GET_SOC_PWR_MAX = (0xC,)
 PARAM_GET_SOC_PWR_MIN = (0xD,)
 PARAM_GET_SOC_PWR_CUR = (0xE,)
-
 DEVICE_NODE = "/dev/dbc"
-
 lib = ctypes.CDLL("./dbc_library.so", mode=ctypes.RTLD_GLOBAL)
-
-
 def handle_error(code):
     raise OSError(code, os.strerror(code))
-
-
 def get_nonce(device, signature):
     if not device:
         raise ValueError("Device required")
@@ -38,8 +27,6 @@ def get_nonce(device, signature):
     if ret:
         handle_error(ret)
     return buf.value
-
-
 def set_uid(device, new_uid, signature):
     if not signature:
         raise ValueError("Signature required")
@@ -49,8 +36,6 @@ def set_uid(device, new_uid, signature):
     if ret:
         handle_error(ret)
     return True
-
-
 def process_param(device, message, signature, data=None):
     if not signature:
         raise ValueError("Signature required")

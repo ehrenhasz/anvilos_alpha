@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * ATC2603C PMIC register definitions
- *
- * Copyright (C) 2020 Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
- */
-
 #ifndef __LINUX_MFD_ATC260X_ATC2603C_H
 #define __LINUX_MFD_ATC260X_ATC2603C_H
-
 enum atc2603c_irq_def {
 	ATC2603C_IRQ_AUDIO = 0,
 	ATC2603C_IRQ_OV,
@@ -21,8 +13,6 @@ enum atc2603c_irq_def {
 	ATC2603C_IRQ_REMCON,
 	ATC2603C_IRQ_POWER_IN,
 };
-
-/* PMU Registers */
 #define ATC2603C_PMU_SYS_CTL0			0x00
 #define ATC2603C_PMU_SYS_CTL1			0x01
 #define ATC2603C_PMU_SYS_CTL2			0x02
@@ -41,28 +31,28 @@ enum atc2603c_irq_def {
 #define ATC2603C_PMU_WALL_CTL1			0x0F
 #define ATC2603C_PMU_SYS_PENDING		0x10
 #define ATC2603C_PMU_DC1_CTL0			0x11
-#define ATC2603C_PMU_DC1_CTL1			0x12 // Undocumented
-#define ATC2603C_PMU_DC1_CTL2			0x13 // Undocumented
+#define ATC2603C_PMU_DC1_CTL1			0x12  
+#define ATC2603C_PMU_DC1_CTL2			0x13  
 #define ATC2603C_PMU_DC2_CTL0			0x14
-#define ATC2603C_PMU_DC2_CTL1			0x15 // Undocumented
-#define ATC2603C_PMU_DC2_CTL2			0x16 // Undocumented
+#define ATC2603C_PMU_DC2_CTL1			0x15  
+#define ATC2603C_PMU_DC2_CTL2			0x16  
 #define ATC2603C_PMU_DC3_CTL0			0x17
-#define ATC2603C_PMU_DC3_CTL1			0x18 // Undocumented
-#define ATC2603C_PMU_DC3_CTL2			0x19 // Undocumented
-#define ATC2603C_PMU_DC4_CTL0			0x1A // Undocumented
-#define ATC2603C_PMU_DC4_CTL1			0x1B // Undocumented
-#define ATC2603C_PMU_DC5_CTL0			0x1C // Undocumented
-#define ATC2603C_PMU_DC5_CTL1			0x1D // Undocumented
+#define ATC2603C_PMU_DC3_CTL1			0x18  
+#define ATC2603C_PMU_DC3_CTL2			0x19  
+#define ATC2603C_PMU_DC4_CTL0			0x1A  
+#define ATC2603C_PMU_DC4_CTL1			0x1B  
+#define ATC2603C_PMU_DC5_CTL0			0x1C  
+#define ATC2603C_PMU_DC5_CTL1			0x1D  
 #define ATC2603C_PMU_LDO1_CTL			0x1E
 #define ATC2603C_PMU_LDO2_CTL			0x1F
 #define ATC2603C_PMU_LDO3_CTL			0x20
-#define ATC2603C_PMU_LDO4_CTL			0x21 // Undocumented
+#define ATC2603C_PMU_LDO4_CTL			0x21  
 #define ATC2603C_PMU_LDO5_CTL			0x22
 #define ATC2603C_PMU_LDO6_CTL			0x23
 #define ATC2603C_PMU_LDO7_CTL			0x24
-#define ATC2603C_PMU_LDO8_CTL			0x25 // Undocumented
-#define ATC2603C_PMU_LDO9_CTL			0x26 // Undocumented
-#define ATC2603C_PMU_LDO10_CTL			0x27 // Undocumented
+#define ATC2603C_PMU_LDO8_CTL			0x25  
+#define ATC2603C_PMU_LDO9_CTL			0x26  
+#define ATC2603C_PMU_LDO10_CTL			0x27  
 #define ATC2603C_PMU_LDO11_CTL			0x28
 #define ATC2603C_PMU_SWITCH_CTL			0x29
 #define ATC2603C_PMU_OV_CTL0			0x2A
@@ -83,7 +73,7 @@ enum atc2603c_irq_def {
 #define ATC2603C_PMU_CHARGER_CTL0		0x39
 #define ATC2603C_PMU_CHARGER_CTL1		0x3A
 #define ATC2603C_PMU_CHARGER_CTL2		0x3B
-#define ATC2603C_PMU_BAKCHARGER_CTL		0x3C // Undocumented
+#define ATC2603C_PMU_BAKCHARGER_CTL		0x3C  
 #define ATC2603C_PMU_APDS_CTL			0x3D
 #define ATC2603C_PMU_AUXADC_CTL0		0x3E
 #define ATC2603C_PMU_AUXADC_CTL1		0x3F
@@ -104,7 +94,7 @@ enum atc2603c_irq_def {
 #define ATC2603C_PMU_AUXADC1			0x4E
 #define ATC2603C_PMU_AUXADC2			0x4F
 #define	ATC2603C_PMU_ICMADC			0x50
-#define ATC2603C_PMU_BDG_CTL			0x51 // Undocumented
+#define ATC2603C_PMU_BDG_CTL			0x51  
 #define ATC2603C_RTC_CTL			0x52
 #define ATC2603C_RTC_MSALM			0x53
 #define ATC2603C_RTC_HALM			0x54
@@ -113,14 +103,14 @@ enum atc2603c_irq_def {
 #define ATC2603C_RTC_H				0x57
 #define ATC2603C_RTC_DC				0x58
 #define ATC2603C_RTC_YMD			0x59
-#define ATC2603C_EFUSE_DAT			0x5A // Undocumented
-#define ATC2603C_EFUSECRTL1			0x5B // Undocumented
-#define ATC2603C_EFUSECRTL2			0x5C // Undocumented
-#define ATC2603C_PMU_FW_USE0			0x5D // Undocumented
-#define ATC2603C_PMU_FW_USE1			0x5E // Undocumented
-#define ATC2603C_PMU_FW_USE2			0x5F // Undocumented
-#define ATC2603C_PMU_FW_USE3			0x60 // Undocumented
-#define ATC2603C_PMU_FW_USE4			0x61 // Undocumented
+#define ATC2603C_EFUSE_DAT			0x5A  
+#define ATC2603C_EFUSECRTL1			0x5B  
+#define ATC2603C_EFUSECRTL2			0x5C  
+#define ATC2603C_PMU_FW_USE0			0x5D  
+#define ATC2603C_PMU_FW_USE1			0x5E  
+#define ATC2603C_PMU_FW_USE2			0x5F  
+#define ATC2603C_PMU_FW_USE3			0x60  
+#define ATC2603C_PMU_FW_USE4			0x61  
 #define ATC2603C_PMU_ABNORMAL_STATUS		0x62
 #define ATC2603C_PMU_WALL_APDS_CTL		0x63
 #define ATC2603C_PMU_REMCON_CTL0		0x64
@@ -146,8 +136,6 @@ enum atc2603c_irq_def {
 #define ATC2603C_IRC_WK				0x84
 #define ATC2603C_IRC_RCC			0x85
 #define ATC2603C_IRC_FILTER			0x86
-
-/* AUDIO_OUT Registers */
 #define ATC2603C_AUDIOINOUT_CTL			0xA0
 #define ATC2603C_AUDIO_DEBUGOUTCTL		0xA1
 #define ATC2603C_DAC_DIGITALCTL			0xA2
@@ -156,49 +144,35 @@ enum atc2603c_irq_def {
 #define ATC2603C_DAC_ANALOG1			0xA5
 #define ATC2603C_DAC_ANALOG2			0xA6
 #define ATC2603C_DAC_ANALOG3			0xA7
-
-/* AUDIO_IN Registers */
 #define ATC2603C_ADC_DIGITALCTL			0xA8
 #define ATC2603C_ADC_HPFCTL			0xA9
 #define ATC2603C_ADC_CTL			0xAA
 #define ATC2603C_AGC_CTL0			0xAB
-#define ATC2603C_AGC_CTL1			0xAC // Undocumented
+#define ATC2603C_AGC_CTL1			0xAC  
 #define ATC2603C_AGC_CTL2			0xAD
 #define ATC2603C_ADC_ANALOG0			0xAE
 #define ATC2603C_ADC_ANALOG1			0xAF
-
-/* PCM_IF Registers */
-#define ATC2603C_PCM0_CTL			0xB0 // Undocumented
-#define ATC2603C_PCM1_CTL			0xB1 // Undocumented
-#define ATC2603C_PCM2_CTL			0xB2 // Undocumented
-#define ATC2603C_PCMIF_CTL			0xB3 // Undocumented
-
-/* CMU_CONTROL Registers */
-#define ATC2603C_CMU_DEVRST			0xC1 // Undocumented
-
-/* INTS Registers */
+#define ATC2603C_PCM0_CTL			0xB0  
+#define ATC2603C_PCM1_CTL			0xB1  
+#define ATC2603C_PCM2_CTL			0xB2  
+#define ATC2603C_PCMIF_CTL			0xB3  
+#define ATC2603C_CMU_DEVRST			0xC1  
 #define ATC2603C_INTS_PD			0xC8
 #define ATC2603C_INTS_MSK			0xC9
-
-/* MFP Registers */
 #define ATC2603C_MFP_CTL			0xD0
-#define ATC2603C_PAD_VSEL			0xD1 // Undocumented
+#define ATC2603C_PAD_VSEL			0xD1  
 #define ATC2603C_GPIO_OUTEN			0xD2
 #define ATC2603C_GPIO_INEN			0xD3
 #define ATC2603C_GPIO_DAT			0xD4
 #define ATC2603C_PAD_DRV			0xD5
 #define ATC2603C_PAD_EN				0xD6
-#define ATC2603C_DEBUG_SEL			0xD7 // Undocumented
-#define ATC2603C_DEBUG_IE			0xD8 // Undocumented
-#define ATC2603C_DEBUG_OE			0xD9 // Undocumented
-#define ATC2603C_BIST_START			0x0A // Undocumented
-#define ATC2603C_BIST_RESULT			0x0B // Undocumented
+#define ATC2603C_DEBUG_SEL			0xD7  
+#define ATC2603C_DEBUG_IE			0xD8  
+#define ATC2603C_DEBUG_OE			0xD9  
+#define ATC2603C_BIST_START			0x0A  
+#define ATC2603C_BIST_RESULT			0x0B  
 #define ATC2603C_CHIP_VER			0xDC
-
-/* TWSI Registers */
 #define ATC2603C_SADDR				0xFF
-
-/* PMU_SYS_CTL0 Register Mask Bits */
 #define ATC2603C_PMU_SYS_CTL0_IR_WK_EN			BIT(5)
 #define ATC2603C_PMU_SYS_CTL0_RESET_WK_EN		BIT(6)
 #define ATC2603C_PMU_SYS_CTL0_HDSW_WK_EN		BIT(7)
@@ -211,8 +185,6 @@ enum atc2603c_irq_def {
 #define ATC2603C_PMU_SYS_CTL0_WALL_WK_EN		BIT(14)
 #define ATC2603C_PMU_SYS_CTL0_USB_WK_EN			BIT(15)
 #define ATC2603C_PMU_SYS_CTL0_WK_ALL			(GENMASK(15, 5) & (~BIT(10)))
-
-/* PMU_SYS_CTL1 Register Mask Bits */
 #define ATC2603C_PMU_SYS_CTL1_EN_S1			BIT(0)
 #define ATC2603C_PMU_SYS_CTL1_LB_S4_EN			BIT(2)
 #define ATC2603C_PMU_SYS_CTL1_LB_S4			GENMASK(4, 3)
@@ -228,8 +200,6 @@ enum atc2603c_irq_def {
 #define ATC2603C_PMU_SYS_CTL1_ONOFF_LONG_WK_FLAG	BIT(13)
 #define ATC2603C_PMU_SYS_CTL1_WALL_WK_FLAG		BIT(14)
 #define ATC2603C_PMU_SYS_CTL1_USB_WK_FLAG		BIT(15)
-
-/* PMU_SYS_CTL2 Register Mask Bits */
 #define ATC2603C_PMU_SYS_CTL2_PMU_A_EN			BIT(0)
 #define ATC2603C_PMU_SYS_CTL2_ONOFF_PRESS_INT_EN	BIT(1)
 #define ATC2603C_PMU_SYS_CTL2_ONOFF_PRESS_PD		BIT(2)
@@ -242,22 +212,16 @@ enum atc2603c_irq_def {
 #define ATC2603C_PMU_SYS_CTL2_ONOFF_LONG_PRESS		BIT(13)
 #define ATC2603C_PMU_SYS_CTL2_ONOFF_SHORT_PRESS		BIT(14)
 #define ATC2603C_PMU_SYS_CTL2_ONOFF_PRESS		BIT(15)
-
-/* PMU_SYS_CTL3 Register Mask Bits */
 #define ATC2603C_PMU_SYS_CTL3_S2S3TOS1_TIMER		GENMASK(8, 7)
 #define ATC2603C_PMU_SYS_CTL3_S2S3TOS1_TIMER_EN		BIT(9)
 #define ATC2603C_PMU_SYS_CTL3_S3_TIMER			GENMASK(12, 10)
 #define ATC2603C_PMU_SYS_CTL3_S3_TIMER_EN		BIT(13)
 #define ATC2603C_PMU_SYS_CTL3_EN_S3			BIT(14)
 #define ATC2603C_PMU_SYS_CTL3_EN_S2			BIT(15)
-
-/* PMU_SYS_CTL5 Register Mask Bits */
 #define ATC2603C_PMU_SYS_CTL5_WALLWKDTEN		BIT(7)
 #define ATC2603C_PMU_SYS_CTL5_VBUSWKDTEN		BIT(8)
 #define ATC2603C_PMU_SYS_CTL5_REMCON_DECT_EN		BIT(9)
 #define ATC2603C_PMU_SYS_CTL5_ONOFF_8S_SEL		BIT(10)
-
-/* INTS_MSK Register Mask Bits */
 #define ATC2603C_INTS_MSK_AUDIO				BIT(0)
 #define ATC2603C_INTS_MSK_OV				BIT(1)
 #define ATC2603C_INTS_MSK_OC				BIT(2)
@@ -269,13 +233,8 @@ enum atc2603c_irq_def {
 #define ATC2603C_INTS_MSK_IR				BIT(8)
 #define ATC2603C_INTS_MSK_REMCON			BIT(9)
 #define ATC2603C_INTS_MSK_POWERIN			BIT(10)
-
-/* CMU_DEVRST Register Mask Bits */
 #define ATC2603C_CMU_DEVRST_MFP				BIT(1)
 #define ATC2603C_CMU_DEVRST_INTS			BIT(2)
 #define ATC2603C_CMU_DEVRST_AUDIO			BIT(4)
-
-/* PAD_EN Register Mask Bits */
 #define ATC2603C_PAD_EN_EXTIRQ				BIT(0)
-
-#endif /* __LINUX_MFD_ATC260X_ATC2603C_H */
+#endif  

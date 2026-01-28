@@ -1,19 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Sascha Hauer, Pengutronix
- */
-
 /dts-v1/;
 #include "imx25.dtsi"
-
 / {
 	model = "Ka-Ro TX25";
 	compatible = "karo,imx25-tx25", "fsl,imx25";
-
 	chosen {
 		stdout-path = &uart1;
 	};
-
 	reg_fec_phy: regulator-0 {
 		compatible = "regulator-fixed";
 		regulator-name = "fec-phy";
@@ -22,13 +14,11 @@
 		gpio = <&gpio4 9 0>;
 		enable-active-high;
 	};
-
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x80000000 0x02000000 0x90000000 0x02000000>;
 	};
 };
-
 &iomuxc {
 	pinctrl_uart1: uart1grp {
 		fsl,pins = <
@@ -38,11 +28,10 @@
 			MX25_PAD_UART1_RTS__UART1_RTS 0x000000e0
 		>;
 	};
-
 	pinctrl_fec: fecgrp {
 		fsl,pins = <
-			MX25_PAD_D11__GPIO_4_9		0x00000021 /* FEC PHY power on pin */
-			MX25_PAD_D13__GPIO_4_7		0x000000a1 /* FEC reset */
+			MX25_PAD_D11__GPIO_4_9		0x00000021  
+			MX25_PAD_D13__GPIO_4_7		0x000000a1  
 			MX25_PAD_FEC_MDC__FEC_MDC	0x00000060
 			MX25_PAD_FEC_MDIO__FEC_MDIO	0x000001f0
 			MX25_PAD_FEC_TDATA0__FEC_TDATA0	0x00000060
@@ -54,7 +43,6 @@
 			MX25_PAD_FEC_TX_CLK__FEC_TX_CLK	0x000000c0
 		>;
 	};
-
 	pinctrl_nfc: nfcgrp {
 		fsl,pins = <
 			MX25_PAD_NF_CE0__NF_CE0		0x00000001
@@ -75,13 +63,11 @@
 		>;
 	};
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec>;
@@ -90,7 +76,6 @@
 	phy-supply = <&reg_fec_phy>;
 	status = "okay";
 };
-
 &nfc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_nfc>;

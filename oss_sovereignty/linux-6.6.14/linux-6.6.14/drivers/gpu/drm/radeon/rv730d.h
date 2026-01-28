@@ -1,28 +1,5 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef RV730_H
 #define RV730_H
-
 #define	CG_SPLL_FUNC_CNTL				0x600
 #define		SPLL_RESET				(1 << 0)
 #define		SPLL_SLEEP				(1 << 1)
@@ -41,7 +18,6 @@
 #define		SPLL_FB_DIV(x)				((x) << 0)
 #define		SPLL_FB_DIV_MASK			(0x3ffffff << 0)
 #define		SPLL_DITHEN				(1 << 28)
-
 #define	CG_MPLL_FUNC_CNTL				0x624
 #define		MPLL_RESET				(1 << 0)
 #define		MPLL_SLEEP				(1 << 1)
@@ -60,7 +36,6 @@
 #define		MPLL_FB_DIV(x)				((x) << 0)
 #define		MPLL_FB_DIV_MASK			(0x3ffffff << 0)
 #define		MPLL_DITHEN				(1 << 28)
-
 #define	CG_TCI_MPLL_SPREAD_SPECTRUM			0x634
 #define	CG_TCI_MPLL_SPREAD_SPECTRUM_2			0x638
 #define GENERAL_PWRMGT                                  0x63c
@@ -79,7 +54,6 @@
 #       define BACKBIAS_VALUE                           (1 << 19)
 #       define DYN_SPREAD_SPECTRUM_EN                   (1 << 23)
 #       define AC_DC_SW                                 (1 << 24)
-
 #define SCLK_PWRMGT_CNTL                                  0x644
 #       define SCLK_PWRMGT_OFF                            (1 << 0)
 #       define SCLK_LOW_D1                                (1 << 1)
@@ -93,7 +67,6 @@
 #       define GFX_CLK_OFF_ACPI_D1                        (1 << 11)
 #       define GFX_CLK_OFF_ACPI_D2                        (1 << 12)
 #       define GFX_CLK_OFF_ACPI_D3                        (1 << 13)
-
 #define	TCI_MCLK_PWRMGT_CNTL				0x648
 #       define MPLL_PWRMGT_OFF                          (1 << 5)
 #       define DLL_READY                                (1 << 6)
@@ -119,16 +92,13 @@
 #       define USE_DISPLAY_URGENT_NORMAL                (1 << 26)
 #       define MPLL_TURNOFF_D2                          (1 << 28)
 #define	TCI_DLL_CNTL					0x64c
-
 #define	CG_PG_CNTL					0x858
 #       define PWRGATE_ENABLE                           (1 << 0)
-
 #define	CG_AT				                0x6d4
 #define		CG_R(x)					((x) << 0)
 #define		CG_R_MASK				(0xffff << 0)
 #define		CG_L(x)					((x) << 16)
 #define		CG_L_MASK				(0xffff << 16)
-
 #define	CG_SPLL_SPREAD_SPECTRUM				0x790
 #define		SSEN					(1 << 0)
 #define		CLK_S(x)				((x) << 4)
@@ -136,10 +106,8 @@
 #define	CG_SPLL_SPREAD_SPECTRUM_2			0x794
 #define		CLK_V(x)				((x) << 0)
 #define		CLK_V_MASK				(0x3ffffff << 0)
-
 #define	MC_ARB_DRAM_TIMING				0x2774
 #define	MC_ARB_DRAM_TIMING2				0x2778
-
 #define	MC_ARB_RFSH_RATE				0x27b0
 #define		POWERMODE0(x)				((x) << 0)
 #define		POWERMODE0_MASK				(0xff << 0)
@@ -149,17 +117,14 @@
 #define		POWERMODE2_MASK				(0xff << 16)
 #define		POWERMODE3(x)				((x) << 24)
 #define		POWERMODE3_MASK				(0xff << 24)
-
 #define	MC_ARB_DRAM_TIMING_1				0x27f0
 #define	MC_ARB_DRAM_TIMING_2				0x27f4
 #define	MC_ARB_DRAM_TIMING_3				0x27f8
 #define	MC_ARB_DRAM_TIMING2_1				0x27fc
 #define	MC_ARB_DRAM_TIMING2_2				0x2800
 #define	MC_ARB_DRAM_TIMING2_3				0x2804
-
 #define	MC4_IO_DQ_PAD_CNTL_D0_I0			0x2978
 #define	MC4_IO_DQ_PAD_CNTL_D0_I1			0x297c
 #define	MC4_IO_QS_PAD_CNTL_D0_I0			0x2980
 #define	MC4_IO_QS_PAD_CNTL_D0_I1			0x2984
-
 #endif

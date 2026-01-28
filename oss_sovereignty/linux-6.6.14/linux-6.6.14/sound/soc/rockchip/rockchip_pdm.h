@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Rockchip PDM ALSA SoC Digital Audio Interface(DAI)  driver
- *
- * Copyright (C) 2017 Fuzhou Rockchip Electronics Co., Ltd
- */
-
 #ifndef _ROCKCHIP_PDM_H
 #define _ROCKCHIP_PDM_H
-
-/* PDM REGS */
 #define PDM_SYSCONFIG	(0x0000)
 #define PDM_CTRL0	(0x0004)
 #define PDM_CTRL1	(0x0008)
@@ -22,16 +13,12 @@
 #define PDM_RXFIFO_DATA	(0x0030)
 #define PDM_DATA_VALID	(0x0054)
 #define PDM_VERSION	(0x0058)
-
-/* PDM_SYSCONFIG */
 #define PDM_RX_MASK		(0x1 << 2)
 #define PDM_RX_START		(0x1 << 2)
 #define PDM_RX_STOP		(0x0 << 2)
 #define PDM_RX_CLR_MASK		(0x1 << 0)
 #define PDM_RX_CLR_WR		(0x1 << 0)
 #define PDM_RX_CLR_DONE		(0x0 << 0)
-
-/* PDM CTRL0 */
 #define PDM_PATH_MSK		(0xf << 27)
 #define PDM_MODE_MSK		BIT(31)
 #define PDM_MODE_RJ		0
@@ -45,14 +32,10 @@
 #define PDM_SAMPLERATE(x)	((x) << 5)
 #define PDM_VDW_MSK		(0x1f << 0)
 #define PDM_VDW(X)		((X - 1) << 0)
-
-/* PDM CTRL1 */
 #define PDM_FD_NUMERATOR_SFT	16
 #define PDM_FD_NUMERATOR_MSK	GENMASK(31, 16)
 #define PDM_FD_DENOMINATOR_SFT	0
 #define PDM_FD_DENOMINATOR_MSK	GENMASK(15, 0)
-
-/* PDM CLK CTRL */
 #define PDM_PATH_SHIFT(x)	(8 + (x) * 2)
 #define PDM_PATH_MASK(x)	(0x3 << PDM_PATH_SHIFT(x))
 #define PDM_PATH(x, v)		((v) << PDM_PATH_SHIFT(x))
@@ -72,8 +55,6 @@
 #define PDM_CLK_2560FS		(0x3 << 0)
 #define PDM_CLK_5120FS		(0x4 << 0)
 #define PDM_CIC_RATIO_MSK	(0x3 << 0)
-
-/* PDM HPF CTRL */
 #define PDM_HPF_LE		BIT(3)
 #define PDM_HPF_RE		BIT(2)
 #define PDM_HPF_CF_MSK		(0x3 << 0)
@@ -81,12 +62,9 @@
 #define PDM_HPF_60HZ		(0x1 << 0)
 #define PDM_HPF_243HZ		(0x2 << 0)
 #define PDM_HPF_493HZ		(0x3 << 0)
-
-/* PDM DMA CTRL */
 #define PDM_DMA_RD_MSK		BIT(8)
 #define PDM_DMA_RD_EN		BIT(8)
 #define PDM_DMA_RD_DIS		(0x0 << 8)
 #define PDM_DMA_RDL_MSK		(0x7f << 0)
 #define PDM_DMA_RDL(X)		((X - 1) << 0)
-
-#endif /* _ROCKCHIP_PDM_H */
+#endif  

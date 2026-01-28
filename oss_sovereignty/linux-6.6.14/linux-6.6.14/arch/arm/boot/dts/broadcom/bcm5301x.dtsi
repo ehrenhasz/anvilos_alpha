@@ -1,13 +1,4 @@
-/*
- * Broadcom BCM470X / BCM5301X ARM platform code.
- * Generic DTS part for all BCM53010, BCM53011, BCM53012, BCM53014, BCM53015,
- * BCM53016, BCM53017, BCM53018, BCM4707, BCM4708 and BCM4709 SoCs
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
-
 #include "bcm-ns.dtsi"
-
 / {
 	mpcore-bus@19000000 {
 		a9pll: arm_clk@0 {
@@ -16,7 +7,6 @@
 			clocks = <&osc>;
 			reg = <0x00000 0x1000>;
 		};
-
 		watchdog@20620 {
 			compatible = "arm,cortex-a9-twd-wdt";
 			reg = <0x20620 0x20>;
@@ -25,25 +15,21 @@
 			clocks = <&periph_clk>;
 		};
 	};
-
 	pmu {
 		compatible = "arm,cortex-a9-pmu";
 		interrupts =
 			<GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
 			<GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>;
 	};
-
 	clocks {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
-
 		osc: oscillator {
 			#clock-cells = <0>;
 			compatible = "fixed-clock";
 			clock-frequency = <25000000>;
 		};
-
 		iprocmed: iprocmed {
 			#clock-cells = <0>;
 			compatible = "fixed-factor-clock";
@@ -51,7 +37,6 @@
 			clock-div = <2>;
 			clock-mult = <1>;
 		};
-
 		iprocslow: iprocslow {
 			#clock-cells = <0>;
 			compatible = "fixed-factor-clock";
@@ -59,7 +44,6 @@
 			clock-div = <4>;
 			clock-mult = <1>;
 		};
-
 		periph_clk: periph_clk {
 			#clock-cells = <0>;
 			compatible = "fixed-factor-clock";
@@ -68,7 +52,6 @@
 			clock-mult = <1>;
 		};
 	};
-
 	mdio-mux@18003000 {
 		compatible = "mdio-mux-mmioreg", "mdio-mux";
 		mdio-parent-bus = <&mdio>;
@@ -76,12 +59,10 @@
 		#size-cells = <0>;
 		reg = <0x18003000 0x4>;
 		mux-mask = <0x200>;
-
 		mdio@0 {
 			reg = <0x0>;
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			usb3_phy: usb3-phy@10 {
 				compatible = "brcm,ns-ax-usb3-phy";
 				reg = <0x10>;
@@ -91,11 +72,9 @@
 			};
 		};
 	};
-
 	usb3_dmp: syscon@18105000 {
 		reg = <0x18105000 0x1000>;
 	};
-
 	i2c0: i2c@18009000 {
 		compatible = "brcm,iproc-i2c";
 		reg = <0x18009000 0x50>;
@@ -105,7 +84,6 @@
 		clock-frequency = <100000>;
 		status = "disabled";
 	};
-
 	dmu-bus@1800c000 {
 		cru-bus@100 {
 			lcpll0: clock-controller@100 {
@@ -116,7 +94,6 @@
 				clock-output-names = "lcpll0", "pcie_phy",
 						     "sdio", "ddr_phy";
 			};
-
 			genpll: clock-controller@140 {
 				#clock-cells = <1>;
 				compatible = "brcm,nsp-genpll";
@@ -129,7 +106,6 @@
 			};
 		};
 	};
-
 	spi@18029200 {
 		compatible = "brcm,spi-nsp-qspi", "brcm,spi-bcm-qspi";
 		reg = <0x18029200 0x184>,
@@ -155,13 +131,11 @@
 		num-cs = <2>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		spi_nor: flash@0 {
 			compatible = "jedec,spi-nor";
 			reg = <0>;
 			spi-max-frequency = <20000000>;
 			status = "disabled";
-
 			partitions {
 				compatible = "brcm,bcm947xx-cfe-partitions";
 			};

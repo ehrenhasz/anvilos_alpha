@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Linaro Limited
- */
-
 #ifndef _DT_BINDINGS_CLK_QCOM_CAMCC_SM6350_H
 #define _DT_BINDINGS_CLK_QCOM_CAMCC_SM6350_H
-
-/* CAMCC clocks */
 #define CAMCC_PLL2_OUT_EARLY		0
 #define CAMCC_PLL0			1
 #define CAMCC_PLL0_OUT_EVEN		2
@@ -97,13 +89,10 @@
 #define CAMCC_SLOW_AHB_CLK_SRC		86
 #define CAMCC_SOC_AHB_CLK		87
 #define CAMCC_SYS_TMR_CLK		88
-
-/* GDSCs */
 #define BPS_GDSC			0
 #define IPE_0_GDSC			1
 #define IFE_0_GDSC			2
 #define IFE_1_GDSC			3
 #define IFE_2_GDSC			4
 #define TITAN_TOP_GDSC			5
-
 #endif

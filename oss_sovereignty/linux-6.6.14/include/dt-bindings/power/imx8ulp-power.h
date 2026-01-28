@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- *  Copyright 2021 NXP
- */
-
 #ifndef __DT_BINDINGS_IMX8ULP_POWER_H__
 #define __DT_BINDINGS_IMX8ULP_POWER_H__
-
 #define IMX8ULP_PD_DMA1		0
 #define IMX8ULP_PD_FLEXSPI2	1
 #define IMX8ULP_PD_USB0		2
@@ -22,5 +16,4 @@
 #define IMX8ULP_PD_MIPI_CSI	13
 #define IMX8ULP_PD_MIPI_DSI	14
 #define IMX8ULP_PD_PXP		15
-
 #endif

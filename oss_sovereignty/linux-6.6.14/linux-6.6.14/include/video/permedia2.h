@@ -1,27 +1,9 @@
-/*
- * Permedia2 framebuffer driver definitions.
- * Copyright (c) 1998-2000 Ilario Nardinocchi (nardinoc@CS.UniBO.IT)
- * --------------------------------------------------------------------------
- * $Id: pm2fb.h,v 1.26 2000/09/19 00:11:53 illo Exp $
- * --------------------------------------------------------------------------
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details.
- */
-
 #ifndef PM2FB_H
 #define PM2FB_H
-
-#define PM2_REFERENCE_CLOCK	14318			/* in KHz */
-#define PM2_MAX_PIXCLOCK	230000			/* in KHz */
+#define PM2_REFERENCE_CLOCK	14318			 
+#define PM2_MAX_PIXCLOCK	230000			 
 #define PM2_REGS_SIZE		0x10000
-
 #define PM2TAG(r) (u32 )(((r)-0x8000)>>3)
-
-/*****************************************************************************
- * Permedia2 registers used in the framebuffer
- *****************************************************************************/
- 
 #define PM2R_RESET_STATUS				0x0000
 #define PM2R_IN_FIFO_SPACE				0x0018
 #define PM2R_OUT_FIFO_WORDS				0x0020
@@ -29,16 +11,13 @@
 #define PM2R_APERTURE_TWO				0x0058
 #define PM2R_FIFO_DISCON				0x0068
 #define PM2R_CHIP_CONFIG				0x0070
-
 #define PM2R_REBOOT					0x1000
 #define PM2R_MEM_CONTROL				0x1040
 #define PM2R_BOOT_ADDRESS				0x1080
 #define PM2R_MEM_CONFIG					0x10c0
 #define PM2R_BYPASS_WRITE_MASK				0x1100
 #define PM2R_FRAMEBUFFER_WRITE_MASK			0x1140
-
 #define PM2R_OUT_FIFO					0x2000
-
 #define PM2R_SCREEN_BASE				0x3000
 #define PM2R_SCREEN_STRIDE				0x3008
 #define PM2R_H_TOTAL					0x3010
@@ -53,7 +32,6 @@
 #define PM2R_VIDEO_CONTROL				0x3058
 #define PM2R_LINE_COUNT					0x3070
 #define PM2R_FIFO_CONTROL				0x3078
-
 #define PM2R_RD_PALETTE_WRITE_ADDRESS			0x4000
 #define PM2R_RD_PALETTE_DATA				0x4008
 #define PM2R_RD_PIXEL_MASK				0x4010
@@ -66,7 +44,6 @@
 #define PM2R_RD_CURSOR_X_MSB				0x4068
 #define PM2R_RD_CURSOR_Y_LSB				0x4070
 #define PM2R_RD_CURSOR_Y_MSB				0x4078
-
 #define PM2R_START_X_DOM				0x8000
 #define PM2R_D_X_DOM					0x8008
 #define PM2R_START_X_SUB				0x8010
@@ -122,13 +99,9 @@
 #define PM2R_FB_SOURCE_DELTA				0x8d88
 #define PM2R_CONFIG					0x8d90
 #define PM2R_DELTA_MODE					0x9300
-
-/* Permedia2v */
 #define PM2VR_RD_INDEX_LOW				0x4020
 #define PM2VR_RD_INDEX_HIGH				0x4028
 #define PM2VR_RD_INDEXED_DATA				0x4030
-
-/* Permedia2 RAMDAC indexed registers */
 #define PM2I_RD_CURSOR_CONTROL				0x06
 #define PM2I_RD_COLOR_MODE				0x18
 #define PM2I_RD_MODE_CONTROL				0x19
@@ -146,8 +119,6 @@
 #define PM2I_RD_RED_KEY					0x42
 #define PM2I_RD_GREEN_KEY				0x43
 #define PM2I_RD_BLUE_KEY				0x44
-
-/* Permedia2v extensions */
 #define PM2VI_RD_MISC_CONTROL				0x000
 #define PM2VI_RD_SYNC_CONTROL				0x001
 #define PM2VI_RD_DAC_CONTROL				0x002
@@ -173,8 +144,6 @@
 #define PM2VI_RD_MCLK_POSTSCALE				0x210
 #define PM2VI_RD_CURSOR_PALETTE				0x303
 #define PM2VI_RD_CURSOR_PATTERN				0x400
-
-/* Fields and flags */
 #define PM2F_RENDER_AREASTIPPLE				(1L<<0)
 #define PM2F_RENDER_FASTFILL				(1L<<3)
 #define PM2F_RENDER_PRIMITIVE_MASK			(3L<<6)
@@ -241,14 +210,8 @@
 #define PM2F_APERTURE_HALFWORDSWAP			2
 #define PM2F_CURSORMODE_CURSOR_ENABLE			(1 << 0)
 #define PM2F_CURSORMODE_TYPE_X				(1 << 4)
-
 typedef enum {
 	PM2_TYPE_PERMEDIA2,
 	PM2_TYPE_PERMEDIA2V
 } pm2type_t;
-
-#endif /* PM2FB_H */
-
-/*****************************************************************************
- * That's all folks!
- *****************************************************************************/
+#endif  

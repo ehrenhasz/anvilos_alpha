@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides clock numbers for the ingenic,x1830-cgu DT binding.
- *
- * They are roughly ordered as:
- *   - external clocks
- *   - PLLs
- *   - muxes/dividers in the order they appear in the x1830 programmers manual
- *   - gates in order of their bit in the CLKGR* registers
- */
-
 #ifndef __DT_BINDINGS_CLOCK_X1830_CGU_H__
 #define __DT_BINDINGS_CLOCK_X1830_CGU_H__
-
 #define X1830_CLK_EXCLK			0
 #define X1830_CLK_RTCLK			1
 #define X1830_CLK_APLL			2
@@ -53,5 +41,4 @@
 #define X1830_CLK_OST			38
 #define X1830_CLK_EXCLK_DIV512	39
 #define X1830_CLK_RTC			40
-
-#endif /* __DT_BINDINGS_CLOCK_X1830_CGU_H__ */
+#endif  

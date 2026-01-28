@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Applied Micro X-Gene SoC Ethernet Classifier structures
- *
- * Copyright (c) 2016, Applied Micro Circuits Corporation
- * Authors: Khuong Dinh <kdinh@apm.com>
- *          Tanmay Inamdar <tinamdar@apm.com>
- *          Iyappan Subramanian <isubramanian@apm.com>
- */
-
 #ifndef __XGENE_ENET_CLE_H__
 #define __XGENE_ENET_CLE_H__
-
 #include <linux/io.h>
 #include <linux/random.h>
-
-/* Register offsets */
 #define INDADDR			0x04
 #define INDCMD			0x08
 #define INDCMD_STATUS		0x0c
@@ -23,12 +11,10 @@
 #define DFCLSRESDBPTR0		0x0108
 #define DFCLSRESDB00		0x010c
 #define RSS_CTRL0		0x0000013c
-
-#define CLE_CMD_TO		10	/* ms */
-#define CLE_PKTRAM_SIZE		256	/* bytes */
+#define CLE_CMD_TO		10	 
+#define CLE_PKTRAM_SIZE		256	 
 #define CLE_PORT_OFFSET		0x200
 #define CLE_DRAM_REGS		17
-
 #define CLE_DN_TYPE_LEN		2
 #define CLE_DN_TYPE_POS		0
 #define CLE_DN_LASTN_LEN	1
@@ -43,7 +29,6 @@
 #define CLE_DN_SBSTOR_POS	8
 #define CLE_DN_RPTR_LEN		12
 #define CLE_DN_RPTR_POS		12
-
 #define CLE_BR_VALID_LEN	1
 #define CLE_BR_VALID_POS	0
 #define CLE_BR_NPPTR_LEN	9
@@ -58,19 +43,16 @@
 #define CLE_BR_NNODE_POS	15
 #define CLE_BR_NBR_LEN		5
 #define CLE_BR_NBR_POS		24
-
 #define CLE_BR_DATA_LEN		16
 #define CLE_BR_DATA_POS		0
 #define CLE_BR_MASK_LEN		16
 #define CLE_BR_MASK_POS		16
-
 #define CLE_KN_PRIO_POS		0
 #define CLE_KN_PRIO_LEN		3
 #define CLE_KN_RPTR_POS		3
 #define CLE_KN_RPTR_LEN		10
 #define CLE_TYPE_POS		0
 #define CLE_TYPE_LEN		2
-
 #define CLE_DROP_POS		28
 #define CLE_DROP_LEN		1
 #define CLE_DSTQIDL_POS		25
@@ -83,12 +65,10 @@
 #define CLE_NFPSEL_LEN		4
 #define CLE_PRIORITY_POS	5
 #define CLE_PRIORITY_LEN	3
-
 #define JMP_ABS			0
 #define JMP_REL			1
 #define JMP_FW			0
 #define JMP_BW			1
-
 enum xgene_cle_ptree_nodes {
 	PKT_TYPE_NODE,
 	PKT_PROT_NODE,
@@ -98,23 +78,18 @@ enum xgene_cle_ptree_nodes {
 	LAST_NODE,
 	MAX_NODES
 };
-
 enum xgene_cle_byte_store {
 	NO_BYTE,
 	FIRST_BYTE,
 	SECOND_BYTE,
 	BOTH_BYTES
 };
-
-/* Preclassification operation types */
 enum xgene_cle_node_type {
 	INV,
 	KN,
 	EWDN,
 	RES_NODE
 };
-
-/* Preclassification operation types */
 enum xgene_cle_op_type {
 	EQT,
 	NEQT,
@@ -123,14 +98,12 @@ enum xgene_cle_op_type {
 	AND,
 	NAND
 };
-
 enum xgene_cle_parser {
 	PARSER0,
 	PARSER1,
 	PARSER2,
 	PARSER_ALL
 };
-
 #define XGENE_CLE_DRAM(type)	(((type) & 0xf) << 28)
 enum xgene_cle_dram_type {
 	PKT_RAM,
@@ -140,7 +113,6 @@ enum xgene_cle_dram_type {
 	AVL_RAM,
 	DB_RAM
 };
-
 enum xgene_cle_cmd_type {
 	CLE_CMD_WR = 1,
 	CLE_CMD_RD = 2,
@@ -148,31 +120,25 @@ enum xgene_cle_cmd_type {
 	CLE_CMD_AVL_DEL = 16,
 	CLE_CMD_AVL_SRCH = 32
 };
-
 enum xgene_cle_ipv4_rss_hashtype {
 	RSS_IPV4_8B,
 	RSS_IPV4_12B,
 };
-
 enum xgene_cle_prot_type {
 	XGENE_CLE_TCP,
 	XGENE_CLE_UDP,
 	XGENE_CLE_ESP,
 	XGENE_CLE_OTHER
 };
-
 enum xgene_cle_prot_version {
 	XGENE_CLE_IPV4,
 };
-
 enum xgene_cle_ptree_dbptrs {
 	DB_RES_DROP,
 	DB_RES_DEF,
 	DB_RES_ACCEPT,
 	DB_MAX_PTRS
 };
-
-/* RSS sideband signal info */
 #define SB_IPFRAG_POS	0
 #define SB_IPFRAG_LEN	1
 #define SB_IPPROT_POS	1
@@ -181,8 +147,6 @@ enum xgene_cle_ptree_dbptrs {
 #define SB_IPVER_LEN	1
 #define SB_HDRLEN_POS	4
 #define SB_HDRLEN_LEN	12
-
-/* RSS indirection table */
 #define XGENE_CLE_IDT_ENTRIES	128
 #define IDT_DSTQID_POS		0
 #define IDT_DSTQID_LEN		12
@@ -194,7 +158,6 @@ enum xgene_cle_ptree_dbptrs {
 #define IDT_FPSEL1_LEN		4
 #define IDT_NFPSEL1_POS		16
 #define IDT_NFPSEL1_LEN		4
-
 struct xgene_cle_ptree_branch {
 	bool valid;
 	u16 next_packet_pointer;
@@ -206,7 +169,6 @@ struct xgene_cle_ptree_branch {
 	u16 data;
 	u16 mask;
 };
-
 struct xgene_cle_ptree_ewdn {
 	u8 node_type;
 	bool last_node;
@@ -218,18 +180,15 @@ struct xgene_cle_ptree_ewdn {
 	u8 num_branches;
 	struct xgene_cle_ptree_branch branch[6];
 };
-
 struct xgene_cle_ptree_key {
 	u8 priority;
 	u16 result_pointer;
 };
-
 struct xgene_cle_ptree_kn {
 	u8 node_type;
 	u8 num_keys;
 	struct xgene_cle_ptree_key key[32];
 };
-
 struct xgene_cle_dbptr {
 	u8 split_boundary;
 	u8 mirror_nxtfpsel;
@@ -264,7 +223,6 @@ struct xgene_cle_dbptr {
 	u8 nxtfpsel_msb;
 	u8 fpsel_msb;
 };
-
 struct xgene_cle_ptree {
 	struct xgene_cle_ptree_kn *kn;
 	struct xgene_cle_dbptr *dbptr;
@@ -274,7 +232,6 @@ struct xgene_cle_ptree {
 	u32 start_pkt;
 	u32 start_dbptr;
 };
-
 struct xgene_enet_cle {
 	void __iomem *base;
 	struct xgene_cle_ptree ptree;
@@ -284,7 +241,5 @@ struct xgene_enet_cle {
 	u32 max_dbptrs;
 	u32 jump_bytes;
 };
-
 extern const struct xgene_cle_ops xgene_cle3in_ops;
-
-#endif /* __XGENE_ENET_CLE_H__ */
+#endif  

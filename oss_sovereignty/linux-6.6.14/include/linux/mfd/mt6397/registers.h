@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Flora Fu, MediaTek
- */
-
 #ifndef __MFD_MT6397_REGISTERS_H__
 #define __MFD_MT6397_REGISTERS_H__
-
-/* PMIC Registers */
 #define MT6397_CID			0x0100
 #define MT6397_TOP_CKPDN		0x0102
 #define MT6397_TOP_CKPDN_SET		0x0104
@@ -350,5 +342,4 @@
 #define MT6397_ZCD_CON5			0x0742
 #define MT6397_NCP_CLKDIV_CON0		0x0744
 #define MT6397_NCP_CLKDIV_CON1		0x0746
-
-#endif /* __MFD_MT6397_REGISTERS_H__ */
+#endif  

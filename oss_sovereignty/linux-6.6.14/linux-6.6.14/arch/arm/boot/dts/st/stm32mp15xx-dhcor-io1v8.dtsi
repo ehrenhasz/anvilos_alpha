@@ -1,12 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Copyright (C) Linaro Ltd 2019 - All Rights Reserved
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- * Copyright (C) 2020 Marek Vasut <marex@denx.de>
- */
-
 / {
-	/* Enpirion EP3A8LQI U2 on the DHCOR */
 	vdd_io: regulator-buck-io {
 		compatible = "regulator-fixed";
 		regulator-name = "buck-io";
@@ -17,12 +9,10 @@
 		vin-supply = <&vdd>;
 	};
 };
-
 &vdd {
 	regulator-min-microvolt = <2900000>;
 	regulator-max-microvolt = <2900000>;
 };
-
 &pwr_regulators {
 	vdd-supply = <&vdd_io>;
 };

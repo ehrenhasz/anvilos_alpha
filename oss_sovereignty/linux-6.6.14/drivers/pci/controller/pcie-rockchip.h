@@ -1,32 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Rockchip AXI PCIe controller driver
- *
- * Copyright (c) 2018 Rockchip, Inc.
- *
- * Author: Shawn Lin <shawn.lin@rock-chips.com>
- *
- */
-
 #ifndef _PCIE_ROCKCHIP_H
 #define _PCIE_ROCKCHIP_H
-
 #include <linux/kernel.h>
 #include <linux/pci.h>
 #include <linux/pci-ecam.h>
-
-/*
- * The upper 16 bits of PCIE_CLIENT_CONFIG are a write mask for the lower 16
- * bits.  This allows atomic updates of the register without locking.
- */
 #define HIWORD_UPDATE(mask, val)	(((mask) << 16) | (val))
 #define HIWORD_UPDATE_BIT(val)		HIWORD_UPDATE(val, val)
-
 #define ENCODE_LANES(x)			((((x) >> 1) & 3) << 4)
 #define MAX_LANE_NUM			4
 #define MAX_REGION_LIMIT		32
 #define MIN_EP_APERTURE			28
-
 #define PCIE_CLIENT_BASE		0x0
 #define PCIE_CLIENT_CONFIG		(PCIE_CLIENT_BASE + 0x00)
 #define   PCIE_CLIENT_CONF_ENABLE	  HIWORD_UPDATE_BIT(0x0001)
@@ -72,18 +54,15 @@
 #define   PCIE_CLIENT_INT_PHY			BIT(2)
 #define   PCIE_CLIENT_INT_HOT_PLUG		BIT(1)
 #define   PCIE_CLIENT_INT_PWR_STCG		BIT(0)
-
 #define PCIE_CLIENT_INT_LEGACY \
 	(PCIE_CLIENT_INT_INTA | PCIE_CLIENT_INT_INTB | \
 	PCIE_CLIENT_INT_INTC | PCIE_CLIENT_INT_INTD)
-
 #define PCIE_CLIENT_INT_CLI \
 	(PCIE_CLIENT_INT_CORR_ERR | PCIE_CLIENT_INT_NFATAL_ERR | \
 	PCIE_CLIENT_INT_FATAL_ERR | PCIE_CLIENT_INT_DPA | \
 	PCIE_CLIENT_INT_HOT_RST | PCIE_CLIENT_INT_MSG | \
 	PCIE_CLIENT_INT_LEGACY_DONE | PCIE_CLIENT_INT_LEGACY | \
 	PCIE_CLIENT_INT_PHY)
-
 #define PCIE_CORE_CTRL_MGMT_BASE	0x900000
 #define PCIE_CORE_CTRL			(PCIE_CORE_CTRL_MGMT_BASE + 0x000)
 #define   PCIE_CORE_PL_CONF_SPEED_5G		0x00000008
@@ -127,7 +106,6 @@
 #define ROCKCHIP_PCIE_CORE_BAR_CFG_CTRL_PREFETCH_MEM_32BITS	0x5
 #define ROCKCHIP_PCIE_CORE_BAR_CFG_CTRL_MEM_64BITS		0x6
 #define ROCKCHIP_PCIE_CORE_BAR_CFG_CTRL_PREFETCH_MEM_64BITS	0x7
-
 #define PCIE_CORE_INT \
 		(PCIE_CORE_INT_PRFPE | PCIE_CORE_INT_CRFPE | \
 		 PCIE_CORE_INT_RRPE | PCIE_CORE_INT_CRFO | \
@@ -136,7 +114,6 @@
 		 PCIE_CORE_INT_UCR | PCIE_CORE_INT_FCE | \
 		 PCIE_CORE_INT_CT | PCIE_CORE_INT_UTC | \
 		 PCIE_CORE_INT_MMVC)
-
 #define PCIE_RC_RP_ATS_BASE		0x400000
 #define PCIE_RC_CONFIG_NORMAL_BASE	0x800000
 #define PCIE_EP_PF_CONFIG_REGS_BASE	0x800000
@@ -157,7 +134,6 @@
 #define PCIE_RC_CONFIG_L1_SUBSTATE_CTRL2 (PCIE_RC_CONFIG_BASE + 0x90c)
 #define PCIE_RC_CONFIG_THP_CAP		(PCIE_RC_CONFIG_BASE + 0x274)
 #define   PCIE_RC_CONFIG_THP_CAP_NEXT_MASK	GENMASK(31, 20)
-
 #define MAX_AXI_IB_ROOTPORT_REGION_NUM		3
 #define MIN_AXI_ADDR_BITS_PASSED		8
 #define PCIE_ADDR_MASK			GENMASK_ULL(63, MIN_AXI_ADDR_BITS_PASSED)
@@ -168,16 +144,12 @@
 #define PCIE_CORE_OB_REGION_ADDR1	(PCIE_CORE_AXI_CONF_BASE + 0x4)
 #define PCIE_CORE_OB_REGION_DESC0	(PCIE_CORE_AXI_CONF_BASE + 0x8)
 #define PCIE_CORE_OB_REGION_DESC1	(PCIE_CORE_AXI_CONF_BASE + 0xc)
-
 #define PCIE_CORE_AXI_INBOUND_BASE	0xc00800
 #define PCIE_RP_IB_ADDR0		(PCIE_CORE_AXI_INBOUND_BASE + 0x0)
 #define   PCIE_CORE_IB_REGION_ADDR0_NUM_BITS	0x3f
 #define   PCIE_CORE_IB_REGION_ADDR0_LO_ADDR	PCIE_ADDR_MASK
 #define PCIE_RP_IB_ADDR1		(PCIE_CORE_AXI_INBOUND_BASE + 0x4)
-
-/* Size of one AXI Region (not Region 0) */
 #define AXI_REGION_SIZE				BIT(20)
-/* Size of Region 0, equal to sum of sizes of other regions */
 #define AXI_REGION_0_SIZE			(32 * (0x1 << 20))
 #define OB_REG_SIZE_SHIFT			5
 #define IB_ROOT_PORT_REG_SIZE_SHIFT		3
@@ -186,7 +158,6 @@
 #define AXI_WRAPPER_TYPE0_CFG			0xa
 #define AXI_WRAPPER_TYPE1_CFG			0xb
 #define AXI_WRAPPER_NOR_MSG			0xc
-
 #define PCIE_RC_SEND_PME_OFF			0x11960
 #define ROCKCHIP_VENDOR_ID			0x1d87
 #define PCIE_LINK_IS_L2(x) \
@@ -195,13 +166,11 @@
 	(((x) & PCIE_CLIENT_LINK_STATUS_MASK) == PCIE_CLIENT_LINK_STATUS_UP)
 #define PCIE_LINK_IS_GEN2(x) \
 	(((x) & PCIE_CORE_PL_CONF_SPEED_MASK) == PCIE_CORE_PL_CONF_SPEED_5G)
-
 #define RC_REGION_0_ADDR_TRANS_H		0x00000000
 #define RC_REGION_0_ADDR_TRANS_L		0x00000000
 #define RC_REGION_0_PASS_BITS			(25 - 1)
 #define RC_REGION_0_TYPE_MASK			GENMASK(3, 0)
 #define MAX_AXI_WRAPPER_REGION_NUM		33
-
 #define ROCKCHIP_PCIE_MSG_ROUTING_TO_RC		0x0
 #define ROCKCHIP_PCIE_MSG_ROUTING_VIA_ADDR		0x1
 #define ROCKCHIP_PCIE_MSG_ROUTING_VIA_ID		0x2
@@ -223,7 +192,6 @@
 #define ROCKCHIP_PCIE_MSG_CODE(code) \
 	(((code) << 8) & ROCKCHIP_PCIE_MSG_CODE_MASK)
 #define ROCKCHIP_PCIE_MSG_NO_DATA			BIT(16)
-
 #define ROCKCHIP_PCIE_EP_CMD_STATUS			0x4
 #define   ROCKCHIP_PCIE_EP_CMD_STATUS_IS		BIT(19)
 #define ROCKCHIP_PCIE_EP_MSI_CTRL_REG			0x90
@@ -271,7 +239,6 @@
 		(PCIE_RC_EP_ATR_OB_REGIONS_1_32 + 0x000c + ((r) & 0x1f) * 0x0020)
 #define ROCKCHIP_PCIE_AT_OB_REGION_DESC2(r) \
 		(PCIE_RC_EP_ATR_OB_REGIONS_1_32 + 0x0010 + ((r) & 0x1f) * 0x0020)
-
 #define ROCKCHIP_PCIE_CORE_EP_FUNC_BAR_CFG0(fn) \
 		(PCIE_CORE_CTRL_MGMT_BASE + 0x0240 + (fn) * 0x0008)
 #define ROCKCHIP_PCIE_CORE_EP_FUNC_BAR_CFG1(fn) \
@@ -286,10 +253,9 @@
 #define ROCKCHIP_PCIE_CORE_EP_FUNC_BAR_CFG_BAR_CTRL(b, c) \
 		(((c) << ((b) * 8 + 5)) & \
 		 ROCKCHIP_PCIE_CORE_EP_FUNC_BAR_CFG_BAR_CTRL_MASK(b))
-
 struct rockchip_pcie {
-	void	__iomem *reg_base;		/* DT axi-base */
-	void	__iomem *apb_base;		/* DT apb-base */
+	void	__iomem *reg_base;		 
+	void	__iomem *apb_base;		 
 	bool    legacy_phy;
 	struct  phy *phys[MAX_LANE_NUM];
 	struct	reset_control *core_rst;
@@ -303,10 +269,10 @@ struct rockchip_pcie {
 	struct	clk *aclk_perf_pcie;
 	struct	clk *hclk_pcie;
 	struct	clk *clk_pcie_pm;
-	struct	regulator *vpcie12v; /* 12V power supply */
-	struct	regulator *vpcie3v3; /* 3.3V power supply */
-	struct	regulator *vpcie1v8; /* 1.8V power supply */
-	struct	regulator *vpcie0v9; /* 0.9V power supply */
+	struct	regulator *vpcie12v;  
+	struct	regulator *vpcie3v3;  
+	struct	regulator *vpcie1v8;  
+	struct	regulator *vpcie0v9;  
 	struct	gpio_desc *ep_gpio;
 	u32	lanes;
 	u8      lanes_map;
@@ -319,18 +285,15 @@ struct rockchip_pcie {
 	bool is_rc;
 	struct resource *mem_res;
 };
-
 static u32 rockchip_pcie_read(struct rockchip_pcie *rockchip, u32 reg)
 {
 	return readl(rockchip->apb_base + reg);
 }
-
 static void rockchip_pcie_write(struct rockchip_pcie *rockchip, u32 val,
 				u32 reg)
 {
 	writel(val, rockchip->apb_base + reg);
 }
-
 int rockchip_pcie_parse_dt(struct rockchip_pcie *rockchip);
 int rockchip_pcie_init_port(struct rockchip_pcie *rockchip);
 int rockchip_pcie_get_phys(struct rockchip_pcie *rockchip);
@@ -339,5 +302,4 @@ int rockchip_pcie_enable_clocks(struct rockchip_pcie *rockchip);
 void rockchip_pcie_disable_clocks(void *data);
 void rockchip_pcie_cfg_configuration_accesses(
 		struct rockchip_pcie *rockchip, u32 type);
-
-#endif /* _PCIE_ROCKCHIP_H */
+#endif  

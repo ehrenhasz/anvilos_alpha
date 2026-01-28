@@ -1,24 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2012 Sascha Hauer, Pengutronix
-
 /dts-v1/;
 #include "imx27.dtsi"
-
 / {
 	model = "Freescale i.MX27 Product Development Kit";
 	compatible = "fsl,imx27-pdk", "fsl,imx27";
-
 	memory@a0000000 {
 		device_type = "memory";
 		reg = <0xa0000000 0x08000000>;
 	};
-
 	usbphy {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		usbphy0: usbphy@0 {
 			compatible = "usb-nop-xceiv";
 			reg = <0>;
@@ -28,13 +20,11 @@
 		};
 	};
 };
-
 &cspi2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_cspi2>;
 	cs-gpios = <&gpio4 21 GPIO_ACTIVE_HIGH>;
 	status = "okay";
-
 	pmic: mc13783@0 {
 		compatible = "fsl,mc13783";
 		reg = <0>;
@@ -42,7 +32,6 @@
 		spi-max-frequency = <1000000>;
 		interrupt-parent = <&gpio3>;
 		interrupts = <14 IRQ_TYPE_LEVEL_HIGH>;
-
 		regulators {
 			vgen_reg: vgen {
 				regulator-min-microvolt = <1500000>;
@@ -50,17 +39,14 @@
 				regulator-always-on;
 				regulator-boot-on;
 			};
-
 			vmmc1_reg: vmmc1 {
 				regulator-min-microvolt = <1600000>;
 				regulator-max-microvolt = <3000000>;
 			};
-
 			gpo1_reg: gpo1 {
 				regulator-always-on;
 				regulator-boot-on;
 			};
-
 			gpo3_reg: gpo3 {
 				regulator-always-on;
 				regulator-boot-on;
@@ -68,14 +54,12 @@
 		};
 	};
 };
-
 &fec {
 	phy-mode = "mii";
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec>;
 	status = "okay";
 };
-
 &kpp {
 	linux,keymap = <
 		MATRIX_KEY(0, 0, KEY_UP)
@@ -90,7 +74,6 @@
 	>;
 	status = "okay";
 };
-
 &nfc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_nand>;
@@ -98,14 +81,12 @@
 	nand-on-flash-bbt;
 	status = "okay";
 };
-
 &uart1 {
 	uart-has-rtscts;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
 };
-
 &usbotg {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usbotg>;
@@ -114,7 +95,6 @@
 	phy_type = "ulpi";
 	status = "okay";
 };
-
 &iomuxc {
 	imx27-pdk {
 		pinctrl_cspi2: cspi2grp {
@@ -122,11 +102,10 @@
 				MX27_PAD_CSPI2_MISO__CSPI2_MISO 0x0
 				MX27_PAD_CSPI2_MOSI__CSPI2_MOSI 0x0
 				MX27_PAD_CSPI2_SCLK__CSPI2_SCLK 0x0
-				MX27_PAD_CSPI2_SS0__GPIO4_21	0x0 /* SPI2 CS0 */
-				MX27_PAD_TOUT__GPIO3_14		0x0 /* PMIC IRQ */
+				MX27_PAD_CSPI2_SS0__GPIO4_21	0x0  
+				MX27_PAD_TOUT__GPIO3_14		0x0  
 			>;
 		};
-
 		pinctrl_fec: fecgrp {
 			fsl,pins = <
 				MX27_PAD_SD3_CMD__FEC_TXD0 0x0
@@ -149,7 +128,6 @@
 				MX27_PAD_ATA_DATA15__FEC_TX_EN 0x0
 			>;
 		};
-
 		pinctrl_nand: nandgrp {
 			fsl,pins = <
 				MX27_PAD_NFRB__NFRB	0x0
@@ -161,7 +139,6 @@
 				MX27_PAD_NFWE_B__NFWE_B	0x0
 			>;
 		};
-
 		pinctrl_uart1: uart1grp {
 			fsl,pins = <
 				MX27_PAD_UART1_TXD__UART1_TXD 0x0
@@ -170,7 +147,6 @@
 				MX27_PAD_UART1_RTS__UART1_RTS 0x0
 			>;
 		};
-
 		pinctrl_usbotg: usbotggrp {
 			fsl,pins = <
 				MX27_PAD_USBOTG_NXT__USBOTG_NXT 0x0

@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This header provides macros for X1000 DMA bindings.
- *
- * Copyright (c) 2019 Zhou Yanjie <zhouyanjie@zoho.com>
- */
-
 #ifndef __DT_BINDINGS_DMA_X1000_DMA_H__
 #define __DT_BINDINGS_DMA_X1000_DMA_H__
-
-/*
- * Request type numbers for the X1000 DMA controller (written to the DRTn
- * register for the channel).
- */
 #define X1000_DMA_DMIC_RX	0x5
 #define X1000_DMA_I2S0_TX	0x6
 #define X1000_DMA_I2S0_RX	0x7
@@ -36,5 +24,4 @@
 #define X1000_DMA_SMB1_RX	0x27
 #define X1000_DMA_SMB2_TX	0x28
 #define X1000_DMA_SMB2_RX	0x29
-
-#endif /* __DT_BINDINGS_DMA_X1000_DMA_H__ */
+#endif  

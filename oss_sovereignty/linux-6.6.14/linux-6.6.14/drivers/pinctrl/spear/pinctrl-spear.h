@@ -1,35 +1,13 @@
-/*
- * Driver header file for the ST Microelectronics SPEAr pinmux
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
-
 #ifndef __PINMUX_SPEAR_H__
 #define __PINMUX_SPEAR_H__
-
 #include <linux/gpio/driver.h>
 #include <linux/io.h>
 #include <linux/pinctrl/pinctrl.h>
 #include <linux/regmap.h>
 #include <linux/types.h>
-
 struct platform_device;
 struct device;
 struct spear_pmx;
-
-/**
- * struct spear_pmx_mode - SPEAr pmx mode
- * @name: name of pmx mode
- * @mode: mode id
- * @reg: register for configuring this mode
- * @mask: mask of this mode in reg
- * @val: val to be configured at reg after doing (val & mask)
- */
 struct spear_pmx_mode {
 	const char *const name;
 	u16 mode;
@@ -37,27 +15,17 @@ struct spear_pmx_mode {
 	u16 mask;
 	u32 val;
 };
-
-/**
- * struct spear_muxreg - SPEAr mux reg configuration
- * @reg: register offset
- * @mask: mask bits
- * @val: val to be written on mask bits
- */
 struct spear_muxreg {
 	u16 reg;
 	u32 mask;
 	u32 val;
 };
-
 struct spear_gpio_pingroup {
 	const unsigned *pins;
 	unsigned npins;
 	struct spear_muxreg *muxregs;
 	u8 nmuxregs;
 };
-
-/* ste: set to enable */
 #define DEFINE_MUXREG(__pins, __muxreg, __mask, __ste)		\
 static struct spear_muxreg __pins##_muxregs[] = {		\
 	{							\
@@ -66,7 +34,6 @@ static struct spear_muxreg __pins##_muxregs[] = {		\
 		.val = __ste ? __mask : 0,			\
 	},							\
 }
-
 #define DEFINE_2_MUXREG(__pins, __muxreg1, __muxreg2, __mask, __ste1, __ste2) \
 static struct spear_muxreg __pins##_muxregs[] = {		\
 	{							\
@@ -79,7 +46,6 @@ static struct spear_muxreg __pins##_muxregs[] = {		\
 		.val = __ste2 ? __mask : 0,			\
 	},							\
 }
-
 #define GPIO_PINGROUP(__pins)					\
 	{							\
 		.pins = __pins,					\
@@ -87,30 +53,11 @@ static struct spear_muxreg __pins##_muxregs[] = {		\
 		.muxregs = __pins##_muxregs,			\
 		.nmuxregs = ARRAY_SIZE(__pins##_muxregs),	\
 	}
-
-/**
- * struct spear_modemux - SPEAr mode mux configuration
- * @modes: mode ids supported by this group of muxregs
- * @nmuxregs: number of muxreg configurations to be done for modes
- * @muxregs: array of muxreg configurations to be done for modes
- */
 struct spear_modemux {
 	u16 modes;
 	u8 nmuxregs;
 	struct spear_muxreg *muxregs;
 };
-
-/**
- * struct spear_pingroup - SPEAr pin group configurations
- * @name: name of pin group
- * @pins: array containing pin numbers
- * @npins: size of pins array
- * @modemuxs: array of modemux configurations for this pin group
- * @nmodemuxs: size of array modemuxs
- *
- * A representation of a group of pins in the SPEAr pin controller. Each group
- * allows some parameter or parameters to be configured.
- */
 struct spear_pingroup {
 	const char *name;
 	const unsigned *pins;
@@ -118,38 +65,11 @@ struct spear_pingroup {
 	struct spear_modemux *modemuxs;
 	unsigned nmodemuxs;
 };
-
-/**
- * struct spear_function - SPEAr pinctrl mux function
- * @name: The name of the function, exported to pinctrl core.
- * @groups: An array of pin groups that may select this function.
- * @ngroups: The number of entries in @groups.
- */
 struct spear_function {
 	const char *name;
 	const char *const *groups;
 	unsigned ngroups;
 };
-
-/**
- * struct spear_pinctrl_machdata - SPEAr pin controller machine driver
- *	configuration
- * @pins: An array describing all pins the pin controller affects.
- *	All pins which are also GPIOs must be listed first within the *array,
- *	and be numbered identically to the GPIO controller's *numbering.
- * @npins: The numbmer of entries in @pins.
- * @functions: An array describing all mux functions the SoC supports.
- * @nfunctions: The numbmer of entries in @functions.
- * @groups: An array describing all pin groups the pin SoC supports.
- * @ngroups: The numbmer of entries in @groups.
- * @gpio_pingroups: gpio pingroups
- * @ngpio_pingroups: gpio pingroups count
- *
- * @modes_supported: Does SoC support modes
- * @mode: mode configured from probe
- * @pmx_modes: array of modes supported by SoC
- * @npmx_modes: number of entries in pmx_modes.
- */
 struct spear_pinctrl_machdata {
 	const struct pinctrl_pin_desc *pins;
 	unsigned npins;
@@ -161,47 +81,32 @@ struct spear_pinctrl_machdata {
 	void (*gpio_request_endisable)(struct spear_pmx *pmx, int offset,
 			bool enable);
 	unsigned ngpio_pingroups;
-
 	bool modes_supported;
 	u16 mode;
 	struct spear_pmx_mode **pmx_modes;
 	unsigned npmx_modes;
 };
-
-/**
- * struct spear_pmx - SPEAr pinctrl mux
- * @dev: pointer to struct dev of platform_device registered
- * @pctl: pointer to struct pinctrl_dev
- * @machdata: pointer to SoC or machine specific structure
- * @regmap: regmap of pinmux controller
- */
 struct spear_pmx {
 	struct device *dev;
 	struct pinctrl_dev *pctl;
 	struct spear_pinctrl_machdata *machdata;
 	struct regmap *regmap;
 };
-
-/* exported routines */
 static inline u32 pmx_readl(struct spear_pmx *pmx, u32 reg)
 {
 	u32 val;
-
 	regmap_read(pmx->regmap, reg, &val);
 	return val;
 }
-
 static inline void pmx_writel(struct spear_pmx *pmx, u32 val, u32 reg)
 {
 	regmap_write(pmx->regmap, reg, val);
 }
-
 void pmx_init_addr(struct spear_pinctrl_machdata *machdata, u16 reg);
 void pmx_init_gpio_pingroup_addr(struct spear_gpio_pingroup *gpio_pingroup,
 				 unsigned count, u16 reg);
 int spear_pinctrl_probe(struct platform_device *pdev,
 			struct spear_pinctrl_machdata *machdata);
-
 #define SPEAR_PIN_0_TO_101		\
 	PINCTRL_PIN(0, "PLGPIO0"),	\
 	PINCTRL_PIN(1, "PLGPIO1"),	\
@@ -305,7 +210,6 @@ int spear_pinctrl_probe(struct platform_device *pdev,
 	PINCTRL_PIN(99, "PLGPIO99"),	\
 	PINCTRL_PIN(100, "PLGPIO100"),	\
 	PINCTRL_PIN(101, "PLGPIO101")
-
 #define SPEAR_PIN_102_TO_245		\
 	PINCTRL_PIN(102, "PLGPIO102"),	\
 	PINCTRL_PIN(103, "PLGPIO103"),	\
@@ -451,5 +355,4 @@ int spear_pinctrl_probe(struct platform_device *pdev,
 	PINCTRL_PIN(243, "PLGPIO243"),	\
 	PINCTRL_PIN(244, "PLGPIO244"),	\
 	PINCTRL_PIN(245, "PLGPIO245")
-
-#endif /* __PINMUX_SPEAR_H__ */
+#endif  

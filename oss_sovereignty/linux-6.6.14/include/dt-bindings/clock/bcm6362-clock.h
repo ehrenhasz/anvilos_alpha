@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef __DT_BINDINGS_CLOCK_BCM6362_H
 #define __DT_BINDINGS_CLOCK_BCM6362_H
-
 #define BCM6362_CLK_ADSL_QPROC	1
 #define BCM6362_CLK_ADSL_AFE	2
 #define BCM6362_CLK_ADSL	3
@@ -22,5 +19,4 @@
 #define BCM6362_CLK_FAP		18
 #define BCM6362_CLK_PHYMIPS	19
 #define BCM6362_CLK_NAND	20
-
-#endif /* __DT_BINDINGS_CLOCK_BCM6362_H */
+#endif  

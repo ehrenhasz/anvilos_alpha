@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_RESET_MSM_MMCC_8960_H
 #define _DT_BINDINGS_RESET_MSM_MMCC_8960_H
-
 #define VPE_AXI_RESET					0
 #define IJPEG_AXI_RESET					1
 #define MPD_AXI_RESET					2
@@ -89,5 +83,4 @@
 #define CSI_PIX_RESET					80
 #define VCAP_NPL_RESET					81
 #define VCAP_RESET					82
-
 #endif

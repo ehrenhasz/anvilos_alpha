@@ -1,90 +1,61 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Manroland mucmc52 board Device Tree Source
- *
- * Copyright (C) 2009 DENX Software Engineering GmbH
- * Heiko Schocher <hs@denx.de>
- * Copyright 2006-2007 Secret Lab Technologies Ltd.
- */
-
 /include/ "mpc5200b.dtsi"
-
-/* Timer pins that need to be in GPIO mode */
 &gpt0 { gpio-controller; };
 &gpt1 { gpio-controller; };
 &gpt2 { gpio-controller; };
 &gpt3 { gpio-controller; };
-
-/* Disabled timers */
 &gpt4 { status = "disabled"; };
 &gpt5 { status = "disabled"; };
 &gpt6 { status = "disabled"; };
 &gpt7 { status = "disabled"; };
-
 / {
 	model = "manroland,mucmc52";
 	compatible = "manroland,mucmc52";
-
 	soc5200@f0000000 {
 		rtc@800 {
 			status = "disabled";
 		};
-
 		can@900 {
 			status = "disabled";
 		};
-
 		can@980 {
 			status = "disabled";
 		};
-
 		spi@f00 {
 			status = "disabled";
 		};
-
 		usb@1000 {
 			status = "disabled";
 		};
-
-		psc@2000 {		// PSC1
+		psc@2000 {		 
 			compatible = "fsl,mpc5200b-psc-uart","fsl,mpc5200-psc-uart";
 		};
-
-		psc@2200 {		// PSC2
+		psc@2200 {		 
 			compatible = "fsl,mpc5200b-psc-uart","fsl,mpc5200-psc-uart";
 		};
-
-		psc@2400 {		// PSC3
+		psc@2400 {		 
 			status = "disabled";
 		};
-
-		psc@2600 {		// PSC4
+		psc@2600 {		 
 			status = "disabled";
 		};
-
-		psc@2800 {		// PSC5
+		psc@2800 {		 
 			status = "disabled";
 		};
-
-		psc@2c00 {		// PSC6
+		psc@2c00 {		 
 			compatible = "fsl,mpc5200b-psc-uart","fsl,mpc5200-psc-uart";
 		};
-
 		ethernet@3000 {
 			phy-handle = <&phy0>;
 		};
-
 		mdio@3000 {
 			phy0: ethernet-phy@0 {
 				compatible = "intel,lxt971";
 				reg = <0>;
 			};
 		};
-
 		i2c@3d00 {
 			status = "disabled";
 		};
-
 		i2c@3d40 {
 			hwmon@2c {
 				compatible = "ad,adm9240";
@@ -96,11 +67,9 @@
 			};
 		};
 	};
-
 	pci@f0000d00 {
 		interrupt-map-mask = <0xf800 0 0 7>;
 		interrupt-map = <
-				/* IDSEL 0x10 */
 				0x8000 0 0 1 &mpc5200_pic 0 3 3
 				0x8000 0 0 2 &mpc5200_pic 0 3 3
 				0x8000 0 0 3 &mpc5200_pic 0 2 3
@@ -110,12 +79,10 @@
 			 <0x02000000 0 0x90000000 0x90000000 0 0x10000000>,
 			 <0x01000000 0 0x00000000 0xa0000000 0 0x01000000>;
 	};
-
 	localbus {
 		ranges = <0 0 0xff800000 0x00800000
 			  1 0 0x80000000 0x00800000
 			  3 0 0x80000000 0x00800000>;
-
 		flash@0,0 {
 			compatible = "cfi-flash";
 			reg = <0 0 0x00800000>;
@@ -156,7 +123,6 @@
 				reg = <0x00780000 0x00080000>;
 			};
 		};
-
 		simple100: gpio-controller-100@3,600100 {
 			compatible = "manroland,mucmc52-aux-gpio";
 			reg = <3 0x00600100 0x1>;
@@ -217,6 +183,5 @@
 			gpio-controller;
 			#gpio-cells = <2>;
 		};
-
 	};
 };

@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NOUVEAU_ACPI_H__
 #define __NOUVEAU_ACPI_H__
-
 #define ROM_BIOS_PAGE 4096
-
 #if defined(CONFIG_ACPI) && defined(CONFIG_X86)
 bool nouveau_is_optimus(void);
 bool nouveau_is_v1_dsm(void);
@@ -23,5 +20,4 @@ static inline void *nouveau_acpi_edid(struct drm_device *dev, struct drm_connect
 static inline bool nouveau_acpi_video_backlight_use_native(void) { return true; }
 static inline void nouveau_acpi_video_register_backlight(void) {}
 #endif
-
 #endif

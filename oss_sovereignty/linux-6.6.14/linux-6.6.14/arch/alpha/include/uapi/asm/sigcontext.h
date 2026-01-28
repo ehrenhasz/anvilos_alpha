@@ -1,16 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _ASMAXP_SIGCONTEXT_H
 #define _ASMAXP_SIGCONTEXT_H
-
 struct sigcontext {
-	/*
-	 * What should we have here? I'd probably better use the same
-	 * stack layout as OSF/1, just in case we ever want to try
-	 * running their binaries.. 
-	 *
-	 * This is the basic layout, but I don't know if we'll ever
-	 * actually fill in all the values..
-	 */
 	 long		sc_onstack;
 	 long		sc_mask;
 	 long		sc_pc;
@@ -30,6 +20,4 @@ struct sigcontext {
 	 unsigned long	sc_fp_trigger_sum;
 	 unsigned long	sc_fp_trigger_inst;
 };
-
-
 #endif

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2014 Oleksij Rempel <linux@rempel-privat.de>
- */
-
 #ifndef _DT_BINDINGS_CLK_ASM9260_H
 #define _DT_BINDINGS_CLK_ASM9260_H
-
-/* ahb gate */
 #define CLKID_AHB_ROM		0
 #define CLKID_AHB_RAM		1
 #define CLKID_AHB_GPIO		2
@@ -54,8 +47,6 @@
 #define CLKID_AHB_LCD		44
 #define CLKID_AHB_I2S1		45
 #define CLKID_AHB_MAC1		46
-
-/* divider */
 #define CLKID_SYS_CPU		47
 #define CLKID_SYS_AHB		48
 #define CLKID_SYS_I2S0M		49
@@ -84,6 +75,5 @@
 #define CLKID_SYS_MAC		71
 #define CLKID_SYS_LCD		72
 #define CLKID_SYS_ADCANA	73
-
 #define MAX_CLKS		74
 #endif

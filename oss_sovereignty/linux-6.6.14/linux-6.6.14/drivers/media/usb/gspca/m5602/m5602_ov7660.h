@@ -1,22 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Driver for the ov7660 sensor
- *
- * Copyright (C) 2009 Erik Andrén
- * Copyright (C) 2007 Ilyes Gouta. Based on the m5603x Linux Driver Project.
- * Copyright (C) 2005 m5603x Linux Driver Project <m5602@x3ng.com.br>
- *
- * Portions of code to USB interface and ALi driver software,
- * Copyright (c) 2006 Willem Duinker
- * v4l2 interface modeled after the V4L2 driver
- * for SN9C10x PC Camera Controllers
- */
-
 #ifndef M5602_OV7660_H_
 #define M5602_OV7660_H_
-
 #include "m5602_sensor.h"
-
 #define OV7660_GAIN		0x00
 #define OV7660_BLUE_GAIN	0x01
 #define OV7660_RED_GAIN		0x02
@@ -73,24 +57,19 @@
 #define OV7660_LCC5		0x66
 #define OV7660_HV		0x69
 #define OV7660_RSVDA1		0xa1
-
 #define OV7660_DEFAULT_GAIN		0x0e
 #define OV7660_DEFAULT_RED_GAIN		0x80
 #define OV7660_DEFAULT_BLUE_GAIN	0x80
 #define OV7660_DEFAULT_SATURATION	0x00
 #define OV7660_DEFAULT_EXPOSURE		0x20
-
-/* Kernel module parameters */
 extern int force_sensor;
 extern bool dump_sensor;
-
 int ov7660_probe(struct sd *sd);
 int ov7660_init(struct sd *sd);
 int ov7660_init_controls(struct sd *sd);
 int ov7660_start(struct sd *sd);
 int ov7660_stop(struct sd *sd);
 void ov7660_disconnect(struct sd *sd);
-
 static const struct m5602_sensor ov7660 = {
 	.name = "ov7660",
 	.i2c_slave_id = 0x42,

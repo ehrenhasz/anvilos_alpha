@@ -1,26 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 ARM Ltd.
- */
 #ifndef __ASM_CPUTYPE_H
 #define __ASM_CPUTYPE_H
-
 #define INVALID_HWID		ULONG_MAX
-
 #define MPIDR_UP_BITMASK	(0x1 << 30)
 #define MPIDR_MT_BITMASK	(0x1 << 24)
 #define MPIDR_HWID_BITMASK	UL(0xff00ffffff)
-
 #define MPIDR_LEVEL_BITS_SHIFT	3
 #define MPIDR_LEVEL_BITS	(1 << MPIDR_LEVEL_BITS_SHIFT)
 #define MPIDR_LEVEL_MASK	((1 << MPIDR_LEVEL_BITS) - 1)
-
 #define MPIDR_LEVEL_SHIFT(level) \
 	(((1 << level) >> 1) << MPIDR_LEVEL_BITS_SHIFT)
-
 #define MPIDR_AFFINITY_LEVEL(mpidr, level) \
 	((mpidr >> MPIDR_LEVEL_SHIFT(level)) & MPIDR_LEVEL_MASK)
-
 #define MIDR_REVISION_MASK	0xf
 #define MIDR_REVISION(midr)	((midr) & MIDR_REVISION_MASK)
 #define MIDR_PARTNUM_SHIFT	4
@@ -39,18 +29,14 @@
 #define MIDR_IMPLEMENTOR_MASK	(0xffU << MIDR_IMPLEMENTOR_SHIFT)
 #define MIDR_IMPLEMENTOR(midr)	\
 	(((midr) & MIDR_IMPLEMENTOR_MASK) >> MIDR_IMPLEMENTOR_SHIFT)
-
 #define MIDR_CPU_MODEL(imp, partnum) \
 	((_AT(u32, imp)		<< MIDR_IMPLEMENTOR_SHIFT) | \
 	(0xf			<< MIDR_ARCHITECTURE_SHIFT) | \
 	((partnum)		<< MIDR_PARTNUM_SHIFT))
-
 #define MIDR_CPU_VAR_REV(var, rev) \
 	(((var)	<< MIDR_VARIANT_SHIFT) | (rev))
-
 #define MIDR_CPU_MODEL_MASK (MIDR_IMPLEMENTOR_MASK | MIDR_PARTNUM_MASK | \
 			     MIDR_ARCHITECTURE_MASK)
-
 #define ARM_CPU_IMP_ARM			0x41
 #define ARM_CPU_IMP_APM			0x50
 #define ARM_CPU_IMP_CAVIUM		0x43
@@ -61,7 +47,6 @@
 #define ARM_CPU_IMP_HISI		0x48
 #define ARM_CPU_IMP_APPLE		0x61
 #define ARM_CPU_IMP_AMPERE		0xC0
-
 #define ARM_CPU_PART_AEM_V8		0xD0F
 #define ARM_CPU_PART_FOUNDATION		0xD00
 #define ARM_CPU_PART_CORTEX_A57		0xD07
@@ -84,24 +69,19 @@
 #define ARM_CPU_PART_CORTEX_X2		0xD48
 #define ARM_CPU_PART_NEOVERSE_N2	0xD49
 #define ARM_CPU_PART_CORTEX_A78C	0xD4B
-
 #define APM_CPU_PART_POTENZA		0x000
-
 #define CAVIUM_CPU_PART_THUNDERX	0x0A1
 #define CAVIUM_CPU_PART_THUNDERX_81XX	0x0A2
 #define CAVIUM_CPU_PART_THUNDERX_83XX	0x0A3
 #define CAVIUM_CPU_PART_THUNDERX2	0x0AF
-/* OcteonTx2 series */
 #define CAVIUM_CPU_PART_OCTX2_98XX	0x0B1
 #define CAVIUM_CPU_PART_OCTX2_96XX	0x0B2
 #define CAVIUM_CPU_PART_OCTX2_95XX	0x0B3
 #define CAVIUM_CPU_PART_OCTX2_95XXN	0x0B4
 #define CAVIUM_CPU_PART_OCTX2_95XXMM	0x0B5
 #define CAVIUM_CPU_PART_OCTX2_95XXO	0x0B6
-
 #define BRCM_CPU_PART_BRAHMA_B53	0x100
 #define BRCM_CPU_PART_VULCAN		0x516
-
 #define QCOM_CPU_PART_FALKOR_V1		0x800
 #define QCOM_CPU_PART_FALKOR		0xC00
 #define QCOM_CPU_PART_KRYO		0x200
@@ -110,14 +90,10 @@
 #define QCOM_CPU_PART_KRYO_3XX_SILVER	0x803
 #define QCOM_CPU_PART_KRYO_4XX_GOLD	0x804
 #define QCOM_CPU_PART_KRYO_4XX_SILVER	0x805
-
 #define NVIDIA_CPU_PART_DENVER		0x003
 #define NVIDIA_CPU_PART_CARMEL		0x004
-
 #define FUJITSU_CPU_PART_A64FX		0x001
-
 #define HISI_CPU_PART_TSV110		0xD01
-
 #define APPLE_CPU_PART_M1_ICESTORM	0x022
 #define APPLE_CPU_PART_M1_FIRESTORM	0x023
 #define APPLE_CPU_PART_M1_ICESTORM_PRO	0x024
@@ -130,9 +106,7 @@
 #define APPLE_CPU_PART_M2_AVALANCHE_PRO	0x035
 #define APPLE_CPU_PART_M2_BLIZZARD_MAX	0x038
 #define APPLE_CPU_PART_M2_AVALANCHE_MAX	0x039
-
 #define AMPERE_CPU_PART_AMPERE1		0xAC3
-
 #define MIDR_CORTEX_A53 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A53)
 #define MIDR_CORTEX_A57 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A57)
 #define MIDR_CORTEX_A72 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A72)
@@ -190,59 +164,38 @@
 #define MIDR_APPLE_M2_BLIZZARD_MAX MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M2_BLIZZARD_MAX)
 #define MIDR_APPLE_M2_AVALANCHE_MAX MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M2_AVALANCHE_MAX)
 #define MIDR_AMPERE1 MIDR_CPU_MODEL(ARM_CPU_IMP_AMPERE, AMPERE_CPU_PART_AMPERE1)
-
-/* Fujitsu Erratum 010001 affects A64FX 1.0 and 1.1, (v0r0 and v1r0) */
 #define MIDR_FUJITSU_ERRATUM_010001		MIDR_FUJITSU_A64FX
 #define MIDR_FUJITSU_ERRATUM_010001_MASK	(~MIDR_CPU_VAR_REV(1, 0))
 #define TCR_CLEAR_FUJITSU_ERRATUM_010001	(TCR_NFD1 | TCR_NFD0)
-
 #ifndef __ASSEMBLY__
-
 #include <asm/sysreg.h>
-
 #define read_cpuid(reg)			read_sysreg_s(SYS_ ## reg)
-
-/*
- * Represent a range of MIDR values for a given CPU model and a
- * range of variant/revision values.
- *
- * @model	- CPU model as defined by MIDR_CPU_MODEL
- * @rv_min	- Minimum value for the revision/variant as defined by
- *		  MIDR_CPU_VAR_REV
- * @rv_max	- Maximum value for the variant/revision for the range.
- */
 struct midr_range {
 	u32 model;
 	u32 rv_min;
 	u32 rv_max;
 };
-
 #define MIDR_RANGE(m, v_min, r_min, v_max, r_max)		\
 	{							\
 		.model = m,					\
 		.rv_min = MIDR_CPU_VAR_REV(v_min, r_min),	\
 		.rv_max = MIDR_CPU_VAR_REV(v_max, r_max),	\
 	}
-
 #define MIDR_REV_RANGE(m, v, r_min, r_max) MIDR_RANGE(m, v, r_min, v, r_max)
 #define MIDR_REV(m, v, r) MIDR_RANGE(m, v, r, v, r)
 #define MIDR_ALL_VERSIONS(m) MIDR_RANGE(m, 0, 0, 0xf, 0xf)
-
 static inline bool midr_is_cpu_model_range(u32 midr, u32 model, u32 rv_min,
 					   u32 rv_max)
 {
 	u32 _model = midr & MIDR_CPU_MODEL_MASK;
 	u32 rv = midr & (MIDR_REVISION_MASK | MIDR_VARIANT_MASK);
-
 	return _model == model && rv >= rv_min && rv <= rv_max;
 }
-
 static inline bool is_midr_in_range(u32 midr, struct midr_range const *range)
 {
 	return midr_is_cpu_model_range(midr, range->model,
 				       range->rv_min, range->rv_max);
 }
-
 static inline bool
 is_midr_in_range_list(u32 midr, struct midr_range const *ranges)
 {
@@ -251,36 +204,25 @@ is_midr_in_range_list(u32 midr, struct midr_range const *ranges)
 			return true;
 	return false;
 }
-
-/*
- * The CPU ID never changes at run time, so we might as well tell the
- * compiler that it's constant.  Use this function to read the CPU ID
- * rather than directly reading processor_id or read_cpuid() directly.
- */
 static inline u32 __attribute_const__ read_cpuid_id(void)
 {
 	return read_cpuid(MIDR_EL1);
 }
-
 static inline u64 __attribute_const__ read_cpuid_mpidr(void)
 {
 	return read_cpuid(MPIDR_EL1);
 }
-
 static inline unsigned int __attribute_const__ read_cpuid_implementor(void)
 {
 	return MIDR_IMPLEMENTOR(read_cpuid_id());
 }
-
 static inline unsigned int __attribute_const__ read_cpuid_part_number(void)
 {
 	return MIDR_PARTNUM(read_cpuid_id());
 }
-
 static inline u32 __attribute_const__ read_cpuid_cachetype(void)
 {
 	return read_cpuid(CTR_EL0);
 }
-#endif /* __ASSEMBLY__ */
-
+#endif  
 #endif

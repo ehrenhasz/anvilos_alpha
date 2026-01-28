@@ -1,56 +1,22 @@
-/*
- * Copyright (c) 2007 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * $FreeBSD$
- */
-
 #ifndef _OPENSOLARIS_SYS_MUTEX_H_
 #define	_OPENSOLARIS_SYS_MUTEX_H_
-
 typedef struct sx	kmutex_t;
-
 #include <sys/param.h>
 #include <sys/lock.h>
 #include_next <sys/sdt.h>
 #include_next <sys/mutex.h>
 #include <sys/proc.h>
 #include <sys/sx.h>
-
 typedef enum {
-	MUTEX_DEFAULT = 0	/* kernel default mutex */
+	MUTEX_DEFAULT = 0	 
 } kmutex_type_t;
-
 #define	MUTEX_HELD(x)		(mutex_owned(x))
 #define	MUTEX_NOT_HELD(x)	(!mutex_owned(x) || panicstr)
-
 #ifndef OPENSOLARIS_WITNESS
 #define	MUTEX_FLAGS	(SX_DUPOK | SX_NEW | SX_NOWITNESS)
 #else
 #define	MUTEX_FLAGS	(SX_DUPOK | SX_NEW)
 #endif
-
 #define	mutex_init(lock, desc, type, arg)	do {			\
 	const char *_name;						\
 	ASSERT((type) == MUTEX_DEFAULT);				\
@@ -70,4 +36,4 @@ typedef enum {
 #define	mutex_exit(lock)	sx_xunlock(lock)
 #define	mutex_owned(lock)	sx_xlocked(lock)
 #define	mutex_owner(lock)	sx_xholder(lock)
-#endif	/* _OPENSOLARIS_SYS_MUTEX_H_ */
+#endif	 

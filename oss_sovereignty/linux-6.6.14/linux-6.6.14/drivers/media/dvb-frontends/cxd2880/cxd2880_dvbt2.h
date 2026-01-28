@@ -1,29 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * cxd2880_dvbt2.h
- * Sony CXD2880 DVB-T2/T tuner + demodulator driver
- * DVB-T2 related definitions
- *
- * Copyright (C) 2016, 2017, 2018 Sony Semiconductor Solutions Corporation
- */
-
 #ifndef CXD2880_DVBT2_H
 #define CXD2880_DVBT2_H
-
 #include "cxd2880_common.h"
-
 enum cxd2880_dvbt2_profile {
 	CXD2880_DVBT2_PROFILE_BASE,
 	CXD2880_DVBT2_PROFILE_LITE,
 	CXD2880_DVBT2_PROFILE_ANY
 };
-
 enum cxd2880_dvbt2_version {
 	CXD2880_DVBT2_V111,
 	CXD2880_DVBT2_V121,
 	CXD2880_DVBT2_V131
 };
-
 enum cxd2880_dvbt2_s1 {
 	CXD2880_DVBT2_S1_BASE_SISO = 0x00,
 	CXD2880_DVBT2_S1_BASE_MISO = 0x01,
@@ -35,7 +22,6 @@ enum cxd2880_dvbt2_s1 {
 	CXD2880_DVBT2_S1_RSVD5 = 0x07,
 	CXD2880_DVBT2_S1_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_base_s2 {
 	CXD2880_DVBT2_BASE_S2_M2K_G_ANY = 0x00,
 	CXD2880_DVBT2_BASE_S2_M8K_G_DVBT = 0x01,
@@ -47,7 +33,6 @@ enum cxd2880_dvbt2_base_s2 {
 	CXD2880_DVBT2_BASE_S2_M32K_G_DVBT2 = 0x07,
 	CXD2880_DVBT2_BASE_S2_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_lite_s2 {
 	CXD2880_DVBT2_LITE_S2_M2K_G_ANY = 0x00,
 	CXD2880_DVBT2_LITE_S2_M8K_G_DVBT = 0x01,
@@ -59,7 +44,6 @@ enum cxd2880_dvbt2_lite_s2 {
 	CXD2880_DVBT2_LITE_S2_RSVD2 = 0x07,
 	CXD2880_DVBT2_LITE_S2_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_guard {
 	CXD2880_DVBT2_G1_32 = 0x00,
 	CXD2880_DVBT2_G1_16 = 0x01,
@@ -71,7 +55,6 @@ enum cxd2880_dvbt2_guard {
 	CXD2880_DVBT2_G_RSVD1 = 0x07,
 	CXD2880_DVBT2_G_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_mode {
 	CXD2880_DVBT2_M2K = 0x00,
 	CXD2880_DVBT2_M8K = 0x01,
@@ -82,7 +65,6 @@ enum cxd2880_dvbt2_mode {
 	CXD2880_DVBT2_M_RSVD1 = 0x06,
 	CXD2880_DVBT2_M_RSVD2 = 0x07
 };
-
 enum cxd2880_dvbt2_bw {
 	CXD2880_DVBT2_BW_8 = 0x00,
 	CXD2880_DVBT2_BW_7 = 0x01,
@@ -102,7 +84,6 @@ enum cxd2880_dvbt2_bw {
 	CXD2880_DVBT2_BW_RSVD10 = 0x0f,
 	CXD2880_DVBT2_BW_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_l1pre_type {
 	CXD2880_DVBT2_L1PRE_TYPE_TS = 0x00,
 	CXD2880_DVBT2_L1PRE_TYPE_GS = 0x01,
@@ -110,7 +91,6 @@ enum cxd2880_dvbt2_l1pre_type {
 	CXD2880_DVBT2_L1PRE_TYPE_RESERVED = 0x03,
 	CXD2880_DVBT2_L1PRE_TYPE_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_papr {
 	CXD2880_DVBT2_PAPR_0 = 0x00,
 	CXD2880_DVBT2_PAPR_1 = 0x01,
@@ -130,7 +110,6 @@ enum cxd2880_dvbt2_papr {
 	CXD2880_DVBT2_PAPR_RSVD12 = 0x0f,
 	CXD2880_DVBT2_PAPR_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_l1post_constell {
 	CXD2880_DVBT2_L1POST_BPSK = 0x00,
 	CXD2880_DVBT2_L1POST_QPSK = 0x01,
@@ -150,7 +129,6 @@ enum cxd2880_dvbt2_l1post_constell {
 	CXD2880_DVBT2_L1POST_C_RSVD12 = 0x0f,
 	CXD2880_DVBT2_L1POST_CONSTELL_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_l1post_cr {
 	CXD2880_DVBT2_L1POST_R1_2 = 0x00,
 	CXD2880_DVBT2_L1POST_R_RSVD1 = 0x01,
@@ -158,7 +136,6 @@ enum cxd2880_dvbt2_l1post_cr {
 	CXD2880_DVBT2_L1POST_R_RSVD3 = 0x03,
 	CXD2880_DVBT2_L1POST_R_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_l1post_fec_type {
 	CXD2880_DVBT2_L1POST_FEC_LDPC16K = 0x00,
 	CXD2880_DVBT2_L1POST_FEC_RSVD1 = 0x01,
@@ -166,7 +143,6 @@ enum cxd2880_dvbt2_l1post_fec_type {
 	CXD2880_DVBT2_L1POST_FEC_RSVD3 = 0x03,
 	CXD2880_DVBT2_L1POST_FEC_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_pp {
 	CXD2880_DVBT2_PP1 = 0x00,
 	CXD2880_DVBT2_PP2 = 0x01,
@@ -186,7 +162,6 @@ enum cxd2880_dvbt2_pp {
 	CXD2880_DVBT2_PP_RSVD8 = 0x0f,
 	CXD2880_DVBT2_PP_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_plp_code_rate {
 	CXD2880_DVBT2_R1_2 = 0x00,
 	CXD2880_DVBT2_R3_5 = 0x01,
@@ -198,7 +173,6 @@ enum cxd2880_dvbt2_plp_code_rate {
 	CXD2880_DVBT2_R2_5 = 0x07,
 	CXD2880_DVBT2_PLP_CR_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_plp_constell {
 	CXD2880_DVBT2_QPSK = 0x00,
 	CXD2880_DVBT2_QAM16 = 0x01,
@@ -210,7 +184,6 @@ enum cxd2880_dvbt2_plp_constell {
 	CXD2880_DVBT2_CON_RSVD4 = 0x07,
 	CXD2880_DVBT2_CONSTELL_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_plp_type {
 	CXD2880_DVBT2_PLP_TYPE_COMMON = 0x00,
 	CXD2880_DVBT2_PLP_TYPE_DATA1 = 0x01,
@@ -222,7 +195,6 @@ enum cxd2880_dvbt2_plp_type {
 	CXD2880_DVBT2_PLP_TYPE_RSVD5 = 0x07,
 	CXD2880_DVBT2_PLP_TYPE_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_plp_payload {
 	CXD2880_DVBT2_PLP_PAYLOAD_GFPS = 0x00,
 	CXD2880_DVBT2_PLP_PAYLOAD_GCS = 0x01,
@@ -258,7 +230,6 @@ enum cxd2880_dvbt2_plp_payload {
 	CXD2880_DVBT2_PLP_PAYLOAD_RSVD28 = 0x1f,
 	CXD2880_DVBT2_PLP_PAYLOAD_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_plp_fec {
 	CXD2880_DVBT2_FEC_LDPC_16K = 0x00,
 	CXD2880_DVBT2_FEC_LDPC_64K = 0x01,
@@ -266,7 +237,6 @@ enum cxd2880_dvbt2_plp_fec {
 	CXD2880_DVBT2_FEC_RSVD2 = 0x03,
 	CXD2880_DVBT2_FEC_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_plp_mode {
 	CXD2880_DVBT2_PLP_MODE_NOTSPECIFIED = 0x00,
 	CXD2880_DVBT2_PLP_MODE_NM = 0x01,
@@ -274,12 +244,10 @@ enum cxd2880_dvbt2_plp_mode {
 	CXD2880_DVBT2_PLP_MODE_RESERVED = 0x03,
 	CXD2880_DVBT2_PLP_MODE_UNKNOWN = 0xff
 };
-
 enum cxd2880_dvbt2_plp_btype {
 	CXD2880_DVBT2_PLP_COMMON,
 	CXD2880_DVBT2_PLP_DATA
 };
-
 enum cxd2880_dvbt2_stream {
 	CXD2880_DVBT2_STREAM_GENERIC_PACKETIZED = 0x00,
 	CXD2880_DVBT2_STREAM_GENERIC_CONTINUOUS = 0x01,
@@ -287,7 +255,6 @@ enum cxd2880_dvbt2_stream {
 	CXD2880_DVBT2_STREAM_TRANSPORT = 0x03,
 	CXD2880_DVBT2_STREAM_UNKNOWN = 0xff
 };
-
 struct cxd2880_dvbt2_l1pre {
 	enum cxd2880_dvbt2_l1pre_type type;
 	u8 bw_ext;
@@ -319,7 +286,6 @@ struct cxd2880_dvbt2_l1pre {
 	u8 t2_base_lite;
 	u32 crc32;
 };
-
 struct cxd2880_dvbt2_plp {
 	u8 id;
 	enum cxd2880_dvbt2_plp_type type;
@@ -343,7 +309,6 @@ struct cxd2880_dvbt2_plp {
 	u8 static_flag;
 	u8 static_padding_flag;
 };
-
 struct cxd2880_dvbt2_l1post {
 	u16 sub_slices_per_frame;
 	u8 num_plps;
@@ -355,7 +320,6 @@ struct cxd2880_dvbt2_l1post {
 	u32 fef_length;
 	u8 fef_intvl;
 };
-
 struct cxd2880_dvbt2_ofdm {
 	u8 mixed;
 	u8 is_miso;
@@ -366,7 +330,6 @@ struct cxd2880_dvbt2_ofdm {
 	enum cxd2880_dvbt2_papr papr;
 	u16 num_symbols;
 };
-
 struct cxd2880_dvbt2_bbheader {
 	enum cxd2880_dvbt2_stream stream_input;
 	u8 is_single_input_stream;
@@ -381,5 +344,4 @@ struct cxd2880_dvbt2_bbheader {
 	u32 issy;
 	enum cxd2880_dvbt2_plp_mode plp_mode;
 };
-
 #endif

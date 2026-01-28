@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_S390_FUTEX_H
 #define _ASM_S390_FUTEX_H
-
 #include <linux/uaccess.h>
 #include <linux/futex.h>
 #include <asm/asm-extable.h>
 #include <asm/mmu_context.h>
 #include <asm/errno.h>
-
 #define __futex_atomic_op(insn, ret, oldval, newval, uaddr, oparg)	\
 	asm volatile(							\
 		"   sacf  256\n"					\
@@ -23,12 +20,10 @@
 		  "=m" (*uaddr)						\
 		: "0" (-EFAULT), "d" (oparg), "a" (uaddr),		\
 		  "m" (*uaddr) : "cc");
-
 static inline int arch_futex_atomic_op_inuser(int op, int oparg, int *oval,
 		u32 __user *uaddr)
 {
 	int oldval = 0, newval, ret;
-
 	switch (op) {
 	case FUTEX_OP_SET:
 		__futex_atomic_op("lr %2,%5\n",
@@ -53,18 +48,14 @@ static inline int arch_futex_atomic_op_inuser(int op, int oparg, int *oval,
 	default:
 		ret = -ENOSYS;
 	}
-
 	if (!ret)
 		*oval = oldval;
-
 	return ret;
 }
-
 static inline int futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 						u32 oldval, u32 newval)
 {
 	int ret;
-
 	asm volatile(
 		"   sacf 256\n"
 		"0: cs   %1,%4,0(%5)\n"
@@ -77,5 +68,4 @@ static inline int futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	*uval = oldval;
 	return ret;
 }
-
-#endif /* _ASM_S390_FUTEX_H */
+#endif  

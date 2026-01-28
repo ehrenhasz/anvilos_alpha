@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _NF_CONNTRACK_ZONES_H
 #define _NF_CONNTRACK_ZONES_H
-
 #include <linux/netfilter/nf_conntrack_zones_common.h>
 #include <net/netfilter/nf_conntrack.h>
-
 static inline const struct nf_conntrack_zone *
 nf_ct_zone(const struct nf_conn *ct)
 {
@@ -14,17 +11,14 @@ nf_ct_zone(const struct nf_conn *ct)
 	return &nf_ct_zone_dflt;
 #endif
 }
-
 static inline const struct nf_conntrack_zone *
 nf_ct_zone_init(struct nf_conntrack_zone *zone, u16 id, u8 dir, u8 flags)
 {
 	zone->id = id;
 	zone->flags = flags;
 	zone->dir = dir;
-
 	return zone;
 }
-
 static inline const struct nf_conntrack_zone *
 nf_ct_zone_tmpl(const struct nf_conn *tmpl, const struct sk_buff *skb,
 		struct nf_conntrack_zone *tmp)
@@ -32,13 +26,11 @@ nf_ct_zone_tmpl(const struct nf_conn *tmpl, const struct sk_buff *skb,
 #ifdef CONFIG_NF_CONNTRACK_ZONES
 	if (!tmpl)
 		return &nf_ct_zone_dflt;
-
 	if (tmpl->zone.flags & NF_CT_FLAG_MARK)
 		return nf_ct_zone_init(tmp, skb->mark, tmpl->zone.dir, 0);
 #endif
 	return nf_ct_zone(tmpl);
 }
-
 static inline void nf_ct_zone_add(struct nf_conn *ct,
 				  const struct nf_conntrack_zone *zone)
 {
@@ -46,13 +38,11 @@ static inline void nf_ct_zone_add(struct nf_conn *ct,
 	ct->zone = *zone;
 #endif
 }
-
 static inline bool nf_ct_zone_matches_dir(const struct nf_conntrack_zone *zone,
 					  enum ip_conntrack_dir dir)
 {
 	return zone->dir & (1 << dir);
 }
-
 static inline u16 nf_ct_zone_id(const struct nf_conntrack_zone *zone,
 				enum ip_conntrack_dir dir)
 {
@@ -63,7 +53,6 @@ static inline u16 nf_ct_zone_id(const struct nf_conntrack_zone *zone,
 	return NF_CT_DEFAULT_ZONE_ID;
 #endif
 }
-
 static inline bool nf_ct_zone_equal(const struct nf_conn *a,
 				    const struct nf_conntrack_zone *b,
 				    enum ip_conntrack_dir dir)
@@ -75,7 +64,6 @@ static inline bool nf_ct_zone_equal(const struct nf_conn *a,
 	return true;
 #endif
 }
-
 static inline bool nf_ct_zone_equal_any(const struct nf_conn *a,
 					const struct nf_conntrack_zone *b)
 {
@@ -85,5 +73,4 @@ static inline bool nf_ct_zone_equal_any(const struct nf_conn *a,
 	return true;
 #endif
 }
-
-#endif /* _NF_CONNTRACK_ZONES_H */
+#endif  

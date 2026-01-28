@@ -1,13 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-
 /dts-v1/;
-
 #include "pxa300-raumfeld-common.dtsi"
-
 / {
 	model = "Raumfeld Controller (PXA3xx)";
 	compatible = "raumfeld,raumfeld-controller-pxa303", "marvell,pxa300";
-
 	reg_vbatt: regulator-vbatt {
 		compatible = "regulator-fixed";
 		regulator-name = "vbatt-fixed-supply";
@@ -15,7 +10,6 @@
 		regulator-max-microvolt = <3700000>;
 		regulator-always-on;
 	};
-
 	lcd_supply: regulator-va-tft {
 		compatible = "regulator-fixed";
 		regulator-name = "va-tft-fixed-supply";
@@ -24,22 +18,19 @@
 		gpio = <&gpio 33 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	onewire {
 		compatible = "w1-gpio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&w1_pins>;
 		gpios = <
-			&gpio 126 GPIO_OPEN_DRAIN	/* W1 I/O	*/
-			&gpio 105 GPIO_ACTIVE_HIGH	/* pullup	*/
+			&gpio 126 GPIO_OPEN_DRAIN	 
+			&gpio 105 GPIO_ACTIVE_HIGH	 
 		>;
-
 		w1_ds2760: slave-ds2760 {
 			compatible = "maxim,ds2760";
 			power-supplies = <&charger>;
 		};
 	};
-
 	charger: charger {
 		pinctrl-names = "default";
 		pinctrl-0 = <&charger_pins>;
@@ -47,11 +38,6 @@
 		charger-type = "mains";
 		gpios = <&gpio 101 GPIO_ACTIVE_LOW>;
 	};
-
-	/*
-	 * One of the following two will be set to "okay" by the bootloader,
-	 * depending on the hardware revision.
-	 */
 	backlight-controller-pwm {
 		compatible = "pwm-backlight";
 		pinctrl-names = "default";
@@ -59,7 +45,6 @@
 		pwms = <&pwm0 10000>;
 		power-supply = <&reg_vbatt>;
 		status = "disabled";
-
 		brightness-levels = <
 			 0  1  2  3  4  5  6  7  8  9
 			10 11 12 13 14 15 16 17 18 19
@@ -75,41 +60,33 @@
 		>;
 		default-brightness-level = <100>;
 	};
-
 	backlight-controller {
 		compatible = "lltc,lt3593";
 		pinctrl-names = "default";
 		pinctrl-0 = <&lt3593_pins>;
 		lltc,ctrl-gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
 		status = "disabled";
-
 		led {
 			label = "backlight";
 			default-state = "on";
 		};
 	};
 };
-
 &reg_va_5v0 {
 	status = "disabled";
 };
-
 &ethernet {
 	status = "disabled";
 };
-
 &leds {
 	status = "disabled";
 };
-
 &dac {
 	status = "disabled";
 };
-
 &pwm0 {
 	status = "okay";
 };
-
 &keys {
 	pinctrl-0 = <&gpio_keys_pins &dock_detect_pins>;
 	dock-detect {
@@ -118,7 +95,6 @@
 		linux,code = <KEY_F5>;
 	};
 };
-
 &spi {
 	accelerometer@1 {
 		compatible = "st,lis302dl-spi";
@@ -128,7 +104,6 @@
 		spi-max-frequency = <1000000>;
 		interrupt-parent = <&gpio>;
 		interrupts = <104 IRQ_TYPE_EDGE_FALLING>;
-
 		st,click-single-x;
 		st,click-single-y;
 		st,click-single-z;
@@ -145,27 +120,24 @@
 		st,wakeup-z-hi;
 	};
 };
-
 &lcdc {
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&lcdc_pins>;
 	lcd-supply = <&lcd_supply>;
-
 	port {
 		lcdc_out: endpoint {
 			remote-endpoint = <&panel_in>;
 			bus-width = <16>;
 		};
 	};
-
 	panel {
 		compatible = "sharp,lq043t3dx0-panel";
 		display-timings {
 			native-mode = <&timing0>;
 			timing0: timing {
 				clock-frequency = <9009000>;
-				pixelclk-active = <0>;	/* negative edge */
+				pixelclk-active = <0>;	 
 				hactive = <480>;
 				vactive = <272>;
 				hsync-len = <41>;
@@ -176,7 +148,6 @@
 				vfront-porch = <1>;
 			};
 		};
-
 		port {
 			panel_in: endpoint {
 				remote-endpoint = <&lcdc_out>;
@@ -184,11 +155,9 @@
 		};
 	};
 };
-
 &gcu {
 	status = "okay";
 };
-
 &pxai2c1 {
 	touchscreen@a {
 		compatible = "eeti,exc3000-i2c";
@@ -201,84 +170,76 @@
 		touchscreen-inverted-y;
 	};
 };
-
 &pinctrl {
 	lis302_pins: lis302-pins {
 		pinctrl-single,pins = <
-			MFP_PIN_PXA300(104) MFP_AF0	/* IRQ	*/
+			MFP_PIN_PXA300(104) MFP_AF0	 
 		>;
 		pinctrl-single,low-power-mode = MFP_LPM(MFP_LPM_PULL_LOW);
 	};
-
 	eeti_ts_pins: eeti-ts-pins {
 		pinctrl-single,pins = <
-			MFP_PIN_PXA300(32) MFP_AF0	/* IRQ */
+			MFP_PIN_PXA300(32) MFP_AF0	 
 		>;
 		pinctrl-single,low-power-mode = MFP_LPM(MFP_LPM_FLOAT);
 	};
-
 	lt3593_pins: lt3593-pins {
 		pinctrl-single,pins = <
-			MFP_PIN_PXA300(17) MFP_AF0	/* Backlight	*/
+			MFP_PIN_PXA300(17) MFP_AF0	 
 		>;
 		pinctrl-single,low-power-mode = MFP_LPM(MFP_LPM_PULL_LOW);
 	};
-
 	pwm0_pins: pwm0-pins {
 		pinctrl-single,pins = <
-			MFP_PIN_PXA300(17) MFP_AF1	/* PWM	*/
+			MFP_PIN_PXA300(17) MFP_AF1	 
 		>;
 		pinctrl-single,low-power-mode = MFP_LPM(MFP_LPM_PULL_LOW);
 	};
-
 	w1_pins: w1-pins {
 		pinctrl-single,pins = <
-			MFP_PIN_PXA300(126) MFP_AF0	/* PWM	*/
-			MFP_PIN_PXA300(105) MFP_AF0	/* PWM	*/
+			MFP_PIN_PXA300(126) MFP_AF0	 
+			MFP_PIN_PXA300(105) MFP_AF0	 
 		>;
 		pinctrl-single,low-power-mode = MFP_LPM(MFP_LPM_FLOAT);
 	};
-
 	charger_pins: charger_pins {
 		pinctrl-single,pins = <
-			MFP_PIN_PXA300(31) MFP_AF0	/* PEN2	*/
+			MFP_PIN_PXA300(31) MFP_AF0	 
 		>;
 		pinctrl-single,low-power-mode = MFP_LPM(MFP_LPM_PULL_HIGH);
 		pinctrl-single,bias-pullup = MPF_PULL_UP;
 	};
-
 	dock_detect_pins: dock_detect_pins {
 		pinctrl-single,pins = <
-			MFP_PIN_PXA300(116) MFP_AF0	/* DOCK_DETECT	*/
+			MFP_PIN_PXA300(116) MFP_AF0	 
 		>;
 		pinctrl-single,low-power-mode = MFP_LPM(MFP_LPM_PULL_HIGH);
 		pinctrl-single,bias-pullup = MPF_PULL_UP;
 	};
-
 	lcdc_pins: lcdc-pins {
 		pinctrl-single,pins = <
-			MFP_PIN_PXA300(54) MFP_AF1	/* LDD_0	*/
-			MFP_PIN_PXA300(55) MFP_AF1	/* LDD_1	*/
-			MFP_PIN_PXA300(56) MFP_AF1	/* LDD_2	*/
-			MFP_PIN_PXA300(57) MFP_AF1	/* LDD_3	*/
-			MFP_PIN_PXA300(58) MFP_AF1	/* LDD_4	*/
-			MFP_PIN_PXA300(59) MFP_AF1	/* LDD_5	*/
-			MFP_PIN_PXA300(60) MFP_AF1	/* LDD_6	*/
-			MFP_PIN_PXA300(61) MFP_AF1	/* LDD_7	*/
-			MFP_PIN_PXA300(62) MFP_AF1	/* LDD_8	*/
-			MFP_PIN_PXA300(63) MFP_AF1	/* LDD_9	*/
-			MFP_PIN_PXA300(64) MFP_AF1	/* LDD_10	*/
-			MFP_PIN_PXA300(65) MFP_AF1	/* LDD_11	*/
-			MFP_PIN_PXA300(66) MFP_AF1	/* LDD_12	*/
-			MFP_PIN_PXA300(67) MFP_AF1	/* LDD_13	*/
-			MFP_PIN_PXA300(68) MFP_AF1	/* LDD_14	*/
-			MFP_PIN_PXA300(69) MFP_AF1	/* LDD_15	*/
-			MFP_PIN_PXA300(70) MFP_AF1	/* LDD_16	*/
-			MFP_PIN_PXA300(71) MFP_AF1	/* LDD_17	*/
-			MFP_PIN_PXA300(72) MFP_AF1	/* LCD_FCLK	*/
-			MFP_PIN_PXA300(73) MFP_AF1	/* LCD_LCLK	*/
-			MFP_PIN_PXA300(74) MFP_AF1	/* LCD_PCLK	*/
-			MFP_PIN_PXA300(75) MFP_AF1	/* LCD_BIAS	*/
+			MFP_PIN_PXA300(54) MFP_AF1	 
+			MFP_PIN_PXA300(55) MFP_AF1	 
+			MFP_PIN_PXA300(56) MFP_AF1	 
+			MFP_PIN_PXA300(57) MFP_AF1	 
+			MFP_PIN_PXA300(58) MFP_AF1	 
+			MFP_PIN_PXA300(59) MFP_AF1	 
+			MFP_PIN_PXA300(60) MFP_AF1	 
+			MFP_PIN_PXA300(61) MFP_AF1	 
+			MFP_PIN_PXA300(62) MFP_AF1	 
+			MFP_PIN_PXA300(63) MFP_AF1	 
+			MFP_PIN_PXA300(64) MFP_AF1	 
+			MFP_PIN_PXA300(65) MFP_AF1	 
+			MFP_PIN_PXA300(66) MFP_AF1	 
+			MFP_PIN_PXA300(67) MFP_AF1	 
+			MFP_PIN_PXA300(68) MFP_AF1	 
+			MFP_PIN_PXA300(69) MFP_AF1	 
+			MFP_PIN_PXA300(70) MFP_AF1	 
+			MFP_PIN_PXA300(71) MFP_AF1	 
+			MFP_PIN_PXA300(72) MFP_AF1	 
+			MFP_PIN_PXA300(73) MFP_AF1	 
+			MFP_PIN_PXA300(74) MFP_AF1	 
+			MFP_PIN_PXA300(75) MFP_AF1	 
 		>;
 		pinctrl-single,low-power-mode = MFP_LPM(MFP_LPM_PULL_LOW);
 	};

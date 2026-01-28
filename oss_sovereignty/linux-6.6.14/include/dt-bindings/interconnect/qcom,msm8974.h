@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) */
-/*
- * Qualcomm msm8974 interconnect IDs
- *
- * Copyright (c) 2019 Brian Masney <masneyb@onstation.org>
- */
-
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_MSM8974_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_MSM8974_H
-
 #define BIMC_MAS_AMPSS_M0		0
 #define BIMC_MAS_AMPSS_M1		1
 #define BIMC_MAS_MSS_PROC		2
@@ -15,7 +7,6 @@
 #define BIMC_TO_SNOC			4
 #define BIMC_SLV_EBI_CH0		5
 #define BIMC_SLV_AMPSS_L2		6
-
 #define CNOC_MAS_RPM_INST		0
 #define CNOC_MAS_RPM_DATA		1
 #define CNOC_MAS_RPM_SYS		2
@@ -53,7 +44,6 @@
 #define CNOC_SLV_EBI1_PHY_CFG		34
 #define CNOC_SLV_RPM			35
 #define CNOC_SLV_SERVICE_CNOC		36
-
 #define MNOC_MAS_GRAPHICS_3D		0
 #define MNOC_MAS_JPEG			1
 #define MNOC_MAS_MDP_PORT0		2
@@ -76,7 +66,6 @@
 #define MNOC_SLV_MNOC_MPU_CFG		19
 #define MNOC_SLV_ONOC_MPU_CFG		20
 #define MNOC_SLV_SERVICE_MNOC		21
-
 #define OCMEM_NOC_TO_OCMEM_VNOC		0
 #define OCMEM_MAS_JPEG_OCMEM		1
 #define OCMEM_MAS_MDP_OCMEM		2
@@ -89,7 +78,6 @@
 #define OCMEM_VNOC_TO_OCMEM_NOC		9
 #define OCMEM_VNOC_MAS_GFX3D		10
 #define OCMEM_SLV_OCMEM			11
-
 #define PNOC_MAS_PNOC_CFG		0
 #define PNOC_MAS_SDCC_1			1
 #define PNOC_MAS_SDCC_3			2
@@ -117,7 +105,6 @@
 #define PNOC_SLV_PNOC_MPU_CFG		24
 #define PNOC_SLV_PRNG			25
 #define PNOC_SLV_SERVICE_PNOC		26
-
 #define SNOC_MAS_LPASS_AHB		0
 #define SNOC_MAS_QDSS_BAM		1
 #define SNOC_MAS_SNOC_CFG		2
@@ -142,5 +129,4 @@
 #define SNOC_SLV_SNOC_OCMEM		21
 #define SNOC_SLV_SERVICE_SNOC		22
 #define SNOC_SLV_QDSS_STM		23
-
 #endif

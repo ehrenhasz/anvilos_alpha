@@ -1,37 +1,8 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-
 #ifndef __SMU_V13_0_4_PMFW_H__
 #define __SMU_V13_0_4_PMFW_H__
-
 #include "smu13_driver_if_v13_0_4.h"
-
 #pragma pack(push, 1)
-
 #define ENABLE_DEBUG_FEATURES
-
-// Firmware features
-// Feature Control Defines
 #define FEATURE_CCLK_DPM_BIT                 0
 #define FEATURE_FAN_CONTROLLER_BIT           1
 #define FEATURE_DATA_CALCULATION_BIT         2
@@ -73,10 +44,9 @@
 #define FEATURE_CPUOFF_BIT                  38
 #define FEATURE_STAPM_BIT                   39
 #define FEATURE_S0I3_BIT                    40
-#define FEATURE_DF_LIGHT_CSTATE             41   // shift the order or DFCstate annd DF light Cstate
+#define FEATURE_DF_LIGHT_CSTATE             41    
 #define FEATURE_PERF_LIMIT_BIT              42
 #define FEATURE_CORE_DLDO_BIT               43
-//#define FEATURE_RSMU_LOW_POWER_BIT          44 //temp removal for DVO
 #define FEATURE_DVO_BIT                     44
 #define FEATURE_DS_VCN_BIT                  45
 #define FEATURE_CPPC_BIT                    46
@@ -93,15 +63,12 @@
 #define FEATURE_MPCCX_WHISPER_MODE_BIT      57
 #define FEATURE_DS_IPUCLK_BIT               58
 #define NUM_FEATURES                        59
-
 typedef struct {
-  // MP1_EXT_SCRATCH0
   uint32_t DpmHandlerID         : 8;
   uint32_t ActivityMonitorID    : 8;
   uint32_t DpmTimerID           : 8;
   uint32_t DpmHubID             : 4;
   uint32_t DpmHubTask           : 4;
-  // MP1_EXT_SCRATCH1
   uint32_t GfxoffStatus         : 8;
   uint32_t GfxStatus            : 2;
   uint32_t CpuOff               : 2;
@@ -113,11 +80,8 @@ typedef struct {
   uint32_t spare1               : 4;
   uint32_t DstateFun            : 4;
   uint32_t DstateDev            : 4;
-  // MP1_EXT_SCRATCH2
   uint32_t P2JobHandler         :32;
-  // MP1_EXT_SCRATCH3
   uint32_t PostCode             :32;
-  // MP1_EXT_SCRATCH4
   uint32_t MsgPortBusy          :15;
   uint32_t RsmuPmiP1Pending     : 1;
   uint32_t RsmuPmiP2PendingCnt  : 8;
@@ -127,11 +91,7 @@ typedef struct {
   uint32_t WarmResetPending     : 1;
   uint32_t Mp0ClkPending        : 1;
   uint32_t spare2               : 3;
-  // MP1_EXT_SCRATCH5
   uint32_t IdleMask             :32;
 } FwStatus_t;
-
-
 #pragma pack(pop)
-
 #endif

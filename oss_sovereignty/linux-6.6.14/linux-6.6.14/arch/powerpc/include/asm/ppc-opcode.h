@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2009 Freescale Semiconductor, Inc.
- *
- * provides masks and opcode images for use by code generation, emulation
- * and for instructions that older assemblers might not know about
- */
 #ifndef _ASM_POWERPC_PPC_OPCODE_H
 #define _ASM_POWERPC_PPC_OPCODE_H
-
 #include <asm/asm-const.h>
-
 #define	__REG_R0	0
 #define	__REG_R1	1
 #define	__REG_R2	2
@@ -42,7 +33,6 @@
 #define	__REG_R29	29
 #define	__REG_R30	30
 #define	__REG_R31	31
-
 #define	__REGA0_0	0
 #define	__REGA0_R1	1
 #define	__REGA0_R2	2
@@ -75,8 +65,6 @@
 #define	__REGA0_R29	29
 #define	__REGA0_R30	30
 #define	__REGA0_R31	31
-
-/* For use with PPC_RAW_() macros */
 #define	_R0	0
 #define	_R1	1
 #define	_R2	2
@@ -109,31 +97,15 @@
 #define	_R29	29
 #define	_R30	30
 #define	_R31	31
-
 #define IMM_L(i)               ((uintptr_t)(i) & 0xffff)
 #define IMM_DS(i)              ((uintptr_t)(i) & 0xfffc)
 #define IMM_DQ(i)              ((uintptr_t)(i) & 0xfff0)
 #define IMM_D0(i)              (((uintptr_t)(i) >> 16) & 0x3ffff)
 #define IMM_D1(i)              IMM_L(i)
-
-/*
- * 16-bit immediate helper macros: HA() is for use with sign-extending instrs
- * (e.g. LD, ADDI).  If the bottom 16 bits is "-ve", add another bit into the
- * top half to negate the effect (i.e. 0xffff + 1 = 0x(1)0000).
- *
- * XXX: should these mask out possible sign bits?
- */
 #define IMM_H(i)                ((uintptr_t)(i)>>16)
 #define IMM_HA(i)               (((uintptr_t)(i)>>16) +                       \
 					(((uintptr_t)(i) & 0x8000) >> 15))
-
-/*
- * 18-bit immediate helper for prefix 18-bit upper immediate si0 field.
- */
 #define IMM_H18(i)              (((uintptr_t)(i)>>16) & 0x3ffff)
-
-
-/* opcode and xopcode for instructions */
 #define OP_PREFIX	1
 #define OP_TRAP_64	2
 #define OP_TRAP		3
@@ -167,7 +139,6 @@
 #define OP_LQ		56
 #define OP_LD		58
 #define OP_STD		62
-
 #define OP_19_XOP_RFID		18
 #define OP_19_XOP_RFMCI		38
 #define OP_19_XOP_RFDI		39
@@ -181,7 +152,6 @@
 #define OP_19_XOP_NAP		434
 #define OP_19_XOP_SLEEP		466
 #define OP_19_XOP_RVWINKLE	498
-
 #define OP_31_XOP_TRAP      4
 #define OP_31_XOP_LDX       21
 #define OP_31_XOP_LWZX      23
@@ -229,41 +199,24 @@
 #define OP_31_XOP_LFIWZX    887
 #define OP_31_XOP_STHBRX    918
 #define OP_31_XOP_STFIWX    983
-
-/* VSX Scalar Load Instructions */
 #define OP_31_XOP_LXSDX         588
 #define OP_31_XOP_LXSSPX        524
 #define OP_31_XOP_LXSIWAX       76
 #define OP_31_XOP_LXSIWZX       12
-
-/* VSX Scalar Store Instructions */
 #define OP_31_XOP_STXSDX        716
 #define OP_31_XOP_STXSSPX       652
 #define OP_31_XOP_STXSIWX       140
-
-/* VSX Vector Load Instructions */
 #define OP_31_XOP_LXVD2X        844
 #define OP_31_XOP_LXVW4X        780
-
-/* VSX Vector Load and Splat Instruction */
 #define OP_31_XOP_LXVDSX        332
-
-/* VSX Vector Store Instructions */
 #define OP_31_XOP_STXVD2X       972
 #define OP_31_XOP_STXVW4X       908
-
 #define OP_31_XOP_LFSX          535
 #define OP_31_XOP_LFSUX         567
 #define OP_31_XOP_LFDX          599
 #define OP_31_XOP_LFDUX		631
-
-/* VMX Vector Load Instructions */
 #define OP_31_XOP_LVX           103
-
-/* VMX Vector Store Instructions */
 #define OP_31_XOP_STVX          231
-
-/* sorted alphabetically */
 #define PPC_INST_BCCTR_FLUSH		0x4c400420
 #define PPC_INST_COPY			0x7c20060c
 #define PPC_INST_DCBA			0x7c0005ec
@@ -304,21 +257,15 @@
 #define PPC_INST_TRECLAIM		0x7c00075d
 #define PPC_INST_TSR			0x7c0005dd
 #define PPC_INST_BRANCH_COND		0x40800000
-
-/* Prefixes */
 #define PPC_INST_LFS			0xc0000000
 #define PPC_INST_STFS			0xd0000000
 #define PPC_INST_LFD			0xc8000000
 #define PPC_INST_STFD			0xd8000000
 #define PPC_PREFIX_MLS			0x06000000
 #define PPC_PREFIX_8LS			0x04000000
-
-/* Prefixed instructions */
 #define PPC_INST_PADDI			0x38000000
 #define PPC_INST_PLD			0xe4000000
 #define PPC_INST_PSTD			0xf4000000
-
-/* macros to insert fields into opcodes */
 #define ___PPC_RA(a)	(((a) & 0x1f) << 16)
 #define ___PPC_RB(b)	(((b) & 0x1f) << 11)
 #define ___PPC_RC(c)	(((c) & 0x1f) << 6)
@@ -354,23 +301,13 @@
 #define __PPC_RC21	(0x1 << 10)
 #define __PPC_PRFX_R(r)	(((r) & 0x1) << 20)
 #define __PPC_EH(eh)	(((eh) & 0x1) << 0)
-
-/*
- * Both low and high 16 bits are added as SIGNED additions, so if low 16 bits
- * has high bit set, high 16 bits must be adjusted. These macros do that (stolen
- * from binutils).
- */
 #define PPC_LO(v)	((v) & 0xffff)
 #define PPC_HI(v)	(((v) >> 16) & 0xffff)
 #define PPC_HA(v)	PPC_HI((v) + 0x8000)
 #define PPC_HIGHER(v)	(((v) >> 32) & 0xffff)
 #define PPC_HIGHEST(v)	(((v) >> 48) & 0xffff)
-
-/* LI Field */
 #define PPC_LI_MASK	0x03fffffc
 #define PPC_LI(v)	((v) & PPC_LI_MASK)
-
-/* Base instruction encoding */
 #define PPC_RAW_CP_ABORT		(0x7c00068c)
 #define PPC_RAW_COPY(a, b)		(PPC_INST_COPY | ___PPC_RA(a) | ___PPC_RB(b))
 #define PPC_RAW_DARN(t, l)		(0x7c0005e6 | ___PPC_RT(t) | (((l) & 0x3) << 16))
@@ -425,11 +362,6 @@
 #define PPC_RAW_SC()			(0x44000002)
 #define PPC_RAW_SYNC()			(0x7c0004ac)
 #define PPC_RAW_ISYNC()			(0x4c00012c)
-
-/*
- * Define what the VSX XX1 form instructions will look like, then add
- * the 128 bit load store instructions based on that.
- */
 #define VSX_XX1(s, a, b)		(__PPC_XS(s) | __PPC_RA(a) | __PPC_RB(b))
 #define VSX_XX3(t, a, b)		(__PPC_XT(t) | __PPC_XA(a) | __PPC_XB(b))
 #define PPC_RAW_STXVD2X(s, a, b)	(0x7c000798 | VSX_XX1((s), a, b))
@@ -565,29 +497,19 @@
 #define PPC_RAW_RLWIMI(d, a, i, mb, me) (0x50000000 | ___PPC_RA(d) | ___PPC_RS(a) | __PPC_SH(i) | __PPC_MB(mb) | __PPC_ME(me))
 #define PPC_RAW_RLDICL(d, a, i, mb)     (0x78000000 | ___PPC_RA(d) | ___PPC_RS(a) | __PPC_SH64(i) | __PPC_MB64(mb))
 #define PPC_RAW_RLDICR(d, a, i, me)     (0x78000004 | ___PPC_RA(d) | ___PPC_RS(a) | __PPC_SH64(i) | __PPC_ME64(me))
-
-/* slwi = rlwinm Rx, Ry, n, 0, 31-n */
 #define PPC_RAW_SLWI(d, a, i)		PPC_RAW_RLWINM(d, a, i, 0, 31-(i))
-/* srwi = rlwinm Rx, Ry, 32-n, n, 31 */
 #define PPC_RAW_SRWI(d, a, i)		PPC_RAW_RLWINM(d, a, 32-(i), i, 31)
-/* sldi = rldicr Rx, Ry, n, 63-n */
 #define PPC_RAW_SLDI(d, a, i)		PPC_RAW_RLDICR(d, a, i, 63-(i))
-/* sldi = rldicl Rx, Ry, 64-n, n */
 #define PPC_RAW_SRDI(d, a, i)		PPC_RAW_RLDICL(d, a, 64-(i), i)
-
 #define PPC_RAW_NEG(d, a)		(0x7c0000d0 | ___PPC_RT(d) | ___PPC_RA(a))
-
 #define PPC_RAW_MFSPR(d, spr)		(0x7c0002a6 | ___PPC_RT(d) | __PPC_SPR(spr))
 #define PPC_RAW_MTSPR(spr, d)		(0x7c0003a6 | ___PPC_RS(d) | __PPC_SPR(spr))
 #define PPC_RAW_EIEIO()			(0x7c0006ac)
-
 #define PPC_RAW_BRANCH(offset)		(0x48000000 | PPC_LI(offset))
 #define PPC_RAW_BL(offset)		(0x48000001 | PPC_LI(offset))
 #define PPC_RAW_TW(t0, a, b)		(0x7c000008 | ___PPC_RS(t0) | ___PPC_RA(a) | ___PPC_RB(b))
 #define PPC_RAW_TRAP()			PPC_RAW_TW(31, 0, 0)
 #define PPC_RAW_SETB(t, bfa)		(0x7c000100 | ___PPC_RT(t) | ___PPC_RA((bfa) << 2))
-
-/* Deal with instructions that older assemblers aren't aware of */
 #define	PPC_BCCTR_FLUSH		stringify_in_c(.long PPC_INST_BCCTR_FLUSH)
 #define	PPC_CP_ABORT		stringify_in_c(.long PPC_RAW_CP_ABORT)
 #define	PPC_COPY(a, b)		stringify_in_c(.long PPC_RAW_COPY(a, b))
@@ -629,7 +551,6 @@
 #define PPC_TLBIEL_v205(rb, l)	stringify_in_c(.long PPC_RAW_TLBIEL_v205(rb, l))
 #define PPC_TLBSRX_DOT(a, b)	stringify_in_c(.long PPC_RAW_TLBSRX_DOT(a, b))
 #define PPC_TLBIVAX(a, b)	stringify_in_c(.long PPC_RAW_TLBIVAX(a, b))
-
 #define PPC_ERATWE(s, a, w)	stringify_in_c(.long PPC_RAW_ERATWE(s, a, w))
 #define PPC_ERATRE(s, a, w)	stringify_in_c(.long PPC_RAW_ERATRE(a, a, w))
 #define PPC_ERATILX(t, a, b)	stringify_in_c(.long PPC_RAW_ERATILX(t, a, b))
@@ -639,7 +560,6 @@
 #define PPC_SLBFEE_DOT(t, b)	stringify_in_c(.long PPC_RAW_SLBFEE_DOT(t, b))
 #define __PPC_SLBFEE_DOT(t, b)	stringify_in_c(.long __PPC_RAW_SLBFEE_DOT(t, b))
 #define PPC_ICBT(c, a, b)	stringify_in_c(.long PPC_RAW_ICBT(c, a, b))
-/* PASemi instructions */
 #define LBZCIX(t, a, b)		stringify_in_c(.long PPC_RAW_LBZCIX(t, a, b))
 #define STBCIX(s, a, b)		stringify_in_c(.long PPC_RAW_STBCIX(s, a, b))
 #define PPC_DCBFPS(a, b)	stringify_in_c(.long PPC_RAW_DCBFPS(a, b))
@@ -655,47 +575,25 @@
 #define XXLOR(t, a, b)		stringify_in_c(.long PPC_RAW_XXLOR(t, a, b))
 #define XXSWAPD(t, a)		stringify_in_c(.long PPC_RAW_XXSWAPD(t, a))
 #define XVCPSGNDP(t, a, b)	stringify_in_c(.long (PPC_RAW_XVCPSGNDP(t, a, b)))
-
 #define VPERMXOR(vrt, vra, vrb, vrc)				\
 	stringify_in_c(.long (PPC_RAW_VPERMXOR(vrt, vra, vrb, vrc)))
-
 #define PPC_NAP			stringify_in_c(.long PPC_RAW_NAP)
 #define PPC_SLEEP		stringify_in_c(.long PPC_RAW_SLEEP)
 #define PPC_WINKLE		stringify_in_c(.long PPC_RAW_WINKLE)
-
 #define PPC_STOP		stringify_in_c(.long PPC_RAW_STOP)
-
-/* BHRB instructions */
 #define PPC_CLRBHRB		stringify_in_c(.long PPC_RAW_CLRBHRB)
 #define PPC_MFBHRBE(r, n)	stringify_in_c(.long PPC_RAW_MFBHRBE(r, n))
-
-/* Transactional memory instructions */
 #define TRECHKPT		stringify_in_c(.long PPC_RAW_TRECHKPT)
 #define TRECLAIM(r)		stringify_in_c(.long PPC_RAW_TRECLAIM(r))
 #define TABORT(r)		stringify_in_c(.long PPC_RAW_TABORT(r))
-
-/* book3e thread control instructions */
 #define MTTMR(tmr, r)		stringify_in_c(.long PPC_RAW_MTTMR(tmr, r))
 #define MFTMR(tmr, r)		stringify_in_c(.long PPC_RAW_MFTMR(tmr, r))
-
-/* Coprocessor instructions */
 #define PPC_ICSWX(s, a, b)	stringify_in_c(.long PPC_RAW_ICSWX(s, a, b))
 #define PPC_ICSWEPX(s, a, b)	stringify_in_c(.long PPC_RAW_ICSWEPX(s, a, b))
-
 #define PPC_SLBIA(IH)	stringify_in_c(.long PPC_RAW_SLBIA(IH))
-
-/*
- * These may only be used on ISA v3.0 or later (aka. CPU_FTR_ARCH_300, radix
- * implies CPU_FTR_ARCH_300). USER/GUEST invalidates may only be used by radix
- * mode (on HPT these would also invalidate various SLBEs which may not be
- * desired).
- */
 #define PPC_ISA_3_0_INVALIDATE_ERAT	PPC_SLBIA(7)
 #define PPC_RADIX_INVALIDATE_ERAT_USER	PPC_SLBIA(3)
 #define PPC_RADIX_INVALIDATE_ERAT_GUEST	PPC_SLBIA(6)
-
 #define VCMPEQUD_RC(vrt, vra, vrb)	stringify_in_c(.long PPC_RAW_VCMPEQUD_RC(vrt, vra, vrb))
-
 #define VCMPEQUB_RC(vrt, vra, vrb)	stringify_in_c(.long PPC_RAW_VCMPEQUB_RC(vrt, vra, vrb))
-
-#endif /* _ASM_POWERPC_PPC_OPCODE_H */
+#endif  

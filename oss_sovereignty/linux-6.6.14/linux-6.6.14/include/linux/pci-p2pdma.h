@@ -1,21 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * PCI Peer 2 Peer DMA support.
- *
- * Copyright (c) 2016-2018, Logan Gunthorpe
- * Copyright (c) 2016-2017, Microsemi Corporation
- * Copyright (c) 2017, Christoph Hellwig
- * Copyright (c) 2018, Eideticom Inc.
- */
-
 #ifndef _LINUX_PCI_P2PDMA_H
 #define _LINUX_PCI_P2PDMA_H
-
 #include <linux/pci.h>
-
 struct block_device;
 struct scatterlist;
-
 #ifdef CONFIG_PCI_P2PDMA
 int pci_p2pdma_add_resource(struct pci_dev *pdev, int bar, size_t size,
 		u64 offset);
@@ -34,7 +21,7 @@ int pci_p2pdma_enable_store(const char *page, struct pci_dev **p2p_dev,
 			    bool *use_p2pdma);
 ssize_t pci_p2pdma_enable_show(char *page, struct pci_dev *p2p_dev,
 			       bool use_p2pdma);
-#else /* CONFIG_PCI_P2PDMA */
+#else  
 static inline int pci_p2pdma_add_resource(struct pci_dev *pdev, int bar,
 		size_t size, u64 offset)
 {
@@ -90,18 +77,14 @@ static inline ssize_t pci_p2pdma_enable_show(char *page,
 {
 	return sprintf(page, "none\n");
 }
-#endif /* CONFIG_PCI_P2PDMA */
-
-
+#endif  
 static inline int pci_p2pdma_distance(struct pci_dev *provider,
 	struct device *client, bool verbose)
 {
 	return pci_p2pdma_distance_many(provider, &client, 1, verbose);
 }
-
 static inline struct pci_dev *pci_p2pmem_find(struct device *client)
 {
 	return pci_p2pmem_find_many(&client, 1);
 }
-
-#endif /* _LINUX_PCI_P2P_H */
+#endif  

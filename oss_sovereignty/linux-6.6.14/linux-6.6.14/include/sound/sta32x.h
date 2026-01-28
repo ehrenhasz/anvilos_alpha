@@ -1,24 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Platform data for ST STA32x ASoC codec driver.
- *
- * Copyright: 2011 Raumfeld GmbH
- * Author: Johannes Stezenbach <js@sig21.net>
- */
 #ifndef __LINUX_SND__STA32X_H
 #define __LINUX_SND__STA32X_H
-
 #define STA32X_OCFG_2CH		0
 #define STA32X_OCFG_2_1CH	1
 #define STA32X_OCFG_1CH		3
-
 #define STA32X_OM_CH1		0
 #define STA32X_OM_CH2		1
 #define STA32X_OM_CH3		2
-
 #define STA32X_THERMAL_ADJUSTMENT_ENABLE	1
 #define STA32X_THERMAL_RECOVERY_ENABLE		2
-
 struct sta32x_platform_data {
 	u8 output_conf;
 	u8 ch1_output_mapping;
@@ -35,5 +24,4 @@ struct sta32x_platform_data {
 	unsigned int odd_pwm_speed_mode:1;
 	unsigned int invalid_input_detect_mute:1;
 };
-
-#endif /* __LINUX_SND__STA32X_H */
+#endif  

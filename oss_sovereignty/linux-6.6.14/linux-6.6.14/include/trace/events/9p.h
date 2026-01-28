@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM 9p
-
 #if !defined(_TRACE_9P_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_9P_H
-
 #include <linux/tracepoint.h>
-
 #define P9_MSG_T							\
 		EM( P9_TLERROR,		"P9_TLERROR" )			\
 		EM( P9_RLERROR,		"P9_RLERROR" )			\
@@ -76,104 +72,75 @@
 		EM( P9_RSTAT,		"P9_RSTAT" )			\
 		EM( P9_TWSTAT,		"P9_TWSTAT" )			\
 		EMe(P9_RWSTAT,		"P9_RWSTAT" )
-
-
 #define P9_FID_REFTYPE							\
 		EM( P9_FID_REF_CREATE,	"create " )			\
 		EM( P9_FID_REF_GET,	"get    " )			\
 		EM( P9_FID_REF_PUT,	"put    " )			\
 		EMe(P9_FID_REF_DESTROY,	"destroy" )
-
-/* Define EM() to export the enums to userspace via TRACE_DEFINE_ENUM() */
 #undef EM
 #undef EMe
 #define EM(a, b)	TRACE_DEFINE_ENUM(a);
 #define EMe(a, b)	TRACE_DEFINE_ENUM(a);
-
 P9_MSG_T
 P9_FID_REFTYPE
-
-/* And also use EM/EMe to define helper enums -- once */
 #ifndef __9P_DECLARE_TRACE_ENUMS_ONLY_ONCE
 #define __9P_DECLARE_TRACE_ENUMS_ONLY_ONCE
 #undef EM
 #undef EMe
 #define EM(a, b)	a,
 #define EMe(a, b)	a
-
 enum p9_fid_reftype {
 	P9_FID_REFTYPE
 } __mode(byte);
-
 #endif
-
-/*
- * Now redefine the EM() and EMe() macros to map the enums to the strings
- * that will be printed in the output.
- */
 #undef EM
 #undef EMe
 #define EM(a, b)	{ a, b },
 #define EMe(a, b)	{ a, b }
-
 #define show_9p_op(type)						\
 	__print_symbolic(type, P9_MSG_T)
 #define show_9p_fid_reftype(type)					\
 	__print_symbolic(type, P9_FID_REFTYPE)
-
 TRACE_EVENT(9p_client_req,
 	    TP_PROTO(struct p9_client *clnt, int8_t type, int tag),
-
 	    TP_ARGS(clnt, type, tag),
-
 	    TP_STRUCT__entry(
 		    __field(    void *,		clnt			     )
 		    __field(	__u8,		type			     )
 		    __field(	__u32,		tag			     )
 		    ),
-
 	    TP_fast_assign(
 		    __entry->clnt    =  clnt;
 		    __entry->type    =  type;
 		    __entry->tag     =  tag;
 		    ),
-
 	    TP_printk("client %lu request %s tag  %d",
 		    (long)__entry->clnt, show_9p_op(__entry->type),
 		    __entry->tag)
  );
-
 TRACE_EVENT(9p_client_res,
 	    TP_PROTO(struct p9_client *clnt, int8_t type, int tag, int err),
-
 	    TP_ARGS(clnt, type, tag, err),
-
 	    TP_STRUCT__entry(
 		    __field(    void *,		clnt			     )
 		    __field(	__u8,		type			     )
 		    __field(	__u32,		tag			     )
 		    __field(	__u32,		err			     )
 		    ),
-
 	    TP_fast_assign(
 		    __entry->clnt    =  clnt;
 		    __entry->type    =  type;
 		    __entry->tag     =  tag;
 		    __entry->err     =  err;
 		    ),
-
 	    TP_printk("client %lu response %s tag  %d err %d",
 		      (long)__entry->clnt, show_9p_op(__entry->type),
 		      __entry->tag, __entry->err)
 );
-
-/* dump 32 bytes of protocol data */
 #define P9_PROTO_DUMP_SZ 32
 TRACE_EVENT(9p_protocol_dump,
 	    TP_PROTO(struct p9_client *clnt, struct p9_fcall *pdu),
-
 	    TP_ARGS(clnt, pdu),
-
 	    TP_STRUCT__entry(
 		    __field(	void *,		clnt				)
 		    __field(	__u8,		type				)
@@ -181,7 +148,6 @@ TRACE_EVENT(9p_protocol_dump,
 		    __dynamic_array(unsigned char, line,
 				min_t(size_t, pdu->capacity, P9_PROTO_DUMP_SZ))
 		    ),
-
 	    TP_fast_assign(
 		    __entry->clnt   =  clnt;
 		    __entry->type   =  pdu->id;
@@ -194,32 +160,22 @@ TRACE_EVENT(9p_protocol_dump,
 		      __entry->tag, __get_dynamic_array_len(line),
 		      __get_dynamic_array(line))
  );
-
-
 TRACE_EVENT(9p_fid_ref,
 	    TP_PROTO(struct p9_fid *fid, __u8 type),
-
 	    TP_ARGS(fid, type),
-
 	    TP_STRUCT__entry(
 		    __field(	int,	fid		)
 		    __field(	int,	refcount	)
 		    __field(	__u8, type	)
 		    ),
-
 	    TP_fast_assign(
 		    __entry->fid = fid->fid;
 		    __entry->refcount = refcount_read(&fid->count);
 		    __entry->type = type;
 		    ),
-
 	    TP_printk("%s fid %d, refcount %d",
 		      show_9p_fid_reftype(__entry->type),
 		      __entry->fid, __entry->refcount)
 );
-
-
-#endif /* _TRACE_9P_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

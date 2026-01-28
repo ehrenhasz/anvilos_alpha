@@ -1,28 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * GPIO driver for AMD
- *
- * Copyright (c) 2014,2015 Ken Xue <Ken.Xue@amd.com>
- *		Jeff Wu <Jeff.Wu@amd.com>
- */
-
 #ifndef _PINCTRL_AMD_H
 #define _PINCTRL_AMD_H
-
 #define AMD_GPIO_PINS_PER_BANK  64
-
 #define AMD_GPIO_PINS_BANK0     63
 #define AMD_GPIO_PINS_BANK1     64
 #define AMD_GPIO_PINS_BANK2     56
 #define AMD_GPIO_PINS_BANK3     32
-
 #define WAKE_INT_MASTER_REG 0xfc
 #define INTERNAL_GPIO0_DEBOUNCE (1 << 15)
 #define EOI_MASK (1 << 29)
-
 #define WAKE_INT_STATUS_REG0 0x2f8
 #define WAKE_INT_STATUS_REG1 0x2fc
-
 #define DB_TMR_OUT_OFF			0
 #define DB_TMR_OUT_UNIT_OFF		4
 #define DB_CNTRL_OFF			5
@@ -45,58 +32,44 @@
 #define WAKECNTRL_Z_OFF			27
 #define INTERRUPT_STS_OFF		28
 #define WAKE_STS_OFF			29
-
 #define DB_TMR_OUT_MASK	0xFUL
 #define DB_CNTRl_MASK	0x3UL
 #define ACTIVE_LEVEL_MASK	0x3UL
 #define DRV_STRENGTH_SEL_MASK	0x3UL
-
 #define ACTIVE_LEVEL_HIGH	0x0UL
 #define ACTIVE_LEVEL_LOW	0x1UL
 #define ACTIVE_LEVEL_BOTH	0x2UL
-
 #define DB_TYPE_NO_DEBOUNCE               0x0UL
 #define DB_TYPE_PRESERVE_LOW_GLITCH       0x1UL
 #define DB_TYPE_PRESERVE_HIGH_GLITCH      0x2UL
 #define DB_TYPE_REMOVE_GLITCH             0x3UL
-
 #define EDGE_TRAGGER	0x0UL
 #define LEVEL_TRIGGER	0x1UL
-
 #define ACTIVE_HIGH	0x0UL
 #define ACTIVE_LOW	0x1UL
 #define BOTH_EADGE	0x2UL
-
 #define ENABLE_INTERRUPT	0x1UL
 #define DISABLE_INTERRUPT	0x0UL
-
 #define ENABLE_INTERRUPT_MASK	0x0UL
 #define DISABLE_INTERRUPT_MASK	0x1UL
-
 #define CLR_INTR_STAT	0x1UL
-
 #define NSELECTS	0x4
-
 #define FUNCTION_MASK		GENMASK(1, 0)
 #define FUNCTION_INVALID	GENMASK(7, 0)
-
 #define WAKE_SOURCE	(BIT(WAKE_CNTRL_OFF_S0I3) | \
 			 BIT(WAKE_CNTRL_OFF_S3)   | \
 			 BIT(WAKE_CNTRL_OFF_S4)   | \
 			 BIT(WAKECNTRL_Z_OFF))
-
 struct amd_function {
 	const char *name;
 	const char * const groups[NSELECTS];
 	unsigned ngroups;
 	int index;
 };
-
 struct amd_gpio {
 	raw_spinlock_t          lock;
 	void __iomem            *base;
 	void __iomem            *iomux_base;
-
 	const struct pingroup *groups;
 	u32 ngroups;
 	struct pinctrl_dev *pctrl;
@@ -107,8 +80,6 @@ struct amd_gpio {
 	u32			*saved_regs;
 	int			irq;
 };
-
-/*  KERNCZ configuration*/
 static const struct pinctrl_pin_desc kerncz_pins[] = {
 	PINCTRL_PIN(0, "GPIO_0"),
 	PINCTRL_PIN(1, "GPIO_1"),
@@ -294,9 +265,7 @@ static const struct pinctrl_pin_desc kerncz_pins[] = {
 	PINCTRL_PIN(182, "GPIO_182"),
 	PINCTRL_PIN(183, "GPIO_183"),
 };
-
 #define AMD_PINS(...) (const unsigned int []){__VA_ARGS__}
-
 enum amd_functions {
 	IMX_F0_GPIO0,
 	IMX_F1_GPIO0,
@@ -875,11 +844,9 @@ enum amd_functions {
 	IMX_F2_GPIO144,
 	IMX_F3_GPIO144,
 };
-
 #define AMD_PINCTRL_FUNC_GRP(_number, _func)						\
 	[IMX_F##_func##_GPIO##_number] =						\
 		PINCTRL_PINGROUP("IMX_F"#_func "_GPIO"#_number,	AMD_PINS(_number), 1)
-
 static const struct pingroup kerncz_groups[] = {
 	AMD_PINCTRL_FUNC_GRP(0, 0),
 	AMD_PINCTRL_FUNC_GRP(0, 1),
@@ -1457,7 +1424,6 @@ static const struct pingroup kerncz_groups[] = {
 	AMD_PINCTRL_FUNC_GRP(144, 1),
 	AMD_PINCTRL_FUNC_GRP(144, 2),
 	AMD_PINCTRL_FUNC_GRP(144, 3),
-
 	PINCTRL_PINGROUP("i2c0", AMD_PINS(145, 146), 2),
 	PINCTRL_PINGROUP("i2c1", AMD_PINS(147, 148), 2),
 	PINCTRL_PINGROUP("i2c2", AMD_PINS(113, 114), 2),
@@ -1465,7 +1431,6 @@ static const struct pingroup kerncz_groups[] = {
 	PINCTRL_PINGROUP("uart0", AMD_PINS(135, 136, 137, 138, 139), 5),
 	PINCTRL_PINGROUP("uart1", AMD_PINS(140, 141, 142, 143, 144), 5),
 };
-
 #define AMD_PMUX_FUNC(_number) {						\
 	.name = "iomux_gpio_"#_number,						\
 	.groups = {								\
@@ -1475,7 +1440,6 @@ static const struct pingroup kerncz_groups[] = {
 	.index = _number,							\
 	.ngroups = NSELECTS,							\
 }
-
 static const struct amd_function pmx_functions[] = {
 	AMD_PMUX_FUNC(0),
 	AMD_PMUX_FUNC(1),
@@ -1622,5 +1586,4 @@ static const struct amd_function pmx_functions[] = {
 	AMD_PMUX_FUNC(143),
 	AMD_PMUX_FUNC(144),
 };
-
 #endif

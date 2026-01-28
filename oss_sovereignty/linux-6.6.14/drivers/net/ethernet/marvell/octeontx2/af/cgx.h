@@ -1,26 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell OcteonTx2 CGX driver
- *
- * Copyright (C) 2018 Marvell.
- *
- */
-
 #ifndef CGX_H
 #define CGX_H
-
 #include "mbox.h"
 #include "cgx_fw_if.h"
 #include "rpm.h"
-
- /* PCI device IDs */
 #define	PCI_DEVID_OCTEONTX2_CGX		0xA059
-
-/* PCI BAR nos */
 #define PCI_CFG_REG_BAR_NUM		0
-
 #define CGX_ID_MASK			0xF
-
-/* Registers */
 #define CGXX_CMRX_CFG			0x00
 #define CMR_P2X_SEL_MASK		GENMASK_ULL(61, 59)
 #define CMR_P2X_SEL_SHIFT		59ULL
@@ -59,11 +44,9 @@
 #define CGXX_SPUX_LNX_FEC_UNCORR_BLOCKS	0x10800
 #define CGXX_SPUX_RSFEC_CORR		0x10088
 #define CGXX_SPUX_RSFEC_UNCORR		0x10090
-
 #define CGXX_SPUX_CONTROL1_LBK		BIT_ULL(14)
 #define CGXX_GMP_PCS_MRX_CTL		0x30000
 #define CGXX_GMP_PCS_MRX_CTL_LBK	BIT_ULL(14)
-
 #define CGXX_SMUX_RX_FRM_CTL		0x20020
 #define CGX_SMUX_RX_FRM_CTL_CTL_BCK	BIT_ULL(3)
 #define CGX_SMUX_RX_FRM_CTL_PTP_MODE	BIT_ULL(12)
@@ -86,19 +69,15 @@
 #define CGXX_CMR_RX_OVR_BP		0x130
 #define CGX_CMR_RX_OVR_BP_EN(X)		BIT_ULL(((X) + 8))
 #define CGX_CMR_RX_OVR_BP_BP(X)		BIT_ULL(((X) + 4))
-
 #define CGX_COMMAND_REG			CGXX_SCRATCH1_REG
 #define CGX_EVENT_REG			CGXX_SCRATCH0_REG
-#define CGX_CMD_TIMEOUT			5000 /* msecs */
+#define CGX_CMD_TIMEOUT			5000  
 #define DEFAULT_PAUSE_TIME		0x7FF
-
 #define CGX_LMAC_FWI			0
-
 enum  cgx_nix_stat_type {
 	NIX_STATS_RX,
 	NIX_STATS_TX,
 };
-
 enum LMAC_TYPE {
 	LMAC_MODE_SGMII		= 0,
 	LMAC_MODE_XAUI		= 1,
@@ -113,25 +92,16 @@ enum LMAC_TYPE {
 	LMAC_MODE_USGMII	= 11,
 	LMAC_MODE_MAX,
 };
-
 struct cgx_link_event {
 	struct cgx_link_user_info link_uinfo;
 	u8 cgx_id;
 	u8 lmac_id;
 };
-
-/**
- * struct cgx_event_cb
- * @notify_link_chg:	callback for link change notification
- * @data:	data passed to callback function
- */
 struct cgx_event_cb {
 	int (*notify_link_chg)(struct cgx_link_event *event, void *data);
 	void *data;
 };
-
 extern struct pci_driver cgx_driver;
-
 int cgx_get_cgxcnt_max(void);
 int cgx_get_cgxid(void *cgxd);
 int cgx_get_lmac_cnt(void *cgxd);
@@ -184,4 +154,4 @@ int cgx_lmac_get_pfc_frm_cfg(void *cgxd, int lmac_id, u8 *tx_pause,
 int verify_lmac_fc_cfg(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
 		       int pfvf_idx);
 int cgx_lmac_reset(void *cgxd, int lmac_id, u8 pf_req_flr);
-#endif /* CGX_H */
+#endif  

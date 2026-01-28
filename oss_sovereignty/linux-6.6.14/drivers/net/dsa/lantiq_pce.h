@@ -1,12 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * PCE microcode extracted from UGW 7.1.1 switch api
- *
- * Copyright (c) 2012, 2014, 2015 Lantiq Deutschland GmbH
- * Copyright (C) 2012 John Crispin <john@phrozen.org>
- * Copyright (C) 2017 - 2018 Hauke Mehrtens <hauke@hauke-m.de>
- */
-
 enum {
 	OUT_MAC0 = 0,
 	OUT_MAC1,
@@ -18,7 +9,7 @@ enum {
 	OUT_VTAG0,
 	OUT_VTAG1,
 	OUT_ITAG0,
-	OUT_ITAG1,	/*10 */
+	OUT_ITAG1,	 
 	OUT_ITAG2,
 	OUT_ITAG3,
 	OUT_IP0,
@@ -28,7 +19,7 @@ enum {
 	OUT_SIP0,
 	OUT_SIP1,
 	OUT_SIP2,
-	OUT_SIP3,	/*20*/
+	OUT_SIP3,	 
 	OUT_SIP4,
 	OUT_SIP5,
 	OUT_SIP6,
@@ -38,7 +29,7 @@ enum {
 	OUT_DIP2,
 	OUT_DIP3,
 	OUT_DIP4,
-	OUT_DIP5,	/*30*/
+	OUT_DIP5,	 
 	OUT_DIP6,
 	OUT_DIP7,
 	OUT_SESID,
@@ -47,16 +38,12 @@ enum {
 	OUT_APP1,
 	OUT_IGMP0,
 	OUT_IGMP1,
-	OUT_IPOFF,	/*39*/
+	OUT_IPOFF,	 
 	OUT_NONE = 63,
 };
-
-/* parser's microcode length type */
 #define INSTR		0
 #define IPV6		1
 #define LENACCU		2
-
-/* parser's microcode flag type */
 enum {
 	FLAG_ITAG = 0,
 	FLAG_VLAN,
@@ -68,24 +55,21 @@ enum {
 	FLAG_IGMP,
 	FLAG_TU,
 	FLAG_HOP,
-	FLAG_NN1,	/*10 */
+	FLAG_NN1,	 
 	FLAG_NN2,
 	FLAG_END,
-	FLAG_NO,	/*13*/
+	FLAG_NO,	 
 };
-
 struct gswip_pce_microcode {
 	u16 val_3;
 	u16 val_2;
 	u16 val_1;
 	u16 val_0;
 };
-
 #define MC_ENTRY(val, msk, ns, out, len, type, flags, ipv4_len) \
 	{ val, msk, ((ns) << 10 | (out) << 4 | (len) >> 1),\
 		((len) & 1) << 15 | (type) << 13 | (flags) << 9 | (ipv4_len) << 8 }
 static const struct gswip_pce_microcode gswip_pce_microcode[] = {
-	/*      value    mask    ns  fields      L  type     flags       ipv4_len */
 	MC_ENTRY(0x88c3, 0xFFFF,  1, OUT_ITAG0,  4, INSTR,   FLAG_ITAG,  0),
 	MC_ENTRY(0x8100, 0xFFFF,  2, OUT_VTAG0,  2, INSTR,   FLAG_VLAN,  0),
 	MC_ENTRY(0x88A8, 0xFFFF,  1, OUT_VTAG0,  2, INSTR,   FLAG_VLAN,  0),

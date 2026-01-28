@@ -1,12 +1,6 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0
-#
-# Generate atomic headers
-
 ATOMICDIR=$(dirname $0)
 ATOMICTBL=${ATOMICDIR}/atomics.tbl
 LINUXDIR=${ATOMICDIR}/../..
-
 cat <<EOF |
 gen-atomic-instrumented.sh      linux/atomic/atomic-instrumented.h
 gen-atomic-long.sh              linux/atomic/atomic-long.h

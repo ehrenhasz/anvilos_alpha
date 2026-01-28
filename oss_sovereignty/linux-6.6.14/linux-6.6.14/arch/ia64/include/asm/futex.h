@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_FUTEX_H
 #define _ASM_FUTEX_H
-
 #include <linux/futex.h>
 #include <linux/uaccess.h>
 #include <asm/errno.h>
-
 #define __futex_atomic_op1(insn, ret, oldval, uaddr, oparg) \
 do {									\
 	register unsigned long r8 __asm ("r8") = 0;			\
@@ -19,7 +16,6 @@ do {									\
 		: "memory");						\
 	ret = r8;							\
 } while (0)
-
 #define __futex_atomic_op2(insn, ret, oldval, uaddr, oparg) \
 do {									\
 	register unsigned long r8 __asm ("r8") = 0;			\
@@ -44,15 +40,12 @@ do {									\
 	} while (unlikely (val != oldval));				\
 	ret = r8;							\
 } while (0)
-
 static inline int
 arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
 {
 	int oldval = 0, ret;
-
 	if (!access_ok(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	switch (op) {
 	case FUTEX_OP_SET:
 		__futex_atomic_op1("xchg4 %1=[%2],%3", ret, oldval, uaddr,
@@ -74,20 +67,16 @@ arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
 	default:
 		ret = -ENOSYS;
 	}
-
 	if (!ret)
 		*oval = oldval;
-
 	return ret;
 }
-
 static inline int
 futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 			      u32 oldval, u32 newval)
 {
 	if (!access_ok(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	{
 		register unsigned long r8 __asm ("r8") = 0;
 		unsigned long prev;
@@ -105,5 +94,4 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 		return r8;
 	}
 }
-
-#endif /* _ASM_FUTEX_H */
+#endif  

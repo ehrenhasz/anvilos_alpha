@@ -1,8 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 NVIDIA Corporation.
- */
-
 #define HOST1X_CHANNEL_DMASTART				0x0000
 #define HOST1X_CHANNEL_DMASTART_HI			0x0004
 #define HOST1X_CHANNEL_DMAPUT				0x0008
@@ -24,7 +19,6 @@
 #define HOST1X_CHANNEL_CMDPROC_STOP			0x0048
 #define HOST1X_CHANNEL_TEARDOWN				0x004c
 #define HOST1X_CHANNEL_SMMU_STREAMID			0x0084
-
 #define HOST1X_SYNC_SYNCPT_CPU_INCR(x)			(0x6400 + 4 * (x))
 #define HOST1X_SYNC_SYNCPT_THRESH_CPU0_INT_STATUS(x)	(0x6600 + 4 * (x))
 #define HOST1X_SYNC_SYNCPT_INTR_DEST(x)			(0x6684 + 4 * (x))

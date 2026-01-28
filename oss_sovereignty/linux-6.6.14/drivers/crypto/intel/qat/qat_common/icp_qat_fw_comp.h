@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright(c) 2022 Intel Corporation */
 #ifndef _ICP_QAT_FW_COMP_H_
 #define _ICP_QAT_FW_COMP_H_
 #include "icp_qat_fw.h"
-
 enum icp_qat_fw_comp_cmd_id {
 	ICP_QAT_FW_COMP_CMD_STATIC = 0,
 	ICP_QAT_FW_COMP_CMD_DYNAMIC = 1,
 	ICP_QAT_FW_COMP_CMD_DECOMPRESS = 2,
 	ICP_QAT_FW_COMP_CMD_DELIMITER
 };
-
 enum icp_qat_fw_comp_20_cmd_id {
 	ICP_QAT_FW_COMP_20_CMD_LZ4_COMPRESS = 3,
 	ICP_QAT_FW_COMP_20_CMD_LZ4_DECOMPRESS = 4,
@@ -23,7 +19,6 @@ enum icp_qat_fw_comp_20_cmd_id {
 	ICP_QAT_FW_COMP_23_CMD_ZSTD_DECOMPRESS = 11,
 	ICP_QAT_FW_COMP_20_CMD_DELIMITER
 };
-
 #define ICP_QAT_FW_COMP_STATELESS_SESSION 0
 #define ICP_QAT_FW_COMP_STATEFUL_SESSION 1
 #define ICP_QAT_FW_COMP_NOT_AUTO_SELECT_BEST 0
@@ -44,7 +39,6 @@ enum icp_qat_fw_comp_20_cmd_id {
 #define ICP_QAT_FW_COMP_RET_DISABLE_TYPE0_HEADER_DATA_MASK 0x1
 #define ICP_QAT_FW_COMP_DISABLE_SECURE_RAM_AS_INTMD_BUF_BITPOS 7
 #define ICP_QAT_FW_COMP_DISABLE_SECURE_RAM_AS_INTMD_BUF_MASK 0x1
-
 #define ICP_QAT_FW_COMP_FLAGS_BUILD(sesstype, autoselect, enhanced_asb, \
 	ret_uncomp, secure_ram) \
 	((((sesstype) & ICP_QAT_FW_COMP_SESSION_TYPE_MASK) << \
@@ -57,33 +51,26 @@ enum icp_qat_fw_comp_20_cmd_id {
 	ICP_QAT_FW_COMP_RET_DISABLE_TYPE0_HEADER_DATA_BITPOS) | \
 	(((secure_ram) & ICP_QAT_FW_COMP_DISABLE_SECURE_RAM_AS_INTMD_BUF_MASK) << \
 	ICP_QAT_FW_COMP_DISABLE_SECURE_RAM_AS_INTMD_BUF_BITPOS))
-
 #define ICP_QAT_FW_COMP_SESSION_TYPE_GET(flags) \
 	QAT_FIELD_GET(flags, ICP_QAT_FW_COMP_SESSION_TYPE_BITPOS, \
 	ICP_QAT_FW_COMP_SESSION_TYPE_MASK)
-
 #define ICP_QAT_FW_COMP_SESSION_TYPE_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, ICP_QAT_FW_COMP_SESSION_TYPE_BITPOS, \
 	ICP_QAT_FW_COMP_SESSION_TYPE_MASK)
-
 #define ICP_QAT_FW_COMP_AUTO_SELECT_BEST_GET(flags) \
 	QAT_FIELD_GET(flags, ICP_QAT_FW_COMP_AUTO_SELECT_BEST_BITPOS, \
 	ICP_QAT_FW_COMP_AUTO_SELECT_BEST_MASK)
-
 #define ICP_QAT_FW_COMP_EN_ASB_GET(flags) \
 	QAT_FIELD_GET(flags, ICP_QAT_FW_COMP_ENHANCED_AUTO_SELECT_BEST_BITPOS, \
 	ICP_QAT_FW_COMP_ENHANCED_AUTO_SELECT_BEST_MASK)
-
 #define ICP_QAT_FW_COMP_RET_UNCOMP_GET(flags) \
 	QAT_FIELD_GET(flags, \
 	ICP_QAT_FW_COMP_RET_DISABLE_TYPE0_HEADER_DATA_BITPOS, \
 	ICP_QAT_FW_COMP_RET_DISABLE_TYPE0_HEADER_DATA_MASK)
-
 #define ICP_QAT_FW_COMP_SECURE_RAM_USE_GET(flags) \
 	QAT_FIELD_GET(flags, \
 	ICP_QAT_FW_COMP_DISABLE_SECURE_RAM_AS_INTMD_BUF_BITPOS, \
 	ICP_QAT_FW_COMP_DISABLE_SECURE_RAM_AS_INTMD_BUF_MASK)
-
 struct icp_qat_fw_comp_req_hdr_cd_pars {
 	union {
 		struct {
@@ -99,7 +86,6 @@ struct icp_qat_fw_comp_req_hdr_cd_pars {
 		} sl;
 	} u;
 };
-
 struct icp_qat_fw_comp_req_params {
 	__u32 comp_len;
 	__u32 out_buffer_sz;
@@ -113,7 +99,6 @@ struct icp_qat_fw_comp_req_params {
 	__u32 req_par_flags;
 	__u32 rsrvd;
 };
-
 #define ICP_QAT_FW_COMP_REQ_PARAM_FLAGS_BUILD(sop, eop, bfinal, cnv, cnvnr, \
 					      cnvdfx, crc, xxhash_acc, \
 					      cnv_error_type, append_crc, \
@@ -140,7 +125,6 @@ struct icp_qat_fw_comp_req_params {
 	<< ICP_QAT_FW_COMP_APPEND_CRC_BITPOS) | \
 	(((drop_data) & ICP_QAT_FW_COMP_DROP_DATA_MASK) \
 	<< ICP_QAT_FW_COMP_DROP_DATA_BITPOS))
-
 #define ICP_QAT_FW_COMP_NOT_SOP 0
 #define ICP_QAT_FW_COMP_SOP 1
 #define ICP_QAT_FW_COMP_NOT_EOP 0
@@ -189,71 +173,54 @@ struct icp_qat_fw_comp_req_params {
 #define ICP_QAT_FW_COMP_APPEND_CRC_MASK 0x1
 #define ICP_QAT_FW_COMP_DROP_DATA_BITPOS 25
 #define ICP_QAT_FW_COMP_DROP_DATA_MASK 0x1
-
 #define ICP_QAT_FW_COMP_SOP_GET(flags) \
 	QAT_FIELD_GET(flags, ICP_QAT_FW_COMP_SOP_BITPOS, \
 	ICP_QAT_FW_COMP_SOP_MASK)
-
 #define ICP_QAT_FW_COMP_SOP_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, ICP_QAT_FW_COMP_SOP_BITPOS, \
 	ICP_QAT_FW_COMP_SOP_MASK)
-
 #define ICP_QAT_FW_COMP_EOP_GET(flags) \
 	QAT_FIELD_GET(flags, ICP_QAT_FW_COMP_EOP_BITPOS, \
 	ICP_QAT_FW_COMP_EOP_MASK)
-
 #define ICP_QAT_FW_COMP_EOP_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, ICP_QAT_FW_COMP_EOP_BITPOS, \
 	ICP_QAT_FW_COMP_EOP_MASK)
-
 #define ICP_QAT_FW_COMP_BFINAL_GET(flags) \
 	QAT_FIELD_GET(flags, ICP_QAT_FW_COMP_BFINAL_BITPOS, \
 	ICP_QAT_FW_COMP_BFINAL_MASK)
-
 #define ICP_QAT_FW_COMP_BFINAL_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, ICP_QAT_FW_COMP_BFINAL_BITPOS, \
 	ICP_QAT_FW_COMP_BFINAL_MASK)
-
 #define ICP_QAT_FW_COMP_CNV_GET(flags) \
 	QAT_FIELD_GET(flags, ICP_QAT_FW_COMP_CNV_BITPOS, \
 	ICP_QAT_FW_COMP_CNV_MASK)
-
 #define ICP_QAT_FW_COMP_CNVNR_GET(flags) \
 	QAT_FIELD_GET(flags, ICP_QAT_FW_COMP_CNVNR_BITPOS, \
 	ICP_QAT_FW_COMP_CNVNR_MASK)
-
 #define ICP_QAT_FW_COMP_CNV_DFX_GET(flags) \
 	QAT_FIELD_GET(flags, ICP_QAT_FW_COMP_CNV_DFX_BITPOS, \
 	ICP_QAT_FW_COMP_CNV_DFX_MASK)
-
 #define ICP_QAT_FW_COMP_CNV_DFX_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, ICP_QAT_FW_COMP_CNV_DFX_BITPOS, \
 	ICP_QAT_FW_COMP_CNV_DFX_MASK)
-
 #define ICP_QAT_FW_COMP_CRC_MODE_GET(flags) \
 	QAT_FIELD_GET(flags, ICP_QAT_FW_COMP_CRC_MODE_BITPOS, \
 	ICP_QAT_FW_COMP_CRC_MODE_MASK)
-
 #define ICP_QAT_FW_COMP_XXHASH_ACC_MODE_GET(flags) \
 	QAT_FIELD_GET(flags, ICP_QAT_FW_COMP_XXHASH_ACC_MODE_BITPOS, \
 	ICP_QAT_FW_COMP_XXHASH_ACC_MODE_MASK)
-
 #define ICP_QAT_FW_COMP_XXHASH_ACC_MODE_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, ICP_QAT_FW_COMP_XXHASH_ACC_MODE_BITPOS, \
 	ICP_QAT_FW_COMP_XXHASH_ACC_MODE_MASK)
-
 #define ICP_QAT_FW_COMP_CNV_ERROR_TYPE_GET(flags) \
 	QAT_FIELD_GET(flags, ICP_QAT_FW_COMP_CNV_ERROR_BITPOS, \
 	ICP_QAT_FW_COMP_CNV_ERROR_MASK)
-
 #define ICP_QAT_FW_COMP_CNV_ERROR_TYPE_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, ICP_QAT_FW_COMP_CNV_ERROR_BITPOS, \
 	ICP_QAT_FW_COMP_CNV_ERROR_MASK)
-
 struct icp_qat_fw_xlt_req_params {
 	__u64 inter_buff_ptr;
 };
-
 struct icp_qat_fw_comp_cd_hdr {
 	__u16 ram_bank_flags;
 	__u8 comp_cfg_offset;
@@ -262,17 +229,14 @@ struct icp_qat_fw_comp_cd_hdr {
 	__u64 comp_state_addr;
 	__u64 ram_banks_addr;
 };
-
 #define COMP_CPR_INITIAL_CRC 0
 #define COMP_CPR_INITIAL_ADLER 1
-
 struct icp_qat_fw_xlt_cd_hdr {
 	__u16 resrvd1;
 	__u8 resrvd2;
 	__u8 next_curr_id;
 	__u32 resrvd3;
 };
-
 struct icp_qat_fw_comp_req {
 	struct icp_qat_fw_comn_req_hdr comn_hdr;
 	struct icp_qat_fw_comp_req_hdr_cd_pars cd_pars;
@@ -289,7 +253,6 @@ struct icp_qat_fw_comp_req {
 		__u32 resrvd3[ICP_QAT_FW_NUM_LONGWORDS_2];
 	} u2;
 };
-
 struct icp_qat_fw_resp_comp_pars {
 	__u32 input_byte_counter;
 	__u32 output_byte_counter;
@@ -301,7 +264,6 @@ struct icp_qat_fw_resp_comp_pars {
 		__u32 resrvd[ICP_QAT_FW_NUM_LONGWORDS_2];
 	} crc;
 };
-
 struct icp_qat_fw_comp_state {
 	__u32 rd8_counter;
 	__u32 status_flags;
@@ -324,13 +286,11 @@ struct icp_qat_fw_comp_state {
 	__u32 xxhash_state[4];
 	__u32 cleartext[4];
 };
-
 struct icp_qat_fw_comp_resp {
 	struct icp_qat_fw_comn_resp_hdr comn_resp;
 	__u64 opaque_data;
 	struct icp_qat_fw_resp_comp_pars comp_resp_pars;
 };
-
 #define QAT_FW_COMP_BANK_FLAG_MASK 0x1
 #define QAT_FW_COMP_BANK_I_BITPOS 8
 #define QAT_FW_COMP_BANK_H_BITPOS 7
@@ -341,13 +301,11 @@ struct icp_qat_fw_comp_resp {
 #define QAT_FW_COMP_BANK_C_BITPOS 2
 #define QAT_FW_COMP_BANK_B_BITPOS 1
 #define QAT_FW_COMP_BANK_A_BITPOS 0
-
 enum icp_qat_fw_comp_bank_enabled {
 	ICP_QAT_FW_COMP_BANK_DISABLED = 0,
 	ICP_QAT_FW_COMP_BANK_ENABLED = 1,
 	ICP_QAT_FW_COMP_BANK_DELIMITER = 2
 };
-
 #define ICP_QAT_FW_COMP_RAM_FLAGS_BUILD(bank_i_enable, bank_h_enable, \
 					bank_g_enable, bank_f_enable, \
 					bank_e_enable, bank_d_enable, \
@@ -371,7 +329,6 @@ enum icp_qat_fw_comp_bank_enabled {
 	QAT_FW_COMP_BANK_B_BITPOS) | \
 	(((bank_a_enable) & QAT_FW_COMP_BANK_FLAG_MASK) << \
 	QAT_FW_COMP_BANK_A_BITPOS))
-
 struct icp_qat_fw_comp_crc_data_struct {
 	__u32 crc32;
 	union {
@@ -393,12 +350,10 @@ struct icp_qat_fw_comp_crc_data_struct {
 	__u32 append_crc_lo;
 	__u32 append_crc_hi;
 };
-
 struct xxhash_acc_state_buff {
 	__u32 in_counter;
 	__u32 out_counter;
 	__u32 xxhash_state[4];
 	__u32 clear_txt[4];
 };
-
 #endif

@@ -1,40 +1,10 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef _DCE_DCE_TRANSFORM_H_
 #define _DCE_DCE_TRANSFORM_H_
-
-
 #include "transform.h"
-
 #define TO_DCE_TRANSFORM(transform)\
 	container_of(transform, struct dce_transform, base)
-
 #define LB_TOTAL_NUMBER_OF_ENTRIES 1712
 #define LB_BITS_PER_ENTRY 144
-
 #define XFM_COMMON_REG_LIST_DCE_BASE(id) \
 	SRI(LB_DATA_FORMAT, LB, id), \
 	SRI(GAMUT_REMAP_CONTROL, DCP, id), \
@@ -93,21 +63,17 @@
 	SRI(LB_MEMORY_CTRL, LB, id), \
 	SRI(SCL_UPDATE, SCL, id), \
 	SRI(SCL_F_SHARP_CONTROL, SCL, id)
-
 #define XFM_COMMON_REG_LIST_DCE80(id) \
 	XFM_COMMON_REG_LIST_DCE_BASE(id), \
 	SRI(DCFE_MEM_LIGHT_SLEEP_CNTL, CRTC, id)
-
 #define XFM_COMMON_REG_LIST_DCE100(id) \
 	XFM_COMMON_REG_LIST_DCE_BASE(id), \
 	SRI(DCFE_MEM_PWR_CTRL, CRTC, id), \
 	SRI(DCFE_MEM_PWR_STATUS, CRTC, id)
-
 #define XFM_COMMON_REG_LIST_DCE110(id) \
 	XFM_COMMON_REG_LIST_DCE_BASE(id), \
 	SRI(DCFE_MEM_PWR_CTRL, DCFE, id), \
 	SRI(DCFE_MEM_PWR_STATUS, DCFE, id)
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 #define XFM_COMMON_REG_LIST_DCE60_BASE(id) \
 	SRI(DATA_FORMAT, LB, id), \
@@ -164,15 +130,12 @@
 	SRI(DCFE_MEM_LIGHT_SLEEP_CNTL, CRTC, id), \
 	SRI(SCL_UPDATE, SCL, id), \
 	SRI(SCL_F_SHARP_CONTROL, SCL, id)
-
 #define XFM_COMMON_REG_LIST_DCE60(id) \
 	XFM_COMMON_REG_LIST_DCE60_BASE(id), \
 	SRI(DCFE_MEM_LIGHT_SLEEP_CNTL, CRTC, id)
 #endif
-
 #define XFM_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
-
 #define XFM_COMMON_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh) \
 	XFM_SF(OUT_CLAMP_CONTROL_B_CB, OUT_CLAMP_MIN_B_CB, mask_sh), \
 	XFM_SF(OUT_CLAMP_CONTROL_B_CB, OUT_CLAMP_MAX_B_CB, mask_sh), \
@@ -250,13 +213,11 @@
 	XFM_SF(SCL_HORZ_FILTER_CONTROL, SCL_H_2TAP_HARDCODE_COEF_EN, mask_sh), \
 	XFM_SF(SCL_UPDATE, SCL_COEF_UPDATE_COMPLETE, mask_sh), \
 	XFM_SF(LB_DATA_FORMAT, ALPHA_EN, mask_sh)
-
 #define XFM_COMMON_MASK_SH_LIST_DCE80(mask_sh) \
 	XFM_COMMON_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh), \
 	OPP_SF(DCFE_MEM_LIGHT_SLEEP_CNTL, REGAMMA_LUT_LIGHT_SLEEP_DIS, mask_sh),\
 	OPP_SF(DCFE_MEM_LIGHT_SLEEP_CNTL, DCP_LUT_LIGHT_SLEEP_DIS, mask_sh),\
 	OPP_SF(DCFE_MEM_LIGHT_SLEEP_CNTL, REGAMMA_LUT_MEM_PWR_STATE, mask_sh)
-
 #define XFM_COMMON_MASK_SH_LIST_DCE110(mask_sh) \
 	XFM_COMMON_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh), \
 	XFM_SF(DCFE_MEM_PWR_CTRL, SCL_COEFF_MEM_PWR_DIS, mask_sh), \
@@ -265,14 +226,12 @@
 	XFM_SF(DCFE_MEM_PWR_CTRL, DCP_LUT_MEM_PWR_DIS, mask_sh),\
 	XFM_SF(DCFE_MEM_PWR_STATUS, DCP_REGAMMA_MEM_PWR_STATE, mask_sh),\
 	XFM_SF(SCL_MODE, SCL_PSCL_EN, mask_sh)
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 #define XFM_COMMON_MASK_SH_LIST_DCE60(mask_sh) \
 	XFM_COMMON_MASK_SH_LIST_DCE60_COMMON_BASE(mask_sh), \
 	OPP_SF(DCFE_MEM_LIGHT_SLEEP_CNTL, REGAMMA_LUT_LIGHT_SLEEP_DIS, mask_sh),\
 	OPP_SF(DCFE_MEM_LIGHT_SLEEP_CNTL, DCP_LUT_LIGHT_SLEEP_DIS, mask_sh),\
 	OPP_SF(DCFE_MEM_LIGHT_SLEEP_CNTL, REGAMMA_LUT_MEM_PWR_STATE, mask_sh)
-
 #define XFM_COMMON_MASK_SH_LIST_DCE60_COMMON_BASE(mask_sh) \
 	XFM_SF(OUT_ROUND_CONTROL, OUT_ROUND_TRUNC_MODE, mask_sh), \
 	XFM_SF(DCP_SPATIAL_DITHER_CNTL, DCP_SPATIAL_DITHER_EN, mask_sh), \
@@ -342,7 +301,6 @@
 	XFM_SF(DC_LB_MEMORY_SPLIT, DC_LB_MEMORY_CONFIG, mask_sh), \
 	XFM_SF(DC_LB_MEM_SIZE, DC_LB_MEM_SIZE, mask_sh)
 #endif
-
 #define XFM_COMMON_MASK_SH_LIST_SOC_BASE(mask_sh) \
 	XFM_SF(DCP0_OUT_CLAMP_CONTROL_B_CB, OUT_CLAMP_MIN_B_CB, mask_sh), \
 	XFM_SF(DCP0_OUT_CLAMP_CONTROL_B_CB, OUT_CLAMP_MAX_B_CB, mask_sh), \
@@ -425,7 +383,6 @@
 	XFM_SF(DCFE0_DCFE_MEM_PWR_CTRL, DCP_LUT_MEM_PWR_DIS, mask_sh),\
 	XFM_SF(DCFE0_DCFE_MEM_PWR_STATUS, SCL_COEFF_MEM_PWR_STATE, mask_sh), \
 	XFM_SF(SCL0_SCL_MODE, SCL_PSCL_EN, mask_sh)
-
 #define XFM_REG_FIELD_LIST(type) \
 	type OUT_CLAMP_MIN_B_CB; \
 	type OUT_CLAMP_MAX_B_CB; \
@@ -521,15 +478,12 @@
 	type SCL_H_FILTER_PICK_NEAREST; \
 	type SCL_COEF_UPDATE_COMPLETE; \
 	type ALPHA_EN
-
 struct dce_transform_shift {
 	XFM_REG_FIELD_LIST(uint8_t);
 };
-
 struct dce_transform_mask {
 	XFM_REG_FIELD_LIST(uint32_t);
 };
-
 struct dce_transform_registers {
 #if defined(CONFIG_DRM_AMD_DC_SI)
 	uint32_t DATA_FORMAT;
@@ -603,19 +557,16 @@ struct dce_transform_registers {
 	uint32_t SCL_UPDATE;
 	uint32_t SCL_F_SHARP_CONTROL;
 };
-
 struct init_int_and_frac {
 	uint32_t integer;
 	uint32_t fraction;
 };
-
 struct scl_ratios_inits {
 	uint32_t h_int_scale_ratio;
 	uint32_t v_int_scale_ratio;
 	struct init_int_and_frac h_init;
 	struct init_int_and_frac v_init;
 };
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 struct sclh_ratios_inits {
 	uint32_t h_int_scale_ratio;
@@ -625,22 +576,19 @@ struct sclh_ratios_inits {
 	struct init_int_and_frac v_init;
 };
 #endif
-
 enum ram_filter_type {
-	FILTER_TYPE_RGB_Y_VERTICAL	= 0, /* 0 - RGB/Y Vertical filter */
-	FILTER_TYPE_CBCR_VERTICAL	= 1, /* 1 - CbCr  Vertical filter */
-	FILTER_TYPE_RGB_Y_HORIZONTAL	= 2, /* 1 - RGB/Y Horizontal filter */
-	FILTER_TYPE_CBCR_HORIZONTAL	= 3, /* 3 - CbCr  Horizontal filter */
-	FILTER_TYPE_ALPHA_VERTICAL	= 4, /* 4 - Alpha Vertical filter. */
-	FILTER_TYPE_ALPHA_HORIZONTAL	= 5, /* 5 - Alpha Horizontal filter. */
+	FILTER_TYPE_RGB_Y_VERTICAL	= 0,  
+	FILTER_TYPE_CBCR_VERTICAL	= 1,  
+	FILTER_TYPE_RGB_Y_HORIZONTAL	= 2,  
+	FILTER_TYPE_CBCR_HORIZONTAL	= 3,  
+	FILTER_TYPE_ALPHA_VERTICAL	= 4,  
+	FILTER_TYPE_ALPHA_HORIZONTAL	= 5,  
 };
-
 struct dce_transform {
 	struct transform base;
 	const struct dce_transform_registers *regs;
 	const struct dce_transform_shift *xfm_shift;
 	const struct dce_transform_mask *xfm_mask;
-
 	const uint16_t *filter_v;
 	const uint16_t *filter_h;
 	const uint16_t *filter_v_c;
@@ -650,14 +598,12 @@ struct dce_transform {
 	int lb_bits_per_entry;
 	bool prescaler_on;
 };
-
 void dce_transform_construct(struct dce_transform *xfm_dce,
 	struct dc_context *ctx,
 	uint32_t inst,
 	const struct dce_transform_registers *regs,
 	const struct dce_transform_shift *xfm_shift,
 	const struct dce_transform_mask *xfm_mask);
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 void dce60_transform_construct(struct dce_transform *xfm_dce,
 	struct dc_context *ctx,
@@ -666,30 +612,22 @@ void dce60_transform_construct(struct dce_transform *xfm_dce,
 	const struct dce_transform_shift *xfm_shift,
 	const struct dce_transform_mask *xfm_mask);
 #endif
-
 bool dce_transform_get_optimal_number_of_taps(
 	struct transform *xfm,
 	struct scaler_data *scl_data,
 	const struct scaling_taps *in_taps);
-
 void dce110_opp_set_csc_adjustment(
 	struct transform *xfm,
 	const struct out_csc_color_matrix *tbl_entry);
-
 void dce110_opp_set_csc_default(
 	struct transform *xfm,
 	const struct default_adjustment *default_adjust);
-
-/* REGAMMA RELATED */
 void dce110_opp_power_on_regamma_lut(
 	struct transform *xfm,
 	bool power_on);
-
 void dce110_opp_program_regamma_pwl(
 	struct transform *xfm,
 	const struct pwl_params *params);
-
 void dce110_opp_set_regamma_mode(struct transform *xfm,
 		enum opp_regamma mode);
-
-#endif /* _DCE_DCE_TRANSFORM_H_ */
+#endif  

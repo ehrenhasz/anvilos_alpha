@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
-
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/pinctrl/mt8192-pinfunc.h>
-
 / {
 	rt1015p: audio-codec {
 		compatible = "realtek,rt1015p";
@@ -15,7 +9,6 @@
 		#sound-dai-cells = <0>;
 	};
 };
-
 &pio {
 	rt1015p_pins: rt1015p-default-pins {
 		pins {

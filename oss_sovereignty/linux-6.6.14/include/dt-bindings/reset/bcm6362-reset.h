@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef __DT_BINDINGS_RESET_BCM6362_H
 #define __DT_BINDINGS_RESET_BCM6362_H
-
 #define BCM6362_RST_SPI		0
 #define BCM6362_RST_IPSEC	1
 #define BCM6362_RST_EPHY	2
@@ -18,5 +15,4 @@
 #define BCM6362_RST_DDR_PHY	12
 #define BCM6362_RST_FAP		13
 #define BCM6362_RST_WLAN_UBUS	14
-
-#endif /* __DT_BINDINGS_RESET_BCM6362_H */
+#endif  

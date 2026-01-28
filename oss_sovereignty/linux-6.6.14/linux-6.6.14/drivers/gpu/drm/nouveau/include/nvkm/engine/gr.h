@@ -1,19 +1,15 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_GR_H__
 #define __NVKM_GR_H__
 #include <core/engine.h>
-
 struct nvkm_gr {
 	const struct nvkm_gr_func *func;
 	struct nvkm_engine engine;
 };
-
 u64 nvkm_gr_units(struct nvkm_gr *);
 int nvkm_gr_tlb_flush(struct nvkm_gr *);
 int nvkm_gr_ctxsw_pause(struct nvkm_device *);
 int nvkm_gr_ctxsw_resume(struct nvkm_device *);
 u32 nvkm_gr_ctxsw_inst(struct nvkm_device *);
-
 int nv04_gr_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_gr **);
 int nv10_gr_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_gr **);
 int nv15_gr_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_gr **);

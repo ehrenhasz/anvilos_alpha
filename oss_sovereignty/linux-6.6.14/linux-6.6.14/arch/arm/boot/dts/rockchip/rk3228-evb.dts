@@ -1,22 +1,15 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-
 /dts-v1/;
-
 #include "rk322x.dtsi"
-
 / {
 	model = "Rockchip RK3228 Evaluation board";
 	compatible = "rockchip,rk3228-evb", "rockchip,rk3228";
-
 	aliases {
 		mmc0 = &emmc;
 	};
-
 	memory@60000000 {
 		device_type = "memory";
 		reg = <0x60000000 0x40000000>;
 	};
-
 	vcc_phy: vcc-phy-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -27,7 +20,6 @@
 		regulator-boot-on;
 	};
 };
-
 &emmc {
 	cap-mmc-highspeed;
 	mmc-ddr-1_8v;
@@ -35,7 +27,6 @@
 	non-removable;
 	status = "okay";
 };
-
 &gmac {
 	assigned-clocks = <&cru SCLK_MAC_SRC>;
 	assigned-clock-rates = <50000000>;
@@ -44,12 +35,10 @@
 	phy-mode = "rmii";
 	phy-handle = <&phy>;
 	status = "okay";
-
 	mdio {
 		compatible = "snps,dwmac-mdio";
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		phy: ethernet-phy@0 {
 			compatible = "ethernet-phy-id1234.d400", "ethernet-phy-ieee802.3-c22";
 			reg = <0>;
@@ -59,14 +48,11 @@
 		};
 	};
 };
-
 &tsadc {
 	status = "okay";
-
-	rockchip,hw-tshut-mode = <0>; /* tshut mode 0:CRU 1:GPIO */
-	rockchip,hw-tshut-polarity = <1>; /* tshut polarity 0:LOW 1:HIGH */
+	rockchip,hw-tshut-mode = <0>;  
+	rockchip,hw-tshut-polarity = <1>;  
 };
-
 &uart2 {
 	status = "okay";
 };

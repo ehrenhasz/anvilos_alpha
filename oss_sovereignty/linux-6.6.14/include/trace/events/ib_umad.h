@@ -1,23 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-
-/*
- * Copyright (c) 2018 Intel Corporation.  All rights reserved.
- *
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ib_umad
-
 #if !defined(_TRACE_IB_UMAD_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_IB_UMAD_H
-
 #include <linux/tracepoint.h>
-
 DECLARE_EVENT_CLASS(ib_umad_template,
 	TP_PROTO(struct ib_umad_file *file, struct ib_user_mad_hdr *umad_hdr,
 		 struct ib_mad_hdr *mad_hdr),
 	TP_ARGS(file, umad_hdr, mad_hdr),
-
 	TP_STRUCT__entry(
 		__field(u8, port_num)
 		__field(u8, sl)
@@ -48,11 +37,9 @@ DECLARE_EVENT_CLASS(ib_umad_template,
 		__field(u32, dev_index)
 		__field(u8,  traffic_class)
 	),
-
 	TP_fast_assign(
 		__entry->dev_index = file->port->ib_dev->index;
 		__entry->port_num = file->port->port_num;
-
 		__entry->id = umad_hdr->id;
 		__entry->status = umad_hdr->status;
 		__entry->timeout_ms = umad_hdr->timeout_ms;
@@ -70,7 +57,6 @@ DECLARE_EVENT_CLASS(ib_umad_template,
 		memcpy(__entry->gid, umad_hdr->gid, sizeof(umad_hdr->gid));
 		__entry->flow_label = umad_hdr->flow_label;
 		__entry->pkey_index = umad_hdr->pkey_index;
-
 		__entry->base_version = mad_hdr->base_version;
 		__entry->mgmt_class = mad_hdr->mgmt_class;
 		__entry->class_version = mad_hdr->class_version;
@@ -81,7 +67,6 @@ DECLARE_EVENT_CLASS(ib_umad_template,
 		__entry->attr_id = mad_hdr->attr_id;
 		__entry->attr_mod = mad_hdr->attr_mod;
 	),
-
 	TP_printk("%d:%d umad_hdr: id 0x%08x status 0x%08x ms %u ret %u " \
 		  "len %u QP%u qkey 0x%08x lid 0x%04x sl %u path_bits 0x%x " \
 		  "grh 0x%x gidi %u hop_lim %u traf_cl %u gid %pI6c " \
@@ -105,22 +90,17 @@ DECLARE_EVENT_CLASS(ib_umad_template,
 		be32_to_cpu(__entry->attr_mod)
 	)
 );
-
 DEFINE_EVENT(ib_umad_template, ib_umad_write,
 	TP_PROTO(struct ib_umad_file *file, struct ib_user_mad_hdr *umad_hdr,
 		 struct ib_mad_hdr *mad_hdr),
 	TP_ARGS(file, umad_hdr, mad_hdr));
-
 DEFINE_EVENT(ib_umad_template, ib_umad_read_recv,
 	TP_PROTO(struct ib_umad_file *file, struct ib_user_mad_hdr *umad_hdr,
 		 struct ib_mad_hdr *mad_hdr),
 	TP_ARGS(file, umad_hdr, mad_hdr));
-
 DEFINE_EVENT(ib_umad_template, ib_umad_read_send,
 	TP_PROTO(struct ib_umad_file *file, struct ib_user_mad_hdr *umad_hdr,
 		 struct ib_mad_hdr *mad_hdr),
 	TP_ARGS(file, umad_hdr, mad_hdr));
-
-#endif /* _TRACE_IB_UMAD_H */
-
+#endif  
 #include <trace/define_trace.h>

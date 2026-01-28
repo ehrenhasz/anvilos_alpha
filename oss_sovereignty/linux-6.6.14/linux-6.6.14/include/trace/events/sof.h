@@ -1,20 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2022 Intel Corporation. All rights reserved.
- *
- * Author: Noah Klayman <noah.klayman@intel.com>
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sof
-
 #if !defined(_TRACE_SOF_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_SOF_H
 #include <linux/tracepoint.h>
 #include <linux/types.h>
 #include <sound/sof/stream.h>
 #include "../../../sound/soc/sof/sof-audio.h"
-
 DECLARE_EVENT_CLASS(sof_widget_template,
 	TP_PROTO(struct snd_sof_widget *swidget),
 	TP_ARGS(swidget),
@@ -28,17 +19,14 @@ DECLARE_EVENT_CLASS(sof_widget_template,
 	),
 	TP_printk("name=%s use_count=%d", __get_str(name), __entry->use_count)
 );
-
 DEFINE_EVENT(sof_widget_template, sof_widget_setup,
 	TP_PROTO(struct snd_sof_widget *swidget),
 	TP_ARGS(swidget)
 );
-
 DEFINE_EVENT(sof_widget_template, sof_widget_free,
 	TP_PROTO(struct snd_sof_widget *swidget),
 	TP_ARGS(swidget)
 );
-
 TRACE_EVENT(sof_ipc3_period_elapsed_position,
 	TP_PROTO(struct snd_sof_dev *sdev, struct sof_ipc_stream_posn *posn),
 	TP_ARGS(sdev, posn),
@@ -58,7 +46,6 @@ TRACE_EVENT(sof_ipc3_period_elapsed_position,
 		  __get_str(device_name), __entry->host_posn, __entry->dai_posn,
 		  __entry->wallclock)
 );
-
 TRACE_EVENT(sof_pcm_pointer_position,
 	TP_PROTO(struct snd_sof_dev *sdev,
 		struct snd_sof_pcm *spcm,
@@ -85,7 +72,6 @@ TRACE_EVENT(sof_pcm_pointer_position,
 		  __get_str(device_name), __entry->pcm_id, __entry->stream,
 		  __entry->dma_posn, __entry->dai_posn)
 );
-
 TRACE_EVENT(sof_stream_position_ipc_rx,
 	TP_PROTO(struct device *dev),
 	TP_ARGS(dev),
@@ -97,7 +83,6 @@ TRACE_EVENT(sof_stream_position_ipc_rx,
 	),
 	TP_printk("device_name=%s", __get_str(device_name))
 );
-
 TRACE_EVENT(sof_ipc4_fw_config,
 	TP_PROTO(struct snd_sof_dev *sdev, char *key, u32 value),
 	TP_ARGS(sdev, key, value),
@@ -114,8 +99,5 @@ TRACE_EVENT(sof_ipc4_fw_config,
 	TP_printk("device_name=%s key=%s value=%d",
 		  __get_str(device_name), __get_str(key), __entry->value)
 );
-
-#endif /* _TRACE_SOF_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

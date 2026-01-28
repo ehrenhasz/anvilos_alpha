@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright (C) 2020 Xilinx, Inc.
- */
-
 #ifndef _DT_BINDINGS_VERSAL_RESETS_H
 #define _DT_BINDINGS_VERSAL_RESETS_H
-
 #define VERSAL_RST_PMC_POR			(0xc30c001U)
 #define VERSAL_RST_PMC				(0xc410002U)
 #define VERSAL_RST_PS_POR			(0xc30c003U)
@@ -101,5 +95,4 @@
 #define VERSAL_RST_XRAM				(0xc30c05dU)
 #define VERSAL_RST_AIE_ARRAY			(0xc10405eU)
 #define VERSAL_RST_AIE_SHIM			(0xc10405fU)
-
 #endif

@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
-
 #ifndef BRCMFMAC_DEBUG_H
 #define BRCMFMAC_DEBUG_H
-
-#include <linux/net.h>	/* net_ratelimit() */
-
-/* message levels */
+#include <linux/net.h>	 
 #define BRCMF_TRACE_VAL		0x00000002
 #define BRCMF_INFO_VAL		0x00000004
 #define BRCMF_DATA_VAL		0x00000008
@@ -29,18 +21,11 @@
 #define BRCMF_MSGBUF_VAL	0x00040000
 #define BRCMF_PCIE_VAL		0x00080000
 #define BRCMF_FWCON_VAL		0x00100000
-
-/* set default print format */
 #undef pr_fmt
 #define pr_fmt(fmt)		KBUILD_MODNAME ": " fmt
-
 struct brcmf_bus;
-
 __printf(3, 4)
 void __brcmf_err(struct brcmf_bus *bus, const char *func, const char *fmt, ...);
-/* Macro for error messages. When debugging / tracing the driver all error
- * messages are important to us.
- */
 #ifndef brcmf_err
 #define brcmf_err(fmt, ...)						\
 	do {								\
@@ -50,7 +35,6 @@ void __brcmf_err(struct brcmf_bus *bus, const char *func, const char *fmt, ...);
 			__brcmf_err(NULL, __func__, fmt, ##__VA_ARGS__);\
 	} while (0)
 #endif
-
 #define bphy_err(drvr, fmt, ...)					\
 	do {								\
 		if (IS_ENABLED(CONFIG_BRCMDBG) ||			\
@@ -59,16 +43,11 @@ void __brcmf_err(struct brcmf_bus *bus, const char *func, const char *fmt, ...);
 			wiphy_err((drvr)->wiphy, "%s: " fmt, __func__,	\
 				  ##__VA_ARGS__);			\
 	} while (0)
-
 #define bphy_info_once(drvr, fmt, ...)					\
 	wiphy_info_once((drvr)->wiphy, "%s: " fmt, __func__,		\
 			##__VA_ARGS__)
-
 #if defined(DEBUG) || defined(CONFIG_BRCM_TRACING)
-
-/* For debug/tracing purposes treat info messages as errors */
 #define brcmf_info brcmf_err
-
 __printf(3, 4)
 void __brcmf_dbg(u32 level, const char *func, const char *fmt, ...);
 #define brcmf_dbg(level, fmt, ...)				\
@@ -85,16 +64,12 @@ do {								\
 #define BRCMF_FIL_ON()		(brcmf_msg_level & BRCMF_FIL_VAL)
 #define BRCMF_FWCON_ON()	(brcmf_msg_level & BRCMF_FWCON_VAL)
 #define BRCMF_SCAN_ON()		(brcmf_msg_level & BRCMF_SCAN_VAL)
-
-#else /* defined(DEBUG) || defined(CONFIG_BRCM_TRACING) */
-
+#else  
 #define brcmf_info(fmt, ...)						\
 	do {								\
 		pr_info("%s: " fmt, __func__, ##__VA_ARGS__);		\
 	} while (0)
-
 #define brcmf_dbg(level, fmt, ...) no_printk(fmt, ##__VA_ARGS__)
-
 #define BRCMF_DATA_ON()		0
 #define BRCMF_CTL_ON()		0
 #define BRCMF_HDRS_ON()		0
@@ -104,18 +79,14 @@ do {								\
 #define BRCMF_FIL_ON()		0
 #define BRCMF_FWCON_ON()	0
 #define BRCMF_SCAN_ON()		0
-
-#endif /* defined(DEBUG) || defined(CONFIG_BRCM_TRACING) */
-
+#endif  
 #define brcmf_dbg_hex_dump(test, data, len, fmt, ...)			\
 do {									\
 	trace_brcmf_hexdump((void *)data, len);				\
 	if (test)							\
 		brcmu_dbg_hex_dump(data, len, fmt, ##__VA_ARGS__);	\
 } while (0)
-
 extern int brcmf_msg_level;
-
 struct brcmf_pub;
 #ifdef DEBUG
 struct dentry *brcmf_debugfs_get_devdir(struct brcmf_pub *drvr);
@@ -139,5 +110,4 @@ int brcmf_debug_create_memdump(struct brcmf_bus *bus, const void *data,
 	return 0;
 }
 #endif
-
-#endif /* BRCMFMAC_DEBUG_H */
+#endif  

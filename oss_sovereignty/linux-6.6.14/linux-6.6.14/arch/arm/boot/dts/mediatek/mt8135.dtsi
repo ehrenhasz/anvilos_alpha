@@ -1,22 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Joe.C <yingjoe.chen@mediatek.com>
- *
- */
-
 #include <dt-bindings/clock/mt8135-clk.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/reset/mt8135-resets.h>
 #include <dt-bindings/pinctrl/mt8135-pinfunc.h>
-
 / {
 	#address-cells = <2>;
 	#size-cells = <2>;
 	compatible = "mediatek,mt8135";
 	interrupt-parent = <&sysirq>;
-
 	cpu-map {
 		cluster0 {
 			core0 {
@@ -26,7 +17,6 @@
 				cpu = <&cpu1>;
 			};
 		};
-
 		cluster1 {
 			core0 {
 				cpu = <&cpu2>;
@@ -36,73 +26,61 @@
 			};
 		};
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
 		enable-method = "mediatek,mt81xx-tz-smp";
-
 		cpu0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a7";
 			reg = <0x000>;
 		};
-
 		cpu1: cpu@1 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a7";
 			reg = <0x001>;
 		};
-
 		cpu2: cpu@100 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x100>;
 		};
-
 		cpu3: cpu@101 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x101>;
 		};
 	};
-
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		trustzone-bootinfo@80002000 {
 			compatible = "mediatek,trustzone-bootinfo";
 			reg = <0 0x80002000 0 0x1000>;
 		};
 	};
-
 	clocks {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		compatible = "simple-bus";
 		ranges;
-
 		system_clk: dummy13m {
 			compatible = "fixed-clock";
 			clock-frequency = <13000000>;
 			#clock-cells = <0>;
 		};
-
 		rtc_clk: dummy32k {
 			compatible = "fixed-clock";
 			clock-frequency = <32000>;
 			#clock-cells = <0>;
 		};
-
 		clk26m: clk26m {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <26000000>;
 		};
 	};
-
 	timer {
 		compatible = "arm,armv7-timer";
 		interrupt-parent = <&gic>;
@@ -117,37 +95,28 @@
 		clock-frequency = <13000000>;
 		arm,cpu-registers-not-fw-configured;
 	};
-
 	soc {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		compatible = "simple-bus";
 		ranges;
-
 		topckgen: topckgen@10000000 {
 			compatible = "mediatek,mt8135-topckgen";
 			reg = <0 0x10000000 0 0x1000>;
 			#clock-cells = <1>;
 		};
-
 		infracfg: infracfg@10001000 {
 			#reset-cells = <1>;
 			#clock-cells = <1>;
 			compatible = "mediatek,mt8135-infracfg", "syscon";
 			reg = <0 0x10001000 0 0x1000>;
 		};
-
 		pericfg: pericfg@10003000 {
 			#reset-cells = <1>;
 			#clock-cells = <1>;
 			compatible = "mediatek,mt8135-pericfg", "syscon";
 			reg = <0 0x10003000 0 0x1000>;
 		};
-
-		/*
-		 * Pinctrl access register at 0x10005000 and 0x1020c000 through
-		 * regmap. Register 0x1000b000 is used by EINT.
-		 */
 		pio: pinctrl@10005000 {
 			compatible = "mediatek,mt8135-pinctrl";
 			reg = <0 0x1000b000 0 0x1000>;
@@ -160,12 +129,10 @@
 				     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		syscfg_pctl_a: syscfg_pctl_a@10005000 {
 			compatible = "mediatek,mt8135-pctl-a-syscfg", "syscon";
 			reg = <0 0x10005000 0 0x1000>;
 		};
-
 		timer: timer@10008000 {
 			compatible = "mediatek,mt8135-timer",
 					"mediatek,mt6577-timer";
@@ -174,7 +141,6 @@
 			clocks = <&system_clk>, <&rtc_clk>;
 			clock-names = "system-clk", "rtc-clk";
 		};
-
 		pwrap: pwrap@1000f000 {
 			compatible = "mediatek,mt8135-pwrap";
 			reg = <0 0x1000f000 0 0x1000>,
@@ -187,7 +153,6 @@
 			clocks = <&clk26m>, <&clk26m>;
 			clock-names = "spi", "wrap";
 		};
-
 		sysirq: interrupt-controller@10200030 {
 			compatible = "mediatek,mt8135-sysirq",
 				     "mediatek,mt6577-sysirq";
@@ -196,18 +161,15 @@
 			interrupt-parent = <&gic>;
 			reg = <0 0x10200030 0 0x1c>;
 		};
-
 		apmixedsys: apmixedsys@10209000 {
 			compatible = "mediatek,mt8135-apmixedsys";
 			reg = <0 0x10209000 0 0x1000>;
 			#clock-cells = <1>;
 		};
-
 		syscfg_pctl_b: syscfg_pctl_b@1020c000 {
 			compatible = "mediatek,mt8135-pctl-b-syscfg", "syscon";
 			reg = <0 0x1020c000 0 0x1000>;
 		};
-
 		gic: interrupt-controller@10211000 {
 			compatible = "arm,cortex-a15-gic";
 			interrupt-controller;
@@ -218,7 +180,6 @@
 			      <0 0x10214000 0 0x2000>,
 			      <0 0x10216000 0 0x2000>;
 		};
-
 		uart0: serial@11006000 {
 			compatible = "mediatek,mt8135-uart","mediatek,mt6577-uart";
 			reg = <0 0x11006000 0 0x400>;
@@ -227,7 +188,6 @@
 			clock-names = "baud", "bus";
 			status = "disabled";
 		};
-
 		uart1: serial@11007000 {
 			compatible = "mediatek,mt8135-uart","mediatek,mt6577-uart";
 			reg = <0 0x11007000 0 0x400>;
@@ -236,7 +196,6 @@
 			clock-names = "baud", "bus";
 			status = "disabled";
 		};
-
 		uart2: serial@11008000 {
 			compatible = "mediatek,mt8135-uart","mediatek,mt6577-uart";
 			reg = <0 0x11008000 0 0x400>;
@@ -245,7 +204,6 @@
 			clock-names = "baud", "bus";
 			status = "disabled";
 		};
-
 		uart3: serial@11009000 {
 			compatible = "mediatek,mt8135-uart","mediatek,mt6577-uart";
 			reg = <0 0x11009000 0 0x400>;
@@ -254,6 +212,5 @@
 			clock-names = "baud", "bus";
 			status = "disabled";
 		};
-
 	};
 };

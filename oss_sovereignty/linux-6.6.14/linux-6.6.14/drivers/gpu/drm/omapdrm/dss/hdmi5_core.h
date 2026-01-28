@@ -1,18 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * HDMI driver definition for TI OMAP5 processors.
- *
- * Copyright (C) 2011-2012 Texas Instruments Incorporated - https://www.ti.com/
- */
-
 #ifndef _HDMI5_CORE_H_
 #define _HDMI5_CORE_H_
-
 #include "hdmi.h"
-
-/* HDMI IP Core System */
-
-/* HDMI Identification */
 #define HDMI_CORE_DESIGN_ID			0x00000
 #define HDMI_CORE_REVISION_ID			0x00004
 #define HDMI_CORE_PRODUCT_ID0			0x00008
@@ -21,8 +9,6 @@
 #define HDMI_CORE_CONFIG1_ID			0x00014
 #define HDMI_CORE_CONFIG2_ID			0x00018
 #define HDMI_CORE_CONFIG3_ID			0x0001C
-
-/* HDMI Interrupt */
 #define HDMI_CORE_IH_FC_STAT0			0x00400
 #define HDMI_CORE_IH_FC_STAT1			0x00404
 #define HDMI_CORE_IH_FC_STAT2			0x00408
@@ -33,8 +19,6 @@
 #define HDMI_CORE_IH_VP_STAT0			0x0041C
 #define HDMI_CORE_IH_I2CMPHY_STAT0		0x00420
 #define HDMI_CORE_IH_MUTE			0x007FC
-
-/* HDMI Video Sampler */
 #define HDMI_CORE_TX_INVID0			0x00800
 #define HDMI_CORE_TX_INSTUFFING			0x00804
 #define HDMI_CORE_TX_RGYDATA0			0x00808
@@ -43,8 +27,6 @@
 #define HDMI_CORE_TX_RCRDATA1			0x00814
 #define HDMI_CORE_TX_BCBDATA0			0x00818
 #define HDMI_CORE_TX_BCBDATA1			0x0081C
-
-/* HDMI Video Packetizer */
 #define HDMI_CORE_VP_STATUS			0x02000
 #define HDMI_CORE_VP_PR_CD			0x02004
 #define HDMI_CORE_VP_STUFF			0x02008
@@ -54,8 +36,6 @@
 #define HDMI_CORE_VP_INT			0x02018
 #define HDMI_CORE_VP_MASK			0x0201C
 #define HDMI_CORE_VP_POL			0x02020
-
-/* Frame Composer */
 #define HDMI_CORE_FC_INVIDCONF			0x04000
 #define HDMI_CORE_FC_INHACTIV0			0x04004
 #define HDMI_CORE_FC_INHACTIV1			0x04008
@@ -173,8 +153,6 @@
 #define HDMI_CORE_PHY_MASK0			0x0C018
 #define HDMI_CORE_PHY_I2CM_INT_ADDR		0x0C09C
 #define HDMI_CORE_PHY_I2CM_CTLINT_ADDR		0x0C0A0
-
-/* HDMI Audio */
 #define HDMI_CORE_AUD_CONF0			0x0C400
 #define HDMI_CORE_AUD_CONF1			0x0C404
 #define HDMI_CORE_AUD_INT			0x0C408
@@ -194,15 +172,11 @@
 #define HDMI_CORE_AUD_GP_INT			0x0D410
 #define HDMI_CORE_AUD_GP_POL			0x0D414
 #define HDMI_CORE_AUD_GP_MASK			0x0D418
-
-/* HDMI Main Controller */
 #define HDMI_CORE_MC_CLKDIS			0x10004
 #define HDMI_CORE_MC_SWRSTZREQ			0x10008
 #define HDMI_CORE_MC_FLOWCTRL			0x10010
 #define HDMI_CORE_MC_PHYRSTZ			0x10014
 #define HDMI_CORE_MC_LOCKONCLOCK		0x10018
-
-/* HDMI COLOR SPACE CONVERTER */
 #define HDMI_CORE_CSC_CFG			0x10400
 #define HDMI_CORE_CSC_SCALE			0x10404
 #define HDMI_CORE_CSC_COEF_A1_MSB		0x10408
@@ -229,14 +203,8 @@
 #define HDMI_CORE_CSC_COEF_C3_LSB		0x1045C
 #define HDMI_CORE_CSC_COEF_C4_MSB		0x10460
 #define HDMI_CORE_CSC_COEF_C4_LSB		0x10464
-
-/* HDMI HDCP */
 #define HDMI_CORE_HDCP_MASK			0x14020
-
-/* HDMI CEC */
 #define HDMI_CORE_CEC_MASK			0x17408
-
-/* HDMI I2C Master */
 #define HDMI_CORE_I2CM_SLAVE			0x157C8
 #define HDMI_CORE_I2CM_ADDRESS			0x157CC
 #define HDMI_CORE_I2CM_DATAO			0x157D0
@@ -257,7 +225,6 @@
 #define HDMI_CORE_I2CM_FS_SCL_LCNT_1_ADDR	0x1580C
 #define HDMI_CORE_I2CM_FS_SCL_LCNT_0_ADDR	0x15810
 #define HDMI_CORE_I2CM_SDA_HOLD_ADDR		0x15814
-
 enum hdmi_core_packet_mode {
 	HDMI_PACKETMODERESERVEDVALUE = 0,
 	HDMI_PACKETMODE24BITPERPIXEL = 4,
@@ -265,7 +232,6 @@ enum hdmi_core_packet_mode {
 	HDMI_PACKETMODE36BITPERPIXEL = 6,
 	HDMI_PACKETMODE48BITPERPIXEL = 7,
 };
-
 struct hdmi_core_vid_config {
 	struct hdmi_config v_fc_config;
 	enum hdmi_core_packet_mode packet_mode;
@@ -274,23 +240,19 @@ struct hdmi_core_vid_config {
 	int hblank;
 	int vblank;
 };
-
 struct csc_table {
 	u16 a1, a2, a3, a4;
 	u16 b1, b2, b3, b4;
 	u16 c1, c2, c3, c4;
 };
-
 void hdmi5_core_ddc_init(struct hdmi_core_data *core);
 int hdmi5_core_ddc_read(void *data, u8 *buf, unsigned int block, size_t len);
 void hdmi5_core_ddc_uninit(struct hdmi_core_data *core);
-
 void hdmi5_core_dump(struct hdmi_core_data *core, struct seq_file *s);
 int hdmi5_core_handle_irqs(struct hdmi_core_data *core);
 void hdmi5_configure(struct hdmi_core_data *core, struct hdmi_wp_data *wp,
 			struct hdmi_config *cfg);
 int hdmi5_core_init(struct platform_device *pdev, struct hdmi_core_data *core);
-
 int hdmi5_audio_config(struct hdmi_core_data *core, struct hdmi_wp_data *wp,
 			struct omap_dss_audio *audio, u32 pclk);
 #endif

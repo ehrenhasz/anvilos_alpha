@@ -1,31 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- *
- * NOTE: none of these tracepoints shall be considered a stable kernel ABI
- * as they can change at any time.  See xfs_trace.h for documentation of
- * specific units found in tracepoint output.
- */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM xfs_scrub
-
 #if !defined(_TRACE_XFS_SCRUB_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_XFS_SCRUB_TRACE_H
-
 #include <linux/tracepoint.h>
 #include "xfs_bit.h"
-
 struct xfile;
 struct xfarray;
 struct xfarray_sortinfo;
-
-/*
- * ftrace's __print_symbolic requires that all enum values be wrapped in the
- * TRACE_DEFINE_ENUM macro so that the enum value can be encoded in the ftrace
- * ring buffer.  Somehow this was only worth mentioning in the ftrace sample
- * code.
- */
 TRACE_DEFINE_ENUM(XFS_BTNUM_BNOi);
 TRACE_DEFINE_ENUM(XFS_BTNUM_CNTi);
 TRACE_DEFINE_ENUM(XFS_BTNUM_BMAPi);
@@ -33,10 +14,8 @@ TRACE_DEFINE_ENUM(XFS_BTNUM_INOi);
 TRACE_DEFINE_ENUM(XFS_BTNUM_FINOi);
 TRACE_DEFINE_ENUM(XFS_BTNUM_RMAPi);
 TRACE_DEFINE_ENUM(XFS_BTNUM_REFCi);
-
 TRACE_DEFINE_ENUM(XFS_REFC_DOMAIN_SHARED);
 TRACE_DEFINE_ENUM(XFS_REFC_DOMAIN_COW);
-
 TRACE_DEFINE_ENUM(XFS_SCRUB_TYPE_PROBE);
 TRACE_DEFINE_ENUM(XFS_SCRUB_TYPE_SB);
 TRACE_DEFINE_ENUM(XFS_SCRUB_TYPE_AGF);
@@ -62,7 +41,6 @@ TRACE_DEFINE_ENUM(XFS_SCRUB_TYPE_UQUOTA);
 TRACE_DEFINE_ENUM(XFS_SCRUB_TYPE_GQUOTA);
 TRACE_DEFINE_ENUM(XFS_SCRUB_TYPE_PQUOTA);
 TRACE_DEFINE_ENUM(XFS_SCRUB_TYPE_FSCOUNTERS);
-
 #define XFS_SCRUB_TYPE_STRINGS \
 	{ XFS_SCRUB_TYPE_PROBE,		"probe" }, \
 	{ XFS_SCRUB_TYPE_SB,		"sb" }, \
@@ -89,7 +67,6 @@ TRACE_DEFINE_ENUM(XFS_SCRUB_TYPE_FSCOUNTERS);
 	{ XFS_SCRUB_TYPE_GQUOTA,	"grpquota" }, \
 	{ XFS_SCRUB_TYPE_PQUOTA,	"prjquota" }, \
 	{ XFS_SCRUB_TYPE_FSCOUNTERS,	"fscounters" }
-
 #define XFS_SCRUB_FLAG_STRINGS \
 	{ XFS_SCRUB_IFLAG_REPAIR,		"repair" }, \
 	{ XFS_SCRUB_OFLAG_CORRUPT,		"corrupt" }, \
@@ -100,14 +77,12 @@ TRACE_DEFINE_ENUM(XFS_SCRUB_TYPE_FSCOUNTERS);
 	{ XFS_SCRUB_OFLAG_WARNING,		"warning" }, \
 	{ XFS_SCRUB_OFLAG_NO_REPAIR_NEEDED,	"norepair" }, \
 	{ XFS_SCRUB_IFLAG_FORCE_REBUILD,	"rebuild" }
-
 #define XFS_SCRUB_STATE_STRINGS \
 	{ XCHK_TRY_HARDER,			"try_harder" }, \
 	{ XCHK_HAVE_FREEZE_PROT,		"nofreeze" }, \
 	{ XCHK_FSGATES_DRAIN,			"fsgates_drain" }, \
 	{ XCHK_NEED_DRAIN,			"need_drain" }, \
 	{ XREP_ALREADY_FIXED,			"already_fixed" }
-
 DECLARE_EVENT_CLASS(xchk_class,
 	TP_PROTO(struct xfs_inode *ip, struct xfs_scrub_metadata *sm,
 		 int error),
@@ -147,13 +122,11 @@ DEFINE_EVENT(xchk_class, name, \
 	TP_PROTO(struct xfs_inode *ip, struct xfs_scrub_metadata *sm, \
 		 int error), \
 	TP_ARGS(ip, sm, error))
-
 DEFINE_SCRUB_EVENT(xchk_start);
 DEFINE_SCRUB_EVENT(xchk_done);
 DEFINE_SCRUB_EVENT(xchk_deadlock_retry);
 DEFINE_SCRUB_EVENT(xrep_attempt);
 DEFINE_SCRUB_EVENT(xrep_done);
-
 DECLARE_EVENT_CLASS(xchk_fsgate_class,
 	TP_PROTO(struct xfs_scrub *sc, unsigned int fsgate_flags),
 	TP_ARGS(sc, fsgate_flags),
@@ -172,15 +145,12 @@ DECLARE_EVENT_CLASS(xchk_fsgate_class,
 		  __print_symbolic(__entry->type, XFS_SCRUB_TYPE_STRINGS),
 		  __print_flags(__entry->fsgate_flags, "|", XFS_SCRUB_STATE_STRINGS))
 )
-
 #define DEFINE_SCRUB_FSHOOK_EVENT(name) \
 DEFINE_EVENT(xchk_fsgate_class, name, \
 	TP_PROTO(struct xfs_scrub *sc, unsigned int fsgates_flags), \
 	TP_ARGS(sc, fsgates_flags))
-
 DEFINE_SCRUB_FSHOOK_EVENT(xchk_fsgates_enable);
 DEFINE_SCRUB_FSHOOK_EVENT(xchk_fsgates_disable);
-
 TRACE_EVENT(xchk_op_error,
 	TP_PROTO(struct xfs_scrub *sc, xfs_agnumber_t agno,
 		 xfs_agblock_t bno, int error, void *ret_ip),
@@ -209,7 +179,6 @@ TRACE_EVENT(xchk_op_error,
 		  __entry->error,
 		  __entry->ret_ip)
 );
-
 TRACE_EVENT(xchk_file_op_error,
 	TP_PROTO(struct xfs_scrub *sc, int whichfork,
 		 xfs_fileoff_t offset, int error, void *ret_ip),
@@ -241,7 +210,6 @@ TRACE_EVENT(xchk_file_op_error,
 		  __entry->error,
 		  __entry->ret_ip)
 );
-
 DECLARE_EVENT_CLASS(xchk_block_error_class,
 	TP_PROTO(struct xfs_scrub *sc, xfs_daddr_t daddr, void *ret_ip),
 	TP_ARGS(sc, daddr, ret_ip),
@@ -266,17 +234,14 @@ DECLARE_EVENT_CLASS(xchk_block_error_class,
 		  __entry->agbno,
 		  __entry->ret_ip)
 )
-
 #define DEFINE_SCRUB_BLOCK_ERROR_EVENT(name) \
 DEFINE_EVENT(xchk_block_error_class, name, \
 	TP_PROTO(struct xfs_scrub *sc, xfs_daddr_t daddr, \
 		 void *ret_ip), \
 	TP_ARGS(sc, daddr, ret_ip))
-
 DEFINE_SCRUB_BLOCK_ERROR_EVENT(xchk_fs_error);
 DEFINE_SCRUB_BLOCK_ERROR_EVENT(xchk_block_error);
 DEFINE_SCRUB_BLOCK_ERROR_EVENT(xchk_block_preen);
-
 DECLARE_EVENT_CLASS(xchk_ino_error_class,
 	TP_PROTO(struct xfs_scrub *sc, xfs_ino_t ino, void *ret_ip),
 	TP_ARGS(sc, ino, ret_ip),
@@ -298,17 +263,14 @@ DECLARE_EVENT_CLASS(xchk_ino_error_class,
 		  __print_symbolic(__entry->type, XFS_SCRUB_TYPE_STRINGS),
 		  __entry->ret_ip)
 )
-
 #define DEFINE_SCRUB_INO_ERROR_EVENT(name) \
 DEFINE_EVENT(xchk_ino_error_class, name, \
 	TP_PROTO(struct xfs_scrub *sc, xfs_ino_t ino, \
 		 void *ret_ip), \
 	TP_ARGS(sc, ino, ret_ip))
-
 DEFINE_SCRUB_INO_ERROR_EVENT(xchk_ino_error);
 DEFINE_SCRUB_INO_ERROR_EVENT(xchk_ino_preen);
 DEFINE_SCRUB_INO_ERROR_EVENT(xchk_ino_warning);
-
 DECLARE_EVENT_CLASS(xchk_fblock_error_class,
 	TP_PROTO(struct xfs_scrub *sc, int whichfork,
 		 xfs_fileoff_t offset, void *ret_ip),
@@ -337,16 +299,13 @@ DECLARE_EVENT_CLASS(xchk_fblock_error_class,
 		  __entry->offset,
 		  __entry->ret_ip)
 );
-
 #define DEFINE_SCRUB_FBLOCK_ERROR_EVENT(name) \
 DEFINE_EVENT(xchk_fblock_error_class, name, \
 	TP_PROTO(struct xfs_scrub *sc, int whichfork, \
 		 xfs_fileoff_t offset, void *ret_ip), \
 	TP_ARGS(sc, whichfork, offset, ret_ip))
-
 DEFINE_SCRUB_FBLOCK_ERROR_EVENT(xchk_fblock_error);
 DEFINE_SCRUB_FBLOCK_ERROR_EVENT(xchk_fblock_warning);
-
 TRACE_EVENT(xchk_incomplete,
 	TP_PROTO(struct xfs_scrub *sc, void *ret_ip),
 	TP_ARGS(sc, ret_ip),
@@ -365,7 +324,6 @@ TRACE_EVENT(xchk_incomplete,
 		  __print_symbolic(__entry->type, XFS_SCRUB_TYPE_STRINGS),
 		  __entry->ret_ip)
 );
-
 TRACE_EVENT(xchk_btree_op_error,
 	TP_PROTO(struct xfs_scrub *sc, struct xfs_btree_cur *cur,
 		 int level, int error, void *ret_ip),
@@ -383,7 +341,6 @@ TRACE_EVENT(xchk_btree_op_error,
 	),
 	TP_fast_assign(
 		xfs_fsblock_t fsbno = xchk_btree_cur_fsbno(cur, level);
-
 		__entry->dev = sc->mp->m_super->s_dev;
 		__entry->type = sc->sm->sm_type;
 		__entry->btnum = cur->bc_btnum;
@@ -405,7 +362,6 @@ TRACE_EVENT(xchk_btree_op_error,
 		  __entry->error,
 		  __entry->ret_ip)
 );
-
 TRACE_EVENT(xchk_ifork_btree_op_error,
 	TP_PROTO(struct xfs_scrub *sc, struct xfs_btree_cur *cur,
 		 int level, int error, void *ret_ip),
@@ -450,7 +406,6 @@ TRACE_EVENT(xchk_ifork_btree_op_error,
 		  __entry->error,
 		  __entry->ret_ip)
 );
-
 TRACE_EVENT(xchk_btree_error,
 	TP_PROTO(struct xfs_scrub *sc, struct xfs_btree_cur *cur,
 		 int level, void *ret_ip),
@@ -486,7 +441,6 @@ TRACE_EVENT(xchk_btree_error,
 		  __entry->bno,
 		  __entry->ret_ip)
 );
-
 TRACE_EVENT(xchk_ifork_btree_error,
 	TP_PROTO(struct xfs_scrub *sc, struct xfs_btree_cur *cur,
 		 int level, void *ret_ip),
@@ -528,7 +482,6 @@ TRACE_EVENT(xchk_ifork_btree_error,
 		  __entry->bno,
 		  __entry->ret_ip)
 );
-
 DECLARE_EVENT_CLASS(xchk_sbtree_class,
 	TP_PROTO(struct xfs_scrub *sc, struct xfs_btree_cur *cur,
 		 int level),
@@ -545,7 +498,6 @@ DECLARE_EVENT_CLASS(xchk_sbtree_class,
 	),
 	TP_fast_assign(
 		xfs_fsblock_t fsbno = xchk_btree_cur_fsbno(cur, level);
-
 		__entry->dev = sc->mp->m_super->s_dev;
 		__entry->type = sc->sm->sm_type;
 		__entry->btnum = cur->bc_btnum;
@@ -570,10 +522,8 @@ DEFINE_EVENT(xchk_sbtree_class, name, \
 	TP_PROTO(struct xfs_scrub *sc, struct xfs_btree_cur *cur, \
 		 int level), \
 	TP_ARGS(sc, cur, level))
-
 DEFINE_SCRUB_SBTREE_EVENT(xchk_btree_rec);
 DEFINE_SCRUB_SBTREE_EVENT(xchk_btree_key);
-
 TRACE_EVENT(xchk_xref_error,
 	TP_PROTO(struct xfs_scrub *sc, int error, void *ret_ip),
 	TP_ARGS(sc, error, ret_ip),
@@ -595,7 +545,6 @@ TRACE_EVENT(xchk_xref_error,
 		  __entry->error,
 		  __entry->ret_ip)
 );
-
 TRACE_EVENT(xchk_iallocbt_check_cluster,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 xfs_agino_t startino, xfs_daddr_t map_daddr,
@@ -640,7 +589,6 @@ TRACE_EVENT(xchk_iallocbt_check_cluster,
 		  __entry->holemask,
 		  __entry->cluster_ino)
 )
-
 TRACE_EVENT(xchk_inode_is_allocated,
 	TP_PROTO(struct xfs_inode *ip),
 	TP_ARGS(ip),
@@ -662,7 +610,6 @@ TRACE_EVENT(xchk_inode_is_allocated,
 		  __entry->iflags,
 		  __entry->mode)
 );
-
 TRACE_EVENT(xchk_fscounters_calc,
 	TP_PROTO(struct xfs_mount *mp, uint64_t icount, uint64_t ifree,
 		 uint64_t fdblocks, uint64_t delalloc),
@@ -697,7 +644,6 @@ TRACE_EVENT(xchk_fscounters_calc,
 		  __entry->fdblocks_calculated,
 		  __entry->delalloc)
 )
-
 TRACE_EVENT(xchk_fscounters_within_range,
 	TP_PROTO(struct xfs_mount *mp, uint64_t expected, int64_t curr_value,
 		 int64_t old_value),
@@ -720,7 +666,6 @@ TRACE_EVENT(xchk_fscounters_within_range,
 		  __entry->curr_value,
 		  __entry->old_value)
 )
-
 DECLARE_EVENT_CLASS(xchk_fsfreeze_class,
 	TP_PROTO(struct xfs_scrub *sc, int error),
 	TP_ARGS(sc, error),
@@ -745,7 +690,6 @@ DEFINE_EVENT(xchk_fsfreeze_class, name, \
 	TP_ARGS(sc, error))
 DEFINE_XCHK_FSFREEZE_EVENT(xchk_fsfreeze);
 DEFINE_XCHK_FSFREEZE_EVENT(xchk_fsthaw);
-
 TRACE_EVENT(xchk_refcount_incorrect,
 	TP_PROTO(struct xfs_perag *pag, const struct xfs_refcount_irec *irec,
 		 xfs_nlink_t seen),
@@ -777,7 +721,6 @@ TRACE_EVENT(xchk_refcount_incorrect,
 		  __entry->refcount,
 		  __entry->seen)
 )
-
 TRACE_EVENT(xfile_create,
 	TP_PROTO(struct xfile *xf),
 	TP_ARGS(xf),
@@ -789,7 +732,6 @@ TRACE_EVENT(xfile_create,
 	TP_fast_assign(
 		char		pathname[257];
 		char		*path;
-
 		__entry->ino = file_inode(xf->file)->i_ino;
 		memset(pathname, 0, sizeof(pathname));
 		path = file_path(xf->file, pathname, sizeof(pathname) - 1);
@@ -801,7 +743,6 @@ TRACE_EVENT(xfile_create,
 		  __entry->ino,
 		  __entry->pathname)
 );
-
 TRACE_EVENT(xfile_destroy,
 	TP_PROTO(struct xfile *xf),
 	TP_ARGS(xf),
@@ -813,7 +754,6 @@ TRACE_EVENT(xfile_destroy,
 	TP_fast_assign(
 		struct xfile_stat	statbuf;
 		int			ret;
-
 		ret = xfile_stat(xf, &statbuf);
 		if (!ret) {
 			__entry->bytes = statbuf.bytes;
@@ -829,7 +769,6 @@ TRACE_EVENT(xfile_destroy,
 		  __entry->bytes,
 		  __entry->size)
 );
-
 DECLARE_EVENT_CLASS(xfile_class,
 	TP_PROTO(struct xfile *xf, loff_t pos, unsigned long long bytecount),
 	TP_ARGS(xf, pos, bytecount),
@@ -843,7 +782,6 @@ DECLARE_EVENT_CLASS(xfile_class,
 	TP_fast_assign(
 		struct xfile_stat	statbuf;
 		int			ret;
-
 		ret = xfile_stat(xf, &statbuf);
 		if (!ret) {
 			__entry->bytes_used = statbuf.bytes;
@@ -872,7 +810,6 @@ DEFINE_XFILE_EVENT(xfile_pwrite);
 DEFINE_XFILE_EVENT(xfile_seek_data);
 DEFINE_XFILE_EVENT(xfile_get_page);
 DEFINE_XFILE_EVENT(xfile_put_page);
-
 TRACE_EVENT(xfarray_create,
 	TP_PROTO(struct xfarray *xfa, unsigned long long required_capacity),
 	TP_ARGS(xfa, required_capacity),
@@ -897,7 +834,6 @@ TRACE_EVENT(xfarray_create,
 		  __entry->obj_size,
 		  __entry->obj_size_log)
 );
-
 TRACE_EVENT(xfarray_isort,
 	TP_PROTO(struct xfarray_sortinfo *si, uint64_t lo, uint64_t hi),
 	TP_ARGS(si, lo, hi),
@@ -917,7 +853,6 @@ TRACE_EVENT(xfarray_isort,
 		  __entry->hi,
 		  __entry->hi - __entry->lo)
 );
-
 TRACE_EVENT(xfarray_pagesort,
 	TP_PROTO(struct xfarray_sortinfo *si, uint64_t lo, uint64_t hi),
 	TP_ARGS(si, lo, hi),
@@ -937,7 +872,6 @@ TRACE_EVENT(xfarray_pagesort,
 		  __entry->hi,
 		  __entry->hi - __entry->lo)
 );
-
 TRACE_EVENT(xfarray_qsort,
 	TP_PROTO(struct xfarray_sortinfo *si, uint64_t lo, uint64_t hi),
 	TP_ARGS(si, lo, hi),
@@ -963,7 +897,6 @@ TRACE_EVENT(xfarray_qsort,
 		  __entry->stack_depth,
 		  __entry->max_stack_depth)
 );
-
 TRACE_EVENT(xfarray_sort,
 	TP_PROTO(struct xfarray_sortinfo *si, size_t bytes),
 	TP_ARGS(si, bytes),
@@ -988,7 +921,6 @@ TRACE_EVENT(xfarray_sort,
 		  __entry->max_stack_depth,
 		  __entry->bytes)
 );
-
 TRACE_EVENT(xfarray_sort_stats,
 	TP_PROTO(struct xfarray_sortinfo *si, int error),
 	TP_ARGS(si, error),
@@ -1033,7 +965,6 @@ TRACE_EVENT(xfarray_sort_stats,
 		  __entry->max_stack_depth,
 		  __entry->error)
 );
-
 #ifdef CONFIG_XFS_RT
 TRACE_EVENT(xchk_rtsum_record_free,
 	TP_PROTO(struct xfs_mount *mp, xfs_rtblock_t start,
@@ -1066,11 +997,8 @@ TRACE_EVENT(xchk_rtsum_record_free,
 		  __entry->pos,
 		  __entry->v)
 );
-#endif /* CONFIG_XFS_RT */
-
-/* repair tracepoints */
+#endif  
 #if IS_ENABLED(CONFIG_XFS_ONLINE_REPAIR)
-
 DECLARE_EVENT_CLASS(xrep_extent_class,
 	TP_PROTO(struct xfs_perag *pag, xfs_agblock_t agbno, xfs_extlen_t len),
 	TP_ARGS(pag, agbno, len),
@@ -1100,7 +1028,6 @@ DEFINE_REPAIR_EXTENT_EVENT(xreap_dispose_unmap_extent);
 DEFINE_REPAIR_EXTENT_EVENT(xreap_dispose_free_extent);
 DEFINE_REPAIR_EXTENT_EVENT(xreap_agextent_binval);
 DEFINE_REPAIR_EXTENT_EVENT(xrep_agfl_insert);
-
 DECLARE_EVENT_CLASS(xrep_reap_find_class,
 	TP_PROTO(struct xfs_perag *pag, xfs_agblock_t agbno, xfs_extlen_t len,
 		bool crosslinked),
@@ -1132,7 +1059,6 @@ DEFINE_EVENT(xrep_reap_find_class, name, \
 		 bool crosslinked), \
 	TP_ARGS(pag, agbno, len, crosslinked))
 DEFINE_REPAIR_REAP_FIND_EVENT(xreap_agextent_select);
-
 DECLARE_EVENT_CLASS(xrep_rmap_class,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 xfs_agblock_t agbno, xfs_extlen_t len,
@@ -1175,7 +1101,6 @@ DEFINE_REPAIR_RMAP_EVENT(xrep_alloc_extent_fn);
 DEFINE_REPAIR_RMAP_EVENT(xrep_ialloc_extent_fn);
 DEFINE_REPAIR_RMAP_EVENT(xrep_rmap_extent_fn);
 DEFINE_REPAIR_RMAP_EVENT(xrep_bmap_extent_fn);
-
 TRACE_EVENT(xrep_refcount_extent_fn,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 struct xfs_refcount_irec *irec),
@@ -1201,7 +1126,6 @@ TRACE_EVENT(xrep_refcount_extent_fn,
 		  __entry->blockcount,
 		  __entry->refcount)
 )
-
 TRACE_EVENT(xrep_findroot_block,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno, xfs_agblock_t agbno,
 		 uint32_t magic, uint16_t level),
@@ -1297,7 +1221,6 @@ TRACE_EVENT(xrep_reset_counters,
 	TP_printk("dev %d:%d",
 		  MAJOR(__entry->dev), MINOR(__entry->dev))
 )
-
 TRACE_EVENT(xrep_ialloc_insert,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 xfs_agino_t startino, uint16_t holemask, uint8_t count,
@@ -1330,11 +1253,8 @@ TRACE_EVENT(xrep_ialloc_insert,
 		  __entry->freecount,
 		  __entry->freemask)
 )
-
-#endif /* IS_ENABLED(CONFIG_XFS_ONLINE_REPAIR) */
-
-#endif /* _TRACE_XFS_SCRUB_TRACE_H */
-
+#endif  
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE scrub/trace

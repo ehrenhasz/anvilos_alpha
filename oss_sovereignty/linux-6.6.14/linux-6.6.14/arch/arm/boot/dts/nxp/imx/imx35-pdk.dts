@@ -1,28 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2013 Eukréa Electromatique <denis@eukrea.com>
-// Copyright 2014 Freescale Semiconductor, Inc.
-
 /dts-v1/;
 #include "imx35.dtsi"
-
 / {
 	model = "Freescale i.MX35 Product Development Kit";
 	compatible = "fsl,imx35-pdk", "fsl,imx35";
-
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x80000000 0x8000000>,
 		      <0x90000000 0x8000000>;
 	};
 };
-
 &esdhc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_esdhc1>;
 	status = "okay";
 };
-
 &iomuxc {
 	imx35-pdk {
 		pinctrl_esdhc1: esdhc1grp {
@@ -35,7 +26,6 @@
 				MX35_PAD_SD1_DATA3__ESDHC1_DAT3		0x80000000
 			>;
 		};
-
 		pinctrl_uart1: uart1grp {
 			fsl,pins = <
 				MX35_PAD_TXD1__UART1_TXD_MUX		0x1c5
@@ -46,14 +36,12 @@
 		};
 	};
 };
-
 &nfc {
 	nand-bus-width = <16>;
 	nand-ecc-mode = "hw";
 	nand-on-flash-bbt;
 	status = "okay";
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;

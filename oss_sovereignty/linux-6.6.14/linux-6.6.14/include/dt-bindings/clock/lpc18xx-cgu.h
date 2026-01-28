@@ -1,15 +1,3 @@
-/*
- * Copyright (c) 2015 Joachim Eastwood <manabian@gmail.com>
- *
- * This code is released using a dual license strategy: BSD/GPL
- * You can choose the licence that better fits your requirements.
- *
- * Released under the terms of 3-clause BSD License
- * Released under the terms of GNU General Public License Version 2.0
- *
- */
-
-/* LPC18xx/43xx base clock ids */
 #define BASE_SAFE_CLK		0
 #define BASE_USB0_CLK		1
 #define BASE_PERIPH_CLK		2

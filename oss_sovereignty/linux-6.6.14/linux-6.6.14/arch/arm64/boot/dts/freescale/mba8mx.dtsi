@@ -1,12 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
-/*
- * Copyright 2020-2021 TQ-Systems GmbH
- */
-
 #include <dt-bindings/net/ti-dp83867.h>
-
-/* TQ-Systems GmbH MBa8Mx baseboard */
-
 / {
 	beeper {
 		compatible = "pwm-beeper";
@@ -14,31 +6,26 @@
 		beeper-hz = <4000>;
 		amp-supply = <&reg_vcc_3v3>;
 	};
-
 	chosen {
 		stdout-path = &uart3;
 	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpiobutton>;
 		autorepeat;
-
 		switch-1 {
 			label = "switch1";
 			linux,code = <BTN_0>;
 			gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
 			wakeup-source;
 		};
-
 		btn2: switch-2 {
 			label = "switch2";
 			linux,code = <BTN_1>;
 			gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
 			wakeup-source;
 		};
-
 		switch-3 {
 			label = "switch3";
 			linux,code = <BTN_2>;
@@ -46,38 +33,32 @@
 			wakeup-source;
 		};
 	};
-
 	gpio_leds: gpio-leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpioled>;
-
 		led1 {
 			label = "led1";
 			gpios = <&gpio1 0 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "default-on";
 		};
-
 		led2: led2 {
 			label = "led2";
 			gpios = <&gpio3 14 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "heartbeat";
 		};
 	};
-
 	pcie0_refclk: pcie0-refclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <100000000>;
 	};
-
 	reg_hub_vbus: regulator-hub-vbus {
 		compatible = "regulator-fixed";
 		regulator-name = "MBA8MX_HUB_VBUS";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 	};
-
 	reg_sn65dsi83_1v8: regulator-sn65dsi83-1v8 {
 		compatible = "regulator-fixed";
 		regulator-name = "SN65DSI83_1V8";
@@ -86,14 +67,12 @@
 		gpio = <&expander0 5 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	reg_vcc_3v3: regulator-3v3 {
 		compatible = "regulator-fixed";
 		regulator-name = "MBA8MX_3V3";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 	};
-
 	sound {
 		compatible = "fsl,imx-audio-tlv320aic32x4";
 		model = "imx-audio-tlv320aic32x4";
@@ -101,21 +80,18 @@
 		audio-codec = <&tlv320aic3x04>;
 	};
 };
-
 &ecspi1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi1>;
 	cs-gpios = <&gpio5 9 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &ecspi2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi2>;
 	cs-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &fec1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec1>;
@@ -125,11 +101,9 @@
 	fsl,magic-packet;
 	mac-address = [ 00 00 00 00 00 00 ];
 	status = "okay";
-
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		ethphy0: ethernet-phy@e {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <0xe>;
@@ -145,7 +119,6 @@
 		};
 	};
 };
-
 &i2c1 {
 	expander0: gpio@23 {
 		compatible = "nxp,pca9555";
@@ -157,21 +130,18 @@
 		interrupts = <9 IRQ_TYPE_EDGE_FALLING>;
 		interrupt-controller;
 		#interrupt-cells = <2>;
-
 		sd-mux-oe-hog {
 			gpio-hog;
 			gpios = <8 0>;
 			output-low;
 			line-name = "SD_MUX_EN#";
 		};
-
 		boot-cfg-oe-hog {
 			gpio-hog;
 			gpios = <12 0>;
 			output-high;
 			line-name = "BOOT_CFG_OE#";
 		};
-
 		rst-usb-hub-hog {
 			gpio-hog;
 			gpios = <13 0>;
@@ -179,7 +149,6 @@
 			line-name = "RST_USB_HUB#";
 		};
 	};
-
 	expander1: gpio@24 {
 		compatible = "nxp,pca9555";
 		reg = <0x24>;
@@ -188,7 +157,6 @@
 		vcc-supply = <&reg_vcc_3v3>;
 	};
 };
-
 &i2c2 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default", "gpio";
@@ -197,7 +165,6 @@
 	scl-gpios = <&gpio5 16 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	sda-gpios = <&gpio5 17 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
-
 	tlv320aic3x04: audio-codec@18 {
 		compatible = "ti,tlv320aic32x4";
 		reg = <0x18>;
@@ -205,12 +172,10 @@
 		iov-supply = <&reg_vcc_3v3>;
 		ldoin-supply = <&reg_vcc_3v3>;
 	};
-
 	sensor1: temperator-sensor@1f {
 		compatible = "nxp,se97b", "jedec,jc-42.4-temp";
 		reg = <0x1f>;
 	};
-
 	eeprom3: eeprom@57 {
 		compatible = "nxp,se97b", "atmel,24c02";
 		reg = <0x57>;
@@ -218,7 +183,6 @@
 		vcc-supply = <&reg_vcc_3v3>;
 	};
 };
-
 &i2c3 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default", "gpio";
@@ -228,19 +192,16 @@
 	sda-gpios = <&gpio5 19 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
 };
-
 &pwm3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm3>;
 	status = "okay";
 };
-
 &pwm4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm4>;
 	status = "okay";
 };
-
 &sai3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_sai3>;
@@ -248,30 +209,24 @@
 	assigned-clock-rates = <49152000>;
 	status = "okay";
 };
-
 &snvs_pwrkey {
 	status = "okay";
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
 };
-
 &uart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
 	status = "okay";
 };
-
-/* console */
 &uart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3>;
 	status = "okay";
 };
-
 &usdhc2 {
 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
 	pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_usdhc2_gpio>;

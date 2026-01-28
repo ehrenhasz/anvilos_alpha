@@ -1,43 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Cryptographic API.
- *
- * ARIA Cipher Algorithm.
- *
- * Documentation of ARIA can be found in RFC 5794.
- * Copyright (c) 2022 Taehee Yoo <ap420073@gmail.com>
- * Copyright (c) 2022 Taehee Yoo <ap420073@gmail.com>
- *
- * Information for ARIA
- *     http://210.104.33.10/ARIA/index-e.html (English)
- *     http://seed.kisa.or.kr/ (Korean)
- *
- * Public domain version is distributed above.
- */
-
 #ifndef _CRYPTO_ARIA_H
 #define _CRYPTO_ARIA_H
-
 #include <crypto/algapi.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <asm/byteorder.h>
-
 #define ARIA_MIN_KEY_SIZE	16
 #define ARIA_MAX_KEY_SIZE	32
 #define ARIA_BLOCK_SIZE		16
 #define ARIA_MAX_RD_KEYS	17
 #define ARIA_RD_KEY_WORDS	(ARIA_BLOCK_SIZE / sizeof(u32))
-
 struct aria_ctx {
 	u32 enc_key[ARIA_MAX_RD_KEYS][ARIA_RD_KEY_WORDS];
 	u32 dec_key[ARIA_MAX_RD_KEYS][ARIA_RD_KEY_WORDS];
 	int rounds;
 	int key_length;
 };
-
 static const u32 s1[256] = {
 	0x00636363, 0x007c7c7c, 0x00777777, 0x007b7b7b,
 	0x00f2f2f2, 0x006b6b6b, 0x006f6f6f, 0x00c5c5c5,
@@ -104,7 +83,6 @@ static const u32 s1[256] = {
 	0x00414141, 0x00999999, 0x002d2d2d, 0x000f0f0f,
 	0x00b0b0b0, 0x00545454, 0x00bbbbbb, 0x00161616
 };
-
 static const u32 s2[256] = {
 	0xe200e2e2, 0x4e004e4e, 0x54005454, 0xfc00fcfc,
 	0x94009494, 0xc200c2c2, 0x4a004a4a, 0xcc00cccc,
@@ -171,7 +149,6 @@ static const u32 s2[256] = {
 	0x89008989, 0xde00dede, 0x71007171, 0x1a001a1a,
 	0xaf00afaf, 0xba00baba, 0xb500b5b5, 0x81008181
 };
-
 static const u32 x1[256] = {
 	0x52520052, 0x09090009, 0x6a6a006a, 0xd5d500d5,
 	0x30300030, 0x36360036, 0xa5a500a5, 0x38380038,
@@ -238,7 +215,6 @@ static const u32 x1[256] = {
 	0xe1e100e1, 0x69690069, 0x14140014, 0x63630063,
 	0x55550055, 0x21210021, 0x0c0c000c, 0x7d7d007d
 };
-
 static const u32 x2[256] = {
 	0x30303000, 0x68686800, 0x99999900, 0x1b1b1b00,
 	0x87878700, 0xb9b9b900, 0x21212100, 0x78787800,
@@ -305,17 +281,14 @@ static const u32 x2[256] = {
 	0xf7f7f700, 0x4c4c4c00, 0x11111100, 0x33333300,
 	0x03030300, 0xa2a2a200, 0xacacac00, 0x60606000
 };
-
 static inline u32 rotl32(u32 v, u32 r)
 {
 	return ((v << r) | (v >> (32 - r)));
 }
-
 static inline u32 rotr32(u32 v, u32 r)
 {
 	return ((v >> r) | (v << (32 - r)));
 }
-
 static inline u32 bswap32(u32 v)
 {
 	return ((v << 24) ^
@@ -323,23 +296,18 @@ static inline u32 bswap32(u32 v)
 		((v & 0x0000ff00) << 8) ^
 		((v & 0x00ff0000) >> 8));
 }
-
 static inline u8 get_u8(u32 x, u32 y)
 {
 	return (x >> ((3 - y) * 8));
 }
-
 static inline u32 make_u32(u8 v0, u8 v1, u8 v2, u8 v3)
 {
 	return ((u32)v0 << 24) | ((u32)v1 << 16) | ((u32)v2 <<  8) | ((u32)v3);
 }
-
 static inline u32 aria_m(u32 t0)
 {
 	return rotr32(t0, 8) ^ rotr32(t0 ^ rotr32(t0, 8), 16);
 }
-
-/* S-Box Layer 1 + M */
 static inline void aria_sbox_layer1_with_pre_diff(u32 *t0, u32 *t1, u32 *t2,
 						  u32 *t3)
 {
@@ -360,8 +328,6 @@ static inline void aria_sbox_layer1_with_pre_diff(u32 *t0, u32 *t1, u32 *t2,
 	      x1[get_u8(*t3, 2)] ^
 	      x2[get_u8(*t3, 3)];
 }
-
-/* S-Box Layer 2 + M */
 static inline void aria_sbox_layer2_with_pre_diff(u32 *t0, u32 *t1, u32 *t2,
 						  u32 *t3)
 {
@@ -382,28 +348,21 @@ static inline void aria_sbox_layer2_with_pre_diff(u32 *t0, u32 *t1, u32 *t2,
 	      s1[get_u8(*t3, 2)] ^
 	      s2[get_u8(*t3, 3)];
 }
-
-/* Word-level diffusion */
 static inline void aria_diff_word(u32 *t0, u32 *t1, u32 *t2, u32 *t3)
 {
 	*t1 ^= *t2;
 	*t2 ^= *t3;
 	*t0 ^= *t1;
-
 	*t3 ^= *t1;
 	*t2 ^= *t0;
 	*t1 ^= *t2;
 }
-
-/* Byte-level diffusion */
 static inline void aria_diff_byte(u32 *t1, u32 *t2, u32 *t3)
 {
 	*t1 = ((*t1 << 8) & 0xff00ff00) ^ ((*t1 >> 8) & 0x00ff00ff);
 	*t2 = rotr32(*t2, 16);
 	*t3 = bswap32(*t3);
 }
-
-/* Key XOR Layer */
 static inline void aria_add_round_key(u32 *rk, u32 *t0, u32 *t1, u32 *t2,
 				      u32 *t3)
 {
@@ -412,7 +371,6 @@ static inline void aria_add_round_key(u32 *rk, u32 *t0, u32 *t1, u32 *t2,
 	*t2 ^= rk[2];
 	*t3 ^= rk[3];
 }
-/* Odd round Substitution & Diffusion */
 static inline void aria_subst_diff_odd(u32 *t0, u32 *t1, u32 *t2, u32 *t3)
 {
 	aria_sbox_layer1_with_pre_diff(t0, t1, t2, t3);
@@ -420,8 +378,6 @@ static inline void aria_subst_diff_odd(u32 *t0, u32 *t1, u32 *t2, u32 *t3)
 	aria_diff_byte(t1, t2, t3);
 	aria_diff_word(t0, t1, t2, t3);
 }
-
-/* Even round Substitution & Diffusion */
 static inline void aria_subst_diff_even(u32 *t0, u32 *t1, u32 *t2, u32 *t3)
 {
 	aria_sbox_layer2_with_pre_diff(t0, t1, t2, t3);
@@ -429,13 +385,10 @@ static inline void aria_subst_diff_even(u32 *t0, u32 *t1, u32 *t2, u32 *t3)
 	aria_diff_byte(t3, t0, t1);
 	aria_diff_word(t0, t1, t2, t3);
 }
-
-/* Q, R Macro expanded ARIA GSRK */
 static inline void aria_gsrk(u32 *rk, u32 *x, u32 *y, u32 n)
 {
 	int q = 4 - (n / 32);
 	int r = n % 32;
-
 	rk[0] = (x[0]) ^
 		((y[q % 4]) >> r) ^
 		((y[(q + 3) % 4]) << (32 - r));
@@ -449,10 +402,8 @@ static inline void aria_gsrk(u32 *rk, u32 *x, u32 *y, u32 n)
 		((y[(q + 3) % 4]) >> r) ^
 		((y[(q + 2) % 4]) << (32 - r));
 }
-
 void aria_encrypt(void *ctx, u8 *out, const u8 *in);
 void aria_decrypt(void *ctx, u8 *out, const u8 *in);
 int aria_set_key(struct crypto_tfm *tfm, const u8 *in_key,
 		 unsigned int key_len);
-
 #endif

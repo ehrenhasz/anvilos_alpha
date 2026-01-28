@@ -1,18 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
 /dts-v1/;
-
 #include <dt-bindings/leds/leds-ns2.h>
 #include "kirkwood-ns2-common.dtsi"
-
 / {
 	model = "LaCie Network Space Max v2";
 	compatible = "lacie,netspace_max_v2", "marvell,kirkwood-88f6281", "marvell,kirkwood";
-
 	memory {
 		device_type = "memory";
 		reg = <0x00000000 0x10000000>;
 	};
-
 	ocp@f1000000 {
 		sata@80000 {
 			pinctrl-0 = <&pmx_ns2_sata0 &pmx_ns2_sata1>;
@@ -21,7 +16,6 @@
 			nr-ports = <2>;
 		};
 	};
-
 	gpio_fan {
 		compatible = "gpio-fan";
 		gpios = <&gpio0 22 GPIO_ACTIVE_LOW
@@ -40,10 +34,8 @@
 			 5500  8>;
 		alarm-gpios = <&gpio0 25 GPIO_ACTIVE_LOW>;
 	};
-
 	ns2-leds {
 		compatible = "lacie,ns2-leds";
-
 		blue-sata {
 			label = "ns2:blue:sata";
 			slow-gpio = <&gpio0 29 0>;
@@ -55,5 +47,4 @@
 		};
 	};
 };
-
 &ethphy0 { reg = <8>; };

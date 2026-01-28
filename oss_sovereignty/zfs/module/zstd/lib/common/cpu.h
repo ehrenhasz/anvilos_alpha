@@ -1,36 +1,16 @@
-/*
- * Copyright (c) 2018-2020, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under both the BSD-style license (found in the
- * LICENSE file in the root directory of this source tree) and the GPLv2 (found
- * in the COPYING file in the root directory of this source tree).
- * You may select, at your option, one of the above-listed licenses.
- */
-
 #ifndef ZSTD_COMMON_CPU_H
 #define ZSTD_COMMON_CPU_H
-
-/**
- * Implementation taken from folly/CpuId.h
- * https://github.com/facebook/folly/blob/master/folly/CpuId.h
- */
-
 #include <string.h>
-
 #include "mem.h"
-
 #ifdef _MSC_VER
 #include <intrin.h>
 #endif
-
 typedef struct {
     U32 f1c;
     U32 f1d;
     U32 f7b;
     U32 f7c;
 } ZSTD_cpuid_t;
-
 MEM_STATIC ZSTD_cpuid_t ZSTD_cpuid(void) {
     U32 f1c = 0;
     U32 f1d = 0;
@@ -53,10 +33,6 @@ MEM_STATIC ZSTD_cpuid_t ZSTD_cpuid(void) {
         }
     }
 #elif defined(__i386__) && defined(__PIC__) && !defined(__clang__) && defined(__GNUC__)
-    /* The following block like the normal cpuid branch below, but gcc
-     * reserves ebx for use of its pic register so we must specially
-     * handle the save and restore to avoid clobbering the register
-     */
     U32 n;
     __asm__(
         "pushl %%ebx\n\t"
@@ -108,13 +84,10 @@ MEM_STATIC ZSTD_cpuid_t ZSTD_cpuid(void) {
         return cpuid;
     }
 }
-
 #define X(name, r, bit)                                                        \
   MEM_STATIC int ZSTD_cpuid_##name(ZSTD_cpuid_t const cpuid) {                 \
     return ((cpuid.r) & (1U << bit)) != 0;                                     \
   }
-
-/* cpuid(1): Processor Info and Feature Bits. */
 #define C(name, bit) X(name, f1c, bit)
   C(sse3, 0)
   C(pclmuldq, 1)
@@ -177,8 +150,6 @@ MEM_STATIC ZSTD_cpuid_t ZSTD_cpuid(void) {
   D(tm, 29)
   D(pbe, 31)
 #undef D
-
-/* cpuid(7): Extended Features. */
 #define B(name, bit) X(name, f7b, bit)
   B(bmi1, 3)
   B(hle, 4)
@@ -209,7 +180,5 @@ MEM_STATIC ZSTD_cpuid_t ZSTD_cpuid(void) {
   C(prefetchwt1, 0)
   C(avx512vbmi, 1)
 #undef C
-
 #undef X
-
-#endif /* ZSTD_COMMON_CPU_H */
+#endif  

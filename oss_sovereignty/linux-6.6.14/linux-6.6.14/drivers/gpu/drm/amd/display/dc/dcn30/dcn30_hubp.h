@@ -1,39 +1,10 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_HUBP_DCN30_H__
 #define __DC_HUBP_DCN30_H__
-
 #include "dcn20/dcn20_hubp.h"
 #include "dcn21/dcn21_hubp.h"
-
 #define HUBP_REG_LIST_DCN30(id)\
 	HUBP_REG_LIST_DCN21(id),\
 	SRI(DCN_DMDATA_VM_CNTL, HUBPREQ, id)
-
-
 #define HUBP_MASK_SH_LIST_DCN30_BASE(mask_sh)\
 	HUBP_MASK_SH_LIST_DCN21_COMMON(mask_sh),\
 	HUBP_SF(HUBP0_DCSURF_SURFACE_CONFIG, ALPHA_PLANE_EN, mask_sh),\
@@ -45,8 +16,6 @@
 	HUBP_SF(HUBPREQ0_DCN_DMDATA_VM_CNTL, DMDATA_VM_UNDERFLOW_STATUS_CLEAR, mask_sh),\
 	HUBP_SF(HUBPREQ0_DCN_DMDATA_VM_CNTL, DMDATA_VM_DONE, mask_sh),\
 	HUBP_SF(HUBP0_DCSURF_ADDR_CONFIG, NUM_PKRS, mask_sh)
-
-
 #define HUBP_MASK_SH_LIST_DCN30(mask_sh)\
 	HUBP_SF(HUBPREQ0_DCN_DMDATA_VM_CNTL, REFCYC_PER_VM_DMDATA, mask_sh),\
 	HUBP_SF(HUBPREQ0_DCN_DMDATA_VM_CNTL, DMDATA_VM_FAULT_STATUS, mask_sh),\
@@ -244,7 +213,6 @@
 	HUBP_SF(HUBPREQ0_VBLANK_PARAMETERS_5, REFCYC_PER_VM_GROUP_VBLANK, mask_sh),\
 	HUBP_SF(HUBPREQ0_VBLANK_PARAMETERS_6, REFCYC_PER_VM_REQ_VBLANK, mask_sh),\
 	HUBP_SF(HUBP0_DCHUBP_REQ_SIZE_CONFIG, VM_GROUP_SIZE, mask_sh)
-
 bool hubp3_construct(
 		struct dcn20_hubp *hubp2,
 		struct dc_context *ctx,
@@ -252,15 +220,12 @@ bool hubp3_construct(
 		const struct dcn_hubp2_registers *hubp_regs,
 		const struct dcn_hubp2_shift *hubp_shift,
 		const struct dcn_hubp2_mask *hubp_mask);
-
 void hubp3_set_vm_system_aperture_settings(struct hubp *hubp,
 	struct vm_system_aperture_param *apt);
-
 bool hubp3_program_surface_flip_and_addr(
 	struct hubp *hubp,
 	const struct dc_plane_address *address,
 	bool flip_immediate);
-
 void hubp3_program_surface_config(
 	struct hubp *hubp,
 	enum surface_pixel_format format,
@@ -270,28 +235,19 @@ void hubp3_program_surface_config(
 	struct dc_plane_dcc_param *dcc,
 	bool horizontal_mirror,
 	unsigned int compat_level);
-
 void hubp3_setup(
 		struct hubp *hubp,
 		struct _vcs_dpi_display_dlg_regs_st *dlg_attr,
 		struct _vcs_dpi_display_ttu_regs_st *ttu_attr,
 		struct _vcs_dpi_display_rq_regs_st *rq_regs,
 		struct _vcs_dpi_display_pipe_dest_params_st *pipe_dest);
-
 void hubp3_dcc_control(struct hubp *hubp, bool enable,
 		enum hubp_ind_block_size blk_size);
-
 void hubp3_dcc_control_sienna_cichlid(struct hubp *hubp,
 		struct dc_plane_dcc_param *dcc);
-
 void hubp3_dmdata_set_attributes(
 		struct hubp *hubp,
 		const struct dc_dmdata_attributes *attr);
-
 void hubp3_read_state(struct hubp *hubp);
-
 void hubp3_init(struct hubp *hubp);
-
-#endif /* __DC_HUBP_DCN30_H__ */
-
-
+#endif  

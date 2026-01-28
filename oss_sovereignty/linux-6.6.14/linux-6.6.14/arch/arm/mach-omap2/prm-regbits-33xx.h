@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AM33XX PRM_XXX register bits
- *
- * Copyright (C) 2011-2012 Texas Instruments Incorporated - https://www.ti.com/
- */
-
 #ifndef __ARCH_ARM_MACH_OMAP2_PRM_REGBITS_33XX_H
 #define __ARCH_ARM_MACH_OMAP2_PRM_REGBITS_33XX_H
-
 #include "prm.h"
-
 #define AM33XX_GFX_MEM_ONSTATE_MASK			(0x3 << 17)
 #define AM33XX_GFX_MEM_RETSTATE_MASK			(1 << 6)
 #define AM33XX_GFX_MEM_STATEST_MASK			(0x3 << 4)

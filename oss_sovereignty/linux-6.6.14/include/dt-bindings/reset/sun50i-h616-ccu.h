@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (C) 2020 Arm Ltd.
- */
-
 #ifndef _DT_BINDINGS_RESET_SUN50I_H616_H_
 #define _DT_BINDINGS_RESET_SUN50I_H616_H_
-
 #define RST_MBUS		0
 #define RST_BUS_DE		1
 #define RST_BUS_DEINTERLACE	2
@@ -66,5 +60,4 @@
 #define RST_BUS_TVE0		57
 #define RST_BUS_HDCP		58
 #define RST_BUS_KEYADC		59
-
-#endif /* _DT_BINDINGS_RESET_SUN50I_H616_H_ */
+#endif  

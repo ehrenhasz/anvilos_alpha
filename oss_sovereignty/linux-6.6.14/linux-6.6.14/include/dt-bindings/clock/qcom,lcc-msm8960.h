@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_LCC_MSM8960_H
 #define _DT_BINDINGS_CLK_LCC_MSM8960_H
-
 #define PLL4				0
 #define MI2S_OSR_SRC			1
 #define MI2S_OSR_CLK			2
@@ -38,5 +32,4 @@
 #define SPARE_I2S_SPKR_DIV_CLK		29
 #define SPARE_I2S_SPKR_BIT_DIV_CLK	30
 #define SPARE_I2S_SPKR_BIT_CLK		31
-
 #endif

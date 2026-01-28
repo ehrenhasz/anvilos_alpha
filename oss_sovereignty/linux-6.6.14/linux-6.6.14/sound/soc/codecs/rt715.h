@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rt715.h -- RT715 ALSA SoC audio driver header
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- */
-
 #ifndef __RT715_H__
 #define __RT715_H__
-
 #include <linux/regulator/consumer.h>
-
 struct rt715_priv {
 	struct regmap *regmap;
 	struct regmap *sdw_regmap;
@@ -25,8 +16,6 @@ struct rt715_priv {
 	unsigned int kctl_8ch_switch_ori[8];
 	unsigned int kctl_8ch_vol_ori[8];
 };
-
-/* NID */
 #define RT715_AUDIO_FUNCTION_GROUP			0x01
 #define RT715_MIC_ADC					0x07
 #define RT715_LINE_ADC					0x08
@@ -46,13 +35,9 @@ struct rt715_priv {
 #define RT715_MUX_IN4					0x25
 #define RT715_MIX_ADC2					0x27
 #define RT715_INLINE_CMD				0x55
-
-/* Index (NID:20h) */
 #define RT715_VD_CLEAR_CTRL				0x01
 #define RT715_SDW_INPUT_SEL				0x39
 #define RT715_EXT_DMIC_CLK_CTRL2			0x54
-
-/* Verb */
 #define RT715_VERB_SET_CONNECT_SEL			0x3100
 #define RT715_VERB_GET_CONNECT_SEL			0xb100
 #define RT715_VERB_SET_EAPD_BTLENABLE			0x3c00
@@ -89,7 +74,6 @@ struct rt715_priv {
 #define RT715_MIX_ADC2_FORMAT_H				0x7227
 #define RT715_MIX_ADC2_FORMAT_L				0x82a7
 #define RT715_FUNC_RESET				0xff01
-
 #define RT715_SET_AUDIO_POWER_STATE\
 	(RT715_VERB_SET_POWER_STATE | RT715_AUDIO_FUNCTION_GROUP)
 #define RT715_SET_PIN_DMIC1\
@@ -200,28 +184,20 @@ struct rt715_priv {
 	(RT715_VERB_SET_CONFIG_DEFAULT4 | RT715_DMIC3)
 #define RT715_SET_DMIC4_CONFIG_DEFAULT4\
 	(RT715_VERB_SET_CONFIG_DEFAULT4 | RT715_DMIC4)
-
-/* vendor register clear ctrl-1    (0x01)(NID:20h) */
 #define RT715_CLEAR_HIDDEN_REG (0x1 << 15)
-
-
 #define RT715_MUTE_SFT					7
 #define RT715_DIR_IN_SFT				6
 #define RT715_DIR_OUT_SFT				7
-
 enum {
 	RT715_AIF1,
 	RT715_AIF2,
 };
-
 #define RT715_POWER_UP_DELAY_MS 400
-
 int rt715_io_init(struct device *dev, struct sdw_slave *slave);
 int rt715_init(struct device *dev, struct regmap *sdw_regmap,
 	struct regmap *regmap, struct sdw_slave *slave);
-
 int hda_to_sdw(unsigned int nid, unsigned int verb, unsigned int payload,
 	       unsigned int *sdw_addr_h, unsigned int *sdw_data_h,
 	       unsigned int *sdw_addr_l, unsigned int *sdw_data_l);
 int rt715_clock_config(struct device *dev);
-#endif /* __RT715_H__ */
+#endif  

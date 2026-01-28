@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2015 Freescale Semiconductor, Inc.
- */
-
 #ifndef __LINUX_IMX7_IOMUXC_GPR_H
 #define __LINUX_IMX7_IOMUXC_GPR_H
-
 #define IOMUXC_GPR0	0x00
 #define IOMUXC_GPR1	0x04
 #define IOMUXC_GPR2	0x08
@@ -29,8 +23,6 @@
 #define IOMUXC_GPR20	0x50
 #define IOMUXC_GPR21	0x54
 #define IOMUXC_GPR22	0x58
-
-/* For imx7d iomux gpr register field define */
 #define IMX7D_GPR1_IRQ_MASK			(0x1 << 12)
 #define IMX7D_GPR1_ENET1_TX_CLK_SEL_MASK	(0x1 << 13)
 #define IMX7D_GPR1_ENET2_TX_CLK_SEL_MASK	(0x1 << 14)
@@ -38,11 +30,7 @@
 #define IMX7D_GPR1_ENET1_CLK_DIR_MASK		(0x1 << 17)
 #define IMX7D_GPR1_ENET2_CLK_DIR_MASK		(0x1 << 18)
 #define IMX7D_GPR1_ENET_CLK_DIR_MASK		(0x3 << 17)
-
 #define IMX7D_GPR5_CSI_MUX_CONTROL_MIPI		(0x1 << 4)
-
 #define IMX7D_GPR12_PCIE_PHY_REFCLK_SEL		BIT(5)
-
 #define IMX7D_GPR22_PCIE_PHY_PLL_LOCKED		BIT(31)
-
-#endif /* __LINUX_IMX7_IOMUXC_GPR_H */
+#endif  

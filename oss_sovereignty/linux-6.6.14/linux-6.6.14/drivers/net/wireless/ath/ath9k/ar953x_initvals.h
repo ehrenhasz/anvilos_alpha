@@ -1,41 +1,14 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2012 Qualcomm Atheros Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 #ifndef INITVALS_953X_H
 #define INITVALS_953X_H
-
 #define qca953x_1p0_mac_postamble ar9300_2p2_mac_postamble
-
 #define qca953x_1p0_soc_preamble ar955x_1p0_soc_preamble
-
 #define qca953x_1p0_soc_postamble ar9300_2p2_soc_postamble
-
 #define qca953x_1p0_common_rx_gain_table ar9300Common_rx_gain_table_2p2
-
 #define qca953x_1p0_common_wo_xlna_rx_gain_table ar9300Common_wo_xlna_rx_gain_table_2p2
-
 #define qca953x_1p0_modes_fast_clock ar9300Modes_fast_clock_2p2
-
 #define qca953x_1p0_common_wo_xlna_rx_gain_bounds ar955x_1p0_common_wo_xlna_rx_gain_bounds
-
 #define qca953x_1p0_common_rx_gain_bounds ar955x_1p0_common_rx_gain_bounds
-
 static const u32 qca953x_1p0_mac_core[][2] = {
-	/* Addr      allmodes  */
 	{0x00000008, 0x00000000},
 	{0x00000030, 0x00020085},
 	{0x00000034, 0x00000005},
@@ -191,9 +164,7 @@ static const u32 qca953x_1p0_mac_core[][2] = {
 	{0x000083cc, 0x00000200},
 	{0x000083d0, 0x8c7901ff},
 };
-
 static const u32 qca953x_1p0_baseband_core[][2] = {
-	/* Addr      allmodes  */
 	{0x00009800, 0xafe68e30},
 	{0x00009804, 0xfd14e000},
 	{0x00009808, 0x9c0a9f6b},
@@ -339,9 +310,7 @@ static const u32 qca953x_1p0_baseband_core[][2] = {
 	{0x0000b40c, 0x00820820},
 	{0x0000b420, 0x00000000},
 };
-
 static const u32 qca953x_1p0_baseband_postamble[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x00009810, 0xd00a8005, 0xd00a8005, 0xd00a8011, 0xd00a8011},
 	{0x00009820, 0x206a022e, 0x206a022e, 0x206a012e, 0x206a012e},
 	{0x00009824, 0x5ac640d0, 0x5ac640d0, 0x5ac640d0, 0x5ac640d0},
@@ -390,9 +359,7 @@ static const u32 qca953x_1p0_baseband_postamble[][5] = {
 	{0x0000ae20, 0x000001b5, 0x000001b5, 0x000001ce, 0x000001ce},
 	{0x0000b284, 0x00000000, 0x00000000, 0x00000010, 0x00000010},
 };
-
 static const u32 qca953x_1p0_radio_core[][2] = {
-	/* Addr      allmodes  */
 	{0x00016000, 0x36db6db6},
 	{0x00016004, 0x6db6db40},
 	{0x00016008, 0x73f00000},
@@ -481,9 +448,7 @@ static const u32 qca953x_1p0_radio_core[][2] = {
 	{0x000167d0, 0x00000000},
 	{0x000167d4, 0x00000000},
 };
-
 static const u32 qca953x_1p0_radio_postamble[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x00016098, 0xd2dd5554, 0xd2dd5554, 0xc4128f5c, 0xc4128f5c},
 	{0x0001609c, 0x0a566f3a, 0x0a566f3a, 0x0fd08f25, 0x0fd08f25},
 	{0x000160ac, 0xa4647c00, 0xa4647c00, 0x24646800, 0x24646800},
@@ -495,9 +460,7 @@ static const u32 qca953x_1p0_radio_postamble[][5] = {
 	{0x0001650c, 0xc0000000, 0xc0000000, 0x00000000, 0x00000000},
 	{0x00016540, 0x10804008, 0x10804008, 0x50804000, 0x50804000},
 };
-
 static const u32 qca953x_1p0_modes_xpa_tx_gain_table[][2] = {
-	/* Addr      allmodes  */
 	{0x0000a2dc, 0xfffd5aaa},
 	{0x0000a2e0, 0xfffe9ccc},
 	{0x0000a2e4, 0xffffe0f0},
@@ -561,9 +524,7 @@ static const u32 qca953x_1p0_modes_xpa_tx_gain_table[][2] = {
 	{0x00016444, 0x010002d4},
 	{0x00016448, 0x66482400},
 };
-
 static const u32 qca953x_1p0_modes_no_xpa_tx_gain_table[][2] = {
-	/* Addr      allmodes  */
 	{0x0000a2dc, 0xffd5f552},
 	{0x0000a2e0, 0xffe60664},
 	{0x0000a2e4, 0xfff80780},
@@ -626,9 +587,7 @@ static const u32 qca953x_1p0_modes_no_xpa_tx_gain_table[][2] = {
 	{0x00016444, 0x049242db},
 	{0x00016448, 0x6c927a70},
 };
-
 static const u32 qca953x_1p1_modes_no_xpa_tx_gain_table[][2] = {
-	/* Addr      allmodes  */
 	{0x0000a2dc, 0xffd5f552},
 	{0x0000a2e0, 0xffe60664},
 	{0x0000a2e4, 0xfff80780},
@@ -691,9 +650,7 @@ static const u32 qca953x_1p1_modes_no_xpa_tx_gain_table[][2] = {
 	{0x00016444, 0x049242db},
 	{0x00016448, 0x6c927a70},
 };
-
 static const u32 qca953x_1p1_modes_xpa_tx_gain_table[][2] = {
-	/* Addr      allmodes  */
 	{0x0000a2dc, 0xfffb52aa},
 	{0x0000a2e0, 0xfffd64cc},
 	{0x0000a2e4, 0xfffe80f0},
@@ -756,9 +713,7 @@ static const u32 qca953x_1p1_modes_xpa_tx_gain_table[][2] = {
 	{0x00016444, 0x024922db},
 	{0x00016448, 0x6c927a70},
 };
-
 static const u32 qca953x_1p1_modes_no_xpa_low_power_tx_gain_table[][2] = {
-	/* Addr      allmodes  */
 	{0x0000a2dc, 0xfff55592},
 	{0x0000a2e0, 0xfff99924},
 	{0x0000a2e4, 0xfffe1e00},
@@ -821,9 +776,7 @@ static const u32 qca953x_1p1_modes_no_xpa_low_power_tx_gain_table[][2] = {
 	{0x00016444, 0x044922db},
 	{0x00016448, 0x6c927a70},
 };
-
 static const u32 qca953x_2p0_baseband_core[][2] = {
-	/* Addr      allmodes  */
 	{0x00009800, 0xafe68e30},
 	{0x00009804, 0xfd14e000},
 	{0x00009808, 0x9c0a9f6b},
@@ -969,9 +922,7 @@ static const u32 qca953x_2p0_baseband_core[][2] = {
 	{0x0000b40c, 0x00820820},
 	{0x0000b420, 0x00000000},
 };
-
 static const u32 qca953x_2p0_baseband_postamble[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x00009810, 0xd00a8005, 0xd00a8005, 0xd00a8011, 0xd00a8011},
 	{0x00009820, 0x206a022e, 0x206a022e, 0x206a012e, 0x206a012e},
 	{0x00009824, 0x5ac640d0, 0x5ac640d0, 0x5ac640d0, 0x5ac640d0},
@@ -1020,9 +971,7 @@ static const u32 qca953x_2p0_baseband_postamble[][5] = {
 	{0x0000ae20, 0x000001b5, 0x000001b5, 0x000001ce, 0x000001ce},
 	{0x0000b284, 0x00000000, 0x00000000, 0x00000010, 0x00000010},
 };
-
 static const u32 qca953x_2p0_common_wo_xlna_rx_gain_table[][2] = {
-	/* Addr      allmodes  */
 	{0x0000a000, 0x00010000},
 	{0x0000a004, 0x00030002},
 	{0x0000a008, 0x00050004},
@@ -1280,15 +1229,11 @@ static const u32 qca953x_2p0_common_wo_xlna_rx_gain_table[][2] = {
 	{0x0000b1f8, 0x00000396},
 	{0x0000b1fc, 0x00000196},
 };
-
 static const u32 qca953x_2p0_common_wo_xlna_rx_gain_bounds[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x00009e44, 0xfe321e27, 0xfe321e27, 0xfe291e27, 0xfe291e27},
 	{0x00009e48, 0x5030201a, 0x5030201a, 0x50302012, 0x50302012},
 };
-
 static const u32 qca953x_2p0_modes_xpa_tx_gain_table[][2] = {
-	/* Addr      allmodes  */
 	{0x0000a2dc, 0xfffb52aa},
 	{0x0000a2e0, 0xfffd64cc},
 	{0x0000a2e4, 0xfffe80f0},
@@ -1351,9 +1296,7 @@ static const u32 qca953x_2p0_modes_xpa_tx_gain_table[][2] = {
 	{0x00016444, 0x024922db},
 	{0x00016448, 0x6c927a70},
 };
-
 static const u32 qca953x_2p0_modes_no_xpa_tx_gain_table[][2] = {
-	/* Addr      allmodes  */
 	{0x0000a2dc, 0xffd5f552},
 	{0x0000a2e0, 0xffe60664},
 	{0x0000a2e4, 0xfff80780},
@@ -1416,5 +1359,4 @@ static const u32 qca953x_2p0_modes_no_xpa_tx_gain_table[][2] = {
 	{0x00016444, 0x049242db},
 	{0x00016448, 0x6c927a70},
 };
-
-#endif /* INITVALS_953X_H */
+#endif  

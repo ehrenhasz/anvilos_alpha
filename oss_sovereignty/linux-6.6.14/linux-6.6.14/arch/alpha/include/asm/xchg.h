@@ -1,24 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ALPHA_CMPXCHG_H
 #error Do not include xchg.h directly!
 #else
-/*
- * xchg/xchg_local and cmpxchg/cmpxchg_local share the same code
- * except that local version do not have the expensive memory barrier.
- * So this file is included twice from asm/cmpxchg.h.
- */
-
-/*
- * Atomic exchange.
- * Since it can be used to implement critical sections
- * it must clobber "memory" (also for interrupts in UP).
- */
-
 static inline unsigned long
 ____xchg(_u8, volatile char *m, unsigned long val)
 {
 	unsigned long ret, tmp, addr64;
-
 	__asm__ __volatile__(
 	"	andnot	%4,7,%3\n"
 	"	insbl	%1,%4,%1\n"
@@ -33,15 +19,12 @@ ____xchg(_u8, volatile char *m, unsigned long val)
 	".previous"
 	: "=&r" (ret), "=&r" (val), "=&r" (tmp), "=&r" (addr64)
 	: "r" ((long)m), "1" (val) : "memory");
-
 	return ret;
 }
-
 static inline unsigned long
 ____xchg(_u16, volatile short *m, unsigned long val)
 {
 	unsigned long ret, tmp, addr64;
-
 	__asm__ __volatile__(
 	"	andnot	%4,7,%3\n"
 	"	inswl	%1,%4,%1\n"
@@ -56,15 +39,12 @@ ____xchg(_u16, volatile short *m, unsigned long val)
 	".previous"
 	: "=&r" (ret), "=&r" (val), "=&r" (tmp), "=&r" (addr64)
 	: "r" ((long)m), "1" (val) : "memory");
-
 	return ret;
 }
-
 static inline unsigned long
 ____xchg(_u32, volatile int *m, unsigned long val)
 {
 	unsigned long dummy;
-
 	__asm__ __volatile__(
 	"1:	ldl_l %0,%4\n"
 	"	bis $31,%3,%1\n"
@@ -75,15 +55,12 @@ ____xchg(_u32, volatile int *m, unsigned long val)
 	".previous"
 	: "=&r" (val), "=&r" (dummy), "=m" (*m)
 	: "rI" (val), "m" (*m) : "memory");
-
 	return val;
 }
-
 static inline unsigned long
 ____xchg(_u64, volatile long *m, unsigned long val)
 {
 	unsigned long dummy;
-
 	__asm__ __volatile__(
 	"1:	ldq_l %0,%4\n"
 	"	bis $31,%3,%1\n"
@@ -94,14 +71,9 @@ ____xchg(_u64, volatile long *m, unsigned long val)
 	".previous"
 	: "=&r" (val), "=&r" (dummy), "=m" (*m)
 	: "rI" (val), "m" (*m) : "memory");
-
 	return val;
 }
-
-/* This function doesn't exist, so you'll get a linker error
-   if something tries to do an invalid xchg().  */
 extern void __xchg_called_with_bad_pointer(void);
-
 static __always_inline unsigned long
 ____xchg(, volatile void *ptr, unsigned long x, int size)
 {
@@ -118,18 +90,10 @@ ____xchg(, volatile void *ptr, unsigned long x, int size)
 	__xchg_called_with_bad_pointer();
 	return x;
 }
-
-/*
- * Atomic compare and exchange.  Compare OLD with MEM, if identical,
- * store NEW in MEM.  Return the initial value in MEM.  Success is
- * indicated by comparing RETURN with OLD.
- */
-
 static inline unsigned long
 ____cmpxchg(_u8, volatile char *m, unsigned char old, unsigned char new)
 {
 	unsigned long prev, tmp, cmp, addr64;
-
 	__asm__ __volatile__(
 	"	andnot	%5,7,%4\n"
 	"	insbl	%1,%5,%1\n"
@@ -147,15 +111,12 @@ ____cmpxchg(_u8, volatile char *m, unsigned char old, unsigned char new)
 	".previous"
 	: "=&r" (prev), "=&r" (new), "=&r" (tmp), "=&r" (cmp), "=&r" (addr64)
 	: "r" ((long)m), "Ir" (old), "1" (new) : "memory");
-
 	return prev;
 }
-
 static inline unsigned long
 ____cmpxchg(_u16, volatile short *m, unsigned short old, unsigned short new)
 {
 	unsigned long prev, tmp, cmp, addr64;
-
 	__asm__ __volatile__(
 	"	andnot	%5,7,%4\n"
 	"	inswl	%1,%5,%1\n"
@@ -173,15 +134,12 @@ ____cmpxchg(_u16, volatile short *m, unsigned short old, unsigned short new)
 	".previous"
 	: "=&r" (prev), "=&r" (new), "=&r" (tmp), "=&r" (cmp), "=&r" (addr64)
 	: "r" ((long)m), "Ir" (old), "1" (new) : "memory");
-
 	return prev;
 }
-
 static inline unsigned long
 ____cmpxchg(_u32, volatile int *m, int old, int new)
 {
 	unsigned long prev, cmp;
-
 	__asm__ __volatile__(
 	"1:	ldl_l %0,%5\n"
 	"	cmpeq %0,%3,%1\n"
@@ -195,15 +153,12 @@ ____cmpxchg(_u32, volatile int *m, int old, int new)
 	".previous"
 	: "=&r"(prev), "=&r"(cmp), "=m"(*m)
 	: "r"((long) old), "r"(new), "m"(*m) : "memory");
-
 	return prev;
 }
-
 static inline unsigned long
 ____cmpxchg(_u64, volatile long *m, unsigned long old, unsigned long new)
 {
 	unsigned long prev, cmp;
-
 	__asm__ __volatile__(
 	"1:	ldq_l %0,%5\n"
 	"	cmpeq %0,%3,%1\n"
@@ -217,14 +172,9 @@ ____cmpxchg(_u64, volatile long *m, unsigned long old, unsigned long new)
 	".previous"
 	: "=&r"(prev), "=&r"(cmp), "=m"(*m)
 	: "r"((long) old), "r"(new), "m"(*m) : "memory");
-
 	return prev;
 }
-
-/* This function doesn't exist, so you'll get a linker error
-   if something tries to do an invalid cmpxchg().  */
 extern void __cmpxchg_called_with_bad_pointer(void);
-
 static __always_inline unsigned long
 ____cmpxchg(, volatile void *ptr, unsigned long old, unsigned long new,
 	      int size)
@@ -242,5 +192,4 @@ ____cmpxchg(, volatile void *ptr, unsigned long old, unsigned long new,
 	__cmpxchg_called_with_bad_pointer();
 	return old;
 }
-
 #endif

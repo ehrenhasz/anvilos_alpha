@@ -1,49 +1,32 @@
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/ethtool.yaml */
-/* YNL-GEN user header */
-/* YNL-ARG --user-header linux/ethtool_netlink.h --exclude-op stats-get */
-
 #ifndef _LINUX_ETHTOOL_GEN_H
 #define _LINUX_ETHTOOL_GEN_H
-
 #include <stdlib.h>
 #include <string.h>
 #include <linux/types.h>
 #include <linux/ethtool.h>
-
 struct ynl_sock;
-
 extern const struct ynl_family ynl_ethtool_family;
-
-/* Enums */
 const char *ethtool_op_str(int op);
 const char *ethtool_udp_tunnel_type_str(int value);
 const char *ethtool_stringset_str(enum ethtool_stringset value);
-
-/* Common nested types */
 struct ethtool_header {
 	struct {
 		__u32 dev_index:1;
 		__u32 dev_name_len;
 		__u32 flags:1;
 	} _present;
-
 	__u32 dev_index;
 	char *dev_name;
 	__u32 flags;
 };
-
 struct ethtool_pause_stat {
 	struct {
 		__u32 tx_frames:1;
 		__u32 rx_frames:1;
 	} _present;
-
 	__u64 tx_frames;
 	__u64 rx_frames;
 };
-
 struct ethtool_cable_test_tdr_cfg {
 	struct {
 		__u32 first:1;
@@ -51,25 +34,21 @@ struct ethtool_cable_test_tdr_cfg {
 		__u32 step:1;
 		__u32 pair:1;
 	} _present;
-
 	__u32 first;
 	__u32 last;
 	__u32 step;
 	__u8 pair;
 };
-
 struct ethtool_fec_stat {
 	struct {
 		__u32 corrected_len;
 		__u32 uncorr_len;
 		__u32 corr_bits_len;
 	} _present;
-
 	void *corrected;
 	void *uncorr;
 	void *corr_bits;
 };
-
 struct ethtool_mm_stat {
 	struct {
 		__u32 reassembly_errors:1;
@@ -79,7 +58,6 @@ struct ethtool_mm_stat {
 		__u32 tx_frag_count:1;
 		__u32 hold_count:1;
 	} _present;
-
 	__u64 reassembly_errors;
 	__u64 smd_errors;
 	__u64 reassembly_ok;
@@ -87,145 +65,116 @@ struct ethtool_mm_stat {
 	__u64 tx_frag_count;
 	__u64 hold_count;
 };
-
 struct ethtool_cable_result {
 	struct {
 		__u32 pair:1;
 		__u32 code:1;
 	} _present;
-
 	__u8 pair;
 	__u8 code;
 };
-
 struct ethtool_cable_fault_length {
 	struct {
 		__u32 pair:1;
 		__u32 cm:1;
 	} _present;
-
 	__u8 pair;
 	__u32 cm;
 };
-
 struct ethtool_bitset_bit {
 	struct {
 		__u32 index:1;
 		__u32 name_len;
 		__u32 value:1;
 	} _present;
-
 	__u32 index;
 	char *name;
 };
-
 struct ethtool_tunnel_udp_entry {
 	struct {
 		__u32 port:1;
 		__u32 type:1;
 	} _present;
-
-	__u16 port /* big-endian */;
+	__u16 port  ;
 	__u32 type;
 };
-
 struct ethtool_string {
 	struct {
 		__u32 index:1;
 		__u32 value_len;
 	} _present;
-
 	__u32 index;
 	char *value;
 };
-
 struct ethtool_cable_nest {
 	struct {
 		__u32 result:1;
 		__u32 fault_length:1;
 	} _present;
-
 	struct ethtool_cable_result result;
 	struct ethtool_cable_fault_length fault_length;
 };
-
 struct ethtool_bitset_bits {
 	unsigned int n_bit;
 	struct ethtool_bitset_bit *bit;
 };
-
 struct ethtool_strings {
 	unsigned int n_string;
 	struct ethtool_string *string;
 };
-
 struct ethtool_bitset {
 	struct {
 		__u32 nomask:1;
 		__u32 size:1;
 		__u32 bits:1;
 	} _present;
-
 	__u32 size;
 	struct ethtool_bitset_bits bits;
 };
-
 struct ethtool_stringset_ {
 	struct {
 		__u32 id:1;
 		__u32 count:1;
 	} _present;
-
 	__u32 id;
 	__u32 count;
 	unsigned int n_strings;
 	struct ethtool_strings *strings;
 };
-
 struct ethtool_tunnel_udp_table {
 	struct {
 		__u32 size:1;
 		__u32 types:1;
 	} _present;
-
 	__u32 size;
 	struct ethtool_bitset types;
 	unsigned int n_entry;
 	struct ethtool_tunnel_udp_entry *entry;
 };
-
 struct ethtool_stringsets {
 	unsigned int n_stringset;
 	struct ethtool_stringset_ *stringset;
 };
-
 struct ethtool_tunnel_udp {
 	struct {
 		__u32 table:1;
 	} _present;
-
 	struct ethtool_tunnel_udp_table table;
 };
-
-/* ============== ETHTOOL_MSG_STRSET_GET ============== */
-/* ETHTOOL_MSG_STRSET_GET - do */
 struct ethtool_strset_get_req {
 	struct {
 		__u32 header:1;
 		__u32 stringsets:1;
 		__u32 counts_only:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_stringsets stringsets;
 };
-
 static inline struct ethtool_strset_get_req *ethtool_strset_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_strset_get_req));
 }
 void ethtool_strset_get_req_free(struct ethtool_strset_get_req *req);
-
 static inline void
 ethtool_strset_get_req_set_header_dev_index(struct ethtool_strset_get_req *req,
 					    __u32 dev_index)
@@ -266,44 +215,32 @@ ethtool_strset_get_req_set_counts_only(struct ethtool_strset_get_req *req)
 {
 	req->_present.counts_only = 1;
 }
-
 struct ethtool_strset_get_rsp {
 	struct {
 		__u32 header:1;
 		__u32 stringsets:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_stringsets stringsets;
 };
-
 void ethtool_strset_get_rsp_free(struct ethtool_strset_get_rsp *rsp);
-
-/*
- * Get string set from the kernel.
- */
 struct ethtool_strset_get_rsp *
 ethtool_strset_get(struct ynl_sock *ys, struct ethtool_strset_get_req *req);
-
-/* ETHTOOL_MSG_STRSET_GET - dump */
 struct ethtool_strset_get_req_dump {
 	struct {
 		__u32 header:1;
 		__u32 stringsets:1;
 		__u32 counts_only:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_stringsets stringsets;
 };
-
 static inline struct ethtool_strset_get_req_dump *
 ethtool_strset_get_req_dump_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_strset_get_req_dump));
 }
 void ethtool_strset_get_req_dump_free(struct ethtool_strset_get_req_dump *req);
-
 static inline void
 ethtool_strset_get_req_dump_set_header_dev_index(struct ethtool_strset_get_req_dump *req,
 						 __u32 dev_index)
@@ -344,35 +281,26 @@ ethtool_strset_get_req_dump_set_counts_only(struct ethtool_strset_get_req_dump *
 {
 	req->_present.counts_only = 1;
 }
-
 struct ethtool_strset_get_list {
 	struct ethtool_strset_get_list *next;
 	struct ethtool_strset_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_strset_get_list_free(struct ethtool_strset_get_list *rsp);
-
 struct ethtool_strset_get_list *
 ethtool_strset_get_dump(struct ynl_sock *ys,
 			struct ethtool_strset_get_req_dump *req);
-
-/* ============== ETHTOOL_MSG_LINKINFO_GET ============== */
-/* ETHTOOL_MSG_LINKINFO_GET - do */
 struct ethtool_linkinfo_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_linkinfo_get_req *
 ethtool_linkinfo_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_linkinfo_get_req));
 }
 void ethtool_linkinfo_get_req_free(struct ethtool_linkinfo_get_req *req);
-
 static inline void
 ethtool_linkinfo_get_req_set_header_dev_index(struct ethtool_linkinfo_get_req *req,
 					      __u32 dev_index)
@@ -399,7 +327,6 @@ ethtool_linkinfo_get_req_set_header_flags(struct ethtool_linkinfo_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_linkinfo_get_rsp {
 	struct {
 		__u32 header:1;
@@ -409,7 +336,6 @@ struct ethtool_linkinfo_get_rsp {
 		__u32 tp_mdix_ctrl:1;
 		__u32 transceiver:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 port;
 	__u8 phyaddr;
@@ -417,24 +343,15 @@ struct ethtool_linkinfo_get_rsp {
 	__u8 tp_mdix_ctrl;
 	__u8 transceiver;
 };
-
 void ethtool_linkinfo_get_rsp_free(struct ethtool_linkinfo_get_rsp *rsp);
-
-/*
- * Get link info.
- */
 struct ethtool_linkinfo_get_rsp *
 ethtool_linkinfo_get(struct ynl_sock *ys, struct ethtool_linkinfo_get_req *req);
-
-/* ETHTOOL_MSG_LINKINFO_GET - dump */
 struct ethtool_linkinfo_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_linkinfo_get_req_dump *
 ethtool_linkinfo_get_req_dump_alloc(void)
 {
@@ -442,7 +359,6 @@ ethtool_linkinfo_get_req_dump_alloc(void)
 }
 void
 ethtool_linkinfo_get_req_dump_free(struct ethtool_linkinfo_get_req_dump *req);
-
 static inline void
 ethtool_linkinfo_get_req_dump_set_header_dev_index(struct ethtool_linkinfo_get_req_dump *req,
 						   __u32 dev_index)
@@ -469,19 +385,14 @@ ethtool_linkinfo_get_req_dump_set_header_flags(struct ethtool_linkinfo_get_req_d
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_linkinfo_get_list {
 	struct ethtool_linkinfo_get_list *next;
 	struct ethtool_linkinfo_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_linkinfo_get_list_free(struct ethtool_linkinfo_get_list *rsp);
-
 struct ethtool_linkinfo_get_list *
 ethtool_linkinfo_get_dump(struct ynl_sock *ys,
 			  struct ethtool_linkinfo_get_req_dump *req);
-
-/* ETHTOOL_MSG_LINKINFO_GET - notify */
 struct ethtool_linkinfo_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -489,11 +400,7 @@ struct ethtool_linkinfo_get_ntf {
 	void (*free)(struct ethtool_linkinfo_get_ntf *ntf);
 	struct ethtool_linkinfo_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_linkinfo_get_ntf_free(struct ethtool_linkinfo_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_LINKINFO_SET ============== */
-/* ETHTOOL_MSG_LINKINFO_SET - do */
 struct ethtool_linkinfo_set_req {
 	struct {
 		__u32 header:1;
@@ -503,7 +410,6 @@ struct ethtool_linkinfo_set_req {
 		__u32 tp_mdix_ctrl:1;
 		__u32 transceiver:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 port;
 	__u8 phyaddr;
@@ -511,14 +417,12 @@ struct ethtool_linkinfo_set_req {
 	__u8 tp_mdix_ctrl;
 	__u8 transceiver;
 };
-
 static inline struct ethtool_linkinfo_set_req *
 ethtool_linkinfo_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_linkinfo_set_req));
 }
 void ethtool_linkinfo_set_req_free(struct ethtool_linkinfo_set_req *req);
-
 static inline void
 ethtool_linkinfo_set_req_set_header_dev_index(struct ethtool_linkinfo_set_req *req,
 					      __u32 dev_index)
@@ -580,30 +484,20 @@ ethtool_linkinfo_set_req_set_transceiver(struct ethtool_linkinfo_set_req *req,
 	req->_present.transceiver = 1;
 	req->transceiver = transceiver;
 }
-
-/*
- * Set link info.
- */
 int ethtool_linkinfo_set(struct ynl_sock *ys,
 			 struct ethtool_linkinfo_set_req *req);
-
-/* ============== ETHTOOL_MSG_LINKMODES_GET ============== */
-/* ETHTOOL_MSG_LINKMODES_GET - do */
 struct ethtool_linkmodes_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_linkmodes_get_req *
 ethtool_linkmodes_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_linkmodes_get_req));
 }
 void ethtool_linkmodes_get_req_free(struct ethtool_linkmodes_get_req *req);
-
 static inline void
 ethtool_linkmodes_get_req_set_header_dev_index(struct ethtool_linkmodes_get_req *req,
 					       __u32 dev_index)
@@ -630,7 +524,6 @@ ethtool_linkmodes_get_req_set_header_flags(struct ethtool_linkmodes_get_req *req
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_linkmodes_get_rsp {
 	struct {
 		__u32 header:1;
@@ -644,7 +537,6 @@ struct ethtool_linkmodes_get_rsp {
 		__u32 lanes:1;
 		__u32 rate_matching:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 autoneg;
 	struct ethtool_bitset ours;
@@ -656,25 +548,16 @@ struct ethtool_linkmodes_get_rsp {
 	__u32 lanes;
 	__u8 rate_matching;
 };
-
 void ethtool_linkmodes_get_rsp_free(struct ethtool_linkmodes_get_rsp *rsp);
-
-/*
- * Get link modes.
- */
 struct ethtool_linkmodes_get_rsp *
 ethtool_linkmodes_get(struct ynl_sock *ys,
 		      struct ethtool_linkmodes_get_req *req);
-
-/* ETHTOOL_MSG_LINKMODES_GET - dump */
 struct ethtool_linkmodes_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_linkmodes_get_req_dump *
 ethtool_linkmodes_get_req_dump_alloc(void)
 {
@@ -682,7 +565,6 @@ ethtool_linkmodes_get_req_dump_alloc(void)
 }
 void
 ethtool_linkmodes_get_req_dump_free(struct ethtool_linkmodes_get_req_dump *req);
-
 static inline void
 ethtool_linkmodes_get_req_dump_set_header_dev_index(struct ethtool_linkmodes_get_req_dump *req,
 						    __u32 dev_index)
@@ -709,19 +591,14 @@ ethtool_linkmodes_get_req_dump_set_header_flags(struct ethtool_linkmodes_get_req
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_linkmodes_get_list {
 	struct ethtool_linkmodes_get_list *next;
 	struct ethtool_linkmodes_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_linkmodes_get_list_free(struct ethtool_linkmodes_get_list *rsp);
-
 struct ethtool_linkmodes_get_list *
 ethtool_linkmodes_get_dump(struct ynl_sock *ys,
 			   struct ethtool_linkmodes_get_req_dump *req);
-
-/* ETHTOOL_MSG_LINKMODES_GET - notify */
 struct ethtool_linkmodes_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -729,11 +606,7 @@ struct ethtool_linkmodes_get_ntf {
 	void (*free)(struct ethtool_linkmodes_get_ntf *ntf);
 	struct ethtool_linkmodes_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_linkmodes_get_ntf_free(struct ethtool_linkmodes_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_LINKMODES_SET ============== */
-/* ETHTOOL_MSG_LINKMODES_SET - do */
 struct ethtool_linkmodes_set_req {
 	struct {
 		__u32 header:1;
@@ -747,7 +620,6 @@ struct ethtool_linkmodes_set_req {
 		__u32 lanes:1;
 		__u32 rate_matching:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 autoneg;
 	struct ethtool_bitset ours;
@@ -759,14 +631,12 @@ struct ethtool_linkmodes_set_req {
 	__u32 lanes;
 	__u8 rate_matching;
 };
-
 static inline struct ethtool_linkmodes_set_req *
 ethtool_linkmodes_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_linkmodes_set_req));
 }
 void ethtool_linkmodes_set_req_free(struct ethtool_linkmodes_set_req *req);
-
 static inline void
 ethtool_linkmodes_set_req_set_header_dev_index(struct ethtool_linkmodes_set_req *req,
 					       __u32 dev_index)
@@ -888,30 +758,20 @@ ethtool_linkmodes_set_req_set_rate_matching(struct ethtool_linkmodes_set_req *re
 	req->_present.rate_matching = 1;
 	req->rate_matching = rate_matching;
 }
-
-/*
- * Set link modes.
- */
 int ethtool_linkmodes_set(struct ynl_sock *ys,
 			  struct ethtool_linkmodes_set_req *req);
-
-/* ============== ETHTOOL_MSG_LINKSTATE_GET ============== */
-/* ETHTOOL_MSG_LINKSTATE_GET - do */
 struct ethtool_linkstate_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_linkstate_get_req *
 ethtool_linkstate_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_linkstate_get_req));
 }
 void ethtool_linkstate_get_req_free(struct ethtool_linkstate_get_req *req);
-
 static inline void
 ethtool_linkstate_get_req_set_header_dev_index(struct ethtool_linkstate_get_req *req,
 					       __u32 dev_index)
@@ -938,7 +798,6 @@ ethtool_linkstate_get_req_set_header_flags(struct ethtool_linkstate_get_req *req
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_linkstate_get_rsp {
 	struct {
 		__u32 header:1;
@@ -949,7 +808,6 @@ struct ethtool_linkstate_get_rsp {
 		__u32 ext_substate:1;
 		__u32 ext_down_cnt:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 link;
 	__u32 sqi;
@@ -958,25 +816,16 @@ struct ethtool_linkstate_get_rsp {
 	__u8 ext_substate;
 	__u32 ext_down_cnt;
 };
-
 void ethtool_linkstate_get_rsp_free(struct ethtool_linkstate_get_rsp *rsp);
-
-/*
- * Get link state.
- */
 struct ethtool_linkstate_get_rsp *
 ethtool_linkstate_get(struct ynl_sock *ys,
 		      struct ethtool_linkstate_get_req *req);
-
-/* ETHTOOL_MSG_LINKSTATE_GET - dump */
 struct ethtool_linkstate_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_linkstate_get_req_dump *
 ethtool_linkstate_get_req_dump_alloc(void)
 {
@@ -984,7 +833,6 @@ ethtool_linkstate_get_req_dump_alloc(void)
 }
 void
 ethtool_linkstate_get_req_dump_free(struct ethtool_linkstate_get_req_dump *req);
-
 static inline void
 ethtool_linkstate_get_req_dump_set_header_dev_index(struct ethtool_linkstate_get_req_dump *req,
 						    __u32 dev_index)
@@ -1011,34 +859,25 @@ ethtool_linkstate_get_req_dump_set_header_flags(struct ethtool_linkstate_get_req
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_linkstate_get_list {
 	struct ethtool_linkstate_get_list *next;
 	struct ethtool_linkstate_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_linkstate_get_list_free(struct ethtool_linkstate_get_list *rsp);
-
 struct ethtool_linkstate_get_list *
 ethtool_linkstate_get_dump(struct ynl_sock *ys,
 			   struct ethtool_linkstate_get_req_dump *req);
-
-/* ============== ETHTOOL_MSG_DEBUG_GET ============== */
-/* ETHTOOL_MSG_DEBUG_GET - do */
 struct ethtool_debug_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_debug_get_req *ethtool_debug_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_debug_get_req));
 }
 void ethtool_debug_get_req_free(struct ethtool_debug_get_req *req);
-
 static inline void
 ethtool_debug_get_req_set_header_dev_index(struct ethtool_debug_get_req *req,
 					   __u32 dev_index)
@@ -1065,41 +904,29 @@ ethtool_debug_get_req_set_header_flags(struct ethtool_debug_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_debug_get_rsp {
 	struct {
 		__u32 header:1;
 		__u32 msgmask:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset msgmask;
 };
-
 void ethtool_debug_get_rsp_free(struct ethtool_debug_get_rsp *rsp);
-
-/*
- * Get debug message mask.
- */
 struct ethtool_debug_get_rsp *
 ethtool_debug_get(struct ynl_sock *ys, struct ethtool_debug_get_req *req);
-
-/* ETHTOOL_MSG_DEBUG_GET - dump */
 struct ethtool_debug_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_debug_get_req_dump *
 ethtool_debug_get_req_dump_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_debug_get_req_dump));
 }
 void ethtool_debug_get_req_dump_free(struct ethtool_debug_get_req_dump *req);
-
 static inline void
 ethtool_debug_get_req_dump_set_header_dev_index(struct ethtool_debug_get_req_dump *req,
 						__u32 dev_index)
@@ -1126,19 +953,14 @@ ethtool_debug_get_req_dump_set_header_flags(struct ethtool_debug_get_req_dump *r
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_debug_get_list {
 	struct ethtool_debug_get_list *next;
 	struct ethtool_debug_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_debug_get_list_free(struct ethtool_debug_get_list *rsp);
-
 struct ethtool_debug_get_list *
 ethtool_debug_get_dump(struct ynl_sock *ys,
 		       struct ethtool_debug_get_req_dump *req);
-
-/* ETHTOOL_MSG_DEBUG_GET - notify */
 struct ethtool_debug_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -1146,27 +968,20 @@ struct ethtool_debug_get_ntf {
 	void (*free)(struct ethtool_debug_get_ntf *ntf);
 	struct ethtool_debug_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_debug_get_ntf_free(struct ethtool_debug_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_DEBUG_SET ============== */
-/* ETHTOOL_MSG_DEBUG_SET - do */
 struct ethtool_debug_set_req {
 	struct {
 		__u32 header:1;
 		__u32 msgmask:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset msgmask;
 };
-
 static inline struct ethtool_debug_set_req *ethtool_debug_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_debug_set_req));
 }
 void ethtool_debug_set_req_free(struct ethtool_debug_set_req *req);
-
 static inline void
 ethtool_debug_set_req_set_header_dev_index(struct ethtool_debug_set_req *req,
 					   __u32 dev_index)
@@ -1216,28 +1031,18 @@ __ethtool_debug_set_req_set_msgmask_bits_bit(struct ethtool_debug_set_req *req,
 	req->msgmask.bits.bit = bit;
 	req->msgmask.bits.n_bit = n_bit;
 }
-
-/*
- * Set debug message mask.
- */
 int ethtool_debug_set(struct ynl_sock *ys, struct ethtool_debug_set_req *req);
-
-/* ============== ETHTOOL_MSG_WOL_GET ============== */
-/* ETHTOOL_MSG_WOL_GET - do */
 struct ethtool_wol_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_wol_get_req *ethtool_wol_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_wol_get_req));
 }
 void ethtool_wol_get_req_free(struct ethtool_wol_get_req *req);
-
 static inline void
 ethtool_wol_get_req_set_header_dev_index(struct ethtool_wol_get_req *req,
 					 __u32 dev_index)
@@ -1264,43 +1069,31 @@ ethtool_wol_get_req_set_header_flags(struct ethtool_wol_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_wol_get_rsp {
 	struct {
 		__u32 header:1;
 		__u32 modes:1;
 		__u32 sopass_len;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset modes;
 	void *sopass;
 };
-
 void ethtool_wol_get_rsp_free(struct ethtool_wol_get_rsp *rsp);
-
-/*
- * Get WOL params.
- */
 struct ethtool_wol_get_rsp *
 ethtool_wol_get(struct ynl_sock *ys, struct ethtool_wol_get_req *req);
-
-/* ETHTOOL_MSG_WOL_GET - dump */
 struct ethtool_wol_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_wol_get_req_dump *
 ethtool_wol_get_req_dump_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_wol_get_req_dump));
 }
 void ethtool_wol_get_req_dump_free(struct ethtool_wol_get_req_dump *req);
-
 static inline void
 ethtool_wol_get_req_dump_set_header_dev_index(struct ethtool_wol_get_req_dump *req,
 					      __u32 dev_index)
@@ -1327,18 +1120,13 @@ ethtool_wol_get_req_dump_set_header_flags(struct ethtool_wol_get_req_dump *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_wol_get_list {
 	struct ethtool_wol_get_list *next;
 	struct ethtool_wol_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_wol_get_list_free(struct ethtool_wol_get_list *rsp);
-
 struct ethtool_wol_get_list *
 ethtool_wol_get_dump(struct ynl_sock *ys, struct ethtool_wol_get_req_dump *req);
-
-/* ETHTOOL_MSG_WOL_GET - notify */
 struct ethtool_wol_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -1346,29 +1134,22 @@ struct ethtool_wol_get_ntf {
 	void (*free)(struct ethtool_wol_get_ntf *ntf);
 	struct ethtool_wol_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_wol_get_ntf_free(struct ethtool_wol_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_WOL_SET ============== */
-/* ETHTOOL_MSG_WOL_SET - do */
 struct ethtool_wol_set_req {
 	struct {
 		__u32 header:1;
 		__u32 modes:1;
 		__u32 sopass_len;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset modes;
 	void *sopass;
 };
-
 static inline struct ethtool_wol_set_req *ethtool_wol_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_wol_set_req));
 }
 void ethtool_wol_set_req_free(struct ethtool_wol_set_req *req);
-
 static inline void
 ethtool_wol_set_req_set_header_dev_index(struct ethtool_wol_set_req *req,
 					 __u32 dev_index)
@@ -1426,29 +1207,19 @@ ethtool_wol_set_req_set_sopass(struct ethtool_wol_set_req *req,
 	req->sopass = malloc(req->_present.sopass_len);
 	memcpy(req->sopass, sopass, req->_present.sopass_len);
 }
-
-/*
- * Set WOL params.
- */
 int ethtool_wol_set(struct ynl_sock *ys, struct ethtool_wol_set_req *req);
-
-/* ============== ETHTOOL_MSG_FEATURES_GET ============== */
-/* ETHTOOL_MSG_FEATURES_GET - do */
 struct ethtool_features_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_features_get_req *
 ethtool_features_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_features_get_req));
 }
 void ethtool_features_get_req_free(struct ethtool_features_get_req *req);
-
 static inline void
 ethtool_features_get_req_set_header_dev_index(struct ethtool_features_get_req *req,
 					      __u32 dev_index)
@@ -1475,7 +1246,6 @@ ethtool_features_get_req_set_header_flags(struct ethtool_features_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_features_get_rsp {
 	struct {
 		__u32 header:1;
@@ -1484,31 +1254,21 @@ struct ethtool_features_get_rsp {
 		__u32 active:1;
 		__u32 nochange:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset hw;
 	struct ethtool_bitset wanted;
 	struct ethtool_bitset active;
 	struct ethtool_bitset nochange;
 };
-
 void ethtool_features_get_rsp_free(struct ethtool_features_get_rsp *rsp);
-
-/*
- * Get features.
- */
 struct ethtool_features_get_rsp *
 ethtool_features_get(struct ynl_sock *ys, struct ethtool_features_get_req *req);
-
-/* ETHTOOL_MSG_FEATURES_GET - dump */
 struct ethtool_features_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_features_get_req_dump *
 ethtool_features_get_req_dump_alloc(void)
 {
@@ -1516,7 +1276,6 @@ ethtool_features_get_req_dump_alloc(void)
 }
 void
 ethtool_features_get_req_dump_free(struct ethtool_features_get_req_dump *req);
-
 static inline void
 ethtool_features_get_req_dump_set_header_dev_index(struct ethtool_features_get_req_dump *req,
 						   __u32 dev_index)
@@ -1543,19 +1302,14 @@ ethtool_features_get_req_dump_set_header_flags(struct ethtool_features_get_req_d
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_features_get_list {
 	struct ethtool_features_get_list *next;
 	struct ethtool_features_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_features_get_list_free(struct ethtool_features_get_list *rsp);
-
 struct ethtool_features_get_list *
 ethtool_features_get_dump(struct ynl_sock *ys,
 			  struct ethtool_features_get_req_dump *req);
-
-/* ETHTOOL_MSG_FEATURES_GET - notify */
 struct ethtool_features_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -1563,11 +1317,7 @@ struct ethtool_features_get_ntf {
 	void (*free)(struct ethtool_features_get_ntf *ntf);
 	struct ethtool_features_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_features_get_ntf_free(struct ethtool_features_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_FEATURES_SET ============== */
-/* ETHTOOL_MSG_FEATURES_SET - do */
 struct ethtool_features_set_req {
 	struct {
 		__u32 header:1;
@@ -1576,21 +1326,18 @@ struct ethtool_features_set_req {
 		__u32 active:1;
 		__u32 nochange:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset hw;
 	struct ethtool_bitset wanted;
 	struct ethtool_bitset active;
 	struct ethtool_bitset nochange;
 };
-
 static inline struct ethtool_features_set_req *
 ethtool_features_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_features_set_req));
 }
 void ethtool_features_set_req_free(struct ethtool_features_set_req *req);
-
 static inline void
 ethtool_features_set_req_set_header_dev_index(struct ethtool_features_set_req *req,
 					      __u32 dev_index)
@@ -1709,7 +1456,6 @@ __ethtool_features_set_req_set_nochange_bits_bit(struct ethtool_features_set_req
 	req->nochange.bits.bit = bit;
 	req->nochange.bits.n_bit = n_bit;
 }
-
 struct ethtool_features_set_rsp {
 	struct {
 		__u32 header:1;
@@ -1718,39 +1464,27 @@ struct ethtool_features_set_rsp {
 		__u32 active:1;
 		__u32 nochange:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset hw;
 	struct ethtool_bitset wanted;
 	struct ethtool_bitset active;
 	struct ethtool_bitset nochange;
 };
-
 void ethtool_features_set_rsp_free(struct ethtool_features_set_rsp *rsp);
-
-/*
- * Set features.
- */
 struct ethtool_features_set_rsp *
 ethtool_features_set(struct ynl_sock *ys, struct ethtool_features_set_req *req);
-
-/* ============== ETHTOOL_MSG_PRIVFLAGS_GET ============== */
-/* ETHTOOL_MSG_PRIVFLAGS_GET - do */
 struct ethtool_privflags_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_privflags_get_req *
 ethtool_privflags_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_privflags_get_req));
 }
 void ethtool_privflags_get_req_free(struct ethtool_privflags_get_req *req);
-
 static inline void
 ethtool_privflags_get_req_set_header_dev_index(struct ethtool_privflags_get_req *req,
 					       __u32 dev_index)
@@ -1777,35 +1511,24 @@ ethtool_privflags_get_req_set_header_flags(struct ethtool_privflags_get_req *req
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_privflags_get_rsp {
 	struct {
 		__u32 header:1;
 		__u32 flags:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset flags;
 };
-
 void ethtool_privflags_get_rsp_free(struct ethtool_privflags_get_rsp *rsp);
-
-/*
- * Get device private flags.
- */
 struct ethtool_privflags_get_rsp *
 ethtool_privflags_get(struct ynl_sock *ys,
 		      struct ethtool_privflags_get_req *req);
-
-/* ETHTOOL_MSG_PRIVFLAGS_GET - dump */
 struct ethtool_privflags_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_privflags_get_req_dump *
 ethtool_privflags_get_req_dump_alloc(void)
 {
@@ -1813,7 +1536,6 @@ ethtool_privflags_get_req_dump_alloc(void)
 }
 void
 ethtool_privflags_get_req_dump_free(struct ethtool_privflags_get_req_dump *req);
-
 static inline void
 ethtool_privflags_get_req_dump_set_header_dev_index(struct ethtool_privflags_get_req_dump *req,
 						    __u32 dev_index)
@@ -1840,19 +1562,14 @@ ethtool_privflags_get_req_dump_set_header_flags(struct ethtool_privflags_get_req
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_privflags_get_list {
 	struct ethtool_privflags_get_list *next;
 	struct ethtool_privflags_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_privflags_get_list_free(struct ethtool_privflags_get_list *rsp);
-
 struct ethtool_privflags_get_list *
 ethtool_privflags_get_dump(struct ynl_sock *ys,
 			   struct ethtool_privflags_get_req_dump *req);
-
-/* ETHTOOL_MSG_PRIVFLAGS_GET - notify */
 struct ethtool_privflags_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -1860,28 +1577,21 @@ struct ethtool_privflags_get_ntf {
 	void (*free)(struct ethtool_privflags_get_ntf *ntf);
 	struct ethtool_privflags_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_privflags_get_ntf_free(struct ethtool_privflags_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_PRIVFLAGS_SET ============== */
-/* ETHTOOL_MSG_PRIVFLAGS_SET - do */
 struct ethtool_privflags_set_req {
 	struct {
 		__u32 header:1;
 		__u32 flags:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset flags;
 };
-
 static inline struct ethtool_privflags_set_req *
 ethtool_privflags_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_privflags_set_req));
 }
 void ethtool_privflags_set_req_free(struct ethtool_privflags_set_req *req);
-
 static inline void
 ethtool_privflags_set_req_set_header_dev_index(struct ethtool_privflags_set_req *req,
 					       __u32 dev_index)
@@ -1931,29 +1641,19 @@ __ethtool_privflags_set_req_set_flags_bits_bit(struct ethtool_privflags_set_req 
 	req->flags.bits.bit = bit;
 	req->flags.bits.n_bit = n_bit;
 }
-
-/*
- * Set device private flags.
- */
 int ethtool_privflags_set(struct ynl_sock *ys,
 			  struct ethtool_privflags_set_req *req);
-
-/* ============== ETHTOOL_MSG_RINGS_GET ============== */
-/* ETHTOOL_MSG_RINGS_GET - do */
 struct ethtool_rings_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_rings_get_req *ethtool_rings_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_rings_get_req));
 }
 void ethtool_rings_get_req_free(struct ethtool_rings_get_req *req);
-
 static inline void
 ethtool_rings_get_req_set_header_dev_index(struct ethtool_rings_get_req *req,
 					   __u32 dev_index)
@@ -1980,7 +1680,6 @@ ethtool_rings_get_req_set_header_flags(struct ethtool_rings_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_rings_get_rsp {
 	struct {
 		__u32 header:1;
@@ -2000,7 +1699,6 @@ struct ethtool_rings_get_rsp {
 		__u32 tx_push_buf_len:1;
 		__u32 tx_push_buf_len_max:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u32 rx_max;
 	__u32 rx_mini_max;
@@ -2018,31 +1716,21 @@ struct ethtool_rings_get_rsp {
 	__u32 tx_push_buf_len;
 	__u32 tx_push_buf_len_max;
 };
-
 void ethtool_rings_get_rsp_free(struct ethtool_rings_get_rsp *rsp);
-
-/*
- * Get ring params.
- */
 struct ethtool_rings_get_rsp *
 ethtool_rings_get(struct ynl_sock *ys, struct ethtool_rings_get_req *req);
-
-/* ETHTOOL_MSG_RINGS_GET - dump */
 struct ethtool_rings_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_rings_get_req_dump *
 ethtool_rings_get_req_dump_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_rings_get_req_dump));
 }
 void ethtool_rings_get_req_dump_free(struct ethtool_rings_get_req_dump *req);
-
 static inline void
 ethtool_rings_get_req_dump_set_header_dev_index(struct ethtool_rings_get_req_dump *req,
 						__u32 dev_index)
@@ -2069,19 +1757,14 @@ ethtool_rings_get_req_dump_set_header_flags(struct ethtool_rings_get_req_dump *r
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_rings_get_list {
 	struct ethtool_rings_get_list *next;
 	struct ethtool_rings_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_rings_get_list_free(struct ethtool_rings_get_list *rsp);
-
 struct ethtool_rings_get_list *
 ethtool_rings_get_dump(struct ynl_sock *ys,
 		       struct ethtool_rings_get_req_dump *req);
-
-/* ETHTOOL_MSG_RINGS_GET - notify */
 struct ethtool_rings_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -2089,11 +1772,7 @@ struct ethtool_rings_get_ntf {
 	void (*free)(struct ethtool_rings_get_ntf *ntf);
 	struct ethtool_rings_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_rings_get_ntf_free(struct ethtool_rings_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_RINGS_SET ============== */
-/* ETHTOOL_MSG_RINGS_SET - do */
 struct ethtool_rings_set_req {
 	struct {
 		__u32 header:1;
@@ -2113,7 +1792,6 @@ struct ethtool_rings_set_req {
 		__u32 tx_push_buf_len:1;
 		__u32 tx_push_buf_len_max:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u32 rx_max;
 	__u32 rx_mini_max;
@@ -2131,13 +1809,11 @@ struct ethtool_rings_set_req {
 	__u32 tx_push_buf_len;
 	__u32 tx_push_buf_len_max;
 };
-
 static inline struct ethtool_rings_set_req *ethtool_rings_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_rings_set_req));
 }
 void ethtool_rings_set_req_free(struct ethtool_rings_set_req *req);
-
 static inline void
 ethtool_rings_set_req_set_header_dev_index(struct ethtool_rings_set_req *req,
 					   __u32 dev_index)
@@ -2267,29 +1943,19 @@ ethtool_rings_set_req_set_tx_push_buf_len_max(struct ethtool_rings_set_req *req,
 	req->_present.tx_push_buf_len_max = 1;
 	req->tx_push_buf_len_max = tx_push_buf_len_max;
 }
-
-/*
- * Set ring params.
- */
 int ethtool_rings_set(struct ynl_sock *ys, struct ethtool_rings_set_req *req);
-
-/* ============== ETHTOOL_MSG_CHANNELS_GET ============== */
-/* ETHTOOL_MSG_CHANNELS_GET - do */
 struct ethtool_channels_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_channels_get_req *
 ethtool_channels_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_channels_get_req));
 }
 void ethtool_channels_get_req_free(struct ethtool_channels_get_req *req);
-
 static inline void
 ethtool_channels_get_req_set_header_dev_index(struct ethtool_channels_get_req *req,
 					      __u32 dev_index)
@@ -2316,7 +1982,6 @@ ethtool_channels_get_req_set_header_flags(struct ethtool_channels_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_channels_get_rsp {
 	struct {
 		__u32 header:1;
@@ -2329,7 +1994,6 @@ struct ethtool_channels_get_rsp {
 		__u32 other_count:1;
 		__u32 combined_count:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u32 rx_max;
 	__u32 tx_max;
@@ -2340,24 +2004,15 @@ struct ethtool_channels_get_rsp {
 	__u32 other_count;
 	__u32 combined_count;
 };
-
 void ethtool_channels_get_rsp_free(struct ethtool_channels_get_rsp *rsp);
-
-/*
- * Get channel params.
- */
 struct ethtool_channels_get_rsp *
 ethtool_channels_get(struct ynl_sock *ys, struct ethtool_channels_get_req *req);
-
-/* ETHTOOL_MSG_CHANNELS_GET - dump */
 struct ethtool_channels_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_channels_get_req_dump *
 ethtool_channels_get_req_dump_alloc(void)
 {
@@ -2365,7 +2020,6 @@ ethtool_channels_get_req_dump_alloc(void)
 }
 void
 ethtool_channels_get_req_dump_free(struct ethtool_channels_get_req_dump *req);
-
 static inline void
 ethtool_channels_get_req_dump_set_header_dev_index(struct ethtool_channels_get_req_dump *req,
 						   __u32 dev_index)
@@ -2392,19 +2046,14 @@ ethtool_channels_get_req_dump_set_header_flags(struct ethtool_channels_get_req_d
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_channels_get_list {
 	struct ethtool_channels_get_list *next;
 	struct ethtool_channels_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_channels_get_list_free(struct ethtool_channels_get_list *rsp);
-
 struct ethtool_channels_get_list *
 ethtool_channels_get_dump(struct ynl_sock *ys,
 			  struct ethtool_channels_get_req_dump *req);
-
-/* ETHTOOL_MSG_CHANNELS_GET - notify */
 struct ethtool_channels_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -2412,11 +2061,7 @@ struct ethtool_channels_get_ntf {
 	void (*free)(struct ethtool_channels_get_ntf *ntf);
 	struct ethtool_channels_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_channels_get_ntf_free(struct ethtool_channels_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_CHANNELS_SET ============== */
-/* ETHTOOL_MSG_CHANNELS_SET - do */
 struct ethtool_channels_set_req {
 	struct {
 		__u32 header:1;
@@ -2429,7 +2074,6 @@ struct ethtool_channels_set_req {
 		__u32 other_count:1;
 		__u32 combined_count:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u32 rx_max;
 	__u32 tx_max;
@@ -2440,14 +2084,12 @@ struct ethtool_channels_set_req {
 	__u32 other_count;
 	__u32 combined_count;
 };
-
 static inline struct ethtool_channels_set_req *
 ethtool_channels_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_channels_set_req));
 }
 void ethtool_channels_set_req_free(struct ethtool_channels_set_req *req);
-
 static inline void
 ethtool_channels_set_req_set_header_dev_index(struct ethtool_channels_set_req *req,
 					      __u32 dev_index)
@@ -2530,30 +2172,20 @@ ethtool_channels_set_req_set_combined_count(struct ethtool_channels_set_req *req
 	req->_present.combined_count = 1;
 	req->combined_count = combined_count;
 }
-
-/*
- * Set channel params.
- */
 int ethtool_channels_set(struct ynl_sock *ys,
 			 struct ethtool_channels_set_req *req);
-
-/* ============== ETHTOOL_MSG_COALESCE_GET ============== */
-/* ETHTOOL_MSG_COALESCE_GET - do */
 struct ethtool_coalesce_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_coalesce_get_req *
 ethtool_coalesce_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_coalesce_get_req));
 }
 void ethtool_coalesce_get_req_free(struct ethtool_coalesce_get_req *req);
-
 static inline void
 ethtool_coalesce_get_req_set_header_dev_index(struct ethtool_coalesce_get_req *req,
 					      __u32 dev_index)
@@ -2580,7 +2212,6 @@ ethtool_coalesce_get_req_set_header_flags(struct ethtool_coalesce_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_coalesce_get_rsp {
 	struct {
 		__u32 header:1;
@@ -2612,7 +2243,6 @@ struct ethtool_coalesce_get_rsp {
 		__u32 tx_aggr_max_frames:1;
 		__u32 tx_aggr_time_usecs:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u32 rx_usecs;
 	__u32 rx_max_frames;
@@ -2642,24 +2272,15 @@ struct ethtool_coalesce_get_rsp {
 	__u32 tx_aggr_max_frames;
 	__u32 tx_aggr_time_usecs;
 };
-
 void ethtool_coalesce_get_rsp_free(struct ethtool_coalesce_get_rsp *rsp);
-
-/*
- * Get coalesce params.
- */
 struct ethtool_coalesce_get_rsp *
 ethtool_coalesce_get(struct ynl_sock *ys, struct ethtool_coalesce_get_req *req);
-
-/* ETHTOOL_MSG_COALESCE_GET - dump */
 struct ethtool_coalesce_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_coalesce_get_req_dump *
 ethtool_coalesce_get_req_dump_alloc(void)
 {
@@ -2667,7 +2288,6 @@ ethtool_coalesce_get_req_dump_alloc(void)
 }
 void
 ethtool_coalesce_get_req_dump_free(struct ethtool_coalesce_get_req_dump *req);
-
 static inline void
 ethtool_coalesce_get_req_dump_set_header_dev_index(struct ethtool_coalesce_get_req_dump *req,
 						   __u32 dev_index)
@@ -2694,19 +2314,14 @@ ethtool_coalesce_get_req_dump_set_header_flags(struct ethtool_coalesce_get_req_d
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_coalesce_get_list {
 	struct ethtool_coalesce_get_list *next;
 	struct ethtool_coalesce_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_coalesce_get_list_free(struct ethtool_coalesce_get_list *rsp);
-
 struct ethtool_coalesce_get_list *
 ethtool_coalesce_get_dump(struct ynl_sock *ys,
 			  struct ethtool_coalesce_get_req_dump *req);
-
-/* ETHTOOL_MSG_COALESCE_GET - notify */
 struct ethtool_coalesce_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -2714,11 +2329,7 @@ struct ethtool_coalesce_get_ntf {
 	void (*free)(struct ethtool_coalesce_get_ntf *ntf);
 	struct ethtool_coalesce_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_coalesce_get_ntf_free(struct ethtool_coalesce_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_COALESCE_SET ============== */
-/* ETHTOOL_MSG_COALESCE_SET - do */
 struct ethtool_coalesce_set_req {
 	struct {
 		__u32 header:1;
@@ -2750,7 +2361,6 @@ struct ethtool_coalesce_set_req {
 		__u32 tx_aggr_max_frames:1;
 		__u32 tx_aggr_time_usecs:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u32 rx_usecs;
 	__u32 rx_max_frames;
@@ -2780,14 +2390,12 @@ struct ethtool_coalesce_set_req {
 	__u32 tx_aggr_max_frames;
 	__u32 tx_aggr_time_usecs;
 };
-
 static inline struct ethtool_coalesce_set_req *
 ethtool_coalesce_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_coalesce_set_req));
 }
 void ethtool_coalesce_set_req_free(struct ethtool_coalesce_set_req *req);
-
 static inline void
 ethtool_coalesce_set_req_set_header_dev_index(struct ethtool_coalesce_set_req *req,
 					      __u32 dev_index)
@@ -3003,29 +2611,19 @@ ethtool_coalesce_set_req_set_tx_aggr_time_usecs(struct ethtool_coalesce_set_req 
 	req->_present.tx_aggr_time_usecs = 1;
 	req->tx_aggr_time_usecs = tx_aggr_time_usecs;
 }
-
-/*
- * Set coalesce params.
- */
 int ethtool_coalesce_set(struct ynl_sock *ys,
 			 struct ethtool_coalesce_set_req *req);
-
-/* ============== ETHTOOL_MSG_PAUSE_GET ============== */
-/* ETHTOOL_MSG_PAUSE_GET - do */
 struct ethtool_pause_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_pause_get_req *ethtool_pause_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_pause_get_req));
 }
 void ethtool_pause_get_req_free(struct ethtool_pause_get_req *req);
-
 static inline void
 ethtool_pause_get_req_set_header_dev_index(struct ethtool_pause_get_req *req,
 					   __u32 dev_index)
@@ -3052,7 +2650,6 @@ ethtool_pause_get_req_set_header_flags(struct ethtool_pause_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_pause_get_rsp {
 	struct {
 		__u32 header:1;
@@ -3062,7 +2659,6 @@ struct ethtool_pause_get_rsp {
 		__u32 stats:1;
 		__u32 stats_src:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 autoneg;
 	__u8 rx;
@@ -3070,31 +2666,21 @@ struct ethtool_pause_get_rsp {
 	struct ethtool_pause_stat stats;
 	__u32 stats_src;
 };
-
 void ethtool_pause_get_rsp_free(struct ethtool_pause_get_rsp *rsp);
-
-/*
- * Get pause params.
- */
 struct ethtool_pause_get_rsp *
 ethtool_pause_get(struct ynl_sock *ys, struct ethtool_pause_get_req *req);
-
-/* ETHTOOL_MSG_PAUSE_GET - dump */
 struct ethtool_pause_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_pause_get_req_dump *
 ethtool_pause_get_req_dump_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_pause_get_req_dump));
 }
 void ethtool_pause_get_req_dump_free(struct ethtool_pause_get_req_dump *req);
-
 static inline void
 ethtool_pause_get_req_dump_set_header_dev_index(struct ethtool_pause_get_req_dump *req,
 						__u32 dev_index)
@@ -3121,19 +2707,14 @@ ethtool_pause_get_req_dump_set_header_flags(struct ethtool_pause_get_req_dump *r
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_pause_get_list {
 	struct ethtool_pause_get_list *next;
 	struct ethtool_pause_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_pause_get_list_free(struct ethtool_pause_get_list *rsp);
-
 struct ethtool_pause_get_list *
 ethtool_pause_get_dump(struct ynl_sock *ys,
 		       struct ethtool_pause_get_req_dump *req);
-
-/* ETHTOOL_MSG_PAUSE_GET - notify */
 struct ethtool_pause_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -3141,11 +2722,7 @@ struct ethtool_pause_get_ntf {
 	void (*free)(struct ethtool_pause_get_ntf *ntf);
 	struct ethtool_pause_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_pause_get_ntf_free(struct ethtool_pause_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_PAUSE_SET ============== */
-/* ETHTOOL_MSG_PAUSE_SET - do */
 struct ethtool_pause_set_req {
 	struct {
 		__u32 header:1;
@@ -3155,7 +2732,6 @@ struct ethtool_pause_set_req {
 		__u32 stats:1;
 		__u32 stats_src:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 autoneg;
 	__u8 rx;
@@ -3163,13 +2739,11 @@ struct ethtool_pause_set_req {
 	struct ethtool_pause_stat stats;
 	__u32 stats_src;
 };
-
 static inline struct ethtool_pause_set_req *ethtool_pause_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_pause_set_req));
 }
 void ethtool_pause_set_req_free(struct ethtool_pause_set_req *req);
-
 static inline void
 ethtool_pause_set_req_set_header_dev_index(struct ethtool_pause_set_req *req,
 					   __u32 dev_index)
@@ -3238,28 +2812,18 @@ ethtool_pause_set_req_set_stats_src(struct ethtool_pause_set_req *req,
 	req->_present.stats_src = 1;
 	req->stats_src = stats_src;
 }
-
-/*
- * Set pause params.
- */
 int ethtool_pause_set(struct ynl_sock *ys, struct ethtool_pause_set_req *req);
-
-/* ============== ETHTOOL_MSG_EEE_GET ============== */
-/* ETHTOOL_MSG_EEE_GET - do */
 struct ethtool_eee_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_eee_get_req *ethtool_eee_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_eee_get_req));
 }
 void ethtool_eee_get_req_free(struct ethtool_eee_get_req *req);
-
 static inline void
 ethtool_eee_get_req_set_header_dev_index(struct ethtool_eee_get_req *req,
 					 __u32 dev_index)
@@ -3286,7 +2850,6 @@ ethtool_eee_get_req_set_header_flags(struct ethtool_eee_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_eee_get_rsp {
 	struct {
 		__u32 header:1;
@@ -3297,7 +2860,6 @@ struct ethtool_eee_get_rsp {
 		__u32 tx_lpi_enabled:1;
 		__u32 tx_lpi_timer:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset modes_ours;
 	struct ethtool_bitset modes_peer;
@@ -3306,31 +2868,21 @@ struct ethtool_eee_get_rsp {
 	__u8 tx_lpi_enabled;
 	__u32 tx_lpi_timer;
 };
-
 void ethtool_eee_get_rsp_free(struct ethtool_eee_get_rsp *rsp);
-
-/*
- * Get eee params.
- */
 struct ethtool_eee_get_rsp *
 ethtool_eee_get(struct ynl_sock *ys, struct ethtool_eee_get_req *req);
-
-/* ETHTOOL_MSG_EEE_GET - dump */
 struct ethtool_eee_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_eee_get_req_dump *
 ethtool_eee_get_req_dump_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_eee_get_req_dump));
 }
 void ethtool_eee_get_req_dump_free(struct ethtool_eee_get_req_dump *req);
-
 static inline void
 ethtool_eee_get_req_dump_set_header_dev_index(struct ethtool_eee_get_req_dump *req,
 					      __u32 dev_index)
@@ -3357,18 +2909,13 @@ ethtool_eee_get_req_dump_set_header_flags(struct ethtool_eee_get_req_dump *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_eee_get_list {
 	struct ethtool_eee_get_list *next;
 	struct ethtool_eee_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_eee_get_list_free(struct ethtool_eee_get_list *rsp);
-
 struct ethtool_eee_get_list *
 ethtool_eee_get_dump(struct ynl_sock *ys, struct ethtool_eee_get_req_dump *req);
-
-/* ETHTOOL_MSG_EEE_GET - notify */
 struct ethtool_eee_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -3376,11 +2923,7 @@ struct ethtool_eee_get_ntf {
 	void (*free)(struct ethtool_eee_get_ntf *ntf);
 	struct ethtool_eee_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_eee_get_ntf_free(struct ethtool_eee_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_EEE_SET ============== */
-/* ETHTOOL_MSG_EEE_SET - do */
 struct ethtool_eee_set_req {
 	struct {
 		__u32 header:1;
@@ -3391,7 +2934,6 @@ struct ethtool_eee_set_req {
 		__u32 tx_lpi_enabled:1;
 		__u32 tx_lpi_timer:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset modes_ours;
 	struct ethtool_bitset modes_peer;
@@ -3400,13 +2942,11 @@ struct ethtool_eee_set_req {
 	__u8 tx_lpi_enabled;
 	__u32 tx_lpi_timer;
 };
-
 static inline struct ethtool_eee_set_req *ethtool_eee_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_eee_set_req));
 }
 void ethtool_eee_set_req_free(struct ethtool_eee_set_req *req);
-
 static inline void
 ethtool_eee_set_req_set_header_dev_index(struct ethtool_eee_set_req *req,
 					 __u32 dev_index)
@@ -3505,28 +3045,18 @@ ethtool_eee_set_req_set_tx_lpi_timer(struct ethtool_eee_set_req *req,
 	req->_present.tx_lpi_timer = 1;
 	req->tx_lpi_timer = tx_lpi_timer;
 }
-
-/*
- * Set eee params.
- */
 int ethtool_eee_set(struct ynl_sock *ys, struct ethtool_eee_set_req *req);
-
-/* ============== ETHTOOL_MSG_TSINFO_GET ============== */
-/* ETHTOOL_MSG_TSINFO_GET - do */
 struct ethtool_tsinfo_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_tsinfo_get_req *ethtool_tsinfo_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_tsinfo_get_req));
 }
 void ethtool_tsinfo_get_req_free(struct ethtool_tsinfo_get_req *req);
-
 static inline void
 ethtool_tsinfo_get_req_set_header_dev_index(struct ethtool_tsinfo_get_req *req,
 					    __u32 dev_index)
@@ -3553,7 +3083,6 @@ ethtool_tsinfo_get_req_set_header_flags(struct ethtool_tsinfo_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_tsinfo_get_rsp {
 	struct {
 		__u32 header:1;
@@ -3562,38 +3091,27 @@ struct ethtool_tsinfo_get_rsp {
 		__u32 rx_filters:1;
 		__u32 phc_index:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset timestamping;
 	struct ethtool_bitset tx_types;
 	struct ethtool_bitset rx_filters;
 	__u32 phc_index;
 };
-
 void ethtool_tsinfo_get_rsp_free(struct ethtool_tsinfo_get_rsp *rsp);
-
-/*
- * Get tsinfo params.
- */
 struct ethtool_tsinfo_get_rsp *
 ethtool_tsinfo_get(struct ynl_sock *ys, struct ethtool_tsinfo_get_req *req);
-
-/* ETHTOOL_MSG_TSINFO_GET - dump */
 struct ethtool_tsinfo_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_tsinfo_get_req_dump *
 ethtool_tsinfo_get_req_dump_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_tsinfo_get_req_dump));
 }
 void ethtool_tsinfo_get_req_dump_free(struct ethtool_tsinfo_get_req_dump *req);
-
 static inline void
 ethtool_tsinfo_get_req_dump_set_header_dev_index(struct ethtool_tsinfo_get_req_dump *req,
 						 __u32 dev_index)
@@ -3620,35 +3138,26 @@ ethtool_tsinfo_get_req_dump_set_header_flags(struct ethtool_tsinfo_get_req_dump 
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_tsinfo_get_list {
 	struct ethtool_tsinfo_get_list *next;
 	struct ethtool_tsinfo_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_tsinfo_get_list_free(struct ethtool_tsinfo_get_list *rsp);
-
 struct ethtool_tsinfo_get_list *
 ethtool_tsinfo_get_dump(struct ynl_sock *ys,
 			struct ethtool_tsinfo_get_req_dump *req);
-
-/* ============== ETHTOOL_MSG_CABLE_TEST_ACT ============== */
-/* ETHTOOL_MSG_CABLE_TEST_ACT - do */
 struct ethtool_cable_test_act_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_cable_test_act_req *
 ethtool_cable_test_act_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_cable_test_act_req));
 }
 void ethtool_cable_test_act_req_free(struct ethtool_cable_test_act_req *req);
-
 static inline void
 ethtool_cable_test_act_req_set_header_dev_index(struct ethtool_cable_test_act_req *req,
 						__u32 dev_index)
@@ -3675,23 +3184,14 @@ ethtool_cable_test_act_req_set_header_flags(struct ethtool_cable_test_act_req *r
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
-/*
- * Cable test.
- */
 int ethtool_cable_test_act(struct ynl_sock *ys,
 			   struct ethtool_cable_test_act_req *req);
-
-/* ============== ETHTOOL_MSG_CABLE_TEST_TDR_ACT ============== */
-/* ETHTOOL_MSG_CABLE_TEST_TDR_ACT - do */
 struct ethtool_cable_test_tdr_act_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_cable_test_tdr_act_req *
 ethtool_cable_test_tdr_act_req_alloc(void)
 {
@@ -3699,7 +3199,6 @@ ethtool_cable_test_tdr_act_req_alloc(void)
 }
 void
 ethtool_cable_test_tdr_act_req_free(struct ethtool_cable_test_tdr_act_req *req);
-
 static inline void
 ethtool_cable_test_tdr_act_req_set_header_dev_index(struct ethtool_cable_test_tdr_act_req *req,
 						    __u32 dev_index)
@@ -3726,30 +3225,20 @@ ethtool_cable_test_tdr_act_req_set_header_flags(struct ethtool_cable_test_tdr_ac
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
-/*
- * Cable test TDR.
- */
 int ethtool_cable_test_tdr_act(struct ynl_sock *ys,
 			       struct ethtool_cable_test_tdr_act_req *req);
-
-/* ============== ETHTOOL_MSG_TUNNEL_INFO_GET ============== */
-/* ETHTOOL_MSG_TUNNEL_INFO_GET - do */
 struct ethtool_tunnel_info_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_tunnel_info_get_req *
 ethtool_tunnel_info_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_tunnel_info_get_req));
 }
 void ethtool_tunnel_info_get_req_free(struct ethtool_tunnel_info_get_req *req);
-
 static inline void
 ethtool_tunnel_info_get_req_set_header_dev_index(struct ethtool_tunnel_info_get_req *req,
 						 __u32 dev_index)
@@ -3776,35 +3265,24 @@ ethtool_tunnel_info_get_req_set_header_flags(struct ethtool_tunnel_info_get_req 
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_tunnel_info_get_rsp {
 	struct {
 		__u32 header:1;
 		__u32 udp_ports:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_tunnel_udp udp_ports;
 };
-
 void ethtool_tunnel_info_get_rsp_free(struct ethtool_tunnel_info_get_rsp *rsp);
-
-/*
- * Get tsinfo params.
- */
 struct ethtool_tunnel_info_get_rsp *
 ethtool_tunnel_info_get(struct ynl_sock *ys,
 			struct ethtool_tunnel_info_get_req *req);
-
-/* ETHTOOL_MSG_TUNNEL_INFO_GET - dump */
 struct ethtool_tunnel_info_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_tunnel_info_get_req_dump *
 ethtool_tunnel_info_get_req_dump_alloc(void)
 {
@@ -3812,7 +3290,6 @@ ethtool_tunnel_info_get_req_dump_alloc(void)
 }
 void
 ethtool_tunnel_info_get_req_dump_free(struct ethtool_tunnel_info_get_req_dump *req);
-
 static inline void
 ethtool_tunnel_info_get_req_dump_set_header_dev_index(struct ethtool_tunnel_info_get_req_dump *req,
 						      __u32 dev_index)
@@ -3839,35 +3316,26 @@ ethtool_tunnel_info_get_req_dump_set_header_flags(struct ethtool_tunnel_info_get
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_tunnel_info_get_list {
 	struct ethtool_tunnel_info_get_list *next;
 	struct ethtool_tunnel_info_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void
 ethtool_tunnel_info_get_list_free(struct ethtool_tunnel_info_get_list *rsp);
-
 struct ethtool_tunnel_info_get_list *
 ethtool_tunnel_info_get_dump(struct ynl_sock *ys,
 			     struct ethtool_tunnel_info_get_req_dump *req);
-
-/* ============== ETHTOOL_MSG_FEC_GET ============== */
-/* ETHTOOL_MSG_FEC_GET - do */
 struct ethtool_fec_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_fec_get_req *ethtool_fec_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_fec_get_req));
 }
 void ethtool_fec_get_req_free(struct ethtool_fec_get_req *req);
-
 static inline void
 ethtool_fec_get_req_set_header_dev_index(struct ethtool_fec_get_req *req,
 					 __u32 dev_index)
@@ -3894,7 +3362,6 @@ ethtool_fec_get_req_set_header_flags(struct ethtool_fec_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_fec_get_rsp {
 	struct {
 		__u32 header:1;
@@ -3903,38 +3370,27 @@ struct ethtool_fec_get_rsp {
 		__u32 active:1;
 		__u32 stats:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset modes;
 	__u8 auto_;
 	__u32 active;
 	struct ethtool_fec_stat stats;
 };
-
 void ethtool_fec_get_rsp_free(struct ethtool_fec_get_rsp *rsp);
-
-/*
- * Get FEC params.
- */
 struct ethtool_fec_get_rsp *
 ethtool_fec_get(struct ynl_sock *ys, struct ethtool_fec_get_req *req);
-
-/* ETHTOOL_MSG_FEC_GET - dump */
 struct ethtool_fec_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_fec_get_req_dump *
 ethtool_fec_get_req_dump_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_fec_get_req_dump));
 }
 void ethtool_fec_get_req_dump_free(struct ethtool_fec_get_req_dump *req);
-
 static inline void
 ethtool_fec_get_req_dump_set_header_dev_index(struct ethtool_fec_get_req_dump *req,
 					      __u32 dev_index)
@@ -3961,18 +3417,13 @@ ethtool_fec_get_req_dump_set_header_flags(struct ethtool_fec_get_req_dump *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_fec_get_list {
 	struct ethtool_fec_get_list *next;
 	struct ethtool_fec_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_fec_get_list_free(struct ethtool_fec_get_list *rsp);
-
 struct ethtool_fec_get_list *
 ethtool_fec_get_dump(struct ynl_sock *ys, struct ethtool_fec_get_req_dump *req);
-
-/* ETHTOOL_MSG_FEC_GET - notify */
 struct ethtool_fec_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -3980,11 +3431,7 @@ struct ethtool_fec_get_ntf {
 	void (*free)(struct ethtool_fec_get_ntf *ntf);
 	struct ethtool_fec_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_fec_get_ntf_free(struct ethtool_fec_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_FEC_SET ============== */
-/* ETHTOOL_MSG_FEC_SET - do */
 struct ethtool_fec_set_req {
 	struct {
 		__u32 header:1;
@@ -3993,20 +3440,17 @@ struct ethtool_fec_set_req {
 		__u32 active:1;
 		__u32 stats:1;
 	} _present;
-
 	struct ethtool_header header;
 	struct ethtool_bitset modes;
 	__u8 auto_;
 	__u32 active;
 	struct ethtool_fec_stat stats;
 };
-
 static inline struct ethtool_fec_set_req *ethtool_fec_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_fec_set_req));
 }
 void ethtool_fec_set_req_free(struct ethtool_fec_set_req *req);
-
 static inline void
 ethtool_fec_set_req_set_header_dev_index(struct ethtool_fec_set_req *req,
 					 __u32 dev_index)
@@ -4094,22 +3538,13 @@ ethtool_fec_set_req_set_stats_corr_bits(struct ethtool_fec_set_req *req,
 	req->stats.corr_bits = malloc(req->stats._present.corr_bits_len);
 	memcpy(req->stats.corr_bits, corr_bits, req->stats._present.corr_bits_len);
 }
-
-/*
- * Set FEC params.
- */
 int ethtool_fec_set(struct ynl_sock *ys, struct ethtool_fec_set_req *req);
-
-/* ============== ETHTOOL_MSG_MODULE_EEPROM_GET ============== */
-/* ETHTOOL_MSG_MODULE_EEPROM_GET - do */
 struct ethtool_module_eeprom_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_module_eeprom_get_req *
 ethtool_module_eeprom_get_req_alloc(void)
 {
@@ -4117,7 +3552,6 @@ ethtool_module_eeprom_get_req_alloc(void)
 }
 void
 ethtool_module_eeprom_get_req_free(struct ethtool_module_eeprom_get_req *req);
-
 static inline void
 ethtool_module_eeprom_get_req_set_header_dev_index(struct ethtool_module_eeprom_get_req *req,
 						   __u32 dev_index)
@@ -4144,7 +3578,6 @@ ethtool_module_eeprom_get_req_set_header_flags(struct ethtool_module_eeprom_get_
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_module_eeprom_get_rsp {
 	struct {
 		__u32 header:1;
@@ -4155,7 +3588,6 @@ struct ethtool_module_eeprom_get_rsp {
 		__u32 i2c_address:1;
 		__u32 data_len;
 	} _present;
-
 	struct ethtool_header header;
 	__u32 offset;
 	__u32 length;
@@ -4164,26 +3596,17 @@ struct ethtool_module_eeprom_get_rsp {
 	__u8 i2c_address;
 	void *data;
 };
-
 void
 ethtool_module_eeprom_get_rsp_free(struct ethtool_module_eeprom_get_rsp *rsp);
-
-/*
- * Get module EEPROM params.
- */
 struct ethtool_module_eeprom_get_rsp *
 ethtool_module_eeprom_get(struct ynl_sock *ys,
 			  struct ethtool_module_eeprom_get_req *req);
-
-/* ETHTOOL_MSG_MODULE_EEPROM_GET - dump */
 struct ethtool_module_eeprom_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_module_eeprom_get_req_dump *
 ethtool_module_eeprom_get_req_dump_alloc(void)
 {
@@ -4191,7 +3614,6 @@ ethtool_module_eeprom_get_req_dump_alloc(void)
 }
 void
 ethtool_module_eeprom_get_req_dump_free(struct ethtool_module_eeprom_get_req_dump *req);
-
 static inline void
 ethtool_module_eeprom_get_req_dump_set_header_dev_index(struct ethtool_module_eeprom_get_req_dump *req,
 							__u32 dev_index)
@@ -4218,36 +3640,27 @@ ethtool_module_eeprom_get_req_dump_set_header_flags(struct ethtool_module_eeprom
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_module_eeprom_get_list {
 	struct ethtool_module_eeprom_get_list *next;
 	struct ethtool_module_eeprom_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void
 ethtool_module_eeprom_get_list_free(struct ethtool_module_eeprom_get_list *rsp);
-
 struct ethtool_module_eeprom_get_list *
 ethtool_module_eeprom_get_dump(struct ynl_sock *ys,
 			       struct ethtool_module_eeprom_get_req_dump *req);
-
-/* ============== ETHTOOL_MSG_PHC_VCLOCKS_GET ============== */
-/* ETHTOOL_MSG_PHC_VCLOCKS_GET - do */
 struct ethtool_phc_vclocks_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_phc_vclocks_get_req *
 ethtool_phc_vclocks_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_phc_vclocks_get_req));
 }
 void ethtool_phc_vclocks_get_req_free(struct ethtool_phc_vclocks_get_req *req);
-
 static inline void
 ethtool_phc_vclocks_get_req_set_header_dev_index(struct ethtool_phc_vclocks_get_req *req,
 						 __u32 dev_index)
@@ -4274,35 +3687,24 @@ ethtool_phc_vclocks_get_req_set_header_flags(struct ethtool_phc_vclocks_get_req 
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_phc_vclocks_get_rsp {
 	struct {
 		__u32 header:1;
 		__u32 num:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u32 num;
 };
-
 void ethtool_phc_vclocks_get_rsp_free(struct ethtool_phc_vclocks_get_rsp *rsp);
-
-/*
- * Get PHC VCLOCKs.
- */
 struct ethtool_phc_vclocks_get_rsp *
 ethtool_phc_vclocks_get(struct ynl_sock *ys,
 			struct ethtool_phc_vclocks_get_req *req);
-
-/* ETHTOOL_MSG_PHC_VCLOCKS_GET - dump */
 struct ethtool_phc_vclocks_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_phc_vclocks_get_req_dump *
 ethtool_phc_vclocks_get_req_dump_alloc(void)
 {
@@ -4310,7 +3712,6 @@ ethtool_phc_vclocks_get_req_dump_alloc(void)
 }
 void
 ethtool_phc_vclocks_get_req_dump_free(struct ethtool_phc_vclocks_get_req_dump *req);
-
 static inline void
 ethtool_phc_vclocks_get_req_dump_set_header_dev_index(struct ethtool_phc_vclocks_get_req_dump *req,
 						      __u32 dev_index)
@@ -4337,35 +3738,26 @@ ethtool_phc_vclocks_get_req_dump_set_header_flags(struct ethtool_phc_vclocks_get
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_phc_vclocks_get_list {
 	struct ethtool_phc_vclocks_get_list *next;
 	struct ethtool_phc_vclocks_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void
 ethtool_phc_vclocks_get_list_free(struct ethtool_phc_vclocks_get_list *rsp);
-
 struct ethtool_phc_vclocks_get_list *
 ethtool_phc_vclocks_get_dump(struct ynl_sock *ys,
 			     struct ethtool_phc_vclocks_get_req_dump *req);
-
-/* ============== ETHTOOL_MSG_MODULE_GET ============== */
-/* ETHTOOL_MSG_MODULE_GET - do */
 struct ethtool_module_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_module_get_req *ethtool_module_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_module_get_req));
 }
 void ethtool_module_get_req_free(struct ethtool_module_get_req *req);
-
 static inline void
 ethtool_module_get_req_set_header_dev_index(struct ethtool_module_get_req *req,
 					    __u32 dev_index)
@@ -4392,43 +3784,31 @@ ethtool_module_get_req_set_header_flags(struct ethtool_module_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_module_get_rsp {
 	struct {
 		__u32 header:1;
 		__u32 power_mode_policy:1;
 		__u32 power_mode:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 power_mode_policy;
 	__u8 power_mode;
 };
-
 void ethtool_module_get_rsp_free(struct ethtool_module_get_rsp *rsp);
-
-/*
- * Get module params.
- */
 struct ethtool_module_get_rsp *
 ethtool_module_get(struct ynl_sock *ys, struct ethtool_module_get_req *req);
-
-/* ETHTOOL_MSG_MODULE_GET - dump */
 struct ethtool_module_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_module_get_req_dump *
 ethtool_module_get_req_dump_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_module_get_req_dump));
 }
 void ethtool_module_get_req_dump_free(struct ethtool_module_get_req_dump *req);
-
 static inline void
 ethtool_module_get_req_dump_set_header_dev_index(struct ethtool_module_get_req_dump *req,
 						 __u32 dev_index)
@@ -4455,19 +3835,14 @@ ethtool_module_get_req_dump_set_header_flags(struct ethtool_module_get_req_dump 
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_module_get_list {
 	struct ethtool_module_get_list *next;
 	struct ethtool_module_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_module_get_list_free(struct ethtool_module_get_list *rsp);
-
 struct ethtool_module_get_list *
 ethtool_module_get_dump(struct ynl_sock *ys,
 			struct ethtool_module_get_req_dump *req);
-
-/* ETHTOOL_MSG_MODULE_GET - notify */
 struct ethtool_module_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -4475,29 +3850,22 @@ struct ethtool_module_get_ntf {
 	void (*free)(struct ethtool_module_get_ntf *ntf);
 	struct ethtool_module_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_module_get_ntf_free(struct ethtool_module_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_MODULE_SET ============== */
-/* ETHTOOL_MSG_MODULE_SET - do */
 struct ethtool_module_set_req {
 	struct {
 		__u32 header:1;
 		__u32 power_mode_policy:1;
 		__u32 power_mode:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 power_mode_policy;
 	__u8 power_mode;
 };
-
 static inline struct ethtool_module_set_req *ethtool_module_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_module_set_req));
 }
 void ethtool_module_set_req_free(struct ethtool_module_set_req *req);
-
 static inline void
 ethtool_module_set_req_set_header_dev_index(struct ethtool_module_set_req *req,
 					    __u32 dev_index)
@@ -4538,28 +3906,18 @@ ethtool_module_set_req_set_power_mode(struct ethtool_module_set_req *req,
 	req->_present.power_mode = 1;
 	req->power_mode = power_mode;
 }
-
-/*
- * Set module params.
- */
 int ethtool_module_set(struct ynl_sock *ys, struct ethtool_module_set_req *req);
-
-/* ============== ETHTOOL_MSG_PSE_GET ============== */
-/* ETHTOOL_MSG_PSE_GET - do */
 struct ethtool_pse_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_pse_get_req *ethtool_pse_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_pse_get_req));
 }
 void ethtool_pse_get_req_free(struct ethtool_pse_get_req *req);
-
 static inline void
 ethtool_pse_get_req_set_header_dev_index(struct ethtool_pse_get_req *req,
 					 __u32 dev_index)
@@ -4586,7 +3944,6 @@ ethtool_pse_get_req_set_header_flags(struct ethtool_pse_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_pse_get_rsp {
 	struct {
 		__u32 header:1;
@@ -4594,37 +3951,26 @@ struct ethtool_pse_get_rsp {
 		__u32 admin_control:1;
 		__u32 pw_d_status:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u32 admin_state;
 	__u32 admin_control;
 	__u32 pw_d_status;
 };
-
 void ethtool_pse_get_rsp_free(struct ethtool_pse_get_rsp *rsp);
-
-/*
- * Get Power Sourcing Equipment params.
- */
 struct ethtool_pse_get_rsp *
 ethtool_pse_get(struct ynl_sock *ys, struct ethtool_pse_get_req *req);
-
-/* ETHTOOL_MSG_PSE_GET - dump */
 struct ethtool_pse_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_pse_get_req_dump *
 ethtool_pse_get_req_dump_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_pse_get_req_dump));
 }
 void ethtool_pse_get_req_dump_free(struct ethtool_pse_get_req_dump *req);
-
 static inline void
 ethtool_pse_get_req_dump_set_header_dev_index(struct ethtool_pse_get_req_dump *req,
 					      __u32 dev_index)
@@ -4651,19 +3997,13 @@ ethtool_pse_get_req_dump_set_header_flags(struct ethtool_pse_get_req_dump *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_pse_get_list {
 	struct ethtool_pse_get_list *next;
 	struct ethtool_pse_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_pse_get_list_free(struct ethtool_pse_get_list *rsp);
-
 struct ethtool_pse_get_list *
 ethtool_pse_get_dump(struct ynl_sock *ys, struct ethtool_pse_get_req_dump *req);
-
-/* ============== ETHTOOL_MSG_PSE_SET ============== */
-/* ETHTOOL_MSG_PSE_SET - do */
 struct ethtool_pse_set_req {
 	struct {
 		__u32 header:1;
@@ -4671,19 +4011,16 @@ struct ethtool_pse_set_req {
 		__u32 admin_control:1;
 		__u32 pw_d_status:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u32 admin_state;
 	__u32 admin_control;
 	__u32 pw_d_status;
 };
-
 static inline struct ethtool_pse_set_req *ethtool_pse_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_pse_set_req));
 }
 void ethtool_pse_set_req_free(struct ethtool_pse_set_req *req);
-
 static inline void
 ethtool_pse_set_req_set_header_dev_index(struct ethtool_pse_set_req *req,
 					 __u32 dev_index)
@@ -4731,28 +4068,18 @@ ethtool_pse_set_req_set_pw_d_status(struct ethtool_pse_set_req *req,
 	req->_present.pw_d_status = 1;
 	req->pw_d_status = pw_d_status;
 }
-
-/*
- * Set Power Sourcing Equipment params.
- */
 int ethtool_pse_set(struct ynl_sock *ys, struct ethtool_pse_set_req *req);
-
-/* ============== ETHTOOL_MSG_RSS_GET ============== */
-/* ETHTOOL_MSG_RSS_GET - do */
 struct ethtool_rss_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_rss_get_req *ethtool_rss_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_rss_get_req));
 }
 void ethtool_rss_get_req_free(struct ethtool_rss_get_req *req);
-
 static inline void
 ethtool_rss_get_req_set_header_dev_index(struct ethtool_rss_get_req *req,
 					 __u32 dev_index)
@@ -4779,7 +4106,6 @@ ethtool_rss_get_req_set_header_flags(struct ethtool_rss_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_rss_get_rsp {
 	struct {
 		__u32 header:1;
@@ -4788,38 +4114,27 @@ struct ethtool_rss_get_rsp {
 		__u32 indir_len;
 		__u32 hkey_len;
 	} _present;
-
 	struct ethtool_header header;
 	__u32 context;
 	__u32 hfunc;
 	void *indir;
 	void *hkey;
 };
-
 void ethtool_rss_get_rsp_free(struct ethtool_rss_get_rsp *rsp);
-
-/*
- * Get RSS params.
- */
 struct ethtool_rss_get_rsp *
 ethtool_rss_get(struct ynl_sock *ys, struct ethtool_rss_get_req *req);
-
-/* ETHTOOL_MSG_RSS_GET - dump */
 struct ethtool_rss_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_rss_get_req_dump *
 ethtool_rss_get_req_dump_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_rss_get_req_dump));
 }
 void ethtool_rss_get_req_dump_free(struct ethtool_rss_get_req_dump *req);
-
 static inline void
 ethtool_rss_get_req_dump_set_header_dev_index(struct ethtool_rss_get_req_dump *req,
 					      __u32 dev_index)
@@ -4846,34 +4161,25 @@ ethtool_rss_get_req_dump_set_header_flags(struct ethtool_rss_get_req_dump *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_rss_get_list {
 	struct ethtool_rss_get_list *next;
 	struct ethtool_rss_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_rss_get_list_free(struct ethtool_rss_get_list *rsp);
-
 struct ethtool_rss_get_list *
 ethtool_rss_get_dump(struct ynl_sock *ys, struct ethtool_rss_get_req_dump *req);
-
-/* ============== ETHTOOL_MSG_PLCA_GET_CFG ============== */
-/* ETHTOOL_MSG_PLCA_GET_CFG - do */
 struct ethtool_plca_get_cfg_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_plca_get_cfg_req *
 ethtool_plca_get_cfg_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_plca_get_cfg_req));
 }
 void ethtool_plca_get_cfg_req_free(struct ethtool_plca_get_cfg_req *req);
-
 static inline void
 ethtool_plca_get_cfg_req_set_header_dev_index(struct ethtool_plca_get_cfg_req *req,
 					      __u32 dev_index)
@@ -4900,7 +4206,6 @@ ethtool_plca_get_cfg_req_set_header_flags(struct ethtool_plca_get_cfg_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_plca_get_cfg_rsp {
 	struct {
 		__u32 header:1;
@@ -4913,7 +4218,6 @@ struct ethtool_plca_get_cfg_rsp {
 		__u32 burst_cnt:1;
 		__u32 burst_tmr:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u16 version;
 	__u8 enabled;
@@ -4924,24 +4228,15 @@ struct ethtool_plca_get_cfg_rsp {
 	__u32 burst_cnt;
 	__u32 burst_tmr;
 };
-
 void ethtool_plca_get_cfg_rsp_free(struct ethtool_plca_get_cfg_rsp *rsp);
-
-/*
- * Get PLCA params.
- */
 struct ethtool_plca_get_cfg_rsp *
 ethtool_plca_get_cfg(struct ynl_sock *ys, struct ethtool_plca_get_cfg_req *req);
-
-/* ETHTOOL_MSG_PLCA_GET_CFG - dump */
 struct ethtool_plca_get_cfg_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_plca_get_cfg_req_dump *
 ethtool_plca_get_cfg_req_dump_alloc(void)
 {
@@ -4949,7 +4244,6 @@ ethtool_plca_get_cfg_req_dump_alloc(void)
 }
 void
 ethtool_plca_get_cfg_req_dump_free(struct ethtool_plca_get_cfg_req_dump *req);
-
 static inline void
 ethtool_plca_get_cfg_req_dump_set_header_dev_index(struct ethtool_plca_get_cfg_req_dump *req,
 						   __u32 dev_index)
@@ -4976,19 +4270,14 @@ ethtool_plca_get_cfg_req_dump_set_header_flags(struct ethtool_plca_get_cfg_req_d
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_plca_get_cfg_list {
 	struct ethtool_plca_get_cfg_list *next;
 	struct ethtool_plca_get_cfg_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_plca_get_cfg_list_free(struct ethtool_plca_get_cfg_list *rsp);
-
 struct ethtool_plca_get_cfg_list *
 ethtool_plca_get_cfg_dump(struct ynl_sock *ys,
 			  struct ethtool_plca_get_cfg_req_dump *req);
-
-/* ETHTOOL_MSG_PLCA_GET_CFG - notify */
 struct ethtool_plca_get_cfg_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -4996,11 +4285,7 @@ struct ethtool_plca_get_cfg_ntf {
 	void (*free)(struct ethtool_plca_get_cfg_ntf *ntf);
 	struct ethtool_plca_get_cfg_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_plca_get_cfg_ntf_free(struct ethtool_plca_get_cfg_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_PLCA_SET_CFG ============== */
-/* ETHTOOL_MSG_PLCA_SET_CFG - do */
 struct ethtool_plca_set_cfg_req {
 	struct {
 		__u32 header:1;
@@ -5013,7 +4298,6 @@ struct ethtool_plca_set_cfg_req {
 		__u32 burst_cnt:1;
 		__u32 burst_tmr:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u16 version;
 	__u8 enabled;
@@ -5024,14 +4308,12 @@ struct ethtool_plca_set_cfg_req {
 	__u32 burst_cnt;
 	__u32 burst_tmr;
 };
-
 static inline struct ethtool_plca_set_cfg_req *
 ethtool_plca_set_cfg_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_plca_set_cfg_req));
 }
 void ethtool_plca_set_cfg_req_free(struct ethtool_plca_set_cfg_req *req);
-
 static inline void
 ethtool_plca_set_cfg_req_set_header_dev_index(struct ethtool_plca_set_cfg_req *req,
 					      __u32 dev_index)
@@ -5114,30 +4396,20 @@ ethtool_plca_set_cfg_req_set_burst_tmr(struct ethtool_plca_set_cfg_req *req,
 	req->_present.burst_tmr = 1;
 	req->burst_tmr = burst_tmr;
 }
-
-/*
- * Set PLCA params.
- */
 int ethtool_plca_set_cfg(struct ynl_sock *ys,
 			 struct ethtool_plca_set_cfg_req *req);
-
-/* ============== ETHTOOL_MSG_PLCA_GET_STATUS ============== */
-/* ETHTOOL_MSG_PLCA_GET_STATUS - do */
 struct ethtool_plca_get_status_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_plca_get_status_req *
 ethtool_plca_get_status_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_plca_get_status_req));
 }
 void ethtool_plca_get_status_req_free(struct ethtool_plca_get_status_req *req);
-
 static inline void
 ethtool_plca_get_status_req_set_header_dev_index(struct ethtool_plca_get_status_req *req,
 						 __u32 dev_index)
@@ -5164,7 +4436,6 @@ ethtool_plca_get_status_req_set_header_flags(struct ethtool_plca_get_status_req 
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_plca_get_status_rsp {
 	struct {
 		__u32 header:1;
@@ -5177,7 +4448,6 @@ struct ethtool_plca_get_status_rsp {
 		__u32 burst_cnt:1;
 		__u32 burst_tmr:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u16 version;
 	__u8 enabled;
@@ -5188,25 +4458,16 @@ struct ethtool_plca_get_status_rsp {
 	__u32 burst_cnt;
 	__u32 burst_tmr;
 };
-
 void ethtool_plca_get_status_rsp_free(struct ethtool_plca_get_status_rsp *rsp);
-
-/*
- * Get PLCA status params.
- */
 struct ethtool_plca_get_status_rsp *
 ethtool_plca_get_status(struct ynl_sock *ys,
 			struct ethtool_plca_get_status_req *req);
-
-/* ETHTOOL_MSG_PLCA_GET_STATUS - dump */
 struct ethtool_plca_get_status_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_plca_get_status_req_dump *
 ethtool_plca_get_status_req_dump_alloc(void)
 {
@@ -5214,7 +4475,6 @@ ethtool_plca_get_status_req_dump_alloc(void)
 }
 void
 ethtool_plca_get_status_req_dump_free(struct ethtool_plca_get_status_req_dump *req);
-
 static inline void
 ethtool_plca_get_status_req_dump_set_header_dev_index(struct ethtool_plca_get_status_req_dump *req,
 						      __u32 dev_index)
@@ -5241,35 +4501,26 @@ ethtool_plca_get_status_req_dump_set_header_flags(struct ethtool_plca_get_status
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_plca_get_status_list {
 	struct ethtool_plca_get_status_list *next;
 	struct ethtool_plca_get_status_rsp obj __attribute__ ((aligned (8)));
 };
-
 void
 ethtool_plca_get_status_list_free(struct ethtool_plca_get_status_list *rsp);
-
 struct ethtool_plca_get_status_list *
 ethtool_plca_get_status_dump(struct ynl_sock *ys,
 			     struct ethtool_plca_get_status_req_dump *req);
-
-/* ============== ETHTOOL_MSG_MM_GET ============== */
-/* ETHTOOL_MSG_MM_GET - do */
 struct ethtool_mm_get_req {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_mm_get_req *ethtool_mm_get_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_mm_get_req));
 }
 void ethtool_mm_get_req_free(struct ethtool_mm_get_req *req);
-
 static inline void
 ethtool_mm_get_req_set_header_dev_index(struct ethtool_mm_get_req *req,
 					__u32 dev_index)
@@ -5296,7 +4547,6 @@ ethtool_mm_get_req_set_header_flags(struct ethtool_mm_get_req *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_mm_get_rsp {
 	struct {
 		__u32 header:1;
@@ -5310,7 +4560,6 @@ struct ethtool_mm_get_rsp {
 		__u32 max_verify_time:1;
 		__u32 stats:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 pmac_enabled;
 	__u8 tx_enabled;
@@ -5322,31 +4571,21 @@ struct ethtool_mm_get_rsp {
 	__u32 max_verify_time;
 	struct ethtool_mm_stat stats;
 };
-
 void ethtool_mm_get_rsp_free(struct ethtool_mm_get_rsp *rsp);
-
-/*
- * Get MAC Merge configuration and state
- */
 struct ethtool_mm_get_rsp *
 ethtool_mm_get(struct ynl_sock *ys, struct ethtool_mm_get_req *req);
-
-/* ETHTOOL_MSG_MM_GET - dump */
 struct ethtool_mm_get_req_dump {
 	struct {
 		__u32 header:1;
 	} _present;
-
 	struct ethtool_header header;
 };
-
 static inline struct ethtool_mm_get_req_dump *
 ethtool_mm_get_req_dump_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_mm_get_req_dump));
 }
 void ethtool_mm_get_req_dump_free(struct ethtool_mm_get_req_dump *req);
-
 static inline void
 ethtool_mm_get_req_dump_set_header_dev_index(struct ethtool_mm_get_req_dump *req,
 					     __u32 dev_index)
@@ -5373,18 +4612,13 @@ ethtool_mm_get_req_dump_set_header_flags(struct ethtool_mm_get_req_dump *req,
 	req->header._present.flags = 1;
 	req->header.flags = flags;
 }
-
 struct ethtool_mm_get_list {
 	struct ethtool_mm_get_list *next;
 	struct ethtool_mm_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_mm_get_list_free(struct ethtool_mm_get_list *rsp);
-
 struct ethtool_mm_get_list *
 ethtool_mm_get_dump(struct ynl_sock *ys, struct ethtool_mm_get_req_dump *req);
-
-/* ETHTOOL_MSG_MM_GET - notify */
 struct ethtool_mm_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -5392,11 +4626,7 @@ struct ethtool_mm_get_ntf {
 	void (*free)(struct ethtool_mm_get_ntf *ntf);
 	struct ethtool_mm_get_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_mm_get_ntf_free(struct ethtool_mm_get_ntf *rsp);
-
-/* ============== ETHTOOL_MSG_MM_SET ============== */
-/* ETHTOOL_MSG_MM_SET - do */
 struct ethtool_mm_set_req {
 	struct {
 		__u32 header:1;
@@ -5406,7 +4636,6 @@ struct ethtool_mm_set_req {
 		__u32 pmac_enabled:1;
 		__u32 tx_min_frag_size:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 verify_enabled;
 	__u32 verify_time;
@@ -5414,13 +4643,11 @@ struct ethtool_mm_set_req {
 	__u8 pmac_enabled;
 	__u32 tx_min_frag_size;
 };
-
 static inline struct ethtool_mm_set_req *ethtool_mm_set_req_alloc(void)
 {
 	return calloc(1, sizeof(struct ethtool_mm_set_req));
 }
 void ethtool_mm_set_req_free(struct ethtool_mm_set_req *req);
-
 static inline void
 ethtool_mm_set_req_set_header_dev_index(struct ethtool_mm_set_req *req,
 					__u32 dev_index)
@@ -5482,23 +4709,15 @@ ethtool_mm_set_req_set_tx_min_frag_size(struct ethtool_mm_set_req *req,
 	req->_present.tx_min_frag_size = 1;
 	req->tx_min_frag_size = tx_min_frag_size;
 }
-
-/*
- * Set MAC Merge configuration
- */
 int ethtool_mm_set(struct ynl_sock *ys, struct ethtool_mm_set_req *req);
-
-/* ETHTOOL_MSG_CABLE_TEST_NTF - event */
 struct ethtool_cable_test_ntf_rsp {
 	struct {
 		__u32 header:1;
 		__u32 status:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 status;
 };
-
 struct ethtool_cable_test_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -5506,22 +4725,17 @@ struct ethtool_cable_test_ntf {
 	void (*free)(struct ethtool_cable_test_ntf *ntf);
 	struct ethtool_cable_test_ntf_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_cable_test_ntf_free(struct ethtool_cable_test_ntf *rsp);
-
-/* ETHTOOL_MSG_CABLE_TEST_TDR_NTF - event */
 struct ethtool_cable_test_tdr_ntf_rsp {
 	struct {
 		__u32 header:1;
 		__u32 status:1;
 		__u32 nest:1;
 	} _present;
-
 	struct ethtool_header header;
 	__u8 status;
 	struct ethtool_cable_nest nest;
 };
-
 struct ethtool_cable_test_tdr_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -5529,7 +4743,5 @@ struct ethtool_cable_test_tdr_ntf {
 	void (*free)(struct ethtool_cable_test_tdr_ntf *ntf);
 	struct ethtool_cable_test_tdr_ntf_rsp obj __attribute__ ((aligned (8)));
 };
-
 void ethtool_cable_test_tdr_ntf_free(struct ethtool_cable_test_tdr_ntf *rsp);
-
-#endif /* _LINUX_ETHTOOL_GEN_H */
+#endif  

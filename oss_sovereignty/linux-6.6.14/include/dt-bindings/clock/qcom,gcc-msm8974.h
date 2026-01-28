@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_GCC_8974_H
 #define _DT_BINDINGS_CLK_MSM_GCC_8974_H
-
 #define GPLL0							0
 #define GPLL0_VOTE						1
 #define CONFIG_NOC_CLK_SRC					2
@@ -312,8 +306,5 @@
 #define GPLL4_VOTE						303
 #define GCC_SDCC1_CDCCAL_SLEEP_CLK				304
 #define GCC_SDCC1_CDCCAL_FF_CLK					305
-
-/* gdscs */
 #define USB_HS_HSIC_GDSC					0
-
 #endif

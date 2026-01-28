@@ -1,18 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * cimax2.h
- *
- * CIMax(R) SP2 driver in conjunction with NetUp Dual DVB-S2 CI card
- *
- * Copyright (C) 2009 NetUP Inc.
- * Copyright (C) 2009 Igor M. Liplianin <liplianin@netup.ru>
- * Copyright (C) 2009 Abylay Ospan <aospan@netup.ru>
- */
-
 #ifndef CIMAX2_H
 #define CIMAX2_H
 #include <media/dvb_ca_en50221.h>
-
 extern int netup_ci_read_attribute_mem(struct dvb_ca_en50221 *en50221,
 						int slot, int addr);
 extern int netup_ci_write_attribute_mem(struct dvb_ca_en50221 *en50221,
@@ -29,5 +17,4 @@ extern int netup_poll_ci_slot_status(struct dvb_ca_en50221 *en50221,
 						int slot, int open);
 extern int netup_ci_init(struct cx23885_tsport *port);
 extern void netup_ci_exit(struct cx23885_tsport *port);
-
 #endif

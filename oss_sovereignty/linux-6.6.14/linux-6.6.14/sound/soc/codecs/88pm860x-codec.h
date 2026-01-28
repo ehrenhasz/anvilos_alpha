@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * 88pm860x-codec.h -- 88PM860x ALSA SoC Audio Driver
- *
- * Copyright 2010 Marvell International Ltd.
- *	Haojian Zhuang <haojian.zhuang@marvell.com>
- */
-
 #ifndef __88PM860X_H
 #define __88PM860X_H
-
 #define PM860X_PCM_IFACE_1		0xb0
 #define PM860X_PCM_IFACE_2		0xb1
 #define PM860X_PCM_IFACE_3		0xb2
@@ -20,7 +11,6 @@
 #define PM860X_ADC_OFFSET_1		0xb8
 #define PM860X_ADC_OFFSET_2		0xb9
 #define PM860X_DMIC_DELAY		0xba
-
 #define PM860X_I2S_IFACE_1		0xbb
 #define PM860X_I2S_IFACE_2		0xbc
 #define PM860X_I2S_IFACE_3		0xbd
@@ -66,28 +56,21 @@
 #define PM860X_AUDIO_CAL_5		0xe6
 #define PM860X_ANA_INPUT_SEL_1		0xe7
 #define PM860X_ANA_INPUT_SEL_2		0xe8
-
 #define PM860X_PCM_IFACE_4		0xe9
 #define PM860X_I2S_IFACE_5		0xea
-
 #define PM860X_SHORTS			0x3b
 #define PM860X_PLL_ADJ_1		0x3c
 #define PM860X_PLL_ADJ_2		0x3d
-
-/* bits definition */
 #define PM860X_CLK_DIR_IN		0
 #define PM860X_CLK_DIR_OUT		1
-
 #define PM860X_DET_HEADSET		(1 << 0)
 #define PM860X_DET_MIC			(1 << 1)
 #define PM860X_DET_HOOK			(1 << 2)
 #define PM860X_SHORT_HEADSET		(1 << 3)
 #define PM860X_SHORT_LINEOUT		(1 << 4)
 #define PM860X_DET_MASK			0x1F
-
 extern int pm860x_hs_jack_detect(struct snd_soc_component *, struct snd_soc_jack *,
 				 int, int, int, int);
 extern int pm860x_mic_jack_detect(struct snd_soc_component *, struct snd_soc_jack *,
 				  int);
-
-#endif	/* __88PM860X_H */
+#endif	 

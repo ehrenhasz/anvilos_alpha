@@ -1,29 +1,5 @@
-/*
- * Copyright (c) 1993-2014, NVIDIA CORPORATION. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
-
-
 #ifndef _cl507d_h_
 #define _cl507d_h_
-
 #define NV_DISP_CORE_NOTIFIER_1                                                      0x00000000
 #define NV_DISP_CORE_NOTIFIER_1_SIZEOF                                               0x00000054
 #define NV_DISP_CORE_NOTIFIER_1_COMPLETION_0                                         0x00000000
@@ -36,8 +12,6 @@
 #define NV_DISP_CORE_NOTIFIER_1_CAPABILITIES_1_DONE                                  0:0
 #define NV_DISP_CORE_NOTIFIER_1_CAPABILITIES_1_DONE_FALSE                            0x00000000
 #define NV_DISP_CORE_NOTIFIER_1_CAPABILITIES_1_DONE_TRUE                             0x00000001
-
-// class methods
 #define NV507D_UPDATE                                                           (0x00000080)
 #define NV507D_UPDATE_INTERLOCK_WITH_CURSOR0                                    0:0
 #define NV507D_UPDATE_INTERLOCK_WITH_CURSOR0_DISABLE                            (0x00000000)
@@ -84,7 +58,6 @@
 #define NV507D_SET_CONTEXT_DMA_NOTIFIER_HANDLE                                  31:0
 #define NV507D_GET_CAPABILITIES                                                 (0x0000008C)
 #define NV507D_GET_CAPABILITIES_DUMMY                                           31:0
-
 #define NV507D_DAC_SET_CONTROL(a)                                               (0x00000400 + (a)*0x00000080)
 #define NV507D_DAC_SET_CONTROL_OWNER                                            3:0
 #define NV507D_DAC_SET_CONTROL_OWNER_NONE                                       (0x00000000)
@@ -127,7 +100,6 @@
 #define NV507D_DAC_SET_POLARITY_VSYNC_POSITIVE_TRUE                             (0x00000000)
 #define NV507D_DAC_SET_POLARITY_VSYNC_NEGATIVE_TRUE                             (0x00000001)
 #define NV507D_DAC_SET_POLARITY_RESERVED                                        31:2
-
 #define NV507D_SOR_SET_CONTROL(a)                                               (0x00000600 + (a)*0x00000040)
 #define NV507D_SOR_SET_CONTROL_OWNER                                            3:0
 #define NV507D_SOR_SET_CONTROL_OWNER_NONE                                       (0x00000000)
@@ -156,7 +128,6 @@
 #define NV507D_SOR_SET_CONTROL_DE_SYNC_POLARITY                                 14:14
 #define NV507D_SOR_SET_CONTROL_DE_SYNC_POLARITY_POSITIVE_TRUE                   (0x00000000)
 #define NV507D_SOR_SET_CONTROL_DE_SYNC_POLARITY_NEGATIVE_TRUE                   (0x00000001)
-
 #define NV507D_PIOR_SET_CONTROL(a)                                              (0x00000700 + (a)*0x00000040)
 #define NV507D_PIOR_SET_CONTROL_OWNER                                           3:0
 #define NV507D_PIOR_SET_CONTROL_OWNER_NONE                                      (0x00000000)
@@ -179,7 +150,6 @@
 #define NV507D_PIOR_SET_CONTROL_DE_SYNC_POLARITY                                14:14
 #define NV507D_PIOR_SET_CONTROL_DE_SYNC_POLARITY_POSITIVE_TRUE                  (0x00000000)
 #define NV507D_PIOR_SET_CONTROL_DE_SYNC_POLARITY_NEGATIVE_TRUE                  (0x00000001)
-
 #define NV507D_HEAD_SET_PIXEL_CLOCK(a)                                          (0x00000804 + (a)*0x00000400)
 #define NV507D_HEAD_SET_PIXEL_CLOCK_FREQUENCY                                   21:0
 #define NV507D_HEAD_SET_PIXEL_CLOCK_MODE                                        23:22
@@ -372,4 +342,4 @@
 #define NV507D_HEAD_SET_OVERLAY_USAGE_BOUNDS_PIXEL_DEPTH                        11:8
 #define NV507D_HEAD_SET_OVERLAY_USAGE_BOUNDS_PIXEL_DEPTH_BPP_16                 (0x00000001)
 #define NV507D_HEAD_SET_OVERLAY_USAGE_BOUNDS_PIXEL_DEPTH_BPP_32                 (0x00000003)
-#endif // _cl507d_h
+#endif  

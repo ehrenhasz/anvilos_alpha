@@ -1,13 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef _MTK_VCODEC_FW_PRIV_H_
 #define _MTK_VCODEC_FW_PRIV_H_
-
 #include "mtk_vcodec_fw.h"
-
 struct mtk_vcodec_dec_dev;
 struct mtk_vcodec_enc_dev;
-
 struct mtk_vcodec_fw {
 	enum mtk_vcodec_fw_type type;
 	const struct mtk_vcodec_fw_ops *ops;
@@ -15,7 +10,6 @@ struct mtk_vcodec_fw {
 	struct mtk_scp *scp;
 	enum mtk_vcodec_fw_use fw_use;
 };
-
 struct mtk_vcodec_fw_ops {
 	int (*load_firmware)(struct mtk_vcodec_fw *fw);
 	unsigned int (*get_vdec_capa)(struct mtk_vcodec_fw *fw);
@@ -28,7 +22,6 @@ struct mtk_vcodec_fw_ops {
 			unsigned int len, unsigned int wait);
 	void (*release)(struct mtk_vcodec_fw *fw);
 };
-
 #if IS_ENABLED(CONFIG_VIDEO_MEDIATEK_VCODEC_VPU)
 struct mtk_vcodec_fw *mtk_vcodec_fw_vpu_init(void *priv, enum mtk_vcodec_fw_use fw_use);
 #else
@@ -37,8 +30,7 @@ mtk_vcodec_fw_vpu_init(void *priv, enum mtk_vcodec_fw_use fw_use)
 {
 	return ERR_PTR(-ENODEV);
 }
-#endif /* CONFIG_VIDEO_MEDIATEK_VCODEC_VPU */
-
+#endif  
 #if IS_ENABLED(CONFIG_VIDEO_MEDIATEK_VCODEC_SCP)
 struct mtk_vcodec_fw *mtk_vcodec_fw_scp_init(void *priv, enum mtk_vcodec_fw_use fw_use);
 #else
@@ -47,6 +39,5 @@ mtk_vcodec_fw_scp_init(void *priv, enum mtk_vcodec_fw_use fw_use)
 {
 	return ERR_PTR(-ENODEV);
 }
-#endif /* CONFIG_VIDEO_MEDIATEK_VCODEC_SCP */
-
-#endif /* _MTK_VCODEC_FW_PRIV_H_ */
+#endif  
+#endif  

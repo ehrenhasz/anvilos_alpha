@@ -1,22 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
 #ifndef __XFS_STATS_H__
 #define __XFS_STATS_H__
-
-
 #include <linux/percpu.h>
-
-/*
- * The btree stats arrays have fixed offsets for the different stats. We
- * store the base index in the btree cursor via XFS_STATS_CALC_INDEX() and
- * that allows us to use fixed offsets into the stats array for each btree
- * stat. These index offsets are defined in the order they will be emitted
- * in the stats files, so it is possible to add new btree stat types by
- * appending to the enum list below.
- */
 enum {
 	__XBTS_lookup = 0,
 	__XBTS_compare = 1,
@@ -33,13 +17,8 @@ enum {
 	__XBTS_alloc = 12,
 	__XBTS_free = 13,
 	__XBTS_moves = 14,
-
 	__XBTS_MAX = 15,
 };
-
-/*
- * XFS global statistics
- */
 struct __xfsstats {
 	uint32_t		xs_allocx;
 	uint32_t		xs_allocb;
@@ -100,14 +79,14 @@ struct __xfsstats {
 	uint32_t		xs_iflush_count;
 	uint32_t		xs_icluster_flushcnt;
 	uint32_t		xs_icluster_flushinode;
-	uint32_t		vn_active;	/* # vnodes not on free lists */
-	uint32_t		vn_alloc;	/* # times vn_alloc called */
-	uint32_t		vn_get;		/* # times vn_get called */
-	uint32_t		vn_hold;	/* # times vn_hold called */
-	uint32_t		vn_rele;	/* # times vn_rele called */
-	uint32_t		vn_reclaim;	/* # times vn_reclaim called */
-	uint32_t		vn_remove;	/* # times vn_remove called */
-	uint32_t		vn_free;	/* # times vn_free called */
+	uint32_t		vn_active;	 
+	uint32_t		vn_alloc;	 
+	uint32_t		vn_get;		 
+	uint32_t		vn_hold;	 
+	uint32_t		vn_rele;	 
+	uint32_t		vn_reclaim;	 
+	uint32_t		vn_remove;	 
+	uint32_t		vn_free;	 
 	uint32_t		xb_get;
 	uint32_t		xb_create;
 	uint32_t		xb_get_locked;
@@ -117,7 +96,6 @@ struct __xfsstats {
 	uint32_t		xb_page_retries;
 	uint32_t		xb_page_found;
 	uint32_t		xb_get_read;
-/* Version 2 btree counters */
 	uint32_t		xs_abtb_2[__XBTS_MAX];
 	uint32_t		xs_abtc_2[__XBTS_MAX];
 	uint32_t		xs_bmbt_2[__XBTS_MAX];
@@ -133,86 +111,63 @@ struct __xfsstats {
 	uint32_t		xs_qm_dqwants;
 	uint32_t		xs_qm_dquot;
 	uint32_t		xs_qm_dquot_unused;
-/* Extra precision counters */
 	uint64_t		xs_xstrat_bytes;
 	uint64_t		xs_write_bytes;
 	uint64_t		xs_read_bytes;
 	uint64_t		defer_relog;
 };
-
 #define	xfsstats_offset(f)	(offsetof(struct __xfsstats, f)/sizeof(uint32_t))
-
 struct xfsstats {
 	union {
 		struct __xfsstats	s;
 		uint32_t		a[xfsstats_offset(xs_qm_dquot)];
 	};
 };
-
-/*
- * simple wrapper for getting the array index of s struct member offset
- */
 #define XFS_STATS_CALC_INDEX(member)	\
 	(offsetof(struct __xfsstats, member) / (int)sizeof(uint32_t))
-
-
 int xfs_stats_format(struct xfsstats __percpu *stats, char *buf);
 void xfs_stats_clearall(struct xfsstats __percpu *stats);
 extern struct xstats xfsstats;
-
 #define XFS_STATS_INC(mp, v)					\
 do {								\
 	per_cpu_ptr(xfsstats.xs_stats, current_cpu())->s.v++;	\
 	per_cpu_ptr(mp->m_stats.xs_stats, current_cpu())->s.v++;	\
 } while (0)
-
 #define XFS_STATS_DEC(mp, v)					\
 do {								\
 	per_cpu_ptr(xfsstats.xs_stats, current_cpu())->s.v--;	\
 	per_cpu_ptr(mp->m_stats.xs_stats, current_cpu())->s.v--;	\
 } while (0)
-
 #define XFS_STATS_ADD(mp, v, inc)					\
 do {									\
 	per_cpu_ptr(xfsstats.xs_stats, current_cpu())->s.v += (inc);	\
 	per_cpu_ptr(mp->m_stats.xs_stats, current_cpu())->s.v += (inc);	\
 } while (0)
-
 #define XFS_STATS_INC_OFF(mp, off)				\
 do {								\
 	per_cpu_ptr(xfsstats.xs_stats, current_cpu())->a[off]++;	\
 	per_cpu_ptr(mp->m_stats.xs_stats, current_cpu())->a[off]++;	\
 } while (0)
-
 #define XFS_STATS_DEC_OFF(mp, off)					\
 do {								\
 	per_cpu_ptr(xfsstats.xs_stats, current_cpu())->a[off];	\
 	per_cpu_ptr(mp->m_stats.xs_stats, current_cpu())->a[off];	\
 } while (0)
-
 #define XFS_STATS_ADD_OFF(mp, off, inc)					\
 do {									\
 	per_cpu_ptr(xfsstats.xs_stats, current_cpu())->a[off] += (inc);	\
 	per_cpu_ptr(mp->m_stats.xs_stats, current_cpu())->a[off] += (inc);	\
 } while (0)
-
 #if defined(CONFIG_PROC_FS)
-
 extern int xfs_init_procfs(void);
 extern void xfs_cleanup_procfs(void);
-
-
-#else	/* !CONFIG_PROC_FS */
-
+#else	 
 static inline int xfs_init_procfs(void)
 {
 	return 0;
 }
-
 static inline void xfs_cleanup_procfs(void)
 {
 }
-
-#endif	/* !CONFIG_PROC_FS */
-
-#endif /* __XFS_STATS_H__ */
+#endif	 
+#endif  

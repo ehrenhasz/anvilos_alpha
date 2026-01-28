@@ -1,66 +1,51 @@
-// SPDX-License-Identifier: GPL-2.0
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
 	compatible = "brcm,bcm7358";
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		mips-hpt-frequency = <375000000>;
-
 		cpu@0 {
 			compatible = "brcm,bmips3300";
 			device_type = "cpu";
 			reg = <0>;
 		};
 	};
-
 	aliases {
 		uart0 = &uart0;
 	};
-
 	cpu_intc: interrupt-controller {
 		#address-cells = <0>;
 		compatible = "mti,cpu-interrupt-controller";
-
 		interrupt-controller;
 		#interrupt-cells = <1>;
 	};
-
 	clocks {
 		uart_clk: uart_clk {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <81000000>;
 		};
-
 		upg_clk: upg_clk {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <27000000>;
 		};
 	};
-
 	rdb {
 		#address-cells = <1>;
 		#size-cells = <1>;
-
 		compatible = "simple-bus";
 		ranges = <0 0x10000000 0x01000000>;
-
 		periph_intc: interrupt-controller@411400 {
 			compatible = "brcm,bcm7038-l1-intc";
 			reg = <0x411400 0x30>;
-
 			interrupt-controller;
 			#interrupt-cells = <1>;
-
 			interrupt-parent = <&cpu_intc>;
 			interrupts = <2>;
 		};
-
 		sun_l2_intc: interrupt-controller@403000 {
 			compatible = "brcm,l2-intc";
 			reg = <0x403000 0x30>;
@@ -69,7 +54,6 @@
 			interrupt-parent = <&periph_intc>;
 			interrupts = <48>;
 		};
-
 		gisb-arb@400000 {
 			compatible = "brcm,bcm7400-gisb-arb";
 			reg = <0x400000 0xdc>;
@@ -81,50 +65,39 @@
 						     "rdc_0", "raaga_0",
 						     "avd_0", "jtag_0";
 		};
-
 		upg_irq0_intc: interrupt-controller@406600 {
 			compatible = "brcm,bcm7120-l2-intc";
 			reg = <0x406600 0x8>;
-
 			brcm,int-map-mask = <0x44>, <0x7000000>;
 			brcm,int-fwd-mask = <0x70000>;
-
 			interrupt-controller;
 			#interrupt-cells = <1>;
-
 			interrupt-parent = <&periph_intc>;
 			interrupts = <56>, <54>;
 			interrupt-names = "upg_main", "upg_bsc";
 		};
-
 		upg_aon_irq0_intc: interrupt-controller@408b80 {
 			compatible = "brcm,bcm7120-l2-intc";
 			reg = <0x408b80 0x8>;
-
 			brcm,int-map-mask = <0x40>, <0x8000000>, <0x100000>;
 			brcm,int-fwd-mask = <0>;
 			brcm,irq-can-wake;
-
 			interrupt-controller;
 			#interrupt-cells = <1>;
-
 			interrupt-parent = <&periph_intc>;
 			interrupts = <57>, <55>, <59>;
 			interrupt-names = "upg_main_aon", "upg_bsc_aon",
 					  "upg_spi";
 		};
-
 		sun_top_ctrl: syscon@404000 {
 			compatible = "brcm,bcm7358-sun-top-ctrl", "syscon";
 			reg = <0x404000 0x51c>;
 			native-endian;
 		};
-
 		reboot {
 			compatible = "brcm,brcmstb-reboot";
 			syscon = <&sun_top_ctrl 0x304 0x308>;
 		};
-
 		uart0: serial@406800 {
 			compatible = "ns16550a";
 			reg = <0x406800 0x20>;
@@ -136,7 +109,6 @@
 			clocks = <&uart_clk>;
 			status = "disabled";
 		};
-
 		uart1: serial@406840 {
 			compatible = "ns16550a";
 			reg = <0x406840 0x20>;
@@ -148,7 +120,6 @@
 			clocks = <&uart_clk>;
 			status = "disabled";
 		};
-
 		uart2: serial@406880 {
 			compatible = "ns16550a";
 			reg = <0x406880 0x20>;
@@ -160,7 +131,6 @@
 			clocks = <&uart_clk>;
 			status = "disabled";
 		};
-
 		bsca: i2c@406200 {
 		      clock-frequency = <390000>;
 		      compatible = "brcm,brcmstb-i2c";
@@ -170,7 +140,6 @@
 		      interrupt-names = "upg_bsca";
 		      status = "disabled";
 		};
-
 		bscb: i2c@406280 {
 		      clock-frequency = <390000>;
 		      compatible = "brcm,brcmstb-i2c";
@@ -180,7 +149,6 @@
 		      interrupt-names = "upg_bscb";
 		      status = "disabled";
 		};
-
 		bscc: i2c@406300 {
 		      clock-frequency = <390000>;
 		      compatible = "brcm,brcmstb-i2c";
@@ -190,7 +158,6 @@
 		      interrupt-names = "upg_bscc";
 		      status = "disabled";
 		};
-
 		bscd: i2c@408980 {
 		      clock-frequency = <390000>;
 		      compatible = "brcm,brcmstb-i2c";
@@ -200,7 +167,6 @@
 		      interrupt-names = "upg_bscd";
 		      status = "disabled";
 		};
-
 		pwma: pwm@406400 {
 			compatible = "brcm,bcm7038-pwm";
 			reg = <0x406400 0x28>;
@@ -208,7 +174,6 @@
 			clocks = <&upg_clk>;
 			status = "disabled";
 		};
-
 		pwmb: pwm@406700 {
 			compatible = "brcm,bcm7038-pwm";
 			reg = <0x406700 0x28>;
@@ -216,14 +181,12 @@
 			clocks = <&upg_clk>;
 			status = "disabled";
 		};
-
 		watchdog: watchdog@4066a8 {
 			clocks = <&upg_clk>;
 			compatible = "brcm,bcm7038-wdt";
 			reg = <0x4066a8 0x14>;
 			status = "disabled";
 		};
-
 		aon_pm_l2_intc: interrupt-controller@408240 {
 			compatible = "brcm,l2-intc";
 			reg = <0x408240 0x30>;
@@ -233,7 +196,6 @@
 			interrupts = <50>;
 			brcm,irq-can-wake;
 		};
-
 		upg_gio: gpio@406500 {
 			compatible = "brcm,brcmstb-gpio";
 			reg = <0x406500 0xa0>;
@@ -245,7 +207,6 @@
 			interrupts = <6>;
 			brcm,gpio-bank-widths = <32 32 32 29 4>;
 		};
-
 		upg_gio_aon: gpio@408c00 {
 			compatible = "brcm,brcmstb-gpio";
 			reg = <0x408c00 0x60>;
@@ -260,7 +221,6 @@
 			wakeup-source;
 			brcm,gpio-bank-widths = <21 32 2>;
 		};
-
 		enet0: ethernet@430000 {
 			phy-mode = "internal";
 			phy-handle = <&phy1>;
@@ -272,13 +232,11 @@
 			interrupts = <24>, <25>;
 			interrupt-parent = <&periph_intc>;
 			status = "disabled";
-
 			mdio@e14 {
 				compatible = "brcm,genet-mdio-v2";
 				#address-cells = <0x1>;
 				#size-cells = <0x0>;
 				reg = <0xe14 0x8>;
-
 				phy1: ethernet-phy@1 {
 					max-speed = <100>;
 					reg = <0x1>;
@@ -287,7 +245,6 @@
 				};
 			};
 		};
-
 		ehci0: usb@480300 {
 			compatible = "brcm,bcm7358-ehci", "generic-ehci";
 			reg = <0x480300 0x100>;
@@ -296,7 +253,6 @@
 			interrupts = <65>;
 			status = "disabled";
 		};
-
 		ohci0: usb@480400 {
 			compatible = "brcm,bcm7358-ohci", "generic-ohci";
 			reg = <0x480400 0x100>;
@@ -306,7 +262,6 @@
 			interrupts = <66>;
 			status = "disabled";
 		};
-
 		hif_l2_intc: interrupt-controller@411000 {
 			compatible = "brcm,l2-intc";
 			reg = <0x411000 0x30>;
@@ -315,7 +270,6 @@
 			interrupt-parent = <&periph_intc>;
 			interrupts = <30>;
 		};
-
 		nand: nand@412800 {
 			compatible = "brcm,brcmnand-v5.0", "brcm,brcmnand";
 			#address-cells = <1>;
@@ -326,7 +280,6 @@
 			interrupts = <24>;
 			status = "disabled";
 		};
-
 		spi_l2_intc: interrupt-controller@411d00 {
 			compatible = "brcm,l2-intc";
 			reg = <0x411d00 0x30>;
@@ -335,7 +288,6 @@
 			interrupt-parent = <&periph_intc>;
 			interrupts = <31>;
 		};
-
 		qspi: spi@413000 {
 			#address-cells = <0x1>;
 			#size-cells = <0x0>;
@@ -355,7 +307,6 @@
 					  "mspi_halted";
 			status = "disabled";
 		};
-
 		mspi: spi@408a00 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -369,7 +320,6 @@
 			interrupt-names = "mspi_done";
 			status = "disabled";
 		};
-
 		waketimer: waketimer@408e80 {
 			compatible = "brcm,brcmstb-waketimer";
 			reg = <0x408e80 0x14>;

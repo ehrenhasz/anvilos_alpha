@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef HEXAGON_ASM_USER_H
 #define HEXAGON_ASM_USER_H
-
-/*
- * Layout for registers passed in elf core dumps to userspace.
- *
- * Basically a rearranged subset of "pt_regs".
- *
- * Interested parties:  libc, gdb...
- */
-
 struct user_regs_struct {
 	unsigned long r0;
 	unsigned long r1;
@@ -57,14 +47,13 @@ struct user_regs_struct {
 	unsigned long cause;
 	unsigned long badva;
 #if CONFIG_HEXAGON_ARCH_VERSION < 4
-	unsigned long pad1;  /* pad out to 48 words total */
-	unsigned long pad2;  /* pad out to 48 words total */
-	unsigned long pad3;  /* pad out to 48 words total */
+	unsigned long pad1;   
+	unsigned long pad2;   
+	unsigned long pad3;   
 #else
 	unsigned long cs0;
 	unsigned long cs1;
-	unsigned long pad1;  /* pad out to 48 words total */
+	unsigned long pad1;   
 #endif
 };
-
 #endif

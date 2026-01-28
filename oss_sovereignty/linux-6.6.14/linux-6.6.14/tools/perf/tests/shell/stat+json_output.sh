@@ -1,13 +1,5 @@
-#!/bin/bash
-# perf stat JSON output linter
-# SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-# Checks various perf stat JSON output commands for the
-# correct number of fields.
-
 set -e
-
 skip_test=0
-
 pythonchecker=$(dirname $0)/lib/perf_json_output_lint.py
 if [ "x$PYTHON" == "x" ]
 then
@@ -22,27 +14,20 @@ then
 		exit 2
 	fi
 fi
-
 stat_output=$(mktemp /tmp/__perf_test.stat_output.json.XXXXX)
-
 cleanup() {
   rm -f "${stat_output}"
-
   trap - EXIT TERM INT
 }
-
 trap_cleanup() {
   cleanup
   exit 1
 }
 trap trap_cleanup EXIT TERM INT
-
-# Return true if perf_event_paranoid is > $1 and not running as root.
 function ParanoidAndNotRoot()
 {
 	 [ "$(id -u)" != 0 ] && [ "$(cat /proc/sys/kernel/perf_event_paranoid)" -gt $1 ]
 }
-
 check_no_args()
 {
 	echo -n "Checking json output: no args "
@@ -50,7 +35,6 @@ check_no_args()
 	$PYTHON $pythonchecker --no-args --file "${stat_output}"
 	echo "[Success]"
 }
-
 check_system_wide()
 {
 	echo -n "Checking json output: system wide "
@@ -63,7 +47,6 @@ check_system_wide()
 	$PYTHON $pythonchecker --system-wide --file "${stat_output}"
 	echo "[Success]"
 }
-
 check_system_wide_no_aggr()
 {
 	echo -n "Checking json output: system wide no aggregation "
@@ -76,7 +59,6 @@ check_system_wide_no_aggr()
 	$PYTHON $pythonchecker --system-wide-no-aggr --file "${stat_output}"
 	echo "[Success]"
 }
-
 check_interval()
 {
 	echo -n "Checking json output: interval "
@@ -84,8 +66,6 @@ check_interval()
 	$PYTHON $pythonchecker --interval --file "${stat_output}"
 	echo "[Success]"
 }
-
-
 check_event()
 {
 	echo -n "Checking json output: event "
@@ -93,7 +73,6 @@ check_event()
 	$PYTHON $pythonchecker --event --file "${stat_output}"
 	echo "[Success]"
 }
-
 check_per_core()
 {
 	echo -n "Checking json output: per core "
@@ -106,7 +85,6 @@ check_per_core()
 	$PYTHON $pythonchecker --per-core --file "${stat_output}"
 	echo "[Success]"
 }
-
 check_per_thread()
 {
 	echo -n "Checking json output: per thread "
@@ -119,7 +97,6 @@ check_per_thread()
 	$PYTHON $pythonchecker --per-thread --file "${stat_output}"
 	echo "[Success]"
 }
-
 check_per_cache_instance()
 {
 	echo -n "Checking json output: per cache_instance "
@@ -131,7 +108,6 @@ check_per_cache_instance()
 	perf stat -j --per-cache -a true 2>&1 | $PYTHON $pythonchecker --per-cache
 	echo "[Success]"
 }
-
 check_per_die()
 {
 	echo -n "Checking json output: per die "
@@ -144,7 +120,6 @@ check_per_die()
 	$PYTHON $pythonchecker --per-die --file "${stat_output}"
 	echo "[Success]"
 }
-
 check_per_node()
 {
 	echo -n "Checking json output: per node "
@@ -157,7 +132,6 @@ check_per_node()
 	$PYTHON $pythonchecker --per-node --file "${stat_output}"
 	echo "[Success]"
 }
-
 check_per_socket()
 {
 	echo -n "Checking json output: per socket "
@@ -170,22 +144,8 @@ check_per_socket()
 	$PYTHON $pythonchecker --per-socket --file "${stat_output}"
 	echo "[Success]"
 }
-
-# The perf stat options for per-socket, per-core, per-die
-# and -A ( no_aggr mode ) uses the info fetched from this
-# directory: "/sys/devices/system/cpu/cpu*/topology". For
-# example, socket value is fetched from "physical_package_id"
-# file in topology directory.
-# Reference: cpu__get_topology_int in util/cpumap.c
-# If the platform doesn't expose topology information, values
-# will be set to -1. For example, incase of pSeries platform
-# of powerpc, value for  "physical_package_id" is restricted
-# and set to -1. Check here validates the socket-id read from
-# topology file before proceeding further
-
 FILE_LOC="/sys/devices/system/cpu/cpu*/topology/"
 FILE_NAME="physical_package_id"
-
 check_for_topology()
 {
 	if ! ParanoidAndNotRoot 0
@@ -197,7 +157,6 @@ check_for_topology()
 		return 0
 	fi
 }
-
 check_for_topology
 check_no_args
 check_system_wide

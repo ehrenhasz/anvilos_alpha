@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2008-2010 Samsung Electronics
- *  Kyungmin Park <kyungmin.park@samsung.com>
- */
 #ifndef __SAMSUNG_ONENAND_H__
 #define __SAMSUNG_ONENAND_H__
-
-/*
- * OneNAND Controller
- */
 #define MEM_CFG_OFFSET		0x0000
 #define BURST_LEN_OFFSET	0x0010
 #define MEM_RESET_OFFSET	0x0020
@@ -30,12 +21,10 @@
 #define INT_PIN_ENABLE_OFFSET	0x01A0
 #define ACC_CLOCK_OFFSET	0x01C0
 #define FLASH_VER_ID_OFFSET	0x01F0
-#define FLASH_AUX_CNTRL_OFFSET	0x0300		/* s3c64xx only */
-
+#define FLASH_AUX_CNTRL_OFFSET	0x0300		 
 #define ONENAND_MEM_RESET_HOT	0x3
 #define ONENAND_MEM_RESET_COLD	0x2
 #define ONENAND_MEM_RESET_WARM	0x1
-
 #define CACHE_OP_ERR		(1 << 13)
 #define RST_CMP			(1 << 12)
 #define RDY_ACT			(1 << 11)
@@ -50,7 +39,5 @@
 #define PGM_FAIL		(1 << 2)
 #define INT_TO			(1 << 1)
 #define LD_FAIL_ECC_ERR		(1 << 0)
-
 #define TSRF			(1 << 0)
-
 #endif

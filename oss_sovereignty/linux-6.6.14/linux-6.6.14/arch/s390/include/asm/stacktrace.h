@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_S390_STACKTRACE_H
 #define _ASM_S390_STACKTRACE_H
-
 #include <linux/uaccess.h>
 #include <linux/ptrace.h>
 #include <asm/switch_to.h>
-
 enum stack_type {
 	STACK_TYPE_UNKNOWN,
 	STACK_TYPE_TASK,
@@ -14,16 +11,13 @@ enum stack_type {
 	STACK_TYPE_RESTART,
 	STACK_TYPE_MCCK,
 };
-
 struct stack_info {
 	enum stack_type type;
 	unsigned long begin, end;
 };
-
 const char *stack_type_name(enum stack_type type);
 int get_stack_info(unsigned long sp, struct task_struct *task,
 		   struct stack_info *info, unsigned long *visit_mask);
-
 static inline bool on_stack(struct stack_info *info,
 			    unsigned long addr, size_t len)
 {
@@ -33,11 +27,6 @@ static inline bool on_stack(struct stack_info *info,
 		return false;
 	return addr >= info->begin && addr + len <= info->end;
 }
-
-/*
- * Stack layout of a C stack frame.
- * Kernel uses the packed stack layout (-mpacked-stack).
- */
 struct stack_frame {
 	union {
 		unsigned long empty[9];
@@ -52,18 +41,9 @@ struct stack_frame {
 	unsigned long gprs[10];
 	unsigned long back_chain;
 };
-
-/*
- * Unlike current_stack_pointer which simply contains the current value of %r15
- * current_frame_address() returns function stack frame address, which matches
- * %r15 upon function invocation. It may differ from %r15 later if function
- * allocates stack for local variables or new stack frame to call other
- * functions.
- */
 #define current_frame_address()						\
 	((unsigned long)__builtin_frame_address(0) -			\
 	 offsetof(struct stack_frame, back_chain))
-
 static __always_inline unsigned long get_stack_pointer(struct task_struct *task,
 						       struct pt_regs *regs)
 {
@@ -73,25 +53,18 @@ static __always_inline unsigned long get_stack_pointer(struct task_struct *task,
 		return current_frame_address();
 	return (unsigned long)task->thread.ksp;
 }
-
-/*
- * To keep this simple mark register 2-6 as being changed (volatile)
- * by the called function, even though register 6 is saved/nonvolatile.
- */
 #define CALL_FMT_0 "=&d" (r2)
 #define CALL_FMT_1 "+&d" (r2)
 #define CALL_FMT_2 CALL_FMT_1, "+&d" (r3)
 #define CALL_FMT_3 CALL_FMT_2, "+&d" (r4)
 #define CALL_FMT_4 CALL_FMT_3, "+&d" (r5)
 #define CALL_FMT_5 CALL_FMT_4, "+&d" (r6)
-
 #define CALL_CLOBBER_5 "0", "1", "14", "cc", "memory"
 #define CALL_CLOBBER_4 CALL_CLOBBER_5
 #define CALL_CLOBBER_3 CALL_CLOBBER_4, "5"
 #define CALL_CLOBBER_2 CALL_CLOBBER_3, "4"
 #define CALL_CLOBBER_1 CALL_CLOBBER_2, "3"
 #define CALL_CLOBBER_0 CALL_CLOBBER_1
-
 #define CALL_LARGS_0(...)						\
 	long dummy = 0
 #define CALL_LARGS_1(t1, a1)						\
@@ -108,7 +81,6 @@ static __always_inline unsigned long get_stack_pointer(struct task_struct *task,
 #define CALL_LARGS_5(t1, a1, t2, a2, t3, a3, t4, a4, t5, a5)		\
 	CALL_LARGS_4(t1, a1, t2, a2, t3, a3, t4, a4);			\
 	long arg5 = (long)(t5)(a5)
-
 #define CALL_REGS_0							\
 	register long r2 asm("2") = dummy
 #define CALL_REGS_1							\
@@ -125,7 +97,6 @@ static __always_inline unsigned long get_stack_pointer(struct task_struct *task,
 #define CALL_REGS_5							\
 	CALL_REGS_4;							\
 	register long r6 asm("6") = arg5
-
 #define CALL_TYPECHECK_0(...)
 #define CALL_TYPECHECK_1(t, a, ...)					\
 	typecheck(t, a)
@@ -141,7 +112,6 @@ static __always_inline unsigned long get_stack_pointer(struct task_struct *task,
 #define CALL_TYPECHECK_5(t, a, ...)					\
 	CALL_TYPECHECK_4(__VA_ARGS__);					\
 	typecheck(t, a)
-
 #define CALL_PARM_0(...) void
 #define CALL_PARM_1(t, a, ...) t
 #define CALL_PARM_2(t, a, ...) t, CALL_PARM_1(__VA_ARGS__)
@@ -149,22 +119,6 @@ static __always_inline unsigned long get_stack_pointer(struct task_struct *task,
 #define CALL_PARM_4(t, a, ...) t, CALL_PARM_3(__VA_ARGS__)
 #define CALL_PARM_5(t, a, ...) t, CALL_PARM_4(__VA_ARGS__)
 #define CALL_PARM_6(t, a, ...) t, CALL_PARM_5(__VA_ARGS__)
-
-/*
- * Use call_on_stack() to call a function switching to a specified
- * stack. Proper sign and zero extension of function arguments is
- * done. Usage:
- *
- * rc = call_on_stack(nr, stack, rettype, fn, t1, a1, t2, a2, ...)
- *
- * - nr specifies the number of function arguments of fn.
- * - stack specifies the stack to be used.
- * - fn is the function to be called.
- * - rettype is the return type of fn.
- * - t1, a1, ... are pairs, where t1 must match the type of the first
- *   argument of fn, t2 the second, etc. a1 is the corresponding
- *   first function argument (not name), etc.
- */
 #define call_on_stack(nr, stack, rettype, fn, ...)			\
 ({									\
 	rettype (*__fn)(CALL_PARM_##nr(__VA_ARGS__)) = fn;		\
@@ -188,29 +142,10 @@ static __always_inline unsigned long get_stack_pointer(struct task_struct *task,
 		  [_fn] "X" (__fn) : CALL_CLOBBER_##nr);		\
 	(rettype)r2;							\
 })
-
-/*
- * Use call_nodat() to call a function with DAT disabled.
- * Proper sign and zero extension of function arguments is done.
- * Usage:
- *
- * rc = call_nodat(nr, rettype, fn, t1, a1, t2, a2, ...)
- *
- * - nr specifies the number of function arguments of fn.
- * - fn is the function to be called, where fn is a physical address.
- * - rettype is the return type of fn.
- * - t1, a1, ... are pairs, where t1 must match the type of the first
- *   argument of fn, t2 the second, etc. a1 is the corresponding
- *   first function argument (not name), etc.
- *
- * fn() is called with standard C function call ABI, with the exception
- * that no useful stackframe or stackpointer is passed via register 15.
- * Therefore the called function must not use r15 to access the stack.
- */
 #define call_nodat(nr, rettype, fn, ...)				\
 ({									\
 	rettype (*__fn)(CALL_PARM_##nr(__VA_ARGS__)) = (fn);		\
-	/* aligned since psw_leave must not cross page boundary */	\
+	 	\
 	psw_t __aligned(16) psw_leave;					\
 	psw_t psw_enter;						\
 	CALL_LARGS_##nr(__VA_ARGS__);					\
@@ -237,5 +172,4 @@ static __always_inline unsigned long get_stack_pointer(struct task_struct *task,
 		: "7", CALL_CLOBBER_##nr);				\
 	(rettype)r2;							\
 })
-
-#endif /* _ASM_S390_STACKTRACE_H */
+#endif  

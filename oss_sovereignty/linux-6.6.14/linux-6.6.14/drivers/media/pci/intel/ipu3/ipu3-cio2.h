@@ -1,17 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2017 Intel Corporation */
-
 #ifndef __IPU3_CIO2_H
 #define __IPU3_CIO2_H
-
 #include <linux/bits.h>
 #include <linux/dma-mapping.h>
 #include <linux/kernel.h>
 #include <linux/mutex.h>
 #include <linux/types.h>
-
 #include <asm/page.h>
-
 #include <media/media-device.h>
 #include <media/media-entity.h>
 #include <media/v4l2-async.h>
@@ -20,44 +14,31 @@
 #include <media/v4l2-subdev.h>
 #include <media/videobuf2-core.h>
 #include <media/videobuf2-v4l2.h>
-
-struct cio2_fbpt_entry;		/* defined here, after the first usage */
+struct cio2_fbpt_entry;		 
 struct pci_dev;
-
 #define CIO2_NAME					"ipu3-cio2"
 #define CIO2_DEVICE_NAME				"Intel IPU3 CIO2"
 #define CIO2_ENTITY_NAME				"ipu3-csi2"
 #define CIO2_PCI_ID					0x9d32
 #define CIO2_PCI_BAR					0
 #define CIO2_DMA_MASK					DMA_BIT_MASK(39)
-
 #define CIO2_IMAGE_MAX_WIDTH				4224U
 #define CIO2_IMAGE_MAX_HEIGHT				3136U
-
-/* 32MB = 8xFBPT_entry */
 #define CIO2_MAX_LOPS					8
 #define CIO2_MAX_BUFFERS			(PAGE_SIZE / 16 / CIO2_MAX_LOPS)
 #define CIO2_LOP_ENTRIES			(PAGE_SIZE / sizeof(u32))
-
 #define CIO2_PAD_SINK					0U
 #define CIO2_PAD_SOURCE					1U
 #define CIO2_PADS					2U
-
 #define CIO2_NUM_DMA_CHAN				20U
-#define CIO2_NUM_PORTS					4U /* DPHYs */
-
-/* 1 for each sensor */
+#define CIO2_NUM_PORTS					4U  
 #define CIO2_QUEUES					CIO2_NUM_PORTS
-
-/* Register and bit field definitions */
-#define CIO2_REG_PIPE_BASE(n)			((n) * 0x0400)	/* n = 0..3 */
+#define CIO2_REG_PIPE_BASE(n)			((n) * 0x0400)	 
 #define CIO2_REG_CSIRX_BASE				0x000
 #define CIO2_REG_MIPIBE_BASE				0x100
 #define CIO2_REG_PIXELGEN_BAS				0x200
 #define CIO2_REG_IRQCTRL_BASE				0x300
 #define CIO2_REG_GPREG_BASE				0x1000
-
-/* base register: CIO2_REG_PIPE_BASE(pipe) * CIO2_REG_CSIRX_BASE */
 #define CIO2_REG_CSIRX_ENABLE			(CIO2_REG_CSIRX_BASE + 0x0)
 #define CIO2_REG_CSIRX_NOF_ENABLED_LANES	(CIO2_REG_CSIRX_BASE + 0x4)
 #define CIO2_REG_CSIRX_SP_IF_CONFIG		(CIO2_REG_CSIRX_BASE + 0x10)
@@ -71,12 +52,10 @@ struct pci_dev;
 #define CIO2_CSIRX_STATUS_DLANE_HS_MASK			0xff
 #define CIO2_REG_CSIRX_STATUS_DLANE_LP		(CIO2_REG_CSIRX_BASE + 0x20)
 #define CIO2_CSIRX_STATUS_DLANE_LP_MASK			0xffffff
-/* Termination enable and settle in 0.0625ns units, lane=0..3 or -1 for clock */
 #define CIO2_REG_CSIRX_DLY_CNT_TERMEN(lane) \
 				(CIO2_REG_CSIRX_BASE + 0x2c + 8 * (lane))
 #define CIO2_REG_CSIRX_DLY_CNT_SETTLE(lane) \
 				(CIO2_REG_CSIRX_BASE + 0x30 + 8 * (lane))
-/* base register: CIO2_REG_PIPE_BASE(pipe) * CIO2_REG_MIPIBE_BASE */
 #define CIO2_REG_MIPIBE_ENABLE		(CIO2_REG_MIPIBE_BASE + 0x0)
 #define CIO2_REG_MIPIBE_STATUS		(CIO2_REG_MIPIBE_BASE + 0x4)
 #define CIO2_REG_MIPIBE_COMP_FORMAT(vc) \
@@ -85,7 +64,6 @@ struct pci_dev;
 #define CIO2_REG_MIPIBE_FORCE_RAW8_ENABLE		BIT(0)
 #define CIO2_REG_MIPIBE_FORCE_RAW8_USE_TYPEID		BIT(1)
 #define CIO2_REG_MIPIBE_FORCE_RAW8_TYPEID_SHIFT		2U
-
 #define CIO2_REG_MIPIBE_IRQ_STATUS	(CIO2_REG_MIPIBE_BASE + 0x24)
 #define CIO2_REG_MIPIBE_IRQ_CLEAR	(CIO2_REG_MIPIBE_BASE + 0x28)
 #define CIO2_REG_MIPIBE_GLOBAL_LUT_DISREGARD (CIO2_REG_MIPIBE_BASE + 0x68)
@@ -95,27 +73,22 @@ struct pci_dev;
 					(CIO2_REG_MIPIBE_BASE + 0x70)
 #define CIO2_REG_MIPIBE_SP_LUT_ENTRY(vc) \
 				       (CIO2_REG_MIPIBE_BASE + 0x74 + 4 * (vc))
-#define CIO2_REG_MIPIBE_LP_LUT_ENTRY(m)	/* m = 0..15 */ \
+#define CIO2_REG_MIPIBE_LP_LUT_ENTRY(m)	  \
 					(CIO2_REG_MIPIBE_BASE + 0x84 + 4 * (m))
 #define CIO2_MIPIBE_LP_LUT_ENTRY_DISREGARD		1U
 #define CIO2_MIPIBE_LP_LUT_ENTRY_SID_SHIFT		1U
 #define CIO2_MIPIBE_LP_LUT_ENTRY_VC_SHIFT		5U
 #define CIO2_MIPIBE_LP_LUT_ENTRY_FORMAT_TYPE_SHIFT	7U
-
-/* base register: CIO2_REG_PIPE_BASE(pipe) * CIO2_REG_IRQCTRL_BASE */
-/* IRQ registers are 18-bit wide, see cio2_irq_error for bit definitions */
 #define CIO2_REG_IRQCTRL_EDGE		(CIO2_REG_IRQCTRL_BASE + 0x00)
 #define CIO2_REG_IRQCTRL_MASK		(CIO2_REG_IRQCTRL_BASE + 0x04)
 #define CIO2_REG_IRQCTRL_STATUS		(CIO2_REG_IRQCTRL_BASE + 0x08)
 #define CIO2_REG_IRQCTRL_CLEAR		(CIO2_REG_IRQCTRL_BASE + 0x0c)
 #define CIO2_REG_IRQCTRL_ENABLE		(CIO2_REG_IRQCTRL_BASE + 0x10)
 #define CIO2_REG_IRQCTRL_LEVEL_NOT_PULSE	(CIO2_REG_IRQCTRL_BASE + 0x14)
-
 #define CIO2_REG_GPREG_SRST		(CIO2_REG_GPREG_BASE + 0x0)
-#define CIO2_GPREG_SRST_ALL				0xffff	/* Reset all */
+#define CIO2_GPREG_SRST_ALL				0xffff	 
 #define CIO2_REG_FB_HPLL_FREQ		(CIO2_REG_GPREG_BASE + 0x08)
 #define CIO2_REG_ISCLK_RATIO		(CIO2_REG_GPREG_BASE + 0xc)
-
 #define CIO2_REG_CGC					0x1400
 #define CIO2_CGC_CSI2_TGE				BIT(0)
 #define CIO2_CGC_PRIM_TGE				BIT(1)
@@ -134,8 +107,8 @@ struct pci_dev;
 #define CIO2_CGC_CLKGATE_HOLDOFF_SHIFT			20U
 #define CIO2_CGC_CSI_CLKGATE_HOLDOFF_SHIFT		24U
 #define CIO2_REG_D0I3C					0x1408
-#define CIO2_D0I3C_I3					BIT(2)	/* Set D0I3 */
-#define CIO2_D0I3C_RR					BIT(3)	/* Restore? */
+#define CIO2_D0I3C_I3					BIT(2)	 
+#define CIO2_D0I3C_RR					BIT(3)	 
 #define CIO2_REG_SWRESET				0x140c
 #define CIO2_SWRESET_SWRESET				1U
 #define CIO2_REG_SENSOR_ACTIVE				0x1410
@@ -148,10 +121,6 @@ struct pci_dev;
 #define CIO2_REG_INT_EN					0x1420
 #define CIO2_REG_INT_EN_IRQ				(1 << 24)
 #define CIO2_REG_INT_EN_IOS(dma)	(1U << (((dma) >> 1U) + 12U))
-/*
- * Interrupt on completion bit, Eg. DMA 0-3 maps to bit 0-3,
- * DMA4 & DMA5 map to bit 4 ... DMA18 & DMA19 map to bit 11 Et cetera
- */
 #define CIO2_INT_IOC(dma)	(1U << ((dma) < 4U ? (dma) : ((dma) >> 1U) + 2U))
 #define CIO2_INT_IOC_SHIFT				0
 #define CIO2_INT_IOC_MASK		(0x7ff << CIO2_INT_IOC_SHIFT)
@@ -165,7 +134,7 @@ struct pci_dev;
 #define CIO2_REG_DMA_DBG				0x1448
 #define CIO2_REG_DMA_DBG_DMA_INDEX_SHIFT		0U
 #define CIO2_REG_PBM_ARB_CTRL				0x1460
-#define CIO2_PBM_ARB_CTRL_LANES_DIV			0U /* 4-4-2-2 lanes */
+#define CIO2_PBM_ARB_CTRL_LANES_DIV			0U  
 #define CIO2_PBM_ARB_CTRL_LANES_DIV_SHIFT		0U
 #define CIO2_PBM_ARB_CTRL_LE_EN				BIT(7)
 #define CIO2_PBM_ARB_CTRL_PLL_POST_SHTDN		2U
@@ -195,7 +164,6 @@ struct pci_dev;
 #define CIO2_PBM_WMCTRL2_DRAINNOW			BIT(31)
 #define CIO2_REG_PBM_TS_COUNT				0x146c
 #define CIO2_REG_PBM_FOPN_ABORT				0x1474
-/* below n = 0..3 */
 #define CIO2_PBM_FOPN_ABORT(n)				(0x1 << 8U * (n))
 #define CIO2_PBM_FOPN_FORCE_ABORT(n)			(0x2 << 8U * (n))
 #define CIO2_PBM_FOPN_FRAMEOPEN(n)			(0x8 << 8U * (n))
@@ -217,9 +185,7 @@ struct pci_dev;
 #define CIO2_LTRVAL02_SCALE_SHIFT			10U
 #define CIO2_LTRVAL13_VAL_SHIFT				16U
 #define CIO2_LTRVAL13_SCALE_SHIFT			26U
-
 #define CIO2_LTRVAL0_VAL				175U
-/* Value times 1024 ns */
 #define CIO2_LTRVAL0_SCALE				2U
 #define CIO2_LTRVAL1_VAL				90U
 #define CIO2_LTRVAL1_SCALE				2U
@@ -227,8 +193,7 @@ struct pci_dev;
 #define CIO2_LTRVAL2_SCALE				2U
 #define CIO2_LTRVAL3_VAL				90U
 #define CIO2_LTRVAL3_SCALE				2U
-
-#define CIO2_REG_CDMABA(n)		(0x1500 + 0x10 * (n))	/* n = 0..19 */
+#define CIO2_REG_CDMABA(n)		(0x1500 + 0x10 * (n))	 
 #define CIO2_REG_CDMARI(n)		(0x1504 + 0x10 * (n))
 #define CIO2_CDMARI_FBPT_RP_SHIFT			0U
 #define CIO2_CDMARI_FBPT_RP_MASK			0xff
@@ -245,7 +210,6 @@ struct pci_dev;
 #define CIO2_REG_CDMAC1(n)		(0x150c + 0x10 * (n))
 #define CIO2_CDMAC1_LINENUMINT_SHIFT			0U
 #define CIO2_CDMAC1_LINENUMUPDATE_SHIFT			16U
-/* n = 0..3 */
 #define CIO2_REG_PXM_PXF_FMT_CFG0(n)	(0x1700 + 0x30 * (n))
 #define CIO2_PXM_PXF_FMT_CFG_SID0_SHIFT			0U
 #define CIO2_PXM_PXF_FMT_CFG_SID1_SHIFT			16U
@@ -291,172 +255,114 @@ struct pci_dev;
 #define CIO2_REG_PXM_SID2BID0(n)			(0x1724 + 0x30 * (n))
 #define CIO2_FB_HPLL_FREQ				0x2
 #define CIO2_ISCLK_RATIO				0xc
-
 #define CIO2_IRQCTRL_MASK				0x3ffff
-
 #define CIO2_INT_EN_EXT_OE_MASK				0x8f0fffff
-
 #define CIO2_CGC_CLKGATE_HOLDOFF			3U
 #define CIO2_CGC_CSI_CLKGATE_HOLDOFF			5U
-
 #define CIO2_PXM_FRF_CFG_CRC_TH				16
-
 #define CIO2_INT_EN_EXT_IE_MASK				0xffffffff
-
 #define CIO2_DMA_CHAN					0U
-
 #define CIO2_CSIRX_DLY_CNT_CLANE_IDX			-1
-
 #define CIO2_CSIRX_DLY_CNT_TERMEN_CLANE_A		0
 #define CIO2_CSIRX_DLY_CNT_TERMEN_CLANE_B		0
 #define CIO2_CSIRX_DLY_CNT_SETTLE_CLANE_A		95
 #define CIO2_CSIRX_DLY_CNT_SETTLE_CLANE_B		-8
-
 #define CIO2_CSIRX_DLY_CNT_TERMEN_DLANE_A		0
 #define CIO2_CSIRX_DLY_CNT_TERMEN_DLANE_B		0
 #define CIO2_CSIRX_DLY_CNT_SETTLE_DLANE_A		85
 #define CIO2_CSIRX_DLY_CNT_SETTLE_DLANE_B		-2
-
 #define CIO2_CSIRX_DLY_CNT_TERMEN_DEFAULT		0x4
 #define CIO2_CSIRX_DLY_CNT_SETTLE_DEFAULT		0x570
-
 #define CIO2_PMCSR_OFFSET				4U
 #define CIO2_PMCSR_D0D3_SHIFT				2U
 #define CIO2_PMCSR_D3					0x3
-
 struct cio2_csi2_timing {
 	s32 clk_termen;
 	s32 clk_settle;
 	s32 dat_termen;
 	s32 dat_settle;
 };
-
 struct cio2_buffer {
 	struct vb2_v4l2_buffer vbb;
 	u32 *lop[CIO2_MAX_LOPS];
 	dma_addr_t lop_bus_addr[CIO2_MAX_LOPS];
 	unsigned int offset;
 };
-
 #define to_cio2_buffer(vb)	container_of(vb, struct cio2_buffer, vbb.vb2_buf)
-
 struct csi2_bus_info {
 	u32 port;
 	u32 lanes;
 };
-
 struct cio2_queue {
-	/* mutex to be used by vb2_queue */
 	struct mutex lock;
 	struct media_pipeline pipe;
 	struct csi2_bus_info csi2;
 	struct v4l2_subdev *sensor;
 	void __iomem *csi_rx_base;
-
-	/* Subdev, /dev/v4l-subdevX */
 	struct v4l2_subdev subdev;
-	struct mutex subdev_lock; /* Serialise acces to subdev_fmt field */
+	struct mutex subdev_lock;  
 	struct media_pad subdev_pads[CIO2_PADS];
 	struct v4l2_mbus_framefmt subdev_fmt;
 	atomic_t frame_sequence;
-
-	/* Video device, /dev/videoX */
 	struct video_device vdev;
 	struct media_pad vdev_pad;
 	struct v4l2_pix_format_mplane format;
 	struct vb2_queue vbq;
-
-	/* Buffer queue handling */
-	struct cio2_fbpt_entry *fbpt;	/* Frame buffer pointer table */
+	struct cio2_fbpt_entry *fbpt;	 
 	dma_addr_t fbpt_bus_addr;
 	struct cio2_buffer *bufs[CIO2_MAX_BUFFERS];
-	unsigned int bufs_first;	/* Index of the first used entry */
-	unsigned int bufs_next;	/* Index of the first unused entry */
+	unsigned int bufs_first;	 
+	unsigned int bufs_next;	 
 	atomic_t bufs_queued;
 };
-
 struct cio2_device {
 	struct pci_dev *pci_dev;
 	void __iomem *base;
 	struct v4l2_device v4l2_dev;
 	struct cio2_queue queue[CIO2_QUEUES];
 	struct cio2_queue *cur_queue;
-	/* mutex to be used by video_device */
 	struct mutex lock;
-
 	bool streaming;
 	struct v4l2_async_notifier notifier;
 	struct media_device media_dev;
-
-	/*
-	 * Safety net to catch DMA fetch ahead
-	 * when reaching the end of LOP
-	 */
 	void *dummy_page;
-	/* DMA handle of dummy_page */
 	dma_addr_t dummy_page_bus_addr;
-	/* single List of Pointers (LOP) page */
 	u32 *dummy_lop;
-	/* DMA handle of dummy_lop */
 	dma_addr_t dummy_lop_bus_addr;
 };
-
 #define to_cio2_device(n)	container_of(n, struct cio2_device, notifier)
-
-/**************** Virtual channel ****************/
-/*
- * This should come from sensor driver. No
- * driver interface nor requirement yet.
- */
 #define SENSOR_VIR_CH_DFLT		0
-
-/**************** FBPT operations ****************/
 #define CIO2_FBPT_SIZE			(CIO2_MAX_BUFFERS * CIO2_MAX_LOPS * \
 					 sizeof(struct cio2_fbpt_entry))
-
 #define CIO2_FBPT_SUBENTRY_UNIT		4
-
-/* cio2 fbpt first_entry ctrl status */
 #define CIO2_FBPT_CTRL_VALID		BIT(0)
 #define CIO2_FBPT_CTRL_IOC		BIT(1)
 #define CIO2_FBPT_CTRL_IOS		BIT(2)
 #define CIO2_FBPT_CTRL_SUCCXFAIL	BIT(3)
 #define CIO2_FBPT_CTRL_CMPLCODE_SHIFT	4
-
-/*
- * Frame Buffer Pointer Table(FBPT) entry
- * each entry describe an output buffer and consists of
- * several sub-entries
- */
 struct __packed cio2_fbpt_entry {
 	union {
 		struct __packed {
-			u32 ctrl; /* status ctrl */
-			u16 cur_line_num; /* current line # written to DDR */
-			u16 frame_num; /* updated by DMA upon FE */
-			u32 first_page_offset; /* offset for 1st page in LOP */
+			u32 ctrl;  
+			u16 cur_line_num;  
+			u16 frame_num;  
+			u32 first_page_offset;  
 		} first_entry;
-		/* Second entry per buffer */
 		struct __packed {
 			u32 timestamp;
 			u32 num_of_bytes;
-			/* the number of bytes for write on last page */
 			u16 last_page_available_bytes;
-			/* the number of pages allocated for this buf */
 			u16 num_of_pages;
 		} second_entry;
 	};
-	u32 lop_page_addr;	/* Points to list of pointers (LOP) table */
+	u32 lop_page_addr;	 
 };
-
 static inline struct cio2_queue *file_to_cio2_queue(struct file *file)
 {
 	return container_of(video_devdata(file), struct cio2_queue, vdev);
 }
-
 static inline struct cio2_queue *vb2q_to_cio2_queue(struct vb2_queue *vq)
 {
 	return container_of(vq, struct cio2_queue, vbq);
 }
-
 #endif

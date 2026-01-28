@@ -1,32 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2020 NXP
- */
-
 /dts-v1/;
-
 #include "imx8mm-evk.dtsi"
-
 / {
 	model = "FSL i.MX8MM DDR4 EVK with CYW43455 WIFI/BT board";
 	compatible = "fsl,imx8mm-ddr4-evk", "fsl,imx8mm";
-
 	leds {
 		pinctrl-0 = <&pinctrl_gpio_led_2>;
-
 		status {
 			gpios = <&gpio3 4 GPIO_ACTIVE_LOW>;
 		};
 	};
 };
-
 &gpmi {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gpmi_nand>;
 	nand-on-flash-bbt;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl_gpmi_nand: gpminandgrp {
 		fsl,pins = <
@@ -48,7 +37,6 @@
 			MX8MM_IOMUXC_NAND_WP_B_RAWNAND_WP_B		0x00000096
 		>;
 	};
-
 	pinctrl_gpio_led_2: gpioled2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_CE3_B_GPIO3_IO4	0x19

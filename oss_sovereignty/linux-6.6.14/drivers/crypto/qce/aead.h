@@ -1,17 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021, Linaro Limited. All rights reserved.
- */
-
 #ifndef _AEAD_H_
 #define _AEAD_H_
-
 #include "common.h"
 #include "core.h"
-
 #define QCE_MAX_KEY_SIZE		64
 #define QCE_CCM4309_SALT_SIZE		3
-
 struct qce_aead_ctx {
 	u8 enc_key[QCE_MAX_KEY_SIZE];
 	u8 auth_key[QCE_MAX_KEY_SIZE];
@@ -22,7 +14,6 @@ struct qce_aead_ctx {
 	bool need_fallback;
 	struct crypto_aead *fallback;
 };
-
 struct qce_aead_reqctx {
 	unsigned long flags;
 	u8 *iv;
@@ -43,14 +34,10 @@ struct qce_aead_reqctx {
 	u8 ccm_rfc4309_iv[QCE_MAX_IV_SIZE];
 	struct aead_request fallback_req;
 };
-
 static inline struct qce_alg_template *to_aead_tmpl(struct crypto_aead *tfm)
 {
 	struct aead_alg *alg = crypto_aead_alg(tfm);
-
 	return container_of(alg, struct qce_alg_template, alg.aead);
 }
-
 extern const struct qce_algo_ops aead_ops;
-
-#endif /* _AEAD_H_ */
+#endif  

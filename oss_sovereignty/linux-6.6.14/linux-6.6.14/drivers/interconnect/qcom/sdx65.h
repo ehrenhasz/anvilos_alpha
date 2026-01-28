@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- */
-
 #ifndef __DRIVERS_INTERCONNECT_QCOM_SDX65_H
 #define __DRIVERS_INTERCONNECT_QCOM_SDX65_H
-
 #define SDX65_MASTER_TCU_0		0
 #define SDX65_MASTER_LLCC		1
 #define SDX65_MASTER_AUDIO		2
@@ -61,5 +55,4 @@
 #define SDX65_SLAVE_PCIE_0		544
 #define SDX65_SLAVE_QDSS_STM		545
 #define SDX65_SLAVE_TCU			546
-
 #endif

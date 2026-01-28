@@ -1,15 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2022 Edgeble AI Technologies Pvt. Ltd.
- */
-
 / {
 	compatible = "edgeble,neural-compute-module-6a", "rockchip,rk3588";
-
 	aliases {
 		mmc0 = &sdhci;
 	};
-
 	vcc12v_dcin: vcc12v-dcin-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc12v_dcin";
@@ -19,7 +12,6 @@
 		regulator-max-microvolt = <12000000>;
 	};
 };
-
 &sdhci {
 	bus-width = <8>;
 	no-sdio;

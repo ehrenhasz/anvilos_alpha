@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_RESET_IPQ_806X_H
 #define _DT_BINDINGS_RESET_IPQ_806X_H
-
 #define QDSS_STM_RESET					0
 #define AFAB_SMPSS_S_RESET				1
 #define AFAB_SMPSS_M1_RESET				2
@@ -168,5 +162,4 @@
 #define CRYPTO_ENG3_RESET				159
 #define CRYPTO_ENG4_RESET				160
 #define CRYPTO_AHB_RESET				161
-
 #endif

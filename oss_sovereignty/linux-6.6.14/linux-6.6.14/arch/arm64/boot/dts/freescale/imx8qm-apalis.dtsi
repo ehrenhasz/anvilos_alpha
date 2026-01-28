@@ -1,33 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright 2022 Toradex
- */
-
 #include "imx8qm-apalis-v1.1.dtsi"
-
 / {
 	model = "Toradex Apalis iMX8QM";
 	compatible = "toradex,apalis-imx8",
 		     "fsl,imx8qm";
 };
-
 &ethphy0 {
 	interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
 };
-
-/*
- * Apalis iMX8QM V1.0 has PHY KSZ9031. the Micrel PHY driver
- * doesn't support setting internal PHY delay for TXC line for
- * this PHY model. Use delay on MAC side instead.
- */
 &fec1 {
 	fsl,rgmii_txc_dly;
 	phy-mode = "rgmii-rxid";
 };
-
-/* TODO: Apalis HDMI1 */
-
-/* Apalis I2C2 (DDC) */
 &i2c0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lpi2c0>;
@@ -35,7 +18,6 @@
 	#size-cells = <0>;
 	clock-frequency = <100000>;
 };
-
 &lsio_gpio0 {
 	gpio-line-names = "MXM3_279",
 			  "MXM3_277",
@@ -66,7 +48,6 @@
 			  "MXM3_114",
 			  "MXM3_116";
 };
-
 &lsio_gpio1 {
 	gpio-line-names = "",
 			  "",
@@ -92,7 +73,6 @@
 			  "MXM3_175",
 			  "MXM3_123";
 };
-
 &lsio_gpio2 {
 	gpio-line-names = "",
 			  "",
@@ -127,7 +107,6 @@
 			  "MXM3_185",
 			  "MXM3_187";
 };
-
 &lsio_gpio3 {
 	gpio-line-names = "MXM3_191",
 			  "",
@@ -162,7 +141,6 @@
 			  "MXM3_14",
 			  "MXM3_16";
 };
-
 &lsio_gpio4 {
 	gpio-line-names = "MXM3_18",
 			  "MXM3_11/GPIO5",
@@ -191,14 +169,10 @@
 			  "MXM3_291",
 			  "MXM3_289",
 			  "MXM3_287";
-
-	/* Enable pcie root / sata ref clock unconditionally */
 	pcie-sata-hog {
 		gpios = <27 GPIO_ACTIVE_HIGH>;
 	};
-
 };
-
 &lsio_gpio5 {
 	gpio-line-names = "",
 			  "",
@@ -231,7 +205,6 @@
 			  "MXM3_176",
 			  "MXM3_178";
 };
-
 &lsio_gpio6 {
 	gpio-line-names = "",
 			  "",
@@ -256,10 +229,8 @@
 			  "MXM3_245",
 			  "MXM3_243";
 };
-
 &pinctrl_fec1 {
 	fsl,pins =
-		/* Use pads in 1.8V mode */
 		<IMX8QM_COMP_CTL_GPIO_1V8_3V3_ENET_ENETB_PAD			0x000014a0>,
 		<IMX8QM_ENET0_MDC_CONN_ENET0_MDC				0x06000020>,
 		<IMX8QM_ENET0_MDIO_CONN_ENET0_MDIO				0x06000020>,
@@ -276,12 +247,9 @@
 		<IMX8QM_ENET0_RGMII_RXD2_CONN_ENET0_RGMII_RXD2			0x06000020>,
 		<IMX8QM_ENET0_RGMII_RXD3_CONN_ENET0_RGMII_RXD3			0x06000020>,
 		<IMX8QM_ENET0_REFCLK_125M_25M_CONN_ENET0_REFCLK_125M_25M	0x06000020>,
-		/* On-module ETH_RESET# */
 		<IMX8QM_LVDS1_GPIO01_LSIO_GPIO1_IO11				0x06000020>,
-		/* On-module ETH_INT# */
 		<IMX8QM_LVDS0_GPIO01_LSIO_GPIO1_IO05				0x04000060>;
 };
-
 &pinctrl_fec1_sleep {
 	fsl,pins =
 		<IMX8QM_COMP_CTL_GPIO_1V8_3V3_ENET_ENETB_PAD			0x000014a0>,
@@ -303,38 +271,20 @@
 		<IMX8QM_LVDS1_GPIO01_LSIO_GPIO1_IO11				0x04000040>,
 		<IMX8QM_LVDS0_GPIO01_LSIO_GPIO1_IO05				0x04000040>;
 };
-
 &iomuxc {
-	/* Apalis I2C2 (DDC) */
 	pinctrl_lpi2c0: lpi2c0grp {
 		fsl,pins =
 			<IMX8QM_HDMI_TX0_TS_SCL_DMA_I2C0_SCL			0x04000022>,
 			<IMX8QM_HDMI_TX0_TS_SDA_DMA_I2C0_SDA			0x04000022>;
 	};
 };
-
-/* On-module PCIe_CTRL0_CLKREQ */
 &pinctrl_pcie_sata_refclk {
 	fsl,pins =
 		<IMX8QM_PCIE_CTRL0_CLKREQ_B_LSIO_GPIO4_IO27			0x00000021>;
 };
-
-/* TODO: On-module Wi-Fi */
-
-/* Apalis MMC1 */
 &usdhc2 {
-	/*
-	 * The PMIC on V1.0A HW generates 1.6V instead of 1.8V which creates
-	 * issues with certain SD cards, disable 1.8V signaling for now.
-	 */
 	no-1-8-v;
 };
-
-/* Apalis SD1 */
 &usdhc3 {
-	/*
-	 * The PMIC on V1.0A HW generates 1.6V instead of 1.8V which creates
-	 * issues with certain SD cards, disable 1.8V signaling for now.
-	 */
 	no-1-8-v;
 };

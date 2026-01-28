@@ -1,18 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * amdtp-stream-trace.h - tracepoint definitions to dump a part of packet data
- *
- * Copyright (c) 2016 Takashi Sakamoto
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM		snd_firewire_lib
-
 #if !defined(_AMDTP_STREAM_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _AMDTP_STREAM_TRACE_H
-
 #include <linux/tracepoint.h>
-
 TRACE_EVENT(amdtp_packet,
 	TP_PROTO(const struct amdtp_stream *s, u32 cycles, const __be32 *cip_header, unsigned int payload_length, unsigned int data_blocks, unsigned int data_block_counter, unsigned int packet_index, unsigned int index, u32 curr_cycle_time),
 	TP_ARGS(s, cycles, cip_header, payload_length, data_blocks, data_block_counter, packet_index, index, curr_cycle_time),
@@ -71,9 +61,7 @@ TRACE_EVENT(amdtp_packet,
 		__print_array(__get_dynamic_array(cip_header),
 			      __get_dynamic_array_len(cip_header), 1))
 );
-
 #endif
-
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH	.
 #undef TRACE_INCLUDE_FILE

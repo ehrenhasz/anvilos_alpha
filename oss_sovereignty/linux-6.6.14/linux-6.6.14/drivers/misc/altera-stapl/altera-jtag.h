@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * altera-jtag.h
- *
- * altera FPGA driver
- *
- * Copyright (C) Altera Corporation 1998-2001
- * Copyright (C) 2010 NetUP Inc.
- * Copyright (C) 2010 Igor M. Liplianin <liplianin@netup.ru>
- */
-
 #ifndef ALTERA_JTAG_H
 #define ALTERA_JTAG_H
-
-/* Function Prototypes */
 enum altera_jtag_state {
 	ILLEGAL_JTAG_STATE = -1,
 	RESET = 0,
@@ -31,18 +18,11 @@ enum altera_jtag_state {
 	IRPAUSE = 13,
 	IREXIT2 = 14,
 	IRUPDATE = 15
-
 };
-
 struct altera_jtag {
-	/* Global variable to store the current JTAG state */
 	enum altera_jtag_state jtag_state;
-
-	/* Store current stop-state for DR and IR scan commands */
 	enum altera_jtag_state drstop_state;
 	enum altera_jtag_state irstop_state;
-
-	/* Store current padding values */
 	u32 dr_pre;
 	u32 dr_post;
 	u32 ir_pre;
@@ -56,17 +36,14 @@ struct altera_jtag {
 	u8 *dr_buffer;
 	u8 *ir_buffer;
 };
-
 #define ALTERA_STACK_SIZE 128
 #define ALTERA_MESSAGE_LENGTH 1024
-
 struct altera_state {
 	struct altera_config	*config;
 	struct altera_jtag	js;
 	char			msg_buff[ALTERA_MESSAGE_LENGTH + 1];
 	long			stack[ALTERA_STACK_SIZE];
 };
-
 int altera_jinit(struct altera_state *astate);
 int altera_set_drstop(struct altera_jtag *js, enum altera_jtag_state state);
 int altera_set_irstop(struct altera_jtag *js, enum altera_jtag_state state);
@@ -96,4 +73,4 @@ int altera_swap_dr(struct altera_state *astate, u32 count,
 				u8 *in_data, u32 in_index,
 				u8 *out_data, u32 out_index);
 void altera_free_buffers(struct altera_state *astate);
-#endif /* ALTERA_JTAG_H */
+#endif  

@@ -1,7 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
 #ifndef __NFIT_TEST_H__
 #define __NFIT_TEST_H__
 #include <linux/acpi.h>
@@ -9,12 +5,10 @@
 #include <linux/uuid.h>
 #include <linux/ioport.h>
 #include <linux/spinlock_types.h>
-
 struct nfit_test_request {
 	struct list_head list;
 	struct resource res;
 };
-
 struct nfit_test_resource {
 	struct list_head requests;
 	struct list_head list;
@@ -24,22 +18,17 @@ struct nfit_test_resource {
 	int req_count;
 	void *buf;
 };
-
 #define ND_TRANSLATE_SPA_STATUS_INVALID_SPA  2
 #define NFIT_ARS_INJECT_INVALID 2
-
 enum err_inj_options {
 	ND_ARS_ERR_INJ_OPT_NOTIFY = 0,
 };
-
-/* nfit commands */
 enum nfit_cmd_num {
 	NFIT_CMD_TRANSLATE_SPA = 5,
 	NFIT_CMD_ARS_INJECT_SET = 7,
 	NFIT_CMD_ARS_INJECT_CLEAR = 8,
 	NFIT_CMD_ARS_INJECT_GET = 9,
 };
-
 struct nd_cmd_translate_spa {
 	__u64 spa;
 	__u32 status;
@@ -52,22 +41,18 @@ struct nd_cmd_translate_spa {
 		__u32 _reserved;
 		__u64 dpa;
 	} __packed devices[];
-
 } __packed;
-
 struct nd_cmd_ars_err_inj {
 	__u64 err_inj_spa_range_base;
 	__u64 err_inj_spa_range_length;
 	__u8  err_inj_options;
 	__u32 status;
 } __packed;
-
 struct nd_cmd_ars_err_inj_clr {
 	__u64 err_inj_clr_spa_range_base;
 	__u64 err_inj_clr_spa_range_length;
 	__u32 status;
 } __packed;
-
 struct nd_cmd_ars_err_inj_stat {
 	__u32 status;
 	__u32 inj_err_rec_count;
@@ -76,7 +61,6 @@ struct nd_cmd_ars_err_inj_stat {
 		__u64 err_inj_stat_spa_range_length;
 	} __packed record[];
 } __packed;
-
 #define ND_INTEL_SMART			 1
 #define ND_INTEL_SMART_THRESHOLD	 2
 #define ND_INTEL_ENABLE_LSS_STATUS	10
@@ -87,7 +71,6 @@ struct nd_cmd_ars_err_inj_stat {
 #define ND_INTEL_FW_FINISH_QUERY	16
 #define ND_INTEL_SMART_SET_THRESHOLD	17
 #define ND_INTEL_SMART_INJECT		18
-
 #define ND_INTEL_SMART_HEALTH_VALID             (1 << 0)
 #define ND_INTEL_SMART_SPARES_VALID             (1 << 1)
 #define ND_INTEL_SMART_USED_VALID               (1 << 2)
@@ -109,7 +92,6 @@ struct nd_cmd_ars_err_inj_stat {
 #define ND_INTEL_SMART_INJECT_SPARE		(1 << 1)
 #define ND_INTEL_SMART_INJECT_FATAL		(1 << 2)
 #define ND_INTEL_SMART_INJECT_SHUTDOWN		(1 << 3)
-
 struct nd_intel_smart_threshold {
 	__u32 status;
 	union {
@@ -123,7 +105,6 @@ struct nd_intel_smart_threshold {
 		__u8 data[8];
 	};
 } __packed;
-
 struct nd_intel_smart_set_threshold {
 	__u16 alarm_control;
 	__u8 spares;
@@ -131,7 +112,6 @@ struct nd_intel_smart_set_threshold {
 	__u16 ctrl_temperature;
 	__u32 status;
 } __packed;
-
 struct nd_intel_smart_inject {
 	__u64 flags;
 	__u8 mtemp_enable;
@@ -142,21 +122,18 @@ struct nd_intel_smart_inject {
 	__u8 unsafe_shutdown_enable;
 	__u32 status;
 } __packed;
-
 #define INTEL_FW_STORAGE_SIZE		0x100000
 #define INTEL_FW_MAX_SEND_LEN		0xFFEC
 #define INTEL_FW_QUERY_INTERVAL		250000
 #define INTEL_FW_QUERY_MAX_TIME		3000000
 #define INTEL_FW_FIS_VERSION		0x0105
 #define INTEL_FW_FAKE_VERSION		0xffffffffabcd
-
 enum intel_fw_update_state {
 	FW_STATE_NEW = 0,
 	FW_STATE_IN_PROGRESS,
 	FW_STATE_VERIFY,
 	FW_STATE_UPDATED,
 };
-
 struct nd_intel_fw_info {
 	__u32 status;
 	__u32 storage_size;
@@ -169,40 +146,31 @@ struct nd_intel_fw_info {
 	__u64 run_version;
 	__u64 updated_version;
 } __packed;
-
 struct nd_intel_fw_start {
 	__u32 status;
 	__u32 context;
 } __packed;
-
-/* this one has the output first because the variable input data size */
 struct nd_intel_fw_send_data {
 	__u32 context;
 	__u32 offset;
 	__u32 length;
 	__u8 data[];
-/* this field is not declared due ot variable data from input */
-/*	__u32 status; */
 } __packed;
-
 struct nd_intel_fw_finish_update {
 	__u8 ctrl_flags;
 	__u8 reserved[3];
 	__u32 context;
 	__u32 status;
 } __packed;
-
 struct nd_intel_fw_finish_query {
 	__u32 context;
 	__u32 status;
 	__u64 updated_fw_rev;
 } __packed;
-
 struct nd_intel_lss {
 	__u8 enable;
 	__u32 status;
 } __packed;
-
 typedef struct nfit_test_resource *(*nfit_test_lookup_fn)(resource_size_t);
 typedef union acpi_object *(*nfit_test_evaluate_dsm_fn)(acpi_handle handle,
 		 const guid_t *guid, u64 rev, u64 func,
@@ -236,7 +204,6 @@ acpi_status __wrap_acpi_evaluate_object(acpi_handle handle, acpi_string path,
 		struct acpi_object_list *p, struct acpi_buffer *buf);
 union acpi_object * __wrap_acpi_evaluate_dsm(acpi_handle handle, const guid_t *guid,
 		u64 rev, u64 func, union acpi_object *argv4);
-
 void nfit_test_setup(nfit_test_lookup_fn lookup,
 		nfit_test_evaluate_dsm_fn evaluate);
 void nfit_test_teardown(void);

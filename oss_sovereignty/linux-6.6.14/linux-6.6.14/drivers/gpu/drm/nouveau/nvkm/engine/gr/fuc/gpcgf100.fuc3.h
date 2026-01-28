@@ -1,22 +1,11 @@
-/* SPDX-License-Identifier: MIT */
 static uint32_t gf100_grgpc_data[] = {
-/* 0x0000: gpc_mmio_list_head */
 	0x00000064,
-/* 0x0004: gpc_mmio_list_tail */
-/* 0x0004: tpc_mmio_list_head */
 	0x00000064,
-/* 0x0008: tpc_mmio_list_tail */
-/* 0x0008: unk_mmio_list_head */
 	0x00000064,
-/* 0x000c: unk_mmio_list_tail */
 	0x00000064,
-/* 0x0010: gpc_id */
 	0x00000000,
-/* 0x0014: tpc_count */
 	0x00000000,
-/* 0x0018: tpc_mask */
 	0x00000000,
-/* 0x001c: cmd_queue */
 	0x00000000,
 	0x00000000,
 	0x00000000,
@@ -36,17 +25,14 @@ static uint32_t gf100_grgpc_data[] = {
 	0x00000000,
 	0x00000000,
 };
-
 static uint32_t gf100_grgpc_code[] = {
 	0x03a10ef5,
-/* 0x0004: queue_put */
 	0x9800d898,
 	0x86f001d9,
 	0x0489b808,
 	0xf00c1bf4,
 	0x21f502f7,
 	0x00f8037e,
-/* 0x001c: queue_put_next */
 	0xb60798c4,
 	0x8dbb0384,
 	0x0880b600,
@@ -54,7 +40,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x90b6018f,
 	0x0f94f001,
 	0xf801d980,
-/* 0x0039: queue_get */
 	0x0131f400,
 	0x9800d898,
 	0x89b801d9,
@@ -66,14 +51,11 @@ static uint32_t gf100_grgpc_code[] = {
 	0x80b6019f,
 	0x0f84f001,
 	0xf400d880,
-/* 0x0066: queue_get_done */
 	0x00f80132,
-/* 0x0068: nv_rd32 */
 	0xf002ecb9,
 	0x07f11fc9,
 	0x03f0ca00,
 	0x000cd001,
-/* 0x007a: nv_rd32_wait */
 	0xc7f104bd,
 	0xc3f0ca00,
 	0x00cccf01,
@@ -83,7 +65,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x00f7f101,
 	0x01f3f0cb,
 	0xf800ffcf,
-/* 0x009d: nv_wr32 */
 	0x0007f100,
 	0x0103f0cc,
 	0xbd000fd0,
@@ -92,13 +73,11 @@ static uint32_t gf100_grgpc_code[] = {
 	0x07f11ec9,
 	0x03f0ca00,
 	0x000cd001,
-/* 0x00be: nv_wr32_wait */
 	0xc7f104bd,
 	0xc3f0ca00,
 	0x00cccf01,
 	0xf41fccc8,
 	0x00f8f31b,
-/* 0x00d0: wait_donez */
 	0x99f094bd,
 	0x0007f100,
 	0x0203f00f,
@@ -106,7 +85,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x0007f104,
 	0x0203f006,
 	0xbd000ad0,
-/* 0x00ed: wait_donez_ne */
 	0x0087f104,
 	0x0183f000,
 	0xff0088cf,
@@ -116,7 +94,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x03f01700,
 	0x0009d002,
 	0x00f804bd,
-/* 0x0110: wait_doneo */
 	0x99f094bd,
 	0x0007f100,
 	0x0203f00f,
@@ -124,7 +101,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x0007f104,
 	0x0203f006,
 	0xbd000ad0,
-/* 0x012d: wait_doneo_e */
 	0x0087f104,
 	0x0183f000,
 	0xff0088cf,
@@ -134,8 +110,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x03f01700,
 	0x0009d002,
 	0x00f804bd,
-/* 0x0150: mmctx_size */
-/* 0x0152: nv_mmctx_size_loop */
 	0xe89894bd,
 	0x1a85b600,
 	0xb60180b6,
@@ -143,7 +117,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x04e0b600,
 	0xf404efb8,
 	0x9fb9eb1b,
-/* 0x016f: mmctx_xfer */
 	0xbd00f802,
 	0x0199f094,
 	0x0f0007f1,
@@ -154,7 +127,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0xc40007f1,
 	0xd00103f0,
 	0x04bd000b,
-/* 0x0197: mmctx_base_disabled */
 	0xfd0099f0,
 	0x0bf405ee,
 	0x0007f11e,
@@ -164,7 +136,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x0103f0c7,
 	0xbd000fd0,
 	0x0199f004,
-/* 0x01b8: mmctx_multi_disabled */
 	0xb600abc8,
 	0xb9f010b4,
 	0x01aec80c,
@@ -172,8 +143,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x07f105be,
 	0x03f0c500,
 	0x000bd001,
-/* 0x01d6: mmctx_exec_loop */
-/* 0x01d6: mmctx_wait_free */
 	0xe7f104bd,
 	0xe3f0c500,
 	0x00eecf01,
@@ -186,7 +155,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0xb804c0b6,
 	0x1bf404cd,
 	0x02abc8d8,
-/* 0x0207: mmctx_fini_wait */
 	0xf11f1bf4,
 	0xf0c500b7,
 	0xbbcf01b3,
@@ -194,42 +162,35 @@ static uint32_t gf100_grgpc_code[] = {
 	0xf410b4b0,
 	0xa7f0f01b,
 	0xd021f405,
-/* 0x0223: mmctx_stop */
 	0xc82b0ef4,
 	0xb4b600ab,
 	0x0cb9f010,
 	0xf112b9f0,
 	0xf0c50007,
 	0x0bd00103,
-/* 0x023b: mmctx_stop_wait */
 	0xf104bd00,
 	0xf0c500b7,
 	0xbbcf01b3,
 	0x12bbc800,
-/* 0x024b: mmctx_done */
 	0xbdf31bf4,
 	0x0199f094,
 	0x170007f1,
 	0xd00203f0,
 	0x04bd0009,
-/* 0x025e: strand_wait */
 	0xa0f900f8,
 	0xf402a7f0,
 	0xa0fcd021,
-/* 0x026a: strand_pre */
 	0x97f000f8,
 	0xfc07f10c,
 	0x0203f04a,
 	0xbd0009d0,
 	0x5e21f504,
-/* 0x027f: strand_post */
 	0xf000f802,
 	0x07f10d97,
 	0x03f04afc,
 	0x0009d002,
 	0x21f504bd,
 	0x00f8025e,
-/* 0x0294: strand_set */
 	0xf10fc7f0,
 	0xf04ffc07,
 	0x0cd00203,
@@ -245,7 +206,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x0203f04a,
 	0xbd000cd0,
 	0x5e21f504,
-/* 0x02d3: strand_ctx_init */
 	0xbd00f802,
 	0x0399f094,
 	0x0f0007f1,
@@ -276,7 +236,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x0097f102,
 	0x0293f020,
 	0x950099cf,
-/* 0x034a: ctx_init_strand_loop */
 	0x8ed008fe,
 	0x408ed000,
 	0xb6808acf,
@@ -290,7 +249,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x170007f1,
 	0xd00203f0,
 	0x04bd0009,
-/* 0x037e: error */
 	0xe0f900f8,
 	0xf102ffb9,
 	0xf09814e7,
@@ -300,7 +258,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0xf09c1ce7,
 	0x21f440e3,
 	0xf8e0fc9d,
-/* 0x03a1: init */
 	0xf104bd00,
 	0xf0420017,
 	0x11cf0013,
@@ -371,10 +328,8 @@ static uint32_t gf100_grgpc_code[] = {
 	0xf11f29f0,
 	0xf0080007,
 	0x02d00203,
-/* 0x04bb: wait */
 	0xf404bd00,
 	0x31f40028,
-/* 0x04c1: main */
 	0x1cd7f000,
 	0xf43921f4,
 	0xe4b0f401,
@@ -385,12 +340,10 @@ static uint32_t gf100_grgpc_code[] = {
 	0x1efd01e4,
 	0x0018fe05,
 	0x05b421f5,
-/* 0x04eb: main_not_ctx_xfer */
 	0x94d90ef4,
 	0xf5f010ef,
 	0x7e21f501,
 	0xcc0ef403,
-/* 0x04f8: ih */
 	0x80f900f9,
 	0xf90188fe,
 	0xf990f980,
@@ -411,7 +364,6 @@ static uint32_t gf100_grgpc_code[] = {
 	0x1d0007f1,
 	0xd00003f0,
 	0x04bd000e,
-/* 0x0548: ih_no_fifo */
 	0x010007f1,
 	0xd00003f0,
 	0x04bd000a,
@@ -421,20 +373,17 @@ static uint32_t gf100_grgpc_code[] = {
 	0x88fe80fc,
 	0xfc80fc00,
 	0x0032f400,
-/* 0x056e: hub_barrier_done */
 	0xf7f001f8,
 	0x040e9801,
 	0xb904febb,
 	0xe7f102ff,
 	0xe3f09418,
 	0x9d21f440,
-/* 0x0586: ctx_redswitch */
 	0xf7f000f8,
 	0x0007f120,
 	0x0103f085,
 	0xbd000fd0,
 	0x08e7f004,
-/* 0x0598: ctx_redswitch_delay */
 	0xf401e2b6,
 	0xf5f1fd1b,
 	0xf5f10800,
@@ -442,12 +391,10 @@ static uint32_t gf100_grgpc_code[] = {
 	0x03f08500,
 	0x000fd001,
 	0x00f804bd,
-/* 0x05b4: ctx_xfer */
 	0x810007f1,
 	0xd00203f0,
 	0x04bd000f,
 	0xf50711f4,
-/* 0x05c7: ctx_xfer_not_load */
 	0xf5058621,
 	0xbd026a21,
 	0xfc07f124,
@@ -478,9 +425,7 @@ static uint32_t gf100_grgpc_code[] = {
 	0x6f21f508,
 	0x5e21f501,
 	0x0601f402,
-/* 0x063f: ctx_xfer_post */
 	0xf50712f4,
-/* 0x0643: ctx_xfer_done */
 	0xf5027f21,
 	0xf8056e21,
 	0x00000000,

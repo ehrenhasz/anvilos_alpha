@@ -1,26 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2021 Intel Corporation. All rights reserved.
- *
- * Authors: Cezary Rojewski <cezary.rojewski@intel.com>
- *          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
- */
-
 #ifndef __SOUND_SOC_INTEL_AVS_TPLG_H
 #define __SOUND_SOC_INTEL_AVS_TPLG_H
-
 #include <linux/list.h>
 #include "messages.h"
-
 #define INVALID_OBJECT_ID	UINT_MAX
-
 struct snd_soc_component;
-
 struct avs_tplg {
 	char name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];
 	u32 version;
 	struct snd_soc_component *comp;
-
 	struct avs_tplg_library *libs;
 	u32 num_libs;
 	struct avs_audio_format *fmts;
@@ -33,31 +20,24 @@ struct avs_tplg {
 	u32 num_pplcfgs;
 	struct avs_tplg_binding *bindings;
 	u32 num_bindings;
-
 	struct list_head path_tmpl_list;
 };
-
 struct avs_tplg_library {
 	char name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];
 };
-
-/* Matches header of struct avs_mod_cfg_base. */
 struct avs_tplg_modcfg_base {
 	u32 cpc;
 	u32 ibs;
 	u32 obs;
 	u32 is_pages;
 };
-
 struct avs_tplg_pin_format {
 	u32 pin_index;
 	u32 iobs;
 	struct avs_audio_format *fmt;
 };
-
 struct avs_tplg_modcfg_ext {
 	guid_t type;
-
 	union {
 		struct {
 			u16 num_input_pins;
@@ -66,13 +46,12 @@ struct avs_tplg_modcfg_ext {
 		} generic;
 		struct {
 			struct avs_audio_format *out_fmt;
-			struct avs_audio_format *blob_fmt; /* optional override */
+			struct avs_audio_format *blob_fmt;  
 			u32 feature_mask;
 			union avs_virtual_index vindex;
 			u32 dma_type;
 			u32 dma_buffer_size;
 			u32 config_length;
-			/* config_data part of priv data */
 		} copier;
 		struct {
 			u32 out_channel_config;
@@ -105,12 +84,9 @@ struct avs_tplg_modcfg_ext {
 		} micsel;
 	};
 };
-
-/* Specifies path behaviour during PCM ->trigger(START) command. */
 enum avs_tplg_trigger {
 	AVS_TPLG_TRIGGER_AUTO = 0,
 };
-
 struct avs_tplg_pplcfg {
 	u16 req_size;
 	u8 priority;
@@ -118,7 +94,6 @@ struct avs_tplg_pplcfg {
 	u16 attributes;
 	enum avs_tplg_trigger trigger;
 };
-
 struct avs_tplg_binding {
 	char target_tplg_name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];
 	u32 target_path_tmpl_id;
@@ -129,69 +104,46 @@ struct avs_tplg_binding {
 	u8 mod_pin;
 	u8 is_sink;
 };
-
 struct avs_tplg_path_template_id {
 	u32 id;
 	char tplg_name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];
 };
-
 struct avs_tplg_path_template {
 	u32 id;
-
 	struct snd_soc_dapm_widget *w;
-
 	struct list_head path_list;
-
 	struct avs_tplg *owner;
-	/* Driver path templates management. */
 	struct list_head node;
 };
-
 struct avs_tplg_path {
 	u32 id;
-
-	/* Path format requirements. */
 	struct avs_audio_format *fe_fmt;
 	struct avs_audio_format *be_fmt;
-
 	struct list_head ppl_list;
-
 	struct avs_tplg_path_template *owner;
-	/* Path template path-variants management. */
 	struct list_head node;
 };
-
 struct avs_tplg_pipeline {
 	u32 id;
-
 	struct avs_tplg_pplcfg *cfg;
 	struct avs_tplg_binding **bindings;
 	u32 num_bindings;
 	struct list_head mod_list;
-
 	struct avs_tplg_path *owner;
-	/* Path pipelines management. */
 	struct list_head node;
 };
-
 struct avs_tplg_module {
 	u32 id;
-
 	struct avs_tplg_modcfg_base *cfg_base;
 	struct avs_audio_format *in_fmt;
 	u8 core_id;
 	u8 domain;
 	struct avs_tplg_modcfg_ext *cfg_ext;
 	u32 ctl_id;
-
 	struct avs_tplg_pipeline *owner;
-	/* Pipeline modules management. */
 	struct list_head node;
 };
-
 struct avs_tplg *avs_tplg_new(struct snd_soc_component *comp);
-
 int avs_load_topology(struct snd_soc_component *comp, const char *filename);
 int avs_remove_topology(struct snd_soc_component *comp);
-
 #endif

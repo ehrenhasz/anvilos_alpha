@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021 Mellanox Technologies. */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mlx5
-
 #if !defined(_MLX5_ESW_BRIDGE_TRACEPOINT_) || defined(TRACE_HEADER_MULTI_READ)
 #define _MLX5_ESW_BRIDGE_TRACEPOINT_
-
 #include <linux/tracepoint.h>
 #include "../bridge_priv.h"
-
 DECLARE_EVENT_CLASS(mlx5_esw_bridge_fdb_template,
 		    TP_PROTO(const struct mlx5_esw_bridge_fdb_entry *fdb),
 		    TP_ARGS(fdb),
@@ -36,7 +30,6 @@ DECLARE_EVENT_CLASS(mlx5_esw_bridge_fdb_template,
 			      __entry->flags,
 			      __entry->used / 1000)
 	);
-
 DEFINE_EVENT(mlx5_esw_bridge_fdb_template,
 	     mlx5_esw_bridge_fdb_entry_init,
 	     TP_PROTO(const struct mlx5_esw_bridge_fdb_entry *fdb),
@@ -52,7 +45,6 @@ DEFINE_EVENT(mlx5_esw_bridge_fdb_template,
 	     TP_PROTO(const struct mlx5_esw_bridge_fdb_entry *fdb),
 	     TP_ARGS(fdb)
 	);
-
 DECLARE_EVENT_CLASS(mlx5_esw_bridge_vlan_template,
 		    TP_PROTO(const struct mlx5_esw_bridge_vlan *vlan),
 		    TP_ARGS(vlan),
@@ -68,7 +60,6 @@ DECLARE_EVENT_CLASS(mlx5_esw_bridge_vlan_template,
 			      __entry->vid,
 			      __entry->flags)
 	);
-
 DEFINE_EVENT(mlx5_esw_bridge_vlan_template,
 	     mlx5_esw_bridge_vlan_create,
 	     TP_PROTO(const struct mlx5_esw_bridge_vlan *vlan),
@@ -79,7 +70,6 @@ DEFINE_EVENT(mlx5_esw_bridge_vlan_template,
 	     TP_PROTO(const struct mlx5_esw_bridge_vlan *vlan),
 	     TP_ARGS(vlan)
 	);
-
 DECLARE_EVENT_CLASS(mlx5_esw_bridge_port_template,
 		    TP_PROTO(const struct mlx5_esw_bridge_port *port),
 		    TP_ARGS(port),
@@ -98,7 +88,6 @@ DECLARE_EVENT_CLASS(mlx5_esw_bridge_port_template,
 			      __entry->esw_owner_vhca_id,
 			      __entry->flags)
 	);
-
 DEFINE_EVENT(mlx5_esw_bridge_port_template,
 	     mlx5_esw_bridge_vport_init,
 	     TP_PROTO(const struct mlx5_esw_bridge_port *port),
@@ -109,7 +98,6 @@ DEFINE_EVENT(mlx5_esw_bridge_port_template,
 	     TP_PROTO(const struct mlx5_esw_bridge_port *port),
 	     TP_ARGS(port)
 	);
-
 DECLARE_EVENT_CLASS(mlx5_esw_bridge_mdb_port_change_template,
 		    TP_PROTO(const struct net_device *dev,
 			     const struct mlx5_esw_bridge_mdb_entry *mdb),
@@ -132,22 +120,17 @@ DECLARE_EVENT_CLASS(mlx5_esw_bridge_mdb_port_change_template,
 			      __entry->vid,
 			      __entry->num_ports,
 			      __entry->offloaded));
-
 DEFINE_EVENT(mlx5_esw_bridge_mdb_port_change_template,
 	     mlx5_esw_bridge_port_mdb_attach,
 	     TP_PROTO(const struct net_device *dev,
 		      const struct mlx5_esw_bridge_mdb_entry *mdb),
 	     TP_ARGS(dev, mdb));
-
 DEFINE_EVENT(mlx5_esw_bridge_mdb_port_change_template,
 	     mlx5_esw_bridge_port_mdb_detach,
 	     TP_PROTO(const struct net_device *dev,
 		      const struct mlx5_esw_bridge_mdb_entry *mdb),
 	     TP_ARGS(dev, mdb));
-
 #endif
-
-/* This part must be outside protection */
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH esw/diag
 #undef TRACE_INCLUDE_FILE

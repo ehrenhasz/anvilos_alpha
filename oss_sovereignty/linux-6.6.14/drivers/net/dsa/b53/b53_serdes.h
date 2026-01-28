@@ -1,29 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Northstar Plus switch SerDes/SGMII PHY definitions
- *
- * Copyright (C) 2018 Florian Fainelli <f.fainelli@gmail.com>
- */
-
 #include <linux/phy.h>
 #include <linux/types.h>
-
-/* Non-standard page used to access SerDes PHY registers on NorthStar Plus */
 #define B53_SERDES_PAGE			0x16
 #define B53_SERDES_BLKADDR		0x3e
 #define B53_SERDES_LANE			0x3c
-
 #define B53_SERDES_ID0			0x20
 #define  SERDES_ID0_MODEL_MASK		0x3f
 #define  SERDES_ID0_REV_NUM_SHIFT	11
 #define  SERDES_ID0_REV_NUM_MASK	0x7
 #define  SERDES_ID0_REV_LETTER_SHIFT	14
-
 #define B53_SERDES_MII_REG(x)		(0x20 + (x) * 2)
 #define B53_SERDES_DIGITAL_CONTROL(x)	(0x1e + (x) * 2)
 #define B53_SERDES_DIGITAL_STATUS	0x28
-
-/* SERDES_DIGITAL_CONTROL1 */
 #define  FIBER_MODE_1000X		BIT(0)
 #define  TBI_INTERFACE			BIT(1)
 #define  SIGNAL_DETECT_EN		BIT(2)
@@ -38,8 +25,6 @@
 #define  SEL_RX_PKTS_FOR_CNTR		BIT(11)
 #define  MASTER_MDIO_PHY_SEL		BIT(13)
 #define  DISABLE_SIGNAL_DETECT_FLT	BIT(14)
-
-/* SERDES_DIGITAL_CONTROL2 */
 #define  EN_PARALLEL_DET		BIT(0)
 #define  DIS_FALSE_LINK			BIT(1)
 #define  FLT_FORCE_LINK			BIT(2)
@@ -55,8 +40,6 @@
 #define  TX_PACKET_SEQ_TEST		BIT(12)
 #define  TX_IDLE_JAM_SEQ_TEST		BIT(13)
 #define  CLR_BER_CNTR			BIT(14)
-
-/* SERDES_DIGITAL_CONTROL3 */
 #define  TX_FIFO_RST			BIT(0)
 #define  FIFO_ELAST_TX_RX_SHIFT		1
 #define  FIFO_ELAST_TX_RX_5K		0
@@ -68,8 +51,6 @@
 #define  EXT_PHY_CRS_MODE		BIT(11)
 #define  INVERT_EXT_PHY_CRS		BIT(12)
 #define  DISABLE_TX_CRS			BIT(13)
-
-/* SERDES_DIGITAL_STATUS */
 #define  SGMII_MODE			BIT(0)
 #define  LINK_STATUS			BIT(1)
 #define  DUPLEX_STATUS			BIT(2)
@@ -90,23 +71,17 @@
 #define  FALSE_CARRIER_ERR_DET		BIT(13)
 #define  RXFIFO_ERR_DET			BIT(14)
 #define  TXFIFO_ERR_DET			BIT(15)
-
-/* Block offsets */
 #define SERDES_DIGITAL_BLK		0x8300
 #define SERDES_ID0			0x8310
 #define SERDES_MII_BLK			0xffe0
 #define SERDES_XGXSBLK0_BLOCKADDRESS	0xffd0
-
 struct phylink_link_state;
-
 static inline u8 b53_serdes_map_lane(struct b53_device *dev, int port)
 {
 	if (!dev->ops->serdes_map_lane)
 		return B53_INVALID_LANE;
-
 	return dev->ops->serdes_map_lane(dev, port);
 }
-
 void b53_serdes_link_set(struct b53_device *dev, int port, unsigned int mode,
 			 phy_interface_t interface, bool link_up);
 struct phylink_pcs *b53_serdes_phylink_mac_select_pcs(struct b53_device *dev,

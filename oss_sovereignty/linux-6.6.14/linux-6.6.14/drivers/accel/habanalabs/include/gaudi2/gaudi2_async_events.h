@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2018-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
-
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
-
 #ifndef __GAUDI2_ASYNC_EVENTS_H_
 #define __GAUDI2_ASYNC_EVENTS_H_
-
 enum gaudi2_async_event_id {
 	GAUDI2_EVENT_PCIE_CORE_SERR = 32,
 	GAUDI2_EVENT_PCIE_CORE_DERR = 33,
@@ -961,5 +948,4 @@ enum gaudi2_async_event_id {
 	GAUDI2_EVENT_CPU_DEV_RESET_REQ = 1321,
 	GAUDI2_EVENT_SIZE,
 };
-
-#endif /* __GAUDI2_ASYNC_EVENTS_H_ */
+#endif  

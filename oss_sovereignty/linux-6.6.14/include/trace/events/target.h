@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM target
-
 #if !defined(_TRACE_TARGET_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_TARGET_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
 #include <scsi/scsi_proto.h>
 #include <scsi/scsi_tcq.h>
 #include <target/target_core_base.h>
-
-/* cribbed verbatim from <trace/event/scsi.h> */
 #define scsi_opcode_name(opcode)	{ opcode, #opcode }
 #define show_opcode_name(val)					\
 	__print_symbolic(val,					\
@@ -107,14 +102,12 @@
 		scsi_opcode_name(WRITE_SAME_32),		\
 		scsi_opcode_name(ATA_16),			\
 		scsi_opcode_name(ATA_12))
-
 #define show_task_attribute_name(val)				\
 	__print_symbolic(val,					\
 		{ TCM_SIMPLE_TAG,	"SIMPLE"	},	\
 		{ TCM_HEAD_TAG,		"HEAD"		},	\
 		{ TCM_ORDERED_TAG,	"ORDERED"	},	\
 		{ TCM_ACA_TAG,		"ACA"		} )
-
 #define show_scsi_status_name(val)				\
 	__print_symbolic(val,					\
 		{ SAM_STAT_GOOD,	"GOOD" },		\
@@ -128,13 +121,9 @@
 		{ SAM_STAT_TASK_SET_FULL, "TASK SET FULL" },	\
 		{ SAM_STAT_ACA_ACTIVE, "ACA ACTIVE" },		\
 		{ SAM_STAT_TASK_ABORTED, "TASK ABORTED" } )
-
 TRACE_EVENT(target_sequencer_start,
-
 	TP_PROTO(struct se_cmd *cmd),
-
 	TP_ARGS(cmd),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	unpacked_lun	)
 		__field( unsigned long long,	tag	)
@@ -145,7 +134,6 @@ TRACE_EVENT(target_sequencer_start,
 		__array( unsigned char,	cdb, TCM_MAX_COMMAND_SIZE	)
 		__string( initiator,	cmd->se_sess->se_node_acl->initiatorname	)
 	),
-
 	TP_fast_assign(
 		__entry->unpacked_lun	= cmd->orig_fe_lun;
 		__entry->tag		= cmd->tag;
@@ -156,7 +144,6 @@ TRACE_EVENT(target_sequencer_start,
 		memcpy(__entry->cdb, cmd->t_task_cdb, TCM_MAX_COMMAND_SIZE);
 		__assign_str(initiator, cmd->se_sess->se_node_acl->initiatorname);
 	),
-
 	TP_printk("%s -> LUN %03u tag %#llx %s data_length %6u  CDB %s  (TA:%s C:%02x)",
 		  __get_str(initiator), __entry->unpacked_lun,
 		  __entry->tag, show_opcode_name(__entry->opcode),
@@ -165,13 +152,9 @@ TRACE_EVENT(target_sequencer_start,
 		  __entry->control
 	)
 );
-
 TRACE_EVENT(target_cmd_complete,
-
 	TP_PROTO(struct se_cmd *cmd),
-
 	TP_ARGS(cmd),
-
 	TP_STRUCT__entry(
 		__field( unsigned int,	unpacked_lun	)
 		__field( unsigned long long,	tag	)
@@ -185,7 +168,6 @@ TRACE_EVENT(target_cmd_complete,
 		__array( unsigned char,	sense_data, 18	)
 		__string(initiator,	cmd->se_sess->se_node_acl->initiatorname)
 	),
-
 	TP_fast_assign(
 		__entry->unpacked_lun	= cmd->orig_fe_lun;
 		__entry->tag		= cmd->tag;
@@ -200,7 +182,6 @@ TRACE_EVENT(target_cmd_complete,
 		memcpy(__entry->sense_data, cmd->sense_buffer, __entry->sense_length);
 		__assign_str(initiator, cmd->se_sess->se_node_acl->initiatorname);
 	),
-
 	TP_printk("%s <- LUN %03u tag %#llx status %s (sense len %d%s%s)  %s data_length %6u  CDB %s  (TA:%s C:%02x)",
 		  __get_str(initiator), __entry->unpacked_lun,
 		  __entry->tag,
@@ -213,8 +194,5 @@ TRACE_EVENT(target_cmd_complete,
 		  __entry->control
 	)
 );
-
-#endif /*  _TRACE_TARGET_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

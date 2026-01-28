@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_PX30_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_PX30_H
-
-/* core clocks */
 #define PLL_APLL		1
 #define PLL_DPLL		2
 #define PLL_CPLL		3
@@ -11,8 +7,6 @@
 #define APLL_BOOST_H		5
 #define APLL_BOOST_L		6
 #define ARMCLK			7
-
-/* sclk gates (special clocks) */
 #define USB480M			14
 #define SCLK_PDM		15
 #define SCLK_I2S0_TX		16
@@ -87,12 +81,8 @@
 #define SCLK_UART1_SRC		85
 #define SCLK_SDMMC_DIV		86
 #define SCLK_SDMMC_DIV50	87
-
-/* dclk gates */
 #define DCLK_VOPB		150
 #define DCLK_VOPL		151
-
-/* aclk gates */
 #define ACLK_GPU		170
 #define ACLK_BUS_PRE		171
 #define ACLK_CRYPTO		172
@@ -111,8 +101,6 @@
 #define ACLK_DMAC		187
 #define ACLK_BUS_SRC		188
 #define ACLK_PERI_SRC		189
-
-/* hclk gates */
 #define HCLK_BUS_PRE		240
 #define HCLK_CRYPTO		241
 #define HCLK_VI_PRE		242
@@ -138,8 +126,6 @@
 #define HCLK_I2S0		262
 #define HCLK_I2S1		263
 #define HCLK_I2S2		264
-
-/* pclk gates */
 #define PCLK_BUS_PRE		320
 #define PCLK_DDR		321
 #define PCLK_VO_PRE		322
@@ -174,13 +160,8 @@
 #define PCLK_ISP		351
 #define PCLK_CIF		352
 #define PCLK_OTP_PHY		353
-
 #define CLK_NR_CLKS		(PCLK_OTP_PHY + 1)
-
-/* pmu-clocks indices */
-
 #define PLL_GPLL		1
-
 #define SCLK_RTC32K_PMU		4
 #define SCLK_WIFI_PMU		5
 #define SCLK_UART0_PMU		6
@@ -189,15 +170,10 @@
 #define SCLK_REF24M_PMU		9
 #define SCLK_USBPHY_REF		10
 #define SCLK_MIPIDSIPHY_REF	11
-
 #define XIN24M_DIV		12
-
 #define PCLK_GPIO0_PMU		20
 #define PCLK_UART0_PMU		21
-
 #define CLKPMU_NR_CLKS		(PCLK_UART0_PMU + 1)
-
-/* soft-reset indices */
 #define SRST_CORE0_PO		0
 #define SRST_CORE1_PO		1
 #define SRST_CORE2_PO		2
@@ -214,7 +190,6 @@
 #define SRST_CORE_NOC		13
 #define SRST_STRC_A		14
 #define SRST_L2C		15
-
 #define SRST_DAP		16
 #define SRST_CORE_PVTM		17
 #define SRST_GPU		18
@@ -231,7 +206,6 @@
 #define SRST_AXI_SPLIT_A	29
 #define SRST_AXI_CMD_A		30
 #define SRST_AXI_CMD_P		31
-
 #define SRST_DDRPHY		32
 #define SRST_DDRPHYDIV		33
 #define SRST_DDRPHY_P		34
@@ -247,7 +221,6 @@
 #define SRST_CIF_H		45
 #define SRST_CIF_PCLKIN		46
 #define SRST_MIPICSIPHY_P	47
-
 #define SRST_VO_NIU_A		48
 #define SRST_VO_NIU_H		49
 #define SRST_VO_NIU_P		50
@@ -264,7 +237,6 @@
 #define SRST_MIPIDSI_HOST_P	61
 #define SRST_MIPIDSIPHY_P	62
 #define SRST_VPU_CORE		63
-
 #define SRST_PERI_NIU_A		64
 #define SRST_USB_NIU_H		65
 #define SRST_USB2OTG_H		66
@@ -281,7 +253,6 @@
 #define SRST_USBPHY_GRF		77
 #define SRST_CPU_BOOST_P	78
 #define SRST_CPU_BOOST		79
-
 #define SRST_MMC_NAND_NIU_H	80
 #define SRST_SDIO_H		81
 #define SRST_EMMC_H		82
@@ -294,7 +265,6 @@
 #define SRST_GMAC_NIU_A		92
 #define SRST_GMAC_NIU_P		93
 #define SRST_GMAC_A		94
-
 #define SRST_PMU_NIU_P		96
 #define SRST_PMU_SGRF_P		97
 #define SRST_PMU_GRF_P		98
@@ -311,7 +281,6 @@
 #define SRST_PMU_CORE_GRF_P	109
 #define SRST_PMU_GPU_PERF_A	110
 #define SRST_PMU_GPU_GRF_P	111
-
 #define SRST_CRYPTO_NIU_A	112
 #define SRST_CRYPTO_NIU_H	113
 #define SRST_CRYPTO_A		114
@@ -325,7 +294,6 @@
 #define SRST_GIC_A		124
 #define SRST_ROM_H		126
 #define SRST_DCF_A		127
-
 #define SRST_DCF_P		128
 #define SRST_PDM_H		129
 #define SRST_PDM		130
@@ -342,7 +310,6 @@
 #define SRST_UART3_P		141
 #define SRST_UART3		142
 #define SRST_UART4_P		143
-
 #define SRST_UART4		144
 #define SRST_UART5_P		145
 #define SRST_UART5		146
@@ -357,7 +324,6 @@
 #define SRST_PWM0_P		157
 #define SRST_PWM0		158
 #define SRST_PWM1_P		159
-
 #define SRST_PWM1		160
 #define SRST_SPI0_P		161
 #define SRST_SPI0		162
@@ -374,7 +340,6 @@
 #define SRST_TIMER3		173
 #define SRST_TIMER4		174
 #define SRST_TIMER5		175
-
 #define SRST_OTP_NS_P		176
 #define SRST_OTP_NS_SBPI	177
 #define SRST_OTP_NS_USR		178
@@ -387,5 +352,4 @@
 #define SRST_SGRF_P		185
 #define SRST_GRF_P		186
 #define SRST_I2S0_RX		191
-
 #endif

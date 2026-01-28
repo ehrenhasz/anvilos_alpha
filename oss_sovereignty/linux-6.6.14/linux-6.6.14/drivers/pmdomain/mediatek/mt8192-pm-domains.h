@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef __SOC_MEDIATEK_MT8192_PM_DOMAINS_H
 #define __SOC_MEDIATEK_MT8192_PM_DOMAINS_H
-
 #include "mtk-pm-domains.h"
 #include <dt-bindings/power/mt8192-power.h>
-
-/*
- * MT8192 power domain support
- */
-
 static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
 	[MT8192_POWER_DOMAIN_AUDIO] = {
 		.name = "audio",
@@ -346,10 +338,8 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
 		.sram_pdn_ack_bits = GENMASK(12, 12),
 	},
 };
-
 static const struct scpsys_soc_data mt8192_scpsys_data = {
 	.domains_data = scpsys_domain_data_mt8192,
 	.num_domains = ARRAY_SIZE(scpsys_domain_data_mt8192),
 };
-
-#endif /* __SOC_MEDIATEK_MT8192_PM_DOMAINS_H */
+#endif  

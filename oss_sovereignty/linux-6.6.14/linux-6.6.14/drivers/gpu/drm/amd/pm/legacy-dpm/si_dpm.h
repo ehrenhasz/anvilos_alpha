@@ -1,43 +1,17 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef __SI_DPM_H__
 #define __SI_DPM_H__
-
 #include "amdgpu_atombios.h"
 #include "sislands_smc.h"
-
 #define MC_CG_CONFIG                                    0x96f
 #define MC_ARB_CG                                       0x9fa
 #define		CG_ARB_REQ(x)				((x) << 0)
 #define		CG_ARB_REQ_MASK				(0xff << 0)
-
 #define	MC_ARB_DRAM_TIMING_1				0x9fc
 #define	MC_ARB_DRAM_TIMING_2				0x9fd
 #define	MC_ARB_DRAM_TIMING_3				0x9fe
 #define	MC_ARB_DRAM_TIMING2_1				0x9ff
 #define	MC_ARB_DRAM_TIMING2_2				0xa00
 #define	MC_ARB_DRAM_TIMING2_3				0xa01
-
 #define MAX_NO_OF_MVDD_VALUES 2
 #define MAX_NO_VREG_STEPS 32
 #define NISLANDS_MAX_SMC_PERFORMANCE_LEVELS_PER_SWSTATE 16
@@ -48,81 +22,61 @@
 #define PCIE_PERF_REQ_PECI_GEN1         2
 #define PCIE_PERF_REQ_PECI_GEN2         3
 #define PCIE_PERF_REQ_PECI_GEN3         4
-#define RV770_DEFAULT_VCLK_FREQ  53300 /* 10 khz */
-#define RV770_DEFAULT_DCLK_FREQ  40000 /* 10 khz */
-
+#define RV770_DEFAULT_VCLK_FREQ  53300  
+#define RV770_DEFAULT_DCLK_FREQ  40000  
 #define SMC_EVERGREEN_MC_REGISTER_ARRAY_SIZE 16
-
 #define RV770_SMC_TABLE_ADDRESS 0xB000
 #define RV770_SMC_PERFORMANCE_LEVELS_PER_SWSTATE    3
-
 #define SMC_STROBE_RATIO    0x0F
 #define SMC_STROBE_ENABLE   0x10
-
 #define SMC_MC_EDC_RD_FLAG  0x01
 #define SMC_MC_EDC_WR_FLAG  0x02
 #define SMC_MC_RTT_ENABLE   0x04
 #define SMC_MC_STUTTER_EN   0x08
-
 #define RV770_SMC_VOLTAGEMASK_VDDC 0
 #define RV770_SMC_VOLTAGEMASK_MVDD 1
 #define RV770_SMC_VOLTAGEMASK_VDDCI 2
 #define RV770_SMC_VOLTAGEMASK_MAX  4
-
 #define NISLANDS_MAX_SMC_PERFORMANCE_LEVELS_PER_SWSTATE 16
 #define NISLANDS_SMC_STROBE_RATIO    0x0F
 #define NISLANDS_SMC_STROBE_ENABLE   0x10
-
 #define NISLANDS_SMC_MC_EDC_RD_FLAG  0x01
 #define NISLANDS_SMC_MC_EDC_WR_FLAG  0x02
 #define NISLANDS_SMC_MC_RTT_ENABLE   0x04
 #define NISLANDS_SMC_MC_STUTTER_EN   0x08
-
 #define MAX_NO_VREG_STEPS 32
-
 #define NISLANDS_SMC_VOLTAGEMASK_VDDC  0
 #define NISLANDS_SMC_VOLTAGEMASK_MVDD  1
 #define NISLANDS_SMC_VOLTAGEMASK_VDDCI 2
 #define NISLANDS_SMC_VOLTAGEMASK_MAX   4
-
 #define SISLANDS_MCREGISTERTABLE_INITIAL_SLOT               0
 #define SISLANDS_MCREGISTERTABLE_ACPI_SLOT                  1
 #define SISLANDS_MCREGISTERTABLE_ULV_SLOT                   2
 #define SISLANDS_MCREGISTERTABLE_FIRST_DRIVERSTATE_SLOT     3
-
 #define SISLANDS_LEAKAGE_INDEX0     0xff01
 #define SISLANDS_MAX_LEAKAGE_COUNT  4
-
 #define SISLANDS_MAX_HARDWARE_POWERLEVELS 5
 #define SISLANDS_INITIAL_STATE_ARB_INDEX    0
 #define SISLANDS_ACPI_STATE_ARB_INDEX       1
 #define SISLANDS_ULV_STATE_ARB_INDEX        2
 #define SISLANDS_DRIVER_STATE_ARB_INDEX     3
-
 #define SISLANDS_DPM2_MAX_PULSE_SKIP        256
-
 #define SISLANDS_DPM2_NEAR_TDP_DEC          10
 #define SISLANDS_DPM2_ABOVE_SAFE_INC        5
 #define SISLANDS_DPM2_BELOW_SAFE_INC        20
-
 #define SISLANDS_DPM2_TDP_SAFE_LIMIT_PERCENT            80
-
 #define SISLANDS_DPM2_MAXPS_PERCENT_H                   99
 #define SISLANDS_DPM2_MAXPS_PERCENT_M                   99
-
 #define SISLANDS_DPM2_SQ_RAMP_MAX_POWER                 0x3FFF
 #define SISLANDS_DPM2_SQ_RAMP_MIN_POWER                 0x12
 #define SISLANDS_DPM2_SQ_RAMP_MAX_POWER_DELTA           0x15
 #define SISLANDS_DPM2_SQ_RAMP_STI_SIZE                  0x1E
 #define SISLANDS_DPM2_SQ_RAMP_LTI_RATIO                 0xF
-
 #define SISLANDS_DPM2_PWREFFICIENCYRATIO_MARGIN         10
-
 #define SISLANDS_VRC_DFLT                               0xC000B3
 #define SISLANDS_ULVVOLTAGECHANGEDELAY_DFLT             1687
 #define SISLANDS_CGULVPARAMETER_DFLT                    0x00040035
 #define SISLANDS_CGULVCONTROL_DFLT                      0x1f007550
-
 #define SI_ASI_DFLT                                10000
 #define SI_BSP_DFLT                                0x41EB
 #define SI_BSU_DFLT                                0x2
@@ -185,20 +139,15 @@
 #define SI_VCOSTEPPCT_DFLT                          20
 #define SI_ENDINGVCOSTEPPCT_DFLT                    5
 #define SI_REFERENCEDIVIDER_DFLT                    4
-
 #define SI_PM_NUMBER_OF_TC 15
 #define SI_PM_NUMBER_OF_SCLKS 20
 #define SI_PM_NUMBER_OF_MCLKS 4
 #define SI_PM_NUMBER_OF_VOLTAGE_LEVELS 4
 #define SI_PM_NUMBER_OF_ACTIVITY_LEVELS 3
-
-/* XXX are these ok? */
 #define SI_TEMP_RANGE_MIN (90 * 1000)
 #define SI_TEMP_RANGE_MAX (120 * 1000)
-
 #define FDO_PWM_MODE_STATIC  1
 #define FDO_PWM_MODE_STATIC_RPM 5
-
 enum ni_dc_cac_level
 {
 	NISLANDS_DCCAC_LEVEL_0 = 0,
@@ -211,32 +160,27 @@ enum ni_dc_cac_level
 	NISLANDS_DCCAC_LEVEL_7,
 	NISLANDS_DCCAC_MAX_LEVELS
 };
-
 enum si_cac_config_reg_type
 {
 	SISLANDS_CACCONFIG_MMR = 0,
 	SISLANDS_CACCONFIG_CGIND,
 	SISLANDS_CACCONFIG_MAX
 };
-
 enum si_power_level {
 	SI_POWER_LEVEL_LOW = 0,
 	SI_POWER_LEVEL_MEDIUM = 1,
 	SI_POWER_LEVEL_HIGH = 2,
 	SI_POWER_LEVEL_CTXSW = 3,
 };
-
 enum si_td {
 	SI_TD_AUTO,
 	SI_TD_UP,
 	SI_TD_DOWN,
 };
-
 enum si_display_watermark {
 	SI_DISPLAY_WATERMARK_LOW = 0,
 	SI_DISPLAY_WATERMARK_HIGH = 1,
 };
-
 enum si_display_gap
 {
     SI_PM_DISPLAY_GAP_VBLANK_OR_WM = 0,
@@ -244,9 +188,7 @@ enum si_display_gap
     SI_PM_DISPLAY_GAP_WATERMARK    = 2,
     SI_PM_DISPLAY_GAP_IGNORE       = 3,
 };
-
 extern const struct amdgpu_ip_block_version si_smu_ip_block;
-
 struct ni_leakage_coeffients
 {
 	u32 at;
@@ -257,20 +199,16 @@ struct ni_leakage_coeffients
 	s32 t_intercept;
 	u32 t_ref;
 };
-
 struct SMC_Evergreen_MCRegisterAddress
 {
     uint16_t s0;
     uint16_t s1;
 };
-
 typedef struct SMC_Evergreen_MCRegisterAddress SMC_Evergreen_MCRegisterAddress;
-
 struct evergreen_mc_reg_entry {
 	u32 mclk_max;
 	u32 mc_data[SMC_EVERGREEN_MC_REGISTER_ARRAY_SIZE];
 };
-
 struct evergreen_mc_reg_table {
 	u8 last;
 	u8 num_entries;
@@ -278,14 +216,11 @@ struct evergreen_mc_reg_table {
 	struct evergreen_mc_reg_entry mc_reg_table_entry[MAX_AC_TIMING_ENTRIES];
 	SMC_Evergreen_MCRegisterAddress mc_reg_address[SMC_EVERGREEN_MC_REGISTER_ARRAY_SIZE];
 };
-
 struct SMC_Evergreen_MCRegisterSet
 {
     uint32_t value[SMC_EVERGREEN_MC_REGISTER_ARRAY_SIZE];
 };
-
 typedef struct SMC_Evergreen_MCRegisterSet SMC_Evergreen_MCRegisterSet;
-
 struct SMC_Evergreen_MCRegisters
 {
     uint8_t                             last;
@@ -293,29 +228,22 @@ struct SMC_Evergreen_MCRegisters
     SMC_Evergreen_MCRegisterAddress     address[SMC_EVERGREEN_MC_REGISTER_ARRAY_SIZE];
     SMC_Evergreen_MCRegisterSet         data[5];
 };
-
 typedef struct SMC_Evergreen_MCRegisters SMC_Evergreen_MCRegisters;
-
 struct SMC_NIslands_MCRegisterSet
 {
     uint32_t value[SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE];
 };
-
 typedef struct SMC_NIslands_MCRegisterSet SMC_NIslands_MCRegisterSet;
-
 struct ni_mc_reg_entry {
 	u32 mclk_max;
 	u32 mc_data[SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE];
 };
-
 struct SMC_NIslands_MCRegisterAddress
 {
     uint16_t s0;
     uint16_t s1;
 };
-
 typedef struct SMC_NIslands_MCRegisterAddress SMC_NIslands_MCRegisterAddress;
-
 struct SMC_NIslands_MCRegisters
 {
     uint8_t                             last;
@@ -323,28 +251,23 @@ struct SMC_NIslands_MCRegisters
     SMC_NIslands_MCRegisterAddress      address[SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE];
     SMC_NIslands_MCRegisterSet          data[SMC_NISLANDS_MC_REGISTER_ARRAY_SET_COUNT];
 };
-
 typedef struct SMC_NIslands_MCRegisters SMC_NIslands_MCRegisters;
-
 struct evergreen_ulv_param {
 	bool supported;
 	struct rv7xx_pl *pl;
 };
-
 struct evergreen_arb_registers {
 	u32 mc_arb_dram_timing;
 	u32 mc_arb_dram_timing2;
 	u32 mc_arb_rfsh_rate;
 	u32 mc_arb_burst_time;
 };
-
 struct at {
 	u32 rlp;
 	u32 rmp;
 	u32 lhp;
 	u32 lmp;
 };
-
 struct ni_clock_registers {
 	u32 cg_spll_func_cntl;
 	u32 cg_spll_func_cntl_2;
@@ -361,7 +284,6 @@ struct ni_clock_registers {
 	u32 mpll_ss1;
 	u32 mpll_ss2;
 };
-
 struct RV770_SMC_SCLK_VALUE
 {
     uint32_t        vCG_SPLL_FUNC_CNTL;
@@ -371,9 +293,7 @@ struct RV770_SMC_SCLK_VALUE
     uint32_t        vCG_SPLL_SPREAD_SPECTRUM_2;
     uint32_t        sclk_value;
 };
-
 typedef struct RV770_SMC_SCLK_VALUE RV770_SMC_SCLK_VALUE;
-
 struct RV770_SMC_MCLK_VALUE
 {
     uint32_t        vMPLL_AD_FUNC_CNTL;
@@ -386,10 +306,7 @@ struct RV770_SMC_MCLK_VALUE
     uint32_t        vMPLL_SS2;
     uint32_t        mclk_value;
 };
-
 typedef struct RV770_SMC_MCLK_VALUE RV770_SMC_MCLK_VALUE;
-
-
 struct RV730_SMC_MCLK_VALUE
 {
     uint32_t        vMCLK_PWRMGT_CNTL;
@@ -401,26 +318,20 @@ struct RV730_SMC_MCLK_VALUE
     uint32_t        vMPLL_SS2;
     uint32_t        mclk_value;
 };
-
 typedef struct RV730_SMC_MCLK_VALUE RV730_SMC_MCLK_VALUE;
-
 struct RV770_SMC_VOLTAGE_VALUE
 {
     uint16_t             value;
     uint8_t              index;
     uint8_t              padding;
 };
-
 typedef struct RV770_SMC_VOLTAGE_VALUE RV770_SMC_VOLTAGE_VALUE;
-
 union RV7XX_SMC_MCLK_VALUE
 {
     RV770_SMC_MCLK_VALUE    mclk770;
     RV730_SMC_MCLK_VALUE    mclk730;
 };
-
 typedef union RV7XX_SMC_MCLK_VALUE RV7XX_SMC_MCLK_VALUE, *LPRV7XX_SMC_MCLK_VALUE;
-
 struct RV770_SMC_HW_PERFORMANCE_LEVEL
 {
     uint8_t                 arbValue;
@@ -446,9 +357,7 @@ struct RV770_SMC_HW_PERFORMANCE_LEVEL
     uint8_t                 stateFlags;
     uint8_t                 padding;
 };
-
 typedef struct RV770_SMC_HW_PERFORMANCE_LEVEL RV770_SMC_HW_PERFORMANCE_LEVEL;
-
 struct RV770_SMC_SWSTATE
 {
     uint8_t           flags;
@@ -457,17 +366,13 @@ struct RV770_SMC_SWSTATE
     uint8_t           padding3;
     RV770_SMC_HW_PERFORMANCE_LEVEL levels[RV770_SMC_PERFORMANCE_LEVELS_PER_SWSTATE];
 };
-
 typedef struct RV770_SMC_SWSTATE RV770_SMC_SWSTATE;
-
 struct RV770_SMC_VOLTAGEMASKTABLE
 {
     uint8_t  highMask[RV770_SMC_VOLTAGEMASK_MAX];
     uint32_t lowMask[RV770_SMC_VOLTAGEMASK_MAX];
 };
-
 typedef struct RV770_SMC_VOLTAGEMASKTABLE RV770_SMC_VOLTAGEMASKTABLE;
-
 struct RV770_SMC_STATETABLE
 {
     uint8_t             thermalProtectType;
@@ -482,16 +387,13 @@ struct RV770_SMC_STATETABLE
     RV770_SMC_SWSTATE   driverState;
     RV770_SMC_SWSTATE   ULVState;
 };
-
 typedef struct RV770_SMC_STATETABLE RV770_SMC_STATETABLE;
-
 struct vddc_table_entry {
 	u16 vddc;
 	u8 vddc_index;
 	u8 high_smio;
 	u32 low_smio;
 };
-
 struct rv770_clock_registers {
 	u32 cg_spll_func_cntl;
 	u32 cg_spll_func_cntl_2;
@@ -507,7 +409,6 @@ struct rv770_clock_registers {
 	u32 mpll_ss1;
 	u32 mpll_ss2;
 };
-
 struct rv730_clock_registers {
 	u32 cg_spll_func_cntl;
 	u32 cg_spll_func_cntl_2;
@@ -522,20 +423,17 @@ struct rv730_clock_registers {
 	u32 mpll_ss;
 	u32 mpll_ss2;
 };
-
 union r7xx_clock_registers {
 	struct rv770_clock_registers rv770;
 	struct rv730_clock_registers rv730;
 };
-
 struct rv7xx_power_info {
-	/* flags */
 	bool mem_gddr5;
 	bool pcie_gen2;
 	bool dynamic_pcie_gen2;
 	bool acpi_pcie_gen2;
 	bool boot_in_gen2;
-	bool voltage_control; /* vddc */
+	bool voltage_control;  
 	bool mvdd_control;
 	bool sclk_ss;
 	bool mclk_ss;
@@ -548,10 +446,8 @@ struct rv7xx_power_info {
 	bool display_gap;
 	bool dcodt;
 	bool ulps;
-	/* registers */
 	union r7xx_clock_registers clk_regs;
 	u32 s0_vid_lower_smio_cntl;
-	/* voltage */
 	u32 vddc_mask_low;
 	u32 mvdd_mask_low;
 	u32 mvdd_split_frequency;
@@ -561,11 +457,9 @@ struct rv7xx_power_info {
 	u16 min_vddc_in_table;
 	struct vddc_table_entry vddc_table[MAX_NO_VREG_STEPS];
 	u8 valid_vddc_entries;
-	/* dc odt */
 	u32 mclk_odt_threshold;
 	u8 odt_value_0[2];
 	u8 odt_value_1[2];
-	/* stored values */
 	u32 boot_sclk;
 	u16 acpi_vddc;
 	u32 ref_div;
@@ -587,43 +481,36 @@ struct rv7xx_power_info {
 	u32 rmp;
 	u32 lhp;
 	u32 lmp;
-	/* smc offsets */
 	u16 state_table_start;
 	u16 soft_regs_start;
 	u16 sram_end;
-	/* scratch structs */
 	RV770_SMC_STATETABLE smc_statetable;
 };
-
 enum si_pcie_gen {
 	SI_PCIE_GEN1 = 0,
 	SI_PCIE_GEN2 = 1,
 	SI_PCIE_GEN3 = 2,
 	SI_PCIE_GEN_INVALID = 0xffff
 };
-
 struct rv7xx_pl {
 	u32 sclk;
 	u32 mclk;
 	u16 vddc;
-	u16 vddci; /* eg+ only */
+	u16 vddci;  
 	u32 flags;
-	enum si_pcie_gen pcie_gen; /* si+ only */
+	enum si_pcie_gen pcie_gen;  
 };
-
 struct rv7xx_ps {
 	struct rv7xx_pl high;
 	struct rv7xx_pl medium;
 	struct rv7xx_pl low;
 	bool dc_compatible;
 };
-
 struct si_ps {
 	u16 performance_level_count;
 	bool dc_compatible;
 	struct rv7xx_pl performance_levels[NISLANDS_MAX_SMC_PERFORMANCE_LEVELS_PER_SWSTATE];
 };
-
 struct ni_mc_reg_table {
 	u8 last;
 	u8 num_entries;
@@ -631,7 +518,6 @@ struct ni_mc_reg_table {
 	struct ni_mc_reg_entry mc_reg_table_entry[MAX_AC_TIMING_ENTRIES];
 	SMC_NIslands_MCRegisterAddress mc_reg_address[SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE];
 };
-
 struct ni_cac_data
 {
 	struct ni_leakage_coeffients leakage_coefficients;
@@ -648,11 +534,8 @@ struct ni_cac_data
 	u8 l2num_win_tdp;
 	u8 lts_truncate_n;
 };
-
 struct evergreen_power_info {
-	/* must be first! */
 	struct rv7xx_power_info rv7xx;
-	/* flags */
 	bool vddci_control;
 	bool dynamic_ac_timing;
 	bool abm;
@@ -666,7 +549,6 @@ struct evergreen_power_info {
 	bool ls_clock_gating;
 	bool smu_uvd_hs;
 	bool uvd_enabled;
-	/* stored values */
 	u16 acpi_vddci;
 	u8 mvdd_high_index;
 	u8 mvdd_low_index;
@@ -677,14 +559,12 @@ struct evergreen_power_info {
 	struct evergreen_arb_registers bootup_arb_registers;
 	struct evergreen_ulv_param ulv;
 	struct at ats[2];
-	/* smc offsets */
 	u16 mc_reg_table_start;
 	struct amdgpu_ps current_rps;
 	struct rv7xx_ps current_ps;
 	struct amdgpu_ps requested_rps;
 	struct rv7xx_ps requested_ps;
 };
-
 struct PP_NIslands_Dpm2PerfLevel
 {
     uint8_t     MaxPS;
@@ -699,9 +579,7 @@ struct PP_NIslands_Dpm2PerfLevel
     uint8_t     PSDeltaWin;
     uint8_t     Reserved[6];
 };
-
 typedef struct PP_NIslands_Dpm2PerfLevel PP_NIslands_Dpm2PerfLevel;
-
 struct PP_NIslands_DPM2Parameters
 {
     uint32_t    TDPLimit;
@@ -710,7 +588,6 @@ struct PP_NIslands_DPM2Parameters
     uint32_t    PowerBoostLimit;
 };
 typedef struct PP_NIslands_DPM2Parameters PP_NIslands_DPM2Parameters;
-
 struct NISLANDS_SMC_SCLK_VALUE
 {
     uint32_t        vCG_SPLL_FUNC_CNTL;
@@ -721,9 +598,7 @@ struct NISLANDS_SMC_SCLK_VALUE
     uint32_t        vCG_SPLL_SPREAD_SPECTRUM_2;
     uint32_t        sclk_value;
 };
-
 typedef struct NISLANDS_SMC_SCLK_VALUE NISLANDS_SMC_SCLK_VALUE;
-
 struct NISLANDS_SMC_MCLK_VALUE
 {
     uint32_t        vMPLL_FUNC_CNTL;
@@ -739,18 +614,14 @@ struct NISLANDS_SMC_MCLK_VALUE
     uint32_t        vMPLL_SS2;
     uint32_t        mclk_value;
 };
-
 typedef struct NISLANDS_SMC_MCLK_VALUE NISLANDS_SMC_MCLK_VALUE;
-
 struct NISLANDS_SMC_VOLTAGE_VALUE
 {
     uint16_t             value;
     uint8_t              index;
     uint8_t              padding;
 };
-
 typedef struct NISLANDS_SMC_VOLTAGE_VALUE NISLANDS_SMC_VOLTAGE_VALUE;
-
 struct NISLANDS_SMC_HW_PERFORMANCE_LEVEL
 {
     uint8_t                     arbValue;
@@ -779,9 +650,7 @@ struct NISLANDS_SMC_HW_PERFORMANCE_LEVEL
     uint32_t                    reserved[2];
     PP_NIslands_Dpm2PerfLevel   dpm2;
 };
-
 typedef struct NISLANDS_SMC_HW_PERFORMANCE_LEVEL NISLANDS_SMC_HW_PERFORMANCE_LEVEL;
-
 struct NISLANDS_SMC_SWSTATE
 {
     uint8_t                             flags;
@@ -790,19 +659,14 @@ struct NISLANDS_SMC_SWSTATE
     uint8_t                             padding3;
     NISLANDS_SMC_HW_PERFORMANCE_LEVEL   levels[];
 };
-
 typedef struct NISLANDS_SMC_SWSTATE NISLANDS_SMC_SWSTATE;
-
 struct NISLANDS_SMC_VOLTAGEMASKTABLE
 {
     uint8_t  highMask[NISLANDS_SMC_VOLTAGEMASK_MAX];
     uint32_t lowMask[NISLANDS_SMC_VOLTAGEMASK_MAX];
 };
-
 typedef struct NISLANDS_SMC_VOLTAGEMASKTABLE NISLANDS_SMC_VOLTAGEMASKTABLE;
-
 #define NISLANDS_MAX_NO_VREG_STEPS 32
-
 struct NISLANDS_SMC_STATETABLE
 {
     uint8_t                             thermalProtectType;
@@ -819,16 +683,12 @@ struct NISLANDS_SMC_STATETABLE
     NISLANDS_SMC_SWSTATE                driverState;
     NISLANDS_SMC_HW_PERFORMANCE_LEVEL   dpmLevels[NISLANDS_MAX_SMC_PERFORMANCE_LEVELS_PER_SWSTATE - 1];
 };
-
 typedef struct NISLANDS_SMC_STATETABLE NISLANDS_SMC_STATETABLE;
-
 struct ni_power_info {
-	/* must be first! */
 	struct evergreen_power_info eg;
 	struct ni_clock_registers clock_registers;
 	struct ni_mc_reg_table mc_reg_table;
 	u32 mclk_rtt_mode_threshold;
-	/* flags */
 	bool use_power_boost_limit;
 	bool support_cac_long_term_average;
 	bool cac_enabled;
@@ -838,12 +698,10 @@ struct ni_power_info {
 	bool enable_power_containment;
 	bool enable_cac;
 	bool enable_sq_ramping;
-	/* smc offsets */
 	u16 arb_table_start;
 	u16 fan_table_start;
 	u16 cac_table_start;
 	u16 spll_table_start;
-	/* CAC stuff */
 	struct ni_cac_data cac_data;
 	u32 dc_cac_table[NISLANDS_DCCAC_MAX_LEVELS];
 	const struct ni_cac_weights *cac_weights;
@@ -851,11 +709,9 @@ struct ni_power_info {
 	u8 lts_truncate;
 	struct si_ps current_ps;
 	struct si_ps requested_ps;
-	/* scratch structs */
 	SMC_NIslands_MCRegisters smc_mc_reg_table;
 	NISLANDS_SMC_STATETABLE smc_statetable;
 };
-
 struct si_cac_config_reg
 {
 	u32 offset;
@@ -864,7 +720,6 @@ struct si_cac_config_reg
 	u32 value;
 	enum si_cac_config_reg_type type;
 };
-
 struct si_powertune_data
 {
 	u32 cac_window;
@@ -878,7 +733,6 @@ struct si_powertune_data
 	u8 dc_cac[NISLANDS_DCCAC_MAX_LEVELS];
 	bool enable_powertune_by_default;
 };
-
 struct si_dyn_powertune_data
 {
 	u32 cac_leakage;
@@ -890,7 +744,6 @@ struct si_dyn_powertune_data
 	u8 dc_pwr_value;
 	bool disable_uvd_powertune;
 };
-
 struct si_dte_data
 {
 	u32 tau[SMC_SISLANDS_DTE_MAX_FILTER_STAGES];
@@ -908,7 +761,6 @@ struct si_dte_data
 	u32 t_threshold;
 	bool enable_dte_by_default;
 };
-
 struct si_clock_registers {
 	u32 cg_spll_func_cntl;
 	u32 cg_spll_func_cntl_2;
@@ -926,12 +778,10 @@ struct si_clock_registers {
 	u32 mpll_ss1;
 	u32 mpll_ss2;
 };
-
 struct si_mc_reg_entry {
 	u32 mclk_max;
 	u32 mc_data[SMC_SISLANDS_MC_REGISTER_ARRAY_SIZE];
 };
-
 struct si_mc_reg_table {
 	u8 last;
 	u8 num_entries;
@@ -939,20 +789,16 @@ struct si_mc_reg_table {
 	struct si_mc_reg_entry mc_reg_table_entry[MAX_AC_TIMING_ENTRIES];
 	SMC_NIslands_MCRegisterAddress mc_reg_address[SMC_SISLANDS_MC_REGISTER_ARRAY_SIZE];
 };
-
 struct si_leakage_voltage_entry
 {
 	u16 voltage;
 	u16 leakage_index;
 };
-
 struct si_leakage_voltage
 {
 	u16 count;
 	struct si_leakage_voltage_entry entries[SISLANDS_MAX_LEAKAGE_COUNT];
 };
-
-
 struct si_ulv_param {
 	bool supported;
 	u32 cg_ulv_control;
@@ -961,9 +807,7 @@ struct si_ulv_param {
 	struct rv7xx_pl pl;
 	bool one_pcie_lane_in_ulv;
 };
-
 struct si_power_info {
-	/* must be first! */
 	struct ni_power_info ni;
 	struct si_clock_registers clock_registers;
 	struct si_mc_reg_table mc_reg_table;
@@ -973,12 +817,10 @@ struct si_power_info {
 	u16 mvdd_bootup_value;
 	struct si_ulv_param ulv;
 	u32 max_cu;
-	/* pcie gen */
 	enum si_pcie_gen force_pcie_gen;
 	enum si_pcie_gen boot_pcie_gen;
 	enum si_pcie_gen acpi_pcie_gen;
 	u32 sys_pcie_mask;
-	/* flags */
 	bool enable_dte;
 	bool enable_ppm;
 	bool vddc_phase_shed_control;
@@ -986,7 +828,6 @@ struct si_power_info {
 	bool sclk_deep_sleep_above_low;
 	bool voltage_control_svi2;
 	bool vddci_control_svi2;
-	/* smc offsets */
 	u32 sram_end;
 	u32 state_table_start;
 	u32 soft_regs_start;
@@ -997,26 +838,20 @@ struct si_power_info {
 	u32 spll_table_start;
 	u32 papm_cfg_table_start;
 	u32 fan_table_start;
-	/* CAC stuff */
 	const struct si_cac_config_reg *cac_weights;
 	const struct si_cac_config_reg *lcac_config;
 	const struct si_cac_config_reg *cac_override;
 	const struct si_powertune_data *powertune_data;
 	struct si_dyn_powertune_data dyn_powertune_data;
-	/* DTE stuff */
 	struct si_dte_data dte_data;
-	/* scratch structs */
 	SMC_SIslands_MCRegisters smc_mc_reg_table;
 	SISLANDS_SMC_STATETABLE smc_statetable;
 	PP_SIslands_PAPMParameters papm_parm;
-	/* SVI2 */
 	u8 svd_gpio_id;
 	u8 svc_gpio_id;
-	/* fan control */
 	bool fan_ctrl_is_in_default_mode;
 	u32 t_min;
 	u32 fan_ctrl_default_mode;
 	bool fan_is_controlled_by_smc;
 };
-
 #endif

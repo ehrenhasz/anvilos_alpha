@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2013 Daniel Tang <tangrs@tangrs.id.au>
- */
-
 /dts-v1/;
-
 #include <dt-bindings/input/input.h>
-
 /include/ "nspire.dtsi"
-
 &lcd {
 	port {
 		clcd_pads: endpoint {
@@ -16,34 +8,25 @@
 		};
 	};
 };
-
 &fast_timer {
-	/* compatible = "arm,sp804", "arm,primecell"; */
 };
-
 &uart {
 	compatible = "arm,pl011", "arm,primecell";
-
 	clocks = <&uart_clk>, <&apb_pclk>;
 	clock-names = "uartclk", "apb_pclk";
 };
-
 &timer0 {
 	compatible = "arm,sp804", "arm,primecell";
 };
-
 &timer1 {
 	compatible = "arm,sp804", "arm,primecell";
 };
-
 &base_clk {
 	compatible = "lsi,nspire-cx-clock";
 };
-
 &ahb_clk {
 	compatible = "lsi,nspire-cx-ahb-divider";
 };
-
 &keypad {
 	linux,keymap = <
 		MATRIX_KEY(0,  0, 0x1c)
@@ -113,41 +96,33 @@
 		MATRIX_KEY(7, 10, 0x33)
 	>;
 };
-
 &vbus_reg {
 	gpio = <&gpio 2 0>;
 };
-
 / {
 	model = "TI-NSPIRE CX";
 	compatible = "ti,nspire-cx";
-
 	memory {
 		device_type = "memory";
-		reg = <0x10000000 0x4000000>; /* 64 MB */
+		reg = <0x10000000 0x4000000>;  
 	};
-
 	uart_clk: uart_clk {
 		#clock-cells = <0>;
 		compatible = "fixed-clock";
 		clock-frequency = <12000000>;
 	};
-
 	ahb {
 		#address-cells = <1>;
 		#size-cells = <1>;
-
 		intc: interrupt-controller@dc000000 {
 			compatible = "arm,pl190-vic";
 			interrupt-controller;
 			reg = <0xdc000000 0x1000>;
 			#interrupt-cells = <1>;
 		};
-
 		apb@90000000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
-
 			i2c@90050000 {
 				compatible = "snps,designware-i2c";
 				reg = <0x90050000 0x1000>;
@@ -155,7 +130,6 @@
 			};
 		};
 	};
-
 	panel {
 		compatible = "ti,nspire-cx-lcd-panel";
 		port {

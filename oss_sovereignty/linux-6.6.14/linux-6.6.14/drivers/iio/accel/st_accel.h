@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * STMicroelectronics accelerometers driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- * v. 1.0.0
- */
-
 #ifndef ST_ACCEL_H
 #define ST_ACCEL_H
-
 #include <linux/types.h>
 #include <linux/iio/common/st_sensors.h>
-
 #define H3LIS331DL_ACCEL_DEV_NAME	"h3lis331dl_accel"
 #define LIS3LV02DL_ACCEL_DEV_NAME	"lis3lv02dl_accel"
 #define LSM303DLHC_ACCEL_DEV_NAME	"lsm303dlhc_accel"
@@ -40,18 +28,15 @@
 #define LSM303C_ACCEL_DEV_NAME		"lsm303c_accel"
 #define SC7A20_ACCEL_DEV_NAME		"sc7a20"
 #define IIS328DQ_ACCEL_DEV_NAME		"iis328dq"
-
-
 #ifdef CONFIG_IIO_BUFFER
 int st_accel_allocate_ring(struct iio_dev *indio_dev);
 int st_accel_trig_set_state(struct iio_trigger *trig, bool state);
 #define ST_ACCEL_TRIGGER_SET_STATE (&st_accel_trig_set_state)
-#else /* CONFIG_IIO_BUFFER */
+#else  
 static inline int st_accel_allocate_ring(struct iio_dev *indio_dev)
 {
 	return 0;
 }
 #define ST_ACCEL_TRIGGER_SET_STATE NULL
-#endif /* CONFIG_IIO_BUFFER */
-
-#endif /* ST_ACCEL_H */
+#endif  
+#endif  

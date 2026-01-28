@@ -1,17 +1,8 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (C) 2020 Arm Ltd.
- */
-
 #ifndef _DT_BINDINGS_CLK_SUN50I_H616_H_
 #define _DT_BINDINGS_CLK_SUN50I_H616_H_
-
 #define CLK_PLL_PERIPH0		4
-
 #define CLK_CPUX		21
-
 #define CLK_APB1		26
-
 #define CLK_DE			29
 #define CLK_BUS_DE		30
 #define CLK_DEINTERLACE		31
@@ -32,14 +23,12 @@
 #define CLK_BUS_PSI		46
 #define CLK_BUS_PWM		47
 #define CLK_BUS_IOMMU		48
-
 #define CLK_MBUS_DMA		50
 #define CLK_MBUS_VE		51
 #define CLK_MBUS_CE		52
 #define CLK_MBUS_TS		53
 #define CLK_MBUS_NAND		54
 #define CLK_MBUS_G2D		55
-
 #define CLK_NAND0		57
 #define CLK_NAND1		58
 #define CLK_BUS_NAND		59
@@ -112,5 +101,4 @@
 #define CLK_HDCP		126
 #define CLK_BUS_HDCP		127
 #define CLK_PLL_SYSTEM_32K	128
-
-#endif /* _DT_BINDINGS_CLK_SUN50I_H616_H_ */
+#endif  

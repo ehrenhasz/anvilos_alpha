@@ -10,30 +10,20 @@ import glob
 import time
 import uuid
 import json
-
 try:
     import forge_directives
 except ImportError:
     forge_directives = None
-
 PROJECT_ROOT = os.getcwd()
-# Add vendor to path if it exists
 if os.path.exists(os.path.join(PROJECT_ROOT, "vendor")):
     sys.path.append(os.path.join(PROJECT_ROOT, "vendor"))
-
-# Add src to path
 sys.path.append(os.path.join(PROJECT_ROOT, "src"))
-
 from google import genai
 from google.genai import types
 from google.genai.errors import ClientError
-
-# --- CONFIG ---
 TOKEN_PATH = os.path.join(PROJECT_ROOT, "config", "token")
 MEMORY_FILE = os.path.join(PROJECT_ROOT, "data", "aimeat_memory.txt")
 MODEL_ID = "gemini-2.0-flash"
-
-# --- CORTEX INTERFACE ---
 def log_to_cortex(event_type: str, details: str):
     db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
     try:
@@ -41,7 +31,6 @@ def log_to_cortex(event_type: str, details: str):
             conn.execute("CREATE TABLE IF NOT EXISTS live_stream (id INTEGER PRIMARY KEY AUTOINCREMENT, agent_id TEXT, event_type TEXT, details TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
             conn.execute("INSERT INTO live_stream (agent_id, event_type, details) VALUES (?, ?, ?)", ("AIMEAT", event_type, details))
     except Exception: pass
-
 def get_schema_snapshot():
     db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
     if not os.path.exists(db_path): return "No Database Found."
@@ -52,53 +41,39 @@ def get_schema_snapshot():
             return "\n".join([row[0] for row in cursor.fetchall()])
     except Exception as e:
         return f"Schema Error: {e}"
-
-def send_to_forge():
+def send_to_forge(limit=None):
     """Sends Forge Directives to the Architect Daemon (sys_goals)."""
     if not forge_directives:
         print("[ERROR] forge_directives.py not found.")
         return
-
     db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
     print(f"[FORGE] Connecting to {db_path}...")
-    
     try:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
-            
+            directives = forge_directives.PHASE2_DIRECTIVES
+            if limit:
+                directives = directives[:limit]
+                print(f"[FORGE] Limiting to {limit} cards.")
             count = 0
-            for card in forge_directives.PHASE2_DIRECTIVES:
-                # Generate a unique ID for the goal (unused by DB but good for logging)
+            for card in directives:
                 goal_id = str(uuid.uuid4())
-                
-                # Extract details
                 seq = card.get("seq", 999)
                 op = card.get("op", "unknown_op")
                 pld = card.get("pld", {})
-                
-                # Construct the high-level goal string for the Architect
                 goal_text = f"Phase 2 Directive (Seq {seq}): {op}. Payload: {json.dumps(pld)}"
-                
-                # Insert into sys_goals
-                # Status 0 = Pending
                 cursor.execute("""
                     INSERT INTO sys_goals (goal, stat, timestamp)
                     VALUES (?, 0, ?)
                 """, (goal_text, time.time()))
-                
                 count += 1
-                # Small sleep to ensure timestamp ordering
                 time.sleep(0.01)
-            
             conn.commit()
             print(f"[FORGE] Successfully sent {count} directives to The Forge (sys_goals).")
             log_to_cortex("FORGE_SUBMIT", f"Sent {count} directives to The Forge.")
-
     except Exception as e:
         print(f"[FORGE ERROR] Failed to send to forge: {e}")
         log_to_cortex("FORGE_FAIL", str(e))
-
-# --- TOOLS ---
 def execute_command(command: str):
     log_to_cortex("EXEC_ATTEMPT", command)
     try:
@@ -116,7 +91,6 @@ def execute_command(command: str):
         return output if output else "Command executed silently."
     except Exception as e:
         return f"Execution Error: {e}"
-
 def update_memory(text: str):
     log_to_cortex("MEMORY_UPDATE", text[:50])
     try:
@@ -126,12 +100,9 @@ def update_memory(text: str):
         return "Memory updated."
     except Exception as e:
         return f"Failed to write memory: {e}"
-
 def read_memory():
     if not os.path.exists(MEMORY_FILE): return "Identity: Aimeat."
     with open(MEMORY_FILE, "r") as f: return f.read()
-
-# --- MAIN ---
 def main():
     api_key = None
     if os.path.exists(TOKEN_PATH):
@@ -139,17 +110,12 @@ def main():
     if not api_key: api_key = os.environ.get("GOOGLE_API_KEY")
     if not api_key:
         print("[Auth Error] No token found."); return
-
     try:
         client = genai.Client(api_key=api_key)
         context = read_memory()
-        
-        # 1. GENERATE INTELLIGENCE
         print("... Scanning Database Schema ...")
         schema_data = get_schema_snapshot()
         print(f"\033[1;30m{schema_data}\033[0m") # Show user what we found
-        
-        # 2. INJECT INTELLIGENCE
         system_instruction = (
             f"{context}\n\n"
             "*** INTELLIGENCE PACK: DATABASE SCHEMA ***\n"
@@ -171,7 +137,6 @@ def main():
             "7. LOOPING:\n"
             "   - If a command fails, READ THE ERROR, adjust the SQL, and retry. Do not ask me.\n"
         )
-        
         chat = client.chats.create(
             model=MODEL_ID,
             config=types.GenerateContentConfig(
@@ -179,41 +144,43 @@ def main():
                 system_instruction=system_instruction
             )
         )
-
         print("\033[1;32m[AIMEAT ONLINE] Sovereign Interface Ready.\033[0m")
         log_to_cortex("SESSION_START", "Operator connected.")
-
         while True:
             try:
                 user_input = input("\033[1;32m@aimeat>\033[0m ").strip()
             except KeyboardInterrupt: continue
             if not user_input: continue
             if user_input.lower() in ["exit", "quit"]: break
-            
-            # --- LOCAL OVERRIDES ---
+            if user_input.lower().startswith("send"):
+                parts = user_input.split()
+                limit = None
+                for p in parts:
+                    if p.isdigit():
+                        limit = int(p)
+                        break
+                if limit:
+                    send_to_forge(limit=limit)
+                    continue
+                else:
+                    print("[CMD ERROR] Could not parse number of cards.")
+                    continue
             if user_input.lower() in ["start", "start cards", "forge"]:
                 send_to_forge()
                 continue
-
             prompt = user_input
             if "fix" in user_input.lower():
                  prompt += " (MODE: AUTONOMOUS. Use the schema above. Reset status to 0 to retry. Loop until done.)"
-
-            # --- RATE LIMIT SHIELD ---
             max_retries = 3
             retry_count = 0
-            
             while retry_count < max_retries:
                 try:
                     response = chat.send_message(prompt)
-                    
-                    # Success! Print output and break the retry loop
                     if response.text:
                         clean_text = response.text.strip()
                         if "non-text parts" not in clean_text:
                             print(f"\n{clean_text}\n")
                     break # Break retry loop, go back to main input loop
-
                 except ClientError as e:
                     if e.code == 429:
                         retry_count += 1
@@ -227,8 +194,6 @@ def main():
                     if "concatenated text" not in str(e):
                         print(f"\n[CRASH] {e}\n")
                     break
-
     except Exception as e: print(f"[CRASH] {e}")
-
 if __name__ == "__main__":
     main()

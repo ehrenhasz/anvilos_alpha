@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * GPIO definitions for Amlogic Meson GXBB SoCs
- *
- * Copyright (C) 2016 Endless Mobile, Inc.
- * Author: Carlo Caione <carlo@endlessm.com>
- */
-
 #ifndef _DT_BINDINGS_MESON_GXBB_GPIO_H
 #define _DT_BINDINGS_MESON_GXBB_GPIO_H
-
 #define	GPIOAO_0	0
 #define	GPIOAO_1	1
 #define	GPIOAO_2	2
@@ -24,7 +15,6 @@
 #define	GPIOAO_12	12
 #define	GPIOAO_13	13
 #define	GPIO_TEST_N	14
-
 #define	GPIOZ_0		0
 #define	GPIOZ_1		1
 #define	GPIOZ_2		2
@@ -144,5 +134,4 @@
 #define	GPIOCLK_1	116
 #define	GPIOCLK_2	117
 #define	GPIOCLK_3	118
-
 #endif

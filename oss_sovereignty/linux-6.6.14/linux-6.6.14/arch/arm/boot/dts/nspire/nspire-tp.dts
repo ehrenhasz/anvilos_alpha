@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2013 Daniel Tang <tangrs@tangrs.id.au>
- */
-
 /dts-v1/;
-
 #include <dt-bindings/input/input.h>
-
 /include/ "nspire-classic.dtsi"
-
 &keypad {
 	linux,keymap = <
 		MATRIX_KEY(0,  0, 0x1c)
@@ -78,7 +70,6 @@
 		MATRIX_KEY(7, 10, 0x33)
 	>;
 };
-
 / {
 	model = "TI-NSPIRE Touchpad";
 	compatible = "ti,nspire-tp";

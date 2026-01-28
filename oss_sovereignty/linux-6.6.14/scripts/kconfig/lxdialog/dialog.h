@@ -1,10 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- *  dialog.h -- common declarations for all dialog modules
- *
- *  AUTHOR: Savio Lam (lam836@cs.cuhk.hk)
- */
-
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -12,21 +5,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
 #ifdef __sun__
 #define CURS_MACROS
 #endif
 #include <ncurses.h>
-
 #define TR(params) _tracef params
-
 #define KEY_ESC 27
 #define TAB 9
 #define MAX_LEN 2048
 #define BUF_SIZE (10*1024)
 #define MIN(x,y) (x < y ? x : y)
 #define MAX(x,y) (x > y ? x : y)
-
 #ifndef ACS_ULCORNER
 #define ACS_ULCORNER '+'
 #endif
@@ -57,25 +46,17 @@
 #ifndef ACS_DARROW
 #define ACS_DARROW 'v'
 #endif
-
-/* error return codes */
 #define ERRDISPLAYTOOSMALL (KEY_MAX + 1)
-
-/*
- *   Color definitions
- */
 struct dialog_color {
-	chtype atr;	/* Color attribute */
-	int fg;		/* foreground */
-	int bg;		/* background */
-	int hl;		/* highlight this item */
+	chtype atr;	 
+	int fg;		 
+	int bg;		 
+	int hl;		 
 };
-
 struct subtitle_list {
 	struct subtitle_list *next;
 	const char *text;
 };
-
 struct dialog_info {
 	const char *backtitle;
 	struct subtitle_list *subtitles;
@@ -109,19 +90,9 @@ struct dialog_info {
 	struct dialog_color uarrow;
 	struct dialog_color darrow;
 };
-
-/*
- * Global variables
- */
 extern struct dialog_info dlg;
 extern char dialog_input_result[];
-extern int saved_x, saved_y;		/* Needed in signal handler in mconf.c */
-
-/*
- * Function prototypes
- */
-
-/* item list as used by checklist and menubox */
+extern int saved_x, saved_y;		 
 void item_reset(void);
 void item_make(const char *fmt, ...);
 void item_add_str(const char *fmt, ...);
@@ -131,26 +102,20 @@ void item_set_selected(int val);
 int item_activate_selected(void);
 void *item_data(void);
 char item_tag(void);
-
-/* item list manipulation for lxdialog use */
 #define MAXITEMSTR 200
 struct dialog_item {
-	char str[MAXITEMSTR];	/* prompt displayed */
+	char str[MAXITEMSTR];	 
 	char tag;
-	void *data;	/* pointer to menu item - used by menubox+checklist */
-	int selected;	/* Set to 1 by dialog_*() function if selected. */
+	void *data;	 
+	int selected;	 
 };
-
-/* list of lialog_items */
 struct dialog_list {
 	struct dialog_item node;
 	struct dialog_list *next;
 };
-
 extern struct dialog_list *item_cur;
 extern struct dialog_list item_nil;
 extern struct dialog_list *item_head;
-
 int item_count(void);
 void item_set(int n);
 int item_n(void);
@@ -160,25 +125,20 @@ int item_is_tag(char tag);
 #define item_foreach() \
 	for (item_cur = item_head ? item_head: item_cur; \
 	     item_cur && (item_cur != &item_nil); item_cur = item_cur->next)
-
-/* generic key handlers */
 int on_key_esc(WINDOW *win);
 int on_key_resize(void);
-
-/* minimum (re)size values */
-#define CHECKLIST_HEIGTH_MIN 6	/* For dialog_checklist() */
+#define CHECKLIST_HEIGTH_MIN 6	 
 #define CHECKLIST_WIDTH_MIN 6
-#define INPUTBOX_HEIGTH_MIN 2	/* For dialog_inputbox() */
+#define INPUTBOX_HEIGTH_MIN 2	 
 #define INPUTBOX_WIDTH_MIN 2
-#define MENUBOX_HEIGTH_MIN 15	/* For dialog_menu() */
+#define MENUBOX_HEIGTH_MIN 15	 
 #define MENUBOX_WIDTH_MIN 65
-#define TEXTBOX_HEIGTH_MIN 8	/* For dialog_textbox() */
+#define TEXTBOX_HEIGTH_MIN 8	 
 #define TEXTBOX_WIDTH_MIN 8
-#define YESNO_HEIGTH_MIN 4	/* For dialog_yesno() */
+#define YESNO_HEIGTH_MIN 4	 
 #define YESNO_WIDTH_MIN 4
-#define WINDOW_HEIGTH_MIN 19	/* For init_dialog() */
+#define WINDOW_HEIGTH_MIN 19	 
 #define WINDOW_WIDTH_MIN 80
-
 int init_dialog(const char *backtitle);
 void set_dialog_backtitle(const char *backtitle);
 void set_dialog_subtitles(struct subtitle_list *subtitles);
@@ -191,7 +151,6 @@ void print_title(WINDOW *dialog, const char *title, int width);
 void draw_box(WINDOW * win, int y, int x, int height, int width, chtype box,
 	      chtype border);
 void draw_shadow(WINDOW * win, int y, int x, int height, int width);
-
 int first_alpha(const char *string, const char *exempt);
 int dialog_yesno(const char *title, const char *prompt, int height, int width);
 int dialog_msgbox(const char *title, const char *prompt, int height,

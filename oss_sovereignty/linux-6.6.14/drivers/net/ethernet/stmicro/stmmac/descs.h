@@ -1,20 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*******************************************************************************
-  Header File to describe the DMA descriptors and related definitions.
-  This is for DWMAC100 and 1000 cores.
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
-
 #ifndef __DESCS_H__
 #define __DESCS_H__
-
 #include <linux/bitops.h>
-
-/* Normal receive descriptor defines */
-
-/* RDES0 */
 #define	RDES0_PAYLOAD_CSUM_ERR	BIT(0)
 #define	RDES0_CRC_ERROR		BIT(1)
 #define	RDES0_DRIBBLING		BIT(2)
@@ -35,29 +21,19 @@
 #define RDES0_FRAME_LEN_SHIFT	16
 #define	RDES0_DA_FILTER_FAIL	BIT(30)
 #define	RDES0_OWN		BIT(31)
-			/* RDES1 */
 #define	RDES1_BUFFER1_SIZE_MASK		GENMASK(10, 0)
 #define	RDES1_BUFFER2_SIZE_MASK		GENMASK(21, 11)
 #define	RDES1_BUFFER2_SIZE_SHIFT	11
 #define	RDES1_SECOND_ADDRESS_CHAINED	BIT(24)
 #define	RDES1_END_RING			BIT(25)
 #define	RDES1_DISABLE_IC		BIT(31)
-
-/* Enhanced receive descriptor defines */
-
-/* RDES0 (similar to normal RDES) */
 #define	 ERDES0_RX_MAC_ADDR	BIT(0)
-
-/* RDES1: completely differ from normal desc definitions */
 #define	ERDES1_BUFFER1_SIZE_MASK	GENMASK(12, 0)
 #define	ERDES1_SECOND_ADDRESS_CHAINED	BIT(14)
 #define	ERDES1_END_RING			BIT(15)
 #define	ERDES1_BUFFER2_SIZE_MASK	GENMASK(28, 16)
 #define ERDES1_BUFFER2_SIZE_SHIFT	16
 #define	ERDES1_DISABLE_IC		BIT(31)
-
-/* Normal transmit descriptor defines */
-/* TDES0 */
 #define	TDES0_DEFERRED			BIT(0)
 #define	TDES0_UNDERFLOW_ERROR		BIT(1)
 #define	TDES0_EXCESSIVE_DEFERRAL	BIT(2)
@@ -73,8 +49,7 @@
 #define	TDES0_ERROR_SUMMARY		BIT(15)
 #define	TDES0_IP_HEADER_ERROR		BIT(16)
 #define	TDES0_TIME_STAMP_STATUS		BIT(17)
-#define	TDES0_OWN			((u32)BIT(31))	/* silence sparse */
-/* TDES1 */
+#define	TDES0_OWN			((u32)BIT(31))	 
 #define	TDES1_BUFFER1_SIZE_MASK		GENMASK(10, 0)
 #define	TDES1_BUFFER2_SIZE_MASK		GENMASK(21, 11)
 #define	TDES1_BUFFER2_SIZE_SHIFT	11
@@ -88,9 +63,6 @@
 #define	TDES1_FIRST_SEGMENT		BIT(29)
 #define	TDES1_LAST_SEGMENT		BIT(30)
 #define	TDES1_INTERRUPT			BIT(31)
-
-/* Enhanced transmit descriptor defines */
-/* TDES0 */
 #define	ETDES0_DEFERRED			BIT(0)
 #define	ETDES0_UNDERFLOW_ERROR		BIT(1)
 #define	ETDES0_EXCESSIVE_DEFERRAL	BIT(2)
@@ -116,13 +88,10 @@
 #define	ETDES0_FIRST_SEGMENT		BIT(28)
 #define	ETDES0_LAST_SEGMENT		BIT(29)
 #define	ETDES0_INTERRUPT		BIT(30)
-#define	ETDES0_OWN			((u32)BIT(31))	/* silence sparse */
-/* TDES1 */
+#define	ETDES0_OWN			((u32)BIT(31))	 
 #define	ETDES1_BUFFER1_SIZE_MASK	GENMASK(12, 0)
 #define	ETDES1_BUFFER2_SIZE_MASK	GENMASK(28, 16)
 #define	ETDES1_BUFFER2_SIZE_SHIFT	16
-
-/* Extended Receive descriptor definitions */
 #define	ERDES4_IP_PAYLOAD_TYPE_MASK	GENMASK(6, 2)
 #define	ERDES4_IP_HDR_ERR		BIT(3)
 #define	ERDES4_IP_PAYLOAD_ERR		BIT(4)
@@ -139,8 +108,6 @@
 #define	ERDES4_L3_FILTER_MATCH		BIT(24)
 #define	ERDES4_L4_FILTER_MATCH		BIT(25)
 #define	ERDES4_L3_L4_FILT_NO_MATCH_MASK	GENMASK(27, 26)
-
-/* Extended RDES4 message type definitions */
 #define RDES_EXT_NO_PTP			0x0
 #define RDES_EXT_SYNC			0x1
 #define RDES_EXT_FOLLOW_UP		0x2
@@ -153,25 +120,19 @@
 #define RDES_PTP_MANAGEMENT		0x9
 #define RDES_PTP_SIGNALING		0xa
 #define RDES_PTP_PKT_RESERVED_TYPE	0xf
-
-/* Basic descriptor structure for normal and alternate descriptors */
 struct dma_desc {
 	__le32 des0;
 	__le32 des1;
 	__le32 des2;
 	__le32 des3;
 };
-
-/* Extended descriptor structure (e.g. >= databook 3.50a) */
 struct dma_extended_desc {
-	struct dma_desc basic;	/* Basic descriptors */
-	__le32 des4;	/* Extended Status */
-	__le32 des5;	/* Reserved */
-	__le32 des6;	/* Tx/Rx Timestamp Low */
-	__le32 des7;	/* Tx/Rx Timestamp High */
+	struct dma_desc basic;	 
+	__le32 des4;	 
+	__le32 des5;	 
+	__le32 des6;	 
+	__le32 des7;	 
 };
-
-/* Enhanced descriptor for TBS */
 struct dma_edesc {
 	__le32 des4;
 	__le32 des5;
@@ -179,8 +140,5 @@ struct dma_edesc {
 	__le32 des7;
 	struct dma_desc basic;
 };
-
-/* Transmit checksum insertion control */
-#define	TX_CIC_FULL	3	/* Include IP header and pseudoheader */
-
-#endif /* __DESCS_H__ */
+#define	TX_CIC_FULL	3	 
+#endif  

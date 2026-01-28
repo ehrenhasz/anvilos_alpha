@@ -1,9 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+ OR MIT
-//
-// Copyright (C) 2015 Freescale Semiconductor, Inc.
-
 #include "imx7d-sdb.dts"
-
 / {
 	sensor {
 		pinctrl-names = "default";
@@ -13,7 +8,6 @@
 		data-gpios = <&gpio4 13 0>;
 		vcc-supply = <&reg_sht15>;
 	};
-
 	reg_sht15: regulator-sht15 {
 		compatible = "regulator-fixed";
 		regulator-name = "reg_sht15";
@@ -21,11 +15,9 @@
 		regulator-max-microvolt = <3300000>;
 	};
 };
-
 &i2c3 {
 	status = "disabled";
 };
-
 &iomuxc {
 	pinctrl_sensor: sensorgrp {
 		fsl,pins = <

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #define DECLARE_PER_CPU(type, val) extern type val
 #define DEFINE_PER_CPU(type, val) type val
-
 #define __get_cpu_var(var)	var
 #define this_cpu_ptr(var)	var
 #define this_cpu_read(var)	var

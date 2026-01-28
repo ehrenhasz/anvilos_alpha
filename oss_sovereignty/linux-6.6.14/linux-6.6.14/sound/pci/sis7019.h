@@ -1,25 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef __sis7019_h__
 #define __sis7019_h__
-
-/*
- *  Definitions for SiS7019 Audio Accelerator
- *
- *  Copyright (C) 2004-2007, David Dillow
- *  Written by David Dillow <dave@thedillows.org>
- *  Inspired by the Trident 4D-WaveDX/NX driver.
- *
- *  All rights reserved.
- */
-
-
-/* General Control Register */
 #define SIS_GCR		0x00
 #define		SIS_GCR_MACRO_POWER_DOWN		0x80000000
 #define		SIS_GCR_MODEM_ENABLE			0x00010000
 #define		SIS_GCR_SOFTWARE_RESET			0x00000001
-
-/* General Interrupt Enable Register */
 #define SIS_GIER	0x04
 #define		SIS_GIER_MODEM_TIMER_IRQ_ENABLE		0x00100000
 #define		SIS_GIER_MODEM_RX_DMA_IRQ_ENABLE	0x00080000
@@ -31,8 +15,6 @@
 #define		SIS_GIER_AUDIO_RECORD_DMA_IRQ_ENABLE	0x00000004
 #define		SIS_GIER_AUDIO_PLAY_DMA_IRQ_ENABLE	0x00000002
 #define		SIS_GIER_AUDIO_WAVE_ENGINE_IRQ_ENABLE	0x00000001
-
-/* General Interrupt Status Register */
 #define SIS_GISR	0x08
 #define		SIS_GISR_MODEM_TIMER_IRQ_STATUS		0x00100000
 #define		SIS_GISR_MODEM_RX_DMA_IRQ_STATUS	0x00080000
@@ -44,8 +26,6 @@
 #define		SIS_GISR_AUDIO_RECORD_DMA_IRQ_STATUS	0x00000004
 #define		SIS_GISR_AUDIO_PLAY_DMA_IRQ_STATUS	0x00000002
 #define		SIS_GISR_AUDIO_WAVE_ENGINE_IRQ_STATUS	0x00000001
-
-/* DMA Control Register */
 #define SIS_DMA_CSR	0x10
 #define		SIS_DMA_CSR_PCI_SETTINGS		0x0000001d
 #define		SIS_DMA_CSR_CONCURRENT_ENABLE		0x00000200
@@ -55,29 +35,15 @@
 #define		SIS_DMA_CSR_TX_DRAIN_ENABLE		0x00000004
 #define		SIS_DMA_CSR_TX_LOWPRI_FILL_ENABLE	0x00000002
 #define		SIS_DMA_CSR_TX_HIPRI_FILL_ENABLE	0x00000001
-
-/* Playback Channel Start Registers */
 #define SIS_PLAY_START_A_REG	0x14
 #define SIS_PLAY_START_B_REG	0x18
-
-/* Playback Channel Stop Registers */
 #define SIS_PLAY_STOP_A_REG	0x1c
 #define SIS_PLAY_STOP_B_REG	0x20
-
-/* Recording Channel Start Register */
 #define SIS_RECORD_START_REG	0x24
-
-/* Recording Channel Stop Register */
 #define SIS_RECORD_STOP_REG	0x28
-
-/* Playback Interrupt Status Registers */
 #define SIS_PISR_A	0x2c
 #define SIS_PISR_B	0x30
-
-/* Recording Interrupt Status Register */
 #define SIS_RISR	0x34
-
-/* AC97 AC-link Playback Source Register */
 #define SIS_AC97_PSR	0x40
 #define		SIS_AC97_PSR_MODEM_HEADSET_SRC_MIXER	0x0f000000
 #define		SIS_AC97_PSR_MODEM_LINE2_SRC_MIXER	0x00f00000
@@ -86,8 +52,6 @@
 #define		SIS_AC97_PSR_PCM_SURROUND_SRC_MIXER	0x00000f00
 #define		SIS_AC97_PSR_PCM_CENTER_SRC_MIXER	0x000000f0
 #define		SIS_AC97_PSR_PCM_LR_SRC_MIXER		0x0000000f
-
-/* AC97 AC-link Command Register */
 #define SIS_AC97_CMD	0x50
 #define 	SIS_AC97_CMD_DATA_MASK			0xffff0000
 #define		SIS_AC97_CMD_REG_MASK			0x0000ff00
@@ -100,13 +64,9 @@
 #define		SIS_AC97_CMD_CODEC_WARM_RESET		0x00000005
 #define		SIS_AC97_CMD_CODEC_COLD_RESET		0x00000004
 #define		SIS_AC97_CMD_DONE			0x00000000
-
-/* AC97 AC-link Semaphore Register */
 #define SIS_AC97_SEMA	0x54
 #define		SIS_AC97_SEMA_BUSY			0x00000001
 #define		SIS_AC97_SEMA_RELEASE			0x00000000
-
-/* AC97 AC-link Status Register */
 #define SIS_AC97_STATUS	0x58
 #define		SIS_AC97_STATUS_AUDIO_D2_INACT_SECS	0x03f00000
 #define		SIS_AC97_STATUS_MODEM_ALIVE		0x00002000
@@ -121,8 +81,6 @@
 #define		SIS_AC97_STATUS_READ_EXPIRED		0x00000004
 #define		SIS_AC97_STATUS_SEMAPHORE		0x00000002
 #define		SIS_AC97_STATUS_BUSY			0x00000001
-
-/* AC97 AC-link Audio Configuration Register */
 #define SIS_AC97_CONF	0x5c
 #define		SIS_AC97_CONF_AUDIO_ALIVE		0x80000000
 #define		SIS_AC97_CONF_WARM_RESET_ENABLE		0x40000000
@@ -149,15 +107,11 @@
 #define		SIS_AC97_CONF_CODEC_PM_EAC		0x00000004
 #define		SIS_AC97_CONF_CODEC3_EXISTS		0x00000002
 #define		SIS_AC97_CONF_CODEC_EXISTS		0x00000001
-
-/* Playback Channel Sync Group registers */
 #define SIS_PLAY_SYNC_GROUP_A	0x80
 #define SIS_PLAY_SYNC_GROUP_B	0x84
 #define SIS_PLAY_SYNC_GROUP_C	0x88
 #define SIS_PLAY_SYNC_GROUP_D	0x8c
 #define SIS_MIXER_SYNC_GROUP	0x90
-
-/* Wave Engine Config and Control Register */
 #define SIS_WECCR	0xa0
 #define		SIS_WECCR_TESTMODE_MASK			0x00300000
 #define			SIS_WECCR_TESTMODE_NORMAL		0x00000000
@@ -178,25 +132,17 @@
 #define			SIS_WECCR_COMMAND_TOGGLE_VEG		0x00000002
 #define			SIS_WECCR_COMMAND_TOGGLE_MEG		0x00000003
 #define			SIS_WECCR_COMMAND_TOGGLE_VEG_MEG	0x00000004
-
-/* Wave Engine Volume Control Register */
 #define SIS_WEVCR	0xa4
 #define		SIS_WEVCR_LEFT_MUSIC_ATTENUATION_MASK	0xff000000
 #define		SIS_WEVCR_RIGHT_MUSIC_ATTENUATION_MASK	0x00ff0000
 #define		SIS_WEVCR_LEFT_WAVE_ATTENUATION_MASK	0x0000ff00
 #define		SIS_WEVCR_RIGHT_WAVE_ATTENUATION_MASK	0x000000ff
-
-/* Wave Engine Interrupt Status Registers */
 #define SIS_WEISR_A	0xa8
 #define SIS_WEISR_B	0xac
-
-
-/* Playback DMA parameters (parameter RAM) */
 #define SIS_PLAY_DMA_OFFSET	0x0000
 #define SIS_PLAY_DMA_SIZE	0x10
 #define SIS_PLAY_DMA_ADDR(addr, num) \
 	((num * SIS_PLAY_DMA_SIZE) + (addr) + SIS_PLAY_DMA_OFFSET)
-
 #define SIS_PLAY_DMA_FORMAT_CSO	0x00
 #define		SIS_PLAY_DMA_FORMAT_UNSIGNED	0x00080000
 #define		SIS_PLAY_DMA_FORMAT_8BIT	0x00040000
@@ -215,13 +161,10 @@
 #define SIS_PLAY_DMA_SSO_ESO	0x0c
 #define		SIS_PLAY_DMA_SSO_MASK		0xffff0000
 #define		SIS_PLAY_DMA_ESO_MASK		0x0000ffff
-
-/* Capture DMA parameters (parameter RAM) */
 #define SIS_CAPTURE_DMA_OFFSET	0x0800
 #define SIS_CAPTURE_DMA_SIZE	0x10
 #define SIS_CAPTURE_DMA_ADDR(addr, num) \
 	((num * SIS_CAPTURE_DMA_SIZE) + (addr) + SIS_CAPTURE_DMA_OFFSET)
-
 #define	SIS_CAPTURE_CHAN_MIXER_ROUTE_BACK_0	0
 #define	SIS_CAPTURE_CHAN_MIXER_ROUTE_BACK_1	1
 #define	SIS_CAPTURE_CHAN_MIXER_ROUTE_BACK_2	2
@@ -243,7 +186,6 @@
 #define	SIS_CAPTURE_CHAN_AC97_LINE1_IN		18
 #define	SIS_CAPTURE_CHAN_AC97_LINE2_IN		19
 #define	SIS_CAPTURE_CHAN_AC97_HANDSE_IN		20
-
 #define SIS_CAPTURE_DMA_FORMAT_CSO	0x00
 #define		SIS_CAPTURE_DMA_MONO_MODE_MASK	0xc0000000
 #define		SIS_CAPTURE_DMA_MONO_MODE_AVG	0x00000000
@@ -262,22 +204,15 @@
 #define		SIS_CAPTURE_DMA_INTR_AT_MLP	0x00010000
 #define		SIS_CAPTURE_DMA_LEO_MASK		0x0000ffff
 #define SIS_CAPTURE_DMA_RESERVED	0x0c
-
-
-/* Mixer routing list start pointer (parameter RAM) */
 #define SIS_MIXER_START_OFFSET	0x1000
 #define SIS_MIXER_START_SIZE	0x04
 #define SIS_MIXER_START_ADDR(addr, num) \
 	((num * SIS_MIXER_START_SIZE) + (addr) + SIS_MIXER_START_OFFSET)
-
 #define SIS_MIXER_START_MASK	0x0000007f
-
-/* Mixer routing table (parameter RAM) */
 #define SIS_MIXER_OFFSET	0x1400
 #define SIS_MIXER_SIZE		0x04
 #define SIS_MIXER_ADDR(addr, num) \
 	((num * SIS_MIXER_SIZE) + (addr) + SIS_MIXER_OFFSET)
-
 #define SIS_MIXER_RIGHT_ATTENUTATION_MASK	0xff000000
 #define 	SIS_MIXER_RIGHT_NO_ATTEN		0xff000000
 #define SIS_MIXER_LEFT_ATTENUTATION_MASK	0x00ff0000
@@ -301,13 +236,10 @@
 #define 	SIS_MIXER_DEST_13			0x0000002d
 #define 	SIS_MIXER_DEST_14			0x0000002e
 #define 	SIS_MIXER_DEST_15			0x0000002f
-
-/* Wave Engine Control Parameters (parameter RAM) */
 #define SIS_WAVE_OFFSET		0x2000
 #define SIS_WAVE_SIZE		0x40
 #define SIS_WAVE_ADDR(addr, num) \
 	((num * SIS_WAVE_SIZE) + (addr) + SIS_WAVE_OFFSET)
-
 #define SIS_WAVE_GENERAL		0x00
 #define		SIS_WAVE_GENERAL_WAVE_VOLUME			0x80000000
 #define		SIS_WAVE_GENERAL_MUSIC_VOLUME			0x00000000
@@ -326,5 +258,4 @@
 #define SIS_WAVE_LFO_EG_CONTROL_2	0x1c
 #define SIS_WAVE_LFO_EG_CONTROL_3	0x20
 #define SIS_WAVE_LFO_EG_CONTROL_4	0x24
-
-#endif /* __sis7019_h__ */
+#endif  

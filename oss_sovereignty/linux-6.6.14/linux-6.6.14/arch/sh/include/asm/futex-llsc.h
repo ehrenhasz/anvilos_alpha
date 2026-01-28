@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_SH_FUTEX_LLSC_H
 #define __ASM_SH_FUTEX_LLSC_H
-
 static inline int atomic_futex_op_cmpxchg_inatomic(u32 *uval,
 						   u32 __user *uaddr,
 						   u32 oldval, u32 newval)
@@ -38,5 +36,4 @@ static inline int atomic_futex_op_cmpxchg_inatomic(u32 *uval,
 	if (err) return err;
 	return 0;
 }
-
-#endif /* __ASM_SH_FUTEX_LLSC_H */
+#endif  

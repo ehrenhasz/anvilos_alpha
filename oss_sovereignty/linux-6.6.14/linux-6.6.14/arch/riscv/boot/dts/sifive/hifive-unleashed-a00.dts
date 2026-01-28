@@ -1,39 +1,28 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Copyright (c) 2018-2019 SiFive, Inc */
-
 #include "fu540-c000.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/pwm/pwm.h>
-
-/* Clock frequency (in Hz) of the PCB crystal for rtcclk */
 #define RTCCLK_FREQ		1000000
-
 / {
 	model = "SiFive HiFive Unleashed A00";
 	compatible = "sifive,hifive-unleashed-a00", "sifive,fu540-c000",
 		     "sifive,fu540";
-
 	chosen {
 		stdout-path = "serial0";
 	};
-
 	cpus {
 		timebase-frequency = <RTCCLK_FREQ>;
 	};
-
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x0 0x80000000 0x2 0x00000000>;
 	};
-
 	hfclk: hfclk {
 		#clock-cells = <0>;
 		compatible = "fixed-clock";
 		clock-frequency = <33333333>;
 		clock-output-names = "hfclk";
 	};
-
 	rtcclk: rtcclk {
 		#clock-cells = <0>;
 		compatible = "fixed-clock";
@@ -44,10 +33,8 @@
 		compatible = "gpio-restart";
 		gpios = <&gpio 10 GPIO_ACTIVE_LOW>;
 	};
-
 	led-controller {
 		compatible = "pwm-leds";
-
 		led-d1 {
 			pwms = <&pwm0 0 7812500 PWM_POLARITY_INVERTED>;
 			active-low;
@@ -55,7 +42,6 @@
 			max-brightness = <255>;
 			label = "d1";
 		};
-
 		led-d2 {
 			pwms = <&pwm0 1 7812500 PWM_POLARITY_INVERTED>;
 			active-low;
@@ -63,7 +49,6 @@
 			max-brightness = <255>;
 			label = "d2";
 		};
-
 		led-d3 {
 			pwms = <&pwm0 2 7812500 PWM_POLARITY_INVERTED>;
 			active-low;
@@ -71,7 +56,6 @@
 			max-brightness = <255>;
 			label = "d3";
 		};
-
 		led-d4 {
 			pwms = <&pwm0 3 7812500 PWM_POLARITY_INVERTED>;
 			active-low;
@@ -81,19 +65,15 @@
 		};
 	};
 };
-
 &uart0 {
 	status = "okay";
 };
-
 &uart1 {
 	status = "okay";
 };
-
 &i2c0 {
 	status = "okay";
 };
-
 &qspi0 {
 	status = "okay";
 	flash@0 {
@@ -105,7 +85,6 @@
 		spi-rx-bus-width = <4>;
 	};
 };
-
 &qspi2 {
 	status = "okay";
 	mmc@0 {
@@ -117,7 +96,6 @@
 		gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
 	};
 };
-
 &eth0 {
 	status = "okay";
 	phy-mode = "gmii";
@@ -127,15 +105,12 @@
 		reg = <0>;
 	};
 };
-
 &pwm0 {
 	status = "okay";
 };
-
 &pwm1 {
 	status = "okay";
 };
-
 &gpio {
 	status = "okay";
 };

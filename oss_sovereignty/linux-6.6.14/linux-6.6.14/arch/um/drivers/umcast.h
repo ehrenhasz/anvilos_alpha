@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- */
-
 #ifndef __DRIVERS_UMCAST_H
 #define __DRIVERS_UMCAST_H
-
 #include <net_user.h>
-
 struct umcast_data {
 	char *addr;
 	unsigned short lport;
@@ -18,10 +11,7 @@ struct umcast_data {
 	int unicast;
 	void *dev;
 };
-
 extern const struct net_user_info umcast_user_info;
-
 extern int umcast_user_write(int fd, void *buf, int len,
 			     struct umcast_data *pri);
-
 #endif

@@ -1,23 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __SUBCMD_PARSE_OPTIONS_H
 #define __SUBCMD_PARSE_OPTIONS_H
-
 #include <linux/kernel.h>
 #include <stdbool.h>
 #include <stdint.h>
-
 enum parse_opt_type {
-	/* special types */
 	OPTION_END,
 	OPTION_ARGUMENT,
 	OPTION_GROUP,
-	/* options with no arguments */
 	OPTION_BIT,
 	OPTION_BOOLEAN,
 	OPTION_INCR,
 	OPTION_SET_UINT,
 	OPTION_SET_PTR,
-	/* options with arguments (usually) */
 	OPTION_STRING,
 	OPTION_INTEGER,
 	OPTION_LONG,
@@ -26,7 +20,6 @@ enum parse_opt_type {
 	OPTION_U64,
 	OPTION_UINTEGER,
 };
-
 enum parse_opt_flags {
 	PARSE_OPT_KEEP_DASHDASH = 1,
 	PARSE_OPT_STOP_AT_NON_OPTION = 2,
@@ -34,7 +27,6 @@ enum parse_opt_flags {
 	PARSE_OPT_KEEP_UNKNOWN = 8,
 	PARSE_OPT_NO_INTERNAL_HELP = 16,
 };
-
 enum parse_opt_option_flags {
 	PARSE_OPT_OPTARG  = 1,
 	PARSE_OPT_NOARG   = 2,
@@ -47,53 +39,8 @@ enum parse_opt_option_flags {
 	PARSE_OPT_NOBUILD  = 256,
 	PARSE_OPT_CANSKIP  = 512,
 };
-
 struct option;
 typedef int parse_opt_cb(const struct option *, const char *arg, int unset);
-
-/*
- * `type`::
- *   holds the type of the option, you must have an OPTION_END last in your
- *   array.
- *
- * `short_name`::
- *   the character to use as a short option name, '\0' if none.
- *
- * `long_name`::
- *   the long option name, without the leading dashes, NULL if none.
- *
- * `value`::
- *   stores pointers to the values to be filled.
- *
- * `argh`::
- *   token to explain the kind of argument this option wants. Keep it
- *   homogeneous across the repository.
- *
- * `help`::
- *   the short help associated to what the option does.
- *   Must never be NULL (except for OPTION_END).
- *   OPTION_GROUP uses this pointer to store the group header.
- *
- * `flags`::
- *   mask of parse_opt_option_flags.
- *   PARSE_OPT_OPTARG: says that the argument is optional (not for BOOLEANs)
- *   PARSE_OPT_NOARG: says that this option takes no argument, for CALLBACKs
- *   PARSE_OPT_NONEG: says that this option cannot be negated
- *   PARSE_OPT_HIDDEN this option is skipped in the default usage, showed in
- *                    the long one.
- *
- * `callback`::
- *   pointer to the callback to use for OPTION_CALLBACK.
- *
- * `defval`::
- *   default value to fill (*->value) with for PARSE_OPT_OPTARG.
- *   OPTION_{BIT,SET_UINT,SET_PTR} store the {mask,integer,pointer} to put in
- *   the value when met.
- *   CALLBACKS can use it like they want.
- *
- * `set`::
- *   whether an option was set by the user
- */
 struct option {
 	enum parse_opt_type type;
 	int short_name;
@@ -102,7 +49,6 @@ struct option {
 	const char *argh;
 	const char *help;
 	const char *build_opt;
-
 	int flags;
 	parse_opt_cb *callback;
 	intptr_t defval;
@@ -110,9 +56,7 @@ struct option {
 	void *data;
 	const struct option *parent;
 };
-
 #define check_vtype(v, type) ( BUILD_BUG_ON_ZERO(!__builtin_types_compatible_p(typeof(v), type)) + v )
-
 #define OPT_END()                   { .type = OPTION_END }
 #define OPT_PARENT(p)               { .type = OPTION_END, .parent = (p) }
 #define OPT_ARGUMENT(l, h)          { .type = OPTION_ARGUMENT, .long_name = (l), .help = (h) }
@@ -162,32 +106,19 @@ struct option {
 	{ .type = OPTION_CALLBACK, .short_name = (s), .long_name = (l), \
 	  .value = (v), .argh = (a), .help = (h), .callback = (f), \
 	  .flags = PARSE_OPT_OPTARG, .data = (d) }
-
-/* parse_options() will filter out the processed options and leave the
- * non-option argments in argv[].
- * Returns the number of arguments left in argv[].
- *
- * NOTE: parse_options() and parse_options_subcommand() may call exit() in the
- * case of an error (or for 'special' options like --list-cmds or --list-opts).
- */
 extern int parse_options(int argc, const char **argv,
                          const struct option *options,
                          const char * const usagestr[], int flags);
-
 extern int parse_options_subcommand(int argc, const char **argv,
 				const struct option *options,
 				const char *const subcommands[],
 				const char *usagestr[], int flags);
-
 extern __noreturn void usage_with_options(const char * const *usagestr,
                                         const struct option *options);
 extern __noreturn __attribute__((format(printf,3,4)))
 void usage_with_options_msg(const char * const *usagestr,
 			    const struct option *options,
 			    const char *fmt, ...);
-
-/*----- incremantal advanced APIs -----*/
-
 enum {
 	PARSE_OPT_HELP = -1,
 	PARSE_OPT_DONE,
@@ -195,12 +126,6 @@ enum {
 	PARSE_OPT_LIST_SUBCMDS,
 	PARSE_OPT_UNKNOWN,
 };
-
-/*
- * It's okay for the caller to consume argv/argc in the usual way.
- * Other fields of that structure are private to parse-options and should not
- * be modified in any way.
- */
 struct parse_opt_ctx_t {
 	const char **argv;
 	const char **out;
@@ -209,18 +134,13 @@ struct parse_opt_ctx_t {
 	const struct option *excl_opt;
 	int flags;
 };
-
 extern int parse_options_usage(const char * const *usagestr,
 			       const struct option *opts,
 			       const char *optstr,
 			       bool short_opt);
-
-
-/*----- some often used options -----*/
 extern int parse_opt_abbrev_cb(const struct option *, const char *, int);
 extern int parse_opt_approxidate_cb(const struct option *, const char *, int);
 extern int parse_opt_verbosity_cb(const struct option *, const char *, int);
-
 #define OPT__VERBOSE(var)  OPT_BOOLEAN('v', "verbose", (var), "be verbose")
 #define OPT__QUIET(var)    OPT_BOOLEAN('q', "quiet",   (var), "be quiet")
 #define OPT__VERBOSITY(var) \
@@ -233,11 +153,8 @@ extern int parse_opt_verbosity_cb(const struct option *, const char *, int);
 	{ OPTION_CALLBACK, 0, "abbrev", (var), "n", \
 	  "use <n> digits to display SHA-1s", \
 	  PARSE_OPT_OPTARG, &parse_opt_abbrev_cb, 0 }
-
 extern const char *parse_options_fix_filename(const char *prefix, const char *file);
-
 void set_option_flag(struct option *opts, int sopt, const char *lopt, int flag);
 void set_option_nobuild(struct option *opts, int shortopt, const char *longopt,
 			const char *build_opt, bool can_skip);
-
-#endif /* __SUBCMD_PARSE_OPTIONS_H */
+#endif  

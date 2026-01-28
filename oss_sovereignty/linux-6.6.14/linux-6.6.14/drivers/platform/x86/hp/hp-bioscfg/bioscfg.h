@@ -1,22 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Definitions for kernel modules using hp_bioscfg driver
- *
- *  Copyright (c) 2022 HP Development Company, L.P.
- */
-
 #ifndef _HP_BIOSCFG_H_
 #define _HP_BIOSCFG_H_
-
 #include <linux/wmi.h>
 #include <linux/types.h>
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/nls.h>
-
 #define DRIVER_NAME		"hp-bioscfg"
-
 #define MAX_BUFF_SIZE		512
 #define MAX_KEY_MOD_SIZE	256
 #define MAX_PASSWD_SIZE		64
@@ -25,57 +15,43 @@
 #define MAX_VALUES_SIZE		16
 #define MAX_ENCODINGS_SIZE	16
 #define MAX_ELEMENTS_SIZE	16
-
 #define SPM_STR_DESC		"Secure Platform Management"
 #define SPM_STR			"SPM"
 #define SURE_START_DESC		"Sure Start"
 #define SURE_START_STR		"Sure_Start"
 #define SETUP_PASSWD		"Setup Password"
 #define POWER_ON_PASSWD		"Power-On Password"
-
 #define LANG_CODE_STR		"en_US.UTF-8"
 #define SCHEDULE_POWER_ON	"Scheduled Power-On"
-
 #define COMMA_SEP		","
 #define SEMICOLON_SEP		";"
-
-/* Sure Admin Functions */
-
 #define UTF_PREFIX		"<utf-16/>"
 #define BEAM_PREFIX		"<BEAM/>"
-
 enum mechanism_values {
 	PASSWORD		= 0x00,
 	SIGNING_KEY		= 0x01,
 	ENDORSEMENT_KEY		= 0x02,
 };
-
 #define BIOS_ADMIN		"bios-admin"
 #define POWER_ON		"power-on"
 #define BIOS_SPM		"enhanced-bios-auth"
-
 #define PASSWD_MECHANISM_TYPES "password"
-
 #define HP_WMI_BIOS_GUID		"5FB7F034-2C63-45e9-BE91-3D44E2C707E4"
-
 #define HP_WMI_BIOS_STRING_GUID		"988D08E3-68F4-4c35-AF3E-6A1B8106F83C"
 #define HP_WMI_BIOS_INTEGER_GUID	"8232DE3D-663D-4327-A8F4-E293ADB9BF05"
 #define HP_WMI_BIOS_ENUMERATION_GUID	"2D114B49-2DFB-4130-B8FE-4A3C09E75133"
 #define HP_WMI_BIOS_ORDERED_LIST_GUID	"14EA9746-CE1F-4098-A0E0-7045CB4DA745"
 #define HP_WMI_BIOS_PASSWORD_GUID	"322F2028-0F84-4901-988E-015176049E2D"
 #define HP_WMI_SET_BIOS_SETTING_GUID	"1F4C91EB-DC5C-460b-951D-C7CB9B4B8D5E"
-
 enum hp_wmi_spm_commandtype {
 	HPWMI_SECUREPLATFORM_GET_STATE  = 0x10,
 	HPWMI_SECUREPLATFORM_SET_KEK	= 0x11,
 	HPWMI_SECUREPLATFORM_SET_SK	= 0x12,
 };
-
 enum hp_wmi_surestart_commandtype {
 	HPWMI_SURESTART_GET_LOG_COUNT	= 0x01,
 	HPWMI_SURESTART_GET_LOG		= 0x02,
 };
-
 enum hp_wmi_command {
 	HPWMI_READ		= 0x01,
 	HPWMI_WRITE		= 0x02,
@@ -84,12 +60,10 @@ enum hp_wmi_command {
 	HPWMI_GM		= 0x20008,
 	HPWMI_SECUREPLATFORM	= 0x20010,
 };
-
 struct bios_return {
 	u32 sigpass;
 	u32 return_code;
 };
-
 enum wmi_error_values {
 	SUCCESS				= 0x00,
 	CMD_FAILED			= 0x01,
@@ -115,7 +89,6 @@ enum wmi_error_values {
 	HEP_ALREADY_SET			= 0x1006,
 	HEP_CHECK_STATE			= 0x1007,
 };
-
 struct common_data {
 	u8 display_name[MAX_BUFF_SIZE];
 	u8 path[MAX_BUFF_SIZE];
@@ -127,7 +100,6 @@ struct common_data {
 	u8 prerequisites[MAX_PREREQUISITES_SIZE][MAX_BUFF_SIZE];
 	u32 security_level;
 };
-
 struct string_data {
 	struct common_data common;
 	struct kobject *attr_name_kobj;
@@ -136,7 +108,6 @@ struct string_data {
 	u32 min_length;
 	u32 max_length;
 };
-
 struct integer_data {
 	struct common_data common;
 	struct kobject *attr_name_kobj;
@@ -146,7 +117,6 @@ struct integer_data {
 	u32 upper_bound;
 	u32 scalar_increment;
 };
-
 struct enumeration_data {
 	struct common_data common;
 	struct kobject *attr_name_kobj;
@@ -155,7 +125,6 @@ struct enumeration_data {
 	u32 possible_values_size;
 	u8 possible_values[MAX_VALUES_SIZE][MAX_BUFF_SIZE];
 };
-
 struct ordered_list_data {
 	struct common_data common;
 	struct kobject *attr_name_kobj;
@@ -164,7 +133,6 @@ struct ordered_list_data {
 	u32 elements_size;
 	u8 elements[MAX_ELEMENTS_SIZE][MAX_BUFF_SIZE];
 };
-
 struct password_data {
 	struct common_data common;
 	struct kobject *attr_name_kobj;
@@ -175,22 +143,9 @@ struct password_data {
 	u32 encodings_size;
 	u8 encodings[MAX_ENCODINGS_SIZE][MAX_BUFF_SIZE];
 	bool is_enabled;
-
-	/*
-	 * 'role' identifies the type of authentication.
-	 * Two known types are bios-admin and power-on.
-	 * 'bios-admin' represents BIOS administrator password
-	 * 'power-on' represents a password required to use the system
-	 */
 	u32 role;
-
-	/*
-	 * 'mechanism' represents the means of authentication.
-	 * Only supported type currently is "password"
-	 */
 	u32 mechanism;
 };
-
 struct secure_platform_data {
 	struct kobject *attr_name_kobj;
 	u8 attribute_name[MAX_BUFF_SIZE];
@@ -200,7 +155,6 @@ struct secure_platform_data {
 	bool is_enabled;
 	u32 mechanism;
 };
-
 struct bioscfg_priv {
 	struct kset *authentication_dir_kset;
 	struct kset *main_dir_kset;
@@ -215,17 +169,13 @@ struct bioscfg_priv {
 	u32 ordered_list_instances_count;
 	struct password_data *password_data;
 	u32 password_instances_count;
-
 	struct kobject *sure_start_attr_kobj;
 	struct secure_platform_data spm_data;
 	u8 display_name_language_code[MAX_BUFF_SIZE];
 	bool pending_reboot;
 	struct mutex mutex;
 };
-
-/* global structure used by multiple WMI interfaces */
 extern struct bioscfg_priv bioscfg_drv;
-
 enum hp_wmi_data_type {
 	HPWMI_STRING_TYPE,
 	HPWMI_INTEGER_TYPE,
@@ -235,9 +185,7 @@ enum hp_wmi_data_type {
 	HPWMI_SECURE_PLATFORM_TYPE,
 	HPWMI_SURE_START_TYPE,
 };
-
 enum hp_wmi_data_elements {
-	/* Common elements */
 	NAME = 0,
 	VALUE = 1,
 	PATH = 2,
@@ -248,30 +196,20 @@ enum hp_wmi_data_elements {
 	PREREQUISITES_SIZE = 7,
 	PREREQUISITES = 8,
 	SECURITY_LEVEL = 9,
-
-	/* String elements */
 	STR_MIN_LENGTH = 10,
 	STR_MAX_LENGTH = 11,
 	STR_ELEM_CNT = 12,
-
-	/* Integer elements */
 	INT_LOWER_BOUND = 10,
 	INT_UPPER_BOUND = 11,
 	INT_SCALAR_INCREMENT = 12,
 	INT_ELEM_CNT = 13,
-
-	/* Enumeration elements */
 	ENUM_CURRENT_VALUE = 10,
 	ENUM_SIZE = 11,
 	ENUM_POSSIBLE_VALUES = 12,
 	ENUM_ELEM_CNT = 13,
-
-	/* Ordered list elements */
 	ORD_LIST_SIZE = 10,
 	ORD_LIST_ELEMENTS = 11,
 	ORD_ELEM_CNT = 12,
-
-	/* Password elements */
 	PSWD_MIN_LENGTH = 10,
 	PSWD_MAX_LENGTH = 11,
 	PSWD_SIZE = 12,
@@ -279,7 +217,6 @@ enum hp_wmi_data_elements {
 	PSWD_IS_SET = 14,
 	PSWD_ELEM_CNT = 15,
 };
-
 #define GET_INSTANCE_ID(type)						\
 	static int get_##type##_instance_id(struct kobject *kobj)	\
 	{								\
@@ -291,7 +228,6 @@ enum hp_wmi_data_elements {
 		}							\
 		return -EIO;						\
 	}
-
 #define ATTRIBUTE_S_PROPERTY_SHOW(name, type)				\
 	static ssize_t name##_show(struct kobject *kobj, struct kobj_attribute *attr, \
 				   char *buf)				\
@@ -301,7 +237,6 @@ enum hp_wmi_data_elements {
 			return sysfs_emit(buf, "%s\n", bioscfg_drv.type##_data[i].name); \
 		return -EIO;						\
 	}
-
 #define ATTRIBUTE_N_PROPERTY_SHOW(name, type)				\
 	static ssize_t name##_show(struct kobject *kobj, struct kobj_attribute *attr, \
 				   char *buf)				\
@@ -311,7 +246,6 @@ enum hp_wmi_data_elements {
 			return sysfs_emit(buf, "%d\n", bioscfg_drv.type##_data[i].name); \
 		return -EIO;						\
 	}
-
 #define ATTRIBUTE_PROPERTY_STORE(curr_val, type)			\
 	static ssize_t curr_val##_store(struct kobject *kobj,		\
 					struct kobj_attribute *attr,	\
@@ -343,19 +277,16 @@ enum hp_wmi_data_elements {
 									\
 		return ret ? ret : count;				\
 	}
-
 #define ATTRIBUTE_SPM_N_PROPERTY_SHOW(name, type)			\
 	static ssize_t name##_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) \
 	{								\
 		return sysfs_emit(buf, "%d\n", bioscfg_drv.type##_data.name); \
 	}
-
 #define ATTRIBUTE_SPM_S_PROPERTY_SHOW(name, type)			\
 	static ssize_t name##_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) \
 	{								\
 		return sysfs_emit(buf, "%s\n", bioscfg_drv.type##_data.name); \
 	}
-
 #define ATTRIBUTE_VALUES_PROPERTY_SHOW(name, type, sep)			\
 	static ssize_t name##_show(struct kobject *kobj,		\
 				   struct kobj_attribute *attr, char *buf) \
@@ -377,7 +308,6 @@ enum hp_wmi_data_elements {
 		len += sysfs_emit_at(buf, len, "\n");			\
 		return len;						\
 	}
-
 #define ATTRIBUTE_S_COMMON_PROPERTY_SHOW(name, type)		\
 	static ssize_t name##_show(struct kobject *kobj, struct kobj_attribute *attr, \
 				   char *buf)				\
@@ -387,12 +317,7 @@ enum hp_wmi_data_elements {
 			return sysfs_emit(buf, "%s\n", bioscfg_drv.type##_data[i].common.name); \
 		return -EIO;						\
 	}
-
 extern struct kobj_attribute common_display_langcode;
-
-/* Prototypes */
-
-/* String attributes */
 int hp_populate_string_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 				   int instance_id,
 				   struct kobject *attr_name_kobj);
@@ -401,8 +326,6 @@ void hp_exit_string_attributes(void);
 int hp_populate_string_package_data(union acpi_object *str_obj,
 				    int instance_id,
 				    struct kobject *attr_name_kobj);
-
-/* Integer attributes */
 int hp_populate_integer_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 				    int instance_id,
 				    struct kobject *attr_name_kobj);
@@ -411,8 +334,6 @@ void hp_exit_integer_attributes(void);
 int hp_populate_integer_package_data(union acpi_object *integer_obj,
 				     int instance_id,
 				     struct kobject *attr_name_kobj);
-
-/* Enumeration attributes */
 int hp_populate_enumeration_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 					int instance_id,
 					struct kobject *attr_name_kobj);
@@ -421,8 +342,6 @@ void hp_exit_enumeration_attributes(void);
 int hp_populate_enumeration_package_data(union acpi_object *enum_obj,
 					 int instance_id,
 					 struct kobject *attr_name_kobj);
-
-/* Ordered list */
 int hp_populate_ordered_list_buffer_data(u8 *buffer_ptr,
 					 u32 *buffer_size,
 					 int instance_id,
@@ -432,8 +351,6 @@ void hp_exit_ordered_list_attributes(void);
 int hp_populate_ordered_list_package_data(union acpi_object *order_obj,
 					  int instance_id,
 					  struct kobject *attr_name_kobj);
-
-/* Password authentication attributes */
 int hp_populate_password_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 				     int instance_id,
 				     struct kobject *attr_name_kobj);
@@ -444,24 +361,15 @@ int hp_alloc_password_data(void);
 int hp_get_password_instance_for_type(const char *name);
 int hp_clear_all_credentials(void);
 int hp_set_attribute(const char *a_name, const char *a_value);
-
-/* SPM attributes */
 void hp_exit_password_attributes(void);
 void hp_exit_secure_platform_attributes(void);
 int hp_populate_secure_platform_data(struct kobject *attr_name_kobj);
 int hp_populate_security_buffer(u16 *buffer, const char *authentication);
-
-/* Bios Attributes interface */
 int hp_wmi_set_bios_setting(u16 *input_buffer, u32 input_size);
 int hp_wmi_perform_query(int query, enum hp_wmi_command command,
 			 void *buffer, u32 insize, u32 outsize);
-
-/* Sure Start attributes */
 void hp_exit_sure_start_attributes(void);
 int hp_populate_sure_start_data(struct kobject *attr_name_kobj);
-
-/* Bioscfg */
-
 void hp_exit_attr_set_interface(void);
 int hp_init_attr_set_interface(void);
 size_t hp_calculate_string_buffer(const char *str);
@@ -483,5 +391,4 @@ void hp_friendly_user_name_update(char *path, const char *attr_name,
 				  char *attr_display, int attr_size);
 int hp_wmi_error_and_message(int error_code);
 int hp_get_common_data_from_buffer(u8 **buffer_ptr, u32 *buffer_size, struct common_data *common);
-
 #endif

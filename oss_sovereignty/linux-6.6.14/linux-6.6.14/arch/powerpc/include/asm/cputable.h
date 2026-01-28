@@ -1,31 +1,19 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_POWERPC_CPUTABLE_H
 #define __ASM_POWERPC_CPUTABLE_H
-
-
 #include <linux/types.h>
 #include <uapi/asm/cputable.h>
 #include <asm/asm-const.h>
-
 #ifndef __ASSEMBLY__
-
-/* This structure can grow, it's real size is used by head.S code
- * via the mkdefs mechanism.
- */
 struct cpu_spec;
-
 typedef	void (*cpu_setup_t)(unsigned long offset, struct cpu_spec* spec);
 typedef	void (*cpu_restore_t)(void);
-
 enum powerpc_pmc_type {
 	PPC_PMC_DEFAULT = 0,
 	PPC_PMC_IBM = 1,
 	PPC_PMC_PA6T = 2,
 	PPC_PMC_G4 = 3,
 };
-
 struct pt_regs;
-
 extern int machine_check_generic(struct pt_regs *regs);
 extern int machine_check_4xx(struct pt_regs *regs);
 extern int machine_check_440A(struct pt_regs *regs);
@@ -34,92 +22,52 @@ extern int machine_check_e500(struct pt_regs *regs);
 extern int machine_check_47x(struct pt_regs *regs);
 int machine_check_8xx(struct pt_regs *regs);
 int machine_check_83xx(struct pt_regs *regs);
-
 extern void cpu_down_flush_e500v2(void);
 extern void cpu_down_flush_e500mc(void);
 extern void cpu_down_flush_e5500(void);
 extern void cpu_down_flush_e6500(void);
-
-/* NOTE WELL: Update identify_cpu() if fields are added or removed! */
 struct cpu_spec {
-	/* CPU is matched via (PVR & pvr_mask) == pvr_value */
 	unsigned int	pvr_mask;
 	unsigned int	pvr_value;
-
 	char		*cpu_name;
-	unsigned long	cpu_features;		/* Kernel features */
-	unsigned int	cpu_user_features;	/* Userland features */
-	unsigned int	cpu_user_features2;	/* Userland features v2 */
-	unsigned int	mmu_features;		/* MMU features */
-
-	/* cache line sizes */
+	unsigned long	cpu_features;		 
+	unsigned int	cpu_user_features;	 
+	unsigned int	cpu_user_features2;	 
+	unsigned int	mmu_features;		 
 	unsigned int	icache_bsize;
 	unsigned int	dcache_bsize;
-
-	/* flush caches inside the current cpu */
 	void (*cpu_down_flush)(void);
-
-	/* number of performance monitor counters */
 	unsigned int	num_pmcs;
 	enum powerpc_pmc_type pmc_type;
-
-	/* this is called to initialize various CPU bits like L1 cache,
-	 * BHT, SPD, etc... from head.S before branching to identify_machine
-	 */
 	cpu_setup_t	cpu_setup;
-	/* Used to restore cpu setup on secondary processors and at resume */
 	cpu_restore_t	cpu_restore;
-
-	/* Name of processor class, for the ELF AT_PLATFORM entry */
 	char		*platform;
-
-	/* Processor specific machine check handling. Return negative
-	 * if the error is fatal, 1 if it was fully recovered and 0 to
-	 * pass up (not CPU originated) */
 	int		(*machine_check)(struct pt_regs *regs);
-
-	/*
-	 * Processor specific early machine check handler which is
-	 * called in real mode to handle SLB and TLB errors.
-	 */
 	long		(*machine_check_early)(struct pt_regs *regs);
 };
-
 extern struct cpu_spec		*cur_cpu_spec;
-
 extern unsigned int __start___ftr_fixup, __stop___ftr_fixup;
-
 extern void set_cur_cpu_spec(struct cpu_spec *s);
 extern struct cpu_spec *identify_cpu(unsigned long offset, unsigned int pvr);
 extern void identify_cpu_name(unsigned int pvr);
 extern void do_feature_fixups(unsigned long value, void *fixup_start,
 			      void *fixup_end);
-
 extern const char *powerpc_base_platform;
-
 #ifdef CONFIG_JUMP_LABEL_FEATURE_CHECKS
 extern void cpu_feature_keys_init(void);
 #else
 static inline void cpu_feature_keys_init(void) { }
 #endif
-
-#endif /* __ASSEMBLY__ */
-
-/* CPU kernel features */
-
-/* Definitions for features that we have on both 32-bit and 64-bit chips */
+#endif  
 #define CPU_FTR_COHERENT_ICACHE		ASM_CONST(0x00000001)
 #define CPU_FTR_ALTIVEC			ASM_CONST(0x00000002)
 #define CPU_FTR_DBELL			ASM_CONST(0x00000004)
 #define CPU_FTR_CAN_NAP			ASM_CONST(0x00000008)
 #define CPU_FTR_DEBUG_LVL_EXC		ASM_CONST(0x00000010)
-// ASM_CONST(0x00000020) Free
 #define CPU_FTR_FPU_UNAVAILABLE		ASM_CONST(0x00000040)
 #define CPU_FTR_LWSYNC			ASM_CONST(0x00000080)
 #define CPU_FTR_NOEXECUTE		ASM_CONST(0x00000100)
 #define CPU_FTR_EMB_HV			ASM_CONST(0x00000200)
-
-/* Definitions for features that only exist on 32-bit chips */
 #ifdef CONFIG_PPC32
 #define CPU_FTR_L2CR			ASM_CONST(0x00002000)
 #define CPU_FTR_SPEC7450		ASM_CONST(0x00004000)
@@ -137,23 +85,15 @@ static inline void cpu_feature_keys_init(void) { }
 #define CPU_FTR_SPE			ASM_CONST(0x10000000)
 #define CPU_FTR_NEED_PAIRED_STWCX	ASM_CONST(0x20000000)
 #define CPU_FTR_INDEXED_DCR		ASM_CONST(0x40000000)
-
-#else	/* CONFIG_PPC32 */
-/* Define these to 0 for the sake of tests in common code */
+#else	 
 #define CPU_FTR_PPC_LE			(0)
 #define CPU_FTR_SPE			(0)
 #endif
-
-/*
- * Definitions for the 64-bit processor unique features;
- * on 32-bit, make the names available but defined to be 0.
- */
 #ifdef __powerpc64__
 #define LONG_ASM_CONST(x)		ASM_CONST(x)
 #else
 #define LONG_ASM_CONST(x)		0
 #endif
-
 #define CPU_FTR_REAL_LE			LONG_ASM_CONST(0x0000000000001000)
 #define CPU_FTR_HVMODE			LONG_ASM_CONST(0x0000000000002000)
 #define CPU_FTR_ARCH_206		LONG_ASM_CONST(0x0000000000008000)
@@ -175,7 +115,6 @@ static inline void cpu_feature_keys_init(void) { }
 #define CPU_FTR_STCX_CHECKS_ADDRESS	LONG_ASM_CONST(0x0000000080000000)
 #define CPU_FTR_POPCNTB			LONG_ASM_CONST(0x0000000100000000)
 #define CPU_FTR_POPCNTD			LONG_ASM_CONST(0x0000000200000000)
-/* LONG_ASM_CONST(0x0000000400000000) Free */
 #define CPU_FTR_VMX_COPY		LONG_ASM_CONST(0x0000000800000000)
 #define CPU_FTR_TM			LONG_ASM_CONST(0x0000001000000000)
 #define CPU_FTR_CFAR			LONG_ASM_CONST(0x0000002000000000)
@@ -193,14 +132,8 @@ static inline void cpu_feature_keys_init(void) { }
 #define CPU_FTR_ARCH_31			LONG_ASM_CONST(0x0004000000000000)
 #define CPU_FTR_DAWR1			LONG_ASM_CONST(0x0008000000000000)
 #define CPU_FTR_DEXCR_NPHIE		LONG_ASM_CONST(0x0010000000000000)
-
 #ifndef __ASSEMBLY__
-
 #define CPU_FTR_PPCAS_ARCH_V2	(CPU_FTR_NOEXECUTE)
-
-/* We only set the altivec features if the kernel was compiled with altivec
- * support
- */
 #ifdef CONFIG_ALTIVEC
 #define CPU_FTR_ALTIVEC_COMP	CPU_FTR_ALTIVEC
 #define PPC_FEATURE_HAS_ALTIVEC_COMP PPC_FEATURE_HAS_ALTIVEC
@@ -208,10 +141,6 @@ static inline void cpu_feature_keys_init(void) { }
 #define CPU_FTR_ALTIVEC_COMP	0
 #define PPC_FEATURE_HAS_ALTIVEC_COMP    0
 #endif
-
-/* We only set the VSX features if the kernel was compiled with VSX
- * support
- */
 #ifdef CONFIG_VSX
 #define CPU_FTR_VSX_COMP	CPU_FTR_VSX
 #define PPC_FEATURE_HAS_VSX_COMP PPC_FEATURE_HAS_VSX
@@ -219,10 +148,6 @@ static inline void cpu_feature_keys_init(void) { }
 #define CPU_FTR_VSX_COMP	0
 #define PPC_FEATURE_HAS_VSX_COMP    0
 #endif
-
-/* We only set the spe features if the kernel was compiled with spe
- * support
- */
 #ifdef CONFIG_SPE
 #define CPU_FTR_SPE_COMP	CPU_FTR_SPE
 #define PPC_FEATURE_HAS_SPE_COMP PPC_FEATURE_HAS_SPE
@@ -234,8 +159,6 @@ static inline void cpu_feature_keys_init(void) { }
 #define PPC_FEATURE_HAS_EFP_SINGLE_COMP 0
 #define PPC_FEATURE_HAS_EFP_DOUBLE_COMP 0
 #endif
-
-/* We only set the TM feature if the kernel was compiled with TM supprt */
 #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
 #define CPU_FTR_TM_COMP			CPU_FTR_TM
 #define PPC_FEATURE2_HTM_COMP		PPC_FEATURE2_HTM
@@ -245,12 +168,6 @@ static inline void cpu_feature_keys_init(void) { }
 #define PPC_FEATURE2_HTM_COMP		0
 #define PPC_FEATURE2_HTM_NOSC_COMP	0
 #endif
-
-/* We need to mark all pages as being coherent if we're SMP or we have a
- * 74[45]x and an MPC107 host bridge. Also 83xx and PowerQUICC II
- * require it for PCI "streaming/prefetch" to work properly.
- * This is also required by 52xx family.
- */
 #if defined(CONFIG_SMP) || defined(CONFIG_MPC10X_BRIDGE) \
 	|| defined(CONFIG_PPC_83xx) || defined(CONFIG_PPC_82xx) \
 	|| defined(CONFIG_PPC_MPC52xx)
@@ -258,10 +175,6 @@ static inline void cpu_feature_keys_init(void) { }
 #else
 #define CPU_FTR_COMMON                  0
 #endif
-
-/* The powersave features NAP & DOZE seems to confuse BDI when
-   debugging. So if a BDI is used, disable theses
- */
 #ifndef CONFIG_BDI_SWITCH
 #define CPU_FTR_MAYBE_CAN_DOZE	CPU_FTR_CAN_DOZE
 #define CPU_FTR_MAYBE_CAN_NAP	CPU_FTR_CAN_NAP
@@ -269,7 +182,6 @@ static inline void cpu_feature_keys_init(void) { }
 #define CPU_FTR_MAYBE_CAN_DOZE	0
 #define CPU_FTR_MAYBE_CAN_NAP	0
 #endif
-
 #define CPU_FTRS_603	(CPU_FTR_COMMON | CPU_FTR_MAYBE_CAN_DOZE | \
 	    CPU_FTR_MAYBE_CAN_NAP | CPU_FTR_PPC_LE | CPU_FTR_NOEXECUTE)
 #define CPU_FTRS_604	(CPU_FTR_COMMON | CPU_FTR_PPC_LE)
@@ -367,10 +279,6 @@ static inline void cpu_feature_keys_init(void) { }
 #define CPU_FTRS_E500MC	( \
 	    CPU_FTR_LWSYNC | CPU_FTR_NOEXECUTE | \
 	    CPU_FTR_DBELL | CPU_FTR_DEBUG_LVL_EXC | CPU_FTR_EMB_HV)
-/*
- * e5500/e6500 erratum A-006958 is a timebase bug that can use the
- * same workaround as CPU_FTR_CELL_TB_BUG.
- */
 #define CPU_FTRS_E5500	( \
 	    CPU_FTR_LWSYNC | CPU_FTR_NOEXECUTE | \
 	    CPU_FTR_DBELL | CPU_FTR_POPCNTB | CPU_FTR_POPCNTD | \
@@ -380,8 +288,6 @@ static inline void cpu_feature_keys_init(void) { }
 	    CPU_FTR_DBELL | CPU_FTR_POPCNTB | CPU_FTR_POPCNTD | \
 	    CPU_FTR_DEBUG_LVL_EXC | CPU_FTR_EMB_HV | CPU_FTR_ALTIVEC_COMP | \
 	    CPU_FTR_CELL_TB_BUG | CPU_FTR_SMT)
-
-/* 64-bit CPUs */
 #define CPU_FTRS_PPC970	(CPU_FTR_LWSYNC | \
 	    CPU_FTR_PPCAS_ARCH_V2 | CPU_FTR_CTRL | \
 	    CPU_FTR_ALTIVEC_COMP | CPU_FTR_CAN_NAP | CPU_FTR_MMCRA | \
@@ -463,7 +369,6 @@ static inline void cpu_feature_keys_init(void) { }
 	    CPU_FTR_PPCAS_ARCH_V2 | CPU_FTR_ALTIVEC_COMP | \
 	    CPU_FTR_PURR | CPU_FTR_REAL_LE | CPU_FTR_DABRX)
 #define CPU_FTRS_COMPATIBLE	(CPU_FTR_PPCAS_ARCH_V2)
-
 #ifdef CONFIG_PPC64
 #ifdef CONFIG_PPC_BOOK3E_64
 #define CPU_FTRS_POSSIBLE	(CPU_FTRS_E6500 | CPU_FTRS_E5500)
@@ -482,7 +387,7 @@ static inline void cpu_feature_keys_init(void) { }
 	     CPU_FTR_VSX_COMP | CPU_FTR_ALTIVEC_COMP | CPU_FTRS_POWER9 | \
 	     CPU_FTRS_POWER9_DD2_1 | CPU_FTRS_POWER9_DD2_2 | \
 	     CPU_FTRS_POWER9_DD2_3 | CPU_FTRS_POWER10)
-#endif /* CONFIG_CPU_LITTLE_ENDIAN */
+#endif  
 #endif
 #else
 enum {
@@ -520,13 +425,11 @@ enum {
 #endif
 	    0,
 };
-#endif /* __powerpc64__ */
-
+#endif  
 #ifdef CONFIG_PPC64
 #ifdef CONFIG_PPC_BOOK3E_64
 #define CPU_FTRS_ALWAYS		(CPU_FTRS_E6500 & CPU_FTRS_E5500)
 #else
-
 #ifdef CONFIG_PPC_DT_CPU_FTRS
 #define CPU_FTRS_DT_CPU_BASE			\
 	(CPU_FTR_LWSYNC |			\
@@ -541,7 +444,6 @@ enum {
 #else
 #define CPU_FTRS_DT_CPU_BASE	(~0ul)
 #endif
-
 #ifdef CONFIG_CPU_LITTLE_ENDIAN
 #define CPU_FTRS_ALWAYS \
 	    (CPU_FTRS_POSSIBLE & ~CPU_FTR_HVMODE & CPU_FTRS_POWER7 & \
@@ -556,7 +458,7 @@ enum {
 	     ~CPU_FTR_HVMODE & CPU_FTRS_POSSIBLE & CPU_FTRS_POWER9 & \
 	     CPU_FTRS_POWER9_DD2_1 & CPU_FTRS_POWER9_DD2_2 & \
 	     CPU_FTRS_POWER10 & CPU_FTRS_DT_CPU_BASE)
-#endif /* CONFIG_CPU_LITTLE_ENDIAN */
+#endif  
 #endif
 #else
 enum {
@@ -592,18 +494,10 @@ enum {
 #ifdef CONFIG_PPC_E500MC
 	    CPU_FTRS_E500MC & CPU_FTRS_E5500 & CPU_FTRS_E6500 &
 #endif
-	    ~CPU_FTR_EMB_HV &	/* can be removed at runtime */
+	    ~CPU_FTR_EMB_HV &	 
 	    CPU_FTRS_POSSIBLE,
 };
-#endif /* __powerpc64__ */
-
-/*
- * Maximum number of hw breakpoint supported on powerpc. Number of
- * breakpoints supported by actual hw might be less than this, which
- * is decided at run time in nr_wp_slots().
- */
+#endif  
 #define HBP_NUM_MAX	2
-
-#endif /* !__ASSEMBLY__ */
-
-#endif /* __ASM_POWERPC_CPUTABLE_H */
+#endif  
+#endif  

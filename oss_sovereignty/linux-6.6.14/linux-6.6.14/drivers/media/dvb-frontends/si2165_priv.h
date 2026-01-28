@@ -1,36 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Driver for Silicon Labs SI2165 DVB-C/-T Demodulator
- *
- * Copyright (C) 2013-2017 Matthias Schwarzott <zzam@gentoo.org>
- */
-
 #ifndef _DVB_SI2165_PRIV
 #define _DVB_SI2165_PRIV
-
 #define SI2165_FIRMWARE_REV_D "dvb-demod-si2165.fw"
-
 struct si2165_config {
-	/* i2c addr
-	 * possible values: 0x64,0x65,0x66,0x67
-	 */
 	u8 i2c_addr;
-
-	/* external clock or XTAL */
 	u8 chip_mode;
-
-	/* frequency of external clock or xtal in Hz
-	 * possible values: 4000000, 16000000, 20000000, 240000000, 27000000
-	 */
 	u32 ref_freq_hz;
-
-	/* invert the spectrum */
 	bool inversion;
 };
-
 #define STATISTICS_PERIOD_PKT_COUNT	30000u
 #define STATISTICS_PERIOD_BIT_COUNT	(STATISTICS_PERIOD_PKT_COUNT * 204 * 8)
-
 #define REG_CHIP_MODE			0x0000
 #define REG_CHIP_REVCODE		0x0023
 #define REV_CHIP_TYPE			0x0118
@@ -106,5 +84,4 @@ struct si2165_config {
 #define REG_RSSI_ENABLE			0x0641
 #define REG_RSSI_PAD_CTRL		0x0646
 #define REG_TS_PARALLEL_MODE		0x08f8
-
-#endif /* _DVB_SI2165_PRIV */
+#endif  

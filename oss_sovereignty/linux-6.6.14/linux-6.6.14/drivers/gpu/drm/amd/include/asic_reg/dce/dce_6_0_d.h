@@ -1,28 +1,5 @@
-/*
- *
- * Copyright (C) 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 #ifndef DCE_6_0_D_H
 #define DCE_6_0_D_H
-
 #define ixATTR00 0x0000
 #define ixATTR01 0x0001
 #define ixATTR02 0x0002
@@ -4441,8 +4418,6 @@
 #define mmXDMA_SLV_WRITE_URGENT_CNTL 0x0400
 #define mmXDMA_TEST_DEBUG_DATA 0x041D
 #define mmXDMA_TEST_DEBUG_INDEX 0x041C
-
-/* Registers that spilled out of sid.h */
 #define mmDATA_FORMAT                              0x1AC0
 #define mmLB0_DATA_FORMAT                               0x1AC0
 #define mmLB1_DATA_FORMAT                               0x1DC0
@@ -4513,7 +4488,6 @@
 #define mmLB3_VBLANK_STATUS                             0x43EF
 #define mmLB4_VBLANK_STATUS                             0x46EF
 #define mmLB5_VBLANK_STATUS                             0x49EF
-
 #define mmSCL_HORZ_FILTER_INIT_RGB_LUMA            0x1B4C
 #define mmSCL0_SCL_HORZ_FILTER_INIT_RGB_LUMA            0x1B4C
 #define mmSCL1_SCL_HORZ_FILTER_INIT_RGB_LUMA            0x1E4C
@@ -4521,7 +4495,6 @@
 #define mmSCL3_SCL_HORZ_FILTER_INIT_RGB_LUMA            0x444C
 #define mmSCL4_SCL_HORZ_FILTER_INIT_RGB_LUMA            0x474C
 #define mmSCL5_SCL_HORZ_FILTER_INIT_RGB_LUMA            0x4A4C
-
 #define mmSCL_HORZ_FILTER_INIT_CHROMA              0x1B4D
 #define mmSCL0_SCL_HORZ_FILTER_INIT_CHROMA              0x1B4D
 #define mmSCL1_SCL_HORZ_FILTER_INIT_CHROMA              0x1E4D
@@ -4529,5 +4502,4 @@
 #define mmSCL3_SCL_HORZ_FILTER_INIT_CHROMA              0x444D
 #define mmSCL4_SCL_HORZ_FILTER_INIT_CHROMA              0x474D
 #define mmSCL5_SCL_HORZ_FILTER_INIT_CHROMA              0x4A4D
-
 #endif

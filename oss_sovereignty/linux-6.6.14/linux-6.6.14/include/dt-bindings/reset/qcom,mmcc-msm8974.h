@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_RESET_MSM_MMCC_8974_H
 #define _DT_BINDINGS_RESET_MSM_MMCC_8974_H
-
 #define SPDM_RESET			0
 #define SPDM_RM_RESET			1
 #define VENUS0_RESET			2
@@ -50,5 +44,4 @@
 #define MMSSNOCAHB_RESET		41
 #define MMSSNOCAXI_RESET		42
 #define OCMEMNOC_RESET			43
-
 #endif

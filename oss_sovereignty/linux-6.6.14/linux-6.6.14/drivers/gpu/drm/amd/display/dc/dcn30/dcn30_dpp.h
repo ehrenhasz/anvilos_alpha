@@ -1,35 +1,8 @@
-/* Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DCN30_DPP_H__
 #define __DCN30_DPP_H__
-
 #include "dcn20/dcn20_dpp.h"
-
 #define TO_DCN30_DPP(dpp)\
 	container_of(dpp, struct dcn3_dpp, base)
-
 #define DPP_REG_LIST_DCN30_COMMON(id)\
 	SRI(CM_DEALPHA, CM, id),\
 	SRI(CM_MEM_PWR_STATUS, CM, id),\
@@ -157,7 +130,6 @@
 	SRI(OBUF_MEM_PWR_CTRL, DSCL, id),\
 	SRI(DSCL_MEM_PWR_STATUS, DSCL, id), \
 	SRI(DSCL_MEM_PWR_CTRL, DSCL, id)
-
 #define DPP_REG_LIST_DCN30(id)\
 	DPP_REG_LIST_DCN30_COMMON(id), \
 	TF_REG_LIST_DCN20_COMMON(id), \
@@ -172,9 +144,6 @@
 	SRI(CM_BLNDGAM_RAMB_START_SLOPE_CNTL_G, CM, id),\
 	SRI(CM_BLNDGAM_RAMB_START_SLOPE_CNTL_R, CM, id),\
 	SRI(CM_BLNDGAM_LUT_CONTROL, CM, id)
-
-
-
 #define DPP_REG_LIST_SH_MASK_DCN30_COMMON(mask_sh)\
 	TF_SF(CM0_CM_MEM_PWR_STATUS, GAMCOR_MEM_PWR_STATE, mask_sh),\
 	TF_SF(CM0_CM_DEALPHA, CM_DEALPHA_EN, mask_sh),\
@@ -347,7 +316,6 @@
 	TF_SF(DSCL0_OBUF_MEM_PWR_CTRL, OBUF_MEM_PWR_FORCE, mask_sh),\
 	TF_SF(DSCL0_DSCL_MEM_PWR_CTRL, LUT_MEM_PWR_FORCE, mask_sh),\
 	TF_SF(DSCL0_DSCL_MEM_PWR_STATUS, LUT_MEM_PWR_STATE, mask_sh)
-
 #define DPP_REG_LIST_SH_MASK_DCN30_UPDATED(mask_sh)\
 	TF_SF(CM0_CM_MEM_PWR_STATUS, BLNDGAM_MEM_PWR_STATE, mask_sh), \
 	TF_SF(CM0_CM_MEM_PWR_CTRL2, HDR3DLUT_MEM_PWR_FORCE, mask_sh),\
@@ -378,13 +346,10 @@
 	TF_SF(CM0_CM_BLNDGAM_LUT_CONTROL, CM_BLNDGAM_LUT_CONFIG_MODE, mask_sh), \
 	TF_SF(CM0_CM_3DLUT_MODE, CM_3DLUT_MODE_CURRENT, mask_sh), \
 	TF_SF(CM0_CM_SHAPER_CONTROL, CM_SHAPER_MODE_CURRENT, mask_sh)
-
-
 #define DPP_REG_LIST_SH_MASK_DCN30(mask_sh)\
 	DPP_REG_LIST_SH_MASK_DCN30_COMMON(mask_sh), \
 	TF_REG_LIST_SH_MASK_DCN20_COMMON(mask_sh), \
 	DPP_REG_LIST_SH_MASK_DCN30_UPDATED(mask_sh)
-
 #define DPP_REG_FIELD_LIST_DCN3(type) \
 	TF_REG_FIELD_LIST_DCN2_0(type); \
 	type FORMAT_CROSSBAR_R; \
@@ -463,15 +428,12 @@
 	type BLNDGAM_MEM_PWR_STATE; \
 	type HDR3DLUT_MEM_PWR_STATE; \
 	type SHAPER_MEM_PWR_STATE
-
 struct dcn3_dpp_shift {
 	DPP_REG_FIELD_LIST_DCN3(uint8_t);
 };
-
 struct dcn3_dpp_mask {
 	DPP_REG_FIELD_LIST_DCN3(uint32_t);
 };
-
 #define DPP_DCN3_REG_VARIABLE_LIST_COMMON \
 	DPP_DCN2_REG_VARIABLE_LIST; \
 	uint32_t CM_MEM_PWR_STATUS;\
@@ -550,20 +512,14 @@ struct dcn3_dpp_mask {
 	uint32_t CM_BLNDGAM_RAMB_START_SLOPE_CNTL_G; \
 	uint32_t CM_BLNDGAM_RAMB_START_SLOPE_CNTL_R; \
 	uint32_t CM_BLNDGAM_LUT_CONTROL
-
-
 struct dcn3_dpp_registers {
 	DPP_DCN3_REG_VARIABLE_LIST_COMMON;
 };
-
-
 struct dcn3_dpp {
 	struct dpp base;
-
 	const struct dcn3_dpp_registers *tf_regs;
 	const struct dcn3_dpp_shift *tf_shift;
 	const struct dcn3_dpp_mask *tf_mask;
-
 	const uint16_t *filter_v;
 	const uint16_t *filter_h;
 	const uint16_t *filter_v_c;
@@ -575,29 +531,23 @@ struct dcn3_dpp {
 	struct scaler_data scl_data;
 	struct pwl_params pwl_data;
 };
-
 bool dpp3_construct(struct dcn3_dpp *dpp3,
 	struct dc_context *ctx,
 	uint32_t inst,
 	const struct dcn3_dpp_registers *tf_regs,
 	const struct dcn3_dpp_shift *tf_shift,
 	const struct dcn3_dpp_mask *tf_mask);
-
 bool dpp3_program_gamcor_lut(
 	struct dpp *dpp_base, const struct pwl_params *params);
-
 void dpp3_program_CM_dealpha(
 		struct dpp *dpp_base,
 		uint32_t enable, uint32_t additive_blending);
-
 void dpp30_read_state(struct dpp *dpp_base,
 		struct dcn_dpp_state *s);
-
 bool dpp3_get_optimal_number_of_taps(
 		struct dpp *dpp,
 		struct scaler_data *scl_data,
 		const struct scaling_taps *in_taps);
-
 void dpp3_cnv_setup (
 		struct dpp *dpp_base,
 		enum surface_pixel_format format,
@@ -605,38 +555,29 @@ void dpp3_cnv_setup (
 		struct dc_csc_transform input_csc_color_matrix,
 		enum dc_color_space input_color_space,
 		struct cnv_alpha_2bit_lut *alpha_2bit_lut);
-
 void dpp3_program_CM_bias(
 		struct dpp *dpp_base,
 		struct CM_bias_params *bias_params);
-
 void dpp3_set_hdr_multiplier(
 		struct dpp *dpp_base,
 		uint32_t multiplier);
-
 void dpp3_cm_set_gamut_remap(
 		struct dpp *dpp_base,
 		const struct dpp_grph_csc_adjustment *adjust);
-
 void dpp3_set_pre_degam(struct dpp *dpp_base,
 		enum dc_transfer_func_predefined tr);
-
 void dpp3_set_cursor_attributes(
 		struct dpp *dpp_base,
 		struct dc_cursor_attributes *cursor_attributes);
-
 void dpp3_program_post_csc(
 		struct dpp *dpp_base,
 		enum dc_color_space color_space,
 		enum dcn10_input_csc_select input_select,
 		const struct out_csc_color_matrix *tbl_entry);
-
 void dpp3_program_cm_bias(
 	struct dpp *dpp_base,
 	struct CM_bias_params *bias_params);
-
 void dpp3_program_cm_dealpha(
 		struct dpp *dpp_base,
 	uint32_t enable, uint32_t additive_blending);
-
-#endif /* __DC_HWSS_DCN30_H__ */
+#endif  

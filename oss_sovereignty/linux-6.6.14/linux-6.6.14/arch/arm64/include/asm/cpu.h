@@ -1,17 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
-  * Copyright (C) 2014 ARM Ltd.
- */
 #ifndef __ASM_CPU_H
 #define __ASM_CPU_H
-
 #include <linux/cpu.h>
 #include <linux/init.h>
 #include <linux/percpu.h>
-
-/*
- * Records attributes of an individual CPU.
- */
 struct cpuinfo_32bit {
 	u32		reg_id_dfr0;
 	u32		reg_id_dfr1;
@@ -31,12 +22,10 @@ struct cpuinfo_32bit {
 	u32		reg_id_pfr0;
 	u32		reg_id_pfr1;
 	u32		reg_id_pfr2;
-
 	u32		reg_mvfr0;
 	u32		reg_mvfr1;
 	u32		reg_mvfr2;
 };
-
 struct cpuinfo_arm64 {
 	struct cpu	cpu;
 	struct kobject	kobj;
@@ -47,7 +36,6 @@ struct cpuinfo_arm64 {
 	u64		reg_revidr;
 	u64		reg_gmid;
 	u64		reg_smidr;
-
 	u64		reg_id_aa64dfr0;
 	u64		reg_id_aa64dfr1;
 	u64		reg_id_aa64isar0;
@@ -61,23 +49,14 @@ struct cpuinfo_arm64 {
 	u64		reg_id_aa64pfr1;
 	u64		reg_id_aa64zfr0;
 	u64		reg_id_aa64smfr0;
-
 	struct cpuinfo_32bit	aarch32;
-
-	/* pseudo-ZCR for recording maximum ZCR_EL1 LEN value: */
 	u64		reg_zcr;
-
-	/* pseudo-SMCR for recording maximum SMCR_EL1 LEN value: */
 	u64		reg_smcr;
 };
-
 DECLARE_PER_CPU(struct cpuinfo_arm64, cpu_data);
-
 void cpuinfo_store_cpu(void);
 void __init cpuinfo_store_boot_cpu(void);
-
 void __init init_cpu_features(struct cpuinfo_arm64 *info);
 void update_cpu_features(int cpu, struct cpuinfo_arm64 *info,
 				 struct cpuinfo_arm64 *boot);
-
-#endif /* __ASM_CPU_H */
+#endif  

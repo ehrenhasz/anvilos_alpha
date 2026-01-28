@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2010-2013 Bluecherry, LLC <https://www.bluecherrydvr.com>
- *
- * Original author:
- * Ben Collins <bcollins@ubuntu.com>
- *
- * Additional work by:
- * John Brooks <john.brooks@bluecherry.net>
- */
-
 #ifndef __SOLO6X10_JPEG_H
 #define __SOLO6X10_JPEG_H
-
 static const u8 jpeg_header[] = {
 	0xff, 0xd8, 0xff, 0xfe, 0x00, 0x0d, 0x42, 0x6c,
 	0x75, 0x65, 0x63, 0x68, 0x65, 0x72, 0x72, 0x79,
@@ -90,11 +78,7 @@ static const u8 jpeg_header[] = {
 	0x11, 0x01, 0xff, 0xda, 0x00, 0x0c, 0x03, 0x01,
 	0x00, 0x02, 0x11, 0x03, 0x11, 0x00, 0x3f, 0x00
 };
-
-/* This is the byte marker for the start of SOF0: 0xffc0 marker */
 #define SOF0_START	575
-
-/* This is the byte marker for the start of the DQT */
 #define DQT_START	17
 #define DQT_LEN		138
 static const u8 jpeg_dqt[4][DQT_LEN] = {
@@ -176,5 +160,4 @@ static const u8 jpeg_dqt[4][DQT_LEN] = {
 		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
 	}
 };
-
-#endif /* __SOLO6X10_JPEG_H */
+#endif  

@@ -1,16 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell RVU Ethernet driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
-
 #ifndef OTX2_REG_H
 #define OTX2_REG_H
-
 #include <rvu_struct.h>
-
-/* RVU PF registers */
 #define	RVU_PF_VFX_PFVF_MBOX0		    (0x00000)
 #define	RVU_PF_VFX_PFVF_MBOX1		    (0x00008)
 #define RVU_PF_VFX_PFVF_MBOXX(a, b)         (0x0 | (a) << 12 | (b) << 3)
@@ -43,8 +33,6 @@
 #define RVU_PF_MSIX_PBAX(a)                 (0xF0000 | (a) << 3)
 #define RVU_PF_VF_MBOX_ADDR                 (0xC40)
 #define RVU_PF_LMTLINE_ADDR                 (0xC48)
-
-/* RVU VF registers */
 #define	RVU_VF_VFPF_MBOX0		    (0x00000)
 #define	RVU_VF_VFPF_MBOX1		    (0x00008)
 #define	RVU_VF_VFPF_MBOXX(a)		    (0x00 | (a) << 3)
@@ -57,11 +45,8 @@
 #define	RVU_VF_MSIX_VECX_CTL(a)		    (0x008 | (a) << 4)
 #define	RVU_VF_MSIX_PBAX(a)		    (0xF0000 | (a) << 3)
 #define RVU_VF_MBOX_REGION                  (0xC0000)
-
 #define RVU_FUNC_BLKADDR_SHIFT		20
 #define RVU_FUNC_BLKADDR_MASK		0x1FULL
-
-/* NPA LF registers */
 #define NPA_LFBASE			(BLKTYPE_NPA << RVU_FUNC_BLKADDR_SHIFT)
 #define NPA_LF_AURA_OP_ALLOCX(a)	(NPA_LFBASE | 0x10 | (a) << 3)
 #define NPA_LF_AURA_OP_FREE0            (NPA_LFBASE | 0x20)
@@ -92,8 +77,6 @@
 #define NPA_LF_QINTX_ENA_W1S(a)         (NPA_LFBASE | 0x320 | (a) << 12)
 #define NPA_LF_QINTX_ENA_W1C(a)         (NPA_LFBASE | 0x330 | (a) << 12)
 #define NPA_LF_AURA_BATCH_FREE0         (NPA_LFBASE | 0x400)
-
-/* NIX LF registers */
 #define	NIX_LFBASE			(BLKTYPE_NIX << RVU_FUNC_BLKADDR_SHIFT)
 #define	NIX_LF_RX_SECRETX(a)		(NIX_LFBASE | 0x0 | (a) << 3)
 #define	NIX_LF_CFG			(NIX_LFBASE | 0x100)
@@ -137,8 +120,6 @@
 #define	NIX_LF_CINTX_INT_W1S(a)		(NIX_LFBASE | 0xD30 | (a) << 12)
 #define	NIX_LF_CINTX_ENA_W1S(a)		(NIX_LFBASE | 0xD40 | (a) << 12)
 #define	NIX_LF_CINTX_ENA_W1C(a)		(NIX_LFBASE | 0xD50 | (a) << 12)
-
-/* NIX AF transmit scheduler registers */
 #define NIX_AF_SMQX_CFG(a)		(0x700 | (a) << 16)
 #define NIX_AF_TL1X_SCHEDULE(a)		(0xC00 | (a) << 16)
 #define NIX_AF_TL1X_CIR(a)		(0xC20 | (a) << 16)
@@ -166,10 +147,7 @@
 #define NIX_AF_MDQX_PIR(a)		(0x1430 | (a) << 16)
 #define NIX_AF_MDQX_PARENT(a)		(0x1480 | (a) << 16)
 #define NIX_AF_TL3_TL2X_LINKX_CFG(a, b)	(0x1700 | (a) << 16 | (b) << 3)
-
-/* LMT LF registers */
 #define LMT_LFBASE			BIT_ULL(RVU_FUNC_BLKADDR_SHIFT)
 #define LMT_LF_LMTLINEX(a)		(LMT_LFBASE | 0x000 | (a) << 12)
 #define LMT_LF_LMTCANCEL		(LMT_LFBASE | 0x400)
-
-#endif /* OTX2_REG_H */
+#endif  

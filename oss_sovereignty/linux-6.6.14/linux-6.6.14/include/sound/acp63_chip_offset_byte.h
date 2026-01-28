@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * AMD ACP 6.3 Register Documentation
- *
- * Copyright 2022 Advanced Micro Devices, Inc.
- */
-
 #ifndef _acp_ip_OFFSET_HEADER
 #define _acp_ip_OFFSET_HEADER
-
-/* Registers from ACP_DMA block */
 #define ACP_DMA_CNTL_0                                0x0000000
 #define ACP_DMA_CNTL_1                                0x0000004
 #define ACP_DMA_CNTL_2                                0x0000008
@@ -70,8 +61,6 @@
 #define ACP_DMA_CH_STS                                0x00000E8
 #define ACP_DMA_CH_GROUP                              0x00000EC
 #define ACP_DMA_CH_RST_STS                            0x00000F0
-
-/* Registers from ACP_AXI2AXIATU block */
 #define ACPAXI2AXI_ATU_PAGE_SIZE_GRP_1                0x0000C00
 #define ACPAXI2AXI_ATU_BASE_ADDR_GRP_1                0x0000C04
 #define ACPAXI2AXI_ATU_PAGE_SIZE_GRP_2                0x0000C08
@@ -105,8 +94,6 @@
 #define ACPAXI2AXI_ATU_BASE_ADDR_GRP_15               0x0000C78
 #define ACPAXI2AXI_ATU_PAGE_SIZE_GRP_16               0x0000C7C
 #define ACPAXI2AXI_ATU_BASE_ADDR_GRP_16               0x0000C80
-
-/* Registers from ACP_CLKRST block */
 #define ACP_SOFT_RESET                                0x0001000
 #define ACP_CONTROL                                   0x0001004
 #define ACP_STATUS                                    0x0001008
@@ -116,8 +103,6 @@
 #define ACP_PGFSM_CONTROL                             0x0001024
 #define ACP_PGFSM_STATUS                              0x0001028
 #define ACP_CLKMUX_SEL                                0x000102C
-
-/* Registers from ACP_AON block */
 #define ACP_PME_EN                                    0x0001400
 #define ACP_DEVICE_STATE                              0x0001404
 #define AZ_DEVICE_STATE                               0x0001408
@@ -130,7 +115,6 @@
 #define ACP_SW0_WAKE_EN                               0x0001458
 #define ACP_I2S_WAKE_EN                               0x000145C
 #define ACP_SW1_WAKE_EN                               0x0001460
-
 #define ACP_SW0_I2S_ERROR_REASON                      0x00018B4
 #define ACP_SW0_POS_TRACK_AUDIO0_TX_CTRL              0x00018B8
 #define ACP_SW0_AUDIO0_TX_DMA_POS                     0x00018BC
@@ -147,8 +131,6 @@
 #define ACP_ERROR_INTR_MASK1                          0X0001974
 #define ACP_ERROR_INTR_MASK2                          0X0001978
 #define ACP_ERROR_INTR_MASK3                          0X000197C
-
-/* Registers from ACP_P1_MISC block */
 #define ACP_EXTERNAL_INTR_ENB                         0x0001A00
 #define ACP_EXTERNAL_INTR_CNTL                        0x0001A04
 #define ACP_EXTERNAL_INTR_CNTL1                       0x0001A08
@@ -173,8 +155,6 @@
 #define ACP_SW1_AUDIO2_RX_DMA_POS                     0x0001AA4
 #define ACP_ERROR_INTR_MASK4                          0X0001AEC
 #define ACP_ERROR_INTR_MASK5                          0X0001AF0
-
-/* Registers from ACP_AUDIO_BUFFERS block */
 #define ACP_AUDIO0_RX_RINGBUFADDR                        0x0002000
 #define ACP_AUDIO0_RX_RINGBUFSIZE                        0x0002004
 #define ACP_AUDIO0_RX_LINKPOSITIONCNTR                   0x0002008
@@ -229,8 +209,6 @@
 #define ACP_AUDIO2_TX_LINEARPOSITIONCNTR_HIGH            0x00020CC
 #define ACP_AUDIO2_TX_LINEARPOSITIONCNTR_LOW             0x00020D0
 #define ACP_AUDIO2_TX_INTR_WATERMARK_SIZE                0x00020D4
-
-/* Registers from ACP_I2S_TDM block */
 #define ACP_I2STDM_IER                                0x0002400
 #define ACP_I2STDM_IRER                               0x0002404
 #define ACP_I2STDM_RXFRMT                             0x0002408
@@ -240,8 +218,6 @@
 #define ACP_I2STDM1_MSTRCLKGEN                        0x0002418
 #define ACP_I2STDM2_MSTRCLKGEN                        0x000241C
 #define ACP_I2STDM_REFCLKGEN                          0x0002420
-
-/* Registers from ACP_BT_TDM block */
 #define ACP_BTTDM_IER                                 0x0002800
 #define ACP_BTTDM_IRER                                0x0002804
 #define ACP_BTTDM_RXFRMT                              0x0002808
@@ -252,8 +228,6 @@
 #define ACP_HSTDM_RXFRMT                              0x000281C
 #define ACP_HSTDM_ITER                                0x0002820
 #define ACP_HSTDM_TXFRMT                              0x0002824
-
-/* Registers from ACP_WOV block */
 #define ACP_WOV_PDM_ENABLE                            0x0002C04
 #define ACP_WOV_PDM_DMA_ENABLE                        0x0002C08
 #define ACP_WOV_RX_RINGBUFADDR                        0x0002C0C
@@ -273,8 +247,6 @@
 #define ACP_PDM_VAD_DYNAMIC_CLK_GATING_EN             0x0002C64
 #define ACP_WOV_ERROR_STATUS_REGISTER                 0x0002C68
 #define ACP_PDM_CLKDIV                                0x0002C6C
-
-/* Registers from ACP_SW0_SWCLK block */
 #define ACP_SW0_EN                                     0x0003000
 #define ACP_SW0_EN_STATUS                              0x0003004
 #define ACP_SW0_FRAMESIZE                              0x0003008
@@ -369,8 +341,6 @@
 #define ACP_SW0_CLK_FREQUENCY_CTRL                     0x000326C
 #define ACP_SW0_ERROR_INTR_MASK                        0x0003270
 #define ACP_SW0_PHY_TEST_MODE_DATA_OFF                 0x0003274
-
-/* Registers from ACP_P1_AUDIO_BUFFERS block */
 #define ACP_P1_AUDIO0_RX_RINGBUFADDR                     0x0003A00
 #define ACP_P1_AUDIO0_RX_RINGBUFSIZE                     0x0003A04
 #define ACP_P1_AUDIO0_RX_LINKPOSITIONCNTR                0x0003A08
@@ -425,8 +395,6 @@
 #define ACP_P1_AUDIO2_TX_LINEARPOSITIONCNTR_HIGH         0x0003ACC
 #define ACP_P1_AUDIO2_TX_LINEARPOSITIONCNTR_LOW          0x0003AD0
 #define ACP_P1_AUDIO2_TX_INTR_WATERMARK_SIZE             0x0003AD4
-
-/* Registers from ACP_SW1_SWCLK block */
 #define ACP_SW1_EN                                       0x0003C00
 #define ACP_SW1_EN_STATUS                                0x0003C04
 #define ACP_SW1_FRAMESIZE                                0x0003C08
@@ -457,8 +425,6 @@
 #define ACP_SW1_CLK_RESUME_DELAY_CNTR                    0x0003D84
 #define ACP_SW1_BUS_RESET_CTRL                           0x0003D88
 #define ACP_SW1_PRBS_ERR_STATUS                          0x0003D8C
-
-/* Registers from ACP_SW1_ACLK block */
 #define ACP_SW1_CORB_BASE_ADDRESS                       0x0003E00
 #define ACP_SW1_CORB_WRITE_POINTER                      0x0003E04
 #define ACP_SW1_CORB_READ_POINTER                       0x0003E08
@@ -488,8 +454,5 @@
 #define ACP_SW1_CLK_FREQUENCY_CTRL                      0x0003E6C
 #define ACP_SW1_ERROR_INTR_MASK                         0x0003E70
 #define ACP_SW1_PHY_TEST_MODE_DATA_OFF                  0x0003E74
-
-/* Registers from ACP_SCRATCH block */
 #define ACP_SCRATCH_REG_0                               0x0010000
-
 #endif

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015 MediaTek, Shunli Wang <shunli.wang@mediatek.com>
- */
-
 #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT2701
 #define _DT_BINDINGS_RESET_CONTROLLER_MT2701
-
-/* INFRACFG resets */
 #define MT2701_INFRA_EMI_REG_RST		0
 #define MT2701_INFRA_DRAMC0_A0_RST		1
 #define MT2701_INFRA_FHCTL_RST			2
@@ -22,8 +15,6 @@
 #define MT2701_INFRA_DRAMC0_RST			34
 #define MT2701_INFRA_TRNG_RST			37
 #define MT2701_INFRA_SYSIRQ_RST			38
-
-/*  PERICFG resets */
 #define MT2701_PERI_UART0_SW_RST		0
 #define MT2701_PERI_UART1_SW_RST		1
 #define MT2701_PERI_UART2_SW_RST		2
@@ -46,8 +37,6 @@
 #define MT2701_PERI_USB_SW_RST			28
 #define MT2701_PERI_ETH_SW_RST			29
 #define MT2701_PERI_SPI0_SW_RST			33
-
-/* TOPRGU resets */
 #define MT2701_TOPRGU_INFRA_RST			0
 #define MT2701_TOPRGU_MM_RST			1
 #define MT2701_TOPRGU_MFG_RST			2
@@ -62,8 +51,6 @@
 #define MT2701_TOPRGU_HIFSYS_RST		11
 #define MT2701_TOPRGU_CONN_MCU_RST		12
 #define MT2701_TOPRGU_BDP_DISP_RST		13
-
-/* HIFSYS resets */
 #define MT2701_HIFSYS_UHOST0_RST		3
 #define MT2701_HIFSYS_UHOST1_RST		4
 #define MT2701_HIFSYS_UPHY0_RST			21
@@ -71,15 +58,10 @@
 #define MT2701_HIFSYS_PCIE0_RST			24
 #define MT2701_HIFSYS_PCIE1_RST			25
 #define MT2701_HIFSYS_PCIE2_RST			26
-
-/* ETHSYS resets */
 #define MT2701_ETHSYS_SYS_RST			0
 #define MT2701_ETHSYS_MCM_RST			2
 #define MT2701_ETHSYS_FE_RST			6
 #define MT2701_ETHSYS_GMAC_RST			23
 #define MT2701_ETHSYS_PPE_RST			31
-
-/* G3DSYS resets */
 #define MT2701_G3DSYS_CORE_RST			0
-
-#endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT2701 */
+#endif   

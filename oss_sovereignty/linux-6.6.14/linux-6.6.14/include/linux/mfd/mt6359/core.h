@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
-
 #ifndef __MFD_MT6359_CORE_H__
 #define __MFD_MT6359_CORE_H__
-
 enum mt6359_irq_top_status_shift {
 	MT6359_BUCK_TOP = 0,
 	MT6359_LDO_TOP,
@@ -16,7 +10,6 @@ enum mt6359_irq_top_status_shift {
 	MT6359_AUD_TOP = 7,
 	MT6359_MISC_TOP,
 };
-
 enum mt6359_irq_numbers {
 	MT6359_IRQ_VCORE_OC = 1,
 	MT6359_IRQ_VGPU11_OC,
@@ -95,7 +88,6 @@ enum mt6359_irq_numbers {
 	MT6359_IRQ_SPI_CMD_ALERT = 144,
 	MT6359_IRQ_NR,
 };
-
 #define MT6359_IRQ_BUCK_BASE MT6359_IRQ_VCORE_OC
 #define MT6359_IRQ_LDO_BASE MT6359_IRQ_VFE28_OC
 #define MT6359_IRQ_PSC_BASE MT6359_IRQ_PWRKEY
@@ -104,7 +96,6 @@ enum mt6359_irq_numbers {
 #define MT6359_IRQ_HK_BASE MT6359_IRQ_BAT_H
 #define MT6359_IRQ_AUD_BASE MT6359_IRQ_AUDIO
 #define MT6359_IRQ_MISC_BASE MT6359_IRQ_SPI_CMD_ALERT
-
 #define MT6359_IRQ_BUCK_BITS (MT6359_IRQ_VPA_OC - MT6359_IRQ_BUCK_BASE + 1)
 #define MT6359_IRQ_LDO_BITS (MT6359_IRQ_VUFS_OC - MT6359_IRQ_LDO_BASE + 1)
 #define MT6359_IRQ_PSC_BITS	\
@@ -116,7 +107,6 @@ enum mt6359_irq_numbers {
 	(MT6359_IRQ_ACCDET_EINT1 - MT6359_IRQ_AUD_BASE + 1)
 #define MT6359_IRQ_MISC_BITS	\
 	(MT6359_IRQ_SPI_CMD_ALERT - MT6359_IRQ_MISC_BASE + 1)
-
 #define MT6359_TOP_GEN(sp)	\
 {	\
 	.hwirq_base = MT6359_IRQ_##sp##_BASE,	\
@@ -129,5 +119,4 @@ enum mt6359_irq_numbers {
 	.sta_reg_shift = 0x2,	\
 	.top_offset = MT6359_##sp##_TOP,	\
 }
-
-#endif /* __MFD_MT6359_CORE_H__ */
+#endif  

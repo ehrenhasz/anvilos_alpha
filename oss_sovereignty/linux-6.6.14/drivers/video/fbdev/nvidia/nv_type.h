@@ -1,19 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __NV_TYPE_H__
 #define __NV_TYPE_H__
-
 #include <linux/fb.h>
 #include <linux/types.h>
 #include <linux/i2c.h>
 #include <linux/i2c-algo-bit.h>
 #include <video/vga.h>
-
 #define NV_ARCH_04  0x04
 #define NV_ARCH_10  0x10
 #define NV_ARCH_20  0x20
 #define NV_ARCH_30  0x30
 #define NV_ARCH_40  0x40
-
 #define BITMASK(t,b) (((unsigned)(1U << (((t)-(b)+1)))-1)  << (b))
 #define MASKEXPAND(mask) BITMASK(1?mask,0?mask)
 #define SetBF(mask,value) ((value) << (0?mask))
@@ -21,30 +17,24 @@
 #define SetBitField(value,from,to) SetBF(to, GetBF(value,from))
 #define SetBit(n) (1<<(n))
 #define Set8Bits(value) ((value)&0xff)
-
 #define V_DBLSCAN  1
-
 typedef struct {
 	int bitsPerPixel;
 	int depth;
 	int displayWidth;
 	int weight;
 } NVFBLayout;
-
 #define NUM_SEQ_REGS		0x05
 #define NUM_CRT_REGS		0x41
 #define NUM_GRC_REGS		0x09
 #define NUM_ATC_REGS		0x15
-
 struct nvidia_par;
-
 struct nvidia_i2c_chan {
 	struct nvidia_par *par;
 	unsigned long ddc_base;
 	struct i2c_adapter adapter;
 	struct i2c_algo_bit_data algo;
 };
-
 typedef struct _riva_hw_state {
 	u8 attr[NUM_ATC_REGS];
 	u8 crtc[NUM_CRT_REGS];
@@ -88,11 +78,9 @@ typedef struct _riva_hw_state {
 	u32 crtcSync;
 	u32 control;
 } RIVA_HW_STATE;
-
 struct riva_regs {
 	RIVA_HW_STATE ext;
 };
-
 struct nvidia_par {
 	RIVA_HW_STATE SavedReg;
 	RIVA_HW_STATE ModeReg;
@@ -151,7 +139,6 @@ struct nvidia_par {
 	u8 DDCBase;
 	int wc_cookie;
 	struct nvidia_i2c_chan chan[3];
-
 	volatile u32 __iomem *REGS;
 	volatile u32 __iomem *PCRTC0;
 	volatile u32 __iomem *PCRTC;
@@ -172,5 +159,4 @@ struct nvidia_par {
 	volatile u8 __iomem *PDIO;
 	volatile u32 __iomem *PRAMDAC;
 };
-
-#endif				/* __NV_TYPE_H__ */
+#endif				 

@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef RESCTRL_H
 #define RESCTRL_H
 #include <stdio.h>
@@ -22,21 +21,15 @@
 #include <asm/unistd.h>
 #include <linux/perf_event.h>
 #include "../kselftest.h"
-
 #define MB			(1024 * 1024)
 #define RESCTRL_PATH		"/sys/fs/resctrl"
 #define PHYS_ID_PATH		"/sys/devices/system/cpu/cpu"
 #define INFO_PATH		"/sys/fs/resctrl/info"
-
 #define ARCH_INTEL     1
 #define ARCH_AMD       2
-
 #define END_OF_TESTS	1
-
 #define BENCHMARK_ARGS		64
-
 #define DEFAULT_SPAN		(250 * MB)
-
 #define PARENT_EXIT(err_msg)			\
 	do {					\
 		perror(err_msg);		\
@@ -44,17 +37,6 @@
 		umount_resctrlfs();		\
 		exit(EXIT_FAILURE);		\
 	} while (0)
-
-/*
- * resctrl_val_param:	resctrl test parameters
- * @resctrl_val:	Resctrl feature (Eg: mbm, mba.. etc)
- * @ctrlgrp:		Name of the control monitor group (con_mon grp)
- * @mongrp:		Name of the monitor group (mon grp)
- * @cpu_no:		CPU number to which the benchmark would be binded
- * @filename:		Name of file to which the o/p should be written
- * @bw_report:		Bandwidth report type (reads vs writes)
- * @setup:		Call back function to setup test environment
- */
 struct resctrl_val_param {
 	char		*resctrl_val;
 	char		ctrlgrp[64];
@@ -66,16 +48,12 @@ struct resctrl_val_param {
 	int		num_of_runs;
 	int		(*setup)(struct resctrl_val_param *param);
 };
-
 #define MBM_STR			"mbm"
 #define MBA_STR			"mba"
 #define CMT_STR			"cmt"
 #define CAT_STR			"cat"
-
 extern pid_t bm_pid, ppid;
-
 extern char llc_occup_path[1024];
-
 int get_vendor(void);
 bool check_resctrlfs_support(void);
 int filter_dmesg(void);
@@ -117,5 +95,4 @@ int show_cache_info(unsigned long sum_llc_val, int no_of_bits,
 		    size_t cache_span, unsigned long max_diff,
 		    unsigned long max_diff_percent, unsigned long num_of_runs,
 		    bool platform, bool cmt);
-
-#endif /* RESCTRL_H */
+#endif  

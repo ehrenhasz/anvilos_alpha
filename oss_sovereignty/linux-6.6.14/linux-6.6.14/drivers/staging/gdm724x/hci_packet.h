@@ -1,17 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2012 GCT Semiconductor, Inc. All rights reserved. */
-
 #ifndef _HCI_PACKET_H_
 #define _HCI_PACKET_H_
-
 #define HCI_HEADER_SIZE 4
-
-/*
- * The NIC type definition:
- * For backward compatibility, lower 16 bits used as they were.
- * Lower 16 bit: NIC_TYPE values
- * Uppoer 16 bit: NIC_TYPE Flags
- */
 #define NIC_TYPE_NIC0		0x00000010
 #define NIC_TYPE_NIC1		0x00000011
 #define NIC_TYPE_NIC2		0x00000012
@@ -24,19 +13,16 @@
 #define NIC_TYPE_F_DHCP		0x00040000
 #define NIC_TYPE_F_NDP		0x00080000
 #define NIC_TYPE_F_VLAN		0x00100000
-
 struct hci_packet {
 	__dev16 cmd_evt;
 	__dev16 len;
 	u8 data[];
 } __packed;
-
 struct tlv {
 	u8 type;
 	u8 len;
 	u8 *data[];
 } __packed;
-
 struct sdu_header {
 	__dev16 cmd_evt;
 	__dev16 len;
@@ -44,7 +30,6 @@ struct sdu_header {
 	__dev32 bearer_ID;
 	__dev32 nic_type;
 } __packed;
-
 struct sdu {
 	__dev16 cmd_evt;
 	__dev16 len;
@@ -53,7 +38,6 @@ struct sdu {
 	__dev32 nic_type;
 	u8 data[];
 } __packed;
-
 struct multi_sdu {
 	__dev16 cmd_evt;
 	__dev16 len;
@@ -61,7 +45,6 @@ struct multi_sdu {
 	__dev16 reserved;
 	u8 data[];
 } __packed;
-
 struct hci_pdn_table_ind {
 	__dev16 cmd_evt;
 	__dev16 len;
@@ -72,11 +55,9 @@ struct hci_pdn_table_ind {
 	u8 ipv4_addr[4];
 	u8 ipv6_intf_id[8];
 } __packed;
-
 struct hci_connect_ind {
 	__dev16 cmd_evt;
 	__dev16 len;
 	__dev32 connect;
 } __packed;
-
-#endif /* _HCI_PACKET_H_ */
+#endif  

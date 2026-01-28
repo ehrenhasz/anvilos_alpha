@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 LSI Corporation
- */
-
 #ifndef _DT_BINDINGS_CLK_AXM5516_H
 #define _DT_BINDINGS_CLK_AXM5516_H
-
 #define AXXIA_CLK_FAB_PLL	0
 #define AXXIA_CLK_CPU_PLL	1
 #define AXXIA_CLK_SYS_PLL	2
@@ -29,5 +23,4 @@
 #define AXXIA_CLK_CPU3		20
 #define AXXIA_CLK_PER		21
 #define AXXIA_CLK_MMC		22
-
 #endif

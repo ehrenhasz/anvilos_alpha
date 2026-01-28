@@ -1,26 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * VMware VMCI Driver
- *
- * Copyright (C) 2012 VMware, Inc. All rights reserved.
- */
-
 #ifndef __VMW_VMCI_API_H__
 #define __VMW_VMCI_API_H__
-
 #include <linux/uidgid.h>
 #include <linux/vmw_vmci_defs.h>
-
 #undef  VMCI_KERNEL_API_VERSION
 #define VMCI_KERNEL_API_VERSION_1 1
 #define VMCI_KERNEL_API_VERSION_2 2
 #define VMCI_KERNEL_API_VERSION   VMCI_KERNEL_API_VERSION_2
-
 struct msghdr;
 typedef void (vmci_device_shutdown_fn) (void *device_registration,
 					void *user_data);
 typedef void (*vmci_vsock_cb) (bool is_host);
-
 int vmci_datagram_create_handle(u32 resource_id, u32 flags,
 				vmci_datagram_recv_cb recv_cb,
 				void *client_data,
@@ -39,7 +28,6 @@ int vmci_doorbell_notify(struct vmci_handle handle, u32 priv_flags);
 u32 vmci_get_context_id(void);
 bool vmci_is_context_owner(u32 context_id, kuid_t uid);
 int vmci_register_vsock_callback(vmci_vsock_cb callback);
-
 int vmci_event_subscribe(u32 event,
 			 vmci_event_cb callback, void *callback_data,
 			 u32 *subid);
@@ -73,5 +61,4 @@ ssize_t vmci_qpair_dequev(struct vmci_qp *qpair,
 			  struct msghdr *msg, size_t iov_size, int mode);
 ssize_t vmci_qpair_peekv(struct vmci_qp *qpair, struct msghdr *msg, size_t iov_size,
 			 int mode);
-
-#endif /* !__VMW_VMCI_API_H__ */
+#endif  

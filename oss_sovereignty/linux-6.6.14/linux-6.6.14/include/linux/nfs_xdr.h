@@ -1,40 +1,23 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_NFS_XDR_H
 #define _LINUX_NFS_XDR_H
-
 #include <linux/nfsacl.h>
 #include <linux/sunrpc/gss_api.h>
-
-/*
- * To change the maximum rsize and wsize supported by the NFS client, adjust
- * NFS_MAX_FILE_IO_SIZE.  64KB is a typical maximum, but some servers can
- * support a megabyte or more.  The default is left at 4096 bytes, which is
- * reasonable for NFS over UDP.
- */
 #define NFS_MAX_FILE_IO_SIZE	(1048576U)
 #define NFS_DEF_FILE_IO_SIZE	(4096U)
 #define NFS_MIN_FILE_IO_SIZE	(1024U)
-
 #define NFS_BITMASK_SZ		3
-
 struct nfs4_string {
 	unsigned int len;
 	char *data;
 };
-
 struct nfs_fsid {
 	uint64_t		major;
 	uint64_t		minor;
 };
-
-/*
- * Helper for checking equality between 2 fsids.
- */
 static inline int nfs_fsid_equal(const struct nfs_fsid *a, const struct nfs_fsid *b)
 {
 	return a->major == b->major && a->minor == b->minor;
 }
-
 struct nfs4_threshold {
 	__u32	bm;
 	__u32	l_type;
@@ -43,9 +26,8 @@ struct nfs4_threshold {
 	__u64	rd_io_sz;
 	__u64	wr_io_sz;
 };
-
 struct nfs_fattr {
-	unsigned int		valid;		/* which fields are valid */
+	unsigned int		valid;		 
 	umode_t			mode;
 	__u32			nlink;
 	kuid_t			uid;
@@ -67,19 +49,18 @@ struct nfs_fattr {
 	struct timespec64	atime;
 	struct timespec64	mtime;
 	struct timespec64	ctime;
-	__u64			change_attr;	/* NFSv4 change attribute */
-	__u64			pre_change_attr;/* pre-op NFSv4 change attribute */
-	__u64			pre_size;	/* pre_op_attr.size	  */
-	struct timespec64	pre_mtime;	/* pre_op_attr.mtime	  */
-	struct timespec64	pre_ctime;	/* pre_op_attr.ctime	  */
+	__u64			change_attr;	 
+	__u64			pre_change_attr; 
+	__u64			pre_size;	 
+	struct timespec64	pre_mtime;	 
+	struct timespec64	pre_ctime;	 
 	unsigned long		time_start;
 	unsigned long		gencount;
 	struct nfs4_string	*owner_name;
 	struct nfs4_string	*group_name;
-	struct nfs4_threshold	*mdsthreshold;	/* pNFS threshold hints */
+	struct nfs4_threshold	*mdsthreshold;	 
 	struct nfs4_label	*label;
 };
-
 #define NFS_ATTR_FATTR_TYPE		(1U << 0)
 #define NFS_ATTR_FATTR_MODE		(1U << 1)
 #define NFS_ATTR_FATTR_NLINK		(1U << 2)
@@ -106,7 +87,6 @@ struct nfs_fattr {
 #define NFS_ATTR_FATTR_OWNER_NAME	(1U << 23)
 #define NFS_ATTR_FATTR_GROUP_NAME	(1U << 24)
 #define NFS_ATTR_FATTR_V4_SECURITY_LABEL (1U << 25)
-
 #define NFS_ATTR_FATTR (NFS_ATTR_FATTR_TYPE \
 		| NFS_ATTR_FATTR_MODE \
 		| NFS_ATTR_FATTR_NLINK \
@@ -127,69 +107,54 @@ struct nfs_fattr {
 #define NFS_ATTR_FATTR_V4 (NFS_ATTR_FATTR \
 		| NFS_ATTR_FATTR_SPACE_USED \
 		| NFS_ATTR_FATTR_V4_SECURITY_LABEL)
-
-/*
- * Maximal number of supported layout drivers.
- */
 #define NFS_MAX_LAYOUT_TYPES 8
-
-/*
- * Info on the file system
- */
 struct nfs_fsinfo {
-	struct nfs_fattr	*fattr; /* Post-op attributes */
-	__u32			rtmax;	/* max.  read transfer size */
-	__u32			rtpref;	/* pref. read transfer size */
-	__u32			rtmult;	/* reads should be multiple of this */
-	__u32			wtmax;	/* max.  write transfer size */
-	__u32			wtpref;	/* pref. write transfer size */
-	__u32			wtmult;	/* writes should be multiple of this */
-	__u32			dtpref;	/* pref. readdir transfer size */
+	struct nfs_fattr	*fattr;  
+	__u32			rtmax;	 
+	__u32			rtpref;	 
+	__u32			rtmult;	 
+	__u32			wtmax;	 
+	__u32			wtpref;	 
+	__u32			wtmult;	 
+	__u32			dtpref;	 
 	__u64			maxfilesize;
-	struct timespec64	time_delta; /* server time granularity */
-	__u32			lease_time; /* in seconds */
-	__u32			nlayouttypes; /* number of layouttypes */
-	__u32			layouttype[NFS_MAX_LAYOUT_TYPES]; /* supported pnfs layout driver */
-	__u32			blksize; /* preferred pnfs io block size */
-	__u32			clone_blksize; /* granularity of a CLONE operation */
+	struct timespec64	time_delta;  
+	__u32			lease_time;  
+	__u32			nlayouttypes;  
+	__u32			layouttype[NFS_MAX_LAYOUT_TYPES];  
+	__u32			blksize;  
+	__u32			clone_blksize;  
 	enum nfs4_change_attr_type
-				change_attr_type; /* Info about change attr */
-	__u32			xattr_support; /* User xattrs supported */
+				change_attr_type;  
+	__u32			xattr_support;  
 };
-
 struct nfs_fsstat {
-	struct nfs_fattr	*fattr; /* Post-op attributes */
-	__u64			tbytes;	/* total size in bytes */
-	__u64			fbytes;	/* # of free bytes */
-	__u64			abytes;	/* # of bytes available to user */
-	__u64			tfiles;	/* # of files */
-	__u64			ffiles;	/* # of free files */
-	__u64			afiles;	/* # of files available to user */
+	struct nfs_fattr	*fattr;  
+	__u64			tbytes;	 
+	__u64			fbytes;	 
+	__u64			abytes;	 
+	__u64			tfiles;	 
+	__u64			ffiles;	 
+	__u64			afiles;	 
 };
-
 struct nfs2_fsstat {
-	__u32			tsize;  /* Server transfer size */
-	__u32			bsize;  /* Filesystem block size */
-	__u32			blocks; /* No. of "bsize" blocks on filesystem */
-	__u32			bfree;  /* No. of free "bsize" blocks */
-	__u32			bavail; /* No. of available "bsize" blocks */
+	__u32			tsize;   
+	__u32			bsize;   
+	__u32			blocks;  
+	__u32			bfree;   
+	__u32			bavail;  
 };
-
 struct nfs_pathconf {
-	struct nfs_fattr	*fattr; /* Post-op attributes */
-	__u32			max_link; /* max # of hard links */
-	__u32			max_namelen; /* max name length */
+	struct nfs_fattr	*fattr;  
+	__u32			max_link;  
+	__u32			max_namelen;  
 };
-
 struct nfs4_change_info {
 	u32			atomic;
 	u64			before;
 	u64			after;
 };
-
 struct nfs_seqid;
-
-/* nfs41 sessions channel attributes */
 struct nfs4_channel_attrs {
 	u32			max_rqst_sz;
 	u32			max_resp_sz;
@@ -197,60 +162,49 @@ struct nfs4_channel_attrs {
 	u32			max_ops;
 	u32			max_reqs;
 };
-
 struct nfs4_slot;
 struct nfs4_sequence_args {
 	struct nfs4_slot	*sa_slot;
 	u8			sa_cache_this : 1,
 				sa_privileged : 1;
 };
-
 struct nfs4_sequence_res {
-	struct nfs4_slot	*sr_slot;	/* slot used to send request */
+	struct nfs4_slot	*sr_slot;	 
 	unsigned long		sr_timestamp;
-	int			sr_status;	/* sequence operation status */
+	int			sr_status;	 
 	u32			sr_status_flags;
 	u32			sr_highest_slotid;
 	u32			sr_target_highest_slotid;
 };
-
 struct nfs4_get_lease_time_args {
 	struct nfs4_sequence_args	la_seq_args;
 };
-
 struct nfs4_get_lease_time_res {
 	struct nfs4_sequence_res	lr_seq_res;
 	struct nfs_fsinfo	       *lr_fsinfo;
 };
-
 struct xdr_stream;
 struct nfs4_xdr_opaque_data;
-
 struct nfs4_xdr_opaque_ops {
 	void (*encode)(struct xdr_stream *, const void *args,
 			const struct nfs4_xdr_opaque_data *);
 	void (*free)(struct nfs4_xdr_opaque_data *);
 };
-
 struct nfs4_xdr_opaque_data {
 	const struct nfs4_xdr_opaque_ops *ops;
 	void *data;
 };
-
 #define PNFS_LAYOUT_MAXSIZE 4096
-
 struct nfs4_layoutdriver_data {
 	struct page **pages;
 	__u32 pglen;
 	__u32 len;
 };
-
 struct pnfs_layout_range {
 	u32 iomode;
 	u64 offset;
 	u64 length;
 };
-
 struct nfs4_layoutget_args {
 	struct nfs4_sequence_args seq_args;
 	__u32 type;
@@ -262,7 +216,6 @@ struct nfs4_layoutget_args {
 	nfs4_stateid stateid;
 	struct nfs4_layoutdriver_data layout;
 };
-
 struct nfs4_layoutget_res {
 	struct nfs4_sequence_res seq_res;
 	int status;
@@ -272,7 +225,6 @@ struct nfs4_layoutget_res {
 	nfs4_stateid stateid;
 	struct nfs4_layoutdriver_data *layoutp;
 };
-
 struct nfs4_layoutget {
 	struct nfs4_layoutget_args args;
 	struct nfs4_layoutget_res res;
@@ -280,19 +232,16 @@ struct nfs4_layoutget {
 	struct pnfs_layout_hdr *lo;
 	gfp_t gfp_flags;
 };
-
 struct nfs4_getdeviceinfo_args {
 	struct nfs4_sequence_args seq_args;
 	struct pnfs_device *pdev;
 	__u32 notify_types;
 };
-
 struct nfs4_getdeviceinfo_res {
 	struct nfs4_sequence_res seq_res;
 	struct pnfs_device *pdev;
 	__u32 notification;
 };
-
 struct nfs4_layoutcommit_args {
 	struct nfs4_sequence_args seq_args;
 	nfs4_stateid stateid;
@@ -304,14 +253,12 @@ struct nfs4_layoutcommit_args {
 	struct page **layoutupdate_pages;
 	__be32 *start_p;
 };
-
 struct nfs4_layoutcommit_res {
 	struct nfs4_sequence_res seq_res;
 	struct nfs_fattr *fattr;
 	const struct nfs_server *server;
 	int status;
 };
-
 struct nfs4_layoutcommit_data {
 	struct rpc_task task;
 	struct nfs_fattr fattr;
@@ -321,7 +268,6 @@ struct nfs4_layoutcommit_data {
 	struct nfs4_layoutcommit_args args;
 	struct nfs4_layoutcommit_res res;
 };
-
 struct nfs4_layoutreturn_args {
 	struct nfs4_sequence_args seq_args;
 	struct pnfs_layout_hdr *layout;
@@ -331,13 +277,11 @@ struct nfs4_layoutreturn_args {
 	__u32   layout_type;
 	struct nfs4_xdr_opaque_data *ld_private;
 };
-
 struct nfs4_layoutreturn_res {
 	struct nfs4_sequence_res seq_res;
 	u32 lrs_present;
 	nfs4_stateid stateid;
 };
-
 struct nfs4_layoutreturn {
 	struct nfs4_layoutreturn_args args;
 	struct nfs4_layoutreturn_res res;
@@ -347,16 +291,12 @@ struct nfs4_layoutreturn {
 	int rpc_status;
 	struct nfs4_xdr_opaque_data ld_private;
 };
-
 #define PNFS_LAYOUTSTATS_MAXSIZE 256
-
 struct nfs42_layoutstat_args;
 struct nfs42_layoutstat_devinfo;
 typedef	void (*layoutstats_encode_t)(struct xdr_stream *,
 		struct nfs42_layoutstat_args *,
 		struct nfs42_layoutstat_devinfo *);
-
-/* Per file per deviceid layoutstats */
 struct nfs42_layoutstat_devinfo {
 	struct nfs4_deviceid dev_id;
 	__u64 offset;
@@ -368,7 +308,6 @@ struct nfs42_layoutstat_devinfo {
 	__u32 layout_type;
 	struct nfs4_xdr_opaque_data ld_private;
 };
-
 struct nfs42_layoutstat_args {
 	struct nfs4_sequence_args seq_args;
 	struct nfs_fh *fh;
@@ -377,54 +316,45 @@ struct nfs42_layoutstat_args {
 	int num_dev;
 	struct nfs42_layoutstat_devinfo *devinfo;
 };
-
 struct nfs42_layoutstat_res {
 	struct nfs4_sequence_res seq_res;
 	int num_dev;
 	int rpc_status;
 };
-
 struct nfs42_layoutstat_data {
 	struct inode *inode;
 	struct nfs42_layoutstat_args args;
 	struct nfs42_layoutstat_res res;
 };
-
 struct nfs42_device_error {
 	struct nfs4_deviceid dev_id;
 	int status;
 	enum nfs_opnum4 opnum;
 };
-
 struct nfs42_layout_error {
 	__u64 offset;
 	__u64 length;
 	nfs4_stateid stateid;
 	struct nfs42_device_error errors[1];
 };
-
 #define NFS42_LAYOUTERROR_MAX 5
-
 struct nfs42_layouterror_args {
 	struct nfs4_sequence_args seq_args;
 	struct inode *inode;
 	unsigned int num_errors;
 	struct nfs42_layout_error errors[NFS42_LAYOUTERROR_MAX];
 };
-
 struct nfs42_layouterror_res {
 	struct nfs4_sequence_res seq_res;
 	unsigned int num_errors;
 	int rpc_status;
 };
-
 struct nfs42_layouterror_data {
 	struct nfs42_layouterror_args args;
 	struct nfs42_layouterror_res res;
 	struct inode *inode;
 	struct pnfs_layout_segment *lseg;
 };
-
 struct nfs42_clone_args {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh			*src_fh;
@@ -436,22 +366,16 @@ struct nfs42_clone_args {
 	__u64				count;
 	const u32			*dst_bitmask;
 };
-
 struct nfs42_clone_res {
 	struct nfs4_sequence_res	seq_res;
 	unsigned int			rpc_status;
 	struct nfs_fattr		*dst_fattr;
 	const struct nfs_server		*server;
 };
-
 struct stateowner_id {
 	__u64	create_time;
 	__u32	uniquifier;
 };
-
-/*
- * Arguments to the open call.
- */
 struct nfs_openargs {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh *	fh;
@@ -464,14 +388,14 @@ struct nfs_openargs {
 	struct stateowner_id	id;
 	union {
 		struct {
-			struct iattr *  attrs;    /* UNCHECKED, GUARDED, EXCLUSIVE4_1 */
-			nfs4_verifier   verifier; /* EXCLUSIVE */
+			struct iattr *  attrs;     
+			nfs4_verifier   verifier;  
 		};
-		nfs4_stateid	delegation;		/* CLAIM_DELEGATE_CUR */
-		fmode_t		delegation_type;	/* CLAIM_PREVIOUS */
+		nfs4_stateid	delegation;		 
+		fmode_t		delegation_type;	 
 	} u;
 	const struct qstr *	name;
-	const struct nfs_server *server;	 /* Needed for ID mapping */
+	const struct nfs_server *server;	  
 	const u32 *		bitmask;
 	const u32 *		open_bitmap;
 	enum open_claim_type4	claim;
@@ -480,7 +404,6 @@ struct nfs_openargs {
 	umode_t			umask;
 	struct nfs4_layoutget_args *lg_args;
 };
-
 struct nfs_openres {
 	struct nfs4_sequence_res	seq_res;
 	nfs4_stateid            stateid;
@@ -502,26 +425,17 @@ struct nfs_openres {
 	__u32			access_result;
 	struct nfs4_layoutget_res *lg_res;
 };
-
-/*
- * Arguments to the open_confirm call.
- */
 struct nfs_open_confirmargs {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh *	fh;
 	nfs4_stateid *		stateid;
 	struct nfs_seqid *	seqid;
 };
-
 struct nfs_open_confirmres {
 	struct nfs4_sequence_res	seq_res;
 	nfs4_stateid            stateid;
 	struct nfs_seqid *	seqid;
 };
-
-/*
- * Arguments to the close call.
- */
 struct nfs_closeargs {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh *         fh;
@@ -533,7 +447,6 @@ struct nfs_closeargs {
 	u32			bitmask_store[NFS_BITMASK_SZ];
 	struct nfs4_layoutreturn_args *lr_args;
 };
-
 struct nfs_closeres {
 	struct nfs4_sequence_res	seq_res;
 	nfs4_stateid            stateid;
@@ -543,15 +456,11 @@ struct nfs_closeres {
 	struct nfs4_layoutreturn_res *lr_res;
 	int lr_ret;
 };
-/*
- *  * Arguments to the lock,lockt, and locku call.
- *   */
 struct nfs_lowner {
 	__u64			clientid;
 	__u64			id;
 	dev_t			s_dev;
 };
-
 struct nfs_lock_args {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh *		fh;
@@ -566,14 +475,12 @@ struct nfs_lock_args {
 	unsigned char		new_lock : 1;
 	unsigned char		new_lock_owner : 1;
 };
-
 struct nfs_lock_res {
 	struct nfs4_sequence_res	seq_res;
 	nfs4_stateid		stateid;
 	struct nfs_seqid *	lock_seqid;
 	struct nfs_seqid *	open_seqid;
 };
-
 struct nfs_locku_args {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh *		fh;
@@ -581,34 +488,28 @@ struct nfs_locku_args {
 	struct nfs_seqid *	seqid;
 	nfs4_stateid 		stateid;
 };
-
 struct nfs_locku_res {
 	struct nfs4_sequence_res	seq_res;
 	nfs4_stateid		stateid;
 	struct nfs_seqid *	seqid;
 };
-
 struct nfs_lockt_args {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh *		fh;
 	struct file_lock *	fl;
 	struct nfs_lowner	lock_owner;
 };
-
 struct nfs_lockt_res {
 	struct nfs4_sequence_res	seq_res;
-	struct file_lock *	denied; /* LOCK, LOCKT failed */
+	struct file_lock *	denied;  
 };
-
 struct nfs_release_lockowner_args {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_lowner	lock_owner;
 };
-
 struct nfs_release_lockowner_res {
 	struct nfs4_sequence_res	seq_res;
 };
-
 struct nfs4_delegreturnargs {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh *fhandle;
@@ -617,7 +518,6 @@ struct nfs4_delegreturnargs {
 	u32 bitmask_store[NFS_BITMASK_SZ];
 	struct nfs4_layoutreturn_args *lr_args;
 };
-
 struct nfs4_delegreturnres {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs_fattr * fattr;
@@ -625,22 +525,13 @@ struct nfs4_delegreturnres {
 	struct nfs4_layoutreturn_res *lr_res;
 	int lr_ret;
 };
-
-/*
- * Arguments to the write call.
- */
 struct nfs_write_verifier {
 	char			data[8];
 };
-
 struct nfs_writeverf {
 	struct nfs_write_verifier verifier;
 	enum nfs3_stable_how	committed;
 };
-
-/*
- * Arguments shared by the read and write call.
- */
 struct nfs_pgio_args {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh *		fh;
@@ -652,15 +543,14 @@ struct nfs_pgio_args {
 	unsigned int		pgbase;
 	struct page **		pages;
 	union {
-		unsigned int		replen;			/* used by read */
+		unsigned int		replen;			 
 		struct {
-			const u32 *		bitmask;	/* used by write */
-			u32 bitmask_store[NFS_BITMASK_SZ];	/* used by write */
-			enum nfs3_stable_how	stable;		/* used by write */
+			const u32 *		bitmask;	 
+			u32 bitmask_store[NFS_BITMASK_SZ];	 
+			enum nfs3_stable_how	stable;		 
 		};
 	};
 };
-
 struct nfs_pgio_res {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs_fattr *	fattr;
@@ -668,20 +558,16 @@ struct nfs_pgio_res {
 	__u32			op_status;
 	union {
 		struct {
-			unsigned int		replen;		/* used by read */
-			int			eof;		/* used by read */
-			void *			scratch;	/* used by read */
+			unsigned int		replen;		 
+			int			eof;		 
+			void *			scratch;	 
 		};
 		struct {
-			struct nfs_writeverf *	verf;		/* used by write */
-			const struct nfs_server *server;	/* used by write */
+			struct nfs_writeverf *	verf;		 
+			const struct nfs_server *server;	 
 		};
 	};
 };
-
-/*
- * Arguments to the commit call.
- */
 struct nfs_commitargs {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh		*fh;
@@ -689,7 +575,6 @@ struct nfs_commitargs {
 	__u32			count;
 	const u32		*bitmask;
 };
-
 struct nfs_commitres {
 	struct nfs4_sequence_res	seq_res;
 	__u32			op_status;
@@ -697,26 +582,17 @@ struct nfs_commitres {
 	struct nfs_writeverf	*verf;
 	const struct nfs_server *server;
 };
-
-/*
- * Common arguments to the unlink call
- */
 struct nfs_removeargs {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh	*fh;
 	struct qstr		name;
 };
-
 struct nfs_removeres {
 	struct nfs4_sequence_res 	seq_res;
 	struct nfs_server *server;
 	struct nfs_fattr	*dir_attr;
 	struct nfs4_change_info	cinfo;
 };
-
-/*
- * Common arguments to the rename call
- */
 struct nfs_renameargs {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh		*old_dir;
@@ -724,7 +600,6 @@ struct nfs_renameargs {
 	const struct qstr		*old_name;
 	const struct qstr		*new_name;
 };
-
 struct nfs_renameres {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs_server		*server;
@@ -733,17 +608,11 @@ struct nfs_renameres {
 	struct nfs4_change_info		new_cinfo;
 	struct nfs_fattr		*new_fattr;
 };
-
-/* parsed sec= options */
-#define NFS_AUTH_INFO_MAX_FLAVORS 12 /* see fs/nfs/super.c */
+#define NFS_AUTH_INFO_MAX_FLAVORS 12  
 struct nfs_auth_info {
 	unsigned int            flavor_len;
 	rpc_authflavor_t        flavors[NFS_AUTH_INFO_MAX_FLAVORS];
 };
-
-/*
- * Argument struct for decode_entry function
- */
 struct nfs_entry {
 	__u64			ino;
 	__u64			cookie;
@@ -755,7 +624,6 @@ struct nfs_entry {
 	unsigned char		d_type;
 	struct nfs_server *	server;
 };
-
 struct nfs_readdir_arg {
 	struct dentry		*dentry;
 	const struct cred	*cred;
@@ -765,49 +633,39 @@ struct nfs_readdir_arg {
 	unsigned int		page_len;
 	bool			plus;
 };
-
 struct nfs_readdir_res {
 	__be32			*verf;
 };
-
-/*
- * The following types are for NFSv2 only.
- */
 struct nfs_sattrargs {
 	struct nfs_fh *		fh;
 	struct iattr *		sattr;
 };
-
 struct nfs_diropargs {
 	struct nfs_fh *		fh;
 	const char *		name;
 	unsigned int		len;
 };
-
 struct nfs_createargs {
 	struct nfs_fh *		fh;
 	const char *		name;
 	unsigned int		len;
 	struct iattr *		sattr;
 };
-
 struct nfs_setattrargs {
 	struct nfs4_sequence_args 	seq_args;
 	struct nfs_fh *                 fh;
 	nfs4_stateid                    stateid;
 	struct iattr *                  iap;
-	const struct nfs_server *	server; /* Needed for name mapping */
+	const struct nfs_server *	server;  
 	const u32 *			bitmask;
 	const struct nfs4_label		*label;
 };
-
 enum nfs4_acl_type {
 	NFS4ACL_NONE = 0,
 	NFS4ACL_ACL,
 	NFS4ACL_DACL,
 	NFS4ACL_SACL,
 };
-
 struct nfs_setaclargs {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh *			fh;
@@ -815,11 +673,9 @@ struct nfs_setaclargs {
 	size_t				acl_len;
 	struct page **			acl_pages;
 };
-
 struct nfs_setaclres {
 	struct nfs4_sequence_res	seq_res;
 };
-
 struct nfs_getaclargs {
 	struct nfs4_sequence_args 	seq_args;
 	struct nfs_fh *			fh;
@@ -827,9 +683,7 @@ struct nfs_getaclargs {
 	size_t				acl_len;
 	struct page **			acl_pages;
 };
-
-/* getxattr ACL interface flags */
-#define NFS4_ACL_TRUNC		0x0001	/* ACL was truncated */
+#define NFS4_ACL_TRUNC		0x0001	 
 struct nfs_getaclres {
 	struct nfs4_sequence_res	seq_res;
 	enum nfs4_acl_type		acl_type;
@@ -838,20 +692,17 @@ struct nfs_getaclres {
 	int				acl_flags;
 	struct page *			acl_scratch;
 };
-
 struct nfs_setattrres {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs_fattr *              fattr;
 	const struct nfs_server *	server;
 };
-
 struct nfs_linkargs {
 	struct nfs_fh *		fromfh;
 	struct nfs_fh *		tofh;
 	const char *		toname;
 	unsigned int		tolen;
 };
-
 struct nfs_symlinkargs {
 	struct nfs_fh *		fromfh;
 	const char *		fromname;
@@ -860,20 +711,17 @@ struct nfs_symlinkargs {
 	unsigned int		pathlen;
 	struct iattr *		sattr;
 };
-
 struct nfs_readdirargs {
 	struct nfs_fh *		fh;
 	__u32			cookie;
 	unsigned int		count;
 	struct page **		pages;
 };
-
 struct nfs3_getaclargs {
 	struct nfs_fh *		fh;
 	int			mask;
 	struct page **		pages;
 };
-
 struct nfs3_setaclargs {
 	struct inode *		inode;
 	int			mask;
@@ -883,37 +731,31 @@ struct nfs3_setaclargs {
 	unsigned int		npages;
 	struct page **		pages;
 };
-
 struct nfs_diropok {
 	struct nfs_fh *		fh;
 	struct nfs_fattr *	fattr;
 };
-
 struct nfs_readlinkargs {
 	struct nfs_fh *		fh;
 	unsigned int		pgbase;
 	unsigned int		pglen;
 	struct page **		pages;
 };
-
 struct nfs3_sattrargs {
 	struct nfs_fh *		fh;
 	struct iattr *		sattr;
 	unsigned int		guard;
 	struct timespec64	guardtime;
 };
-
 struct nfs3_diropargs {
 	struct nfs_fh *		fh;
 	const char *		name;
 	unsigned int		len;
 };
-
 struct nfs3_accessargs {
 	struct nfs_fh *		fh;
 	__u32			access;
 };
-
 struct nfs3_createargs {
 	struct nfs_fh *		fh;
 	const char *		name;
@@ -922,14 +764,12 @@ struct nfs3_createargs {
 	enum nfs3_createmode	createmode;
 	__be32			verifier[2];
 };
-
 struct nfs3_mkdirargs {
 	struct nfs_fh *		fh;
 	const char *		name;
 	unsigned int		len;
 	struct iattr *		sattr;
 };
-
 struct nfs3_symlinkargs {
 	struct nfs_fh *		fromfh;
 	const char *		fromname;
@@ -938,7 +778,6 @@ struct nfs3_symlinkargs {
 	unsigned int		pathlen;
 	struct iattr *		sattr;
 };
-
 struct nfs3_mknodargs {
 	struct nfs_fh *		fh;
 	const char *		name;
@@ -947,14 +786,12 @@ struct nfs3_mknodargs {
 	struct iattr *		sattr;
 	dev_t			rdev;
 };
-
 struct nfs3_linkargs {
 	struct nfs_fh *		fromfh;
 	struct nfs_fh *		tofh;
 	const char *		toname;
 	unsigned int		tolen;
 };
-
 struct nfs3_readdirargs {
 	struct nfs_fh *		fh;
 	__u64			cookie;
@@ -963,36 +800,30 @@ struct nfs3_readdirargs {
 	unsigned int            count;
 	struct page **		pages;
 };
-
 struct nfs3_diropres {
 	struct nfs_fattr *	dir_attr;
 	struct nfs_fh *		fh;
 	struct nfs_fattr *	fattr;
 };
-
 struct nfs3_accessres {
 	struct nfs_fattr *	fattr;
 	__u32			access;
 };
-
 struct nfs3_readlinkargs {
 	struct nfs_fh *		fh;
 	unsigned int		pgbase;
 	unsigned int		pglen;
 	struct page **		pages;
 };
-
 struct nfs3_linkres {
 	struct nfs_fattr *	dir_attr;
 	struct nfs_fattr *	fattr;
 };
-
 struct nfs3_readdirres {
 	struct nfs_fattr *	dir_attr;
 	__be32 *		verf;
 	bool			plus;
 };
-
 struct nfs3_getaclres {
 	struct nfs_fattr *	fattr;
 	int			mask;
@@ -1001,18 +832,14 @@ struct nfs3_getaclres {
 	struct posix_acl *	acl_access;
 	struct posix_acl *	acl_default;
 };
-
 #if IS_ENABLED(CONFIG_NFS_V4)
-
 typedef u64 clientid4;
-
 struct nfs4_accessargs {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh *		fh;
 	const u32 *			bitmask;
 	u32				access;
 };
-
 struct nfs4_accessres {
 	struct nfs4_sequence_res	seq_res;
 	const struct nfs_server *	server;
@@ -1020,7 +847,6 @@ struct nfs4_accessres {
 	u32				supported;
 	u32				access;
 };
-
 struct nfs4_create_arg {
 	struct nfs4_sequence_args 	seq_args;
 	u32				ftype;
@@ -1028,11 +854,11 @@ struct nfs4_create_arg {
 		struct {
 			struct page **	pages;
 			unsigned int	len;
-		} symlink;   /* NF4LNK */
+		} symlink;    
 		struct {
 			u32		specdata1;
 			u32		specdata2;
-		} device;    /* NF4BLK, NF4CHR */
+		} device;     
 	} u;
 	const struct qstr *		name;
 	const struct nfs_server *	server;
@@ -1042,7 +868,6 @@ struct nfs4_create_arg {
 	const struct nfs4_label		*label;
 	umode_t				umask;
 };
-
 struct nfs4_create_res {
 	struct nfs4_sequence_res	seq_res;
 	const struct nfs_server *	server;
@@ -1050,30 +875,25 @@ struct nfs4_create_res {
 	struct nfs_fattr *		fattr;
 	struct nfs4_change_info		dir_cinfo;
 };
-
 struct nfs4_fsinfo_arg {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh *		fh;
 	const u32 *			bitmask;
 };
-
 struct nfs4_fsinfo_res {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs_fsinfo	       *fsinfo;
 };
-
 struct nfs4_getattr_arg {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh *		fh;
 	const u32 *			bitmask;
 };
-
 struct nfs4_getattr_res {
 	struct nfs4_sequence_res	seq_res;
 	const struct nfs_server *	server;
 	struct nfs_fattr *		fattr;
 };
-
 struct nfs4_link_arg {
 	struct nfs4_sequence_args 	seq_args;
 	const struct nfs_fh *		fh;
@@ -1081,7 +901,6 @@ struct nfs4_link_arg {
 	const struct qstr *		name;
 	const u32 *			bitmask;
 };
-
 struct nfs4_link_res {
 	struct nfs4_sequence_res	seq_res;
 	const struct nfs_server *	server;
@@ -1089,80 +908,68 @@ struct nfs4_link_res {
 	struct nfs4_change_info		cinfo;
 	struct nfs_fattr *		dir_attr;
 };
-
 struct nfs4_lookup_arg {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh *		dir_fh;
 	const struct qstr *		name;
 	const u32 *			bitmask;
 };
-
 struct nfs4_lookup_res {
 	struct nfs4_sequence_res	seq_res;
 	const struct nfs_server *	server;
 	struct nfs_fattr *		fattr;
 	struct nfs_fh *			fh;
 };
-
 struct nfs4_lookupp_arg {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh		*fh;
 	const u32			*bitmask;
 };
-
 struct nfs4_lookupp_res {
 	struct nfs4_sequence_res	seq_res;
 	const struct nfs_server		*server;
 	struct nfs_fattr		*fattr;
 	struct nfs_fh			*fh;
 };
-
 struct nfs4_lookup_root_arg {
 	struct nfs4_sequence_args	seq_args;
 	const u32 *			bitmask;
 };
-
 struct nfs4_pathconf_arg {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh *		fh;
 	const u32 *			bitmask;
 };
-
 struct nfs4_pathconf_res {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs_pathconf	       *pathconf;
 };
-
 struct nfs4_readdir_arg {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh *		fh;
 	u64				cookie;
 	nfs4_verifier			verifier;
 	u32				count;
-	struct page **			pages;	/* zero-copy data */
-	unsigned int			pgbase;	/* zero-copy data */
+	struct page **			pages;	 
+	unsigned int			pgbase;	 
 	const u32 *			bitmask;
 	bool				plus;
 };
-
 struct nfs4_readdir_res {
 	struct nfs4_sequence_res	seq_res;
 	nfs4_verifier			verifier;
 	unsigned int			pgbase;
 };
-
 struct nfs4_readlink {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh *		fh;
 	unsigned int			pgbase;
-	unsigned int			pglen;   /* zero-copy data */
-	struct page **			pages;   /* zero-copy data */
+	unsigned int			pglen;    
+	struct page **			pages;    
 };
-
 struct nfs4_readlink_res {
 	struct nfs4_sequence_res	seq_res;
 };
-
 struct nfs4_setclientid {
 	const nfs4_verifier *		sc_verifier;
 	u32				sc_prog;
@@ -1173,29 +980,24 @@ struct nfs4_setclientid {
 	struct nfs_client		*sc_clnt;
 	struct rpc_cred			*sc_cred;
 };
-
 struct nfs4_setclientid_res {
 	u64				clientid;
 	nfs4_verifier			confirm;
 };
-
 struct nfs4_statfs_arg {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh *		fh;
 	const u32 *			bitmask;
 };
-
 struct nfs4_statfs_res {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs_fsstat	       *fsstat;
 };
-
 struct nfs4_server_caps_arg {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh		       *fhandle;
 	const u32 *			bitmask;
 };
-
 struct nfs4_server_caps_res {
 	struct nfs4_sequence_res	seq_res;
 	u32				attr_bitmask[3];
@@ -1207,20 +1009,17 @@ struct nfs4_server_caps_res {
 	u32				case_insensitive;
 	u32				case_preserving;
 };
-
 #define NFS4_PATHNAME_MAXCOMPONENTS 512
 struct nfs4_pathname {
 	unsigned int ncomponents;
 	struct nfs4_string components[NFS4_PATHNAME_MAXCOMPONENTS];
 };
-
 #define NFS4_FS_LOCATION_MAXSERVERS 10
 struct nfs4_fs_location {
 	unsigned int nservers;
 	struct nfs4_string servers[NFS4_FS_LOCATION_MAXSERVERS];
 	struct nfs4_pathname rootpath;
 };
-
 #define NFS4_FS_LOCATIONS_MAXENTRIES 10
 struct nfs4_fs_locations {
 	struct nfs_fattr *fattr;
@@ -1229,7 +1028,6 @@ struct nfs4_fs_locations {
 	int nlocations;
 	struct nfs4_fs_location locations[NFS4_FS_LOCATIONS_MAXENTRIES];
 };
-
 struct nfs4_fs_locations_arg {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh *dir_fh;
@@ -1240,63 +1038,51 @@ struct nfs4_fs_locations_arg {
 	clientid4 clientid;
 	unsigned char migration:1, renew:1;
 };
-
 struct nfs4_fs_locations_res {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs4_fs_locations       *fs_locations;
 	unsigned char			migration:1, renew:1;
 };
-
 struct nfs4_secinfo4 {
 	u32			flavor;
 	struct rpcsec_gss_info	flavor_info;
 };
-
 struct nfs4_secinfo_flavors {
 	unsigned int		num_flavors;
 	struct nfs4_secinfo4	flavors[];
 };
-
 struct nfs4_secinfo_arg {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh		*dir_fh;
 	const struct qstr		*name;
 };
-
 struct nfs4_secinfo_res {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs4_secinfo_flavors	*flavors;
 };
-
 struct nfs4_fsid_present_arg {
 	struct nfs4_sequence_args	seq_args;
 	const struct nfs_fh		*fh;
 	clientid4			clientid;
 	unsigned char			renew:1;
 };
-
 struct nfs4_fsid_present_res {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs_fh			*fh;
 	unsigned char			renew:1;
 };
-
-#endif /* CONFIG_NFS_V4 */
-
+#endif  
 struct nfstime4 {
 	u64	seconds;
 	u32	nseconds;
 };
-
 #ifdef CONFIG_NFS_V4_1
-
 struct pnfs_commit_bucket {
 	struct list_head written;
 	struct list_head committing;
 	struct pnfs_layout_segment *lseg;
 	struct nfs_writeverf direct_verf;
 };
-
 struct pnfs_commit_array {
 	struct list_head cinfo_list;
 	struct list_head lseg_list;
@@ -1306,44 +1092,37 @@ struct pnfs_commit_array {
 	unsigned int nbuckets;
 	struct pnfs_commit_bucket buckets[];
 };
-
 struct pnfs_ds_commit_info {
 	struct list_head commits;
 	unsigned int nwritten;
 	unsigned int ncommitting;
 	const struct pnfs_commit_ops *ops;
 };
-
 struct nfs41_state_protection {
 	u32 how;
 	struct nfs4_op_map enforce;
 	struct nfs4_op_map allow;
 };
-
 struct nfs41_exchange_id_args {
 	struct nfs_client		*client;
 	nfs4_verifier			verifier;
 	u32				flags;
 	struct nfs41_state_protection	state_protect;
 };
-
 struct nfs41_server_owner {
 	uint64_t			minor_id;
 	uint32_t			major_id_sz;
 	char				major_id[NFS4_OPAQUE_LIMIT];
 };
-
 struct nfs41_server_scope {
 	uint32_t			server_scope_sz;
 	char 				server_scope[NFS4_OPAQUE_LIMIT];
 };
-
 struct nfs41_impl_id {
 	char				domain[NFS4_OPAQUE_LIMIT + 1];
 	char				name[NFS4_OPAQUE_LIMIT + 1];
 	struct nfstime4			date;
 };
-
 #define MAX_BIND_CONN_TO_SESSION_RETRIES 3
 struct nfs41_bind_conn_to_session_args {
 	struct nfs_client		*client;
@@ -1352,13 +1131,11 @@ struct nfs41_bind_conn_to_session_args {
 	bool				use_conn_in_rdma_mode;
 	int				retries;
 };
-
 struct nfs41_bind_conn_to_session_res {
 	struct nfs4_sessionid		sessionid;
 	u32				dir;
 	bool				use_conn_in_rdma_mode;
 };
-
 struct nfs41_exchange_id_res {
 	u64				clientid;
 	u32				seqid;
@@ -1368,110 +1145,87 @@ struct nfs41_exchange_id_res {
 	struct nfs41_impl_id		*impl_id;
 	struct nfs41_state_protection	state_protect;
 };
-
 struct nfs41_create_session_args {
 	struct nfs_client	       *client;
 	u64				clientid;
 	uint32_t			seqid;
 	uint32_t			flags;
 	uint32_t			cb_program;
-	struct nfs4_channel_attrs	fc_attrs;	/* Fore Channel */
-	struct nfs4_channel_attrs	bc_attrs;	/* Back Channel */
+	struct nfs4_channel_attrs	fc_attrs;	 
+	struct nfs4_channel_attrs	bc_attrs;	 
 };
-
 struct nfs41_create_session_res {
 	struct nfs4_sessionid		sessionid;
 	uint32_t			seqid;
 	uint32_t			flags;
-	struct nfs4_channel_attrs	fc_attrs;	/* Fore Channel */
-	struct nfs4_channel_attrs	bc_attrs;	/* Back Channel */
+	struct nfs4_channel_attrs	fc_attrs;	 
+	struct nfs4_channel_attrs	bc_attrs;	 
 };
-
 struct nfs41_reclaim_complete_args {
 	struct nfs4_sequence_args	seq_args;
-	/* In the future extend to include curr_fh for use with migration */
 	unsigned char			one_fs:1;
 };
-
 struct nfs41_reclaim_complete_res {
 	struct nfs4_sequence_res	seq_res;
 };
-
 #define SECINFO_STYLE_CURRENT_FH 0
 #define SECINFO_STYLE_PARENT 1
 struct nfs41_secinfo_no_name_args {
 	struct nfs4_sequence_args	seq_args;
 	int				style;
 };
-
 struct nfs41_test_stateid_args {
 	struct nfs4_sequence_args	seq_args;
 	nfs4_stateid			*stateid;
 };
-
 struct nfs41_test_stateid_res {
 	struct nfs4_sequence_res	seq_res;
 	unsigned int			status;
 };
-
 struct nfs41_free_stateid_args {
 	struct nfs4_sequence_args	seq_args;
 	nfs4_stateid			stateid;
 };
-
 struct nfs41_free_stateid_res {
 	struct nfs4_sequence_res	seq_res;
 	unsigned int			status;
 };
-
 #else
-
 struct pnfs_ds_commit_info {
 };
-
-#endif /* CONFIG_NFS_V4_1 */
-
+#endif  
 #ifdef CONFIG_NFS_V4_2
 struct nfs42_falloc_args {
 	struct nfs4_sequence_args	seq_args;
-
 	struct nfs_fh			*falloc_fh;
 	nfs4_stateid			 falloc_stateid;
 	u64				 falloc_offset;
 	u64				 falloc_length;
 	const u32			*falloc_bitmask;
 };
-
 struct nfs42_falloc_res {
 	struct nfs4_sequence_res	seq_res;
 	unsigned int			status;
-
 	struct nfs_fattr		*falloc_fattr;
 	const struct nfs_server		*falloc_server;
 };
-
 struct nfs42_copy_args {
 	struct nfs4_sequence_args	seq_args;
-
 	struct nfs_fh			*src_fh;
 	nfs4_stateid			src_stateid;
 	u64				src_pos;
-
 	struct nfs_fh			*dst_fh;
 	nfs4_stateid			dst_stateid;
 	u64				dst_pos;
-
 	u64				count;
 	bool				sync;
 	struct nl4_server		*cp_src;
 };
-
 struct nfs42_write_res {
 	nfs4_stateid		stateid;
 	u64			count;
 	struct nfs_writeverf	verifier;
 };
-
 struct nfs42_copy_res {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs42_write_res		write_res;
@@ -1479,52 +1233,41 @@ struct nfs42_copy_res {
 	bool				synchronous;
 	struct nfs_commitres		commit_res;
 };
-
 struct nfs42_offload_status_args {
 	struct nfs4_sequence_args	osa_seq_args;
 	struct nfs_fh			*osa_src_fh;
 	nfs4_stateid			osa_stateid;
 };
-
 struct nfs42_offload_status_res {
 	struct nfs4_sequence_res	osr_seq_res;
 	uint64_t			osr_count;
 	int				osr_status;
 };
-
 struct nfs42_copy_notify_args {
 	struct nfs4_sequence_args	cna_seq_args;
-
 	struct nfs_fh		*cna_src_fh;
 	nfs4_stateid		cna_src_stateid;
 	struct nl4_server	cna_dst;
 };
-
 struct nfs42_copy_notify_res {
 	struct nfs4_sequence_res	cnr_seq_res;
-
 	struct nfstime4		cnr_lease_time;
 	nfs4_stateid		cnr_stateid;
 	struct nl4_server	cnr_src;
 };
-
 struct nfs42_seek_args {
 	struct nfs4_sequence_args	seq_args;
-
 	struct nfs_fh			*sa_fh;
 	nfs4_stateid			sa_stateid;
 	u64				sa_offset;
 	u32				sa_what;
 };
-
 struct nfs42_seek_res {
 	struct nfs4_sequence_res	seq_res;
 	unsigned int			status;
-
 	u32	sr_eof;
 	u64	sr_offset;
 };
-
 struct nfs42_setxattrargs {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh			*fh;
@@ -1534,14 +1277,12 @@ struct nfs42_setxattrargs {
 	size_t				xattr_len;
 	struct page			**xattr_pages;
 };
-
 struct nfs42_setxattrres {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs4_change_info		cinfo;
 	struct nfs_fattr		*fattr;
 	const struct nfs_server		*server;
 };
-
 struct nfs42_getxattrargs {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh			*fh;
@@ -1549,12 +1290,10 @@ struct nfs42_getxattrargs {
 	size_t				xattr_len;
 	struct page			**xattr_pages;
 };
-
 struct nfs42_getxattrres {
 	struct nfs4_sequence_res	seq_res;
 	size_t				xattr_len;
 };
-
 struct nfs42_listxattrsargs {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh			*fh;
@@ -1562,7 +1301,6 @@ struct nfs42_listxattrsargs {
 	u64				cookie;
 	struct page			**xattr_pages;
 };
-
 struct nfs42_listxattrsres {
 	struct nfs4_sequence_res	seq_res;
 	struct page			*scratch;
@@ -1572,31 +1310,23 @@ struct nfs42_listxattrsres {
 	bool				eof;
 	size_t				copied;
 };
-
 struct nfs42_removexattrargs {
 	struct nfs4_sequence_args	seq_args;
 	struct nfs_fh			*fh;
 	const char			*xattr_name;
 };
-
 struct nfs42_removexattrres {
 	struct nfs4_sequence_res	seq_res;
 	struct nfs4_change_info		cinfo;
 };
-
-#endif /* CONFIG_NFS_V4_2 */
-
+#endif  
 struct nfs_page;
-
 #define NFS_PAGEVEC_SIZE	(8U)
-
 struct nfs_page_array {
 	struct page		**pagevec;
-	unsigned int		npages;		/* Max length of pagevec */
+	unsigned int		npages;		 
 	struct page		*page_array[NFS_PAGEVEC_SIZE];
 };
-
-/* used as flag bits in nfs_pgio_header */
 enum {
 	NFS_IOHDR_ERROR = 0,
 	NFS_IOHDR_EOF,
@@ -1606,14 +1336,13 @@ enum {
 	NFS_IOHDR_RESEND_MDS,
 	NFS_IOHDR_UNSTABLE_WRITES,
 };
-
 struct nfs_io_completion;
 struct nfs_pgio_header {
 	struct inode		*inode;
 	const struct cred		*cred;
 	struct list_head	pages;
 	struct nfs_page		*req;
-	struct nfs_writeverf	verf;		/* Used for writes */
+	struct nfs_writeverf	verf;		 
 	fmode_t			rw_mode;
 	struct pnfs_layout_segment *lseg;
 	loff_t			io_start;
@@ -1626,34 +1355,27 @@ struct nfs_pgio_header {
 #ifdef CONFIG_NFS_FSCACHE
 	void			*netfs;
 #endif
-
 	int			pnfs_error;
-	int			error;		/* merge with pnfs_error */
-	unsigned int		good_bytes;	/* boundary of good data */
+	int			error;		 
+	unsigned int		good_bytes;	 
 	unsigned long		flags;
-
-	/*
-	 * rpc data
-	 */
 	struct rpc_task		task;
 	struct nfs_fattr	fattr;
-	struct nfs_pgio_args	args;		/* argument struct */
-	struct nfs_pgio_res	res;		/* result struct */
-	unsigned long		timestamp;	/* For lease renewal */
+	struct nfs_pgio_args	args;		 
+	struct nfs_pgio_res	res;		 
+	unsigned long		timestamp;	 
 	int (*pgio_done_cb)(struct rpc_task *, struct nfs_pgio_header *);
-	__u64			mds_offset;	/* Filelayout dense stripe */
+	__u64			mds_offset;	 
 	struct nfs_page_array	page_array;
-	struct nfs_client	*ds_clp;	/* pNFS data server */
-	u32			ds_commit_idx;	/* ds index if ds_clp is set */
-	u32			pgio_mirror_idx;/* mirror index in pgio layer */
+	struct nfs_client	*ds_clp;	 
+	u32			ds_commit_idx;	 
+	u32			pgio_mirror_idx; 
 };
-
 struct nfs_mds_commit_info {
 	atomic_t rpcs_out;
 	atomic_long_t		ncommit;
 	struct list_head	list;
 };
-
 struct nfs_commit_info;
 struct nfs_commit_data;
 struct nfs_inode;
@@ -1661,29 +1383,27 @@ struct nfs_commit_completion_ops {
 	void (*completion) (struct nfs_commit_data *data);
 	void (*resched_write) (struct nfs_commit_info *, struct nfs_page *);
 };
-
 struct nfs_commit_info {
-	struct inode 			*inode;	/* Needed for inode->i_lock */
+	struct inode 			*inode;	 
 	struct nfs_mds_commit_info	*mds;
 	struct pnfs_ds_commit_info	*ds;
-	struct nfs_direct_req		*dreq;	/* O_DIRECT request */
+	struct nfs_direct_req		*dreq;	 
 	const struct nfs_commit_completion_ops *completion_ops;
 };
-
 struct nfs_commit_data {
 	struct rpc_task		task;
 	struct inode		*inode;
 	const struct cred		*cred;
 	struct nfs_fattr	fattr;
 	struct nfs_writeverf	verf;
-	struct list_head	pages;		/* Coalesced requests we wish to flush */
-	struct list_head	list;		/* lists of struct nfs_write_data */
-	struct nfs_direct_req	*dreq;		/* O_DIRECT request */
-	struct nfs_commitargs	args;		/* argument struct */
-	struct nfs_commitres	res;		/* result struct */
+	struct list_head	pages;		 
+	struct list_head	list;		 
+	struct nfs_direct_req	*dreq;		 
+	struct nfs_commitargs	args;		 
+	struct nfs_commitres	res;		 
 	struct nfs_open_context *context;
 	struct pnfs_layout_segment *lseg;
-	struct nfs_client	*ds_clp;	/* pNFS data server */
+	struct nfs_client	*ds_clp;	 
 	int			ds_commit_index;
 	loff_t			lwb;
 	const struct rpc_call_ops *mds_ops;
@@ -1691,14 +1411,12 @@ struct nfs_commit_data {
 	int (*commit_done_cb) (struct rpc_task *task, struct nfs_commit_data *data);
 	unsigned long		flags;
 };
-
 struct nfs_pgio_completion_ops {
 	void	(*error_cleanup)(struct list_head *head, int);
 	void	(*init_hdr)(struct nfs_pgio_header *hdr);
 	void	(*completion)(struct nfs_pgio_header *hdr);
 	void	(*reschedule_io)(struct nfs_pgio_header *hdr);
 };
-
 struct nfs_unlinkdata {
 	struct nfs_removeargs args;
 	struct nfs_removeres res;
@@ -1708,7 +1426,6 @@ struct nfs_unlinkdata {
 	struct nfs_fattr dir_attr;
 	long timeout;
 };
-
 struct nfs_renamedata {
 	struct nfs_renameargs	args;
 	struct nfs_renameres	res;
@@ -1724,7 +1441,6 @@ struct nfs_renamedata {
 	long timeout;
 	bool cancelled;
 };
-
 struct nfs_access_entry;
 struct nfs_client;
 struct rpc_timeout;
@@ -1733,18 +1449,13 @@ struct nfs_mount_info;
 struct nfs_client_initdata;
 struct nfs_pageio_descriptor;
 struct fs_context;
-
-/*
- * RPC procedure vector for NFSv2/NFSv3 demuxing
- */
 struct nfs_rpc_ops {
-	u32	version;		/* Protocol version */
+	u32	version;		 
 	const struct dentry_operations *dentry_ops;
 	const struct inode_operations *dir_inode_ops;
 	const struct inode_operations *file_inode_ops;
 	const struct file_operations *file_ops;
 	const struct nlmclnt_operations *nlmclnt_ops;
-
 	int	(*getroot) (struct nfs_server *, struct nfs_fh *,
 			    struct nfs_fsinfo *);
 	int	(*submount) (struct fs_context *, struct nfs_server *);
@@ -1819,25 +1530,13 @@ struct nfs_rpc_ops {
 	void	(*enable_swap)(struct inode *inode);
 	void	(*disable_swap)(struct inode *inode);
 };
-
-/*
- * 	NFS_CALL(getattr, inode, (fattr));
- * into
- *	NFS_PROTO(inode)->getattr(fattr);
- */
 #define NFS_CALL(op, inode, args)	NFS_PROTO(inode)->op args
-
-/*
- * Function vectors etc. for the NFS client
- */
 extern const struct nfs_rpc_ops	nfs_v2_clientops;
 extern const struct nfs_rpc_ops	nfs_v3_clientops;
 extern const struct nfs_rpc_ops	nfs_v4_clientops;
 extern const struct rpc_version nfs_version2;
 extern const struct rpc_version nfs_version3;
 extern const struct rpc_version nfs_version4;
-
 extern const struct rpc_version nfsacl_version3;
 extern const struct rpc_program nfsacl_program;
-
 #endif

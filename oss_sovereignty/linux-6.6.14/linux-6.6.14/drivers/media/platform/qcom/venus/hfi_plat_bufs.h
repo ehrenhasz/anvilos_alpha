@@ -1,14 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __HFI_PLATFORM_BUFFERS_H__
 #define __HFI_PLATFORM_BUFFERS_H__
-
 #include <linux/types.h>
 #include "hfi_helper.h"
-
 struct hfi_plat_buffers_params {
 	u32 width;
 	u32 height;
@@ -34,8 +27,6 @@ struct hfi_plat_buffers_params {
 		} enc;
 	};
 };
-
 int hfi_plat_bufreq_v6(struct hfi_plat_buffers_params *params, u32 session_type,
 		       u32 buftype, struct hfi_buffer_requirements *bufreq);
-
 #endif

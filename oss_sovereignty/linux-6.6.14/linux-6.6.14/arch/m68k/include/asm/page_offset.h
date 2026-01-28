@@ -1,6 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* This handles the memory map.. */
-
 #if defined(CONFIG_RAMBASE)
 #define PAGE_OFFSET_RAW		CONFIG_RAMBASE
 #elif defined(CONFIG_SUN3)

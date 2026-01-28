@@ -1,25 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
 #ifndef __RTL871X_EEPROM_H__
 #define __RTL871X_EEPROM_H__
-
 #include "osdep_service.h"
-
 #define	RTL8712_EEPROM_ID		0x8712
 #define	EEPROM_MAX_SIZE			256
-#define	CLOCK_RATE			50	/*100us*/
-
-/*- EEPROM opcodes*/
+#define	CLOCK_RATE			50	 
 #define EEPROM_READ_OPCODE		06
 #define EEPROM_WRITE_OPCODE		05
 #define EEPROM_ERASE_OPCODE		07
-#define EEPROM_EWEN_OPCODE		19      /* Erase/write enable*/
-#define EEPROM_EWDS_OPCODE		16      /* Erase/write disable*/
-
+#define EEPROM_EWEN_OPCODE		19       
+#define EEPROM_EWDS_OPCODE		16       
 #define	EEPROM_CID_DEFAULT		0x0
 #define	EEPROM_CID_ALPHA		0x1
 #define	EEPROM_CID_Senao		0x3
@@ -33,7 +22,6 @@
 #define	EEPROM_CID_WNC_COREGA		0x12
 #define	EEPROM_CID_CLEVO		0x13
 #define	EEPROM_CID_WHQL			0xFE
-
 enum RT_CUSTOMER_ID {
 	RT_CID_DEFAULT = 0,
 	RT_CID_8187_ALPHA0 = 1,
@@ -65,7 +53,6 @@ enum RT_CUSTOMER_ID {
 	RT_CID_819x_WNC_COREGA = 27,
 	RT_CID_819x_CLEVO = 28,
 };
-
 struct eeprom_priv {
 	u8 bautoload_fail_flag;
 	u8 bempty;
@@ -80,9 +67,6 @@ struct eeprom_priv {
 	u8 efuse_eeprom_data[EEPROM_MAX_SIZE];
 	enum RT_CUSTOMER_ID CustomerID;
 };
-
 void r8712_eeprom_write16(struct _adapter *padapter, u16 reg, u16 data);
 u16 r8712_eeprom_read16(struct _adapter *padapter, u16 reg);
-
-#endif  /*__RTL871X_EEPROM_H__*/
-
+#endif   

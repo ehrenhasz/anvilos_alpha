@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __KVM_FPU_H_
 #define __KVM_FPU_H_
-
 #include <asm/fpu/api.h>
-
 typedef u32		__attribute__((vector_size(16))) sse128_t;
 #define __sse128_u	union { sse128_t vec; u64 as_u64[2]; u32 as_u32[4]; }
 #define sse128_lo(x)	({ __sse128_u t; t.vec = x; t.as_u64[0]; })
@@ -14,7 +10,6 @@ typedef u32		__attribute__((vector_size(16))) sse128_t;
 #define sse128_l2(x)	({ __sse128_u t; t.vec = x; t.as_u32[2]; })
 #define sse128_l3(x)	({ __sse128_u t; t.vec = x; t.as_u32[3]; })
 #define sse128(lo, hi)	({ __sse128_u t; t.as_u64[0] = lo; t.as_u64[1] = hi; t.vec; })
-
 static inline void _kvm_read_sse_reg(int reg, sse128_t *data)
 {
 	switch (reg) {
@@ -39,7 +34,6 @@ static inline void _kvm_read_sse_reg(int reg, sse128_t *data)
 	default: BUG();
 	}
 }
-
 static inline void _kvm_write_sse_reg(int reg, const sse128_t *data)
 {
 	switch (reg) {
@@ -64,7 +58,6 @@ static inline void _kvm_write_sse_reg(int reg, const sse128_t *data)
 	default: BUG();
 	}
 }
-
 static inline void _kvm_read_mmx_reg(int reg, u64 *data)
 {
 	switch (reg) {
@@ -79,7 +72,6 @@ static inline void _kvm_read_mmx_reg(int reg, u64 *data)
 	default: BUG();
 	}
 }
-
 static inline void _kvm_write_mmx_reg(int reg, const u64 *data)
 {
 	switch (reg) {
@@ -94,47 +86,39 @@ static inline void _kvm_write_mmx_reg(int reg, const u64 *data)
 	default: BUG();
 	}
 }
-
 static inline void kvm_fpu_get(void)
 {
 	fpregs_lock();
-
 	fpregs_assert_state_consistent();
 	if (test_thread_flag(TIF_NEED_FPU_LOAD))
 		switch_fpu_return();
 }
-
 static inline void kvm_fpu_put(void)
 {
 	fpregs_unlock();
 }
-
 static inline void kvm_read_sse_reg(int reg, sse128_t *data)
 {
 	kvm_fpu_get();
 	_kvm_read_sse_reg(reg, data);
 	kvm_fpu_put();
 }
-
 static inline void kvm_write_sse_reg(int reg, const sse128_t *data)
 {
 	kvm_fpu_get();
 	_kvm_write_sse_reg(reg, data);
 	kvm_fpu_put();
 }
-
 static inline void kvm_read_mmx_reg(int reg, u64 *data)
 {
 	kvm_fpu_get();
 	_kvm_read_mmx_reg(reg, data);
 	kvm_fpu_put();
 }
-
 static inline void kvm_write_mmx_reg(int reg, const u64 *data)
 {
 	kvm_fpu_get();
 	_kvm_write_mmx_reg(reg, data);
 	kvm_fpu_put();
 }
-
 #endif

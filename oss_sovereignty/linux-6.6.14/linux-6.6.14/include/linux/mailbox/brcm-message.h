@@ -1,16 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2016 Broadcom
- *
- * Common header for Broadcom mailbox messages which is shared across
- * Broadcom SoCs and Broadcom mailbox client drivers.
- */
-
 #ifndef _LINUX_BRCM_MESSAGE_H_
 #define _LINUX_BRCM_MESSAGE_H_
-
 #include <linux/scatterlist.h>
-
 enum brcm_message_type {
 	BRCM_MESSAGE_UNKNOWN = 0,
 	BRCM_MESSAGE_BATCH,
@@ -18,7 +8,6 @@ enum brcm_message_type {
 	BRCM_MESSAGE_SBA,
 	BRCM_MESSAGE_MAX,
 };
-
 struct brcm_sba_command {
 	u64 cmd;
 	u64 *cmd_dma;
@@ -34,7 +23,6 @@ struct brcm_sba_command {
 	dma_addr_t data;
 	size_t data_len;
 };
-
 struct brcm_message {
 	enum brcm_message_type type;
 	union {
@@ -55,5 +43,4 @@ struct brcm_message {
 	void *ctx;
 	int error;
 };
-
-#endif /* _LINUX_BRCM_MESSAGE_H_ */
+#endif  

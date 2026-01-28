@@ -1,21 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2013 - 2021 Intel Corporation. */
-
 #ifndef _I40E_PROTOTYPE_H_
 #define _I40E_PROTOTYPE_H_
-
 #include "i40e_type.h"
 #include "i40e_alloc.h"
 #include <linux/avf/virtchnl.h>
-
-/* Prototypes for shared code functions that are not in
- * the standard function pointer structures.  These are
- * mostly because they are needed even before the init
- * has happened and will assist in the early SW and FW
- * setup.
- */
-
-/* adminq functions */
 int i40e_init_adminq(struct i40e_hw *hw);
 void i40e_shutdown_adminq(struct i40e_hw *hw);
 int i40e_clean_arq_element(struct i40e_hw *hw,
@@ -23,37 +10,33 @@ int i40e_clean_arq_element(struct i40e_hw *hw,
 			   u16 *events_pending);
 int
 i40e_asq_send_command(struct i40e_hw *hw, struct i40e_aq_desc *desc,
-		      void *buff, /* can be NULL */ u16  buff_size,
+		      void *buff,   u16  buff_size,
 		      struct i40e_asq_cmd_details *cmd_details);
 int
 i40e_asq_send_command_v2(struct i40e_hw *hw,
 			 struct i40e_aq_desc *desc,
-			 void *buff, /* can be NULL */
+			 void *buff,  
 			 u16  buff_size,
 			 struct i40e_asq_cmd_details *cmd_details,
 			 enum i40e_admin_queue_err *aq_status);
 int
 i40e_asq_send_command_atomic(struct i40e_hw *hw, struct i40e_aq_desc *desc,
-			     void *buff, /* can be NULL */ u16  buff_size,
+			     void *buff,   u16  buff_size,
 			     struct i40e_asq_cmd_details *cmd_details,
 			     bool is_atomic_context);
 int
 i40e_asq_send_command_atomic_v2(struct i40e_hw *hw,
 				struct i40e_aq_desc *desc,
-				void *buff, /* can be NULL */
+				void *buff,  
 				u16  buff_size,
 				struct i40e_asq_cmd_details *cmd_details,
 				bool is_atomic_context,
 				enum i40e_admin_queue_err *aq_status);
-
-/* debug function for adminq */
 void i40e_debug_aq(struct i40e_hw *hw, enum i40e_debug_mask mask,
 		   void *desc, void *buffer, u16 buf_len);
-
 bool i40e_check_asq_alive(struct i40e_hw *hw);
 int i40e_aq_queue_shutdown(struct i40e_hw *hw, bool unloading);
 const char *i40e_aq_str(struct i40e_hw *hw, enum i40e_admin_queue_err aq_err);
-
 int i40e_aq_get_rss_lut(struct i40e_hw *hw, u16 seid,
 			bool pf_lut, u8 *lut, u16 lut_size);
 int i40e_aq_set_rss_lut(struct i40e_hw *hw, u16 seid,
@@ -64,7 +47,6 @@ int i40e_aq_get_rss_key(struct i40e_hw *hw,
 int i40e_aq_set_rss_key(struct i40e_hw *hw,
 			u16 seid,
 			struct i40e_aqc_get_set_rss_key_data *key);
-
 u32 i40e_led_get(struct i40e_hw *hw);
 void i40e_led_set(struct i40e_hw *hw, u32 mode, bool blink);
 int i40e_led_set_phy(struct i40e_hw *hw, bool on,
@@ -73,9 +55,6 @@ int i40e_led_get_phy(struct i40e_hw *hw, u16 *led_addr,
 		     u16 *val);
 int i40e_blink_phy_link_led(struct i40e_hw *hw,
 			    u32 time, u32 interval);
-
-/* admin send queue commands */
-
 int i40e_aq_get_firmware_version(struct i40e_hw *hw,
 				 u16 *fw_major_version, u16 *fw_minor_version,
 				 u32 *fw_build,
@@ -183,7 +162,6 @@ int i40e_aq_delete_mirrorrule(struct i40e_hw *hw, u16 sw_seid,
 			      u16 rule_type, u16 rule_id, u16 count, __le16 *mr_list,
 			      struct i40e_asq_cmd_details *cmd_details,
 			      u16 *rules_used, u16 *rules_free);
-
 int i40e_aq_send_msg_to_vf(struct i40e_hw *hw, u16 vfid,
 			   u32 v_opcode, u32 v_retval, u8 *msg, u16 msglen,
 			   struct i40e_asq_cmd_details *cmd_details);
@@ -324,7 +302,6 @@ int i40e_read_lldp_cfg(struct i40e_hw *hw,
 int
 i40e_aq_suspend_port_tx(struct i40e_hw *hw, u16 seid,
 			struct i40e_asq_cmd_details *cmd_details);
-/* i40e_common */
 int i40e_init_shared_code(struct i40e_hw *hw);
 int i40e_pf_reset(struct i40e_hw *hw);
 void i40e_clear_hw(struct i40e_hw *hw);
@@ -343,7 +320,6 @@ int i40e_get_port_mac_addr(struct i40e_hw *hw, u8 *mac_addr);
 int i40e_read_pba_string(struct i40e_hw *hw, u8 *pba_num,
 			 u32 pba_num_size);
 void i40e_pre_tx_queue_cfg(struct i40e_hw *hw, u32 queue, bool enable);
-/* prototype for functions used for NVM access */
 int i40e_init_nvm(struct i40e_hw *hw);
 int i40e_acquire_nvm(struct i40e_hw *hw,
 		     enum i40e_aq_resource_access_type access);
@@ -368,25 +344,12 @@ void i40e_nvmupd_check_wait_event(struct i40e_hw *hw, u16 opcode,
 				  struct i40e_aq_desc *desc);
 void i40e_nvmupd_clear_wait_state(struct i40e_hw *hw);
 void i40e_set_pci_config_data(struct i40e_hw *hw, u16 link_status);
-
 int i40e_set_mac_type(struct i40e_hw *hw);
-
 extern struct i40e_rx_ptype_decoded i40e_ptype_lookup[];
-
 static inline struct i40e_rx_ptype_decoded decode_rx_desc_ptype(u8 ptype)
 {
 	return i40e_ptype_lookup[ptype];
 }
-
-/**
- * i40e_virtchnl_link_speed - Convert AdminQ link_speed to virtchnl definition
- * @link_speed: the speed to convert
- *
- * Returns the link_speed in terms of the virtchnl interface, for use in
- * converting link_speed as reported by the AdminQ into the format used for
- * talking to virtchnl devices. If we can't represent the link speed properly,
- * report LINK_SPEED_UNKNOWN.
- **/
 static inline enum virtchnl_link_speed
 i40e_virtchnl_link_speed(enum i40e_aq_link_speed link_speed)
 {
@@ -412,10 +375,6 @@ i40e_virtchnl_link_speed(enum i40e_aq_link_speed link_speed)
 		return VIRTCHNL_LINK_SPEED_UNKNOWN;
 	}
 }
-
-/* prototype for functions used for SW locks */
-
-/* i40e_common for VF drivers*/
 int i40e_set_filter_control(struct i40e_hw *hw,
 			    struct i40e_filter_control_settings *settings);
 int i40e_aq_add_rem_control_packet_filter(struct i40e_hw *hw,
@@ -450,13 +409,10 @@ i40e_aq_get_phy_register_ext(struct i40e_hw *hw,
 			     bool set_mdio, u8 mdio_num,
 			     u32 reg_addr, u32 *reg_val,
 			     struct i40e_asq_cmd_details *cmd_details);
-
-/* Convenience wrappers for most common use case */
 #define i40e_aq_set_phy_register(hw, ps, da, pc, ra, rv, cd)		\
 	i40e_aq_set_phy_register_ext(hw, ps, da, pc, false, 0, ra, rv, cd)
 #define i40e_aq_get_phy_register(hw, ps, da, pc, ra, rv, cd)		\
 	i40e_aq_get_phy_register_ext(hw, ps, da, pc, false, 0, ra, rv, cd)
-
 int i40e_read_phy_register_clause22(struct i40e_hw *hw,
 				    u16 reg, u8 phy_addr, u16 *value);
 int i40e_write_phy_register_clause22(struct i40e_hw *hw,
@@ -497,4 +453,4 @@ int
 i40e_add_pinfo_to_list(struct i40e_hw *hw,
 		       struct i40e_profile_segment *profile,
 		       u8 *profile_info_sec, u32 track_id);
-#endif /* _I40E_PROTOTYPE_H_ */
+#endif  

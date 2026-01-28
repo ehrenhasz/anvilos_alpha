@@ -1,22 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Tesla Full Self-Driving SoC device tree source
- *
- * Copyright (c) 2017-2022 Samsung Electronics Co., Ltd.
- *		https://www.samsung.com
- * Copyright (c) 2017-2022 Tesla, Inc.
- *		https://www.tesla.com
- */
-
 #include <dt-bindings/clock/fsd-clk.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
-
 / {
 	compatible = "tesla,fsd";
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	aliases {
 		i2c0 = &hsi2c_0;
 		i2c1 = &hsi2c_1;
@@ -33,11 +21,9 @@
 		spi1 = &spi_1;
 		spi2 = &spi_2;
 	};
-
 	cpus {
 		#address-cells = <2>;
 		#size-cells = <0>;
-
 		cpu-map {
 			cluster0 {
 				core0 {
@@ -53,7 +39,6 @@
 					cpu = <&cpucl0_3>;
 				};
 			};
-
 			cluster1 {
 				core0 {
 					cpu = <&cpucl1_0>;
@@ -68,7 +53,6 @@
 					cpu = <&cpucl1_3>;
 				};
 			};
-
 			cluster2 {
 				core0 {
 					cpu = <&cpucl2_0>;
@@ -84,8 +68,6 @@
 				};
 			};
 		};
-
-		/* Cluster 0 */
 		cpucl0_0: cpu@0 {
 				device_type = "cpu";
 				compatible = "arm,cortex-a72";
@@ -101,7 +83,6 @@
 				d-cache-sets = <256>;
 				next-level-cache = <&cpucl_l2>;
 		};
-
 		cpucl0_1: cpu@1 {
 				device_type = "cpu";
 				compatible = "arm,cortex-a72";
@@ -117,7 +98,6 @@
 				d-cache-sets = <256>;
 				next-level-cache = <&cpucl_l2>;
 		};
-
 		cpucl0_2: cpu@2 {
 				device_type = "cpu";
 				compatible = "arm,cortex-a72";
@@ -133,7 +113,6 @@
 				d-cache-sets = <256>;
 				next-level-cache = <&cpucl_l2>;
 		};
-
 		cpucl0_3: cpu@3 {
 				device_type = "cpu";
 				compatible = "arm,cortex-a72";
@@ -148,8 +127,6 @@
 				d-cache-sets = <256>;
 				next-level-cache = <&cpucl_l2>;
 		};
-
-		/* Cluster 1 */
 		cpucl1_0: cpu@100 {
 				device_type = "cpu";
 				compatible = "arm,cortex-a72";
@@ -165,7 +142,6 @@
 				d-cache-sets = <256>;
 				next-level-cache = <&cpucl_l2>;
 		};
-
 		cpucl1_1: cpu@101 {
 				device_type = "cpu";
 				compatible = "arm,cortex-a72";
@@ -181,7 +157,6 @@
 				d-cache-sets = <256>;
 				next-level-cache = <&cpucl_l2>;
 		};
-
 		cpucl1_2: cpu@102 {
 				device_type = "cpu";
 				compatible = "arm,cortex-a72";
@@ -197,7 +172,6 @@
 				d-cache-sets = <256>;
 				next-level-cache = <&cpucl_l2>;
 		};
-
 		cpucl1_3: cpu@103 {
 				device_type = "cpu";
 				compatible = "arm,cortex-a72";
@@ -213,8 +187,6 @@
 				d-cache-sets = <256>;
 				next-level-cache = <&cpucl_l2>;
 		};
-
-		/* Cluster 2 */
 		cpucl2_0: cpu@200 {
 				device_type = "cpu";
 				compatible = "arm,cortex-a72";
@@ -230,7 +202,6 @@
 				d-cache-sets = <256>;
 				next-level-cache = <&cpucl_l2>;
 		};
-
 		cpucl2_1: cpu@201 {
 				device_type = "cpu";
 				compatible = "arm,cortex-a72";
@@ -246,7 +217,6 @@
 				d-cache-sets = <256>;
 				next-level-cache = <&cpucl_l2>;
 		};
-
 		cpucl2_2: cpu@202 {
 				device_type = "cpu";
 				compatible = "arm,cortex-a72";
@@ -262,7 +232,6 @@
 				d-cache-sets = <256>;
 				next-level-cache = <&cpucl_l2>;
 		};
-
 		cpucl2_3: cpu@203 {
 				device_type = "cpu";
 				compatible = "arm,cortex-a72";
@@ -278,7 +247,6 @@
 				d-cache-sets = <256>;
 				next-level-cache = <&cpucl_l2>;
 		};
-
 		cpucl_l2: l2-cache0 {
 			compatible = "cache";
 			cache-level = <2>;
@@ -287,10 +255,8 @@
 			cache-line-size = <64>;
 			cache-sets = <4096>;
 		};
-
 		idle-states {
 			entry-method = "psci";
-
 			CPU_SLEEP: cpu-sleep {
 				idle-state-name = "c2";
 				compatible = "arm,idle-state";
@@ -302,7 +268,6 @@
 			};
 		};
 	};
-
 	arm-pmu {
 		compatible = "arm,armv8-pmuv3";
 		interrupts = <GIC_SPI 356 IRQ_TYPE_LEVEL_HIGH>,
@@ -322,12 +287,10 @@
 				     <&cpucl1_2>, <&cpucl1_3>, <&cpucl2_0>,
 				     <&cpucl2_1>, <&cpucl2_2>, <&cpucl2_3>;
 	};
-
 	psci {
 		compatible = "arm,psci-1.0";
 		method = "smc";
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW>,
@@ -335,109 +298,93 @@
 			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW>,
 			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW>;
 	};
-
 	fin_pll: clock {
 		compatible = "fixed-clock";
 		clock-output-names = "fin_pll";
 		#clock-cells = <0>;
 	};
-
 	soc: soc@0 {
 		compatible = "simple-bus";
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges = <0x0 0x0 0x0 0x0 0x0 0x18000000>;
 		dma-ranges = <0x0 0x0 0x0 0x0 0x10 0x0>;
-
 		gic: interrupt-controller@10400000 {
 			compatible = "arm,gic-v3";
 			#interrupt-cells = <3>;
 			interrupt-controller;
-			reg = <0x0 0x10400000 0x0 0x10000>, /* GICD */
-			      <0x0 0x10600000 0x0 0x200000>; /* GICR_RD+GICR_SGI */
+			reg = <0x0 0x10400000 0x0 0x10000>,  
+			      <0x0 0x10600000 0x0 0x200000>;  
 			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		smmu_imem: iommu@10200000 {
 			compatible = "arm,mmu-500";
 			reg = <0x0 0x10200000 0x0 0x10000>;
 			#iommu-cells = <2>;
 			#global-interrupts = <7>;
-			interrupts = <GIC_SPI 438 IRQ_TYPE_LEVEL_HIGH>, /* Global secure fault */
-				     <GIC_SPI 439 IRQ_TYPE_LEVEL_HIGH>, /* Global non-secure fault */
-				     <GIC_SPI 451 IRQ_TYPE_LEVEL_HIGH>, /* Combined secure interrupt */
-				     <GIC_SPI 450 IRQ_TYPE_LEVEL_HIGH>, /* Combined non-secure interrupt */
-				     /* Performance counter interrupts */
-				     <GIC_SPI 441 IRQ_TYPE_LEVEL_HIGH>, /* for FSYS1_0 */
-				     <GIC_SPI 442 IRQ_TYPE_LEVEL_HIGH>, /* for FSYS1_1 */
-				     <GIC_SPI 443 IRQ_TYPE_LEVEL_HIGH>, /* for IMEM_0  */
-				     /* Per context non-secure context interrupts, 0-3 interrupts */
-				     <GIC_SPI 446 IRQ_TYPE_LEVEL_HIGH>, /* for CONTEXT_0 */
-				     <GIC_SPI 447 IRQ_TYPE_LEVEL_HIGH>, /* for CONTEXT_1 */
-				     <GIC_SPI 448 IRQ_TYPE_LEVEL_HIGH>, /* for CONTEXT_2 */
-				     <GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH>; /* for CONTEXT_3 */
+			interrupts = <GIC_SPI 438 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 439 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 451 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 450 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 441 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 442 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 443 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 446 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 447 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 448 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH>;  
 		};
-
 		smmu_isp: iommu@12100000 {
 			compatible = "arm,mmu-500";
 			reg = <0x0 0x12100000 0x0 0x10000>;
 			#iommu-cells = <2>;
 			#global-interrupts = <11>;
-			interrupts = <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>, /* Global secure fault */
-				     <GIC_SPI 322 IRQ_TYPE_LEVEL_HIGH>, /* Global non-secure fault */
-				     <GIC_SPI 346 IRQ_TYPE_LEVEL_HIGH>, /* Combined secure interrupt */
-				     <GIC_SPI 345 IRQ_TYPE_LEVEL_HIGH>, /* Combined non-secure interrupt */
-				     /* Performance counter interrupts */
-				     <GIC_SPI 323 IRQ_TYPE_LEVEL_HIGH>, /* for CAM_CSI   */
-				     <GIC_SPI 324 IRQ_TYPE_LEVEL_HIGH>, /* for CAM_DP_0  */
-				     <GIC_SPI 325 IRQ_TYPE_LEVEL_HIGH>, /* for CAM_DP_1  */
-				     <GIC_SPI 326 IRQ_TYPE_LEVEL_HIGH>, /* for CAM_ISP_0 */
-				     <GIC_SPI 327 IRQ_TYPE_LEVEL_HIGH>, /* for CAM_ISP_1 */
-				     <GIC_SPI 328 IRQ_TYPE_LEVEL_HIGH>, /* for CAM_MFC_0 */
-				     <GIC_SPI 329 IRQ_TYPE_LEVEL_HIGH>, /* for CAM_MFC_1 */
-				     /* Per context non-secure context interrupts, 0-7 interrupts */
-				     <GIC_SPI 330 IRQ_TYPE_LEVEL_HIGH>, /* for CONTEXT_0 */
-				     <GIC_SPI 331 IRQ_TYPE_LEVEL_HIGH>, /* for CONTEXT_1 */
-				     <GIC_SPI 332 IRQ_TYPE_LEVEL_HIGH>, /* for CONTEXT_2 */
-				     <GIC_SPI 333 IRQ_TYPE_LEVEL_HIGH>, /* for CONTEXT_3 */
-				     <GIC_SPI 334 IRQ_TYPE_LEVEL_HIGH>, /* for CONTEXT_4 */
-				     <GIC_SPI 335 IRQ_TYPE_LEVEL_HIGH>, /* for CONTEXT_5 */
-				     <GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>, /* for CONTEXT_6 */
-				     <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>; /* for CONTEXT_7 */
+			interrupts = <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 322 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 346 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 345 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 323 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 324 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 325 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 326 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 327 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 328 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 329 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 330 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 331 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 332 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 333 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 334 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 335 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>;  
 		};
-
 		smmu_peric: iommu@14900000 {
 			compatible = "arm,mmu-500";
 			reg = <0x0 0x14900000 0x0 0x10000>;
 			#iommu-cells = <2>;
 			#global-interrupts = <5>;
-			interrupts = <GIC_SPI 197 IRQ_TYPE_LEVEL_HIGH>, /* Global secure fault */
-				     <GIC_SPI 196 IRQ_TYPE_LEVEL_HIGH>, /* Global non-secure fault */
-				     <GIC_SPI 193 IRQ_TYPE_LEVEL_HIGH>, /* Combined secure interrupt */
-				     <GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>, /* Combined non-secure interrupt */
-				     /* Performance counter interrupts */
-				     <GIC_SPI 198 IRQ_TYPE_LEVEL_HIGH>, /* for PERIC */
-				     /* Per context non-secure context interrupts, 0-1 interrupts */
-				     <GIC_SPI 194 IRQ_TYPE_LEVEL_HIGH>, /* for CONTEXT_0 */
-				     <GIC_SPI 195 IRQ_TYPE_LEVEL_HIGH>; /* for CONTEXT_1 */
+			interrupts = <GIC_SPI 197 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 196 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 193 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 198 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 194 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 195 IRQ_TYPE_LEVEL_HIGH>;  
 		};
-
 		smmu_fsys0: iommu@15450000 {
 			compatible = "arm,mmu-500";
 			reg = <0x0 0x15450000 0x0 0x10000>;
 			#iommu-cells = <2>;
 			#global-interrupts = <5>;
-			interrupts = <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>, /* Global secure fault */
-				     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>, /* Global non-secure fault */
-				     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>, /* Combined secure interrupt */
-				     <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>, /* Combined non-secure interrupt */
-				     /* Performance counter interrupts */
-				     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>, /* for FSYS0   */
-				     /* Per context non-secure context interrupts, 0-1 interrupts */
-				     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>, /* for CONTEXT_0 */
-				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>; /* for CONTEXT_1 */
+			interrupts = <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;  
 		};
-
 		clock_imem: clock-controller@10010000 {
 			compatible = "tesla,fsd-clock-imem";
 			reg = <0x0 0x10010000 0x0 0x3000>;
@@ -451,7 +398,6 @@
 				"dout_cmu_imem_aclk",
 				"dout_cmu_imem_dmaclk";
 		};
-
 		clock_cmu: clock-controller@11c10000 {
 			compatible = "tesla,fsd-clock-cmu";
 			reg = <0x0 0x11c10000 0x0 0x3000>;
@@ -459,7 +405,6 @@
 			clocks = <&fin_pll>;
 			clock-names = "fin_pll";
 		};
-
 		clock_csi: clock-controller@12610000 {
 			compatible = "tesla,fsd-clock-cam_csi";
 			reg = <0x0 0x12610000 0x0 0x3000>;
@@ -467,12 +412,10 @@
 			clocks = <&fin_pll>;
 			clock-names = "fin_pll";
 		};
-
 		sysreg_cam: system-controller@12630000 {
 			compatible = "tesla,fsd-cam-sysreg", "syscon";
 			reg = <0x0 0x12630000 0x0 0x500>;
 		};
-
 		clock_mfc: clock-controller@12810000 {
 			compatible = "tesla,fsd-clock-mfc";
 			reg = <0x0 0x12810000 0x0 0x3000>;
@@ -480,7 +423,6 @@
 			clocks = <&fin_pll>;
 			clock-names = "fin_pll";
 		};
-
 		clock_peric: clock-controller@14010000 {
 			compatible = "tesla,fsd-clock-peric";
 			reg = <0x0 0x14010000 0x0 0x3000>;
@@ -498,12 +440,10 @@
 				"dout_cmu_peric_shared0div20",
 				"dout_cmu_peric_shared1div4_dmaclk";
 		};
-
 		sysreg_peric: system-controller@14030000 {
 			compatible = "tesla,fsd-peric-sysreg", "syscon";
 			reg = <0x0 0x14030000 0x0 0x1000>;
 		};
-
 		clock_fsys0: clock-controller@15010000 {
 			compatible = "tesla,fsd-clock-fsys0";
 			reg = <0x0 0x15010000 0x0 0x3000>;
@@ -517,12 +457,10 @@
 				"dout_cmu_fsys0_shared1div4",
 				"dout_cmu_fsys0_shared0div4";
 		};
-
 		sysreg_fsys0: system-controller@15030000 {
 			compatible = "tesla,fsd-fsys0-sysreg", "syscon";
 			reg = <0x0 0x15030000 0x0 0x1000>;
 		};
-
 		clock_fsys1: clock-controller@16810000 {
 			compatible = "tesla,fsd-clock-fsys1";
 			reg = <0x0 0x16810000 0x0 0x3000>;
@@ -534,12 +472,10 @@
 				"dout_cmu_fsys1_shared0div8",
 				"dout_cmu_fsys1_shared0div4";
 		};
-
 		sysreg_fsys1: system-controller@16830000 {
 			compatible = "tesla,fsd-fsys1-sysreg", "syscon";
 			reg = <0x0 0x16830000 0x0 0x1000>;
 		};
-
 		mdma0: dma-controller@10100000 {
 			compatible = "arm,pl330", "arm,primecell";
 			reg = <0x0 0x10100000 0x0 0x1000>;
@@ -549,7 +485,6 @@
 			clock-names = "apb_pclk";
 			iommus = <&smmu_imem 0x800 0x0>;
 		};
-
 		mdma1: dma-controller@10110000 {
 			compatible = "arm,pl330", "arm,primecell";
 			reg = <0x0 0x10110000 0x0 0x1000>;
@@ -559,7 +494,6 @@
 			clock-names = "apb_pclk";
 			iommus = <&smmu_imem 0x801 0x0>;
 		};
-
 		pdma0: dma-controller@14280000 {
 			compatible = "arm,pl330", "arm,primecell";
 			reg = <0x0 0x14280000 0x0 0x1000>;
@@ -569,7 +503,6 @@
 			clock-names = "apb_pclk";
 			iommus = <&smmu_peric 0x2 0x0>;
 		};
-
 		pdma1: dma-controller@14290000 {
 			compatible = "arm,pl330", "arm,primecell";
 			reg = <0x0 0x14290000 0x0 0x1000>;
@@ -579,7 +512,6 @@
 			clock-names = "apb_pclk";
 			iommus = <&smmu_peric 0x1 0x0>;
 		};
-
 		serial_0: serial@14180000 {
 			compatible = "samsung,exynos4210-uart";
 			reg = <0x0 0x14180000 0x0 0x100>;
@@ -591,7 +523,6 @@
 			clock-names = "uart", "clk_uart_baud0";
 			status = "disabled";
 		};
-
 		serial_1: serial@14190000 {
 			compatible = "samsung,exynos4210-uart";
 			reg = <0x0 0x14190000 0x0 0x100>;
@@ -603,12 +534,10 @@
 			clock-names = "uart", "clk_uart_baud0";
 			status = "disabled";
 		};
-
 		pmu_system_controller: system-controller@11400000 {
 			compatible = "samsung,exynos7-pmu", "syscon";
 			reg = <0x0 0x11400000 0x0 0x5000>;
 		};
-
 		watchdog_0: watchdog@100a0000 {
 			compatible = "samsung,exynos7-wdt";
 			reg = <0x0 0x100a0000 0x0 0x100>;
@@ -617,7 +546,6 @@
 			clocks = <&fin_pll>;
 			clock-names = "watchdog";
 		};
-
 		watchdog_1: watchdog@100b0000 {
 			compatible = "samsung,exynos7-wdt";
 			reg = <0x0 0x100b0000 0x0 0x100>;
@@ -626,7 +554,6 @@
 			clocks = <&fin_pll>;
 			clock-names = "watchdog";
 		};
-
 		watchdog_2: watchdog@100c0000 {
 			compatible = "samsung,exynos7-wdt";
 			reg = <0x0 0x100c0000 0x0 0x100>;
@@ -635,7 +562,6 @@
 			clocks = <&fin_pll>;
 			clock-names = "watchdog";
 		};
-
 		pwm_0: pwm@14100000 {
 			compatible = "samsung,exynos4210-pwm";
 			reg = <0x0 0x14100000 0x0 0x100>;
@@ -645,7 +571,6 @@
 			clock-names = "timers";
 			status = "disabled";
 		};
-
 		pwm_1: pwm@14110000 {
 			compatible = "samsung,exynos4210-pwm";
 			reg = <0x0 0x14110000 0x0 0x100>;
@@ -655,7 +580,6 @@
 			clock-names = "timers";
 			status = "disabled";
 		};
-
 		hsi2c_0: i2c@14200000 {
 			compatible = "samsung,exynos7-hsi2c";
 			reg = <0x0 0x14200000 0x0 0x1000>;
@@ -668,7 +592,6 @@
 			clock-names = "hsi2c";
 			status = "disabled";
 		};
-
 		hsi2c_1: i2c@14210000 {
 			compatible = "samsung,exynos7-hsi2c";
 			reg = <0x0 0x14210000 0x0 0x1000>;
@@ -681,7 +604,6 @@
 			clock-names = "hsi2c";
 			status = "disabled";
 		};
-
 		hsi2c_2: i2c@14220000 {
 			compatible = "samsung,exynos7-hsi2c";
 			reg = <0x0 0x14220000 0x0 0x1000>;
@@ -694,7 +616,6 @@
 			clock-names = "hsi2c";
 			status = "disabled";
 		};
-
 		hsi2c_3: i2c@14230000 {
 			compatible = "samsung,exynos7-hsi2c";
 			reg = <0x0 0x14230000 0x0 0x1000>;
@@ -707,7 +628,6 @@
 			clock-names = "hsi2c";
 			status = "disabled";
 		};
-
 		hsi2c_4: i2c@14240000 {
 			compatible = "samsung,exynos7-hsi2c";
 			reg = <0x0 0x14240000 0x0 0x1000>;
@@ -720,7 +640,6 @@
 			clock-names = "hsi2c";
 			status = "disabled";
 		};
-
 		hsi2c_5: i2c@14250000 {
 			compatible = "samsung,exynos7-hsi2c";
 			reg = <0x0 0x14250000 0x0 0x1000>;
@@ -733,7 +652,6 @@
 			clock-names = "hsi2c";
 			status = "disabled";
 		};
-
 		hsi2c_6: i2c@14260000 {
 			compatible = "samsung,exynos7-hsi2c";
 			reg = <0x0 0x14260000 0x0 0x1000>;
@@ -746,7 +664,6 @@
 			clock-names = "hsi2c";
 			status = "disabled";
 		};
-
 		hsi2c_7: i2c@14270000 {
 			compatible = "samsung,exynos7-hsi2c";
 			reg = <0x0 0x14270000 0x0 0x1000>;
@@ -759,7 +676,6 @@
 			clock-names = "hsi2c";
 			status = "disabled";
 		};
-
 		i2s_0: i2s@140e0000 {
 			compatible = "tesla,fsd-i2s";
 			reg = <0x0 0x140e0000 0x0 0x100>;
@@ -776,7 +692,6 @@
 			#sound-dai-cells = <1>;
 			status = "disabled";
 		};
-
 		i2s_1: i2s@140f0000 {
 			compatible = "tesla,fsd-i2s";
 			reg = <0x0 0x140f0000 0x0 0x100>;
@@ -793,24 +708,20 @@
 			#sound-dai-cells = <1>;
 			status = "disabled";
 		};
-
 		pinctrl_pmu: pinctrl@114f0000 {
 			compatible = "tesla,fsd-pinctrl";
 			reg = <0x0 0x114f0000 0x0 0x1000>;
 		};
-
 		pinctrl_peric: pinctrl@141f0000 {
 			compatible = "tesla,fsd-pinctrl";
 			reg = <0x0 0x141f0000 0x0 0x1000>;
 			interrupts = <GIC_SPI 189 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		pinctrl_fsys0: pinctrl@15020000 {
 			compatible = "tesla,fsd-pinctrl";
 			reg = <0x0 0x15020000 0x0 0x1000>;
 			interrupts = <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		m_can0: can@14088000 {
 			compatible = "bosch,m_can";
 			reg = <0x0 0x14088000 0x0 0x0200>,
@@ -827,7 +738,6 @@
 			bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
 			status = "disabled";
 		};
-
 		m_can1: can@14098000 {
 			compatible = "bosch,m_can";
 			reg = <0x0 0x14098000 0x0 0x0200>,
@@ -844,7 +754,6 @@
 			bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
 			status = "disabled";
 		};
-
 		m_can2: can@140a8000 {
 			compatible = "bosch,m_can";
 			reg = <0x0 0x140a8000 0x0 0x0200>,
@@ -861,7 +770,6 @@
 			bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
 			status = "disabled";
 		};
-
 		m_can3: can@140b8000 {
 			compatible = "bosch,m_can";
 			reg = <0x0 0x140b8000 0x0 0x0200>,
@@ -878,7 +786,6 @@
 			bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
 			status = "disabled";
 		};
-
 		spi_0: spi@14140000 {
 			compatible = "tesla,fsd-spi";
 			reg = <0x0 0x14140000 0x0 0x100>;
@@ -896,7 +803,6 @@
 			num-cs = <1>;
 			status = "disabled";
 		};
-
 		spi_1: spi@14150000 {
 			compatible = "tesla,fsd-spi";
 			reg = <0x0 0x14150000 0x0 0x100>;
@@ -914,7 +820,6 @@
 			num-cs = <1>;
 			status = "disabled";
 		};
-
 		spi_2: spi@14160000 {
 			compatible = "tesla,fsd-spi";
 			reg = <0x0 0x14160000 0x0 0x100>;
@@ -932,7 +837,6 @@
 			num-cs = <1>;
 			status = "disabled";
 		};
-
 		timer@10040000 {
 			compatible = "tesla,fsd-mct", "samsung,exynos4210-mct";
 			reg = <0x0 0x10040000 0x0 0x800>;
@@ -955,13 +859,12 @@
 			clocks = <&fin_pll>, <&clock_imem IMEM_MCT_PCLK>;
 			clock-names = "fin_pll", "mct";
 		};
-
 		ufs: ufs@15120000 {
 			compatible = "tesla,fsd-ufs";
-			reg = <0x0 0x15120000 0x0 0x200>,  /* 0: HCI standard */
-			      <0x0 0x15121100 0x0 0x200>,  /* 1: Vendor specified */
-			      <0x0 0x15110000 0x0 0x8000>,  /* 2: UNIPRO */
-			      <0x0 0x15130000 0x0 0x100>;  /* 3: UFS protector */
+			reg = <0x0 0x15120000 0x0 0x200>,   
+			      <0x0 0x15121100 0x0 0x200>,   
+			      <0x0 0x15110000 0x0 0x8000>,   
+			      <0x0 0x15130000 0x0 0x100>;   
 			reg-names = "hci", "vs_hci", "unipro", "ufsp";
 			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&clock_fsys0 UFS0_TOP0_HCLK_BUS>,
@@ -974,7 +877,6 @@
 			phy-names = "ufs-phy";
 			status = "disabled";
 		};
-
 		ufs_phy: ufs-phy@15124000 {
 			compatible = "tesla,fsd-ufs-phy";
 			reg = <0x0 0x15124000 0x0 0x800>;
@@ -986,5 +888,4 @@
 		};
 	};
 };
-
 #include "fsd-pinctrl.dtsi"

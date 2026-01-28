@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2016 Freescale Semiconductor, Inc.
- * Copyright 2017-2018 NXP.
- *
- */
-
 #ifndef __DTS_IMX6SLL_PINFUNC_H
 #define __DTS_IMX6SLL_PINFUNC_H
-
-/*
- * The pin function ID is a tuple of
- * <mux_reg conf_reg input_reg mux_mode input_val>
- */
 #define MX6SLL_PAD_WDOG_B__WDOG1_B                                0x0014 0x02DC 0x0000 0x0 0x0
 #define MX6SLL_PAD_WDOG_B__WDOG1_RESET_B_DEB                      0x0014 0x02DC 0x0000 0x1 0x0
 #define MX6SLL_PAD_WDOG_B__UART5_RI_B                             0x0014 0x02DC 0x0000 0x2 0x0
@@ -876,5 +864,4 @@
 #define MX6SLL_PAD_GPIO4_IO26__CCM_PMIC_READY                     0x0260 0x0528 0x05AC 0x4 0x1
 #define MX6SLL_PAD_GPIO4_IO26__GPIO4_IO26                         0x0260 0x0528 0x0000 0x5 0x0
 #define MX6SLL_PAD_GPIO4_IO26__SPDIF_EXT_CLK                      0x0260 0x0528 0x073C 0x6 0x0
-
-#endif /* __DTS_IMX6SLL_PINFUNC_H */
+#endif  

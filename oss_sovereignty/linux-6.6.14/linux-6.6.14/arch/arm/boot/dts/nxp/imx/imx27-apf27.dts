@@ -1,28 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Philippe Reynes <tremyfr@yahoo.fr>
- * Copyright 2012 Armadeus Systems <support@armadeus.com>
- *
- * Based on code which is: Copyright 2012 Sascha Hauer, Pengutronix
- */
-
 /dts-v1/;
 #include "imx27.dtsi"
-
 / {
 	model = "Armadeus Systems APF27 module";
 	compatible = "armadeus,imx27-apf27", "fsl,imx27";
-
 	memory@a0000000 {
 		device_type = "memory";
 		reg = <0xa0000000 0x04000000>;
 	};
 };
-
 &clk_osc26m {
 	clock-frequency = <0>;
 };
-
 &iomuxc {
 	imx27-apf27 {
 		pinctrl_fec1: fec1grp {
@@ -47,7 +35,6 @@
 				MX27_PAD_ATA_DATA15__FEC_TX_EN 0x0
 			>;
 		};
-
 		pinctrl_uart1: uart1grp {
 			fsl,pins = <
 				MX27_PAD_UART1_TXD__UART1_TXD 0x0
@@ -56,55 +43,45 @@
 		};
 	};
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec1>;
 	status = "okay";
 };
-
 &nfc {
 	status = "okay";
 	nand-bus-width = <16>;
 	nand-ecc-mode = "hw";
 	nand-on-flash-bbt;
-
 	partition@0 {
 		label = "u-boot";
 		reg = <0x0 0x100000>;
 	};
-
 	partition@100000 {
 		label = "env";
 		reg = <0x100000 0x80000>;
 	};
-
 	partition@180000 {
 		label = "env2";
 		reg = <0x180000 0x80000>;
 	};
-
 	partition@200000 {
 		label = "firmware";
 		reg = <0x200000 0x80000>;
 	};
-
 	partition@280000 {
 		label = "dtb";
 		reg = <0x280000 0x80000>;
 	};
-
 	partition@300000 {
 		label = "kernel";
 		reg = <0x300000 0x500000>;
 	};
-
 	partition@800000 {
 		label = "rootfs";
 		reg = <0x800000 0xf800000>;

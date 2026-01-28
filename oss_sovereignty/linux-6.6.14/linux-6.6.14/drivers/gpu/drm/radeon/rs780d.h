@@ -1,28 +1,5 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef __RS780D_H__
 #define __RS780D_H__
-
 #define CG_SPLL_FUNC_CNTL                                 0x600
 #       define SPLL_RESET                                (1 << 0)
 #       define SPLL_SLEEP                                (1 << 1)
@@ -46,8 +23,6 @@
 #       define SPLL_CHG_STATUS                           (1 << 29)
 #       define SPLL_CTLREQ                               (1 << 30)
 #       define SPLL_CTLACK                               (1 << 31)
-
-/* RS780/RS880 PM */
 #define	FVTHROT_CNTRL_REG				0x3000
 #define		DONT_WAIT_FOR_FBDIV_WRAP		(1 << 0)
 #define		MINIMUM_CIP(x)				((x) << 1)
@@ -163,9 +138,7 @@
 #define		RANGE0_SLOW_CLK_FEEDBACK_DIV_MASK	0xfff
 #define		RANGE0_SLOW_CLK_FEEDBACK_DIV_SHIFT	0
 #define		RANGE_SLOW_CLK_FEEDBACK_DIV_EN		(1 << 12)
-
 #define	GFX_MACRO_BYPASS_CNTL				0x30c0
 #define		SPLL_BYPASS_CNTL			(1 << 0)
 #define		UPLL_BYPASS_CNTL			(1 << 1)
-
 #endif

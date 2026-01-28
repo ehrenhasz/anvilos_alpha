@@ -1,28 +1,17 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * rseq-arm-bits.h
- *
- * (C) Copyright 2016-2022 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
- */
-
 #include "rseq-bits-template.h"
-
 #if defined(RSEQ_TEMPLATE_MO_RELAXED) && \
 	(defined(RSEQ_TEMPLATE_CPU_ID) || defined(RSEQ_TEMPLATE_MM_CID))
-
 static inline __attribute__((always_inline))
 int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_storev)(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
 {
 	RSEQ_INJECT_C(9)
-
 	__asm__ __volatile__ goto (
-		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f)  
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
 #ifdef RSEQ_COMPARE_TWICE
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error1])
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
 #endif
-		/* Start rseq by storing table entry pointer into rseq_cs. */
 		RSEQ_ASM_STORE_RSEQ_CS(1, 3f, rseq_cs)
 		RSEQ_ASM_CMP_CPU_ID(cpu_id, current_cpu_id, 4f)
 		RSEQ_INJECT_ASM(3)
@@ -36,14 +25,13 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_storev)(intptr_t *v, intptr_t expect, i
 		"cmp %[expect], r0\n\t"
 		"bne %l[error2]\n\t"
 #endif
-		/* final store */
 		"str %[newv], %[v]\n\t"
 		"2:\n\t"
 		RSEQ_INJECT_ASM(5)
 		"b 5f\n\t"
 		RSEQ_ASM_DEFINE_ABORT(3, 4, "", abort, 1b, 2b, 4f)
 		"5:\n\t"
-		: /* gcc asm goto does not allow outputs */
+		:  
 		: [cpu_id]		"r" (cpu),
 		  [current_cpu_id]	"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
@@ -76,21 +64,18 @@ error2:
 	rseq_bug("expected value comparison failed");
 #endif
 }
-
 static inline __attribute__((always_inline))
 int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpnev_storeoffp_load)(intptr_t *v, intptr_t expectnot,
 			       long voffp, intptr_t *load, int cpu)
 {
 	RSEQ_INJECT_C(9)
-
 	__asm__ __volatile__ goto (
-		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f)  
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
 #ifdef RSEQ_COMPARE_TWICE
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error1])
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
 #endif
-		/* Start rseq by storing table entry pointer into rseq_cs. */
 		RSEQ_ASM_STORE_RSEQ_CS(1, 3f, rseq_cs)
 		RSEQ_ASM_CMP_CPU_ID(cpu_id, current_cpu_id, 4f)
 		RSEQ_INJECT_ASM(3)
@@ -107,18 +92,16 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpnev_storeoffp_load)(intptr_t *v, intptr_t e
 		"str r0, %[load]\n\t"
 		"add r0, %[voffp]\n\t"
 		"ldr r0, [r0]\n\t"
-		/* final store */
 		"str r0, %[v]\n\t"
 		"2:\n\t"
 		RSEQ_INJECT_ASM(5)
 		"b 5f\n\t"
 		RSEQ_ASM_DEFINE_ABORT(3, 4, "", abort, 1b, 2b, 4f)
 		"5:\n\t"
-		: /* gcc asm goto does not allow outputs */
+		:  
 		: [cpu_id]		"r" (cpu),
 		  [current_cpu_id]	"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
-		  /* final store input */
 		  [v]			"m" (*v),
 		  [expectnot]		"r" (expectnot),
 		  [voffp]		"Ir" (voffp),
@@ -149,18 +132,15 @@ error2:
 	rseq_bug("expected value comparison failed");
 #endif
 }
-
 static inline __attribute__((always_inline))
 int RSEQ_TEMPLATE_IDENTIFIER(rseq_addv)(intptr_t *v, intptr_t count, int cpu)
 {
 	RSEQ_INJECT_C(9)
-
 	__asm__ __volatile__ goto (
-		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f)  
 #ifdef RSEQ_COMPARE_TWICE
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error1])
 #endif
-		/* Start rseq by storing table entry pointer into rseq_cs. */
 		RSEQ_ASM_STORE_RSEQ_CS(1, 3f, rseq_cs)
 		RSEQ_ASM_CMP_CPU_ID(cpu_id, current_cpu_id, 4f)
 		RSEQ_INJECT_ASM(3)
@@ -169,14 +149,13 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_addv)(intptr_t *v, intptr_t count, int cpu)
 #endif
 		"ldr r0, %[v]\n\t"
 		"add r0, %[count]\n\t"
-		/* final store */
 		"str r0, %[v]\n\t"
 		"2:\n\t"
 		RSEQ_INJECT_ASM(4)
 		"b 5f\n\t"
 		RSEQ_ASM_DEFINE_ABORT(3, 4, "", abort, 1b, 2b, 4f)
 		"5:\n\t"
-		: /* gcc asm goto does not allow outputs */
+		:  
 		: [cpu_id]		"r" (cpu),
 		  [current_cpu_id]	"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
@@ -202,23 +181,20 @@ error1:
 	rseq_bug("cpu_id comparison failed");
 #endif
 }
-
 static inline __attribute__((always_inline))
 int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_cmpeqv_storev)(intptr_t *v, intptr_t expect,
 			      intptr_t *v2, intptr_t expect2,
 			      intptr_t newv, int cpu)
 {
 	RSEQ_INJECT_C(9)
-
 	__asm__ __volatile__ goto (
-		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f)  
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
 #ifdef RSEQ_COMPARE_TWICE
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error1])
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error3])
 #endif
-		/* Start rseq by storing table entry pointer into rseq_cs. */
 		RSEQ_ASM_STORE_RSEQ_CS(1, 3f, rseq_cs)
 		RSEQ_ASM_CMP_CPU_ID(cpu_id, current_cpu_id, 4f)
 		RSEQ_INJECT_ASM(3)
@@ -239,21 +215,18 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_cmpeqv_storev)(intptr_t *v, intptr_t ex
 		"cmp %[expect2], r0\n\t"
 		"bne %l[error3]\n\t"
 #endif
-		/* final store */
 		"str %[newv], %[v]\n\t"
 		"2:\n\t"
 		RSEQ_INJECT_ASM(6)
 		"b 5f\n\t"
 		RSEQ_ASM_DEFINE_ABORT(3, 4, "", abort, 1b, 2b, 4f)
 		"5:\n\t"
-		: /* gcc asm goto does not allow outputs */
+		:  
 		: [cpu_id]		"r" (cpu),
 		  [current_cpu_id]	"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
-		  /* cmp2 input */
 		  [v2]			"m" (*v2),
 		  [expect2]		"r" (expect2),
-		  /* final store input */
 		  [v]			"m" (*v),
 		  [expect]		"r" (expect),
 		  [newv]		"r" (newv)
@@ -286,28 +259,22 @@ error3:
 	rseq_bug("2nd expected value comparison failed");
 #endif
 }
-
-#endif /* #if defined(RSEQ_TEMPLATE_MO_RELAXED) &&
-	(defined(RSEQ_TEMPLATE_CPU_ID) || defined(RSEQ_TEMPLATE_MM_CID)) */
-
+#endif  
 #if (defined(RSEQ_TEMPLATE_MO_RELAXED) || defined(RSEQ_TEMPLATE_MO_RELEASE)) && \
 	(defined(RSEQ_TEMPLATE_CPU_ID) || defined(RSEQ_TEMPLATE_MM_CID))
-
 static inline __attribute__((always_inline))
 int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_trystorev_storev)(intptr_t *v, intptr_t expect,
 				 intptr_t *v2, intptr_t newv2,
 				 intptr_t newv, int cpu)
 {
 	RSEQ_INJECT_C(9)
-
 	__asm__ __volatile__ goto (
-		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f)  
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
 #ifdef RSEQ_COMPARE_TWICE
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error1])
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
 #endif
-		/* Start rseq by storing table entry pointer into rseq_cs. */
 		RSEQ_ASM_STORE_RSEQ_CS(1, 3f, rseq_cs)
 		RSEQ_ASM_CMP_CPU_ID(cpu_id, current_cpu_id, 4f)
 		RSEQ_INJECT_ASM(3)
@@ -321,27 +288,23 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_trystorev_storev)(intptr_t *v, intptr_t
 		"cmp %[expect], r0\n\t"
 		"bne %l[error2]\n\t"
 #endif
-		/* try store */
 		"str %[newv2], %[v2]\n\t"
 		RSEQ_INJECT_ASM(5)
 #ifdef RSEQ_TEMPLATE_MO_RELEASE
-		"dmb\n\t"	/* full mb provides store-release */
+		"dmb\n\t"	 
 #endif
-		/* final store */
 		"str %[newv], %[v]\n\t"
 		"2:\n\t"
 		RSEQ_INJECT_ASM(6)
 		"b 5f\n\t"
 		RSEQ_ASM_DEFINE_ABORT(3, 4, "", abort, 1b, 2b, 4f)
 		"5:\n\t"
-		: /* gcc asm goto does not allow outputs */
+		:  
 		: [cpu_id]		"r" (cpu),
 		  [current_cpu_id]	"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
-		  /* try store input */
 		  [v2]			"m" (*v2),
 		  [newv2]		"r" (newv2),
-		  /* final store input */
 		  [v]			"m" (*v),
 		  [expect]		"r" (expect),
 		  [newv]		"r" (newv)
@@ -371,19 +334,15 @@ error2:
 	rseq_bug("expected value comparison failed");
 #endif
 }
-
-
 static inline __attribute__((always_inline))
 int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_trymemcpy_storev)(intptr_t *v, intptr_t expect,
 				 void *dst, void *src, size_t len,
 				 intptr_t newv, int cpu)
 {
 	uint32_t rseq_scratch[3];
-
 	RSEQ_INJECT_C(9)
-
 	__asm__ __volatile__ goto (
-		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f)  
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
 #ifdef RSEQ_COMPARE_TWICE
 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error1])
@@ -392,7 +351,6 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_trymemcpy_storev)(intptr_t *v, intptr_t
 		"str %[src], %[rseq_scratch0]\n\t"
 		"str %[dst], %[rseq_scratch1]\n\t"
 		"str %[len], %[rseq_scratch2]\n\t"
-		/* Start rseq by storing table entry pointer into rseq_cs. */
 		RSEQ_ASM_STORE_RSEQ_CS(1, 3f, rseq_cs)
 		RSEQ_ASM_CMP_CPU_ID(cpu_id, current_cpu_id, 4f)
 		RSEQ_INJECT_ASM(3)
@@ -406,7 +364,6 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_trymemcpy_storev)(intptr_t *v, intptr_t
 		"cmp %[expect], r0\n\t"
 		"bne 7f\n\t"
 #endif
-		/* try memcpy */
 		"cmp %[len], #0\n\t" \
 		"beq 333f\n\t" \
 		"222:\n\t" \
@@ -419,53 +376,45 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_trymemcpy_storev)(intptr_t *v, intptr_t
 		"333:\n\t" \
 		RSEQ_INJECT_ASM(5)
 #ifdef RSEQ_TEMPLATE_MO_RELEASE
-		"dmb\n\t"	/* full mb provides store-release */
+		"dmb\n\t"	 
 #endif
-		/* final store */
 		"str %[newv], %[v]\n\t"
 		"2:\n\t"
 		RSEQ_INJECT_ASM(6)
-		/* teardown */
 		"ldr %[len], %[rseq_scratch2]\n\t"
 		"ldr %[dst], %[rseq_scratch1]\n\t"
 		"ldr %[src], %[rseq_scratch0]\n\t"
 		"b 8f\n\t"
 		RSEQ_ASM_DEFINE_ABORT(3, 4,
-				      /* teardown */
 				      "ldr %[len], %[rseq_scratch2]\n\t"
 				      "ldr %[dst], %[rseq_scratch1]\n\t"
 				      "ldr %[src], %[rseq_scratch0]\n\t",
 				      abort, 1b, 2b, 4f)
 		RSEQ_ASM_DEFINE_CMPFAIL(5,
-					/* teardown */
 					"ldr %[len], %[rseq_scratch2]\n\t"
 					"ldr %[dst], %[rseq_scratch1]\n\t"
 					"ldr %[src], %[rseq_scratch0]\n\t",
 					cmpfail)
 #ifdef RSEQ_COMPARE_TWICE
 		RSEQ_ASM_DEFINE_CMPFAIL(6,
-					/* teardown */
 					"ldr %[len], %[rseq_scratch2]\n\t"
 					"ldr %[dst], %[rseq_scratch1]\n\t"
 					"ldr %[src], %[rseq_scratch0]\n\t",
 					error1)
 		RSEQ_ASM_DEFINE_CMPFAIL(7,
-					/* teardown */
 					"ldr %[len], %[rseq_scratch2]\n\t"
 					"ldr %[dst], %[rseq_scratch1]\n\t"
 					"ldr %[src], %[rseq_scratch0]\n\t",
 					error2)
 #endif
 		"8:\n\t"
-		: /* gcc asm goto does not allow outputs */
+		:  
 		: [cpu_id]		"r" (cpu),
 		  [current_cpu_id]	"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
-		  /* final store input */
 		  [v]			"m" (*v),
 		  [expect]		"r" (expect),
 		  [newv]		"r" (newv),
-		  /* try memcpy input */
 		  [dst]			"r" (dst),
 		  [src]			"r" (src),
 		  [len]			"r" (len),
@@ -498,8 +447,5 @@ error2:
 	rseq_bug("expected value comparison failed");
 #endif
 }
-
-#endif /* #if (defined(RSEQ_TEMPLATE_MO_RELAXED) || defined(RSEQ_TEMPLATE_MO_RELEASE)) &&
-	(defined(RSEQ_TEMPLATE_CPU_ID) || defined(RSEQ_TEMPLATE_MM_CID)) */
-
+#endif  
 #include "rseq-bits-reset.h"

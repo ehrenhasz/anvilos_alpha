@@ -1,46 +1,7 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0-or-later OR copyleft-next-0.3.1
-# Copyright (C) 2017 Luis R. Rodriguez <mcgrof@kernel.org>
-#
-# This is a stress test script for kmod, the kernel module loader. It uses
-# test_kmod which exposes a series of knobs for the API for us so we can
-# tweak each test in userspace rather than in kernelspace.
-#
-# The way kmod works is it uses the kernel's usermode helper API to eventually
-# call /sbin/modprobe. It has a limit of the number of concurrent calls
-# possible. The kernel interface to load modules is request_module(), however
-# mount uses get_fs_type(). Both behave slightly differently, but the
-# differences are important enough to test each call separately. For this
-# reason test_kmod starts by providing tests for both calls.
-#
-# The test driver test_kmod assumes a series of defaults which you can
-# override by exporting to your environment prior running this script.
-# For instance this script assumes you do not have xfs loaded upon boot.
-# If this is false, export DEFAULT_KMOD_FS="ext4" prior to running this
-# script if the filesystem module you don't have loaded upon bootup
-# is ext4 instead. Refer to allow_user_defaults() for a list of user
-# override variables possible.
-#
-# You'll want at least 4 GiB of RAM to expect to run these tests
-# without running out of memory on them. For other requirements refer
-# to test_reqs()
-
 set -e
-
 TEST_NAME="kmod"
 TEST_DRIVER="test_${TEST_NAME}"
 TEST_DIR=$(dirname $0)
-
-# This represents
-#
-# TEST_ID:TEST_COUNT:ENABLED
-#
-# TEST_ID: is the test id number
-# TEST_COUNT: number of times we should run the test
-# ENABLED: 1 if enabled, 0 otherwise
-#
-# Once these are enabled please leave them as-is. Write your own test,
-# we have tons of space.
 ALL_TESTS="0001:3:1"
 ALL_TESTS="$ALL_TESTS 0002:3:1"
 ALL_TESTS="$ALL_TESTS 0003:1:1"
@@ -54,10 +15,7 @@ ALL_TESTS="$ALL_TESTS 0010:1:1"
 ALL_TESTS="$ALL_TESTS 0011:1:1"
 ALL_TESTS="$ALL_TESTS 0012:1:1"
 ALL_TESTS="$ALL_TESTS 0013:1:1"
-
-# Kselftest framework requirement - SKIP code is 4.
 ksft_skip=4
-
 test_modprobe()
 {
        if [ ! -d $DIR ]; then
@@ -67,54 +25,38 @@ test_modprobe()
                exit $ksft_skip
        fi
 }
-
 function allow_user_defaults()
 {
 	if [ -z $DEFAULT_KMOD_DRIVER ]; then
 		DEFAULT_KMOD_DRIVER="test_module"
 	fi
-
 	if [ -z $DEFAULT_KMOD_FS ]; then
 		DEFAULT_KMOD_FS="xfs"
 	fi
-
 	if [ -z $PROC_DIR ]; then
 		PROC_DIR="/proc/sys/kernel/"
 	fi
-
 	if [ -z $MODPROBE_LIMIT ]; then
 		MODPROBE_LIMIT=50
 	fi
-
 	if [ -z $DIR ]; then
 		DIR="/sys/devices/virtual/misc/${TEST_DRIVER}0/"
 	fi
-
 	if [ -z $DEFAULT_NUM_TESTS ]; then
 		DEFAULT_NUM_TESTS=150
 	fi
-
 	MODPROBE_LIMIT_FILE="${PROC_DIR}/kmod-limit"
 }
-
 test_reqs()
 {
 	if ! which modprobe 2> /dev/null > /dev/null; then
 		echo "$0: You need modprobe installed" >&2
 		exit $ksft_skip
 	fi
-
 	if ! which kmod 2> /dev/null > /dev/null; then
 		echo "$0: You need kmod installed" >&2
 		exit $ksft_skip
 	fi
-
-	# kmod 19 has a bad bug where it returns 0 when modprobe
-	# gets called *even* if the module was not loaded due to
-	# some bad heuristics. For details see:
-	#
-	# A work around is possible in-kernel but its rather
-	# complex.
 	KMOD_VERSION=$(kmod --version | awk '{print $3}')
 	if [[ $KMOD_VERSION  -le 19 ]]; then
 		echo "$0: You need at least kmod 20" >&2
@@ -122,36 +64,27 @@ test_reqs()
 		echo "https://git.kernel.org/cgit/utils/kernel/kmod/kmod.git/commit/libkmod/libkmod-module.c?id=fd44a98ae2eb5eb32161088954ab21e58e19dfc4" >&2
 		exit $ksft_skip
 	fi
-
 	uid=$(id -u)
 	if [ $uid -ne 0 ]; then
 		echo $msg must be run as root >&2
 		exit $ksft_skip
 	fi
 }
-
 function load_req_mod()
 {
 	trap "test_modprobe" EXIT
-
 	if [ ! -d $DIR ]; then
-		# Alanis: "Oh isn't it ironic?"
 		modprobe $TEST_DRIVER
 	fi
 }
-
 test_finish()
 {
 	echo "$MODPROBE" > /proc/sys/kernel/modprobe
 	echo "Test completed"
 }
-
 errno_name_to_val()
 {
 	case "$1" in
-	# kmod calls modprobe and upon of a module not found
-	# modprobe returns just 1... However in the kernel we
-	# *sometimes* see 256...
 	MODULE_NOT_FOUND)
 		echo 256;;
 	SUCCESS)
@@ -168,7 +101,6 @@ errno_name_to_val()
 		echo invalid;;
 	esac
 }
-
 errno_val_to_name()
 	case "$1" in
 	256)
@@ -186,7 +118,6 @@ errno_val_to_name()
 	*)
 		echo invalid;;
 	esac
-
 config_set_test_case_driver()
 {
 	if ! echo -n 1 >$DIR/config_test_case; then
@@ -194,7 +125,6 @@ config_set_test_case_driver()
 		exit 1
 	fi
 }
-
 config_set_test_case_fs()
 {
 	if ! echo -n 2 >$DIR/config_test_case; then
@@ -202,7 +132,6 @@ config_set_test_case_fs()
 		exit 1
 	fi
 }
-
 config_num_threads()
 {
 	if ! echo -n $1 >$DIR/config_num_threads; then
@@ -210,7 +139,6 @@ config_num_threads()
 		exit 1
 	fi
 }
-
 config_get_modprobe_limit()
 {
 	if [[ -f ${MODPROBE_LIMIT_FILE} ]] ; then
@@ -218,16 +146,12 @@ config_get_modprobe_limit()
 	fi
 	echo $MODPROBE_LIMIT
 }
-
 config_num_thread_limit_extra()
 {
 	MODPROBE_LIMIT=$(config_get_modprobe_limit)
 	let EXTRA_LIMIT=$MODPROBE_LIMIT+$1
 	config_num_threads $EXTRA_LIMIT
 }
-
-# For special characters use printf directly,
-# refer to kmod_test_0001
 config_set_driver()
 {
 	if ! echo -n $1 >$DIR/config_test_driver; then
@@ -235,7 +159,6 @@ config_set_driver()
 		exit 1
 	fi
 }
-
 config_set_fs()
 {
 	if ! echo -n $1 >$DIR/config_test_fs; then
@@ -243,17 +166,14 @@ config_set_fs()
 		exit 1
 	fi
 }
-
 config_get_driver()
 {
 	cat $DIR/config_test_driver
 }
-
 config_get_test_result()
 {
 	cat $DIR/test_result
 }
-
 config_reset()
 {
 	if ! echo -n "1" >"$DIR"/reset; then
@@ -261,14 +181,12 @@ config_reset()
 		exit 1
 	fi
 }
-
 config_show_config()
 {
 	echo "----------------------------------------------------"
 	cat "$DIR"/config
 	echo "----------------------------------------------------"
 }
-
 config_trigger()
 {
 	if ! echo -n "1" >"$DIR"/trigger_config 2>/dev/null; then
@@ -278,7 +196,6 @@ config_trigger()
 	fi
 	echo "$1: OK! - loading kmod test"
 }
-
 config_trigger_want_fail()
 {
 	if echo "1" > $DIR/trigger_config 2>/dev/null; then
@@ -288,15 +205,12 @@ config_trigger_want_fail()
 	fi
 	echo "$1: OK! - kmod test case failed as expected"
 }
-
 config_expect_result()
 {
 	RC=$(config_get_test_result)
 	RC_NAME=$(errno_val_to_name $RC)
-
 	ERRNO_NAME=$2
 	ERRNO=$(errno_name_to_val $ERRNO_NAME)
-
 	if [[ $ERRNO_NAME = "-ERR_ANY" ]]; then
 		if [[ $RC -ge 0 ]]; then
 			echo "$1: FAIL, test expects $ERRNO_NAME - got $RC_NAME ($RC)" >&2
@@ -310,14 +224,12 @@ config_expect_result()
 	fi
 	echo "$1: OK! - Return value: $RC ($RC_NAME), expected $ERRNO_NAME"
 }
-
 kmod_defaults_driver()
 {
 	config_reset
 	modprobe -r $DEFAULT_KMOD_DRIVER
 	config_set_driver $DEFAULT_KMOD_DRIVER
 }
-
 kmod_defaults_fs()
 {
 	config_reset
@@ -325,62 +237,51 @@ kmod_defaults_fs()
 	config_set_fs $DEFAULT_KMOD_FS
 	config_set_test_case_fs
 }
-
 kmod_test_0001_driver()
 {
 	NAME='\000'
-
 	kmod_defaults_driver
 	config_num_threads 1
 	printf $NAME >"$DIR"/config_test_driver
 	config_trigger ${FUNCNAME[0]}
 	config_expect_result ${FUNCNAME[0]} MODULE_NOT_FOUND
 }
-
 kmod_test_0001_fs()
 {
 	NAME='\000'
-
 	kmod_defaults_fs
 	config_num_threads 1
 	printf $NAME >"$DIR"/config_test_fs
 	config_trigger ${FUNCNAME[0]}
 	config_expect_result ${FUNCNAME[0]} -EINVAL
 }
-
 kmod_test_0001()
 {
 	kmod_test_0001_driver
 	kmod_test_0001_fs
 }
-
 kmod_test_0002_driver()
 {
 	NAME="nope-$DEFAULT_KMOD_DRIVER"
-
 	kmod_defaults_driver
 	config_set_driver $NAME
 	config_num_threads 1
 	config_trigger ${FUNCNAME[0]}
 	config_expect_result ${FUNCNAME[0]} MODULE_NOT_FOUND
 }
-
 kmod_test_0002_fs()
 {
 	NAME="nope-$DEFAULT_KMOD_FS"
-
 	kmod_defaults_fs
 	config_set_fs $NAME
 	config_trigger ${FUNCNAME[0]}
 	config_expect_result ${FUNCNAME[0]} -EINVAL
 }
-
 kmod_test_0002()
 {
 	kmod_test_0002_driver
 	kmod_test_0002_fs
 }
-
 kmod_test_0003()
 {
 	kmod_defaults_fs
@@ -388,7 +289,6 @@ kmod_test_0003()
 	config_trigger ${FUNCNAME[0]}
 	config_expect_result ${FUNCNAME[0]} SUCCESS
 }
-
 kmod_test_0004()
 {
 	kmod_defaults_fs
@@ -396,27 +296,23 @@ kmod_test_0004()
 	config_trigger ${FUNCNAME[0]}
 	config_expect_result ${FUNCNAME[0]} SUCCESS
 }
-
 kmod_test_0005()
 {
 	kmod_defaults_driver
 	config_trigger ${FUNCNAME[0]}
 	config_expect_result ${FUNCNAME[0]} SUCCESS
 }
-
 kmod_test_0006()
 {
 	kmod_defaults_fs
 	config_trigger ${FUNCNAME[0]}
 	config_expect_result ${FUNCNAME[0]} SUCCESS
 }
-
 kmod_test_0007()
 {
 	kmod_test_0005
 	kmod_test_0006
 }
-
 kmod_test_0008()
 {
 	kmod_defaults_driver
@@ -426,7 +322,6 @@ kmod_test_0008()
 	config_trigger ${FUNCNAME[0]}
 	config_expect_result ${FUNCNAME[0]} SUCCESS
 }
-
 kmod_test_0009()
 {
 	kmod_defaults_fs
@@ -436,7 +331,6 @@ kmod_test_0009()
 	config_trigger ${FUNCNAME[0]}
 	config_expect_result ${FUNCNAME[0]} SUCCESS
 }
-
 kmod_test_0010()
 {
 	kmod_defaults_driver
@@ -446,31 +340,22 @@ kmod_test_0010()
 	config_expect_result ${FUNCNAME[0]} -ENOENT
 	echo "$MODPROBE" > /proc/sys/kernel/modprobe
 }
-
 kmod_test_0011()
 {
 	kmod_defaults_driver
 	config_num_threads 1
-	# This causes the kernel to not even try executing modprobe.  The error
-	# code is still -ENOENT like when modprobe doesn't exist, so we can't
-	# easily test for the exact difference.  But this still is a useful test
-	# since there was a bug where request_module() returned 0 in this case.
 	echo > /proc/sys/kernel/modprobe
 	config_trigger ${FUNCNAME[0]}
 	config_expect_result ${FUNCNAME[0]} -ENOENT
 	echo "$MODPROBE" > /proc/sys/kernel/modprobe
 }
-
 kmod_check_visibility()
 {
 	local name="$1"
 	local cmd="$2"
-
 	modprobe $DEFAULT_KMOD_DRIVER
-
 	local priv=$(eval $cmd)
 	local unpriv=$(capsh --drop=CAP_SYSLOG -- -c "$cmd")
-
 	if [ "$priv" = "$unpriv" ] || \
 	   [ "${priv:0:3}" = "0x0" ] || \
 	   [ "${unpriv:0:3}" != "0x0" ] ; then
@@ -480,19 +365,16 @@ kmod_check_visibility()
 		echo "${FUNCNAME[0]}: OK!"
 	fi
 }
-
 kmod_test_0012()
 {
 	kmod_check_visibility /proc/modules \
 		"grep '^${DEFAULT_KMOD_DRIVER}\b' /proc/modules | awk '{print \$NF}'"
 }
-
 kmod_test_0013()
 {
 	kmod_check_visibility '/sys/module/*/sections/*' \
 		"cat /sys/module/${DEFAULT_KMOD_DRIVER}/sections/.*text | head -n1"
 }
-
 list_tests()
 {
 	echo "Test ID list:"
@@ -515,7 +397,6 @@ list_tests()
 	echo "0012 x $(get_test_count 0012) - test /proc/modules address visibility under CAP_SYSLOG"
 	echo "0013 x $(get_test_count 0013) - test /sys/module/*/sections/* visibility under CAP_SYSLOG"
 }
-
 usage()
 {
 	NUM_TESTS=$(grep -o ' ' <<<"$ALL_TESTS" | grep -c .)
@@ -550,7 +431,6 @@ usage()
 	list_tests
 	exit 1
 }
-
 function test_num()
 {
 	re='^[0-9]+$'
@@ -558,27 +438,23 @@ function test_num()
 		usage
 	fi
 }
-
 function get_test_data()
 {
 	test_num $1
 	local field_num=$(echo $1 | sed 's/^0*//')
 	echo $ALL_TESTS | awk '{print $'$field_num'}'
 }
-
 function get_test_count()
 {
 	TEST_DATA=$(get_test_data $1)
-	LAST_TWO=${TEST_DATA#*:*}
+	LAST_TWO=${TEST_DATA
 	echo ${LAST_TWO%:*}
 }
-
 function get_test_enabled()
 {
 	TEST_DATA=$(get_test_data $1)
-	echo ${TEST_DATA#*:*:}
+	echo ${TEST_DATA
 }
-
 function run_all_tests()
 {
 	for i in $ALL_TESTS ; do
@@ -590,22 +466,19 @@ function run_all_tests()
 		fi
 	done
 }
-
 function watch_log()
 {
-	if [ $# -ne 3 ]; then
+	if [ $
 		clear
 	fi
 	date
 	echo "Running test: $2 - run #$1"
 }
-
 function watch_case()
 {
 	i=0
 	while [ 1 ]; do
-
-		if [ $# -eq 1 ]; then
+		if [ $
 			test_num $1
 			watch_log $i ${TEST_NAME}_test_$1
 			${TEST_NAME}_test_$1
@@ -616,14 +489,12 @@ function watch_case()
 		let i=$i+1
 	done
 }
-
 function test_case()
 {
 	NUM_TESTS=$DEFAULT_NUM_TESTS
-	if [ $# -eq 2 ]; then
+	if [ $
 		NUM_TESTS=$2
 	fi
-
 	i=0
 	while [ $i -lt $NUM_TESTS ]; do
 		test_num $1
@@ -633,10 +504,9 @@ function test_case()
 		let i=$i+1
 	done
 }
-
 function parse_args()
 {
-	if [ $# -eq 0 ]; then
+	if [ $
 		run_all_tests
 	else
 		if [[ "$1" = "all" ]]; then
@@ -665,14 +535,10 @@ function parse_args()
 		fi
 	fi
 }
-
 test_reqs
 allow_user_defaults
 load_req_mod
-
 MODPROBE=$(</proc/sys/kernel/modprobe)
 trap "test_finish" EXIT
-
 parse_args $@
-
 exit 0

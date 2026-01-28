@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Header providing constants for Rockchip pinctrl bindings.
- *
- * Copyright (c) 2013 MundoReader S.L.
- * Author: Heiko Stuebner <heiko@sntech.de>
- */
-
 #ifndef __DT_BINDINGS_ROCKCHIP_PINCTRL_H__
 #define __DT_BINDINGS_ROCKCHIP_PINCTRL_H__
-
 #define RK_PA0		0
 #define RK_PA1		1
 #define RK_PA2		2
@@ -41,7 +32,5 @@
 #define RK_PD5		29
 #define RK_PD6		30
 #define RK_PD7		31
-
 #define RK_FUNC_GPIO	0
-
 #endif

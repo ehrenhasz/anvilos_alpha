@@ -1,19 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
-* Copyright(c) 2015, 2016 Intel Corporation.
-*/
-
 #if !defined(__HFI1_TRACE_MISC_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __HFI1_TRACE_MISC_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #include "hfi.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hfi1_misc
-
 TRACE_EVENT(hfi1_interrupt,
 	    TP_PROTO(struct hfi1_devdata *dd, const struct is_table *is_entry,
 		     int src),
@@ -30,7 +21,6 @@ TRACE_EVENT(hfi1_interrupt,
 	    TP_printk("[%s] source: %s [%d]", __get_str(dev), __entry->buf,
 		      __entry->src)
 );
-
 DECLARE_EVENT_CLASS(
 	hfi1_csr_template,
 	TP_PROTO(void __iomem *addr, u64 value),
@@ -45,12 +35,10 @@ DECLARE_EVENT_CLASS(
 	),
 	TP_printk("addr %p value %llx", __entry->addr, __entry->value)
 );
-
 DEFINE_EVENT(
 	hfi1_csr_template, hfi1_write_rcvarray,
 	TP_PROTO(void __iomem *addr, u64 value),
 	TP_ARGS(addr, value));
-
 #ifdef CONFIG_FAULT_INJECTION
 TRACE_EVENT(hfi1_fault_opcode,
 	    TP_PROTO(struct rvt_qp *qp, u8 opcode),
@@ -66,7 +54,6 @@ TRACE_EVENT(hfi1_fault_opcode,
 	    TP_printk("[%s] qpn 0x%x opcode 0x%x",
 		      __get_str(dev), __entry->qpn, __entry->opcode)
 );
-
 TRACE_EVENT(hfi1_fault_packet,
 	    TP_PROTO(struct hfi1_packet *packet),
 	    TP_ARGS(packet),
@@ -98,9 +85,7 @@ TRACE_EVENT(hfi1_fault_packet,
 		)
 );
 #endif
-
-#endif /* __HFI1_TRACE_MISC_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH .

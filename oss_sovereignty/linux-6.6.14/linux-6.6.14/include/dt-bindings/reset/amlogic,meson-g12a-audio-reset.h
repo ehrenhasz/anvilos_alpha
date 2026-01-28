@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- *
- */
-
 #ifndef _DT_BINDINGS_AMLOGIC_MESON_G12A_AUDIO_RESET_H
 #define _DT_BINDINGS_AMLOGIC_MESON_G12A_AUDIO_RESET_H
-
 #define AUD_RESET_PDM		0
 #define AUD_RESET_TDMIN_A	1
 #define AUD_RESET_TDMIN_B	2
@@ -34,8 +26,6 @@
 #define AUD_RESET_TOACODEC	23
 #define AUD_RESET_TOHDMITX	24
 #define AUD_RESET_CLKTREE	25
-
-/* SM1 added resets */
 #define AUD_RESET_RESAMPLE_B	26
 #define AUD_RESET_TOVAD		27
 #define AUD_RESET_LOCKER	28
@@ -49,5 +39,4 @@
 #define AUD_RESET_EARCRX	36
 #define AUD_RESET_FRDDR_E	37
 #define AUD_RESET_TODDR_E	38
-
 #endif

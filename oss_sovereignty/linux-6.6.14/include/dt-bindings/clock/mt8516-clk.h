@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Copyright (c) 2019 BayLibre, SAS.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_MT8516_H
 #define _DT_BINDINGS_CLK_MT8516_H
-
-/* APMIXEDSYS */
-
 #define CLK_APMIXED_ARMPLL		0
 #define CLK_APMIXED_MAINPLL		1
 #define CLK_APMIXED_UNIVPLL		2
@@ -17,18 +7,12 @@
 #define CLK_APMIXED_APLL1		4
 #define CLK_APMIXED_APLL2		5
 #define CLK_APMIXED_NR_CLK		6
-
-/* INFRACFG */
-
 #define CLK_IFR_MUX1_SEL		0
 #define CLK_IFR_ETH_25M_SEL		1
 #define CLK_IFR_I2C0_SEL		2
 #define CLK_IFR_I2C1_SEL		3
 #define CLK_IFR_I2C2_SEL		4
 #define CLK_IFR_NR_CLK			5
-
-/* TOPCKGEN */
-
 #define CLK_TOP_CLK_NULL		0
 #define CLK_TOP_I2S_INFRA_BCK		1
 #define CLK_TOP_MEMPLL			2
@@ -207,9 +191,6 @@
 #define CLK_TOP_MSDC1_INFRA		175
 #define CLK_TOP_MSDC2_INFRA		176
 #define CLK_TOP_NR_CLK			177
-
-/* AUDSYS */
-
 #define CLK_AUD_AFE			0
 #define CLK_AUD_I2S			1
 #define CLK_AUD_22M			2
@@ -224,5 +205,4 @@
 #define CLK_AUD_DAC_PREDIS		11
 #define CLK_AUD_TML			12
 #define CLK_AUD_NR_CLK			13
-
-#endif /* _DT_BINDINGS_CLK_MT8516_H */
+#endif  

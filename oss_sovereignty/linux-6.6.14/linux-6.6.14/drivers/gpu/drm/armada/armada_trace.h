@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #if !defined(ARMADA_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define ARMADA_TRACE_H
-
 #include <linux/tracepoint.h>
-
 struct drm_crtc;
 struct drm_framebuffer;
 struct drm_plane;
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM armada
 #define TRACE_INCLUDE_FILE armada_trace
-
 TRACE_EVENT(armada_drm_irq,
 	TP_PROTO(struct drm_crtc *crtc, u32 stat),
 	TP_ARGS(crtc, stat),
@@ -26,7 +21,6 @@ TRACE_EVENT(armada_drm_irq,
 	TP_printk("crtc %p stat 0x%08x",
 		__entry->crtc, __entry->stat)
 );
-
 TRACE_EVENT(armada_ovl_plane_update,
 	TP_PROTO(struct drm_plane *plane, struct drm_crtc *crtc,
 		     struct drm_framebuffer *fb,
@@ -66,7 +60,6 @@ TRACE_EVENT(armada_ovl_plane_update,
 		__entry->src_x >> 16, __entry->src_y >> 16,
 		__entry->src_w >> 16, __entry->src_h >> 16)
 );
-
 TRACE_EVENT(armada_ovl_plane_work,
 	TP_PROTO(struct drm_crtc *crtc, struct drm_plane *plane),
 	TP_ARGS(crtc, plane),
@@ -81,10 +74,7 @@ TRACE_EVENT(armada_ovl_plane_work,
 	TP_printk("plane %p crtc %p",
 		__entry->plane, __entry->crtc)
 );
-
 #endif
-
-/* This part must be outside protection */
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/armada
 #include <trace/define_trace.h>

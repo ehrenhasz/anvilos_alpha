@@ -1,50 +1,28 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
 #ifndef _ASM_POWERPC_TERMBITS_H
 #define _ASM_POWERPC_TERMBITS_H
-
-/*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-
 #include <asm-generic/termbits-common.h>
-
 typedef unsigned int	tcflag_t;
-
-/*
- * termios type and macro definitions.  Be careful about adding stuff
- * to this file since it's used in GNU libc and there are strict rules
- * concerning namespace pollution.
- */
-
 #define NCCS 19
 struct termios {
-	tcflag_t c_iflag;		/* input mode flags */
-	tcflag_t c_oflag;		/* output mode flags */
-	tcflag_t c_cflag;		/* control mode flags */
-	tcflag_t c_lflag;		/* local mode flags */
-	cc_t c_cc[NCCS];		/* control characters */
-	cc_t c_line;			/* line discipline (== c_cc[19]) */
-	speed_t c_ispeed;		/* input speed */
-	speed_t c_ospeed;		/* output speed */
+	tcflag_t c_iflag;		 
+	tcflag_t c_oflag;		 
+	tcflag_t c_cflag;		 
+	tcflag_t c_lflag;		 
+	cc_t c_cc[NCCS];		 
+	cc_t c_line;			 
+	speed_t c_ispeed;		 
+	speed_t c_ospeed;		 
 };
-
-/* For PowerPC the termios and ktermios are the same */
-
 struct ktermios {
-	tcflag_t c_iflag;		/* input mode flags */
-	tcflag_t c_oflag;		/* output mode flags */
-	tcflag_t c_cflag;		/* control mode flags */
-	tcflag_t c_lflag;		/* local mode flags */
-	cc_t c_cc[NCCS];		/* control characters */
-	cc_t c_line;			/* line discipline (== c_cc[19]) */
-	speed_t c_ispeed;		/* input speed */
-	speed_t c_ospeed;		/* output speed */
+	tcflag_t c_iflag;		 
+	tcflag_t c_oflag;		 
+	tcflag_t c_cflag;		 
+	tcflag_t c_lflag;		 
+	cc_t c_cc[NCCS];		 
+	cc_t c_line;			 
+	speed_t c_ispeed;		 
+	speed_t c_ospeed;		 
 };
-
-/* c_cc characters */
 #define VINTR 	         0
 #define VQUIT 	         1
 #define VERASE 	         2
@@ -62,15 +40,11 @@ struct ktermios {
 #define VSTOP		14
 #define VLNEXT		15
 #define VDISCARD	16
-
-/* c_iflag bits */
 #define IXON	0x0200
 #define IXOFF	0x0400
 #define IUCLC	0x1000
 #define IMAXBEL	0x2000
 #define IUTF8	0x4000
-
-/* c_oflag bits */
 #define ONLCR	0x00002
 #define OLCUC	0x00004
 #define NLDLY	0x00300
@@ -83,7 +57,7 @@ struct ktermios {
 #define   TAB1	0x00400
 #define   TAB2	0x00800
 #define   TAB3	0x00c00
-#define   XTABS	0x00c00		/* required by POSIX to == TAB3 */
+#define   XTABS	0x00c00		 
 #define CRDLY	0x03000
 #define   CR0	0x00000
 #define   CR1	0x01000
@@ -98,8 +72,6 @@ struct ktermios {
 #define VTDLY	0x10000
 #define   VT0	0x00000
 #define   VT1	0x10000
-
-/* c_cflag bit meaning */
 #define CBAUD		0x000000ff
 #define CBAUDEX		0x00000000
 #define BOTHER		0x0000001f
@@ -130,8 +102,6 @@ struct ktermios {
 #define HUPCL		0x00004000
 #define CLOCAL		0x00008000
 #define CIBAUD		0x00ff0000
-
-/* c_lflag bits */
 #define ISIG	0x00000080
 #define ICANON	0x00000100
 #define XCASE	0x00004000
@@ -148,10 +118,7 @@ struct ktermios {
 #define PENDIN	0x20000000
 #define IEXTEN	0x00000400
 #define EXTPROC	0x10000000
-
-/* Values for the OPTIONAL_ACTIONS argument to `tcsetattr'.  */
 #define	TCSANOW		0
 #define	TCSADRAIN	1
 #define	TCSAFLUSH	2
-
-#endif	/* _ASM_POWERPC_TERMBITS_H */
+#endif	 

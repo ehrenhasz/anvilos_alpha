@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SC7180_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SC7180_H
-
-/* GCC clocks */
 #define GCC_GPLL0_MAIN_DIV_CDIV					0
 #define GPLL0							1
 #define GPLL0_OUT_EVEN						2
@@ -139,8 +132,6 @@
 #define GCC_MSS_SNOC_AXI_CLK					129
 #define GCC_SEC_CTRL_CLK_SRC					130
 #define GCC_LPASS_CFG_NOC_SWAY_CLK				131
-
-/* GCC resets */
 #define GCC_QUSB2PHY_PRIM_BCR					0
 #define GCC_QUSB2PHY_SEC_BCR					1
 #define GCC_UFS_PHY_BCR						2
@@ -152,11 +143,8 @@
 #define GCC_USB3PHY_PHY_PRIM_BCR				8
 #define GCC_USB3PHY_PHY_SEC_BCR					9
 #define GCC_USB_PHY_CFG_AHB2PHY_BCR				10
-
-/* GCC GDSCRs */
 #define UFS_PHY_GDSC						0
 #define USB30_PRIM_GDSC						1
 #define HLOS1_VOTE_MMNOC_MMU_TBU_HF0_GDSC			2
 #define HLOS1_VOTE_MMNOC_MMU_TBU_SF_GDSC			3
-
 #endif

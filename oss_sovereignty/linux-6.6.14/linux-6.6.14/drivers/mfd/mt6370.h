@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2022 Richtek Technology Corp.
- *
- * Author: ChiYuan Huang <cy_huang@richtek.com>
- */
-
 #ifndef __MFD_MT6370_H__
 #define __MFD_MT6370_H__
-
-/* IRQ definitions */
 #define MT6370_IRQ_DIRCHGON		0
 #define MT6370_IRQ_CHG_TREG		4
 #define MT6370_IRQ_CHG_AICR		5
@@ -84,16 +75,13 @@
 #define MT6370_IRQ_DSV_BST_OCP		125
 #define MT6370_IRQ_DSV_VNEG_SCP		126
 #define MT6370_IRQ_DSV_VPOS_SCP		127
-
 enum {
 	MT6370_USBC_I2C = 0,
 	MT6370_PMU_I2C,
 	MT6370_MAX_I2C
 };
-
 struct mt6370_info {
 	struct i2c_client *i2c[MT6370_MAX_I2C];
 	struct regmap_irq_chip_data *irq_data;
 };
-
-#endif /* __MFD_MT6375_H__ */
+#endif  

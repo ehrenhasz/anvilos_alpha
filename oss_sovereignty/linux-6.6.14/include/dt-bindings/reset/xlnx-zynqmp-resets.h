@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright (C) 2018 Xilinx, Inc.
- */
-
 #ifndef _DT_BINDINGS_ZYNQMP_RESETS_H
 #define _DT_BINDINGS_ZYNQMP_RESETS_H
-
 #define		ZYNQMP_RESET_PCIE_CFG		0
 #define		ZYNQMP_RESET_PCIE_BRIDGE	1
 #define		ZYNQMP_RESET_PCIE_CTRL		2
@@ -126,5 +120,4 @@
 #define		ZYNQMP_RESET_PS_PL1		117
 #define		ZYNQMP_RESET_PS_PL2		118
 #define		ZYNQMP_RESET_PS_PL3		119
-
 #endif

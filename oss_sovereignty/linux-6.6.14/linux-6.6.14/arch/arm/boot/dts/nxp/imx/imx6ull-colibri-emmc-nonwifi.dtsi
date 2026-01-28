@@ -1,22 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright 2022 Toradex
- */
-
 #include "imx6ull-colibri.dtsi"
-
 / {
 	aliases {
-		mmc0 = &usdhc2; /* eMMC */
-		mmc1 = &usdhc1; /* MMC 4-bit slot */
+		mmc0 = &usdhc2;  
+		mmc1 = &usdhc1;  
 	};
-
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x80000000 0x10000000>;
 	};
 };
-
 &gpio1 {
 	gpio-line-names = "SODIMM_8",
 			  "SODIMM_6",
@@ -49,7 +41,6 @@
 			  "SODIMM_196",
 			  "SODIMM_194";
 };
-
 &gpio2 {
 	gpio-line-names = "SODIMM_55",
 			  "SODIMM_63",
@@ -74,7 +65,6 @@
 			  "SODIMM_51",
 			  "SODIMM_53";
 };
-
 &gpio3 {
 	gpio-line-names = "SODIMM_56",
 			  "SODIMM_44",
@@ -106,7 +96,6 @@
 			  "SODIMM_92",
 			  "SODIMM_90";
 };
-
 &gpio4 {
 	gpio-line-names = "",
 			  "",
@@ -138,7 +127,6 @@
 			  "SODIMM_85",
 			  "SODIMM_65";
 };
-
 &gpio5 {
 	gpio-line-names = "SODIMM_43",
 			  "SODIMM_45",
@@ -153,25 +141,19 @@
 			  "SODIMM_105",
 			  "SODIMM_127";
 };
-
-/* NAND */
 &gpmi {
 	status = "disabled";
 };
-
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gpio1 &pinctrl_gpio2 &pinctrl_gpio3
 		&pinctrl_gpio4 &pinctrl_gpio6 &pinctrl_gpio7
 		&pinctrl_gpmi_gpio>;
 };
-
 &iomuxc_snvs {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_snvs_gpio1 &pinctrl_snvs_gpio3>;
 };
-
-/* eMMC */
 &usdhc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2emmc>;

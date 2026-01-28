@@ -1,10 +1,3 @@
-// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
-/*
- * Copyright (C) 2016, 2020 PHYTEC Messtechnik
- * Author: Christian Hemp <c.hemp@phytec.de>
- * Author: Stefan Riedmueller <s.riedmueller@phytec.de>
- */
-
 / {
 	backlight_lcd: backlight-lcd {
 		compatible = "pwm-backlight";
@@ -14,19 +7,16 @@
 		pwms = <&pwm3 0 5000000 0>;
 		status = "disabled";
 	};
-
 	lcd_panel: lcd-panel {
 		compatible = "edt,etm0700g0edh6";
 		backlight = <&backlight_lcd>;
 		status = "disabled";
-
 		port {
 			lcd_panel_in: endpoint {
 				remote-endpoint = <&lcdif_parallel_out>;
 			};
 		};
 	};
-
 	reg_backlight_en: regulator-backlight-en {
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
@@ -38,7 +28,6 @@
 		enable-active-high;
 	};
 };
-
 &i2c1 {
 	edt_ft5406: touchscreen@38 {
 		compatible = "edt,edt-ft5406";
@@ -50,7 +39,6 @@
 		wakeup-source;
 		status = "disabled";
 	};
-
 	stmpe: touchscreen@44 {
 		compatible = "st,stmpe811";
 		reg = <0x44>;
@@ -60,7 +48,6 @@
 		interrupt-parent = <&gpio5>;
 		wakeup-source;
 		status = "disabled";
-
 		stmpe_touchscreen {
 			compatible = "st,stmpe-ts";
 			st,sample-time = <4>;
@@ -77,38 +64,32 @@
 		};
 	};
 };
-
 &lcdif {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lcdif_dat>;
 	status = "disabled";
-
 	port {
 		lcdif_parallel_out: endpoint {
 			remote-endpoint = <&lcd_panel_in>;
 		};
 	};
 };
-
 &pwm3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm3>;
 	status = "disabled";
 };
-
 &iomuxc {
 	pinctrl_edt_ft5406: edtft5406grp {
 		fsl,pins = <
 			MX6UL_PAD_SNVS_TAMPER5__GPIO5_IO05	0x1b0b0
 		>;
 	};
-
 	pinctrl_backlight_en: bachlightengrp {
 		fsl,pins = <
 			MX6UL_PAD_UART1_CTS_B__GPIO1_IO18	0x1b0b0
 		>;
 	};
-
 	pinctrl_lcdif_dat: lcdifdatgrp {
 		fsl,pins = <
 			MX6UL_PAD_LCD_DATA00__LCDIF_DATA00  0x59
@@ -135,13 +116,11 @@
 			MX6UL_PAD_LCD_VSYNC__LCDIF_VSYNC    0x59
 		>;
 	};
-
 	pinctrl_pwm3: pwm3grp {
 		fsl,pins = <
 			MX6UL_PAD_GPIO1_IO04__PWM3_OUT	0x0b0b0
 		>;
 	};
-
 	pinctrl_stmpe: stmpegrp {
 		fsl,pins = <
 			MX6UL_PAD_SNVS_TAMPER3__GPIO5_IO03	0x17059

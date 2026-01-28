@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017-2018 NXP
- */
-
 #ifndef __DT_BINDINGS_RSCRC_IMX_H
 #define __DT_BINDINGS_RSCRC_IMX_H
-
-/*
- * These defines are used to indicate a resource. Resources include peripherals
- * and bus masters (but not memory regions). Note items from list should
- * never be changed or removed (only added to at the end of the list).
- */
-
 #define IMX_SC_R_AP_0			0
 #define IMX_SC_R_AP_0_0			1
 #define IMX_SC_R_AP_0_1			2
@@ -561,27 +548,19 @@
 #define IMX_SC_R_DMA_5_CH3		544
 #define IMX_SC_R_ATTESTATION		545
 #define IMX_SC_R_LAST			546
-
-/*
- * Defines for SC PM CLK
- */
-#define IMX_SC_PM_CLK_SLV_BUS		0	/* Slave bus clock */
-#define IMX_SC_PM_CLK_MST_BUS		1	/* Master bus clock */
-#define IMX_SC_PM_CLK_PER		2	/* Peripheral clock */
-#define IMX_SC_PM_CLK_PHY		3	/* Phy clock */
-#define IMX_SC_PM_CLK_MISC		4	/* Misc clock */
-#define IMX_SC_PM_CLK_MISC0		0	/* Misc 0 clock */
-#define IMX_SC_PM_CLK_MISC1		1	/* Misc 1 clock */
-#define IMX_SC_PM_CLK_MISC2		2	/* Misc 2 clock */
-#define IMX_SC_PM_CLK_MISC3		3	/* Misc 3 clock */
-#define IMX_SC_PM_CLK_MISC4		4	/* Misc 4 clock */
-#define IMX_SC_PM_CLK_CPU		2	/* CPU clock */
-#define IMX_SC_PM_CLK_PLL		4	/* PLL */
-#define IMX_SC_PM_CLK_BYPASS		4	/* Bypass clock */
-
-/*
- * Compatibility defines for sc_rsrc_t
- */
+#define IMX_SC_PM_CLK_SLV_BUS		0	 
+#define IMX_SC_PM_CLK_MST_BUS		1	 
+#define IMX_SC_PM_CLK_PER		2	 
+#define IMX_SC_PM_CLK_PHY		3	 
+#define IMX_SC_PM_CLK_MISC		4	 
+#define IMX_SC_PM_CLK_MISC0		0	 
+#define IMX_SC_PM_CLK_MISC1		1	 
+#define IMX_SC_PM_CLK_MISC2		2	 
+#define IMX_SC_PM_CLK_MISC3		3	 
+#define IMX_SC_PM_CLK_MISC4		4	 
+#define IMX_SC_PM_CLK_CPU		2	 
+#define IMX_SC_PM_CLK_PLL		4	 
+#define IMX_SC_PM_CLK_BYPASS		4	 
 #define IMX_SC_R_A35			IMX_SC_R_AP_2
 #define IMX_SC_R_A35_0			IMX_SC_R_AP_2_0
 #define IMX_SC_R_A35_1			IMX_SC_R_AP_2_1
@@ -677,10 +656,6 @@
 #define IMX_SC_R_UNUSED2		IMX_SC_R_V2X_PID1
 #define IMX_SC_R_UNUSED3		IMX_SC_R_V2X_PID2
 #define IMX_SC_R_UNUSED4		IMX_SC_R_V2X_PID3
-
-/*
- * Defines for SC CONTROL
- */
 #define IMX_SC_C_TEMP				0
 #define IMX_SC_C_TEMP_HI			1
 #define IMX_SC_C_TEMP_LOW			2
@@ -748,5 +723,4 @@
 #define IMX_SC_C_MISC2				64
 #define IMX_SC_C_MISC3				65
 #define IMX_SC_C_LAST				66
-
-#endif /* __DT_BINDINGS_RSCRC_IMX_H */
+#endif  

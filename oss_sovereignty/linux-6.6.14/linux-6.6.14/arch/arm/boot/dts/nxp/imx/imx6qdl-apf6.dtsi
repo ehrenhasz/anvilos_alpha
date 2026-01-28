@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+ OR MIT
-//
-// Copyright 2015 Armadeus Systems <support@armadeus.com>
-
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/irq.h>
-
 / {
 	reg_1p8v: regulator-1p8v {
 		compatible = "regulator-fixed";
@@ -14,7 +9,6 @@
 		regulator-always-on;
 		vin-supply = <&reg_3p3v>;
 	};
-
 	usdhc1_pwrseq: usdhc1-pwrseq {
 		compatible = "mmc-pwrseq-simple";
 		reset-gpios = <&gpio2 8 GPIO_ACTIVE_LOW>;
@@ -22,7 +16,6 @@
 		power-off-delay-us = <70>;
 	};
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet>;
@@ -31,11 +24,9 @@
 	phy-reset-gpios = <&gpio1 24 GPIO_ACTIVE_LOW>;
 	phy-handle = <&ethphy1>;
 	status = "okay";
-
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		ethphy1: ethernet-phy@1 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <1>;
@@ -45,16 +36,12 @@
 		};
 	};
 };
-
-/* Bluetooth */
 &uart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
 	uart-has-rtscts;
 	status = "okay";
 };
-
-/* Wi-Fi */
 &usdhc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc1>;
@@ -66,7 +53,6 @@
 	keep-power-in-suspend;
 	non-removable;
 	status = "okay";
-
 	#address-cells = <1>;
 	#size-cells = <0>;
 	wlcore: wlcore@2 {
@@ -78,8 +64,6 @@
 		tcxo-clock-frequency = <38400000>;
 	};
 };
-
-/* eMMC */
 &usdhc3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc3>;
@@ -88,7 +72,6 @@
 	non-removable;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl_enet: enetgrp {
 		fsl,pins = <
@@ -111,17 +94,15 @@
 			MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL	0x13030
 		>;
 	};
-
 	pinctrl_uart2: uart2grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD4_DAT4__UART2_RX_DATA	0x1b0b0
 			MX6QDL_PAD_SD4_DAT5__UART2_RTS_B	0x1b0b0
 			MX6QDL_PAD_SD4_DAT6__UART2_CTS_B	0x1b0b0
 			MX6QDL_PAD_SD4_DAT7__UART2_TX_DATA	0x1b0b0
-			MX6QDL_PAD_SD4_DAT3__GPIO2_IO11		0x130b0 /* BT_EN */
+			MX6QDL_PAD_SD4_DAT3__GPIO2_IO11		0x130b0  
 		>;
 	};
-
 	pinctrl_usdhc1: usdhc1grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD1_CMD__SD1_CMD	0x17059
@@ -130,11 +111,10 @@
 			MX6QDL_PAD_SD1_DAT1__SD1_DATA1	0x17059
 			MX6QDL_PAD_SD1_DAT2__SD1_DATA2	0x17059
 			MX6QDL_PAD_SD1_DAT3__SD1_DATA3	0x17059
-			MX6QDL_PAD_SD4_DAT0__GPIO2_IO08	0x130b0 /* WL_EN */
-			MX6QDL_PAD_SD4_DAT2__GPIO2_IO10	0x130b0 /* WL_IRQ */
+			MX6QDL_PAD_SD4_DAT0__GPIO2_IO08	0x130b0  
+			MX6QDL_PAD_SD4_DAT2__GPIO2_IO10	0x130b0  
 		>;
 	};
-
 	pinctrl_usdhc3: usdhc3grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD3_CMD__SD3_CMD	0x17059

@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_DPI_DEFS_H__
 #define __CVMX_DPI_DEFS_H__
-
 #define CVMX_DPI_BIST_STATUS (CVMX_ADD_IO_SEG(0x0001DF0000000000ull))
 #define CVMX_DPI_CTL (CVMX_ADD_IO_SEG(0x0001DF0000000040ull))
 #define CVMX_DPI_DMAX_COUNTS(offset) (CVMX_ADD_IO_SEG(0x0001DF0000000300ull) + ((offset) & 7) * 8)
@@ -63,10 +35,8 @@ static inline uint64_t CVMX_DPI_SLI_PRTX_ERR(unsigned long offset)
 	case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 	case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 	case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-
 		if (OCTEON_IS_MODEL(OCTEON_CN68XX_PASS1))
 			return CVMX_ADD_IO_SEG(0x0001DF0000000928ull) + (offset) * 8;
-
 		if (OCTEON_IS_MODEL(OCTEON_CN68XX_PASS2))
 			return CVMX_ADD_IO_SEG(0x0001DF0000000920ull) + (offset) * 8;
 		return CVMX_ADD_IO_SEG(0x0001DF0000000920ull) + (offset) * 8;
@@ -75,9 +45,7 @@ static inline uint64_t CVMX_DPI_SLI_PRTX_ERR(unsigned long offset)
 	}
 	return CVMX_ADD_IO_SEG(0x0001DF0000000920ull) + (offset) * 8;
 }
-
 #define CVMX_DPI_SLI_PRTX_ERR_INFO(offset) (CVMX_ADD_IO_SEG(0x0001DF0000000940ull) + ((offset) & 3) * 8)
-
 union cvmx_dpi_bist_status {
 	uint64_t u64;
 	struct cvmx_dpi_bist_status_s {
@@ -108,7 +76,6 @@ union cvmx_dpi_bist_status {
 #endif
 	} cn63xxp1;
 };
-
 union cvmx_dpi_ctl {
 	uint64_t u64;
 	struct cvmx_dpi_ctl_s {
@@ -132,7 +99,6 @@ union cvmx_dpi_ctl {
 #endif
 	} cn61xx;
 };
-
 union cvmx_dpi_dmax_counts {
 	uint64_t u64;
 	struct cvmx_dpi_dmax_counts_s {
@@ -147,7 +113,6 @@ union cvmx_dpi_dmax_counts {
 #endif
 	} s;
 };
-
 union cvmx_dpi_dmax_dbell {
 	uint64_t u64;
 	struct cvmx_dpi_dmax_dbell_s {
@@ -160,7 +125,6 @@ union cvmx_dpi_dmax_dbell {
 #endif
 	} s;
 };
-
 union cvmx_dpi_dmax_err_rsp_status {
 	uint64_t u64;
 	struct cvmx_dpi_dmax_err_rsp_status_s {
@@ -173,7 +137,6 @@ union cvmx_dpi_dmax_err_rsp_status {
 #endif
 	} s;
 };
-
 union cvmx_dpi_dmax_ibuff_saddr {
 	uint64_t u64;
 	struct cvmx_dpi_dmax_ibuff_saddr_s {
@@ -213,7 +176,6 @@ union cvmx_dpi_dmax_ibuff_saddr {
 #endif
 	} cn61xx;
 };
-
 union cvmx_dpi_dmax_iflight {
 	uint64_t u64;
 	struct cvmx_dpi_dmax_iflight_s {
@@ -226,7 +188,6 @@ union cvmx_dpi_dmax_iflight {
 #endif
 	} s;
 };
-
 union cvmx_dpi_dmax_naddr {
 	uint64_t u64;
 	struct cvmx_dpi_dmax_naddr_s {
@@ -248,7 +209,6 @@ union cvmx_dpi_dmax_naddr {
 #endif
 	} cn61xx;
 };
-
 union cvmx_dpi_dmax_reqbnk0 {
 	uint64_t u64;
 	struct cvmx_dpi_dmax_reqbnk0_s {
@@ -259,7 +219,6 @@ union cvmx_dpi_dmax_reqbnk0 {
 #endif
 	} s;
 };
-
 union cvmx_dpi_dmax_reqbnk1 {
 	uint64_t u64;
 	struct cvmx_dpi_dmax_reqbnk1_s {
@@ -270,7 +229,6 @@ union cvmx_dpi_dmax_reqbnk1 {
 #endif
 	} s;
 };
-
 union cvmx_dpi_dma_control {
 	uint64_t u64;
 	struct cvmx_dpi_dma_control_s {
@@ -401,7 +359,6 @@ union cvmx_dpi_dma_control {
 #endif
 	} cn63xxp1;
 };
-
 union cvmx_dpi_dma_engx_en {
 	uint64_t u64;
 	struct cvmx_dpi_dma_engx_en_s {
@@ -414,7 +371,6 @@ union cvmx_dpi_dma_engx_en {
 #endif
 	} s;
 };
-
 union cvmx_dpi_dma_ppx_cnt {
 	uint64_t u64;
 	struct cvmx_dpi_dma_ppx_cnt_s {
@@ -427,7 +383,6 @@ union cvmx_dpi_dma_ppx_cnt {
 #endif
 	} s;
 };
-
 union cvmx_dpi_engx_buf {
 	uint64_t u64;
 	struct cvmx_dpi_engx_buf_s {
@@ -457,7 +412,6 @@ union cvmx_dpi_engx_buf {
 #endif
 	} cn63xx;
 };
-
 union cvmx_dpi_info_reg {
 	uint64_t u64;
 	struct cvmx_dpi_info_reg_s {
@@ -487,7 +441,6 @@ union cvmx_dpi_info_reg {
 #endif
 	} cn63xxp1;
 };
-
 union cvmx_dpi_int_en {
 	uint64_t u64;
 	struct cvmx_dpi_int_en_s {
@@ -565,7 +518,6 @@ union cvmx_dpi_int_en {
 #endif
 	} cn63xx;
 };
-
 union cvmx_dpi_int_reg {
 	uint64_t u64;
 	struct cvmx_dpi_int_reg_s {
@@ -643,7 +595,6 @@ union cvmx_dpi_int_reg {
 #endif
 	} cn63xx;
 };
-
 union cvmx_dpi_ncbx_cfg {
 	uint64_t u64;
 	struct cvmx_dpi_ncbx_cfg_s {
@@ -656,7 +607,6 @@ union cvmx_dpi_ncbx_cfg {
 #endif
 	} s;
 };
-
 union cvmx_dpi_pint_info {
 	uint64_t u64;
 	struct cvmx_dpi_pint_info_s {
@@ -673,7 +623,6 @@ union cvmx_dpi_pint_info {
 #endif
 	} s;
 };
-
 union cvmx_dpi_pkt_err_rsp {
 	uint64_t u64;
 	struct cvmx_dpi_pkt_err_rsp_s {
@@ -686,7 +635,6 @@ union cvmx_dpi_pkt_err_rsp {
 #endif
 	} s;
 };
-
 union cvmx_dpi_req_err_rsp {
 	uint64_t u64;
 	struct cvmx_dpi_req_err_rsp_s {
@@ -699,7 +647,6 @@ union cvmx_dpi_req_err_rsp {
 #endif
 	} s;
 };
-
 union cvmx_dpi_req_err_rsp_en {
 	uint64_t u64;
 	struct cvmx_dpi_req_err_rsp_en_s {
@@ -712,7 +659,6 @@ union cvmx_dpi_req_err_rsp_en {
 #endif
 	} s;
 };
-
 union cvmx_dpi_req_err_rst {
 	uint64_t u64;
 	struct cvmx_dpi_req_err_rst_s {
@@ -725,7 +671,6 @@ union cvmx_dpi_req_err_rst {
 #endif
 	} s;
 };
-
 union cvmx_dpi_req_err_rst_en {
 	uint64_t u64;
 	struct cvmx_dpi_req_err_rst_en_s {
@@ -738,7 +683,6 @@ union cvmx_dpi_req_err_rst_en {
 #endif
 	} s;
 };
-
 union cvmx_dpi_req_err_skip_comp {
 	uint64_t u64;
 	struct cvmx_dpi_req_err_skip_comp_s {
@@ -755,7 +699,6 @@ union cvmx_dpi_req_err_skip_comp {
 #endif
 	} s;
 };
-
 union cvmx_dpi_req_gbl_en {
 	uint64_t u64;
 	struct cvmx_dpi_req_gbl_en_s {
@@ -768,7 +711,6 @@ union cvmx_dpi_req_gbl_en {
 #endif
 	} s;
 };
-
 union cvmx_dpi_sli_prtx_cfg {
 	uint64_t u64;
 	struct cvmx_dpi_sli_prtx_cfg_s {
@@ -836,7 +778,6 @@ union cvmx_dpi_sli_prtx_cfg {
 #endif
 	} cn63xx;
 };
-
 union cvmx_dpi_sli_prtx_err {
 	uint64_t u64;
 	struct cvmx_dpi_sli_prtx_err_s {
@@ -849,7 +790,6 @@ union cvmx_dpi_sli_prtx_err {
 #endif
 	} s;
 };
-
 union cvmx_dpi_sli_prtx_err_info {
 	uint64_t u64;
 	struct cvmx_dpi_sli_prtx_err_info_s {
@@ -870,5 +810,4 @@ union cvmx_dpi_sli_prtx_err_info {
 #endif
 	} s;
 };
-
 #endif

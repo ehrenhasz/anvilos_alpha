@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVIF_IF0020_H__
 #define __NVIF_IF0020_H__
-
 union nvif_chan_args {
 	struct nvif_chan_v0 {
 		__u8  version;
@@ -12,14 +10,11 @@ union nvif_chan_args {
 		__u8  pad05;
 		__u16 devm;
 		__u64 vmm;
-
 		__u64 ctxdma;
 		__u64 offset;
 		__u64 length;
-
 		__u64 huserd;
 		__u64 ouserd;
-
 		__u32 token;
 		__u16 chid;
 		__u8  pad3e;
@@ -29,11 +24,9 @@ union nvif_chan_args {
 #define NVIF_CHAN_V0_INST_APER_INST 0xff
 		__u8  aper;
 		__u64 inst;
-
 		__u8  name[];
 	} v0;
 };
-
 union nvif_chan_event_args {
 	struct nvif_chan_event_v0 {
 		__u8 version;

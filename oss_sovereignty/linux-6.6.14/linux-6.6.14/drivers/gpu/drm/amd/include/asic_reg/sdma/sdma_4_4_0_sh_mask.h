@@ -1,47 +1,17 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef _sdma_4_4_0_SH_MASK_HEADER
 #define _sdma_4_4_0_SH_MASK_HEADER
-
-
-// addressBlock: sdma0_sdma0dec
-//SDMA0_UCODE_ADDR
 #define SDMA0_UCODE_ADDR__VALUE__SHIFT                                                                        0x0
 #define SDMA0_UCODE_ADDR__VALUE_MASK                                                                          0x00003FFFL
-//SDMA0_UCODE_DATA
 #define SDMA0_UCODE_DATA__VALUE__SHIFT                                                                        0x0
 #define SDMA0_UCODE_DATA__VALUE_MASK                                                                          0xFFFFFFFFL
-//SDMA0_VF_ENABLE
 #define SDMA0_VF_ENABLE__VF_ENABLE__SHIFT                                                                     0x0
 #define SDMA0_VF_ENABLE__VF_ENABLE_MASK                                                                       0x00000001L
 #define SDMA0_PUB_REG_TYPE0__SDMA0_UCODE_ADDR__SHIFT                                                          0x0
 #define SDMA0_PUB_REG_TYPE0__SDMA0_UCODE_DATA__SHIFT                                                          0x1
 #define SDMA0_PUB_REG_TYPE0__SDMA0_UCODE_ADDR_MASK                                                            0x00000001L
 #define SDMA0_PUB_REG_TYPE0__SDMA0_UCODE_DATA_MASK                                                            0x00000002L
-//SDMA0_CONTEXT_GROUP_BOUNDARY
 #define SDMA0_CONTEXT_GROUP_BOUNDARY__RESERVED__SHIFT                                                         0x0
 #define SDMA0_CONTEXT_GROUP_BOUNDARY__RESERVED_MASK                                                           0xFFFFFFFFL
-//SDMA0_POWER_CNTL
 #define SDMA0_POWER_CNTL__PG_CNTL_ENABLE__SHIFT                                                               0x0
 #define SDMA0_POWER_CNTL__EXT_PG_POWER_ON_REQ__SHIFT                                                          0x1
 #define SDMA0_POWER_CNTL__EXT_PG_POWER_OFF_REQ__SHIFT                                                         0x2
@@ -62,7 +32,6 @@
 #define SDMA0_POWER_CNTL__MEM_POWER_SD_EN_MASK                                                                0x00000800L
 #define SDMA0_POWER_CNTL__MEM_POWER_DELAY_MASK                                                                0x003FF000L
 #define SDMA0_POWER_CNTL__ON_OFF_STATUS_DURATION_TIME_MASK                                                    0xFC000000L
-//SDMA0_CLK_CTRL
 #define SDMA0_CLK_CTRL__ON_DELAY__SHIFT                                                                       0x0
 #define SDMA0_CLK_CTRL__OFF_HYSTERESIS__SHIFT                                                                 0x4
 #define SDMA0_CLK_CTRL__RESERVED__SHIFT                                                                       0xc
@@ -85,7 +54,6 @@
 #define SDMA0_CLK_CTRL__SOFT_OVERRIDE2_MASK                                                                   0x20000000L
 #define SDMA0_CLK_CTRL__SOFT_OVERRIDE1_MASK                                                                   0x40000000L
 #define SDMA0_CLK_CTRL__SOFT_OVERRIDE0_MASK                                                                   0x80000000L
-//SDMA0_CNTL
 #define SDMA0_CNTL__TRAP_ENABLE__SHIFT                                                                        0x0
 #define SDMA0_CNTL__UTC_L1_ENABLE__SHIFT                                                                      0x1
 #define SDMA0_CNTL__SEM_WAIT_INT_ENABLE__SHIFT                                                                0x2
@@ -110,7 +78,6 @@
 #define SDMA0_CNTL__CTXEMPTY_INT_ENABLE_MASK                                                                  0x10000000L
 #define SDMA0_CNTL__FROZEN_INT_ENABLE_MASK                                                                    0x20000000L
 #define SDMA0_CNTL__IB_PREEMPT_INT_ENABLE_MASK                                                                0x40000000L
-//SDMA0_CHICKEN_BITS
 #define SDMA0_CHICKEN_BITS__COPY_EFFICIENCY_ENABLE__SHIFT                                                     0x0
 #define SDMA0_CHICKEN_BITS__STALL_ON_TRANS_FULL_ENABLE__SHIFT                                                 0x1
 #define SDMA0_CHICKEN_BITS__STALL_ON_NO_FREE_DATA_BUFFER_ENABLE__SHIFT                                        0x2
@@ -135,7 +102,6 @@
 #define SDMA0_CHICKEN_BITS__TIME_BASED_QOS_MASK                                                               0x02000000L
 #define SDMA0_CHICKEN_BITS__SRAM_FGCG_ENABLE_MASK                                                             0x04000000L
 #define SDMA0_CHICKEN_BITS__RESERVED_MASK                                                                     0xF8000000L
-//SDMA0_GB_ADDR_CONFIG
 #define SDMA0_GB_ADDR_CONFIG__NUM_PIPES__SHIFT                                                                0x0
 #define SDMA0_GB_ADDR_CONFIG__PIPE_INTERLEAVE_SIZE__SHIFT                                                     0x3
 #define SDMA0_GB_ADDR_CONFIG__BANK_INTERLEAVE_SIZE__SHIFT                                                     0x8
@@ -146,7 +112,6 @@
 #define SDMA0_GB_ADDR_CONFIG__BANK_INTERLEAVE_SIZE_MASK                                                       0x00000700L
 #define SDMA0_GB_ADDR_CONFIG__NUM_BANKS_MASK                                                                  0x00007000L
 #define SDMA0_GB_ADDR_CONFIG__NUM_SHADER_ENGINES_MASK                                                         0x00180000L
-//SDMA0_GB_ADDR_CONFIG_READ
 #define SDMA0_GB_ADDR_CONFIG_READ__NUM_PIPES__SHIFT                                                           0x0
 #define SDMA0_GB_ADDR_CONFIG_READ__PIPE_INTERLEAVE_SIZE__SHIFT                                                0x3
 #define SDMA0_GB_ADDR_CONFIG_READ__BANK_INTERLEAVE_SIZE__SHIFT                                                0x8
@@ -157,22 +122,16 @@
 #define SDMA0_GB_ADDR_CONFIG_READ__BANK_INTERLEAVE_SIZE_MASK                                                  0x00000700L
 #define SDMA0_GB_ADDR_CONFIG_READ__NUM_BANKS_MASK                                                             0x00007000L
 #define SDMA0_GB_ADDR_CONFIG_READ__NUM_SHADER_ENGINES_MASK                                                    0x00180000L
-//SDMA0_RB_RPTR_FETCH_HI
 #define SDMA0_RB_RPTR_FETCH_HI__OFFSET__SHIFT                                                                 0x0
 #define SDMA0_RB_RPTR_FETCH_HI__OFFSET_MASK                                                                   0xFFFFFFFFL
-//SDMA0_SEM_WAIT_FAIL_TIMER_CNTL
 #define SDMA0_SEM_WAIT_FAIL_TIMER_CNTL__TIMER__SHIFT                                                          0x0
 #define SDMA0_SEM_WAIT_FAIL_TIMER_CNTL__TIMER_MASK                                                            0xFFFFFFFFL
-//SDMA0_RB_RPTR_FETCH
 #define SDMA0_RB_RPTR_FETCH__OFFSET__SHIFT                                                                    0x2
 #define SDMA0_RB_RPTR_FETCH__OFFSET_MASK                                                                      0xFFFFFFFCL
-//SDMA0_IB_OFFSET_FETCH
 #define SDMA0_IB_OFFSET_FETCH__OFFSET__SHIFT                                                                  0x2
 #define SDMA0_IB_OFFSET_FETCH__OFFSET_MASK                                                                    0x003FFFFCL
-//SDMA0_PROGRAM
 #define SDMA0_PROGRAM__STREAM__SHIFT                                                                          0x0
 #define SDMA0_PROGRAM__STREAM_MASK                                                                            0xFFFFFFFFL
-//SDMA0_STATUS_REG
 #define SDMA0_STATUS_REG__IDLE__SHIFT                                                                         0x0
 #define SDMA0_STATUS_REG__REG_IDLE__SHIFT                                                                     0x1
 #define SDMA0_STATUS_REG__RB_EMPTY__SHIFT                                                                     0x2
@@ -231,7 +190,6 @@
 #define SDMA0_STATUS_REG__SEM_RESP_STATE_MASK                                                                 0x30000000L
 #define SDMA0_STATUS_REG__INT_IDLE_MASK                                                                       0x40000000L
 #define SDMA0_STATUS_REG__INT_REQ_STALL_MASK                                                                  0x80000000L
-//SDMA0_STATUS1_REG
 #define SDMA0_STATUS1_REG__CE_WREQ_IDLE__SHIFT                                                                0x0
 #define SDMA0_STATUS1_REG__CE_WR_IDLE__SHIFT                                                                  0x1
 #define SDMA0_STATUS1_REG__CE_SPLIT_IDLE__SHIFT                                                               0x2
@@ -260,25 +218,20 @@
 #define SDMA0_STATUS1_REG__EX_START_MASK                                                                      0x00008000L
 #define SDMA0_STATUS1_REG__CE_RD_STALL_MASK                                                                   0x00020000L
 #define SDMA0_STATUS1_REG__CE_WR_STALL_MASK                                                                   0x00040000L
-//SDMA0_RD_BURST_CNTL
 #define SDMA0_RD_BURST_CNTL__RD_BURST__SHIFT                                                                  0x0
 #define SDMA0_RD_BURST_CNTL__CMD_BUFFER_RD_BURST__SHIFT                                                       0x2
 #define SDMA0_RD_BURST_CNTL__RD_BURST_MASK                                                                    0x00000003L
 #define SDMA0_RD_BURST_CNTL__CMD_BUFFER_RD_BURST_MASK                                                         0x0000000CL
-//SDMA0_HBM_PAGE_CONFIG
 #define SDMA0_HBM_PAGE_CONFIG__PAGE_SIZE_EXPONENT__SHIFT                                                      0x0
 #define SDMA0_HBM_PAGE_CONFIG__PAGE_SIZE_EXPONENT_MASK                                                        0x00000003L
-//SDMA0_UCODE_CHECKSUM
 #define SDMA0_UCODE_CHECKSUM__DATA__SHIFT                                                                     0x0
 #define SDMA0_UCODE_CHECKSUM__DATA_MASK                                                                       0xFFFFFFFFL
-//SDMA0_F32_CNTL
 #define SDMA0_F32_CNTL__HALT__SHIFT                                                                           0x0
 #define SDMA0_F32_CNTL__STEP__SHIFT                                                                           0x1
 #define SDMA0_F32_CNTL__RESET__SHIFT                                                                          0x8
 #define SDMA0_F32_CNTL__HALT_MASK                                                                             0x00000001L
 #define SDMA0_F32_CNTL__STEP_MASK                                                                             0x00000002L
 #define SDMA0_F32_CNTL__RESET_MASK                                                                            0x00000100L
-//SDMA0_FREEZE
 #define SDMA0_FREEZE__PREEMPT__SHIFT                                                                          0x0
 #define SDMA0_FREEZE__FREEZE__SHIFT                                                                           0x4
 #define SDMA0_FREEZE__FROZEN__SHIFT                                                                           0x5
@@ -287,21 +240,18 @@
 #define SDMA0_FREEZE__FREEZE_MASK                                                                             0x00000010L
 #define SDMA0_FREEZE__FROZEN_MASK                                                                             0x00000020L
 #define SDMA0_FREEZE__F32_FREEZE_MASK                                                                         0x00000040L
-//SDMA0_PHASE0_QUANTUM
 #define SDMA0_PHASE0_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA0_PHASE0_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA0_PHASE0_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA0_PHASE0_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA0_PHASE0_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA0_PHASE0_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//SDMA0_PHASE1_QUANTUM
 #define SDMA0_PHASE1_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA0_PHASE1_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA0_PHASE1_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA0_PHASE1_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA0_PHASE1_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA0_PHASE1_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//SDMA_POWER_GATING
 #define SDMA_POWER_GATING__SDMA0_POWER_OFF_CONDITION__SHIFT                                                   0x0
 #define SDMA_POWER_GATING__SDMA0_POWER_ON_CONDITION__SHIFT                                                    0x1
 #define SDMA_POWER_GATING__SDMA0_POWER_OFF_REQ__SHIFT                                                         0x2
@@ -312,7 +262,6 @@
 #define SDMA_POWER_GATING__SDMA0_POWER_OFF_REQ_MASK                                                           0x00000004L
 #define SDMA_POWER_GATING__SDMA0_POWER_ON_REQ_MASK                                                            0x00000008L
 #define SDMA_POWER_GATING__PG_CNTL_STATUS_MASK                                                                0x00000030L
-//SDMA_PGFSM_CONFIG
 #define SDMA_PGFSM_CONFIG__FSM_ADDR__SHIFT                                                                    0x0
 #define SDMA_PGFSM_CONFIG__POWER_DOWN__SHIFT                                                                  0x8
 #define SDMA_PGFSM_CONFIG__POWER_UP__SHIFT                                                                    0x9
@@ -331,31 +280,24 @@
 #define SDMA_PGFSM_CONFIG__READ_MASK                                                                          0x00002000L
 #define SDMA_PGFSM_CONFIG__SRBM_OVERRIDE_MASK                                                                 0x08000000L
 #define SDMA_PGFSM_CONFIG__REG_ADDR_MASK                                                                      0xF0000000L
-//SDMA_PGFSM_WRITE
 #define SDMA_PGFSM_WRITE__VALUE__SHIFT                                                                        0x0
 #define SDMA_PGFSM_WRITE__VALUE_MASK                                                                          0xFFFFFFFFL
-//SDMA_PGFSM_READ
 #define SDMA_PGFSM_READ__VALUE__SHIFT                                                                         0x0
 #define SDMA_PGFSM_READ__VALUE_MASK                                                                           0x00FFFFFFL
-//CC_SDMA0_EDC_CONFIG
 #define CC_SDMA0_EDC_CONFIG__DIS_EDC__SHIFT                                                                   0x1
 #define CC_SDMA0_EDC_CONFIG__DIS_EDC_MASK                                                                     0x00000002L
-//SDMA0_BA_THRESHOLD
 #define SDMA0_BA_THRESHOLD__READ_THRES__SHIFT                                                                 0x0
 #define SDMA0_BA_THRESHOLD__WRITE_THRES__SHIFT                                                                0x10
 #define SDMA0_BA_THRESHOLD__READ_THRES_MASK                                                                   0x000003FFL
 #define SDMA0_BA_THRESHOLD__WRITE_THRES_MASK                                                                  0x03FF0000L
-//SDMA0_ID
 #define SDMA0_ID__DEVICE_ID__SHIFT                                                                            0x0
 #define SDMA0_ID__DEVICE_ID_MASK                                                                              0x000000FFL
-//SDMA0_VERSION
 #define SDMA0_VERSION__MINVER__SHIFT                                                                          0x0
 #define SDMA0_VERSION__MAJVER__SHIFT                                                                          0x8
 #define SDMA0_VERSION__REV__SHIFT                                                                             0x10
 #define SDMA0_VERSION__MINVER_MASK                                                                            0x0000007FL
 #define SDMA0_VERSION__MAJVER_MASK                                                                            0x00007F00L
 #define SDMA0_VERSION__REV_MASK                                                                               0x003F0000L
-//SDMA0_EDC_COUNTER
 #define SDMA0_EDC_COUNTER__SDMA_MBANK_DATA_BUF0_SED__SHIFT                                                    0x0
 #define SDMA0_EDC_COUNTER__SDMA_MBANK_DATA_BUF1_SED__SHIFT                                                    0x2
 #define SDMA0_EDC_COUNTER__SDMA_MBANK_DATA_BUF2_SED__SHIFT                                                    0x4
@@ -388,7 +330,6 @@
 #define SDMA0_EDC_COUNTER__SDMA_MBANK_DATA_BUF13_SED_MASK                                                     0x0C000000L
 #define SDMA0_EDC_COUNTER__SDMA_MBANK_DATA_BUF14_SED_MASK                                                     0x30000000L
 #define SDMA0_EDC_COUNTER__SDMA_MBANK_DATA_BUF15_SED_MASK                                                     0xC0000000L
-//SDMA0_EDC_COUNTER2
 #define SDMA0_EDC_COUNTER2__SDMA_UCODE_BUF_SED__SHIFT                                                         0x0
 #define SDMA0_EDC_COUNTER2__SDMA_RB_CMD_BUF_SED__SHIFT                                                        0x2
 #define SDMA0_EDC_COUNTER2__SDMA_IB_CMD_BUF_SED__SHIFT                                                        0x4
@@ -409,25 +350,20 @@
 #define SDMA0_EDC_COUNTER2__SDMA_SPLIT_DATA_BUF_SED_MASK                                                      0x0000C000L
 #define SDMA0_EDC_COUNTER2__SDMA_MC_WR_ADDR_FIFO_SED_MASK                                                     0x00030000L
 #define SDMA0_EDC_COUNTER2__SDMA_MC_RDRET_BUF_SED_MASK                                                        0x000C0000L
-//SDMA0_STATUS2_REG
 #define SDMA0_STATUS2_REG__ID__SHIFT                                                                          0x0
 #define SDMA0_STATUS2_REG__F32_INSTR_PTR__SHIFT                                                               0x3
 #define SDMA0_STATUS2_REG__CMD_OP__SHIFT                                                                      0x10
 #define SDMA0_STATUS2_REG__ID_MASK                                                                            0x00000007L
 #define SDMA0_STATUS2_REG__F32_INSTR_PTR_MASK                                                                 0x0000FFF8L
 #define SDMA0_STATUS2_REG__CMD_OP_MASK                                                                        0xFFFF0000L
-//SDMA0_ATOMIC_CNTL
 #define SDMA0_ATOMIC_CNTL__LOOP_TIMER__SHIFT                                                                  0x0
 #define SDMA0_ATOMIC_CNTL__ATOMIC_RTN_INT_ENABLE__SHIFT                                                       0x1f
 #define SDMA0_ATOMIC_CNTL__LOOP_TIMER_MASK                                                                    0x7FFFFFFFL
 #define SDMA0_ATOMIC_CNTL__ATOMIC_RTN_INT_ENABLE_MASK                                                         0x80000000L
-//SDMA0_ATOMIC_PREOP_LO
 #define SDMA0_ATOMIC_PREOP_LO__DATA__SHIFT                                                                    0x0
 #define SDMA0_ATOMIC_PREOP_LO__DATA_MASK                                                                      0xFFFFFFFFL
-//SDMA0_ATOMIC_PREOP_HI
 #define SDMA0_ATOMIC_PREOP_HI__DATA__SHIFT                                                                    0x0
 #define SDMA0_ATOMIC_PREOP_HI__DATA_MASK                                                                      0xFFFFFFFFL
-//SDMA0_UTCL1_CNTL
 #define SDMA0_UTCL1_CNTL__REDO_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_UTCL1_CNTL__REDO_DELAY__SHIFT                                                                   0x1
 #define SDMA0_UTCL1_CNTL__REDO_WATERMK__SHIFT                                                                 0xb
@@ -440,7 +376,6 @@
 #define SDMA0_UTCL1_CNTL__INVACK_DELAY_MASK                                                                   0x00FFC000L
 #define SDMA0_UTCL1_CNTL__REQL2_CREDIT_MASK                                                                   0x1F000000L
 #define SDMA0_UTCL1_CNTL__VADDR_WATERMK_MASK                                                                  0xE0000000L
-//SDMA0_UTCL1_WATERMK
 #define SDMA0_UTCL1_WATERMK__REQ_WATERMK__SHIFT                                                               0x0
 #define SDMA0_UTCL1_WATERMK__REQ_DEPTH__SHIFT                                                                 0x3
 #define SDMA0_UTCL1_WATERMK__PAGE_WATERMK__SHIFT                                                              0x5
@@ -451,7 +386,6 @@
 #define SDMA0_UTCL1_WATERMK__PAGE_WATERMK_MASK                                                                0x000000E0L
 #define SDMA0_UTCL1_WATERMK__INVREQ_WATERMK_MASK                                                              0x0000FF00L
 #define SDMA0_UTCL1_WATERMK__RESERVED_MASK                                                                    0xFFFF0000L
-//SDMA0_UTCL1_RD_STATUS
 #define SDMA0_UTCL1_RD_STATUS__RQMC_RET_ADDR_FIFO_EMPTY__SHIFT                                                0x0
 #define SDMA0_UTCL1_RD_STATUS__RQMC_REQ_FIFO_EMPTY__SHIFT                                                     0x1
 #define SDMA0_UTCL1_RD_STATUS__RTPG_RET_BUF_EMPTY__SHIFT                                                      0x2
@@ -506,7 +440,6 @@
 #define SDMA0_UTCL1_RD_STATUS__ADDR_RD_RTR_MASK                                                               0x20000000L
 #define SDMA0_UTCL1_RD_STATUS__WPTR_POLLING_MASK                                                              0x40000000L
 #define SDMA0_UTCL1_RD_STATUS__INVREQ_SIZE_MASK                                                               0x80000000L
-//SDMA0_UTCL1_WR_STATUS
 #define SDMA0_UTCL1_WR_STATUS__RQMC_RET_ADDR_FIFO_EMPTY__SHIFT                                                0x0
 #define SDMA0_UTCL1_WR_STATUS__RQMC_REQ_FIFO_EMPTY__SHIFT                                                     0x1
 #define SDMA0_UTCL1_WR_STATUS__RTPG_RET_BUF_EMPTY__SHIFT                                                      0x2
@@ -563,7 +496,6 @@
 #define SDMA0_UTCL1_WR_STATUS__RPTR_DATA_FIFO_FULL_MASK                                                       0x20000000L
 #define SDMA0_UTCL1_WR_STATUS__WRREQ_DATA_FIFO_EMPTY_MASK                                                     0x40000000L
 #define SDMA0_UTCL1_WR_STATUS__WRREQ_DATA_FIFO_FULL_MASK                                                      0x80000000L
-//SDMA0_UTCL1_INV0
 #define SDMA0_UTCL1_INV0__INV_MIDDLE__SHIFT                                                                   0x0
 #define SDMA0_UTCL1_INV0__RD_TIMEOUT__SHIFT                                                                   0x1
 #define SDMA0_UTCL1_INV0__WR_TIMEOUT__SHIFT                                                                   0x2
@@ -592,16 +524,12 @@
 #define SDMA0_UTCL1_INV0__INV_FLUSHTYPE_MASK                                                                  0x00000800L
 #define SDMA0_UTCL1_INV0__INV_VMID_VEC_MASK                                                                   0x0FFFF000L
 #define SDMA0_UTCL1_INV0__INV_ADDR_HI_MASK                                                                    0xF0000000L
-//SDMA0_UTCL1_INV1
 #define SDMA0_UTCL1_INV1__INV_ADDR_LO__SHIFT                                                                  0x0
 #define SDMA0_UTCL1_INV1__INV_ADDR_LO_MASK                                                                    0xFFFFFFFFL
-//SDMA0_UTCL1_INV2
 #define SDMA0_UTCL1_INV2__INV_NFLUSH_VMID_VEC__SHIFT                                                          0x0
 #define SDMA0_UTCL1_INV2__INV_NFLUSH_VMID_VEC_MASK                                                            0xFFFFFFFFL
-//SDMA0_UTCL1_RD_XNACK0
 #define SDMA0_UTCL1_RD_XNACK0__XNACK_ADDR_LO__SHIFT                                                           0x0
 #define SDMA0_UTCL1_RD_XNACK0__XNACK_ADDR_LO_MASK                                                             0xFFFFFFFFL
-//SDMA0_UTCL1_RD_XNACK1
 #define SDMA0_UTCL1_RD_XNACK1__XNACK_ADDR_HI__SHIFT                                                           0x0
 #define SDMA0_UTCL1_RD_XNACK1__XNACK_VMID__SHIFT                                                              0x4
 #define SDMA0_UTCL1_RD_XNACK1__XNACK_VECTOR__SHIFT                                                            0x8
@@ -610,10 +538,8 @@
 #define SDMA0_UTCL1_RD_XNACK1__XNACK_VMID_MASK                                                                0x000000F0L
 #define SDMA0_UTCL1_RD_XNACK1__XNACK_VECTOR_MASK                                                              0x03FFFF00L
 #define SDMA0_UTCL1_RD_XNACK1__IS_XNACK_MASK                                                                  0x0C000000L
-//SDMA0_UTCL1_WR_XNACK0
 #define SDMA0_UTCL1_WR_XNACK0__XNACK_ADDR_LO__SHIFT                                                           0x0
 #define SDMA0_UTCL1_WR_XNACK0__XNACK_ADDR_LO_MASK                                                             0xFFFFFFFFL
-//SDMA0_UTCL1_WR_XNACK1
 #define SDMA0_UTCL1_WR_XNACK1__XNACK_ADDR_HI__SHIFT                                                           0x0
 #define SDMA0_UTCL1_WR_XNACK1__XNACK_VMID__SHIFT                                                              0x4
 #define SDMA0_UTCL1_WR_XNACK1__XNACK_VECTOR__SHIFT                                                            0x8
@@ -622,12 +548,10 @@
 #define SDMA0_UTCL1_WR_XNACK1__XNACK_VMID_MASK                                                                0x000000F0L
 #define SDMA0_UTCL1_WR_XNACK1__XNACK_VECTOR_MASK                                                              0x03FFFF00L
 #define SDMA0_UTCL1_WR_XNACK1__IS_XNACK_MASK                                                                  0x0C000000L
-//SDMA0_UTCL1_TIMEOUT
 #define SDMA0_UTCL1_TIMEOUT__RD_XNACK_LIMIT__SHIFT                                                            0x0
 #define SDMA0_UTCL1_TIMEOUT__WR_XNACK_LIMIT__SHIFT                                                            0x10
 #define SDMA0_UTCL1_TIMEOUT__RD_XNACK_LIMIT_MASK                                                              0x0000FFFFL
 #define SDMA0_UTCL1_TIMEOUT__WR_XNACK_LIMIT_MASK                                                              0xFFFF0000L
-//SDMA0_UTCL1_PAGE
 #define SDMA0_UTCL1_PAGE__VM_HOLE__SHIFT                                                                      0x0
 #define SDMA0_UTCL1_PAGE__REQ_TYPE__SHIFT                                                                     0x1
 #define SDMA0_UTCL1_PAGE__USE_MTYPE__SHIFT                                                                    0x6
@@ -636,14 +560,12 @@
 #define SDMA0_UTCL1_PAGE__REQ_TYPE_MASK                                                                       0x0000001EL
 #define SDMA0_UTCL1_PAGE__USE_MTYPE_MASK                                                                      0x000001C0L
 #define SDMA0_UTCL1_PAGE__USE_PT_SNOOP_MASK                                                                   0x00000200L
-//SDMA0_POWER_CNTL_IDLE
 #define SDMA0_POWER_CNTL_IDLE__DELAY0__SHIFT                                                                  0x0
 #define SDMA0_POWER_CNTL_IDLE__DELAY1__SHIFT                                                                  0x10
 #define SDMA0_POWER_CNTL_IDLE__DELAY2__SHIFT                                                                  0x18
 #define SDMA0_POWER_CNTL_IDLE__DELAY0_MASK                                                                    0x0000FFFFL
 #define SDMA0_POWER_CNTL_IDLE__DELAY1_MASK                                                                    0x00FF0000L
 #define SDMA0_POWER_CNTL_IDLE__DELAY2_MASK                                                                    0xFF000000L
-//SDMA0_RELAX_ORDERING_LUT
 #define SDMA0_RELAX_ORDERING_LUT__RESERVED0__SHIFT                                                            0x0
 #define SDMA0_RELAX_ORDERING_LUT__COPY__SHIFT                                                                 0x1
 #define SDMA0_RELAX_ORDERING_LUT__WRITE__SHIFT                                                                0x2
@@ -682,12 +604,10 @@
 #define SDMA0_RELAX_ORDERING_LUT__WPTR_POLL_MASK                                                              0x20000000L
 #define SDMA0_RELAX_ORDERING_LUT__IB_FETCH_MASK                                                               0x40000000L
 #define SDMA0_RELAX_ORDERING_LUT__RB_FETCH_MASK                                                               0x80000000L
-//SDMA0_CHICKEN_BITS_2
 #define SDMA0_CHICKEN_BITS_2__F32_CMD_PROC_DELAY__SHIFT                                                       0x0
 #define SDMA0_CHICKEN_BITS_2__F32_SEND_POSTCODE_EN__SHIFT                                                     0x4
 #define SDMA0_CHICKEN_BITS_2__F32_CMD_PROC_DELAY_MASK                                                         0x0000000FL
 #define SDMA0_CHICKEN_BITS_2__F32_SEND_POSTCODE_EN_MASK                                                       0x00000010L
-//SDMA0_STATUS3_REG
 #define SDMA0_STATUS3_REG__CMD_OP_STATUS__SHIFT                                                               0x0
 #define SDMA0_STATUS3_REG__PREV_VM_CMD__SHIFT                                                                 0x10
 #define SDMA0_STATUS3_REG__EXCEPTION_IDLE__SHIFT                                                              0x14
@@ -698,7 +618,6 @@
 #define SDMA0_STATUS3_REG__EXCEPTION_IDLE_MASK                                                                0x00100000L
 #define SDMA0_STATUS3_REG__QUEUE_ID_MATCH_MASK                                                                0x00200000L
 #define SDMA0_STATUS3_REG__INT_QUEUE_ID_MASK                                                                  0x03C00000L
-//SDMA0_PHYSICAL_ADDR_LO
 #define SDMA0_PHYSICAL_ADDR_LO__D_VALID__SHIFT                                                                0x0
 #define SDMA0_PHYSICAL_ADDR_LO__DIRTY__SHIFT                                                                  0x1
 #define SDMA0_PHYSICAL_ADDR_LO__PHY_VALID__SHIFT                                                              0x2
@@ -707,37 +626,28 @@
 #define SDMA0_PHYSICAL_ADDR_LO__DIRTY_MASK                                                                    0x00000002L
 #define SDMA0_PHYSICAL_ADDR_LO__PHY_VALID_MASK                                                                0x00000004L
 #define SDMA0_PHYSICAL_ADDR_LO__ADDR_MASK                                                                     0xFFFFF000L
-//SDMA0_PHYSICAL_ADDR_HI
 #define SDMA0_PHYSICAL_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA0_PHYSICAL_ADDR_HI__ADDR_MASK                                                                     0x0000FFFFL
-//SDMA0_PHASE2_QUANTUM
 #define SDMA0_PHASE2_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA0_PHASE2_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA0_PHASE2_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA0_PHASE2_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA0_PHASE2_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA0_PHASE2_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//SDMA0_ERROR_LOG
 #define SDMA0_ERROR_LOG__OVERRIDE__SHIFT                                                                      0x0
 #define SDMA0_ERROR_LOG__STATUS__SHIFT                                                                        0x10
 #define SDMA0_ERROR_LOG__OVERRIDE_MASK                                                                        0x0000FFFFL
 #define SDMA0_ERROR_LOG__STATUS_MASK                                                                          0xFFFF0000L
-//SDMA0_PUB_DUMMY_REG0
 #define SDMA0_PUB_DUMMY_REG0__VALUE__SHIFT                                                                    0x0
 #define SDMA0_PUB_DUMMY_REG0__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA0_PUB_DUMMY_REG1
 #define SDMA0_PUB_DUMMY_REG1__VALUE__SHIFT                                                                    0x0
 #define SDMA0_PUB_DUMMY_REG1__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA0_PUB_DUMMY_REG2
 #define SDMA0_PUB_DUMMY_REG2__VALUE__SHIFT                                                                    0x0
 #define SDMA0_PUB_DUMMY_REG2__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA0_PUB_DUMMY_REG3
 #define SDMA0_PUB_DUMMY_REG3__VALUE__SHIFT                                                                    0x0
 #define SDMA0_PUB_DUMMY_REG3__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA0_F32_COUNTER
 #define SDMA0_F32_COUNTER__VALUE__SHIFT                                                                       0x0
 #define SDMA0_F32_COUNTER__VALUE_MASK                                                                         0xFFFFFFFFL
-//SDMA0_PERFCNT_PERFCOUNTER0_CFG
 #define SDMA0_PERFCNT_PERFCOUNTER0_CFG__PERF_SEL__SHIFT                                                       0x0
 #define SDMA0_PERFCNT_PERFCOUNTER0_CFG__PERF_SEL_END__SHIFT                                                   0x8
 #define SDMA0_PERFCNT_PERFCOUNTER0_CFG__PERF_MODE__SHIFT                                                      0x18
@@ -748,7 +658,6 @@
 #define SDMA0_PERFCNT_PERFCOUNTER0_CFG__PERF_MODE_MASK                                                        0x0F000000L
 #define SDMA0_PERFCNT_PERFCOUNTER0_CFG__ENABLE_MASK                                                           0x10000000L
 #define SDMA0_PERFCNT_PERFCOUNTER0_CFG__CLEAR_MASK                                                            0x20000000L
-//SDMA0_PERFCNT_PERFCOUNTER1_CFG
 #define SDMA0_PERFCNT_PERFCOUNTER1_CFG__PERF_SEL__SHIFT                                                       0x0
 #define SDMA0_PERFCNT_PERFCOUNTER1_CFG__PERF_SEL_END__SHIFT                                                   0x8
 #define SDMA0_PERFCNT_PERFCOUNTER1_CFG__PERF_MODE__SHIFT                                                      0x18
@@ -759,7 +668,6 @@
 #define SDMA0_PERFCNT_PERFCOUNTER1_CFG__PERF_MODE_MASK                                                        0x0F000000L
 #define SDMA0_PERFCNT_PERFCOUNTER1_CFG__ENABLE_MASK                                                           0x10000000L
 #define SDMA0_PERFCNT_PERFCOUNTER1_CFG__CLEAR_MASK                                                            0x20000000L
-//SDMA0_PERFCNT_PERFCOUNTER_RSLT_CNTL
 #define SDMA0_PERFCNT_PERFCOUNTER_RSLT_CNTL__PERF_COUNTER_SELECT__SHIFT                                       0x0
 #define SDMA0_PERFCNT_PERFCOUNTER_RSLT_CNTL__START_TRIGGER__SHIFT                                             0x8
 #define SDMA0_PERFCNT_PERFCOUNTER_RSLT_CNTL__STOP_TRIGGER__SHIFT                                              0x10
@@ -772,23 +680,18 @@
 #define SDMA0_PERFCNT_PERFCOUNTER_RSLT_CNTL__ENABLE_ANY_MASK                                                  0x01000000L
 #define SDMA0_PERFCNT_PERFCOUNTER_RSLT_CNTL__CLEAR_ALL_MASK                                                   0x02000000L
 #define SDMA0_PERFCNT_PERFCOUNTER_RSLT_CNTL__STOP_ALL_ON_SATURATE_MASK                                        0x04000000L
-//SDMA0_PERFCNT_MISC_CNTL
 #define SDMA0_PERFCNT_MISC_CNTL__CMD_OP__SHIFT                                                                0x0
 #define SDMA0_PERFCNT_MISC_CNTL__CMD_OP_MASK                                                                  0x0000FFFFL
-//SDMA0_PERFCNT_PERFCOUNTER_LO
 #define SDMA0_PERFCNT_PERFCOUNTER_LO__COUNTER_LO__SHIFT                                                       0x0
 #define SDMA0_PERFCNT_PERFCOUNTER_LO__COUNTER_LO_MASK                                                         0xFFFFFFFFL
-//SDMA0_PERFCNT_PERFCOUNTER_HI
 #define SDMA0_PERFCNT_PERFCOUNTER_HI__COUNTER_HI__SHIFT                                                       0x0
 #define SDMA0_PERFCNT_PERFCOUNTER_HI__COMPARE_VALUE__SHIFT                                                    0x10
 #define SDMA0_PERFCNT_PERFCOUNTER_HI__COUNTER_HI_MASK                                                         0x0000FFFFL
 #define SDMA0_PERFCNT_PERFCOUNTER_HI__COMPARE_VALUE_MASK                                                      0xFFFF0000L
-//SDMA0_CRD_CNTL
 #define SDMA0_CRD_CNTL__MC_WRREQ_CREDIT__SHIFT                                                                0x7
 #define SDMA0_CRD_CNTL__MC_RDREQ_CREDIT__SHIFT                                                                0xd
 #define SDMA0_CRD_CNTL__MC_WRREQ_CREDIT_MASK                                                                  0x00001F80L
 #define SDMA0_CRD_CNTL__MC_RDREQ_CREDIT_MASK                                                                  0x0007E000L
-//SDMA0_ULV_CNTL
 #define SDMA0_ULV_CNTL__HYSTERESIS__SHIFT                                                                     0x0
 #define SDMA0_ULV_CNTL__ENTER_ULV_INT_CLR__SHIFT                                                              0x1b
 #define SDMA0_ULV_CNTL__EXIT_ULV_INT_CLR__SHIFT                                                               0x1c
@@ -801,13 +704,10 @@
 #define SDMA0_ULV_CNTL__ENTER_ULV_INT_MASK                                                                    0x20000000L
 #define SDMA0_ULV_CNTL__EXIT_ULV_INT_MASK                                                                     0x40000000L
 #define SDMA0_ULV_CNTL__ULV_STATUS_MASK                                                                       0x80000000L
-//SDMA0_EA_DBIT_ADDR_DATA
 #define SDMA0_EA_DBIT_ADDR_DATA__VALUE__SHIFT                                                                 0x0
 #define SDMA0_EA_DBIT_ADDR_DATA__VALUE_MASK                                                                   0xFFFFFFFFL
-//SDMA0_EA_DBIT_ADDR_INDEX
 #define SDMA0_EA_DBIT_ADDR_INDEX__VALUE__SHIFT                                                                0x0
 #define SDMA0_EA_DBIT_ADDR_INDEX__VALUE_MASK                                                                  0x00000007L
-//SDMA0_STATUS4_REG
 #define SDMA0_STATUS4_REG__IDLE__SHIFT                                                                        0x0
 #define SDMA0_STATUS4_REG__IH_OUTSTANDING__SHIFT                                                              0x2
 #define SDMA0_STATUS4_REG__SEM_OUTSTANDING__SHIFT                                                             0x3
@@ -836,13 +736,10 @@
 #define SDMA0_STATUS4_REG__ACTIVE_QUEUE_ID_MASK                                                               0x0003C000L
 #define SDMA0_STATUS4_REG__SRIOV_WATING_RLCV_CMD_MASK                                                         0x00040000L
 #define SDMA0_STATUS4_REG__SRIOV_SDMA_EXECUTING_CMD_MASK                                                      0x00080000L
-//SDMA0_SCRATCH_RAM_DATA
 #define SDMA0_SCRATCH_RAM_DATA__DATA__SHIFT                                                                   0x0
 #define SDMA0_SCRATCH_RAM_DATA__DATA_MASK                                                                     0xFFFFFFFFL
-//SDMA0_SCRATCH_RAM_ADDR
 #define SDMA0_SCRATCH_RAM_ADDR__ADDR__SHIFT                                                                   0x0
 #define SDMA0_SCRATCH_RAM_ADDR__ADDR_MASK                                                                     0x0000007FL
-//SDMA0_CE_CTRL
 #define SDMA0_CE_CTRL__RD_LUT_WATERMARK__SHIFT                                                                0x0
 #define SDMA0_CE_CTRL__RD_LUT_DEPTH__SHIFT                                                                    0x3
 #define SDMA0_CE_CTRL__WR_AFIFO_WATERMARK__SHIFT                                                              0x5
@@ -851,7 +748,6 @@
 #define SDMA0_CE_CTRL__RD_LUT_DEPTH_MASK                                                                      0x00000018L
 #define SDMA0_CE_CTRL__WR_AFIFO_WATERMARK_MASK                                                                0x000000E0L
 #define SDMA0_CE_CTRL__RESERVED_MASK                                                                          0xFFFFFF00L
-//SDMA0_RAS_STATUS
 #define SDMA0_RAS_STATUS__RB_FETCH_ECC__SHIFT                                                                 0x0
 #define SDMA0_RAS_STATUS__IB_FETCH_ECC__SHIFT                                                                 0x1
 #define SDMA0_RAS_STATUS__F32_DATA_ECC__SHIFT                                                                 0x2
@@ -876,7 +772,6 @@
 #define SDMA0_RAS_STATUS__COPY_DATA_NACK_GEN_ERR_MASK                                                         0x00000800L
 #define SDMA0_RAS_STATUS__WRRET_DATA_NACK_GEN_ERR_MASK                                                        0x00001000L
 #define SDMA0_RAS_STATUS__WPTR_RPTR_ATOMIC_NACK_GEN_ERR_MASK                                                  0x00002000L
-//SDMA0_CLK_STATUS
 #define SDMA0_CLK_STATUS__DYN_CLK__SHIFT                                                                      0x0
 #define SDMA0_CLK_STATUS__PTR_CLK__SHIFT                                                                      0x1
 #define SDMA0_CLK_STATUS__REG_CLK__SHIFT                                                                      0x2
@@ -885,7 +780,6 @@
 #define SDMA0_CLK_STATUS__PTR_CLK_MASK                                                                        0x00000002L
 #define SDMA0_CLK_STATUS__REG_CLK_MASK                                                                        0x00000004L
 #define SDMA0_CLK_STATUS__F32_CLK_MASK                                                                        0x00000008L
-//SDMA0_GFX_RB_CNTL
 #define SDMA0_GFX_RB_CNTL__RB_ENABLE__SHIFT                                                                   0x0
 #define SDMA0_GFX_RB_CNTL__RB_SIZE__SHIFT                                                                     0x1
 #define SDMA0_GFX_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                              0x9
@@ -902,25 +796,18 @@
 #define SDMA0_GFX_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                          0x001F0000L
 #define SDMA0_GFX_RB_CNTL__RB_PRIV_MASK                                                                       0x00800000L
 #define SDMA0_GFX_RB_CNTL__RB_VMID_MASK                                                                       0x0F000000L
-//SDMA0_GFX_RB_BASE
 #define SDMA0_GFX_RB_BASE__ADDR__SHIFT                                                                        0x0
 #define SDMA0_GFX_RB_BASE__ADDR_MASK                                                                          0xFFFFFFFFL
-//SDMA0_GFX_RB_BASE_HI
 #define SDMA0_GFX_RB_BASE_HI__ADDR__SHIFT                                                                     0x0
 #define SDMA0_GFX_RB_BASE_HI__ADDR_MASK                                                                       0x00FFFFFFL
-//SDMA0_GFX_RB_RPTR
 #define SDMA0_GFX_RB_RPTR__OFFSET__SHIFT                                                                      0x0
 #define SDMA0_GFX_RB_RPTR__OFFSET_MASK                                                                        0xFFFFFFFFL
-//SDMA0_GFX_RB_RPTR_HI
 #define SDMA0_GFX_RB_RPTR_HI__OFFSET__SHIFT                                                                   0x0
 #define SDMA0_GFX_RB_RPTR_HI__OFFSET_MASK                                                                     0xFFFFFFFFL
-//SDMA0_GFX_RB_WPTR
 #define SDMA0_GFX_RB_WPTR__OFFSET__SHIFT                                                                      0x0
 #define SDMA0_GFX_RB_WPTR__OFFSET_MASK                                                                        0xFFFFFFFFL
-//SDMA0_GFX_RB_WPTR_HI
 #define SDMA0_GFX_RB_WPTR_HI__OFFSET__SHIFT                                                                   0x0
 #define SDMA0_GFX_RB_WPTR_HI__OFFSET_MASK                                                                     0xFFFFFFFFL
-//SDMA0_GFX_RB_WPTR_POLL_CNTL
 #define SDMA0_GFX_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                            0x0
 #define SDMA0_GFX_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                       0x1
 #define SDMA0_GFX_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                   0x2
@@ -931,15 +818,12 @@
 #define SDMA0_GFX_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                     0x00000004L
 #define SDMA0_GFX_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                           0x0000FFF0L
 #define SDMA0_GFX_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                     0xFFFF0000L
-//SDMA0_GFX_RB_RPTR_ADDR_HI
 #define SDMA0_GFX_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                                0x0
 #define SDMA0_GFX_RB_RPTR_ADDR_HI__ADDR_MASK                                                                  0xFFFFFFFFL
-//SDMA0_GFX_RB_RPTR_ADDR_LO
 #define SDMA0_GFX_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                        0x0
 #define SDMA0_GFX_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                                0x2
 #define SDMA0_GFX_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                          0x00000001L
 #define SDMA0_GFX_RB_RPTR_ADDR_LO__ADDR_MASK                                                                  0xFFFFFFFCL
-//SDMA0_GFX_IB_CNTL
 #define SDMA0_GFX_IB_CNTL__IB_ENABLE__SHIFT                                                                   0x0
 #define SDMA0_GFX_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                              0x4
 #define SDMA0_GFX_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                            0x8
@@ -948,25 +832,18 @@
 #define SDMA0_GFX_IB_CNTL__IB_SWAP_ENABLE_MASK                                                                0x00000010L
 #define SDMA0_GFX_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                              0x00000100L
 #define SDMA0_GFX_IB_CNTL__CMD_VMID_MASK                                                                      0x000F0000L
-//SDMA0_GFX_IB_RPTR
 #define SDMA0_GFX_IB_RPTR__OFFSET__SHIFT                                                                      0x2
 #define SDMA0_GFX_IB_RPTR__OFFSET_MASK                                                                        0x003FFFFCL
-//SDMA0_GFX_IB_OFFSET
 #define SDMA0_GFX_IB_OFFSET__OFFSET__SHIFT                                                                    0x2
 #define SDMA0_GFX_IB_OFFSET__OFFSET_MASK                                                                      0x003FFFFCL
-//SDMA0_GFX_IB_BASE_LO
 #define SDMA0_GFX_IB_BASE_LO__ADDR__SHIFT                                                                     0x5
 #define SDMA0_GFX_IB_BASE_LO__ADDR_MASK                                                                       0xFFFFFFE0L
-//SDMA0_GFX_IB_BASE_HI
 #define SDMA0_GFX_IB_BASE_HI__ADDR__SHIFT                                                                     0x0
 #define SDMA0_GFX_IB_BASE_HI__ADDR_MASK                                                                       0xFFFFFFFFL
-//SDMA0_GFX_IB_SIZE
 #define SDMA0_GFX_IB_SIZE__SIZE__SHIFT                                                                        0x0
 #define SDMA0_GFX_IB_SIZE__SIZE_MASK                                                                          0x000FFFFFL
-//SDMA0_GFX_SKIP_CNTL
 #define SDMA0_GFX_SKIP_CNTL__SKIP_COUNT__SHIFT                                                                0x0
 #define SDMA0_GFX_SKIP_CNTL__SKIP_COUNT_MASK                                                                  0x000FFFFFL
-//SDMA0_GFX_CONTEXT_STATUS
 #define SDMA0_GFX_CONTEXT_STATUS__SELECTED__SHIFT                                                             0x0
 #define SDMA0_GFX_CONTEXT_STATUS__IDLE__SHIFT                                                                 0x2
 #define SDMA0_GFX_CONTEXT_STATUS__EXPIRED__SHIFT                                                              0x3
@@ -983,99 +860,72 @@
 #define SDMA0_GFX_CONTEXT_STATUS__CTXSW_READY_MASK                                                            0x00000100L
 #define SDMA0_GFX_CONTEXT_STATUS__PREEMPTED_MASK                                                              0x00000200L
 #define SDMA0_GFX_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                        0x00000400L
-//SDMA0_GFX_DOORBELL
 #define SDMA0_GFX_DOORBELL__ENABLE__SHIFT                                                                     0x1c
 #define SDMA0_GFX_DOORBELL__CAPTURED__SHIFT                                                                   0x1e
 #define SDMA0_GFX_DOORBELL__ENABLE_MASK                                                                       0x10000000L
 #define SDMA0_GFX_DOORBELL__CAPTURED_MASK                                                                     0x40000000L
-//SDMA0_GFX_CONTEXT_CNTL
 #define SDMA0_GFX_CONTEXT_CNTL__RESUME_CTX__SHIFT                                                             0x10
 #define SDMA0_GFX_CONTEXT_CNTL__SESSION_SEL__SHIFT                                                            0x18
 #define SDMA0_GFX_CONTEXT_CNTL__RESUME_CTX_MASK                                                               0x00010000L
 #define SDMA0_GFX_CONTEXT_CNTL__SESSION_SEL_MASK                                                              0x0F000000L
-//SDMA0_GFX_STATUS
 #define SDMA0_GFX_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                       0x0
 #define SDMA0_GFX_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                          0x8
 #define SDMA0_GFX_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                         0x000000FFL
 #define SDMA0_GFX_STATUS__WPTR_UPDATE_PENDING_MASK                                                            0x00000100L
-//SDMA0_GFX_DOORBELL_LOG
 #define SDMA0_GFX_DOORBELL_LOG__BE_ERROR__SHIFT                                                               0x0
 #define SDMA0_GFX_DOORBELL_LOG__DATA__SHIFT                                                                   0x2
 #define SDMA0_GFX_DOORBELL_LOG__BE_ERROR_MASK                                                                 0x00000001L
 #define SDMA0_GFX_DOORBELL_LOG__DATA_MASK                                                                     0xFFFFFFFCL
-//SDMA0_GFX_WATERMARK
 #define SDMA0_GFX_WATERMARK__RD_OUTSTANDING__SHIFT                                                            0x0
 #define SDMA0_GFX_WATERMARK__WR_OUTSTANDING__SHIFT                                                            0x10
 #define SDMA0_GFX_WATERMARK__RD_OUTSTANDING_MASK                                                              0x00000FFFL
 #define SDMA0_GFX_WATERMARK__WR_OUTSTANDING_MASK                                                              0x03FF0000L
-//SDMA0_GFX_DOORBELL_OFFSET
 #define SDMA0_GFX_DOORBELL_OFFSET__OFFSET__SHIFT                                                              0x2
 #define SDMA0_GFX_DOORBELL_OFFSET__OFFSET_MASK                                                                0x0FFFFFFCL
-//SDMA0_GFX_CSA_ADDR_LO
 #define SDMA0_GFX_CSA_ADDR_LO__ADDR__SHIFT                                                                    0x2
 #define SDMA0_GFX_CSA_ADDR_LO__ADDR_MASK                                                                      0xFFFFFFFCL
-//SDMA0_GFX_CSA_ADDR_HI
 #define SDMA0_GFX_CSA_ADDR_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_GFX_CSA_ADDR_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA0_GFX_IB_SUB_REMAIN
 #define SDMA0_GFX_IB_SUB_REMAIN__SIZE__SHIFT                                                                  0x0
 #define SDMA0_GFX_IB_SUB_REMAIN__SIZE_MASK                                                                    0x000FFFFFL
-//SDMA0_GFX_PREEMPT
 #define SDMA0_GFX_PREEMPT__IB_PREEMPT__SHIFT                                                                  0x0
 #define SDMA0_GFX_PREEMPT__IB_PREEMPT_MASK                                                                    0x00000001L
-//SDMA0_GFX_DUMMY_REG
 #define SDMA0_GFX_DUMMY_REG__DUMMY__SHIFT                                                                     0x0
 #define SDMA0_GFX_DUMMY_REG__DUMMY_MASK                                                                       0xFFFFFFFFL
-//SDMA0_GFX_RB_WPTR_POLL_ADDR_HI
 #define SDMA0_GFX_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                           0x0
 #define SDMA0_GFX_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                             0xFFFFFFFFL
-//SDMA0_GFX_RB_WPTR_POLL_ADDR_LO
 #define SDMA0_GFX_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                           0x2
 #define SDMA0_GFX_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                             0xFFFFFFFCL
-//SDMA0_GFX_RB_AQL_CNTL
 #define SDMA0_GFX_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                              0x0
 #define SDMA0_GFX_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                         0x1
 #define SDMA0_GFX_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                             0x8
 #define SDMA0_GFX_RB_AQL_CNTL__AQL_ENABLE_MASK                                                                0x00000001L
 #define SDMA0_GFX_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                           0x000000FEL
 #define SDMA0_GFX_RB_AQL_CNTL__PACKET_STEP_MASK                                                               0x0000FF00L
-//SDMA0_GFX_MINOR_PTR_UPDATE
 #define SDMA0_GFX_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                             0x0
 #define SDMA0_GFX_MINOR_PTR_UPDATE__ENABLE_MASK                                                               0x00000001L
-//SDMA0_GFX_MIDCMD_DATA0
 #define SDMA0_GFX_MIDCMD_DATA0__DATA0__SHIFT                                                                  0x0
 #define SDMA0_GFX_MIDCMD_DATA0__DATA0_MASK                                                                    0xFFFFFFFFL
-//SDMA0_GFX_MIDCMD_DATA1
 #define SDMA0_GFX_MIDCMD_DATA1__DATA1__SHIFT                                                                  0x0
 #define SDMA0_GFX_MIDCMD_DATA1__DATA1_MASK                                                                    0xFFFFFFFFL
-//SDMA0_GFX_MIDCMD_DATA2
 #define SDMA0_GFX_MIDCMD_DATA2__DATA2__SHIFT                                                                  0x0
 #define SDMA0_GFX_MIDCMD_DATA2__DATA2_MASK                                                                    0xFFFFFFFFL
-//SDMA0_GFX_MIDCMD_DATA3
 #define SDMA0_GFX_MIDCMD_DATA3__DATA3__SHIFT                                                                  0x0
 #define SDMA0_GFX_MIDCMD_DATA3__DATA3_MASK                                                                    0xFFFFFFFFL
-//SDMA0_GFX_MIDCMD_DATA4
 #define SDMA0_GFX_MIDCMD_DATA4__DATA4__SHIFT                                                                  0x0
 #define SDMA0_GFX_MIDCMD_DATA4__DATA4_MASK                                                                    0xFFFFFFFFL
-//SDMA0_GFX_MIDCMD_DATA5
 #define SDMA0_GFX_MIDCMD_DATA5__DATA5__SHIFT                                                                  0x0
 #define SDMA0_GFX_MIDCMD_DATA5__DATA5_MASK                                                                    0xFFFFFFFFL
-//SDMA0_GFX_MIDCMD_DATA6
 #define SDMA0_GFX_MIDCMD_DATA6__DATA6__SHIFT                                                                  0x0
 #define SDMA0_GFX_MIDCMD_DATA6__DATA6_MASK                                                                    0xFFFFFFFFL
-//SDMA0_GFX_MIDCMD_DATA7
 #define SDMA0_GFX_MIDCMD_DATA7__DATA7__SHIFT                                                                  0x0
 #define SDMA0_GFX_MIDCMD_DATA7__DATA7_MASK                                                                    0xFFFFFFFFL
-//SDMA0_GFX_MIDCMD_DATA8
 #define SDMA0_GFX_MIDCMD_DATA8__DATA8__SHIFT                                                                  0x0
 #define SDMA0_GFX_MIDCMD_DATA8__DATA8_MASK                                                                    0xFFFFFFFFL
-//SDMA0_GFX_MIDCMD_DATA9
 #define SDMA0_GFX_MIDCMD_DATA9__DATA9__SHIFT                                                                  0x0
 #define SDMA0_GFX_MIDCMD_DATA9__DATA9_MASK                                                                    0xFFFFFFFFL
-//SDMA0_GFX_MIDCMD_DATA10
 #define SDMA0_GFX_MIDCMD_DATA10__DATA10__SHIFT                                                                0x0
 #define SDMA0_GFX_MIDCMD_DATA10__DATA10_MASK                                                                  0xFFFFFFFFL
-//SDMA0_GFX_MIDCMD_CNTL
 #define SDMA0_GFX_MIDCMD_CNTL__DATA_VALID__SHIFT                                                              0x0
 #define SDMA0_GFX_MIDCMD_CNTL__COPY_MODE__SHIFT                                                               0x1
 #define SDMA0_GFX_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                             0x4
@@ -1084,7 +934,6 @@
 #define SDMA0_GFX_MIDCMD_CNTL__COPY_MODE_MASK                                                                 0x00000002L
 #define SDMA0_GFX_MIDCMD_CNTL__SPLIT_STATE_MASK                                                               0x000000F0L
 #define SDMA0_GFX_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                             0x00000100L
-//SDMA0_PAGE_RB_CNTL
 #define SDMA0_PAGE_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_PAGE_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA0_PAGE_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -1101,25 +950,18 @@
 #define SDMA0_PAGE_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA0_PAGE_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA0_PAGE_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA0_PAGE_RB_BASE
 #define SDMA0_PAGE_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA0_PAGE_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA0_PAGE_RB_BASE_HI
 #define SDMA0_PAGE_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_PAGE_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA0_PAGE_RB_RPTR
 #define SDMA0_PAGE_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_PAGE_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_PAGE_RB_RPTR_HI
 #define SDMA0_PAGE_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_PAGE_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_PAGE_RB_WPTR
 #define SDMA0_PAGE_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_PAGE_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_PAGE_RB_WPTR_HI
 #define SDMA0_PAGE_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_PAGE_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_PAGE_RB_WPTR_POLL_CNTL
 #define SDMA0_PAGE_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA0_PAGE_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA0_PAGE_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -1130,15 +972,12 @@
 #define SDMA0_PAGE_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA0_PAGE_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA0_PAGE_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA0_PAGE_RB_RPTR_ADDR_HI
 #define SDMA0_PAGE_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA0_PAGE_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA0_PAGE_RB_RPTR_ADDR_LO
 #define SDMA0_PAGE_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA0_PAGE_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA0_PAGE_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA0_PAGE_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA0_PAGE_IB_CNTL
 #define SDMA0_PAGE_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_PAGE_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA0_PAGE_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -1147,25 +986,18 @@
 #define SDMA0_PAGE_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA0_PAGE_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA0_PAGE_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA0_PAGE_IB_RPTR
 #define SDMA0_PAGE_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA0_PAGE_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA0_PAGE_IB_OFFSET
 #define SDMA0_PAGE_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA0_PAGE_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA0_PAGE_IB_BASE_LO
 #define SDMA0_PAGE_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA0_PAGE_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA0_PAGE_IB_BASE_HI
 #define SDMA0_PAGE_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_PAGE_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA0_PAGE_IB_SIZE
 #define SDMA0_PAGE_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA0_PAGE_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA0_PAGE_SKIP_CNTL
 #define SDMA0_PAGE_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA0_PAGE_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA0_PAGE_CONTEXT_STATUS
 #define SDMA0_PAGE_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA0_PAGE_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA0_PAGE_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -1182,94 +1014,68 @@
 #define SDMA0_PAGE_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA0_PAGE_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA0_PAGE_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA0_PAGE_DOORBELL
 #define SDMA0_PAGE_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA0_PAGE_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA0_PAGE_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA0_PAGE_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA0_PAGE_STATUS
 #define SDMA0_PAGE_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA0_PAGE_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA0_PAGE_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA0_PAGE_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA0_PAGE_DOORBELL_LOG
 #define SDMA0_PAGE_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA0_PAGE_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA0_PAGE_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA0_PAGE_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA0_PAGE_WATERMARK
 #define SDMA0_PAGE_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA0_PAGE_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA0_PAGE_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA0_PAGE_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA0_PAGE_DOORBELL_OFFSET
 #define SDMA0_PAGE_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA0_PAGE_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA0_PAGE_CSA_ADDR_LO
 #define SDMA0_PAGE_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA0_PAGE_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA0_PAGE_CSA_ADDR_HI
 #define SDMA0_PAGE_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA0_PAGE_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA0_PAGE_IB_SUB_REMAIN
 #define SDMA0_PAGE_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA0_PAGE_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA0_PAGE_PREEMPT
 #define SDMA0_PAGE_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA0_PAGE_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA0_PAGE_DUMMY_REG
 #define SDMA0_PAGE_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA0_PAGE_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA0_PAGE_RB_WPTR_POLL_ADDR_HI
 #define SDMA0_PAGE_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA0_PAGE_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA0_PAGE_RB_WPTR_POLL_ADDR_LO
 #define SDMA0_PAGE_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA0_PAGE_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA0_PAGE_RB_AQL_CNTL
 #define SDMA0_PAGE_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA0_PAGE_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA0_PAGE_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA0_PAGE_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA0_PAGE_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA0_PAGE_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA0_PAGE_MINOR_PTR_UPDATE
 #define SDMA0_PAGE_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA0_PAGE_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA0_PAGE_MIDCMD_DATA0
 #define SDMA0_PAGE_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA0_PAGE_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA0_PAGE_MIDCMD_DATA1
 #define SDMA0_PAGE_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA0_PAGE_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA0_PAGE_MIDCMD_DATA2
 #define SDMA0_PAGE_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA0_PAGE_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA0_PAGE_MIDCMD_DATA3
 #define SDMA0_PAGE_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA0_PAGE_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA0_PAGE_MIDCMD_DATA4
 #define SDMA0_PAGE_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA0_PAGE_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA0_PAGE_MIDCMD_DATA5
 #define SDMA0_PAGE_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA0_PAGE_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA0_PAGE_MIDCMD_DATA6
 #define SDMA0_PAGE_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA0_PAGE_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA0_PAGE_MIDCMD_DATA7
 #define SDMA0_PAGE_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA0_PAGE_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA0_PAGE_MIDCMD_DATA8
 #define SDMA0_PAGE_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA0_PAGE_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA0_PAGE_MIDCMD_DATA9
 #define SDMA0_PAGE_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA0_PAGE_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA0_PAGE_MIDCMD_DATA10
 #define SDMA0_PAGE_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA0_PAGE_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA0_PAGE_MIDCMD_CNTL
 #define SDMA0_PAGE_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA0_PAGE_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA0_PAGE_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -1278,7 +1084,6 @@
 #define SDMA0_PAGE_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA0_PAGE_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA0_PAGE_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA0_RLC0_RB_CNTL
 #define SDMA0_RLC0_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC0_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA0_RLC0_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -1295,25 +1100,18 @@
 #define SDMA0_RLC0_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA0_RLC0_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA0_RLC0_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA0_RLC0_RB_BASE
 #define SDMA0_RLC0_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA0_RLC0_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA0_RLC0_RB_BASE_HI
 #define SDMA0_RLC0_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC0_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA0_RLC0_RB_RPTR
 #define SDMA0_RLC0_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC0_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC0_RB_RPTR_HI
 #define SDMA0_RLC0_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC0_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC0_RB_WPTR
 #define SDMA0_RLC0_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC0_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC0_RB_WPTR_HI
 #define SDMA0_RLC0_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC0_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC0_RB_WPTR_POLL_CNTL
 #define SDMA0_RLC0_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA0_RLC0_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA0_RLC0_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -1324,15 +1122,12 @@
 #define SDMA0_RLC0_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA0_RLC0_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA0_RLC0_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA0_RLC0_RB_RPTR_ADDR_HI
 #define SDMA0_RLC0_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA0_RLC0_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC0_RB_RPTR_ADDR_LO
 #define SDMA0_RLC0_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA0_RLC0_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA0_RLC0_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA0_RLC0_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA0_RLC0_IB_CNTL
 #define SDMA0_RLC0_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC0_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA0_RLC0_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -1341,25 +1136,18 @@
 #define SDMA0_RLC0_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA0_RLC0_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA0_RLC0_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA0_RLC0_IB_RPTR
 #define SDMA0_RLC0_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA0_RLC0_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA0_RLC0_IB_OFFSET
 #define SDMA0_RLC0_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA0_RLC0_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA0_RLC0_IB_BASE_LO
 #define SDMA0_RLC0_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA0_RLC0_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA0_RLC0_IB_BASE_HI
 #define SDMA0_RLC0_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC0_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC0_IB_SIZE
 #define SDMA0_RLC0_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA0_RLC0_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA0_RLC0_SKIP_CNTL
 #define SDMA0_RLC0_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA0_RLC0_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA0_RLC0_CONTEXT_STATUS
 #define SDMA0_RLC0_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA0_RLC0_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA0_RLC0_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -1376,94 +1164,68 @@
 #define SDMA0_RLC0_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA0_RLC0_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA0_RLC0_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA0_RLC0_DOORBELL
 #define SDMA0_RLC0_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA0_RLC0_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA0_RLC0_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA0_RLC0_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA0_RLC0_STATUS
 #define SDMA0_RLC0_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA0_RLC0_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA0_RLC0_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA0_RLC0_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA0_RLC0_DOORBELL_LOG
 #define SDMA0_RLC0_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA0_RLC0_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA0_RLC0_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA0_RLC0_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA0_RLC0_WATERMARK
 #define SDMA0_RLC0_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA0_RLC0_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA0_RLC0_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA0_RLC0_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA0_RLC0_DOORBELL_OFFSET
 #define SDMA0_RLC0_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA0_RLC0_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA0_RLC0_CSA_ADDR_LO
 #define SDMA0_RLC0_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA0_RLC0_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA0_RLC0_CSA_ADDR_HI
 #define SDMA0_RLC0_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA0_RLC0_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA0_RLC0_IB_SUB_REMAIN
 #define SDMA0_RLC0_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA0_RLC0_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA0_RLC0_PREEMPT
 #define SDMA0_RLC0_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA0_RLC0_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA0_RLC0_DUMMY_REG
 #define SDMA0_RLC0_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA0_RLC0_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC0_RB_WPTR_POLL_ADDR_HI
 #define SDMA0_RLC0_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA0_RLC0_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA0_RLC0_RB_WPTR_POLL_ADDR_LO
 #define SDMA0_RLC0_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA0_RLC0_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA0_RLC0_RB_AQL_CNTL
 #define SDMA0_RLC0_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA0_RLC0_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA0_RLC0_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA0_RLC0_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA0_RLC0_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA0_RLC0_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA0_RLC0_MINOR_PTR_UPDATE
 #define SDMA0_RLC0_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA0_RLC0_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA0_RLC0_MIDCMD_DATA0
 #define SDMA0_RLC0_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA0_RLC0_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC0_MIDCMD_DATA1
 #define SDMA0_RLC0_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA0_RLC0_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC0_MIDCMD_DATA2
 #define SDMA0_RLC0_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA0_RLC0_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC0_MIDCMD_DATA3
 #define SDMA0_RLC0_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA0_RLC0_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC0_MIDCMD_DATA4
 #define SDMA0_RLC0_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA0_RLC0_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC0_MIDCMD_DATA5
 #define SDMA0_RLC0_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA0_RLC0_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC0_MIDCMD_DATA6
 #define SDMA0_RLC0_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA0_RLC0_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC0_MIDCMD_DATA7
 #define SDMA0_RLC0_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA0_RLC0_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC0_MIDCMD_DATA8
 #define SDMA0_RLC0_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA0_RLC0_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC0_MIDCMD_DATA9
 #define SDMA0_RLC0_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA0_RLC0_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC0_MIDCMD_DATA10
 #define SDMA0_RLC0_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA0_RLC0_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC0_MIDCMD_CNTL
 #define SDMA0_RLC0_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA0_RLC0_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA0_RLC0_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -1472,7 +1234,6 @@
 #define SDMA0_RLC0_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA0_RLC0_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA0_RLC0_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA0_RLC1_RB_CNTL
 #define SDMA0_RLC1_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC1_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA0_RLC1_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -1489,25 +1250,18 @@
 #define SDMA0_RLC1_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA0_RLC1_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA0_RLC1_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA0_RLC1_RB_BASE
 #define SDMA0_RLC1_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA0_RLC1_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA0_RLC1_RB_BASE_HI
 #define SDMA0_RLC1_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC1_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA0_RLC1_RB_RPTR
 #define SDMA0_RLC1_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC1_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC1_RB_RPTR_HI
 #define SDMA0_RLC1_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC1_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC1_RB_WPTR
 #define SDMA0_RLC1_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC1_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC1_RB_WPTR_HI
 #define SDMA0_RLC1_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC1_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC1_RB_WPTR_POLL_CNTL
 #define SDMA0_RLC1_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA0_RLC1_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA0_RLC1_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -1518,15 +1272,12 @@
 #define SDMA0_RLC1_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA0_RLC1_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA0_RLC1_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA0_RLC1_RB_RPTR_ADDR_HI
 #define SDMA0_RLC1_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA0_RLC1_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC1_RB_RPTR_ADDR_LO
 #define SDMA0_RLC1_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA0_RLC1_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA0_RLC1_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA0_RLC1_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA0_RLC1_IB_CNTL
 #define SDMA0_RLC1_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC1_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA0_RLC1_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -1535,25 +1286,18 @@
 #define SDMA0_RLC1_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA0_RLC1_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA0_RLC1_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA0_RLC1_IB_RPTR
 #define SDMA0_RLC1_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA0_RLC1_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA0_RLC1_IB_OFFSET
 #define SDMA0_RLC1_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA0_RLC1_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA0_RLC1_IB_BASE_LO
 #define SDMA0_RLC1_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA0_RLC1_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA0_RLC1_IB_BASE_HI
 #define SDMA0_RLC1_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC1_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC1_IB_SIZE
 #define SDMA0_RLC1_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA0_RLC1_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA0_RLC1_SKIP_CNTL
 #define SDMA0_RLC1_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA0_RLC1_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA0_RLC1_CONTEXT_STATUS
 #define SDMA0_RLC1_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA0_RLC1_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA0_RLC1_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -1570,94 +1314,68 @@
 #define SDMA0_RLC1_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA0_RLC1_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA0_RLC1_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA0_RLC1_DOORBELL
 #define SDMA0_RLC1_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA0_RLC1_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA0_RLC1_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA0_RLC1_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA0_RLC1_STATUS
 #define SDMA0_RLC1_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA0_RLC1_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA0_RLC1_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA0_RLC1_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA0_RLC1_DOORBELL_LOG
 #define SDMA0_RLC1_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA0_RLC1_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA0_RLC1_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA0_RLC1_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA0_RLC1_WATERMARK
 #define SDMA0_RLC1_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA0_RLC1_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA0_RLC1_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA0_RLC1_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA0_RLC1_DOORBELL_OFFSET
 #define SDMA0_RLC1_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA0_RLC1_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA0_RLC1_CSA_ADDR_LO
 #define SDMA0_RLC1_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA0_RLC1_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA0_RLC1_CSA_ADDR_HI
 #define SDMA0_RLC1_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA0_RLC1_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA0_RLC1_IB_SUB_REMAIN
 #define SDMA0_RLC1_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA0_RLC1_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA0_RLC1_PREEMPT
 #define SDMA0_RLC1_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA0_RLC1_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA0_RLC1_DUMMY_REG
 #define SDMA0_RLC1_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA0_RLC1_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC1_RB_WPTR_POLL_ADDR_HI
 #define SDMA0_RLC1_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA0_RLC1_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA0_RLC1_RB_WPTR_POLL_ADDR_LO
 #define SDMA0_RLC1_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA0_RLC1_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA0_RLC1_RB_AQL_CNTL
 #define SDMA0_RLC1_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA0_RLC1_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA0_RLC1_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA0_RLC1_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA0_RLC1_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA0_RLC1_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA0_RLC1_MINOR_PTR_UPDATE
 #define SDMA0_RLC1_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA0_RLC1_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA0_RLC1_MIDCMD_DATA0
 #define SDMA0_RLC1_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA0_RLC1_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC1_MIDCMD_DATA1
 #define SDMA0_RLC1_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA0_RLC1_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC1_MIDCMD_DATA2
 #define SDMA0_RLC1_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA0_RLC1_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC1_MIDCMD_DATA3
 #define SDMA0_RLC1_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA0_RLC1_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC1_MIDCMD_DATA4
 #define SDMA0_RLC1_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA0_RLC1_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC1_MIDCMD_DATA5
 #define SDMA0_RLC1_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA0_RLC1_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC1_MIDCMD_DATA6
 #define SDMA0_RLC1_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA0_RLC1_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC1_MIDCMD_DATA7
 #define SDMA0_RLC1_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA0_RLC1_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC1_MIDCMD_DATA8
 #define SDMA0_RLC1_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA0_RLC1_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC1_MIDCMD_DATA9
 #define SDMA0_RLC1_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA0_RLC1_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC1_MIDCMD_DATA10
 #define SDMA0_RLC1_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA0_RLC1_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC1_MIDCMD_CNTL
 #define SDMA0_RLC1_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA0_RLC1_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA0_RLC1_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -1666,7 +1384,6 @@
 #define SDMA0_RLC1_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA0_RLC1_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA0_RLC1_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA0_RLC2_RB_CNTL
 #define SDMA0_RLC2_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC2_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA0_RLC2_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -1683,25 +1400,18 @@
 #define SDMA0_RLC2_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA0_RLC2_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA0_RLC2_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA0_RLC2_RB_BASE
 #define SDMA0_RLC2_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA0_RLC2_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA0_RLC2_RB_BASE_HI
 #define SDMA0_RLC2_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC2_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA0_RLC2_RB_RPTR
 #define SDMA0_RLC2_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC2_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC2_RB_RPTR_HI
 #define SDMA0_RLC2_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC2_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC2_RB_WPTR
 #define SDMA0_RLC2_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC2_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC2_RB_WPTR_HI
 #define SDMA0_RLC2_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC2_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC2_RB_WPTR_POLL_CNTL
 #define SDMA0_RLC2_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA0_RLC2_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA0_RLC2_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -1712,15 +1422,12 @@
 #define SDMA0_RLC2_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA0_RLC2_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA0_RLC2_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA0_RLC2_RB_RPTR_ADDR_HI
 #define SDMA0_RLC2_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA0_RLC2_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC2_RB_RPTR_ADDR_LO
 #define SDMA0_RLC2_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA0_RLC2_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA0_RLC2_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA0_RLC2_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA0_RLC2_IB_CNTL
 #define SDMA0_RLC2_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC2_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA0_RLC2_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -1729,25 +1436,18 @@
 #define SDMA0_RLC2_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA0_RLC2_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA0_RLC2_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA0_RLC2_IB_RPTR
 #define SDMA0_RLC2_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA0_RLC2_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA0_RLC2_IB_OFFSET
 #define SDMA0_RLC2_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA0_RLC2_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA0_RLC2_IB_BASE_LO
 #define SDMA0_RLC2_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA0_RLC2_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA0_RLC2_IB_BASE_HI
 #define SDMA0_RLC2_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC2_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC2_IB_SIZE
 #define SDMA0_RLC2_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA0_RLC2_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA0_RLC2_SKIP_CNTL
 #define SDMA0_RLC2_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA0_RLC2_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA0_RLC2_CONTEXT_STATUS
 #define SDMA0_RLC2_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA0_RLC2_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA0_RLC2_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -1764,94 +1464,68 @@
 #define SDMA0_RLC2_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA0_RLC2_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA0_RLC2_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA0_RLC2_DOORBELL
 #define SDMA0_RLC2_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA0_RLC2_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA0_RLC2_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA0_RLC2_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA0_RLC2_STATUS
 #define SDMA0_RLC2_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA0_RLC2_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA0_RLC2_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA0_RLC2_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA0_RLC2_DOORBELL_LOG
 #define SDMA0_RLC2_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA0_RLC2_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA0_RLC2_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA0_RLC2_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA0_RLC2_WATERMARK
 #define SDMA0_RLC2_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA0_RLC2_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA0_RLC2_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA0_RLC2_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA0_RLC2_DOORBELL_OFFSET
 #define SDMA0_RLC2_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA0_RLC2_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA0_RLC2_CSA_ADDR_LO
 #define SDMA0_RLC2_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA0_RLC2_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA0_RLC2_CSA_ADDR_HI
 #define SDMA0_RLC2_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA0_RLC2_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA0_RLC2_IB_SUB_REMAIN
 #define SDMA0_RLC2_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA0_RLC2_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA0_RLC2_PREEMPT
 #define SDMA0_RLC2_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA0_RLC2_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA0_RLC2_DUMMY_REG
 #define SDMA0_RLC2_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA0_RLC2_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC2_RB_WPTR_POLL_ADDR_HI
 #define SDMA0_RLC2_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA0_RLC2_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA0_RLC2_RB_WPTR_POLL_ADDR_LO
 #define SDMA0_RLC2_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA0_RLC2_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA0_RLC2_RB_AQL_CNTL
 #define SDMA0_RLC2_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA0_RLC2_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA0_RLC2_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA0_RLC2_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA0_RLC2_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA0_RLC2_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA0_RLC2_MINOR_PTR_UPDATE
 #define SDMA0_RLC2_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA0_RLC2_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA0_RLC2_MIDCMD_DATA0
 #define SDMA0_RLC2_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA0_RLC2_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC2_MIDCMD_DATA1
 #define SDMA0_RLC2_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA0_RLC2_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC2_MIDCMD_DATA2
 #define SDMA0_RLC2_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA0_RLC2_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC2_MIDCMD_DATA3
 #define SDMA0_RLC2_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA0_RLC2_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC2_MIDCMD_DATA4
 #define SDMA0_RLC2_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA0_RLC2_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC2_MIDCMD_DATA5
 #define SDMA0_RLC2_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA0_RLC2_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC2_MIDCMD_DATA6
 #define SDMA0_RLC2_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA0_RLC2_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC2_MIDCMD_DATA7
 #define SDMA0_RLC2_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA0_RLC2_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC2_MIDCMD_DATA8
 #define SDMA0_RLC2_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA0_RLC2_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC2_MIDCMD_DATA9
 #define SDMA0_RLC2_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA0_RLC2_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC2_MIDCMD_DATA10
 #define SDMA0_RLC2_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA0_RLC2_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC2_MIDCMD_CNTL
 #define SDMA0_RLC2_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA0_RLC2_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA0_RLC2_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -1860,7 +1534,6 @@
 #define SDMA0_RLC2_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA0_RLC2_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA0_RLC2_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA0_RLC3_RB_CNTL
 #define SDMA0_RLC3_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC3_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA0_RLC3_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -1877,25 +1550,18 @@
 #define SDMA0_RLC3_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA0_RLC3_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA0_RLC3_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA0_RLC3_RB_BASE
 #define SDMA0_RLC3_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA0_RLC3_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA0_RLC3_RB_BASE_HI
 #define SDMA0_RLC3_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC3_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA0_RLC3_RB_RPTR
 #define SDMA0_RLC3_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC3_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC3_RB_RPTR_HI
 #define SDMA0_RLC3_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC3_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC3_RB_WPTR
 #define SDMA0_RLC3_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC3_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC3_RB_WPTR_HI
 #define SDMA0_RLC3_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC3_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC3_RB_WPTR_POLL_CNTL
 #define SDMA0_RLC3_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA0_RLC3_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA0_RLC3_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -1906,15 +1572,12 @@
 #define SDMA0_RLC3_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA0_RLC3_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA0_RLC3_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA0_RLC3_RB_RPTR_ADDR_HI
 #define SDMA0_RLC3_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA0_RLC3_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC3_RB_RPTR_ADDR_LO
 #define SDMA0_RLC3_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA0_RLC3_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA0_RLC3_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA0_RLC3_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA0_RLC3_IB_CNTL
 #define SDMA0_RLC3_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC3_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA0_RLC3_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -1923,25 +1586,18 @@
 #define SDMA0_RLC3_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA0_RLC3_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA0_RLC3_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA0_RLC3_IB_RPTR
 #define SDMA0_RLC3_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA0_RLC3_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA0_RLC3_IB_OFFSET
 #define SDMA0_RLC3_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA0_RLC3_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA0_RLC3_IB_BASE_LO
 #define SDMA0_RLC3_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA0_RLC3_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA0_RLC3_IB_BASE_HI
 #define SDMA0_RLC3_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC3_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC3_IB_SIZE
 #define SDMA0_RLC3_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA0_RLC3_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA0_RLC3_SKIP_CNTL
 #define SDMA0_RLC3_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA0_RLC3_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA0_RLC3_CONTEXT_STATUS
 #define SDMA0_RLC3_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA0_RLC3_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA0_RLC3_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -1958,94 +1614,68 @@
 #define SDMA0_RLC3_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA0_RLC3_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA0_RLC3_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA0_RLC3_DOORBELL
 #define SDMA0_RLC3_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA0_RLC3_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA0_RLC3_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA0_RLC3_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA0_RLC3_STATUS
 #define SDMA0_RLC3_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA0_RLC3_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA0_RLC3_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA0_RLC3_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA0_RLC3_DOORBELL_LOG
 #define SDMA0_RLC3_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA0_RLC3_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA0_RLC3_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA0_RLC3_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA0_RLC3_WATERMARK
 #define SDMA0_RLC3_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA0_RLC3_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA0_RLC3_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA0_RLC3_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA0_RLC3_DOORBELL_OFFSET
 #define SDMA0_RLC3_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA0_RLC3_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA0_RLC3_CSA_ADDR_LO
 #define SDMA0_RLC3_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA0_RLC3_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA0_RLC3_CSA_ADDR_HI
 #define SDMA0_RLC3_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA0_RLC3_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA0_RLC3_IB_SUB_REMAIN
 #define SDMA0_RLC3_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA0_RLC3_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA0_RLC3_PREEMPT
 #define SDMA0_RLC3_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA0_RLC3_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA0_RLC3_DUMMY_REG
 #define SDMA0_RLC3_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA0_RLC3_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC3_RB_WPTR_POLL_ADDR_HI
 #define SDMA0_RLC3_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA0_RLC3_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA0_RLC3_RB_WPTR_POLL_ADDR_LO
 #define SDMA0_RLC3_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA0_RLC3_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA0_RLC3_RB_AQL_CNTL
 #define SDMA0_RLC3_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA0_RLC3_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA0_RLC3_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA0_RLC3_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA0_RLC3_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA0_RLC3_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA0_RLC3_MINOR_PTR_UPDATE
 #define SDMA0_RLC3_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA0_RLC3_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA0_RLC3_MIDCMD_DATA0
 #define SDMA0_RLC3_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA0_RLC3_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC3_MIDCMD_DATA1
 #define SDMA0_RLC3_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA0_RLC3_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC3_MIDCMD_DATA2
 #define SDMA0_RLC3_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA0_RLC3_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC3_MIDCMD_DATA3
 #define SDMA0_RLC3_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA0_RLC3_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC3_MIDCMD_DATA4
 #define SDMA0_RLC3_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA0_RLC3_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC3_MIDCMD_DATA5
 #define SDMA0_RLC3_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA0_RLC3_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC3_MIDCMD_DATA6
 #define SDMA0_RLC3_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA0_RLC3_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC3_MIDCMD_DATA7
 #define SDMA0_RLC3_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA0_RLC3_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC3_MIDCMD_DATA8
 #define SDMA0_RLC3_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA0_RLC3_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC3_MIDCMD_DATA9
 #define SDMA0_RLC3_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA0_RLC3_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC3_MIDCMD_DATA10
 #define SDMA0_RLC3_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA0_RLC3_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC3_MIDCMD_CNTL
 #define SDMA0_RLC3_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA0_RLC3_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA0_RLC3_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -2054,7 +1684,6 @@
 #define SDMA0_RLC3_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA0_RLC3_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA0_RLC3_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA0_RLC4_RB_CNTL
 #define SDMA0_RLC4_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC4_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA0_RLC4_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -2071,25 +1700,18 @@
 #define SDMA0_RLC4_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA0_RLC4_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA0_RLC4_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA0_RLC4_RB_BASE
 #define SDMA0_RLC4_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA0_RLC4_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA0_RLC4_RB_BASE_HI
 #define SDMA0_RLC4_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC4_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA0_RLC4_RB_RPTR
 #define SDMA0_RLC4_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC4_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC4_RB_RPTR_HI
 #define SDMA0_RLC4_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC4_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC4_RB_WPTR
 #define SDMA0_RLC4_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC4_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC4_RB_WPTR_HI
 #define SDMA0_RLC4_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC4_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC4_RB_WPTR_POLL_CNTL
 #define SDMA0_RLC4_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA0_RLC4_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA0_RLC4_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -2100,15 +1722,12 @@
 #define SDMA0_RLC4_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA0_RLC4_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA0_RLC4_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA0_RLC4_RB_RPTR_ADDR_HI
 #define SDMA0_RLC4_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA0_RLC4_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC4_RB_RPTR_ADDR_LO
 #define SDMA0_RLC4_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA0_RLC4_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA0_RLC4_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA0_RLC4_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA0_RLC4_IB_CNTL
 #define SDMA0_RLC4_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC4_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA0_RLC4_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -2117,25 +1736,18 @@
 #define SDMA0_RLC4_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA0_RLC4_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA0_RLC4_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA0_RLC4_IB_RPTR
 #define SDMA0_RLC4_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA0_RLC4_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA0_RLC4_IB_OFFSET
 #define SDMA0_RLC4_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA0_RLC4_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA0_RLC4_IB_BASE_LO
 #define SDMA0_RLC4_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA0_RLC4_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA0_RLC4_IB_BASE_HI
 #define SDMA0_RLC4_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC4_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC4_IB_SIZE
 #define SDMA0_RLC4_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA0_RLC4_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA0_RLC4_SKIP_CNTL
 #define SDMA0_RLC4_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA0_RLC4_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA0_RLC4_CONTEXT_STATUS
 #define SDMA0_RLC4_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA0_RLC4_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA0_RLC4_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -2152,94 +1764,68 @@
 #define SDMA0_RLC4_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA0_RLC4_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA0_RLC4_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA0_RLC4_DOORBELL
 #define SDMA0_RLC4_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA0_RLC4_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA0_RLC4_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA0_RLC4_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA0_RLC4_STATUS
 #define SDMA0_RLC4_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA0_RLC4_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA0_RLC4_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA0_RLC4_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA0_RLC4_DOORBELL_LOG
 #define SDMA0_RLC4_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA0_RLC4_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA0_RLC4_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA0_RLC4_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA0_RLC4_WATERMARK
 #define SDMA0_RLC4_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA0_RLC4_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA0_RLC4_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA0_RLC4_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA0_RLC4_DOORBELL_OFFSET
 #define SDMA0_RLC4_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA0_RLC4_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA0_RLC4_CSA_ADDR_LO
 #define SDMA0_RLC4_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA0_RLC4_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA0_RLC4_CSA_ADDR_HI
 #define SDMA0_RLC4_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA0_RLC4_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA0_RLC4_IB_SUB_REMAIN
 #define SDMA0_RLC4_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA0_RLC4_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA0_RLC4_PREEMPT
 #define SDMA0_RLC4_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA0_RLC4_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA0_RLC4_DUMMY_REG
 #define SDMA0_RLC4_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA0_RLC4_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC4_RB_WPTR_POLL_ADDR_HI
 #define SDMA0_RLC4_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA0_RLC4_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA0_RLC4_RB_WPTR_POLL_ADDR_LO
 #define SDMA0_RLC4_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA0_RLC4_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA0_RLC4_RB_AQL_CNTL
 #define SDMA0_RLC4_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA0_RLC4_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA0_RLC4_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA0_RLC4_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA0_RLC4_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA0_RLC4_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA0_RLC4_MINOR_PTR_UPDATE
 #define SDMA0_RLC4_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA0_RLC4_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA0_RLC4_MIDCMD_DATA0
 #define SDMA0_RLC4_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA0_RLC4_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC4_MIDCMD_DATA1
 #define SDMA0_RLC4_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA0_RLC4_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC4_MIDCMD_DATA2
 #define SDMA0_RLC4_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA0_RLC4_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC4_MIDCMD_DATA3
 #define SDMA0_RLC4_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA0_RLC4_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC4_MIDCMD_DATA4
 #define SDMA0_RLC4_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA0_RLC4_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC4_MIDCMD_DATA5
 #define SDMA0_RLC4_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA0_RLC4_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC4_MIDCMD_DATA6
 #define SDMA0_RLC4_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA0_RLC4_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC4_MIDCMD_DATA7
 #define SDMA0_RLC4_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA0_RLC4_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC4_MIDCMD_DATA8
 #define SDMA0_RLC4_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA0_RLC4_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC4_MIDCMD_DATA9
 #define SDMA0_RLC4_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA0_RLC4_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC4_MIDCMD_DATA10
 #define SDMA0_RLC4_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA0_RLC4_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC4_MIDCMD_CNTL
 #define SDMA0_RLC4_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA0_RLC4_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA0_RLC4_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -2248,7 +1834,6 @@
 #define SDMA0_RLC4_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA0_RLC4_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA0_RLC4_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA0_RLC5_RB_CNTL
 #define SDMA0_RLC5_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC5_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA0_RLC5_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -2265,25 +1850,18 @@
 #define SDMA0_RLC5_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA0_RLC5_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA0_RLC5_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA0_RLC5_RB_BASE
 #define SDMA0_RLC5_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA0_RLC5_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA0_RLC5_RB_BASE_HI
 #define SDMA0_RLC5_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC5_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA0_RLC5_RB_RPTR
 #define SDMA0_RLC5_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC5_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC5_RB_RPTR_HI
 #define SDMA0_RLC5_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC5_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC5_RB_WPTR
 #define SDMA0_RLC5_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC5_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC5_RB_WPTR_HI
 #define SDMA0_RLC5_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC5_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC5_RB_WPTR_POLL_CNTL
 #define SDMA0_RLC5_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA0_RLC5_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA0_RLC5_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -2294,15 +1872,12 @@
 #define SDMA0_RLC5_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA0_RLC5_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA0_RLC5_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA0_RLC5_RB_RPTR_ADDR_HI
 #define SDMA0_RLC5_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA0_RLC5_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC5_RB_RPTR_ADDR_LO
 #define SDMA0_RLC5_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA0_RLC5_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA0_RLC5_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA0_RLC5_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA0_RLC5_IB_CNTL
 #define SDMA0_RLC5_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC5_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA0_RLC5_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -2311,25 +1886,18 @@
 #define SDMA0_RLC5_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA0_RLC5_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA0_RLC5_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA0_RLC5_IB_RPTR
 #define SDMA0_RLC5_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA0_RLC5_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA0_RLC5_IB_OFFSET
 #define SDMA0_RLC5_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA0_RLC5_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA0_RLC5_IB_BASE_LO
 #define SDMA0_RLC5_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA0_RLC5_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA0_RLC5_IB_BASE_HI
 #define SDMA0_RLC5_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC5_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC5_IB_SIZE
 #define SDMA0_RLC5_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA0_RLC5_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA0_RLC5_SKIP_CNTL
 #define SDMA0_RLC5_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA0_RLC5_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA0_RLC5_CONTEXT_STATUS
 #define SDMA0_RLC5_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA0_RLC5_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA0_RLC5_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -2346,94 +1914,68 @@
 #define SDMA0_RLC5_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA0_RLC5_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA0_RLC5_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA0_RLC5_DOORBELL
 #define SDMA0_RLC5_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA0_RLC5_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA0_RLC5_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA0_RLC5_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA0_RLC5_STATUS
 #define SDMA0_RLC5_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA0_RLC5_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA0_RLC5_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA0_RLC5_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA0_RLC5_DOORBELL_LOG
 #define SDMA0_RLC5_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA0_RLC5_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA0_RLC5_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA0_RLC5_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA0_RLC5_WATERMARK
 #define SDMA0_RLC5_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA0_RLC5_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA0_RLC5_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA0_RLC5_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA0_RLC5_DOORBELL_OFFSET
 #define SDMA0_RLC5_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA0_RLC5_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA0_RLC5_CSA_ADDR_LO
 #define SDMA0_RLC5_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA0_RLC5_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA0_RLC5_CSA_ADDR_HI
 #define SDMA0_RLC5_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA0_RLC5_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA0_RLC5_IB_SUB_REMAIN
 #define SDMA0_RLC5_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA0_RLC5_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA0_RLC5_PREEMPT
 #define SDMA0_RLC5_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA0_RLC5_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA0_RLC5_DUMMY_REG
 #define SDMA0_RLC5_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA0_RLC5_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC5_RB_WPTR_POLL_ADDR_HI
 #define SDMA0_RLC5_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA0_RLC5_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA0_RLC5_RB_WPTR_POLL_ADDR_LO
 #define SDMA0_RLC5_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA0_RLC5_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA0_RLC5_RB_AQL_CNTL
 #define SDMA0_RLC5_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA0_RLC5_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA0_RLC5_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA0_RLC5_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA0_RLC5_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA0_RLC5_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA0_RLC5_MINOR_PTR_UPDATE
 #define SDMA0_RLC5_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA0_RLC5_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA0_RLC5_MIDCMD_DATA0
 #define SDMA0_RLC5_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA0_RLC5_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC5_MIDCMD_DATA1
 #define SDMA0_RLC5_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA0_RLC5_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC5_MIDCMD_DATA2
 #define SDMA0_RLC5_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA0_RLC5_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC5_MIDCMD_DATA3
 #define SDMA0_RLC5_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA0_RLC5_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC5_MIDCMD_DATA4
 #define SDMA0_RLC5_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA0_RLC5_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC5_MIDCMD_DATA5
 #define SDMA0_RLC5_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA0_RLC5_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC5_MIDCMD_DATA6
 #define SDMA0_RLC5_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA0_RLC5_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC5_MIDCMD_DATA7
 #define SDMA0_RLC5_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA0_RLC5_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC5_MIDCMD_DATA8
 #define SDMA0_RLC5_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA0_RLC5_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC5_MIDCMD_DATA9
 #define SDMA0_RLC5_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA0_RLC5_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC5_MIDCMD_DATA10
 #define SDMA0_RLC5_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA0_RLC5_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC5_MIDCMD_CNTL
 #define SDMA0_RLC5_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA0_RLC5_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA0_RLC5_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -2442,7 +1984,6 @@
 #define SDMA0_RLC5_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA0_RLC5_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA0_RLC5_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA0_RLC6_RB_CNTL
 #define SDMA0_RLC6_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC6_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA0_RLC6_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -2459,25 +2000,18 @@
 #define SDMA0_RLC6_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA0_RLC6_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA0_RLC6_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA0_RLC6_RB_BASE
 #define SDMA0_RLC6_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA0_RLC6_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA0_RLC6_RB_BASE_HI
 #define SDMA0_RLC6_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC6_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA0_RLC6_RB_RPTR
 #define SDMA0_RLC6_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC6_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC6_RB_RPTR_HI
 #define SDMA0_RLC6_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC6_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC6_RB_WPTR
 #define SDMA0_RLC6_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC6_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC6_RB_WPTR_HI
 #define SDMA0_RLC6_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC6_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC6_RB_WPTR_POLL_CNTL
 #define SDMA0_RLC6_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA0_RLC6_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA0_RLC6_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -2488,15 +2022,12 @@
 #define SDMA0_RLC6_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA0_RLC6_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA0_RLC6_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA0_RLC6_RB_RPTR_ADDR_HI
 #define SDMA0_RLC6_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA0_RLC6_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC6_RB_RPTR_ADDR_LO
 #define SDMA0_RLC6_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA0_RLC6_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA0_RLC6_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA0_RLC6_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA0_RLC6_IB_CNTL
 #define SDMA0_RLC6_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC6_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA0_RLC6_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -2505,25 +2036,18 @@
 #define SDMA0_RLC6_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA0_RLC6_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA0_RLC6_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA0_RLC6_IB_RPTR
 #define SDMA0_RLC6_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA0_RLC6_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA0_RLC6_IB_OFFSET
 #define SDMA0_RLC6_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA0_RLC6_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA0_RLC6_IB_BASE_LO
 #define SDMA0_RLC6_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA0_RLC6_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA0_RLC6_IB_BASE_HI
 #define SDMA0_RLC6_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC6_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC6_IB_SIZE
 #define SDMA0_RLC6_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA0_RLC6_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA0_RLC6_SKIP_CNTL
 #define SDMA0_RLC6_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA0_RLC6_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA0_RLC6_CONTEXT_STATUS
 #define SDMA0_RLC6_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA0_RLC6_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA0_RLC6_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -2540,94 +2064,68 @@
 #define SDMA0_RLC6_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA0_RLC6_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA0_RLC6_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA0_RLC6_DOORBELL
 #define SDMA0_RLC6_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA0_RLC6_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA0_RLC6_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA0_RLC6_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA0_RLC6_STATUS
 #define SDMA0_RLC6_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA0_RLC6_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA0_RLC6_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA0_RLC6_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA0_RLC6_DOORBELL_LOG
 #define SDMA0_RLC6_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA0_RLC6_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA0_RLC6_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA0_RLC6_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA0_RLC6_WATERMARK
 #define SDMA0_RLC6_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA0_RLC6_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA0_RLC6_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA0_RLC6_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA0_RLC6_DOORBELL_OFFSET
 #define SDMA0_RLC6_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA0_RLC6_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA0_RLC6_CSA_ADDR_LO
 #define SDMA0_RLC6_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA0_RLC6_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA0_RLC6_CSA_ADDR_HI
 #define SDMA0_RLC6_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA0_RLC6_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA0_RLC6_IB_SUB_REMAIN
 #define SDMA0_RLC6_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA0_RLC6_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA0_RLC6_PREEMPT
 #define SDMA0_RLC6_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA0_RLC6_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA0_RLC6_DUMMY_REG
 #define SDMA0_RLC6_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA0_RLC6_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC6_RB_WPTR_POLL_ADDR_HI
 #define SDMA0_RLC6_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA0_RLC6_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA0_RLC6_RB_WPTR_POLL_ADDR_LO
 #define SDMA0_RLC6_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA0_RLC6_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA0_RLC6_RB_AQL_CNTL
 #define SDMA0_RLC6_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA0_RLC6_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA0_RLC6_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA0_RLC6_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA0_RLC6_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA0_RLC6_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA0_RLC6_MINOR_PTR_UPDATE
 #define SDMA0_RLC6_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA0_RLC6_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA0_RLC6_MIDCMD_DATA0
 #define SDMA0_RLC6_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA0_RLC6_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC6_MIDCMD_DATA1
 #define SDMA0_RLC6_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA0_RLC6_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC6_MIDCMD_DATA2
 #define SDMA0_RLC6_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA0_RLC6_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC6_MIDCMD_DATA3
 #define SDMA0_RLC6_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA0_RLC6_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC6_MIDCMD_DATA4
 #define SDMA0_RLC6_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA0_RLC6_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC6_MIDCMD_DATA5
 #define SDMA0_RLC6_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA0_RLC6_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC6_MIDCMD_DATA6
 #define SDMA0_RLC6_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA0_RLC6_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC6_MIDCMD_DATA7
 #define SDMA0_RLC6_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA0_RLC6_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC6_MIDCMD_DATA8
 #define SDMA0_RLC6_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA0_RLC6_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC6_MIDCMD_DATA9
 #define SDMA0_RLC6_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA0_RLC6_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC6_MIDCMD_DATA10
 #define SDMA0_RLC6_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA0_RLC6_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC6_MIDCMD_CNTL
 #define SDMA0_RLC6_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA0_RLC6_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA0_RLC6_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -2636,7 +2134,6 @@
 #define SDMA0_RLC6_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA0_RLC6_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA0_RLC6_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA0_RLC7_RB_CNTL
 #define SDMA0_RLC7_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC7_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA0_RLC7_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -2653,25 +2150,18 @@
 #define SDMA0_RLC7_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA0_RLC7_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA0_RLC7_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA0_RLC7_RB_BASE
 #define SDMA0_RLC7_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA0_RLC7_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA0_RLC7_RB_BASE_HI
 #define SDMA0_RLC7_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC7_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA0_RLC7_RB_RPTR
 #define SDMA0_RLC7_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC7_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC7_RB_RPTR_HI
 #define SDMA0_RLC7_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC7_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC7_RB_WPTR
 #define SDMA0_RLC7_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA0_RLC7_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA0_RLC7_RB_WPTR_HI
 #define SDMA0_RLC7_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA0_RLC7_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA0_RLC7_RB_WPTR_POLL_CNTL
 #define SDMA0_RLC7_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA0_RLC7_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA0_RLC7_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -2682,15 +2172,12 @@
 #define SDMA0_RLC7_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA0_RLC7_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA0_RLC7_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA0_RLC7_RB_RPTR_ADDR_HI
 #define SDMA0_RLC7_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA0_RLC7_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC7_RB_RPTR_ADDR_LO
 #define SDMA0_RLC7_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA0_RLC7_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA0_RLC7_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA0_RLC7_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA0_RLC7_IB_CNTL
 #define SDMA0_RLC7_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA0_RLC7_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA0_RLC7_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -2699,25 +2186,18 @@
 #define SDMA0_RLC7_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA0_RLC7_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA0_RLC7_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA0_RLC7_IB_RPTR
 #define SDMA0_RLC7_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA0_RLC7_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA0_RLC7_IB_OFFSET
 #define SDMA0_RLC7_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA0_RLC7_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA0_RLC7_IB_BASE_LO
 #define SDMA0_RLC7_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA0_RLC7_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA0_RLC7_IB_BASE_HI
 #define SDMA0_RLC7_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA0_RLC7_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC7_IB_SIZE
 #define SDMA0_RLC7_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA0_RLC7_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA0_RLC7_SKIP_CNTL
 #define SDMA0_RLC7_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA0_RLC7_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA0_RLC7_CONTEXT_STATUS
 #define SDMA0_RLC7_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA0_RLC7_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA0_RLC7_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -2734,94 +2214,68 @@
 #define SDMA0_RLC7_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA0_RLC7_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA0_RLC7_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA0_RLC7_DOORBELL
 #define SDMA0_RLC7_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA0_RLC7_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA0_RLC7_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA0_RLC7_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA0_RLC7_STATUS
 #define SDMA0_RLC7_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA0_RLC7_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA0_RLC7_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA0_RLC7_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA0_RLC7_DOORBELL_LOG
 #define SDMA0_RLC7_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA0_RLC7_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA0_RLC7_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA0_RLC7_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA0_RLC7_WATERMARK
 #define SDMA0_RLC7_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA0_RLC7_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA0_RLC7_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA0_RLC7_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA0_RLC7_DOORBELL_OFFSET
 #define SDMA0_RLC7_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA0_RLC7_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA0_RLC7_CSA_ADDR_LO
 #define SDMA0_RLC7_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA0_RLC7_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA0_RLC7_CSA_ADDR_HI
 #define SDMA0_RLC7_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA0_RLC7_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA0_RLC7_IB_SUB_REMAIN
 #define SDMA0_RLC7_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA0_RLC7_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA0_RLC7_PREEMPT
 #define SDMA0_RLC7_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA0_RLC7_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA0_RLC7_DUMMY_REG
 #define SDMA0_RLC7_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA0_RLC7_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA0_RLC7_RB_WPTR_POLL_ADDR_HI
 #define SDMA0_RLC7_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA0_RLC7_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA0_RLC7_RB_WPTR_POLL_ADDR_LO
 #define SDMA0_RLC7_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA0_RLC7_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA0_RLC7_RB_AQL_CNTL
 #define SDMA0_RLC7_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA0_RLC7_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA0_RLC7_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA0_RLC7_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA0_RLC7_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA0_RLC7_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA0_RLC7_MINOR_PTR_UPDATE
 #define SDMA0_RLC7_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA0_RLC7_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA0_RLC7_MIDCMD_DATA0
 #define SDMA0_RLC7_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA0_RLC7_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC7_MIDCMD_DATA1
 #define SDMA0_RLC7_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA0_RLC7_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC7_MIDCMD_DATA2
 #define SDMA0_RLC7_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA0_RLC7_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC7_MIDCMD_DATA3
 #define SDMA0_RLC7_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA0_RLC7_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC7_MIDCMD_DATA4
 #define SDMA0_RLC7_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA0_RLC7_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC7_MIDCMD_DATA5
 #define SDMA0_RLC7_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA0_RLC7_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC7_MIDCMD_DATA6
 #define SDMA0_RLC7_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA0_RLC7_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC7_MIDCMD_DATA7
 #define SDMA0_RLC7_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA0_RLC7_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC7_MIDCMD_DATA8
 #define SDMA0_RLC7_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA0_RLC7_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC7_MIDCMD_DATA9
 #define SDMA0_RLC7_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA0_RLC7_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA0_RLC7_MIDCMD_DATA10
 #define SDMA0_RLC7_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA0_RLC7_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA0_RLC7_MIDCMD_CNTL
 #define SDMA0_RLC7_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA0_RLC7_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA0_RLC7_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -2830,26 +2284,18 @@
 #define SDMA0_RLC7_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA0_RLC7_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA0_RLC7_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-
-
-// addressBlock: sdma0_sdma1dec
-//SDMA1_UCODE_ADDR
 #define SDMA1_UCODE_ADDR__VALUE__SHIFT                                                                        0x0
 #define SDMA1_UCODE_ADDR__VALUE_MASK                                                                          0x00003FFFL
-//SDMA1_UCODE_DATA
 #define SDMA1_UCODE_DATA__VALUE__SHIFT                                                                        0x0
 #define SDMA1_UCODE_DATA__VALUE_MASK                                                                          0xFFFFFFFFL
-//SDMA1_VF_ENABLE
 #define SDMA1_VF_ENABLE__VF_ENABLE__SHIFT                                                                     0x0
 #define SDMA1_VF_ENABLE__VF_ENABLE_MASK                                                                       0x00000001L
 #define SDMA1_PUB_REG_TYPE0__SDMA1_UCODE_ADDR__SHIFT                                                          0x0
 #define SDMA1_PUB_REG_TYPE0__SDMA1_UCODE_DATA__SHIFT                                                          0x1
 #define SDMA1_PUB_REG_TYPE0__SDMA1_UCODE_ADDR_MASK                                                            0x00000001L
 #define SDMA1_PUB_REG_TYPE0__SDMA1_UCODE_DATA_MASK                                                            0x00000002L
-//SDMA1_CONTEXT_GROUP_BOUNDARY
 #define SDMA1_CONTEXT_GROUP_BOUNDARY__RESERVED__SHIFT                                                         0x0
 #define SDMA1_CONTEXT_GROUP_BOUNDARY__RESERVED_MASK                                                           0xFFFFFFFFL
-//SDMA1_POWER_CNTL
 #define SDMA1_POWER_CNTL__PG_CNTL_ENABLE__SHIFT                                                               0x0
 #define SDMA1_POWER_CNTL__EXT_PG_POWER_ON_REQ__SHIFT                                                          0x1
 #define SDMA1_POWER_CNTL__EXT_PG_POWER_OFF_REQ__SHIFT                                                         0x2
@@ -2870,7 +2316,6 @@
 #define SDMA1_POWER_CNTL__MEM_POWER_SD_EN_MASK                                                                0x00000800L
 #define SDMA1_POWER_CNTL__MEM_POWER_DELAY_MASK                                                                0x003FF000L
 #define SDMA1_POWER_CNTL__ON_OFF_STATUS_DURATION_TIME_MASK                                                    0xFC000000L
-//SDMA1_CLK_CTRL
 #define SDMA1_CLK_CTRL__ON_DELAY__SHIFT                                                                       0x0
 #define SDMA1_CLK_CTRL__OFF_HYSTERESIS__SHIFT                                                                 0x4
 #define SDMA1_CLK_CTRL__RESERVED__SHIFT                                                                       0xc
@@ -2893,7 +2338,6 @@
 #define SDMA1_CLK_CTRL__SOFT_OVERRIDE2_MASK                                                                   0x20000000L
 #define SDMA1_CLK_CTRL__SOFT_OVERRIDE1_MASK                                                                   0x40000000L
 #define SDMA1_CLK_CTRL__SOFT_OVERRIDE0_MASK                                                                   0x80000000L
-//SDMA1_CNTL
 #define SDMA1_CNTL__TRAP_ENABLE__SHIFT                                                                        0x0
 #define SDMA1_CNTL__UTC_L1_ENABLE__SHIFT                                                                      0x1
 #define SDMA1_CNTL__SEM_WAIT_INT_ENABLE__SHIFT                                                                0x2
@@ -2918,7 +2362,6 @@
 #define SDMA1_CNTL__CTXEMPTY_INT_ENABLE_MASK                                                                  0x10000000L
 #define SDMA1_CNTL__FROZEN_INT_ENABLE_MASK                                                                    0x20000000L
 #define SDMA1_CNTL__IB_PREEMPT_INT_ENABLE_MASK                                                                0x40000000L
-//SDMA1_CHICKEN_BITS
 #define SDMA1_CHICKEN_BITS__COPY_EFFICIENCY_ENABLE__SHIFT                                                     0x0
 #define SDMA1_CHICKEN_BITS__STALL_ON_TRANS_FULL_ENABLE__SHIFT                                                 0x1
 #define SDMA1_CHICKEN_BITS__STALL_ON_NO_FREE_DATA_BUFFER_ENABLE__SHIFT                                        0x2
@@ -2943,7 +2386,6 @@
 #define SDMA1_CHICKEN_BITS__TIME_BASED_QOS_MASK                                                               0x02000000L
 #define SDMA1_CHICKEN_BITS__SRAM_FGCG_ENABLE_MASK                                                             0x04000000L
 #define SDMA1_CHICKEN_BITS__RESERVED_MASK                                                                     0xF8000000L
-//SDMA1_GB_ADDR_CONFIG
 #define SDMA1_GB_ADDR_CONFIG__NUM_PIPES__SHIFT                                                                0x0
 #define SDMA1_GB_ADDR_CONFIG__PIPE_INTERLEAVE_SIZE__SHIFT                                                     0x3
 #define SDMA1_GB_ADDR_CONFIG__BANK_INTERLEAVE_SIZE__SHIFT                                                     0x8
@@ -2954,7 +2396,6 @@
 #define SDMA1_GB_ADDR_CONFIG__BANK_INTERLEAVE_SIZE_MASK                                                       0x00000700L
 #define SDMA1_GB_ADDR_CONFIG__NUM_BANKS_MASK                                                                  0x00007000L
 #define SDMA1_GB_ADDR_CONFIG__NUM_SHADER_ENGINES_MASK                                                         0x00180000L
-//SDMA1_GB_ADDR_CONFIG_READ
 #define SDMA1_GB_ADDR_CONFIG_READ__NUM_PIPES__SHIFT                                                           0x0
 #define SDMA1_GB_ADDR_CONFIG_READ__PIPE_INTERLEAVE_SIZE__SHIFT                                                0x3
 #define SDMA1_GB_ADDR_CONFIG_READ__BANK_INTERLEAVE_SIZE__SHIFT                                                0x8
@@ -2965,22 +2406,16 @@
 #define SDMA1_GB_ADDR_CONFIG_READ__BANK_INTERLEAVE_SIZE_MASK                                                  0x00000700L
 #define SDMA1_GB_ADDR_CONFIG_READ__NUM_BANKS_MASK                                                             0x00007000L
 #define SDMA1_GB_ADDR_CONFIG_READ__NUM_SHADER_ENGINES_MASK                                                    0x00180000L
-//SDMA1_RB_RPTR_FETCH_HI
 #define SDMA1_RB_RPTR_FETCH_HI__OFFSET__SHIFT                                                                 0x0
 #define SDMA1_RB_RPTR_FETCH_HI__OFFSET_MASK                                                                   0xFFFFFFFFL
-//SDMA1_SEM_WAIT_FAIL_TIMER_CNTL
 #define SDMA1_SEM_WAIT_FAIL_TIMER_CNTL__TIMER__SHIFT                                                          0x0
 #define SDMA1_SEM_WAIT_FAIL_TIMER_CNTL__TIMER_MASK                                                            0xFFFFFFFFL
-//SDMA1_RB_RPTR_FETCH
 #define SDMA1_RB_RPTR_FETCH__OFFSET__SHIFT                                                                    0x2
 #define SDMA1_RB_RPTR_FETCH__OFFSET_MASK                                                                      0xFFFFFFFCL
-//SDMA1_IB_OFFSET_FETCH
 #define SDMA1_IB_OFFSET_FETCH__OFFSET__SHIFT                                                                  0x2
 #define SDMA1_IB_OFFSET_FETCH__OFFSET_MASK                                                                    0x003FFFFCL
-//SDMA1_PROGRAM
 #define SDMA1_PROGRAM__STREAM__SHIFT                                                                          0x0
 #define SDMA1_PROGRAM__STREAM_MASK                                                                            0xFFFFFFFFL
-//SDMA1_STATUS_REG
 #define SDMA1_STATUS_REG__IDLE__SHIFT                                                                         0x0
 #define SDMA1_STATUS_REG__REG_IDLE__SHIFT                                                                     0x1
 #define SDMA1_STATUS_REG__RB_EMPTY__SHIFT                                                                     0x2
@@ -3039,7 +2474,6 @@
 #define SDMA1_STATUS_REG__SEM_RESP_STATE_MASK                                                                 0x30000000L
 #define SDMA1_STATUS_REG__INT_IDLE_MASK                                                                       0x40000000L
 #define SDMA1_STATUS_REG__INT_REQ_STALL_MASK                                                                  0x80000000L
-//SDMA1_STATUS1_REG
 #define SDMA1_STATUS1_REG__CE_WREQ_IDLE__SHIFT                                                                0x0
 #define SDMA1_STATUS1_REG__CE_WR_IDLE__SHIFT                                                                  0x1
 #define SDMA1_STATUS1_REG__CE_SPLIT_IDLE__SHIFT                                                               0x2
@@ -3068,25 +2502,20 @@
 #define SDMA1_STATUS1_REG__EX_START_MASK                                                                      0x00008000L
 #define SDMA1_STATUS1_REG__CE_RD_STALL_MASK                                                                   0x00020000L
 #define SDMA1_STATUS1_REG__CE_WR_STALL_MASK                                                                   0x00040000L
-//SDMA1_RD_BURST_CNTL
 #define SDMA1_RD_BURST_CNTL__RD_BURST__SHIFT                                                                  0x0
 #define SDMA1_RD_BURST_CNTL__CMD_BUFFER_RD_BURST__SHIFT                                                       0x2
 #define SDMA1_RD_BURST_CNTL__RD_BURST_MASK                                                                    0x00000003L
 #define SDMA1_RD_BURST_CNTL__CMD_BUFFER_RD_BURST_MASK                                                         0x0000000CL
-//SDMA1_HBM_PAGE_CONFIG
 #define SDMA1_HBM_PAGE_CONFIG__PAGE_SIZE_EXPONENT__SHIFT                                                      0x0
 #define SDMA1_HBM_PAGE_CONFIG__PAGE_SIZE_EXPONENT_MASK                                                        0x00000003L
-//SDMA1_UCODE_CHECKSUM
 #define SDMA1_UCODE_CHECKSUM__DATA__SHIFT                                                                     0x0
 #define SDMA1_UCODE_CHECKSUM__DATA_MASK                                                                       0xFFFFFFFFL
-//SDMA1_F32_CNTL
 #define SDMA1_F32_CNTL__HALT__SHIFT                                                                           0x0
 #define SDMA1_F32_CNTL__STEP__SHIFT                                                                           0x1
 #define SDMA1_F32_CNTL__RESET__SHIFT                                                                          0x8
 #define SDMA1_F32_CNTL__HALT_MASK                                                                             0x00000001L
 #define SDMA1_F32_CNTL__STEP_MASK                                                                             0x00000002L
 #define SDMA1_F32_CNTL__RESET_MASK                                                                            0x00000100L
-//SDMA1_FREEZE
 #define SDMA1_FREEZE__PREEMPT__SHIFT                                                                          0x0
 #define SDMA1_FREEZE__FREEZE__SHIFT                                                                           0x4
 #define SDMA1_FREEZE__FROZEN__SHIFT                                                                           0x5
@@ -3095,39 +2524,32 @@
 #define SDMA1_FREEZE__FREEZE_MASK                                                                             0x00000010L
 #define SDMA1_FREEZE__FROZEN_MASK                                                                             0x00000020L
 #define SDMA1_FREEZE__F32_FREEZE_MASK                                                                         0x00000040L
-//SDMA1_PHASE0_QUANTUM
 #define SDMA1_PHASE0_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA1_PHASE0_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA1_PHASE0_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA1_PHASE0_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA1_PHASE0_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA1_PHASE0_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//SDMA1_PHASE1_QUANTUM
 #define SDMA1_PHASE1_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA1_PHASE1_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA1_PHASE1_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA1_PHASE1_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA1_PHASE1_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA1_PHASE1_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//CC_SDMA1_EDC_CONFIG
 #define CC_SDMA1_EDC_CONFIG__DIS_EDC__SHIFT                                                                   0x1
 #define CC_SDMA1_EDC_CONFIG__DIS_EDC_MASK                                                                     0x00000002L
-//SDMA1_BA_THRESHOLD
 #define SDMA1_BA_THRESHOLD__READ_THRES__SHIFT                                                                 0x0
 #define SDMA1_BA_THRESHOLD__WRITE_THRES__SHIFT                                                                0x10
 #define SDMA1_BA_THRESHOLD__READ_THRES_MASK                                                                   0x000003FFL
 #define SDMA1_BA_THRESHOLD__WRITE_THRES_MASK                                                                  0x03FF0000L
-//SDMA1_ID
 #define SDMA1_ID__DEVICE_ID__SHIFT                                                                            0x0
 #define SDMA1_ID__DEVICE_ID_MASK                                                                              0x000000FFL
-//SDMA1_VERSION
 #define SDMA1_VERSION__MINVER__SHIFT                                                                          0x0
 #define SDMA1_VERSION__MAJVER__SHIFT                                                                          0x8
 #define SDMA1_VERSION__REV__SHIFT                                                                             0x10
 #define SDMA1_VERSION__MINVER_MASK                                                                            0x0000007FL
 #define SDMA1_VERSION__MAJVER_MASK                                                                            0x00007F00L
 #define SDMA1_VERSION__REV_MASK                                                                               0x003F0000L
-//SDMA1_EDC_COUNTER
 #define SDMA1_EDC_COUNTER__SDMA_MBANK_DATA_BUF0_SED__SHIFT                                                    0x0
 #define SDMA1_EDC_COUNTER__SDMA_MBANK_DATA_BUF1_SED__SHIFT                                                    0x2
 #define SDMA1_EDC_COUNTER__SDMA_MBANK_DATA_BUF2_SED__SHIFT                                                    0x4
@@ -3160,7 +2582,6 @@
 #define SDMA1_EDC_COUNTER__SDMA_MBANK_DATA_BUF13_SED_MASK                                                     0x0C000000L
 #define SDMA1_EDC_COUNTER__SDMA_MBANK_DATA_BUF14_SED_MASK                                                     0x30000000L
 #define SDMA1_EDC_COUNTER__SDMA_MBANK_DATA_BUF15_SED_MASK                                                     0xC0000000L
-//SDMA1_EDC_COUNTER2
 #define SDMA1_EDC_COUNTER2__SDMA_UCODE_BUF_SED__SHIFT                                                         0x0
 #define SDMA1_EDC_COUNTER2__SDMA_RB_CMD_BUF_SED__SHIFT                                                        0x2
 #define SDMA1_EDC_COUNTER2__SDMA_IB_CMD_BUF_SED__SHIFT                                                        0x4
@@ -3181,25 +2602,20 @@
 #define SDMA1_EDC_COUNTER2__SDMA_SPLIT_DATA_BUF_SED_MASK                                                      0x0000C000L
 #define SDMA1_EDC_COUNTER2__SDMA_MC_WR_ADDR_FIFO_SED_MASK                                                     0x00030000L
 #define SDMA1_EDC_COUNTER2__SDMA_MC_RDRET_BUF_SED_MASK                                                        0x000C0000L
-//SDMA1_STATUS2_REG
 #define SDMA1_STATUS2_REG__ID__SHIFT                                                                          0x0
 #define SDMA1_STATUS2_REG__F32_INSTR_PTR__SHIFT                                                               0x3
 #define SDMA1_STATUS2_REG__CMD_OP__SHIFT                                                                      0x10
 #define SDMA1_STATUS2_REG__ID_MASK                                                                            0x00000007L
 #define SDMA1_STATUS2_REG__F32_INSTR_PTR_MASK                                                                 0x0000FFF8L
 #define SDMA1_STATUS2_REG__CMD_OP_MASK                                                                        0xFFFF0000L
-//SDMA1_ATOMIC_CNTL
 #define SDMA1_ATOMIC_CNTL__LOOP_TIMER__SHIFT                                                                  0x0
 #define SDMA1_ATOMIC_CNTL__ATOMIC_RTN_INT_ENABLE__SHIFT                                                       0x1f
 #define SDMA1_ATOMIC_CNTL__LOOP_TIMER_MASK                                                                    0x7FFFFFFFL
 #define SDMA1_ATOMIC_CNTL__ATOMIC_RTN_INT_ENABLE_MASK                                                         0x80000000L
-//SDMA1_ATOMIC_PREOP_LO
 #define SDMA1_ATOMIC_PREOP_LO__DATA__SHIFT                                                                    0x0
 #define SDMA1_ATOMIC_PREOP_LO__DATA_MASK                                                                      0xFFFFFFFFL
-//SDMA1_ATOMIC_PREOP_HI
 #define SDMA1_ATOMIC_PREOP_HI__DATA__SHIFT                                                                    0x0
 #define SDMA1_ATOMIC_PREOP_HI__DATA_MASK                                                                      0xFFFFFFFFL
-//SDMA1_UTCL1_CNTL
 #define SDMA1_UTCL1_CNTL__REDO_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_UTCL1_CNTL__REDO_DELAY__SHIFT                                                                   0x1
 #define SDMA1_UTCL1_CNTL__REDO_WATERMK__SHIFT                                                                 0xb
@@ -3212,7 +2628,6 @@
 #define SDMA1_UTCL1_CNTL__INVACK_DELAY_MASK                                                                   0x00FFC000L
 #define SDMA1_UTCL1_CNTL__REQL2_CREDIT_MASK                                                                   0x1F000000L
 #define SDMA1_UTCL1_CNTL__VADDR_WATERMK_MASK                                                                  0xE0000000L
-//SDMA1_UTCL1_WATERMK
 #define SDMA1_UTCL1_WATERMK__REQ_WATERMK__SHIFT                                                               0x0
 #define SDMA1_UTCL1_WATERMK__REQ_DEPTH__SHIFT                                                                 0x3
 #define SDMA1_UTCL1_WATERMK__PAGE_WATERMK__SHIFT                                                              0x5
@@ -3223,7 +2638,6 @@
 #define SDMA1_UTCL1_WATERMK__PAGE_WATERMK_MASK                                                                0x000000E0L
 #define SDMA1_UTCL1_WATERMK__INVREQ_WATERMK_MASK                                                              0x0000FF00L
 #define SDMA1_UTCL1_WATERMK__RESERVED_MASK                                                                    0xFFFF0000L
-//SDMA1_UTCL1_RD_STATUS
 #define SDMA1_UTCL1_RD_STATUS__RQMC_RET_ADDR_FIFO_EMPTY__SHIFT                                                0x0
 #define SDMA1_UTCL1_RD_STATUS__RQMC_REQ_FIFO_EMPTY__SHIFT                                                     0x1
 #define SDMA1_UTCL1_RD_STATUS__RTPG_RET_BUF_EMPTY__SHIFT                                                      0x2
@@ -3278,7 +2692,6 @@
 #define SDMA1_UTCL1_RD_STATUS__ADDR_RD_RTR_MASK                                                               0x20000000L
 #define SDMA1_UTCL1_RD_STATUS__WPTR_POLLING_MASK                                                              0x40000000L
 #define SDMA1_UTCL1_RD_STATUS__INVREQ_SIZE_MASK                                                               0x80000000L
-//SDMA1_UTCL1_WR_STATUS
 #define SDMA1_UTCL1_WR_STATUS__RQMC_RET_ADDR_FIFO_EMPTY__SHIFT                                                0x0
 #define SDMA1_UTCL1_WR_STATUS__RQMC_REQ_FIFO_EMPTY__SHIFT                                                     0x1
 #define SDMA1_UTCL1_WR_STATUS__RTPG_RET_BUF_EMPTY__SHIFT                                                      0x2
@@ -3335,7 +2748,6 @@
 #define SDMA1_UTCL1_WR_STATUS__RPTR_DATA_FIFO_FULL_MASK                                                       0x20000000L
 #define SDMA1_UTCL1_WR_STATUS__WRREQ_DATA_FIFO_EMPTY_MASK                                                     0x40000000L
 #define SDMA1_UTCL1_WR_STATUS__WRREQ_DATA_FIFO_FULL_MASK                                                      0x80000000L
-//SDMA1_UTCL1_INV0
 #define SDMA1_UTCL1_INV0__INV_MIDDLE__SHIFT                                                                   0x0
 #define SDMA1_UTCL1_INV0__RD_TIMEOUT__SHIFT                                                                   0x1
 #define SDMA1_UTCL1_INV0__WR_TIMEOUT__SHIFT                                                                   0x2
@@ -3364,16 +2776,12 @@
 #define SDMA1_UTCL1_INV0__INV_FLUSHTYPE_MASK                                                                  0x00000800L
 #define SDMA1_UTCL1_INV0__INV_VMID_VEC_MASK                                                                   0x0FFFF000L
 #define SDMA1_UTCL1_INV0__INV_ADDR_HI_MASK                                                                    0xF0000000L
-//SDMA1_UTCL1_INV1
 #define SDMA1_UTCL1_INV1__INV_ADDR_LO__SHIFT                                                                  0x0
 #define SDMA1_UTCL1_INV1__INV_ADDR_LO_MASK                                                                    0xFFFFFFFFL
-//SDMA1_UTCL1_INV2
 #define SDMA1_UTCL1_INV2__INV_NFLUSH_VMID_VEC__SHIFT                                                          0x0
 #define SDMA1_UTCL1_INV2__INV_NFLUSH_VMID_VEC_MASK                                                            0xFFFFFFFFL
-//SDMA1_UTCL1_RD_XNACK0
 #define SDMA1_UTCL1_RD_XNACK0__XNACK_ADDR_LO__SHIFT                                                           0x0
 #define SDMA1_UTCL1_RD_XNACK0__XNACK_ADDR_LO_MASK                                                             0xFFFFFFFFL
-//SDMA1_UTCL1_RD_XNACK1
 #define SDMA1_UTCL1_RD_XNACK1__XNACK_ADDR_HI__SHIFT                                                           0x0
 #define SDMA1_UTCL1_RD_XNACK1__XNACK_VMID__SHIFT                                                              0x4
 #define SDMA1_UTCL1_RD_XNACK1__XNACK_VECTOR__SHIFT                                                            0x8
@@ -3382,10 +2790,8 @@
 #define SDMA1_UTCL1_RD_XNACK1__XNACK_VMID_MASK                                                                0x000000F0L
 #define SDMA1_UTCL1_RD_XNACK1__XNACK_VECTOR_MASK                                                              0x03FFFF00L
 #define SDMA1_UTCL1_RD_XNACK1__IS_XNACK_MASK                                                                  0x0C000000L
-//SDMA1_UTCL1_WR_XNACK0
 #define SDMA1_UTCL1_WR_XNACK0__XNACK_ADDR_LO__SHIFT                                                           0x0
 #define SDMA1_UTCL1_WR_XNACK0__XNACK_ADDR_LO_MASK                                                             0xFFFFFFFFL
-//SDMA1_UTCL1_WR_XNACK1
 #define SDMA1_UTCL1_WR_XNACK1__XNACK_ADDR_HI__SHIFT                                                           0x0
 #define SDMA1_UTCL1_WR_XNACK1__XNACK_VMID__SHIFT                                                              0x4
 #define SDMA1_UTCL1_WR_XNACK1__XNACK_VECTOR__SHIFT                                                            0x8
@@ -3394,12 +2800,10 @@
 #define SDMA1_UTCL1_WR_XNACK1__XNACK_VMID_MASK                                                                0x000000F0L
 #define SDMA1_UTCL1_WR_XNACK1__XNACK_VECTOR_MASK                                                              0x03FFFF00L
 #define SDMA1_UTCL1_WR_XNACK1__IS_XNACK_MASK                                                                  0x0C000000L
-//SDMA1_UTCL1_TIMEOUT
 #define SDMA1_UTCL1_TIMEOUT__RD_XNACK_LIMIT__SHIFT                                                            0x0
 #define SDMA1_UTCL1_TIMEOUT__WR_XNACK_LIMIT__SHIFT                                                            0x10
 #define SDMA1_UTCL1_TIMEOUT__RD_XNACK_LIMIT_MASK                                                              0x0000FFFFL
 #define SDMA1_UTCL1_TIMEOUT__WR_XNACK_LIMIT_MASK                                                              0xFFFF0000L
-//SDMA1_UTCL1_PAGE
 #define SDMA1_UTCL1_PAGE__VM_HOLE__SHIFT                                                                      0x0
 #define SDMA1_UTCL1_PAGE__REQ_TYPE__SHIFT                                                                     0x1
 #define SDMA1_UTCL1_PAGE__USE_MTYPE__SHIFT                                                                    0x6
@@ -3408,14 +2812,12 @@
 #define SDMA1_UTCL1_PAGE__REQ_TYPE_MASK                                                                       0x0000001EL
 #define SDMA1_UTCL1_PAGE__USE_MTYPE_MASK                                                                      0x000001C0L
 #define SDMA1_UTCL1_PAGE__USE_PT_SNOOP_MASK                                                                   0x00000200L
-//SDMA1_POWER_CNTL_IDLE
 #define SDMA1_POWER_CNTL_IDLE__DELAY0__SHIFT                                                                  0x0
 #define SDMA1_POWER_CNTL_IDLE__DELAY1__SHIFT                                                                  0x10
 #define SDMA1_POWER_CNTL_IDLE__DELAY2__SHIFT                                                                  0x18
 #define SDMA1_POWER_CNTL_IDLE__DELAY0_MASK                                                                    0x0000FFFFL
 #define SDMA1_POWER_CNTL_IDLE__DELAY1_MASK                                                                    0x00FF0000L
 #define SDMA1_POWER_CNTL_IDLE__DELAY2_MASK                                                                    0xFF000000L
-//SDMA1_RELAX_ORDERING_LUT
 #define SDMA1_RELAX_ORDERING_LUT__RESERVED0__SHIFT                                                            0x0
 #define SDMA1_RELAX_ORDERING_LUT__COPY__SHIFT                                                                 0x1
 #define SDMA1_RELAX_ORDERING_LUT__WRITE__SHIFT                                                                0x2
@@ -3454,12 +2856,10 @@
 #define SDMA1_RELAX_ORDERING_LUT__WPTR_POLL_MASK                                                              0x20000000L
 #define SDMA1_RELAX_ORDERING_LUT__IB_FETCH_MASK                                                               0x40000000L
 #define SDMA1_RELAX_ORDERING_LUT__RB_FETCH_MASK                                                               0x80000000L
-//SDMA1_CHICKEN_BITS_2
 #define SDMA1_CHICKEN_BITS_2__F32_CMD_PROC_DELAY__SHIFT                                                       0x0
 #define SDMA1_CHICKEN_BITS_2__F32_SEND_POSTCODE_EN__SHIFT                                                     0x4
 #define SDMA1_CHICKEN_BITS_2__F32_CMD_PROC_DELAY_MASK                                                         0x0000000FL
 #define SDMA1_CHICKEN_BITS_2__F32_SEND_POSTCODE_EN_MASK                                                       0x00000010L
-//SDMA1_STATUS3_REG
 #define SDMA1_STATUS3_REG__CMD_OP_STATUS__SHIFT                                                               0x0
 #define SDMA1_STATUS3_REG__PREV_VM_CMD__SHIFT                                                                 0x10
 #define SDMA1_STATUS3_REG__EXCEPTION_IDLE__SHIFT                                                              0x14
@@ -3470,7 +2870,6 @@
 #define SDMA1_STATUS3_REG__EXCEPTION_IDLE_MASK                                                                0x00100000L
 #define SDMA1_STATUS3_REG__QUEUE_ID_MATCH_MASK                                                                0x00200000L
 #define SDMA1_STATUS3_REG__INT_QUEUE_ID_MASK                                                                  0x03C00000L
-//SDMA1_PHYSICAL_ADDR_LO
 #define SDMA1_PHYSICAL_ADDR_LO__D_VALID__SHIFT                                                                0x0
 #define SDMA1_PHYSICAL_ADDR_LO__DIRTY__SHIFT                                                                  0x1
 #define SDMA1_PHYSICAL_ADDR_LO__PHY_VALID__SHIFT                                                              0x2
@@ -3479,37 +2878,28 @@
 #define SDMA1_PHYSICAL_ADDR_LO__DIRTY_MASK                                                                    0x00000002L
 #define SDMA1_PHYSICAL_ADDR_LO__PHY_VALID_MASK                                                                0x00000004L
 #define SDMA1_PHYSICAL_ADDR_LO__ADDR_MASK                                                                     0xFFFFF000L
-//SDMA1_PHYSICAL_ADDR_HI
 #define SDMA1_PHYSICAL_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA1_PHYSICAL_ADDR_HI__ADDR_MASK                                                                     0x0000FFFFL
-//SDMA1_PHASE2_QUANTUM
 #define SDMA1_PHASE2_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA1_PHASE2_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA1_PHASE2_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA1_PHASE2_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA1_PHASE2_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA1_PHASE2_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//SDMA1_ERROR_LOG
 #define SDMA1_ERROR_LOG__OVERRIDE__SHIFT                                                                      0x0
 #define SDMA1_ERROR_LOG__STATUS__SHIFT                                                                        0x10
 #define SDMA1_ERROR_LOG__OVERRIDE_MASK                                                                        0x0000FFFFL
 #define SDMA1_ERROR_LOG__STATUS_MASK                                                                          0xFFFF0000L
-//SDMA1_PUB_DUMMY_REG0
 #define SDMA1_PUB_DUMMY_REG0__VALUE__SHIFT                                                                    0x0
 #define SDMA1_PUB_DUMMY_REG0__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA1_PUB_DUMMY_REG1
 #define SDMA1_PUB_DUMMY_REG1__VALUE__SHIFT                                                                    0x0
 #define SDMA1_PUB_DUMMY_REG1__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA1_PUB_DUMMY_REG2
 #define SDMA1_PUB_DUMMY_REG2__VALUE__SHIFT                                                                    0x0
 #define SDMA1_PUB_DUMMY_REG2__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA1_PUB_DUMMY_REG3
 #define SDMA1_PUB_DUMMY_REG3__VALUE__SHIFT                                                                    0x0
 #define SDMA1_PUB_DUMMY_REG3__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA1_F32_COUNTER
 #define SDMA1_F32_COUNTER__VALUE__SHIFT                                                                       0x0
 #define SDMA1_F32_COUNTER__VALUE_MASK                                                                         0xFFFFFFFFL
-//SDMA1_PERFCNT_PERFCOUNTER0_CFG
 #define SDMA1_PERFCNT_PERFCOUNTER0_CFG__PERF_SEL__SHIFT                                                       0x0
 #define SDMA1_PERFCNT_PERFCOUNTER0_CFG__PERF_SEL_END__SHIFT                                                   0x8
 #define SDMA1_PERFCNT_PERFCOUNTER0_CFG__PERF_MODE__SHIFT                                                      0x18
@@ -3520,7 +2910,6 @@
 #define SDMA1_PERFCNT_PERFCOUNTER0_CFG__PERF_MODE_MASK                                                        0x0F000000L
 #define SDMA1_PERFCNT_PERFCOUNTER0_CFG__ENABLE_MASK                                                           0x10000000L
 #define SDMA1_PERFCNT_PERFCOUNTER0_CFG__CLEAR_MASK                                                            0x20000000L
-//SDMA1_PERFCNT_PERFCOUNTER1_CFG
 #define SDMA1_PERFCNT_PERFCOUNTER1_CFG__PERF_SEL__SHIFT                                                       0x0
 #define SDMA1_PERFCNT_PERFCOUNTER1_CFG__PERF_SEL_END__SHIFT                                                   0x8
 #define SDMA1_PERFCNT_PERFCOUNTER1_CFG__PERF_MODE__SHIFT                                                      0x18
@@ -3531,7 +2920,6 @@
 #define SDMA1_PERFCNT_PERFCOUNTER1_CFG__PERF_MODE_MASK                                                        0x0F000000L
 #define SDMA1_PERFCNT_PERFCOUNTER1_CFG__ENABLE_MASK                                                           0x10000000L
 #define SDMA1_PERFCNT_PERFCOUNTER1_CFG__CLEAR_MASK                                                            0x20000000L
-//SDMA1_PERFCNT_PERFCOUNTER_RSLT_CNTL
 #define SDMA1_PERFCNT_PERFCOUNTER_RSLT_CNTL__PERF_COUNTER_SELECT__SHIFT                                       0x0
 #define SDMA1_PERFCNT_PERFCOUNTER_RSLT_CNTL__START_TRIGGER__SHIFT                                             0x8
 #define SDMA1_PERFCNT_PERFCOUNTER_RSLT_CNTL__STOP_TRIGGER__SHIFT                                              0x10
@@ -3544,23 +2932,18 @@
 #define SDMA1_PERFCNT_PERFCOUNTER_RSLT_CNTL__ENABLE_ANY_MASK                                                  0x01000000L
 #define SDMA1_PERFCNT_PERFCOUNTER_RSLT_CNTL__CLEAR_ALL_MASK                                                   0x02000000L
 #define SDMA1_PERFCNT_PERFCOUNTER_RSLT_CNTL__STOP_ALL_ON_SATURATE_MASK                                        0x04000000L
-//SDMA1_PERFCNT_MISC_CNTL
 #define SDMA1_PERFCNT_MISC_CNTL__CMD_OP__SHIFT                                                                0x0
 #define SDMA1_PERFCNT_MISC_CNTL__CMD_OP_MASK                                                                  0x0000FFFFL
-//SDMA1_PERFCNT_PERFCOUNTER_LO
 #define SDMA1_PERFCNT_PERFCOUNTER_LO__COUNTER_LO__SHIFT                                                       0x0
 #define SDMA1_PERFCNT_PERFCOUNTER_LO__COUNTER_LO_MASK                                                         0xFFFFFFFFL
-//SDMA1_PERFCNT_PERFCOUNTER_HI
 #define SDMA1_PERFCNT_PERFCOUNTER_HI__COUNTER_HI__SHIFT                                                       0x0
 #define SDMA1_PERFCNT_PERFCOUNTER_HI__COMPARE_VALUE__SHIFT                                                    0x10
 #define SDMA1_PERFCNT_PERFCOUNTER_HI__COUNTER_HI_MASK                                                         0x0000FFFFL
 #define SDMA1_PERFCNT_PERFCOUNTER_HI__COMPARE_VALUE_MASK                                                      0xFFFF0000L
-//SDMA1_CRD_CNTL
 #define SDMA1_CRD_CNTL__MC_WRREQ_CREDIT__SHIFT                                                                0x7
 #define SDMA1_CRD_CNTL__MC_RDREQ_CREDIT__SHIFT                                                                0xd
 #define SDMA1_CRD_CNTL__MC_WRREQ_CREDIT_MASK                                                                  0x00001F80L
 #define SDMA1_CRD_CNTL__MC_RDREQ_CREDIT_MASK                                                                  0x0007E000L
-//SDMA1_ULV_CNTL
 #define SDMA1_ULV_CNTL__HYSTERESIS__SHIFT                                                                     0x0
 #define SDMA1_ULV_CNTL__ENTER_ULV_INT_CLR__SHIFT                                                              0x1b
 #define SDMA1_ULV_CNTL__EXIT_ULV_INT_CLR__SHIFT                                                               0x1c
@@ -3573,13 +2956,10 @@
 #define SDMA1_ULV_CNTL__ENTER_ULV_INT_MASK                                                                    0x20000000L
 #define SDMA1_ULV_CNTL__EXIT_ULV_INT_MASK                                                                     0x40000000L
 #define SDMA1_ULV_CNTL__ULV_STATUS_MASK                                                                       0x80000000L
-//SDMA1_EA_DBIT_ADDR_DATA
 #define SDMA1_EA_DBIT_ADDR_DATA__VALUE__SHIFT                                                                 0x0
 #define SDMA1_EA_DBIT_ADDR_DATA__VALUE_MASK                                                                   0xFFFFFFFFL
-//SDMA1_EA_DBIT_ADDR_INDEX
 #define SDMA1_EA_DBIT_ADDR_INDEX__VALUE__SHIFT                                                                0x0
 #define SDMA1_EA_DBIT_ADDR_INDEX__VALUE_MASK                                                                  0x00000007L
-//SDMA1_STATUS4_REG
 #define SDMA1_STATUS4_REG__IDLE__SHIFT                                                                        0x0
 #define SDMA1_STATUS4_REG__IH_OUTSTANDING__SHIFT                                                              0x2
 #define SDMA1_STATUS4_REG__SEM_OUTSTANDING__SHIFT                                                             0x3
@@ -3608,13 +2988,10 @@
 #define SDMA1_STATUS4_REG__ACTIVE_QUEUE_ID_MASK                                                               0x0003C000L
 #define SDMA1_STATUS4_REG__SRIOV_WATING_RLCV_CMD_MASK                                                         0x00040000L
 #define SDMA1_STATUS4_REG__SRIOV_SDMA_EXECUTING_CMD_MASK                                                      0x00080000L
-//SDMA1_SCRATCH_RAM_DATA
 #define SDMA1_SCRATCH_RAM_DATA__DATA__SHIFT                                                                   0x0
 #define SDMA1_SCRATCH_RAM_DATA__DATA_MASK                                                                     0xFFFFFFFFL
-//SDMA1_SCRATCH_RAM_ADDR
 #define SDMA1_SCRATCH_RAM_ADDR__ADDR__SHIFT                                                                   0x0
 #define SDMA1_SCRATCH_RAM_ADDR__ADDR_MASK                                                                     0x0000007FL
-//SDMA1_CE_CTRL
 #define SDMA1_CE_CTRL__RD_LUT_WATERMARK__SHIFT                                                                0x0
 #define SDMA1_CE_CTRL__RD_LUT_DEPTH__SHIFT                                                                    0x3
 #define SDMA1_CE_CTRL__WR_AFIFO_WATERMARK__SHIFT                                                              0x5
@@ -3623,7 +3000,6 @@
 #define SDMA1_CE_CTRL__RD_LUT_DEPTH_MASK                                                                      0x00000018L
 #define SDMA1_CE_CTRL__WR_AFIFO_WATERMARK_MASK                                                                0x000000E0L
 #define SDMA1_CE_CTRL__RESERVED_MASK                                                                          0xFFFFFF00L
-//SDMA1_RAS_STATUS
 #define SDMA1_RAS_STATUS__RB_FETCH_ECC__SHIFT                                                                 0x0
 #define SDMA1_RAS_STATUS__IB_FETCH_ECC__SHIFT                                                                 0x1
 #define SDMA1_RAS_STATUS__F32_DATA_ECC__SHIFT                                                                 0x2
@@ -3648,7 +3024,6 @@
 #define SDMA1_RAS_STATUS__COPY_DATA_NACK_GEN_ERR_MASK                                                         0x00000800L
 #define SDMA1_RAS_STATUS__WRRET_DATA_NACK_GEN_ERR_MASK                                                        0x00001000L
 #define SDMA1_RAS_STATUS__WPTR_RPTR_ATOMIC_NACK_GEN_ERR_MASK                                                  0x00002000L
-//SDMA1_CLK_STATUS
 #define SDMA1_CLK_STATUS__DYN_CLK__SHIFT                                                                      0x0
 #define SDMA1_CLK_STATUS__PTR_CLK__SHIFT                                                                      0x1
 #define SDMA1_CLK_STATUS__REG_CLK__SHIFT                                                                      0x2
@@ -3657,7 +3032,6 @@
 #define SDMA1_CLK_STATUS__PTR_CLK_MASK                                                                        0x00000002L
 #define SDMA1_CLK_STATUS__REG_CLK_MASK                                                                        0x00000004L
 #define SDMA1_CLK_STATUS__F32_CLK_MASK                                                                        0x00000008L
-//SDMA1_GFX_RB_CNTL
 #define SDMA1_GFX_RB_CNTL__RB_ENABLE__SHIFT                                                                   0x0
 #define SDMA1_GFX_RB_CNTL__RB_SIZE__SHIFT                                                                     0x1
 #define SDMA1_GFX_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                              0x9
@@ -3674,25 +3048,18 @@
 #define SDMA1_GFX_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                          0x001F0000L
 #define SDMA1_GFX_RB_CNTL__RB_PRIV_MASK                                                                       0x00800000L
 #define SDMA1_GFX_RB_CNTL__RB_VMID_MASK                                                                       0x0F000000L
-//SDMA1_GFX_RB_BASE
 #define SDMA1_GFX_RB_BASE__ADDR__SHIFT                                                                        0x0
 #define SDMA1_GFX_RB_BASE__ADDR_MASK                                                                          0xFFFFFFFFL
-//SDMA1_GFX_RB_BASE_HI
 #define SDMA1_GFX_RB_BASE_HI__ADDR__SHIFT                                                                     0x0
 #define SDMA1_GFX_RB_BASE_HI__ADDR_MASK                                                                       0x00FFFFFFL
-//SDMA1_GFX_RB_RPTR
 #define SDMA1_GFX_RB_RPTR__OFFSET__SHIFT                                                                      0x0
 #define SDMA1_GFX_RB_RPTR__OFFSET_MASK                                                                        0xFFFFFFFFL
-//SDMA1_GFX_RB_RPTR_HI
 #define SDMA1_GFX_RB_RPTR_HI__OFFSET__SHIFT                                                                   0x0
 #define SDMA1_GFX_RB_RPTR_HI__OFFSET_MASK                                                                     0xFFFFFFFFL
-//SDMA1_GFX_RB_WPTR
 #define SDMA1_GFX_RB_WPTR__OFFSET__SHIFT                                                                      0x0
 #define SDMA1_GFX_RB_WPTR__OFFSET_MASK                                                                        0xFFFFFFFFL
-//SDMA1_GFX_RB_WPTR_HI
 #define SDMA1_GFX_RB_WPTR_HI__OFFSET__SHIFT                                                                   0x0
 #define SDMA1_GFX_RB_WPTR_HI__OFFSET_MASK                                                                     0xFFFFFFFFL
-//SDMA1_GFX_RB_WPTR_POLL_CNTL
 #define SDMA1_GFX_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                            0x0
 #define SDMA1_GFX_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                       0x1
 #define SDMA1_GFX_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                   0x2
@@ -3703,15 +3070,12 @@
 #define SDMA1_GFX_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                     0x00000004L
 #define SDMA1_GFX_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                           0x0000FFF0L
 #define SDMA1_GFX_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                     0xFFFF0000L
-//SDMA1_GFX_RB_RPTR_ADDR_HI
 #define SDMA1_GFX_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                                0x0
 #define SDMA1_GFX_RB_RPTR_ADDR_HI__ADDR_MASK                                                                  0xFFFFFFFFL
-//SDMA1_GFX_RB_RPTR_ADDR_LO
 #define SDMA1_GFX_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                        0x0
 #define SDMA1_GFX_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                                0x2
 #define SDMA1_GFX_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                          0x00000001L
 #define SDMA1_GFX_RB_RPTR_ADDR_LO__ADDR_MASK                                                                  0xFFFFFFFCL
-//SDMA1_GFX_IB_CNTL
 #define SDMA1_GFX_IB_CNTL__IB_ENABLE__SHIFT                                                                   0x0
 #define SDMA1_GFX_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                              0x4
 #define SDMA1_GFX_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                            0x8
@@ -3720,25 +3084,18 @@
 #define SDMA1_GFX_IB_CNTL__IB_SWAP_ENABLE_MASK                                                                0x00000010L
 #define SDMA1_GFX_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                              0x00000100L
 #define SDMA1_GFX_IB_CNTL__CMD_VMID_MASK                                                                      0x000F0000L
-//SDMA1_GFX_IB_RPTR
 #define SDMA1_GFX_IB_RPTR__OFFSET__SHIFT                                                                      0x2
 #define SDMA1_GFX_IB_RPTR__OFFSET_MASK                                                                        0x003FFFFCL
-//SDMA1_GFX_IB_OFFSET
 #define SDMA1_GFX_IB_OFFSET__OFFSET__SHIFT                                                                    0x2
 #define SDMA1_GFX_IB_OFFSET__OFFSET_MASK                                                                      0x003FFFFCL
-//SDMA1_GFX_IB_BASE_LO
 #define SDMA1_GFX_IB_BASE_LO__ADDR__SHIFT                                                                     0x5
 #define SDMA1_GFX_IB_BASE_LO__ADDR_MASK                                                                       0xFFFFFFE0L
-//SDMA1_GFX_IB_BASE_HI
 #define SDMA1_GFX_IB_BASE_HI__ADDR__SHIFT                                                                     0x0
 #define SDMA1_GFX_IB_BASE_HI__ADDR_MASK                                                                       0xFFFFFFFFL
-//SDMA1_GFX_IB_SIZE
 #define SDMA1_GFX_IB_SIZE__SIZE__SHIFT                                                                        0x0
 #define SDMA1_GFX_IB_SIZE__SIZE_MASK                                                                          0x000FFFFFL
-//SDMA1_GFX_SKIP_CNTL
 #define SDMA1_GFX_SKIP_CNTL__SKIP_COUNT__SHIFT                                                                0x0
 #define SDMA1_GFX_SKIP_CNTL__SKIP_COUNT_MASK                                                                  0x000FFFFFL
-//SDMA1_GFX_CONTEXT_STATUS
 #define SDMA1_GFX_CONTEXT_STATUS__SELECTED__SHIFT                                                             0x0
 #define SDMA1_GFX_CONTEXT_STATUS__IDLE__SHIFT                                                                 0x2
 #define SDMA1_GFX_CONTEXT_STATUS__EXPIRED__SHIFT                                                              0x3
@@ -3755,99 +3112,72 @@
 #define SDMA1_GFX_CONTEXT_STATUS__CTXSW_READY_MASK                                                            0x00000100L
 #define SDMA1_GFX_CONTEXT_STATUS__PREEMPTED_MASK                                                              0x00000200L
 #define SDMA1_GFX_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                        0x00000400L
-//SDMA1_GFX_DOORBELL
 #define SDMA1_GFX_DOORBELL__ENABLE__SHIFT                                                                     0x1c
 #define SDMA1_GFX_DOORBELL__CAPTURED__SHIFT                                                                   0x1e
 #define SDMA1_GFX_DOORBELL__ENABLE_MASK                                                                       0x10000000L
 #define SDMA1_GFX_DOORBELL__CAPTURED_MASK                                                                     0x40000000L
-//SDMA1_GFX_CONTEXT_CNTL
 #define SDMA1_GFX_CONTEXT_CNTL__RESUME_CTX__SHIFT                                                             0x10
 #define SDMA1_GFX_CONTEXT_CNTL__SESSION_SEL__SHIFT                                                            0x18
 #define SDMA1_GFX_CONTEXT_CNTL__RESUME_CTX_MASK                                                               0x00010000L
 #define SDMA1_GFX_CONTEXT_CNTL__SESSION_SEL_MASK                                                              0x0F000000L
-//SDMA1_GFX_STATUS
 #define SDMA1_GFX_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                       0x0
 #define SDMA1_GFX_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                          0x8
 #define SDMA1_GFX_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                         0x000000FFL
 #define SDMA1_GFX_STATUS__WPTR_UPDATE_PENDING_MASK                                                            0x00000100L
-//SDMA1_GFX_DOORBELL_LOG
 #define SDMA1_GFX_DOORBELL_LOG__BE_ERROR__SHIFT                                                               0x0
 #define SDMA1_GFX_DOORBELL_LOG__DATA__SHIFT                                                                   0x2
 #define SDMA1_GFX_DOORBELL_LOG__BE_ERROR_MASK                                                                 0x00000001L
 #define SDMA1_GFX_DOORBELL_LOG__DATA_MASK                                                                     0xFFFFFFFCL
-//SDMA1_GFX_WATERMARK
 #define SDMA1_GFX_WATERMARK__RD_OUTSTANDING__SHIFT                                                            0x0
 #define SDMA1_GFX_WATERMARK__WR_OUTSTANDING__SHIFT                                                            0x10
 #define SDMA1_GFX_WATERMARK__RD_OUTSTANDING_MASK                                                              0x00000FFFL
 #define SDMA1_GFX_WATERMARK__WR_OUTSTANDING_MASK                                                              0x03FF0000L
-//SDMA1_GFX_DOORBELL_OFFSET
 #define SDMA1_GFX_DOORBELL_OFFSET__OFFSET__SHIFT                                                              0x2
 #define SDMA1_GFX_DOORBELL_OFFSET__OFFSET_MASK                                                                0x0FFFFFFCL
-//SDMA1_GFX_CSA_ADDR_LO
 #define SDMA1_GFX_CSA_ADDR_LO__ADDR__SHIFT                                                                    0x2
 #define SDMA1_GFX_CSA_ADDR_LO__ADDR_MASK                                                                      0xFFFFFFFCL
-//SDMA1_GFX_CSA_ADDR_HI
 #define SDMA1_GFX_CSA_ADDR_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_GFX_CSA_ADDR_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA1_GFX_IB_SUB_REMAIN
 #define SDMA1_GFX_IB_SUB_REMAIN__SIZE__SHIFT                                                                  0x0
 #define SDMA1_GFX_IB_SUB_REMAIN__SIZE_MASK                                                                    0x000FFFFFL
-//SDMA1_GFX_PREEMPT
 #define SDMA1_GFX_PREEMPT__IB_PREEMPT__SHIFT                                                                  0x0
 #define SDMA1_GFX_PREEMPT__IB_PREEMPT_MASK                                                                    0x00000001L
-//SDMA1_GFX_DUMMY_REG
 #define SDMA1_GFX_DUMMY_REG__DUMMY__SHIFT                                                                     0x0
 #define SDMA1_GFX_DUMMY_REG__DUMMY_MASK                                                                       0xFFFFFFFFL
-//SDMA1_GFX_RB_WPTR_POLL_ADDR_HI
 #define SDMA1_GFX_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                           0x0
 #define SDMA1_GFX_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                             0xFFFFFFFFL
-//SDMA1_GFX_RB_WPTR_POLL_ADDR_LO
 #define SDMA1_GFX_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                           0x2
 #define SDMA1_GFX_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                             0xFFFFFFFCL
-//SDMA1_GFX_RB_AQL_CNTL
 #define SDMA1_GFX_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                              0x0
 #define SDMA1_GFX_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                         0x1
 #define SDMA1_GFX_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                             0x8
 #define SDMA1_GFX_RB_AQL_CNTL__AQL_ENABLE_MASK                                                                0x00000001L
 #define SDMA1_GFX_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                           0x000000FEL
 #define SDMA1_GFX_RB_AQL_CNTL__PACKET_STEP_MASK                                                               0x0000FF00L
-//SDMA1_GFX_MINOR_PTR_UPDATE
 #define SDMA1_GFX_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                             0x0
 #define SDMA1_GFX_MINOR_PTR_UPDATE__ENABLE_MASK                                                               0x00000001L
-//SDMA1_GFX_MIDCMD_DATA0
 #define SDMA1_GFX_MIDCMD_DATA0__DATA0__SHIFT                                                                  0x0
 #define SDMA1_GFX_MIDCMD_DATA0__DATA0_MASK                                                                    0xFFFFFFFFL
-//SDMA1_GFX_MIDCMD_DATA1
 #define SDMA1_GFX_MIDCMD_DATA1__DATA1__SHIFT                                                                  0x0
 #define SDMA1_GFX_MIDCMD_DATA1__DATA1_MASK                                                                    0xFFFFFFFFL
-//SDMA1_GFX_MIDCMD_DATA2
 #define SDMA1_GFX_MIDCMD_DATA2__DATA2__SHIFT                                                                  0x0
 #define SDMA1_GFX_MIDCMD_DATA2__DATA2_MASK                                                                    0xFFFFFFFFL
-//SDMA1_GFX_MIDCMD_DATA3
 #define SDMA1_GFX_MIDCMD_DATA3__DATA3__SHIFT                                                                  0x0
 #define SDMA1_GFX_MIDCMD_DATA3__DATA3_MASK                                                                    0xFFFFFFFFL
-//SDMA1_GFX_MIDCMD_DATA4
 #define SDMA1_GFX_MIDCMD_DATA4__DATA4__SHIFT                                                                  0x0
 #define SDMA1_GFX_MIDCMD_DATA4__DATA4_MASK                                                                    0xFFFFFFFFL
-//SDMA1_GFX_MIDCMD_DATA5
 #define SDMA1_GFX_MIDCMD_DATA5__DATA5__SHIFT                                                                  0x0
 #define SDMA1_GFX_MIDCMD_DATA5__DATA5_MASK                                                                    0xFFFFFFFFL
-//SDMA1_GFX_MIDCMD_DATA6
 #define SDMA1_GFX_MIDCMD_DATA6__DATA6__SHIFT                                                                  0x0
 #define SDMA1_GFX_MIDCMD_DATA6__DATA6_MASK                                                                    0xFFFFFFFFL
-//SDMA1_GFX_MIDCMD_DATA7
 #define SDMA1_GFX_MIDCMD_DATA7__DATA7__SHIFT                                                                  0x0
 #define SDMA1_GFX_MIDCMD_DATA7__DATA7_MASK                                                                    0xFFFFFFFFL
-//SDMA1_GFX_MIDCMD_DATA8
 #define SDMA1_GFX_MIDCMD_DATA8__DATA8__SHIFT                                                                  0x0
 #define SDMA1_GFX_MIDCMD_DATA8__DATA8_MASK                                                                    0xFFFFFFFFL
-//SDMA1_GFX_MIDCMD_DATA9
 #define SDMA1_GFX_MIDCMD_DATA9__DATA9__SHIFT                                                                  0x0
 #define SDMA1_GFX_MIDCMD_DATA9__DATA9_MASK                                                                    0xFFFFFFFFL
-//SDMA1_GFX_MIDCMD_DATA10
 #define SDMA1_GFX_MIDCMD_DATA10__DATA10__SHIFT                                                                0x0
 #define SDMA1_GFX_MIDCMD_DATA10__DATA10_MASK                                                                  0xFFFFFFFFL
-//SDMA1_GFX_MIDCMD_CNTL
 #define SDMA1_GFX_MIDCMD_CNTL__DATA_VALID__SHIFT                                                              0x0
 #define SDMA1_GFX_MIDCMD_CNTL__COPY_MODE__SHIFT                                                               0x1
 #define SDMA1_GFX_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                             0x4
@@ -3856,7 +3186,6 @@
 #define SDMA1_GFX_MIDCMD_CNTL__COPY_MODE_MASK                                                                 0x00000002L
 #define SDMA1_GFX_MIDCMD_CNTL__SPLIT_STATE_MASK                                                               0x000000F0L
 #define SDMA1_GFX_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                             0x00000100L
-//SDMA1_PAGE_RB_CNTL
 #define SDMA1_PAGE_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_PAGE_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA1_PAGE_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -3873,25 +3202,18 @@
 #define SDMA1_PAGE_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA1_PAGE_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA1_PAGE_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA1_PAGE_RB_BASE
 #define SDMA1_PAGE_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA1_PAGE_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA1_PAGE_RB_BASE_HI
 #define SDMA1_PAGE_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_PAGE_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA1_PAGE_RB_RPTR
 #define SDMA1_PAGE_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_PAGE_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_PAGE_RB_RPTR_HI
 #define SDMA1_PAGE_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_PAGE_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_PAGE_RB_WPTR
 #define SDMA1_PAGE_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_PAGE_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_PAGE_RB_WPTR_HI
 #define SDMA1_PAGE_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_PAGE_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_PAGE_RB_WPTR_POLL_CNTL
 #define SDMA1_PAGE_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA1_PAGE_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA1_PAGE_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -3902,15 +3224,12 @@
 #define SDMA1_PAGE_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA1_PAGE_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA1_PAGE_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA1_PAGE_RB_RPTR_ADDR_HI
 #define SDMA1_PAGE_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA1_PAGE_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA1_PAGE_RB_RPTR_ADDR_LO
 #define SDMA1_PAGE_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA1_PAGE_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA1_PAGE_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA1_PAGE_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA1_PAGE_IB_CNTL
 #define SDMA1_PAGE_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_PAGE_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA1_PAGE_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -3919,25 +3238,18 @@
 #define SDMA1_PAGE_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA1_PAGE_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA1_PAGE_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA1_PAGE_IB_RPTR
 #define SDMA1_PAGE_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA1_PAGE_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA1_PAGE_IB_OFFSET
 #define SDMA1_PAGE_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA1_PAGE_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA1_PAGE_IB_BASE_LO
 #define SDMA1_PAGE_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA1_PAGE_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA1_PAGE_IB_BASE_HI
 #define SDMA1_PAGE_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_PAGE_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA1_PAGE_IB_SIZE
 #define SDMA1_PAGE_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA1_PAGE_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA1_PAGE_SKIP_CNTL
 #define SDMA1_PAGE_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA1_PAGE_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA1_PAGE_CONTEXT_STATUS
 #define SDMA1_PAGE_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA1_PAGE_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA1_PAGE_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -3954,94 +3266,68 @@
 #define SDMA1_PAGE_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA1_PAGE_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA1_PAGE_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA1_PAGE_DOORBELL
 #define SDMA1_PAGE_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA1_PAGE_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA1_PAGE_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA1_PAGE_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA1_PAGE_STATUS
 #define SDMA1_PAGE_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA1_PAGE_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA1_PAGE_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA1_PAGE_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA1_PAGE_DOORBELL_LOG
 #define SDMA1_PAGE_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA1_PAGE_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA1_PAGE_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA1_PAGE_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA1_PAGE_WATERMARK
 #define SDMA1_PAGE_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA1_PAGE_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA1_PAGE_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA1_PAGE_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA1_PAGE_DOORBELL_OFFSET
 #define SDMA1_PAGE_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA1_PAGE_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA1_PAGE_CSA_ADDR_LO
 #define SDMA1_PAGE_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA1_PAGE_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA1_PAGE_CSA_ADDR_HI
 #define SDMA1_PAGE_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA1_PAGE_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA1_PAGE_IB_SUB_REMAIN
 #define SDMA1_PAGE_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA1_PAGE_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA1_PAGE_PREEMPT
 #define SDMA1_PAGE_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA1_PAGE_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA1_PAGE_DUMMY_REG
 #define SDMA1_PAGE_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA1_PAGE_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA1_PAGE_RB_WPTR_POLL_ADDR_HI
 #define SDMA1_PAGE_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA1_PAGE_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA1_PAGE_RB_WPTR_POLL_ADDR_LO
 #define SDMA1_PAGE_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA1_PAGE_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA1_PAGE_RB_AQL_CNTL
 #define SDMA1_PAGE_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA1_PAGE_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA1_PAGE_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA1_PAGE_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA1_PAGE_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA1_PAGE_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA1_PAGE_MINOR_PTR_UPDATE
 #define SDMA1_PAGE_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA1_PAGE_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA1_PAGE_MIDCMD_DATA0
 #define SDMA1_PAGE_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA1_PAGE_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA1_PAGE_MIDCMD_DATA1
 #define SDMA1_PAGE_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA1_PAGE_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA1_PAGE_MIDCMD_DATA2
 #define SDMA1_PAGE_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA1_PAGE_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA1_PAGE_MIDCMD_DATA3
 #define SDMA1_PAGE_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA1_PAGE_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA1_PAGE_MIDCMD_DATA4
 #define SDMA1_PAGE_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA1_PAGE_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA1_PAGE_MIDCMD_DATA5
 #define SDMA1_PAGE_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA1_PAGE_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA1_PAGE_MIDCMD_DATA6
 #define SDMA1_PAGE_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA1_PAGE_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA1_PAGE_MIDCMD_DATA7
 #define SDMA1_PAGE_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA1_PAGE_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA1_PAGE_MIDCMD_DATA8
 #define SDMA1_PAGE_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA1_PAGE_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA1_PAGE_MIDCMD_DATA9
 #define SDMA1_PAGE_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA1_PAGE_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA1_PAGE_MIDCMD_DATA10
 #define SDMA1_PAGE_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA1_PAGE_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA1_PAGE_MIDCMD_CNTL
 #define SDMA1_PAGE_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA1_PAGE_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA1_PAGE_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -4050,7 +3336,6 @@
 #define SDMA1_PAGE_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA1_PAGE_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA1_PAGE_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA1_RLC0_RB_CNTL
 #define SDMA1_RLC0_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC0_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA1_RLC0_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -4067,25 +3352,18 @@
 #define SDMA1_RLC0_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA1_RLC0_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA1_RLC0_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA1_RLC0_RB_BASE
 #define SDMA1_RLC0_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA1_RLC0_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA1_RLC0_RB_BASE_HI
 #define SDMA1_RLC0_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC0_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA1_RLC0_RB_RPTR
 #define SDMA1_RLC0_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC0_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC0_RB_RPTR_HI
 #define SDMA1_RLC0_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC0_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC0_RB_WPTR
 #define SDMA1_RLC0_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC0_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC0_RB_WPTR_HI
 #define SDMA1_RLC0_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC0_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC0_RB_WPTR_POLL_CNTL
 #define SDMA1_RLC0_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA1_RLC0_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA1_RLC0_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -4096,15 +3374,12 @@
 #define SDMA1_RLC0_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA1_RLC0_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA1_RLC0_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA1_RLC0_RB_RPTR_ADDR_HI
 #define SDMA1_RLC0_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA1_RLC0_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC0_RB_RPTR_ADDR_LO
 #define SDMA1_RLC0_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA1_RLC0_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA1_RLC0_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA1_RLC0_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA1_RLC0_IB_CNTL
 #define SDMA1_RLC0_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC0_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA1_RLC0_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -4113,25 +3388,18 @@
 #define SDMA1_RLC0_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA1_RLC0_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA1_RLC0_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA1_RLC0_IB_RPTR
 #define SDMA1_RLC0_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA1_RLC0_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA1_RLC0_IB_OFFSET
 #define SDMA1_RLC0_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA1_RLC0_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA1_RLC0_IB_BASE_LO
 #define SDMA1_RLC0_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA1_RLC0_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA1_RLC0_IB_BASE_HI
 #define SDMA1_RLC0_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC0_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC0_IB_SIZE
 #define SDMA1_RLC0_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA1_RLC0_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA1_RLC0_SKIP_CNTL
 #define SDMA1_RLC0_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA1_RLC0_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA1_RLC0_CONTEXT_STATUS
 #define SDMA1_RLC0_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA1_RLC0_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA1_RLC0_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -4148,94 +3416,68 @@
 #define SDMA1_RLC0_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA1_RLC0_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA1_RLC0_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA1_RLC0_DOORBELL
 #define SDMA1_RLC0_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA1_RLC0_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA1_RLC0_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA1_RLC0_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA1_RLC0_STATUS
 #define SDMA1_RLC0_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA1_RLC0_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA1_RLC0_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA1_RLC0_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA1_RLC0_DOORBELL_LOG
 #define SDMA1_RLC0_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA1_RLC0_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA1_RLC0_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA1_RLC0_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA1_RLC0_WATERMARK
 #define SDMA1_RLC0_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA1_RLC0_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA1_RLC0_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA1_RLC0_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA1_RLC0_DOORBELL_OFFSET
 #define SDMA1_RLC0_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA1_RLC0_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA1_RLC0_CSA_ADDR_LO
 #define SDMA1_RLC0_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA1_RLC0_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA1_RLC0_CSA_ADDR_HI
 #define SDMA1_RLC0_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA1_RLC0_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA1_RLC0_IB_SUB_REMAIN
 #define SDMA1_RLC0_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA1_RLC0_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA1_RLC0_PREEMPT
 #define SDMA1_RLC0_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA1_RLC0_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA1_RLC0_DUMMY_REG
 #define SDMA1_RLC0_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA1_RLC0_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC0_RB_WPTR_POLL_ADDR_HI
 #define SDMA1_RLC0_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA1_RLC0_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA1_RLC0_RB_WPTR_POLL_ADDR_LO
 #define SDMA1_RLC0_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA1_RLC0_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA1_RLC0_RB_AQL_CNTL
 #define SDMA1_RLC0_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA1_RLC0_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA1_RLC0_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA1_RLC0_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA1_RLC0_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA1_RLC0_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA1_RLC0_MINOR_PTR_UPDATE
 #define SDMA1_RLC0_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA1_RLC0_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA1_RLC0_MIDCMD_DATA0
 #define SDMA1_RLC0_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA1_RLC0_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC0_MIDCMD_DATA1
 #define SDMA1_RLC0_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA1_RLC0_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC0_MIDCMD_DATA2
 #define SDMA1_RLC0_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA1_RLC0_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC0_MIDCMD_DATA3
 #define SDMA1_RLC0_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA1_RLC0_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC0_MIDCMD_DATA4
 #define SDMA1_RLC0_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA1_RLC0_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC0_MIDCMD_DATA5
 #define SDMA1_RLC0_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA1_RLC0_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC0_MIDCMD_DATA6
 #define SDMA1_RLC0_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA1_RLC0_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC0_MIDCMD_DATA7
 #define SDMA1_RLC0_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA1_RLC0_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC0_MIDCMD_DATA8
 #define SDMA1_RLC0_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA1_RLC0_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC0_MIDCMD_DATA9
 #define SDMA1_RLC0_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA1_RLC0_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC0_MIDCMD_DATA10
 #define SDMA1_RLC0_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA1_RLC0_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC0_MIDCMD_CNTL
 #define SDMA1_RLC0_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA1_RLC0_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA1_RLC0_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -4244,7 +3486,6 @@
 #define SDMA1_RLC0_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA1_RLC0_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA1_RLC0_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA1_RLC1_RB_CNTL
 #define SDMA1_RLC1_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC1_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA1_RLC1_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -4261,25 +3502,18 @@
 #define SDMA1_RLC1_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA1_RLC1_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA1_RLC1_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA1_RLC1_RB_BASE
 #define SDMA1_RLC1_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA1_RLC1_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA1_RLC1_RB_BASE_HI
 #define SDMA1_RLC1_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC1_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA1_RLC1_RB_RPTR
 #define SDMA1_RLC1_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC1_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC1_RB_RPTR_HI
 #define SDMA1_RLC1_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC1_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC1_RB_WPTR
 #define SDMA1_RLC1_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC1_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC1_RB_WPTR_HI
 #define SDMA1_RLC1_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC1_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC1_RB_WPTR_POLL_CNTL
 #define SDMA1_RLC1_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA1_RLC1_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA1_RLC1_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -4290,15 +3524,12 @@
 #define SDMA1_RLC1_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA1_RLC1_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA1_RLC1_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA1_RLC1_RB_RPTR_ADDR_HI
 #define SDMA1_RLC1_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA1_RLC1_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC1_RB_RPTR_ADDR_LO
 #define SDMA1_RLC1_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA1_RLC1_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA1_RLC1_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA1_RLC1_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA1_RLC1_IB_CNTL
 #define SDMA1_RLC1_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC1_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA1_RLC1_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -4307,25 +3538,18 @@
 #define SDMA1_RLC1_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA1_RLC1_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA1_RLC1_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA1_RLC1_IB_RPTR
 #define SDMA1_RLC1_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA1_RLC1_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA1_RLC1_IB_OFFSET
 #define SDMA1_RLC1_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA1_RLC1_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA1_RLC1_IB_BASE_LO
 #define SDMA1_RLC1_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA1_RLC1_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA1_RLC1_IB_BASE_HI
 #define SDMA1_RLC1_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC1_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC1_IB_SIZE
 #define SDMA1_RLC1_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA1_RLC1_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA1_RLC1_SKIP_CNTL
 #define SDMA1_RLC1_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA1_RLC1_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA1_RLC1_CONTEXT_STATUS
 #define SDMA1_RLC1_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA1_RLC1_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA1_RLC1_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -4342,94 +3566,68 @@
 #define SDMA1_RLC1_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA1_RLC1_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA1_RLC1_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA1_RLC1_DOORBELL
 #define SDMA1_RLC1_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA1_RLC1_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA1_RLC1_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA1_RLC1_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA1_RLC1_STATUS
 #define SDMA1_RLC1_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA1_RLC1_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA1_RLC1_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA1_RLC1_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA1_RLC1_DOORBELL_LOG
 #define SDMA1_RLC1_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA1_RLC1_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA1_RLC1_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA1_RLC1_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA1_RLC1_WATERMARK
 #define SDMA1_RLC1_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA1_RLC1_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA1_RLC1_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA1_RLC1_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA1_RLC1_DOORBELL_OFFSET
 #define SDMA1_RLC1_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA1_RLC1_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA1_RLC1_CSA_ADDR_LO
 #define SDMA1_RLC1_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA1_RLC1_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA1_RLC1_CSA_ADDR_HI
 #define SDMA1_RLC1_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA1_RLC1_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA1_RLC1_IB_SUB_REMAIN
 #define SDMA1_RLC1_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA1_RLC1_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA1_RLC1_PREEMPT
 #define SDMA1_RLC1_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA1_RLC1_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA1_RLC1_DUMMY_REG
 #define SDMA1_RLC1_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA1_RLC1_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC1_RB_WPTR_POLL_ADDR_HI
 #define SDMA1_RLC1_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA1_RLC1_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA1_RLC1_RB_WPTR_POLL_ADDR_LO
 #define SDMA1_RLC1_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA1_RLC1_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA1_RLC1_RB_AQL_CNTL
 #define SDMA1_RLC1_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA1_RLC1_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA1_RLC1_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA1_RLC1_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA1_RLC1_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA1_RLC1_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA1_RLC1_MINOR_PTR_UPDATE
 #define SDMA1_RLC1_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA1_RLC1_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA1_RLC1_MIDCMD_DATA0
 #define SDMA1_RLC1_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA1_RLC1_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC1_MIDCMD_DATA1
 #define SDMA1_RLC1_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA1_RLC1_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC1_MIDCMD_DATA2
 #define SDMA1_RLC1_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA1_RLC1_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC1_MIDCMD_DATA3
 #define SDMA1_RLC1_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA1_RLC1_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC1_MIDCMD_DATA4
 #define SDMA1_RLC1_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA1_RLC1_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC1_MIDCMD_DATA5
 #define SDMA1_RLC1_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA1_RLC1_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC1_MIDCMD_DATA6
 #define SDMA1_RLC1_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA1_RLC1_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC1_MIDCMD_DATA7
 #define SDMA1_RLC1_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA1_RLC1_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC1_MIDCMD_DATA8
 #define SDMA1_RLC1_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA1_RLC1_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC1_MIDCMD_DATA9
 #define SDMA1_RLC1_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA1_RLC1_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC1_MIDCMD_DATA10
 #define SDMA1_RLC1_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA1_RLC1_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC1_MIDCMD_CNTL
 #define SDMA1_RLC1_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA1_RLC1_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA1_RLC1_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -4438,7 +3636,6 @@
 #define SDMA1_RLC1_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA1_RLC1_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA1_RLC1_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA1_RLC2_RB_CNTL
 #define SDMA1_RLC2_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC2_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA1_RLC2_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -4455,25 +3652,18 @@
 #define SDMA1_RLC2_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA1_RLC2_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA1_RLC2_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA1_RLC2_RB_BASE
 #define SDMA1_RLC2_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA1_RLC2_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA1_RLC2_RB_BASE_HI
 #define SDMA1_RLC2_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC2_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA1_RLC2_RB_RPTR
 #define SDMA1_RLC2_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC2_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC2_RB_RPTR_HI
 #define SDMA1_RLC2_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC2_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC2_RB_WPTR
 #define SDMA1_RLC2_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC2_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC2_RB_WPTR_HI
 #define SDMA1_RLC2_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC2_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC2_RB_WPTR_POLL_CNTL
 #define SDMA1_RLC2_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA1_RLC2_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA1_RLC2_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -4484,15 +3674,12 @@
 #define SDMA1_RLC2_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA1_RLC2_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA1_RLC2_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA1_RLC2_RB_RPTR_ADDR_HI
 #define SDMA1_RLC2_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA1_RLC2_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC2_RB_RPTR_ADDR_LO
 #define SDMA1_RLC2_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA1_RLC2_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA1_RLC2_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA1_RLC2_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA1_RLC2_IB_CNTL
 #define SDMA1_RLC2_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC2_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA1_RLC2_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -4501,25 +3688,18 @@
 #define SDMA1_RLC2_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA1_RLC2_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA1_RLC2_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA1_RLC2_IB_RPTR
 #define SDMA1_RLC2_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA1_RLC2_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA1_RLC2_IB_OFFSET
 #define SDMA1_RLC2_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA1_RLC2_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA1_RLC2_IB_BASE_LO
 #define SDMA1_RLC2_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA1_RLC2_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA1_RLC2_IB_BASE_HI
 #define SDMA1_RLC2_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC2_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC2_IB_SIZE
 #define SDMA1_RLC2_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA1_RLC2_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA1_RLC2_SKIP_CNTL
 #define SDMA1_RLC2_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA1_RLC2_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA1_RLC2_CONTEXT_STATUS
 #define SDMA1_RLC2_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA1_RLC2_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA1_RLC2_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -4536,94 +3716,68 @@
 #define SDMA1_RLC2_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA1_RLC2_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA1_RLC2_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA1_RLC2_DOORBELL
 #define SDMA1_RLC2_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA1_RLC2_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA1_RLC2_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA1_RLC2_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA1_RLC2_STATUS
 #define SDMA1_RLC2_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA1_RLC2_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA1_RLC2_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA1_RLC2_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA1_RLC2_DOORBELL_LOG
 #define SDMA1_RLC2_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA1_RLC2_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA1_RLC2_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA1_RLC2_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA1_RLC2_WATERMARK
 #define SDMA1_RLC2_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA1_RLC2_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA1_RLC2_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA1_RLC2_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA1_RLC2_DOORBELL_OFFSET
 #define SDMA1_RLC2_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA1_RLC2_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA1_RLC2_CSA_ADDR_LO
 #define SDMA1_RLC2_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA1_RLC2_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA1_RLC2_CSA_ADDR_HI
 #define SDMA1_RLC2_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA1_RLC2_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA1_RLC2_IB_SUB_REMAIN
 #define SDMA1_RLC2_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA1_RLC2_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA1_RLC2_PREEMPT
 #define SDMA1_RLC2_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA1_RLC2_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA1_RLC2_DUMMY_REG
 #define SDMA1_RLC2_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA1_RLC2_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC2_RB_WPTR_POLL_ADDR_HI
 #define SDMA1_RLC2_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA1_RLC2_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA1_RLC2_RB_WPTR_POLL_ADDR_LO
 #define SDMA1_RLC2_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA1_RLC2_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA1_RLC2_RB_AQL_CNTL
 #define SDMA1_RLC2_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA1_RLC2_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA1_RLC2_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA1_RLC2_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA1_RLC2_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA1_RLC2_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA1_RLC2_MINOR_PTR_UPDATE
 #define SDMA1_RLC2_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA1_RLC2_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA1_RLC2_MIDCMD_DATA0
 #define SDMA1_RLC2_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA1_RLC2_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC2_MIDCMD_DATA1
 #define SDMA1_RLC2_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA1_RLC2_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC2_MIDCMD_DATA2
 #define SDMA1_RLC2_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA1_RLC2_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC2_MIDCMD_DATA3
 #define SDMA1_RLC2_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA1_RLC2_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC2_MIDCMD_DATA4
 #define SDMA1_RLC2_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA1_RLC2_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC2_MIDCMD_DATA5
 #define SDMA1_RLC2_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA1_RLC2_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC2_MIDCMD_DATA6
 #define SDMA1_RLC2_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA1_RLC2_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC2_MIDCMD_DATA7
 #define SDMA1_RLC2_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA1_RLC2_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC2_MIDCMD_DATA8
 #define SDMA1_RLC2_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA1_RLC2_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC2_MIDCMD_DATA9
 #define SDMA1_RLC2_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA1_RLC2_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC2_MIDCMD_DATA10
 #define SDMA1_RLC2_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA1_RLC2_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC2_MIDCMD_CNTL
 #define SDMA1_RLC2_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA1_RLC2_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA1_RLC2_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -4632,7 +3786,6 @@
 #define SDMA1_RLC2_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA1_RLC2_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA1_RLC2_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA1_RLC3_RB_CNTL
 #define SDMA1_RLC3_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC3_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA1_RLC3_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -4649,25 +3802,18 @@
 #define SDMA1_RLC3_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA1_RLC3_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA1_RLC3_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA1_RLC3_RB_BASE
 #define SDMA1_RLC3_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA1_RLC3_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA1_RLC3_RB_BASE_HI
 #define SDMA1_RLC3_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC3_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA1_RLC3_RB_RPTR
 #define SDMA1_RLC3_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC3_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC3_RB_RPTR_HI
 #define SDMA1_RLC3_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC3_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC3_RB_WPTR
 #define SDMA1_RLC3_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC3_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC3_RB_WPTR_HI
 #define SDMA1_RLC3_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC3_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC3_RB_WPTR_POLL_CNTL
 #define SDMA1_RLC3_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA1_RLC3_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA1_RLC3_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -4678,15 +3824,12 @@
 #define SDMA1_RLC3_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA1_RLC3_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA1_RLC3_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA1_RLC3_RB_RPTR_ADDR_HI
 #define SDMA1_RLC3_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA1_RLC3_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC3_RB_RPTR_ADDR_LO
 #define SDMA1_RLC3_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA1_RLC3_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA1_RLC3_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA1_RLC3_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA1_RLC3_IB_CNTL
 #define SDMA1_RLC3_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC3_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA1_RLC3_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -4695,25 +3838,18 @@
 #define SDMA1_RLC3_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA1_RLC3_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA1_RLC3_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA1_RLC3_IB_RPTR
 #define SDMA1_RLC3_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA1_RLC3_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA1_RLC3_IB_OFFSET
 #define SDMA1_RLC3_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA1_RLC3_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA1_RLC3_IB_BASE_LO
 #define SDMA1_RLC3_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA1_RLC3_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA1_RLC3_IB_BASE_HI
 #define SDMA1_RLC3_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC3_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC3_IB_SIZE
 #define SDMA1_RLC3_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA1_RLC3_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA1_RLC3_SKIP_CNTL
 #define SDMA1_RLC3_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA1_RLC3_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA1_RLC3_CONTEXT_STATUS
 #define SDMA1_RLC3_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA1_RLC3_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA1_RLC3_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -4730,94 +3866,68 @@
 #define SDMA1_RLC3_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA1_RLC3_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA1_RLC3_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA1_RLC3_DOORBELL
 #define SDMA1_RLC3_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA1_RLC3_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA1_RLC3_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA1_RLC3_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA1_RLC3_STATUS
 #define SDMA1_RLC3_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA1_RLC3_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA1_RLC3_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA1_RLC3_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA1_RLC3_DOORBELL_LOG
 #define SDMA1_RLC3_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA1_RLC3_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA1_RLC3_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA1_RLC3_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA1_RLC3_WATERMARK
 #define SDMA1_RLC3_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA1_RLC3_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA1_RLC3_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA1_RLC3_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA1_RLC3_DOORBELL_OFFSET
 #define SDMA1_RLC3_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA1_RLC3_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA1_RLC3_CSA_ADDR_LO
 #define SDMA1_RLC3_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA1_RLC3_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA1_RLC3_CSA_ADDR_HI
 #define SDMA1_RLC3_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA1_RLC3_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA1_RLC3_IB_SUB_REMAIN
 #define SDMA1_RLC3_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA1_RLC3_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA1_RLC3_PREEMPT
 #define SDMA1_RLC3_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA1_RLC3_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA1_RLC3_DUMMY_REG
 #define SDMA1_RLC3_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA1_RLC3_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC3_RB_WPTR_POLL_ADDR_HI
 #define SDMA1_RLC3_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA1_RLC3_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA1_RLC3_RB_WPTR_POLL_ADDR_LO
 #define SDMA1_RLC3_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA1_RLC3_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA1_RLC3_RB_AQL_CNTL
 #define SDMA1_RLC3_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA1_RLC3_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA1_RLC3_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA1_RLC3_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA1_RLC3_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA1_RLC3_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA1_RLC3_MINOR_PTR_UPDATE
 #define SDMA1_RLC3_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA1_RLC3_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA1_RLC3_MIDCMD_DATA0
 #define SDMA1_RLC3_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA1_RLC3_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC3_MIDCMD_DATA1
 #define SDMA1_RLC3_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA1_RLC3_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC3_MIDCMD_DATA2
 #define SDMA1_RLC3_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA1_RLC3_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC3_MIDCMD_DATA3
 #define SDMA1_RLC3_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA1_RLC3_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC3_MIDCMD_DATA4
 #define SDMA1_RLC3_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA1_RLC3_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC3_MIDCMD_DATA5
 #define SDMA1_RLC3_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA1_RLC3_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC3_MIDCMD_DATA6
 #define SDMA1_RLC3_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA1_RLC3_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC3_MIDCMD_DATA7
 #define SDMA1_RLC3_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA1_RLC3_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC3_MIDCMD_DATA8
 #define SDMA1_RLC3_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA1_RLC3_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC3_MIDCMD_DATA9
 #define SDMA1_RLC3_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA1_RLC3_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC3_MIDCMD_DATA10
 #define SDMA1_RLC3_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA1_RLC3_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC3_MIDCMD_CNTL
 #define SDMA1_RLC3_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA1_RLC3_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA1_RLC3_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -4826,7 +3936,6 @@
 #define SDMA1_RLC3_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA1_RLC3_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA1_RLC3_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA1_RLC4_RB_CNTL
 #define SDMA1_RLC4_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC4_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA1_RLC4_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -4843,25 +3952,18 @@
 #define SDMA1_RLC4_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA1_RLC4_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA1_RLC4_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA1_RLC4_RB_BASE
 #define SDMA1_RLC4_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA1_RLC4_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA1_RLC4_RB_BASE_HI
 #define SDMA1_RLC4_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC4_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA1_RLC4_RB_RPTR
 #define SDMA1_RLC4_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC4_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC4_RB_RPTR_HI
 #define SDMA1_RLC4_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC4_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC4_RB_WPTR
 #define SDMA1_RLC4_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC4_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC4_RB_WPTR_HI
 #define SDMA1_RLC4_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC4_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC4_RB_WPTR_POLL_CNTL
 #define SDMA1_RLC4_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA1_RLC4_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA1_RLC4_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -4872,15 +3974,12 @@
 #define SDMA1_RLC4_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA1_RLC4_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA1_RLC4_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA1_RLC4_RB_RPTR_ADDR_HI
 #define SDMA1_RLC4_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA1_RLC4_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC4_RB_RPTR_ADDR_LO
 #define SDMA1_RLC4_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA1_RLC4_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA1_RLC4_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA1_RLC4_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA1_RLC4_IB_CNTL
 #define SDMA1_RLC4_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC4_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA1_RLC4_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -4889,25 +3988,18 @@
 #define SDMA1_RLC4_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA1_RLC4_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA1_RLC4_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA1_RLC4_IB_RPTR
 #define SDMA1_RLC4_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA1_RLC4_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA1_RLC4_IB_OFFSET
 #define SDMA1_RLC4_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA1_RLC4_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA1_RLC4_IB_BASE_LO
 #define SDMA1_RLC4_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA1_RLC4_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA1_RLC4_IB_BASE_HI
 #define SDMA1_RLC4_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC4_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC4_IB_SIZE
 #define SDMA1_RLC4_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA1_RLC4_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA1_RLC4_SKIP_CNTL
 #define SDMA1_RLC4_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA1_RLC4_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA1_RLC4_CONTEXT_STATUS
 #define SDMA1_RLC4_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA1_RLC4_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA1_RLC4_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -4924,94 +4016,68 @@
 #define SDMA1_RLC4_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA1_RLC4_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA1_RLC4_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA1_RLC4_DOORBELL
 #define SDMA1_RLC4_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA1_RLC4_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA1_RLC4_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA1_RLC4_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA1_RLC4_STATUS
 #define SDMA1_RLC4_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA1_RLC4_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA1_RLC4_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA1_RLC4_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA1_RLC4_DOORBELL_LOG
 #define SDMA1_RLC4_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA1_RLC4_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA1_RLC4_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA1_RLC4_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA1_RLC4_WATERMARK
 #define SDMA1_RLC4_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA1_RLC4_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA1_RLC4_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA1_RLC4_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA1_RLC4_DOORBELL_OFFSET
 #define SDMA1_RLC4_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA1_RLC4_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA1_RLC4_CSA_ADDR_LO
 #define SDMA1_RLC4_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA1_RLC4_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA1_RLC4_CSA_ADDR_HI
 #define SDMA1_RLC4_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA1_RLC4_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA1_RLC4_IB_SUB_REMAIN
 #define SDMA1_RLC4_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA1_RLC4_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA1_RLC4_PREEMPT
 #define SDMA1_RLC4_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA1_RLC4_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA1_RLC4_DUMMY_REG
 #define SDMA1_RLC4_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA1_RLC4_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC4_RB_WPTR_POLL_ADDR_HI
 #define SDMA1_RLC4_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA1_RLC4_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA1_RLC4_RB_WPTR_POLL_ADDR_LO
 #define SDMA1_RLC4_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA1_RLC4_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA1_RLC4_RB_AQL_CNTL
 #define SDMA1_RLC4_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA1_RLC4_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA1_RLC4_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA1_RLC4_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA1_RLC4_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA1_RLC4_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA1_RLC4_MINOR_PTR_UPDATE
 #define SDMA1_RLC4_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA1_RLC4_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA1_RLC4_MIDCMD_DATA0
 #define SDMA1_RLC4_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA1_RLC4_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC4_MIDCMD_DATA1
 #define SDMA1_RLC4_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA1_RLC4_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC4_MIDCMD_DATA2
 #define SDMA1_RLC4_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA1_RLC4_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC4_MIDCMD_DATA3
 #define SDMA1_RLC4_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA1_RLC4_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC4_MIDCMD_DATA4
 #define SDMA1_RLC4_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA1_RLC4_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC4_MIDCMD_DATA5
 #define SDMA1_RLC4_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA1_RLC4_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC4_MIDCMD_DATA6
 #define SDMA1_RLC4_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA1_RLC4_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC4_MIDCMD_DATA7
 #define SDMA1_RLC4_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA1_RLC4_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC4_MIDCMD_DATA8
 #define SDMA1_RLC4_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA1_RLC4_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC4_MIDCMD_DATA9
 #define SDMA1_RLC4_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA1_RLC4_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC4_MIDCMD_DATA10
 #define SDMA1_RLC4_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA1_RLC4_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC4_MIDCMD_CNTL
 #define SDMA1_RLC4_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA1_RLC4_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA1_RLC4_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -5020,7 +4086,6 @@
 #define SDMA1_RLC4_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA1_RLC4_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA1_RLC4_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA1_RLC5_RB_CNTL
 #define SDMA1_RLC5_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC5_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA1_RLC5_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -5037,25 +4102,18 @@
 #define SDMA1_RLC5_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA1_RLC5_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA1_RLC5_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA1_RLC5_RB_BASE
 #define SDMA1_RLC5_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA1_RLC5_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA1_RLC5_RB_BASE_HI
 #define SDMA1_RLC5_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC5_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA1_RLC5_RB_RPTR
 #define SDMA1_RLC5_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC5_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC5_RB_RPTR_HI
 #define SDMA1_RLC5_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC5_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC5_RB_WPTR
 #define SDMA1_RLC5_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC5_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC5_RB_WPTR_HI
 #define SDMA1_RLC5_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC5_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC5_RB_WPTR_POLL_CNTL
 #define SDMA1_RLC5_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA1_RLC5_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA1_RLC5_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -5066,15 +4124,12 @@
 #define SDMA1_RLC5_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA1_RLC5_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA1_RLC5_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA1_RLC5_RB_RPTR_ADDR_HI
 #define SDMA1_RLC5_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA1_RLC5_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC5_RB_RPTR_ADDR_LO
 #define SDMA1_RLC5_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA1_RLC5_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA1_RLC5_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA1_RLC5_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA1_RLC5_IB_CNTL
 #define SDMA1_RLC5_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC5_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA1_RLC5_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -5083,25 +4138,18 @@
 #define SDMA1_RLC5_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA1_RLC5_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA1_RLC5_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA1_RLC5_IB_RPTR
 #define SDMA1_RLC5_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA1_RLC5_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA1_RLC5_IB_OFFSET
 #define SDMA1_RLC5_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA1_RLC5_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA1_RLC5_IB_BASE_LO
 #define SDMA1_RLC5_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA1_RLC5_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA1_RLC5_IB_BASE_HI
 #define SDMA1_RLC5_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC5_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC5_IB_SIZE
 #define SDMA1_RLC5_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA1_RLC5_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA1_RLC5_SKIP_CNTL
 #define SDMA1_RLC5_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA1_RLC5_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA1_RLC5_CONTEXT_STATUS
 #define SDMA1_RLC5_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA1_RLC5_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA1_RLC5_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -5118,94 +4166,68 @@
 #define SDMA1_RLC5_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA1_RLC5_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA1_RLC5_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA1_RLC5_DOORBELL
 #define SDMA1_RLC5_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA1_RLC5_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA1_RLC5_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA1_RLC5_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA1_RLC5_STATUS
 #define SDMA1_RLC5_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA1_RLC5_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA1_RLC5_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA1_RLC5_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA1_RLC5_DOORBELL_LOG
 #define SDMA1_RLC5_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA1_RLC5_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA1_RLC5_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA1_RLC5_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA1_RLC5_WATERMARK
 #define SDMA1_RLC5_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA1_RLC5_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA1_RLC5_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA1_RLC5_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA1_RLC5_DOORBELL_OFFSET
 #define SDMA1_RLC5_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA1_RLC5_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA1_RLC5_CSA_ADDR_LO
 #define SDMA1_RLC5_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA1_RLC5_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA1_RLC5_CSA_ADDR_HI
 #define SDMA1_RLC5_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA1_RLC5_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA1_RLC5_IB_SUB_REMAIN
 #define SDMA1_RLC5_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA1_RLC5_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA1_RLC5_PREEMPT
 #define SDMA1_RLC5_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA1_RLC5_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA1_RLC5_DUMMY_REG
 #define SDMA1_RLC5_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA1_RLC5_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC5_RB_WPTR_POLL_ADDR_HI
 #define SDMA1_RLC5_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA1_RLC5_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA1_RLC5_RB_WPTR_POLL_ADDR_LO
 #define SDMA1_RLC5_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA1_RLC5_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA1_RLC5_RB_AQL_CNTL
 #define SDMA1_RLC5_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA1_RLC5_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA1_RLC5_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA1_RLC5_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA1_RLC5_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA1_RLC5_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA1_RLC5_MINOR_PTR_UPDATE
 #define SDMA1_RLC5_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA1_RLC5_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA1_RLC5_MIDCMD_DATA0
 #define SDMA1_RLC5_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA1_RLC5_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC5_MIDCMD_DATA1
 #define SDMA1_RLC5_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA1_RLC5_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC5_MIDCMD_DATA2
 #define SDMA1_RLC5_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA1_RLC5_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC5_MIDCMD_DATA3
 #define SDMA1_RLC5_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA1_RLC5_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC5_MIDCMD_DATA4
 #define SDMA1_RLC5_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA1_RLC5_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC5_MIDCMD_DATA5
 #define SDMA1_RLC5_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA1_RLC5_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC5_MIDCMD_DATA6
 #define SDMA1_RLC5_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA1_RLC5_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC5_MIDCMD_DATA7
 #define SDMA1_RLC5_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA1_RLC5_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC5_MIDCMD_DATA8
 #define SDMA1_RLC5_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA1_RLC5_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC5_MIDCMD_DATA9
 #define SDMA1_RLC5_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA1_RLC5_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC5_MIDCMD_DATA10
 #define SDMA1_RLC5_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA1_RLC5_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC5_MIDCMD_CNTL
 #define SDMA1_RLC5_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA1_RLC5_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA1_RLC5_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -5214,7 +4236,6 @@
 #define SDMA1_RLC5_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA1_RLC5_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA1_RLC5_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA1_RLC6_RB_CNTL
 #define SDMA1_RLC6_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC6_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA1_RLC6_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -5231,25 +4252,18 @@
 #define SDMA1_RLC6_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA1_RLC6_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA1_RLC6_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA1_RLC6_RB_BASE
 #define SDMA1_RLC6_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA1_RLC6_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA1_RLC6_RB_BASE_HI
 #define SDMA1_RLC6_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC6_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA1_RLC6_RB_RPTR
 #define SDMA1_RLC6_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC6_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC6_RB_RPTR_HI
 #define SDMA1_RLC6_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC6_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC6_RB_WPTR
 #define SDMA1_RLC6_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC6_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC6_RB_WPTR_HI
 #define SDMA1_RLC6_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC6_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC6_RB_WPTR_POLL_CNTL
 #define SDMA1_RLC6_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA1_RLC6_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA1_RLC6_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -5260,15 +4274,12 @@
 #define SDMA1_RLC6_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA1_RLC6_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA1_RLC6_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA1_RLC6_RB_RPTR_ADDR_HI
 #define SDMA1_RLC6_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA1_RLC6_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC6_RB_RPTR_ADDR_LO
 #define SDMA1_RLC6_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA1_RLC6_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA1_RLC6_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA1_RLC6_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA1_RLC6_IB_CNTL
 #define SDMA1_RLC6_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC6_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA1_RLC6_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -5277,25 +4288,18 @@
 #define SDMA1_RLC6_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA1_RLC6_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA1_RLC6_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA1_RLC6_IB_RPTR
 #define SDMA1_RLC6_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA1_RLC6_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA1_RLC6_IB_OFFSET
 #define SDMA1_RLC6_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA1_RLC6_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA1_RLC6_IB_BASE_LO
 #define SDMA1_RLC6_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA1_RLC6_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA1_RLC6_IB_BASE_HI
 #define SDMA1_RLC6_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC6_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC6_IB_SIZE
 #define SDMA1_RLC6_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA1_RLC6_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA1_RLC6_SKIP_CNTL
 #define SDMA1_RLC6_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA1_RLC6_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA1_RLC6_CONTEXT_STATUS
 #define SDMA1_RLC6_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA1_RLC6_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA1_RLC6_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -5312,94 +4316,68 @@
 #define SDMA1_RLC6_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA1_RLC6_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA1_RLC6_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA1_RLC6_DOORBELL
 #define SDMA1_RLC6_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA1_RLC6_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA1_RLC6_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA1_RLC6_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA1_RLC6_STATUS
 #define SDMA1_RLC6_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA1_RLC6_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA1_RLC6_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA1_RLC6_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA1_RLC6_DOORBELL_LOG
 #define SDMA1_RLC6_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA1_RLC6_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA1_RLC6_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA1_RLC6_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA1_RLC6_WATERMARK
 #define SDMA1_RLC6_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA1_RLC6_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA1_RLC6_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA1_RLC6_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA1_RLC6_DOORBELL_OFFSET
 #define SDMA1_RLC6_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA1_RLC6_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA1_RLC6_CSA_ADDR_LO
 #define SDMA1_RLC6_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA1_RLC6_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA1_RLC6_CSA_ADDR_HI
 #define SDMA1_RLC6_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA1_RLC6_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA1_RLC6_IB_SUB_REMAIN
 #define SDMA1_RLC6_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA1_RLC6_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA1_RLC6_PREEMPT
 #define SDMA1_RLC6_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA1_RLC6_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA1_RLC6_DUMMY_REG
 #define SDMA1_RLC6_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA1_RLC6_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC6_RB_WPTR_POLL_ADDR_HI
 #define SDMA1_RLC6_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA1_RLC6_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA1_RLC6_RB_WPTR_POLL_ADDR_LO
 #define SDMA1_RLC6_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA1_RLC6_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA1_RLC6_RB_AQL_CNTL
 #define SDMA1_RLC6_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA1_RLC6_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA1_RLC6_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA1_RLC6_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA1_RLC6_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA1_RLC6_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA1_RLC6_MINOR_PTR_UPDATE
 #define SDMA1_RLC6_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA1_RLC6_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA1_RLC6_MIDCMD_DATA0
 #define SDMA1_RLC6_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA1_RLC6_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC6_MIDCMD_DATA1
 #define SDMA1_RLC6_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA1_RLC6_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC6_MIDCMD_DATA2
 #define SDMA1_RLC6_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA1_RLC6_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC6_MIDCMD_DATA3
 #define SDMA1_RLC6_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA1_RLC6_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC6_MIDCMD_DATA4
 #define SDMA1_RLC6_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA1_RLC6_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC6_MIDCMD_DATA5
 #define SDMA1_RLC6_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA1_RLC6_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC6_MIDCMD_DATA6
 #define SDMA1_RLC6_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA1_RLC6_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC6_MIDCMD_DATA7
 #define SDMA1_RLC6_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA1_RLC6_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC6_MIDCMD_DATA8
 #define SDMA1_RLC6_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA1_RLC6_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC6_MIDCMD_DATA9
 #define SDMA1_RLC6_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA1_RLC6_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC6_MIDCMD_DATA10
 #define SDMA1_RLC6_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA1_RLC6_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC6_MIDCMD_CNTL
 #define SDMA1_RLC6_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA1_RLC6_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA1_RLC6_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -5408,7 +4386,6 @@
 #define SDMA1_RLC6_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA1_RLC6_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA1_RLC6_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA1_RLC7_RB_CNTL
 #define SDMA1_RLC7_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC7_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA1_RLC7_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -5425,25 +4402,18 @@
 #define SDMA1_RLC7_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA1_RLC7_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA1_RLC7_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA1_RLC7_RB_BASE
 #define SDMA1_RLC7_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA1_RLC7_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA1_RLC7_RB_BASE_HI
 #define SDMA1_RLC7_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC7_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA1_RLC7_RB_RPTR
 #define SDMA1_RLC7_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC7_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC7_RB_RPTR_HI
 #define SDMA1_RLC7_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC7_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC7_RB_WPTR
 #define SDMA1_RLC7_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA1_RLC7_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA1_RLC7_RB_WPTR_HI
 #define SDMA1_RLC7_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA1_RLC7_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA1_RLC7_RB_WPTR_POLL_CNTL
 #define SDMA1_RLC7_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA1_RLC7_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA1_RLC7_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -5454,15 +4424,12 @@
 #define SDMA1_RLC7_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA1_RLC7_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA1_RLC7_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA1_RLC7_RB_RPTR_ADDR_HI
 #define SDMA1_RLC7_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA1_RLC7_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC7_RB_RPTR_ADDR_LO
 #define SDMA1_RLC7_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA1_RLC7_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA1_RLC7_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA1_RLC7_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA1_RLC7_IB_CNTL
 #define SDMA1_RLC7_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA1_RLC7_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA1_RLC7_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -5471,25 +4438,18 @@
 #define SDMA1_RLC7_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA1_RLC7_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA1_RLC7_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA1_RLC7_IB_RPTR
 #define SDMA1_RLC7_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA1_RLC7_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA1_RLC7_IB_OFFSET
 #define SDMA1_RLC7_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA1_RLC7_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA1_RLC7_IB_BASE_LO
 #define SDMA1_RLC7_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA1_RLC7_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA1_RLC7_IB_BASE_HI
 #define SDMA1_RLC7_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA1_RLC7_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC7_IB_SIZE
 #define SDMA1_RLC7_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA1_RLC7_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA1_RLC7_SKIP_CNTL
 #define SDMA1_RLC7_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA1_RLC7_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA1_RLC7_CONTEXT_STATUS
 #define SDMA1_RLC7_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA1_RLC7_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA1_RLC7_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -5506,94 +4466,68 @@
 #define SDMA1_RLC7_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA1_RLC7_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA1_RLC7_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA1_RLC7_DOORBELL
 #define SDMA1_RLC7_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA1_RLC7_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA1_RLC7_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA1_RLC7_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA1_RLC7_STATUS
 #define SDMA1_RLC7_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA1_RLC7_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA1_RLC7_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA1_RLC7_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA1_RLC7_DOORBELL_LOG
 #define SDMA1_RLC7_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA1_RLC7_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA1_RLC7_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA1_RLC7_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA1_RLC7_WATERMARK
 #define SDMA1_RLC7_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA1_RLC7_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA1_RLC7_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA1_RLC7_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA1_RLC7_DOORBELL_OFFSET
 #define SDMA1_RLC7_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA1_RLC7_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA1_RLC7_CSA_ADDR_LO
 #define SDMA1_RLC7_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA1_RLC7_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA1_RLC7_CSA_ADDR_HI
 #define SDMA1_RLC7_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA1_RLC7_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA1_RLC7_IB_SUB_REMAIN
 #define SDMA1_RLC7_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA1_RLC7_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA1_RLC7_PREEMPT
 #define SDMA1_RLC7_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA1_RLC7_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA1_RLC7_DUMMY_REG
 #define SDMA1_RLC7_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA1_RLC7_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA1_RLC7_RB_WPTR_POLL_ADDR_HI
 #define SDMA1_RLC7_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA1_RLC7_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA1_RLC7_RB_WPTR_POLL_ADDR_LO
 #define SDMA1_RLC7_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA1_RLC7_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA1_RLC7_RB_AQL_CNTL
 #define SDMA1_RLC7_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA1_RLC7_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA1_RLC7_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA1_RLC7_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA1_RLC7_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA1_RLC7_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA1_RLC7_MINOR_PTR_UPDATE
 #define SDMA1_RLC7_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA1_RLC7_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA1_RLC7_MIDCMD_DATA0
 #define SDMA1_RLC7_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA1_RLC7_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC7_MIDCMD_DATA1
 #define SDMA1_RLC7_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA1_RLC7_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC7_MIDCMD_DATA2
 #define SDMA1_RLC7_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA1_RLC7_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC7_MIDCMD_DATA3
 #define SDMA1_RLC7_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA1_RLC7_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC7_MIDCMD_DATA4
 #define SDMA1_RLC7_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA1_RLC7_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC7_MIDCMD_DATA5
 #define SDMA1_RLC7_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA1_RLC7_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC7_MIDCMD_DATA6
 #define SDMA1_RLC7_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA1_RLC7_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC7_MIDCMD_DATA7
 #define SDMA1_RLC7_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA1_RLC7_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC7_MIDCMD_DATA8
 #define SDMA1_RLC7_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA1_RLC7_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC7_MIDCMD_DATA9
 #define SDMA1_RLC7_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA1_RLC7_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA1_RLC7_MIDCMD_DATA10
 #define SDMA1_RLC7_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA1_RLC7_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA1_RLC7_MIDCMD_CNTL
 #define SDMA1_RLC7_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA1_RLC7_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA1_RLC7_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -5602,26 +4536,18 @@
 #define SDMA1_RLC7_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA1_RLC7_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA1_RLC7_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-
-
-// addressBlock: sdma0_sdma2dec
-//SDMA2_UCODE_ADDR
 #define SDMA2_UCODE_ADDR__VALUE__SHIFT                                                                        0x0
 #define SDMA2_UCODE_ADDR__VALUE_MASK                                                                          0x00003FFFL
-//SDMA2_UCODE_DATA
 #define SDMA2_UCODE_DATA__VALUE__SHIFT                                                                        0x0
 #define SDMA2_UCODE_DATA__VALUE_MASK                                                                          0xFFFFFFFFL
-//SDMA2_VF_ENABLE
 #define SDMA2_VF_ENABLE__VF_ENABLE__SHIFT                                                                     0x0
 #define SDMA2_VF_ENABLE__VF_ENABLE_MASK                                                                       0x00000001L
 #define SDMA2_PUB_REG_TYPE0__SDMA2_UCODE_ADDR__SHIFT                                                          0x0
 #define SDMA2_PUB_REG_TYPE0__SDMA2_UCODE_DATA__SHIFT                                                          0x1
 #define SDMA2_PUB_REG_TYPE0__SDMA2_UCODE_ADDR_MASK                                                            0x00000001L
 #define SDMA2_PUB_REG_TYPE0__SDMA2_UCODE_DATA_MASK                                                            0x00000002L
-//SDMA2_CONTEXT_GROUP_BOUNDARY
 #define SDMA2_CONTEXT_GROUP_BOUNDARY__RESERVED__SHIFT                                                         0x0
 #define SDMA2_CONTEXT_GROUP_BOUNDARY__RESERVED_MASK                                                           0xFFFFFFFFL
-//SDMA2_POWER_CNTL
 #define SDMA2_POWER_CNTL__PG_CNTL_ENABLE__SHIFT                                                               0x0
 #define SDMA2_POWER_CNTL__EXT_PG_POWER_ON_REQ__SHIFT                                                          0x1
 #define SDMA2_POWER_CNTL__EXT_PG_POWER_OFF_REQ__SHIFT                                                         0x2
@@ -5642,7 +4568,6 @@
 #define SDMA2_POWER_CNTL__MEM_POWER_SD_EN_MASK                                                                0x00000800L
 #define SDMA2_POWER_CNTL__MEM_POWER_DELAY_MASK                                                                0x003FF000L
 #define SDMA2_POWER_CNTL__ON_OFF_STATUS_DURATION_TIME_MASK                                                    0xFC000000L
-//SDMA2_CLK_CTRL
 #define SDMA2_CLK_CTRL__ON_DELAY__SHIFT                                                                       0x0
 #define SDMA2_CLK_CTRL__OFF_HYSTERESIS__SHIFT                                                                 0x4
 #define SDMA2_CLK_CTRL__RESERVED__SHIFT                                                                       0xc
@@ -5665,7 +4590,6 @@
 #define SDMA2_CLK_CTRL__SOFT_OVERRIDE2_MASK                                                                   0x20000000L
 #define SDMA2_CLK_CTRL__SOFT_OVERRIDE1_MASK                                                                   0x40000000L
 #define SDMA2_CLK_CTRL__SOFT_OVERRIDE0_MASK                                                                   0x80000000L
-//SDMA2_CNTL
 #define SDMA2_CNTL__TRAP_ENABLE__SHIFT                                                                        0x0
 #define SDMA2_CNTL__UTC_L1_ENABLE__SHIFT                                                                      0x1
 #define SDMA2_CNTL__SEM_WAIT_INT_ENABLE__SHIFT                                                                0x2
@@ -5690,7 +4614,6 @@
 #define SDMA2_CNTL__CTXEMPTY_INT_ENABLE_MASK                                                                  0x10000000L
 #define SDMA2_CNTL__FROZEN_INT_ENABLE_MASK                                                                    0x20000000L
 #define SDMA2_CNTL__IB_PREEMPT_INT_ENABLE_MASK                                                                0x40000000L
-//SDMA2_CHICKEN_BITS
 #define SDMA2_CHICKEN_BITS__COPY_EFFICIENCY_ENABLE__SHIFT                                                     0x0
 #define SDMA2_CHICKEN_BITS__STALL_ON_TRANS_FULL_ENABLE__SHIFT                                                 0x1
 #define SDMA2_CHICKEN_BITS__STALL_ON_NO_FREE_DATA_BUFFER_ENABLE__SHIFT                                        0x2
@@ -5715,7 +4638,6 @@
 #define SDMA2_CHICKEN_BITS__TIME_BASED_QOS_MASK                                                               0x02000000L
 #define SDMA2_CHICKEN_BITS__SRAM_FGCG_ENABLE_MASK                                                             0x04000000L
 #define SDMA2_CHICKEN_BITS__RESERVED_MASK                                                                     0xF8000000L
-//SDMA2_GB_ADDR_CONFIG
 #define SDMA2_GB_ADDR_CONFIG__NUM_PIPES__SHIFT                                                                0x0
 #define SDMA2_GB_ADDR_CONFIG__PIPE_INTERLEAVE_SIZE__SHIFT                                                     0x3
 #define SDMA2_GB_ADDR_CONFIG__BANK_INTERLEAVE_SIZE__SHIFT                                                     0x8
@@ -5726,7 +4648,6 @@
 #define SDMA2_GB_ADDR_CONFIG__BANK_INTERLEAVE_SIZE_MASK                                                       0x00000700L
 #define SDMA2_GB_ADDR_CONFIG__NUM_BANKS_MASK                                                                  0x00007000L
 #define SDMA2_GB_ADDR_CONFIG__NUM_SHADER_ENGINES_MASK                                                         0x00180000L
-//SDMA2_GB_ADDR_CONFIG_READ
 #define SDMA2_GB_ADDR_CONFIG_READ__NUM_PIPES__SHIFT                                                           0x0
 #define SDMA2_GB_ADDR_CONFIG_READ__PIPE_INTERLEAVE_SIZE__SHIFT                                                0x3
 #define SDMA2_GB_ADDR_CONFIG_READ__BANK_INTERLEAVE_SIZE__SHIFT                                                0x8
@@ -5737,22 +4658,16 @@
 #define SDMA2_GB_ADDR_CONFIG_READ__BANK_INTERLEAVE_SIZE_MASK                                                  0x00000700L
 #define SDMA2_GB_ADDR_CONFIG_READ__NUM_BANKS_MASK                                                             0x00007000L
 #define SDMA2_GB_ADDR_CONFIG_READ__NUM_SHADER_ENGINES_MASK                                                    0x00180000L
-//SDMA2_RB_RPTR_FETCH_HI
 #define SDMA2_RB_RPTR_FETCH_HI__OFFSET__SHIFT                                                                 0x0
 #define SDMA2_RB_RPTR_FETCH_HI__OFFSET_MASK                                                                   0xFFFFFFFFL
-//SDMA2_SEM_WAIT_FAIL_TIMER_CNTL
 #define SDMA2_SEM_WAIT_FAIL_TIMER_CNTL__TIMER__SHIFT                                                          0x0
 #define SDMA2_SEM_WAIT_FAIL_TIMER_CNTL__TIMER_MASK                                                            0xFFFFFFFFL
-//SDMA2_RB_RPTR_FETCH
 #define SDMA2_RB_RPTR_FETCH__OFFSET__SHIFT                                                                    0x2
 #define SDMA2_RB_RPTR_FETCH__OFFSET_MASK                                                                      0xFFFFFFFCL
-//SDMA2_IB_OFFSET_FETCH
 #define SDMA2_IB_OFFSET_FETCH__OFFSET__SHIFT                                                                  0x2
 #define SDMA2_IB_OFFSET_FETCH__OFFSET_MASK                                                                    0x003FFFFCL
-//SDMA2_PROGRAM
 #define SDMA2_PROGRAM__STREAM__SHIFT                                                                          0x0
 #define SDMA2_PROGRAM__STREAM_MASK                                                                            0xFFFFFFFFL
-//SDMA2_STATUS_REG
 #define SDMA2_STATUS_REG__IDLE__SHIFT                                                                         0x0
 #define SDMA2_STATUS_REG__REG_IDLE__SHIFT                                                                     0x1
 #define SDMA2_STATUS_REG__RB_EMPTY__SHIFT                                                                     0x2
@@ -5811,7 +4726,6 @@
 #define SDMA2_STATUS_REG__SEM_RESP_STATE_MASK                                                                 0x30000000L
 #define SDMA2_STATUS_REG__INT_IDLE_MASK                                                                       0x40000000L
 #define SDMA2_STATUS_REG__INT_REQ_STALL_MASK                                                                  0x80000000L
-//SDMA2_STATUS1_REG
 #define SDMA2_STATUS1_REG__CE_WREQ_IDLE__SHIFT                                                                0x0
 #define SDMA2_STATUS1_REG__CE_WR_IDLE__SHIFT                                                                  0x1
 #define SDMA2_STATUS1_REG__CE_SPLIT_IDLE__SHIFT                                                               0x2
@@ -5840,25 +4754,20 @@
 #define SDMA2_STATUS1_REG__EX_START_MASK                                                                      0x00008000L
 #define SDMA2_STATUS1_REG__CE_RD_STALL_MASK                                                                   0x00020000L
 #define SDMA2_STATUS1_REG__CE_WR_STALL_MASK                                                                   0x00040000L
-//SDMA2_RD_BURST_CNTL
 #define SDMA2_RD_BURST_CNTL__RD_BURST__SHIFT                                                                  0x0
 #define SDMA2_RD_BURST_CNTL__CMD_BUFFER_RD_BURST__SHIFT                                                       0x2
 #define SDMA2_RD_BURST_CNTL__RD_BURST_MASK                                                                    0x00000003L
 #define SDMA2_RD_BURST_CNTL__CMD_BUFFER_RD_BURST_MASK                                                         0x0000000CL
-//SDMA2_HBM_PAGE_CONFIG
 #define SDMA2_HBM_PAGE_CONFIG__PAGE_SIZE_EXPONENT__SHIFT                                                      0x0
 #define SDMA2_HBM_PAGE_CONFIG__PAGE_SIZE_EXPONENT_MASK                                                        0x00000003L
-//SDMA2_UCODE_CHECKSUM
 #define SDMA2_UCODE_CHECKSUM__DATA__SHIFT                                                                     0x0
 #define SDMA2_UCODE_CHECKSUM__DATA_MASK                                                                       0xFFFFFFFFL
-//SDMA2_F32_CNTL
 #define SDMA2_F32_CNTL__HALT__SHIFT                                                                           0x0
 #define SDMA2_F32_CNTL__STEP__SHIFT                                                                           0x1
 #define SDMA2_F32_CNTL__RESET__SHIFT                                                                          0x8
 #define SDMA2_F32_CNTL__HALT_MASK                                                                             0x00000001L
 #define SDMA2_F32_CNTL__STEP_MASK                                                                             0x00000002L
 #define SDMA2_F32_CNTL__RESET_MASK                                                                            0x00000100L
-//SDMA2_FREEZE
 #define SDMA2_FREEZE__PREEMPT__SHIFT                                                                          0x0
 #define SDMA2_FREEZE__FREEZE__SHIFT                                                                           0x4
 #define SDMA2_FREEZE__FROZEN__SHIFT                                                                           0x5
@@ -5867,39 +4776,32 @@
 #define SDMA2_FREEZE__FREEZE_MASK                                                                             0x00000010L
 #define SDMA2_FREEZE__FROZEN_MASK                                                                             0x00000020L
 #define SDMA2_FREEZE__F32_FREEZE_MASK                                                                         0x00000040L
-//SDMA2_PHASE0_QUANTUM
 #define SDMA2_PHASE0_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA2_PHASE0_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA2_PHASE0_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA2_PHASE0_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA2_PHASE0_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA2_PHASE0_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//SDMA2_PHASE1_QUANTUM
 #define SDMA2_PHASE1_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA2_PHASE1_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA2_PHASE1_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA2_PHASE1_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA2_PHASE1_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA2_PHASE1_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//CC_SDMA2_EDC_CONFIG
 #define CC_SDMA2_EDC_CONFIG__DIS_EDC__SHIFT                                                                   0x1
 #define CC_SDMA2_EDC_CONFIG__DIS_EDC_MASK                                                                     0x00000002L
-//SDMA2_BA_THRESHOLD
 #define SDMA2_BA_THRESHOLD__READ_THRES__SHIFT                                                                 0x0
 #define SDMA2_BA_THRESHOLD__WRITE_THRES__SHIFT                                                                0x10
 #define SDMA2_BA_THRESHOLD__READ_THRES_MASK                                                                   0x000003FFL
 #define SDMA2_BA_THRESHOLD__WRITE_THRES_MASK                                                                  0x03FF0000L
-//SDMA2_ID
 #define SDMA2_ID__DEVICE_ID__SHIFT                                                                            0x0
 #define SDMA2_ID__DEVICE_ID_MASK                                                                              0x000000FFL
-//SDMA2_VERSION
 #define SDMA2_VERSION__MINVER__SHIFT                                                                          0x0
 #define SDMA2_VERSION__MAJVER__SHIFT                                                                          0x8
 #define SDMA2_VERSION__REV__SHIFT                                                                             0x10
 #define SDMA2_VERSION__MINVER_MASK                                                                            0x0000007FL
 #define SDMA2_VERSION__MAJVER_MASK                                                                            0x00007F00L
 #define SDMA2_VERSION__REV_MASK                                                                               0x003F0000L
-//SDMA2_EDC_COUNTER
 #define SDMA2_EDC_COUNTER__SDMA_MBANK_DATA_BUF0_SED__SHIFT                                                    0x0
 #define SDMA2_EDC_COUNTER__SDMA_MBANK_DATA_BUF1_SED__SHIFT                                                    0x2
 #define SDMA2_EDC_COUNTER__SDMA_MBANK_DATA_BUF2_SED__SHIFT                                                    0x4
@@ -5932,7 +4834,6 @@
 #define SDMA2_EDC_COUNTER__SDMA_MBANK_DATA_BUF13_SED_MASK                                                     0x0C000000L
 #define SDMA2_EDC_COUNTER__SDMA_MBANK_DATA_BUF14_SED_MASK                                                     0x30000000L
 #define SDMA2_EDC_COUNTER__SDMA_MBANK_DATA_BUF15_SED_MASK                                                     0xC0000000L
-//SDMA2_EDC_COUNTER2
 #define SDMA2_EDC_COUNTER2__SDMA_UCODE_BUF_SED__SHIFT                                                         0x0
 #define SDMA2_EDC_COUNTER2__SDMA_RB_CMD_BUF_SED__SHIFT                                                        0x2
 #define SDMA2_EDC_COUNTER2__SDMA_IB_CMD_BUF_SED__SHIFT                                                        0x4
@@ -5953,25 +4854,20 @@
 #define SDMA2_EDC_COUNTER2__SDMA_SPLIT_DATA_BUF_SED_MASK                                                      0x0000C000L
 #define SDMA2_EDC_COUNTER2__SDMA_MC_WR_ADDR_FIFO_SED_MASK                                                     0x00030000L
 #define SDMA2_EDC_COUNTER2__SDMA_MC_RDRET_BUF_SED_MASK                                                        0x000C0000L
-//SDMA2_STATUS2_REG
 #define SDMA2_STATUS2_REG__ID__SHIFT                                                                          0x0
 #define SDMA2_STATUS2_REG__F32_INSTR_PTR__SHIFT                                                               0x3
 #define SDMA2_STATUS2_REG__CMD_OP__SHIFT                                                                      0x10
 #define SDMA2_STATUS2_REG__ID_MASK                                                                            0x00000007L
 #define SDMA2_STATUS2_REG__F32_INSTR_PTR_MASK                                                                 0x0000FFF8L
 #define SDMA2_STATUS2_REG__CMD_OP_MASK                                                                        0xFFFF0000L
-//SDMA2_ATOMIC_CNTL
 #define SDMA2_ATOMIC_CNTL__LOOP_TIMER__SHIFT                                                                  0x0
 #define SDMA2_ATOMIC_CNTL__ATOMIC_RTN_INT_ENABLE__SHIFT                                                       0x1f
 #define SDMA2_ATOMIC_CNTL__LOOP_TIMER_MASK                                                                    0x7FFFFFFFL
 #define SDMA2_ATOMIC_CNTL__ATOMIC_RTN_INT_ENABLE_MASK                                                         0x80000000L
-//SDMA2_ATOMIC_PREOP_LO
 #define SDMA2_ATOMIC_PREOP_LO__DATA__SHIFT                                                                    0x0
 #define SDMA2_ATOMIC_PREOP_LO__DATA_MASK                                                                      0xFFFFFFFFL
-//SDMA2_ATOMIC_PREOP_HI
 #define SDMA2_ATOMIC_PREOP_HI__DATA__SHIFT                                                                    0x0
 #define SDMA2_ATOMIC_PREOP_HI__DATA_MASK                                                                      0xFFFFFFFFL
-//SDMA2_UTCL1_CNTL
 #define SDMA2_UTCL1_CNTL__REDO_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_UTCL1_CNTL__REDO_DELAY__SHIFT                                                                   0x1
 #define SDMA2_UTCL1_CNTL__REDO_WATERMK__SHIFT                                                                 0xb
@@ -5984,7 +4880,6 @@
 #define SDMA2_UTCL1_CNTL__INVACK_DELAY_MASK                                                                   0x00FFC000L
 #define SDMA2_UTCL1_CNTL__REQL2_CREDIT_MASK                                                                   0x1F000000L
 #define SDMA2_UTCL1_CNTL__VADDR_WATERMK_MASK                                                                  0xE0000000L
-//SDMA2_UTCL1_WATERMK
 #define SDMA2_UTCL1_WATERMK__REQ_WATERMK__SHIFT                                                               0x0
 #define SDMA2_UTCL1_WATERMK__REQ_DEPTH__SHIFT                                                                 0x3
 #define SDMA2_UTCL1_WATERMK__PAGE_WATERMK__SHIFT                                                              0x5
@@ -5995,7 +4890,6 @@
 #define SDMA2_UTCL1_WATERMK__PAGE_WATERMK_MASK                                                                0x000000E0L
 #define SDMA2_UTCL1_WATERMK__INVREQ_WATERMK_MASK                                                              0x0000FF00L
 #define SDMA2_UTCL1_WATERMK__RESERVED_MASK                                                                    0xFFFF0000L
-//SDMA2_UTCL1_RD_STATUS
 #define SDMA2_UTCL1_RD_STATUS__RQMC_RET_ADDR_FIFO_EMPTY__SHIFT                                                0x0
 #define SDMA2_UTCL1_RD_STATUS__RQMC_REQ_FIFO_EMPTY__SHIFT                                                     0x1
 #define SDMA2_UTCL1_RD_STATUS__RTPG_RET_BUF_EMPTY__SHIFT                                                      0x2
@@ -6050,7 +4944,6 @@
 #define SDMA2_UTCL1_RD_STATUS__ADDR_RD_RTR_MASK                                                               0x20000000L
 #define SDMA2_UTCL1_RD_STATUS__WPTR_POLLING_MASK                                                              0x40000000L
 #define SDMA2_UTCL1_RD_STATUS__INVREQ_SIZE_MASK                                                               0x80000000L
-//SDMA2_UTCL1_WR_STATUS
 #define SDMA2_UTCL1_WR_STATUS__RQMC_RET_ADDR_FIFO_EMPTY__SHIFT                                                0x0
 #define SDMA2_UTCL1_WR_STATUS__RQMC_REQ_FIFO_EMPTY__SHIFT                                                     0x1
 #define SDMA2_UTCL1_WR_STATUS__RTPG_RET_BUF_EMPTY__SHIFT                                                      0x2
@@ -6107,7 +5000,6 @@
 #define SDMA2_UTCL1_WR_STATUS__RPTR_DATA_FIFO_FULL_MASK                                                       0x20000000L
 #define SDMA2_UTCL1_WR_STATUS__WRREQ_DATA_FIFO_EMPTY_MASK                                                     0x40000000L
 #define SDMA2_UTCL1_WR_STATUS__WRREQ_DATA_FIFO_FULL_MASK                                                      0x80000000L
-//SDMA2_UTCL1_INV0
 #define SDMA2_UTCL1_INV0__INV_MIDDLE__SHIFT                                                                   0x0
 #define SDMA2_UTCL1_INV0__RD_TIMEOUT__SHIFT                                                                   0x1
 #define SDMA2_UTCL1_INV0__WR_TIMEOUT__SHIFT                                                                   0x2
@@ -6136,16 +5028,12 @@
 #define SDMA2_UTCL1_INV0__INV_FLUSHTYPE_MASK                                                                  0x00000800L
 #define SDMA2_UTCL1_INV0__INV_VMID_VEC_MASK                                                                   0x0FFFF000L
 #define SDMA2_UTCL1_INV0__INV_ADDR_HI_MASK                                                                    0xF0000000L
-//SDMA2_UTCL1_INV1
 #define SDMA2_UTCL1_INV1__INV_ADDR_LO__SHIFT                                                                  0x0
 #define SDMA2_UTCL1_INV1__INV_ADDR_LO_MASK                                                                    0xFFFFFFFFL
-//SDMA2_UTCL1_INV2
 #define SDMA2_UTCL1_INV2__INV_NFLUSH_VMID_VEC__SHIFT                                                          0x0
 #define SDMA2_UTCL1_INV2__INV_NFLUSH_VMID_VEC_MASK                                                            0xFFFFFFFFL
-//SDMA2_UTCL1_RD_XNACK0
 #define SDMA2_UTCL1_RD_XNACK0__XNACK_ADDR_LO__SHIFT                                                           0x0
 #define SDMA2_UTCL1_RD_XNACK0__XNACK_ADDR_LO_MASK                                                             0xFFFFFFFFL
-//SDMA2_UTCL1_RD_XNACK1
 #define SDMA2_UTCL1_RD_XNACK1__XNACK_ADDR_HI__SHIFT                                                           0x0
 #define SDMA2_UTCL1_RD_XNACK1__XNACK_VMID__SHIFT                                                              0x4
 #define SDMA2_UTCL1_RD_XNACK1__XNACK_VECTOR__SHIFT                                                            0x8
@@ -6154,10 +5042,8 @@
 #define SDMA2_UTCL1_RD_XNACK1__XNACK_VMID_MASK                                                                0x000000F0L
 #define SDMA2_UTCL1_RD_XNACK1__XNACK_VECTOR_MASK                                                              0x03FFFF00L
 #define SDMA2_UTCL1_RD_XNACK1__IS_XNACK_MASK                                                                  0x0C000000L
-//SDMA2_UTCL1_WR_XNACK0
 #define SDMA2_UTCL1_WR_XNACK0__XNACK_ADDR_LO__SHIFT                                                           0x0
 #define SDMA2_UTCL1_WR_XNACK0__XNACK_ADDR_LO_MASK                                                             0xFFFFFFFFL
-//SDMA2_UTCL1_WR_XNACK1
 #define SDMA2_UTCL1_WR_XNACK1__XNACK_ADDR_HI__SHIFT                                                           0x0
 #define SDMA2_UTCL1_WR_XNACK1__XNACK_VMID__SHIFT                                                              0x4
 #define SDMA2_UTCL1_WR_XNACK1__XNACK_VECTOR__SHIFT                                                            0x8
@@ -6166,12 +5052,10 @@
 #define SDMA2_UTCL1_WR_XNACK1__XNACK_VMID_MASK                                                                0x000000F0L
 #define SDMA2_UTCL1_WR_XNACK1__XNACK_VECTOR_MASK                                                              0x03FFFF00L
 #define SDMA2_UTCL1_WR_XNACK1__IS_XNACK_MASK                                                                  0x0C000000L
-//SDMA2_UTCL1_TIMEOUT
 #define SDMA2_UTCL1_TIMEOUT__RD_XNACK_LIMIT__SHIFT                                                            0x0
 #define SDMA2_UTCL1_TIMEOUT__WR_XNACK_LIMIT__SHIFT                                                            0x10
 #define SDMA2_UTCL1_TIMEOUT__RD_XNACK_LIMIT_MASK                                                              0x0000FFFFL
 #define SDMA2_UTCL1_TIMEOUT__WR_XNACK_LIMIT_MASK                                                              0xFFFF0000L
-//SDMA2_UTCL1_PAGE
 #define SDMA2_UTCL1_PAGE__VM_HOLE__SHIFT                                                                      0x0
 #define SDMA2_UTCL1_PAGE__REQ_TYPE__SHIFT                                                                     0x1
 #define SDMA2_UTCL1_PAGE__USE_MTYPE__SHIFT                                                                    0x6
@@ -6180,14 +5064,12 @@
 #define SDMA2_UTCL1_PAGE__REQ_TYPE_MASK                                                                       0x0000001EL
 #define SDMA2_UTCL1_PAGE__USE_MTYPE_MASK                                                                      0x000001C0L
 #define SDMA2_UTCL1_PAGE__USE_PT_SNOOP_MASK                                                                   0x00000200L
-//SDMA2_POWER_CNTL_IDLE
 #define SDMA2_POWER_CNTL_IDLE__DELAY0__SHIFT                                                                  0x0
 #define SDMA2_POWER_CNTL_IDLE__DELAY1__SHIFT                                                                  0x10
 #define SDMA2_POWER_CNTL_IDLE__DELAY2__SHIFT                                                                  0x18
 #define SDMA2_POWER_CNTL_IDLE__DELAY0_MASK                                                                    0x0000FFFFL
 #define SDMA2_POWER_CNTL_IDLE__DELAY1_MASK                                                                    0x00FF0000L
 #define SDMA2_POWER_CNTL_IDLE__DELAY2_MASK                                                                    0xFF000000L
-//SDMA2_RELAX_ORDERING_LUT
 #define SDMA2_RELAX_ORDERING_LUT__RESERVED0__SHIFT                                                            0x0
 #define SDMA2_RELAX_ORDERING_LUT__COPY__SHIFT                                                                 0x1
 #define SDMA2_RELAX_ORDERING_LUT__WRITE__SHIFT                                                                0x2
@@ -6226,12 +5108,10 @@
 #define SDMA2_RELAX_ORDERING_LUT__WPTR_POLL_MASK                                                              0x20000000L
 #define SDMA2_RELAX_ORDERING_LUT__IB_FETCH_MASK                                                               0x40000000L
 #define SDMA2_RELAX_ORDERING_LUT__RB_FETCH_MASK                                                               0x80000000L
-//SDMA2_CHICKEN_BITS_2
 #define SDMA2_CHICKEN_BITS_2__F32_CMD_PROC_DELAY__SHIFT                                                       0x0
 #define SDMA2_CHICKEN_BITS_2__F32_SEND_POSTCODE_EN__SHIFT                                                     0x4
 #define SDMA2_CHICKEN_BITS_2__F32_CMD_PROC_DELAY_MASK                                                         0x0000000FL
 #define SDMA2_CHICKEN_BITS_2__F32_SEND_POSTCODE_EN_MASK                                                       0x00000010L
-//SDMA2_STATUS3_REG
 #define SDMA2_STATUS3_REG__CMD_OP_STATUS__SHIFT                                                               0x0
 #define SDMA2_STATUS3_REG__PREV_VM_CMD__SHIFT                                                                 0x10
 #define SDMA2_STATUS3_REG__EXCEPTION_IDLE__SHIFT                                                              0x14
@@ -6242,7 +5122,6 @@
 #define SDMA2_STATUS3_REG__EXCEPTION_IDLE_MASK                                                                0x00100000L
 #define SDMA2_STATUS3_REG__QUEUE_ID_MATCH_MASK                                                                0x00200000L
 #define SDMA2_STATUS3_REG__INT_QUEUE_ID_MASK                                                                  0x03C00000L
-//SDMA2_PHYSICAL_ADDR_LO
 #define SDMA2_PHYSICAL_ADDR_LO__D_VALID__SHIFT                                                                0x0
 #define SDMA2_PHYSICAL_ADDR_LO__DIRTY__SHIFT                                                                  0x1
 #define SDMA2_PHYSICAL_ADDR_LO__PHY_VALID__SHIFT                                                              0x2
@@ -6251,37 +5130,28 @@
 #define SDMA2_PHYSICAL_ADDR_LO__DIRTY_MASK                                                                    0x00000002L
 #define SDMA2_PHYSICAL_ADDR_LO__PHY_VALID_MASK                                                                0x00000004L
 #define SDMA2_PHYSICAL_ADDR_LO__ADDR_MASK                                                                     0xFFFFF000L
-//SDMA2_PHYSICAL_ADDR_HI
 #define SDMA2_PHYSICAL_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA2_PHYSICAL_ADDR_HI__ADDR_MASK                                                                     0x0000FFFFL
-//SDMA2_PHASE2_QUANTUM
 #define SDMA2_PHASE2_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA2_PHASE2_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA2_PHASE2_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA2_PHASE2_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA2_PHASE2_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA2_PHASE2_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//SDMA2_ERROR_LOG
 #define SDMA2_ERROR_LOG__OVERRIDE__SHIFT                                                                      0x0
 #define SDMA2_ERROR_LOG__STATUS__SHIFT                                                                        0x10
 #define SDMA2_ERROR_LOG__OVERRIDE_MASK                                                                        0x0000FFFFL
 #define SDMA2_ERROR_LOG__STATUS_MASK                                                                          0xFFFF0000L
-//SDMA2_PUB_DUMMY_REG0
 #define SDMA2_PUB_DUMMY_REG0__VALUE__SHIFT                                                                    0x0
 #define SDMA2_PUB_DUMMY_REG0__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA2_PUB_DUMMY_REG1
 #define SDMA2_PUB_DUMMY_REG1__VALUE__SHIFT                                                                    0x0
 #define SDMA2_PUB_DUMMY_REG1__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA2_PUB_DUMMY_REG2
 #define SDMA2_PUB_DUMMY_REG2__VALUE__SHIFT                                                                    0x0
 #define SDMA2_PUB_DUMMY_REG2__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA2_PUB_DUMMY_REG3
 #define SDMA2_PUB_DUMMY_REG3__VALUE__SHIFT                                                                    0x0
 #define SDMA2_PUB_DUMMY_REG3__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA2_F32_COUNTER
 #define SDMA2_F32_COUNTER__VALUE__SHIFT                                                                       0x0
 #define SDMA2_F32_COUNTER__VALUE_MASK                                                                         0xFFFFFFFFL
-//SDMA2_PERFCNT_PERFCOUNTER0_CFG
 #define SDMA2_PERFCNT_PERFCOUNTER0_CFG__PERF_SEL__SHIFT                                                       0x0
 #define SDMA2_PERFCNT_PERFCOUNTER0_CFG__PERF_SEL_END__SHIFT                                                   0x8
 #define SDMA2_PERFCNT_PERFCOUNTER0_CFG__PERF_MODE__SHIFT                                                      0x18
@@ -6292,7 +5162,6 @@
 #define SDMA2_PERFCNT_PERFCOUNTER0_CFG__PERF_MODE_MASK                                                        0x0F000000L
 #define SDMA2_PERFCNT_PERFCOUNTER0_CFG__ENABLE_MASK                                                           0x10000000L
 #define SDMA2_PERFCNT_PERFCOUNTER0_CFG__CLEAR_MASK                                                            0x20000000L
-//SDMA2_PERFCNT_PERFCOUNTER1_CFG
 #define SDMA2_PERFCNT_PERFCOUNTER1_CFG__PERF_SEL__SHIFT                                                       0x0
 #define SDMA2_PERFCNT_PERFCOUNTER1_CFG__PERF_SEL_END__SHIFT                                                   0x8
 #define SDMA2_PERFCNT_PERFCOUNTER1_CFG__PERF_MODE__SHIFT                                                      0x18
@@ -6303,7 +5172,6 @@
 #define SDMA2_PERFCNT_PERFCOUNTER1_CFG__PERF_MODE_MASK                                                        0x0F000000L
 #define SDMA2_PERFCNT_PERFCOUNTER1_CFG__ENABLE_MASK                                                           0x10000000L
 #define SDMA2_PERFCNT_PERFCOUNTER1_CFG__CLEAR_MASK                                                            0x20000000L
-//SDMA2_PERFCNT_PERFCOUNTER_RSLT_CNTL
 #define SDMA2_PERFCNT_PERFCOUNTER_RSLT_CNTL__PERF_COUNTER_SELECT__SHIFT                                       0x0
 #define SDMA2_PERFCNT_PERFCOUNTER_RSLT_CNTL__START_TRIGGER__SHIFT                                             0x8
 #define SDMA2_PERFCNT_PERFCOUNTER_RSLT_CNTL__STOP_TRIGGER__SHIFT                                              0x10
@@ -6316,23 +5184,18 @@
 #define SDMA2_PERFCNT_PERFCOUNTER_RSLT_CNTL__ENABLE_ANY_MASK                                                  0x01000000L
 #define SDMA2_PERFCNT_PERFCOUNTER_RSLT_CNTL__CLEAR_ALL_MASK                                                   0x02000000L
 #define SDMA2_PERFCNT_PERFCOUNTER_RSLT_CNTL__STOP_ALL_ON_SATURATE_MASK                                        0x04000000L
-//SDMA2_PERFCNT_MISC_CNTL
 #define SDMA2_PERFCNT_MISC_CNTL__CMD_OP__SHIFT                                                                0x0
 #define SDMA2_PERFCNT_MISC_CNTL__CMD_OP_MASK                                                                  0x0000FFFFL
-//SDMA2_PERFCNT_PERFCOUNTER_LO
 #define SDMA2_PERFCNT_PERFCOUNTER_LO__COUNTER_LO__SHIFT                                                       0x0
 #define SDMA2_PERFCNT_PERFCOUNTER_LO__COUNTER_LO_MASK                                                         0xFFFFFFFFL
-//SDMA2_PERFCNT_PERFCOUNTER_HI
 #define SDMA2_PERFCNT_PERFCOUNTER_HI__COUNTER_HI__SHIFT                                                       0x0
 #define SDMA2_PERFCNT_PERFCOUNTER_HI__COMPARE_VALUE__SHIFT                                                    0x10
 #define SDMA2_PERFCNT_PERFCOUNTER_HI__COUNTER_HI_MASK                                                         0x0000FFFFL
 #define SDMA2_PERFCNT_PERFCOUNTER_HI__COMPARE_VALUE_MASK                                                      0xFFFF0000L
-//SDMA2_CRD_CNTL
 #define SDMA2_CRD_CNTL__MC_WRREQ_CREDIT__SHIFT                                                                0x7
 #define SDMA2_CRD_CNTL__MC_RDREQ_CREDIT__SHIFT                                                                0xd
 #define SDMA2_CRD_CNTL__MC_WRREQ_CREDIT_MASK                                                                  0x00001F80L
 #define SDMA2_CRD_CNTL__MC_RDREQ_CREDIT_MASK                                                                  0x0007E000L
-//SDMA2_ULV_CNTL
 #define SDMA2_ULV_CNTL__HYSTERESIS__SHIFT                                                                     0x0
 #define SDMA2_ULV_CNTL__ENTER_ULV_INT_CLR__SHIFT                                                              0x1b
 #define SDMA2_ULV_CNTL__EXIT_ULV_INT_CLR__SHIFT                                                               0x1c
@@ -6345,13 +5208,10 @@
 #define SDMA2_ULV_CNTL__ENTER_ULV_INT_MASK                                                                    0x20000000L
 #define SDMA2_ULV_CNTL__EXIT_ULV_INT_MASK                                                                     0x40000000L
 #define SDMA2_ULV_CNTL__ULV_STATUS_MASK                                                                       0x80000000L
-//SDMA2_EA_DBIT_ADDR_DATA
 #define SDMA2_EA_DBIT_ADDR_DATA__VALUE__SHIFT                                                                 0x0
 #define SDMA2_EA_DBIT_ADDR_DATA__VALUE_MASK                                                                   0xFFFFFFFFL
-//SDMA2_EA_DBIT_ADDR_INDEX
 #define SDMA2_EA_DBIT_ADDR_INDEX__VALUE__SHIFT                                                                0x0
 #define SDMA2_EA_DBIT_ADDR_INDEX__VALUE_MASK                                                                  0x00000007L
-//SDMA2_STATUS4_REG
 #define SDMA2_STATUS4_REG__IDLE__SHIFT                                                                        0x0
 #define SDMA2_STATUS4_REG__IH_OUTSTANDING__SHIFT                                                              0x2
 #define SDMA2_STATUS4_REG__SEM_OUTSTANDING__SHIFT                                                             0x3
@@ -6380,13 +5240,10 @@
 #define SDMA2_STATUS4_REG__ACTIVE_QUEUE_ID_MASK                                                               0x0003C000L
 #define SDMA2_STATUS4_REG__SRIOV_WATING_RLCV_CMD_MASK                                                         0x00040000L
 #define SDMA2_STATUS4_REG__SRIOV_SDMA_EXECUTING_CMD_MASK                                                      0x00080000L
-//SDMA2_SCRATCH_RAM_DATA
 #define SDMA2_SCRATCH_RAM_DATA__DATA__SHIFT                                                                   0x0
 #define SDMA2_SCRATCH_RAM_DATA__DATA_MASK                                                                     0xFFFFFFFFL
-//SDMA2_SCRATCH_RAM_ADDR
 #define SDMA2_SCRATCH_RAM_ADDR__ADDR__SHIFT                                                                   0x0
 #define SDMA2_SCRATCH_RAM_ADDR__ADDR_MASK                                                                     0x0000007FL
-//SDMA2_CE_CTRL
 #define SDMA2_CE_CTRL__RD_LUT_WATERMARK__SHIFT                                                                0x0
 #define SDMA2_CE_CTRL__RD_LUT_DEPTH__SHIFT                                                                    0x3
 #define SDMA2_CE_CTRL__WR_AFIFO_WATERMARK__SHIFT                                                              0x5
@@ -6395,7 +5252,6 @@
 #define SDMA2_CE_CTRL__RD_LUT_DEPTH_MASK                                                                      0x00000018L
 #define SDMA2_CE_CTRL__WR_AFIFO_WATERMARK_MASK                                                                0x000000E0L
 #define SDMA2_CE_CTRL__RESERVED_MASK                                                                          0xFFFFFF00L
-//SDMA2_RAS_STATUS
 #define SDMA2_RAS_STATUS__RB_FETCH_ECC__SHIFT                                                                 0x0
 #define SDMA2_RAS_STATUS__IB_FETCH_ECC__SHIFT                                                                 0x1
 #define SDMA2_RAS_STATUS__F32_DATA_ECC__SHIFT                                                                 0x2
@@ -6420,7 +5276,6 @@
 #define SDMA2_RAS_STATUS__COPY_DATA_NACK_GEN_ERR_MASK                                                         0x00000800L
 #define SDMA2_RAS_STATUS__WRRET_DATA_NACK_GEN_ERR_MASK                                                        0x00001000L
 #define SDMA2_RAS_STATUS__WPTR_RPTR_ATOMIC_NACK_GEN_ERR_MASK                                                  0x00002000L
-//SDMA2_CLK_STATUS
 #define SDMA2_CLK_STATUS__DYN_CLK__SHIFT                                                                      0x0
 #define SDMA2_CLK_STATUS__PTR_CLK__SHIFT                                                                      0x1
 #define SDMA2_CLK_STATUS__REG_CLK__SHIFT                                                                      0x2
@@ -6429,7 +5284,6 @@
 #define SDMA2_CLK_STATUS__PTR_CLK_MASK                                                                        0x00000002L
 #define SDMA2_CLK_STATUS__REG_CLK_MASK                                                                        0x00000004L
 #define SDMA2_CLK_STATUS__F32_CLK_MASK                                                                        0x00000008L
-//SDMA2_GFX_RB_CNTL
 #define SDMA2_GFX_RB_CNTL__RB_ENABLE__SHIFT                                                                   0x0
 #define SDMA2_GFX_RB_CNTL__RB_SIZE__SHIFT                                                                     0x1
 #define SDMA2_GFX_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                              0x9
@@ -6446,25 +5300,18 @@
 #define SDMA2_GFX_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                          0x001F0000L
 #define SDMA2_GFX_RB_CNTL__RB_PRIV_MASK                                                                       0x00800000L
 #define SDMA2_GFX_RB_CNTL__RB_VMID_MASK                                                                       0x0F000000L
-//SDMA2_GFX_RB_BASE
 #define SDMA2_GFX_RB_BASE__ADDR__SHIFT                                                                        0x0
 #define SDMA2_GFX_RB_BASE__ADDR_MASK                                                                          0xFFFFFFFFL
-//SDMA2_GFX_RB_BASE_HI
 #define SDMA2_GFX_RB_BASE_HI__ADDR__SHIFT                                                                     0x0
 #define SDMA2_GFX_RB_BASE_HI__ADDR_MASK                                                                       0x00FFFFFFL
-//SDMA2_GFX_RB_RPTR
 #define SDMA2_GFX_RB_RPTR__OFFSET__SHIFT                                                                      0x0
 #define SDMA2_GFX_RB_RPTR__OFFSET_MASK                                                                        0xFFFFFFFFL
-//SDMA2_GFX_RB_RPTR_HI
 #define SDMA2_GFX_RB_RPTR_HI__OFFSET__SHIFT                                                                   0x0
 #define SDMA2_GFX_RB_RPTR_HI__OFFSET_MASK                                                                     0xFFFFFFFFL
-//SDMA2_GFX_RB_WPTR
 #define SDMA2_GFX_RB_WPTR__OFFSET__SHIFT                                                                      0x0
 #define SDMA2_GFX_RB_WPTR__OFFSET_MASK                                                                        0xFFFFFFFFL
-//SDMA2_GFX_RB_WPTR_HI
 #define SDMA2_GFX_RB_WPTR_HI__OFFSET__SHIFT                                                                   0x0
 #define SDMA2_GFX_RB_WPTR_HI__OFFSET_MASK                                                                     0xFFFFFFFFL
-//SDMA2_GFX_RB_WPTR_POLL_CNTL
 #define SDMA2_GFX_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                            0x0
 #define SDMA2_GFX_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                       0x1
 #define SDMA2_GFX_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                   0x2
@@ -6475,15 +5322,12 @@
 #define SDMA2_GFX_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                     0x00000004L
 #define SDMA2_GFX_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                           0x0000FFF0L
 #define SDMA2_GFX_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                     0xFFFF0000L
-//SDMA2_GFX_RB_RPTR_ADDR_HI
 #define SDMA2_GFX_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                                0x0
 #define SDMA2_GFX_RB_RPTR_ADDR_HI__ADDR_MASK                                                                  0xFFFFFFFFL
-//SDMA2_GFX_RB_RPTR_ADDR_LO
 #define SDMA2_GFX_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                        0x0
 #define SDMA2_GFX_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                                0x2
 #define SDMA2_GFX_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                          0x00000001L
 #define SDMA2_GFX_RB_RPTR_ADDR_LO__ADDR_MASK                                                                  0xFFFFFFFCL
-//SDMA2_GFX_IB_CNTL
 #define SDMA2_GFX_IB_CNTL__IB_ENABLE__SHIFT                                                                   0x0
 #define SDMA2_GFX_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                              0x4
 #define SDMA2_GFX_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                            0x8
@@ -6492,25 +5336,18 @@
 #define SDMA2_GFX_IB_CNTL__IB_SWAP_ENABLE_MASK                                                                0x00000010L
 #define SDMA2_GFX_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                              0x00000100L
 #define SDMA2_GFX_IB_CNTL__CMD_VMID_MASK                                                                      0x000F0000L
-//SDMA2_GFX_IB_RPTR
 #define SDMA2_GFX_IB_RPTR__OFFSET__SHIFT                                                                      0x2
 #define SDMA2_GFX_IB_RPTR__OFFSET_MASK                                                                        0x003FFFFCL
-//SDMA2_GFX_IB_OFFSET
 #define SDMA2_GFX_IB_OFFSET__OFFSET__SHIFT                                                                    0x2
 #define SDMA2_GFX_IB_OFFSET__OFFSET_MASK                                                                      0x003FFFFCL
-//SDMA2_GFX_IB_BASE_LO
 #define SDMA2_GFX_IB_BASE_LO__ADDR__SHIFT                                                                     0x5
 #define SDMA2_GFX_IB_BASE_LO__ADDR_MASK                                                                       0xFFFFFFE0L
-//SDMA2_GFX_IB_BASE_HI
 #define SDMA2_GFX_IB_BASE_HI__ADDR__SHIFT                                                                     0x0
 #define SDMA2_GFX_IB_BASE_HI__ADDR_MASK                                                                       0xFFFFFFFFL
-//SDMA2_GFX_IB_SIZE
 #define SDMA2_GFX_IB_SIZE__SIZE__SHIFT                                                                        0x0
 #define SDMA2_GFX_IB_SIZE__SIZE_MASK                                                                          0x000FFFFFL
-//SDMA2_GFX_SKIP_CNTL
 #define SDMA2_GFX_SKIP_CNTL__SKIP_COUNT__SHIFT                                                                0x0
 #define SDMA2_GFX_SKIP_CNTL__SKIP_COUNT_MASK                                                                  0x000FFFFFL
-//SDMA2_GFX_CONTEXT_STATUS
 #define SDMA2_GFX_CONTEXT_STATUS__SELECTED__SHIFT                                                             0x0
 #define SDMA2_GFX_CONTEXT_STATUS__IDLE__SHIFT                                                                 0x2
 #define SDMA2_GFX_CONTEXT_STATUS__EXPIRED__SHIFT                                                              0x3
@@ -6527,99 +5364,72 @@
 #define SDMA2_GFX_CONTEXT_STATUS__CTXSW_READY_MASK                                                            0x00000100L
 #define SDMA2_GFX_CONTEXT_STATUS__PREEMPTED_MASK                                                              0x00000200L
 #define SDMA2_GFX_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                        0x00000400L
-//SDMA2_GFX_DOORBELL
 #define SDMA2_GFX_DOORBELL__ENABLE__SHIFT                                                                     0x1c
 #define SDMA2_GFX_DOORBELL__CAPTURED__SHIFT                                                                   0x1e
 #define SDMA2_GFX_DOORBELL__ENABLE_MASK                                                                       0x10000000L
 #define SDMA2_GFX_DOORBELL__CAPTURED_MASK                                                                     0x40000000L
-//SDMA2_GFX_CONTEXT_CNTL
 #define SDMA2_GFX_CONTEXT_CNTL__RESUME_CTX__SHIFT                                                             0x10
 #define SDMA2_GFX_CONTEXT_CNTL__SESSION_SEL__SHIFT                                                            0x18
 #define SDMA2_GFX_CONTEXT_CNTL__RESUME_CTX_MASK                                                               0x00010000L
 #define SDMA2_GFX_CONTEXT_CNTL__SESSION_SEL_MASK                                                              0x0F000000L
-//SDMA2_GFX_STATUS
 #define SDMA2_GFX_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                       0x0
 #define SDMA2_GFX_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                          0x8
 #define SDMA2_GFX_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                         0x000000FFL
 #define SDMA2_GFX_STATUS__WPTR_UPDATE_PENDING_MASK                                                            0x00000100L
-//SDMA2_GFX_DOORBELL_LOG
 #define SDMA2_GFX_DOORBELL_LOG__BE_ERROR__SHIFT                                                               0x0
 #define SDMA2_GFX_DOORBELL_LOG__DATA__SHIFT                                                                   0x2
 #define SDMA2_GFX_DOORBELL_LOG__BE_ERROR_MASK                                                                 0x00000001L
 #define SDMA2_GFX_DOORBELL_LOG__DATA_MASK                                                                     0xFFFFFFFCL
-//SDMA2_GFX_WATERMARK
 #define SDMA2_GFX_WATERMARK__RD_OUTSTANDING__SHIFT                                                            0x0
 #define SDMA2_GFX_WATERMARK__WR_OUTSTANDING__SHIFT                                                            0x10
 #define SDMA2_GFX_WATERMARK__RD_OUTSTANDING_MASK                                                              0x00000FFFL
 #define SDMA2_GFX_WATERMARK__WR_OUTSTANDING_MASK                                                              0x03FF0000L
-//SDMA2_GFX_DOORBELL_OFFSET
 #define SDMA2_GFX_DOORBELL_OFFSET__OFFSET__SHIFT                                                              0x2
 #define SDMA2_GFX_DOORBELL_OFFSET__OFFSET_MASK                                                                0x0FFFFFFCL
-//SDMA2_GFX_CSA_ADDR_LO
 #define SDMA2_GFX_CSA_ADDR_LO__ADDR__SHIFT                                                                    0x2
 #define SDMA2_GFX_CSA_ADDR_LO__ADDR_MASK                                                                      0xFFFFFFFCL
-//SDMA2_GFX_CSA_ADDR_HI
 #define SDMA2_GFX_CSA_ADDR_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_GFX_CSA_ADDR_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA2_GFX_IB_SUB_REMAIN
 #define SDMA2_GFX_IB_SUB_REMAIN__SIZE__SHIFT                                                                  0x0
 #define SDMA2_GFX_IB_SUB_REMAIN__SIZE_MASK                                                                    0x000FFFFFL
-//SDMA2_GFX_PREEMPT
 #define SDMA2_GFX_PREEMPT__IB_PREEMPT__SHIFT                                                                  0x0
 #define SDMA2_GFX_PREEMPT__IB_PREEMPT_MASK                                                                    0x00000001L
-//SDMA2_GFX_DUMMY_REG
 #define SDMA2_GFX_DUMMY_REG__DUMMY__SHIFT                                                                     0x0
 #define SDMA2_GFX_DUMMY_REG__DUMMY_MASK                                                                       0xFFFFFFFFL
-//SDMA2_GFX_RB_WPTR_POLL_ADDR_HI
 #define SDMA2_GFX_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                           0x0
 #define SDMA2_GFX_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                             0xFFFFFFFFL
-//SDMA2_GFX_RB_WPTR_POLL_ADDR_LO
 #define SDMA2_GFX_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                           0x2
 #define SDMA2_GFX_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                             0xFFFFFFFCL
-//SDMA2_GFX_RB_AQL_CNTL
 #define SDMA2_GFX_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                              0x0
 #define SDMA2_GFX_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                         0x1
 #define SDMA2_GFX_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                             0x8
 #define SDMA2_GFX_RB_AQL_CNTL__AQL_ENABLE_MASK                                                                0x00000001L
 #define SDMA2_GFX_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                           0x000000FEL
 #define SDMA2_GFX_RB_AQL_CNTL__PACKET_STEP_MASK                                                               0x0000FF00L
-//SDMA2_GFX_MINOR_PTR_UPDATE
 #define SDMA2_GFX_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                             0x0
 #define SDMA2_GFX_MINOR_PTR_UPDATE__ENABLE_MASK                                                               0x00000001L
-//SDMA2_GFX_MIDCMD_DATA0
 #define SDMA2_GFX_MIDCMD_DATA0__DATA0__SHIFT                                                                  0x0
 #define SDMA2_GFX_MIDCMD_DATA0__DATA0_MASK                                                                    0xFFFFFFFFL
-//SDMA2_GFX_MIDCMD_DATA1
 #define SDMA2_GFX_MIDCMD_DATA1__DATA1__SHIFT                                                                  0x0
 #define SDMA2_GFX_MIDCMD_DATA1__DATA1_MASK                                                                    0xFFFFFFFFL
-//SDMA2_GFX_MIDCMD_DATA2
 #define SDMA2_GFX_MIDCMD_DATA2__DATA2__SHIFT                                                                  0x0
 #define SDMA2_GFX_MIDCMD_DATA2__DATA2_MASK                                                                    0xFFFFFFFFL
-//SDMA2_GFX_MIDCMD_DATA3
 #define SDMA2_GFX_MIDCMD_DATA3__DATA3__SHIFT                                                                  0x0
 #define SDMA2_GFX_MIDCMD_DATA3__DATA3_MASK                                                                    0xFFFFFFFFL
-//SDMA2_GFX_MIDCMD_DATA4
 #define SDMA2_GFX_MIDCMD_DATA4__DATA4__SHIFT                                                                  0x0
 #define SDMA2_GFX_MIDCMD_DATA4__DATA4_MASK                                                                    0xFFFFFFFFL
-//SDMA2_GFX_MIDCMD_DATA5
 #define SDMA2_GFX_MIDCMD_DATA5__DATA5__SHIFT                                                                  0x0
 #define SDMA2_GFX_MIDCMD_DATA5__DATA5_MASK                                                                    0xFFFFFFFFL
-//SDMA2_GFX_MIDCMD_DATA6
 #define SDMA2_GFX_MIDCMD_DATA6__DATA6__SHIFT                                                                  0x0
 #define SDMA2_GFX_MIDCMD_DATA6__DATA6_MASK                                                                    0xFFFFFFFFL
-//SDMA2_GFX_MIDCMD_DATA7
 #define SDMA2_GFX_MIDCMD_DATA7__DATA7__SHIFT                                                                  0x0
 #define SDMA2_GFX_MIDCMD_DATA7__DATA7_MASK                                                                    0xFFFFFFFFL
-//SDMA2_GFX_MIDCMD_DATA8
 #define SDMA2_GFX_MIDCMD_DATA8__DATA8__SHIFT                                                                  0x0
 #define SDMA2_GFX_MIDCMD_DATA8__DATA8_MASK                                                                    0xFFFFFFFFL
-//SDMA2_GFX_MIDCMD_DATA9
 #define SDMA2_GFX_MIDCMD_DATA9__DATA9__SHIFT                                                                  0x0
 #define SDMA2_GFX_MIDCMD_DATA9__DATA9_MASK                                                                    0xFFFFFFFFL
-//SDMA2_GFX_MIDCMD_DATA10
 #define SDMA2_GFX_MIDCMD_DATA10__DATA10__SHIFT                                                                0x0
 #define SDMA2_GFX_MIDCMD_DATA10__DATA10_MASK                                                                  0xFFFFFFFFL
-//SDMA2_GFX_MIDCMD_CNTL
 #define SDMA2_GFX_MIDCMD_CNTL__DATA_VALID__SHIFT                                                              0x0
 #define SDMA2_GFX_MIDCMD_CNTL__COPY_MODE__SHIFT                                                               0x1
 #define SDMA2_GFX_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                             0x4
@@ -6628,7 +5438,6 @@
 #define SDMA2_GFX_MIDCMD_CNTL__COPY_MODE_MASK                                                                 0x00000002L
 #define SDMA2_GFX_MIDCMD_CNTL__SPLIT_STATE_MASK                                                               0x000000F0L
 #define SDMA2_GFX_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                             0x00000100L
-//SDMA2_PAGE_RB_CNTL
 #define SDMA2_PAGE_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_PAGE_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA2_PAGE_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -6645,25 +5454,18 @@
 #define SDMA2_PAGE_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA2_PAGE_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA2_PAGE_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA2_PAGE_RB_BASE
 #define SDMA2_PAGE_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA2_PAGE_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA2_PAGE_RB_BASE_HI
 #define SDMA2_PAGE_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_PAGE_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA2_PAGE_RB_RPTR
 #define SDMA2_PAGE_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_PAGE_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_PAGE_RB_RPTR_HI
 #define SDMA2_PAGE_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_PAGE_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_PAGE_RB_WPTR
 #define SDMA2_PAGE_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_PAGE_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_PAGE_RB_WPTR_HI
 #define SDMA2_PAGE_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_PAGE_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_PAGE_RB_WPTR_POLL_CNTL
 #define SDMA2_PAGE_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA2_PAGE_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA2_PAGE_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -6674,15 +5476,12 @@
 #define SDMA2_PAGE_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA2_PAGE_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA2_PAGE_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA2_PAGE_RB_RPTR_ADDR_HI
 #define SDMA2_PAGE_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA2_PAGE_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA2_PAGE_RB_RPTR_ADDR_LO
 #define SDMA2_PAGE_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA2_PAGE_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA2_PAGE_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA2_PAGE_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA2_PAGE_IB_CNTL
 #define SDMA2_PAGE_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_PAGE_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA2_PAGE_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -6691,25 +5490,18 @@
 #define SDMA2_PAGE_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA2_PAGE_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA2_PAGE_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA2_PAGE_IB_RPTR
 #define SDMA2_PAGE_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA2_PAGE_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA2_PAGE_IB_OFFSET
 #define SDMA2_PAGE_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA2_PAGE_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA2_PAGE_IB_BASE_LO
 #define SDMA2_PAGE_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA2_PAGE_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA2_PAGE_IB_BASE_HI
 #define SDMA2_PAGE_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_PAGE_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA2_PAGE_IB_SIZE
 #define SDMA2_PAGE_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA2_PAGE_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA2_PAGE_SKIP_CNTL
 #define SDMA2_PAGE_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA2_PAGE_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA2_PAGE_CONTEXT_STATUS
 #define SDMA2_PAGE_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA2_PAGE_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA2_PAGE_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -6726,94 +5518,68 @@
 #define SDMA2_PAGE_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA2_PAGE_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA2_PAGE_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA2_PAGE_DOORBELL
 #define SDMA2_PAGE_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA2_PAGE_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA2_PAGE_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA2_PAGE_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA2_PAGE_STATUS
 #define SDMA2_PAGE_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA2_PAGE_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA2_PAGE_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA2_PAGE_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA2_PAGE_DOORBELL_LOG
 #define SDMA2_PAGE_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA2_PAGE_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA2_PAGE_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA2_PAGE_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA2_PAGE_WATERMARK
 #define SDMA2_PAGE_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA2_PAGE_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA2_PAGE_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA2_PAGE_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA2_PAGE_DOORBELL_OFFSET
 #define SDMA2_PAGE_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA2_PAGE_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA2_PAGE_CSA_ADDR_LO
 #define SDMA2_PAGE_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA2_PAGE_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA2_PAGE_CSA_ADDR_HI
 #define SDMA2_PAGE_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA2_PAGE_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA2_PAGE_IB_SUB_REMAIN
 #define SDMA2_PAGE_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA2_PAGE_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA2_PAGE_PREEMPT
 #define SDMA2_PAGE_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA2_PAGE_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA2_PAGE_DUMMY_REG
 #define SDMA2_PAGE_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA2_PAGE_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA2_PAGE_RB_WPTR_POLL_ADDR_HI
 #define SDMA2_PAGE_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA2_PAGE_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA2_PAGE_RB_WPTR_POLL_ADDR_LO
 #define SDMA2_PAGE_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA2_PAGE_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA2_PAGE_RB_AQL_CNTL
 #define SDMA2_PAGE_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA2_PAGE_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA2_PAGE_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA2_PAGE_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA2_PAGE_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA2_PAGE_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA2_PAGE_MINOR_PTR_UPDATE
 #define SDMA2_PAGE_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA2_PAGE_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA2_PAGE_MIDCMD_DATA0
 #define SDMA2_PAGE_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA2_PAGE_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA2_PAGE_MIDCMD_DATA1
 #define SDMA2_PAGE_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA2_PAGE_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA2_PAGE_MIDCMD_DATA2
 #define SDMA2_PAGE_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA2_PAGE_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA2_PAGE_MIDCMD_DATA3
 #define SDMA2_PAGE_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA2_PAGE_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA2_PAGE_MIDCMD_DATA4
 #define SDMA2_PAGE_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA2_PAGE_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA2_PAGE_MIDCMD_DATA5
 #define SDMA2_PAGE_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA2_PAGE_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA2_PAGE_MIDCMD_DATA6
 #define SDMA2_PAGE_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA2_PAGE_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA2_PAGE_MIDCMD_DATA7
 #define SDMA2_PAGE_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA2_PAGE_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA2_PAGE_MIDCMD_DATA8
 #define SDMA2_PAGE_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA2_PAGE_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA2_PAGE_MIDCMD_DATA9
 #define SDMA2_PAGE_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA2_PAGE_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA2_PAGE_MIDCMD_DATA10
 #define SDMA2_PAGE_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA2_PAGE_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA2_PAGE_MIDCMD_CNTL
 #define SDMA2_PAGE_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA2_PAGE_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA2_PAGE_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -6822,7 +5588,6 @@
 #define SDMA2_PAGE_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA2_PAGE_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA2_PAGE_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA2_RLC0_RB_CNTL
 #define SDMA2_RLC0_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC0_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA2_RLC0_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -6839,25 +5604,18 @@
 #define SDMA2_RLC0_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA2_RLC0_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA2_RLC0_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA2_RLC0_RB_BASE
 #define SDMA2_RLC0_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA2_RLC0_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA2_RLC0_RB_BASE_HI
 #define SDMA2_RLC0_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC0_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA2_RLC0_RB_RPTR
 #define SDMA2_RLC0_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC0_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC0_RB_RPTR_HI
 #define SDMA2_RLC0_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC0_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC0_RB_WPTR
 #define SDMA2_RLC0_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC0_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC0_RB_WPTR_HI
 #define SDMA2_RLC0_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC0_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC0_RB_WPTR_POLL_CNTL
 #define SDMA2_RLC0_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA2_RLC0_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA2_RLC0_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -6868,15 +5626,12 @@
 #define SDMA2_RLC0_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA2_RLC0_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA2_RLC0_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA2_RLC0_RB_RPTR_ADDR_HI
 #define SDMA2_RLC0_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA2_RLC0_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC0_RB_RPTR_ADDR_LO
 #define SDMA2_RLC0_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA2_RLC0_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA2_RLC0_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA2_RLC0_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA2_RLC0_IB_CNTL
 #define SDMA2_RLC0_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC0_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA2_RLC0_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -6885,25 +5640,18 @@
 #define SDMA2_RLC0_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA2_RLC0_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA2_RLC0_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA2_RLC0_IB_RPTR
 #define SDMA2_RLC0_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA2_RLC0_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA2_RLC0_IB_OFFSET
 #define SDMA2_RLC0_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA2_RLC0_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA2_RLC0_IB_BASE_LO
 #define SDMA2_RLC0_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA2_RLC0_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA2_RLC0_IB_BASE_HI
 #define SDMA2_RLC0_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC0_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC0_IB_SIZE
 #define SDMA2_RLC0_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA2_RLC0_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA2_RLC0_SKIP_CNTL
 #define SDMA2_RLC0_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA2_RLC0_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA2_RLC0_CONTEXT_STATUS
 #define SDMA2_RLC0_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA2_RLC0_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA2_RLC0_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -6920,94 +5668,68 @@
 #define SDMA2_RLC0_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA2_RLC0_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA2_RLC0_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA2_RLC0_DOORBELL
 #define SDMA2_RLC0_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA2_RLC0_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA2_RLC0_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA2_RLC0_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA2_RLC0_STATUS
 #define SDMA2_RLC0_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA2_RLC0_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA2_RLC0_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA2_RLC0_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA2_RLC0_DOORBELL_LOG
 #define SDMA2_RLC0_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA2_RLC0_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA2_RLC0_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA2_RLC0_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA2_RLC0_WATERMARK
 #define SDMA2_RLC0_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA2_RLC0_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA2_RLC0_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA2_RLC0_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA2_RLC0_DOORBELL_OFFSET
 #define SDMA2_RLC0_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA2_RLC0_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA2_RLC0_CSA_ADDR_LO
 #define SDMA2_RLC0_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA2_RLC0_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA2_RLC0_CSA_ADDR_HI
 #define SDMA2_RLC0_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA2_RLC0_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA2_RLC0_IB_SUB_REMAIN
 #define SDMA2_RLC0_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA2_RLC0_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA2_RLC0_PREEMPT
 #define SDMA2_RLC0_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA2_RLC0_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA2_RLC0_DUMMY_REG
 #define SDMA2_RLC0_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA2_RLC0_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC0_RB_WPTR_POLL_ADDR_HI
 #define SDMA2_RLC0_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA2_RLC0_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA2_RLC0_RB_WPTR_POLL_ADDR_LO
 #define SDMA2_RLC0_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA2_RLC0_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA2_RLC0_RB_AQL_CNTL
 #define SDMA2_RLC0_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA2_RLC0_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA2_RLC0_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA2_RLC0_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA2_RLC0_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA2_RLC0_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA2_RLC0_MINOR_PTR_UPDATE
 #define SDMA2_RLC0_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA2_RLC0_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA2_RLC0_MIDCMD_DATA0
 #define SDMA2_RLC0_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA2_RLC0_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC0_MIDCMD_DATA1
 #define SDMA2_RLC0_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA2_RLC0_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC0_MIDCMD_DATA2
 #define SDMA2_RLC0_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA2_RLC0_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC0_MIDCMD_DATA3
 #define SDMA2_RLC0_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA2_RLC0_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC0_MIDCMD_DATA4
 #define SDMA2_RLC0_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA2_RLC0_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC0_MIDCMD_DATA5
 #define SDMA2_RLC0_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA2_RLC0_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC0_MIDCMD_DATA6
 #define SDMA2_RLC0_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA2_RLC0_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC0_MIDCMD_DATA7
 #define SDMA2_RLC0_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA2_RLC0_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC0_MIDCMD_DATA8
 #define SDMA2_RLC0_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA2_RLC0_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC0_MIDCMD_DATA9
 #define SDMA2_RLC0_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA2_RLC0_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC0_MIDCMD_DATA10
 #define SDMA2_RLC0_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA2_RLC0_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC0_MIDCMD_CNTL
 #define SDMA2_RLC0_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA2_RLC0_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA2_RLC0_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -7016,7 +5738,6 @@
 #define SDMA2_RLC0_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA2_RLC0_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA2_RLC0_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA2_RLC1_RB_CNTL
 #define SDMA2_RLC1_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC1_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA2_RLC1_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -7033,25 +5754,18 @@
 #define SDMA2_RLC1_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA2_RLC1_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA2_RLC1_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA2_RLC1_RB_BASE
 #define SDMA2_RLC1_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA2_RLC1_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA2_RLC1_RB_BASE_HI
 #define SDMA2_RLC1_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC1_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA2_RLC1_RB_RPTR
 #define SDMA2_RLC1_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC1_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC1_RB_RPTR_HI
 #define SDMA2_RLC1_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC1_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC1_RB_WPTR
 #define SDMA2_RLC1_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC1_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC1_RB_WPTR_HI
 #define SDMA2_RLC1_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC1_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC1_RB_WPTR_POLL_CNTL
 #define SDMA2_RLC1_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA2_RLC1_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA2_RLC1_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -7062,15 +5776,12 @@
 #define SDMA2_RLC1_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA2_RLC1_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA2_RLC1_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA2_RLC1_RB_RPTR_ADDR_HI
 #define SDMA2_RLC1_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA2_RLC1_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC1_RB_RPTR_ADDR_LO
 #define SDMA2_RLC1_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA2_RLC1_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA2_RLC1_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA2_RLC1_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA2_RLC1_IB_CNTL
 #define SDMA2_RLC1_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC1_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA2_RLC1_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -7079,25 +5790,18 @@
 #define SDMA2_RLC1_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA2_RLC1_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA2_RLC1_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA2_RLC1_IB_RPTR
 #define SDMA2_RLC1_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA2_RLC1_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA2_RLC1_IB_OFFSET
 #define SDMA2_RLC1_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA2_RLC1_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA2_RLC1_IB_BASE_LO
 #define SDMA2_RLC1_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA2_RLC1_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA2_RLC1_IB_BASE_HI
 #define SDMA2_RLC1_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC1_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC1_IB_SIZE
 #define SDMA2_RLC1_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA2_RLC1_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA2_RLC1_SKIP_CNTL
 #define SDMA2_RLC1_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA2_RLC1_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA2_RLC1_CONTEXT_STATUS
 #define SDMA2_RLC1_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA2_RLC1_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA2_RLC1_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -7114,94 +5818,68 @@
 #define SDMA2_RLC1_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA2_RLC1_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA2_RLC1_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA2_RLC1_DOORBELL
 #define SDMA2_RLC1_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA2_RLC1_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA2_RLC1_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA2_RLC1_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA2_RLC1_STATUS
 #define SDMA2_RLC1_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA2_RLC1_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA2_RLC1_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA2_RLC1_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA2_RLC1_DOORBELL_LOG
 #define SDMA2_RLC1_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA2_RLC1_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA2_RLC1_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA2_RLC1_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA2_RLC1_WATERMARK
 #define SDMA2_RLC1_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA2_RLC1_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA2_RLC1_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA2_RLC1_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA2_RLC1_DOORBELL_OFFSET
 #define SDMA2_RLC1_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA2_RLC1_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA2_RLC1_CSA_ADDR_LO
 #define SDMA2_RLC1_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA2_RLC1_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA2_RLC1_CSA_ADDR_HI
 #define SDMA2_RLC1_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA2_RLC1_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA2_RLC1_IB_SUB_REMAIN
 #define SDMA2_RLC1_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA2_RLC1_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA2_RLC1_PREEMPT
 #define SDMA2_RLC1_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA2_RLC1_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA2_RLC1_DUMMY_REG
 #define SDMA2_RLC1_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA2_RLC1_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC1_RB_WPTR_POLL_ADDR_HI
 #define SDMA2_RLC1_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA2_RLC1_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA2_RLC1_RB_WPTR_POLL_ADDR_LO
 #define SDMA2_RLC1_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA2_RLC1_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA2_RLC1_RB_AQL_CNTL
 #define SDMA2_RLC1_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA2_RLC1_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA2_RLC1_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA2_RLC1_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA2_RLC1_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA2_RLC1_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA2_RLC1_MINOR_PTR_UPDATE
 #define SDMA2_RLC1_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA2_RLC1_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA2_RLC1_MIDCMD_DATA0
 #define SDMA2_RLC1_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA2_RLC1_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC1_MIDCMD_DATA1
 #define SDMA2_RLC1_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA2_RLC1_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC1_MIDCMD_DATA2
 #define SDMA2_RLC1_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA2_RLC1_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC1_MIDCMD_DATA3
 #define SDMA2_RLC1_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA2_RLC1_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC1_MIDCMD_DATA4
 #define SDMA2_RLC1_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA2_RLC1_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC1_MIDCMD_DATA5
 #define SDMA2_RLC1_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA2_RLC1_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC1_MIDCMD_DATA6
 #define SDMA2_RLC1_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA2_RLC1_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC1_MIDCMD_DATA7
 #define SDMA2_RLC1_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA2_RLC1_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC1_MIDCMD_DATA8
 #define SDMA2_RLC1_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA2_RLC1_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC1_MIDCMD_DATA9
 #define SDMA2_RLC1_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA2_RLC1_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC1_MIDCMD_DATA10
 #define SDMA2_RLC1_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA2_RLC1_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC1_MIDCMD_CNTL
 #define SDMA2_RLC1_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA2_RLC1_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA2_RLC1_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -7210,7 +5888,6 @@
 #define SDMA2_RLC1_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA2_RLC1_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA2_RLC1_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA2_RLC2_RB_CNTL
 #define SDMA2_RLC2_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC2_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA2_RLC2_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -7227,25 +5904,18 @@
 #define SDMA2_RLC2_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA2_RLC2_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA2_RLC2_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA2_RLC2_RB_BASE
 #define SDMA2_RLC2_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA2_RLC2_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA2_RLC2_RB_BASE_HI
 #define SDMA2_RLC2_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC2_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA2_RLC2_RB_RPTR
 #define SDMA2_RLC2_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC2_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC2_RB_RPTR_HI
 #define SDMA2_RLC2_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC2_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC2_RB_WPTR
 #define SDMA2_RLC2_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC2_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC2_RB_WPTR_HI
 #define SDMA2_RLC2_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC2_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC2_RB_WPTR_POLL_CNTL
 #define SDMA2_RLC2_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA2_RLC2_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA2_RLC2_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -7256,15 +5926,12 @@
 #define SDMA2_RLC2_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA2_RLC2_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA2_RLC2_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA2_RLC2_RB_RPTR_ADDR_HI
 #define SDMA2_RLC2_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA2_RLC2_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC2_RB_RPTR_ADDR_LO
 #define SDMA2_RLC2_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA2_RLC2_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA2_RLC2_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA2_RLC2_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA2_RLC2_IB_CNTL
 #define SDMA2_RLC2_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC2_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA2_RLC2_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -7273,25 +5940,18 @@
 #define SDMA2_RLC2_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA2_RLC2_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA2_RLC2_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA2_RLC2_IB_RPTR
 #define SDMA2_RLC2_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA2_RLC2_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA2_RLC2_IB_OFFSET
 #define SDMA2_RLC2_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA2_RLC2_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA2_RLC2_IB_BASE_LO
 #define SDMA2_RLC2_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA2_RLC2_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA2_RLC2_IB_BASE_HI
 #define SDMA2_RLC2_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC2_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC2_IB_SIZE
 #define SDMA2_RLC2_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA2_RLC2_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA2_RLC2_SKIP_CNTL
 #define SDMA2_RLC2_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA2_RLC2_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA2_RLC2_CONTEXT_STATUS
 #define SDMA2_RLC2_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA2_RLC2_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA2_RLC2_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -7308,94 +5968,68 @@
 #define SDMA2_RLC2_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA2_RLC2_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA2_RLC2_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA2_RLC2_DOORBELL
 #define SDMA2_RLC2_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA2_RLC2_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA2_RLC2_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA2_RLC2_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA2_RLC2_STATUS
 #define SDMA2_RLC2_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA2_RLC2_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA2_RLC2_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA2_RLC2_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA2_RLC2_DOORBELL_LOG
 #define SDMA2_RLC2_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA2_RLC2_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA2_RLC2_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA2_RLC2_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA2_RLC2_WATERMARK
 #define SDMA2_RLC2_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA2_RLC2_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA2_RLC2_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA2_RLC2_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA2_RLC2_DOORBELL_OFFSET
 #define SDMA2_RLC2_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA2_RLC2_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA2_RLC2_CSA_ADDR_LO
 #define SDMA2_RLC2_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA2_RLC2_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA2_RLC2_CSA_ADDR_HI
 #define SDMA2_RLC2_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA2_RLC2_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA2_RLC2_IB_SUB_REMAIN
 #define SDMA2_RLC2_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA2_RLC2_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA2_RLC2_PREEMPT
 #define SDMA2_RLC2_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA2_RLC2_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA2_RLC2_DUMMY_REG
 #define SDMA2_RLC2_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA2_RLC2_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC2_RB_WPTR_POLL_ADDR_HI
 #define SDMA2_RLC2_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA2_RLC2_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA2_RLC2_RB_WPTR_POLL_ADDR_LO
 #define SDMA2_RLC2_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA2_RLC2_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA2_RLC2_RB_AQL_CNTL
 #define SDMA2_RLC2_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA2_RLC2_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA2_RLC2_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA2_RLC2_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA2_RLC2_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA2_RLC2_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA2_RLC2_MINOR_PTR_UPDATE
 #define SDMA2_RLC2_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA2_RLC2_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA2_RLC2_MIDCMD_DATA0
 #define SDMA2_RLC2_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA2_RLC2_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC2_MIDCMD_DATA1
 #define SDMA2_RLC2_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA2_RLC2_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC2_MIDCMD_DATA2
 #define SDMA2_RLC2_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA2_RLC2_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC2_MIDCMD_DATA3
 #define SDMA2_RLC2_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA2_RLC2_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC2_MIDCMD_DATA4
 #define SDMA2_RLC2_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA2_RLC2_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC2_MIDCMD_DATA5
 #define SDMA2_RLC2_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA2_RLC2_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC2_MIDCMD_DATA6
 #define SDMA2_RLC2_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA2_RLC2_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC2_MIDCMD_DATA7
 #define SDMA2_RLC2_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA2_RLC2_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC2_MIDCMD_DATA8
 #define SDMA2_RLC2_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA2_RLC2_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC2_MIDCMD_DATA9
 #define SDMA2_RLC2_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA2_RLC2_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC2_MIDCMD_DATA10
 #define SDMA2_RLC2_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA2_RLC2_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC2_MIDCMD_CNTL
 #define SDMA2_RLC2_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA2_RLC2_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA2_RLC2_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -7404,7 +6038,6 @@
 #define SDMA2_RLC2_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA2_RLC2_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA2_RLC2_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA2_RLC3_RB_CNTL
 #define SDMA2_RLC3_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC3_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA2_RLC3_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -7421,25 +6054,18 @@
 #define SDMA2_RLC3_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA2_RLC3_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA2_RLC3_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA2_RLC3_RB_BASE
 #define SDMA2_RLC3_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA2_RLC3_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA2_RLC3_RB_BASE_HI
 #define SDMA2_RLC3_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC3_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA2_RLC3_RB_RPTR
 #define SDMA2_RLC3_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC3_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC3_RB_RPTR_HI
 #define SDMA2_RLC3_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC3_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC3_RB_WPTR
 #define SDMA2_RLC3_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC3_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC3_RB_WPTR_HI
 #define SDMA2_RLC3_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC3_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC3_RB_WPTR_POLL_CNTL
 #define SDMA2_RLC3_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA2_RLC3_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA2_RLC3_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -7450,15 +6076,12 @@
 #define SDMA2_RLC3_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA2_RLC3_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA2_RLC3_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA2_RLC3_RB_RPTR_ADDR_HI
 #define SDMA2_RLC3_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA2_RLC3_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC3_RB_RPTR_ADDR_LO
 #define SDMA2_RLC3_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA2_RLC3_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA2_RLC3_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA2_RLC3_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA2_RLC3_IB_CNTL
 #define SDMA2_RLC3_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC3_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA2_RLC3_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -7467,25 +6090,18 @@
 #define SDMA2_RLC3_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA2_RLC3_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA2_RLC3_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA2_RLC3_IB_RPTR
 #define SDMA2_RLC3_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA2_RLC3_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA2_RLC3_IB_OFFSET
 #define SDMA2_RLC3_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA2_RLC3_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA2_RLC3_IB_BASE_LO
 #define SDMA2_RLC3_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA2_RLC3_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA2_RLC3_IB_BASE_HI
 #define SDMA2_RLC3_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC3_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC3_IB_SIZE
 #define SDMA2_RLC3_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA2_RLC3_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA2_RLC3_SKIP_CNTL
 #define SDMA2_RLC3_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA2_RLC3_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA2_RLC3_CONTEXT_STATUS
 #define SDMA2_RLC3_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA2_RLC3_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA2_RLC3_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -7502,94 +6118,68 @@
 #define SDMA2_RLC3_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA2_RLC3_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA2_RLC3_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA2_RLC3_DOORBELL
 #define SDMA2_RLC3_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA2_RLC3_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA2_RLC3_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA2_RLC3_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA2_RLC3_STATUS
 #define SDMA2_RLC3_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA2_RLC3_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA2_RLC3_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA2_RLC3_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA2_RLC3_DOORBELL_LOG
 #define SDMA2_RLC3_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA2_RLC3_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA2_RLC3_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA2_RLC3_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA2_RLC3_WATERMARK
 #define SDMA2_RLC3_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA2_RLC3_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA2_RLC3_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA2_RLC3_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA2_RLC3_DOORBELL_OFFSET
 #define SDMA2_RLC3_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA2_RLC3_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA2_RLC3_CSA_ADDR_LO
 #define SDMA2_RLC3_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA2_RLC3_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA2_RLC3_CSA_ADDR_HI
 #define SDMA2_RLC3_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA2_RLC3_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA2_RLC3_IB_SUB_REMAIN
 #define SDMA2_RLC3_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA2_RLC3_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA2_RLC3_PREEMPT
 #define SDMA2_RLC3_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA2_RLC3_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA2_RLC3_DUMMY_REG
 #define SDMA2_RLC3_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA2_RLC3_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC3_RB_WPTR_POLL_ADDR_HI
 #define SDMA2_RLC3_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA2_RLC3_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA2_RLC3_RB_WPTR_POLL_ADDR_LO
 #define SDMA2_RLC3_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA2_RLC3_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA2_RLC3_RB_AQL_CNTL
 #define SDMA2_RLC3_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA2_RLC3_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA2_RLC3_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA2_RLC3_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA2_RLC3_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA2_RLC3_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA2_RLC3_MINOR_PTR_UPDATE
 #define SDMA2_RLC3_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA2_RLC3_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA2_RLC3_MIDCMD_DATA0
 #define SDMA2_RLC3_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA2_RLC3_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC3_MIDCMD_DATA1
 #define SDMA2_RLC3_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA2_RLC3_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC3_MIDCMD_DATA2
 #define SDMA2_RLC3_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA2_RLC3_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC3_MIDCMD_DATA3
 #define SDMA2_RLC3_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA2_RLC3_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC3_MIDCMD_DATA4
 #define SDMA2_RLC3_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA2_RLC3_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC3_MIDCMD_DATA5
 #define SDMA2_RLC3_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA2_RLC3_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC3_MIDCMD_DATA6
 #define SDMA2_RLC3_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA2_RLC3_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC3_MIDCMD_DATA7
 #define SDMA2_RLC3_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA2_RLC3_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC3_MIDCMD_DATA8
 #define SDMA2_RLC3_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA2_RLC3_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC3_MIDCMD_DATA9
 #define SDMA2_RLC3_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA2_RLC3_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC3_MIDCMD_DATA10
 #define SDMA2_RLC3_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA2_RLC3_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC3_MIDCMD_CNTL
 #define SDMA2_RLC3_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA2_RLC3_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA2_RLC3_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -7598,7 +6188,6 @@
 #define SDMA2_RLC3_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA2_RLC3_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA2_RLC3_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA2_RLC4_RB_CNTL
 #define SDMA2_RLC4_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC4_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA2_RLC4_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -7615,25 +6204,18 @@
 #define SDMA2_RLC4_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA2_RLC4_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA2_RLC4_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA2_RLC4_RB_BASE
 #define SDMA2_RLC4_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA2_RLC4_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA2_RLC4_RB_BASE_HI
 #define SDMA2_RLC4_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC4_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA2_RLC4_RB_RPTR
 #define SDMA2_RLC4_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC4_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC4_RB_RPTR_HI
 #define SDMA2_RLC4_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC4_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC4_RB_WPTR
 #define SDMA2_RLC4_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC4_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC4_RB_WPTR_HI
 #define SDMA2_RLC4_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC4_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC4_RB_WPTR_POLL_CNTL
 #define SDMA2_RLC4_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA2_RLC4_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA2_RLC4_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -7644,15 +6226,12 @@
 #define SDMA2_RLC4_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA2_RLC4_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA2_RLC4_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA2_RLC4_RB_RPTR_ADDR_HI
 #define SDMA2_RLC4_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA2_RLC4_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC4_RB_RPTR_ADDR_LO
 #define SDMA2_RLC4_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA2_RLC4_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA2_RLC4_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA2_RLC4_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA2_RLC4_IB_CNTL
 #define SDMA2_RLC4_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC4_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA2_RLC4_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -7661,25 +6240,18 @@
 #define SDMA2_RLC4_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA2_RLC4_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA2_RLC4_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA2_RLC4_IB_RPTR
 #define SDMA2_RLC4_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA2_RLC4_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA2_RLC4_IB_OFFSET
 #define SDMA2_RLC4_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA2_RLC4_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA2_RLC4_IB_BASE_LO
 #define SDMA2_RLC4_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA2_RLC4_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA2_RLC4_IB_BASE_HI
 #define SDMA2_RLC4_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC4_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC4_IB_SIZE
 #define SDMA2_RLC4_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA2_RLC4_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA2_RLC4_SKIP_CNTL
 #define SDMA2_RLC4_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA2_RLC4_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA2_RLC4_CONTEXT_STATUS
 #define SDMA2_RLC4_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA2_RLC4_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA2_RLC4_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -7696,94 +6268,68 @@
 #define SDMA2_RLC4_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA2_RLC4_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA2_RLC4_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA2_RLC4_DOORBELL
 #define SDMA2_RLC4_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA2_RLC4_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA2_RLC4_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA2_RLC4_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA2_RLC4_STATUS
 #define SDMA2_RLC4_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA2_RLC4_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA2_RLC4_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA2_RLC4_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA2_RLC4_DOORBELL_LOG
 #define SDMA2_RLC4_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA2_RLC4_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA2_RLC4_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA2_RLC4_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA2_RLC4_WATERMARK
 #define SDMA2_RLC4_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA2_RLC4_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA2_RLC4_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA2_RLC4_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA2_RLC4_DOORBELL_OFFSET
 #define SDMA2_RLC4_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA2_RLC4_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA2_RLC4_CSA_ADDR_LO
 #define SDMA2_RLC4_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA2_RLC4_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA2_RLC4_CSA_ADDR_HI
 #define SDMA2_RLC4_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA2_RLC4_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA2_RLC4_IB_SUB_REMAIN
 #define SDMA2_RLC4_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA2_RLC4_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA2_RLC4_PREEMPT
 #define SDMA2_RLC4_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA2_RLC4_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA2_RLC4_DUMMY_REG
 #define SDMA2_RLC4_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA2_RLC4_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC4_RB_WPTR_POLL_ADDR_HI
 #define SDMA2_RLC4_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA2_RLC4_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA2_RLC4_RB_WPTR_POLL_ADDR_LO
 #define SDMA2_RLC4_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA2_RLC4_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA2_RLC4_RB_AQL_CNTL
 #define SDMA2_RLC4_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA2_RLC4_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA2_RLC4_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA2_RLC4_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA2_RLC4_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA2_RLC4_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA2_RLC4_MINOR_PTR_UPDATE
 #define SDMA2_RLC4_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA2_RLC4_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA2_RLC4_MIDCMD_DATA0
 #define SDMA2_RLC4_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA2_RLC4_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC4_MIDCMD_DATA1
 #define SDMA2_RLC4_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA2_RLC4_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC4_MIDCMD_DATA2
 #define SDMA2_RLC4_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA2_RLC4_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC4_MIDCMD_DATA3
 #define SDMA2_RLC4_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA2_RLC4_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC4_MIDCMD_DATA4
 #define SDMA2_RLC4_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA2_RLC4_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC4_MIDCMD_DATA5
 #define SDMA2_RLC4_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA2_RLC4_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC4_MIDCMD_DATA6
 #define SDMA2_RLC4_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA2_RLC4_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC4_MIDCMD_DATA7
 #define SDMA2_RLC4_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA2_RLC4_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC4_MIDCMD_DATA8
 #define SDMA2_RLC4_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA2_RLC4_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC4_MIDCMD_DATA9
 #define SDMA2_RLC4_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA2_RLC4_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC4_MIDCMD_DATA10
 #define SDMA2_RLC4_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA2_RLC4_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC4_MIDCMD_CNTL
 #define SDMA2_RLC4_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA2_RLC4_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA2_RLC4_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -7792,7 +6338,6 @@
 #define SDMA2_RLC4_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA2_RLC4_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA2_RLC4_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA2_RLC5_RB_CNTL
 #define SDMA2_RLC5_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC5_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA2_RLC5_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -7809,25 +6354,18 @@
 #define SDMA2_RLC5_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA2_RLC5_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA2_RLC5_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA2_RLC5_RB_BASE
 #define SDMA2_RLC5_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA2_RLC5_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA2_RLC5_RB_BASE_HI
 #define SDMA2_RLC5_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC5_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA2_RLC5_RB_RPTR
 #define SDMA2_RLC5_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC5_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC5_RB_RPTR_HI
 #define SDMA2_RLC5_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC5_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC5_RB_WPTR
 #define SDMA2_RLC5_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC5_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC5_RB_WPTR_HI
 #define SDMA2_RLC5_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC5_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC5_RB_WPTR_POLL_CNTL
 #define SDMA2_RLC5_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA2_RLC5_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA2_RLC5_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -7838,15 +6376,12 @@
 #define SDMA2_RLC5_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA2_RLC5_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA2_RLC5_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA2_RLC5_RB_RPTR_ADDR_HI
 #define SDMA2_RLC5_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA2_RLC5_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC5_RB_RPTR_ADDR_LO
 #define SDMA2_RLC5_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA2_RLC5_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA2_RLC5_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA2_RLC5_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA2_RLC5_IB_CNTL
 #define SDMA2_RLC5_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC5_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA2_RLC5_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -7855,25 +6390,18 @@
 #define SDMA2_RLC5_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA2_RLC5_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA2_RLC5_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA2_RLC5_IB_RPTR
 #define SDMA2_RLC5_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA2_RLC5_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA2_RLC5_IB_OFFSET
 #define SDMA2_RLC5_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA2_RLC5_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA2_RLC5_IB_BASE_LO
 #define SDMA2_RLC5_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA2_RLC5_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA2_RLC5_IB_BASE_HI
 #define SDMA2_RLC5_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC5_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC5_IB_SIZE
 #define SDMA2_RLC5_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA2_RLC5_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA2_RLC5_SKIP_CNTL
 #define SDMA2_RLC5_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA2_RLC5_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA2_RLC5_CONTEXT_STATUS
 #define SDMA2_RLC5_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA2_RLC5_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA2_RLC5_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -7890,94 +6418,68 @@
 #define SDMA2_RLC5_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA2_RLC5_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA2_RLC5_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA2_RLC5_DOORBELL
 #define SDMA2_RLC5_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA2_RLC5_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA2_RLC5_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA2_RLC5_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA2_RLC5_STATUS
 #define SDMA2_RLC5_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA2_RLC5_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA2_RLC5_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA2_RLC5_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA2_RLC5_DOORBELL_LOG
 #define SDMA2_RLC5_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA2_RLC5_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA2_RLC5_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA2_RLC5_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA2_RLC5_WATERMARK
 #define SDMA2_RLC5_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA2_RLC5_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA2_RLC5_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA2_RLC5_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA2_RLC5_DOORBELL_OFFSET
 #define SDMA2_RLC5_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA2_RLC5_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA2_RLC5_CSA_ADDR_LO
 #define SDMA2_RLC5_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA2_RLC5_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA2_RLC5_CSA_ADDR_HI
 #define SDMA2_RLC5_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA2_RLC5_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA2_RLC5_IB_SUB_REMAIN
 #define SDMA2_RLC5_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA2_RLC5_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA2_RLC5_PREEMPT
 #define SDMA2_RLC5_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA2_RLC5_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA2_RLC5_DUMMY_REG
 #define SDMA2_RLC5_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA2_RLC5_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC5_RB_WPTR_POLL_ADDR_HI
 #define SDMA2_RLC5_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA2_RLC5_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA2_RLC5_RB_WPTR_POLL_ADDR_LO
 #define SDMA2_RLC5_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA2_RLC5_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA2_RLC5_RB_AQL_CNTL
 #define SDMA2_RLC5_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA2_RLC5_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA2_RLC5_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA2_RLC5_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA2_RLC5_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA2_RLC5_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA2_RLC5_MINOR_PTR_UPDATE
 #define SDMA2_RLC5_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA2_RLC5_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA2_RLC5_MIDCMD_DATA0
 #define SDMA2_RLC5_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA2_RLC5_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC5_MIDCMD_DATA1
 #define SDMA2_RLC5_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA2_RLC5_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC5_MIDCMD_DATA2
 #define SDMA2_RLC5_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA2_RLC5_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC5_MIDCMD_DATA3
 #define SDMA2_RLC5_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA2_RLC5_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC5_MIDCMD_DATA4
 #define SDMA2_RLC5_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA2_RLC5_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC5_MIDCMD_DATA5
 #define SDMA2_RLC5_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA2_RLC5_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC5_MIDCMD_DATA6
 #define SDMA2_RLC5_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA2_RLC5_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC5_MIDCMD_DATA7
 #define SDMA2_RLC5_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA2_RLC5_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC5_MIDCMD_DATA8
 #define SDMA2_RLC5_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA2_RLC5_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC5_MIDCMD_DATA9
 #define SDMA2_RLC5_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA2_RLC5_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC5_MIDCMD_DATA10
 #define SDMA2_RLC5_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA2_RLC5_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC5_MIDCMD_CNTL
 #define SDMA2_RLC5_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA2_RLC5_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA2_RLC5_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -7986,7 +6488,6 @@
 #define SDMA2_RLC5_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA2_RLC5_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA2_RLC5_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA2_RLC6_RB_CNTL
 #define SDMA2_RLC6_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC6_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA2_RLC6_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -8003,25 +6504,18 @@
 #define SDMA2_RLC6_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA2_RLC6_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA2_RLC6_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA2_RLC6_RB_BASE
 #define SDMA2_RLC6_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA2_RLC6_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA2_RLC6_RB_BASE_HI
 #define SDMA2_RLC6_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC6_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA2_RLC6_RB_RPTR
 #define SDMA2_RLC6_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC6_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC6_RB_RPTR_HI
 #define SDMA2_RLC6_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC6_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC6_RB_WPTR
 #define SDMA2_RLC6_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC6_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC6_RB_WPTR_HI
 #define SDMA2_RLC6_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC6_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC6_RB_WPTR_POLL_CNTL
 #define SDMA2_RLC6_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA2_RLC6_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA2_RLC6_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -8032,15 +6526,12 @@
 #define SDMA2_RLC6_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA2_RLC6_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA2_RLC6_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA2_RLC6_RB_RPTR_ADDR_HI
 #define SDMA2_RLC6_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA2_RLC6_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC6_RB_RPTR_ADDR_LO
 #define SDMA2_RLC6_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA2_RLC6_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA2_RLC6_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA2_RLC6_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA2_RLC6_IB_CNTL
 #define SDMA2_RLC6_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC6_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA2_RLC6_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -8049,25 +6540,18 @@
 #define SDMA2_RLC6_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA2_RLC6_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA2_RLC6_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA2_RLC6_IB_RPTR
 #define SDMA2_RLC6_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA2_RLC6_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA2_RLC6_IB_OFFSET
 #define SDMA2_RLC6_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA2_RLC6_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA2_RLC6_IB_BASE_LO
 #define SDMA2_RLC6_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA2_RLC6_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA2_RLC6_IB_BASE_HI
 #define SDMA2_RLC6_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC6_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC6_IB_SIZE
 #define SDMA2_RLC6_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA2_RLC6_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA2_RLC6_SKIP_CNTL
 #define SDMA2_RLC6_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA2_RLC6_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA2_RLC6_CONTEXT_STATUS
 #define SDMA2_RLC6_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA2_RLC6_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA2_RLC6_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -8084,94 +6568,68 @@
 #define SDMA2_RLC6_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA2_RLC6_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA2_RLC6_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA2_RLC6_DOORBELL
 #define SDMA2_RLC6_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA2_RLC6_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA2_RLC6_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA2_RLC6_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA2_RLC6_STATUS
 #define SDMA2_RLC6_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA2_RLC6_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA2_RLC6_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA2_RLC6_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA2_RLC6_DOORBELL_LOG
 #define SDMA2_RLC6_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA2_RLC6_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA2_RLC6_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA2_RLC6_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA2_RLC6_WATERMARK
 #define SDMA2_RLC6_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA2_RLC6_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA2_RLC6_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA2_RLC6_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA2_RLC6_DOORBELL_OFFSET
 #define SDMA2_RLC6_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA2_RLC6_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA2_RLC6_CSA_ADDR_LO
 #define SDMA2_RLC6_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA2_RLC6_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA2_RLC6_CSA_ADDR_HI
 #define SDMA2_RLC6_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA2_RLC6_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA2_RLC6_IB_SUB_REMAIN
 #define SDMA2_RLC6_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA2_RLC6_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA2_RLC6_PREEMPT
 #define SDMA2_RLC6_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA2_RLC6_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA2_RLC6_DUMMY_REG
 #define SDMA2_RLC6_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA2_RLC6_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC6_RB_WPTR_POLL_ADDR_HI
 #define SDMA2_RLC6_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA2_RLC6_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA2_RLC6_RB_WPTR_POLL_ADDR_LO
 #define SDMA2_RLC6_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA2_RLC6_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA2_RLC6_RB_AQL_CNTL
 #define SDMA2_RLC6_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA2_RLC6_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA2_RLC6_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA2_RLC6_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA2_RLC6_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA2_RLC6_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA2_RLC6_MINOR_PTR_UPDATE
 #define SDMA2_RLC6_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA2_RLC6_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA2_RLC6_MIDCMD_DATA0
 #define SDMA2_RLC6_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA2_RLC6_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC6_MIDCMD_DATA1
 #define SDMA2_RLC6_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA2_RLC6_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC6_MIDCMD_DATA2
 #define SDMA2_RLC6_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA2_RLC6_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC6_MIDCMD_DATA3
 #define SDMA2_RLC6_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA2_RLC6_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC6_MIDCMD_DATA4
 #define SDMA2_RLC6_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA2_RLC6_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC6_MIDCMD_DATA5
 #define SDMA2_RLC6_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA2_RLC6_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC6_MIDCMD_DATA6
 #define SDMA2_RLC6_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA2_RLC6_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC6_MIDCMD_DATA7
 #define SDMA2_RLC6_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA2_RLC6_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC6_MIDCMD_DATA8
 #define SDMA2_RLC6_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA2_RLC6_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC6_MIDCMD_DATA9
 #define SDMA2_RLC6_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA2_RLC6_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC6_MIDCMD_DATA10
 #define SDMA2_RLC6_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA2_RLC6_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC6_MIDCMD_CNTL
 #define SDMA2_RLC6_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA2_RLC6_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA2_RLC6_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -8180,7 +6638,6 @@
 #define SDMA2_RLC6_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA2_RLC6_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA2_RLC6_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA2_RLC7_RB_CNTL
 #define SDMA2_RLC7_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC7_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA2_RLC7_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -8197,25 +6654,18 @@
 #define SDMA2_RLC7_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA2_RLC7_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA2_RLC7_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA2_RLC7_RB_BASE
 #define SDMA2_RLC7_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA2_RLC7_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA2_RLC7_RB_BASE_HI
 #define SDMA2_RLC7_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC7_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA2_RLC7_RB_RPTR
 #define SDMA2_RLC7_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC7_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC7_RB_RPTR_HI
 #define SDMA2_RLC7_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC7_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC7_RB_WPTR
 #define SDMA2_RLC7_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA2_RLC7_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA2_RLC7_RB_WPTR_HI
 #define SDMA2_RLC7_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA2_RLC7_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA2_RLC7_RB_WPTR_POLL_CNTL
 #define SDMA2_RLC7_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA2_RLC7_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA2_RLC7_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -8226,15 +6676,12 @@
 #define SDMA2_RLC7_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA2_RLC7_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA2_RLC7_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA2_RLC7_RB_RPTR_ADDR_HI
 #define SDMA2_RLC7_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA2_RLC7_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC7_RB_RPTR_ADDR_LO
 #define SDMA2_RLC7_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA2_RLC7_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA2_RLC7_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA2_RLC7_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA2_RLC7_IB_CNTL
 #define SDMA2_RLC7_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA2_RLC7_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA2_RLC7_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -8243,25 +6690,18 @@
 #define SDMA2_RLC7_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA2_RLC7_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA2_RLC7_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA2_RLC7_IB_RPTR
 #define SDMA2_RLC7_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA2_RLC7_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA2_RLC7_IB_OFFSET
 #define SDMA2_RLC7_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA2_RLC7_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA2_RLC7_IB_BASE_LO
 #define SDMA2_RLC7_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA2_RLC7_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA2_RLC7_IB_BASE_HI
 #define SDMA2_RLC7_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA2_RLC7_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC7_IB_SIZE
 #define SDMA2_RLC7_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA2_RLC7_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA2_RLC7_SKIP_CNTL
 #define SDMA2_RLC7_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA2_RLC7_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA2_RLC7_CONTEXT_STATUS
 #define SDMA2_RLC7_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA2_RLC7_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA2_RLC7_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -8278,94 +6718,68 @@
 #define SDMA2_RLC7_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA2_RLC7_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA2_RLC7_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA2_RLC7_DOORBELL
 #define SDMA2_RLC7_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA2_RLC7_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA2_RLC7_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA2_RLC7_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA2_RLC7_STATUS
 #define SDMA2_RLC7_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA2_RLC7_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA2_RLC7_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA2_RLC7_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA2_RLC7_DOORBELL_LOG
 #define SDMA2_RLC7_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA2_RLC7_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA2_RLC7_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA2_RLC7_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA2_RLC7_WATERMARK
 #define SDMA2_RLC7_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA2_RLC7_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA2_RLC7_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA2_RLC7_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA2_RLC7_DOORBELL_OFFSET
 #define SDMA2_RLC7_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA2_RLC7_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA2_RLC7_CSA_ADDR_LO
 #define SDMA2_RLC7_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA2_RLC7_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA2_RLC7_CSA_ADDR_HI
 #define SDMA2_RLC7_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA2_RLC7_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA2_RLC7_IB_SUB_REMAIN
 #define SDMA2_RLC7_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA2_RLC7_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA2_RLC7_PREEMPT
 #define SDMA2_RLC7_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA2_RLC7_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA2_RLC7_DUMMY_REG
 #define SDMA2_RLC7_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA2_RLC7_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA2_RLC7_RB_WPTR_POLL_ADDR_HI
 #define SDMA2_RLC7_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA2_RLC7_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA2_RLC7_RB_WPTR_POLL_ADDR_LO
 #define SDMA2_RLC7_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA2_RLC7_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA2_RLC7_RB_AQL_CNTL
 #define SDMA2_RLC7_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA2_RLC7_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA2_RLC7_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA2_RLC7_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA2_RLC7_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA2_RLC7_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA2_RLC7_MINOR_PTR_UPDATE
 #define SDMA2_RLC7_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA2_RLC7_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA2_RLC7_MIDCMD_DATA0
 #define SDMA2_RLC7_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA2_RLC7_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC7_MIDCMD_DATA1
 #define SDMA2_RLC7_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA2_RLC7_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC7_MIDCMD_DATA2
 #define SDMA2_RLC7_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA2_RLC7_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC7_MIDCMD_DATA3
 #define SDMA2_RLC7_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA2_RLC7_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC7_MIDCMD_DATA4
 #define SDMA2_RLC7_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA2_RLC7_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC7_MIDCMD_DATA5
 #define SDMA2_RLC7_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA2_RLC7_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC7_MIDCMD_DATA6
 #define SDMA2_RLC7_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA2_RLC7_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC7_MIDCMD_DATA7
 #define SDMA2_RLC7_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA2_RLC7_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC7_MIDCMD_DATA8
 #define SDMA2_RLC7_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA2_RLC7_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC7_MIDCMD_DATA9
 #define SDMA2_RLC7_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA2_RLC7_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA2_RLC7_MIDCMD_DATA10
 #define SDMA2_RLC7_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA2_RLC7_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA2_RLC7_MIDCMD_CNTL
 #define SDMA2_RLC7_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA2_RLC7_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA2_RLC7_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -8374,26 +6788,18 @@
 #define SDMA2_RLC7_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA2_RLC7_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA2_RLC7_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-
-
-// addressBlock: sdma0_sdma3dec
-//SDMA3_UCODE_ADDR
 #define SDMA3_UCODE_ADDR__VALUE__SHIFT                                                                        0x0
 #define SDMA3_UCODE_ADDR__VALUE_MASK                                                                          0x00003FFFL
-//SDMA3_UCODE_DATA
 #define SDMA3_UCODE_DATA__VALUE__SHIFT                                                                        0x0
 #define SDMA3_UCODE_DATA__VALUE_MASK                                                                          0xFFFFFFFFL
-//SDMA3_VF_ENABLE
 #define SDMA3_VF_ENABLE__VF_ENABLE__SHIFT                                                                     0x0
 #define SDMA3_VF_ENABLE__VF_ENABLE_MASK                                                                       0x00000001L
 #define SDMA3_PUB_REG_TYPE0__SDMA3_UCODE_ADDR__SHIFT                                                          0x0
 #define SDMA3_PUB_REG_TYPE0__SDMA3_UCODE_DATA__SHIFT                                                          0x1
 #define SDMA3_PUB_REG_TYPE0__SDMA3_UCODE_ADDR_MASK                                                            0x00000001L
 #define SDMA3_PUB_REG_TYPE0__SDMA3_UCODE_DATA_MASK                                                            0x00000002L
-//SDMA3_CONTEXT_GROUP_BOUNDARY
 #define SDMA3_CONTEXT_GROUP_BOUNDARY__RESERVED__SHIFT                                                         0x0
 #define SDMA3_CONTEXT_GROUP_BOUNDARY__RESERVED_MASK                                                           0xFFFFFFFFL
-//SDMA3_POWER_CNTL
 #define SDMA3_POWER_CNTL__PG_CNTL_ENABLE__SHIFT                                                               0x0
 #define SDMA3_POWER_CNTL__EXT_PG_POWER_ON_REQ__SHIFT                                                          0x1
 #define SDMA3_POWER_CNTL__EXT_PG_POWER_OFF_REQ__SHIFT                                                         0x2
@@ -8414,7 +6820,6 @@
 #define SDMA3_POWER_CNTL__MEM_POWER_SD_EN_MASK                                                                0x00000800L
 #define SDMA3_POWER_CNTL__MEM_POWER_DELAY_MASK                                                                0x003FF000L
 #define SDMA3_POWER_CNTL__ON_OFF_STATUS_DURATION_TIME_MASK                                                    0xFC000000L
-//SDMA3_CLK_CTRL
 #define SDMA3_CLK_CTRL__ON_DELAY__SHIFT                                                                       0x0
 #define SDMA3_CLK_CTRL__OFF_HYSTERESIS__SHIFT                                                                 0x4
 #define SDMA3_CLK_CTRL__RESERVED__SHIFT                                                                       0xc
@@ -8437,7 +6842,6 @@
 #define SDMA3_CLK_CTRL__SOFT_OVERRIDE2_MASK                                                                   0x20000000L
 #define SDMA3_CLK_CTRL__SOFT_OVERRIDE1_MASK                                                                   0x40000000L
 #define SDMA3_CLK_CTRL__SOFT_OVERRIDE0_MASK                                                                   0x80000000L
-//SDMA3_CNTL
 #define SDMA3_CNTL__TRAP_ENABLE__SHIFT                                                                        0x0
 #define SDMA3_CNTL__UTC_L1_ENABLE__SHIFT                                                                      0x1
 #define SDMA3_CNTL__SEM_WAIT_INT_ENABLE__SHIFT                                                                0x2
@@ -8462,7 +6866,6 @@
 #define SDMA3_CNTL__CTXEMPTY_INT_ENABLE_MASK                                                                  0x10000000L
 #define SDMA3_CNTL__FROZEN_INT_ENABLE_MASK                                                                    0x20000000L
 #define SDMA3_CNTL__IB_PREEMPT_INT_ENABLE_MASK                                                                0x40000000L
-//SDMA3_CHICKEN_BITS
 #define SDMA3_CHICKEN_BITS__COPY_EFFICIENCY_ENABLE__SHIFT                                                     0x0
 #define SDMA3_CHICKEN_BITS__STALL_ON_TRANS_FULL_ENABLE__SHIFT                                                 0x1
 #define SDMA3_CHICKEN_BITS__STALL_ON_NO_FREE_DATA_BUFFER_ENABLE__SHIFT                                        0x2
@@ -8487,7 +6890,6 @@
 #define SDMA3_CHICKEN_BITS__TIME_BASED_QOS_MASK                                                               0x02000000L
 #define SDMA3_CHICKEN_BITS__SRAM_FGCG_ENABLE_MASK                                                             0x04000000L
 #define SDMA3_CHICKEN_BITS__RESERVED_MASK                                                                     0xF8000000L
-//SDMA3_GB_ADDR_CONFIG
 #define SDMA3_GB_ADDR_CONFIG__NUM_PIPES__SHIFT                                                                0x0
 #define SDMA3_GB_ADDR_CONFIG__PIPE_INTERLEAVE_SIZE__SHIFT                                                     0x3
 #define SDMA3_GB_ADDR_CONFIG__BANK_INTERLEAVE_SIZE__SHIFT                                                     0x8
@@ -8498,7 +6900,6 @@
 #define SDMA3_GB_ADDR_CONFIG__BANK_INTERLEAVE_SIZE_MASK                                                       0x00000700L
 #define SDMA3_GB_ADDR_CONFIG__NUM_BANKS_MASK                                                                  0x00007000L
 #define SDMA3_GB_ADDR_CONFIG__NUM_SHADER_ENGINES_MASK                                                         0x00180000L
-//SDMA3_GB_ADDR_CONFIG_READ
 #define SDMA3_GB_ADDR_CONFIG_READ__NUM_PIPES__SHIFT                                                           0x0
 #define SDMA3_GB_ADDR_CONFIG_READ__PIPE_INTERLEAVE_SIZE__SHIFT                                                0x3
 #define SDMA3_GB_ADDR_CONFIG_READ__BANK_INTERLEAVE_SIZE__SHIFT                                                0x8
@@ -8509,22 +6910,16 @@
 #define SDMA3_GB_ADDR_CONFIG_READ__BANK_INTERLEAVE_SIZE_MASK                                                  0x00000700L
 #define SDMA3_GB_ADDR_CONFIG_READ__NUM_BANKS_MASK                                                             0x00007000L
 #define SDMA3_GB_ADDR_CONFIG_READ__NUM_SHADER_ENGINES_MASK                                                    0x00180000L
-//SDMA3_RB_RPTR_FETCH_HI
 #define SDMA3_RB_RPTR_FETCH_HI__OFFSET__SHIFT                                                                 0x0
 #define SDMA3_RB_RPTR_FETCH_HI__OFFSET_MASK                                                                   0xFFFFFFFFL
-//SDMA3_SEM_WAIT_FAIL_TIMER_CNTL
 #define SDMA3_SEM_WAIT_FAIL_TIMER_CNTL__TIMER__SHIFT                                                          0x0
 #define SDMA3_SEM_WAIT_FAIL_TIMER_CNTL__TIMER_MASK                                                            0xFFFFFFFFL
-//SDMA3_RB_RPTR_FETCH
 #define SDMA3_RB_RPTR_FETCH__OFFSET__SHIFT                                                                    0x2
 #define SDMA3_RB_RPTR_FETCH__OFFSET_MASK                                                                      0xFFFFFFFCL
-//SDMA3_IB_OFFSET_FETCH
 #define SDMA3_IB_OFFSET_FETCH__OFFSET__SHIFT                                                                  0x2
 #define SDMA3_IB_OFFSET_FETCH__OFFSET_MASK                                                                    0x003FFFFCL
-//SDMA3_PROGRAM
 #define SDMA3_PROGRAM__STREAM__SHIFT                                                                          0x0
 #define SDMA3_PROGRAM__STREAM_MASK                                                                            0xFFFFFFFFL
-//SDMA3_STATUS_REG
 #define SDMA3_STATUS_REG__IDLE__SHIFT                                                                         0x0
 #define SDMA3_STATUS_REG__REG_IDLE__SHIFT                                                                     0x1
 #define SDMA3_STATUS_REG__RB_EMPTY__SHIFT                                                                     0x2
@@ -8583,7 +6978,6 @@
 #define SDMA3_STATUS_REG__SEM_RESP_STATE_MASK                                                                 0x30000000L
 #define SDMA3_STATUS_REG__INT_IDLE_MASK                                                                       0x40000000L
 #define SDMA3_STATUS_REG__INT_REQ_STALL_MASK                                                                  0x80000000L
-//SDMA3_STATUS1_REG
 #define SDMA3_STATUS1_REG__CE_WREQ_IDLE__SHIFT                                                                0x0
 #define SDMA3_STATUS1_REG__CE_WR_IDLE__SHIFT                                                                  0x1
 #define SDMA3_STATUS1_REG__CE_SPLIT_IDLE__SHIFT                                                               0x2
@@ -8612,25 +7006,20 @@
 #define SDMA3_STATUS1_REG__EX_START_MASK                                                                      0x00008000L
 #define SDMA3_STATUS1_REG__CE_RD_STALL_MASK                                                                   0x00020000L
 #define SDMA3_STATUS1_REG__CE_WR_STALL_MASK                                                                   0x00040000L
-//SDMA3_RD_BURST_CNTL
 #define SDMA3_RD_BURST_CNTL__RD_BURST__SHIFT                                                                  0x0
 #define SDMA3_RD_BURST_CNTL__CMD_BUFFER_RD_BURST__SHIFT                                                       0x2
 #define SDMA3_RD_BURST_CNTL__RD_BURST_MASK                                                                    0x00000003L
 #define SDMA3_RD_BURST_CNTL__CMD_BUFFER_RD_BURST_MASK                                                         0x0000000CL
-//SDMA3_HBM_PAGE_CONFIG
 #define SDMA3_HBM_PAGE_CONFIG__PAGE_SIZE_EXPONENT__SHIFT                                                      0x0
 #define SDMA3_HBM_PAGE_CONFIG__PAGE_SIZE_EXPONENT_MASK                                                        0x00000003L
-//SDMA3_UCODE_CHECKSUM
 #define SDMA3_UCODE_CHECKSUM__DATA__SHIFT                                                                     0x0
 #define SDMA3_UCODE_CHECKSUM__DATA_MASK                                                                       0xFFFFFFFFL
-//SDMA3_F32_CNTL
 #define SDMA3_F32_CNTL__HALT__SHIFT                                                                           0x0
 #define SDMA3_F32_CNTL__STEP__SHIFT                                                                           0x1
 #define SDMA3_F32_CNTL__RESET__SHIFT                                                                          0x8
 #define SDMA3_F32_CNTL__HALT_MASK                                                                             0x00000001L
 #define SDMA3_F32_CNTL__STEP_MASK                                                                             0x00000002L
 #define SDMA3_F32_CNTL__RESET_MASK                                                                            0x00000100L
-//SDMA3_FREEZE
 #define SDMA3_FREEZE__PREEMPT__SHIFT                                                                          0x0
 #define SDMA3_FREEZE__FREEZE__SHIFT                                                                           0x4
 #define SDMA3_FREEZE__FROZEN__SHIFT                                                                           0x5
@@ -8639,39 +7028,32 @@
 #define SDMA3_FREEZE__FREEZE_MASK                                                                             0x00000010L
 #define SDMA3_FREEZE__FROZEN_MASK                                                                             0x00000020L
 #define SDMA3_FREEZE__F32_FREEZE_MASK                                                                         0x00000040L
-//SDMA3_PHASE0_QUANTUM
 #define SDMA3_PHASE0_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA3_PHASE0_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA3_PHASE0_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA3_PHASE0_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA3_PHASE0_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA3_PHASE0_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//SDMA3_PHASE1_QUANTUM
 #define SDMA3_PHASE1_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA3_PHASE1_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA3_PHASE1_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA3_PHASE1_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA3_PHASE1_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA3_PHASE1_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//CC_SDMA3_EDC_CONFIG
 #define CC_SDMA3_EDC_CONFIG__DIS_EDC__SHIFT                                                                   0x1
 #define CC_SDMA3_EDC_CONFIG__DIS_EDC_MASK                                                                     0x00000002L
-//SDMA3_BA_THRESHOLD
 #define SDMA3_BA_THRESHOLD__READ_THRES__SHIFT                                                                 0x0
 #define SDMA3_BA_THRESHOLD__WRITE_THRES__SHIFT                                                                0x10
 #define SDMA3_BA_THRESHOLD__READ_THRES_MASK                                                                   0x000003FFL
 #define SDMA3_BA_THRESHOLD__WRITE_THRES_MASK                                                                  0x03FF0000L
-//SDMA3_ID
 #define SDMA3_ID__DEVICE_ID__SHIFT                                                                            0x0
 #define SDMA3_ID__DEVICE_ID_MASK                                                                              0x000000FFL
-//SDMA3_VERSION
 #define SDMA3_VERSION__MINVER__SHIFT                                                                          0x0
 #define SDMA3_VERSION__MAJVER__SHIFT                                                                          0x8
 #define SDMA3_VERSION__REV__SHIFT                                                                             0x10
 #define SDMA3_VERSION__MINVER_MASK                                                                            0x0000007FL
 #define SDMA3_VERSION__MAJVER_MASK                                                                            0x00007F00L
 #define SDMA3_VERSION__REV_MASK                                                                               0x003F0000L
-//SDMA3_EDC_COUNTER
 #define SDMA3_EDC_COUNTER__SDMA_MBANK_DATA_BUF0_SED__SHIFT                                                    0x0
 #define SDMA3_EDC_COUNTER__SDMA_MBANK_DATA_BUF1_SED__SHIFT                                                    0x2
 #define SDMA3_EDC_COUNTER__SDMA_MBANK_DATA_BUF2_SED__SHIFT                                                    0x4
@@ -8704,7 +7086,6 @@
 #define SDMA3_EDC_COUNTER__SDMA_MBANK_DATA_BUF13_SED_MASK                                                     0x0C000000L
 #define SDMA3_EDC_COUNTER__SDMA_MBANK_DATA_BUF14_SED_MASK                                                     0x30000000L
 #define SDMA3_EDC_COUNTER__SDMA_MBANK_DATA_BUF15_SED_MASK                                                     0xC0000000L
-//SDMA3_EDC_COUNTER2
 #define SDMA3_EDC_COUNTER2__SDMA_UCODE_BUF_SED__SHIFT                                                         0x0
 #define SDMA3_EDC_COUNTER2__SDMA_RB_CMD_BUF_SED__SHIFT                                                        0x2
 #define SDMA3_EDC_COUNTER2__SDMA_IB_CMD_BUF_SED__SHIFT                                                        0x4
@@ -8725,25 +7106,20 @@
 #define SDMA3_EDC_COUNTER2__SDMA_SPLIT_DATA_BUF_SED_MASK                                                      0x0000C000L
 #define SDMA3_EDC_COUNTER2__SDMA_MC_WR_ADDR_FIFO_SED_MASK                                                     0x00030000L
 #define SDMA3_EDC_COUNTER2__SDMA_MC_RDRET_BUF_SED_MASK                                                        0x000C0000L
-//SDMA3_STATUS2_REG
 #define SDMA3_STATUS2_REG__ID__SHIFT                                                                          0x0
 #define SDMA3_STATUS2_REG__F32_INSTR_PTR__SHIFT                                                               0x3
 #define SDMA3_STATUS2_REG__CMD_OP__SHIFT                                                                      0x10
 #define SDMA3_STATUS2_REG__ID_MASK                                                                            0x00000007L
 #define SDMA3_STATUS2_REG__F32_INSTR_PTR_MASK                                                                 0x0000FFF8L
 #define SDMA3_STATUS2_REG__CMD_OP_MASK                                                                        0xFFFF0000L
-//SDMA3_ATOMIC_CNTL
 #define SDMA3_ATOMIC_CNTL__LOOP_TIMER__SHIFT                                                                  0x0
 #define SDMA3_ATOMIC_CNTL__ATOMIC_RTN_INT_ENABLE__SHIFT                                                       0x1f
 #define SDMA3_ATOMIC_CNTL__LOOP_TIMER_MASK                                                                    0x7FFFFFFFL
 #define SDMA3_ATOMIC_CNTL__ATOMIC_RTN_INT_ENABLE_MASK                                                         0x80000000L
-//SDMA3_ATOMIC_PREOP_LO
 #define SDMA3_ATOMIC_PREOP_LO__DATA__SHIFT                                                                    0x0
 #define SDMA3_ATOMIC_PREOP_LO__DATA_MASK                                                                      0xFFFFFFFFL
-//SDMA3_ATOMIC_PREOP_HI
 #define SDMA3_ATOMIC_PREOP_HI__DATA__SHIFT                                                                    0x0
 #define SDMA3_ATOMIC_PREOP_HI__DATA_MASK                                                                      0xFFFFFFFFL
-//SDMA3_UTCL1_CNTL
 #define SDMA3_UTCL1_CNTL__REDO_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_UTCL1_CNTL__REDO_DELAY__SHIFT                                                                   0x1
 #define SDMA3_UTCL1_CNTL__REDO_WATERMK__SHIFT                                                                 0xb
@@ -8756,7 +7132,6 @@
 #define SDMA3_UTCL1_CNTL__INVACK_DELAY_MASK                                                                   0x00FFC000L
 #define SDMA3_UTCL1_CNTL__REQL2_CREDIT_MASK                                                                   0x1F000000L
 #define SDMA3_UTCL1_CNTL__VADDR_WATERMK_MASK                                                                  0xE0000000L
-//SDMA3_UTCL1_WATERMK
 #define SDMA3_UTCL1_WATERMK__REQ_WATERMK__SHIFT                                                               0x0
 #define SDMA3_UTCL1_WATERMK__REQ_DEPTH__SHIFT                                                                 0x3
 #define SDMA3_UTCL1_WATERMK__PAGE_WATERMK__SHIFT                                                              0x5
@@ -8767,7 +7142,6 @@
 #define SDMA3_UTCL1_WATERMK__PAGE_WATERMK_MASK                                                                0x000000E0L
 #define SDMA3_UTCL1_WATERMK__INVREQ_WATERMK_MASK                                                              0x0000FF00L
 #define SDMA3_UTCL1_WATERMK__RESERVED_MASK                                                                    0xFFFF0000L
-//SDMA3_UTCL1_RD_STATUS
 #define SDMA3_UTCL1_RD_STATUS__RQMC_RET_ADDR_FIFO_EMPTY__SHIFT                                                0x0
 #define SDMA3_UTCL1_RD_STATUS__RQMC_REQ_FIFO_EMPTY__SHIFT                                                     0x1
 #define SDMA3_UTCL1_RD_STATUS__RTPG_RET_BUF_EMPTY__SHIFT                                                      0x2
@@ -8822,7 +7196,6 @@
 #define SDMA3_UTCL1_RD_STATUS__ADDR_RD_RTR_MASK                                                               0x20000000L
 #define SDMA3_UTCL1_RD_STATUS__WPTR_POLLING_MASK                                                              0x40000000L
 #define SDMA3_UTCL1_RD_STATUS__INVREQ_SIZE_MASK                                                               0x80000000L
-//SDMA3_UTCL1_WR_STATUS
 #define SDMA3_UTCL1_WR_STATUS__RQMC_RET_ADDR_FIFO_EMPTY__SHIFT                                                0x0
 #define SDMA3_UTCL1_WR_STATUS__RQMC_REQ_FIFO_EMPTY__SHIFT                                                     0x1
 #define SDMA3_UTCL1_WR_STATUS__RTPG_RET_BUF_EMPTY__SHIFT                                                      0x2
@@ -8879,7 +7252,6 @@
 #define SDMA3_UTCL1_WR_STATUS__RPTR_DATA_FIFO_FULL_MASK                                                       0x20000000L
 #define SDMA3_UTCL1_WR_STATUS__WRREQ_DATA_FIFO_EMPTY_MASK                                                     0x40000000L
 #define SDMA3_UTCL1_WR_STATUS__WRREQ_DATA_FIFO_FULL_MASK                                                      0x80000000L
-//SDMA3_UTCL1_INV0
 #define SDMA3_UTCL1_INV0__INV_MIDDLE__SHIFT                                                                   0x0
 #define SDMA3_UTCL1_INV0__RD_TIMEOUT__SHIFT                                                                   0x1
 #define SDMA3_UTCL1_INV0__WR_TIMEOUT__SHIFT                                                                   0x2
@@ -8908,16 +7280,12 @@
 #define SDMA3_UTCL1_INV0__INV_FLUSHTYPE_MASK                                                                  0x00000800L
 #define SDMA3_UTCL1_INV0__INV_VMID_VEC_MASK                                                                   0x0FFFF000L
 #define SDMA3_UTCL1_INV0__INV_ADDR_HI_MASK                                                                    0xF0000000L
-//SDMA3_UTCL1_INV1
 #define SDMA3_UTCL1_INV1__INV_ADDR_LO__SHIFT                                                                  0x0
 #define SDMA3_UTCL1_INV1__INV_ADDR_LO_MASK                                                                    0xFFFFFFFFL
-//SDMA3_UTCL1_INV2
 #define SDMA3_UTCL1_INV2__INV_NFLUSH_VMID_VEC__SHIFT                                                          0x0
 #define SDMA3_UTCL1_INV2__INV_NFLUSH_VMID_VEC_MASK                                                            0xFFFFFFFFL
-//SDMA3_UTCL1_RD_XNACK0
 #define SDMA3_UTCL1_RD_XNACK0__XNACK_ADDR_LO__SHIFT                                                           0x0
 #define SDMA3_UTCL1_RD_XNACK0__XNACK_ADDR_LO_MASK                                                             0xFFFFFFFFL
-//SDMA3_UTCL1_RD_XNACK1
 #define SDMA3_UTCL1_RD_XNACK1__XNACK_ADDR_HI__SHIFT                                                           0x0
 #define SDMA3_UTCL1_RD_XNACK1__XNACK_VMID__SHIFT                                                              0x4
 #define SDMA3_UTCL1_RD_XNACK1__XNACK_VECTOR__SHIFT                                                            0x8
@@ -8926,10 +7294,8 @@
 #define SDMA3_UTCL1_RD_XNACK1__XNACK_VMID_MASK                                                                0x000000F0L
 #define SDMA3_UTCL1_RD_XNACK1__XNACK_VECTOR_MASK                                                              0x03FFFF00L
 #define SDMA3_UTCL1_RD_XNACK1__IS_XNACK_MASK                                                                  0x0C000000L
-//SDMA3_UTCL1_WR_XNACK0
 #define SDMA3_UTCL1_WR_XNACK0__XNACK_ADDR_LO__SHIFT                                                           0x0
 #define SDMA3_UTCL1_WR_XNACK0__XNACK_ADDR_LO_MASK                                                             0xFFFFFFFFL
-//SDMA3_UTCL1_WR_XNACK1
 #define SDMA3_UTCL1_WR_XNACK1__XNACK_ADDR_HI__SHIFT                                                           0x0
 #define SDMA3_UTCL1_WR_XNACK1__XNACK_VMID__SHIFT                                                              0x4
 #define SDMA3_UTCL1_WR_XNACK1__XNACK_VECTOR__SHIFT                                                            0x8
@@ -8938,12 +7304,10 @@
 #define SDMA3_UTCL1_WR_XNACK1__XNACK_VMID_MASK                                                                0x000000F0L
 #define SDMA3_UTCL1_WR_XNACK1__XNACK_VECTOR_MASK                                                              0x03FFFF00L
 #define SDMA3_UTCL1_WR_XNACK1__IS_XNACK_MASK                                                                  0x0C000000L
-//SDMA3_UTCL1_TIMEOUT
 #define SDMA3_UTCL1_TIMEOUT__RD_XNACK_LIMIT__SHIFT                                                            0x0
 #define SDMA3_UTCL1_TIMEOUT__WR_XNACK_LIMIT__SHIFT                                                            0x10
 #define SDMA3_UTCL1_TIMEOUT__RD_XNACK_LIMIT_MASK                                                              0x0000FFFFL
 #define SDMA3_UTCL1_TIMEOUT__WR_XNACK_LIMIT_MASK                                                              0xFFFF0000L
-//SDMA3_UTCL1_PAGE
 #define SDMA3_UTCL1_PAGE__VM_HOLE__SHIFT                                                                      0x0
 #define SDMA3_UTCL1_PAGE__REQ_TYPE__SHIFT                                                                     0x1
 #define SDMA3_UTCL1_PAGE__USE_MTYPE__SHIFT                                                                    0x6
@@ -8952,14 +7316,12 @@
 #define SDMA3_UTCL1_PAGE__REQ_TYPE_MASK                                                                       0x0000001EL
 #define SDMA3_UTCL1_PAGE__USE_MTYPE_MASK                                                                      0x000001C0L
 #define SDMA3_UTCL1_PAGE__USE_PT_SNOOP_MASK                                                                   0x00000200L
-//SDMA3_POWER_CNTL_IDLE
 #define SDMA3_POWER_CNTL_IDLE__DELAY0__SHIFT                                                                  0x0
 #define SDMA3_POWER_CNTL_IDLE__DELAY1__SHIFT                                                                  0x10
 #define SDMA3_POWER_CNTL_IDLE__DELAY2__SHIFT                                                                  0x18
 #define SDMA3_POWER_CNTL_IDLE__DELAY0_MASK                                                                    0x0000FFFFL
 #define SDMA3_POWER_CNTL_IDLE__DELAY1_MASK                                                                    0x00FF0000L
 #define SDMA3_POWER_CNTL_IDLE__DELAY2_MASK                                                                    0xFF000000L
-//SDMA3_RELAX_ORDERING_LUT
 #define SDMA3_RELAX_ORDERING_LUT__RESERVED0__SHIFT                                                            0x0
 #define SDMA3_RELAX_ORDERING_LUT__COPY__SHIFT                                                                 0x1
 #define SDMA3_RELAX_ORDERING_LUT__WRITE__SHIFT                                                                0x2
@@ -8998,12 +7360,10 @@
 #define SDMA3_RELAX_ORDERING_LUT__WPTR_POLL_MASK                                                              0x20000000L
 #define SDMA3_RELAX_ORDERING_LUT__IB_FETCH_MASK                                                               0x40000000L
 #define SDMA3_RELAX_ORDERING_LUT__RB_FETCH_MASK                                                               0x80000000L
-//SDMA3_CHICKEN_BITS_2
 #define SDMA3_CHICKEN_BITS_2__F32_CMD_PROC_DELAY__SHIFT                                                       0x0
 #define SDMA3_CHICKEN_BITS_2__F32_SEND_POSTCODE_EN__SHIFT                                                     0x4
 #define SDMA3_CHICKEN_BITS_2__F32_CMD_PROC_DELAY_MASK                                                         0x0000000FL
 #define SDMA3_CHICKEN_BITS_2__F32_SEND_POSTCODE_EN_MASK                                                       0x00000010L
-//SDMA3_STATUS3_REG
 #define SDMA3_STATUS3_REG__CMD_OP_STATUS__SHIFT                                                               0x0
 #define SDMA3_STATUS3_REG__PREV_VM_CMD__SHIFT                                                                 0x10
 #define SDMA3_STATUS3_REG__EXCEPTION_IDLE__SHIFT                                                              0x14
@@ -9014,7 +7374,6 @@
 #define SDMA3_STATUS3_REG__EXCEPTION_IDLE_MASK                                                                0x00100000L
 #define SDMA3_STATUS3_REG__QUEUE_ID_MATCH_MASK                                                                0x00200000L
 #define SDMA3_STATUS3_REG__INT_QUEUE_ID_MASK                                                                  0x03C00000L
-//SDMA3_PHYSICAL_ADDR_LO
 #define SDMA3_PHYSICAL_ADDR_LO__D_VALID__SHIFT                                                                0x0
 #define SDMA3_PHYSICAL_ADDR_LO__DIRTY__SHIFT                                                                  0x1
 #define SDMA3_PHYSICAL_ADDR_LO__PHY_VALID__SHIFT                                                              0x2
@@ -9023,37 +7382,28 @@
 #define SDMA3_PHYSICAL_ADDR_LO__DIRTY_MASK                                                                    0x00000002L
 #define SDMA3_PHYSICAL_ADDR_LO__PHY_VALID_MASK                                                                0x00000004L
 #define SDMA3_PHYSICAL_ADDR_LO__ADDR_MASK                                                                     0xFFFFF000L
-//SDMA3_PHYSICAL_ADDR_HI
 #define SDMA3_PHYSICAL_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA3_PHYSICAL_ADDR_HI__ADDR_MASK                                                                     0x0000FFFFL
-//SDMA3_PHASE2_QUANTUM
 #define SDMA3_PHASE2_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA3_PHASE2_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA3_PHASE2_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA3_PHASE2_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA3_PHASE2_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA3_PHASE2_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//SDMA3_ERROR_LOG
 #define SDMA3_ERROR_LOG__OVERRIDE__SHIFT                                                                      0x0
 #define SDMA3_ERROR_LOG__STATUS__SHIFT                                                                        0x10
 #define SDMA3_ERROR_LOG__OVERRIDE_MASK                                                                        0x0000FFFFL
 #define SDMA3_ERROR_LOG__STATUS_MASK                                                                          0xFFFF0000L
-//SDMA3_PUB_DUMMY_REG0
 #define SDMA3_PUB_DUMMY_REG0__VALUE__SHIFT                                                                    0x0
 #define SDMA3_PUB_DUMMY_REG0__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA3_PUB_DUMMY_REG1
 #define SDMA3_PUB_DUMMY_REG1__VALUE__SHIFT                                                                    0x0
 #define SDMA3_PUB_DUMMY_REG1__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA3_PUB_DUMMY_REG2
 #define SDMA3_PUB_DUMMY_REG2__VALUE__SHIFT                                                                    0x0
 #define SDMA3_PUB_DUMMY_REG2__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA3_PUB_DUMMY_REG3
 #define SDMA3_PUB_DUMMY_REG3__VALUE__SHIFT                                                                    0x0
 #define SDMA3_PUB_DUMMY_REG3__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA3_F32_COUNTER
 #define SDMA3_F32_COUNTER__VALUE__SHIFT                                                                       0x0
 #define SDMA3_F32_COUNTER__VALUE_MASK                                                                         0xFFFFFFFFL
-//SDMA3_PERFCNT_PERFCOUNTER0_CFG
 #define SDMA3_PERFCNT_PERFCOUNTER0_CFG__PERF_SEL__SHIFT                                                       0x0
 #define SDMA3_PERFCNT_PERFCOUNTER0_CFG__PERF_SEL_END__SHIFT                                                   0x8
 #define SDMA3_PERFCNT_PERFCOUNTER0_CFG__PERF_MODE__SHIFT                                                      0x18
@@ -9064,7 +7414,6 @@
 #define SDMA3_PERFCNT_PERFCOUNTER0_CFG__PERF_MODE_MASK                                                        0x0F000000L
 #define SDMA3_PERFCNT_PERFCOUNTER0_CFG__ENABLE_MASK                                                           0x10000000L
 #define SDMA3_PERFCNT_PERFCOUNTER0_CFG__CLEAR_MASK                                                            0x20000000L
-//SDMA3_PERFCNT_PERFCOUNTER1_CFG
 #define SDMA3_PERFCNT_PERFCOUNTER1_CFG__PERF_SEL__SHIFT                                                       0x0
 #define SDMA3_PERFCNT_PERFCOUNTER1_CFG__PERF_SEL_END__SHIFT                                                   0x8
 #define SDMA3_PERFCNT_PERFCOUNTER1_CFG__PERF_MODE__SHIFT                                                      0x18
@@ -9075,7 +7424,6 @@
 #define SDMA3_PERFCNT_PERFCOUNTER1_CFG__PERF_MODE_MASK                                                        0x0F000000L
 #define SDMA3_PERFCNT_PERFCOUNTER1_CFG__ENABLE_MASK                                                           0x10000000L
 #define SDMA3_PERFCNT_PERFCOUNTER1_CFG__CLEAR_MASK                                                            0x20000000L
-//SDMA3_PERFCNT_PERFCOUNTER_RSLT_CNTL
 #define SDMA3_PERFCNT_PERFCOUNTER_RSLT_CNTL__PERF_COUNTER_SELECT__SHIFT                                       0x0
 #define SDMA3_PERFCNT_PERFCOUNTER_RSLT_CNTL__START_TRIGGER__SHIFT                                             0x8
 #define SDMA3_PERFCNT_PERFCOUNTER_RSLT_CNTL__STOP_TRIGGER__SHIFT                                              0x10
@@ -9088,23 +7436,18 @@
 #define SDMA3_PERFCNT_PERFCOUNTER_RSLT_CNTL__ENABLE_ANY_MASK                                                  0x01000000L
 #define SDMA3_PERFCNT_PERFCOUNTER_RSLT_CNTL__CLEAR_ALL_MASK                                                   0x02000000L
 #define SDMA3_PERFCNT_PERFCOUNTER_RSLT_CNTL__STOP_ALL_ON_SATURATE_MASK                                        0x04000000L
-//SDMA3_PERFCNT_MISC_CNTL
 #define SDMA3_PERFCNT_MISC_CNTL__CMD_OP__SHIFT                                                                0x0
 #define SDMA3_PERFCNT_MISC_CNTL__CMD_OP_MASK                                                                  0x0000FFFFL
-//SDMA3_PERFCNT_PERFCOUNTER_LO
 #define SDMA3_PERFCNT_PERFCOUNTER_LO__COUNTER_LO__SHIFT                                                       0x0
 #define SDMA3_PERFCNT_PERFCOUNTER_LO__COUNTER_LO_MASK                                                         0xFFFFFFFFL
-//SDMA3_PERFCNT_PERFCOUNTER_HI
 #define SDMA3_PERFCNT_PERFCOUNTER_HI__COUNTER_HI__SHIFT                                                       0x0
 #define SDMA3_PERFCNT_PERFCOUNTER_HI__COMPARE_VALUE__SHIFT                                                    0x10
 #define SDMA3_PERFCNT_PERFCOUNTER_HI__COUNTER_HI_MASK                                                         0x0000FFFFL
 #define SDMA3_PERFCNT_PERFCOUNTER_HI__COMPARE_VALUE_MASK                                                      0xFFFF0000L
-//SDMA3_CRD_CNTL
 #define SDMA3_CRD_CNTL__MC_WRREQ_CREDIT__SHIFT                                                                0x7
 #define SDMA3_CRD_CNTL__MC_RDREQ_CREDIT__SHIFT                                                                0xd
 #define SDMA3_CRD_CNTL__MC_WRREQ_CREDIT_MASK                                                                  0x00001F80L
 #define SDMA3_CRD_CNTL__MC_RDREQ_CREDIT_MASK                                                                  0x0007E000L
-//SDMA3_ULV_CNTL
 #define SDMA3_ULV_CNTL__HYSTERESIS__SHIFT                                                                     0x0
 #define SDMA3_ULV_CNTL__ENTER_ULV_INT_CLR__SHIFT                                                              0x1b
 #define SDMA3_ULV_CNTL__EXIT_ULV_INT_CLR__SHIFT                                                               0x1c
@@ -9117,13 +7460,10 @@
 #define SDMA3_ULV_CNTL__ENTER_ULV_INT_MASK                                                                    0x20000000L
 #define SDMA3_ULV_CNTL__EXIT_ULV_INT_MASK                                                                     0x40000000L
 #define SDMA3_ULV_CNTL__ULV_STATUS_MASK                                                                       0x80000000L
-//SDMA3_EA_DBIT_ADDR_DATA
 #define SDMA3_EA_DBIT_ADDR_DATA__VALUE__SHIFT                                                                 0x0
 #define SDMA3_EA_DBIT_ADDR_DATA__VALUE_MASK                                                                   0xFFFFFFFFL
-//SDMA3_EA_DBIT_ADDR_INDEX
 #define SDMA3_EA_DBIT_ADDR_INDEX__VALUE__SHIFT                                                                0x0
 #define SDMA3_EA_DBIT_ADDR_INDEX__VALUE_MASK                                                                  0x00000007L
-//SDMA3_STATUS4_REG
 #define SDMA3_STATUS4_REG__IDLE__SHIFT                                                                        0x0
 #define SDMA3_STATUS4_REG__IH_OUTSTANDING__SHIFT                                                              0x2
 #define SDMA3_STATUS4_REG__SEM_OUTSTANDING__SHIFT                                                             0x3
@@ -9152,13 +7492,10 @@
 #define SDMA3_STATUS4_REG__ACTIVE_QUEUE_ID_MASK                                                               0x0003C000L
 #define SDMA3_STATUS4_REG__SRIOV_WATING_RLCV_CMD_MASK                                                         0x00040000L
 #define SDMA3_STATUS4_REG__SRIOV_SDMA_EXECUTING_CMD_MASK                                                      0x00080000L
-//SDMA3_SCRATCH_RAM_DATA
 #define SDMA3_SCRATCH_RAM_DATA__DATA__SHIFT                                                                   0x0
 #define SDMA3_SCRATCH_RAM_DATA__DATA_MASK                                                                     0xFFFFFFFFL
-//SDMA3_SCRATCH_RAM_ADDR
 #define SDMA3_SCRATCH_RAM_ADDR__ADDR__SHIFT                                                                   0x0
 #define SDMA3_SCRATCH_RAM_ADDR__ADDR_MASK                                                                     0x0000007FL
-//SDMA3_CE_CTRL
 #define SDMA3_CE_CTRL__RD_LUT_WATERMARK__SHIFT                                                                0x0
 #define SDMA3_CE_CTRL__RD_LUT_DEPTH__SHIFT                                                                    0x3
 #define SDMA3_CE_CTRL__WR_AFIFO_WATERMARK__SHIFT                                                              0x5
@@ -9167,7 +7504,6 @@
 #define SDMA3_CE_CTRL__RD_LUT_DEPTH_MASK                                                                      0x00000018L
 #define SDMA3_CE_CTRL__WR_AFIFO_WATERMARK_MASK                                                                0x000000E0L
 #define SDMA3_CE_CTRL__RESERVED_MASK                                                                          0xFFFFFF00L
-//SDMA3_RAS_STATUS
 #define SDMA3_RAS_STATUS__RB_FETCH_ECC__SHIFT                                                                 0x0
 #define SDMA3_RAS_STATUS__IB_FETCH_ECC__SHIFT                                                                 0x1
 #define SDMA3_RAS_STATUS__F32_DATA_ECC__SHIFT                                                                 0x2
@@ -9192,7 +7528,6 @@
 #define SDMA3_RAS_STATUS__COPY_DATA_NACK_GEN_ERR_MASK                                                         0x00000800L
 #define SDMA3_RAS_STATUS__WRRET_DATA_NACK_GEN_ERR_MASK                                                        0x00001000L
 #define SDMA3_RAS_STATUS__WPTR_RPTR_ATOMIC_NACK_GEN_ERR_MASK                                                  0x00002000L
-//SDMA3_CLK_STATUS
 #define SDMA3_CLK_STATUS__DYN_CLK__SHIFT                                                                      0x0
 #define SDMA3_CLK_STATUS__PTR_CLK__SHIFT                                                                      0x1
 #define SDMA3_CLK_STATUS__REG_CLK__SHIFT                                                                      0x2
@@ -9201,7 +7536,6 @@
 #define SDMA3_CLK_STATUS__PTR_CLK_MASK                                                                        0x00000002L
 #define SDMA3_CLK_STATUS__REG_CLK_MASK                                                                        0x00000004L
 #define SDMA3_CLK_STATUS__F32_CLK_MASK                                                                        0x00000008L
-//SDMA3_GFX_RB_CNTL
 #define SDMA3_GFX_RB_CNTL__RB_ENABLE__SHIFT                                                                   0x0
 #define SDMA3_GFX_RB_CNTL__RB_SIZE__SHIFT                                                                     0x1
 #define SDMA3_GFX_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                              0x9
@@ -9218,25 +7552,18 @@
 #define SDMA3_GFX_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                          0x001F0000L
 #define SDMA3_GFX_RB_CNTL__RB_PRIV_MASK                                                                       0x00800000L
 #define SDMA3_GFX_RB_CNTL__RB_VMID_MASK                                                                       0x0F000000L
-//SDMA3_GFX_RB_BASE
 #define SDMA3_GFX_RB_BASE__ADDR__SHIFT                                                                        0x0
 #define SDMA3_GFX_RB_BASE__ADDR_MASK                                                                          0xFFFFFFFFL
-//SDMA3_GFX_RB_BASE_HI
 #define SDMA3_GFX_RB_BASE_HI__ADDR__SHIFT                                                                     0x0
 #define SDMA3_GFX_RB_BASE_HI__ADDR_MASK                                                                       0x00FFFFFFL
-//SDMA3_GFX_RB_RPTR
 #define SDMA3_GFX_RB_RPTR__OFFSET__SHIFT                                                                      0x0
 #define SDMA3_GFX_RB_RPTR__OFFSET_MASK                                                                        0xFFFFFFFFL
-//SDMA3_GFX_RB_RPTR_HI
 #define SDMA3_GFX_RB_RPTR_HI__OFFSET__SHIFT                                                                   0x0
 #define SDMA3_GFX_RB_RPTR_HI__OFFSET_MASK                                                                     0xFFFFFFFFL
-//SDMA3_GFX_RB_WPTR
 #define SDMA3_GFX_RB_WPTR__OFFSET__SHIFT                                                                      0x0
 #define SDMA3_GFX_RB_WPTR__OFFSET_MASK                                                                        0xFFFFFFFFL
-//SDMA3_GFX_RB_WPTR_HI
 #define SDMA3_GFX_RB_WPTR_HI__OFFSET__SHIFT                                                                   0x0
 #define SDMA3_GFX_RB_WPTR_HI__OFFSET_MASK                                                                     0xFFFFFFFFL
-//SDMA3_GFX_RB_WPTR_POLL_CNTL
 #define SDMA3_GFX_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                            0x0
 #define SDMA3_GFX_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                       0x1
 #define SDMA3_GFX_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                   0x2
@@ -9247,15 +7574,12 @@
 #define SDMA3_GFX_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                     0x00000004L
 #define SDMA3_GFX_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                           0x0000FFF0L
 #define SDMA3_GFX_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                     0xFFFF0000L
-//SDMA3_GFX_RB_RPTR_ADDR_HI
 #define SDMA3_GFX_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                                0x0
 #define SDMA3_GFX_RB_RPTR_ADDR_HI__ADDR_MASK                                                                  0xFFFFFFFFL
-//SDMA3_GFX_RB_RPTR_ADDR_LO
 #define SDMA3_GFX_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                        0x0
 #define SDMA3_GFX_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                                0x2
 #define SDMA3_GFX_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                          0x00000001L
 #define SDMA3_GFX_RB_RPTR_ADDR_LO__ADDR_MASK                                                                  0xFFFFFFFCL
-//SDMA3_GFX_IB_CNTL
 #define SDMA3_GFX_IB_CNTL__IB_ENABLE__SHIFT                                                                   0x0
 #define SDMA3_GFX_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                              0x4
 #define SDMA3_GFX_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                            0x8
@@ -9264,25 +7588,18 @@
 #define SDMA3_GFX_IB_CNTL__IB_SWAP_ENABLE_MASK                                                                0x00000010L
 #define SDMA3_GFX_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                              0x00000100L
 #define SDMA3_GFX_IB_CNTL__CMD_VMID_MASK                                                                      0x000F0000L
-//SDMA3_GFX_IB_RPTR
 #define SDMA3_GFX_IB_RPTR__OFFSET__SHIFT                                                                      0x2
 #define SDMA3_GFX_IB_RPTR__OFFSET_MASK                                                                        0x003FFFFCL
-//SDMA3_GFX_IB_OFFSET
 #define SDMA3_GFX_IB_OFFSET__OFFSET__SHIFT                                                                    0x2
 #define SDMA3_GFX_IB_OFFSET__OFFSET_MASK                                                                      0x003FFFFCL
-//SDMA3_GFX_IB_BASE_LO
 #define SDMA3_GFX_IB_BASE_LO__ADDR__SHIFT                                                                     0x5
 #define SDMA3_GFX_IB_BASE_LO__ADDR_MASK                                                                       0xFFFFFFE0L
-//SDMA3_GFX_IB_BASE_HI
 #define SDMA3_GFX_IB_BASE_HI__ADDR__SHIFT                                                                     0x0
 #define SDMA3_GFX_IB_BASE_HI__ADDR_MASK                                                                       0xFFFFFFFFL
-//SDMA3_GFX_IB_SIZE
 #define SDMA3_GFX_IB_SIZE__SIZE__SHIFT                                                                        0x0
 #define SDMA3_GFX_IB_SIZE__SIZE_MASK                                                                          0x000FFFFFL
-//SDMA3_GFX_SKIP_CNTL
 #define SDMA3_GFX_SKIP_CNTL__SKIP_COUNT__SHIFT                                                                0x0
 #define SDMA3_GFX_SKIP_CNTL__SKIP_COUNT_MASK                                                                  0x000FFFFFL
-//SDMA3_GFX_CONTEXT_STATUS
 #define SDMA3_GFX_CONTEXT_STATUS__SELECTED__SHIFT                                                             0x0
 #define SDMA3_GFX_CONTEXT_STATUS__IDLE__SHIFT                                                                 0x2
 #define SDMA3_GFX_CONTEXT_STATUS__EXPIRED__SHIFT                                                              0x3
@@ -9299,99 +7616,72 @@
 #define SDMA3_GFX_CONTEXT_STATUS__CTXSW_READY_MASK                                                            0x00000100L
 #define SDMA3_GFX_CONTEXT_STATUS__PREEMPTED_MASK                                                              0x00000200L
 #define SDMA3_GFX_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                        0x00000400L
-//SDMA3_GFX_DOORBELL
 #define SDMA3_GFX_DOORBELL__ENABLE__SHIFT                                                                     0x1c
 #define SDMA3_GFX_DOORBELL__CAPTURED__SHIFT                                                                   0x1e
 #define SDMA3_GFX_DOORBELL__ENABLE_MASK                                                                       0x10000000L
 #define SDMA3_GFX_DOORBELL__CAPTURED_MASK                                                                     0x40000000L
-//SDMA3_GFX_CONTEXT_CNTL
 #define SDMA3_GFX_CONTEXT_CNTL__RESUME_CTX__SHIFT                                                             0x10
 #define SDMA3_GFX_CONTEXT_CNTL__SESSION_SEL__SHIFT                                                            0x18
 #define SDMA3_GFX_CONTEXT_CNTL__RESUME_CTX_MASK                                                               0x00010000L
 #define SDMA3_GFX_CONTEXT_CNTL__SESSION_SEL_MASK                                                              0x0F000000L
-//SDMA3_GFX_STATUS
 #define SDMA3_GFX_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                       0x0
 #define SDMA3_GFX_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                          0x8
 #define SDMA3_GFX_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                         0x000000FFL
 #define SDMA3_GFX_STATUS__WPTR_UPDATE_PENDING_MASK                                                            0x00000100L
-//SDMA3_GFX_DOORBELL_LOG
 #define SDMA3_GFX_DOORBELL_LOG__BE_ERROR__SHIFT                                                               0x0
 #define SDMA3_GFX_DOORBELL_LOG__DATA__SHIFT                                                                   0x2
 #define SDMA3_GFX_DOORBELL_LOG__BE_ERROR_MASK                                                                 0x00000001L
 #define SDMA3_GFX_DOORBELL_LOG__DATA_MASK                                                                     0xFFFFFFFCL
-//SDMA3_GFX_WATERMARK
 #define SDMA3_GFX_WATERMARK__RD_OUTSTANDING__SHIFT                                                            0x0
 #define SDMA3_GFX_WATERMARK__WR_OUTSTANDING__SHIFT                                                            0x10
 #define SDMA3_GFX_WATERMARK__RD_OUTSTANDING_MASK                                                              0x00000FFFL
 #define SDMA3_GFX_WATERMARK__WR_OUTSTANDING_MASK                                                              0x03FF0000L
-//SDMA3_GFX_DOORBELL_OFFSET
 #define SDMA3_GFX_DOORBELL_OFFSET__OFFSET__SHIFT                                                              0x2
 #define SDMA3_GFX_DOORBELL_OFFSET__OFFSET_MASK                                                                0x0FFFFFFCL
-//SDMA3_GFX_CSA_ADDR_LO
 #define SDMA3_GFX_CSA_ADDR_LO__ADDR__SHIFT                                                                    0x2
 #define SDMA3_GFX_CSA_ADDR_LO__ADDR_MASK                                                                      0xFFFFFFFCL
-//SDMA3_GFX_CSA_ADDR_HI
 #define SDMA3_GFX_CSA_ADDR_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_GFX_CSA_ADDR_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA3_GFX_IB_SUB_REMAIN
 #define SDMA3_GFX_IB_SUB_REMAIN__SIZE__SHIFT                                                                  0x0
 #define SDMA3_GFX_IB_SUB_REMAIN__SIZE_MASK                                                                    0x000FFFFFL
-//SDMA3_GFX_PREEMPT
 #define SDMA3_GFX_PREEMPT__IB_PREEMPT__SHIFT                                                                  0x0
 #define SDMA3_GFX_PREEMPT__IB_PREEMPT_MASK                                                                    0x00000001L
-//SDMA3_GFX_DUMMY_REG
 #define SDMA3_GFX_DUMMY_REG__DUMMY__SHIFT                                                                     0x0
 #define SDMA3_GFX_DUMMY_REG__DUMMY_MASK                                                                       0xFFFFFFFFL
-//SDMA3_GFX_RB_WPTR_POLL_ADDR_HI
 #define SDMA3_GFX_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                           0x0
 #define SDMA3_GFX_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                             0xFFFFFFFFL
-//SDMA3_GFX_RB_WPTR_POLL_ADDR_LO
 #define SDMA3_GFX_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                           0x2
 #define SDMA3_GFX_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                             0xFFFFFFFCL
-//SDMA3_GFX_RB_AQL_CNTL
 #define SDMA3_GFX_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                              0x0
 #define SDMA3_GFX_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                         0x1
 #define SDMA3_GFX_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                             0x8
 #define SDMA3_GFX_RB_AQL_CNTL__AQL_ENABLE_MASK                                                                0x00000001L
 #define SDMA3_GFX_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                           0x000000FEL
 #define SDMA3_GFX_RB_AQL_CNTL__PACKET_STEP_MASK                                                               0x0000FF00L
-//SDMA3_GFX_MINOR_PTR_UPDATE
 #define SDMA3_GFX_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                             0x0
 #define SDMA3_GFX_MINOR_PTR_UPDATE__ENABLE_MASK                                                               0x00000001L
-//SDMA3_GFX_MIDCMD_DATA0
 #define SDMA3_GFX_MIDCMD_DATA0__DATA0__SHIFT                                                                  0x0
 #define SDMA3_GFX_MIDCMD_DATA0__DATA0_MASK                                                                    0xFFFFFFFFL
-//SDMA3_GFX_MIDCMD_DATA1
 #define SDMA3_GFX_MIDCMD_DATA1__DATA1__SHIFT                                                                  0x0
 #define SDMA3_GFX_MIDCMD_DATA1__DATA1_MASK                                                                    0xFFFFFFFFL
-//SDMA3_GFX_MIDCMD_DATA2
 #define SDMA3_GFX_MIDCMD_DATA2__DATA2__SHIFT                                                                  0x0
 #define SDMA3_GFX_MIDCMD_DATA2__DATA2_MASK                                                                    0xFFFFFFFFL
-//SDMA3_GFX_MIDCMD_DATA3
 #define SDMA3_GFX_MIDCMD_DATA3__DATA3__SHIFT                                                                  0x0
 #define SDMA3_GFX_MIDCMD_DATA3__DATA3_MASK                                                                    0xFFFFFFFFL
-//SDMA3_GFX_MIDCMD_DATA4
 #define SDMA3_GFX_MIDCMD_DATA4__DATA4__SHIFT                                                                  0x0
 #define SDMA3_GFX_MIDCMD_DATA4__DATA4_MASK                                                                    0xFFFFFFFFL
-//SDMA3_GFX_MIDCMD_DATA5
 #define SDMA3_GFX_MIDCMD_DATA5__DATA5__SHIFT                                                                  0x0
 #define SDMA3_GFX_MIDCMD_DATA5__DATA5_MASK                                                                    0xFFFFFFFFL
-//SDMA3_GFX_MIDCMD_DATA6
 #define SDMA3_GFX_MIDCMD_DATA6__DATA6__SHIFT                                                                  0x0
 #define SDMA3_GFX_MIDCMD_DATA6__DATA6_MASK                                                                    0xFFFFFFFFL
-//SDMA3_GFX_MIDCMD_DATA7
 #define SDMA3_GFX_MIDCMD_DATA7__DATA7__SHIFT                                                                  0x0
 #define SDMA3_GFX_MIDCMD_DATA7__DATA7_MASK                                                                    0xFFFFFFFFL
-//SDMA3_GFX_MIDCMD_DATA8
 #define SDMA3_GFX_MIDCMD_DATA8__DATA8__SHIFT                                                                  0x0
 #define SDMA3_GFX_MIDCMD_DATA8__DATA8_MASK                                                                    0xFFFFFFFFL
-//SDMA3_GFX_MIDCMD_DATA9
 #define SDMA3_GFX_MIDCMD_DATA9__DATA9__SHIFT                                                                  0x0
 #define SDMA3_GFX_MIDCMD_DATA9__DATA9_MASK                                                                    0xFFFFFFFFL
-//SDMA3_GFX_MIDCMD_DATA10
 #define SDMA3_GFX_MIDCMD_DATA10__DATA10__SHIFT                                                                0x0
 #define SDMA3_GFX_MIDCMD_DATA10__DATA10_MASK                                                                  0xFFFFFFFFL
-//SDMA3_GFX_MIDCMD_CNTL
 #define SDMA3_GFX_MIDCMD_CNTL__DATA_VALID__SHIFT                                                              0x0
 #define SDMA3_GFX_MIDCMD_CNTL__COPY_MODE__SHIFT                                                               0x1
 #define SDMA3_GFX_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                             0x4
@@ -9400,7 +7690,6 @@
 #define SDMA3_GFX_MIDCMD_CNTL__COPY_MODE_MASK                                                                 0x00000002L
 #define SDMA3_GFX_MIDCMD_CNTL__SPLIT_STATE_MASK                                                               0x000000F0L
 #define SDMA3_GFX_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                             0x00000100L
-//SDMA3_PAGE_RB_CNTL
 #define SDMA3_PAGE_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_PAGE_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA3_PAGE_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -9417,25 +7706,18 @@
 #define SDMA3_PAGE_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA3_PAGE_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA3_PAGE_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA3_PAGE_RB_BASE
 #define SDMA3_PAGE_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA3_PAGE_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA3_PAGE_RB_BASE_HI
 #define SDMA3_PAGE_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_PAGE_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA3_PAGE_RB_RPTR
 #define SDMA3_PAGE_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_PAGE_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_PAGE_RB_RPTR_HI
 #define SDMA3_PAGE_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_PAGE_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_PAGE_RB_WPTR
 #define SDMA3_PAGE_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_PAGE_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_PAGE_RB_WPTR_HI
 #define SDMA3_PAGE_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_PAGE_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_PAGE_RB_WPTR_POLL_CNTL
 #define SDMA3_PAGE_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA3_PAGE_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA3_PAGE_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -9446,15 +7728,12 @@
 #define SDMA3_PAGE_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA3_PAGE_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA3_PAGE_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA3_PAGE_RB_RPTR_ADDR_HI
 #define SDMA3_PAGE_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA3_PAGE_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA3_PAGE_RB_RPTR_ADDR_LO
 #define SDMA3_PAGE_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA3_PAGE_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA3_PAGE_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA3_PAGE_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA3_PAGE_IB_CNTL
 #define SDMA3_PAGE_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_PAGE_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA3_PAGE_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -9463,25 +7742,18 @@
 #define SDMA3_PAGE_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA3_PAGE_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA3_PAGE_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA3_PAGE_IB_RPTR
 #define SDMA3_PAGE_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA3_PAGE_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA3_PAGE_IB_OFFSET
 #define SDMA3_PAGE_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA3_PAGE_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA3_PAGE_IB_BASE_LO
 #define SDMA3_PAGE_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA3_PAGE_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA3_PAGE_IB_BASE_HI
 #define SDMA3_PAGE_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_PAGE_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA3_PAGE_IB_SIZE
 #define SDMA3_PAGE_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA3_PAGE_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA3_PAGE_SKIP_CNTL
 #define SDMA3_PAGE_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA3_PAGE_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA3_PAGE_CONTEXT_STATUS
 #define SDMA3_PAGE_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA3_PAGE_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA3_PAGE_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -9498,94 +7770,68 @@
 #define SDMA3_PAGE_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA3_PAGE_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA3_PAGE_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA3_PAGE_DOORBELL
 #define SDMA3_PAGE_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA3_PAGE_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA3_PAGE_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA3_PAGE_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA3_PAGE_STATUS
 #define SDMA3_PAGE_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA3_PAGE_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA3_PAGE_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA3_PAGE_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA3_PAGE_DOORBELL_LOG
 #define SDMA3_PAGE_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA3_PAGE_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA3_PAGE_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA3_PAGE_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA3_PAGE_WATERMARK
 #define SDMA3_PAGE_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA3_PAGE_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA3_PAGE_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA3_PAGE_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA3_PAGE_DOORBELL_OFFSET
 #define SDMA3_PAGE_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA3_PAGE_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA3_PAGE_CSA_ADDR_LO
 #define SDMA3_PAGE_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA3_PAGE_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA3_PAGE_CSA_ADDR_HI
 #define SDMA3_PAGE_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA3_PAGE_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA3_PAGE_IB_SUB_REMAIN
 #define SDMA3_PAGE_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA3_PAGE_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA3_PAGE_PREEMPT
 #define SDMA3_PAGE_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA3_PAGE_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA3_PAGE_DUMMY_REG
 #define SDMA3_PAGE_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA3_PAGE_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA3_PAGE_RB_WPTR_POLL_ADDR_HI
 #define SDMA3_PAGE_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA3_PAGE_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA3_PAGE_RB_WPTR_POLL_ADDR_LO
 #define SDMA3_PAGE_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA3_PAGE_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA3_PAGE_RB_AQL_CNTL
 #define SDMA3_PAGE_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA3_PAGE_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA3_PAGE_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA3_PAGE_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA3_PAGE_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA3_PAGE_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA3_PAGE_MINOR_PTR_UPDATE
 #define SDMA3_PAGE_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA3_PAGE_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA3_PAGE_MIDCMD_DATA0
 #define SDMA3_PAGE_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA3_PAGE_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA3_PAGE_MIDCMD_DATA1
 #define SDMA3_PAGE_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA3_PAGE_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA3_PAGE_MIDCMD_DATA2
 #define SDMA3_PAGE_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA3_PAGE_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA3_PAGE_MIDCMD_DATA3
 #define SDMA3_PAGE_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA3_PAGE_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA3_PAGE_MIDCMD_DATA4
 #define SDMA3_PAGE_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA3_PAGE_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA3_PAGE_MIDCMD_DATA5
 #define SDMA3_PAGE_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA3_PAGE_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA3_PAGE_MIDCMD_DATA6
 #define SDMA3_PAGE_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA3_PAGE_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA3_PAGE_MIDCMD_DATA7
 #define SDMA3_PAGE_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA3_PAGE_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA3_PAGE_MIDCMD_DATA8
 #define SDMA3_PAGE_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA3_PAGE_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA3_PAGE_MIDCMD_DATA9
 #define SDMA3_PAGE_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA3_PAGE_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA3_PAGE_MIDCMD_DATA10
 #define SDMA3_PAGE_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA3_PAGE_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA3_PAGE_MIDCMD_CNTL
 #define SDMA3_PAGE_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA3_PAGE_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA3_PAGE_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -9594,7 +7840,6 @@
 #define SDMA3_PAGE_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA3_PAGE_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA3_PAGE_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA3_RLC0_RB_CNTL
 #define SDMA3_RLC0_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC0_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA3_RLC0_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -9611,25 +7856,18 @@
 #define SDMA3_RLC0_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA3_RLC0_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA3_RLC0_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA3_RLC0_RB_BASE
 #define SDMA3_RLC0_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA3_RLC0_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA3_RLC0_RB_BASE_HI
 #define SDMA3_RLC0_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC0_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA3_RLC0_RB_RPTR
 #define SDMA3_RLC0_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC0_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC0_RB_RPTR_HI
 #define SDMA3_RLC0_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC0_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC0_RB_WPTR
 #define SDMA3_RLC0_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC0_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC0_RB_WPTR_HI
 #define SDMA3_RLC0_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC0_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC0_RB_WPTR_POLL_CNTL
 #define SDMA3_RLC0_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA3_RLC0_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA3_RLC0_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -9640,15 +7878,12 @@
 #define SDMA3_RLC0_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA3_RLC0_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA3_RLC0_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA3_RLC0_RB_RPTR_ADDR_HI
 #define SDMA3_RLC0_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA3_RLC0_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC0_RB_RPTR_ADDR_LO
 #define SDMA3_RLC0_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA3_RLC0_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA3_RLC0_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA3_RLC0_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA3_RLC0_IB_CNTL
 #define SDMA3_RLC0_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC0_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA3_RLC0_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -9657,25 +7892,18 @@
 #define SDMA3_RLC0_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA3_RLC0_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA3_RLC0_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA3_RLC0_IB_RPTR
 #define SDMA3_RLC0_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA3_RLC0_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA3_RLC0_IB_OFFSET
 #define SDMA3_RLC0_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA3_RLC0_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA3_RLC0_IB_BASE_LO
 #define SDMA3_RLC0_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA3_RLC0_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA3_RLC0_IB_BASE_HI
 #define SDMA3_RLC0_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC0_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC0_IB_SIZE
 #define SDMA3_RLC0_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA3_RLC0_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA3_RLC0_SKIP_CNTL
 #define SDMA3_RLC0_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA3_RLC0_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA3_RLC0_CONTEXT_STATUS
 #define SDMA3_RLC0_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA3_RLC0_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA3_RLC0_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -9692,94 +7920,68 @@
 #define SDMA3_RLC0_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA3_RLC0_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA3_RLC0_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA3_RLC0_DOORBELL
 #define SDMA3_RLC0_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA3_RLC0_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA3_RLC0_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA3_RLC0_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA3_RLC0_STATUS
 #define SDMA3_RLC0_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA3_RLC0_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA3_RLC0_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA3_RLC0_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA3_RLC0_DOORBELL_LOG
 #define SDMA3_RLC0_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA3_RLC0_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA3_RLC0_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA3_RLC0_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA3_RLC0_WATERMARK
 #define SDMA3_RLC0_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA3_RLC0_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA3_RLC0_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA3_RLC0_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA3_RLC0_DOORBELL_OFFSET
 #define SDMA3_RLC0_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA3_RLC0_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA3_RLC0_CSA_ADDR_LO
 #define SDMA3_RLC0_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA3_RLC0_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA3_RLC0_CSA_ADDR_HI
 #define SDMA3_RLC0_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA3_RLC0_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA3_RLC0_IB_SUB_REMAIN
 #define SDMA3_RLC0_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA3_RLC0_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA3_RLC0_PREEMPT
 #define SDMA3_RLC0_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA3_RLC0_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA3_RLC0_DUMMY_REG
 #define SDMA3_RLC0_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA3_RLC0_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC0_RB_WPTR_POLL_ADDR_HI
 #define SDMA3_RLC0_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA3_RLC0_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA3_RLC0_RB_WPTR_POLL_ADDR_LO
 #define SDMA3_RLC0_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA3_RLC0_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA3_RLC0_RB_AQL_CNTL
 #define SDMA3_RLC0_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA3_RLC0_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA3_RLC0_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA3_RLC0_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA3_RLC0_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA3_RLC0_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA3_RLC0_MINOR_PTR_UPDATE
 #define SDMA3_RLC0_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA3_RLC0_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA3_RLC0_MIDCMD_DATA0
 #define SDMA3_RLC0_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA3_RLC0_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC0_MIDCMD_DATA1
 #define SDMA3_RLC0_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA3_RLC0_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC0_MIDCMD_DATA2
 #define SDMA3_RLC0_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA3_RLC0_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC0_MIDCMD_DATA3
 #define SDMA3_RLC0_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA3_RLC0_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC0_MIDCMD_DATA4
 #define SDMA3_RLC0_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA3_RLC0_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC0_MIDCMD_DATA5
 #define SDMA3_RLC0_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA3_RLC0_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC0_MIDCMD_DATA6
 #define SDMA3_RLC0_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA3_RLC0_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC0_MIDCMD_DATA7
 #define SDMA3_RLC0_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA3_RLC0_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC0_MIDCMD_DATA8
 #define SDMA3_RLC0_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA3_RLC0_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC0_MIDCMD_DATA9
 #define SDMA3_RLC0_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA3_RLC0_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC0_MIDCMD_DATA10
 #define SDMA3_RLC0_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA3_RLC0_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC0_MIDCMD_CNTL
 #define SDMA3_RLC0_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA3_RLC0_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA3_RLC0_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -9788,7 +7990,6 @@
 #define SDMA3_RLC0_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA3_RLC0_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA3_RLC0_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA3_RLC1_RB_CNTL
 #define SDMA3_RLC1_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC1_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA3_RLC1_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -9805,25 +8006,18 @@
 #define SDMA3_RLC1_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA3_RLC1_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA3_RLC1_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA3_RLC1_RB_BASE
 #define SDMA3_RLC1_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA3_RLC1_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA3_RLC1_RB_BASE_HI
 #define SDMA3_RLC1_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC1_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA3_RLC1_RB_RPTR
 #define SDMA3_RLC1_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC1_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC1_RB_RPTR_HI
 #define SDMA3_RLC1_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC1_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC1_RB_WPTR
 #define SDMA3_RLC1_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC1_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC1_RB_WPTR_HI
 #define SDMA3_RLC1_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC1_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC1_RB_WPTR_POLL_CNTL
 #define SDMA3_RLC1_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA3_RLC1_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA3_RLC1_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -9834,15 +8028,12 @@
 #define SDMA3_RLC1_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA3_RLC1_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA3_RLC1_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA3_RLC1_RB_RPTR_ADDR_HI
 #define SDMA3_RLC1_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA3_RLC1_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC1_RB_RPTR_ADDR_LO
 #define SDMA3_RLC1_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA3_RLC1_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA3_RLC1_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA3_RLC1_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA3_RLC1_IB_CNTL
 #define SDMA3_RLC1_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC1_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA3_RLC1_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -9851,25 +8042,18 @@
 #define SDMA3_RLC1_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA3_RLC1_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA3_RLC1_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA3_RLC1_IB_RPTR
 #define SDMA3_RLC1_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA3_RLC1_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA3_RLC1_IB_OFFSET
 #define SDMA3_RLC1_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA3_RLC1_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA3_RLC1_IB_BASE_LO
 #define SDMA3_RLC1_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA3_RLC1_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA3_RLC1_IB_BASE_HI
 #define SDMA3_RLC1_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC1_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC1_IB_SIZE
 #define SDMA3_RLC1_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA3_RLC1_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA3_RLC1_SKIP_CNTL
 #define SDMA3_RLC1_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA3_RLC1_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA3_RLC1_CONTEXT_STATUS
 #define SDMA3_RLC1_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA3_RLC1_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA3_RLC1_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -9886,94 +8070,68 @@
 #define SDMA3_RLC1_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA3_RLC1_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA3_RLC1_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA3_RLC1_DOORBELL
 #define SDMA3_RLC1_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA3_RLC1_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA3_RLC1_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA3_RLC1_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA3_RLC1_STATUS
 #define SDMA3_RLC1_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA3_RLC1_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA3_RLC1_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA3_RLC1_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA3_RLC1_DOORBELL_LOG
 #define SDMA3_RLC1_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA3_RLC1_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA3_RLC1_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA3_RLC1_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA3_RLC1_WATERMARK
 #define SDMA3_RLC1_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA3_RLC1_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA3_RLC1_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA3_RLC1_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA3_RLC1_DOORBELL_OFFSET
 #define SDMA3_RLC1_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA3_RLC1_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA3_RLC1_CSA_ADDR_LO
 #define SDMA3_RLC1_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA3_RLC1_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA3_RLC1_CSA_ADDR_HI
 #define SDMA3_RLC1_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA3_RLC1_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA3_RLC1_IB_SUB_REMAIN
 #define SDMA3_RLC1_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA3_RLC1_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA3_RLC1_PREEMPT
 #define SDMA3_RLC1_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA3_RLC1_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA3_RLC1_DUMMY_REG
 #define SDMA3_RLC1_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA3_RLC1_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC1_RB_WPTR_POLL_ADDR_HI
 #define SDMA3_RLC1_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA3_RLC1_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA3_RLC1_RB_WPTR_POLL_ADDR_LO
 #define SDMA3_RLC1_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA3_RLC1_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA3_RLC1_RB_AQL_CNTL
 #define SDMA3_RLC1_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA3_RLC1_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA3_RLC1_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA3_RLC1_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA3_RLC1_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA3_RLC1_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA3_RLC1_MINOR_PTR_UPDATE
 #define SDMA3_RLC1_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA3_RLC1_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA3_RLC1_MIDCMD_DATA0
 #define SDMA3_RLC1_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA3_RLC1_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC1_MIDCMD_DATA1
 #define SDMA3_RLC1_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA3_RLC1_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC1_MIDCMD_DATA2
 #define SDMA3_RLC1_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA3_RLC1_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC1_MIDCMD_DATA3
 #define SDMA3_RLC1_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA3_RLC1_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC1_MIDCMD_DATA4
 #define SDMA3_RLC1_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA3_RLC1_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC1_MIDCMD_DATA5
 #define SDMA3_RLC1_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA3_RLC1_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC1_MIDCMD_DATA6
 #define SDMA3_RLC1_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA3_RLC1_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC1_MIDCMD_DATA7
 #define SDMA3_RLC1_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA3_RLC1_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC1_MIDCMD_DATA8
 #define SDMA3_RLC1_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA3_RLC1_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC1_MIDCMD_DATA9
 #define SDMA3_RLC1_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA3_RLC1_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC1_MIDCMD_DATA10
 #define SDMA3_RLC1_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA3_RLC1_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC1_MIDCMD_CNTL
 #define SDMA3_RLC1_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA3_RLC1_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA3_RLC1_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -9982,7 +8140,6 @@
 #define SDMA3_RLC1_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA3_RLC1_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA3_RLC1_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA3_RLC2_RB_CNTL
 #define SDMA3_RLC2_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC2_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA3_RLC2_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -9999,25 +8156,18 @@
 #define SDMA3_RLC2_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA3_RLC2_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA3_RLC2_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA3_RLC2_RB_BASE
 #define SDMA3_RLC2_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA3_RLC2_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA3_RLC2_RB_BASE_HI
 #define SDMA3_RLC2_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC2_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA3_RLC2_RB_RPTR
 #define SDMA3_RLC2_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC2_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC2_RB_RPTR_HI
 #define SDMA3_RLC2_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC2_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC2_RB_WPTR
 #define SDMA3_RLC2_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC2_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC2_RB_WPTR_HI
 #define SDMA3_RLC2_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC2_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC2_RB_WPTR_POLL_CNTL
 #define SDMA3_RLC2_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA3_RLC2_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA3_RLC2_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -10028,15 +8178,12 @@
 #define SDMA3_RLC2_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA3_RLC2_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA3_RLC2_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA3_RLC2_RB_RPTR_ADDR_HI
 #define SDMA3_RLC2_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA3_RLC2_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC2_RB_RPTR_ADDR_LO
 #define SDMA3_RLC2_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA3_RLC2_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA3_RLC2_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA3_RLC2_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA3_RLC2_IB_CNTL
 #define SDMA3_RLC2_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC2_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA3_RLC2_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -10045,25 +8192,18 @@
 #define SDMA3_RLC2_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA3_RLC2_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA3_RLC2_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA3_RLC2_IB_RPTR
 #define SDMA3_RLC2_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA3_RLC2_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA3_RLC2_IB_OFFSET
 #define SDMA3_RLC2_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA3_RLC2_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA3_RLC2_IB_BASE_LO
 #define SDMA3_RLC2_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA3_RLC2_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA3_RLC2_IB_BASE_HI
 #define SDMA3_RLC2_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC2_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC2_IB_SIZE
 #define SDMA3_RLC2_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA3_RLC2_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA3_RLC2_SKIP_CNTL
 #define SDMA3_RLC2_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA3_RLC2_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA3_RLC2_CONTEXT_STATUS
 #define SDMA3_RLC2_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA3_RLC2_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA3_RLC2_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -10080,94 +8220,68 @@
 #define SDMA3_RLC2_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA3_RLC2_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA3_RLC2_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA3_RLC2_DOORBELL
 #define SDMA3_RLC2_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA3_RLC2_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA3_RLC2_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA3_RLC2_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA3_RLC2_STATUS
 #define SDMA3_RLC2_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA3_RLC2_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA3_RLC2_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA3_RLC2_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA3_RLC2_DOORBELL_LOG
 #define SDMA3_RLC2_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA3_RLC2_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA3_RLC2_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA3_RLC2_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA3_RLC2_WATERMARK
 #define SDMA3_RLC2_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA3_RLC2_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA3_RLC2_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA3_RLC2_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA3_RLC2_DOORBELL_OFFSET
 #define SDMA3_RLC2_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA3_RLC2_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA3_RLC2_CSA_ADDR_LO
 #define SDMA3_RLC2_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA3_RLC2_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA3_RLC2_CSA_ADDR_HI
 #define SDMA3_RLC2_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA3_RLC2_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA3_RLC2_IB_SUB_REMAIN
 #define SDMA3_RLC2_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA3_RLC2_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA3_RLC2_PREEMPT
 #define SDMA3_RLC2_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA3_RLC2_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA3_RLC2_DUMMY_REG
 #define SDMA3_RLC2_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA3_RLC2_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC2_RB_WPTR_POLL_ADDR_HI
 #define SDMA3_RLC2_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA3_RLC2_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA3_RLC2_RB_WPTR_POLL_ADDR_LO
 #define SDMA3_RLC2_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA3_RLC2_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA3_RLC2_RB_AQL_CNTL
 #define SDMA3_RLC2_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA3_RLC2_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA3_RLC2_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA3_RLC2_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA3_RLC2_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA3_RLC2_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA3_RLC2_MINOR_PTR_UPDATE
 #define SDMA3_RLC2_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA3_RLC2_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA3_RLC2_MIDCMD_DATA0
 #define SDMA3_RLC2_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA3_RLC2_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC2_MIDCMD_DATA1
 #define SDMA3_RLC2_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA3_RLC2_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC2_MIDCMD_DATA2
 #define SDMA3_RLC2_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA3_RLC2_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC2_MIDCMD_DATA3
 #define SDMA3_RLC2_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA3_RLC2_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC2_MIDCMD_DATA4
 #define SDMA3_RLC2_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA3_RLC2_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC2_MIDCMD_DATA5
 #define SDMA3_RLC2_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA3_RLC2_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC2_MIDCMD_DATA6
 #define SDMA3_RLC2_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA3_RLC2_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC2_MIDCMD_DATA7
 #define SDMA3_RLC2_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA3_RLC2_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC2_MIDCMD_DATA8
 #define SDMA3_RLC2_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA3_RLC2_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC2_MIDCMD_DATA9
 #define SDMA3_RLC2_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA3_RLC2_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC2_MIDCMD_DATA10
 #define SDMA3_RLC2_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA3_RLC2_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC2_MIDCMD_CNTL
 #define SDMA3_RLC2_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA3_RLC2_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA3_RLC2_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -10176,7 +8290,6 @@
 #define SDMA3_RLC2_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA3_RLC2_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA3_RLC2_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA3_RLC3_RB_CNTL
 #define SDMA3_RLC3_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC3_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA3_RLC3_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -10193,25 +8306,18 @@
 #define SDMA3_RLC3_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA3_RLC3_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA3_RLC3_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA3_RLC3_RB_BASE
 #define SDMA3_RLC3_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA3_RLC3_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA3_RLC3_RB_BASE_HI
 #define SDMA3_RLC3_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC3_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA3_RLC3_RB_RPTR
 #define SDMA3_RLC3_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC3_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC3_RB_RPTR_HI
 #define SDMA3_RLC3_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC3_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC3_RB_WPTR
 #define SDMA3_RLC3_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC3_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC3_RB_WPTR_HI
 #define SDMA3_RLC3_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC3_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC3_RB_WPTR_POLL_CNTL
 #define SDMA3_RLC3_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA3_RLC3_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA3_RLC3_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -10222,15 +8328,12 @@
 #define SDMA3_RLC3_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA3_RLC3_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA3_RLC3_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA3_RLC3_RB_RPTR_ADDR_HI
 #define SDMA3_RLC3_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA3_RLC3_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC3_RB_RPTR_ADDR_LO
 #define SDMA3_RLC3_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA3_RLC3_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA3_RLC3_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA3_RLC3_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA3_RLC3_IB_CNTL
 #define SDMA3_RLC3_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC3_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA3_RLC3_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -10239,25 +8342,18 @@
 #define SDMA3_RLC3_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA3_RLC3_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA3_RLC3_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA3_RLC3_IB_RPTR
 #define SDMA3_RLC3_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA3_RLC3_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA3_RLC3_IB_OFFSET
 #define SDMA3_RLC3_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA3_RLC3_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA3_RLC3_IB_BASE_LO
 #define SDMA3_RLC3_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA3_RLC3_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA3_RLC3_IB_BASE_HI
 #define SDMA3_RLC3_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC3_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC3_IB_SIZE
 #define SDMA3_RLC3_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA3_RLC3_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA3_RLC3_SKIP_CNTL
 #define SDMA3_RLC3_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA3_RLC3_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA3_RLC3_CONTEXT_STATUS
 #define SDMA3_RLC3_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA3_RLC3_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA3_RLC3_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -10274,94 +8370,68 @@
 #define SDMA3_RLC3_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA3_RLC3_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA3_RLC3_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA3_RLC3_DOORBELL
 #define SDMA3_RLC3_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA3_RLC3_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA3_RLC3_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA3_RLC3_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA3_RLC3_STATUS
 #define SDMA3_RLC3_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA3_RLC3_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA3_RLC3_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA3_RLC3_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA3_RLC3_DOORBELL_LOG
 #define SDMA3_RLC3_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA3_RLC3_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA3_RLC3_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA3_RLC3_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA3_RLC3_WATERMARK
 #define SDMA3_RLC3_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA3_RLC3_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA3_RLC3_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA3_RLC3_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA3_RLC3_DOORBELL_OFFSET
 #define SDMA3_RLC3_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA3_RLC3_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA3_RLC3_CSA_ADDR_LO
 #define SDMA3_RLC3_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA3_RLC3_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA3_RLC3_CSA_ADDR_HI
 #define SDMA3_RLC3_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA3_RLC3_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA3_RLC3_IB_SUB_REMAIN
 #define SDMA3_RLC3_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA3_RLC3_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA3_RLC3_PREEMPT
 #define SDMA3_RLC3_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA3_RLC3_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA3_RLC3_DUMMY_REG
 #define SDMA3_RLC3_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA3_RLC3_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC3_RB_WPTR_POLL_ADDR_HI
 #define SDMA3_RLC3_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA3_RLC3_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA3_RLC3_RB_WPTR_POLL_ADDR_LO
 #define SDMA3_RLC3_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA3_RLC3_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA3_RLC3_RB_AQL_CNTL
 #define SDMA3_RLC3_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA3_RLC3_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA3_RLC3_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA3_RLC3_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA3_RLC3_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA3_RLC3_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA3_RLC3_MINOR_PTR_UPDATE
 #define SDMA3_RLC3_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA3_RLC3_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA3_RLC3_MIDCMD_DATA0
 #define SDMA3_RLC3_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA3_RLC3_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC3_MIDCMD_DATA1
 #define SDMA3_RLC3_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA3_RLC3_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC3_MIDCMD_DATA2
 #define SDMA3_RLC3_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA3_RLC3_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC3_MIDCMD_DATA3
 #define SDMA3_RLC3_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA3_RLC3_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC3_MIDCMD_DATA4
 #define SDMA3_RLC3_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA3_RLC3_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC3_MIDCMD_DATA5
 #define SDMA3_RLC3_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA3_RLC3_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC3_MIDCMD_DATA6
 #define SDMA3_RLC3_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA3_RLC3_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC3_MIDCMD_DATA7
 #define SDMA3_RLC3_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA3_RLC3_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC3_MIDCMD_DATA8
 #define SDMA3_RLC3_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA3_RLC3_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC3_MIDCMD_DATA9
 #define SDMA3_RLC3_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA3_RLC3_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC3_MIDCMD_DATA10
 #define SDMA3_RLC3_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA3_RLC3_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC3_MIDCMD_CNTL
 #define SDMA3_RLC3_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA3_RLC3_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA3_RLC3_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -10370,7 +8440,6 @@
 #define SDMA3_RLC3_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA3_RLC3_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA3_RLC3_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA3_RLC4_RB_CNTL
 #define SDMA3_RLC4_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC4_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA3_RLC4_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -10387,25 +8456,18 @@
 #define SDMA3_RLC4_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA3_RLC4_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA3_RLC4_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA3_RLC4_RB_BASE
 #define SDMA3_RLC4_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA3_RLC4_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA3_RLC4_RB_BASE_HI
 #define SDMA3_RLC4_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC4_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA3_RLC4_RB_RPTR
 #define SDMA3_RLC4_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC4_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC4_RB_RPTR_HI
 #define SDMA3_RLC4_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC4_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC4_RB_WPTR
 #define SDMA3_RLC4_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC4_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC4_RB_WPTR_HI
 #define SDMA3_RLC4_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC4_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC4_RB_WPTR_POLL_CNTL
 #define SDMA3_RLC4_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA3_RLC4_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA3_RLC4_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -10416,15 +8478,12 @@
 #define SDMA3_RLC4_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA3_RLC4_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA3_RLC4_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA3_RLC4_RB_RPTR_ADDR_HI
 #define SDMA3_RLC4_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA3_RLC4_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC4_RB_RPTR_ADDR_LO
 #define SDMA3_RLC4_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA3_RLC4_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA3_RLC4_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA3_RLC4_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA3_RLC4_IB_CNTL
 #define SDMA3_RLC4_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC4_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA3_RLC4_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -10433,25 +8492,18 @@
 #define SDMA3_RLC4_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA3_RLC4_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA3_RLC4_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA3_RLC4_IB_RPTR
 #define SDMA3_RLC4_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA3_RLC4_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA3_RLC4_IB_OFFSET
 #define SDMA3_RLC4_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA3_RLC4_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA3_RLC4_IB_BASE_LO
 #define SDMA3_RLC4_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA3_RLC4_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA3_RLC4_IB_BASE_HI
 #define SDMA3_RLC4_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC4_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC4_IB_SIZE
 #define SDMA3_RLC4_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA3_RLC4_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA3_RLC4_SKIP_CNTL
 #define SDMA3_RLC4_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA3_RLC4_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA3_RLC4_CONTEXT_STATUS
 #define SDMA3_RLC4_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA3_RLC4_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA3_RLC4_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -10468,94 +8520,68 @@
 #define SDMA3_RLC4_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA3_RLC4_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA3_RLC4_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA3_RLC4_DOORBELL
 #define SDMA3_RLC4_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA3_RLC4_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA3_RLC4_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA3_RLC4_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA3_RLC4_STATUS
 #define SDMA3_RLC4_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA3_RLC4_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA3_RLC4_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA3_RLC4_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA3_RLC4_DOORBELL_LOG
 #define SDMA3_RLC4_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA3_RLC4_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA3_RLC4_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA3_RLC4_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA3_RLC4_WATERMARK
 #define SDMA3_RLC4_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA3_RLC4_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA3_RLC4_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA3_RLC4_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA3_RLC4_DOORBELL_OFFSET
 #define SDMA3_RLC4_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA3_RLC4_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA3_RLC4_CSA_ADDR_LO
 #define SDMA3_RLC4_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA3_RLC4_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA3_RLC4_CSA_ADDR_HI
 #define SDMA3_RLC4_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA3_RLC4_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA3_RLC4_IB_SUB_REMAIN
 #define SDMA3_RLC4_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA3_RLC4_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA3_RLC4_PREEMPT
 #define SDMA3_RLC4_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA3_RLC4_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA3_RLC4_DUMMY_REG
 #define SDMA3_RLC4_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA3_RLC4_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC4_RB_WPTR_POLL_ADDR_HI
 #define SDMA3_RLC4_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA3_RLC4_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA3_RLC4_RB_WPTR_POLL_ADDR_LO
 #define SDMA3_RLC4_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA3_RLC4_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA3_RLC4_RB_AQL_CNTL
 #define SDMA3_RLC4_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA3_RLC4_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA3_RLC4_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA3_RLC4_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA3_RLC4_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA3_RLC4_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA3_RLC4_MINOR_PTR_UPDATE
 #define SDMA3_RLC4_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA3_RLC4_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA3_RLC4_MIDCMD_DATA0
 #define SDMA3_RLC4_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA3_RLC4_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC4_MIDCMD_DATA1
 #define SDMA3_RLC4_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA3_RLC4_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC4_MIDCMD_DATA2
 #define SDMA3_RLC4_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA3_RLC4_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC4_MIDCMD_DATA3
 #define SDMA3_RLC4_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA3_RLC4_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC4_MIDCMD_DATA4
 #define SDMA3_RLC4_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA3_RLC4_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC4_MIDCMD_DATA5
 #define SDMA3_RLC4_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA3_RLC4_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC4_MIDCMD_DATA6
 #define SDMA3_RLC4_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA3_RLC4_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC4_MIDCMD_DATA7
 #define SDMA3_RLC4_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA3_RLC4_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC4_MIDCMD_DATA8
 #define SDMA3_RLC4_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA3_RLC4_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC4_MIDCMD_DATA9
 #define SDMA3_RLC4_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA3_RLC4_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC4_MIDCMD_DATA10
 #define SDMA3_RLC4_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA3_RLC4_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC4_MIDCMD_CNTL
 #define SDMA3_RLC4_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA3_RLC4_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA3_RLC4_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -10564,7 +8590,6 @@
 #define SDMA3_RLC4_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA3_RLC4_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA3_RLC4_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA3_RLC5_RB_CNTL
 #define SDMA3_RLC5_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC5_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA3_RLC5_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -10581,25 +8606,18 @@
 #define SDMA3_RLC5_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA3_RLC5_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA3_RLC5_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA3_RLC5_RB_BASE
 #define SDMA3_RLC5_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA3_RLC5_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA3_RLC5_RB_BASE_HI
 #define SDMA3_RLC5_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC5_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA3_RLC5_RB_RPTR
 #define SDMA3_RLC5_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC5_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC5_RB_RPTR_HI
 #define SDMA3_RLC5_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC5_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC5_RB_WPTR
 #define SDMA3_RLC5_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC5_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC5_RB_WPTR_HI
 #define SDMA3_RLC5_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC5_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC5_RB_WPTR_POLL_CNTL
 #define SDMA3_RLC5_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA3_RLC5_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA3_RLC5_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -10610,15 +8628,12 @@
 #define SDMA3_RLC5_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA3_RLC5_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA3_RLC5_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA3_RLC5_RB_RPTR_ADDR_HI
 #define SDMA3_RLC5_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA3_RLC5_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC5_RB_RPTR_ADDR_LO
 #define SDMA3_RLC5_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA3_RLC5_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA3_RLC5_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA3_RLC5_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA3_RLC5_IB_CNTL
 #define SDMA3_RLC5_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC5_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA3_RLC5_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -10627,25 +8642,18 @@
 #define SDMA3_RLC5_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA3_RLC5_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA3_RLC5_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA3_RLC5_IB_RPTR
 #define SDMA3_RLC5_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA3_RLC5_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA3_RLC5_IB_OFFSET
 #define SDMA3_RLC5_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA3_RLC5_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA3_RLC5_IB_BASE_LO
 #define SDMA3_RLC5_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA3_RLC5_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA3_RLC5_IB_BASE_HI
 #define SDMA3_RLC5_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC5_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC5_IB_SIZE
 #define SDMA3_RLC5_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA3_RLC5_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA3_RLC5_SKIP_CNTL
 #define SDMA3_RLC5_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA3_RLC5_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA3_RLC5_CONTEXT_STATUS
 #define SDMA3_RLC5_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA3_RLC5_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA3_RLC5_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -10662,94 +8670,68 @@
 #define SDMA3_RLC5_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA3_RLC5_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA3_RLC5_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA3_RLC5_DOORBELL
 #define SDMA3_RLC5_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA3_RLC5_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA3_RLC5_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA3_RLC5_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA3_RLC5_STATUS
 #define SDMA3_RLC5_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA3_RLC5_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA3_RLC5_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA3_RLC5_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA3_RLC5_DOORBELL_LOG
 #define SDMA3_RLC5_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA3_RLC5_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA3_RLC5_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA3_RLC5_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA3_RLC5_WATERMARK
 #define SDMA3_RLC5_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA3_RLC5_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA3_RLC5_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA3_RLC5_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA3_RLC5_DOORBELL_OFFSET
 #define SDMA3_RLC5_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA3_RLC5_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA3_RLC5_CSA_ADDR_LO
 #define SDMA3_RLC5_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA3_RLC5_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA3_RLC5_CSA_ADDR_HI
 #define SDMA3_RLC5_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA3_RLC5_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA3_RLC5_IB_SUB_REMAIN
 #define SDMA3_RLC5_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA3_RLC5_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA3_RLC5_PREEMPT
 #define SDMA3_RLC5_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA3_RLC5_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA3_RLC5_DUMMY_REG
 #define SDMA3_RLC5_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA3_RLC5_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC5_RB_WPTR_POLL_ADDR_HI
 #define SDMA3_RLC5_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA3_RLC5_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA3_RLC5_RB_WPTR_POLL_ADDR_LO
 #define SDMA3_RLC5_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA3_RLC5_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA3_RLC5_RB_AQL_CNTL
 #define SDMA3_RLC5_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA3_RLC5_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA3_RLC5_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA3_RLC5_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA3_RLC5_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA3_RLC5_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA3_RLC5_MINOR_PTR_UPDATE
 #define SDMA3_RLC5_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA3_RLC5_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA3_RLC5_MIDCMD_DATA0
 #define SDMA3_RLC5_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA3_RLC5_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC5_MIDCMD_DATA1
 #define SDMA3_RLC5_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA3_RLC5_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC5_MIDCMD_DATA2
 #define SDMA3_RLC5_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA3_RLC5_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC5_MIDCMD_DATA3
 #define SDMA3_RLC5_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA3_RLC5_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC5_MIDCMD_DATA4
 #define SDMA3_RLC5_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA3_RLC5_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC5_MIDCMD_DATA5
 #define SDMA3_RLC5_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA3_RLC5_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC5_MIDCMD_DATA6
 #define SDMA3_RLC5_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA3_RLC5_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC5_MIDCMD_DATA7
 #define SDMA3_RLC5_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA3_RLC5_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC5_MIDCMD_DATA8
 #define SDMA3_RLC5_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA3_RLC5_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC5_MIDCMD_DATA9
 #define SDMA3_RLC5_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA3_RLC5_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC5_MIDCMD_DATA10
 #define SDMA3_RLC5_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA3_RLC5_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC5_MIDCMD_CNTL
 #define SDMA3_RLC5_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA3_RLC5_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA3_RLC5_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -10758,7 +8740,6 @@
 #define SDMA3_RLC5_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA3_RLC5_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA3_RLC5_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA3_RLC6_RB_CNTL
 #define SDMA3_RLC6_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC6_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA3_RLC6_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -10775,25 +8756,18 @@
 #define SDMA3_RLC6_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA3_RLC6_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA3_RLC6_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA3_RLC6_RB_BASE
 #define SDMA3_RLC6_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA3_RLC6_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA3_RLC6_RB_BASE_HI
 #define SDMA3_RLC6_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC6_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA3_RLC6_RB_RPTR
 #define SDMA3_RLC6_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC6_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC6_RB_RPTR_HI
 #define SDMA3_RLC6_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC6_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC6_RB_WPTR
 #define SDMA3_RLC6_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC6_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC6_RB_WPTR_HI
 #define SDMA3_RLC6_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC6_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC6_RB_WPTR_POLL_CNTL
 #define SDMA3_RLC6_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA3_RLC6_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA3_RLC6_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -10804,15 +8778,12 @@
 #define SDMA3_RLC6_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA3_RLC6_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA3_RLC6_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA3_RLC6_RB_RPTR_ADDR_HI
 #define SDMA3_RLC6_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA3_RLC6_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC6_RB_RPTR_ADDR_LO
 #define SDMA3_RLC6_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA3_RLC6_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA3_RLC6_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA3_RLC6_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA3_RLC6_IB_CNTL
 #define SDMA3_RLC6_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC6_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA3_RLC6_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -10821,25 +8792,18 @@
 #define SDMA3_RLC6_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA3_RLC6_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA3_RLC6_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA3_RLC6_IB_RPTR
 #define SDMA3_RLC6_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA3_RLC6_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA3_RLC6_IB_OFFSET
 #define SDMA3_RLC6_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA3_RLC6_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA3_RLC6_IB_BASE_LO
 #define SDMA3_RLC6_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA3_RLC6_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA3_RLC6_IB_BASE_HI
 #define SDMA3_RLC6_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC6_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC6_IB_SIZE
 #define SDMA3_RLC6_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA3_RLC6_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA3_RLC6_SKIP_CNTL
 #define SDMA3_RLC6_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA3_RLC6_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA3_RLC6_CONTEXT_STATUS
 #define SDMA3_RLC6_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA3_RLC6_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA3_RLC6_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -10856,94 +8820,68 @@
 #define SDMA3_RLC6_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA3_RLC6_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA3_RLC6_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA3_RLC6_DOORBELL
 #define SDMA3_RLC6_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA3_RLC6_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA3_RLC6_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA3_RLC6_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA3_RLC6_STATUS
 #define SDMA3_RLC6_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA3_RLC6_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA3_RLC6_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA3_RLC6_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA3_RLC6_DOORBELL_LOG
 #define SDMA3_RLC6_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA3_RLC6_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA3_RLC6_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA3_RLC6_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA3_RLC6_WATERMARK
 #define SDMA3_RLC6_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA3_RLC6_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA3_RLC6_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA3_RLC6_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA3_RLC6_DOORBELL_OFFSET
 #define SDMA3_RLC6_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA3_RLC6_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA3_RLC6_CSA_ADDR_LO
 #define SDMA3_RLC6_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA3_RLC6_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA3_RLC6_CSA_ADDR_HI
 #define SDMA3_RLC6_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA3_RLC6_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA3_RLC6_IB_SUB_REMAIN
 #define SDMA3_RLC6_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA3_RLC6_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA3_RLC6_PREEMPT
 #define SDMA3_RLC6_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA3_RLC6_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA3_RLC6_DUMMY_REG
 #define SDMA3_RLC6_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA3_RLC6_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC6_RB_WPTR_POLL_ADDR_HI
 #define SDMA3_RLC6_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA3_RLC6_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA3_RLC6_RB_WPTR_POLL_ADDR_LO
 #define SDMA3_RLC6_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA3_RLC6_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA3_RLC6_RB_AQL_CNTL
 #define SDMA3_RLC6_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA3_RLC6_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA3_RLC6_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA3_RLC6_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA3_RLC6_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA3_RLC6_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA3_RLC6_MINOR_PTR_UPDATE
 #define SDMA3_RLC6_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA3_RLC6_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA3_RLC6_MIDCMD_DATA0
 #define SDMA3_RLC6_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA3_RLC6_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC6_MIDCMD_DATA1
 #define SDMA3_RLC6_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA3_RLC6_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC6_MIDCMD_DATA2
 #define SDMA3_RLC6_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA3_RLC6_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC6_MIDCMD_DATA3
 #define SDMA3_RLC6_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA3_RLC6_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC6_MIDCMD_DATA4
 #define SDMA3_RLC6_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA3_RLC6_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC6_MIDCMD_DATA5
 #define SDMA3_RLC6_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA3_RLC6_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC6_MIDCMD_DATA6
 #define SDMA3_RLC6_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA3_RLC6_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC6_MIDCMD_DATA7
 #define SDMA3_RLC6_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA3_RLC6_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC6_MIDCMD_DATA8
 #define SDMA3_RLC6_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA3_RLC6_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC6_MIDCMD_DATA9
 #define SDMA3_RLC6_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA3_RLC6_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC6_MIDCMD_DATA10
 #define SDMA3_RLC6_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA3_RLC6_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC6_MIDCMD_CNTL
 #define SDMA3_RLC6_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA3_RLC6_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA3_RLC6_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -10952,7 +8890,6 @@
 #define SDMA3_RLC6_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA3_RLC6_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA3_RLC6_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA3_RLC7_RB_CNTL
 #define SDMA3_RLC7_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC7_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA3_RLC7_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -10969,25 +8906,18 @@
 #define SDMA3_RLC7_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA3_RLC7_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA3_RLC7_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA3_RLC7_RB_BASE
 #define SDMA3_RLC7_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA3_RLC7_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA3_RLC7_RB_BASE_HI
 #define SDMA3_RLC7_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC7_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA3_RLC7_RB_RPTR
 #define SDMA3_RLC7_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC7_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC7_RB_RPTR_HI
 #define SDMA3_RLC7_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC7_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC7_RB_WPTR
 #define SDMA3_RLC7_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA3_RLC7_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA3_RLC7_RB_WPTR_HI
 #define SDMA3_RLC7_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA3_RLC7_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA3_RLC7_RB_WPTR_POLL_CNTL
 #define SDMA3_RLC7_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA3_RLC7_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA3_RLC7_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -10998,15 +8928,12 @@
 #define SDMA3_RLC7_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA3_RLC7_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA3_RLC7_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA3_RLC7_RB_RPTR_ADDR_HI
 #define SDMA3_RLC7_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA3_RLC7_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC7_RB_RPTR_ADDR_LO
 #define SDMA3_RLC7_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA3_RLC7_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA3_RLC7_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA3_RLC7_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA3_RLC7_IB_CNTL
 #define SDMA3_RLC7_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA3_RLC7_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA3_RLC7_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -11015,25 +8942,18 @@
 #define SDMA3_RLC7_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA3_RLC7_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA3_RLC7_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA3_RLC7_IB_RPTR
 #define SDMA3_RLC7_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA3_RLC7_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA3_RLC7_IB_OFFSET
 #define SDMA3_RLC7_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA3_RLC7_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA3_RLC7_IB_BASE_LO
 #define SDMA3_RLC7_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA3_RLC7_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA3_RLC7_IB_BASE_HI
 #define SDMA3_RLC7_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA3_RLC7_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC7_IB_SIZE
 #define SDMA3_RLC7_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA3_RLC7_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA3_RLC7_SKIP_CNTL
 #define SDMA3_RLC7_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA3_RLC7_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA3_RLC7_CONTEXT_STATUS
 #define SDMA3_RLC7_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA3_RLC7_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA3_RLC7_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -11050,94 +8970,68 @@
 #define SDMA3_RLC7_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA3_RLC7_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA3_RLC7_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA3_RLC7_DOORBELL
 #define SDMA3_RLC7_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA3_RLC7_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA3_RLC7_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA3_RLC7_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA3_RLC7_STATUS
 #define SDMA3_RLC7_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA3_RLC7_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA3_RLC7_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA3_RLC7_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA3_RLC7_DOORBELL_LOG
 #define SDMA3_RLC7_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA3_RLC7_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA3_RLC7_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA3_RLC7_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA3_RLC7_WATERMARK
 #define SDMA3_RLC7_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA3_RLC7_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA3_RLC7_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA3_RLC7_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA3_RLC7_DOORBELL_OFFSET
 #define SDMA3_RLC7_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA3_RLC7_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA3_RLC7_CSA_ADDR_LO
 #define SDMA3_RLC7_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA3_RLC7_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA3_RLC7_CSA_ADDR_HI
 #define SDMA3_RLC7_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA3_RLC7_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA3_RLC7_IB_SUB_REMAIN
 #define SDMA3_RLC7_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA3_RLC7_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA3_RLC7_PREEMPT
 #define SDMA3_RLC7_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA3_RLC7_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA3_RLC7_DUMMY_REG
 #define SDMA3_RLC7_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA3_RLC7_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA3_RLC7_RB_WPTR_POLL_ADDR_HI
 #define SDMA3_RLC7_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA3_RLC7_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA3_RLC7_RB_WPTR_POLL_ADDR_LO
 #define SDMA3_RLC7_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA3_RLC7_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA3_RLC7_RB_AQL_CNTL
 #define SDMA3_RLC7_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA3_RLC7_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA3_RLC7_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA3_RLC7_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA3_RLC7_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA3_RLC7_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA3_RLC7_MINOR_PTR_UPDATE
 #define SDMA3_RLC7_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA3_RLC7_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA3_RLC7_MIDCMD_DATA0
 #define SDMA3_RLC7_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA3_RLC7_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC7_MIDCMD_DATA1
 #define SDMA3_RLC7_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA3_RLC7_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC7_MIDCMD_DATA2
 #define SDMA3_RLC7_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA3_RLC7_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC7_MIDCMD_DATA3
 #define SDMA3_RLC7_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA3_RLC7_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC7_MIDCMD_DATA4
 #define SDMA3_RLC7_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA3_RLC7_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC7_MIDCMD_DATA5
 #define SDMA3_RLC7_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA3_RLC7_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC7_MIDCMD_DATA6
 #define SDMA3_RLC7_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA3_RLC7_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC7_MIDCMD_DATA7
 #define SDMA3_RLC7_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA3_RLC7_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC7_MIDCMD_DATA8
 #define SDMA3_RLC7_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA3_RLC7_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC7_MIDCMD_DATA9
 #define SDMA3_RLC7_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA3_RLC7_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA3_RLC7_MIDCMD_DATA10
 #define SDMA3_RLC7_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA3_RLC7_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA3_RLC7_MIDCMD_CNTL
 #define SDMA3_RLC7_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA3_RLC7_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA3_RLC7_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -11146,26 +9040,18 @@
 #define SDMA3_RLC7_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA3_RLC7_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA3_RLC7_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-
-
-// addressBlock: sdma0_sdma4dec
-//SDMA4_UCODE_ADDR
 #define SDMA4_UCODE_ADDR__VALUE__SHIFT                                                                        0x0
 #define SDMA4_UCODE_ADDR__VALUE_MASK                                                                          0x00003FFFL
-//SDMA4_UCODE_DATA
 #define SDMA4_UCODE_DATA__VALUE__SHIFT                                                                        0x0
 #define SDMA4_UCODE_DATA__VALUE_MASK                                                                          0xFFFFFFFFL
-//SDMA4_VF_ENABLE
 #define SDMA4_VF_ENABLE__VF_ENABLE__SHIFT                                                                     0x0
 #define SDMA4_VF_ENABLE__VF_ENABLE_MASK                                                                       0x00000001L
 #define SDMA4_PUB_REG_TYPE0__SDMA4_UCODE_ADDR__SHIFT                                                          0x0
 #define SDMA4_PUB_REG_TYPE0__SDMA4_UCODE_DATA__SHIFT                                                          0x1
 #define SDMA4_PUB_REG_TYPE0__SDMA4_UCODE_ADDR_MASK                                                            0x00000001L
 #define SDMA4_PUB_REG_TYPE0__SDMA4_UCODE_DATA_MASK                                                            0x00000002L
-//SDMA4_CONTEXT_GROUP_BOUNDARY
 #define SDMA4_CONTEXT_GROUP_BOUNDARY__RESERVED__SHIFT                                                         0x0
 #define SDMA4_CONTEXT_GROUP_BOUNDARY__RESERVED_MASK                                                           0xFFFFFFFFL
-//SDMA4_POWER_CNTL
 #define SDMA4_POWER_CNTL__PG_CNTL_ENABLE__SHIFT                                                               0x0
 #define SDMA4_POWER_CNTL__EXT_PG_POWER_ON_REQ__SHIFT                                                          0x1
 #define SDMA4_POWER_CNTL__EXT_PG_POWER_OFF_REQ__SHIFT                                                         0x2
@@ -11186,7 +9072,6 @@
 #define SDMA4_POWER_CNTL__MEM_POWER_SD_EN_MASK                                                                0x00000800L
 #define SDMA4_POWER_CNTL__MEM_POWER_DELAY_MASK                                                                0x003FF000L
 #define SDMA4_POWER_CNTL__ON_OFF_STATUS_DURATION_TIME_MASK                                                    0xFC000000L
-//SDMA4_CLK_CTRL
 #define SDMA4_CLK_CTRL__ON_DELAY__SHIFT                                                                       0x0
 #define SDMA4_CLK_CTRL__OFF_HYSTERESIS__SHIFT                                                                 0x4
 #define SDMA4_CLK_CTRL__RESERVED__SHIFT                                                                       0xc
@@ -11209,7 +9094,6 @@
 #define SDMA4_CLK_CTRL__SOFT_OVERRIDE2_MASK                                                                   0x20000000L
 #define SDMA4_CLK_CTRL__SOFT_OVERRIDE1_MASK                                                                   0x40000000L
 #define SDMA4_CLK_CTRL__SOFT_OVERRIDE0_MASK                                                                   0x80000000L
-//SDMA4_CNTL
 #define SDMA4_CNTL__TRAP_ENABLE__SHIFT                                                                        0x0
 #define SDMA4_CNTL__UTC_L1_ENABLE__SHIFT                                                                      0x1
 #define SDMA4_CNTL__SEM_WAIT_INT_ENABLE__SHIFT                                                                0x2
@@ -11234,7 +9118,6 @@
 #define SDMA4_CNTL__CTXEMPTY_INT_ENABLE_MASK                                                                  0x10000000L
 #define SDMA4_CNTL__FROZEN_INT_ENABLE_MASK                                                                    0x20000000L
 #define SDMA4_CNTL__IB_PREEMPT_INT_ENABLE_MASK                                                                0x40000000L
-//SDMA4_CHICKEN_BITS
 #define SDMA4_CHICKEN_BITS__COPY_EFFICIENCY_ENABLE__SHIFT                                                     0x0
 #define SDMA4_CHICKEN_BITS__STALL_ON_TRANS_FULL_ENABLE__SHIFT                                                 0x1
 #define SDMA4_CHICKEN_BITS__STALL_ON_NO_FREE_DATA_BUFFER_ENABLE__SHIFT                                        0x2
@@ -11259,7 +9142,6 @@
 #define SDMA4_CHICKEN_BITS__TIME_BASED_QOS_MASK                                                               0x02000000L
 #define SDMA4_CHICKEN_BITS__SRAM_FGCG_ENABLE_MASK                                                             0x04000000L
 #define SDMA4_CHICKEN_BITS__RESERVED_MASK                                                                     0xF8000000L
-//SDMA4_GB_ADDR_CONFIG
 #define SDMA4_GB_ADDR_CONFIG__NUM_PIPES__SHIFT                                                                0x0
 #define SDMA4_GB_ADDR_CONFIG__PIPE_INTERLEAVE_SIZE__SHIFT                                                     0x3
 #define SDMA4_GB_ADDR_CONFIG__BANK_INTERLEAVE_SIZE__SHIFT                                                     0x8
@@ -11270,7 +9152,6 @@
 #define SDMA4_GB_ADDR_CONFIG__BANK_INTERLEAVE_SIZE_MASK                                                       0x00000700L
 #define SDMA4_GB_ADDR_CONFIG__NUM_BANKS_MASK                                                                  0x00007000L
 #define SDMA4_GB_ADDR_CONFIG__NUM_SHADER_ENGINES_MASK                                                         0x00180000L
-//SDMA4_GB_ADDR_CONFIG_READ
 #define SDMA4_GB_ADDR_CONFIG_READ__NUM_PIPES__SHIFT                                                           0x0
 #define SDMA4_GB_ADDR_CONFIG_READ__PIPE_INTERLEAVE_SIZE__SHIFT                                                0x3
 #define SDMA4_GB_ADDR_CONFIG_READ__BANK_INTERLEAVE_SIZE__SHIFT                                                0x8
@@ -11281,22 +9162,16 @@
 #define SDMA4_GB_ADDR_CONFIG_READ__BANK_INTERLEAVE_SIZE_MASK                                                  0x00000700L
 #define SDMA4_GB_ADDR_CONFIG_READ__NUM_BANKS_MASK                                                             0x00007000L
 #define SDMA4_GB_ADDR_CONFIG_READ__NUM_SHADER_ENGINES_MASK                                                    0x00180000L
-//SDMA4_RB_RPTR_FETCH_HI
 #define SDMA4_RB_RPTR_FETCH_HI__OFFSET__SHIFT                                                                 0x0
 #define SDMA4_RB_RPTR_FETCH_HI__OFFSET_MASK                                                                   0xFFFFFFFFL
-//SDMA4_SEM_WAIT_FAIL_TIMER_CNTL
 #define SDMA4_SEM_WAIT_FAIL_TIMER_CNTL__TIMER__SHIFT                                                          0x0
 #define SDMA4_SEM_WAIT_FAIL_TIMER_CNTL__TIMER_MASK                                                            0xFFFFFFFFL
-//SDMA4_RB_RPTR_FETCH
 #define SDMA4_RB_RPTR_FETCH__OFFSET__SHIFT                                                                    0x2
 #define SDMA4_RB_RPTR_FETCH__OFFSET_MASK                                                                      0xFFFFFFFCL
-//SDMA4_IB_OFFSET_FETCH
 #define SDMA4_IB_OFFSET_FETCH__OFFSET__SHIFT                                                                  0x2
 #define SDMA4_IB_OFFSET_FETCH__OFFSET_MASK                                                                    0x003FFFFCL
-//SDMA4_PROGRAM
 #define SDMA4_PROGRAM__STREAM__SHIFT                                                                          0x0
 #define SDMA4_PROGRAM__STREAM_MASK                                                                            0xFFFFFFFFL
-//SDMA4_STATUS_REG
 #define SDMA4_STATUS_REG__IDLE__SHIFT                                                                         0x0
 #define SDMA4_STATUS_REG__REG_IDLE__SHIFT                                                                     0x1
 #define SDMA4_STATUS_REG__RB_EMPTY__SHIFT                                                                     0x2
@@ -11355,7 +9230,6 @@
 #define SDMA4_STATUS_REG__SEM_RESP_STATE_MASK                                                                 0x30000000L
 #define SDMA4_STATUS_REG__INT_IDLE_MASK                                                                       0x40000000L
 #define SDMA4_STATUS_REG__INT_REQ_STALL_MASK                                                                  0x80000000L
-//SDMA4_STATUS1_REG
 #define SDMA4_STATUS1_REG__CE_WREQ_IDLE__SHIFT                                                                0x0
 #define SDMA4_STATUS1_REG__CE_WR_IDLE__SHIFT                                                                  0x1
 #define SDMA4_STATUS1_REG__CE_SPLIT_IDLE__SHIFT                                                               0x2
@@ -11384,25 +9258,20 @@
 #define SDMA4_STATUS1_REG__EX_START_MASK                                                                      0x00008000L
 #define SDMA4_STATUS1_REG__CE_RD_STALL_MASK                                                                   0x00020000L
 #define SDMA4_STATUS1_REG__CE_WR_STALL_MASK                                                                   0x00040000L
-//SDMA4_RD_BURST_CNTL
 #define SDMA4_RD_BURST_CNTL__RD_BURST__SHIFT                                                                  0x0
 #define SDMA4_RD_BURST_CNTL__CMD_BUFFER_RD_BURST__SHIFT                                                       0x2
 #define SDMA4_RD_BURST_CNTL__RD_BURST_MASK                                                                    0x00000003L
 #define SDMA4_RD_BURST_CNTL__CMD_BUFFER_RD_BURST_MASK                                                         0x0000000CL
-//SDMA4_HBM_PAGE_CONFIG
 #define SDMA4_HBM_PAGE_CONFIG__PAGE_SIZE_EXPONENT__SHIFT                                                      0x0
 #define SDMA4_HBM_PAGE_CONFIG__PAGE_SIZE_EXPONENT_MASK                                                        0x00000003L
-//SDMA4_UCODE_CHECKSUM
 #define SDMA4_UCODE_CHECKSUM__DATA__SHIFT                                                                     0x0
 #define SDMA4_UCODE_CHECKSUM__DATA_MASK                                                                       0xFFFFFFFFL
-//SDMA4_F32_CNTL
 #define SDMA4_F32_CNTL__HALT__SHIFT                                                                           0x0
 #define SDMA4_F32_CNTL__STEP__SHIFT                                                                           0x1
 #define SDMA4_F32_CNTL__RESET__SHIFT                                                                          0x8
 #define SDMA4_F32_CNTL__HALT_MASK                                                                             0x00000001L
 #define SDMA4_F32_CNTL__STEP_MASK                                                                             0x00000002L
 #define SDMA4_F32_CNTL__RESET_MASK                                                                            0x00000100L
-//SDMA4_FREEZE
 #define SDMA4_FREEZE__PREEMPT__SHIFT                                                                          0x0
 #define SDMA4_FREEZE__FREEZE__SHIFT                                                                           0x4
 #define SDMA4_FREEZE__FROZEN__SHIFT                                                                           0x5
@@ -11411,39 +9280,32 @@
 #define SDMA4_FREEZE__FREEZE_MASK                                                                             0x00000010L
 #define SDMA4_FREEZE__FROZEN_MASK                                                                             0x00000020L
 #define SDMA4_FREEZE__F32_FREEZE_MASK                                                                         0x00000040L
-//SDMA4_PHASE0_QUANTUM
 #define SDMA4_PHASE0_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA4_PHASE0_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA4_PHASE0_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA4_PHASE0_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA4_PHASE0_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA4_PHASE0_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//SDMA4_PHASE1_QUANTUM
 #define SDMA4_PHASE1_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA4_PHASE1_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA4_PHASE1_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA4_PHASE1_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA4_PHASE1_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA4_PHASE1_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//CC_SDMA4_EDC_CONFIG
 #define CC_SDMA4_EDC_CONFIG__DIS_EDC__SHIFT                                                                   0x1
 #define CC_SDMA4_EDC_CONFIG__DIS_EDC_MASK                                                                     0x00000002L
-//SDMA4_BA_THRESHOLD
 #define SDMA4_BA_THRESHOLD__READ_THRES__SHIFT                                                                 0x0
 #define SDMA4_BA_THRESHOLD__WRITE_THRES__SHIFT                                                                0x10
 #define SDMA4_BA_THRESHOLD__READ_THRES_MASK                                                                   0x000003FFL
 #define SDMA4_BA_THRESHOLD__WRITE_THRES_MASK                                                                  0x03FF0000L
-//SDMA4_ID
 #define SDMA4_ID__DEVICE_ID__SHIFT                                                                            0x0
 #define SDMA4_ID__DEVICE_ID_MASK                                                                              0x000000FFL
-//SDMA4_VERSION
 #define SDMA4_VERSION__MINVER__SHIFT                                                                          0x0
 #define SDMA4_VERSION__MAJVER__SHIFT                                                                          0x8
 #define SDMA4_VERSION__REV__SHIFT                                                                             0x10
 #define SDMA4_VERSION__MINVER_MASK                                                                            0x0000007FL
 #define SDMA4_VERSION__MAJVER_MASK                                                                            0x00007F00L
 #define SDMA4_VERSION__REV_MASK                                                                               0x003F0000L
-//SDMA4_EDC_COUNTER
 #define SDMA4_EDC_COUNTER__SDMA_MBANK_DATA_BUF0_SED__SHIFT                                                    0x0
 #define SDMA4_EDC_COUNTER__SDMA_MBANK_DATA_BUF1_SED__SHIFT                                                    0x2
 #define SDMA4_EDC_COUNTER__SDMA_MBANK_DATA_BUF2_SED__SHIFT                                                    0x4
@@ -11476,7 +9338,6 @@
 #define SDMA4_EDC_COUNTER__SDMA_MBANK_DATA_BUF13_SED_MASK                                                     0x0C000000L
 #define SDMA4_EDC_COUNTER__SDMA_MBANK_DATA_BUF14_SED_MASK                                                     0x30000000L
 #define SDMA4_EDC_COUNTER__SDMA_MBANK_DATA_BUF15_SED_MASK                                                     0xC0000000L
-//SDMA4_EDC_COUNTER2
 #define SDMA4_EDC_COUNTER2__SDMA_UCODE_BUF_SED__SHIFT                                                         0x0
 #define SDMA4_EDC_COUNTER2__SDMA_RB_CMD_BUF_SED__SHIFT                                                        0x2
 #define SDMA4_EDC_COUNTER2__SDMA_IB_CMD_BUF_SED__SHIFT                                                        0x4
@@ -11497,25 +9358,20 @@
 #define SDMA4_EDC_COUNTER2__SDMA_SPLIT_DATA_BUF_SED_MASK                                                      0x0000C000L
 #define SDMA4_EDC_COUNTER2__SDMA_MC_WR_ADDR_FIFO_SED_MASK                                                     0x00030000L
 #define SDMA4_EDC_COUNTER2__SDMA_MC_RDRET_BUF_SED_MASK                                                        0x000C0000L
-//SDMA4_STATUS2_REG
 #define SDMA4_STATUS2_REG__ID__SHIFT                                                                          0x0
 #define SDMA4_STATUS2_REG__F32_INSTR_PTR__SHIFT                                                               0x3
 #define SDMA4_STATUS2_REG__CMD_OP__SHIFT                                                                      0x10
 #define SDMA4_STATUS2_REG__ID_MASK                                                                            0x00000007L
 #define SDMA4_STATUS2_REG__F32_INSTR_PTR_MASK                                                                 0x0000FFF8L
 #define SDMA4_STATUS2_REG__CMD_OP_MASK                                                                        0xFFFF0000L
-//SDMA4_ATOMIC_CNTL
 #define SDMA4_ATOMIC_CNTL__LOOP_TIMER__SHIFT                                                                  0x0
 #define SDMA4_ATOMIC_CNTL__ATOMIC_RTN_INT_ENABLE__SHIFT                                                       0x1f
 #define SDMA4_ATOMIC_CNTL__LOOP_TIMER_MASK                                                                    0x7FFFFFFFL
 #define SDMA4_ATOMIC_CNTL__ATOMIC_RTN_INT_ENABLE_MASK                                                         0x80000000L
-//SDMA4_ATOMIC_PREOP_LO
 #define SDMA4_ATOMIC_PREOP_LO__DATA__SHIFT                                                                    0x0
 #define SDMA4_ATOMIC_PREOP_LO__DATA_MASK                                                                      0xFFFFFFFFL
-//SDMA4_ATOMIC_PREOP_HI
 #define SDMA4_ATOMIC_PREOP_HI__DATA__SHIFT                                                                    0x0
 #define SDMA4_ATOMIC_PREOP_HI__DATA_MASK                                                                      0xFFFFFFFFL
-//SDMA4_UTCL1_CNTL
 #define SDMA4_UTCL1_CNTL__REDO_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_UTCL1_CNTL__REDO_DELAY__SHIFT                                                                   0x1
 #define SDMA4_UTCL1_CNTL__REDO_WATERMK__SHIFT                                                                 0xb
@@ -11528,7 +9384,6 @@
 #define SDMA4_UTCL1_CNTL__INVACK_DELAY_MASK                                                                   0x00FFC000L
 #define SDMA4_UTCL1_CNTL__REQL2_CREDIT_MASK                                                                   0x1F000000L
 #define SDMA4_UTCL1_CNTL__VADDR_WATERMK_MASK                                                                  0xE0000000L
-//SDMA4_UTCL1_WATERMK
 #define SDMA4_UTCL1_WATERMK__REQ_WATERMK__SHIFT                                                               0x0
 #define SDMA4_UTCL1_WATERMK__REQ_DEPTH__SHIFT                                                                 0x3
 #define SDMA4_UTCL1_WATERMK__PAGE_WATERMK__SHIFT                                                              0x5
@@ -11539,7 +9394,6 @@
 #define SDMA4_UTCL1_WATERMK__PAGE_WATERMK_MASK                                                                0x000000E0L
 #define SDMA4_UTCL1_WATERMK__INVREQ_WATERMK_MASK                                                              0x0000FF00L
 #define SDMA4_UTCL1_WATERMK__RESERVED_MASK                                                                    0xFFFF0000L
-//SDMA4_UTCL1_RD_STATUS
 #define SDMA4_UTCL1_RD_STATUS__RQMC_RET_ADDR_FIFO_EMPTY__SHIFT                                                0x0
 #define SDMA4_UTCL1_RD_STATUS__RQMC_REQ_FIFO_EMPTY__SHIFT                                                     0x1
 #define SDMA4_UTCL1_RD_STATUS__RTPG_RET_BUF_EMPTY__SHIFT                                                      0x2
@@ -11594,7 +9448,6 @@
 #define SDMA4_UTCL1_RD_STATUS__ADDR_RD_RTR_MASK                                                               0x20000000L
 #define SDMA4_UTCL1_RD_STATUS__WPTR_POLLING_MASK                                                              0x40000000L
 #define SDMA4_UTCL1_RD_STATUS__INVREQ_SIZE_MASK                                                               0x80000000L
-//SDMA4_UTCL1_WR_STATUS
 #define SDMA4_UTCL1_WR_STATUS__RQMC_RET_ADDR_FIFO_EMPTY__SHIFT                                                0x0
 #define SDMA4_UTCL1_WR_STATUS__RQMC_REQ_FIFO_EMPTY__SHIFT                                                     0x1
 #define SDMA4_UTCL1_WR_STATUS__RTPG_RET_BUF_EMPTY__SHIFT                                                      0x2
@@ -11651,7 +9504,6 @@
 #define SDMA4_UTCL1_WR_STATUS__RPTR_DATA_FIFO_FULL_MASK                                                       0x20000000L
 #define SDMA4_UTCL1_WR_STATUS__WRREQ_DATA_FIFO_EMPTY_MASK                                                     0x40000000L
 #define SDMA4_UTCL1_WR_STATUS__WRREQ_DATA_FIFO_FULL_MASK                                                      0x80000000L
-//SDMA4_UTCL1_INV0
 #define SDMA4_UTCL1_INV0__INV_MIDDLE__SHIFT                                                                   0x0
 #define SDMA4_UTCL1_INV0__RD_TIMEOUT__SHIFT                                                                   0x1
 #define SDMA4_UTCL1_INV0__WR_TIMEOUT__SHIFT                                                                   0x2
@@ -11680,16 +9532,12 @@
 #define SDMA4_UTCL1_INV0__INV_FLUSHTYPE_MASK                                                                  0x00000800L
 #define SDMA4_UTCL1_INV0__INV_VMID_VEC_MASK                                                                   0x0FFFF000L
 #define SDMA4_UTCL1_INV0__INV_ADDR_HI_MASK                                                                    0xF0000000L
-//SDMA4_UTCL1_INV1
 #define SDMA4_UTCL1_INV1__INV_ADDR_LO__SHIFT                                                                  0x0
 #define SDMA4_UTCL1_INV1__INV_ADDR_LO_MASK                                                                    0xFFFFFFFFL
-//SDMA4_UTCL1_INV2
 #define SDMA4_UTCL1_INV2__INV_NFLUSH_VMID_VEC__SHIFT                                                          0x0
 #define SDMA4_UTCL1_INV2__INV_NFLUSH_VMID_VEC_MASK                                                            0xFFFFFFFFL
-//SDMA4_UTCL1_RD_XNACK0
 #define SDMA4_UTCL1_RD_XNACK0__XNACK_ADDR_LO__SHIFT                                                           0x0
 #define SDMA4_UTCL1_RD_XNACK0__XNACK_ADDR_LO_MASK                                                             0xFFFFFFFFL
-//SDMA4_UTCL1_RD_XNACK1
 #define SDMA4_UTCL1_RD_XNACK1__XNACK_ADDR_HI__SHIFT                                                           0x0
 #define SDMA4_UTCL1_RD_XNACK1__XNACK_VMID__SHIFT                                                              0x4
 #define SDMA4_UTCL1_RD_XNACK1__XNACK_VECTOR__SHIFT                                                            0x8
@@ -11698,10 +9546,8 @@
 #define SDMA4_UTCL1_RD_XNACK1__XNACK_VMID_MASK                                                                0x000000F0L
 #define SDMA4_UTCL1_RD_XNACK1__XNACK_VECTOR_MASK                                                              0x03FFFF00L
 #define SDMA4_UTCL1_RD_XNACK1__IS_XNACK_MASK                                                                  0x0C000000L
-//SDMA4_UTCL1_WR_XNACK0
 #define SDMA4_UTCL1_WR_XNACK0__XNACK_ADDR_LO__SHIFT                                                           0x0
 #define SDMA4_UTCL1_WR_XNACK0__XNACK_ADDR_LO_MASK                                                             0xFFFFFFFFL
-//SDMA4_UTCL1_WR_XNACK1
 #define SDMA4_UTCL1_WR_XNACK1__XNACK_ADDR_HI__SHIFT                                                           0x0
 #define SDMA4_UTCL1_WR_XNACK1__XNACK_VMID__SHIFT                                                              0x4
 #define SDMA4_UTCL1_WR_XNACK1__XNACK_VECTOR__SHIFT                                                            0x8
@@ -11710,12 +9556,10 @@
 #define SDMA4_UTCL1_WR_XNACK1__XNACK_VMID_MASK                                                                0x000000F0L
 #define SDMA4_UTCL1_WR_XNACK1__XNACK_VECTOR_MASK                                                              0x03FFFF00L
 #define SDMA4_UTCL1_WR_XNACK1__IS_XNACK_MASK                                                                  0x0C000000L
-//SDMA4_UTCL1_TIMEOUT
 #define SDMA4_UTCL1_TIMEOUT__RD_XNACK_LIMIT__SHIFT                                                            0x0
 #define SDMA4_UTCL1_TIMEOUT__WR_XNACK_LIMIT__SHIFT                                                            0x10
 #define SDMA4_UTCL1_TIMEOUT__RD_XNACK_LIMIT_MASK                                                              0x0000FFFFL
 #define SDMA4_UTCL1_TIMEOUT__WR_XNACK_LIMIT_MASK                                                              0xFFFF0000L
-//SDMA4_UTCL1_PAGE
 #define SDMA4_UTCL1_PAGE__VM_HOLE__SHIFT                                                                      0x0
 #define SDMA4_UTCL1_PAGE__REQ_TYPE__SHIFT                                                                     0x1
 #define SDMA4_UTCL1_PAGE__USE_MTYPE__SHIFT                                                                    0x6
@@ -11724,14 +9568,12 @@
 #define SDMA4_UTCL1_PAGE__REQ_TYPE_MASK                                                                       0x0000001EL
 #define SDMA4_UTCL1_PAGE__USE_MTYPE_MASK                                                                      0x000001C0L
 #define SDMA4_UTCL1_PAGE__USE_PT_SNOOP_MASK                                                                   0x00000200L
-//SDMA4_POWER_CNTL_IDLE
 #define SDMA4_POWER_CNTL_IDLE__DELAY0__SHIFT                                                                  0x0
 #define SDMA4_POWER_CNTL_IDLE__DELAY1__SHIFT                                                                  0x10
 #define SDMA4_POWER_CNTL_IDLE__DELAY2__SHIFT                                                                  0x18
 #define SDMA4_POWER_CNTL_IDLE__DELAY0_MASK                                                                    0x0000FFFFL
 #define SDMA4_POWER_CNTL_IDLE__DELAY1_MASK                                                                    0x00FF0000L
 #define SDMA4_POWER_CNTL_IDLE__DELAY2_MASK                                                                    0xFF000000L
-//SDMA4_RELAX_ORDERING_LUT
 #define SDMA4_RELAX_ORDERING_LUT__RESERVED0__SHIFT                                                            0x0
 #define SDMA4_RELAX_ORDERING_LUT__COPY__SHIFT                                                                 0x1
 #define SDMA4_RELAX_ORDERING_LUT__WRITE__SHIFT                                                                0x2
@@ -11770,12 +9612,10 @@
 #define SDMA4_RELAX_ORDERING_LUT__WPTR_POLL_MASK                                                              0x20000000L
 #define SDMA4_RELAX_ORDERING_LUT__IB_FETCH_MASK                                                               0x40000000L
 #define SDMA4_RELAX_ORDERING_LUT__RB_FETCH_MASK                                                               0x80000000L
-//SDMA4_CHICKEN_BITS_2
 #define SDMA4_CHICKEN_BITS_2__F32_CMD_PROC_DELAY__SHIFT                                                       0x0
 #define SDMA4_CHICKEN_BITS_2__F32_SEND_POSTCODE_EN__SHIFT                                                     0x4
 #define SDMA4_CHICKEN_BITS_2__F32_CMD_PROC_DELAY_MASK                                                         0x0000000FL
 #define SDMA4_CHICKEN_BITS_2__F32_SEND_POSTCODE_EN_MASK                                                       0x00000010L
-//SDMA4_STATUS3_REG
 #define SDMA4_STATUS3_REG__CMD_OP_STATUS__SHIFT                                                               0x0
 #define SDMA4_STATUS3_REG__PREV_VM_CMD__SHIFT                                                                 0x10
 #define SDMA4_STATUS3_REG__EXCEPTION_IDLE__SHIFT                                                              0x14
@@ -11786,7 +9626,6 @@
 #define SDMA4_STATUS3_REG__EXCEPTION_IDLE_MASK                                                                0x00100000L
 #define SDMA4_STATUS3_REG__QUEUE_ID_MATCH_MASK                                                                0x00200000L
 #define SDMA4_STATUS3_REG__INT_QUEUE_ID_MASK                                                                  0x03C00000L
-//SDMA4_PHYSICAL_ADDR_LO
 #define SDMA4_PHYSICAL_ADDR_LO__D_VALID__SHIFT                                                                0x0
 #define SDMA4_PHYSICAL_ADDR_LO__DIRTY__SHIFT                                                                  0x1
 #define SDMA4_PHYSICAL_ADDR_LO__PHY_VALID__SHIFT                                                              0x2
@@ -11795,37 +9634,28 @@
 #define SDMA4_PHYSICAL_ADDR_LO__DIRTY_MASK                                                                    0x00000002L
 #define SDMA4_PHYSICAL_ADDR_LO__PHY_VALID_MASK                                                                0x00000004L
 #define SDMA4_PHYSICAL_ADDR_LO__ADDR_MASK                                                                     0xFFFFF000L
-//SDMA4_PHYSICAL_ADDR_HI
 #define SDMA4_PHYSICAL_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA4_PHYSICAL_ADDR_HI__ADDR_MASK                                                                     0x0000FFFFL
-//SDMA4_PHASE2_QUANTUM
 #define SDMA4_PHASE2_QUANTUM__UNIT__SHIFT                                                                     0x0
 #define SDMA4_PHASE2_QUANTUM__VALUE__SHIFT                                                                    0x8
 #define SDMA4_PHASE2_QUANTUM__PREFER__SHIFT                                                                   0x1e
 #define SDMA4_PHASE2_QUANTUM__UNIT_MASK                                                                       0x0000000FL
 #define SDMA4_PHASE2_QUANTUM__VALUE_MASK                                                                      0x00FFFF00L
 #define SDMA4_PHASE2_QUANTUM__PREFER_MASK                                                                     0x40000000L
-//SDMA4_ERROR_LOG
 #define SDMA4_ERROR_LOG__OVERRIDE__SHIFT                                                                      0x0
 #define SDMA4_ERROR_LOG__STATUS__SHIFT                                                                        0x10
 #define SDMA4_ERROR_LOG__OVERRIDE_MASK                                                                        0x0000FFFFL
 #define SDMA4_ERROR_LOG__STATUS_MASK                                                                          0xFFFF0000L
-//SDMA4_PUB_DUMMY_REG0
 #define SDMA4_PUB_DUMMY_REG0__VALUE__SHIFT                                                                    0x0
 #define SDMA4_PUB_DUMMY_REG0__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA4_PUB_DUMMY_REG1
 #define SDMA4_PUB_DUMMY_REG1__VALUE__SHIFT                                                                    0x0
 #define SDMA4_PUB_DUMMY_REG1__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA4_PUB_DUMMY_REG2
 #define SDMA4_PUB_DUMMY_REG2__VALUE__SHIFT                                                                    0x0
 #define SDMA4_PUB_DUMMY_REG2__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA4_PUB_DUMMY_REG3
 #define SDMA4_PUB_DUMMY_REG3__VALUE__SHIFT                                                                    0x0
 #define SDMA4_PUB_DUMMY_REG3__VALUE_MASK                                                                      0xFFFFFFFFL
-//SDMA4_F32_COUNTER
 #define SDMA4_F32_COUNTER__VALUE__SHIFT                                                                       0x0
 #define SDMA4_F32_COUNTER__VALUE_MASK                                                                         0xFFFFFFFFL
-//SDMA4_PERFCNT_PERFCOUNTER0_CFG
 #define SDMA4_PERFCNT_PERFCOUNTER0_CFG__PERF_SEL__SHIFT                                                       0x0
 #define SDMA4_PERFCNT_PERFCOUNTER0_CFG__PERF_SEL_END__SHIFT                                                   0x8
 #define SDMA4_PERFCNT_PERFCOUNTER0_CFG__PERF_MODE__SHIFT                                                      0x18
@@ -11836,7 +9666,6 @@
 #define SDMA4_PERFCNT_PERFCOUNTER0_CFG__PERF_MODE_MASK                                                        0x0F000000L
 #define SDMA4_PERFCNT_PERFCOUNTER0_CFG__ENABLE_MASK                                                           0x10000000L
 #define SDMA4_PERFCNT_PERFCOUNTER0_CFG__CLEAR_MASK                                                            0x20000000L
-//SDMA4_PERFCNT_PERFCOUNTER1_CFG
 #define SDMA4_PERFCNT_PERFCOUNTER1_CFG__PERF_SEL__SHIFT                                                       0x0
 #define SDMA4_PERFCNT_PERFCOUNTER1_CFG__PERF_SEL_END__SHIFT                                                   0x8
 #define SDMA4_PERFCNT_PERFCOUNTER1_CFG__PERF_MODE__SHIFT                                                      0x18
@@ -11847,7 +9676,6 @@
 #define SDMA4_PERFCNT_PERFCOUNTER1_CFG__PERF_MODE_MASK                                                        0x0F000000L
 #define SDMA4_PERFCNT_PERFCOUNTER1_CFG__ENABLE_MASK                                                           0x10000000L
 #define SDMA4_PERFCNT_PERFCOUNTER1_CFG__CLEAR_MASK                                                            0x20000000L
-//SDMA4_PERFCNT_PERFCOUNTER_RSLT_CNTL
 #define SDMA4_PERFCNT_PERFCOUNTER_RSLT_CNTL__PERF_COUNTER_SELECT__SHIFT                                       0x0
 #define SDMA4_PERFCNT_PERFCOUNTER_RSLT_CNTL__START_TRIGGER__SHIFT                                             0x8
 #define SDMA4_PERFCNT_PERFCOUNTER_RSLT_CNTL__STOP_TRIGGER__SHIFT                                              0x10
@@ -11860,23 +9688,18 @@
 #define SDMA4_PERFCNT_PERFCOUNTER_RSLT_CNTL__ENABLE_ANY_MASK                                                  0x01000000L
 #define SDMA4_PERFCNT_PERFCOUNTER_RSLT_CNTL__CLEAR_ALL_MASK                                                   0x02000000L
 #define SDMA4_PERFCNT_PERFCOUNTER_RSLT_CNTL__STOP_ALL_ON_SATURATE_MASK                                        0x04000000L
-//SDMA4_PERFCNT_MISC_CNTL
 #define SDMA4_PERFCNT_MISC_CNTL__CMD_OP__SHIFT                                                                0x0
 #define SDMA4_PERFCNT_MISC_CNTL__CMD_OP_MASK                                                                  0x0000FFFFL
-//SDMA4_PERFCNT_PERFCOUNTER_LO
 #define SDMA4_PERFCNT_PERFCOUNTER_LO__COUNTER_LO__SHIFT                                                       0x0
 #define SDMA4_PERFCNT_PERFCOUNTER_LO__COUNTER_LO_MASK                                                         0xFFFFFFFFL
-//SDMA4_PERFCNT_PERFCOUNTER_HI
 #define SDMA4_PERFCNT_PERFCOUNTER_HI__COUNTER_HI__SHIFT                                                       0x0
 #define SDMA4_PERFCNT_PERFCOUNTER_HI__COMPARE_VALUE__SHIFT                                                    0x10
 #define SDMA4_PERFCNT_PERFCOUNTER_HI__COUNTER_HI_MASK                                                         0x0000FFFFL
 #define SDMA4_PERFCNT_PERFCOUNTER_HI__COMPARE_VALUE_MASK                                                      0xFFFF0000L
-//SDMA4_CRD_CNTL
 #define SDMA4_CRD_CNTL__MC_WRREQ_CREDIT__SHIFT                                                                0x7
 #define SDMA4_CRD_CNTL__MC_RDREQ_CREDIT__SHIFT                                                                0xd
 #define SDMA4_CRD_CNTL__MC_WRREQ_CREDIT_MASK                                                                  0x00001F80L
 #define SDMA4_CRD_CNTL__MC_RDREQ_CREDIT_MASK                                                                  0x0007E000L
-//SDMA4_ULV_CNTL
 #define SDMA4_ULV_CNTL__HYSTERESIS__SHIFT                                                                     0x0
 #define SDMA4_ULV_CNTL__ENTER_ULV_INT_CLR__SHIFT                                                              0x1b
 #define SDMA4_ULV_CNTL__EXIT_ULV_INT_CLR__SHIFT                                                               0x1c
@@ -11889,13 +9712,10 @@
 #define SDMA4_ULV_CNTL__ENTER_ULV_INT_MASK                                                                    0x20000000L
 #define SDMA4_ULV_CNTL__EXIT_ULV_INT_MASK                                                                     0x40000000L
 #define SDMA4_ULV_CNTL__ULV_STATUS_MASK                                                                       0x80000000L
-//SDMA4_EA_DBIT_ADDR_DATA
 #define SDMA4_EA_DBIT_ADDR_DATA__VALUE__SHIFT                                                                 0x0
 #define SDMA4_EA_DBIT_ADDR_DATA__VALUE_MASK                                                                   0xFFFFFFFFL
-//SDMA4_EA_DBIT_ADDR_INDEX
 #define SDMA4_EA_DBIT_ADDR_INDEX__VALUE__SHIFT                                                                0x0
 #define SDMA4_EA_DBIT_ADDR_INDEX__VALUE_MASK                                                                  0x00000007L
-//SDMA4_STATUS4_REG
 #define SDMA4_STATUS4_REG__IDLE__SHIFT                                                                        0x0
 #define SDMA4_STATUS4_REG__IH_OUTSTANDING__SHIFT                                                              0x2
 #define SDMA4_STATUS4_REG__SEM_OUTSTANDING__SHIFT                                                             0x3
@@ -11924,13 +9744,10 @@
 #define SDMA4_STATUS4_REG__ACTIVE_QUEUE_ID_MASK                                                               0x0003C000L
 #define SDMA4_STATUS4_REG__SRIOV_WATING_RLCV_CMD_MASK                                                         0x00040000L
 #define SDMA4_STATUS4_REG__SRIOV_SDMA_EXECUTING_CMD_MASK                                                      0x00080000L
-//SDMA4_SCRATCH_RAM_DATA
 #define SDMA4_SCRATCH_RAM_DATA__DATA__SHIFT                                                                   0x0
 #define SDMA4_SCRATCH_RAM_DATA__DATA_MASK                                                                     0xFFFFFFFFL
-//SDMA4_SCRATCH_RAM_ADDR
 #define SDMA4_SCRATCH_RAM_ADDR__ADDR__SHIFT                                                                   0x0
 #define SDMA4_SCRATCH_RAM_ADDR__ADDR_MASK                                                                     0x0000007FL
-//SDMA4_CE_CTRL
 #define SDMA4_CE_CTRL__RD_LUT_WATERMARK__SHIFT                                                                0x0
 #define SDMA4_CE_CTRL__RD_LUT_DEPTH__SHIFT                                                                    0x3
 #define SDMA4_CE_CTRL__WR_AFIFO_WATERMARK__SHIFT                                                              0x5
@@ -11939,7 +9756,6 @@
 #define SDMA4_CE_CTRL__RD_LUT_DEPTH_MASK                                                                      0x00000018L
 #define SDMA4_CE_CTRL__WR_AFIFO_WATERMARK_MASK                                                                0x000000E0L
 #define SDMA4_CE_CTRL__RESERVED_MASK                                                                          0xFFFFFF00L
-//SDMA4_RAS_STATUS
 #define SDMA4_RAS_STATUS__RB_FETCH_ECC__SHIFT                                                                 0x0
 #define SDMA4_RAS_STATUS__IB_FETCH_ECC__SHIFT                                                                 0x1
 #define SDMA4_RAS_STATUS__F32_DATA_ECC__SHIFT                                                                 0x2
@@ -11964,7 +9780,6 @@
 #define SDMA4_RAS_STATUS__COPY_DATA_NACK_GEN_ERR_MASK                                                         0x00000800L
 #define SDMA4_RAS_STATUS__WRRET_DATA_NACK_GEN_ERR_MASK                                                        0x00001000L
 #define SDMA4_RAS_STATUS__WPTR_RPTR_ATOMIC_NACK_GEN_ERR_MASK                                                  0x00002000L
-//SDMA4_CLK_STATUS
 #define SDMA4_CLK_STATUS__DYN_CLK__SHIFT                                                                      0x0
 #define SDMA4_CLK_STATUS__PTR_CLK__SHIFT                                                                      0x1
 #define SDMA4_CLK_STATUS__REG_CLK__SHIFT                                                                      0x2
@@ -11973,7 +9788,6 @@
 #define SDMA4_CLK_STATUS__PTR_CLK_MASK                                                                        0x00000002L
 #define SDMA4_CLK_STATUS__REG_CLK_MASK                                                                        0x00000004L
 #define SDMA4_CLK_STATUS__F32_CLK_MASK                                                                        0x00000008L
-//SDMA4_GFX_RB_CNTL
 #define SDMA4_GFX_RB_CNTL__RB_ENABLE__SHIFT                                                                   0x0
 #define SDMA4_GFX_RB_CNTL__RB_SIZE__SHIFT                                                                     0x1
 #define SDMA4_GFX_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                              0x9
@@ -11990,25 +9804,18 @@
 #define SDMA4_GFX_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                          0x001F0000L
 #define SDMA4_GFX_RB_CNTL__RB_PRIV_MASK                                                                       0x00800000L
 #define SDMA4_GFX_RB_CNTL__RB_VMID_MASK                                                                       0x0F000000L
-//SDMA4_GFX_RB_BASE
 #define SDMA4_GFX_RB_BASE__ADDR__SHIFT                                                                        0x0
 #define SDMA4_GFX_RB_BASE__ADDR_MASK                                                                          0xFFFFFFFFL
-//SDMA4_GFX_RB_BASE_HI
 #define SDMA4_GFX_RB_BASE_HI__ADDR__SHIFT                                                                     0x0
 #define SDMA4_GFX_RB_BASE_HI__ADDR_MASK                                                                       0x00FFFFFFL
-//SDMA4_GFX_RB_RPTR
 #define SDMA4_GFX_RB_RPTR__OFFSET__SHIFT                                                                      0x0
 #define SDMA4_GFX_RB_RPTR__OFFSET_MASK                                                                        0xFFFFFFFFL
-//SDMA4_GFX_RB_RPTR_HI
 #define SDMA4_GFX_RB_RPTR_HI__OFFSET__SHIFT                                                                   0x0
 #define SDMA4_GFX_RB_RPTR_HI__OFFSET_MASK                                                                     0xFFFFFFFFL
-//SDMA4_GFX_RB_WPTR
 #define SDMA4_GFX_RB_WPTR__OFFSET__SHIFT                                                                      0x0
 #define SDMA4_GFX_RB_WPTR__OFFSET_MASK                                                                        0xFFFFFFFFL
-//SDMA4_GFX_RB_WPTR_HI
 #define SDMA4_GFX_RB_WPTR_HI__OFFSET__SHIFT                                                                   0x0
 #define SDMA4_GFX_RB_WPTR_HI__OFFSET_MASK                                                                     0xFFFFFFFFL
-//SDMA4_GFX_RB_WPTR_POLL_CNTL
 #define SDMA4_GFX_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                            0x0
 #define SDMA4_GFX_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                       0x1
 #define SDMA4_GFX_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                   0x2
@@ -12019,15 +9826,12 @@
 #define SDMA4_GFX_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                     0x00000004L
 #define SDMA4_GFX_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                           0x0000FFF0L
 #define SDMA4_GFX_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                     0xFFFF0000L
-//SDMA4_GFX_RB_RPTR_ADDR_HI
 #define SDMA4_GFX_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                                0x0
 #define SDMA4_GFX_RB_RPTR_ADDR_HI__ADDR_MASK                                                                  0xFFFFFFFFL
-//SDMA4_GFX_RB_RPTR_ADDR_LO
 #define SDMA4_GFX_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                        0x0
 #define SDMA4_GFX_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                                0x2
 #define SDMA4_GFX_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                          0x00000001L
 #define SDMA4_GFX_RB_RPTR_ADDR_LO__ADDR_MASK                                                                  0xFFFFFFFCL
-//SDMA4_GFX_IB_CNTL
 #define SDMA4_GFX_IB_CNTL__IB_ENABLE__SHIFT                                                                   0x0
 #define SDMA4_GFX_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                              0x4
 #define SDMA4_GFX_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                            0x8
@@ -12036,25 +9840,18 @@
 #define SDMA4_GFX_IB_CNTL__IB_SWAP_ENABLE_MASK                                                                0x00000010L
 #define SDMA4_GFX_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                              0x00000100L
 #define SDMA4_GFX_IB_CNTL__CMD_VMID_MASK                                                                      0x000F0000L
-//SDMA4_GFX_IB_RPTR
 #define SDMA4_GFX_IB_RPTR__OFFSET__SHIFT                                                                      0x2
 #define SDMA4_GFX_IB_RPTR__OFFSET_MASK                                                                        0x003FFFFCL
-//SDMA4_GFX_IB_OFFSET
 #define SDMA4_GFX_IB_OFFSET__OFFSET__SHIFT                                                                    0x2
 #define SDMA4_GFX_IB_OFFSET__OFFSET_MASK                                                                      0x003FFFFCL
-//SDMA4_GFX_IB_BASE_LO
 #define SDMA4_GFX_IB_BASE_LO__ADDR__SHIFT                                                                     0x5
 #define SDMA4_GFX_IB_BASE_LO__ADDR_MASK                                                                       0xFFFFFFE0L
-//SDMA4_GFX_IB_BASE_HI
 #define SDMA4_GFX_IB_BASE_HI__ADDR__SHIFT                                                                     0x0
 #define SDMA4_GFX_IB_BASE_HI__ADDR_MASK                                                                       0xFFFFFFFFL
-//SDMA4_GFX_IB_SIZE
 #define SDMA4_GFX_IB_SIZE__SIZE__SHIFT                                                                        0x0
 #define SDMA4_GFX_IB_SIZE__SIZE_MASK                                                                          0x000FFFFFL
-//SDMA4_GFX_SKIP_CNTL
 #define SDMA4_GFX_SKIP_CNTL__SKIP_COUNT__SHIFT                                                                0x0
 #define SDMA4_GFX_SKIP_CNTL__SKIP_COUNT_MASK                                                                  0x000FFFFFL
-//SDMA4_GFX_CONTEXT_STATUS
 #define SDMA4_GFX_CONTEXT_STATUS__SELECTED__SHIFT                                                             0x0
 #define SDMA4_GFX_CONTEXT_STATUS__IDLE__SHIFT                                                                 0x2
 #define SDMA4_GFX_CONTEXT_STATUS__EXPIRED__SHIFT                                                              0x3
@@ -12071,99 +9868,72 @@
 #define SDMA4_GFX_CONTEXT_STATUS__CTXSW_READY_MASK                                                            0x00000100L
 #define SDMA4_GFX_CONTEXT_STATUS__PREEMPTED_MASK                                                              0x00000200L
 #define SDMA4_GFX_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                        0x00000400L
-//SDMA4_GFX_DOORBELL
 #define SDMA4_GFX_DOORBELL__ENABLE__SHIFT                                                                     0x1c
 #define SDMA4_GFX_DOORBELL__CAPTURED__SHIFT                                                                   0x1e
 #define SDMA4_GFX_DOORBELL__ENABLE_MASK                                                                       0x10000000L
 #define SDMA4_GFX_DOORBELL__CAPTURED_MASK                                                                     0x40000000L
-//SDMA4_GFX_CONTEXT_CNTL
 #define SDMA4_GFX_CONTEXT_CNTL__RESUME_CTX__SHIFT                                                             0x10
 #define SDMA4_GFX_CONTEXT_CNTL__SESSION_SEL__SHIFT                                                            0x18
 #define SDMA4_GFX_CONTEXT_CNTL__RESUME_CTX_MASK                                                               0x00010000L
 #define SDMA4_GFX_CONTEXT_CNTL__SESSION_SEL_MASK                                                              0x0F000000L
-//SDMA4_GFX_STATUS
 #define SDMA4_GFX_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                       0x0
 #define SDMA4_GFX_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                          0x8
 #define SDMA4_GFX_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                         0x000000FFL
 #define SDMA4_GFX_STATUS__WPTR_UPDATE_PENDING_MASK                                                            0x00000100L
-//SDMA4_GFX_DOORBELL_LOG
 #define SDMA4_GFX_DOORBELL_LOG__BE_ERROR__SHIFT                                                               0x0
 #define SDMA4_GFX_DOORBELL_LOG__DATA__SHIFT                                                                   0x2
 #define SDMA4_GFX_DOORBELL_LOG__BE_ERROR_MASK                                                                 0x00000001L
 #define SDMA4_GFX_DOORBELL_LOG__DATA_MASK                                                                     0xFFFFFFFCL
-//SDMA4_GFX_WATERMARK
 #define SDMA4_GFX_WATERMARK__RD_OUTSTANDING__SHIFT                                                            0x0
 #define SDMA4_GFX_WATERMARK__WR_OUTSTANDING__SHIFT                                                            0x10
 #define SDMA4_GFX_WATERMARK__RD_OUTSTANDING_MASK                                                              0x00000FFFL
 #define SDMA4_GFX_WATERMARK__WR_OUTSTANDING_MASK                                                              0x03FF0000L
-//SDMA4_GFX_DOORBELL_OFFSET
 #define SDMA4_GFX_DOORBELL_OFFSET__OFFSET__SHIFT                                                              0x2
 #define SDMA4_GFX_DOORBELL_OFFSET__OFFSET_MASK                                                                0x0FFFFFFCL
-//SDMA4_GFX_CSA_ADDR_LO
 #define SDMA4_GFX_CSA_ADDR_LO__ADDR__SHIFT                                                                    0x2
 #define SDMA4_GFX_CSA_ADDR_LO__ADDR_MASK                                                                      0xFFFFFFFCL
-//SDMA4_GFX_CSA_ADDR_HI
 #define SDMA4_GFX_CSA_ADDR_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_GFX_CSA_ADDR_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA4_GFX_IB_SUB_REMAIN
 #define SDMA4_GFX_IB_SUB_REMAIN__SIZE__SHIFT                                                                  0x0
 #define SDMA4_GFX_IB_SUB_REMAIN__SIZE_MASK                                                                    0x000FFFFFL
-//SDMA4_GFX_PREEMPT
 #define SDMA4_GFX_PREEMPT__IB_PREEMPT__SHIFT                                                                  0x0
 #define SDMA4_GFX_PREEMPT__IB_PREEMPT_MASK                                                                    0x00000001L
-//SDMA4_GFX_DUMMY_REG
 #define SDMA4_GFX_DUMMY_REG__DUMMY__SHIFT                                                                     0x0
 #define SDMA4_GFX_DUMMY_REG__DUMMY_MASK                                                                       0xFFFFFFFFL
-//SDMA4_GFX_RB_WPTR_POLL_ADDR_HI
 #define SDMA4_GFX_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                           0x0
 #define SDMA4_GFX_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                             0xFFFFFFFFL
-//SDMA4_GFX_RB_WPTR_POLL_ADDR_LO
 #define SDMA4_GFX_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                           0x2
 #define SDMA4_GFX_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                             0xFFFFFFFCL
-//SDMA4_GFX_RB_AQL_CNTL
 #define SDMA4_GFX_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                              0x0
 #define SDMA4_GFX_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                         0x1
 #define SDMA4_GFX_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                             0x8
 #define SDMA4_GFX_RB_AQL_CNTL__AQL_ENABLE_MASK                                                                0x00000001L
 #define SDMA4_GFX_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                           0x000000FEL
 #define SDMA4_GFX_RB_AQL_CNTL__PACKET_STEP_MASK                                                               0x0000FF00L
-//SDMA4_GFX_MINOR_PTR_UPDATE
 #define SDMA4_GFX_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                             0x0
 #define SDMA4_GFX_MINOR_PTR_UPDATE__ENABLE_MASK                                                               0x00000001L
-//SDMA4_GFX_MIDCMD_DATA0
 #define SDMA4_GFX_MIDCMD_DATA0__DATA0__SHIFT                                                                  0x0
 #define SDMA4_GFX_MIDCMD_DATA0__DATA0_MASK                                                                    0xFFFFFFFFL
-//SDMA4_GFX_MIDCMD_DATA1
 #define SDMA4_GFX_MIDCMD_DATA1__DATA1__SHIFT                                                                  0x0
 #define SDMA4_GFX_MIDCMD_DATA1__DATA1_MASK                                                                    0xFFFFFFFFL
-//SDMA4_GFX_MIDCMD_DATA2
 #define SDMA4_GFX_MIDCMD_DATA2__DATA2__SHIFT                                                                  0x0
 #define SDMA4_GFX_MIDCMD_DATA2__DATA2_MASK                                                                    0xFFFFFFFFL
-//SDMA4_GFX_MIDCMD_DATA3
 #define SDMA4_GFX_MIDCMD_DATA3__DATA3__SHIFT                                                                  0x0
 #define SDMA4_GFX_MIDCMD_DATA3__DATA3_MASK                                                                    0xFFFFFFFFL
-//SDMA4_GFX_MIDCMD_DATA4
 #define SDMA4_GFX_MIDCMD_DATA4__DATA4__SHIFT                                                                  0x0
 #define SDMA4_GFX_MIDCMD_DATA4__DATA4_MASK                                                                    0xFFFFFFFFL
-//SDMA4_GFX_MIDCMD_DATA5
 #define SDMA4_GFX_MIDCMD_DATA5__DATA5__SHIFT                                                                  0x0
 #define SDMA4_GFX_MIDCMD_DATA5__DATA5_MASK                                                                    0xFFFFFFFFL
-//SDMA4_GFX_MIDCMD_DATA6
 #define SDMA4_GFX_MIDCMD_DATA6__DATA6__SHIFT                                                                  0x0
 #define SDMA4_GFX_MIDCMD_DATA6__DATA6_MASK                                                                    0xFFFFFFFFL
-//SDMA4_GFX_MIDCMD_DATA7
 #define SDMA4_GFX_MIDCMD_DATA7__DATA7__SHIFT                                                                  0x0
 #define SDMA4_GFX_MIDCMD_DATA7__DATA7_MASK                                                                    0xFFFFFFFFL
-//SDMA4_GFX_MIDCMD_DATA8
 #define SDMA4_GFX_MIDCMD_DATA8__DATA8__SHIFT                                                                  0x0
 #define SDMA4_GFX_MIDCMD_DATA8__DATA8_MASK                                                                    0xFFFFFFFFL
-//SDMA4_GFX_MIDCMD_DATA9
 #define SDMA4_GFX_MIDCMD_DATA9__DATA9__SHIFT                                                                  0x0
 #define SDMA4_GFX_MIDCMD_DATA9__DATA9_MASK                                                                    0xFFFFFFFFL
-//SDMA4_GFX_MIDCMD_DATA10
 #define SDMA4_GFX_MIDCMD_DATA10__DATA10__SHIFT                                                                0x0
 #define SDMA4_GFX_MIDCMD_DATA10__DATA10_MASK                                                                  0xFFFFFFFFL
-//SDMA4_GFX_MIDCMD_CNTL
 #define SDMA4_GFX_MIDCMD_CNTL__DATA_VALID__SHIFT                                                              0x0
 #define SDMA4_GFX_MIDCMD_CNTL__COPY_MODE__SHIFT                                                               0x1
 #define SDMA4_GFX_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                             0x4
@@ -12172,7 +9942,6 @@
 #define SDMA4_GFX_MIDCMD_CNTL__COPY_MODE_MASK                                                                 0x00000002L
 #define SDMA4_GFX_MIDCMD_CNTL__SPLIT_STATE_MASK                                                               0x000000F0L
 #define SDMA4_GFX_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                             0x00000100L
-//SDMA4_PAGE_RB_CNTL
 #define SDMA4_PAGE_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_PAGE_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA4_PAGE_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -12189,25 +9958,18 @@
 #define SDMA4_PAGE_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA4_PAGE_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA4_PAGE_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA4_PAGE_RB_BASE
 #define SDMA4_PAGE_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA4_PAGE_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA4_PAGE_RB_BASE_HI
 #define SDMA4_PAGE_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_PAGE_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA4_PAGE_RB_RPTR
 #define SDMA4_PAGE_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_PAGE_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_PAGE_RB_RPTR_HI
 #define SDMA4_PAGE_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_PAGE_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_PAGE_RB_WPTR
 #define SDMA4_PAGE_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_PAGE_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_PAGE_RB_WPTR_HI
 #define SDMA4_PAGE_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_PAGE_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_PAGE_RB_WPTR_POLL_CNTL
 #define SDMA4_PAGE_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA4_PAGE_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA4_PAGE_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -12218,15 +9980,12 @@
 #define SDMA4_PAGE_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA4_PAGE_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA4_PAGE_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA4_PAGE_RB_RPTR_ADDR_HI
 #define SDMA4_PAGE_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA4_PAGE_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA4_PAGE_RB_RPTR_ADDR_LO
 #define SDMA4_PAGE_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA4_PAGE_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA4_PAGE_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA4_PAGE_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA4_PAGE_IB_CNTL
 #define SDMA4_PAGE_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_PAGE_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA4_PAGE_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -12235,25 +9994,18 @@
 #define SDMA4_PAGE_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA4_PAGE_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA4_PAGE_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA4_PAGE_IB_RPTR
 #define SDMA4_PAGE_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA4_PAGE_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA4_PAGE_IB_OFFSET
 #define SDMA4_PAGE_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA4_PAGE_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA4_PAGE_IB_BASE_LO
 #define SDMA4_PAGE_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA4_PAGE_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA4_PAGE_IB_BASE_HI
 #define SDMA4_PAGE_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_PAGE_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA4_PAGE_IB_SIZE
 #define SDMA4_PAGE_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA4_PAGE_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA4_PAGE_SKIP_CNTL
 #define SDMA4_PAGE_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA4_PAGE_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA4_PAGE_CONTEXT_STATUS
 #define SDMA4_PAGE_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA4_PAGE_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA4_PAGE_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -12270,94 +10022,68 @@
 #define SDMA4_PAGE_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA4_PAGE_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA4_PAGE_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA4_PAGE_DOORBELL
 #define SDMA4_PAGE_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA4_PAGE_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA4_PAGE_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA4_PAGE_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA4_PAGE_STATUS
 #define SDMA4_PAGE_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA4_PAGE_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA4_PAGE_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA4_PAGE_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA4_PAGE_DOORBELL_LOG
 #define SDMA4_PAGE_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA4_PAGE_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA4_PAGE_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA4_PAGE_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA4_PAGE_WATERMARK
 #define SDMA4_PAGE_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA4_PAGE_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA4_PAGE_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA4_PAGE_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA4_PAGE_DOORBELL_OFFSET
 #define SDMA4_PAGE_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA4_PAGE_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA4_PAGE_CSA_ADDR_LO
 #define SDMA4_PAGE_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA4_PAGE_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA4_PAGE_CSA_ADDR_HI
 #define SDMA4_PAGE_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA4_PAGE_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA4_PAGE_IB_SUB_REMAIN
 #define SDMA4_PAGE_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA4_PAGE_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA4_PAGE_PREEMPT
 #define SDMA4_PAGE_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA4_PAGE_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA4_PAGE_DUMMY_REG
 #define SDMA4_PAGE_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA4_PAGE_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA4_PAGE_RB_WPTR_POLL_ADDR_HI
 #define SDMA4_PAGE_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA4_PAGE_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA4_PAGE_RB_WPTR_POLL_ADDR_LO
 #define SDMA4_PAGE_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA4_PAGE_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA4_PAGE_RB_AQL_CNTL
 #define SDMA4_PAGE_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA4_PAGE_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA4_PAGE_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA4_PAGE_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA4_PAGE_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA4_PAGE_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA4_PAGE_MINOR_PTR_UPDATE
 #define SDMA4_PAGE_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA4_PAGE_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA4_PAGE_MIDCMD_DATA0
 #define SDMA4_PAGE_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA4_PAGE_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA4_PAGE_MIDCMD_DATA1
 #define SDMA4_PAGE_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA4_PAGE_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA4_PAGE_MIDCMD_DATA2
 #define SDMA4_PAGE_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA4_PAGE_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA4_PAGE_MIDCMD_DATA3
 #define SDMA4_PAGE_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA4_PAGE_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA4_PAGE_MIDCMD_DATA4
 #define SDMA4_PAGE_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA4_PAGE_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA4_PAGE_MIDCMD_DATA5
 #define SDMA4_PAGE_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA4_PAGE_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA4_PAGE_MIDCMD_DATA6
 #define SDMA4_PAGE_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA4_PAGE_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA4_PAGE_MIDCMD_DATA7
 #define SDMA4_PAGE_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA4_PAGE_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA4_PAGE_MIDCMD_DATA8
 #define SDMA4_PAGE_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA4_PAGE_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA4_PAGE_MIDCMD_DATA9
 #define SDMA4_PAGE_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA4_PAGE_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA4_PAGE_MIDCMD_DATA10
 #define SDMA4_PAGE_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA4_PAGE_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA4_PAGE_MIDCMD_CNTL
 #define SDMA4_PAGE_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA4_PAGE_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA4_PAGE_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -12366,7 +10092,6 @@
 #define SDMA4_PAGE_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA4_PAGE_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA4_PAGE_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA4_RLC0_RB_CNTL
 #define SDMA4_RLC0_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC0_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA4_RLC0_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -12383,25 +10108,18 @@
 #define SDMA4_RLC0_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA4_RLC0_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA4_RLC0_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA4_RLC0_RB_BASE
 #define SDMA4_RLC0_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA4_RLC0_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA4_RLC0_RB_BASE_HI
 #define SDMA4_RLC0_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC0_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA4_RLC0_RB_RPTR
 #define SDMA4_RLC0_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC0_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC0_RB_RPTR_HI
 #define SDMA4_RLC0_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC0_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC0_RB_WPTR
 #define SDMA4_RLC0_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC0_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC0_RB_WPTR_HI
 #define SDMA4_RLC0_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC0_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC0_RB_WPTR_POLL_CNTL
 #define SDMA4_RLC0_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA4_RLC0_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA4_RLC0_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -12412,15 +10130,12 @@
 #define SDMA4_RLC0_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA4_RLC0_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA4_RLC0_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA4_RLC0_RB_RPTR_ADDR_HI
 #define SDMA4_RLC0_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA4_RLC0_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC0_RB_RPTR_ADDR_LO
 #define SDMA4_RLC0_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA4_RLC0_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA4_RLC0_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA4_RLC0_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA4_RLC0_IB_CNTL
 #define SDMA4_RLC0_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC0_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA4_RLC0_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -12429,25 +10144,18 @@
 #define SDMA4_RLC0_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA4_RLC0_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA4_RLC0_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA4_RLC0_IB_RPTR
 #define SDMA4_RLC0_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA4_RLC0_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA4_RLC0_IB_OFFSET
 #define SDMA4_RLC0_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA4_RLC0_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA4_RLC0_IB_BASE_LO
 #define SDMA4_RLC0_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA4_RLC0_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA4_RLC0_IB_BASE_HI
 #define SDMA4_RLC0_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC0_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC0_IB_SIZE
 #define SDMA4_RLC0_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA4_RLC0_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA4_RLC0_SKIP_CNTL
 #define SDMA4_RLC0_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA4_RLC0_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA4_RLC0_CONTEXT_STATUS
 #define SDMA4_RLC0_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA4_RLC0_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA4_RLC0_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -12464,94 +10172,68 @@
 #define SDMA4_RLC0_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA4_RLC0_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA4_RLC0_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA4_RLC0_DOORBELL
 #define SDMA4_RLC0_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA4_RLC0_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA4_RLC0_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA4_RLC0_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA4_RLC0_STATUS
 #define SDMA4_RLC0_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA4_RLC0_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA4_RLC0_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA4_RLC0_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA4_RLC0_DOORBELL_LOG
 #define SDMA4_RLC0_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA4_RLC0_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA4_RLC0_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA4_RLC0_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA4_RLC0_WATERMARK
 #define SDMA4_RLC0_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA4_RLC0_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA4_RLC0_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA4_RLC0_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA4_RLC0_DOORBELL_OFFSET
 #define SDMA4_RLC0_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA4_RLC0_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA4_RLC0_CSA_ADDR_LO
 #define SDMA4_RLC0_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA4_RLC0_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA4_RLC0_CSA_ADDR_HI
 #define SDMA4_RLC0_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA4_RLC0_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA4_RLC0_IB_SUB_REMAIN
 #define SDMA4_RLC0_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA4_RLC0_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA4_RLC0_PREEMPT
 #define SDMA4_RLC0_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA4_RLC0_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA4_RLC0_DUMMY_REG
 #define SDMA4_RLC0_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA4_RLC0_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC0_RB_WPTR_POLL_ADDR_HI
 #define SDMA4_RLC0_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA4_RLC0_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA4_RLC0_RB_WPTR_POLL_ADDR_LO
 #define SDMA4_RLC0_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA4_RLC0_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA4_RLC0_RB_AQL_CNTL
 #define SDMA4_RLC0_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA4_RLC0_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA4_RLC0_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA4_RLC0_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA4_RLC0_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA4_RLC0_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA4_RLC0_MINOR_PTR_UPDATE
 #define SDMA4_RLC0_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA4_RLC0_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA4_RLC0_MIDCMD_DATA0
 #define SDMA4_RLC0_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA4_RLC0_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC0_MIDCMD_DATA1
 #define SDMA4_RLC0_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA4_RLC0_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC0_MIDCMD_DATA2
 #define SDMA4_RLC0_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA4_RLC0_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC0_MIDCMD_DATA3
 #define SDMA4_RLC0_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA4_RLC0_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC0_MIDCMD_DATA4
 #define SDMA4_RLC0_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA4_RLC0_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC0_MIDCMD_DATA5
 #define SDMA4_RLC0_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA4_RLC0_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC0_MIDCMD_DATA6
 #define SDMA4_RLC0_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA4_RLC0_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC0_MIDCMD_DATA7
 #define SDMA4_RLC0_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA4_RLC0_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC0_MIDCMD_DATA8
 #define SDMA4_RLC0_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA4_RLC0_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC0_MIDCMD_DATA9
 #define SDMA4_RLC0_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA4_RLC0_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC0_MIDCMD_DATA10
 #define SDMA4_RLC0_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA4_RLC0_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC0_MIDCMD_CNTL
 #define SDMA4_RLC0_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA4_RLC0_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA4_RLC0_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -12560,7 +10242,6 @@
 #define SDMA4_RLC0_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA4_RLC0_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA4_RLC0_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA4_RLC1_RB_CNTL
 #define SDMA4_RLC1_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC1_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA4_RLC1_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -12577,25 +10258,18 @@
 #define SDMA4_RLC1_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA4_RLC1_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA4_RLC1_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA4_RLC1_RB_BASE
 #define SDMA4_RLC1_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA4_RLC1_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA4_RLC1_RB_BASE_HI
 #define SDMA4_RLC1_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC1_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA4_RLC1_RB_RPTR
 #define SDMA4_RLC1_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC1_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC1_RB_RPTR_HI
 #define SDMA4_RLC1_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC1_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC1_RB_WPTR
 #define SDMA4_RLC1_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC1_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC1_RB_WPTR_HI
 #define SDMA4_RLC1_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC1_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC1_RB_WPTR_POLL_CNTL
 #define SDMA4_RLC1_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA4_RLC1_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA4_RLC1_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -12606,15 +10280,12 @@
 #define SDMA4_RLC1_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA4_RLC1_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA4_RLC1_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA4_RLC1_RB_RPTR_ADDR_HI
 #define SDMA4_RLC1_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA4_RLC1_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC1_RB_RPTR_ADDR_LO
 #define SDMA4_RLC1_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA4_RLC1_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA4_RLC1_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA4_RLC1_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA4_RLC1_IB_CNTL
 #define SDMA4_RLC1_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC1_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA4_RLC1_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -12623,25 +10294,18 @@
 #define SDMA4_RLC1_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA4_RLC1_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA4_RLC1_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA4_RLC1_IB_RPTR
 #define SDMA4_RLC1_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA4_RLC1_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA4_RLC1_IB_OFFSET
 #define SDMA4_RLC1_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA4_RLC1_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA4_RLC1_IB_BASE_LO
 #define SDMA4_RLC1_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA4_RLC1_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA4_RLC1_IB_BASE_HI
 #define SDMA4_RLC1_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC1_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC1_IB_SIZE
 #define SDMA4_RLC1_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA4_RLC1_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA4_RLC1_SKIP_CNTL
 #define SDMA4_RLC1_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA4_RLC1_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA4_RLC1_CONTEXT_STATUS
 #define SDMA4_RLC1_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA4_RLC1_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA4_RLC1_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -12658,94 +10322,68 @@
 #define SDMA4_RLC1_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA4_RLC1_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA4_RLC1_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA4_RLC1_DOORBELL
 #define SDMA4_RLC1_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA4_RLC1_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA4_RLC1_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA4_RLC1_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA4_RLC1_STATUS
 #define SDMA4_RLC1_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA4_RLC1_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA4_RLC1_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA4_RLC1_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA4_RLC1_DOORBELL_LOG
 #define SDMA4_RLC1_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA4_RLC1_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA4_RLC1_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA4_RLC1_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA4_RLC1_WATERMARK
 #define SDMA4_RLC1_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA4_RLC1_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA4_RLC1_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA4_RLC1_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA4_RLC1_DOORBELL_OFFSET
 #define SDMA4_RLC1_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA4_RLC1_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA4_RLC1_CSA_ADDR_LO
 #define SDMA4_RLC1_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA4_RLC1_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA4_RLC1_CSA_ADDR_HI
 #define SDMA4_RLC1_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA4_RLC1_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA4_RLC1_IB_SUB_REMAIN
 #define SDMA4_RLC1_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA4_RLC1_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA4_RLC1_PREEMPT
 #define SDMA4_RLC1_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA4_RLC1_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA4_RLC1_DUMMY_REG
 #define SDMA4_RLC1_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA4_RLC1_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC1_RB_WPTR_POLL_ADDR_HI
 #define SDMA4_RLC1_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA4_RLC1_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA4_RLC1_RB_WPTR_POLL_ADDR_LO
 #define SDMA4_RLC1_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA4_RLC1_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA4_RLC1_RB_AQL_CNTL
 #define SDMA4_RLC1_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA4_RLC1_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA4_RLC1_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA4_RLC1_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA4_RLC1_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA4_RLC1_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA4_RLC1_MINOR_PTR_UPDATE
 #define SDMA4_RLC1_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA4_RLC1_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA4_RLC1_MIDCMD_DATA0
 #define SDMA4_RLC1_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA4_RLC1_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC1_MIDCMD_DATA1
 #define SDMA4_RLC1_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA4_RLC1_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC1_MIDCMD_DATA2
 #define SDMA4_RLC1_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA4_RLC1_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC1_MIDCMD_DATA3
 #define SDMA4_RLC1_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA4_RLC1_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC1_MIDCMD_DATA4
 #define SDMA4_RLC1_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA4_RLC1_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC1_MIDCMD_DATA5
 #define SDMA4_RLC1_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA4_RLC1_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC1_MIDCMD_DATA6
 #define SDMA4_RLC1_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA4_RLC1_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC1_MIDCMD_DATA7
 #define SDMA4_RLC1_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA4_RLC1_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC1_MIDCMD_DATA8
 #define SDMA4_RLC1_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA4_RLC1_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC1_MIDCMD_DATA9
 #define SDMA4_RLC1_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA4_RLC1_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC1_MIDCMD_DATA10
 #define SDMA4_RLC1_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA4_RLC1_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC1_MIDCMD_CNTL
 #define SDMA4_RLC1_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA4_RLC1_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA4_RLC1_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -12754,7 +10392,6 @@
 #define SDMA4_RLC1_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA4_RLC1_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA4_RLC1_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA4_RLC2_RB_CNTL
 #define SDMA4_RLC2_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC2_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA4_RLC2_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -12771,25 +10408,18 @@
 #define SDMA4_RLC2_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA4_RLC2_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA4_RLC2_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA4_RLC2_RB_BASE
 #define SDMA4_RLC2_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA4_RLC2_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA4_RLC2_RB_BASE_HI
 #define SDMA4_RLC2_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC2_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA4_RLC2_RB_RPTR
 #define SDMA4_RLC2_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC2_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC2_RB_RPTR_HI
 #define SDMA4_RLC2_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC2_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC2_RB_WPTR
 #define SDMA4_RLC2_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC2_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC2_RB_WPTR_HI
 #define SDMA4_RLC2_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC2_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC2_RB_WPTR_POLL_CNTL
 #define SDMA4_RLC2_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA4_RLC2_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA4_RLC2_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -12800,15 +10430,12 @@
 #define SDMA4_RLC2_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA4_RLC2_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA4_RLC2_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA4_RLC2_RB_RPTR_ADDR_HI
 #define SDMA4_RLC2_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA4_RLC2_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC2_RB_RPTR_ADDR_LO
 #define SDMA4_RLC2_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA4_RLC2_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA4_RLC2_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA4_RLC2_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA4_RLC2_IB_CNTL
 #define SDMA4_RLC2_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC2_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA4_RLC2_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -12817,25 +10444,18 @@
 #define SDMA4_RLC2_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA4_RLC2_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA4_RLC2_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA4_RLC2_IB_RPTR
 #define SDMA4_RLC2_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA4_RLC2_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA4_RLC2_IB_OFFSET
 #define SDMA4_RLC2_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA4_RLC2_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA4_RLC2_IB_BASE_LO
 #define SDMA4_RLC2_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA4_RLC2_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA4_RLC2_IB_BASE_HI
 #define SDMA4_RLC2_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC2_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC2_IB_SIZE
 #define SDMA4_RLC2_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA4_RLC2_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA4_RLC2_SKIP_CNTL
 #define SDMA4_RLC2_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA4_RLC2_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA4_RLC2_CONTEXT_STATUS
 #define SDMA4_RLC2_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA4_RLC2_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA4_RLC2_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -12852,94 +10472,68 @@
 #define SDMA4_RLC2_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA4_RLC2_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA4_RLC2_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA4_RLC2_DOORBELL
 #define SDMA4_RLC2_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA4_RLC2_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA4_RLC2_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA4_RLC2_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA4_RLC2_STATUS
 #define SDMA4_RLC2_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA4_RLC2_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA4_RLC2_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA4_RLC2_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA4_RLC2_DOORBELL_LOG
 #define SDMA4_RLC2_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA4_RLC2_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA4_RLC2_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA4_RLC2_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA4_RLC2_WATERMARK
 #define SDMA4_RLC2_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA4_RLC2_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA4_RLC2_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA4_RLC2_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA4_RLC2_DOORBELL_OFFSET
 #define SDMA4_RLC2_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA4_RLC2_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA4_RLC2_CSA_ADDR_LO
 #define SDMA4_RLC2_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA4_RLC2_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA4_RLC2_CSA_ADDR_HI
 #define SDMA4_RLC2_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA4_RLC2_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA4_RLC2_IB_SUB_REMAIN
 #define SDMA4_RLC2_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA4_RLC2_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA4_RLC2_PREEMPT
 #define SDMA4_RLC2_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA4_RLC2_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA4_RLC2_DUMMY_REG
 #define SDMA4_RLC2_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA4_RLC2_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC2_RB_WPTR_POLL_ADDR_HI
 #define SDMA4_RLC2_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA4_RLC2_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA4_RLC2_RB_WPTR_POLL_ADDR_LO
 #define SDMA4_RLC2_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA4_RLC2_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA4_RLC2_RB_AQL_CNTL
 #define SDMA4_RLC2_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA4_RLC2_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA4_RLC2_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA4_RLC2_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA4_RLC2_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA4_RLC2_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA4_RLC2_MINOR_PTR_UPDATE
 #define SDMA4_RLC2_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA4_RLC2_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA4_RLC2_MIDCMD_DATA0
 #define SDMA4_RLC2_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA4_RLC2_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC2_MIDCMD_DATA1
 #define SDMA4_RLC2_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA4_RLC2_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC2_MIDCMD_DATA2
 #define SDMA4_RLC2_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA4_RLC2_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC2_MIDCMD_DATA3
 #define SDMA4_RLC2_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA4_RLC2_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC2_MIDCMD_DATA4
 #define SDMA4_RLC2_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA4_RLC2_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC2_MIDCMD_DATA5
 #define SDMA4_RLC2_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA4_RLC2_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC2_MIDCMD_DATA6
 #define SDMA4_RLC2_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA4_RLC2_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC2_MIDCMD_DATA7
 #define SDMA4_RLC2_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA4_RLC2_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC2_MIDCMD_DATA8
 #define SDMA4_RLC2_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA4_RLC2_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC2_MIDCMD_DATA9
 #define SDMA4_RLC2_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA4_RLC2_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC2_MIDCMD_DATA10
 #define SDMA4_RLC2_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA4_RLC2_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC2_MIDCMD_CNTL
 #define SDMA4_RLC2_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA4_RLC2_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA4_RLC2_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -12948,7 +10542,6 @@
 #define SDMA4_RLC2_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA4_RLC2_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA4_RLC2_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA4_RLC3_RB_CNTL
 #define SDMA4_RLC3_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC3_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA4_RLC3_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -12965,25 +10558,18 @@
 #define SDMA4_RLC3_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA4_RLC3_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA4_RLC3_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA4_RLC3_RB_BASE
 #define SDMA4_RLC3_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA4_RLC3_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA4_RLC3_RB_BASE_HI
 #define SDMA4_RLC3_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC3_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA4_RLC3_RB_RPTR
 #define SDMA4_RLC3_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC3_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC3_RB_RPTR_HI
 #define SDMA4_RLC3_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC3_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC3_RB_WPTR
 #define SDMA4_RLC3_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC3_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC3_RB_WPTR_HI
 #define SDMA4_RLC3_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC3_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC3_RB_WPTR_POLL_CNTL
 #define SDMA4_RLC3_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA4_RLC3_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA4_RLC3_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -12994,15 +10580,12 @@
 #define SDMA4_RLC3_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA4_RLC3_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA4_RLC3_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA4_RLC3_RB_RPTR_ADDR_HI
 #define SDMA4_RLC3_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA4_RLC3_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC3_RB_RPTR_ADDR_LO
 #define SDMA4_RLC3_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA4_RLC3_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA4_RLC3_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA4_RLC3_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA4_RLC3_IB_CNTL
 #define SDMA4_RLC3_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC3_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA4_RLC3_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -13011,25 +10594,18 @@
 #define SDMA4_RLC3_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA4_RLC3_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA4_RLC3_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA4_RLC3_IB_RPTR
 #define SDMA4_RLC3_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA4_RLC3_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA4_RLC3_IB_OFFSET
 #define SDMA4_RLC3_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA4_RLC3_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA4_RLC3_IB_BASE_LO
 #define SDMA4_RLC3_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA4_RLC3_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA4_RLC3_IB_BASE_HI
 #define SDMA4_RLC3_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC3_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC3_IB_SIZE
 #define SDMA4_RLC3_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA4_RLC3_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA4_RLC3_SKIP_CNTL
 #define SDMA4_RLC3_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA4_RLC3_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA4_RLC3_CONTEXT_STATUS
 #define SDMA4_RLC3_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA4_RLC3_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA4_RLC3_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -13046,94 +10622,68 @@
 #define SDMA4_RLC3_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA4_RLC3_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA4_RLC3_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA4_RLC3_DOORBELL
 #define SDMA4_RLC3_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA4_RLC3_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA4_RLC3_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA4_RLC3_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA4_RLC3_STATUS
 #define SDMA4_RLC3_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA4_RLC3_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA4_RLC3_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA4_RLC3_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA4_RLC3_DOORBELL_LOG
 #define SDMA4_RLC3_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA4_RLC3_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA4_RLC3_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA4_RLC3_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA4_RLC3_WATERMARK
 #define SDMA4_RLC3_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA4_RLC3_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA4_RLC3_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA4_RLC3_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA4_RLC3_DOORBELL_OFFSET
 #define SDMA4_RLC3_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA4_RLC3_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA4_RLC3_CSA_ADDR_LO
 #define SDMA4_RLC3_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA4_RLC3_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA4_RLC3_CSA_ADDR_HI
 #define SDMA4_RLC3_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA4_RLC3_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA4_RLC3_IB_SUB_REMAIN
 #define SDMA4_RLC3_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA4_RLC3_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA4_RLC3_PREEMPT
 #define SDMA4_RLC3_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA4_RLC3_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA4_RLC3_DUMMY_REG
 #define SDMA4_RLC3_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA4_RLC3_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC3_RB_WPTR_POLL_ADDR_HI
 #define SDMA4_RLC3_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA4_RLC3_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA4_RLC3_RB_WPTR_POLL_ADDR_LO
 #define SDMA4_RLC3_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA4_RLC3_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA4_RLC3_RB_AQL_CNTL
 #define SDMA4_RLC3_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA4_RLC3_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA4_RLC3_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA4_RLC3_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA4_RLC3_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA4_RLC3_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA4_RLC3_MINOR_PTR_UPDATE
 #define SDMA4_RLC3_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA4_RLC3_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA4_RLC3_MIDCMD_DATA0
 #define SDMA4_RLC3_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA4_RLC3_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC3_MIDCMD_DATA1
 #define SDMA4_RLC3_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA4_RLC3_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC3_MIDCMD_DATA2
 #define SDMA4_RLC3_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA4_RLC3_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC3_MIDCMD_DATA3
 #define SDMA4_RLC3_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA4_RLC3_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC3_MIDCMD_DATA4
 #define SDMA4_RLC3_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA4_RLC3_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC3_MIDCMD_DATA5
 #define SDMA4_RLC3_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA4_RLC3_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC3_MIDCMD_DATA6
 #define SDMA4_RLC3_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA4_RLC3_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC3_MIDCMD_DATA7
 #define SDMA4_RLC3_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA4_RLC3_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC3_MIDCMD_DATA8
 #define SDMA4_RLC3_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA4_RLC3_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC3_MIDCMD_DATA9
 #define SDMA4_RLC3_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA4_RLC3_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC3_MIDCMD_DATA10
 #define SDMA4_RLC3_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA4_RLC3_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC3_MIDCMD_CNTL
 #define SDMA4_RLC3_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA4_RLC3_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA4_RLC3_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -13142,7 +10692,6 @@
 #define SDMA4_RLC3_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA4_RLC3_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA4_RLC3_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA4_RLC4_RB_CNTL
 #define SDMA4_RLC4_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC4_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA4_RLC4_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -13159,25 +10708,18 @@
 #define SDMA4_RLC4_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA4_RLC4_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA4_RLC4_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA4_RLC4_RB_BASE
 #define SDMA4_RLC4_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA4_RLC4_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA4_RLC4_RB_BASE_HI
 #define SDMA4_RLC4_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC4_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA4_RLC4_RB_RPTR
 #define SDMA4_RLC4_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC4_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC4_RB_RPTR_HI
 #define SDMA4_RLC4_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC4_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC4_RB_WPTR
 #define SDMA4_RLC4_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC4_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC4_RB_WPTR_HI
 #define SDMA4_RLC4_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC4_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC4_RB_WPTR_POLL_CNTL
 #define SDMA4_RLC4_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA4_RLC4_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA4_RLC4_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -13188,15 +10730,12 @@
 #define SDMA4_RLC4_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA4_RLC4_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA4_RLC4_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA4_RLC4_RB_RPTR_ADDR_HI
 #define SDMA4_RLC4_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA4_RLC4_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC4_RB_RPTR_ADDR_LO
 #define SDMA4_RLC4_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA4_RLC4_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA4_RLC4_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA4_RLC4_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA4_RLC4_IB_CNTL
 #define SDMA4_RLC4_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC4_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA4_RLC4_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -13205,25 +10744,18 @@
 #define SDMA4_RLC4_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA4_RLC4_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA4_RLC4_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA4_RLC4_IB_RPTR
 #define SDMA4_RLC4_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA4_RLC4_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA4_RLC4_IB_OFFSET
 #define SDMA4_RLC4_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA4_RLC4_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA4_RLC4_IB_BASE_LO
 #define SDMA4_RLC4_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA4_RLC4_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA4_RLC4_IB_BASE_HI
 #define SDMA4_RLC4_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC4_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC4_IB_SIZE
 #define SDMA4_RLC4_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA4_RLC4_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA4_RLC4_SKIP_CNTL
 #define SDMA4_RLC4_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA4_RLC4_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA4_RLC4_CONTEXT_STATUS
 #define SDMA4_RLC4_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA4_RLC4_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA4_RLC4_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -13240,94 +10772,68 @@
 #define SDMA4_RLC4_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA4_RLC4_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA4_RLC4_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA4_RLC4_DOORBELL
 #define SDMA4_RLC4_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA4_RLC4_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA4_RLC4_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA4_RLC4_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA4_RLC4_STATUS
 #define SDMA4_RLC4_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA4_RLC4_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA4_RLC4_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA4_RLC4_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA4_RLC4_DOORBELL_LOG
 #define SDMA4_RLC4_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA4_RLC4_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA4_RLC4_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA4_RLC4_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA4_RLC4_WATERMARK
 #define SDMA4_RLC4_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA4_RLC4_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA4_RLC4_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA4_RLC4_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA4_RLC4_DOORBELL_OFFSET
 #define SDMA4_RLC4_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA4_RLC4_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA4_RLC4_CSA_ADDR_LO
 #define SDMA4_RLC4_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA4_RLC4_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA4_RLC4_CSA_ADDR_HI
 #define SDMA4_RLC4_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA4_RLC4_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA4_RLC4_IB_SUB_REMAIN
 #define SDMA4_RLC4_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA4_RLC4_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA4_RLC4_PREEMPT
 #define SDMA4_RLC4_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA4_RLC4_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA4_RLC4_DUMMY_REG
 #define SDMA4_RLC4_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA4_RLC4_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC4_RB_WPTR_POLL_ADDR_HI
 #define SDMA4_RLC4_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA4_RLC4_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA4_RLC4_RB_WPTR_POLL_ADDR_LO
 #define SDMA4_RLC4_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA4_RLC4_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA4_RLC4_RB_AQL_CNTL
 #define SDMA4_RLC4_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA4_RLC4_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA4_RLC4_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA4_RLC4_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA4_RLC4_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA4_RLC4_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA4_RLC4_MINOR_PTR_UPDATE
 #define SDMA4_RLC4_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA4_RLC4_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA4_RLC4_MIDCMD_DATA0
 #define SDMA4_RLC4_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA4_RLC4_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC4_MIDCMD_DATA1
 #define SDMA4_RLC4_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA4_RLC4_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC4_MIDCMD_DATA2
 #define SDMA4_RLC4_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA4_RLC4_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC4_MIDCMD_DATA3
 #define SDMA4_RLC4_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA4_RLC4_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC4_MIDCMD_DATA4
 #define SDMA4_RLC4_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA4_RLC4_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC4_MIDCMD_DATA5
 #define SDMA4_RLC4_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA4_RLC4_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC4_MIDCMD_DATA6
 #define SDMA4_RLC4_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA4_RLC4_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC4_MIDCMD_DATA7
 #define SDMA4_RLC4_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA4_RLC4_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC4_MIDCMD_DATA8
 #define SDMA4_RLC4_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA4_RLC4_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC4_MIDCMD_DATA9
 #define SDMA4_RLC4_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA4_RLC4_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC4_MIDCMD_DATA10
 #define SDMA4_RLC4_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA4_RLC4_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC4_MIDCMD_CNTL
 #define SDMA4_RLC4_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA4_RLC4_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA4_RLC4_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -13336,7 +10842,6 @@
 #define SDMA4_RLC4_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA4_RLC4_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA4_RLC4_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA4_RLC5_RB_CNTL
 #define SDMA4_RLC5_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC5_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA4_RLC5_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -13353,25 +10858,18 @@
 #define SDMA4_RLC5_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA4_RLC5_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA4_RLC5_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA4_RLC5_RB_BASE
 #define SDMA4_RLC5_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA4_RLC5_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA4_RLC5_RB_BASE_HI
 #define SDMA4_RLC5_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC5_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA4_RLC5_RB_RPTR
 #define SDMA4_RLC5_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC5_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC5_RB_RPTR_HI
 #define SDMA4_RLC5_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC5_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC5_RB_WPTR
 #define SDMA4_RLC5_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC5_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC5_RB_WPTR_HI
 #define SDMA4_RLC5_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC5_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC5_RB_WPTR_POLL_CNTL
 #define SDMA4_RLC5_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA4_RLC5_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA4_RLC5_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -13382,15 +10880,12 @@
 #define SDMA4_RLC5_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA4_RLC5_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA4_RLC5_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA4_RLC5_RB_RPTR_ADDR_HI
 #define SDMA4_RLC5_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA4_RLC5_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC5_RB_RPTR_ADDR_LO
 #define SDMA4_RLC5_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA4_RLC5_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA4_RLC5_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA4_RLC5_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA4_RLC5_IB_CNTL
 #define SDMA4_RLC5_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC5_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA4_RLC5_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -13399,25 +10894,18 @@
 #define SDMA4_RLC5_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA4_RLC5_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA4_RLC5_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA4_RLC5_IB_RPTR
 #define SDMA4_RLC5_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA4_RLC5_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA4_RLC5_IB_OFFSET
 #define SDMA4_RLC5_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA4_RLC5_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA4_RLC5_IB_BASE_LO
 #define SDMA4_RLC5_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA4_RLC5_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA4_RLC5_IB_BASE_HI
 #define SDMA4_RLC5_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC5_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC5_IB_SIZE
 #define SDMA4_RLC5_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA4_RLC5_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA4_RLC5_SKIP_CNTL
 #define SDMA4_RLC5_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA4_RLC5_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA4_RLC5_CONTEXT_STATUS
 #define SDMA4_RLC5_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA4_RLC5_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA4_RLC5_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -13434,94 +10922,68 @@
 #define SDMA4_RLC5_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA4_RLC5_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA4_RLC5_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA4_RLC5_DOORBELL
 #define SDMA4_RLC5_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA4_RLC5_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA4_RLC5_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA4_RLC5_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA4_RLC5_STATUS
 #define SDMA4_RLC5_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA4_RLC5_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA4_RLC5_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA4_RLC5_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA4_RLC5_DOORBELL_LOG
 #define SDMA4_RLC5_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA4_RLC5_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA4_RLC5_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA4_RLC5_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA4_RLC5_WATERMARK
 #define SDMA4_RLC5_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA4_RLC5_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA4_RLC5_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA4_RLC5_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA4_RLC5_DOORBELL_OFFSET
 #define SDMA4_RLC5_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA4_RLC5_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA4_RLC5_CSA_ADDR_LO
 #define SDMA4_RLC5_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA4_RLC5_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA4_RLC5_CSA_ADDR_HI
 #define SDMA4_RLC5_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA4_RLC5_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA4_RLC5_IB_SUB_REMAIN
 #define SDMA4_RLC5_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA4_RLC5_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA4_RLC5_PREEMPT
 #define SDMA4_RLC5_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA4_RLC5_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA4_RLC5_DUMMY_REG
 #define SDMA4_RLC5_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA4_RLC5_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC5_RB_WPTR_POLL_ADDR_HI
 #define SDMA4_RLC5_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA4_RLC5_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA4_RLC5_RB_WPTR_POLL_ADDR_LO
 #define SDMA4_RLC5_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA4_RLC5_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA4_RLC5_RB_AQL_CNTL
 #define SDMA4_RLC5_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA4_RLC5_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA4_RLC5_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA4_RLC5_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA4_RLC5_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA4_RLC5_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA4_RLC5_MINOR_PTR_UPDATE
 #define SDMA4_RLC5_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA4_RLC5_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA4_RLC5_MIDCMD_DATA0
 #define SDMA4_RLC5_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA4_RLC5_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC5_MIDCMD_DATA1
 #define SDMA4_RLC5_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA4_RLC5_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC5_MIDCMD_DATA2
 #define SDMA4_RLC5_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA4_RLC5_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC5_MIDCMD_DATA3
 #define SDMA4_RLC5_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA4_RLC5_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC5_MIDCMD_DATA4
 #define SDMA4_RLC5_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA4_RLC5_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC5_MIDCMD_DATA5
 #define SDMA4_RLC5_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA4_RLC5_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC5_MIDCMD_DATA6
 #define SDMA4_RLC5_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA4_RLC5_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC5_MIDCMD_DATA7
 #define SDMA4_RLC5_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA4_RLC5_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC5_MIDCMD_DATA8
 #define SDMA4_RLC5_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA4_RLC5_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC5_MIDCMD_DATA9
 #define SDMA4_RLC5_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA4_RLC5_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC5_MIDCMD_DATA10
 #define SDMA4_RLC5_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA4_RLC5_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC5_MIDCMD_CNTL
 #define SDMA4_RLC5_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA4_RLC5_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA4_RLC5_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -13530,7 +10992,6 @@
 #define SDMA4_RLC5_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA4_RLC5_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA4_RLC5_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA4_RLC6_RB_CNTL
 #define SDMA4_RLC6_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC6_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA4_RLC6_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -13547,25 +11008,18 @@
 #define SDMA4_RLC6_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA4_RLC6_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA4_RLC6_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA4_RLC6_RB_BASE
 #define SDMA4_RLC6_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA4_RLC6_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA4_RLC6_RB_BASE_HI
 #define SDMA4_RLC6_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC6_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA4_RLC6_RB_RPTR
 #define SDMA4_RLC6_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC6_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC6_RB_RPTR_HI
 #define SDMA4_RLC6_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC6_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC6_RB_WPTR
 #define SDMA4_RLC6_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC6_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC6_RB_WPTR_HI
 #define SDMA4_RLC6_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC6_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC6_RB_WPTR_POLL_CNTL
 #define SDMA4_RLC6_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA4_RLC6_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA4_RLC6_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -13576,15 +11030,12 @@
 #define SDMA4_RLC6_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA4_RLC6_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA4_RLC6_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA4_RLC6_RB_RPTR_ADDR_HI
 #define SDMA4_RLC6_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA4_RLC6_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC6_RB_RPTR_ADDR_LO
 #define SDMA4_RLC6_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA4_RLC6_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA4_RLC6_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA4_RLC6_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA4_RLC6_IB_CNTL
 #define SDMA4_RLC6_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC6_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA4_RLC6_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -13593,25 +11044,18 @@
 #define SDMA4_RLC6_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA4_RLC6_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA4_RLC6_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA4_RLC6_IB_RPTR
 #define SDMA4_RLC6_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA4_RLC6_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA4_RLC6_IB_OFFSET
 #define SDMA4_RLC6_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA4_RLC6_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA4_RLC6_IB_BASE_LO
 #define SDMA4_RLC6_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA4_RLC6_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA4_RLC6_IB_BASE_HI
 #define SDMA4_RLC6_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC6_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC6_IB_SIZE
 #define SDMA4_RLC6_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA4_RLC6_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA4_RLC6_SKIP_CNTL
 #define SDMA4_RLC6_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA4_RLC6_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA4_RLC6_CONTEXT_STATUS
 #define SDMA4_RLC6_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA4_RLC6_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA4_RLC6_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -13628,94 +11072,68 @@
 #define SDMA4_RLC6_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA4_RLC6_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA4_RLC6_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA4_RLC6_DOORBELL
 #define SDMA4_RLC6_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA4_RLC6_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA4_RLC6_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA4_RLC6_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA4_RLC6_STATUS
 #define SDMA4_RLC6_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA4_RLC6_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA4_RLC6_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA4_RLC6_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA4_RLC6_DOORBELL_LOG
 #define SDMA4_RLC6_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA4_RLC6_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA4_RLC6_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA4_RLC6_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA4_RLC6_WATERMARK
 #define SDMA4_RLC6_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA4_RLC6_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA4_RLC6_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA4_RLC6_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA4_RLC6_DOORBELL_OFFSET
 #define SDMA4_RLC6_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA4_RLC6_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA4_RLC6_CSA_ADDR_LO
 #define SDMA4_RLC6_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA4_RLC6_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA4_RLC6_CSA_ADDR_HI
 #define SDMA4_RLC6_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA4_RLC6_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA4_RLC6_IB_SUB_REMAIN
 #define SDMA4_RLC6_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA4_RLC6_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA4_RLC6_PREEMPT
 #define SDMA4_RLC6_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA4_RLC6_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA4_RLC6_DUMMY_REG
 #define SDMA4_RLC6_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA4_RLC6_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC6_RB_WPTR_POLL_ADDR_HI
 #define SDMA4_RLC6_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA4_RLC6_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA4_RLC6_RB_WPTR_POLL_ADDR_LO
 #define SDMA4_RLC6_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA4_RLC6_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA4_RLC6_RB_AQL_CNTL
 #define SDMA4_RLC6_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA4_RLC6_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA4_RLC6_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA4_RLC6_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA4_RLC6_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA4_RLC6_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA4_RLC6_MINOR_PTR_UPDATE
 #define SDMA4_RLC6_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA4_RLC6_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA4_RLC6_MIDCMD_DATA0
 #define SDMA4_RLC6_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA4_RLC6_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC6_MIDCMD_DATA1
 #define SDMA4_RLC6_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA4_RLC6_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC6_MIDCMD_DATA2
 #define SDMA4_RLC6_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA4_RLC6_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC6_MIDCMD_DATA3
 #define SDMA4_RLC6_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA4_RLC6_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC6_MIDCMD_DATA4
 #define SDMA4_RLC6_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA4_RLC6_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC6_MIDCMD_DATA5
 #define SDMA4_RLC6_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA4_RLC6_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC6_MIDCMD_DATA6
 #define SDMA4_RLC6_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA4_RLC6_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC6_MIDCMD_DATA7
 #define SDMA4_RLC6_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA4_RLC6_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC6_MIDCMD_DATA8
 #define SDMA4_RLC6_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA4_RLC6_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC6_MIDCMD_DATA9
 #define SDMA4_RLC6_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA4_RLC6_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC6_MIDCMD_DATA10
 #define SDMA4_RLC6_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA4_RLC6_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC6_MIDCMD_CNTL
 #define SDMA4_RLC6_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA4_RLC6_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA4_RLC6_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -13724,7 +11142,6 @@
 #define SDMA4_RLC6_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA4_RLC6_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA4_RLC6_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-//SDMA4_RLC7_RB_CNTL
 #define SDMA4_RLC7_RB_CNTL__RB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC7_RB_CNTL__RB_SIZE__SHIFT                                                                    0x1
 #define SDMA4_RLC7_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                             0x9
@@ -13741,25 +11158,18 @@
 #define SDMA4_RLC7_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                         0x001F0000L
 #define SDMA4_RLC7_RB_CNTL__RB_PRIV_MASK                                                                      0x00800000L
 #define SDMA4_RLC7_RB_CNTL__RB_VMID_MASK                                                                      0x0F000000L
-//SDMA4_RLC7_RB_BASE
 #define SDMA4_RLC7_RB_BASE__ADDR__SHIFT                                                                       0x0
 #define SDMA4_RLC7_RB_BASE__ADDR_MASK                                                                         0xFFFFFFFFL
-//SDMA4_RLC7_RB_BASE_HI
 #define SDMA4_RLC7_RB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC7_RB_BASE_HI__ADDR_MASK                                                                      0x00FFFFFFL
-//SDMA4_RLC7_RB_RPTR
 #define SDMA4_RLC7_RB_RPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC7_RB_RPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC7_RB_RPTR_HI
 #define SDMA4_RLC7_RB_RPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC7_RB_RPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC7_RB_WPTR
 #define SDMA4_RLC7_RB_WPTR__OFFSET__SHIFT                                                                     0x0
 #define SDMA4_RLC7_RB_WPTR__OFFSET_MASK                                                                       0xFFFFFFFFL
-//SDMA4_RLC7_RB_WPTR_HI
 #define SDMA4_RLC7_RB_WPTR_HI__OFFSET__SHIFT                                                                  0x0
 #define SDMA4_RLC7_RB_WPTR_HI__OFFSET_MASK                                                                    0xFFFFFFFFL
-//SDMA4_RLC7_RB_WPTR_POLL_CNTL
 #define SDMA4_RLC7_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                           0x0
 #define SDMA4_RLC7_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                      0x1
 #define SDMA4_RLC7_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                  0x2
@@ -13770,15 +11180,12 @@
 #define SDMA4_RLC7_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                    0x00000004L
 #define SDMA4_RLC7_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                          0x0000FFF0L
 #define SDMA4_RLC7_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                    0xFFFF0000L
-//SDMA4_RLC7_RB_RPTR_ADDR_HI
 #define SDMA4_RLC7_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                               0x0
 #define SDMA4_RLC7_RB_RPTR_ADDR_HI__ADDR_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC7_RB_RPTR_ADDR_LO
 #define SDMA4_RLC7_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                       0x0
 #define SDMA4_RLC7_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                               0x2
 #define SDMA4_RLC7_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                         0x00000001L
 #define SDMA4_RLC7_RB_RPTR_ADDR_LO__ADDR_MASK                                                                 0xFFFFFFFCL
-//SDMA4_RLC7_IB_CNTL
 #define SDMA4_RLC7_IB_CNTL__IB_ENABLE__SHIFT                                                                  0x0
 #define SDMA4_RLC7_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                             0x4
 #define SDMA4_RLC7_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                           0x8
@@ -13787,25 +11194,18 @@
 #define SDMA4_RLC7_IB_CNTL__IB_SWAP_ENABLE_MASK                                                               0x00000010L
 #define SDMA4_RLC7_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                             0x00000100L
 #define SDMA4_RLC7_IB_CNTL__CMD_VMID_MASK                                                                     0x000F0000L
-//SDMA4_RLC7_IB_RPTR
 #define SDMA4_RLC7_IB_RPTR__OFFSET__SHIFT                                                                     0x2
 #define SDMA4_RLC7_IB_RPTR__OFFSET_MASK                                                                       0x003FFFFCL
-//SDMA4_RLC7_IB_OFFSET
 #define SDMA4_RLC7_IB_OFFSET__OFFSET__SHIFT                                                                   0x2
 #define SDMA4_RLC7_IB_OFFSET__OFFSET_MASK                                                                     0x003FFFFCL
-//SDMA4_RLC7_IB_BASE_LO
 #define SDMA4_RLC7_IB_BASE_LO__ADDR__SHIFT                                                                    0x5
 #define SDMA4_RLC7_IB_BASE_LO__ADDR_MASK                                                                      0xFFFFFFE0L
-//SDMA4_RLC7_IB_BASE_HI
 #define SDMA4_RLC7_IB_BASE_HI__ADDR__SHIFT                                                                    0x0
 #define SDMA4_RLC7_IB_BASE_HI__ADDR_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC7_IB_SIZE
 #define SDMA4_RLC7_IB_SIZE__SIZE__SHIFT                                                                       0x0
 #define SDMA4_RLC7_IB_SIZE__SIZE_MASK                                                                         0x000FFFFFL
-//SDMA4_RLC7_SKIP_CNTL
 #define SDMA4_RLC7_SKIP_CNTL__SKIP_COUNT__SHIFT                                                               0x0
 #define SDMA4_RLC7_SKIP_CNTL__SKIP_COUNT_MASK                                                                 0x000FFFFFL
-//SDMA4_RLC7_CONTEXT_STATUS
 #define SDMA4_RLC7_CONTEXT_STATUS__SELECTED__SHIFT                                                            0x0
 #define SDMA4_RLC7_CONTEXT_STATUS__IDLE__SHIFT                                                                0x2
 #define SDMA4_RLC7_CONTEXT_STATUS__EXPIRED__SHIFT                                                             0x3
@@ -13822,94 +11222,68 @@
 #define SDMA4_RLC7_CONTEXT_STATUS__CTXSW_READY_MASK                                                           0x00000100L
 #define SDMA4_RLC7_CONTEXT_STATUS__PREEMPTED_MASK                                                             0x00000200L
 #define SDMA4_RLC7_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                       0x00000400L
-//SDMA4_RLC7_DOORBELL
 #define SDMA4_RLC7_DOORBELL__ENABLE__SHIFT                                                                    0x1c
 #define SDMA4_RLC7_DOORBELL__CAPTURED__SHIFT                                                                  0x1e
 #define SDMA4_RLC7_DOORBELL__ENABLE_MASK                                                                      0x10000000L
 #define SDMA4_RLC7_DOORBELL__CAPTURED_MASK                                                                    0x40000000L
-//SDMA4_RLC7_STATUS
 #define SDMA4_RLC7_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                      0x0
 #define SDMA4_RLC7_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                         0x8
 #define SDMA4_RLC7_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                        0x000000FFL
 #define SDMA4_RLC7_STATUS__WPTR_UPDATE_PENDING_MASK                                                           0x00000100L
-//SDMA4_RLC7_DOORBELL_LOG
 #define SDMA4_RLC7_DOORBELL_LOG__BE_ERROR__SHIFT                                                              0x0
 #define SDMA4_RLC7_DOORBELL_LOG__DATA__SHIFT                                                                  0x2
 #define SDMA4_RLC7_DOORBELL_LOG__BE_ERROR_MASK                                                                0x00000001L
 #define SDMA4_RLC7_DOORBELL_LOG__DATA_MASK                                                                    0xFFFFFFFCL
-//SDMA4_RLC7_WATERMARK
 #define SDMA4_RLC7_WATERMARK__RD_OUTSTANDING__SHIFT                                                           0x0
 #define SDMA4_RLC7_WATERMARK__WR_OUTSTANDING__SHIFT                                                           0x10
 #define SDMA4_RLC7_WATERMARK__RD_OUTSTANDING_MASK                                                             0x00000FFFL
 #define SDMA4_RLC7_WATERMARK__WR_OUTSTANDING_MASK                                                             0x03FF0000L
-//SDMA4_RLC7_DOORBELL_OFFSET
 #define SDMA4_RLC7_DOORBELL_OFFSET__OFFSET__SHIFT                                                             0x2
 #define SDMA4_RLC7_DOORBELL_OFFSET__OFFSET_MASK                                                               0x0FFFFFFCL
-//SDMA4_RLC7_CSA_ADDR_LO
 #define SDMA4_RLC7_CSA_ADDR_LO__ADDR__SHIFT                                                                   0x2
 #define SDMA4_RLC7_CSA_ADDR_LO__ADDR_MASK                                                                     0xFFFFFFFCL
-//SDMA4_RLC7_CSA_ADDR_HI
 #define SDMA4_RLC7_CSA_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define SDMA4_RLC7_CSA_ADDR_HI__ADDR_MASK                                                                     0xFFFFFFFFL
-//SDMA4_RLC7_IB_SUB_REMAIN
 #define SDMA4_RLC7_IB_SUB_REMAIN__SIZE__SHIFT                                                                 0x0
 #define SDMA4_RLC7_IB_SUB_REMAIN__SIZE_MASK                                                                   0x000FFFFFL
-//SDMA4_RLC7_PREEMPT
 #define SDMA4_RLC7_PREEMPT__IB_PREEMPT__SHIFT                                                                 0x0
 #define SDMA4_RLC7_PREEMPT__IB_PREEMPT_MASK                                                                   0x00000001L
-//SDMA4_RLC7_DUMMY_REG
 #define SDMA4_RLC7_DUMMY_REG__DUMMY__SHIFT                                                                    0x0
 #define SDMA4_RLC7_DUMMY_REG__DUMMY_MASK                                                                      0xFFFFFFFFL
-//SDMA4_RLC7_RB_WPTR_POLL_ADDR_HI
 #define SDMA4_RLC7_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                          0x0
 #define SDMA4_RLC7_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                            0xFFFFFFFFL
-//SDMA4_RLC7_RB_WPTR_POLL_ADDR_LO
 #define SDMA4_RLC7_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                          0x2
 #define SDMA4_RLC7_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                            0xFFFFFFFCL
-//SDMA4_RLC7_RB_AQL_CNTL
 #define SDMA4_RLC7_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                             0x0
 #define SDMA4_RLC7_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                        0x1
 #define SDMA4_RLC7_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                            0x8
 #define SDMA4_RLC7_RB_AQL_CNTL__AQL_ENABLE_MASK                                                               0x00000001L
 #define SDMA4_RLC7_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                          0x000000FEL
 #define SDMA4_RLC7_RB_AQL_CNTL__PACKET_STEP_MASK                                                              0x0000FF00L
-//SDMA4_RLC7_MINOR_PTR_UPDATE
 #define SDMA4_RLC7_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                            0x0
 #define SDMA4_RLC7_MINOR_PTR_UPDATE__ENABLE_MASK                                                              0x00000001L
-//SDMA4_RLC7_MIDCMD_DATA0
 #define SDMA4_RLC7_MIDCMD_DATA0__DATA0__SHIFT                                                                 0x0
 #define SDMA4_RLC7_MIDCMD_DATA0__DATA0_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC7_MIDCMD_DATA1
 #define SDMA4_RLC7_MIDCMD_DATA1__DATA1__SHIFT                                                                 0x0
 #define SDMA4_RLC7_MIDCMD_DATA1__DATA1_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC7_MIDCMD_DATA2
 #define SDMA4_RLC7_MIDCMD_DATA2__DATA2__SHIFT                                                                 0x0
 #define SDMA4_RLC7_MIDCMD_DATA2__DATA2_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC7_MIDCMD_DATA3
 #define SDMA4_RLC7_MIDCMD_DATA3__DATA3__SHIFT                                                                 0x0
 #define SDMA4_RLC7_MIDCMD_DATA3__DATA3_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC7_MIDCMD_DATA4
 #define SDMA4_RLC7_MIDCMD_DATA4__DATA4__SHIFT                                                                 0x0
 #define SDMA4_RLC7_MIDCMD_DATA4__DATA4_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC7_MIDCMD_DATA5
 #define SDMA4_RLC7_MIDCMD_DATA5__DATA5__SHIFT                                                                 0x0
 #define SDMA4_RLC7_MIDCMD_DATA5__DATA5_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC7_MIDCMD_DATA6
 #define SDMA4_RLC7_MIDCMD_DATA6__DATA6__SHIFT                                                                 0x0
 #define SDMA4_RLC7_MIDCMD_DATA6__DATA6_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC7_MIDCMD_DATA7
 #define SDMA4_RLC7_MIDCMD_DATA7__DATA7__SHIFT                                                                 0x0
 #define SDMA4_RLC7_MIDCMD_DATA7__DATA7_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC7_MIDCMD_DATA8
 #define SDMA4_RLC7_MIDCMD_DATA8__DATA8__SHIFT                                                                 0x0
 #define SDMA4_RLC7_MIDCMD_DATA8__DATA8_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC7_MIDCMD_DATA9
 #define SDMA4_RLC7_MIDCMD_DATA9__DATA9__SHIFT                                                                 0x0
 #define SDMA4_RLC7_MIDCMD_DATA9__DATA9_MASK                                                                   0xFFFFFFFFL
-//SDMA4_RLC7_MIDCMD_DATA10
 #define SDMA4_RLC7_MIDCMD_DATA10__DATA10__SHIFT                                                               0x0
 #define SDMA4_RLC7_MIDCMD_DATA10__DATA10_MASK                                                                 0xFFFFFFFFL
-//SDMA4_RLC7_MIDCMD_CNTL
 #define SDMA4_RLC7_MIDCMD_CNTL__DATA_VALID__SHIFT                                                             0x0
 #define SDMA4_RLC7_MIDCMD_CNTL__COPY_MODE__SHIFT                                                              0x1
 #define SDMA4_RLC7_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                            0x4
@@ -13918,5 +11292,4 @@
 #define SDMA4_RLC7_MIDCMD_CNTL__COPY_MODE_MASK                                                                0x00000002L
 #define SDMA4_RLC7_MIDCMD_CNTL__SPLIT_STATE_MASK                                                              0x000000F0L
 #define SDMA4_RLC7_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                            0x00000100L
-
 #endif

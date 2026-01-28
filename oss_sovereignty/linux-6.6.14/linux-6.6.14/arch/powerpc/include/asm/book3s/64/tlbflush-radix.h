@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_POWERPC_TLBFLUSH_RADIX_H
 #define _ASM_POWERPC_TLBFLUSH_RADIX_H
-
 #include <asm/hvcall.h>
-
 #define RIC_FLUSH_TLB 0
 #define RIC_FLUSH_PWC 1
 #define RIC_FLUSH_ALL 2
-
 struct vm_area_struct;
 struct mm_struct;
 struct mmu_gather;
-
 static inline u64 psize_to_rpti_pgsize(unsigned long psize)
 {
 	if (psize == MMU_PAGE_4K)
@@ -24,12 +19,10 @@ static inline u64 psize_to_rpti_pgsize(unsigned long psize)
 		return H_RPTI_PAGE_1G;
 	return H_RPTI_PAGE_ALL;
 }
-
 static inline int mmu_get_ap(int psize)
 {
 	return mmu_psize_defs[psize].ap;
 }
-
 #ifdef CONFIG_PPC_RADIX_MMU
 extern void radix__tlbiel_all(unsigned int action);
 extern void radix__flush_tlb_lpid_page(unsigned int lpid,
@@ -59,7 +52,6 @@ static inline void radix__flush_all_lpid_guest(unsigned int lpid)
 	WARN_ON(1);
 }
 #endif
-
 extern void radix__flush_hugetlb_tlb_range(struct vm_area_struct *vma,
 					   unsigned long start, unsigned long end);
 extern void radix__flush_tlb_range_psize(struct mm_struct *mm, unsigned long start,
@@ -73,7 +65,6 @@ extern void radix__flush_pud_tlb_range(struct vm_area_struct *vma,
 extern void radix__flush_tlb_range(struct vm_area_struct *vma, unsigned long start,
 			    unsigned long end);
 extern void radix__flush_tlb_kernel_range(unsigned long start, unsigned long end);
-
 extern void radix__local_flush_tlb_mm(struct mm_struct *mm);
 extern void radix__local_flush_all_mm(struct mm_struct *mm);
 extern void radix__local_flush_tlb_page(struct vm_area_struct *vma, unsigned long vmaddr);
@@ -95,5 +86,4 @@ extern void radix__flush_tlb_page_psize(struct mm_struct *mm, unsigned long vmad
 extern void radix__flush_tlb_pwc(struct mmu_gather *tlb, unsigned long addr);
 extern void radix__flush_tlb_collapsed_pmd(struct mm_struct *mm, unsigned long addr);
 extern void radix__flush_tlb_all(void);
-
 #endif

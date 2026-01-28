@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright © 2015 Broadcom
- */
-
 #ifndef _DT_BINDINGS_ARM_BCM2835_RPI_POWER_H
 #define _DT_BINDINGS_ARM_BCM2835_RPI_POWER_H
-
-/* These power domain indices are the firmware interface's indices
- * minus one.
- */
 #define RPI_POWER_DOMAIN_I2C0		0
 #define RPI_POWER_DOMAIN_I2C1		1
 #define RPI_POWER_DOMAIN_I2C2		2
@@ -32,7 +23,5 @@
 #define RPI_POWER_DOMAIN_CCP2TX		20
 #define RPI_POWER_DOMAIN_CDP		21
 #define RPI_POWER_DOMAIN_ARM		22
-
 #define RPI_POWER_DOMAIN_COUNT		23
-
-#endif /* _DT_BINDINGS_ARM_BCM2835_RPI_POWER_H */
+#endif  

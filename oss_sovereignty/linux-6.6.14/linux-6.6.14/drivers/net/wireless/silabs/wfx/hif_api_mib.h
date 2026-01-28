@@ -1,18 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only or Apache-2.0 */
-/*
- * WF200 hardware interface definitions
- *
- * Copyright (c) 2018-2020, Silicon Laboratories Inc.
- */
-
 #ifndef WFX_HIF_API_MIB_H
 #define WFX_HIF_API_MIB_H
-
 #include "hif_api_general.h"
-
 #define HIF_API_IPV4_ADDRESS_SIZE 4
 #define HIF_API_IPV6_ADDRESS_SIZE 16
-
 enum wfx_hif_mib_ids {
 	HIF_MIB_ID_GL_OPERATIONAL_POWER_MODE        = 0x2000,
 	HIF_MIB_ID_GL_BLOCK_ACK_INFO                = 0x2001,
@@ -62,39 +52,33 @@ enum wfx_hif_mib_ids {
 	HIF_MIB_ID_INTERFACE_PROTECTION             = 0x2055,
 	HIF_MIB_ID_BEACON_STATS                     = 0x2056,
 };
-
 enum wfx_hif_op_power_mode {
 	HIF_OP_POWER_MODE_ACTIVE    = 0x0,
 	HIF_OP_POWER_MODE_DOZE      = 0x1,
 	HIF_OP_POWER_MODE_QUIESCENT = 0x2
 };
-
 struct wfx_hif_mib_gl_operational_power_mode {
 	u8     power_mode:4;
 	u8     reserved1:3;
 	u8     wup_ind_activation:1;
 	u8     reserved2[3];
 } __packed;
-
 struct wfx_hif_mib_gl_set_multi_msg {
 	u8     enable_multi_tx_conf:1;
 	u8     reserved1:7;
 	u8     reserved2[3];
 } __packed;
-
 enum wfx_hif_arp_ns_frame_treatment {
 	HIF_ARP_NS_FILTERING_DISABLE = 0x0,
 	HIF_ARP_NS_FILTERING_ENABLE  = 0x1,
 	HIF_ARP_NS_REPLY_ENABLE      = 0x2
 };
-
 struct wfx_hif_mib_arp_ip_addr_table {
 	u8     condition_idx;
 	u8     arp_enable;
 	u8     reserved[2];
 	u8     ipv4_address[HIF_API_IPV4_ADDRESS_SIZE];
 } __packed;
-
 struct wfx_hif_mib_rx_filter {
 	u8     reserved1:1;
 	u8     bssid_filter:1;
@@ -104,7 +88,6 @@ struct wfx_hif_mib_rx_filter {
 	u8     reserved3:3;
 	u8     reserved4[3];
 } __packed;
-
 struct wfx_hif_ie_table_entry {
 	u8     ie_id;
 	u8     has_changed:1;
@@ -115,23 +98,19 @@ struct wfx_hif_ie_table_entry {
 	u8     oui[3];
 	u8     match_data[3];
 } __packed;
-
 struct wfx_hif_mib_bcn_filter_table {
 	__le32 num_of_info_elmts;
 	struct wfx_hif_ie_table_entry ie_table[];
 } __packed;
-
 enum wfx_hif_beacon_filter {
 	HIF_BEACON_FILTER_DISABLE  = 0x0,
 	HIF_BEACON_FILTER_ENABLE   = 0x1,
 	HIF_BEACON_FILTER_AUTO_ERP = 0x2
 };
-
 struct wfx_hif_mib_bcn_filter_enable {
 	__le32 enable;
 	__le32 bcn_count;
 } __packed;
-
 struct wfx_hif_mib_extended_count_table {
 	__le32 count_drop_plcp;
 	__le32 count_drop_fcs;
@@ -163,7 +142,6 @@ struct wfx_hif_mib_extended_count_table {
 	__le32 count_rx_bcn_dtim_aid0_set;
 	__le32 reserved[12];
 } __packed;
-
 struct wfx_hif_mib_count_table {
 	__le32 count_drop_plcp;
 	__le32 count_drop_fcs;
@@ -189,35 +167,28 @@ struct wfx_hif_mib_count_table {
 	__le32 count_drop_ccmp_replay;
 	__le32 count_drop_bip_mic;
 } __packed;
-
 struct wfx_hif_mib_mac_address {
 	u8     mac_addr[ETH_ALEN];
 	__le16 reserved;
 } __packed;
-
 struct wfx_hif_mib_wep_default_key_id {
 	u8     wep_default_key_id;
 	u8     reserved[3];
 } __packed;
-
 struct wfx_hif_mib_dot11_rts_threshold {
 	__le32 threshold;
 } __packed;
-
 struct wfx_hif_mib_slot_time {
 	__le32 slot_time;
 } __packed;
-
 struct wfx_hif_mib_current_tx_power_level {
-	__le32 power_level; /* signed value */
+	__le32 power_level;  
 } __packed;
-
 struct wfx_hif_mib_non_erp_protection {
 	u8     use_cts_to_self:1;
 	u8     reserved1:7;
 	u8     reserved2[3];
 } __packed;
-
 enum wfx_hif_tmplt {
 	HIF_TMPLT_PRBREQ = 0x0,
 	HIF_TMPLT_BCN    = 0x1,
@@ -228,9 +199,7 @@ enum wfx_hif_tmplt {
 	HIF_TMPLT_ARP    = 0x6,
 	HIF_TMPLT_NA     = 0x7
 };
-
 #define HIF_API_MAX_TEMPLATE_FRAME_SIZE 700
-
 struct wfx_hif_mib_template_frame {
 	u8     frame_type;
 	u8     init_rate:7;
@@ -238,7 +207,6 @@ struct wfx_hif_mib_template_frame {
 	__le16 frame_length;
 	u8     frame[];
 } __packed;
-
 struct wfx_hif_mib_beacon_wake_up_period {
 	u8     wakeup_period_min;
 	u8     receive_dtim:1;
@@ -246,7 +214,6 @@ struct wfx_hif_mib_beacon_wake_up_period {
 	u8     wakeup_period_max;
 	u8     reserved2;
 } __packed;
-
 struct wfx_hif_mib_rcpi_rssi_threshold {
 	u8     detection:1;
 	u8     rcpi_rssi:1;
@@ -257,16 +224,13 @@ struct wfx_hif_mib_rcpi_rssi_threshold {
 	u8     upper_threshold;
 	u8     rolling_average_count;
 } __packed;
-
 #define DEFAULT_BA_MAX_RX_BUFFER_SIZE 16
-
 struct wfx_hif_mib_block_ack_policy {
 	u8     block_ack_tx_tid_policy;
 	u8     reserved1;
 	u8     block_ack_rx_tid_policy;
 	u8     block_ack_rx_max_buffer_size;
 } __packed;
-
 enum wfx_hif_mpdu_start_spacing {
 	HIF_MPDU_START_SPACING_NO_RESTRIC = 0x0,
 	HIF_MPDU_START_SPACING_QUARTER    = 0x1,
@@ -277,7 +241,6 @@ enum wfx_hif_mpdu_start_spacing {
 	HIF_MPDU_START_SPACING_EIGHT      = 0x6,
 	HIF_MPDU_START_SPACING_SIXTEEN    = 0x7
 };
-
 struct wfx_hif_mib_set_association_mode {
 	u8     preambtype_use:1;
 	u8     mode:1;
@@ -291,7 +254,6 @@ struct wfx_hif_mib_set_association_mode {
 	u8     mpdu_start_spacing;
 	__le32 basic_rate_set;
 } __packed;
-
 struct wfx_hif_mib_set_uapsd_information {
 	u8     trig_bckgrnd:1;
 	u8     trig_be:1;
@@ -307,7 +269,6 @@ struct wfx_hif_mib_set_uapsd_information {
 	__le16 max_auto_trigger_interval;
 	__le16 auto_trigger_step;
 } __packed;
-
 struct wfx_hif_tx_rate_retry_policy {
 	u8     policy_index;
 	u8     short_retry_count;
@@ -320,16 +281,13 @@ struct wfx_hif_tx_rate_retry_policy {
 	u8     reserved2[3];
 	u8     rates[12];
 } __packed;
-
 #define HIF_TX_RETRY_POLICY_MAX     15
 #define HIF_TX_RETRY_POLICY_INVALID HIF_TX_RETRY_POLICY_MAX
-
 struct wfx_hif_mib_set_tx_rate_retry_policy {
 	u8     num_tx_rate_policies;
 	u8     reserved[3];
 	struct wfx_hif_tx_rate_retry_policy tx_rate_retry_policy[];
 } __packed;
-
 struct wfx_hif_mib_protected_mgmt_policy {
 	u8     pmf_enable:1;
 	u8     unpmf_allowed:1;
@@ -337,10 +295,8 @@ struct wfx_hif_mib_protected_mgmt_policy {
 	u8     reserved1:5;
 	u8     reserved2[3];
 } __packed;
-
 struct wfx_hif_mib_keep_alive_period {
 	__le16 keep_alive_period;
 	u8     reserved[2];
 } __packed;
-
 #endif

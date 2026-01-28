@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef BTRFS_DELALLOC_SPACE_H
 #define BTRFS_DELALLOC_SPACE_H
-
 struct extent_changeset;
-
 int btrfs_alloc_data_chunk_ondemand(struct btrfs_inode *inode, u64 bytes);
 int btrfs_check_data_free_space(struct btrfs_inode *inode,
 			struct extent_changeset **reserved, u64 start, u64 len,
@@ -23,5 +19,4 @@ int btrfs_delalloc_reserve_space(struct btrfs_inode *inode,
 int btrfs_delalloc_reserve_metadata(struct btrfs_inode *inode, u64 num_bytes,
 				    u64 disk_num_bytes, bool noflush);
 void btrfs_delalloc_release_extents(struct btrfs_inode *inode, u64 num_bytes);
-
-#endif /* BTRFS_DELALLOC_SPACE_H */
+#endif  

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __ASM_CSKY_FUTEX_H
 #define __ASM_CSKY_FUTEX_H
-
 #ifndef CONFIG_SMP
 #include <asm-generic/futex.h>
 #else
@@ -10,7 +7,6 @@
 #include <linux/futex.h>
 #include <linux/uaccess.h>
 #include <linux/errno.h>
-
 #define __futex_atomic_op(insn, ret, oldval, uaddr, oparg)		\
 {									\
 	u32 tmp;							\
@@ -37,15 +33,12 @@
 									\
 	__atomic_post_full_fence();					\
 }
-
 static inline int
 arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
 {
 	int oldval = 0, ret = 0;
-
 	if (!access_ok(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	switch (op) {
 	case FUTEX_OP_SET:
 		__futex_atomic_op("mov %[t], %[ov]",
@@ -70,27 +63,19 @@ arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
 	default:
 		ret = -ENOSYS;
 	}
-
 	if (!ret)
 		*oval = oldval;
-
 	return ret;
 }
-
-
-
 static inline int
 futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 			      u32 oldval, u32 newval)
 {
 	int ret = 0;
 	u32 val, tmp;
-
 	if (!access_ok(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	__atomic_pre_full_fence();
-
 	__asm__ __volatile__ (
 	"1:	ldex.w	%[v], %[u]			\n"
 	"	cmpne	%[v], %[ov]			\n"
@@ -110,12 +95,9 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	  [t] "=&r" (tmp)
 	: [ov] "Jr" (oldval), [nv] "Jr" (newval), [e] "Jr" (-EFAULT)
 	: "memory");
-
 	__atomic_post_full_fence();
-
 	*uval = val;
 	return ret;
 }
-
-#endif /* CONFIG_SMP */
-#endif /* __ASM_CSKY_FUTEX_H */
+#endif  
+#endif  

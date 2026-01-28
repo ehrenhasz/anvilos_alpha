@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Intel Speed Select -- Enumerate and control features
- * Copyright (c) 2019 Intel Corporation.
- */
-
 #ifndef _ISST_H_
 #define _ISST_H_
-
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -24,18 +17,14 @@
 #include <cpuid.h>
 #include <dirent.h>
 #include <errno.h>
-
 #include <stdarg.h>
 #include <sys/ioctl.h>
-
 #include <linux/isst_if.h>
-
 #define BIT(x) (1 << (x))
 #define BIT_ULL(nr) (1ULL << (nr))
 #define GENMASK(h, l) (((~0UL) << (l)) & (~0UL >> (sizeof(long) * 8 - 1 - (h))))
 #define GENMASK_ULL(h, l)                                                      \
 	(((~0ULL) << (l)) & (~0ULL >> (sizeof(long long) * 8 - 1 - (h))))
-
 #define CONFIG_TDP				0x7f
 #define CONFIG_TDP_GET_LEVELS_INFO		0x00
 #define CONFIG_TDP_GET_TDP_CONTROL		0x01
@@ -50,47 +39,36 @@
 #define CONFIG_TDP_GET_P1_INFO			0x0a
 #define CONFIG_TDP_GET_MEM_FREQ			0x0b
 #define	CONFIG_TDP_GET_RATIO_INFO		0x0c
-
 #define CONFIG_TDP_GET_FACT_HP_TURBO_LIMIT_NUMCORES	0x10
 #define CONFIG_TDP_GET_FACT_HP_TURBO_LIMIT_RATIOS	0x11
 #define CONFIG_TDP_GET_FACT_LP_CLIPPING_RATIO		0x12
-
 #define CONFIG_TDP_PBF_GET_CORE_MASK_INFO	0x20
 #define CONFIG_TDP_PBF_GET_P1HI_P1LO_INFO	0x21
 #define CONFIG_TDP_PBF_GET_TJ_MAX_INFO		0x22
 #define CONFIG_TDP_PBF_GET_TDP_INFO		0X23
-
 #define CONFIG_CLOS				0xd0
 #define CLOS_PQR_ASSOC				0x00
 #define CLOS_PM_CLOS				0x01
 #define CLOS_PM_QOS_CONFIG			0x02
 #define CLOS_STATUS				0x03
-
 #define MBOX_CMD_WRITE_BIT			0x08
-
 #define PM_QOS_INFO_OFFSET			0x00
 #define PM_QOS_CONFIG_OFFSET			0x04
 #define PM_CLOS_OFFSET				0x08
 #define PQR_ASSOC_OFFSET			0x20
-
 #define READ_PM_CONFIG				0x94
 #define WRITE_PM_CONFIG				0x95
 #define PM_FEATURE				0x03
-
 #define DISP_FREQ_MULTIPLIER 100
-
 #define MAX_PACKAGE_COUNT	32
 #define MAX_DIE_PER_PACKAGE	2
 #define MAX_PUNIT_PER_DIE	8
-
-/* Unified structure to specific a CPU or a Power Domain */
 struct isst_id {
 	int cpu;
 	int pkg;
 	int die;
 	int punit;
 };
-
 struct isst_clos_config {
 	unsigned int clos_min;
 	unsigned int clos_max;
@@ -98,12 +76,10 @@ struct isst_clos_config {
 	unsigned char clos_prop_prio;
 	unsigned char clos_desired;
 };
-
 struct isst_fact_bucket_info {
 	int hp_cores;
 	int hp_ratios[TRL_MAX_LEVELS];
 };
-
 struct isst_pbf_info {
 	int pbf_acticated;
 	int pbf_available;
@@ -115,14 +91,12 @@ struct isst_pbf_info {
 	int t_prochot;
 	int tdp;
 };
-
 #define ISST_TRL_MAX_ACTIVE_CORES	8
 #define ISST_FACT_MAX_BUCKETS		8
 struct isst_fact_info {
 	int lp_ratios[TRL_MAX_LEVELS];
 	struct isst_fact_bucket_info bucket_info[ISST_FACT_MAX_BUCKETS];
 };
-
 struct isst_pkg_ctdp_level_info {
 	int processed;
 	int control_cpu;
@@ -155,7 +129,7 @@ struct isst_pkg_ctdp_level_info {
 	size_t core_cpumask_size;
 	cpu_set_t *core_cpumask;
 	int cpu_count;
-	unsigned long long trl_cores;	/* Buckets info */
+	unsigned long long trl_cores;	 
 	int trl_ratios[TRL_MAX_LEVELS][ISST_TRL_MAX_ACTIVE_CORES];
 	int kobj_bucket_index;
 	int active_bucket;
@@ -166,8 +140,7 @@ struct isst_pkg_ctdp_level_info {
 	struct isst_pbf_info pbf_info;
 	struct isst_fact_info fact_info;
 };
-
-#define ISST_MAX_TDP_LEVELS	(4 + 1) /* +1 for base config */
+#define ISST_MAX_TDP_LEVELS	(4 + 1)  
 struct isst_pkg_ctdp {
 	int locked;
 	int version;
@@ -177,12 +150,10 @@ struct isst_pkg_ctdp {
 	int enabled;
 	struct isst_pkg_ctdp_level_info ctdp_level[ISST_MAX_TDP_LEVELS];
 };
-
 enum isst_platform_param {
 	ISST_PARAM_MBOX_DELAY,
 	ISST_PARAM_MBOX_RETRIES,
 };
-
 struct isst_platform_ops {
 	int (*get_disp_freq_multiplier)(void);
 	int (*get_trl_max_levels)(void);
@@ -210,14 +181,11 @@ struct isst_platform_ops {
 	int (*clos_get_assoc_status)(struct isst_id *id, int *clos_id);
 	int (*clos_associate)(struct isst_id *id, int clos_id);
 };
-
 extern int is_cpu_in_power_domain(int cpu, struct isst_id *id);
 extern int get_topo_max_cpus(void);
 extern int get_cpu_count(struct isst_id *id);
 extern int get_max_punit_core_id(struct isst_id *id);
 extern int api_version(void);
-
-/* Common interfaces */
 FILE *get_output_file(void);
 extern int is_debug_enabled(void);
 extern void debug_printf(const char *format, ...);
@@ -233,14 +201,12 @@ extern void set_cpu_mask_from_punit_coremask(struct isst_id *id,
 					     int *cpu_cnt);
 extern int isst_send_msr_command(unsigned int cpu, unsigned int command,
 				 int write, unsigned long long *req_resp);
-
 extern int isst_set_platform_ops(int api_version);
 extern void isst_update_platform_param(enum isst_platform_param, int vale);
 extern int isst_get_disp_freq_multiplier(void);
 extern int isst_get_trl_max_levels(void);
 extern char *isst_get_trl_level_name(int level);
 extern int isst_is_punit_valid(struct isst_id *id);
-
 extern int isst_get_ctdp_levels(struct isst_id *id, struct isst_pkg_ctdp *pkg_dev);
 extern int isst_get_ctdp_control(struct isst_id *id, int config_index,
 				 struct isst_pkg_ctdp_level_info *ctdp_level);
@@ -273,7 +239,6 @@ extern int isst_set_trl(struct isst_id *id, unsigned long long trl);
 extern int isst_get_trl(struct isst_id *id, unsigned long long *trl);
 extern int isst_set_trl_from_current_tdp(struct isst_id *id, unsigned long long trl);
 extern int isst_get_config_tdp_lock_status(struct isst_id *id);
-
 extern int isst_pm_qos_config(struct isst_id *id, int enable_clos, int priority_type);
 extern int isst_pm_get_clos(struct isst_id *id, int clos,
 			    struct isst_clos_config *clos_config);
@@ -284,10 +249,8 @@ extern int isst_clos_get_assoc_status(struct isst_id *id, int *clos_id);
 extern void isst_clos_display_information(struct isst_id *id, FILE *outf, int clos,
 					  struct isst_clos_config *clos_config);
 extern void isst_clos_display_assoc_information(struct isst_id *id, FILE *outf, int clos);
-
 extern void isst_display_result(struct isst_id *id, FILE *outf, char *feature, char *cmd,
 				int result);
-
 extern int isst_clos_get_clos_information(struct isst_id *id, int *enable, int *type);
 extern void isst_clos_display_clos_information(struct isst_id *id, FILE *outf,
 					       int clos_enable, int type,
@@ -301,7 +264,6 @@ extern int is_spr_platform(void);
 extern int is_emr_platform(void);
 extern int is_icx_platform(void);
 extern void isst_trl_display_information(struct isst_id *id, FILE *outf, unsigned long long trl);
-
 extern void set_cpu_online_offline(int cpu, int state);
 extern void for_each_online_power_domain_in_set(void (*callback)(struct isst_id *, void *, void *,
 							    void *, void *),
@@ -311,14 +273,9 @@ extern int isst_daemon(int debug_mode, int poll_interval, int no_daemon);
 extern void process_level_change(struct isst_id *id);
 extern int hfi_main(void);
 extern void hfi_exit(void);
-
-/* Interface specific callbacks */
 extern struct isst_platform_ops *mbox_get_platform_ops(void);
 extern struct isst_platform_ops *tpmi_get_platform_ops(void);
-
-/* Cgroup related interface */
 extern int enable_cpuset_controller(void);
 extern int isolate_cpus(struct isst_id *id, int mask_size, cpu_set_t *cpu_mask, int level);
 extern int use_cgroupv2(void);
-
 #endif

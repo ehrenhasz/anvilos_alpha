@@ -1,13 +1,7 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Meta Platforms, Inc. and affiliates.
-
 set -e
-
-printf '%s' '#define ORC_HASH '
-
+printf '%s' '
 awk '
-/^#define ORC_(REG|TYPE)_/ { print }
+/^
 /^struct orc_entry {$/ { p=1 }
 p { print }
 /^}/ { p=0 }' |

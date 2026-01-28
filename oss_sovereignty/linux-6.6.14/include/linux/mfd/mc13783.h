@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2010 Yong Shen <yong.shen@linaro.org>
- * Copyright 2009-2010 Pengutronix
- * Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>
- */
 #ifndef __LINUX_MFD_MC13783_H
 #define __LINUX_MFD_MC13783_H
-
 #include <linux/mfd/mc13xxx.h>
-
 #define	MC13783_REG_SW1A		0
 #define	MC13783_REG_SW1B		1
 #define	MC13783_REG_SW2A		2
@@ -42,7 +34,6 @@
 #define	MC13783_REG_V4		30
 #define	MC13783_REG_PWGT1SPI	31
 #define	MC13783_REG_PWGT2SPI	32
-
 #define MC13783_IRQ_ADCDONE	MC13XXX_IRQ_ADCDONE
 #define MC13783_IRQ_ADCBISDONE	MC13XXX_IRQ_ADCBISDONE
 #define MC13783_IRQ_TS		MC13XXX_IRQ_TS
@@ -83,5 +74,4 @@
 #define MC13783_IRQ_HSL		43
 #define MC13783_IRQ_ALSPTH	44
 #define MC13783_IRQ_AHSSHORT	45
-
-#endif /* ifndef __LINUX_MFD_MC13783_H */
+#endif  

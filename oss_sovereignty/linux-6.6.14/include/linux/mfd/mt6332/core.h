@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
-
 #ifndef __MFD_MT6332_CORE_H__
 #define __MFD_MT6332_CORE_H__
-
 enum mt6332_irq_status_numbers {
 	MT6332_IRQ_STATUS_CHR_COMPLETE = 0,
 	MT6332_IRQ_STATUS_THERMAL_SD,
@@ -52,7 +46,6 @@ enum mt6332_irq_status_numbers {
 	MT6332_IRQ_STATUS_LDO_OC,
 	MT6332_IRQ_STATUS_NR,
 };
-
 #define MT6332_IRQ_CON0_BASE	MT6332_IRQ_STATUS_CHR_COMPLETE
 #define MT6332_IRQ_CON0_BITS	(MT6332_IRQ_STATUS_FLASH_VLED1_OPEN + 1)
 #define MT6332_IRQ_CON1_BASE	MT6332_IRQ_STATUS_OV
@@ -61,5 +54,4 @@ enum mt6332_irq_status_numbers {
 #define MT6332_IRQ_CON2_BITS	(MT6332_IRQ_STATUS_VWLED_OC - MT6332_IRQ_STATUS_THR_H + 1)
 #define MT6332_IRQ_CON3_BASE	MT6332_IRQ_STATUS_VDRAM_OC
 #define MT6332_IRQ_CON3_BITS	(MT6332_IRQ_STATUS_LDO_OC - MT6332_IRQ_STATUS_VDRAM_OC + 1)
-
-#endif /* __MFD_MT6332_CORE_H__ */
+#endif  

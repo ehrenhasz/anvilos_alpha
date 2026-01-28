@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2021 Ahmad Fatoum, Pengutronix
- */
-
 #ifndef __DT_BINDINGS_CLOCK_STARFIVE_JH7100_H__
 #define __DT_BINDINGS_CLOCK_STARFIVE_JH7100_H__
-
 #define JH7100_CLK_CPUNDBUS_ROOT	0
 #define JH7100_CLK_DLA_ROOT		1
 #define JH7100_CLK_DSP_ROOT		2
@@ -192,11 +186,8 @@
 #define JH7100_CLK_TEMP_APB		183
 #define JH7100_CLK_TEMP_SENSE		184
 #define JH7100_CLK_SYSERR_APB		185
-
 #define JH7100_CLK_PLL0_OUT		186
 #define JH7100_CLK_PLL1_OUT		187
 #define JH7100_CLK_PLL2_OUT		188
-
 #define JH7100_CLK_END			189
-
-#endif /* __DT_BINDINGS_CLOCK_STARFIVE_JH7100_H__ */
+#endif  

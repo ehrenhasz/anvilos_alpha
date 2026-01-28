@@ -1,17 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2006-2013 Solarflare Communications Inc.
- * Copyright 2019-2020 Xilinx Inc.
- */
-
 #ifndef EFX_PTP_H
 #define EFX_PTP_H
-
 #include <linux/net_tstamp.h>
 #include "net_driver.h"
-
 struct ethtool_ts_info;
 void efx_siena_ptp_defer_probe_with_channel(struct efx_nic *efx);
 struct efx_channel *efx_siena_ptp_channel(struct efx_nic *efx);
@@ -36,10 +26,8 @@ static inline void efx_rx_skb_attach_timestamp(struct efx_channel *channel,
 	if (channel->sync_events_state == SYNC_EVENTS_VALID)
 		__efx_siena_rx_skb_attach_timestamp(channel, skb);
 }
-
 void efx_siena_ptp_start_datapath(struct efx_nic *efx);
 void efx_siena_ptp_stop_datapath(struct efx_nic *efx);
 bool efx_siena_ptp_use_mac_tx_timestamps(struct efx_nic *efx);
 ktime_t efx_siena_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue);
-
-#endif /* EFX_PTP_H */
+#endif  

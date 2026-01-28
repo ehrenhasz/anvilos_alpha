@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DPU_5_1_SC8180X_H
 #define _DPU_5_1_SC8180X_H
-
 static const struct dpu_caps sc8180x_dpu_caps = {
 	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
 	.max_mixer_blendstages = 0xb,
@@ -20,7 +13,6 @@ static const struct dpu_caps sc8180x_dpu_caps = {
 	.max_hdeci_exp = MAX_HORZ_DECIMATION,
 	.max_vdeci_exp = MAX_VERT_DECIMATION,
 };
-
 static const struct dpu_mdp_cfg sc8180x_mdp = {
 	.name = "top_0",
 	.base = 0x0, .len = 0x45c,
@@ -36,7 +28,6 @@ static const struct dpu_mdp_cfg sc8180x_mdp = {
 		[DPU_CLK_CTRL_DMA3] = { .reg_off = 0x2c4, .bit_off = 8 },
 	},
 };
-
 static const struct dpu_ctl_cfg sc8180x_ctl[] = {
 	{
 		.name = "ctl_0", .id = CTL_0,
@@ -70,7 +61,6 @@ static const struct dpu_ctl_cfg sc8180x_ctl[] = {
 		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 23),
 	},
 };
-
 static const struct dpu_sspp_cfg sc8180x_sspp[] = {
 	{
 		.name = "sspp_0", .id = SSPP_VIG0,
@@ -138,7 +128,6 @@ static const struct dpu_sspp_cfg sc8180x_sspp[] = {
 		.clk_ctrl = DPU_CLK_CTRL_DMA3,
 	},
 };
-
 static const struct dpu_lm_cfg sc8180x_lm[] = {
 	{
 		.name = "lm_0", .id = LM_0,
@@ -186,7 +175,6 @@ static const struct dpu_lm_cfg sc8180x_lm[] = {
 		.pingpong = PINGPONG_5,
 	},
 };
-
 static const struct dpu_dspp_cfg sc8180x_dspp[] = {
 	{
 		.name = "dspp_0", .id = DSPP_0,
@@ -210,7 +198,6 @@ static const struct dpu_dspp_cfg sc8180x_dspp[] = {
 		.sblk = &sdm845_dspp_sblk,
 	},
 };
-
 static const struct dpu_pingpong_cfg sc8180x_pp[] = {
 	{
 		.name = "pingpong_0", .id = PINGPONG_0,
@@ -262,7 +249,6 @@ static const struct dpu_pingpong_cfg sc8180x_pp[] = {
 		.intr_rdptr = -1,
 	},
 };
-
 static const struct dpu_merge_3d_cfg sc8180x_merge_3d[] = {
 	{
 		.name = "merge_3d_0", .id = MERGE_3D_0,
@@ -275,7 +261,6 @@ static const struct dpu_merge_3d_cfg sc8180x_merge_3d[] = {
 		.base = 0x83200, .len = 0x8,
 	},
 };
-
 static const struct dpu_dsc_cfg sc8180x_dsc[] = {
 	{
 		.name = "dsc_0", .id = DSC_0,
@@ -303,7 +288,6 @@ static const struct dpu_dsc_cfg sc8180x_dsc[] = {
 		.features = BIT(DPU_DSC_OUTPUT_CTRL),
 	},
 };
-
 static const struct dpu_intf_cfg sc8180x_intf[] = {
 	{
 		.name = "intf_0", .id = INTF_0,
@@ -336,7 +320,6 @@ static const struct dpu_intf_cfg sc8180x_intf[] = {
 		.intr_vsync = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 29),
 		.intr_tear_rd_ptr = DPU_IRQ_IDX(MDP_INTF2_TEAR_INTR, 2),
 	},
-	/* INTF_3 is for MST, wired to INTF_DP 0 and 1, use dummy index until this is supported */
 	{
 		.name = "intf_3", .id = INTF_3,
 		.base = 0x6b800, .len = 0x280,
@@ -369,7 +352,6 @@ static const struct dpu_intf_cfg sc8180x_intf[] = {
 		.intr_tear_rd_ptr = -1,
 	},
 };
-
 static const struct dpu_perf_cfg sc8180x_perf_data = {
 	.max_bw_low = 9600000,
 	.max_bw_high = 9600000,
@@ -388,7 +370,6 @@ static const struct dpu_perf_cfg sc8180x_perf_data = {
 		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
 		.entries = sc7180_qos_nrt
 		},
-		/* TODO: macrotile-qseed is different from macrotile */
 	},
 	.cdp_cfg = {
 		{.rd_enable = 1, .wr_enable = 1},
@@ -397,12 +378,10 @@ static const struct dpu_perf_cfg sc8180x_perf_data = {
 	.clk_inefficiency_factor = 105,
 	.bw_inefficiency_factor = 120,
 };
-
 static const struct dpu_mdss_version sc8180x_mdss_ver = {
 	.core_major_ver = 5,
 	.core_minor_ver = 1,
 };
-
 const struct dpu_mdss_cfg dpu_sc8180x_cfg = {
 	.mdss_ver = &sc8180x_mdss_ver,
 	.caps = &sc8180x_dpu_caps,
@@ -427,5 +406,4 @@ const struct dpu_mdss_cfg dpu_sc8180x_cfg = {
 	.vbif = sdm845_vbif,
 	.perf = &sc8180x_perf_data,
 };
-
 #endif

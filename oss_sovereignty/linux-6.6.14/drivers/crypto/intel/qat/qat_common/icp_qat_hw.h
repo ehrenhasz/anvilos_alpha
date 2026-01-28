@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2020 Intel Corporation */
 #ifndef _ICP_QAT_HW_H_
 #define _ICP_QAT_HW_H_
-
 enum icp_qat_hw_ae_id {
 	ICP_QAT_HW_AE_0 = 0,
 	ICP_QAT_HW_AE_1 = 1,
@@ -18,7 +15,6 @@ enum icp_qat_hw_ae_id {
 	ICP_QAT_HW_AE_11 = 11,
 	ICP_QAT_HW_AE_DELIMITER = 12
 };
-
 enum icp_qat_hw_qat_id {
 	ICP_QAT_HW_QAT_0 = 0,
 	ICP_QAT_HW_QAT_1 = 1,
@@ -28,7 +24,6 @@ enum icp_qat_hw_qat_id {
 	ICP_QAT_HW_QAT_5 = 5,
 	ICP_QAT_HW_QAT_DELIMITER = 6
 };
-
 enum icp_qat_hw_auth_algo {
 	ICP_QAT_HW_AUTH_ALGO_NULL = 0,
 	ICP_QAT_HW_AUTH_ALGO_SHA1 = 1,
@@ -52,24 +47,20 @@ enum icp_qat_hw_auth_algo {
 	ICP_QAT_HW_AUTH_ALGO_SHA3_512 = 19,
 	ICP_QAT_HW_AUTH_ALGO_DELIMITER = 20
 };
-
 enum icp_qat_hw_auth_mode {
 	ICP_QAT_HW_AUTH_MODE0 = 0,
 	ICP_QAT_HW_AUTH_MODE1 = 1,
 	ICP_QAT_HW_AUTH_MODE2 = 2,
 	ICP_QAT_HW_AUTH_MODE_DELIMITER = 3
 };
-
 struct icp_qat_hw_auth_config {
 	__u32 config;
 	__u32 reserved;
 };
-
 struct icp_qat_hw_ucs_cipher_config {
 	__u32 val;
 	__u32 reserved[3];
 };
-
 enum icp_qat_slice_mask {
 	ICP_ACCEL_MASK_CIPHER_SLICE = BIT(0),
 	ICP_ACCEL_MASK_AUTH_SLICE = BIT(1),
@@ -79,7 +70,6 @@ enum icp_qat_slice_mask {
 	ICP_ACCEL_MASK_EIA3_SLICE = BIT(5),
 	ICP_ACCEL_MASK_SHA3_SLICE = BIT(6),
 };
-
 enum icp_qat_capabilities_mask {
 	ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC = BIT(0),
 	ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC = BIT(1),
@@ -87,27 +77,22 @@ enum icp_qat_capabilities_mask {
 	ICP_ACCEL_CAPABILITIES_AUTHENTICATION = BIT(3),
 	ICP_ACCEL_CAPABILITIES_RESERVED_1 = BIT(4),
 	ICP_ACCEL_CAPABILITIES_COMPRESSION = BIT(5),
-	/* Bits 6-7 are currently reserved */
 	ICP_ACCEL_CAPABILITIES_ZUC = BIT(8),
 	ICP_ACCEL_CAPABILITIES_SHA3 = BIT(9),
-	/* Bits 10-11 are currently reserved */
 	ICP_ACCEL_CAPABILITIES_HKDF = BIT(12),
 	ICP_ACCEL_CAPABILITIES_ECEDMONT = BIT(13),
-	/* Bit 14 is currently reserved */
 	ICP_ACCEL_CAPABILITIES_SHA3_EXT = BIT(15),
 	ICP_ACCEL_CAPABILITIES_AESGCM_SPC = BIT(16),
 	ICP_ACCEL_CAPABILITIES_CHACHA_POLY = BIT(17),
 	ICP_ACCEL_CAPABILITIES_SM2 = BIT(18),
 	ICP_ACCEL_CAPABILITIES_SM3 = BIT(19),
 	ICP_ACCEL_CAPABILITIES_SM4 = BIT(20),
-	/* Bit 21 is currently reserved */
 	ICP_ACCEL_CAPABILITIES_CNV_INTEGRITY = BIT(22),
 	ICP_ACCEL_CAPABILITIES_CNV_INTEGRITY64 = BIT(23),
 	ICP_ACCEL_CAPABILITIES_LZ4_COMPRESSION = BIT(24),
 	ICP_ACCEL_CAPABILITIES_LZ4S_COMPRESSION = BIT(25),
 	ICP_ACCEL_CAPABILITIES_AES_V2 = BIT(26)
 };
-
 #define QAT_AUTH_MODE_BITPOS 4
 #define QAT_AUTH_MODE_MASK 0xF
 #define QAT_AUTH_ALGO_BITPOS 0
@@ -127,22 +112,18 @@ enum icp_qat_capabilities_mask {
 	(algo == ICP_QAT_HW_AUTH_ALGO_SHA3_512)) ? 1 : 0) \
 	& QAT_AUTH_SHA3_PADDING_MASK) << QAT_AUTH_SHA3_PADDING_BITPOS) | \
 	((cmp_len & QAT_AUTH_CMP_MASK) << QAT_AUTH_CMP_BITPOS))
-
 struct icp_qat_hw_auth_counter {
 	__be32 counter;
 	__u32 reserved;
 };
-
 #define QAT_AUTH_COUNT_MASK 0xFFFFFFFF
 #define QAT_AUTH_COUNT_BITPOS 0
 #define ICP_QAT_HW_AUTH_COUNT_BUILD(val) \
 	(((val) & QAT_AUTH_COUNT_MASK) << QAT_AUTH_COUNT_BITPOS)
-
 struct icp_qat_hw_auth_setup {
 	struct icp_qat_hw_auth_config auth_config;
 	struct icp_qat_hw_auth_counter auth_counter;
 };
-
 #define QAT_HW_DEFAULT_ALIGNMENT 8
 #define QAT_HW_ROUND_UP(val, n) (((val) + ((n) - 1)) & (~(n - 1)))
 #define ICP_QAT_HW_NULL_STATE1_SZ 32
@@ -187,21 +168,17 @@ struct icp_qat_hw_auth_setup {
 #define ICP_QAT_HW_GALOIS_H_SZ 16
 #define ICP_QAT_HW_GALOIS_LEN_A_SZ 8
 #define ICP_QAT_HW_GALOIS_E_CTR0_SZ 16
-
 struct icp_qat_hw_auth_sha512 {
 	struct icp_qat_hw_auth_setup inner_setup;
 	__u8 state1[ICP_QAT_HW_SHA512_STATE1_SZ];
 	struct icp_qat_hw_auth_setup outer_setup;
 	__u8 state2[ICP_QAT_HW_SHA512_STATE2_SZ];
 };
-
 struct icp_qat_hw_auth_algo_blk {
 	struct icp_qat_hw_auth_sha512 sha;
 };
-
 #define ICP_QAT_HW_GALOIS_LEN_A_BITPOS 0
 #define ICP_QAT_HW_GALOIS_LEN_A_MASK 0xFFFFFFFF
-
 enum icp_qat_hw_cipher_algo {
 	ICP_QAT_HW_CIPHER_ALGO_NULL = 0,
 	ICP_QAT_HW_CIPHER_ALGO_DES = 1,
@@ -215,7 +192,6 @@ enum icp_qat_hw_cipher_algo {
 	ICP_QAT_HW_CIPHER_ALGO_ZUC_3G_128_EEA3 = 9,
 	ICP_QAT_HW_CIPHER_DELIMITER = 10
 };
-
 enum icp_qat_hw_cipher_mode {
 	ICP_QAT_HW_CIPHER_ECB_MODE = 0,
 	ICP_QAT_HW_CIPHER_CBC_MODE = 1,
@@ -224,22 +200,18 @@ enum icp_qat_hw_cipher_mode {
 	ICP_QAT_HW_CIPHER_XTS_MODE = 6,
 	ICP_QAT_HW_CIPHER_MODE_DELIMITER = 7
 };
-
 struct icp_qat_hw_cipher_config {
 	__u32 val;
 	__u32 reserved;
 };
-
 enum icp_qat_hw_cipher_dir {
 	ICP_QAT_HW_CIPHER_ENCRYPT = 0,
 	ICP_QAT_HW_CIPHER_DECRYPT = 1,
 };
-
 enum icp_qat_hw_cipher_convert {
 	ICP_QAT_HW_CIPHER_NO_CONVERT = 0,
 	ICP_QAT_HW_CIPHER_KEY_CONVERT = 1,
 };
-
 #define QAT_CIPHER_MODE_BITPOS 4
 #define QAT_CIPHER_MODE_MASK 0xF
 #define QAT_CIPHER_ALGO_BITPOS 0
@@ -292,42 +264,35 @@ enum icp_qat_hw_cipher_convert {
 #define ICP_QAT_HW_ZUC_3G_EEA3_IV_SZ 16
 #define ICP_QAT_HW_MODE_F8_NUM_REG_TO_CLEAR 2
 #define INIT_SHRAM_CONSTANTS_TABLE_SZ 1024
-
 struct icp_qat_hw_cipher_aes256_f8 {
 	struct icp_qat_hw_cipher_config cipher_config;
 	__u8 key[ICP_QAT_HW_AES_256_F8_KEY_SZ];
 };
-
 struct icp_qat_hw_ucs_cipher_aes256_f8 {
 	struct icp_qat_hw_ucs_cipher_config cipher_config;
 	__u8 key[ICP_QAT_HW_AES_256_F8_KEY_SZ];
 };
-
 struct icp_qat_hw_cipher_algo_blk {
 	union {
 		struct icp_qat_hw_cipher_aes256_f8 aes;
 		struct icp_qat_hw_ucs_cipher_aes256_f8 ucs_aes;
 	};
 } __aligned(64);
-
 enum icp_qat_hw_compression_direction {
 	ICP_QAT_HW_COMPRESSION_DIR_COMPRESS = 0,
 	ICP_QAT_HW_COMPRESSION_DIR_DECOMPRESS = 1,
 	ICP_QAT_HW_COMPRESSION_DIR_DELIMITER = 2
 };
-
 enum icp_qat_hw_compression_delayed_match {
 	ICP_QAT_HW_COMPRESSION_DELAYED_MATCH_DISABLED = 0,
 	ICP_QAT_HW_COMPRESSION_DELAYED_MATCH_ENABLED = 1,
 	ICP_QAT_HW_COMPRESSION_DELAYED_MATCH_DELIMITER = 2
 };
-
 enum icp_qat_hw_compression_algo {
 	ICP_QAT_HW_COMPRESSION_ALGO_DEFLATE = 0,
 	ICP_QAT_HW_COMPRESSION_ALGO_LZS = 1,
 	ICP_QAT_HW_COMPRESSION_ALGO_DELIMITER = 2
 };
-
 enum icp_qat_hw_compression_depth {
 	ICP_QAT_HW_COMPRESSION_DEPTH_1 = 0,
 	ICP_QAT_HW_COMPRESSION_DEPTH_4 = 1,
@@ -336,7 +301,6 @@ enum icp_qat_hw_compression_depth {
 	ICP_QAT_HW_COMPRESSION_DEPTH_128 = 4,
 	ICP_QAT_HW_COMPRESSION_DEPTH_DELIMITER = 5
 };
-
 enum icp_qat_hw_compression_file_type {
 	ICP_QAT_HW_COMPRESSION_FILE_TYPE_0 = 0,
 	ICP_QAT_HW_COMPRESSION_FILE_TYPE_1 = 1,
@@ -345,12 +309,10 @@ enum icp_qat_hw_compression_file_type {
 	ICP_QAT_HW_COMPRESSION_FILE_TYPE_4 = 4,
 	ICP_QAT_HW_COMPRESSION_FILE_TYPE_DELIMITER = 5
 };
-
 struct icp_qat_hw_compression_config {
 	__u32 lower_val;
 	__u32 upper_val;
 };
-
 #define QAT_COMPRESSION_DIR_BITPOS 4
 #define QAT_COMPRESSION_DIR_MASK 0x7
 #define QAT_COMPRESSION_DELAYED_MATCH_BITPOS 16
@@ -361,7 +323,6 @@ struct icp_qat_hw_compression_config {
 #define QAT_COMPRESSION_DEPTH_MASK 0x7
 #define QAT_COMPRESSION_FILE_TYPE_BITPOS 24
 #define QAT_COMPRESSION_FILE_TYPE_MASK 0xF
-
 #define ICP_QAT_HW_COMPRESSION_CONFIG_BUILD(dir, delayed, \
 	algo, depth, filetype) \
 	((((dir) & QAT_COMPRESSION_DIR_MASK) << \
@@ -374,5 +335,4 @@ struct icp_qat_hw_compression_config {
 	QAT_COMPRESSION_DEPTH_BITPOS) | \
 	(((filetype) & QAT_COMPRESSION_FILE_TYPE_MASK) << \
 	QAT_COMPRESSION_FILE_TYPE_BITPOS))
-
 #endif

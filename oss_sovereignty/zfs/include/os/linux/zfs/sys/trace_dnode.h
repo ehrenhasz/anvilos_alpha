@@ -1,48 +1,13 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-
 #if defined(_KERNEL)
 #if defined(HAVE_DECLARE_EVENT_CLASS)
-
 #undef TRACE_SYSTEM
 #define	TRACE_SYSTEM zfs
-
 #undef TRACE_SYSTEM_VAR
 #define	TRACE_SYSTEM_VAR zfs_dnode
-
 #if !defined(_TRACE_DNODE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define	_TRACE_DNODE_H
-
 #include <linux/tracepoint.h>
 #include <sys/types.h>
-
-/*
- * Generic support for three argument tracepoints of the form:
- *
- * DTRACE_PROBE3(...,
- *     dnode_t *, ...,
- *     int64_t, ...,
- *     uint32_t, ...);
- */
-/* BEGIN CSTYLED */
 DECLARE_EVENT_CLASS(zfs_dnode_move_class,
 	TP_PROTO(dnode_t *dn, int64_t refcount, uint32_t dbufs),
 	TP_ARGS(dn, refcount, dbufs),
@@ -64,7 +29,6 @@ DECLARE_EVENT_CLASS(zfs_dnode_move_class,
 	    __field(int64_t,		dn_tx_holds)
 	    __field(int64_t,		dn_holds)
 	    __field(boolean_t,		dn_have_spill)
-
 	    __field(int64_t,		refcount)
 	    __field(uint32_t,		dbufs)
 	),
@@ -86,7 +50,6 @@ DECLARE_EVENT_CLASS(zfs_dnode_move_class,
 	    __entry->dn_tx_holds	= dn->dn_tx_holds.rc_count;
 	    __entry->dn_holds		= dn->dn_holds.rc_count;
 	    __entry->dn_have_spill	= dn->dn_have_spill;
-
 	    __entry->refcount		= refcount;
 	    __entry->dbufs		= dbufs;
 	),
@@ -103,25 +66,18 @@ DECLARE_EVENT_CLASS(zfs_dnode_move_class,
 	    __entry->dn_maxblkid, __entry->dn_tx_holds, __entry->dn_holds,
 	    __entry->dn_have_spill, __entry->refcount, __entry->dbufs)
 );
-/* END CSTYLED */
-
 #define	DEFINE_DNODE_MOVE_EVENT(name) \
 DEFINE_EVENT(zfs_dnode_move_class, name, \
     TP_PROTO(dnode_t *dn, int64_t refcount, uint32_t dbufs), \
     TP_ARGS(dn, refcount, dbufs))
 DEFINE_DNODE_MOVE_EVENT(zfs_dnode__move);
-
-#endif /* _TRACE_DNODE_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define	TRACE_INCLUDE_PATH sys
 #define	TRACE_INCLUDE_FILE trace_dnode
 #include <trace/define_trace.h>
-
 #else
-
 DEFINE_DTRACE_PROBE3(dnode__move);
-
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif  
+#endif  

@@ -1,36 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ALPHA_SPINLOCK_H
 #define _ALPHA_SPINLOCK_H
-
 #include <linux/kernel.h>
 #include <asm/current.h>
 #include <asm/barrier.h>
 #include <asm/processor.h>
-
-/*
- * Simple spin lock operations.  There are two variants, one clears IRQ's
- * on the local processor, one does not.
- *
- * We make no fairness assumptions. They have a cost.
- */
-
 #define arch_spin_is_locked(x)	((x)->lock != 0)
-
 static inline int arch_spin_value_unlocked(arch_spinlock_t lock)
 {
         return lock.lock == 0;
 }
-
 static inline void arch_spin_unlock(arch_spinlock_t * lock)
 {
 	mb();
 	lock->lock = 0;
 }
-
 static inline void arch_spin_lock(arch_spinlock_t * lock)
 {
 	long tmp;
-
 	__asm__ __volatile__(
 	"1:	ldl_l	%0,%1\n"
 	"	bne	%0,2f\n"
@@ -46,18 +32,13 @@ static inline void arch_spin_lock(arch_spinlock_t * lock)
 	: "=&r" (tmp), "=m" (lock->lock)
 	: "m"(lock->lock) : "memory");
 }
-
 static inline int arch_spin_trylock(arch_spinlock_t *lock)
 {
 	return !test_and_set_bit(0, &lock->lock);
 }
-
-/***********************************************************/
-
 static inline void arch_read_lock(arch_rwlock_t *lock)
 {
 	long regx;
-
 	__asm__ __volatile__(
 	"1:	ldl_l	%1,%0\n"
 	"	blbs	%1,6f\n"
@@ -73,11 +54,9 @@ static inline void arch_read_lock(arch_rwlock_t *lock)
 	: "=m" (*lock), "=&r" (regx)
 	: "m" (*lock) : "memory");
 }
-
 static inline void arch_write_lock(arch_rwlock_t *lock)
 {
 	long regx;
-
 	__asm__ __volatile__(
 	"1:	ldl_l	%1,%0\n"
 	"	bne	%1,6f\n"
@@ -93,12 +72,10 @@ static inline void arch_write_lock(arch_rwlock_t *lock)
 	: "=m" (*lock), "=&r" (regx)
 	: "m" (*lock) : "memory");
 }
-
 static inline int arch_read_trylock(arch_rwlock_t * lock)
 {
 	long regx;
 	int success;
-
 	__asm__ __volatile__(
 	"1:	ldl_l	%1,%0\n"
 	"	lda	%2,0\n"
@@ -112,15 +89,12 @@ static inline int arch_read_trylock(arch_rwlock_t * lock)
 	".previous"
 	: "=m" (*lock), "=&r" (regx), "=&r" (success)
 	: "m" (*lock) : "memory");
-
 	return success;
 }
-
 static inline int arch_write_trylock(arch_rwlock_t * lock)
 {
 	long regx;
 	int success;
-
 	__asm__ __volatile__(
 	"1:	ldl_l	%1,%0\n"
 	"	lda	%2,0\n"
@@ -134,10 +108,8 @@ static inline int arch_write_trylock(arch_rwlock_t * lock)
 	".previous"
 	: "=m" (*lock), "=&r" (regx), "=&r" (success)
 	: "m" (*lock) : "memory");
-
 	return success;
 }
-
 static inline void arch_read_unlock(arch_rwlock_t * lock)
 {
 	long regx;
@@ -153,11 +125,9 @@ static inline void arch_read_unlock(arch_rwlock_t * lock)
 	: "=m" (*lock), "=&r" (regx)
 	: "m" (*lock) : "memory");
 }
-
 static inline void arch_write_unlock(arch_rwlock_t * lock)
 {
 	mb();
 	lock->lock = 0;
 }
-
-#endif /* _ALPHA_SPINLOCK_H */
+#endif  

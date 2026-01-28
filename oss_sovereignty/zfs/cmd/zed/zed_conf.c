@@ -1,17 +1,3 @@
-/*
- * This file is part of the ZFS Event Daemon (ZED).
- *
- * Developed at Lawrence Livermore National Laboratory (LLNL-CODE-403049).
- * Copyright (C) 2013-2014 Lawrence Livermore National Security, LLC.
- * Refer to the OpenZFS git commit log for authoritative copyright attribution.
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License Version 1.0 (CDDL-1.0).
- * You can obtain a copy of the license from the top-level file
- * "OPENSOLARIS.LICENSE" or at <http://opensource.org/licenses/CDDL-1.0>.
- * You may not use this file except in compliance with the license.
- */
-
 #include <assert.h>
 #include <ctype.h>
 #include <dirent.h>
@@ -31,36 +17,20 @@
 #include "zed_file.h"
 #include "zed_log.h"
 #include "zed_strings.h"
-
-/*
- * Initialise the configuration with default values.
- */
 void
 zed_conf_init(struct zed_conf *zcp)
 {
 	memset(zcp, 0, sizeof (*zcp));
-
-	/* zcp->zfs_hdl opened in zed_event_init() */
-	/* zcp->zedlets created in zed_conf_scan_dir() */
-
-	zcp->pid_fd = -1;		/* opened in zed_conf_write_pid() */
-	zcp->state_fd = -1;		/* opened in zed_conf_open_state() */
-	zcp->zevent_fd = -1;		/* opened in zed_event_init() */
-
+	zcp->pid_fd = -1;		 
+	zcp->state_fd = -1;		 
+	zcp->zevent_fd = -1;		 
 	zcp->max_jobs = 16;
 	zcp->max_zevent_buf_len = 1 << 20;
-
 	if (!(zcp->pid_file = strdup(ZED_PID_FILE)) ||
 	    !(zcp->zedlet_dir = strdup(ZED_ZEDLET_DIR)) ||
 	    !(zcp->state_file = strdup(ZED_STATE_FILE)))
 		zed_log_die("Failed to create conf: %s", strerror(errno));
 }
-
-/*
- * Destroy the configuration [zcp].
- *
- * Note: zfs_hdl & zevent_fd are destroyed via zed_event_fini().
- */
 void
 zed_conf_destroy(struct zed_conf *zcp)
 {
@@ -101,20 +71,11 @@ zed_conf_destroy(struct zed_conf *zcp)
 		zcp->zedlets = NULL;
 	}
 }
-
-/*
- * Display command-line help and exit.
- *
- * If [got_err] is 0, output to stdout and exit normally;
- * otherwise, output to stderr and exit with a failure status.
- */
 static void
 _zed_conf_display_help(const char *prog, boolean_t got_err)
 {
 	struct opt { const char *o, *d, *v; };
-
 	FILE *fp = got_err ? stderr : stdout;
-
 	struct opt *oo;
 	struct opt iopts[] = {
 		{ .o = "-h", .d = "Display help" },
@@ -146,7 +107,6 @@ _zed_conf_display_help(const char *prog, boolean_t got_err)
 		    .v = "1048576" },
 		{},
 	};
-
 	fprintf(fp, "Usage: %s [OPTION]...\n", (prog ? prog : "zed"));
 	fprintf(fp, "\n");
 	for (oo = iopts; oo->o; ++oo)
@@ -158,13 +118,8 @@ _zed_conf_display_help(const char *prog, boolean_t got_err)
 	for (oo = vopts; oo->o; ++oo)
 		fprintf(fp, "    %*s %s [%s]\n", -8, oo->o, oo->d, oo->v);
 	fprintf(fp, "\n");
-
 	exit(got_err ? EXIT_FAILURE : EXIT_SUCCESS);
 }
-
-/*
- * Display license information to stdout and exit.
- */
 static void
 _zed_conf_display_license(void)
 {
@@ -176,72 +131,47 @@ _zed_conf_display_license(void)
 	    "Developed at Lawrence Livermore National Laboratory"
 	    " (LLNL-CODE-403049).\n"
 	    "\n");
-
 	exit(EXIT_SUCCESS);
 }
-
-/*
- * Display version information to stdout and exit.
- */
 static void
 _zed_conf_display_version(void)
 {
 	printf("%s-%s-%s\n",
 	    ZFS_META_NAME, ZFS_META_VERSION, ZFS_META_RELEASE);
-
 	exit(EXIT_SUCCESS);
 }
-
-/*
- * Copy the [path] string to the [resultp] ptr.
- * If [path] is not an absolute path, prefix it with the current working dir.
- * If [resultp] is non-null, free its existing string before assignment.
- */
 static void
 _zed_conf_parse_path(char **resultp, const char *path)
 {
 	char buf[PATH_MAX];
-
 	assert(resultp != NULL);
 	assert(path != NULL);
-
 	if (*resultp)
 		free(*resultp);
-
 	if (path[0] == '/') {
 		*resultp = strdup(path);
 	} else {
 		if (!getcwd(buf, sizeof (buf)))
 			zed_log_die("Failed to get current working dir: %s",
 			    strerror(errno));
-
 		if (strlcat(buf, "/", sizeof (buf)) >= sizeof (buf) ||
 		    strlcat(buf, path, sizeof (buf)) >= sizeof (buf))
 			zed_log_die("Failed to copy path: %s",
 			    strerror(ENAMETOOLONG));
-
 		*resultp = strdup(buf);
 	}
-
 	if (!*resultp)
 		zed_log_die("Failed to copy path: %s", strerror(ENOMEM));
 }
-
-/*
- * Parse the command-line options into the configuration [zcp].
- */
 void
 zed_conf_parse_opts(struct zed_conf *zcp, int argc, char **argv)
 {
 	const char * const opts = ":hLVd:p:P:s:vfFMZIj:b:";
 	int opt;
 	unsigned long raw;
-
 	if (!zcp || !argv || !argv[0])
 		zed_log_die("Failed to parse options: Internal error");
-
-	opterr = 0;			/* suppress default getopt err msgs */
-
+	opterr = 0;			 
 	while ((opt = getopt(argc, argv, opts)) != -1) {
 		switch (opt) {
 		case 'h':
@@ -309,7 +239,6 @@ zed_conf_parse_opts(struct zed_conf *zcp, int argc, char **argv)
 		default:
 			if (optopt == '?')
 				_zed_conf_display_help(argv[0], B_FALSE);
-
 			fprintf(stderr, "%s: Invalid option '-%c'\n\n",
 			    argv[0], optopt);
 			_zed_conf_display_help(argv[0], B_TRUE);
@@ -317,15 +246,6 @@ zed_conf_parse_opts(struct zed_conf *zcp, int argc, char **argv)
 		}
 	}
 }
-
-/*
- * Scan the [zcp] zedlet_dir for files to exec based on the event class.
- * Files must be executable by user, but not writable by group or other.
- * Dotfiles are ignored.
- *
- * Return 0 on success with an updated set of zedlets,
- * or -1 on error with errno set.
- */
 int
 zed_conf_scan_dir(struct zed_conf *zcp)
 {
@@ -335,7 +255,6 @@ zed_conf_scan_dir(struct zed_conf *zcp)
 	char pathname[PATH_MAX];
 	struct stat st;
 	int n;
-
 	if (!zcp) {
 		errno = EINVAL;
 		zed_log_msg(LOG_ERR, "Failed to scan zedlet dir: %s",
@@ -361,7 +280,6 @@ zed_conf_scan_dir(struct zed_conf *zcp)
 	while ((direntp = readdir(dirp))) {
 		if (direntp->d_name[0] == '.')
 			continue;
-
 		n = snprintf(pathname, sizeof (pathname),
 		    "%s/%s", zcp->zedlet_dir, direntp->d_name);
 		if ((n < 0) || (n >= sizeof (pathname))) {
@@ -424,19 +342,9 @@ zed_conf_scan_dir(struct zed_conf *zcp)
 	}
 	if (zcp->zedlets)
 		zed_strings_destroy(zcp->zedlets);
-
 	zcp->zedlets = zedlets;
 	return (0);
 }
-
-/*
- * Write the PID file specified in [zcp].
- * Return 0 on success, -1 on error.
- *
- * This must be called after fork()ing to become a daemon (so the correct PID
- * is recorded), but before daemonization is complete and the parent process
- * exits (for synchronization with systemd).
- */
 int
 zed_conf_write_pid(struct zed_conf *zcp)
 {
@@ -445,7 +353,6 @@ zed_conf_write_pid(struct zed_conf *zcp)
 	char *p;
 	mode_t mask;
 	int rv;
-
 	if (!zcp || !zcp->pid_file) {
 		errno = EINVAL;
 		zed_log_msg(LOG_ERR, "Failed to create PID file: %s",
@@ -453,9 +360,6 @@ zed_conf_write_pid(struct zed_conf *zcp)
 		return (-1);
 	}
 	assert(zcp->pid_fd == -1);
-	/*
-	 * Create PID file directory if needed.
-	 */
 	n = strlcpy(buf, zcp->pid_file, sizeof (buf));
 	if (n >= sizeof (buf)) {
 		errno = ENAMETOOLONG;
@@ -466,15 +370,11 @@ zed_conf_write_pid(struct zed_conf *zcp)
 	p = strrchr(buf, '/');
 	if (p)
 		*p = '\0';
-
 	if ((mkdirp(buf, 0755) < 0) && (errno != EEXIST)) {
 		zed_log_msg(LOG_ERR, "Failed to create directory \"%s\": %s",
 		    buf, strerror(errno));
 		goto err;
 	}
-	/*
-	 * Obtain PID file lock.
-	 */
 	mask = umask(0);
 	umask(mask | 022);
 	zcp->pid_fd = open(zcp->pid_file, O_RDWR | O_CREAT | O_CLOEXEC, 0644);
@@ -506,9 +406,6 @@ zed_conf_write_pid(struct zed_conf *zcp)
 		}
 		goto err;
 	}
-	/*
-	 * Write PID file.
-	 */
 	n = snprintf(buf, sizeof (buf), "%d\n", (int)getpid());
 	if ((n < 0) || (n >= sizeof (buf))) {
 		errno = ERANGE;
@@ -523,7 +420,6 @@ zed_conf_write_pid(struct zed_conf *zcp)
 	} else {
 		return (0);
 	}
-
 err:
 	if (zcp->pid_fd >= 0) {
 		(void) close(zcp->pid_fd);
@@ -531,13 +427,6 @@ err:
 	}
 	return (-1);
 }
-
-/*
- * Open and lock the [zcp] state_file.
- * Return 0 on success, -1 on error.
- *
- * FIXME: Move state information into kernel.
- */
 int
 zed_conf_open_state(struct zed_conf *zcp)
 {
@@ -545,7 +434,6 @@ zed_conf_open_state(struct zed_conf *zcp)
 	int n;
 	char *p;
 	int rv;
-
 	if (!zcp || !zcp->state_file) {
 		errno = EINVAL;
 		zed_log_msg(LOG_ERR, "Failed to open state file: %s",
@@ -562,7 +450,6 @@ zed_conf_open_state(struct zed_conf *zcp)
 	p = strrchr(dirbuf, '/');
 	if (p)
 		*p = '\0';
-
 	if ((mkdirp(dirbuf, 0755) < 0) && (errno != EEXIST)) {
 		zed_log_msg(LOG_WARNING,
 		    "Failed to create directory \"%s\": %s",
@@ -579,7 +466,6 @@ zed_conf_open_state(struct zed_conf *zcp)
 	}
 	if (zcp->do_zero)
 		(void) unlink(zcp->state_file);
-
 	zcp->state_fd = open(zcp->state_file,
 	    O_RDWR | O_CREAT | O_CLOEXEC, 0644);
 	if (zcp->state_fd < 0) {
@@ -612,20 +498,12 @@ zed_conf_open_state(struct zed_conf *zcp)
 	}
 	return (0);
 }
-
-/*
- * Read the opened [zcp] state_file to obtain the eid & etime of the last event
- * processed.  Write the state from the last event to the [eidp] & [etime] args
- * passed by reference.  Note that etime[] is an array of size 2.
- * Return 0 on success, -1 on error.
- */
 int
 zed_conf_read_state(struct zed_conf *zcp, uint64_t *eidp, int64_t etime[])
 {
 	ssize_t len;
 	struct iovec iov[3];
 	ssize_t n;
-
 	if (!zcp || !eidp || !etime) {
 		errno = EINVAL;
 		zed_log_msg(LOG_ERR,
@@ -645,7 +523,6 @@ zed_conf_read_state(struct zed_conf *zcp, uint64_t *eidp, int64_t etime[])
 	len += iov[1].iov_len = sizeof (etime[0]);
 	iov[2].iov_base = &etime[1];
 	len += iov[2].iov_len = sizeof (etime[1]);
-
 	n = readv(zcp->state_fd, iov, 3);
 	if (n == 0) {
 		*eidp = 0;
@@ -663,19 +540,12 @@ zed_conf_read_state(struct zed_conf *zcp, uint64_t *eidp, int64_t etime[])
 	}
 	return (0);
 }
-
-/*
- * Write the [eid] & [etime] of the last processed event to the opened
- * [zcp] state_file.  Note that etime[] is an array of size 2.
- * Return 0 on success, -1 on error.
- */
 int
 zed_conf_write_state(struct zed_conf *zcp, uint64_t eid, int64_t etime[])
 {
 	ssize_t len;
 	struct iovec iov[3];
 	ssize_t n;
-
 	if (!zcp) {
 		errno = EINVAL;
 		zed_log_msg(LOG_ERR,
@@ -695,7 +565,6 @@ zed_conf_write_state(struct zed_conf *zcp, uint64_t eid, int64_t etime[])
 	len += iov[1].iov_len = sizeof (etime[0]);
 	iov[2].iov_base = &etime[1];
 	len += iov[2].iov_len = sizeof (etime[1]);
-
 	n = writev(zcp->state_fd, iov, 3);
 	if (n < 0) {
 		zed_log_msg(LOG_WARNING,

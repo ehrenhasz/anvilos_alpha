@@ -1,19 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
-
 #ifndef __RTK_PCI_H_
 #define __RTK_PCI_H_
-
 #include "main.h"
-
 #define RTK_DEFAULT_TX_DESC_NUM 128
 #define RTK_BEQ_TX_DESC_NUM	256
-
 #define RTK_MAX_RX_DESC_NUM	512
-/* 11K + rx desc size */
 #define RTK_PCI_RX_BUF_SIZE	(11454 + 24)
-
 #define RTK_PCI_CTRL		0x300
 #define BIT_RST_TRXDMA_INTF	BIT(20)
 #define BIT_RX_TAG_EN		BIT(15)
@@ -24,7 +15,6 @@
 #define BIT_DBI_WFLAG		BIT(16)
 #define BITS_DBI_WREN		GENMASK(15, 12)
 #define BITS_DBI_ADDR_MASK	GENMASK(11, 2)
-
 #define REG_MDIO_V1		0x03F4
 #define REG_PCIE_MIX_CFG	0x03F8
 #define BITS_MDIO_ADDR_MASK	GENMASK(4, 0)
@@ -33,13 +23,11 @@
 #define RTW_PCI_MDIO_PG_OFFS_G1	0
 #define RTW_PCI_MDIO_PG_OFFS_G2	2
 #define RTW_PCI_WR_RETRY_CNT	20
-
 #define RTK_PCIE_LINK_CFG	0x0719
 #define BIT_CLKREQ_SW_EN	BIT(4)
 #define BIT_L1_SW_EN		BIT(3)
 #define BIT_CLKREQ_N_PAD	BIT(0)
 #define RTK_PCIE_CLKDLY_CTRL	0x0725
-
 #define BIT_PCI_BCNQ_FLAG	BIT(4)
 #define RTK_PCI_TXBD_DESA_BCNQ	0x308
 #define RTK_PCI_TXBD_DESA_H2CQ	0x1320
@@ -50,11 +38,8 @@
 #define RTK_PCI_TXBD_DESA_VOQ	0x318
 #define RTK_PCI_TXBD_DESA_HI0Q	0x340
 #define RTK_PCI_RXBD_DESA_MPDUQ	0x338
-
 #define TRX_BD_IDX_MASK		GENMASK(11, 0)
 #define TRX_BD_HW_IDX_MASK	GENMASK(27, 16)
-
-/* BCNQ is specialized for rsvd page, does not need to specify a number */
 #define RTK_PCI_TXBD_NUM_H2CQ	0x1328
 #define RTK_PCI_TXBD_NUM_MGMTQ	0x380
 #define RTK_PCI_TXBD_NUM_BKQ	0x38A
@@ -71,13 +56,10 @@
 #define RTK_PCI_TXBD_IDX_VOQ	0x3A0
 #define RTK_PCI_TXBD_IDX_HI0Q	0x3B8
 #define RTK_PCI_RXBD_IDX_MPDUQ	0x3B4
-
 #define RTK_PCI_TXBD_RWPTR_CLR	0x39C
 #define RTK_PCI_TXBD_H2CQ_CSR	0x1330
-
 #define BIT_CLR_H2CQ_HOST_IDX	BIT(16)
 #define BIT_CLR_H2CQ_HW_IDX	BIT(8)
-
 #define RTK_PCI_HIMR0		0x0B0
 #define RTK_PCI_HISR0		0x0B4
 #define RTK_PCI_HIMR1		0x0B8
@@ -86,7 +68,6 @@
 #define RTK_PCI_HISR2		0x10B4
 #define RTK_PCI_HIMR3		0x10B8
 #define RTK_PCI_HISR3		0x10BC
-/* IMR 0 */
 #define IMR_TIMER2		BIT(31)
 #define IMR_TIMER1		BIT(30)
 #define IMR_PSTIMEOUT		BIT(29)
@@ -112,7 +93,6 @@
 #define IMR_VODOK		BIT(2)
 #define IMR_RDU			BIT(1)
 #define IMR_ROK			BIT(0)
-/* IMR 1 */
 #define IMR_TXFIFO_TH_INT	BIT(30)
 #define IMR_BTON_STS_UPDATE	BIT(29)
 #define IMR_MCUERR		BIT(28)
@@ -141,16 +121,11 @@
 #define IMR_PS_TIMER_B		BIT(3)
 #define IMR_PS_TIMER_A		BIT(2)
 #define IMR_CPUMGQ_TX_TIMER	BIT(1)
-/* IMR 3 */
 #define IMR_H2CDOK		BIT(16)
-
 enum rtw_pci_flags {
 	RTW_PCI_FLAG_NAPI_RUNNING,
-
 	NUM_OF_RTW_PCI_FLAGS,
 };
-
-/* one element is reserved to know if the ring is closed */
 static inline int avail_desc(u32 wp, u32 rp, u32 len)
 {
 	if (rp > wp)
@@ -158,66 +133,49 @@ static inline int avail_desc(u32 wp, u32 rp, u32 len)
 	else
 		return len - wp + rp - 1;
 }
-
 #define RTK_PCI_TXBD_OWN_OFFSET 15
 #define RTK_PCI_TXBD_BCN_WORK	0x383
-
 struct rtw_pci_tx_buffer_desc {
 	__le16 buf_size;
 	__le16 psb_len;
 	__le32 dma;
 };
-
 struct rtw_pci_tx_data {
 	dma_addr_t dma;
 	u8 sn;
 };
-
 struct rtw_pci_ring {
 	u8 *head;
 	dma_addr_t dma;
-
 	u8 desc_size;
-
 	u32 len;
 	u32 wp;
 	u32 rp;
 };
-
 struct rtw_pci_tx_ring {
 	struct rtw_pci_ring r;
 	struct sk_buff_head queue;
 	bool queue_stopped;
 };
-
 struct rtw_pci_rx_buffer_desc {
 	__le16 buf_size;
 	__le16 total_pkt_size;
 	__le32 dma;
 };
-
 struct rtw_pci_rx_ring {
 	struct rtw_pci_ring r;
 	struct sk_buff *buf[RTK_MAX_RX_DESC_NUM];
 };
-
 #define RX_TAG_MAX	8192
-
 struct rtw_pci {
 	struct pci_dev *pdev;
-
-	/* Used for PCI interrupt. */
 	spinlock_t hwirq_lock;
-	/* Used for PCI TX ring/queueing, and enable INT. */
 	spinlock_t irq_lock;
 	u32 irq_mask[4];
 	bool irq_enabled;
 	bool running;
-
-	/* napi structure */
 	struct net_device netdev;
 	struct napi_struct napi;
-
 	u16 rx_tag;
 	DECLARE_BITMAP(tx_queued, RTK_MAX_TX_QUEUE_NUM);
 	struct rtw_pci_tx_ring tx_rings[RTK_MAX_TX_QUEUE_NUM];
@@ -226,20 +184,15 @@ struct rtw_pci {
 	atomic_t link_usage;
 	bool rx_no_aspm;
 	DECLARE_BITMAP(flags, NUM_OF_RTW_PCI_FLAGS);
-
 	void __iomem *mmap;
 };
-
 extern const struct dev_pm_ops rtw_pm_ops;
-
 int rtw_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id);
 void rtw_pci_remove(struct pci_dev *pdev);
 void rtw_pci_shutdown(struct pci_dev *pdev);
-
 static inline u32 max_num_of_tx_queue(u8 queue)
 {
 	u32 max_num;
-
 	switch (queue) {
 	case RTW_TX_QUEUE_BE:
 		max_num = RTK_BEQ_TX_DESC_NUM;
@@ -251,29 +204,22 @@ static inline u32 max_num_of_tx_queue(u8 queue)
 		max_num = RTK_DEFAULT_TX_DESC_NUM;
 		break;
 	}
-
 	return max_num;
 }
-
 static inline struct
 rtw_pci_tx_data *rtw_pci_get_tx_data(struct sk_buff *skb)
 {
 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
-
 	BUILD_BUG_ON(sizeof(struct rtw_pci_tx_data) >
 		     sizeof(info->status.status_driver_data));
-
 	return (struct rtw_pci_tx_data *)info->status.status_driver_data;
 }
-
 static inline
 struct rtw_pci_tx_buffer_desc *get_tx_buffer_desc(struct rtw_pci_tx_ring *ring,
 						  u32 size)
 {
 	u8 *buf_desc;
-
 	buf_desc = ring->r.head + ring->r.wp * size;
 	return (struct rtw_pci_tx_buffer_desc *)buf_desc;
 }
-
 #endif

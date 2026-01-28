@@ -1,56 +1,41 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2022, Google LLC
- */
-
 #ifndef _USB_MISC_ONBOARD_USB_HUB_H
 #define _USB_MISC_ONBOARD_USB_HUB_H
-
 struct onboard_hub_pdata {
-	unsigned long reset_us;		/* reset pulse width in us */
-	unsigned int num_supplies;	/* number of supplies */
+	unsigned long reset_us;		 
+	unsigned int num_supplies;	 
 };
-
 static const struct onboard_hub_pdata microchip_usb424_data = {
 	.reset_us = 1,
 	.num_supplies = 1,
 };
-
 static const struct onboard_hub_pdata microchip_usb5744_data = {
 	.reset_us = 0,
 	.num_supplies = 2,
 };
-
 static const struct onboard_hub_pdata realtek_rts5411_data = {
 	.reset_us = 0,
 	.num_supplies = 1,
 };
-
 static const struct onboard_hub_pdata ti_tusb8041_data = {
 	.reset_us = 3000,
 	.num_supplies = 1,
 };
-
 static const struct onboard_hub_pdata cypress_hx3_data = {
 	.reset_us = 10000,
 	.num_supplies = 2,
 };
-
 static const struct onboard_hub_pdata genesys_gl850g_data = {
 	.reset_us = 3,
 	.num_supplies = 1,
 };
-
 static const struct onboard_hub_pdata genesys_gl852g_data = {
 	.reset_us = 50,
 	.num_supplies = 1,
 };
-
 static const struct onboard_hub_pdata vialab_vl817_data = {
 	.reset_us = 10,
 	.num_supplies = 1,
 };
-
 static const struct of_device_id onboard_hub_match[] = {
 	{ .compatible = "usb424,2412", .data = &microchip_usb424_data, },
 	{ .compatible = "usb424,2514", .data = &microchip_usb424_data, },
@@ -72,5 +57,4 @@ static const struct of_device_id onboard_hub_match[] = {
 	{ .compatible = "usb2109,2817", .data = &vialab_vl817_data, },
 	{}
 };
-
-#endif /* _USB_MISC_ONBOARD_USB_HUB_H */
+#endif  

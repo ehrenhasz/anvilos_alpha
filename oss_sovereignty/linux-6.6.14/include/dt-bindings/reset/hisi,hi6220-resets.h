@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/**
- * This header provides index for the reset controller
- * based on hi6220 SoC.
- */
 #ifndef _DT_BINDINGS_RESET_CONTROLLER_HI6220
 #define _DT_BINDINGS_RESET_CONTROLLER_HI6220
-
 #define PERIPH_RSTDIS0_MMC0             0x000
 #define PERIPH_RSTDIS0_MMC1             0x001
 #define PERIPH_RSTDIS0_MMC2             0x002
@@ -64,7 +58,6 @@
 #define PERIPH_RSDIST9_CARM_L2          0x506
 #define PERIPH_RSDIST9_CARM_SOCDBG      0x507
 #define PERIPH_RSDIST9_CARM_ETM         0x508
-
 #define MEDIA_G3D                       0
 #define MEDIA_CODEC_VPU                 2
 #define MEDIA_CODEC_JPEG                3
@@ -72,12 +65,10 @@
 #define MEDIA_ADE                       5
 #define MEDIA_MMU                       6
 #define MEDIA_XG2RAM1                   7
-
 #define AO_G3D                          1
 #define AO_CODECISP                     2
 #define AO_MCPU                         4
 #define AO_BBPHARQMEM                   5
 #define AO_HIFI                         8
 #define AO_ACPUSCUL2C                   12
-
-#endif /*_DT_BINDINGS_RESET_CONTROLLER_HI6220*/
+#endif  

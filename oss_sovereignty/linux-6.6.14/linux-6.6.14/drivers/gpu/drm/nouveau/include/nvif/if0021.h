@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVIF_IF0021_H__
 #define __NVIF_IF0021_H__
-
 union nvif_cgrp_args {
 	struct nvif_cgrp_v0 {
 		__u8  version;

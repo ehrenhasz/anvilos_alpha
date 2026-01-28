@@ -1,22 +1,9 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 1999, 2000, 2003 Ralf Baechle
- * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
- */
 #ifndef _ASM_SIM_H
 #define _ASM_SIM_H
-
-
 #include <asm/asm-offsets.h>
-
 #define __str2(x) #x
 #define __str(x) __str2(x)
-
 #ifdef CONFIG_32BIT
-
 #define save_static_function(symbol)					\
 __asm__(								\
 	".text\n\t"							\
@@ -38,11 +25,8 @@ __asm__(								\
 	"j\t" #symbol "\n\t"						\
 	".end\t__" #symbol "\n\t"					\
 	".size\t__" #symbol",. - __" #symbol)
-
-#endif /* CONFIG_32BIT */
-
+#endif  
 #ifdef CONFIG_64BIT
-
 #define save_static_function(symbol)					\
 __asm__(								\
 	".text\n\t"							\
@@ -64,7 +48,5 @@ __asm__(								\
 	"j\t" #symbol "\n\t"						\
 	".end\t__" #symbol "\n\t"					\
 	".size\t__" #symbol",. - __" #symbol)
-
-#endif /* CONFIG_64BIT */
-
-#endif /* _ASM_SIM_H */
+#endif  
+#endif  

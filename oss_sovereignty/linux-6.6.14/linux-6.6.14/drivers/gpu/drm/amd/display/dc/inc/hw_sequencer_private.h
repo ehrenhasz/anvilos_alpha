@@ -1,39 +1,11 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_HW_SEQUENCER_PRIVATE_H__
 #define __DC_HW_SEQUENCER_PRIVATE_H__
-
 #include "dc_types.h"
-
 enum pipe_gating_control {
 	PIPE_GATING_CONTROL_DISABLE = 0,
 	PIPE_GATING_CONTROL_ENABLE,
 	PIPE_GATING_CONTROL_INIT
 };
-
 struct dce_hwseq_wa {
 	bool blnd_crtc_trigger;
 	bool DEGVIDCN10_253;
@@ -44,13 +16,11 @@ struct dce_hwseq_wa {
 	bool dp_hpo_and_otg_sequence;
 	bool wait_hubpret_read_start_during_mpo_transition;
 };
-
 struct hwseq_wa_state {
 	bool DEGVIDCN10_253_applied;
 	bool disallow_self_refresh_during_multi_plane_transition_applied;
 	unsigned int disallow_self_refresh_during_multi_plane_transition_applied_on_frame;
 };
-
 struct pipe_ctx;
 struct dc_state;
 struct dc_stream_status;
@@ -69,9 +39,7 @@ struct timing_generator;
 struct tg_color;
 struct output_pixel_processor;
 struct mpcc_blnd_cfg;
-
 struct hwseq_private_funcs {
-
 	void (*disable_stream_gating)(struct dc *dc, struct pipe_ctx *pipe_ctx);
 	void (*enable_stream_gating)(struct dc *dc, struct pipe_ctx *pipe_ctx);
 	void (*init_pipes)(struct dc *dc, struct dc_state *context);
@@ -165,7 +133,6 @@ struct hwseq_private_funcs {
 	bool (*is_dp_dig_pixel_rate_div_policy)(struct pipe_ctx *pipe_ctx);
 #endif
 };
-
 struct dce_hwseq {
 	struct dc_context *ctx;
 	const struct dce_hwseq_registers *regs;
@@ -174,11 +141,9 @@ struct dce_hwseq {
 	struct dce_hwseq_wa wa;
 	struct hwseq_wa_state wa_state;
 	struct hwseq_private_funcs funcs;
-
 	PHYSICAL_ADDRESS_LOC fb_base;
 	PHYSICAL_ADDRESS_LOC fb_top;
 	PHYSICAL_ADDRESS_LOC fb_offset;
 	PHYSICAL_ADDRESS_LOC uma_top;
 };
-
-#endif /* __DC_HW_SEQUENCER_PRIVATE_H__ */
+#endif  

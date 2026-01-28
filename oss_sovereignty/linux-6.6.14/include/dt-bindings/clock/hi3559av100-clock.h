@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later OR BSD-2-Clause */
-/*
- * Copyright (c) 2019-2020, Huawei Tech. Co., Ltd.
- *
- * Author: Dongjiu Geng <gengdongjiu@huawei.com>
- */
-
 #ifndef __DTS_HI3559AV100_CLOCK_H
 #define __DTS_HI3559AV100_CLOCK_H
-
-/*  fixed   rate    */
 #define HI3559AV100_FIXED_1188M     1
 #define HI3559AV100_FIXED_1000M     2
 #define HI3559AV100_FIXED_842M      3
@@ -54,7 +45,6 @@
 #define HI3559AV100_FIXED_100K      43
 #define HI3559AV100_FIXED_200M      44
 #define HI3559AV100_FIXED_75M       75
-
 #define HI3559AV100_I2C0_CLK    50
 #define HI3559AV100_I2C1_CLK    51
 #define HI3559AV100_I2C2_CLK    52
@@ -67,7 +57,6 @@
 #define HI3559AV100_I2C9_CLK    59
 #define HI3559AV100_I2C10_CLK   60
 #define HI3559AV100_I2C11_CLK   61
-
 #define HI3559AV100_SPI0_CLK    62
 #define HI3559AV100_SPI1_CLK    63
 #define HI3559AV100_SPI2_CLK    64
@@ -75,14 +64,11 @@
 #define HI3559AV100_SPI4_CLK    66
 #define HI3559AV100_SPI5_CLK    67
 #define HI3559AV100_SPI6_CLK    68
-
 #define HI3559AV100_EDMAC_CLK     69
 #define HI3559AV100_EDMAC_AXICLK  70
 #define HI3559AV100_EDMAC1_CLK    71
 #define HI3559AV100_EDMAC1_AXICLK 72
 #define HI3559AV100_VDMAC_CLK     73
-
-/*  mux clocks  */
 #define HI3559AV100_FMC_MUX     80
 #define HI3559AV100_SYSAPB_MUX  81
 #define HI3559AV100_UART_MUX    82
@@ -92,8 +78,6 @@
 #define HI3559AV100_MMC1_MUX    86
 #define HI3559AV100_MMC2_MUX    87
 #define HI3559AV100_MMC3_MUX    88
-
-/*  gate    clocks  */
 #define HI3559AV100_FMC_CLK     90
 #define HI3559AV100_UART0_CLK   91
 #define HI3559AV100_UART1_CLK   92
@@ -104,31 +88,23 @@
 #define HI3559AV100_MMC1_CLK    97
 #define HI3559AV100_MMC2_CLK    98
 #define HI3559AV100_MMC3_CLK    99
-
 #define HI3559AV100_ETH_CLK         100
 #define HI3559AV100_ETH_MACIF_CLK   101
 #define HI3559AV100_ETH1_CLK        102
 #define HI3559AV100_ETH1_MACIF_CLK  103
-
-/*  complex */
 #define HI3559AV100_MAC0_CLK                110
 #define HI3559AV100_MAC1_CLK                111
 #define HI3559AV100_SATA_CLK                112
 #define HI3559AV100_USB_CLK                 113
 #define HI3559AV100_USB1_CLK                114
-
-/* pll clocks */
 #define HI3559AV100_APLL_CLK                250
 #define HI3559AV100_GPLL_CLK                251
-
 #define HI3559AV100_CRG_NR_CLKS	            256
-
 #define HI3559AV100_SHUB_SOURCE_SOC_24M	    0
 #define HI3559AV100_SHUB_SOURCE_SOC_200M    1
 #define HI3559AV100_SHUB_SOURCE_SOC_300M    2
 #define HI3559AV100_SHUB_SOURCE_PLL         3
 #define HI3559AV100_SHUB_SOURCE_CLK         4
-
 #define HI3559AV100_SHUB_I2C0_CLK           10
 #define HI3559AV100_SHUB_I2C1_CLK           11
 #define HI3559AV100_SHUB_I2C2_CLK           12
@@ -137,7 +113,6 @@
 #define HI3559AV100_SHUB_I2C5_CLK           15
 #define HI3559AV100_SHUB_I2C6_CLK           16
 #define HI3559AV100_SHUB_I2C7_CLK           17
-
 #define HI3559AV100_SHUB_SPI_SOURCE_CLK     20
 #define HI3559AV100_SHUB_SPI4_SOURCE_CLK    21
 #define HI3559AV100_SHUB_SPI0_CLK           22
@@ -145,7 +120,6 @@
 #define HI3559AV100_SHUB_SPI2_CLK           24
 #define HI3559AV100_SHUB_SPI3_CLK           25
 #define HI3559AV100_SHUB_SPI4_CLK           26
-
 #define HI3559AV100_SHUB_UART_CLK_32K       30
 #define HI3559AV100_SHUB_UART_SOURCE_CLK    31
 #define HI3559AV100_SHUB_UART_DIV_CLK       32
@@ -156,10 +130,6 @@
 #define HI3559AV100_SHUB_UART4_CLK          37
 #define HI3559AV100_SHUB_UART5_CLK          38
 #define HI3559AV100_SHUB_UART6_CLK          39
-
 #define HI3559AV100_SHUB_EDMAC_CLK          40
-
 #define HI3559AV100_SHUB_NR_CLKS            50
-
-#endif  /* __DTS_HI3559AV100_CLOCK_H */
-
+#endif   

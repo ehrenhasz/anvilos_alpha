@@ -1,59 +1,37 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __KVM_IO_APIC_H
 #define __KVM_IO_APIC_H
-
 #include <linux/kvm_host.h>
 #include <kvm/iodev.h>
 #include "irq.h"
-
 struct kvm;
 struct kvm_vcpu;
-
 #define IOAPIC_NUM_PINS  KVM_IOAPIC_NUM_PINS
 #define MAX_NR_RESERVED_IOAPIC_PINS KVM_MAX_IRQ_ROUTES
-#define IOAPIC_VERSION_ID 0x11	/* IOAPIC version */
+#define IOAPIC_VERSION_ID 0x11	 
 #define IOAPIC_EDGE_TRIG  0
 #define IOAPIC_LEVEL_TRIG 1
-
 #define IOAPIC_DEFAULT_BASE_ADDRESS  0xfec00000
 #define IOAPIC_MEM_LENGTH            0x100
-
-/* Direct registers. */
 #define IOAPIC_REG_SELECT  0x00
 #define IOAPIC_REG_WINDOW  0x10
-
-/* Indirect registers. */
-#define IOAPIC_REG_APIC_ID 0x00	/* x86 IOAPIC only */
+#define IOAPIC_REG_APIC_ID 0x00	 
 #define IOAPIC_REG_VERSION 0x01
-#define IOAPIC_REG_ARB_ID  0x02	/* x86 IOAPIC only */
-
-/*ioapic delivery mode*/
+#define IOAPIC_REG_ARB_ID  0x02	 
 #define	IOAPIC_FIXED			0x0
 #define	IOAPIC_LOWEST_PRIORITY		0x1
 #define	IOAPIC_PMI			0x2
 #define	IOAPIC_NMI			0x4
 #define	IOAPIC_INIT			0x5
 #define	IOAPIC_EXTINT			0x7
-
 #define RTC_GSI 8
-
 struct dest_map {
-	/* vcpu bitmap where IRQ has been sent */
 	DECLARE_BITMAP(map, KVM_MAX_VCPU_IDS);
-
-	/*
-	 * Vector sent to a given vcpu, only valid when
-	 * the vcpu's bit in map is set
-	 */
 	u8 vectors[KVM_MAX_VCPU_IDS];
 };
-
-
 struct rtc_status {
 	int pending_eoi;
 	struct dest_map dest_map;
 };
-
 union kvm_ioapic_redirect_entry {
 	u64 bits;
 	struct {
@@ -70,7 +48,6 @@ union kvm_ioapic_redirect_entry {
 		u8 dest_id;
 	} fields;
 };
-
 struct kvm_ioapic {
 	u64 base_address;
 	u32 ioregsel;
@@ -87,7 +64,6 @@ struct kvm_ioapic {
 	u32 irq_eoi[IOAPIC_NUM_PINS];
 	u32 irr_delivered;
 };
-
 #ifdef DEBUG
 #define ASSERT(x)  							\
 do {									\
@@ -100,12 +76,10 @@ do {									\
 #else
 #define ASSERT(x) do { } while (0)
 #endif
-
 static inline int ioapic_in_kernel(struct kvm *kvm)
 {
 	return irqchip_kernel(kvm);
 }
-
 void kvm_rtc_eoi_tracking_restore_one(struct kvm_vcpu *vcpu);
 void kvm_ioapic_update_eoi(struct kvm_vcpu *vcpu, int vector,
 			int trigger_mode);

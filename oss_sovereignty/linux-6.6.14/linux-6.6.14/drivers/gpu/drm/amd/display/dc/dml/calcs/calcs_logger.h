@@ -1,35 +1,8 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef _CALCS_CALCS_LOGGER_H_
 #define _CALCS_CALCS_LOGGER_H_
 #define DC_LOGGER ctx->logger
-
 static void print_bw_calcs_dceip(struct dc_context *ctx, const struct bw_calcs_dceip *dceip)
 {
-
 	DC_LOG_BANDWIDTH_CALCS("#####################################################################");
 	DC_LOG_BANDWIDTH_CALCS("struct bw_calcs_dceip");
 	DC_LOG_BANDWIDTH_CALCS("#####################################################################");
@@ -117,13 +90,9 @@ static void print_bw_calcs_dceip(struct dc_context *ctx, const struct bw_calcs_d
 				bw_fixed_to_int(dceip->mcifwr_all_surfaces_burst_time));
 	DC_LOG_BANDWIDTH_CALCS("	[bw_fixed] dmif_request_buffer_size: %d",
 				bw_fixed_to_int(dceip->dmif_request_buffer_size));
-
-
 }
-
 static void print_bw_calcs_vbios(struct dc_context *ctx, const struct bw_calcs_vbios *vbios)
 {
-
 	DC_LOG_BANDWIDTH_CALCS("#####################################################################");
 	DC_LOG_BANDWIDTH_CALCS("struct bw_calcs_vbios vbios");
 	DC_LOG_BANDWIDTH_CALCS("#####################################################################");
@@ -176,15 +145,10 @@ static void print_bw_calcs_vbios(struct dc_context *ctx, const struct bw_calcs_v
 	DC_LOG_BANDWIDTH_CALCS("	[bw_fixed] blackout_duration: %d", bw_fixed_to_int(vbios->blackout_duration));
 	DC_LOG_BANDWIDTH_CALCS("	[bw_fixed] maximum_blackout_recovery_time: %d",
 				bw_fixed_to_int(vbios->maximum_blackout_recovery_time));
-
-
 }
-
 static void print_bw_calcs_data(struct dc_context *ctx, struct bw_calcs_data *data)
 {
-
 	int i, j, k;
-
 	DC_LOG_BANDWIDTH_CALCS("#####################################################################");
 	DC_LOG_BANDWIDTH_CALCS("struct bw_calcs_data data");
 	DC_LOG_BANDWIDTH_CALCS("#####################################################################");
@@ -378,7 +342,6 @@ static void print_bw_calcs_data(struct dc_context *ctx, struct bw_calcs_data *da
 				bw_fixed_to_int(data->v_blank_nbp_state_dram_speed_change_latency_supported));
 	DC_LOG_BANDWIDTH_CALCS("	[bw_fixed] nbp_state_dram_speed_change_latency_supported: %d",
 				bw_fixed_to_int(data->nbp_state_dram_speed_change_latency_supported));
-
 	for (i = 0; i < maximum_number_of_surfaces; i++) {
 		DC_LOG_BANDWIDTH_CALCS("	[bool] fbc_en[%d]:%d\n", i, data->fbc_en[i]);
 		DC_LOG_BANDWIDTH_CALCS("	[bool] lpt_en[%d]:%d", i, data->lpt_en[i]);
@@ -532,11 +495,9 @@ static void print_bw_calcs_data(struct dc_context *ctx, struct bw_calcs_data *da
 		DC_LOG_BANDWIDTH_CALCS("	[bw_fixed] v_blank_dram_speed_change_margin[%d]:%d",
 					i, bw_fixed_to_int(data->v_blank_dram_speed_change_margin[i]));
 		}
-
 	for (i = 0; i < maximum_number_of_surfaces; i++) {
 		for (j = 0; j < 3; j++) {
 			for (k = 0; k < 8; k++) {
-
 				DC_LOG_BANDWIDTH_CALCS("\n	[bw_fixed] line_source_transfer_time[%d][%d][%d]:%d",
 					i, j, k, bw_fixed_to_int(data->line_source_transfer_time[i][j][k]));
 				DC_LOG_BANDWIDTH_CALCS("	[bw_fixed] dram_speed_change_line_source_transfer_time[%d][%d][%d]:%d",
@@ -545,10 +506,8 @@ static void print_bw_calcs_data(struct dc_context *ctx, struct bw_calcs_data *da
 			}
 		}
 	}
-
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 8; j++) {
-
 			DC_LOG_BANDWIDTH_CALCS("\n	[uint32_t] num_displays_with_margin[%d][%d]:%d",
 					i, j, data->num_displays_with_margin[i][j]);
 			DC_LOG_BANDWIDTH_CALCS("	[bw_fixed] dmif_burst_time[%d][%d]:%d",
@@ -567,12 +526,10 @@ static void print_bw_calcs_data(struct dc_context *ctx, struct bw_calcs_data *da
 					i, j, bw_fixed_to_int(data->dispclk_required_for_blackout_recovery[i][j]));
 		}
 	}
-
 	for (i = 0; i < 6; i++) {
 		DC_LOG_BANDWIDTH_CALCS("	[bw_fixed] dmif_required_sclk_for_urgent_latency[%d]:%d",
 					i, bw_fixed_to_int(data->dmif_required_sclk_for_urgent_latency[i]));
 	}
 }
 ;
-
-#endif /* _CALCS_CALCS_LOGGER_H_ */
+#endif  

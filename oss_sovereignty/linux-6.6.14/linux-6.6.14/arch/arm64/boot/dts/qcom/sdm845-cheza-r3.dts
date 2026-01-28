@@ -1,21 +1,9 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Google Cheza board device tree source
- *
- * Copyright 2018 Google LLC.
- */
-
 /dts-v1/;
-
 #include "sdm845-cheza.dtsi"
-
 / {
 	model = "Google Cheza (rev3+)";
 	compatible = "google,cheza", "qcom,sdm845";
 };
-
-/* PINCTRL - board-specific pinctrl */
-
 &tlmm {
 	gpio-line-names = "AP_SPI_FP_MISO",
 			  "AP_SPI_FP_MOSI",
@@ -145,10 +133,6 @@
 			  "TS_INT_L",
 			  "AP_SUSPEND_L",
 			  "SDM_GRFC_3",
-			  /*
-			   * AP_FLASH_WP_L is crossystem ABI. Rev3 schematics
-			   * call it BIOS_FLASH_WP_R_L.
-			   */
 			  "AP_FLASH_WP_L",
 			  "H1_AP_INT_ODL",
 			  "QLINK_REQ",

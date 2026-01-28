@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Cadence CDNSP DRD Driver.
- *
- * Copyright (C) 2020 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- *
- */
 #ifndef __LINUX_CDNSP_DEBUG
 #define __LINUX_CDNSP_DEBUG
-
 static inline const char *cdnsp_trb_comp_code_string(u8 status)
 {
 	switch (status) {
@@ -75,7 +65,6 @@ static inline const char *cdnsp_trb_comp_code_string(u8 status)
 		return "Unknown!!";
 	}
 }
-
 static inline const char *cdnsp_trb_type_string(u8 type)
 {
 	switch (type) {
@@ -137,7 +126,6 @@ static inline const char *cdnsp_trb_type_string(u8 type)
 		return "UNKNOWN";
 	}
 }
-
 static inline const char *cdnsp_ring_type_string(enum cdnsp_ring_type type)
 {
 	switch (type) {
@@ -156,10 +144,8 @@ static inline const char *cdnsp_ring_type_string(enum cdnsp_ring_type type)
 	case TYPE_EVENT:
 		return "EVENT";
 	}
-
 	return "UNKNOWN";
 }
-
 static inline char *cdnsp_slot_state_string(u32 state)
 {
 	switch (state) {
@@ -175,7 +161,6 @@ static inline char *cdnsp_slot_state_string(u32 state)
 		return "reserved";
 	}
 }
-
 static inline const char *cdnsp_decode_trb(char *str, size_t size, u32 field0,
 					   u32 field1, u32 field2, u32 field3)
 {
@@ -184,9 +169,7 @@ static inline const char *cdnsp_decode_trb(char *str, size_t size, u32 field0,
 	unsigned int ep_num;
 	int ret;
 	u32 temp;
-
 	ep_num = DIV_ROUND_UP(ep_id, 2);
-
 	switch (type) {
 	case TRB_LINK:
 		ret = snprintf(str, size,
@@ -365,7 +348,6 @@ static inline const char *cdnsp_decode_trb(char *str, size_t size, u32 field0,
 		break;
 	case TRB_ENDPOINT_NRDY:
 		temp = TRB_TO_HOST_STREAM(field2);
-
 		ret = snprintf(str, size,
 			       "%s: ep%d%s(%d) H_SID %x%s%s D_SID %lx flags %c:%c",
 			       cdnsp_trb_type_string(type),
@@ -383,13 +365,10 @@ static inline const char *cdnsp_decode_trb(char *str, size_t size, u32 field0,
 			       cdnsp_trb_type_string(type),
 			       field0, field1, field2, field3);
 	}
-
 	if (ret >= size)
 		pr_info("CDNSP: buffer overflowed.\n");
-
 	return str;
 }
-
 static inline const char *cdnsp_decode_slot_context(u32 info, u32 info2,
 						    u32 int_target, u32 state)
 {
@@ -397,9 +376,7 @@ static inline const char *cdnsp_decode_slot_context(u32 info, u32 info2,
 	int ret = 0;
 	u32 speed;
 	char *s;
-
 	speed = info & DEV_SPEED;
-
 	switch (speed) {
 	case SLOT_SPEED_FS:
 		s = "full-speed";
@@ -416,17 +393,13 @@ static inline const char *cdnsp_decode_slot_context(u32 info, u32 info2,
 	default:
 		s = "UNKNOWN speed";
 	}
-
 	ret = sprintf(str, "%s Ctx Entries %d",
 		      s, (info & LAST_CTX_MASK) >> 27);
-
 	ret += sprintf(str + ret, " [Intr %ld] Addr %ld State %s",
 		       GET_INTR_TARGET(int_target), state & DEV_ADDR_MASK,
 		       cdnsp_slot_state_string(GET_SLOT_STATE(state)));
-
 	return str;
 }
-
 static inline const char *cdnsp_portsc_link_state_string(u32 portsc)
 {
 	switch (portsc & PORT_PLS_MASK) {
@@ -459,25 +432,20 @@ static inline const char *cdnsp_portsc_link_state_string(u32 portsc)
 	default:
 		break;
 	}
-
 	return "Unknown";
 }
-
 static inline const char *cdnsp_decode_portsc(char *str, size_t size,
 					      u32 portsc)
 {
 	int ret;
-
 	ret = snprintf(str, size, "%s %s %s Link:%s PortSpeed:%d ",
 		       portsc & PORT_POWER ? "Powered" : "Powered-off",
 		       portsc & PORT_CONNECT ? "Connected" : "Not-connected",
 		       portsc & PORT_PED ? "Enabled" : "Disabled",
 		       cdnsp_portsc_link_state_string(portsc),
 		       DEV_PORT_SPEED(portsc));
-
 	if (portsc & PORT_RESET)
 		ret += snprintf(str + ret, size - ret, "In-Reset ");
-
 	ret += snprintf(str + ret, size - ret, "Change: ");
 	if (portsc & PORT_CSC)
 		ret += snprintf(str + ret, size - ret, "CSC ");
@@ -494,10 +462,8 @@ static inline const char *cdnsp_decode_portsc(char *str, size_t size,
 		ret += snprintf(str + ret, size - ret, "WCE ");
 	if (portsc & PORT_WKDISC_E)
 		ret += snprintf(str + ret, size - ret, "WDE ");
-
 	return str;
 }
-
 static inline const char *cdnsp_ep_state_string(u8 state)
 {
 	switch (state) {
@@ -515,7 +481,6 @@ static inline const char *cdnsp_ep_state_string(u8 state)
 		return "INVALID";
 	}
 }
-
 static inline const char *cdnsp_ep_type_string(u8 type)
 {
 	switch (type) {
@@ -537,7 +502,6 @@ static inline const char *cdnsp_ep_type_string(u8 type)
 		return "INVALID";
 	}
 }
-
 static inline const char *cdnsp_decode_ep_context(char *str, size_t size,
 						  u32 info, u32 info2,
 						  u64 deq, u32 tx_info)
@@ -547,40 +511,30 @@ static inline const char *cdnsp_decode_ep_context(char *str, size_t size,
 	u16 maxp, avg;
 	u32 esit;
 	int ret;
-
 	esit = CTX_TO_MAX_ESIT_PAYLOAD_HI(info) << 16 |
 	       CTX_TO_MAX_ESIT_PAYLOAD_LO(tx_info);
-
 	ep_state = info & EP_STATE_MASK;
 	max_pstr = CTX_TO_EP_MAXPSTREAMS(info);
 	interval = CTX_TO_EP_INTERVAL(info);
 	mult = CTX_TO_EP_MULT(info) + 1;
 	lsa = !!(info & EP_HAS_LSA);
-
 	cerr = (info2 & (3 << 1)) >> 1;
 	ep_type = CTX_TO_EP_TYPE(info2);
 	hid = !!(info2 & (1 << 7));
 	burst = CTX_TO_MAX_BURST(info2);
 	maxp = MAX_PACKET_DECODED(info2);
-
 	avg = EP_AVG_TRB_LENGTH(tx_info);
-
 	ret = snprintf(str, size, "State %s mult %d max P. Streams %d %s",
 		       cdnsp_ep_state_string(ep_state), mult,
 		       max_pstr, lsa ? "LSA " : "");
-
 	ret += snprintf(str + ret, size - ret,
 			"interval %d us max ESIT payload %d CErr %d ",
 			(1 << interval) * 125, esit, cerr);
-
 	ret += snprintf(str + ret, size - ret,
 			"Type %s %sburst %d maxp %d deq %016llx ",
 			cdnsp_ep_type_string(ep_type), hid ? "HID" : "",
 			burst, maxp, deq);
-
 	ret += snprintf(str + ret, size - ret, "avg trb len %d", avg);
-
 	return str;
 }
-
-#endif /*__LINUX_CDNSP_DEBUG*/
+#endif  

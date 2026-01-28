@@ -1,18 +1,9 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (C) 2017 Marvell Technology Group Ltd.
- *
- * Device Tree file for Marvell Armada AP810 OCTA cores.
- */
-
 #include "armada-ap810-ap0.dtsi"
-
 / {
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
 		compatible = "marvell,armada-ap810-octa";
-
 		cpu0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a72";

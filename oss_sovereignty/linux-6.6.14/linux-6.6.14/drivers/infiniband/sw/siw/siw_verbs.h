@@ -1,26 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
-
 #ifndef _SIW_VERBS_H
 #define _SIW_VERBS_H
-
 #include <linux/errno.h>
-
 #include <rdma/iw_cm.h>
 #include <rdma/ib_verbs.h>
 #include <rdma/ib_user_verbs.h>
-
 #include "siw.h"
 #include "siw_cm.h"
-
-/*
- * siw_copy_sgl()
- *
- * Copy SGL from RDMA core representation to local
- * representation.
- */
 static inline void siw_copy_sgl(struct ib_sge *sge, struct siw_sge *siw_sge,
 				int num_sge)
 {
@@ -28,12 +13,10 @@ static inline void siw_copy_sgl(struct ib_sge *sge, struct siw_sge *siw_sge,
 		siw_sge->laddr = sge->addr;
 		siw_sge->length = sge->length;
 		siw_sge->lkey = sge->lkey;
-
 		siw_sge++;
 		sge++;
 	}
 }
-
 int siw_alloc_ucontext(struct ib_ucontext *base_ctx, struct ib_udata *udata);
 void siw_dealloc_ucontext(struct ib_ucontext *base_ctx);
 int siw_query_port(struct ib_device *base_dev, u32 port,
@@ -86,5 +69,4 @@ void siw_qp_event(struct siw_qp *qp, enum ib_event_type type);
 void siw_cq_event(struct siw_cq *cq, enum ib_event_type type);
 void siw_srq_event(struct siw_srq *srq, enum ib_event_type type);
 void siw_port_event(struct siw_device *dev, u32 port, enum ib_event_type type);
-
 #endif

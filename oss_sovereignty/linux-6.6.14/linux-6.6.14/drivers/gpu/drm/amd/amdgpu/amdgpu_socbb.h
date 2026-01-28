@@ -1,28 +1,5 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef __AMDGPU_SOCBB_H__
 #define __AMDGPU_SOCBB_H__
-
 struct gpu_info_voltage_scaling_v1_0 {
 	uint32_t state;
 	uint32_t dscclk_mhz;
@@ -34,7 +11,6 @@ struct gpu_info_voltage_scaling_v1_0 {
 	uint32_t phyclk_mhz;
 	uint32_t dppclk_mhz;
 };
-
 struct gpu_info_soc_bounding_box_v1_0 {
 	uint32_t sr_exit_time_us;
 	uint32_t sr_enter_plus_exit_time_us;
@@ -44,7 +20,7 @@ struct gpu_info_soc_bounding_box_v1_0 {
 	uint32_t urgent_latency_vm_data_only_us;
 	uint32_t writeback_latency_us;
 	uint32_t ideal_dram_bw_after_urgent_percent;
-	uint32_t pct_ideal_dram_sdp_bw_after_urgent_pixel_only; // PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelDataOnly
+	uint32_t pct_ideal_dram_sdp_bw_after_urgent_pixel_only;  
 	uint32_t pct_ideal_dram_sdp_bw_after_urgent_pixel_and_vm;
 	uint32_t pct_ideal_dram_sdp_bw_after_urgent_vm_only;
 	uint32_t max_avg_sdp_bw_use_normal_percent;
@@ -78,5 +54,4 @@ struct gpu_info_soc_bounding_box_v1_0 {
 	uint32_t num_states;
 	struct gpu_info_voltage_scaling_v1_0 clock_limits[8];
 };
-
 #endif

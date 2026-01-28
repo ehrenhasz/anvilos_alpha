@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 MediaTek Inc.
- * Author: Zhiyong Tao <zhiyong.tao@mediatek.com>
- *
- */
-
 #ifndef __PINCTRL_MTK_MT8365_H
 #define __PINCTRL_MTK_MT8365_H
-
 #include <linux/pinctrl/pinctrl.h>
 #include "pinctrl-mtk-common.h"
-
 static const struct mtk_desc_pin mtk_pins_mt8365[] = {
 	MTK_PIN(
 		PINCTRL_PIN(0, "GPIO0"),
@@ -1507,5 +1498,4 @@ static const struct mtk_desc_pin mtk_pins_mt8365[] = {
 		MTK_FUNCTION(0, "GPIO155")
 	),
 };
-
-#endif /* __PINCTRL_MTK_MT8365_H */
+#endif  

@@ -1,13 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hyperv
-
 #if !defined(_HV_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _HV_TRACE_H
-
 #include <linux/tracepoint.h>
-
 DECLARE_EVENT_CLASS(vmbus_hdr_msg,
 	TP_PROTO(const struct vmbus_channel_message_header *hdr),
 	TP_ARGS(hdr),
@@ -15,17 +10,14 @@ DECLARE_EVENT_CLASS(vmbus_hdr_msg,
 	TP_fast_assign(__entry->msgtype = hdr->msgtype;),
 	TP_printk("msgtype=%u", __entry->msgtype)
 );
-
 DEFINE_EVENT(vmbus_hdr_msg, vmbus_on_msg_dpc,
 	TP_PROTO(const struct vmbus_channel_message_header *hdr),
 	TP_ARGS(hdr)
 );
-
 DEFINE_EVENT(vmbus_hdr_msg, vmbus_on_message,
 	TP_PROTO(const struct vmbus_channel_message_header *hdr),
 	TP_ARGS(hdr)
 );
-
 TRACE_EVENT(vmbus_onoffer,
 	    TP_PROTO(const struct vmbus_channel_offer_channel *offer),
 	    TP_ARGS(offer),
@@ -60,7 +52,6 @@ TRACE_EVENT(vmbus_onoffer,
 		      __entry->sub_idx
 		    )
 	);
-
 TRACE_EVENT(vmbus_onoffer_rescind,
 	    TP_PROTO(const struct vmbus_channel_rescind_offer *offer),
 	    TP_ARGS(offer),
@@ -68,7 +59,6 @@ TRACE_EVENT(vmbus_onoffer_rescind,
 	    TP_fast_assign(__entry->child_relid = offer->child_relid),
 	    TP_printk("child_relid 0x%x", __entry->child_relid)
 	);
-
 TRACE_EVENT(vmbus_onopen_result,
 	    TP_PROTO(const struct vmbus_channel_open_result *result),
 	    TP_ARGS(result),
@@ -85,7 +75,6 @@ TRACE_EVENT(vmbus_onopen_result,
 		      __entry->child_relid,  __entry->openid,  __entry->status
 		    )
 	);
-
 TRACE_EVENT(vmbus_ongpadl_created,
 	    TP_PROTO(const struct vmbus_channel_gpadl_created *gpadlcreated),
 	    TP_ARGS(gpadlcreated),
@@ -102,7 +91,6 @@ TRACE_EVENT(vmbus_ongpadl_created,
 		      __entry->child_relid,  __entry->gpadl,  __entry->status
 		    )
 	);
-
 TRACE_EVENT(vmbus_onmodifychannel_response,
 	    TP_PROTO(const struct vmbus_channel_modifychannel_response *response),
 	    TP_ARGS(response),
@@ -117,7 +105,6 @@ TRACE_EVENT(vmbus_onmodifychannel_response,
 		      __entry->child_relid,  __entry->status
 		    )
 	);
-
 TRACE_EVENT(vmbus_ongpadl_torndown,
 	    TP_PROTO(const struct vmbus_channel_gpadl_torndown *gpadltorndown),
 	    TP_ARGS(gpadltorndown),
@@ -125,7 +112,6 @@ TRACE_EVENT(vmbus_ongpadl_torndown,
 	    TP_fast_assign(__entry->gpadl = gpadltorndown->gpadl),
 	    TP_printk("gpadl 0x%x", __entry->gpadl)
 	);
-
 TRACE_EVENT(vmbus_onversion_response,
 	    TP_PROTO(const struct vmbus_channel_version_response *response),
 	    TP_ARGS(response),
@@ -136,7 +122,6 @@ TRACE_EVENT(vmbus_onversion_response,
 		    ),
 	    TP_printk("version_supported %d", __entry->ver)
 	);
-
 TRACE_EVENT(vmbus_request_offers,
 	    TP_PROTO(int ret),
 	    TP_ARGS(ret),
@@ -144,7 +129,6 @@ TRACE_EVENT(vmbus_request_offers,
 	    TP_fast_assign(__entry->ret = ret),
 	    TP_printk("sending ret %d", __entry->ret)
 	);
-
 TRACE_EVENT(vmbus_open,
 	    TP_PROTO(const struct vmbus_channel_open_channel *msg, int ret),
 	    TP_ARGS(msg, ret),
@@ -171,7 +155,6 @@ TRACE_EVENT(vmbus_open,
 		      __entry->offset, __entry->ret
 		    )
 	);
-
 TRACE_EVENT(vmbus_close_internal,
 	    TP_PROTO(const struct vmbus_channel_close_channel *msg, int ret),
 	    TP_ARGS(msg, ret),
@@ -186,7 +169,6 @@ TRACE_EVENT(vmbus_close_internal,
 	    TP_printk("sending child_relid 0x%x, ret %d", __entry->child_relid,
 		    __entry->ret)
 	);
-
 TRACE_EVENT(vmbus_establish_gpadl_header,
 	    TP_PROTO(const struct vmbus_channel_gpadl_header *msg, int ret),
 	    TP_ARGS(msg, ret),
@@ -210,7 +192,6 @@ TRACE_EVENT(vmbus_establish_gpadl_header,
 		      __entry->range_buflen, __entry->rangecount, __entry->ret
 		    )
 	);
-
 TRACE_EVENT(vmbus_establish_gpadl_body,
 	    TP_PROTO(const struct vmbus_channel_gpadl_body *msg, int ret),
 	    TP_ARGS(msg, ret),
@@ -228,7 +209,6 @@ TRACE_EVENT(vmbus_establish_gpadl_body,
 		      __entry->msgnumber, __entry->gpadl, __entry->ret
 		    )
 	);
-
 TRACE_EVENT(vmbus_teardown_gpadl,
 	    TP_PROTO(const struct vmbus_channel_gpadl_teardown *msg, int ret),
 	    TP_ARGS(msg, ret),
@@ -246,7 +226,6 @@ TRACE_EVENT(vmbus_teardown_gpadl,
 		      __entry->child_relid, __entry->gpadl, __entry->ret
 		    )
 	);
-
 TRACE_EVENT(vmbus_negotiate_version,
 	    TP_PROTO(const struct vmbus_channel_initiate_contact *msg, int ret),
 	    TP_ARGS(msg, ret),
@@ -272,7 +251,6 @@ TRACE_EVENT(vmbus_negotiate_version,
 		      __entry->mon_page1, __entry->mon_page2, __entry->ret
 		    )
 	);
-
 TRACE_EVENT(vmbus_release_relid,
 	    TP_PROTO(const struct vmbus_channel_relid_released *msg, int ret),
 	    TP_ARGS(msg, ret),
@@ -288,7 +266,6 @@ TRACE_EVENT(vmbus_release_relid,
 		      __entry->child_relid, __entry->ret
 		    )
 	);
-
 TRACE_EVENT(vmbus_send_tl_connect_request,
 	    TP_PROTO(const struct vmbus_channel_tl_connect_request *msg,
 		     int ret),
@@ -308,7 +285,6 @@ TRACE_EVENT(vmbus_send_tl_connect_request,
 		      __entry->guest_id, __entry->host_id, __entry->ret
 		    )
 	);
-
 TRACE_EVENT(vmbus_send_modifychannel,
 	    TP_PROTO(const struct vmbus_channel_modifychannel *msg,
 		     int ret),
@@ -327,7 +303,6 @@ TRACE_EVENT(vmbus_send_modifychannel,
 		      __entry->child_relid, __entry->target_vp, __entry->ret
 		    )
 	);
-
 DECLARE_EVENT_CLASS(vmbus_channel,
 	TP_PROTO(const struct vmbus_channel *channel),
 	TP_ARGS(channel),
@@ -335,27 +310,21 @@ DECLARE_EVENT_CLASS(vmbus_channel,
 	TP_fast_assign(__entry->relid = channel->offermsg.child_relid),
 	TP_printk("relid 0x%x", __entry->relid)
 );
-
 DEFINE_EVENT(vmbus_channel, vmbus_chan_sched,
 	    TP_PROTO(const struct vmbus_channel *channel),
 	    TP_ARGS(channel)
 );
-
 DEFINE_EVENT(vmbus_channel, vmbus_setevent,
 	    TP_PROTO(const struct vmbus_channel *channel),
 	    TP_ARGS(channel)
 );
-
 DEFINE_EVENT(vmbus_channel, vmbus_on_event,
 	    TP_PROTO(const struct vmbus_channel *channel),
 	    TP_ARGS(channel)
 );
-
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE hv_trace
-#endif /* _HV_TRACE_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

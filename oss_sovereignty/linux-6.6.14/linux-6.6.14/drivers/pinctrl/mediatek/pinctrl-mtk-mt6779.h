@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019 MediaTek Inc.
- * Author: Andy Teng <andy.teng@mediatek.com>
- *
- */
-
 #ifndef __PINCTRL_MTK_MT6779_H
 #define __PINCTRL_MTK_MT6779_H
-
 #include "pinctrl-paris.h"
-
 static const struct mtk_pin_desc mtk_pins_mt6779[] = {
 	MTK_PIN(
 		0, "GPIO0",
@@ -2081,5 +2072,4 @@ static const struct mtk_pin_desc mtk_pins_mt6779[] = {
 		MTK_FUNCTION(0, NULL)
 	),
 };
-
-#endif /* __PINCTRL-MTK-MT6779_H */
+#endif  

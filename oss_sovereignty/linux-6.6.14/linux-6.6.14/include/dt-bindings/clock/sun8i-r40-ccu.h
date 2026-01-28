@@ -1,54 +1,8 @@
-/*
- * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
- *
- * This file is dual-licensed: you can use it either under the terms
- * of the GPL or the X11 license, at your option. Note that this dual
- * licensing only applies to this file, and not this project as a
- * whole.
- *
- *  a) This file is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU General Public License as
- *     published by the Free Software Foundation; either version 2 of the
- *     License, or (at your option) any later version.
- *
- *     This file is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- * Or, alternatively,
- *
- *  b) Permission is hereby granted, free of charge, to any person
- *     obtaining a copy of this software and associated documentation
- *     files (the "Software"), to deal in the Software without
- *     restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or
- *     sell copies of the Software, and to permit persons to whom the
- *     Software is furnished to do so, subject to the following
- *     conditions:
- *
- *     The above copyright notice and this permission notice shall be
- *     included in all copies or substantial portions of the Software.
- *
- *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- *     OTHER DEALINGS IN THE SOFTWARE.
- */
-
 #ifndef _DT_BINDINGS_CLK_SUN8I_R40_H_
 #define _DT_BINDINGS_CLK_SUN8I_R40_H_
-
 #define CLK_PLL_VIDEO0		7
-
 #define CLK_PLL_VIDEO1		16
-
 #define CLK_CPU			24
-
 #define CLK_BUS_MIPI_DSI	29
 #define CLK_BUS_CE		30
 #define CLK_BUS_DMA		31
@@ -125,7 +79,6 @@
 #define CLK_BUS_UART6		102
 #define CLK_BUS_UART7		103
 #define CLK_BUS_DBG		104
-
 #define CLK_THS			105
 #define CLK_NAND		106
 #define CLK_MMC0		107
@@ -153,7 +106,6 @@
 #define CLK_USB_OHCI2		129
 #define CLK_IR0			130
 #define CLK_IR1			131
-
 #define CLK_DRAM_VE		133
 #define CLK_DRAM_CSI0		134
 #define CLK_DRAM_CSI1		135
@@ -187,5 +139,4 @@
 #define CLK_GPU			163
 #define CLK_OUTA		164
 #define CLK_OUTB		165
-
-#endif /* _DT_BINDINGS_CLK_SUN8I_R40_H_ */
+#endif  

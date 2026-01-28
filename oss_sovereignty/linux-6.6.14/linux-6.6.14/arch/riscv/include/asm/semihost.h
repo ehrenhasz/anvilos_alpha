@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2022 tinylab.org
- * Author: Bin Meng <bmeng@tinylab.org>
- */
-
 #ifndef _RISCV_SEMIHOST_H_
 #define _RISCV_SEMIHOST_H_
-
 struct uart_port;
-
 static inline void smh_putc(struct uart_port *port, unsigned char c)
 {
 	asm volatile("addi    a1, %0, 0\n"
@@ -22,5 +14,4 @@ static inline void smh_putc(struct uart_port *port, unsigned char c)
 		     ".option pop\n"
 		     : : "r" (&c) : "a0", "a1", "memory");
 }
-
-#endif /* _RISCV_SEMIHOST_H_ */
+#endif  

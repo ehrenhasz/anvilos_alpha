@@ -1,30 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
-/*
- * Preserved registers that are shared between code in ivt.S and
- * entry.S.  Be careful not to step on these!
- */
-#define PRED_LEAVE_SYSCALL	1 /* TRUE iff leave from syscall */
-#define PRED_KERNEL_STACK	2 /* returning to kernel-stacks? */
-#define PRED_USER_STACK		3 /* returning to user-stacks? */
-#define PRED_SYSCALL		4 /* inside a system call? */
-#define PRED_NON_SYSCALL	5 /* complement of PRED_SYSCALL */
-
+#define PRED_LEAVE_SYSCALL	1  
+#define PRED_KERNEL_STACK	2  
+#define PRED_USER_STACK		3  
+#define PRED_SYSCALL		4  
+#define PRED_NON_SYSCALL	5  
 #ifdef __ASSEMBLY__
 # define PASTE2(x,y)	x##y
 # define PASTE(x,y)	PASTE2(x,y)
-
 # define pLvSys		PASTE(p,PRED_LEAVE_SYSCALL)
 # define pKStk		PASTE(p,PRED_KERNEL_STACK)
 # define pUStk		PASTE(p,PRED_USER_STACK)
 # define pSys		PASTE(p,PRED_SYSCALL)
 # define pNonSys	PASTE(p,PRED_NON_SYSCALL)
 #endif
-
 #define PT(f)		(IA64_PT_REGS_##f##_OFFSET)
 #define SW(f)		(IA64_SWITCH_STACK_##f##_OFFSET)
 #define SOS(f)		(IA64_SAL_OS_STATE_##f##_OFFSET)
-
 #define PT_REGS_SAVES(off)			\
 	.unwabi 3, 'i';				\
 	.fframe IA64_PT_REGS_SIZE+16+(off);	\
@@ -33,12 +23,10 @@
 	.spillsp ar.unat, PT(AR_UNAT)+16+(off);	\
 	.spillsp ar.fpsr, PT(AR_FPSR)+16+(off);	\
 	.spillsp pr, PT(PR)+16+(off);
-
 #define PT_REGS_UNWIND_INFO(off)		\
 	.prologue;				\
 	PT_REGS_SAVES(off);			\
 	.body
-
 #define SWITCH_STACK_SAVES(off)							\
 	.savesp ar.unat,SW(CALLER_UNAT)+16+(off);				\
 	.savesp ar.fpsr,SW(AR_FPSR)+16+(off);					\
@@ -62,7 +50,6 @@
 	.spillsp ar.rnat,SW(AR_RNAT)+16+(off);					\
 	.spillsp ar.bspstore,SW(AR_BSPSTORE)+16+(off);				\
 	.spillsp pr,SW(PR)+16+(off)
-
 #define DO_SAVE_SWITCH_STACK			\
 	movl r28=1f;				\
 	;;					\
@@ -72,7 +59,6 @@
 	SWITCH_STACK_SAVES(0);			\
 	br.cond.sptk.many save_switch_stack;	\
 1:
-
 #define DO_LOAD_SWITCH_STACK			\
 	movl r28=1f;				\
 	;;					\

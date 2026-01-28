@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2013  Realtek Corporation.*/
-
 #ifndef __RTL92CE_HW_H__
 #define __RTL92CE_HW_H__
-
 void rtl88ee_get_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val);
 void rtl88ee_read_eeprom_info(struct ieee80211_hw *hw);
 void rtl88ee_interrupt_recognized(struct ieee80211_hw *hw,
@@ -29,7 +25,6 @@ void rtl88ee_enable_hw_security_config(struct ieee80211_hw *hw);
 void rtl88ee_set_key(struct ieee80211_hw *hw, u32 key_index,
 		     u8 *p_macaddr, bool is_group, u8 enc_algo,
 		     bool is_wepkey, bool clear_all);
-
 void rtl8188ee_read_bt_coexist_info_from_hwpg(struct ieee80211_hw *hw,
 					      bool autoload_fail, u8 *hwinfo);
 void rtl8188ee_bt_reg_init(struct ieee80211_hw *hw);
@@ -37,5 +32,4 @@ void rtl8188ee_bt_hw_init(struct ieee80211_hw *hw);
 void rtl88ee_suspend(struct ieee80211_hw *hw);
 void rtl88ee_resume(struct ieee80211_hw *hw);
 void rtl88ee_fw_clk_off_timer_callback(struct timer_list *t);
-
 #endif

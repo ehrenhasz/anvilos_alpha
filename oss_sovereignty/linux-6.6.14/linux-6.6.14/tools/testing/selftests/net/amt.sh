@@ -1,94 +1,16 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0
-
-# Author: Taehee Yoo <ap420073@gmail.com>
-#
-# This script evaluates the AMT driver.
-# There are four network-namespaces, LISTENER, SOURCE, GATEWAY, RELAY.
-# The role of LISTENER is to listen multicast traffic.
-# In order to do that, it send IGMP group join message.
-# The role of SOURCE is to send multicast traffic to listener.
-# The role of GATEWAY is to work Gateway role of AMT interface.
-# The role of RELAY is to work Relay role of AMT interface.
-#
-#
-#       +------------------------+
-#       |    LISTENER netns      |
-#       |                        |
-#       |  +------------------+  |
-#       |  |       l_gw       |  |
-#       |  |  192.168.0.2/24  |  |
-#       |  |  2001:db8::2/64  |  |
-#       |  +------------------+  |
-#       |            .           |
-#       +------------------------+
-#                    .
-#                    .
-#       +-----------------------------------------------------+
-#       |            .         GATEWAY netns                  |
-#       |            .                                        |
-#       |+---------------------------------------------------+|
-#       ||           .          br0                          ||
-#       || +------------------+       +------------------+   ||
-#       || |       gw_l       |       |       amtg       |   ||
-#       || |  192.168.0.1/24  |       +--------+---------+   ||
-#       || |  2001:db8::1/64  |                |             ||
-#       || +------------------+                |             ||
-#       |+-------------------------------------|-------------+|
-#       |                                      |              |
-#       |                             +--------+---------+    |
-#       |                             |     gw_relay     |    |
-#       |                             |    10.0.0.1/24   |    |
-#       |                             +------------------+    |
-#       |                                      .              |
-#       +-----------------------------------------------------+
-#                                              .
-#                                              .
-#       +-----------------------------------------------------+
-#       |                       RELAY netns    .              |
-#       |                             +------------------+    |
-#       |                             |     relay_gw     |    |
-#       |                             |    10.0.0.2/24   |    |
-#       |                             +--------+---------+    |
-#       |                                      |              |
-#       |                                      |              |
-#       |  +------------------+       +--------+---------+    |
-#       |  |     relay_src    |       |       amtr       |    |
-#       |  |   172.17.0.1/24  |       +------------------+    |
-#       |  | 2001:db8:3::1/64 |                               |
-#       |  +------------------+                               |
-#       |            .                                        |
-#       |            .                                        |
-#       +-----------------------------------------------------+
-#                    .
-#                    .
-#       +------------------------+
-#       |            .           |
-#       |  +------------------+  |
-#       |  |     src_relay    |  |
-#       |  |   172.17.0.2/24  |  |
-#       |  | 2001:db8:3::2/64 |  |
-#       |  +------------------+  |
-#       |      SOURCE netns      |
-#       +------------------------+
-#==============================================================================
-
 readonly LISTENER=$(mktemp -u listener-XXXXXXXX)
 readonly GATEWAY=$(mktemp -u gateway-XXXXXXXX)
 readonly RELAY=$(mktemp -u relay-XXXXXXXX)
 readonly SOURCE=$(mktemp -u source-XXXXXXXX)
 ERR=4
 err=0
-
 exit_cleanup()
 {
 	for ns in "$@"; do
 		ip netns delete "${ns}" 2>/dev/null || true
 	done
-
 	exit $ERR
 }
-
 create_namespaces()
 {
 	ip netns add "${LISTENER}" || exit_cleanup
@@ -97,38 +19,30 @@ create_namespaces()
 	ip netns add "${SOURCE}" || exit_cleanup "${LISTENER}" "${GATEWAY}" \
 		"${RELAY}"
 }
-
-# The trap function handler
-#
 exit_cleanup_all()
 {
 	exit_cleanup "${LISTENER}" "${GATEWAY}" "${RELAY}" "${SOURCE}"
 }
-
 setup_interface()
 {
 	for ns in "${LISTENER}" "${GATEWAY}" "${RELAY}" "${SOURCE}"; do
 		ip -netns "${ns}" link set dev lo up
 	done;
-
 	ip link add l_gw type veth peer name gw_l
 	ip link add gw_relay type veth peer name relay_gw
 	ip link add relay_src type veth peer name src_relay
-
 	ip link set l_gw netns "${LISTENER}" up
 	ip link set gw_l netns "${GATEWAY}" up
 	ip link set gw_relay netns "${GATEWAY}" up
 	ip link set relay_gw netns "${RELAY}" up
 	ip link set relay_src netns "${RELAY}" up
 	ip link set src_relay netns "${SOURCE}" up mtu 1400
-
 	ip netns exec "${LISTENER}" ip a a 192.168.0.2/24 dev l_gw
 	ip netns exec "${LISTENER}" ip r a default via 192.168.0.1 dev l_gw
 	ip netns exec "${LISTENER}" ip a a 2001:db8::2/64 dev l_gw
 	ip netns exec "${LISTENER}" ip r a default via 2001:db8::1 dev l_gw
 	ip netns exec "${LISTENER}" ip a a 239.0.0.1/32 dev l_gw autojoin
 	ip netns exec "${LISTENER}" ip a a ff0e::5:6/128 dev l_gw autojoin
-
 	ip netns exec "${GATEWAY}" ip a a 192.168.0.1/24 dev gw_l
 	ip netns exec "${GATEWAY}" ip a a 2001:db8::1/64 dev gw_l
 	ip netns exec "${GATEWAY}" ip a a 10.0.0.1/24 dev gw_relay
@@ -151,12 +65,10 @@ setup_interface()
 	ip netns exec "${RELAY}" ip link set amtr up
 	ip netns exec "${GATEWAY}" ip link set amtg up
 }
-
 setup_sysctl()
 {
 	ip netns exec "${RELAY}" sysctl net.ipv4.ip_forward=1 -w -q
 }
-
 setup_iptables()
 {
 	ip netns exec "${RELAY}" iptables -t mangle -I PREROUTING \
@@ -164,7 +76,6 @@ setup_iptables()
 	ip netns exec "${RELAY}" ip6tables -t mangle -I PREROUTING \
 		-j HL --hl-set 2
 }
-
 setup_mcast_routing()
 {
 	ip netns exec "${RELAY}" smcrouted
@@ -173,7 +84,6 @@ setup_mcast_routing()
 	ip netns exec "${RELAY}" smcroutectl a relay_src \
 		2001:db8:3::2 ff0e::5:6 amtr
 }
-
 test_remote_ip()
 {
 	REMOTE=$(ip netns exec "${GATEWAY}" \
@@ -185,20 +95,16 @@ test_remote_ip()
 		ERR=1
 	fi
 }
-
 send_mcast_torture4()
 {
 	ip netns exec "${SOURCE}" bash -c \
 		'cat /dev/urandom | head -c 1G | nc -w 1 -u 239.0.0.1 4001'
 }
-
-
 send_mcast_torture6()
 {
 	ip netns exec "${SOURCE}" bash -c \
 		'cat /dev/urandom | head -c 1G | nc -w 1 -u ff0e::5:6 6001'
 }
-
 check_features()
 {
         ip link help 2>&1 | grep -q amt
@@ -207,7 +113,6 @@ check_features()
                 exit_cleanup
         fi
 }
-
 test_ipv4_forward()
 {
 	RESULT4=$(ip netns exec "${LISTENER}" nc -w 1 -l -u 239.0.0.1 4000)
@@ -219,7 +124,6 @@ test_ipv4_forward()
 		exit 1
 	fi
 }
-
 test_ipv6_forward()
 {
 	RESULT6=$(ip netns exec "${LISTENER}" nc -w 1 -l -u ff0e::5:6 6000)
@@ -231,28 +135,22 @@ test_ipv6_forward()
 		exit 1
 	fi
 }
-
 send_mcast4()
 {
 	sleep 2
 	ip netns exec "${SOURCE}" bash -c \
 		'echo 172.17.0.2 | nc -w 1 -u 239.0.0.1 4000' &
 }
-
 send_mcast6()
 {
 	sleep 2
 	ip netns exec "${SOURCE}" bash -c \
 		'echo 2001:db8:3::2 | nc -w 1 -u ff0e::5:6 6000' &
 }
-
 check_features
-
 create_namespaces
-
 set -e
 trap exit_cleanup_all EXIT
-
 setup_interface
 setup_sysctl
 setup_iptables

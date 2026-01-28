@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
- */
 #ifndef _ASM_ASMMACRO_H
 #define _ASM_ASMMACRO_H
-
 #include <asm/asm-offsets.h>
 #include <asm/regdef.h>
 #include <asm/fpregdef.h>
 #include <asm/loongarch.h>
-
 	.macro	cpu_save_nonscratch thread
 	stptr.d	s0, \thread, THREAD_REG23
 	stptr.d	s1, \thread, THREAD_REG24
@@ -23,7 +17,6 @@
 	stptr.d	sp, \thread, THREAD_REG03
 	stptr.d	fp, \thread, THREAD_REG22
 	.endm
-
 	.macro	cpu_restore_nonscratch thread
 	ldptr.d	s0, \thread, THREAD_REG23
 	ldptr.d	s1, \thread, THREAD_REG24
@@ -38,31 +31,24 @@
 	ldptr.d	sp, \thread, THREAD_REG03
 	ldptr.d	fp, \thread, THREAD_REG22
 	.endm
-
 	.macro fpu_save_csr thread tmp
 	movfcsr2gr	\tmp, fcsr0
 	stptr.w		\tmp, \thread, THREAD_FCSR
 #ifdef CONFIG_CPU_HAS_LBT
-	/* TM bit is always 0 if LBT not supported */
 	andi		\tmp, \tmp, FPU_CSR_TM
 	beqz		\tmp, 1f
-	/* Save FTOP */
 	x86mftop	\tmp
 	stptr.w		\tmp, \thread, THREAD_FTOP
-	/* Turn off TM to ensure the order of FPR in memory independent of TM */
 	x86clrtm
 1:
 #endif
 	.endm
-
 	.macro fpu_restore_csr thread tmp0 tmp1
 	ldptr.w		\tmp0, \thread, THREAD_FCSR
 	movgr2fcsr	fcsr0, \tmp0
 #ifdef CONFIG_CPU_HAS_LBT
-	/* TM bit is always 0 if LBT not supported */
 	andi		\tmp0, \tmp0, FPU_CSR_TM
 	beqz		\tmp0, 2f
-	/* Restore FTOP */
 	ldptr.w		\tmp0, \thread, THREAD_FTOP
 	andi		\tmp0, \tmp0, 0x7
 	la.pcrel	\tmp1, 1f
@@ -87,7 +73,6 @@
 2:
 #endif
 	.endm
-
 	.macro fpu_save_cc thread tmp0 tmp1
 	movcf2gr	\tmp0, $fcc0
 	move	\tmp1, \tmp0
@@ -107,7 +92,6 @@
 	bstrins.d	\tmp1, \tmp0, 63, 56
 	stptr.d		\tmp1, \thread, THREAD_FCC
 	.endm
-
 	.macro fpu_restore_cc thread tmp0 tmp1
 	ldptr.d	\tmp0, \thread, THREAD_FCC
 	bstrpick.d	\tmp1, \tmp0, 7, 0
@@ -127,7 +111,6 @@
 	bstrpick.d	\tmp1, \tmp0, 63, 56
 	movgr2cf	$fcc7, \tmp1
 	.endm
-
 	.macro	fpu_save_double thread tmp
 	li.w	\tmp, THREAD_FPR0
 	PTR_ADD \tmp, \tmp, \thread
@@ -164,7 +147,6 @@
 	fst.d	$f30, \tmp, THREAD_FPR30 - THREAD_FPR0
 	fst.d	$f31, \tmp, THREAD_FPR31 - THREAD_FPR0
 	.endm
-
 	.macro	fpu_restore_double thread tmp
 	li.w	\tmp, THREAD_FPR0
 	PTR_ADD \tmp, \tmp, \thread
@@ -201,7 +183,6 @@
 	fld.d	$f30, \tmp, THREAD_FPR30 - THREAD_FPR0
 	fld.d	$f31, \tmp, THREAD_FPR31 - THREAD_FPR0
 	.endm
-
 	.macro	lsx_save_data thread tmp
 	li.w	\tmp, THREAD_FPR0
 	PTR_ADD \tmp, \thread, \tmp
@@ -238,7 +219,6 @@
 	vst	$vr30, \tmp, THREAD_FPR30 - THREAD_FPR0
 	vst	$vr31, \tmp, THREAD_FPR31 - THREAD_FPR0
 	.endm
-
 	.macro	lsx_restore_data thread tmp
 	li.w	\tmp, THREAD_FPR0
 	PTR_ADD	\tmp, \thread, \tmp
@@ -275,24 +255,20 @@
 	vld	$vr30, \tmp, THREAD_FPR30 - THREAD_FPR0
 	vld	$vr31, \tmp, THREAD_FPR31 - THREAD_FPR0
 	.endm
-
 	.macro	lsx_save_all	thread tmp0 tmp1
 	fpu_save_cc		\thread, \tmp0, \tmp1
 	fpu_save_csr		\thread, \tmp0
 	lsx_save_data		\thread, \tmp0
 	.endm
-
 	.macro	lsx_restore_all	thread tmp0 tmp1
 	lsx_restore_data	\thread, \tmp0
 	fpu_restore_cc		\thread, \tmp0, \tmp1
 	fpu_restore_csr		\thread, \tmp0, \tmp1
 	.endm
-
 	.macro	lsx_save_upper vd base tmp off
 	vpickve2gr.d	\tmp, \vd, 1
 	st.d		\tmp, \base, (\off+8)
 	.endm
-
 	.macro	lsx_save_all_upper thread base tmp
 	li.w		\tmp, THREAD_FPR0
 	PTR_ADD		\base, \thread, \tmp
@@ -329,12 +305,10 @@
 	lsx_save_upper	$vr30, \base, \tmp, (THREAD_FPR30-THREAD_FPR0)
 	lsx_save_upper	$vr31, \base, \tmp, (THREAD_FPR31-THREAD_FPR0)
 	.endm
-
 	.macro	lsx_restore_upper vd base tmp off
 	ld.d		\tmp, \base, (\off+8)
 	vinsgr2vr.d	\vd,  \tmp, 1
 	.endm
-
 	.macro	lsx_restore_all_upper thread base tmp
 	li.w		  \tmp, THREAD_FPR0
 	PTR_ADD		  \base, \thread, \tmp
@@ -371,11 +345,9 @@
 	lsx_restore_upper $vr30, \base, \tmp, (THREAD_FPR30-THREAD_FPR0)
 	lsx_restore_upper $vr31, \base, \tmp, (THREAD_FPR31-THREAD_FPR0)
 	.endm
-
 	.macro	lsx_init_upper vd tmp
 	vinsgr2vr.d	\vd, \tmp, 1
 	.endm
-
 	.macro	lsx_init_all_upper tmp
 	not		\tmp, zero
 	lsx_init_upper	$vr0 \tmp
@@ -411,7 +383,6 @@
 	lsx_init_upper	$vr30 \tmp
 	lsx_init_upper	$vr31 \tmp
 	.endm
-
 	.macro	lasx_save_data thread tmp
 	li.w	\tmp, THREAD_FPR0
 	PTR_ADD	\tmp, \thread, \tmp
@@ -448,7 +419,6 @@
 	xvst	$xr30, \tmp, THREAD_FPR30 - THREAD_FPR0
 	xvst	$xr31, \tmp, THREAD_FPR31 - THREAD_FPR0
 	.endm
-
 	.macro	lasx_restore_data thread tmp
 	li.w	\tmp, THREAD_FPR0
 	PTR_ADD	\tmp, \thread, \tmp
@@ -485,36 +455,27 @@
 	xvld	$xr30, \tmp, THREAD_FPR30 - THREAD_FPR0
 	xvld	$xr31, \tmp, THREAD_FPR31 - THREAD_FPR0
 	.endm
-
 	.macro	lasx_save_all	thread tmp0 tmp1
 	fpu_save_cc		\thread, \tmp0, \tmp1
 	fpu_save_csr		\thread, \tmp0
 	lasx_save_data		\thread, \tmp0
 	.endm
-
 	.macro	lasx_restore_all thread tmp0 tmp1
 	lasx_restore_data	\thread, \tmp0
 	fpu_restore_cc		\thread, \tmp0, \tmp1
 	fpu_restore_csr		\thread, \tmp0, \tmp1
 	.endm
-
 	.macro	lasx_save_upper xd base tmp off
-	/* Nothing */
 	.endm
-
 	.macro	lasx_save_all_upper thread base tmp
-	/* Nothing */
 	.endm
-
 	.macro	lasx_restore_upper xd base tmp0 tmp1 off
 	vld		\tmp0, \base, (\off+16)
 	xvpermi.q 	\xd,   \tmp1, 0x2
 	.endm
-
 	.macro	lasx_restore_all_upper thread base tmp
 	li.w		\tmp, THREAD_FPR0
 	PTR_ADD		\base, \thread, \tmp
-	/* Save $vr31 ($xr31 lower bits) with xvpickve2gr */
 	xvpickve2gr.d	$r17, $xr31, 0
 	xvpickve2gr.d	$r18, $xr31, 1
 	lasx_restore_upper $xr0, \base, $vr31, $xr31, (THREAD_FPR0-THREAD_FPR0)
@@ -549,16 +510,13 @@
 	lasx_restore_upper $xr29, \base, $vr31, $xr31, (THREAD_FPR29-THREAD_FPR0)
 	lasx_restore_upper $xr30, \base, $vr31, $xr31, (THREAD_FPR30-THREAD_FPR0)
 	lasx_restore_upper $xr31, \base, $vr31, $xr31, (THREAD_FPR31-THREAD_FPR0)
-	/* Restore $vr31 ($xr31 lower bits) with xvinsgr2vr */
 	xvinsgr2vr.d	$xr31, $r17, 0
 	xvinsgr2vr.d	$xr31, $r18, 1
 	.endm
-
 	.macro	lasx_init_upper xd tmp
 	xvinsgr2vr.d	\xd, \tmp, 2
 	xvinsgr2vr.d	\xd, \tmp, 3
 	.endm
-
 	.macro	lasx_init_all_upper tmp
 	not		\tmp, zero
 	lasx_init_upper	$xr0 \tmp
@@ -594,11 +552,9 @@
 	lasx_init_upper	$xr30 \tmp
 	lasx_init_upper	$xr31 \tmp
 	.endm
-
 .macro not dst src
 	nor	\dst, \src, zero
 .endm
-
 .macro la_abs reg, sym
 #ifndef CONFIG_RELOCATABLE
 	la.abs	\reg, \sym
@@ -614,5 +570,4 @@
 	.popsection
 #endif
 .endm
-
-#endif /* _ASM_ASMMACRO_H */
+#endif  

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __ABI_CSKY_ELF_H
 #define __ABI_CSKY_ELF_H
-
-/* The member sort in array pr_reg[x] is defined by GDB. */
 #define ELF_CORE_COPY_REGS(pr_reg, regs) do {	\
 	pr_reg[0] = regs->pc;			\
 	pr_reg[1] = regs->a1;			\
@@ -40,4 +36,4 @@
 	pr_reg[32] = regs->exregs[14];		\
 	pr_reg[33] = regs->tls;			\
 } while (0);
-#endif /* __ABI_CSKY_ELF_H */
+#endif  

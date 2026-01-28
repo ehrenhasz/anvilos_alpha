@@ -1,22 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * wm8400.h  --  audio driver for WM8400
- *
- * Copyright 2008 Wolfson Microelectronics PLC.
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
-
 #ifndef _WM8400_CODEC_H
 #define _WM8400_CODEC_H
-
 #define WM8400_MCLK_DIV 0
 #define WM8400_DACCLK_DIV 1
 #define WM8400_ADCCLK_DIV 2
 #define WM8400_BCLK_DIV 3
-
 #define WM8400_MCLK_DIV_1 0x400
 #define WM8400_MCLK_DIV_2 0x800
-
 #define WM8400_DAC_CLKDIV_1    0x00
 #define WM8400_DAC_CLKDIV_1_5  0x04
 #define WM8400_DAC_CLKDIV_2    0x08
@@ -24,7 +13,6 @@
 #define WM8400_DAC_CLKDIV_4    0x10
 #define WM8400_DAC_CLKDIV_5_5  0x14
 #define WM8400_DAC_CLKDIV_6    0x18
-
 #define WM8400_ADC_CLKDIV_1    0x00
 #define WM8400_ADC_CLKDIV_1_5  0x20
 #define WM8400_ADC_CLKDIV_2    0x40
@@ -32,8 +20,6 @@
 #define WM8400_ADC_CLKDIV_4    0x80
 #define WM8400_ADC_CLKDIV_5_5  0xa0
 #define WM8400_ADC_CLKDIV_6    0xc0
-
-
 #define WM8400_BCLK_DIV_1                       (0x0 << 1)
 #define WM8400_BCLK_DIV_1_5                     (0x1 << 1)
 #define WM8400_BCLK_DIV_2                       (0x2 << 1)
@@ -50,5 +36,4 @@
 #define WM8400_BCLK_DIV_32                      (0xD << 1)
 #define WM8400_BCLK_DIV_44                      (0xE << 1)
 #define WM8400_BCLK_DIV_48                      (0xF << 1)
-
 #endif

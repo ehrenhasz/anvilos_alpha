@@ -1,39 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *	linux/include/asm-alpha/err_common.h
- *
- *	Copyright (C) 2000 Jeff Wiedemeier (Compaq Computer Corporation)
- *
- *	Contains declarations and macros to support Alpha error handling
- * 	implementations.
- */
-
 #ifndef __ALPHA_ERR_COMMON_H
 #define __ALPHA_ERR_COMMON_H 1
-
-/*
- * SCB Vector definitions
- */
 #define SCB_Q_SYSERR	0x620
 #define SCB_Q_PROCERR	0x630
 #define SCB_Q_SYSMCHK	0x660
 #define SCB_Q_PROCMCHK	0x670
 #define SCB_Q_SYSEVENT	0x680
-
-/*
- * Disposition definitions for logout frame parser
- */
 #define MCHK_DISPOSITION_UNKNOWN_ERROR		0x00
 #define MCHK_DISPOSITION_REPORT			0x01
 #define MCHK_DISPOSITION_DISMISS		0x02
-
-/*
- * Error Log definitions
- */
-/*
- * Types
- */
-
 #define EL_CLASS__TERMINATION		(0)
 #  define EL_TYPE__TERMINATION__TERMINATION		(0)
 #define EL_CLASS__HEADER		(5)
@@ -65,7 +39,6 @@
 #  define EL_TYPE__PAL__ENV__POWER_SUPPLY		(14)
 #  define EL_TYPE__PAL__ENV__LAN			(15)
 #  define EL_TYPE__PAL__ENV__HOT_PLUG			(16)
-
 union el_timestamp {
 	struct {
 		u8 second;
@@ -77,43 +50,41 @@ union el_timestamp {
 	} b;
 	u64 as_int;
 };
-
 struct el_subpacket {
-	u16 length;		/* length of header (in bytes)	*/
-	u16 class;		/* header class and type...   	*/
-	u16 type;		/* ...determine content     	*/
-	u16 revision;		/* header revision 		*/
+	u16 length;		 
+	u16 class;		 
+	u16 type;		 
+	u16 revision;		 
 	union {
-		struct {	/* Class 5, Type 1 - System Error	*/
+		struct {	 
 			u32 frame_length;
 			u32 frame_packet_count;			
 		} sys_err;			
-		struct {	/* Class 5, Type 2 - System Event 	*/
+		struct {	 
 			union el_timestamp timestamp;
 			u32 frame_length;
 			u32 frame_packet_count;			
 		} sys_event;
-		struct {	/* Class 5, Type 3 - Double Error Halt	*/
+		struct {	 
 			u16 halt_code;
 			u16 reserved;
 			union el_timestamp timestamp;
 			u32 frame_length;
 			u32 frame_packet_count;
 		} err_halt;
-		struct {	/* Clasee 5, Type 19 - Logout Frame Header */
+		struct {	 
 			u32 frame_length;
 			u32 frame_flags;
 			u32 cpu_offset;	
 			u32 system_offset;
 		} logout_header;
-		struct {	/* Class 12 - Regatta			*/
+		struct {	 
 			u64 cpuid;
 			u64 data_start[1];
 		} regatta_frame;
-		struct {	/* Raw 				        */
+		struct {	 
 			u64 data_start[1];
 		} raw;
 	} by_type;
 };
-
-#endif /* __ALPHA_ERR_COMMON_H */
+#endif  

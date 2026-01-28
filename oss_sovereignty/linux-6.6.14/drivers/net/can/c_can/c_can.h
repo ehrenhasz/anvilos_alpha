@@ -1,27 +1,5 @@
-/*
- * CAN bus driver for Bosch C_CAN controller
- *
- * Copyright (C) 2010 ST Microelectronics
- * Bhupesh Sharma <bhupesh.sharma@st.com>
- *
- * Borrowed heavily from the C_CAN driver originally written by:
- * Copyright (C) 2007
- * - Sascha Hauer, Marc Kleine-Budde, Pengutronix <s.hauer@pengutronix.de>
- * - Simon Kallweit, intefo AG <simon.kallweit@intefo.ch>
- *
- * Bosch C_CAN controller is compliant to CAN protocol version 2.0 part A and B.
- * Bosch C_CAN user manual can be obtained from:
- * http://www.semiconductors.bosch.de/media/en/pdf/ipmodules_1/c_can/
- * users_manual_c_can.pdf
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
-
 #ifndef C_CAN_H
 #define C_CAN_H
-
 enum reg {
 	C_CAN_CTRL_REG = 0,
 	C_CAN_CTRL_EX_REG,
@@ -64,7 +42,6 @@ enum reg {
 	C_CAN_MSGVAL2_REG,
 	C_CAN_FUNCTION_REG,
 };
-
 static const u16 __maybe_unused reg_map_c_can[] = {
 	[C_CAN_CTRL_REG]	= 0x00,
 	[C_CAN_STS_REG]		= 0x02,
@@ -104,7 +81,6 @@ static const u16 __maybe_unused reg_map_c_can[] = {
 	[C_CAN_MSGVAL1_REG]	= 0xB0,
 	[C_CAN_MSGVAL2_REG]	= 0xB2,
 };
-
 static const u16 __maybe_unused reg_map_d_can[] = {
 	[C_CAN_CTRL_REG]	= 0x00,
 	[C_CAN_CTRL_EX_REG]	= 0x02,
@@ -147,45 +123,34 @@ static const u16 __maybe_unused reg_map_d_can[] = {
 	[C_CAN_IF2_DATA3_REG]	= 0x134,
 	[C_CAN_IF2_DATA4_REG]	= 0x136,
 };
-
 enum c_can_dev_id {
 	BOSCH_C_CAN,
 	BOSCH_D_CAN,
 };
-
 struct raminit_bits {
 	u8 start;
 	u8 done;
 };
-
 struct c_can_driver_data {
 	enum c_can_dev_id id;
 	unsigned int msg_obj_num;
-
-	/* RAMINIT register description. Optional. */
-	const struct raminit_bits *raminit_bits; /* Array of START/DONE bit positions */
-	u8 raminit_num;		/* Number of CAN instances on the SoC */
-	bool raminit_pulse;	/* If set, sets and clears START bit (pulse) */
+	const struct raminit_bits *raminit_bits;  
+	u8 raminit_num;		 
+	bool raminit_pulse;	 
 };
-
-/* Out of band RAMINIT register access via syscon regmap */
 struct c_can_raminit {
-	struct regmap *syscon;	/* for raminit ctrl. reg. access */
-	unsigned int reg;	/* register index within syscon */
+	struct regmap *syscon;	 
+	unsigned int reg;	 
 	struct raminit_bits bits;
 	bool needs_pulse;
 };
-
-/* c_can tx ring structure */
 struct c_can_tx_ring {
 	unsigned int head;
 	unsigned int tail;
 	unsigned int obj_num;
 };
-
-/* c_can private data structure */
 struct c_can_priv {
-	struct can_priv can;	/* must be the first member */
+	struct can_priv can;	 
 	struct napi_struct napi;
 	struct net_device *dev;
 	struct device *device;
@@ -208,49 +173,36 @@ struct c_can_priv {
 	void __iomem *base;
 	const u16 *regs;
 	enum c_can_dev_id type;
-	struct c_can_raminit raminit_sys;	/* RAMINIT via syscon regmap */
+	struct c_can_raminit raminit_sys;	 
 	void (*raminit)(const struct c_can_priv *priv, bool enable);
 	u32 comm_rcv_high;
 };
-
 struct net_device *alloc_c_can_dev(int msg_obj_num);
 void free_c_can_dev(struct net_device *dev);
 int register_c_can_dev(struct net_device *dev);
 void unregister_c_can_dev(struct net_device *dev);
-
 #ifdef CONFIG_PM
 int c_can_power_up(struct net_device *dev);
 int c_can_power_down(struct net_device *dev);
 #endif
-
 extern const struct ethtool_ops c_can_ethtool_ops;
-
 static inline u8 c_can_get_tx_head(const struct c_can_tx_ring *ring)
 {
 	return ring->head & (ring->obj_num - 1);
 }
-
 static inline u8 c_can_get_tx_tail(const struct c_can_tx_ring *ring)
 {
 	return ring->tail & (ring->obj_num - 1);
 }
-
 static inline u8 c_can_get_tx_free(const struct c_can_priv *priv,
 				   const struct c_can_tx_ring *ring)
 {
 	u8 head = c_can_get_tx_head(ring);
 	u8 tail = c_can_get_tx_tail(ring);
-
 	if (priv->type == BOSCH_D_CAN)
 		return ring->obj_num - (ring->head - ring->tail);
-
-	/* This is not a FIFO. C/D_CAN sends out the buffers
-	 * prioritized. The lowest buffer number wins.
-	 */
 	if (head < tail)
 		return 0;
-
 	return ring->obj_num - head;
 }
-
-#endif /* C_CAN_H */
+#endif  

@@ -1,21 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
 #include <dt-bindings/input/input.h>
-
 #include "qcom-msm8660.dtsi"
-
 / {
 	model = "Qualcomm MSM8660 SURF";
 	compatible = "qcom,msm8660-surf", "qcom,msm8660";
-
 	aliases {
 		serial0 = &gsbi12_serial;
 	};
-
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
-
-	/* Temporary fixed regulator */
 	vsdcc_fixed: vsdcc-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "SDCC Power";
@@ -24,16 +17,13 @@
 		regulator-always-on;
 	};
 };
-
 &gsbi12 {
 	qcom,mode = <GSBI_PROT_I2C_UART>;
 	status = "okay";
 };
-
 &gsbi12_serial {
 	status = "okay";
 };
-
 &pm8058 {
 	keypad@148 {
 		linux,keymap = <
@@ -61,14 +51,10 @@
 		keypad,num-columns = <5>;
 	};
 };
-
-/* eMMC */
 &sdcc1 {
 	vmmc-supply = <&vsdcc_fixed>;
 	status = "okay";
 };
-
-/* External micro SD card */
 &sdcc3 {
 	vmmc-supply = <&vsdcc_fixed>;
 	status = "okay";

@@ -1,46 +1,33 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Sascha Hauer, Uwe Kleine-König, Steffen Trumtrar
- * and Markus Pargmann, Pengutronix
- */
-
 /dts-v1/;
 #include "imx27.dtsi"
-
 / {
 	model = "Phytec pca100";
 	compatible = "phytec,imx27-pca100", "fsl,imx27";
-
 	memory@a0000000 {
 		device_type = "memory";
-		reg = <0xa0000000 0x08000000>; /* 128MB */
+		reg = <0xa0000000 0x08000000>;  
 	};
 };
-
 &cspi1 {
 	cs-gpios = <&gpio4 28 GPIO_ACTIVE_LOW>,
 		   <&gpio4 27 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec1>;
 	status = "okay";
 };
-
 &i2c2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
-
 	at24@52 {
 		compatible = "atmel,24c32";
 		pagesize = <32>;
 		reg = <0x52>;
 	};
 };
-
 &iomuxc {
 	imx27-phycard-s-som {
 		pinctrl_fec1: fec1grp {
@@ -65,14 +52,12 @@
 				MX27_PAD_ATA_DATA15__FEC_TX_EN 0x0
 			>;
 		};
-
 		pinctrl_i2c2: i2c2grp {
 			fsl,pins = <
 				MX27_PAD_I2C2_SDA__I2C2_SDA 0x0
 				MX27_PAD_I2C2_SCL__I2C2_SCL 0x0
 			>;
 		};
-
 		pinctrl_nfc: nfcgrp {
 			fsl,pins = <
 				MX27_PAD_NFRB__NFRB 0x0
@@ -86,7 +71,6 @@
 		};
 	};
 };
-
 &nfc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_nfc>;

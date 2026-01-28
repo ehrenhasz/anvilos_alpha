@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020 Renesas Electronics Corp.
- */
 #ifndef __DT_BINDINGS_POWER_R8A779A0_SYSC_H__
 #define __DT_BINDINGS_POWER_R8A779A0_SYSC_H__
-
-/*
- * These power domain indices match the Power Domain Register Numbers (PDR)
- */
-
 #define R8A779A0_PD_A1E0D0C0		0
 #define R8A779A0_PD_A1E0D0C1		1
 #define R8A779A0_PD_A1E0D1C0		2
@@ -52,8 +43,5 @@
 #define R8A779A0_PD_A3VIP3		59
 #define R8A779A0_PD_A3ISP01		60
 #define R8A779A0_PD_A3ISP23		61
-
-/* Always-on power area */
 #define R8A779A0_PD_ALWAYS_ON		64
-
-#endif /* __DT_BINDINGS_POWER_R8A779A0_SYSC_H__ */
+#endif  

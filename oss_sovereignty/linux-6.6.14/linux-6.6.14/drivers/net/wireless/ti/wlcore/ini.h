@@ -1,20 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2010 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
-
 #ifndef __INI_H__
 #define __INI_H__
-
 #define GENERAL_SETTINGS_DRPW_LPD 0xc0
 #define SCRATCH_ENABLE_LPD        BIT(25)
-
 #define WL1271_INI_MAX_SMART_REFLEX_PARAM 16
-
 struct wl1271_ini_general_params {
 	u8 ref_clock;
 	u8 settling_time;
@@ -29,9 +17,7 @@ struct wl1271_ini_general_params {
 	u8 srf2[WL1271_INI_MAX_SMART_REFLEX_PARAM];
 	u8 srf3[WL1271_INI_MAX_SMART_REFLEX_PARAM];
 } __packed;
-
 #define WL128X_INI_MAX_SETTINGS_PARAM 4
-
 struct wl128x_ini_general_params {
 	u8 ref_clock;
 	u8 settling_time;
@@ -51,25 +37,19 @@ struct wl128x_ini_general_params {
 	u8 srf2[WL1271_INI_MAX_SMART_REFLEX_PARAM];
 	u8 srf3[WL1271_INI_MAX_SMART_REFLEX_PARAM];
 } __packed;
-
 #define WL1271_INI_RSSI_PROCESS_COMPENS_SIZE 15
-
 struct wl1271_ini_band_params_2 {
 	u8 rx_trace_insertion_loss;
 	u8 tx_trace_loss;
 	u8 rx_rssi_process_compens[WL1271_INI_RSSI_PROCESS_COMPENS_SIZE];
 } __packed;
-
 #define WL1271_INI_CHANNEL_COUNT_2 14
-
 struct wl128x_ini_band_params_2 {
 	u8 rx_trace_insertion_loss;
 	u8 tx_trace_loss[WL1271_INI_CHANNEL_COUNT_2];
 	u8 rx_rssi_process_compens[WL1271_INI_RSSI_PROCESS_COMPENS_SIZE];
 } __packed;
-
 #define WL1271_INI_RATE_GROUP_COUNT 6
-
 struct wl1271_ini_fem_params_2 {
 	__le16 tx_bip_ref_pd_voltage;
 	u8 tx_bip_ref_power;
@@ -85,11 +65,8 @@ struct wl1271_ini_fem_params_2 {
 	u8 degraded_low_to_normal_thr;
 	u8 normal_to_degraded_high_thr;
 } __packed;
-
 #define WL128X_INI_RATE_GROUP_COUNT 7
-/* low and high temperatures */
 #define WL128X_INI_PD_VS_TEMPERATURE_RANGES 2
-
 struct wl128x_ini_fem_params_2 {
 	__le16 tx_bip_ref_pd_voltage;
 	u8 tx_bip_ref_power;
@@ -107,22 +84,18 @@ struct wl128x_ini_fem_params_2 {
 	u8 degraded_low_to_normal_thr;
 	u8 normal_to_degraded_high_thr;
 } __packed;
-
 #define WL1271_INI_CHANNEL_COUNT_5 35
 #define WL1271_INI_SUB_BAND_COUNT_5 7
-
 struct wl1271_ini_band_params_5 {
 	u8 rx_trace_insertion_loss[WL1271_INI_SUB_BAND_COUNT_5];
 	u8 tx_trace_loss[WL1271_INI_SUB_BAND_COUNT_5];
 	u8 rx_rssi_process_compens[WL1271_INI_RSSI_PROCESS_COMPENS_SIZE];
 } __packed;
-
 struct wl128x_ini_band_params_5 {
 	u8 rx_trace_insertion_loss[WL1271_INI_SUB_BAND_COUNT_5];
 	u8 tx_trace_loss[WL1271_INI_CHANNEL_COUNT_5];
 	u8 rx_rssi_process_compens[WL1271_INI_RSSI_PROCESS_COMPENS_SIZE];
 } __packed;
-
 struct wl1271_ini_fem_params_5 {
 	__le16 tx_bip_ref_pd_voltage[WL1271_INI_SUB_BAND_COUNT_5];
 	u8 tx_bip_ref_power[WL1271_INI_SUB_BAND_COUNT_5];
@@ -137,7 +110,6 @@ struct wl1271_ini_fem_params_5 {
 	u8 degraded_low_to_normal_thr;
 	u8 normal_to_degraded_high_thr;
 } __packed;
-
 struct wl128x_ini_fem_params_5 {
 	__le16 tx_bip_ref_pd_voltage[WL1271_INI_SUB_BAND_COUNT_5];
 	u8 tx_bip_ref_power[WL1271_INI_SUB_BAND_COUNT_5];
@@ -155,30 +127,14 @@ struct wl128x_ini_fem_params_5 {
 	u8 degraded_low_to_normal_thr;
 	u8 normal_to_degraded_high_thr;
 } __packed;
-
-/* NVS data structure */
 #define WL1271_INI_NVS_SECTION_SIZE		     468
-
-/* We have four FEM module types: 0-RFMD, 1-TQS, 2-SKW, 3-TQS_HP */
 #define WL1271_INI_FEM_MODULE_COUNT                  4
-
-/*
- * In NVS we only store two FEM module entries -
- *	  FEM modules 0,2,3 are stored in entry 0
- *	  FEM module 1 is stored in entry 1
- */
 #define WL12XX_NVS_FEM_MODULE_COUNT                  2
-
 #define WL12XX_FEM_TO_NVS_ENTRY(ini_fem_module)      \
 	((ini_fem_module) == 1 ? 1 : 0)
-
 #define WL1271_INI_LEGACY_NVS_FILE_SIZE              800
-
 struct wl1271_nvs_file {
-	/* NVS section - must be first! */
 	u8 nvs[WL1271_INI_NVS_SECTION_SIZE];
-
-	/* INI section */
 	struct wl1271_ini_general_params general_params;
 	u8 padding1;
 	struct wl1271_ini_band_params_2 stat_radio_params_2;
@@ -194,12 +150,8 @@ struct wl1271_nvs_file {
 		u8 padding;
 	} dyn_radio_params_5[WL12XX_NVS_FEM_MODULE_COUNT];
 } __packed;
-
 struct wl128x_nvs_file {
-	/* NVS section - must be first! */
 	u8 nvs[WL1271_INI_NVS_SECTION_SIZE];
-
-	/* INI section */
 	struct wl128x_ini_general_params general_params;
 	u8 fem_vendor_and_options;
 	struct wl128x_ini_band_params_2 stat_radio_params_2;

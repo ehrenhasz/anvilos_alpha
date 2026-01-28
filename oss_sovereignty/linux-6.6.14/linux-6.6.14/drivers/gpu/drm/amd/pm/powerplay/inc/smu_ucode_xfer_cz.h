@@ -1,46 +1,18 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-// CZ Ucode Loading Definitions
 #ifndef SMU_UCODE_XFER_CZ_H
 #define SMU_UCODE_XFER_CZ_H
-
 #define NUM_JOBLIST_ENTRIES      32
-
 #define TASK_TYPE_NO_ACTION      0
 #define TASK_TYPE_UCODE_LOAD     1
 #define TASK_TYPE_UCODE_SAVE     2
 #define TASK_TYPE_REG_LOAD       3
 #define TASK_TYPE_REG_SAVE       4
 #define TASK_TYPE_INITIALIZE     5
-
 #define TASK_ARG_REG_SMCIND      0
 #define TASK_ARG_REG_MMIO        1
 #define TASK_ARG_REG_FCH         2
 #define TASK_ARG_REG_UNB         3
-
 #define TASK_ARG_INIT_MM_PWR_LOG 0
 #define TASK_ARG_INIT_CLK_TABLE  1
-
 #define JOB_GFX_SAVE             0
 #define JOB_GFX_RESTORE          1
 #define JOB_FCH_SAVE             2
@@ -51,13 +23,9 @@
 #define JOB_GMC_RESTORE          7
 #define JOB_GNB_SAVE             8
 #define JOB_GNB_RESTORE          9
-
 #define IGNORE_JOB               0xff
 #define END_OF_TASK_LIST     (uint16_t)0xffff
-
-// Size of DRAM regions (in bytes) requested by SMU:
 #define SMU_DRAM_REQ_MM_PWR_LOG 48 
-
 #define UCODE_ID_SDMA0           0
 #define UCODE_ID_SDMA1           1
 #define UCODE_ID_CP_CE           2
@@ -72,7 +40,6 @@
 #define UCODE_ID_RLC_SRM_DRAM    11
 #define UCODE_ID_DMCU_ERAM       12
 #define UCODE_ID_DMCU_IRAM       13
-
 #define UCODE_ID_SDMA0_MASK           0x00000001       
 #define UCODE_ID_SDMA1_MASK           0x00000002        
 #define UCODE_ID_CP_CE_MASK           0x00000004      
@@ -87,7 +54,6 @@
 #define UCODE_ID_RLC_SRM_DRAM_MASK    0x00000800                 
 #define UCODE_ID_DMCU_ERAM_MASK       0x00001000             
 #define UCODE_ID_DMCU_IRAM_MASK       0x00002000              
-
 #define UCODE_ID_SDMA0_SIZE_BYTE           10368        
 #define UCODE_ID_SDMA1_SIZE_BYTE           10368          
 #define UCODE_ID_CP_CE_SIZE_BYTE           8576        
@@ -102,14 +68,11 @@
 #define UCODE_ID_RLC_SRM_DRAM_SIZE_BYTE    4096                   
 #define UCODE_ID_DMCU_ERAM_SIZE_BYTE       24576               
 #define UCODE_ID_DMCU_IRAM_SIZE_BYTE       1024                 
-
 #define NUM_UCODES               14
-
 typedef struct {
 	uint32_t high;
 	uint32_t low;
 } data_64_t;
-
 struct SMU_Task {
     uint8_t type;
     uint8_t arg;
@@ -118,13 +81,10 @@ struct SMU_Task {
     uint32_t size_bytes;
 };
 typedef struct SMU_Task SMU_Task;
-
 struct TOC {
     uint8_t JobList[NUM_JOBLIST_ENTRIES];
     SMU_Task tasks[];
 };
-
-// META DATA COMMAND Definitions
 #define METADATA_CMD_MODE0         0x00000103 
 #define METADATA_CMD_MODE1         0x00000113 
 #define METADATA_CMD_MODE2         0x00000123 
@@ -135,35 +95,27 @@ struct TOC {
 #define METADATA_PERFORM_ON_LOAD   0x00002000
 #define METADATA_CMD_ARG_MASK      0xFFFF0000
 #define METADATA_CMD_ARG_SHIFT     16
-
-// Simple register addr/data fields
 struct SMU_MetaData_Mode0 {
     uint32_t register_address;
     uint32_t register_data;
 };
 typedef struct SMU_MetaData_Mode0 SMU_MetaData_Mode0;
-
-// Register addr/data with mask
 struct SMU_MetaData_Mode1 {
     uint32_t register_address;
     uint32_t register_mask;
     uint32_t register_data;
 };
 typedef struct SMU_MetaData_Mode1 SMU_MetaData_Mode1;
-
 struct SMU_MetaData_Mode2 {
     uint32_t register_address;
     uint32_t register_mask;
     uint32_t target_value;
 };
 typedef struct SMU_MetaData_Mode2 SMU_MetaData_Mode2;
-
-// Always write data (even on a save operation)
 struct SMU_MetaData_Mode3 {
     uint32_t register_address;
     uint32_t register_mask;
     uint32_t register_data;
 };
 typedef struct SMU_MetaData_Mode3 SMU_MetaData_Mode3;
-
 #endif

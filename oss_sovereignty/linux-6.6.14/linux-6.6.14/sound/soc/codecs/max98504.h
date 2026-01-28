@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * MAX98504 ALSA SoC Audio driver
- *
- * Copyright 2011 - 2012 Maxim Integrated Products
- * Copyright 2016 Samsung Electronics Co., Ltd.
- */
 #ifndef MAX98504_H_
 #define MAX98504_H_
-
-/*
- * MAX98504 Register Definitions
- */
 #define MAX98504_INTERRUPT_STATUS		0x01
 #define MAX98504_INTERRUPT_FLAGS		0x02
 #define MAX98504_INTERRUPT_ENABLE		0x03
@@ -47,10 +36,7 @@
 #define MAX98504_GLOBAL_ENABLE			0x40
 #define MAX98504_SOFTWARE_RESET			0x41
 #define MAX98504_REV_ID				0x7fff
-
 #define MAX98504_MAX_REGISTER			0x7fff
-
 #define MAX98504_DAI_ID_PCM			1
 #define MAX98504_DAI_ID_PDM			2
-
-#endif /* MAX98504_H_ */
+#endif  

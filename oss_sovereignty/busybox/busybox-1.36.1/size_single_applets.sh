@@ -1,13 +1,3 @@
-#!/bin/bash
-# Which config to use when updating the sizes in "official"
-# source tree? I am using x86 glibc toolchain of some typical distro,
-# not-static build, 32-bit defconfig build:
-# # CONFIG_STATIC is not set
-# CONFIG_CROSS_COMPILER_PREFIX=""
-# CONFIG_EXTRA_CFLAGS="-m32"
-# CONFIG_EXTRA_LDFLAGS="-m32"
-
-# The list of all applet config symbols
 test -f include/applets.h || { echo "No include/applets.h file"; exit 1; }
 apps="`
 grep ^IF_ include/applets.h \
@@ -15,15 +5,12 @@ grep ^IF_ include/applets.h \
 | sed 's/IF_\([A-Z0-9._-]*\)(.*/\1/' \
 | sort | uniq
 `"
-
-test $# = 0 && set -- $apps
-
+test $
 mintext=999999999
 for app; do
 	b="busybox_${app}"
 	test -f "$b" || continue
 	text=`size "$b" | tail -1 | sed -e's/\t/ /g' -e's/^ *//' -e's/ .*//'`
-	#echo "text from $app: $text"
 	test x"${text//[0123456789]/}" = x"" || {
 		echo "Can't get: size $b"
 		exit 1
@@ -34,14 +21,12 @@ for app; do
 	}
 	eval "text_${app}=$text"
 done
-
 for app; do
 	b="busybox_${app}"
 	test -f "$b" || continue
 	eval "text=\$text_${app}"
 	echo "# $app adds $((text-mintext))"
 done
-
 grep ^IF_ include/applets.h \
 | grep -v ^IF_FEATURE_ \
 | sed 's/, .*//' \
@@ -55,19 +40,14 @@ grep ^IF_ include/applets.h \
 | while read app name; do
 	b="busybox_${app}"
 	test -f "$b" || continue
-
 	file=`grep -l "bool \"$name[\" ]" $(find -name '*.c') | xargs`
-	# A few applets have their CONFIG items in Config.* files, not .c files:
 	test "$file" || file=`grep -l "bool \"$name[\" ]" $(find -name 'Config.*') | xargs`
 	test "$file" || continue
-	#echo "FILE:'$file'"
-
 	eval "text=\$text_${app}"
 	sz=$((text-mintext))
 	sz_kb=$((sz/1000))
 	sz_frac=$(( (sz - sz_kb*1000) ))
 	sz_f=$((sz_frac / 100))
-
 	echo -n "sed 's/bool \"$name"'[" ](*[0-9tinykbytes .]*)*"*$/'
 	if test "$sz_kb" -ge 10; then
 		echo -n "bool \"$name (${sz_kb} kb)\""

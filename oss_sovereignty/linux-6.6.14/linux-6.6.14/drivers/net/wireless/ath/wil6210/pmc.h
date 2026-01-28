@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (c) 2012-2015 Qualcomm Atheros, Inc. */
-
 #include <linux/types.h>
-
 #define PCM_DATA_INVALID_DW_VAL (0xB0BA0000)
-
 void wil_pmc_init(struct wil6210_priv *wil);
 void wil_pmc_alloc(struct wil6210_priv *wil,
 		   int num_descriptors, int descriptor_size);

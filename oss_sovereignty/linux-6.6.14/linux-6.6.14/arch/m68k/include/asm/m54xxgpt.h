@@ -1,22 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * File:	m54xxgpt.h
- * Purpose:	Register and bit definitions for the MCF54XX
- *
- * Notes:
- *
- */
-
 #ifndef m54xxgpt_h
 #define m54xxgpt_h
-
-/*********************************************************************
-*
-* General Purpose Timers (GPT)
-*
-*********************************************************************/
-
-/* Register read/write macros */
 #define MCF_GPT_GMS0       (MCF_MBAR + 0x000800)
 #define MCF_GPT_GCIR0      (MCF_MBAR + 0x000804)
 #define MCF_GPT_GPWM0      (MCF_MBAR + 0x000808)
@@ -37,8 +20,6 @@
 #define MCF_GPT_GCIR(x)    (MCF_MBAR + 0x000804 + ((x) * 0x010))
 #define MCF_GPT_GPWM(x)    (MCF_MBAR + 0x000808 + ((x) * 0x010))
 #define MCF_GPT_GSR(x)     (MCF_MBAR + 0x00080C + ((x) * 0x010))
-
-/* Bit definitions and macros for MCF_GPT_GMS */
 #define MCF_GPT_GMS_TMS(x)         (((x)&0x00000007)<<0)
 #define MCF_GPT_GMS_GPIO(x)        (((x)&0x00000003)<<4)
 #define MCF_GPT_GMS_IEN            (0x00000100)
@@ -67,17 +48,11 @@
 #define MCF_GPT_GMS_TMS_PWM        (0x00000003)
 #define MCF_GPT_GMS_TMS_GPIO       (0x00000004)
 #define MCF_GPT_GMS_TMS_MASK       (0x00000007)
-
-/* Bit definitions and macros for MCF_GPT_GCIR */
 #define MCF_GPT_GCIR_CNT(x)        (((x)&0x0000FFFF)<<0)
 #define MCF_GPT_GCIR_PRE(x)        (((x)&0x0000FFFF)<<16)
-
-/* Bit definitions and macros for MCF_GPT_GPWM */
 #define MCF_GPT_GPWM_LOAD          (0x00000001)
 #define MCF_GPT_GPWM_PWMOP         (0x00000100)
 #define MCF_GPT_GPWM_WIDTH(x)      (((x)&0x0000FFFF)<<16)
-
-/* Bit definitions and macros for MCF_GPT_GSR */
 #define MCF_GPT_GSR_CAPT           (0x00000001)
 #define MCF_GPT_GSR_COMP           (0x00000002)
 #define MCF_GPT_GSR_PWMP           (0x00000004)
@@ -85,7 +60,4 @@
 #define MCF_GPT_GSR_PIN            (0x00000100)
 #define MCF_GPT_GSR_OVF(x)         (((x)&0x00000007)<<12)
 #define MCF_GPT_GSR_CAPTURE(x)     (((x)&0x0000FFFF)<<16)
-
-/********************************************************************/
-
-#endif /* m54xxgpt_h */
+#endif  

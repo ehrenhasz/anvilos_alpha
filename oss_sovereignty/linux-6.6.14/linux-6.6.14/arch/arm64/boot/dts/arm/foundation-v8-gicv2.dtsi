@@ -1,9 +1,3 @@
-/*
- * ARM Ltd.
- *
- * ARMv8 Foundation model DTS (GICv2 configuration)
- */
-
 / {
 	gic: interrupt-controller@2c001000 {
 		compatible = "arm,gic-400", "arm,cortex-a15-gic";

@@ -1,20 +1,5 @@
-/*
-** atarikb.h -- This header contains the prototypes of functions of
-**              the intelligent keyboard of the Atari needed by the
-**              mouse and joystick drivers.
-**
-** Copyright 1994 by Robert de Vries
-**
-** This file is subject to the terms and conditions of the GNU General Public
-** License.  See the file COPYING in the main directory of this archive
-** for more details.
-**
-** Created: 20 Feb 1994 by Robert de Vries
-*/
-
 #ifndef _LINUX_ATARIKB_H
 #define _LINUX_ATARIKB_H
-
 void ikbd_write(const char *, int);
 void ikbd_mouse_button_action(int mode);
 void ikbd_mouse_rel_pos(void);
@@ -31,14 +16,8 @@ void ikbd_joystick_event_on(void);
 void ikbd_joystick_event_off(void);
 void ikbd_joystick_get_state(void);
 void ikbd_joystick_disable(void);
-
-/* Hook for MIDI serial driver */
 extern void (*atari_MIDI_interrupt_hook) (void);
-/* Hook for keyboard inputdev  driver */
 extern void (*atari_input_keyboard_interrupt_hook) (unsigned char, char);
-/* Hook for mouse inputdev  driver */
 extern void (*atari_input_mouse_interrupt_hook) (char *);
-
 int atari_keyb_init(void);
-
-#endif /* _LINUX_ATARIKB_H */
+#endif  

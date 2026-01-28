@@ -1,29 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DTS file for SPEAr320 Evaluation Baord
- *
- * Copyright 2012 Viresh Kumar <vireshk@kernel.org>
- */
-
 /dts-v1/;
 /include/ "spear320.dtsi"
-
 / {
 	model = "ST SPEAr320 Evaluation Board";
 	compatible = "st,spear320-evb", "st,spear320";
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	memory {
 		reg = <0 0x40000000>;
 	};
-
 	ahb {
 		pinmux@b3000000 {
 			st,pinmux-mode = <4>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&state_default>;
-
 			state_default: pinmux {
 				i2c0 {
 					st,pins = "i2c0_grp";
@@ -75,34 +64,27 @@
 				};
 			};
 		};
-
 		dma@fc400000 {
 			status = "okay";
 		};
-
 		fsmc: flash@4c000000 {
 			status = "okay";
 		};
-
 		gmac: eth@e0800000 {
 			status = "okay";
 		};
-
 		sdhci@70000000 {
 			power-gpio = <&gpiopinctrl 61 1>;
 			status = "okay";
 		};
-
 		smi: flash@fc000000 {
 			status = "okay";
 			clock-rate = <50000000>;
-
 			flash@f8000000 {
 				#address-cells = <1>;
 				#size-cells = <1>;
 				reg = <0xf8000000 0x800000>;
 				st,smi-fast-mode;
-
 				partition@0 {
 					label = "xloader";
 					reg = <0x0 0x10000>;
@@ -129,70 +111,55 @@
 				};
 			};
 		};
-
 		spi0: spi@d0100000 {
 			status = "okay";
 		};
-
 		spi1: spi@a5000000 {
 			status = "okay";
 		};
-
 		spi2: spi@a6000000 {
 			status = "okay";
 		};
-
 		ehci@e1800000 {
 			status = "okay";
 		};
-
 		ohci@e1900000 {
 			status = "okay";
 		};
-
 		ohci@e2100000 {
 			status = "okay";
 		};
-
 		apb {
 			gpio0: gpio@fc980000 {
 			       status = "okay";
 			};
-
 			gpio@b3000000 {
 			       status = "okay";
 			};
-
 			i2c0: i2c@d0180000 {
 			       status = "okay";
 			};
-
 			i2c1: i2c@a7000000 {
 			       status = "okay";
 			};
-
 			rtc@fc900000 {
 			       status = "okay";
 			};
-
 			serial@d0000000 {
 			       status = "okay";
 				pinctrl-names = "default";
 				pinctrl-0 = <>;
 			};
-
 			serial@a3000000 {
 			       status = "okay";
 				pinctrl-names = "default";
 				pinctrl-0 = <>;
 			};
-
 			serial@a4000000 {
 			       status = "okay";
 				pinctrl-names = "default";
 				pinctrl-0 = <>;
 			};
-
 			wdt@fc880000 {
 			       status = "okay";
 			};

@@ -1,57 +1,15 @@
-/*
- * Copyright 2017
- * Lukasz Majewski, DENX Software Engineering, lukma@denx.de
- *
- * This file is dual-licensed: you can use it either under the terms
- * of the GPL or the X11 license, at your option. Note that this dual
- * licensing only applies to this file, and not this project as a
- * whole.
- *
- *  a) This file is licensed under the terms of the GNU General Public
- *     License version 2.  This program is licensed "as is" without
- *     any warranty of any kind, whether express or implied.
- *
- * Or, alternatively,
- *
- *  b) Permission is hereby granted, free of charge, to any person
- *     obtaining a copy of this software and associated documentation
- *     files (the "Software"), to deal in the Software without
- *     restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or
- *     sell copies of the Software, and to permit persons to whom the
- *     Software is furnished to do so, subject to the following
- *     conditions:
- *
- *     The above copyright notice and this permission notice shall be
- *     included in all copies or substantial portions of the Software.
- *
- *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- *     OTHER DEALINGS IN THE SOFTWARE.
- */
-
 /dts-v1/;
-
 #include "imx6q.dtsi"
-
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/pwm/pwm.h>
 #include <dt-bindings/sound/fsl-imx-audmux.h>
-
 / {
 	model = "Liebherr (LWN) display5 i.MX6 Quad Board";
 	compatible = "lwn,display5", "fsl,imx6q";
-
 	memory@10000000 {
 		device_type = "memory";
 		reg = <0x10000000 0x40000000>;
 	};
-
 	backlight_lvds: backlight {
 		compatible = "pwm-backlight";
 		pinctrl-names = "default";
@@ -86,7 +44,6 @@
 		default-brightness-level = <250>;
 		enable-gpios = <&gpio5 7 GPIO_ACTIVE_HIGH>;
 	};
-
 	reg_lvds: regulator-lvds {
 		compatible = "regulator-fixed";
 		regulator-name = "lvds_ppen";
@@ -99,7 +56,6 @@
 		gpio = <&gpio5 13 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	reg_usbh1_vbus: usb-h1-vbus {
 		compatible = "regulator-fixed";
 		gpio = <&gpio3 31 GPIO_ACTIVE_LOW>;
@@ -110,17 +66,13 @@
 		regulator-max-microvolt = <5000000>;
 		regulator-enable-ramp-delay = <300000>;
 	};
-
 	sound {
 		compatible = "simple-audio-card";
 		label = "tfa9879-mono";
-
 		simple-audio-card,dai-link {
-			/* DAC */
 			format = "i2s";
 			bitclock-master = <&dailink_master>;
 			frame-master = <&dailink_master>;
-
 			dailink_master: cpu {
 			    sound-dai = <&ssi2>;
 			};
@@ -129,11 +81,9 @@
 			};
 		};
 	};
-
 	panel: panel-lvds0 {
 		backlight = <&backlight_lvds>;
 		power-supply = <&reg_lvds>;
-
 		port {
 			panel_in_lvds0: endpoint {
 				remote-endpoint = <&lvds0_out>;
@@ -141,12 +91,10 @@
 		};
 	};
 };
-
 &audmux {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_audmux>;
 	status = "okay";
-
 	mux-ssi2 {
 		fsl,audmux-port = <1>;
 		fsl,port-config = <
@@ -158,7 +106,6 @@
 			IMX_AUDMUX_V2_PDCR_RXDSEL(5)
 		>;
 	};
-
 	mux-aud6 {
 		fsl,audmux-port = <5>;
 		fsl,port-config = <
@@ -174,20 +121,17 @@
 		>;
 	};
 };
-
 &ecspi2 {
 	cs-gpios = <&gpio5 29 GPIO_ACTIVE_LOW>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi2 &pinctrl_ecspi2_cs &pinctrl_ecspi2_flwp>;
 	status = "okay";
-
 	s25fl256s: flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "jedec,spi-nor";
 		spi-max-frequency = <40000000>;
 		reg = <0>;
-
 		partition@0 {
 			label = "SPL (spi)";
 			reg = <0x0 0x20000>;
@@ -220,72 +164,60 @@
 		};
 	};
 };
-
 &ecspi3 {
 	cs-gpios = <&gpio4 24 GPIO_ACTIVE_LOW>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi3 &pinctrl_ecspi3_cs &pinctrl_ecspi3_flwp>;
 	status = "okay";
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet>;
 	phy-handle = <&ethernet_phy0>;
 	phy-mode = "rgmii-id";
 	status = "okay";
-
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
 		ethernet_phy0: ethernet-phy@0 {
 			compatible = "marvell,88E1510";
 			device_type = "ethernet-phy";
-			/* Set LED0 control: */
-			/* On - Link, Blink - Activity, Off - No Link */
 			marvell,reg-init = <3 0x10 0 0x1011>;
 			max-speed = <100>;
 			reg = <0>;
 		};
 	};
 };
-
 &i2c1 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
-
 	codec: tfa9879@6c {
 		#sound-dai-cells = <0>;
 		compatible = "nxp,tfa9879";
 		reg = <0x6C>;
 	};
 };
-
 &i2c2 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
 };
-
 &i2c3 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";
-
 	eeprom@50 {
 		compatible = "atmel,24c256";
 		pagesize = <64>;
 		reg = <0x50>;
 	};
-
 	pfuze100: pmic@8 {
 		compatible = "fsl,pfuze100";
 		reg = <0x08>;
-
 		regulators {
 			sw1a_reg: sw1ab {
 				regulator-min-microvolt = <300000>;
@@ -294,7 +226,6 @@
 				regulator-always-on;
 				regulator-ramp-delay = <6250>;
 			};
-
 			sw1c_reg: sw1c {
 				regulator-min-microvolt = <300000>;
 				regulator-max-microvolt = <1875000>;
@@ -302,77 +233,64 @@
 				regulator-always-on;
 				regulator-ramp-delay = <6250>;
 			};
-
 			sw2_reg: sw2 {
 				regulator-min-microvolt = <800000>;
 				regulator-max-microvolt = <3950000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			sw3a_reg: sw3a {
 				regulator-min-microvolt = <400000>;
 				regulator-max-microvolt = <1975000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			sw3b_reg: sw3b {
 				regulator-min-microvolt = <400000>;
 				regulator-max-microvolt = <1975000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			sw4_reg: sw4 {
 				regulator-min-microvolt = <800000>;
 				regulator-max-microvolt = <3300000>;
 			};
-
 			swbst_reg: swbst {
 				regulator-min-microvolt = <5000000>;
 				regulator-max-microvolt = <5150000>;
 			};
-
 			snvs_reg: vsnvs {
 				regulator-min-microvolt = <1000000>;
 				regulator-max-microvolt = <3000000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			vref_reg: vrefddr {
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			vgen1_reg: vgen1 {
 				regulator-min-microvolt = <800000>;
 				regulator-max-microvolt = <1550000>;
 			};
-
 			vgen2_reg: vgen2 {
 				regulator-min-microvolt = <800000>;
 				regulator-max-microvolt = <1550000>;
 			};
-
 			vgen3_reg: vgen3 {
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <3300000>;
 			};
-
 			vgen4_reg: vgen4 {
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-always-on;
 			};
-
 			vgen5_reg: vgen5 {
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-always-on;
 			};
-
 			vgen6_reg: vgen6 {
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <3300000>;
@@ -381,52 +299,42 @@
 		};
 	};
 };
-
 &ldb {
 	status = "okay";
-
 	lvds0: lvds-channel@0 {
 		status = "okay";
-
 		port@4 {
 			reg = <4>;
-
 			lvds0_out: endpoint {
 				remote-endpoint = <&panel_in_lvds0>;
 			};
 		};
 	};
 };
-
 &pwm2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm2>;
 	status = "okay";
 };
-
 &ssi2 {
 	status = "okay";
 };
-
 &uart4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart4>;
 	uart-has-rtscts;
 	status = "okay";
 };
-
 &uart5 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart5>;
 	status = "okay";
 };
-
 &usbh1 {
 	vbus-supply = <&reg_usbh1_vbus>;
 	pinctrl-0 = <&pinctrl_usbh1>;
 	status = "okay";
 };
-
 &usdhc4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc4>;
@@ -434,25 +342,20 @@
 	non-removable;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl_audmux: audmuxgrp {
 		fsl,pins = <
-			/* I2S OUTPUT AUD6*/
 			MX6QDL_PAD_DI0_PIN4__AUD6_RXD  0x130b0
 			MX6QDL_PAD_DI0_PIN2__AUD6_TXD  0x130b0
 			MX6QDL_PAD_DI0_PIN3__AUD6_TXFS  0x130b0
 			MX6QDL_PAD_DI0_PIN15__AUD6_TXC  0x130b0
 		>;
 	};
-
 	pinctrl_backlight: dispgrp {
 		fsl,pins = <
-			/* BLEN_OUT */
 			MX6QDL_PAD_DISP0_DAT13__GPIO5_IO07    0x1b0b0
 		>;
 	};
-
 	pinctrl_ecspi2: ecspi2grp {
 		fsl,pins = <
 			MX6QDL_PAD_CSI0_DAT10__ECSPI2_MISO	0x100b1
@@ -460,19 +363,16 @@
 			MX6QDL_PAD_CSI0_DAT8__ECSPI2_SCLK	0x100b1
 		>;
 	};
-
 	pinctrl_ecspi2_cs: ecspi2csgrp {
 		fsl,pins = <
 			MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29 0x100b1
 		>;
 	};
-
 	pinctrl_ecspi2_flwp: ecspi2flwpgrp {
 		fsl,pins = <
 			MX6QDL_PAD_SD3_DAT5__GPIO7_IO00 0x1b0b0
 		>;
 	};
-
 	pinctrl_ecspi3: ecspi3grp {
 		fsl,pins = <
 			MX6QDL_PAD_DISP0_DAT2__ECSPI3_MISO	0x100b1
@@ -480,19 +380,16 @@
 			MX6QDL_PAD_DISP0_DAT0__ECSPI3_SCLK	0x100b1
 		>;
 	};
-
 	pinctrl_ecspi3_cs: ecspi3csgrp {
 		fsl,pins = <
 			MX6QDL_PAD_DISP0_DAT3__GPIO4_IO24 0x1b0b0
 		>;
 	};
-
 	pinctrl_ecspi3_flwp: ecspi3flwpgrp {
 		fsl,pins = <
 			MX6QDL_PAD_DISP0_DAT6__GPIO4_IO27 0x1b0b0
 		>;
 	};
-
 	pinctrl_enet: enetgrp {
 		fsl,pins = <
 			MX6QDL_PAD_ENET_MDIO__ENET_MDIO		0x1b0b0
@@ -515,41 +412,34 @@
 			MX6QDL_PAD_ENET_RXD0__GPIO1_IO27        0x1b0b0
 		>;
 	};
-
 	pinctrl_i2c1: i2c1grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D21__I2C1_SCL	0x4001b8b1
 			MX6QDL_PAD_EIM_D28__I2C1_SDA	0x4001b8b1
 		>;
 	};
-
 	pinctrl_i2c2: i2c2grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_EB2__I2C2_SCL	0x4001b8b1
 			MX6QDL_PAD_EIM_D16__I2C2_SDA	0x4001b8b1
 		>;
 	};
-
 	pinctrl_i2c3: i2c3grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D17__I2C3_SCL	0x4001b8b1
 			MX6QDL_PAD_EIM_D18__I2C3_SDA	0x4001b8b1
 		>;
 	};
-
 	pinctrl_pwm2: pwm2grp {
 		fsl,pins = <
 			MX6QDL_PAD_DISP0_DAT9__PWM2_OUT	0x1b0b1
 		>;
 	};
-
 	pinctrl_reg_lvds: reqlvdsgrp {
 		fsl,pins = <
-			/* LVDS_PPEN_OUT */
 			MX6QDL_PAD_DISP0_DAT19__GPIO5_IO13      0x1b0b0
 		>;
 	};
-
 	pinctrl_uart4: uart4grp {
 		fsl,pins = <
 			MX6QDL_PAD_CSI0_DAT12__UART4_TX_DATA	0x1b0b1
@@ -558,26 +448,22 @@
 			MX6QDL_PAD_CSI0_DAT17__UART4_CTS_B	0x1b0b1
 		>;
 	};
-
 	pinctrl_uart5: uart5grp {
 		fsl,pins = <
 			MX6QDL_PAD_CSI0_DAT14__UART5_TX_DATA	0x1b0b1
 			MX6QDL_PAD_CSI0_DAT15__UART5_RX_DATA    0x1b0b1
 		>;
 	};
-
 	pinctrl_usbh1: usbh1grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D30__USB_H1_OC  0x030b0
 		>;
 	};
-
 	pinctrl_usbh1_vbus: usbh1_vbus_grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D31__GPIO3_IO31 0x1b0b0
 		>;
 	};
-
 	pinctrl_usdhc4: usdhc4grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD4_CMD__SD4_CMD		0x17059

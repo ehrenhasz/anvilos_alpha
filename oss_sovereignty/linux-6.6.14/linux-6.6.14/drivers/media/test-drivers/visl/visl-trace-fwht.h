@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #if !defined(_VISL_TRACE_FWHT_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _VISL_TRACE_FWHT_H_
-
 #include <linux/tracepoint.h>
 #include "visl.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM visl_fwht_controls
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_fwht_params_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_fwht_params *p),
 	TP_ARGS(p),
@@ -51,14 +47,11 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_fwht_params_tmpl,
 		  __entry->colorspace, __entry->xfer_func, __entry->ycbcr_enc,
 		  __entry->quantization)
 );
-
 DEFINE_EVENT(v4l2_ctrl_fwht_params_tmpl, v4l2_ctrl_fwht_params,
 	TP_PROTO(const struct v4l2_ctrl_fwht_params *p),
 	TP_ARGS(p)
 );
-
 #endif
-
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH ../../drivers/media/test-drivers/visl

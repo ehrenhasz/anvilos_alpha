@@ -1,81 +1,53 @@
-// SPDX-License-Identifier: (GPL-2.0)
-/*
- * Device tree for the Kobo Clara HD ebook reader
- *
- * Name on mainboard is: 37NB-E60K00+4A4
- * Serials start with: E60K02 (a number also seen in
- * vendor kernel sources)
- *
- * This mainboard seems to be equipped with different SoCs.
- * In the Kobo Clara HD ebook reader it is an i.MX6SLL
- *
- * Copyright 2019 Andreas Kemnade
- * based on works
- * Copyright 2016 Freescale Semiconductor, Inc.
- */
-
 /dts-v1/;
-
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/gpio/gpio.h>
 #include "imx6sll.dtsi"
 #include "e60k02.dtsi"
-
 / {
 	model = "Kobo Clara HD";
 	compatible = "kobo,clarahd", "fsl,imx6sll";
 };
-
 &clks {
 	assigned-clocks = <&clks IMX6SLL_CLK_PLL4_AUDIO_DIV>;
 	assigned-clock-rates = <393216000>;
 };
-
 &cpu0 {
 	arm-supply = <&dcdc3_reg>;
 	soc-supply = <&dcdc1_reg>;
 };
-
 &gpio_keys {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gpio_keys>;
 };
-
 &i2c1 {
 	pinctrl-names = "default","sleep";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	pinctrl-1 = <&pinctrl_i2c1_sleep>;
 };
-
 &i2c2 {
 	pinctrl-names = "default","sleep";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	pinctrl-1 = <&pinctrl_i2c2_sleep>;
 };
-
 &i2c3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c3>;
 };
-
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
-
 	pinctrl_cyttsp5_gpio: cyttsp5-gpiogrp {
 		fsl,pins = <
-			MX6SLL_PAD_SD1_DATA3__GPIO5_IO06                0x17059 /* TP_INT */
-			MX6SLL_PAD_SD1_DATA2__GPIO5_IO13                0x10059 /* TP_RST */
+			MX6SLL_PAD_SD1_DATA3__GPIO5_IO06                0x17059  
+			MX6SLL_PAD_SD1_DATA2__GPIO5_IO13                0x10059  
 		>;
 	};
-
 	pinctrl_gpio_keys: gpio-keysgrp {
 		fsl,pins = <
-			MX6SLL_PAD_SD1_DATA1__GPIO5_IO08	0x17059	/* PWR_SW */
-			MX6SLL_PAD_SD1_DATA4__GPIO5_IO12	0x17059	/* HALL_EN */
+			MX6SLL_PAD_SD1_DATA1__GPIO5_IO08	0x17059	 
+			MX6SLL_PAD_SD1_DATA4__GPIO5_IO12	0x17059	 
 		>;
 	};
-
 	pinctrl_hog: hoggrp {
 		fsl,pins = <
 			MX6SLL_PAD_LCD_DATA00__GPIO2_IO20	0x79
@@ -113,82 +85,70 @@
 			MX6SLL_PAD_KEY_COL5__GPIO4_IO02		0x79
 		>;
 	};
-
 	pinctrl_i2c1: i2c1grp {
 		fsl,pins = <
 			MX6SLL_PAD_I2C1_SCL__I2C1_SCL	0x4001f8b1
 			MX6SLL_PAD_I2C1_SDA__I2C1_SDA	0x4001f8b1
 		>;
 	};
-
 	pinctrl_i2c1_sleep: i2c1grp-sleep {
 		fsl,pins = <
 			MX6SLL_PAD_I2C1_SCL__I2C1_SCL	0x400108b1
 			MX6SLL_PAD_I2C1_SDA__I2C1_SDA	0x400108b1
 		>;
 	};
-
 	pinctrl_i2c2: i2c2grp {
 		fsl,pins = <
 			MX6SLL_PAD_I2C2_SCL__I2C2_SCL	0x4001f8b1
 			MX6SLL_PAD_I2C2_SDA__I2C2_SDA	0x4001f8b1
 		>;
 	};
-
 	pinctrl_i2c2_sleep: i2c2grp-sleep {
 		fsl,pins = <
 			MX6SLL_PAD_I2C2_SCL__I2C2_SCL	0x400108b1
 			MX6SLL_PAD_I2C2_SDA__I2C2_SDA	0x400108b1
 		>;
 	};
-
 	pinctrl_i2c3: i2c3grp {
 		fsl,pins = <
 			MX6SLL_PAD_REF_CLK_24M__I2C3_SCL 0x4001f8b1
 			MX6SLL_PAD_REF_CLK_32K__I2C3_SDA 0x4001f8b1
 		>;
 	};
-
 	pinctrl_led: ledgrp {
 		fsl,pins = <
 			MX6SLL_PAD_SD1_DATA6__GPIO5_IO07 0x17059
 		>;
 	};
-
 	pinctrl_lm3630a_bl_gpio: lm3630a-bl-gpiogrp {
 		fsl,pins = <
-			MX6SLL_PAD_EPDC_PWR_CTRL3__GPIO2_IO10	0x10059 /* HWEN */
+			MX6SLL_PAD_EPDC_PWR_CTRL3__GPIO2_IO10	0x10059  
 		>;
 	};
-
 	pinctrl_ricoh_gpio: ricoh-gpiogrp {
 		fsl,pins = <
-			MX6SLL_PAD_SD1_CLK__GPIO5_IO15	0x1b8b1 /* ricoh619 chg */
-			MX6SLL_PAD_SD1_DATA0__GPIO5_IO11 0x1b8b1 /* ricoh619 irq */
-			MX6SLL_PAD_KEY_COL2__GPIO3_IO28	0x1b8b1 /* ricoh619 bat_low_int */
+			MX6SLL_PAD_SD1_CLK__GPIO5_IO15	0x1b8b1  
+			MX6SLL_PAD_SD1_DATA0__GPIO5_IO11 0x1b8b1  
+			MX6SLL_PAD_KEY_COL2__GPIO3_IO28	0x1b8b1  
 		>;
 	};
-
 	pinctrl_uart1: uart1grp {
 		fsl,pins = <
 			MX6SLL_PAD_UART1_TXD__UART1_DCE_TX 0x1b0b1
 			MX6SLL_PAD_UART1_RXD__UART1_DCE_RX 0x1b0b1
 		>;
 	};
-
 	pinctrl_uart4: uart4grp {
 		fsl,pins = <
 			MX6SLL_PAD_KEY_ROW6__UART4_DCE_TX 0x1b0b1
 			MX6SLL_PAD_KEY_COL6__UART4_DCE_RX 0x1b0b1
 		>;
 	};
-
 	pinctrl_usbotg1: usbotg1grp {
 		fsl,pins = <
 			MX6SLL_PAD_EPDC_PWR_COM__USB_OTG1_ID 0x17059
 		>;
 	};
-
 	pinctrl_usdhc2: usdhc2grp {
 		fsl,pins = <
 			MX6SLL_PAD_SD2_CMD__SD2_CMD		0x17059
@@ -199,7 +159,6 @@
 			MX6SLL_PAD_SD2_DATA3__SD2_DATA3		0x17059
 		>;
 	};
-
 	pinctrl_usdhc2_100mhz: usdhc2grp-100mhz {
 		fsl,pins = <
 			MX6SLL_PAD_SD2_CMD__SD2_CMD		0x170b9
@@ -210,7 +169,6 @@
 			MX6SLL_PAD_SD2_DATA3__SD2_DATA3		0x170b9
 		>;
 	};
-
 	pinctrl_usdhc2_200mhz: usdhc2grp-200mhz {
 		fsl,pins = <
 			MX6SLL_PAD_SD2_CMD__SD2_CMD		0x170f9
@@ -221,7 +179,6 @@
 			MX6SLL_PAD_SD2_DATA3__SD2_DATA3		0x170f9
 		>;
 	};
-
 	pinctrl_usdhc2_sleep: usdhc2grp-sleep {
 		fsl,pins = <
 			MX6SLL_PAD_SD2_CMD__GPIO5_IO04		0x100f9
@@ -232,7 +189,6 @@
 			MX6SLL_PAD_SD2_DATA3__GPIO4_IO28	0x100f9
 		>;
 	};
-
 	pinctrl_usdhc3: usdhc3grp {
 		fsl,pins = <
 			MX6SLL_PAD_SD3_CMD__SD3_CMD	0x11059
@@ -243,7 +199,6 @@
 			MX6SLL_PAD_SD3_DATA3__SD3_DATA3	0x11059
 		>;
 	};
-
 	pinctrl_usdhc3_100mhz: usdhc3grp-100mhz {
 		fsl,pins = <
 			MX6SLL_PAD_SD3_CMD__SD3_CMD	0x170b9
@@ -254,7 +209,6 @@
 			MX6SLL_PAD_SD3_DATA3__SD3_DATA3	0x170b9
 		>;
 	};
-
 	pinctrl_usdhc3_200mhz: usdhc3grp-200mhz {
 		fsl,pins = <
 			MX6SLL_PAD_SD3_CMD__SD3_CMD	0x170f9
@@ -265,7 +219,6 @@
 			MX6SLL_PAD_SD3_DATA3__SD3_DATA3	0x170f9
 		>;
 	};
-
 	pinctrl_usdhc3_sleep: usdhc3grp-sleep {
 		fsl,pins = <
 			MX6SLL_PAD_SD3_CMD__GPIO5_IO21	0x100c1
@@ -276,50 +229,41 @@
 			MX6SLL_PAD_SD3_DATA3__GPIO5_IO17	0x100c1
 		>;
 	};
-
 	pinctrl_wifi_power: wifi-powergrp {
 		fsl,pins = <
-			MX6SLL_PAD_SD2_DATA6__GPIO4_IO29	0x10059		/* WIFI_3V3_ON */
+			MX6SLL_PAD_SD2_DATA6__GPIO4_IO29	0x10059		 
 		>;
 	};
-
 	pinctrl_wifi_reset: wifi-resetgrp {
 		fsl,pins = <
-			MX6SLL_PAD_SD2_DATA7__GPIO5_IO00	0x10059		/* WIFI_RST */
+			MX6SLL_PAD_SD2_DATA7__GPIO5_IO00	0x10059		 
 		>;
 	};
 };
-
 &leds {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_led>;
 };
-
 &lm3630a {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lm3630a_bl_gpio>;
 };
-
 &reg_wifi {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_wifi_power>;
 };
-
 &ricoh619 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ricoh_gpio>;
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 };
-
 &uart4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart4>;
 };
-
 &usdhc2 {
 	pinctrl-names = "default", "state_100mhz", "state_200mhz","sleep";
 	pinctrl-0 = <&pinctrl_usdhc2>;
@@ -327,7 +271,6 @@
 	pinctrl-2 = <&pinctrl_usdhc2_200mhz>;
 	pinctrl-3 = <&pinctrl_usdhc2_sleep>;
 };
-
 &usdhc3 {
 	pinctrl-names = "default", "state_100mhz", "state_200mhz","sleep";
 	pinctrl-0 = <&pinctrl_usdhc3>;
@@ -335,7 +278,6 @@
 	pinctrl-2 = <&pinctrl_usdhc3_200mhz>;
 	pinctrl-3 = <&pinctrl_usdhc3_sleep>;
 };
-
 &wifi_pwrseq {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_wifi_reset>;

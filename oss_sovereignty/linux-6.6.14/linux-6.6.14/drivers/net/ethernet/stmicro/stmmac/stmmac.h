@@ -1,16 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*******************************************************************************
-  Copyright (C) 2007-2009  STMicroelectronics Ltd
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
-
 #ifndef __STMMAC_H__
 #define __STMMAC_H__
-
 #define STMMAC_RESOURCE_NAME   "stmmaceth"
-
 #include <linux/clk.h>
 #include <linux/hrtimer.h>
 #include <linux/if_vlan.h>
@@ -24,7 +14,6 @@
 #include <net/page_pool/types.h>
 #include <net/xdp.h>
 #include <uapi/linux/bpf.h>
-
 struct stmmac_resources {
 	void __iomem *addr;
 	u8 mac[ETH_ALEN];
@@ -36,14 +25,12 @@ struct stmmac_resources {
 	int rx_irq[MTL_MAX_RX_QUEUES];
 	int tx_irq[MTL_MAX_TX_QUEUES];
 };
-
 enum stmmac_txbuf_type {
 	STMMAC_TXBUF_T_SKB,
 	STMMAC_TXBUF_T_XDP_TX,
 	STMMAC_TXBUF_T_XDP_NDO,
 	STMMAC_TXBUF_T_XSK_TX,
 };
-
 struct stmmac_tx_info {
 	dma_addr_t buf;
 	bool map_as_page;
@@ -52,11 +39,8 @@ struct stmmac_tx_info {
 	bool is_jumbo;
 	enum stmmac_txbuf_type buf_type;
 };
-
 #define STMMAC_TBS_AVAIL	BIT(0)
 #define STMMAC_TBS_EN		BIT(1)
-
-/* Frequently used values are kept adjacent for cache effect */
 struct stmmac_tx_queue {
 	u32 tx_count_frames;
 	int tbs;
@@ -79,7 +63,6 @@ struct stmmac_tx_queue {
 	dma_addr_t tx_tail_addr;
 	u32 mss;
 };
-
 struct stmmac_rx_buffer {
 	union {
 		struct {
@@ -92,14 +75,12 @@ struct stmmac_rx_buffer {
 	struct page *sec_page;
 	dma_addr_t sec_addr;
 };
-
 struct stmmac_xdp_buff {
 	struct xdp_buff xdp;
 	struct stmmac_priv *priv;
 	struct dma_desc *desc;
 	struct dma_desc *ndesc;
 };
-
 struct stmmac_rx_queue {
 	u32 rx_count_frames;
 	u32 queue_index;
@@ -123,7 +104,6 @@ struct stmmac_rx_queue {
 		unsigned int error;
 	} state;
 };
-
 struct stmmac_channel {
 	struct napi_struct rx_napi ____cacheline_aligned_in_smp;
 	struct napi_struct tx_napi ____cacheline_aligned_in_smp;
@@ -132,7 +112,6 @@ struct stmmac_channel {
 	spinlock_t lock;
 	u32 index;
 };
-
 struct stmmac_tc_entry {
 	bool in_use;
 	bool in_hw;
@@ -156,20 +135,17 @@ struct stmmac_tc_entry {
 		u32 res2;
 	} __packed val;
 };
-
 #define STMMAC_PPS_MAX		4
 struct stmmac_pps_cfg {
 	bool available;
 	struct timespec64 start;
 	struct timespec64 period;
 };
-
 struct stmmac_rss {
 	int enable;
 	u8 key[STMMAC_RSS_HASH_KEY_SIZE];
 	u32 table[STMMAC_RSS_MAX_TABLE_SIZE];
 };
-
 #define STMMAC_FLOW_ACTION_DROP		BIT(0)
 struct stmmac_flow_entry {
 	unsigned long cookie;
@@ -179,15 +155,12 @@ struct stmmac_flow_entry {
 	int idx;
 	int is_l4;
 };
-
-/* Rx Frame Steering */
 enum stmmac_rfs_type {
 	STMMAC_RFS_T_VLAN,
 	STMMAC_RFS_T_LLDP,
 	STMMAC_RFS_T_1588,
 	STMMAC_RFS_T_MAX,
 };
-
 struct stmmac_rfs_entry {
 	unsigned long cookie;
 	u16 etype;
@@ -195,56 +168,40 @@ struct stmmac_rfs_entry {
 	int type;
 	int tc;
 };
-
 struct stmmac_dma_conf {
 	unsigned int dma_buf_sz;
-
-	/* RX Queue */
 	struct stmmac_rx_queue rx_queue[MTL_MAX_RX_QUEUES];
 	unsigned int dma_rx_size;
-
-	/* TX Queue */
 	struct stmmac_tx_queue tx_queue[MTL_MAX_TX_QUEUES];
 	unsigned int dma_tx_size;
 };
-
 struct stmmac_priv {
-	/* Frequently used values are kept adjacent for cache effect */
 	u32 tx_coal_frames[MTL_MAX_TX_QUEUES];
 	u32 tx_coal_timer[MTL_MAX_TX_QUEUES];
 	u32 rx_coal_frames[MTL_MAX_TX_QUEUES];
-
 	int hwts_tx_en;
 	bool tx_path_in_lpi_mode;
 	bool tso;
 	int sph;
 	int sph_cap;
 	u32 sarc_type;
-
 	unsigned int rx_copybreak;
 	u32 rx_riwt[MTL_MAX_TX_QUEUES];
 	int hwts_rx_en;
-
 	void __iomem *ioaddr;
 	struct net_device *dev;
 	struct device *device;
 	struct mac_device_info *hw;
 	int (*hwif_quirks)(struct stmmac_priv *priv);
 	struct mutex lock;
-
 	struct stmmac_dma_conf dma_conf;
-
-	/* Generic channel for NAPI */
 	struct stmmac_channel channel[STMMAC_CH_MAX];
-
 	int speed;
 	unsigned int flow_ctrl;
 	unsigned int pause;
 	struct mii_bus *mii;
-
 	struct phylink_config phylink_config;
 	struct phylink *phylink;
-
 	struct stmmac_extra_stats xstats ____cacheline_aligned_in_smp;
 	struct stmmac_safety_stats sstats;
 	struct plat_stmmacenet_data *plat;
@@ -278,10 +235,8 @@ struct stmmac_priv {
 	int use_riwt;
 	int irq_wake;
 	rwlock_t ptp_lock;
-	/* Protects auxiliary snapshot registers from concurrent access. */
 	struct mutex aux_ts_lock;
 	wait_queue_head_t tstamp_busy_wait;
-
 	void __iomem *mmcaddr;
 	void __iomem *ptpaddr;
 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
@@ -289,7 +244,6 @@ struct stmmac_priv {
 	int sfty_ue_irq;
 	int rx_irq[MTL_MAX_RX_QUEUES];
 	int tx_irq[MTL_MAX_TX_QUEUES];
-	/*irq name */
 	char int_name_mac[IFNAMSIZ + 9];
 	char int_name_wol[IFNAMSIZ + 9];
 	char int_name_lpi[IFNAMSIZ + 9];
@@ -297,22 +251,16 @@ struct stmmac_priv {
 	char int_name_sfty_ue[IFNAMSIZ + 10];
 	char int_name_rx_irq[MTL_MAX_TX_QUEUES][IFNAMSIZ + 14];
 	char int_name_tx_irq[MTL_MAX_TX_QUEUES][IFNAMSIZ + 18];
-
 #ifdef CONFIG_DEBUG_FS
 	struct dentry *dbgfs_dir;
 #endif
-
 	unsigned long state;
 	struct workqueue_struct *wq;
 	struct work_struct service_task;
-
-	/* Workqueue for handling FPE hand-shaking */
 	unsigned long fpe_task_state;
 	struct workqueue_struct *fpe_wq;
 	struct work_struct fpe_task;
 	char wq_name[IFNAMSIZ + 4];
-
-	/* TC Handling */
 	unsigned int tc_entries_max;
 	unsigned int tc_off_max;
 	struct stmmac_tc_entry *tc_entries;
@@ -322,31 +270,22 @@ struct stmmac_priv {
 	unsigned int rfs_entries_cnt[STMMAC_RFS_T_MAX];
 	unsigned int rfs_entries_total;
 	struct stmmac_rfs_entry *rfs_entries;
-
-	/* Pulse Per Second output */
 	struct stmmac_pps_cfg pps[STMMAC_PPS_MAX];
-
-	/* Receive Side Scaling */
 	struct stmmac_rss rss;
-
-	/* XDP BPF Program */
 	unsigned long *af_xdp_zc_qps;
 	struct bpf_prog *xdp_prog;
 };
-
 enum stmmac_state {
 	STMMAC_DOWN,
 	STMMAC_RESET_REQUESTED,
 	STMMAC_RESETING,
 	STMMAC_SERVICE_SCHED,
 };
-
 int stmmac_mdio_unregister(struct net_device *ndev);
 int stmmac_mdio_register(struct net_device *ndev);
 int stmmac_mdio_reset(struct mii_bus *mii);
 int stmmac_xpcs_setup(struct mii_bus *mii);
 void stmmac_set_ethtool_ops(struct net_device *netdev);
-
 int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags);
 void stmmac_ptp_register(struct stmmac_priv *priv);
 void stmmac_ptp_unregister(struct stmmac_priv *priv);
@@ -364,20 +303,16 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt);
 int stmmac_reinit_ringparam(struct net_device *dev, u32 rx_size, u32 tx_size);
 int stmmac_bus_clks_config(struct stmmac_priv *priv, bool enabled);
 void stmmac_fpe_handshake(struct stmmac_priv *priv, bool enable);
-
 static inline bool stmmac_xdp_is_enabled(struct stmmac_priv *priv)
 {
 	return !!priv->xdp_prog;
 }
-
 static inline unsigned int stmmac_rx_offset(struct stmmac_priv *priv)
 {
 	if (stmmac_xdp_is_enabled(priv))
 		return XDP_PACKET_HEADROOM;
-
 	return 0;
 }
-
 void stmmac_disable_rx_queue(struct stmmac_priv *priv, u32 queue);
 void stmmac_enable_rx_queue(struct stmmac_priv *priv, u32 queue);
 void stmmac_disable_tx_queue(struct stmmac_priv *priv, u32 queue);
@@ -386,7 +321,6 @@ int stmmac_xsk_wakeup(struct net_device *dev, u32 queue, u32 flags);
 struct timespec64 stmmac_calc_tas_basetime(ktime_t old_base_time,
 					   ktime_t current_time,
 					   u64 cycle_time);
-
 #if IS_ENABLED(CONFIG_STMMAC_SELFTESTS)
 void stmmac_selftest_run(struct net_device *dev,
 			 struct ethtool_test *etest, u64 *buf);
@@ -396,17 +330,14 @@ int stmmac_selftest_get_count(struct stmmac_priv *priv);
 static inline void stmmac_selftest_run(struct net_device *dev,
 				       struct ethtool_test *etest, u64 *buf)
 {
-	/* Not enabled */
 }
 static inline void stmmac_selftest_get_strings(struct stmmac_priv *priv,
 					       u8 *data)
 {
-	/* Not enabled */
 }
 static inline int stmmac_selftest_get_count(struct stmmac_priv *priv)
 {
 	return -EOPNOTSUPP;
 }
-#endif /* CONFIG_STMMAC_SELFTESTS */
-
-#endif /* __STMMAC_H__ */
+#endif  
+#endif  

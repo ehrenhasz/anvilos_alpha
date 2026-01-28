@@ -1,29 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, Linaro Limited
- */
-
 /dts-v1/;
-
 #include <dt-bindings/gpio/gpio.h>
 #include "qcs404-evb.dtsi"
-
 / {
 	model = "Qualcomm Technologies, Inc. QCS404 EVB 4000";
 	compatible = "qcom,qcs404-evb-4000", "qcom,qcs404-evb",
 		     "qcom,qcs404";
 };
-
 &ethernet {
 	status = "okay";
-
 	snps,reset-gpio = <&tlmm 60 GPIO_ACTIVE_LOW>;
 	snps,reset-active-low;
 	snps,reset-delays-us = <0 10000 10000>;
-
 	pinctrl-names = "default";
 	pinctrl-0 = <&ethernet_defaults>;
-
 	phy-handle = <&phy1>;
 	phy-mode = "rgmii";
 	mdio {
@@ -37,7 +26,6 @@
 		};
 	};
 };
-
 &tlmm {
 	ethernet_defaults: ethernet-defaults-state {
 		int-pins {

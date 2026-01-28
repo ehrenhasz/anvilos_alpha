@@ -1,39 +1,28 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
-
 #ifndef __RTL_EFUSE_H_
 #define __RTL_EFUSE_H_
-
 #define EFUSE_IC_ID_OFFSET		506
-
 #define EFUSE_MAX_WORD_UNIT		4
-
 #define EFUSE_INIT_MAP			0
 #define EFUSE_MODIFY_MAP		1
-
 #define PG_STATE_HEADER			0x01
 #define PG_STATE_WORD_0			0x02
 #define PG_STATE_WORD_1			0x04
 #define PG_STATE_WORD_2			0x08
 #define PG_STATE_WORD_3			0x10
 #define PG_STATE_DATA			0x20
-
 #define EFUSE_REPEAT_THRESHOLD_		3
 #define EFUSE_ERROE_HANDLE		1
-
 struct efuse_map {
 	u8 offset;
 	u8 word_start;
 	u8 byte_start;
 	u8 byte_cnts;
 };
-
 struct pgpkt_struct {
 	u8 offset;
 	u8 word_en;
 	u8 data[8];
 };
-
 enum efuse_data_item {
 	EFUSE_CHIP_ID = 0,
 	EFUSE_LDO_SETTING,
@@ -49,12 +38,10 @@ enum efuse_data_item {
 	EFUSE_CHAN_PLAN,
 	EFUSE_TXPW_TAB
 };
-
 enum {
 	VOLTAGE_V25 = 0x03,
 	LDOE25_SHIFT = 28,
 };
-
 struct efuse_priv {
 	u8 id[2];
 	u8 ldo_setting[2];
@@ -70,7 +57,6 @@ struct efuse_priv {
 	u8 tx_power_b[14];
 	u8 tx_power_g[14];
 };
-
 void read_efuse_byte(struct ieee80211_hw *hw, u16 _offset, u8 *pbuf);
 void efuse_initialize(struct ieee80211_hw *hw);
 u8 efuse_read_1byte(struct ieee80211_hw *hw, u16 address);

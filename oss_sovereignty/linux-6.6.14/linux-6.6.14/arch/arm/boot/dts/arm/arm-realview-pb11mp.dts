@@ -1,79 +1,44 @@
-/*
- * Copyright 2015 Linaro Ltd
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
 /dts-v1/;
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/gpio/gpio.h>
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
 	model = "ARM RealView PB11MPcore";
 	compatible = "arm,realview-pb11mp";
-
 	chosen { };
-
 	aliases {
 		serial0 = &pb11mp_serial0;
 		serial1 = &pb11mp_serial1;
 		serial2 = &pb11mp_serial2;
 		serial3 = &pb11mp_serial3;
 	};
-
 	memory {
 		device_type = "memory";
-		/*
-		 * The PB11MPCore has 512 MiB memory @ 0x70000000
-		 * and the first 256 are also remapped @ 0x00000000
-		 */
 		reg = <0x70000000 0x20000000>;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
 		enable-method = "arm,realview-smp";
-
 		MP11_0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,arm11mpcore";
 			reg = <0>;
 			next-level-cache = <&L2>;
 		};
-
 		MP11_1: cpu@1 {
 			device_type = "cpu";
 			compatible = "arm,arm11mpcore";
 			reg = <1>;
 			next-level-cache = <&L2>;
 		};
-
 		MP11_2: cpu@2 {
 			device_type = "cpu";
 			compatible = "arm,arm11mpcore";
 			reg = <2>;
 			next-level-cache = <&L2>;
 		};
-
 		MP11_3: cpu@3 {
 			device_type = "cpu";
 			compatible = "arm,arm11mpcore";
@@ -81,8 +46,6 @@
 			next-level-cache = <&L2>;
 		};
 	};
-
-	/* Primary TestChip GIC synthesized with the CPU */
 	intc_tc11mp: interrupt-controller@1f000100 {
 		compatible = "arm,tc11mp-gic";
 		#interrupt-cells = <3>;
@@ -91,7 +54,6 @@
 		reg = <0x1f001000 0x1000>,
 		      <0x1f000100 0x100>;
 	};
-
 	L2: cache-controller {
 		compatible = "arm,l220-cache";
 		reg = <0x1f002000 0x1000>;
@@ -101,41 +63,29 @@
 			     <0 31 IRQ_TYPE_LEVEL_HIGH>;
 		cache-unified;
 		cache-level = <2>;
-		/*
-		 * Override default cache size, sets and
-		 * associativity as these may be erroneously set
-		 * up by boot loader(s), probably for safety
-		 * since th outer sync operation can cause the
-		 * cache to hang unless disabled.
-		 */
-		cache-size = <1048576>; // 1MB
+		cache-size = <1048576>;  
 		cache-sets = <4096>;
 		cache-line-size = <32>;
 		arm,shared-override;
 		arm,parity-enable;
 		arm,outer-sync-disable;
 	};
-
 	scu@1f000000 {
 		compatible = "arm,arm11mp-scu";
 		reg = <0x1f000000 0x100>;
 	};
-
 	timer@1f000600 {
 		compatible = "arm,arm11mp-twd-timer";
 		reg = <0x1f000600 0x20>;
 		interrupt-parent = <&intc_tc11mp>;
 		interrupts = <1 13 0xf04>;
 	};
-
 	watchdog@1f000620 {
 		compatible = "arm,arm11mp-twd-wdt";
 		reg = <0x1f000620 0x20>;
 		interrupt-parent = <&intc_tc11mp>;
 		interrupts = <1 14 0xf04>;
 	};
-
-	/* PMU with one IRQ line per core */
 	pmu {
 		compatible = "arm,arm11mpcore-pmu";
 		interrupt-parent = <&intc_tc11mp>;
@@ -145,8 +95,6 @@
 			     <0 20 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-affinity = <&MP11_0>, <&MP11_1>, <&MP11_2>, <&MP11_3>;
 	};
-
-	/* The voltage to the MMC card is hardwired at 3.3V */
 	vmmc: regulator-vmmc {
 		compatible = "regulator-fixed";
 		regulator-name = "vmmc";
@@ -154,7 +102,6 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-boot-on;
         };
-
 	veth: regulator-veth {
 		compatible = "regulator-fixed";
 		regulator-name = "veth";
@@ -162,19 +109,16 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-boot-on;
 	};
-
 	xtal24mhz: xtal24mhz@24M {
 		#clock-cells = <0>;
 		compatible = "fixed-clock";
 		clock-frequency = <24000000>;
 	};
-
 	refclk32khz: refclk32khz {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <32768>;
 	};
-
 	timclk: timclk@1M {
 		#clock-cells = <0>;
 		compatible = "fixed-factor-clock";
@@ -182,7 +126,6 @@
 		clock-mult = <1>;
 		clocks = <&xtal24mhz>;
 	};
-
 	mclk: mclk@24M {
 		#clock-cells = <0>;
 		compatible = "fixed-factor-clock";
@@ -190,7 +133,6 @@
 		clock-mult = <1>;
 		clocks = <&xtal24mhz>;
 	};
-
 	kmiclk: kmiclk@24M {
 		#clock-cells = <0>;
 		compatible = "fixed-factor-clock";
@@ -198,7 +140,6 @@
 		clock-mult = <1>;
 		clocks = <&xtal24mhz>;
 	};
-
 	sspclk: sspclk@24M {
 		#clock-cells = <0>;
 		compatible = "fixed-factor-clock";
@@ -206,7 +147,6 @@
 		clock-mult = <1>;
 		clocks = <&xtal24mhz>;
 	};
-
 	uartclk: uartclk@24M {
 		#clock-cells = <0>;
 		compatible = "fixed-factor-clock";
@@ -214,7 +154,6 @@
 		clock-mult = <1>;
 		clocks = <&xtal24mhz>;
 	};
-
 	wdogclk: wdogclk@24M {
 		#clock-cells = <0>;
 		compatible = "fixed-factor-clock";
@@ -222,16 +161,12 @@
 		clock-mult = <1>;
 		clocks = <&xtal24mhz>;
 	};
-
-	/* FIXME: this actually hangs off the PLL clocks */
 	pclk: pclk@0 {
 		#clock-cells = <0>;
 		compatible = "fixed-clock";
 		clock-frequency = <0>;
 	};
-
 	flash0@40000000 {
-		/* 2 * 32MiB NOR Flash memory */
 		compatible = "arm,versatile-flash", "cfi-flash";
 		reg = <0x40000000 0x04000000>;
 		bank-width = <4>;
@@ -239,9 +174,7 @@
 			compatible = "arm,arm-firmware-suite";
 		};
 	};
-
 	flash1@44000000 {
-		// 2 * 32MiB NOR Flash memory
 		compatible = "arm,versatile-flash", "cfi-flash";
 		reg = <0x44000000 0x04000000>;
 		bank-width = <4>;
@@ -249,64 +182,48 @@
 			compatible = "arm,arm-firmware-suite";
 		};
 	};
-
 	bridge {
 		compatible = "ti,ths8134a", "ti,ths8134";
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			port@0 {
 				reg = <0>;
-
 				vga_bridge_in: endpoint {
 					remote-endpoint = <&clcd_pads>;
 				};
 			};
-
 			port@1 {
 				reg = <1>;
-
 				vga_bridge_out: endpoint {
 					remote-endpoint = <&vga_con_in>;
 				};
 			};
 		};
 	};
-
 	vga {
-		/*
-		 * This DDC I2C is connected directly to the DVI portions
-		 * of the connector, so it's not really working when the
-		 * monitor is connected to the VGA connector.
-		 */
 		compatible = "vga-connector";
 		ddc-i2c-bus = <&i2c1>;
-
 		port {
 			vga_con_in: endpoint {
 				remote-endpoint = <&vga_bridge_out>;
 			};
 		};
 	};
-
 	soc {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "arm,realview-pb11mp-soc", "simple-bus";
 		regmap = <&pb11mp_syscon>;
 		ranges;
-
 		pb11mp_syscon: syscon@10000000 {
 			compatible = "arm,realview-pb11mp-syscon", "syscon", "simple-mfd";
 			reg = <0x10000000 0x1000>;
 			ranges = <0x0 0x10000000 0x1000>;
 			#address-cells = <1>;
 			#size-cells = <1>;
-
 			led@8,0 {
 				compatible = "register-bit-led";
 				reg = <0x08 0x04>;
@@ -377,7 +294,6 @@
 				label = "versatile:7";
 				default-state = "off";
 			};
-
 			oscclk0: clock-controller@c {
 				compatible = "arm,syscon-icst307";
 				reg = <0x0c 0x04>;
@@ -435,7 +351,6 @@
 				clocks = <&xtal24mhz>;
 			};
 		};
-
 		sp810_syscon: sysctl@10001000 {
 			compatible = "arm,sp810", "arm,primecell";
 			reg = <0x10001000 0x1000>;
@@ -455,19 +370,16 @@
 					       <&timclk>,
 					       <&timclk>;
 		};
-
 		i2c0: i2c@10002000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			compatible = "arm,versatile-i2c";
 			reg = <0x10002000 0x1000>;
-
 			rtc@68 {
 				compatible = "dallas,ds1338";
 				reg = <0x68>;
 			};
 		};
-
 		aaci: aaci@10004000 {
 			compatible = "arm,pl041", "arm,primecell";
 			reg = <0x10004000 0x1000>;
@@ -476,14 +388,12 @@
 			clocks = <&pclk>;
 			clock-names = "apb_pclk";
 		};
-
 		mci: mmcsd@10005000 {
 			compatible = "arm,pl18x", "arm,primecell";
 			reg = <0x10005000 0x1000>;
 			interrupt-parent = <&intc_tc11mp>;
 			interrupts = <0 14 IRQ_TYPE_LEVEL_HIGH>,
 					<0 15 IRQ_TYPE_LEVEL_HIGH>;
-			/* Due to frequent FIFO overruns, use just 500 kHz */
 			max-frequency = <500000>;
 			bus-width = <4>;
 			cap-sd-highspeed;
@@ -494,7 +404,6 @@
 			cd-gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
 			wp-gpios = <&gpio2 1 GPIO_ACTIVE_HIGH>;
 		};
-
 		kmi0: kmi@10006000 {
 			compatible = "arm,pl050", "arm,primecell";
 			reg = <0x10006000 0x1000>;
@@ -503,7 +412,6 @@
 			clocks = <&kmiclk>, <&pclk>;
 			clock-names = "KMIREFCLK", "apb_pclk";
 		};
-
 		kmi1: kmi@10007000 {
 			compatible = "arm,pl050", "arm,primecell";
 			reg = <0x10007000 0x1000>;
@@ -512,7 +420,6 @@
 			clocks = <&kmiclk>, <&pclk>;
 			clock-names = "KMIREFCLK", "apb_pclk";
 		};
-
 		pb11mp_serial0: serial@10009000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x10009000 0x1000>;
@@ -521,7 +428,6 @@
 			clocks = <&uartclk>, <&pclk>;
 			clock-names = "uartclk", "apb_pclk";
 		};
-
 		pb11mp_serial1: serial@1000a000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x1000a000 0x1000>;
@@ -530,7 +436,6 @@
 			clocks = <&uartclk>, <&pclk>;
 			clock-names = "uartclk", "apb_pclk";
 		};
-
 		pb11mp_serial2: serial@1000b000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x1000b000 0x1000>;
@@ -539,7 +444,6 @@
 			clocks = <&uartclk>, <&pclk>;
 			clock-names = "uartclk", "apb_pclk";
 		};
-
 		pb11mp_serial3: serial@1000c000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x1000c000 0x1000>;
@@ -548,7 +452,6 @@
 			clocks = <&uartclk>, <&pclk>;
 			clock-names = "uartclk", "apb_pclk";
 		};
-
 		spi@1000d000 {
 			compatible = "arm,pl022", "arm,primecell";
 			reg = <0x1000d000 0x1000>;
@@ -557,7 +460,6 @@
 			clocks = <&sspclk>, <&pclk>;
 			clock-names = "sspclk", "apb_pclk";
 		};
-
 		watchdog@1000f000 {
 			compatible = "arm,sp805", "arm,primecell";
 			reg = <0x1000f000 0x1000>;
@@ -567,7 +469,6 @@
 			clock-names = "wdog_clk", "apb_pclk";
 			status = "disabled";
 		};
-
 		watchdog@10010000 {
 			compatible = "arm,sp805", "arm,primecell";
 			reg = <0x10010000 0x1000>;
@@ -576,7 +477,6 @@
 			clocks = <&wdogclk>, <&pclk>;
 			clock-names = "wdog_clk", "apb_pclk";
 		};
-
 		timer01: timer@10011000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0x10011000 0x1000>;
@@ -590,7 +490,6 @@
 				    "timer1clk",
 				    "apb_pclk";
 		};
-
 		timer23: timer@10012000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0x10012000 0x1000>;
@@ -604,7 +503,6 @@
 				    "timer1clk",
 				    "apb_pclk";
 		};
-
 		gpio0: gpio@10013000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x10013000 0x1000>;
@@ -617,7 +515,6 @@
 			clocks = <&pclk>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio1: gpio@10014000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x10014000 0x1000>;
@@ -630,7 +527,6 @@
 			clocks = <&pclk>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio2: gpio@10015000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x10015000 0x1000>;
@@ -643,14 +539,12 @@
 			clocks = <&pclk>;
 			clock-names = "apb_pclk";
 		};
-
 		i2c1: i2c@10016000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			compatible = "arm,versatile-i2c";
 			reg = <0x10016000 0x1000>;
 		};
-
 		rtc: rtc@10017000 {
 			compatible = "arm,pl031", "arm,primecell";
 			reg = <0x10017000 0x1000>;
@@ -659,7 +553,6 @@
 			clocks = <&pclk>;
 			clock-names = "apb_pclk";
 		};
-
 		timer45: timer@10018000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0x10018000 0x1000>;
@@ -667,7 +560,6 @@
 			clock-names = "timer0clk", "timer1clk", "apb_pclk";
 			status = "disabled";
 		};
-
 		timer67: timer@10019000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0x10019000 0x1000>;
@@ -675,8 +567,6 @@
 			clock-names = "timer0clk", "timer1clk", "apb_pclk";
 			status = "disabled";
 		};
-
-
 		clcd@10020000 {
 			compatible = "arm,pl111", "arm,primecell";
 			reg = <0x10020000 0x1000>;
@@ -685,9 +575,7 @@
 			interrupts = <0 23 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&oscclk4>, <&pclk>;
 			clock-names = "clcdclk", "apb_pclk";
-			/* 1024x768 16bpp @65MHz works fine */
 			max-memory-bandwidth = <95000000>;
-
 			port {
 				clcd_pads: endpoint {
 					remote-endpoint = <&vga_bridge_in>;
@@ -695,11 +583,6 @@
 				};
 			};
 		};
-
-		/*
-		 * This GIC on the Platform Baseboard is cascaded off the
-		 * TestChip GIC
-		 */
 		intc_pb11mp: interrupt-controller@1e000000 {
 			compatible = "arm,arm11mp-gic";
 			#interrupt-cells = <3>;
@@ -710,8 +593,6 @@
 			interrupt-parent = <&intc_tc11mp>;
 			interrupts = <0 10 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
-		/* SMSC 9118 ethernet with PHY and EEPROM */
 		ethernet@4e000000 {
 			compatible = "smsc,lan9118", "smsc,lan9115";
 			reg = <0x4e000000 0x10000>;
@@ -724,7 +605,6 @@
 			vdd33a-supply = <&veth>;
 			vddvario-supply = <&veth>;
 		};
-
 		usb@4f000000 {
 			compatible = "nxp,usb-isp1761";
 			reg = <0x4f000000 0x20000>;

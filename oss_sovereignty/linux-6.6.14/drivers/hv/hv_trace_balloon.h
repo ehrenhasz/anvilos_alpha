@@ -1,11 +1,8 @@
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hyperv
-
 #if !defined(_HV_TRACE_BALLOON_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _HV_TRACE_BALLOON_H
-
 #include <linux/tracepoint.h>
-
 TRACE_EVENT(balloon_status,
 	    TP_PROTO(u64 available, u64 committed,
 		     unsigned long vm_memory_committed,
@@ -37,12 +34,9 @@ TRACE_EVENT(balloon_status,
 		      __entry->pages_added, __entry->pages_onlined
 		    )
 	);
-
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE hv_trace_balloon
-#endif /* _HV_TRACE_BALLOON_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

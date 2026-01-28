@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NOUVEAU_OS_H__
 #define __NOUVEAU_OS_H__
-
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/mutex.h>
@@ -29,9 +27,7 @@
 #include <linux/reset.h>
 #include <linux/iommu.h>
 #include <linux/of_device.h>
-
 #include <asm/unaligned.h>
-
 #include <soc/tegra/fuse.h>
 #include <soc/tegra/pmc.h>
 #endif

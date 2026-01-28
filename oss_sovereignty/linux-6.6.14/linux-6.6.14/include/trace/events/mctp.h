@@ -1,13 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mctp
-
 #if !defined(_TRACE_MCTP_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_MCTP_H
-
 #include <linux/tracepoint.h>
-
 #ifndef __TRACE_MCTP_ENUMS
 #define __TRACE_MCTP_ENUMS
 enum {
@@ -17,14 +12,12 @@ enum {
 	MCTP_TRACE_KEY_CLOSED,
 	MCTP_TRACE_KEY_DROPPED,
 };
-#endif /* __TRACE_MCTP_ENUMS */
-
+#endif  
 TRACE_DEFINE_ENUM(MCTP_TRACE_KEY_TIMEOUT);
 TRACE_DEFINE_ENUM(MCTP_TRACE_KEY_REPLIED);
 TRACE_DEFINE_ENUM(MCTP_TRACE_KEY_INVALIDATED);
 TRACE_DEFINE_ENUM(MCTP_TRACE_KEY_CLOSED);
 TRACE_DEFINE_ENUM(MCTP_TRACE_KEY_DROPPED);
-
 TRACE_EVENT(mctp_key_acquire,
 	TP_PROTO(const struct mctp_sk_key *key),
 	TP_ARGS(key),
@@ -44,7 +37,6 @@ TRACE_EVENT(mctp_key_acquire,
 		__entry->tag
 	)
 );
-
 TRACE_EVENT(mctp_key_release,
 	TP_PROTO(const struct mctp_sk_key *key, int reason),
 	TP_ARGS(key, reason),
@@ -72,7 +64,5 @@ TRACE_EVENT(mctp_key_release,
 				 { MCTP_TRACE_KEY_DROPPED, "dropped" })
 	)
 );
-
 #endif
-
 #include <trace/define_trace.h>

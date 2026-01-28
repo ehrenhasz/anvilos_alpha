@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
 #ifndef __RTL8712_EDCASETTING_REGDEF_H__
 #define __RTL8712_EDCASETTING_REGDEF_H__
-
 #define EDCA_VO_PARAM		(RTL8712_EDCASETTING_ + 0x00)
 #define EDCA_VI_PARAM		(RTL8712_EDCASETTING_ + 0x04)
 #define EDCA_BE_PARAM		(RTL8712_EDCASETTING_ + 0x08)
@@ -19,6 +12,4 @@
 #define VI_ADMTIME		(RTL8712_EDCASETTING_ + 0x1C)
 #define BE_ADMTIME		(RTL8712_EDCASETTING_ + 0x20)
 #define RL			(RTL8712_EDCASETTING_ + 0x24)
-
-#endif /* __RTL8712_EDCASETTING_REGDEF_H__ */
-
+#endif  

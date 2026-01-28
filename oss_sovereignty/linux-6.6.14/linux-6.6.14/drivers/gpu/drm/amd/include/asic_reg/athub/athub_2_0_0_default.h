@@ -1,28 +1,5 @@
-/*
- * Copyright (C) 2019  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 #ifndef _athub_2_0_0_DEFAULT_HEADER
 #define _athub_2_0_0_DEFAULT_HEADER
-
-
-// addressBlock: athub_atsdec
 #define mmATC_ATS_CNTL_DEFAULT                                                   0x009a0c00
 #define mmATC_ATS_STATUS_DEFAULT                                                 0x00000000
 #define mmATC_ATS_FAULT_CNTL_DEFAULT                                             0x000001ff
@@ -119,9 +96,6 @@
 #define mmATC_ATS_SDPPORT_CNTL_DEFAULT                                           0x03ffa210
 #define mmATC_ATS_VMID_SNAPSHOT_GFX_STAT_DEFAULT                                 0x00000000
 #define mmATC_ATS_VMID_SNAPSHOT_MMHUB_STAT_DEFAULT                               0x00000000
-
-
-// addressBlock: athub_xpbdec
 #define mmXPB_RTR_SRC_APRTR0_DEFAULT                                             0x00000000
 #define mmXPB_RTR_SRC_APRTR1_DEFAULT                                             0x00000000
 #define mmXPB_RTR_SRC_APRTR2_DEFAULT                                             0x00000000
@@ -228,9 +202,6 @@
 #define mmXPB_CLG_GUS_UNITID_MAPPING5_DEFAULT                                    0x00000140
 #define mmXPB_CLG_GUS_UNITID_MAPPING6_DEFAULT                                    0x00000180
 #define mmXPB_CLG_GUS_UNITID_MAPPING7_DEFAULT                                    0x000001c0
-
-
-// addressBlock: athub_rpbdec
 #define mmRPB_PASSPW_CONF_DEFAULT                                                0x00000230
 #define mmRPB_BLOCKLEVEL_CONF_DEFAULT                                            0x000000f0
 #define mmRPB_TAG_CONF_DEFAULT                                                   0x08040080
@@ -268,5 +239,4 @@
 #define mmRPB_DF_SDPPORT_CNTL_DEFAULT                                            0x00003820
 #define mmRPB_SDPPORT_CNTL_DEFAULT                                               0x0fd14010
 #define mmRPB_NBIF_SDPPORT_CNTL_DEFAULT                                          0x08084020
-
 #endif

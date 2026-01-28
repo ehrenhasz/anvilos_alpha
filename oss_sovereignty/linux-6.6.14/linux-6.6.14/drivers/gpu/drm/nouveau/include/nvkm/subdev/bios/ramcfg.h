@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVBIOS_RAMCFG_H__
 #define __NVBIOS_RAMCFG_H__
 struct nvbios_ramcfg {
@@ -34,7 +33,6 @@ struct nvbios_ramcfg {
 			unsigned rammap_11_11_0c:2;
 		};
 	};
-
 	unsigned ramcfg_ver;
 	unsigned ramcfg_hdr;
 	unsigned ramcfg_timing;
@@ -109,7 +107,6 @@ struct nvbios_ramcfg {
 			unsigned ramcfg_11_09:8;
 		};
 	};
-
 	unsigned timing_ver;
 	unsigned timing_hdr;
 	unsigned timing[11];
@@ -119,25 +116,19 @@ struct nvbios_ramcfg {
 			unsigned timing_10_WTR:8;
 			unsigned timing_10_CL:8;
 			unsigned timing_10_RC:8;
-			/*empty: 4 */
-			unsigned timing_10_RFC:8;        /* Byte 5 */
-			/*empty: 6 */
-			unsigned timing_10_RAS:8;        /* Byte 7 */
-			/*empty: 8 */
-			unsigned timing_10_RP:8;         /* Byte 9 */
+			unsigned timing_10_RFC:8;         
+			unsigned timing_10_RAS:8;         
+			unsigned timing_10_RP:8;          
 			unsigned timing_10_RCDRD:8;
 			unsigned timing_10_RCDWR:8;
 			unsigned timing_10_RRD:8;
 			unsigned timing_10_13:8;
 			unsigned timing_10_ODT:3;
-			/* empty: 15 */
 			unsigned timing_10_16:8;
-			/* empty: 17 */
 			unsigned timing_10_18:8;
 			unsigned timing_10_CWL:8;
 			unsigned timing_10_20:8;
 			unsigned timing_10_21:8;
-			/* empty: 22, 23 */
 			unsigned timing_10_24:8;
 		};
 		struct {
@@ -158,7 +149,6 @@ struct nvbios_ramcfg {
 		};
 	};
 };
-
 u8 nvbios_ramcfg_count(struct nvkm_bios *);
 u8 nvbios_ramcfg_index(struct nvkm_subdev *);
 #endif

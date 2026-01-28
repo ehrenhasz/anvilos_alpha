@@ -1,11 +1,6 @@
-#!/bin/bash
-
 TCID="safesetid-test.sh"
 errcode=0
-
-# Kselftest framework requirement - SKIP code is 4.
 ksft_skip=4
-
 check_root()
 {
 	uid=$(id -u)
@@ -14,13 +9,11 @@ check_root()
 		exit $ksft_skip
 	fi
 }
-
 main_function()
 {
   check_root
   ./safesetid-test
 }
-
 main_function
 echo "$TCID: done"
 exit $errcode

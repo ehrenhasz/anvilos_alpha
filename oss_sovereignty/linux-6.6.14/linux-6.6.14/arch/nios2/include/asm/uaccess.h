@@ -1,31 +1,10 @@
-/*
- * User space memory access functions for Nios II
- *
- * Copyright (C) 2010-2011, Tobias Klauser <tklauser@distanz.ch>
- * Copyright (C) 2009, Wind River Systems Inc
- *   Implemented by fredrik.markstrom@gmail.com and ivarholmqvist@gmail.com
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
-
 #ifndef _ASM_NIOS2_UACCESS_H
 #define _ASM_NIOS2_UACCESS_H
-
 #include <linux/string.h>
-
 #include <asm/page.h>
-
 #include <asm/extable.h>
 #include <asm-generic/access_ok.h>
-
 # define __EX_TABLE_SECTION	".section __ex_table,\"a\"\n"
-
-/*
- * Zero Userspace
- */
-
 static inline unsigned long __must_check __clear_user(void __user *to,
 						      unsigned long n)
 {
@@ -41,10 +20,8 @@ static inline unsigned long __must_check __clear_user(void __user *to,
 		: "=r" (n), "=r" (to)
 		: "0" (n), "1" (to)
 	);
-
 	return n;
 }
-
 static inline unsigned long __must_check clear_user(void __user *to,
 						    unsigned long n)
 {
@@ -52,19 +29,15 @@ static inline unsigned long __must_check clear_user(void __user *to,
 		return n;
 	return __clear_user(to, n);
 }
-
 extern unsigned long
 raw_copy_from_user(void *to, const void __user *from, unsigned long n);
 extern unsigned long
 raw_copy_to_user(void __user *to, const void *from, unsigned long n);
 #define INLINE_COPY_FROM_USER
 #define INLINE_COPY_TO_USER
-
 extern long strncpy_from_user(char *__to, const char __user *__from,
 			      long __len);
 extern __must_check long strnlen_user(const char __user *s, long n);
-
-/* Optimized macros */
 #define __get_user_asm(val, insn, addr, err)				\
 {									\
 	unsigned long __gu_val;						\
@@ -80,9 +53,7 @@ extern __must_check long strnlen_user(const char __user *s, long n);
 	: "r" (addr), "i" (-EFAULT));					\
 	val = (__force __typeof__(*(addr)))__gu_val;			\
 }
-
 extern void __get_user_unknown(void);
-
 #define __get_user_8(val, ptr, err) do {				\
 	u64 __val = 0;							\
 	err = 0;							\
@@ -92,7 +63,6 @@ extern void __get_user_unknown(void);
 		val = (typeof(val))(typeof((val) - (val)))__val;	\
 	}								\
 	} while (0)
-
 #define __get_user_common(val, size, ptr, err)				\
 do {									\
 	switch (size) {							\
@@ -113,7 +83,6 @@ do {									\
 		break;							\
 	}								\
 } while (0)
-
 #define __get_user(x, ptr)						\
 	({								\
 	long __gu_err = -EFAULT;					\
@@ -121,7 +90,6 @@ do {									\
 	__get_user_common(x, sizeof(*(ptr)), __gu_ptr, __gu_err);	\
 	__gu_err;							\
 	})
-
 #define get_user(x, ptr)						\
 ({									\
 	long __gu_err = -EFAULT;					\
@@ -131,7 +99,6 @@ do {									\
 			__gu_ptr, __gu_err);				\
 	__gu_err;							\
 })
-
 #define __put_user_asm(val, insn, ptr, err)				\
 {									\
 	__asm__ __volatile__(						\
@@ -145,7 +112,6 @@ do {									\
 	: "=&r" (err)							\
 	: "r" (val), "r" (ptr), "i" (-EFAULT));				\
 }
-
 #define __put_user_common(__pu_val, __pu_ptr)				\
 ({									\
 	long __pu_err = -EFAULT;					\
@@ -160,7 +126,7 @@ do {									\
 		__put_user_asm(__pu_val, "stw", __pu_ptr, __pu_err);	\
 		break;							\
 	default:							\
-		/* XXX: This looks wrong... */				\
+		 				\
 		__pu_err = 0;						\
 		if (__copy_to_user(__pu_ptr, &(__pu_val),		\
 			sizeof(*__pu_ptr)))				\
@@ -169,14 +135,12 @@ do {									\
 	}								\
 	__pu_err;							\
 })
-
 #define __put_user(x, ptr)						\
 ({									\
 	__auto_type __pu_ptr = (ptr);					\
 	typeof(*__pu_ptr) __pu_val = (typeof(*__pu_ptr))(x);		\
 	__put_user_common(__pu_val, __pu_ptr);				\
 })
-
 #define put_user(x, ptr)						\
 ({									\
 	__auto_type __pu_ptr = (ptr);					\
@@ -185,5 +149,4 @@ do {									\
 		__put_user_common(__pu_val, __pu_ptr) :			\
 		-EFAULT;						\
 })
-
-#endif /* _ASM_NIOS2_UACCESS_H */
+#endif  

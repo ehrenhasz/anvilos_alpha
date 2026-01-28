@@ -1,36 +1,24 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
-
 #ifndef	_BRCM_PHY_RADIO_H_
 #define	_BRCM_PHY_RADIO_H_
-
 #define	RADIO_IDCODE			0x01
-
 #define RADIO_DEFAULT_CORE		0
-
 #define	RXC0_RSSI_RST			0x80
 #define	RXC0_MODE_RSSI			0x40
 #define	RXC0_MODE_OFF			0x20
 #define	RXC0_MODE_CM			0x10
 #define	RXC0_LAN_LOAD			0x08
 #define	RXC0_OFF_ADJ_MASK		0x07
-
 #define	TXC0_MODE_TXLPF			0x04
 #define	TXC0_PA_TSSI_EN			0x02
 #define	TXC0_TSSI_EN			0x01
-
 #define	TXC1_PA_GAIN_MASK		0x60
 #define	TXC1_PA_GAIN_3DB		0x40
 #define	TXC1_PA_GAIN_2DB		0x20
 #define	TXC1_TX_MIX_GAIN		0x10
 #define	TXC1_OFF_I_MASK			0x0c
 #define	TXC1_OFF_Q_MASK			0x03
-
 #define	RADIO_2055_READ_OFF		0x100
 #define	RADIO_2057_READ_OFF		0x200
-
 #define RADIO_2055_GEN_SPARE		0x00
 #define RADIO_2055_SP_PIN_PD		0x02
 #define RADIO_2055_SP_RSSI_CORE1	0x03
@@ -235,10 +223,8 @@
 #define RADIO_2055_CORE2_LNA_GAINBST	0xd9
 #define RADIO_2055_CORE2_B0_NBRSSI_VCM	0xde
 #define RADIO_2055_CORE2_GEN_SPARE2		0xe2
-
 #define RADIO_2055_GAINBST_GAIN_DB	6
 #define RADIO_2055_GAINBST_CODE		0x6
-
 #define RADIO_2055_JTAGCTRL_MASK	0x04
 #define RADIO_2055_JTAGSYNC_MASK	0x08
 #define RADIO_2055_RRCAL_START		0x40
@@ -262,7 +248,6 @@
 #define RADIO_2055_GAINBST_DISABLE	0x02
 #define RADIO_2055_GAINBST_VAL_MASK	0x07
 #define RADIO_2055_RXMX_GC_MASK		0x0c
-
 #define RADIO_MIMO_CORESEL_OFF		0x0
 #define RADIO_MIMO_CORESEL_CORE1	0x1
 #define RADIO_MIMO_CORESEL_CORE2	0x2
@@ -271,9 +256,7 @@
 #define RADIO_MIMO_CORESEL_ALLRX	0x5
 #define RADIO_MIMO_CORESEL_ALLTX	0x6
 #define RADIO_MIMO_CORESEL_ALLRXTX	0x7
-
 #define	RADIO_2064_READ_OFF		0x200
-
 #define RADIO_2064_REG000               0x0
 #define RADIO_2064_REG001               0x1
 #define RADIO_2064_REG002               0x2
@@ -579,7 +562,6 @@
 #define RADIO_2064_REG12E               0x12e
 #define RADIO_2064_REG12F               0x12f
 #define RADIO_2064_REG130               0x130
-
 #define RADIO_2056_SYN                           (0x0 << 12)
 #define RADIO_2056_TX0                           (0x2 << 12)
 #define RADIO_2056_TX1                           (0x3 << 12)
@@ -587,7 +569,6 @@
 #define RADIO_2056_RX1                           (0x7 << 12)
 #define RADIO_2056_ALLTX                         (0xe << 12)
 #define RADIO_2056_ALLRX                         (0xf << 12)
-
 #define RADIO_2056_SYN_RESERVED_ADDR0            0x0
 #define RADIO_2056_SYN_IDCODE                    0x1
 #define RADIO_2056_SYN_RESERVED_ADDR2            0x2
@@ -771,7 +752,6 @@
 #define RADIO_2056_SYN_LOGEN_CORE_CALVALID       0xb4
 #define RADIO_2056_SYN_LOGEN_RX_CMOS_CALVALID    0xb5
 #define RADIO_2056_SYN_LOGEN_TX_CMOS_VALID       0xb6
-
 #define RADIO_2056_TX_RESERVED_ADDR0             0x0
 #define RADIO_2056_TX_IDCODE                     0x1
 #define RADIO_2056_TX_RESERVED_ADDR2             0x2
@@ -927,7 +907,6 @@
 #define RADIO_2056_TX_GMBB_IDAC5                 0x98
 #define RADIO_2056_TX_GMBB_IDAC6                 0x99
 #define RADIO_2056_TX_GMBB_IDAC7                 0x9a
-
 #define RADIO_2056_RX_RESERVED_ADDR0             0x0
 #define RADIO_2056_RX_IDCODE                     0x1
 #define RADIO_2056_RX_RESERVED_ADDR2             0x2
@@ -1077,7 +1056,6 @@
 #define RADIO_2056_RX_STATUS_RXLPF_VGA_HPC       0x92
 #define RADIO_2056_RX_STATUS_RXLPF_RC            0x93
 #define RADIO_2056_RX_STATUS_HPC_RC              0x94
-
 #define RADIO_2056_LNA1_A_PU		0x01
 #define RADIO_2056_LNA2_A_PU		0x02
 #define RADIO_2056_LNA1_G_PU		0x01
@@ -1098,7 +1076,6 @@
 #define RADIO_2056_RSSI_NB_SEL		0x08
 #define RADIO_2056_VCM_MASK			0x1c
 #define RADIO_2056_RSSI_VCM_SHIFT	0x02
-
 #define RADIO_2057_DACBUF_VINCM_CORE0            0x0
 #define RADIO_2057_IDCODE                        0x1
 #define RADIO_2057_RCCAL_MASTER                  0x2
@@ -1485,7 +1462,6 @@
 #define RADIO_2057_AFE_STATUS_VCM_IQADC_CORE1    0x1aa
 #define RADIO_2057_AFE_STATUS_VCM_I_CORE1        0x1ab
 #define RADIO_2057_AFE_STATUS_VCM_Q_CORE1        0x1ac
-
 #define RADIO_2057v7_DACBUF_VINCM_CORE0          0x1ad
 #define RADIO_2057v7_RCCAL_MASTER                0x1ae
 #define RADIO_2057v7_TR2G_CONFIG3_CORE0_NU       0x1af
@@ -1516,7 +1492,5 @@
 #define RADIO_2057v7_OVR_REG27                   0x1c8
 #define RADIO_2057v7_OVR_REG28                   0x1c9
 #define RADIO_2057v7_IQTEST_SEL_PU2              0x1ca
-
 #define RADIO_2057_VCM_MASK			 0x7
-
-#endif				/* _BRCM_PHY_RADIO_H_ */
+#endif				 

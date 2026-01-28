@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
 #ifndef _WQ_ENET_DESC_H_
 #define _WQ_ENET_DESC_H_
-
-/* Ethernet work queue descriptor: 16B */
 struct wq_enet_desc {
 	__le64 address;
 	__le16 length;
@@ -14,7 +7,6 @@ struct wq_enet_desc {
 	__le16 header_length_flags;
 	__le16 vlan_tag;
 };
-
 #define WQ_ENET_ADDR_BITS		64
 #define WQ_ENET_LEN_BITS		14
 #define WQ_ENET_LEN_MASK		((1 << WQ_ENET_LEN_BITS) - 1)
@@ -30,12 +22,10 @@ struct wq_enet_desc {
 #define WQ_ENET_FLAGS_CQ_ENTRY_SHIFT	13
 #define WQ_ENET_FLAGS_FCOE_ENCAP_SHIFT	14
 #define WQ_ENET_FLAGS_VLAN_TAG_INSERT_SHIFT	15
-
 #define WQ_ENET_OFFLOAD_MODE_CSUM	0
 #define WQ_ENET_OFFLOAD_MODE_RESERVED	1
 #define WQ_ENET_OFFLOAD_MODE_CSUM_L4	2
 #define WQ_ENET_OFFLOAD_MODE_TSO	3
-
 static inline void wq_enet_desc_enc(struct wq_enet_desc *desc,
 	u64 address, u16 length, u16 mss, u16 header_length,
 	u8 offload_mode, u8 eop, u8 cq_entry, u8 fcoe_encap,
@@ -54,7 +44,6 @@ static inline void wq_enet_desc_enc(struct wq_enet_desc *desc,
 		(vlan_tag_insert & 1) << WQ_ENET_FLAGS_VLAN_TAG_INSERT_SHIFT);
 	desc->vlan_tag = cpu_to_le16(vlan_tag);
 }
-
 static inline void wq_enet_desc_dec(struct wq_enet_desc *desc,
 	u64 *address, u16 *length, u16 *mss, u16 *header_length,
 	u8 *offload_mode, u8 *eop, u8 *cq_entry, u8 *fcoe_encap,
@@ -80,5 +69,4 @@ static inline void wq_enet_desc_dec(struct wq_enet_desc *desc,
 		WQ_ENET_FLAGS_VLAN_TAG_INSERT_SHIFT) & 1);
 	*vlan_tag = le16_to_cpu(desc->vlan_tag);
 }
-
-#endif /* _WQ_ENET_DESC_H_ */
+#endif  

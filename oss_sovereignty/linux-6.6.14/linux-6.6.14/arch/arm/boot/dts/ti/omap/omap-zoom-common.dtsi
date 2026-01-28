@@ -1,27 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Common features on the Zoom debug board
- */
-
 #include "omap-gpmc-smsc911x.dtsi"
-
 &gpmc {
-	ranges = <3 0 0x10000000 0x1000000>,	/* CS3: 16MB for UART */
+	ranges = <3 0 0x10000000 0x1000000>,	 
 		 <7 0 0x2c000000 0x01000000>;
-
-	/*
-	 * Four port TL16CP754C serial port on GPMC,
-	 * they probably share the same GPIO IRQ
-	 * REVISIT: Add timing support from slls644g.pdf
-	 */
 	serial@3,0 {
 		compatible = "ns16550a";
-		reg = <3 0 8>;	/* CS3, offset 0, IO size 8 */
+		reg = <3 0 8>;	 
 		bank-width = <2>;
 		reg-shift = <1>;
 		reg-io-width = <1>;
 		interrupt-parent = <&gpio4>;
-		interrupts = <6 IRQ_TYPE_EDGE_RISING>;	/* gpio102 */
+		interrupts = <6 IRQ_TYPE_EDGE_RISING>;	 
 		clock-frequency = <1843200>;
 		current-speed = <115200>;
 		gpmc,mux-add-data = <0>;
@@ -52,41 +40,40 @@
 	};
 	serial@3,1 {
 		compatible = "ns16550a";
-		reg = <3 0x100 8>;	/* CS3, offset 0x100, IO size 8 */
+		reg = <3 0x100 8>;	 
 		bank-width = <2>;
 		reg-shift = <1>;
 		reg-io-width = <1>;
 		interrupt-parent = <&gpio4>;
-		interrupts = <6 IRQ_TYPE_EDGE_RISING>;	/* gpio102 */
+		interrupts = <6 IRQ_TYPE_EDGE_RISING>;	 
 		clock-frequency = <1843200>;
 		current-speed = <115200>;
 	};
 	serial@3,2 {
 		compatible = "ns16550a";
-		reg = <3 0x200 8>;	/* CS3, offset 0x200, IO size 8 */
+		reg = <3 0x200 8>;	 
 		bank-width = <2>;
 		reg-shift = <1>;
 		reg-io-width = <1>;
 		interrupt-parent = <&gpio4>;
-		interrupts = <6 IRQ_TYPE_EDGE_RISING>;	/* gpio102 */
+		interrupts = <6 IRQ_TYPE_EDGE_RISING>;	 
 		clock-frequency = <1843200>;
 		current-speed = <115200>;
 	};
 	serial@3,3 {
 		compatible = "ns16550a";
-		reg = <3 0x300 8>;	/* CS3, offset 0x300, IO size 8 */
+		reg = <3 0x300 8>;	 
 		bank-width = <2>;
 		reg-shift = <1>;
 		reg-io-width = <1>;
 		interrupt-parent = <&gpio4>;
-		interrupts = <6 IRQ_TYPE_EDGE_RISING>;	/* gpio102 */
+		interrupts = <6 IRQ_TYPE_EDGE_RISING>;	 
 		clock-frequency = <1843200>;
 		current-speed = <115200>;
 	};
-
 	ethernet@gpmc {
 		reg = <7 0 0xff>;
 		interrupt-parent = <&gpio5>;
-		interrupts = <30 IRQ_TYPE_LEVEL_LOW>;	/* gpio158 */
+		interrupts = <30 IRQ_TYPE_LEVEL_LOW>;	 
 	};
 };

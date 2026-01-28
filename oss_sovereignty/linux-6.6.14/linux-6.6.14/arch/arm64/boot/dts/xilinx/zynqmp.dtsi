@@ -1,33 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * dts file for Xilinx ZynqMP
- *
- * (C) Copyright 2014 - 2021, Xilinx, Inc.
- *
- * Michal Simek <michal.simek@amd.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- */
-
 #include <dt-bindings/dma/xlnx-zynqmp-dpdma.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/power/xlnx-zynqmp-power.h>
 #include <dt-bindings/reset/xlnx-zynqmp-resets.h>
-
 / {
 	compatible = "xlnx,zynqmp";
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu0: cpu@0 {
 			compatible = "arm,cortex-a53";
 			device_type = "cpu";
@@ -37,7 +20,6 @@
 			cpu-idle-states = <&CPU_SLEEP_0>;
 			next-level-cache = <&L2>;
 		};
-
 		cpu1: cpu@1 {
 			compatible = "arm,cortex-a53";
 			device_type = "cpu";
@@ -47,7 +29,6 @@
 			cpu-idle-states = <&CPU_SLEEP_0>;
 			next-level-cache = <&L2>;
 		};
-
 		cpu2: cpu@2 {
 			compatible = "arm,cortex-a53";
 			device_type = "cpu";
@@ -57,7 +38,6 @@
 			cpu-idle-states = <&CPU_SLEEP_0>;
 			next-level-cache = <&L2>;
 		};
-
 		cpu3: cpu@3 {
 			compatible = "arm,cortex-a53";
 			device_type = "cpu";
@@ -67,16 +47,13 @@
 			cpu-idle-states = <&CPU_SLEEP_0>;
 			next-level-cache = <&L2>;
 		};
-
 		L2: l2-cache {
 			compatible = "cache";
 			cache-level = <2>;
 			cache-unified;
 		};
-
 		idle-states {
 			entry-method = "psci";
-
 			CPU_SLEEP_0: cpu-sleep-0 {
 				compatible = "arm,idle-state";
 				arm,psci-suspend-param = <0x40000000>;
@@ -87,7 +64,6 @@
 			};
 		};
 	};
-
 	cpu_opp_table: opp-table-cpu {
 		compatible = "operating-points-v2";
 		opp-shared;
@@ -112,23 +88,19 @@
 			clock-latency-ns = <500000>;
 		};
 	};
-
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		rproc_0_fw_image: memory@3ed00000 {
 			no-map;
 			reg = <0x0 0x3ed00000 0x0 0x40000>;
 		};
-
 		rproc_1_fw_image: memory@3ef00000 {
 			no-map;
 			reg = <0x0 0x3ef00000 0x0 0x40000>;
 		};
 	};
-
 	zynqmp_ipi: zynqmp_ipi {
 		bootph-all;
 		compatible = "xlnx,zynqmp-ipi-mailbox";
@@ -138,7 +110,6 @@
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		ipi_mailbox_pmu1: mailbox@ff9905c0 {
 			bootph-all;
 			reg = <0x0 0xff9905c0 0x0 0x20>,
@@ -153,13 +124,11 @@
 			xlnx,ipi-id = <4>;
 		};
 	};
-
 	dcc: dcc {
 		compatible = "arm,dcc";
 		status = "disabled";
 		bootph-all;
 	};
-
 	pmu {
 		compatible = "arm,armv8-pmuv3";
 		interrupt-parent = <&gic>;
@@ -172,19 +141,16 @@
 				     <&cpu2>,
 				     <&cpu3>;
 	};
-
 	psci {
 		compatible = "arm,psci-0.2";
 		method = "smc";
 	};
-
 	firmware {
 		zynqmp_firmware: zynqmp-firmware {
 			compatible = "xlnx,zynqmp-firmware";
 			#power-domain-cells = <1>;
 			method = "smc";
 			bootph-all;
-
 			zynqmp_power: zynqmp-power {
 				bootph-all;
 				compatible = "xlnx,zynqmp-power";
@@ -193,35 +159,28 @@
 				mboxes = <&ipi_mailbox_pmu1 0>, <&ipi_mailbox_pmu1 1>;
 				mbox-names = "tx", "rx";
 			};
-
 			nvmem_firmware {
 				compatible = "xlnx,zynqmp-nvmem-fw";
 				#address-cells = <1>;
 				#size-cells = <1>;
-
 				soc_revision: soc_revision@0 {
 					reg = <0x0 0x4>;
 				};
 			};
-
 			zynqmp_pcap: pcap {
 				compatible = "xlnx,zynqmp-pcap-fpga";
 			};
-
 			xlnx_aes: zynqmp-aes {
 				compatible = "xlnx,zynqmp-aes";
 			};
-
 			zynqmp_reset: reset-controller {
 				compatible = "xlnx,zynqmp-reset";
 				#reset-cells = <1>;
 			};
-
 			pinctrl0: pinctrl {
 				compatible = "xlnx,zynqmp-pinctrl";
 				status = "disabled";
 			};
-
 			modepin_gpio: gpio {
 				compatible = "xlnx,zynqmp-gpio-modepin";
 				gpio-controller;
@@ -229,7 +188,6 @@
 			};
 		};
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupt-parent = <&gic>;
@@ -238,7 +196,6 @@
 			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
 			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
 	};
-
 	fpga_full: fpga-full {
 		compatible = "fpga-region";
 		fpga-mgr = <&zynqmp_pcap>;
@@ -246,31 +203,26 @@
 		#size-cells = <2>;
 		ranges;
 	};
-
 	remoteproc {
 		compatible = "xlnx,zynqmp-r5fss";
 		xlnx,cluster-mode = <1>;
-
 		r5f-0 {
 			compatible = "xlnx,zynqmp-r5f";
 			power-domains = <&zynqmp_firmware PD_RPU_0>;
 			memory-region = <&rproc_0_fw_image>;
 		};
-
 		r5f-1 {
 			compatible = "xlnx,zynqmp-r5f";
 			power-domains = <&zynqmp_firmware PD_RPU_1>;
 			memory-region = <&rproc_1_fw_image>;
 		};
 	};
-
 	amba: axi {
 		compatible = "simple-bus";
 		bootph-all;
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		can0: can@ff060000 {
 			compatible = "xlnx,zynq-can-1.0";
 			status = "disabled";
@@ -282,7 +234,6 @@
 			rx-fifo-depth = <0x40>;
 			power-domains = <&zynqmp_firmware PD_CAN_0>;
 		};
-
 		can1: can@ff070000 {
 			compatible = "xlnx,zynq-can-1.0";
 			status = "disabled";
@@ -294,7 +245,6 @@
 			rx-fifo-depth = <0x40>;
 			power-domains = <&zynqmp_firmware PD_CAN_1>;
 		};
-
 		cci: cci@fd6e0000 {
 			compatible = "arm,cci-400";
 			status = "disabled";
@@ -302,7 +252,6 @@
 			ranges = <0x0 0x0 0xfd6e0000 0x10000>;
 			#address-cells = <1>;
 			#size-cells = <1>;
-
 			pmu@9000 {
 				compatible = "arm,cci-400-pmu,r1";
 				reg = <0x9000 0x5000>;
@@ -314,8 +263,6 @@
 					     <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
 			};
 		};
-
-		/* GDMA */
 		fpd_dma_chan1: dma-controller@fd500000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -328,7 +275,6 @@
 			iommus = <&smmu 0x14e8>;
 			power-domains = <&zynqmp_firmware PD_GDMA>;
 		};
-
 		fpd_dma_chan2: dma-controller@fd510000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -341,7 +287,6 @@
 			iommus = <&smmu 0x14e9>;
 			power-domains = <&zynqmp_firmware PD_GDMA>;
 		};
-
 		fpd_dma_chan3: dma-controller@fd520000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -354,7 +299,6 @@
 			iommus = <&smmu 0x14ea>;
 			power-domains = <&zynqmp_firmware PD_GDMA>;
 		};
-
 		fpd_dma_chan4: dma-controller@fd530000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -367,7 +311,6 @@
 			iommus = <&smmu 0x14eb>;
 			power-domains = <&zynqmp_firmware PD_GDMA>;
 		};
-
 		fpd_dma_chan5: dma-controller@fd540000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -380,7 +323,6 @@
 			iommus = <&smmu 0x14ec>;
 			power-domains = <&zynqmp_firmware PD_GDMA>;
 		};
-
 		fpd_dma_chan6: dma-controller@fd550000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -393,7 +335,6 @@
 			iommus = <&smmu 0x14ed>;
 			power-domains = <&zynqmp_firmware PD_GDMA>;
 		};
-
 		fpd_dma_chan7: dma-controller@fd560000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -406,7 +347,6 @@
 			iommus = <&smmu 0x14ee>;
 			power-domains = <&zynqmp_firmware PD_GDMA>;
 		};
-
 		fpd_dma_chan8: dma-controller@fd570000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -419,7 +359,6 @@
 			iommus = <&smmu 0x14ef>;
 			power-domains = <&zynqmp_firmware PD_GDMA>;
 		};
-
 		gic: interrupt-controller@f9010000 {
 			compatible = "arm,gic-400";
 			#interrupt-cells = <3>;
@@ -431,7 +370,6 @@
 			interrupt-parent = <&gic>;
 			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
 		};
-
 		gpu: gpu@fd4b0000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-mali", "arm,mali-400";
@@ -447,11 +385,6 @@
 			clock-names = "bus", "core";
 			power-domains = <&zynqmp_firmware PD_GPU>;
 		};
-
-		/* LPDDMA default allows only secured access. inorder to enable
-		 * These dma channels, Users should ensure that these dma
-		 * Channels are allowed for non secure access.
-		 */
 		lpd_dma_chan1: dma-controller@ffa80000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -464,7 +397,6 @@
 			iommus = <&smmu 0x868>;
 			power-domains = <&zynqmp_firmware PD_ADMA>;
 		};
-
 		lpd_dma_chan2: dma-controller@ffa90000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -477,7 +409,6 @@
 			iommus = <&smmu 0x869>;
 			power-domains = <&zynqmp_firmware PD_ADMA>;
 		};
-
 		lpd_dma_chan3: dma-controller@ffaa0000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -490,7 +421,6 @@
 			iommus = <&smmu 0x86a>;
 			power-domains = <&zynqmp_firmware PD_ADMA>;
 		};
-
 		lpd_dma_chan4: dma-controller@ffab0000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -503,7 +433,6 @@
 			iommus = <&smmu 0x86b>;
 			power-domains = <&zynqmp_firmware PD_ADMA>;
 		};
-
 		lpd_dma_chan5: dma-controller@ffac0000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -516,7 +445,6 @@
 			iommus = <&smmu 0x86c>;
 			power-domains = <&zynqmp_firmware PD_ADMA>;
 		};
-
 		lpd_dma_chan6: dma-controller@ffad0000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -529,7 +457,6 @@
 			iommus = <&smmu 0x86d>;
 			power-domains = <&zynqmp_firmware PD_ADMA>;
 		};
-
 		lpd_dma_chan7: dma-controller@ffae0000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -542,7 +469,6 @@
 			iommus = <&smmu 0x86e>;
 			power-domains = <&zynqmp_firmware PD_ADMA>;
 		};
-
 		lpd_dma_chan8: dma-controller@ffaf0000 {
 			status = "disabled";
 			compatible = "xlnx,zynqmp-dma-1.0";
@@ -555,14 +481,12 @@
 			iommus = <&smmu 0x86f>;
 			power-domains = <&zynqmp_firmware PD_ADMA>;
 		};
-
 		mc: memory-controller@fd070000 {
 			compatible = "xlnx,zynqmp-ddrc-2.40a";
 			reg = <0x0 0xfd070000 0x0 0x30000>;
 			interrupt-parent = <&gic>;
 			interrupts = <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		nand0: nand-controller@ff100000 {
 			compatible = "xlnx,zynqmp-nand-controller", "arasan,nfc-v3p10";
 			status = "disabled";
@@ -575,7 +499,6 @@
 			iommus = <&smmu 0x872>;
 			power-domains = <&zynqmp_firmware PD_NAND>;
 		};
-
 		gem0: ethernet@ff0b0000 {
 			compatible = "xlnx,zynqmp-gem", "cdns,gem";
 			status = "disabled";
@@ -591,7 +514,6 @@
 			resets = <&zynqmp_reset ZYNQMP_RESET_GEM0>;
 			reset-names = "gem0_rst";
 		};
-
 		gem1: ethernet@ff0c0000 {
 			compatible = "xlnx,zynqmp-gem", "cdns,gem";
 			status = "disabled";
@@ -607,7 +529,6 @@
 			resets = <&zynqmp_reset ZYNQMP_RESET_GEM1>;
 			reset-names = "gem1_rst";
 		};
-
 		gem2: ethernet@ff0d0000 {
 			compatible = "xlnx,zynqmp-gem", "cdns,gem";
 			status = "disabled";
@@ -623,7 +544,6 @@
 			resets = <&zynqmp_reset ZYNQMP_RESET_GEM2>;
 			reset-names = "gem2_rst";
 		};
-
 		gem3: ethernet@ff0e0000 {
 			compatible = "xlnx,zynqmp-gem", "cdns,gem";
 			status = "disabled";
@@ -639,7 +559,6 @@
 			resets = <&zynqmp_reset ZYNQMP_RESET_GEM3>;
 			reset-names = "gem3_rst";
 		};
-
 		gpio: gpio@ff0a0000 {
 			compatible = "xlnx,zynqmp-gpio-1.0";
 			status = "disabled";
@@ -652,7 +571,6 @@
 			reg = <0x0 0xff0a0000 0x0 0x1000>;
 			power-domains = <&zynqmp_firmware PD_GPIO>;
 		};
-
 		i2c0: i2c@ff020000 {
 			compatible = "cdns,i2c-r1p14";
 			status = "disabled";
@@ -664,7 +582,6 @@
 			#size-cells = <0>;
 			power-domains = <&zynqmp_firmware PD_I2C_0>;
 		};
-
 		i2c1: i2c@ff030000 {
 			compatible = "cdns,i2c-r1p14";
 			status = "disabled";
@@ -676,7 +593,6 @@
 			#size-cells = <0>;
 			power-domains = <&zynqmp_firmware PD_I2C_1>;
 		};
-
 		pcie: pcie@fd0e0000 {
 			compatible = "xlnx,nwl-pcie-2.11";
 			status = "disabled";
@@ -689,8 +605,8 @@
 			interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
-				     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,	/* MSI_1 [63...32] */
-				     <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>;	/* MSI_0 [31...0] */
+				     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,	 
+				     <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>;	 
 			interrupt-names = "misc", "dummy", "intx",
 					  "msi1", "msi0";
 			msi-parent = <&pcie>;
@@ -698,8 +614,8 @@
 			      <0x0 0xfd480000 0x0 0x1000>,
 			      <0x80 0x00000000 0x0 0x1000000>;
 			reg-names = "breg", "pcireg", "cfg";
-			ranges = <0x02000000 0x00000000 0xe0000000 0x00000000 0xe0000000 0x00000000 0x10000000>,/* non-prefetchable memory */
-				 <0x43000000 0x00000006 0x00000000 0x00000006 0x00000000 0x00000002 0x00000000>;/* prefetchable memory */
+			ranges = <0x02000000 0x00000000 0xe0000000 0x00000000 0xe0000000 0x00000000 0x10000000>, 
+				 <0x43000000 0x00000006 0x00000000 0x00000006 0x00000000 0x00000002 0x00000000>; 
 			bus-range = <0x00 0xff>;
 			interrupt-map-mask = <0x0 0x0 0x0 0x7>;
 			interrupt-map = <0x0 0x0 0x0 0x1 &pcie_intc 0x1>,
@@ -714,7 +630,6 @@
 				#interrupt-cells = <1>;
 			};
 		};
-
 		qspi: spi@ff0f0000 {
 			bootph-all;
 			compatible = "xlnx,zynqmp-qspi-1.0";
@@ -730,7 +645,6 @@
 			iommus = <&smmu 0x873>;
 			power-domains = <&zynqmp_firmware PD_QSPI>;
 		};
-
 		psgtr: phy@fd400000 {
 			compatible = "xlnx,zynqmp-psgtr-v1.1";
 			status = "disabled";
@@ -739,7 +653,6 @@
 			reg-names = "serdes", "siou";
 			#phy-cells = <4>;
 		};
-
 		rtc: rtc@ffa60000 {
 			compatible = "xlnx,zynqmp-rtc";
 			status = "disabled";
@@ -750,7 +663,6 @@
 			interrupt-names = "alarm", "sec";
 			calibration = <0x7FFF>;
 		};
-
 		sata: ahci@fd0c0000 {
 			compatible = "ceva,ahci-1v84";
 			status = "disabled";
@@ -762,7 +674,6 @@
 			iommus = <&smmu 0x4c0>, <&smmu 0x4c1>,
 				 <&smmu 0x4c2>, <&smmu 0x4c3>;
 		};
-
 		sdhci0: mmc@ff160000 {
 			bootph-all;
 			compatible = "xlnx,zynqmp-8.9a", "arasan,sdhci-8.9a";
@@ -777,7 +688,6 @@
 			power-domains = <&zynqmp_firmware PD_SD_0>;
 			resets = <&zynqmp_reset ZYNQMP_RESET_SDIO0>;
 		};
-
 		sdhci1: mmc@ff170000 {
 			bootph-all;
 			compatible = "xlnx,zynqmp-8.9a", "arasan,sdhci-8.9a";
@@ -792,7 +702,6 @@
 			power-domains = <&zynqmp_firmware PD_SD_1>;
 			resets = <&zynqmp_reset ZYNQMP_RESET_SDIO1>;
 		};
-
 		smmu: iommu@fd800000 {
 			compatible = "arm,mmu-500";
 			reg = <0x0 0xfd800000 0x0 0x20000>;
@@ -818,7 +727,6 @@
 				     <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		spi0: spi@ff040000 {
 			compatible = "cdns,spi-r1p6";
 			status = "disabled";
@@ -830,7 +738,6 @@
 			#size-cells = <0>;
 			power-domains = <&zynqmp_firmware PD_SPI_0>;
 		};
-
 		spi1: spi@ff050000 {
 			compatible = "cdns,spi-r1p6";
 			status = "disabled";
@@ -842,7 +749,6 @@
 			#size-cells = <0>;
 			power-domains = <&zynqmp_firmware PD_SPI_1>;
 		};
-
 		ttc0: timer@ff110000 {
 			compatible = "cdns,ttc";
 			status = "disabled";
@@ -854,7 +760,6 @@
 			timer-width = <32>;
 			power-domains = <&zynqmp_firmware PD_TTC_0>;
 		};
-
 		ttc1: timer@ff120000 {
 			compatible = "cdns,ttc";
 			status = "disabled";
@@ -866,7 +771,6 @@
 			timer-width = <32>;
 			power-domains = <&zynqmp_firmware PD_TTC_1>;
 		};
-
 		ttc2: timer@ff130000 {
 			compatible = "cdns,ttc";
 			status = "disabled";
@@ -878,7 +782,6 @@
 			timer-width = <32>;
 			power-domains = <&zynqmp_firmware PD_TTC_2>;
 		};
-
 		ttc3: timer@ff140000 {
 			compatible = "cdns,ttc";
 			status = "disabled";
@@ -890,7 +793,6 @@
 			timer-width = <32>;
 			power-domains = <&zynqmp_firmware PD_TTC_3>;
 		};
-
 		uart0: serial@ff000000 {
 			bootph-all;
 			compatible = "xlnx,zynqmp-uart", "cdns,uart-r1p12";
@@ -901,7 +803,6 @@
 			clock-names = "uart_clk", "pclk";
 			power-domains = <&zynqmp_firmware PD_UART_0>;
 		};
-
 		uart1: serial@ff010000 {
 			bootph-all;
 			compatible = "xlnx,zynqmp-uart", "cdns,uart-r1p12";
@@ -912,7 +813,6 @@
 			clock-names = "uart_clk", "pclk";
 			power-domains = <&zynqmp_firmware PD_UART_1>;
 		};
-
 		usb0: usb@ff9d0000 {
 			#address-cells = <2>;
 			#size-cells = <2>;
@@ -926,7 +826,6 @@
 			reset-names = "usb_crst", "usb_hibrst", "usb_apbrst";
 			reset-gpios = <&modepin_gpio 1 GPIO_ACTIVE_LOW>;
 			ranges;
-
 			dwc3_0: usb@fe200000 {
 				compatible = "snps,dwc3";
 				reg = <0x0 0xfe200000 0x0 0x40000>;
@@ -939,10 +838,8 @@
 				iommus = <&smmu 0x860>;
 				snps,quirk-frame-length-adjustment = <0x20>;
 				snps,resume-hs-terminations;
-				/* dma-coherent; */
 			};
 		};
-
 		usb1: usb@ff9e0000 {
 			#address-cells = <2>;
 			#size-cells = <2>;
@@ -955,7 +852,6 @@
 				 <&zynqmp_reset ZYNQMP_RESET_USB1_APB>;
 			reset-names = "usb_crst", "usb_hibrst", "usb_apbrst";
 			ranges;
-
 			dwc3_1: usb@fe300000 {
 				compatible = "snps,dwc3";
 				reg = <0x0 0xfe300000 0x0 0x40000>;
@@ -968,10 +864,8 @@
 				iommus = <&smmu 0x861>;
 				snps,quirk-frame-length-adjustment = <0x20>;
 				snps,resume-hs-terminations;
-				/* dma-coherent; */
 			};
 		};
-
 		watchdog0: watchdog@fd4d0000 {
 			compatible = "cdns,wdt-r1p2";
 			status = "disabled";
@@ -981,7 +875,6 @@
 			timeout-sec = <60>;
 			reset-on-timeout;
 		};
-
 		lpd_watchdog: watchdog@ff150000 {
 			compatible = "cdns,wdt-r1p2";
 			status = "disabled";
@@ -990,7 +883,6 @@
 			reg = <0x0 0xff150000 0x0 0x1000>;
 			timeout-sec = <10>;
 		};
-
 		xilinx_ams: ams@ffa50000 {
 			compatible = "xlnx,zynqmp-ams";
 			status = "disabled";
@@ -1001,13 +893,11 @@
 			#size-cells = <1>;
 			#io-channel-cells = <1>;
 			ranges = <0 0 0xffa50800 0x800>;
-
 			ams_ps: ams-ps@0 {
 				compatible = "xlnx,zynqmp-ams-ps";
 				status = "disabled";
 				reg = <0x0 0x400>;
 			};
-
 			ams_pl: ams-pl@400 {
 				compatible = "xlnx,zynqmp-ams-pl";
 				status = "disabled";
@@ -1016,7 +906,6 @@
 				#size-cells = <0>;
 			};
 		};
-
 		zynqmp_dpdma: dma-controller@fd4c0000 {
 			compatible = "xlnx,zynqmp-dpdma";
 			status = "disabled";
@@ -1027,7 +916,6 @@
 			power-domains = <&zynqmp_firmware PD_DP>;
 			#dma-cells = <1>;
 		};
-
 		zynqmp_dpsub: display@fd4a0000 {
 			bootph-all;
 			compatible = "xlnx,zynqmp-dpsub-1.7";
@@ -1048,11 +936,9 @@
 			       <&zynqmp_dpdma ZYNQMP_DPDMA_VIDEO1>,
 			       <&zynqmp_dpdma ZYNQMP_DPDMA_VIDEO2>,
 			       <&zynqmp_dpdma ZYNQMP_DPDMA_GRAPHICS>;
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@0 {
 					reg = <0>;
 				};

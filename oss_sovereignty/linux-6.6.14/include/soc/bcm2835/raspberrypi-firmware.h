@@ -1,45 +1,23 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright © 2015 Broadcom
- */
-
 #ifndef __SOC_RASPBERRY_FIRMWARE_H__
 #define __SOC_RASPBERRY_FIRMWARE_H__
-
 #include <linux/types.h>
 #include <linux/of_device.h>
-
 struct rpi_firmware;
-
 enum rpi_firmware_property_status {
 	RPI_FIRMWARE_STATUS_REQUEST = 0,
 	RPI_FIRMWARE_STATUS_SUCCESS = 0x80000000,
 	RPI_FIRMWARE_STATUS_ERROR =   0x80000001,
 };
-
-/**
- * struct rpi_firmware_property_tag_header - Firmware property tag header
- * @tag:		One of enum_mbox_property_tag.
- * @buf_size:		The number of bytes in the value buffer following this
- *			struct.
- * @req_resp_size:	On submit, the length of the request (though it doesn't
- *			appear to be currently used by the firmware).  On return,
- *			the length of the response (always 4 byte aligned), with
- *			the low bit set.
- */
 struct rpi_firmware_property_tag_header {
 	u32 tag;
 	u32 buf_size;
 	u32 req_resp_size;
 };
-
 enum rpi_firmware_property_tag {
 	RPI_FIRMWARE_PROPERTY_END =                           0,
 	RPI_FIRMWARE_GET_FIRMWARE_REVISION =                  0x00000001,
-
 	RPI_FIRMWARE_SET_CURSOR_INFO =                        0x00008010,
 	RPI_FIRMWARE_SET_CURSOR_STATE =                       0x00008011,
-
 	RPI_FIRMWARE_GET_BOARD_MODEL =                        0x00010001,
 	RPI_FIRMWARE_GET_BOARD_REVISION =                     0x00010002,
 	RPI_FIRMWARE_GET_BOARD_MAC_ADDRESS =                  0x00010003,
@@ -92,8 +70,6 @@ enum rpi_firmware_property_tag {
 	RPI_FIRMWARE_SET_POE_HAT_VAL =                        0x00030050,
 	RPI_FIRMWARE_NOTIFY_XHCI_RESET =                      0x00030058,
 	RPI_FIRMWARE_NOTIFY_DISPLAY_DONE =                    0x00030066,
-
-	/* Dispmanx TAGS */
 	RPI_FIRMWARE_FRAMEBUFFER_ALLOCATE =                   0x00040001,
 	RPI_FIRMWARE_FRAMEBUFFER_BLANK =                      0x00040002,
 	RPI_FIRMWARE_FRAMEBUFFER_GET_PHYSICAL_WIDTH_HEIGHT =  0x00040003,
@@ -129,13 +105,10 @@ enum rpi_firmware_property_tag {
 	RPI_FIRMWARE_FRAMEBUFFER_SET_GPIOVIRTBUF =            0x00048020,
 	RPI_FIRMWARE_FRAMEBUFFER_SET_VSYNC =                  0x0004800e,
 	RPI_FIRMWARE_FRAMEBUFFER_SET_BACKLIGHT =              0x0004800f,
-
 	RPI_FIRMWARE_VCHIQ_INIT =                             0x00048010,
-
 	RPI_FIRMWARE_GET_COMMAND_LINE =                       0x00050001,
 	RPI_FIRMWARE_GET_DMA_CHANNELS =                       0x00060001,
 };
-
 enum rpi_firmware_clk_id {
 	RPI_FIRMWARE_EMMC_CLK_ID = 1,
 	RPI_FIRMWARE_UART_CLK_ID,
@@ -154,25 +127,14 @@ enum rpi_firmware_clk_id {
 	RPI_FIRMWARE_VEC_CLK_ID,
 	RPI_FIRMWARE_NUM_CLK_ID,
 };
-
-/**
- * struct rpi_firmware_clk_rate_request - Firmware Request for a rate
- * @id:	ID of the clock being queried
- * @rate: Rate in Hertz. Set by the firmware.
- *
- * Used by @RPI_FIRMWARE_GET_CLOCK_RATE, @RPI_FIRMWARE_GET_CLOCK_MEASURED,
- * @RPI_FIRMWARE_GET_MAX_CLOCK_RATE and @RPI_FIRMWARE_GET_MIN_CLOCK_RATE.
- */
 struct rpi_firmware_clk_rate_request {
 	__le32 id;
 	__le32 rate;
 } __packed;
-
 #define RPI_FIRMWARE_CLK_RATE_REQUEST(_id)	\
 	{					\
 		.id = cpu_to_le32(_id),		\
 	}
-
 #if IS_ENABLED(CONFIG_RASPBERRYPI_FIRMWARE)
 int rpi_firmware_property(struct rpi_firmware *fw,
 			  u32 tag, void *data, size_t len);
@@ -191,36 +153,29 @@ static inline int rpi_firmware_property(struct rpi_firmware *fw, u32 tag,
 {
 	return -ENOSYS;
 }
-
 static inline int rpi_firmware_property_list(struct rpi_firmware *fw,
 					     void *data, size_t tag_size)
 {
 	return -ENOSYS;
 }
-
 static inline void rpi_firmware_put(struct rpi_firmware *fw) { }
-
 static inline unsigned int rpi_firmware_clk_get_max_rate(struct rpi_firmware *fw,
 							 unsigned int id)
 {
 	return UINT_MAX;
 }
-
 static inline struct device_node *rpi_firmware_find_node(void)
 {
 	return NULL;
 }
-
 static inline struct rpi_firmware *rpi_firmware_get(struct device_node *firmware_node)
 {
 	return NULL;
 }
-
 static inline struct rpi_firmware *devm_rpi_firmware_get(struct device *dev,
 					struct device_node *firmware_node)
 {
 	return NULL;
 }
 #endif
-
-#endif /* __SOC_RASPBERRY_FIRMWARE_H__ */
+#endif  

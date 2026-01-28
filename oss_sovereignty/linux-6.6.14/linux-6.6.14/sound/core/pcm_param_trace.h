@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM snd_pcm
-
 #if !defined(_PCM_PARAMS_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _PCM_PARAMS_TRACE_H
-
 #include <linux/tracepoint.h>
-
 #define HW_PARAM_ENTRY(param) {SNDRV_PCM_HW_PARAM_##param, #param}
 #define hw_param_labels			\
 	HW_PARAM_ENTRY(ACCESS),		\
@@ -24,7 +20,6 @@
 	HW_PARAM_ENTRY(BUFFER_SIZE),	\
 	HW_PARAM_ENTRY(BUFFER_BYTES),	\
 	HW_PARAM_ENTRY(TICK_TIME)
-
 TRACE_EVENT(hw_mask_param,
 	TP_PROTO(struct snd_pcm_substream *substream, snd_pcm_hw_param_t type, int index, const struct snd_mask *prev, const struct snd_mask *curr),
 	TP_ARGS(substream, type, index, prev, curr),
@@ -64,7 +59,6 @@ TRACE_EVENT(hw_mask_param,
 		  __entry->curr_bits[1], __entry->curr_bits[0]
 	)
 );
-
 TRACE_EVENT(hw_interval_param,
 	TP_PROTO(struct snd_pcm_substream *substream, snd_pcm_hw_param_t type, int index, const struct snd_interval *prev, const struct snd_interval *curr),
 	TP_ARGS(substream, type, index, prev, curr),
@@ -132,10 +126,7 @@ TRACE_EVENT(hw_interval_param,
 		  __entry->curr_openmax ? ")" : "]"
 	)
 );
-
-#endif /* _PCM_PARAMS_TRACE_H */
-
-/* This part must be outside protection */
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE

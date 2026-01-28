@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_PESCX_DEFS_H__
 #define __CVMX_PESCX_DEFS_H__
-
 #define CVMX_PESCX_BIST_STATUS(block_id) (CVMX_ADD_IO_SEG(0x00011800C8000018ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_PESCX_BIST_STATUS2(block_id) (CVMX_ADD_IO_SEG(0x00011800C8000418ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_PESCX_CFG_RD(block_id) (CVMX_ADD_IO_SEG(0x00011800C8000030ull) + ((block_id) & 1) * 0x8000000ull)
@@ -44,7 +16,6 @@
 #define CVMX_PESCX_P2P_BARX_END(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800C8000048ull) + (((offset) & 3) + ((block_id) & 1) * 0x800000ull) * 16)
 #define CVMX_PESCX_P2P_BARX_START(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800C8000040ull) + (((offset) & 3) + ((block_id) & 1) * 0x800000ull) * 16)
 #define CVMX_PESCX_TLP_CREDITS(block_id) (CVMX_ADD_IO_SEG(0x00011800C8000038ull) + ((block_id) & 1) * 0x8000000ull)
-
 union cvmx_pescx_bist_status {
 	uint64_t u64;
 	struct cvmx_pescx_bist_status_s {
@@ -112,7 +83,6 @@ union cvmx_pescx_bist_status {
 #endif
 	} cn52xxp1;
 };
-
 union cvmx_pescx_bist_status2 {
 	uint64_t u64;
 	struct cvmx_pescx_bist_status2_s {
@@ -151,7 +121,6 @@ union cvmx_pescx_bist_status2 {
 #endif
 	} s;
 };
-
 union cvmx_pescx_cfg_rd {
 	uint64_t u64;
 	struct cvmx_pescx_cfg_rd_s {
@@ -164,7 +133,6 @@ union cvmx_pescx_cfg_rd {
 #endif
 	} s;
 };
-
 union cvmx_pescx_cfg_wr {
 	uint64_t u64;
 	struct cvmx_pescx_cfg_wr_s {
@@ -177,7 +145,6 @@ union cvmx_pescx_cfg_wr {
 #endif
 	} s;
 };
-
 union cvmx_pescx_cpl_lut_valid {
 	uint64_t u64;
 	struct cvmx_pescx_cpl_lut_valid_s {
@@ -190,7 +157,6 @@ union cvmx_pescx_cpl_lut_valid {
 #endif
 	} s;
 };
-
 union cvmx_pescx_ctl_status {
 	uint64_t u64;
 	struct cvmx_pescx_ctl_status_s {
@@ -268,7 +234,6 @@ union cvmx_pescx_ctl_status {
 #endif
 	} cn56xx;
 };
-
 union cvmx_pescx_ctl_status2 {
 	uint64_t u64;
 	struct cvmx_pescx_ctl_status2_s {
@@ -292,7 +257,6 @@ union cvmx_pescx_ctl_status2 {
 #endif
 	} cn52xxp1;
 };
-
 union cvmx_pescx_dbg_info {
 	uint64_t u64;
 	struct cvmx_pescx_dbg_info_s {
@@ -365,7 +329,6 @@ union cvmx_pescx_dbg_info {
 #endif
 	} s;
 };
-
 union cvmx_pescx_dbg_info_en {
 	uint64_t u64;
 	struct cvmx_pescx_dbg_info_en_s {
@@ -438,7 +401,6 @@ union cvmx_pescx_dbg_info_en {
 #endif
 	} s;
 };
-
 union cvmx_pescx_diag_status {
 	uint64_t u64;
 	struct cvmx_pescx_diag_status_s {
@@ -457,7 +419,6 @@ union cvmx_pescx_diag_status {
 #endif
 	} s;
 };
-
 union cvmx_pescx_p2n_bar0_start {
 	uint64_t u64;
 	struct cvmx_pescx_p2n_bar0_start_s {
@@ -470,7 +431,6 @@ union cvmx_pescx_p2n_bar0_start {
 #endif
 	} s;
 };
-
 union cvmx_pescx_p2n_bar1_start {
 	uint64_t u64;
 	struct cvmx_pescx_p2n_bar1_start_s {
@@ -483,7 +443,6 @@ union cvmx_pescx_p2n_bar1_start {
 #endif
 	} s;
 };
-
 union cvmx_pescx_p2n_bar2_start {
 	uint64_t u64;
 	struct cvmx_pescx_p2n_bar2_start_s {
@@ -496,7 +455,6 @@ union cvmx_pescx_p2n_bar2_start {
 #endif
 	} s;
 };
-
 union cvmx_pescx_p2p_barx_end {
 	uint64_t u64;
 	struct cvmx_pescx_p2p_barx_end_s {
@@ -509,7 +467,6 @@ union cvmx_pescx_p2p_barx_end {
 #endif
 	} s;
 };
-
 union cvmx_pescx_p2p_barx_start {
 	uint64_t u64;
 	struct cvmx_pescx_p2p_barx_start_s {
@@ -522,7 +479,6 @@ union cvmx_pescx_p2p_barx_start {
 #endif
 	} s;
 };
-
 union cvmx_pescx_tlp_credits {
 	uint64_t u64;
 	struct cvmx_pescx_tlp_credits_s {
@@ -575,5 +531,4 @@ union cvmx_pescx_tlp_credits {
 #endif
 	} cn52xxp1;
 };
-
 #endif

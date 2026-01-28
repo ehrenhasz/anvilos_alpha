@@ -1,11 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
-
 #ifndef __PHY_COMMON__
 #define __PHY_COMMON__
-
 #define RT_CANNOT_IO(hw)			false
-
 enum swchnlcmd_id {
 	CMDID_END,
 	CMDID_SET_TXPOWEROWER_LEVEL,
@@ -15,14 +10,12 @@ enum swchnlcmd_id {
 	CMDID_WRITEPORT_UCHAR,
 	CMDID_RF_WRITEREG,
 };
-
 struct swchnlcmd {
 	enum swchnlcmd_id cmdid;
 	u32 para1;
 	u32 para2;
 	u32 msdelay;
 };
-
 u32 rtl8723_phy_query_bb_reg(struct ieee80211_hw *hw,
 			     u32 regaddr, u32 bitmask);
 void rtl8723_phy_set_bb_reg(struct ieee80211_hw *hw, u32 regaddr,
@@ -63,5 +56,4 @@ void rtl8723_phy_mac_setting_calibration(struct ieee80211_hw *hw,
 					 u32 *macreg, u32 *macbackup);
 void rtl8723_phy_path_a_standby(struct ieee80211_hw *hw);
 void rtl8723_phy_pi_mode_switch(struct ieee80211_hw *hw, bool pi_mode);
-
 #endif

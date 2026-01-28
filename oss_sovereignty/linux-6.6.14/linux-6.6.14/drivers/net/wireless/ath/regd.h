@@ -1,33 +1,13 @@
-/*
- * Copyright (c) 2008-2009 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 #ifndef REGD_H
 #define REGD_H
-
 #include <linux/nl80211.h>
 #include <net/cfg80211.h>
-
 #include "ath.h"
-
 enum ctl_group {
 	CTL_FCC = 0x10,
 	CTL_MKK = 0x40,
 	CTL_ETSI = 0x30,
 };
-
 #define SD_NO_CTL               0xE0
 #define NO_CTL                  0xff
 #define CTL_11A                 0
@@ -37,27 +17,20 @@ enum ctl_group {
 #define CTL_5GHT20              6
 #define CTL_2GHT40              7
 #define CTL_5GHT40              8
-
 #define CTRY_DEBUG 0x1ff
 #define CTRY_DEFAULT 0
-
 #define COUNTRY_ERD_FLAG        0x8000
 #define WORLDWIDE_ROAMING_FLAG  0x4000
-
 #define MULTI_DOMAIN_MASK 0xFF00
-
 #define WORLD_SKU_MASK          0x00F0
 #define WORLD_SKU_PREFIX        0x0060
-
 #define CHANNEL_HALF_BW         10
 #define CHANNEL_QUARTER_BW      5
-
 struct country_code_to_enum_rd {
 	u16 countryCode;
 	u16 regDmnEnum;
 	const char *isoName;
 };
-
 enum CountryCode {
 	CTRY_ALBANIA = 8,
 	CTRY_ALGERIA = 12,
@@ -257,7 +230,6 @@ enum CountryCode {
 	CTRY_CANADA2 = 5001,
 	CTRY_BELGIUM2 = 5002
 };
-
 bool ath_is_world_regd(struct ath_regulatory *reg);
 bool ath_is_49ghz_allowed(u16 redomain);
 u16 ath_regd_find_country_by_name(char *alpha2);
@@ -269,5 +241,4 @@ u32 ath_regd_get_band_ctl(struct ath_regulatory *reg,
 void ath_reg_notifier_apply(struct wiphy *wiphy,
 			    struct regulatory_request *request,
 			    struct ath_regulatory *reg);
-
 #endif

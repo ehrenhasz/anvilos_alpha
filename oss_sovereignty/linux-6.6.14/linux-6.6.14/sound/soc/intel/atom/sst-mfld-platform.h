@@ -1,30 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  sst_mfld_platform.h - Intel MID Platform driver header file
- *
- *  Copyright (C) 2010 Intel Corp
- *  Author: Vinod Koul <vinod.koul@intel.com>
- *  Author: Harsha Priya <priya.harsha@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
-
 #ifndef __SST_PLATFORMDRV_H__
 #define __SST_PLATFORMDRV_H__
-
 #include "sst-mfld-dsp.h"
 #include "sst-atom-controls.h"
-
 extern struct sst_device *sst;
 extern const struct snd_compress_ops sst_platform_compress_ops;
-
 #define DRV_NAME "sst"
-
 #define SST_MONO		1
 #define SST_STEREO		2
 #define SST_MAX_CAP		5
-
 #define SST_MAX_BUFFER		(800*1024)
 #define SST_MIN_BUFFER		(800*1024)
 #define SST_MIN_PERIOD_BYTES	32
@@ -32,7 +15,6 @@ extern const struct snd_compress_ops sst_platform_compress_ops;
 #define SST_MIN_PERIODS		2
 #define SST_MAX_PERIODS		(1024*2)
 #define SST_FIFO_SIZE		0
-
 struct pcm_stream_info {
 	int str_id;
 	void *arg;
@@ -41,7 +23,6 @@ struct pcm_stream_info {
 	unsigned long long pcm_delay;
 	int sfreq;
 };
-
 enum sst_drv_status {
 	SST_PLATFORM_INIT = 1,
 	SST_PLATFORM_STARTED,
@@ -49,12 +30,10 @@ enum sst_drv_status {
 	SST_PLATFORM_PAUSED,
 	SST_PLATFORM_DROPPED,
 };
-
 enum sst_stream_ops {
 	STREAM_OPS_PLAYBACK = 0,
 	STREAM_OPS_CAPTURE,
 };
-
 enum sst_audio_device_type {
 	SND_SST_DEVICE_HEADSET = 1,
 	SND_SST_DEVICE_IHF,
@@ -63,19 +42,16 @@ enum sst_audio_device_type {
 	SND_SST_DEVICE_CAPTURE,
 	SND_SST_DEVICE_COMPRESS,
 };
-
-/* PCM Parameters */
 struct sst_pcm_params {
-	u16 codec;	/* codec type */
-	u8 num_chan;	/* 1=Mono, 2=Stereo */
-	u8 pcm_wd_sz;	/* 16/24 - bit*/
-	u32 reserved;	/* Bitrate in bits per second */
-	u32 sfreq;	/* Sampling rate in Hz */
+	u16 codec;	 
+	u8 num_chan;	 
+	u8 pcm_wd_sz;	 
+	u32 reserved;	 
+	u32 sfreq;	 
 	u32 ring_buffer_size;
-	u32 period_count;	/* period elapsed in samples*/
+	u32 period_count;	 
 	u32 ring_buffer_addr;
 };
-
 struct sst_stream_params {
 	u32 result;
 	u32 stream_id;
@@ -85,14 +61,12 @@ struct sst_stream_params {
 	u8 device_type;
 	struct sst_pcm_params sparams;
 };
-
 struct sst_compress_cb {
 	void *param;
 	void (*compr_cb)(void *param);
 	void *drain_cb_param;
 	void (*drain_notify)(void *param);
 };
-
 struct compress_sst_ops {
 	const char *name;
 	int (*open)(struct device *dev,
@@ -103,7 +77,6 @@ struct compress_sst_ops {
 	int (*stream_partial_drain)(struct device *dev,	unsigned int str_id);
 	int (*stream_pause)(struct device *dev, unsigned int str_id);
 	int (*stream_pause_release)(struct device *dev,	unsigned int str_id);
-
 	int (*tstamp)(struct device *dev, unsigned int str_id,
 			struct snd_compr_tstamp *tstamp);
 	int (*ack)(struct device *dev, unsigned int str_id,
@@ -115,7 +88,6 @@ struct compress_sst_ops {
 			struct snd_compr_metadata *mdata);
 	int (*power)(struct device *dev, bool state);
 };
-
 struct sst_ops {
 	int (*open)(struct device *dev, struct snd_sst_params *str_param);
 	int (*stream_init)(struct device *dev, struct pcm_stream_info *str_info);
@@ -128,7 +100,6 @@ struct sst_ops {
 	int (*close)(struct device *dev, unsigned int str_id);
 	int (*power)(struct device *dev, bool state);
 };
-
 struct sst_runtime_stream {
 	int     stream_status;
 	unsigned int id;
@@ -138,7 +109,6 @@ struct sst_runtime_stream {
 	struct compress_sst_ops *compr_ops;
 	spinlock_t	status_lock;
 };
-
 struct sst_device {
 	char *name;
 	struct device *dev;
@@ -146,24 +116,20 @@ struct sst_device {
 	struct platform_device *pdev;
 	struct compress_sst_ops *compr_ops;
 };
-
 struct sst_data;
-
 int sst_dsp_init_v2_dpcm(struct snd_soc_component *component);
 int sst_send_pipe_gains(struct snd_soc_dai *dai, int stream, int mute);
 int send_ssp_cmd(struct snd_soc_dai *dai, const char *id, bool enable);
 int sst_handle_vb_timer(struct snd_soc_dai *dai, bool enable);
-
 void sst_set_stream_status(struct sst_runtime_stream *stream, int state);
 int sst_fill_stream_params(void *substream, const struct sst_data *ctx,
 			   struct snd_sst_params *str_params, bool is_compress);
-
 struct sst_algo_int_control_v2 {
 	struct soc_mixer_control mc;
-	u16 module_id; /* module identifieer */
-	u16 pipe_id; /* location info: pipe_id + instance_id */
+	u16 module_id;  
+	u16 pipe_id;  
 	u16 instance_id;
-	unsigned int value; /* Value received is stored here */
+	unsigned int value;  
 };
 struct sst_data {
 	struct platform_device *pdev;

@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt1017-sdca-sdw.h -- RT1017 SDCA ALSA SoC audio driver header
- *
- * Copyright(c) 2023 Realtek Semiconductor Corp.
- */
-
 #ifndef __RT1017_SDW_H__
 #define __RT1017_SDW_H__
-
 #include <linux/regmap.h>
 #include <linux/soundwire/sdw.h>
 #include <linux/soundwire/sdw_type.h>
 #include <linux/soundwire/sdw_registers.h>
 #include <sound/soc.h>
-
-/* RT1017 SDCA Control - function number */
 #define FUNC_NUM_SMART_AMP 0x04
-
-/* RT1017 SDCA entity */
 #define RT1017_SDCA_ENT_PDE23 0x31
 #define RT1017_SDCA_ENT_PDE22 0x33
 #define RT1017_SDCA_ENT_CS21 0x21
@@ -25,8 +13,6 @@
 #define RT1017_SDCA_ENT_XU22 0x22
 #define RT1017_SDCA_ENT_FU 0x03
 #define RT1017_SDCA_ENT_UDMPU21 0x02
-
-/* RT1017 SDCA control */
 #define RT1017_SDCA_CTL_FS_INDEX 0x10
 #define RT1017_SDCA_CTL_REQ_POWER_STATE 0x01
 #define RT1017_SDCA_CTL_PROT_STAT 0x11
@@ -34,23 +20,17 @@
 #define RT1017_SDCA_CTL_FU_MUTE 0x01
 #define RT1017_SDCA_CTL_FU_VOLUME 0x02
 #define RT1017_SDCA_CTL_UDMPU_CLUSTER 0x10
-
-
 #define RT1017_CLASSD_INT_1		0xd300
 #define RT1017_PWM_TRIM_1		0xd370
-
-
 #define RT1017_PWM_FREQ_CTL_SRC_SEL_MASK	(0x3 << 2)
 #define RT1017_PWM_FREQ_CTL_SRC_SEL_EFUSE	(0x2 << 2)
 #define RT1017_PWM_FREQ_CTL_SRC_SEL_REG		(0x0 << 2)
-
 enum {
 	RT1017_SDCA_RATE_44100HZ = 0x8,
 	RT1017_SDCA_RATE_48000HZ = 0x9,
 	RT1017_SDCA_RATE_96000HZ = 0xb,
 	RT1017_SDCA_RATE_192000HZ = 0xd,
 };
-
 struct rt1017_sdca_priv {
 	struct snd_soc_component *component;
 	struct regmap *regmap;
@@ -59,7 +39,6 @@ struct rt1017_sdca_priv {
 	bool hw_init;
 	bool first_hw_init;
 };
-
 static const struct reg_default rt1017_sdca_reg_defaults[] = {
 	{ 0x3206, 0x00 },
 	{ 0xc001, 0x43 },
@@ -165,7 +144,6 @@ static const struct reg_default rt1017_sdca_reg_defaults[] = {
 	{ 0xdb09, 0x0f },
 	{ 0xdb0a, 0xff },
 	{ 0xdb14, 0x00 },
-
 	{ SDW_SDCA_CTL(FUNC_NUM_SMART_AMP, RT1017_SDCA_ENT_UDMPU21,
 			RT1017_SDCA_CTL_UDMPU_CLUSTER, 0), 0x00 },
 	{ SDW_SDCA_CTL(FUNC_NUM_SMART_AMP, RT1017_SDCA_ENT_FU,
@@ -179,5 +157,4 @@ static const struct reg_default rt1017_sdca_reg_defaults[] = {
 	{ SDW_SDCA_CTL(FUNC_NUM_SMART_AMP, RT1017_SDCA_ENT_PDE22,
 			RT1017_SDCA_CTL_REQ_POWER_STATE, 0), 0x03 },
 };
-
-#endif /* __RT1017_SDW_H__ */
+#endif  

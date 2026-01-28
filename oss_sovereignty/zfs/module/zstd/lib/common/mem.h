@@ -1,127 +1,48 @@
-/*
- * Copyright (c) 2016-2020, Yann Collet, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under both the BSD-style license (found in the
- * LICENSE file in the root directory of this source tree) and the GPLv2 (found
- * in the COPYING file in the root directory of this source tree).
- * You may select, at your option, one of the above-listed licenses.
- */
-
 #ifndef MEM_H_MODULE
 #define MEM_H_MODULE
-
 #if defined (__cplusplus)
 extern "C" {
 #endif
-
-/*-****************************************
-*  Dependencies
-******************************************/
-#include <stddef.h>     /* size_t, ptrdiff_t */
-#include <string.h>     /* memcpy */
-
-
-/*-****************************************
-*  Compiler specifics
-******************************************/
-#if defined(_MSC_VER)   /* Visual Studio */
-#   include <stdlib.h>  /* _byteswap_ulong */
-#   include <intrin.h>  /* _byteswap_* */
+#include <stddef.h>      
+#include <string.h>      
+#if defined(_MSC_VER)    
+#   include <stdlib.h>   
+#   include <intrin.h>   
 #endif
 #if defined(__GNUC__)
 #  define MEM_STATIC static __inline __attribute__((unused))
-#elif defined (__cplusplus) || (defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) /* C99 */)
+#elif defined (__cplusplus) || (defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)  )
 #  define MEM_STATIC static inline
 #elif defined(_MSC_VER)
 #  define MEM_STATIC static __inline
 #else
-#  define MEM_STATIC static  /* this version may generate warnings for unused static functions; disable the relevant warning */
+#  define MEM_STATIC static   
 #endif
-
 #ifndef __has_builtin
-#  define __has_builtin(x) 0  /* compat. with non-clang compilers */
+#  define __has_builtin(x) 0   
 #endif
-
-/* code only tested on 32 and 64 bits systems */
 #define MEM_STATIC_ASSERT(c)   { enum { MEM_static_assert = 1/(int)(!!(c)) }; }
 MEM_STATIC void MEM_check(void) { MEM_STATIC_ASSERT((sizeof(size_t)==4) || (sizeof(size_t)==8)); }
-
-/* detects whether we are being compiled under msan */
 #if defined (__has_feature)
 #  if __has_feature(memory_sanitizer)
 #    define MEMORY_SANITIZER 1
 #  endif
 #endif
-
 #if defined (MEMORY_SANITIZER)
-/* Not all platforms that support msan provide sanitizers/msan_interface.h.
- * We therefore declare the functions we need ourselves, rather than trying to
- * include the header file... */
-
-#include <stdint.h> /* intptr_t */
-
-/* Make memory region fully initialized (without changing its contents). */
+#include <stdint.h>  
 void __msan_unpoison(const volatile void *a, size_t size);
-
-/* Make memory region fully uninitialized (without changing its contents).
-   This is a legacy interface that does not update origin information. Use
-   __msan_allocated_memory() instead. */
 void __msan_poison(const volatile void *a, size_t size);
-
-/* Returns the offset of the first (at least partially) poisoned byte in the
-   memory range, or -1 if the whole range is good. */
 intptr_t __msan_test_shadow(const volatile void *x, size_t size);
 #endif
-
-/* detects whether we are being compiled under asan */
 #if defined (ZFS_ASAN_ENABLED)
 #  define ADDRESS_SANITIZER 1
 #  define ZSTD_ASAN_DONT_POISON_WORKSPACE
 #endif
-
 #if defined (ADDRESS_SANITIZER)
-/* Not all platforms that support asan provide sanitizers/asan_interface.h.
- * We therefore declare the functions we need ourselves, rather than trying to
- * include the header file... */
-
-/**
- * Marks a memory region (<c>[addr, addr+size)</c>) as unaddressable.
- *
- * This memory must be previously allocated by your program. Instrumented
- * code is forbidden from accessing addresses in this region until it is
- * unpoisoned. This function is not guaranteed to poison the entire region -
- * it could poison only a subregion of <c>[addr, addr+size)</c> due to ASan
- * alignment restrictions.
- *
- * \note This function is not thread-safe because no two threads can poison or
- * unpoison memory in the same memory region simultaneously.
- *
- * \param addr Start of memory region.
- * \param size Size of memory region. */
 void __asan_poison_memory_region(void const volatile *addr, size_t size);
-
-/**
- * Marks a memory region (<c>[addr, addr+size)</c>) as addressable.
- *
- * This memory must be previously allocated by your program. Accessing
- * addresses in this region is allowed until this region is poisoned again.
- * This function could unpoison a super-region of <c>[addr, addr+size)</c> due
- * to ASan alignment restrictions.
- *
- * \note This function is not thread-safe because no two threads can
- * poison or unpoison memory in the same memory region simultaneously.
- *
- * \param addr Start of memory region.
- * \param size Size of memory region. */
 void __asan_unpoison_memory_region(void const volatile *addr, size_t size);
 #endif
-
-
-/*-**************************************************************
-*  Basic Types
-*****************************************************************/
-#if  !defined (__VMS) && (defined (__cplusplus) || (defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) /* C99 */) )
+#if  !defined (__VMS) && (defined (__cplusplus) || (defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)  ) )
 # include <stdint.h>
   typedef   uint8_t BYTE;
   typedef  uint16_t U16;
@@ -146,63 +67,32 @@ void __asan_unpoison_memory_region(void const volatile *addr, size_t size);
 #endif
   typedef unsigned int        U32;
   typedef   signed int        S32;
-/* note : there are no limits defined for long long type in C90.
- * limits exist in C99, however, in such case, <stdint.h> is preferred */
   typedef unsigned long long  U64;
   typedef   signed long long  S64;
 #endif
-
-
-/*-**************************************************************
-*  Memory I/O
-*****************************************************************/
-/* MEM_FORCE_MEMORY_ACCESS :
- * By default, access to unaligned memory is controlled by `memcpy()`, which is safe and portable.
- * Unfortunately, on some target/compiler combinations, the generated assembly is sub-optimal.
- * The below switch allow to select different access method for improved performance.
- * Method 0 (default) : use `memcpy()`. Safe and portable.
- * Method 1 : `__packed` statement. It depends on compiler extension (i.e., not portable).
- *            This method is safe if your compiler supports it, and *generally* as fast or faster than `memcpy`.
- * Method 2 : direct access. This method is portable but violate C standard.
- *            It can generate buggy code on targets depending on alignment.
- *            In some circumstances, it's the only known way to get the most performance (i.e. GCC + ARMv6)
- * See http://fastcompression.blogspot.fr/2015/08/accessing-unaligned-memory.html for details.
- * Prefer these methods in priority order (0 > 1 > 2)
- */
-#ifndef MEM_FORCE_MEMORY_ACCESS   /* can be defined externally, on command line for example */
+#ifndef MEM_FORCE_MEMORY_ACCESS    
 #  if defined(__GNUC__) && ( defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) || defined(__ARM_ARCH_6K__) || defined(__ARM_ARCH_6Z__) || defined(__ARM_ARCH_6ZK__) || defined(__ARM_ARCH_6T2__) )
 #    define MEM_FORCE_MEMORY_ACCESS 2
 #  elif defined(__INTEL_COMPILER) || defined(__GNUC__) || defined(__ICCARM__)
 #    define MEM_FORCE_MEMORY_ACCESS 1
 #  endif
 #endif
-
 MEM_STATIC unsigned MEM_32bits(void) { return sizeof(size_t)==4; }
 MEM_STATIC unsigned MEM_64bits(void) { return sizeof(size_t)==8; }
-
 MEM_STATIC unsigned MEM_isLittleEndian(void)
 {
-    const union { U32 u; BYTE c[4]; } one = { 1 };   /* don't use static : performance detrimental  */
+    const union { U32 u; BYTE c[4]; } one = { 1 };    
     return one.c[0];
 }
-
 #if defined(MEM_FORCE_MEMORY_ACCESS) && (MEM_FORCE_MEMORY_ACCESS==2)
-
-/* violates C standard, by lying on structure alignment.
-Only use if no other choice to achieve best performance on target platform */
 MEM_STATIC U16 MEM_read16(const void* memPtr) { return *(const U16*) memPtr; }
 MEM_STATIC U32 MEM_read32(const void* memPtr) { return *(const U32*) memPtr; }
 MEM_STATIC U64 MEM_read64(const void* memPtr) { return *(const U64*) memPtr; }
 MEM_STATIC size_t MEM_readST(const void* memPtr) { return *(const size_t*) memPtr; }
-
 MEM_STATIC void MEM_write16(void* memPtr, U16 value) { *(U16*)memPtr = value; }
 MEM_STATIC void MEM_write32(void* memPtr, U32 value) { *(U32*)memPtr = value; }
 MEM_STATIC void MEM_write64(void* memPtr, U64 value) { *(U64*)memPtr = value; }
-
 #elif defined(MEM_FORCE_MEMORY_ACCESS) && (MEM_FORCE_MEMORY_ACCESS==1)
-
-/* __pack instructions are safer, but compiler specific, hence potentially problematic for some compilers */
-/* currently only defined for gcc and icc */
 #if defined(_MSC_VER) || (defined(__INTEL_COMPILER) && defined(WIN32))
     __pragma( pack(push, 1) )
     typedef struct { U16 v; } unalign16;
@@ -216,61 +106,46 @@ MEM_STATIC void MEM_write64(void* memPtr, U64 value) { *(U64*)memPtr = value; }
     typedef struct { U64 v; } __attribute__((packed)) unalign64;
     typedef struct { size_t v; } __attribute__((packed)) unalignArch;
 #endif
-
 MEM_STATIC U16 MEM_read16(const void* ptr) { return ((const unalign16*)ptr)->v; }
 MEM_STATIC U32 MEM_read32(const void* ptr) { return ((const unalign32*)ptr)->v; }
 MEM_STATIC U64 MEM_read64(const void* ptr) { return ((const unalign64*)ptr)->v; }
 MEM_STATIC size_t MEM_readST(const void* ptr) { return ((const unalignArch*)ptr)->v; }
-
 MEM_STATIC void MEM_write16(void* memPtr, U16 value) { ((unalign16*)memPtr)->v = value; }
 MEM_STATIC void MEM_write32(void* memPtr, U32 value) { ((unalign32*)memPtr)->v = value; }
 MEM_STATIC void MEM_write64(void* memPtr, U64 value) { ((unalign64*)memPtr)->v = value; }
-
 #else
-
-/* default method, safe and standard.
-   can sometimes prove slower */
-
 MEM_STATIC U16 MEM_read16(const void* memPtr)
 {
     U16 val; memcpy(&val, memPtr, sizeof(val)); return val;
 }
-
 MEM_STATIC U32 MEM_read32(const void* memPtr)
 {
     U32 val; memcpy(&val, memPtr, sizeof(val)); return val;
 }
-
 MEM_STATIC U64 MEM_read64(const void* memPtr)
 {
     U64 val; memcpy(&val, memPtr, sizeof(val)); return val;
 }
-
 MEM_STATIC size_t MEM_readST(const void* memPtr)
 {
     size_t val; memcpy(&val, memPtr, sizeof(val)); return val;
 }
-
 MEM_STATIC void MEM_write16(void* memPtr, U16 value)
 {
     memcpy(memPtr, &value, sizeof(value));
 }
-
 MEM_STATIC void MEM_write32(void* memPtr, U32 value)
 {
     memcpy(memPtr, &value, sizeof(value));
 }
-
 MEM_STATIC void MEM_write64(void* memPtr, U64 value)
 {
     memcpy(memPtr, &value, sizeof(value));
 }
-
-#endif /* MEM_FORCE_MEMORY_ACCESS */
-
+#endif  
 MEM_STATIC U32 MEM_swap32(U32 in)
 {
-#if defined(_MSC_VER)     /* Visual Studio */
+#if defined(_MSC_VER)      
     return _byteswap_ulong(in);
 #elif (defined (__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 403)) \
   || (defined(__clang__) && __has_builtin(__builtin_bswap32))
@@ -282,10 +157,9 @@ MEM_STATIC U32 MEM_swap32(U32 in)
             ((in >> 24) & 0x000000ff );
 #endif
 }
-
 MEM_STATIC U64 MEM_swap64(U64 in)
 {
-#if defined(_MSC_VER)     /* Visual Studio */
+#if defined(_MSC_VER)      
     return _byteswap_uint64(in);
 #elif (defined (__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 403)) \
   || (defined(__clang__) && __has_builtin(__builtin_bswap64))
@@ -301,7 +175,6 @@ MEM_STATIC U64 MEM_swap64(U64 in)
             ((in >> 56) & 0x00000000000000ffULL);
 #endif
 }
-
 MEM_STATIC size_t MEM_swapST(size_t in)
 {
     if (MEM_32bits())
@@ -309,9 +182,6 @@ MEM_STATIC size_t MEM_swapST(size_t in)
     else
         return (size_t)MEM_swap64((U64)in);
 }
-
-/*=== Little endian r/w ===*/
-
 MEM_STATIC U16 MEM_readLE16(const void* memPtr)
 {
     if (MEM_isLittleEndian())
@@ -321,7 +191,6 @@ MEM_STATIC U16 MEM_readLE16(const void* memPtr)
         return (U16)(p[0] + (p[1]<<8));
     }
 }
-
 MEM_STATIC void MEM_writeLE16(void* memPtr, U16 val)
 {
     if (MEM_isLittleEndian()) {
@@ -332,18 +201,15 @@ MEM_STATIC void MEM_writeLE16(void* memPtr, U16 val)
         p[1] = (BYTE)(val>>8);
     }
 }
-
 MEM_STATIC U32 MEM_readLE24(const void* memPtr)
 {
     return MEM_readLE16(memPtr) + (((const BYTE*)memPtr)[2] << 16);
 }
-
 MEM_STATIC void MEM_writeLE24(void* memPtr, U32 val)
 {
     MEM_writeLE16(memPtr, (U16)val);
     ((BYTE*)memPtr)[2] = (BYTE)(val>>16);
 }
-
 MEM_STATIC U32 MEM_readLE32(const void* memPtr)
 {
     if (MEM_isLittleEndian())
@@ -351,7 +217,6 @@ MEM_STATIC U32 MEM_readLE32(const void* memPtr)
     else
         return MEM_swap32(MEM_read32(memPtr));
 }
-
 MEM_STATIC void MEM_writeLE32(void* memPtr, U32 val32)
 {
     if (MEM_isLittleEndian())
@@ -359,7 +224,6 @@ MEM_STATIC void MEM_writeLE32(void* memPtr, U32 val32)
     else
         MEM_write32(memPtr, MEM_swap32(val32));
 }
-
 MEM_STATIC U64 MEM_readLE64(const void* memPtr)
 {
     if (MEM_isLittleEndian())
@@ -367,7 +231,6 @@ MEM_STATIC U64 MEM_readLE64(const void* memPtr)
     else
         return MEM_swap64(MEM_read64(memPtr));
 }
-
 MEM_STATIC void MEM_writeLE64(void* memPtr, U64 val64)
 {
     if (MEM_isLittleEndian())
@@ -375,7 +238,6 @@ MEM_STATIC void MEM_writeLE64(void* memPtr, U64 val64)
     else
         MEM_write64(memPtr, MEM_swap64(val64));
 }
-
 MEM_STATIC size_t MEM_readLEST(const void* memPtr)
 {
     if (MEM_32bits())
@@ -383,7 +245,6 @@ MEM_STATIC size_t MEM_readLEST(const void* memPtr)
     else
         return (size_t)MEM_readLE64(memPtr);
 }
-
 MEM_STATIC void MEM_writeLEST(void* memPtr, size_t val)
 {
     if (MEM_32bits())
@@ -391,9 +252,6 @@ MEM_STATIC void MEM_writeLEST(void* memPtr, size_t val)
     else
         MEM_writeLE64(memPtr, (U64)val);
 }
-
-/*=== Big endian r/w ===*/
-
 MEM_STATIC U32 MEM_readBE32(const void* memPtr)
 {
     if (MEM_isLittleEndian())
@@ -401,7 +259,6 @@ MEM_STATIC U32 MEM_readBE32(const void* memPtr)
     else
         return MEM_read32(memPtr);
 }
-
 MEM_STATIC void MEM_writeBE32(void* memPtr, U32 val32)
 {
     if (MEM_isLittleEndian())
@@ -409,7 +266,6 @@ MEM_STATIC void MEM_writeBE32(void* memPtr, U32 val32)
     else
         MEM_write32(memPtr, val32);
 }
-
 MEM_STATIC U64 MEM_readBE64(const void* memPtr)
 {
     if (MEM_isLittleEndian())
@@ -417,7 +273,6 @@ MEM_STATIC U64 MEM_readBE64(const void* memPtr)
     else
         return MEM_read64(memPtr);
 }
-
 MEM_STATIC void MEM_writeBE64(void* memPtr, U64 val64)
 {
     if (MEM_isLittleEndian())
@@ -425,7 +280,6 @@ MEM_STATIC void MEM_writeBE64(void* memPtr, U64 val64)
     else
         MEM_write64(memPtr, val64);
 }
-
 MEM_STATIC size_t MEM_readBEST(const void* memPtr)
 {
     if (MEM_32bits())
@@ -433,7 +287,6 @@ MEM_STATIC size_t MEM_readBEST(const void* memPtr)
     else
         return (size_t)MEM_readBE64(memPtr);
 }
-
 MEM_STATIC void MEM_writeBEST(void* memPtr, size_t val)
 {
     if (MEM_32bits())
@@ -441,10 +294,7 @@ MEM_STATIC void MEM_writeBEST(void* memPtr, size_t val)
     else
         MEM_writeBE64(memPtr, (U64)val);
 }
-
-
 #if defined (__cplusplus)
 }
 #endif
-
-#endif /* MEM_H_MODULE */
+#endif  

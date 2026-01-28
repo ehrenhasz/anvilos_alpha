@@ -1,15 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Fii USA Inc.
-
 /dts-v1/;
 #include "nuvoton-npcm730.dtsi"
-
 #include <dt-bindings/gpio/gpio.h>
-
 / {
 	model = "Fii Kudo Board";
 	compatible = "fii,kudo", "nuvoton,npcm730";
-
 	aliases {
 		ethernet1 = &gmac0;
 		serial0 = &serial0;
@@ -36,44 +30,32 @@
 		fiu0 = &fiu0;
 		fiu1 = &fiu3;
 	};
-
 	chosen {
 		stdout-path = &serial3;
 	};
-
 	memory {
 		reg = <0 0x40000000>;
 	};
-
 	iio-hwmon {
 		compatible = "iio-hwmon";
 		io-channels = <&adc 0>, <&adc 1>, <&adc 2>, <&adc 3>,
 			<&adc 4>, <&adc 5>, <&adc 6>, <&adc 7>;
 	};
-
 	jtag_master {
 		compatible = "nuvoton,npcm750-jtag-master";
 		#address-cells = <1>;
 		#size-cells = <1>;
-
-		// dev/jtag0
 		dev-num = <0>;
-		// pspi or gpio
 		mode = "pspi";
-
-		// pspi2
 		pspi-controller = <2>;
 		reg = <0xf0201000 0x1000>;
 		interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
 		clocks = <&clk NPCM7XX_CLK_APB5>;
-
-		// TCK, TDI, TDO, TMS
 		jtag-gpios = <&gpio0 19 GPIO_ACTIVE_HIGH>,
 				<&gpio0 18 GPIO_ACTIVE_HIGH>,
 				<&gpio0 17 GPIO_ACTIVE_HIGH>,
 				<&gpio0 16 GPIO_ACTIVE_HIGH>;
 	};
-
 	leds {
 		compatible = "gpio-leds";
 		heartbeat {
@@ -81,7 +63,6 @@
 			gpios = <&gpio0 14 1>;
 		};
 	};
-
 	pinctrl: pinctrl@f0800000 {
 		gpio61oh_pins: gpio61oh-pins {
 			pins = "GPO61/nDTR1_BOUT1/STRAP6";
@@ -365,17 +346,14 @@
 		};
 	};
 };
-
 &gmac0 {
 	phy-mode = "rgmii-id";
 	snps,eee-force-disable;
 	status = "okay";
 };
-
 &ehci1 {
 	status = "okay";
 };
-
 &fiu0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0cs1_pins>;
@@ -437,7 +415,6 @@
 		};
 	};
 };
-
 &fiu3 {
 	pinctrl-0 = <&spi3_pins>;
 	flash@0 {
@@ -462,36 +439,28 @@
 		};
 	};
 };
-
 &watchdog1 {
 	status = "okay";
 };
-
 &rng {
 	status = "okay";
 };
-
 &serial0 {
 	status = "okay";
 };
-
 &serial1 {
 	status = "okay";
 };
-
 &serial2 {
 	status = "okay";
 };
-
 &serial3 {
 	status = "okay";
 };
-
 &adc {
 	#io-channel-cells = <1>;
 	status = "okay";
 };
-
 &i2c1 {
 	status = "okay";
 	i2c-mux@75 {
@@ -500,73 +469,55 @@
 		#size-cells = <0>;
 		reg = <0x75>;
 		i2c-mux-idle-disconnect;
-
 		i2c@2 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <2>;
-
-			// Rear-Fan
 			max31790@58 {
 				compatible = "maxim,max31790";
 				reg = <0x58>;
 			};
 		};
-
 		i2c@3 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <3>;
-
-			// Mid-Fan
 			max31790@58 {
 				compatible = "maxim,max31790";
 				reg = <0x58>;
 			};
 		};
-
 		i2c-bus@4 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <4>;
-
-			// INLET1_T
 			lm75@5c {
 				compatible = "ti,lm75";
 				reg = <0x5c>;
 			};
 		};
-
 		i2c-bus@5 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <5>;
-
-			// OUTLET1_T
 			lm75@5c {
 				compatible = "ti,lm75";
 				reg = <0x5c>;
 			};
 		};
-
 		i2c-bus@6 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <6>;
-
-			// OUTLET2_T
 			lm75@5c {
 				compatible = "ti,lm75";
 				reg = <0x5c>;
 			};
 		};
-
 		i2c-bus@7 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <7>;
-
-			// OUTLET3_T
 			lm75@5c {
 				compatible = "ti,lm75";
 				reg = <0x5c>;
@@ -579,13 +530,10 @@
 		#size-cells = <0>;
 		reg = <0x77>;
 		i2c-mux-idle-disconnect;
-
 		i2c-bus@2 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <2>;
-
-			// STB-T
 			pmbus@74 {
 				compatible = "pmbus";
 				reg = <0x74>;
@@ -593,24 +541,20 @@
 		};
 	};
 };
-
 &i2c2 {
 	status = "okay";
 	smpro@4f {
 		compatible = "ampere,smpro";
 		reg = <0x4f>;
 	};
-
 	smpro@4e {
 		compatible = "ampere,smpro";
 		reg = <0x4e>;
 	};
 };
-
 &i2c3 {
 	status = "okay";
 };
-
 &i2c4 {
 	status = "okay";
 	i2c-mux@77 {
@@ -619,25 +563,19 @@
 		#size-cells = <0>;
 		reg = <0x77>;
 		i2c-mux-idle-disconnect;
-
 		i2c-bus@0 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <0>;
-
-			// ADC sensors
 			adm1266@40 {
 				compatible = "adi,adm1266";
 				reg = <0x40>;
 			};
 		};
-
 		i2c-bus@1 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <1>;
-
-			// ADC sensors
 			adm1266@41 {
 				compatible = "adi,adm1266";
 				reg = <0x41>;
@@ -645,35 +583,27 @@
 		};
 	};
 };
-
 &i2c5 {
 	status = "okay";
 };
-
 &i2c6 {
 	status = "okay";
 };
-
 &i2c7 {
 	status = "okay";
 };
-
 &i2c8 {
 	status = "okay";
 };
-
 &i2c9 {
 	status = "okay";
 };
-
 &i2c10 {
 	status = "okay";
 };
-
 &i2c11 {
 	status = "okay";
 };
-
 &i2c12 {
 	status = "okay";
 	ssif-bmc@10 {
@@ -681,7 +611,6 @@
 		reg = <0x10>;
 	};
 };
-
 &i2c13 {
 	status = "okay";
 	i2c-mux@77 {
@@ -690,37 +619,28 @@
 		#size-cells = <0>;
 		reg = <0x77>;
 		i2c-mux-idle-disconnect;
-
 		i2c-bus@3 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <3>;
-
-			// M2_ZONE_T
 			lm75@28 {
 				compatible = "ti,lm75";
 				reg = <0x28>;
 			};
 		};
-
 		i2c-bus@4 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <4>;
-
-			// BATT_ZONE_T
 			lm75@29 {
 				compatible = "ti,lm75";
 				reg = <0x29>;
 			};
 		};
-
 		i2c-bus@5 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <5>;
-
-			// NBM1_ZONE_T
 			lm75@28 {
 				compatible = "ti,lm75";
 				reg = <0x28>;
@@ -730,8 +650,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <6>;
-
-			// NBM2_ZONE_T
 			lm75@29 {
 				compatible = "ti,lm75";
 				reg = <0x29>;
@@ -739,20 +657,16 @@
 		};
 	};
 };
-
 &i2c14 {
 	status = "okay";
 };
-
 &i2c15 {
 	status = "okay";
 };
-
 &spi0 {
 	cs-gpios = <&gpio6 11 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &pinctrl {
 	pinctrl-names = "default";
 	pinctrl-0 = <
@@ -814,12 +728,10 @@
 			&gpio202ol_pins
 			>;
 };
-
 &gcr {
 	serial_port_mux: mux-controller {
 		compatible = "mmio-mux";
 		#mux-control-cells = <1>;
-
 		mux-reg-masks = <0x38 0x07>;
 		idle-states = <2>;
 	};

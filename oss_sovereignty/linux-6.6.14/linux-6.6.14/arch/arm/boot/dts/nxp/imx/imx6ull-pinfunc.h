@@ -1,17 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- */
-
 #ifndef __DTS_IMX6ULL_PINFUNC_H
 #define __DTS_IMX6ULL_PINFUNC_H
-
 #include "imx6ul-pinfunc.h"
-/*
- * The pin function ID is a tuple of
- * <mux_reg conf_reg input_reg mux_mode input_val>
- */
-/* signals common for i.MX6UL and i.MX6ULL */
 #undef MX6UL_PAD_UART5_TX_DATA__UART5_DTE_RX
 #define MX6UL_PAD_UART5_TX_DATA__UART5_DTE_RX                    0x00BC 0x0348 0x0644 0x0 0x6
 #undef MX6UL_PAD_UART5_RX_DATA__UART5_DCE_RX
@@ -22,8 +11,6 @@
 #define MX6UL_PAD_ENET1_TX_DATA0__UART5_DTE_RTS                  0x00D0 0x035C 0x0640 0x1 0x6
 #undef MX6UL_PAD_CSI_DATA02__UART5_DCE_RTS
 #define MX6UL_PAD_CSI_DATA02__UART5_DCE_RTS                      0x01EC 0x0478 0x0640 0x8 0x7
-
-/* signals for i.MX6ULL only */
 #define MX6ULL_PAD_UART1_TX_DATA__UART5_DCE_TX                    0x0084 0x0310 0x0000 0x9 0x0
 #define MX6ULL_PAD_UART1_TX_DATA__UART5_DTE_RX                    0x0084 0x0310 0x0644 0x9 0x4
 #define MX6ULL_PAD_UART1_RX_DATA__UART5_DCE_RX                    0x0088 0x0314 0x0644 0x9 0x5
@@ -83,5 +70,4 @@
 #define MX6ULL_PAD_CSI_DATA05__ESAI_TX_CLK                        0x01F8 0x0484 0x0000 0x9 0x0
 #define MX6ULL_PAD_CSI_DATA06__ESAI_TX5_RX0                       0x01FC 0x0488 0x0000 0x9 0x0
 #define MX6ULL_PAD_CSI_DATA07__ESAI_TX0                           0x0200 0x048C 0x0000 0x9 0x0
-
-#endif /* __DTS_IMX6ULL_PINFUNC_H */
+#endif  

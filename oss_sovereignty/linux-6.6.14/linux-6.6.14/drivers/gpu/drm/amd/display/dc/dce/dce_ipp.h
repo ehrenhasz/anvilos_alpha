@@ -1,36 +1,8 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef _DCE_IPP_H_
 #define _DCE_IPP_H_
-
 #include "ipp.h"
-
 #define TO_DCE_IPP(ipp)\
 	container_of(ipp, struct dce_ipp, base)
-
 #define IPP_COMMON_REG_LIST_DCE_BASE(id) \
 	SRI(CUR_UPDATE, DCP, id), \
 	SRI(CUR_CONTROL, DCP, id), \
@@ -52,18 +24,14 @@
 	SRI(DC_LUT_RW_INDEX, DCP, id), \
 	SRI(DC_LUT_SEQ_COLOR, DCP, id), \
 	SRI(DEGAMMA_CONTROL, DCP, id)
-
 #define IPP_DCE100_REG_LIST_DCE_BASE(id) \
 	IPP_COMMON_REG_LIST_DCE_BASE(id), \
 	SRI(DCFE_MEM_PWR_CTRL, CRTC, id)
-
 #define IPP_DCE110_REG_LIST_DCE_BASE(id) \
 	IPP_COMMON_REG_LIST_DCE_BASE(id), \
 	SRI(DCFE_MEM_PWR_CTRL, DCFE, id)
-
 #define IPP_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
-
 #define IPP_COMMON_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh) \
 	IPP_SF(CUR_UPDATE, CURSOR_UPDATE_LOCK, mask_sh), \
 	IPP_SF(CUR_CONTROL, CURSOR_EN, mask_sh), \
@@ -102,11 +70,9 @@
 	IPP_SF(DEGAMMA_CONTROL, GRPH_DEGAMMA_MODE, mask_sh), \
 	IPP_SF(DEGAMMA_CONTROL, CURSOR_DEGAMMA_MODE, mask_sh), \
 	IPP_SF(DEGAMMA_CONTROL, CURSOR2_DEGAMMA_MODE, mask_sh)
-
 #define IPP_DCE100_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh) \
 	IPP_COMMON_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh), \
 	IPP_SF(DCFE_MEM_PWR_CTRL, DCP_LUT_MEM_PWR_DIS, mask_sh)
-
 #define IPP_DCE120_MASK_SH_LIST_SOC_BASE(mask_sh) \
 	IPP_SF(DCP0_CUR_UPDATE, CURSOR_UPDATE_LOCK, mask_sh), \
 	IPP_SF(DCP0_CUR_CONTROL, CURSOR_EN, mask_sh), \
@@ -146,7 +112,6 @@
 	IPP_SF(DCP0_DEGAMMA_CONTROL, GRPH_DEGAMMA_MODE, mask_sh), \
 	IPP_SF(DCP0_DEGAMMA_CONTROL, CURSOR_DEGAMMA_MODE, mask_sh), \
 	IPP_SF(DCP0_DEGAMMA_CONTROL, CURSOR2_DEGAMMA_MODE, mask_sh)
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 #define IPP_DCE60_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh) \
 	IPP_SF(CUR_UPDATE, CURSOR_UPDATE_LOCK, mask_sh), \
@@ -186,7 +151,6 @@
 	IPP_SF(DEGAMMA_CONTROL, GRPH_DEGAMMA_MODE, mask_sh), \
 	IPP_SF(DEGAMMA_CONTROL, CURSOR_DEGAMMA_MODE, mask_sh)
 #endif
-
 #define IPP_REG_FIELD_LIST(type) \
 	type CURSOR_UPDATE_LOCK; \
 	type CURSOR_EN; \
@@ -226,15 +190,12 @@
 	type GRPH_DEGAMMA_MODE; \
 	type CURSOR_DEGAMMA_MODE; \
 	type CURSOR2_DEGAMMA_MODE
-
 struct dce_ipp_shift {
 	IPP_REG_FIELD_LIST(uint8_t);
 };
-
 struct dce_ipp_mask {
 	IPP_REG_FIELD_LIST(uint32_t);
 };
-
 struct dce_ipp_registers {
 	uint32_t CUR_UPDATE;
 	uint32_t CUR_CONTROL;
@@ -258,21 +219,18 @@ struct dce_ipp_registers {
 	uint32_t DC_LUT_SEQ_COLOR;
 	uint32_t DEGAMMA_CONTROL;
 };
-
 struct dce_ipp {
 	struct input_pixel_processor base;
 	const struct dce_ipp_registers *regs;
 	const struct dce_ipp_shift *ipp_shift;
 	const struct dce_ipp_mask *ipp_mask;
 };
-
 void dce_ipp_construct(struct dce_ipp *ipp_dce,
 	struct dc_context *ctx,
 	int inst,
 	const struct dce_ipp_registers *regs,
 	const struct dce_ipp_shift *ipp_shift,
 	const struct dce_ipp_mask *ipp_mask);
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 void dce60_ipp_construct(struct dce_ipp *ipp_dce,
 	struct dc_context *ctx,
@@ -281,7 +239,5 @@ void dce60_ipp_construct(struct dce_ipp *ipp_dce,
 	const struct dce_ipp_shift *ipp_shift,
 	const struct dce_ipp_mask *ipp_mask);
 #endif
-
 void dce_ipp_destroy(struct input_pixel_processor **ipp);
-
-#endif /* _DCE_IPP_H_ */
+#endif  

@@ -1,19 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Device Tree Include file for Marvell Armada 388 SoC.
- *
- * Copyright (C) 2015 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- *
- * The main difference with the Armada 385 is that the 388 can handle two more
- * SATA ports. So we can reuse the dtsi of the Armada 385, override the pinctrl
- * property and the name of the SoC, and add the second SATA host which control
- * the 2 other ports.
- */
-
 #include "armada-385.dtsi"
-
 / {
 	model = "Marvell Armada 388 family SoC";
 	compatible = "marvell,armada388", "marvell,armada385",
@@ -27,11 +12,9 @@
 				clocks = <&gateclk 30>;
 				status = "disabled";
 			};
-
 		};
 	};
 };
-
 &pinctrl {
 	compatible = "marvell,mv88f6828-pinctrl";
 };

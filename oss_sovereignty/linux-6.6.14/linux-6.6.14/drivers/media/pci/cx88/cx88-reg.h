@@ -1,160 +1,116 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * cx88x-hw.h - CX2388x register offsets
- *
- * Copyright (C) 1996,97,98 Ralph Metzler (rjkm@thp.uni-koeln.de)
- *		  2001 Michael Eskin
- *		  2002 Yurij Sysoev <yurij@naturesoft.net>
- *		  2003 Gerd Knorr <kraxel@bytesex.org>
- */
-
 #ifndef _CX88_REG_H_
 #define _CX88_REG_H_
-
-/*
- * PCI IDs and config space
- */
-
 #ifndef PCI_VENDOR_ID_CONEXANT
 # define PCI_VENDOR_ID_CONEXANT		0x14F1
 #endif
 #ifndef PCI_DEVICE_ID_CX2300_VID
 # define PCI_DEVICE_ID_CX2300_VID	0x8800
 #endif
-
 #define CX88X_DEVCTRL 0x40
 #define CX88X_EN_TBFX 0x02
 #define CX88X_EN_VSFX 0x04
-
-/*
- * PCI controller registers
- */
-
-/* Command and Status Register */
 #define F0_CMD_STAT_MM      0x2f0004
 #define F1_CMD_STAT_MM      0x2f0104
 #define F2_CMD_STAT_MM      0x2f0204
 #define F3_CMD_STAT_MM      0x2f0304
 #define F4_CMD_STAT_MM      0x2f0404
-
-/* Device Control #1 */
 #define F0_DEV_CNTRL1_MM    0x2f0040
 #define F1_DEV_CNTRL1_MM    0x2f0140
 #define F2_DEV_CNTRL1_MM    0x2f0240
 #define F3_DEV_CNTRL1_MM    0x2f0340
 #define F4_DEV_CNTRL1_MM    0x2f0440
-
-/* Device Control #1 */
 #define F0_BAR0_MM          0x2f0010
 #define F1_BAR0_MM          0x2f0110
 #define F2_BAR0_MM          0x2f0210
 #define F3_BAR0_MM          0x2f0310
 #define F4_BAR0_MM          0x2f0410
-
-/*
- * DMA Controller registers
- */
-
-#define MO_PDMA_STHRSH      0x200000 // Source threshold
-#define MO_PDMA_STADRS      0x200004 // Source target address
-#define MO_PDMA_SIADRS      0x200008 // Source internal address
-#define MO_PDMA_SCNTRL      0x20000C // Source control
-#define MO_PDMA_DTHRSH      0x200010 // Destination threshold
-#define MO_PDMA_DTADRS      0x200014 // Destination target address
-#define MO_PDMA_DIADRS      0x200018 // Destination internal address
-#define MO_PDMA_DCNTRL      0x20001C // Destination control
-#define MO_LD_SSID          0x200030 // Load subsystem ID
-#define MO_DEV_CNTRL2       0x200034 // Device control
-#define MO_PCI_INTMSK       0x200040 // PCI interrupt mask
-#define MO_PCI_INTSTAT      0x200044 // PCI interrupt status
-#define MO_PCI_INTMSTAT     0x200048 // PCI interrupt masked status
-#define MO_VID_INTMSK       0x200050 // Video interrupt mask
-#define MO_VID_INTSTAT      0x200054 // Video interrupt status
-#define MO_VID_INTMSTAT     0x200058 // Video interrupt masked status
-#define MO_VID_INTSSTAT     0x20005C // Video interrupt set status
-#define MO_AUD_INTMSK       0x200060 // Audio interrupt mask
-#define MO_AUD_INTSTAT      0x200064 // Audio interrupt status
-#define MO_AUD_INTMSTAT     0x200068 // Audio interrupt masked status
-#define MO_AUD_INTSSTAT     0x20006C // Audio interrupt set status
-#define MO_TS_INTMSK        0x200070 // Transport stream interrupt mask
-#define MO_TS_INTSTAT       0x200074 // Transport stream interrupt status
-#define MO_TS_INTMSTAT      0x200078 // Transport stream interrupt mask status
-#define MO_TS_INTSSTAT      0x20007C // Transport stream interrupt set status
-#define MO_VIP_INTMSK       0x200080 // VIP interrupt mask
-#define MO_VIP_INTSTAT      0x200084 // VIP interrupt status
-#define MO_VIP_INTMSTAT     0x200088 // VIP interrupt masked status
-#define MO_VIP_INTSSTAT     0x20008C // VIP interrupt set status
-#define MO_GPHST_INTMSK     0x200090 // Host interrupt mask
-#define MO_GPHST_INTSTAT    0x200094 // Host interrupt status
-#define MO_GPHST_INTMSTAT   0x200098 // Host interrupt masked status
-#define MO_GPHST_INTSSTAT   0x20009C // Host interrupt set status
-
-// DMA Channels 1-6 belong to SPIPE
-#define MO_DMA7_PTR1        0x300018 // {24}RW* DMA Current Ptr : Ch#7
-#define MO_DMA8_PTR1        0x30001C // {24}RW* DMA Current Ptr : Ch#8
-
-// DMA Channels 9-20 belong to SPIPE
-#define MO_DMA21_PTR1       0x300080 // {24}R0* DMA Current Ptr : Ch#21
-#define MO_DMA22_PTR1       0x300084 // {24}R0* DMA Current Ptr : Ch#22
-#define MO_DMA23_PTR1       0x300088 // {24}R0* DMA Current Ptr : Ch#23
-#define MO_DMA24_PTR1       0x30008C // {24}R0* DMA Current Ptr : Ch#24
-#define MO_DMA25_PTR1       0x300090 // {24}R0* DMA Current Ptr : Ch#25
-#define MO_DMA26_PTR1       0x300094 // {24}R0* DMA Current Ptr : Ch#26
-#define MO_DMA27_PTR1       0x300098 // {24}R0* DMA Current Ptr : Ch#27
-#define MO_DMA28_PTR1       0x30009C // {24}R0* DMA Current Ptr : Ch#28
-#define MO_DMA29_PTR1       0x3000A0 // {24}R0* DMA Current Ptr : Ch#29
-#define MO_DMA30_PTR1       0x3000A4 // {24}R0* DMA Current Ptr : Ch#30
-#define MO_DMA31_PTR1       0x3000A8 // {24}R0* DMA Current Ptr : Ch#31
-#define MO_DMA32_PTR1       0x3000AC // {24}R0* DMA Current Ptr : Ch#32
-
-#define MO_DMA21_PTR2       0x3000C0 // {24}RW* DMA Tab Ptr : Ch#21
-#define MO_DMA22_PTR2       0x3000C4 // {24}RW* DMA Tab Ptr : Ch#22
-#define MO_DMA23_PTR2       0x3000C8 // {24}RW* DMA Tab Ptr : Ch#23
-#define MO_DMA24_PTR2       0x3000CC // {24}RW* DMA Tab Ptr : Ch#24
-#define MO_DMA25_PTR2       0x3000D0 // {24}RW* DMA Tab Ptr : Ch#25
-#define MO_DMA26_PTR2       0x3000D4 // {24}RW* DMA Tab Ptr : Ch#26
-#define MO_DMA27_PTR2       0x3000D8 // {24}RW* DMA Tab Ptr : Ch#27
-#define MO_DMA28_PTR2       0x3000DC // {24}RW* DMA Tab Ptr : Ch#28
-#define MO_DMA29_PTR2       0x3000E0 // {24}RW* DMA Tab Ptr : Ch#29
-#define MO_DMA30_PTR2       0x3000E4 // {24}RW* DMA Tab Ptr : Ch#30
-#define MO_DMA31_PTR2       0x3000E8 // {24}RW* DMA Tab Ptr : Ch#31
-#define MO_DMA32_PTR2       0x3000EC // {24}RW* DMA Tab Ptr : Ch#32
-
-#define MO_DMA21_CNT1       0x300100 // {11}RW* DMA Buffer Size : Ch#21
-#define MO_DMA22_CNT1       0x300104 // {11}RW* DMA Buffer Size : Ch#22
-#define MO_DMA23_CNT1       0x300108 // {11}RW* DMA Buffer Size : Ch#23
-#define MO_DMA24_CNT1       0x30010C // {11}RW* DMA Buffer Size : Ch#24
-#define MO_DMA25_CNT1       0x300110 // {11}RW* DMA Buffer Size : Ch#25
-#define MO_DMA26_CNT1       0x300114 // {11}RW* DMA Buffer Size : Ch#26
-#define MO_DMA27_CNT1       0x300118 // {11}RW* DMA Buffer Size : Ch#27
-#define MO_DMA28_CNT1       0x30011C // {11}RW* DMA Buffer Size : Ch#28
-#define MO_DMA29_CNT1       0x300120 // {11}RW* DMA Buffer Size : Ch#29
-#define MO_DMA30_CNT1       0x300124 // {11}RW* DMA Buffer Size : Ch#30
-#define MO_DMA31_CNT1       0x300128 // {11}RW* DMA Buffer Size : Ch#31
-#define MO_DMA32_CNT1       0x30012C // {11}RW* DMA Buffer Size : Ch#32
-
-#define MO_DMA21_CNT2       0x300140 // {11}RW* DMA Table Size : Ch#21
-#define MO_DMA22_CNT2       0x300144 // {11}RW* DMA Table Size : Ch#22
-#define MO_DMA23_CNT2       0x300148 // {11}RW* DMA Table Size : Ch#23
-#define MO_DMA24_CNT2       0x30014C // {11}RW* DMA Table Size : Ch#24
-#define MO_DMA25_CNT2       0x300150 // {11}RW* DMA Table Size : Ch#25
-#define MO_DMA26_CNT2       0x300154 // {11}RW* DMA Table Size : Ch#26
-#define MO_DMA27_CNT2       0x300158 // {11}RW* DMA Table Size : Ch#27
-#define MO_DMA28_CNT2       0x30015C // {11}RW* DMA Table Size : Ch#28
-#define MO_DMA29_CNT2       0x300160 // {11}RW* DMA Table Size : Ch#29
-#define MO_DMA30_CNT2       0x300164 // {11}RW* DMA Table Size : Ch#30
-#define MO_DMA31_CNT2       0x300168 // {11}RW* DMA Table Size : Ch#31
-#define MO_DMA32_CNT2       0x30016C // {11}RW* DMA Table Size : Ch#32
-
-/*
- * Video registers
- */
-
-#define MO_VIDY_DMA         0x310000 // {64}RWp Video Y
-#define MO_VIDU_DMA         0x310008 // {64}RWp Video U
-#define MO_VIDV_DMA         0x310010 // {64}RWp Video V
-#define MO_VBI_DMA          0x310018 // {64}RWp VBI (Vertical blanking interval)
-
+#define MO_PDMA_STHRSH      0x200000  
+#define MO_PDMA_STADRS      0x200004  
+#define MO_PDMA_SIADRS      0x200008  
+#define MO_PDMA_SCNTRL      0x20000C  
+#define MO_PDMA_DTHRSH      0x200010  
+#define MO_PDMA_DTADRS      0x200014  
+#define MO_PDMA_DIADRS      0x200018  
+#define MO_PDMA_DCNTRL      0x20001C  
+#define MO_LD_SSID          0x200030  
+#define MO_DEV_CNTRL2       0x200034  
+#define MO_PCI_INTMSK       0x200040  
+#define MO_PCI_INTSTAT      0x200044  
+#define MO_PCI_INTMSTAT     0x200048  
+#define MO_VID_INTMSK       0x200050  
+#define MO_VID_INTSTAT      0x200054  
+#define MO_VID_INTMSTAT     0x200058  
+#define MO_VID_INTSSTAT     0x20005C  
+#define MO_AUD_INTMSK       0x200060  
+#define MO_AUD_INTSTAT      0x200064  
+#define MO_AUD_INTMSTAT     0x200068  
+#define MO_AUD_INTSSTAT     0x20006C  
+#define MO_TS_INTMSK        0x200070  
+#define MO_TS_INTSTAT       0x200074  
+#define MO_TS_INTMSTAT      0x200078  
+#define MO_TS_INTSSTAT      0x20007C  
+#define MO_VIP_INTMSK       0x200080  
+#define MO_VIP_INTSTAT      0x200084  
+#define MO_VIP_INTMSTAT     0x200088  
+#define MO_VIP_INTSSTAT     0x20008C  
+#define MO_GPHST_INTMSK     0x200090  
+#define MO_GPHST_INTSTAT    0x200094  
+#define MO_GPHST_INTMSTAT   0x200098  
+#define MO_GPHST_INTSSTAT   0x20009C  
+#define MO_DMA7_PTR1        0x300018  
+#define MO_DMA8_PTR1        0x30001C  
+#define MO_DMA21_PTR1       0x300080  
+#define MO_DMA22_PTR1       0x300084  
+#define MO_DMA23_PTR1       0x300088  
+#define MO_DMA24_PTR1       0x30008C  
+#define MO_DMA25_PTR1       0x300090  
+#define MO_DMA26_PTR1       0x300094  
+#define MO_DMA27_PTR1       0x300098  
+#define MO_DMA28_PTR1       0x30009C  
+#define MO_DMA29_PTR1       0x3000A0  
+#define MO_DMA30_PTR1       0x3000A4  
+#define MO_DMA31_PTR1       0x3000A8  
+#define MO_DMA32_PTR1       0x3000AC  
+#define MO_DMA21_PTR2       0x3000C0  
+#define MO_DMA22_PTR2       0x3000C4  
+#define MO_DMA23_PTR2       0x3000C8  
+#define MO_DMA24_PTR2       0x3000CC  
+#define MO_DMA25_PTR2       0x3000D0  
+#define MO_DMA26_PTR2       0x3000D4  
+#define MO_DMA27_PTR2       0x3000D8  
+#define MO_DMA28_PTR2       0x3000DC  
+#define MO_DMA29_PTR2       0x3000E0  
+#define MO_DMA30_PTR2       0x3000E4  
+#define MO_DMA31_PTR2       0x3000E8  
+#define MO_DMA32_PTR2       0x3000EC  
+#define MO_DMA21_CNT1       0x300100  
+#define MO_DMA22_CNT1       0x300104  
+#define MO_DMA23_CNT1       0x300108  
+#define MO_DMA24_CNT1       0x30010C  
+#define MO_DMA25_CNT1       0x300110  
+#define MO_DMA26_CNT1       0x300114  
+#define MO_DMA27_CNT1       0x300118  
+#define MO_DMA28_CNT1       0x30011C  
+#define MO_DMA29_CNT1       0x300120  
+#define MO_DMA30_CNT1       0x300124  
+#define MO_DMA31_CNT1       0x300128  
+#define MO_DMA32_CNT1       0x30012C  
+#define MO_DMA21_CNT2       0x300140  
+#define MO_DMA22_CNT2       0x300144  
+#define MO_DMA23_CNT2       0x300148  
+#define MO_DMA24_CNT2       0x30014C  
+#define MO_DMA25_CNT2       0x300150  
+#define MO_DMA26_CNT2       0x300154  
+#define MO_DMA27_CNT2       0x300158  
+#define MO_DMA28_CNT2       0x30015C  
+#define MO_DMA29_CNT2       0x300160  
+#define MO_DMA30_CNT2       0x300164  
+#define MO_DMA31_CNT2       0x300168  
+#define MO_DMA32_CNT2       0x30016C  
+#define MO_VIDY_DMA         0x310000  
+#define MO_VIDU_DMA         0x310008  
+#define MO_VIDV_DMA         0x310010  
+#define MO_VBI_DMA          0x310018  
 #define MO_DEVICE_STATUS    0x310100
 #define MO_INPUT_FORMAT     0x310104
 #define MO_AGC_BURST        0x31010c
@@ -177,53 +133,43 @@
 #define MO_VSCALE_ODD       0x310158
 #define MO_FILTER_ODD       0x310160
 #define MO_OUTPUT_FORMAT    0x310164
-
-#define MO_PLL_REG          0x310168 // PLL register
-#define MO_PLL_ADJ_CTRL     0x31016c // PLL adjust control register
-#define MO_SCONV_REG        0x310170 // sample rate conversion register
-#define MO_SCONV_FIFO       0x310174 // sample rate conversion fifo
-#define MO_SUB_STEP         0x310178 // subcarrier step size
-#define MO_SUB_STEP_DR      0x31017c // subcarrier step size for DR line
-
-#define MO_CAPTURE_CTRL     0x310180 // capture control
+#define MO_PLL_REG          0x310168  
+#define MO_PLL_ADJ_CTRL     0x31016c  
+#define MO_SCONV_REG        0x310170  
+#define MO_SCONV_FIFO       0x310174  
+#define MO_SUB_STEP         0x310178  
+#define MO_SUB_STEP_DR      0x31017c  
+#define MO_CAPTURE_CTRL     0x310180  
 #define MO_COLOR_CTRL       0x310184
-#define MO_VBI_PACKET       0x310188 // vbi packet size / delay
-#define MO_FIELD_COUNT      0x310190 // field counter
+#define MO_VBI_PACKET       0x310188  
+#define MO_FIELD_COUNT      0x310190  
 #define MO_VIP_CONFIG       0x310194
 #define MO_VBOS_CONTROL	    0x3101a8
-
 #define MO_AGC_BACK_VBI     0x310200
 #define MO_AGC_SYNC_TIP1    0x310208
-
-#define MO_VIDY_GPCNT       0x31C020 // {16}RO Video Y general purpose counter
-#define MO_VIDU_GPCNT       0x31C024 // {16}RO Video U general purpose counter
-#define MO_VIDV_GPCNT       0x31C028 // {16}RO Video V general purpose counter
-#define MO_VBI_GPCNT        0x31C02C // {16}RO VBI general purpose counter
-#define MO_VIDY_GPCNTRL     0x31C030 // {2}WO Video Y general purpose control
-#define MO_VIDU_GPCNTRL     0x31C034 // {2}WO Video U general purpose control
-#define MO_VIDV_GPCNTRL     0x31C038 // {2}WO Video V general purpose control
-#define MO_VBI_GPCNTRL      0x31C03C // {2}WO VBI general purpose counter
-#define MO_VID_DMACNTRL     0x31C040 // {8}RW Video DMA control
-#define MO_VID_XFR_STAT     0x31C044 // {1}RO Video transfer status
-
-/*
- * audio registers
- */
-
-#define MO_AUDD_DMA         0x320000 // {64}RWp Audio downstream
-#define MO_AUDU_DMA         0x320008 // {64}RWp Audio upstream
-#define MO_AUDR_DMA         0x320010 // {64}RWp Audio RDS (downstream)
-#define MO_AUDD_GPCNT       0x32C020 // {16}RO Audio down general purpose counter
-#define MO_AUDU_GPCNT       0x32C024 // {16}RO Audio up general purpose counter
-#define MO_AUDR_GPCNT       0x32C028 // {16}RO Audio RDS general purpose counter
-#define MO_AUDD_GPCNTRL     0x32C030 // {2}WO Audio down general purpose control
-#define MO_AUDU_GPCNTRL     0x32C034 // {2}WO Audio up general purpose control
-#define MO_AUDR_GPCNTRL     0x32C038 // {2}WO Audio RDS general purpose control
-#define MO_AUD_DMACNTRL     0x32C040 // {6}RW Audio DMA control
-#define MO_AUD_XFR_STAT     0x32C044 // {1}RO Audio transfer status
-#define MO_AUDD_LNGTH       0x32C048 // {12}RW Audio down line length
-#define MO_AUDR_LNGTH       0x32C04C // {12}RW Audio RDS line length
-
+#define MO_VIDY_GPCNT       0x31C020  
+#define MO_VIDU_GPCNT       0x31C024  
+#define MO_VIDV_GPCNT       0x31C028  
+#define MO_VBI_GPCNT        0x31C02C  
+#define MO_VIDY_GPCNTRL     0x31C030  
+#define MO_VIDU_GPCNTRL     0x31C034  
+#define MO_VIDV_GPCNTRL     0x31C038  
+#define MO_VBI_GPCNTRL      0x31C03C  
+#define MO_VID_DMACNTRL     0x31C040  
+#define MO_VID_XFR_STAT     0x31C044  
+#define MO_AUDD_DMA         0x320000  
+#define MO_AUDU_DMA         0x320008  
+#define MO_AUDR_DMA         0x320010  
+#define MO_AUDD_GPCNT       0x32C020  
+#define MO_AUDU_GPCNT       0x32C024  
+#define MO_AUDR_GPCNT       0x32C028  
+#define MO_AUDD_GPCNTRL     0x32C030  
+#define MO_AUDU_GPCNTRL     0x32C034  
+#define MO_AUDR_GPCNTRL     0x32C038  
+#define MO_AUD_DMACNTRL     0x32C040  
+#define MO_AUD_XFR_STAT     0x32C044  
+#define MO_AUDD_LNGTH       0x32C048  
+#define MO_AUDR_LNGTH       0x32C04C  
 #define AUD_INIT                 0x320100
 #define AUD_INIT_LD              0x320104
 #define AUD_SOFT_RESET           0x320108
@@ -417,129 +363,90 @@
 #define AUD_PLL_JTAG             0x320620
 #define AUD_PLL_SPMP             0x320624
 #define AUD_AFE_12DB_EN          0x320628
-
-// Audio QAM Register Addresses
 #define AUD_PDF_DDS_CNST_BYTE2   0x320d01
 #define AUD_PDF_DDS_CNST_BYTE1   0x320d02
 #define AUD_PDF_DDS_CNST_BYTE0   0x320d03
 #define AUD_PHACC_FREQ_8MSB      0x320d2a
 #define AUD_PHACC_FREQ_8LSB      0x320d2b
 #define AUD_QAM_MODE             0x320d04
-
-/*
- * transport stream registers
- */
-
-#define MO_TS_DMA           0x330000 // {64}RWp Transport stream downstream
-#define MO_TS_GPCNT         0x33C020 // {16}RO TS general purpose counter
-#define MO_TS_GPCNTRL       0x33C030 // {2}WO TS general purpose control
-#define MO_TS_DMACNTRL      0x33C040 // {6}RW TS DMA control
-#define MO_TS_XFR_STAT      0x33C044 // {1}RO TS transfer status
-#define MO_TS_LNGTH         0x33C048 // {12}RW TS line length
-
+#define MO_TS_DMA           0x330000  
+#define MO_TS_GPCNT         0x33C020  
+#define MO_TS_GPCNTRL       0x33C030  
+#define MO_TS_DMACNTRL      0x33C040  
+#define MO_TS_XFR_STAT      0x33C044  
+#define MO_TS_LNGTH         0x33C048  
 #define TS_HW_SOP_CNTRL     0x33C04C
 #define TS_GEN_CNTRL        0x33C050
 #define TS_BD_PKT_STAT      0x33C054
 #define TS_SOP_STAT         0x33C058
 #define TS_FIFO_OVFL_STAT   0x33C05C
 #define TS_VALERR_CNTRL     0x33C060
-
-/*
- * VIP registers
- */
-
-#define MO_VIPD_DMA         0x340000 // {64}RWp VIP downstream
-#define MO_VIPU_DMA         0x340008 // {64}RWp VIP upstream
-#define MO_VIPD_GPCNT       0x34C020 // {16}RO VIP down general purpose counter
-#define MO_VIPU_GPCNT       0x34C024 // {16}RO VIP up general purpose counter
-#define MO_VIPD_GPCNTRL     0x34C030 // {2}WO VIP down general purpose control
-#define MO_VIPU_GPCNTRL     0x34C034 // {2}WO VIP up general purpose control
-#define MO_VIP_DMACNTRL     0x34C040 // {6}RW VIP DMA control
-#define MO_VIP_XFR_STAT     0x34C044 // {1}RO VIP transfer status
-#define MO_VIP_CFG          0x340048 // VIP configuration
-#define MO_VIPU_CNTRL       0x34004C // VIP upstream control #1
-#define MO_VIPD_CNTRL       0x340050 // VIP downstream control #2
-#define MO_VIPD_LNGTH       0x340054 // VIP downstream line length
-#define MO_VIP_BRSTLN       0x340058 // VIP burst length
-#define MO_VIP_INTCNTRL     0x34C05C // VIP Interrupt Control
-#define MO_VIP_XFTERM       0x340060 // VIP transfer terminate
-
-/*
- * misc registers
- */
-
-#define MO_M2M_DMA          0x350000 // {64}RWp Mem2Mem DMA Bfr
-#define MO_GP0_IO           0x350010 // {32}RW* GPIOoutput enablesdata I/O
-#define MO_GP1_IO           0x350014 // {32}RW* GPIOoutput enablesdata I/O
-#define MO_GP2_IO           0x350018 // {32}RW* GPIOoutput enablesdata I/O
-#define MO_GP3_IO           0x35001C // {32}RW* GPIO Mode/Ctrloutput enables
-#define MO_GPIO             0x350020 // {32}RW* GPIO I2C Ctrldata I/O
-#define MO_GPOE             0x350024 // {32}RW  GPIO I2C Ctrloutput enables
-#define MO_GP_ISM           0x350028 // {16}WO  GPIO Intr Sens/Pol
-
-#define MO_PLL_B            0x35C008 // {32}RW* PLL Control for ASB bus clks
-#define MO_M2M_CNT          0x35C024 // {32}RW  Mem2Mem DMA Cnt
-#define MO_M2M_XSUM         0x35C028 // {32}RO  M2M XOR-Checksum
-#define MO_CRC              0x35C02C // {16}RW  CRC16 init/result
-#define MO_CRC_D            0x35C030 // {32}WO  CRC16 new data in
-#define MO_TM_CNT_LDW       0x35C034 // {32}RO  Timer : Counter low dword
-#define MO_TM_CNT_UW        0x35C038 // {16}RO  Timer : Counter high word
-#define MO_TM_LMT_LDW       0x35C03C // {32}RW  Timer : Limit low dword
-#define MO_TM_LMT_UW        0x35C040 // {32}RW  Timer : Limit high word
-#define MO_PINMUX_IO        0x35C044 // {8}RW  Pin Mux Control
-#define MO_TSTSEL_IO        0x35C048 // {2}RW  Pin Mux Control
-#define MO_AFECFG_IO        0x35C04C // AFE configuration reg
-#define MO_DDS_IO           0x35C050 // DDS Increment reg
-#define MO_DDSCFG_IO        0x35C054 // DDS Configuration reg
-#define MO_SAMPLE_IO        0x35C058 // IRIn sample reg
-#define MO_SRST_IO          0x35C05C // Output system reset reg
-
-#define MO_INT1_MSK         0x35C060 // DMA RISC interrupt mask
-#define MO_INT1_STAT        0x35C064 // DMA RISC interrupt status
-#define MO_INT1_MSTAT       0x35C068 // DMA RISC interrupt masked status
-
-/*
- * i2c bus registers
- */
-
-#define MO_I2C              0x368000 // I2C data/control
+#define MO_VIPD_DMA         0x340000  
+#define MO_VIPU_DMA         0x340008  
+#define MO_VIPD_GPCNT       0x34C020  
+#define MO_VIPU_GPCNT       0x34C024  
+#define MO_VIPD_GPCNTRL     0x34C030  
+#define MO_VIPU_GPCNTRL     0x34C034  
+#define MO_VIP_DMACNTRL     0x34C040  
+#define MO_VIP_XFR_STAT     0x34C044  
+#define MO_VIP_CFG          0x340048  
+#define MO_VIPU_CNTRL       0x34004C  
+#define MO_VIPD_CNTRL       0x340050  
+#define MO_VIPD_LNGTH       0x340054  
+#define MO_VIP_BRSTLN       0x340058  
+#define MO_VIP_INTCNTRL     0x34C05C  
+#define MO_VIP_XFTERM       0x340060  
+#define MO_M2M_DMA          0x350000  
+#define MO_GP0_IO           0x350010  
+#define MO_GP1_IO           0x350014  
+#define MO_GP2_IO           0x350018  
+#define MO_GP3_IO           0x35001C  
+#define MO_GPIO             0x350020  
+#define MO_GPOE             0x350024  
+#define MO_GP_ISM           0x350028  
+#define MO_PLL_B            0x35C008  
+#define MO_M2M_CNT          0x35C024  
+#define MO_M2M_XSUM         0x35C028  
+#define MO_CRC              0x35C02C  
+#define MO_CRC_D            0x35C030  
+#define MO_TM_CNT_LDW       0x35C034  
+#define MO_TM_CNT_UW        0x35C038  
+#define MO_TM_LMT_LDW       0x35C03C  
+#define MO_TM_LMT_UW        0x35C040  
+#define MO_PINMUX_IO        0x35C044  
+#define MO_TSTSEL_IO        0x35C048  
+#define MO_AFECFG_IO        0x35C04C  
+#define MO_DDS_IO           0x35C050  
+#define MO_DDSCFG_IO        0x35C054  
+#define MO_SAMPLE_IO        0x35C058  
+#define MO_SRST_IO          0x35C05C  
+#define MO_INT1_MSK         0x35C060  
+#define MO_INT1_STAT        0x35C064  
+#define MO_INT1_MSTAT       0x35C068  
+#define MO_I2C              0x368000  
 #define MO_I2C_DIV          (0xf<<4)
 #define MO_I2C_SYNC         (1<<3)
 #define MO_I2C_W3B          (1<<2)
 #define MO_I2C_SCL          (1<<1)
 #define MO_I2C_SDA          (1<<0)
-
-
-/*
- * general purpose host registers
- *
- * FIXME: tyops?  s/0x35/0x38/ ??
- */
-
-#define MO_GPHSTD_DMA       0x350000 // {64}RWp Host downstream
-#define MO_GPHSTU_DMA       0x350008 // {64}RWp Host upstream
-#define MO_GPHSTU_CNTRL     0x380048 // Host upstream control #1
-#define MO_GPHSTD_CNTRL     0x38004C // Host downstream control #2
-#define MO_GPHSTD_LNGTH     0x380050 // Host downstream line length
-#define MO_GPHST_WSC        0x380054 // Host wait state control
-#define MO_GPHST_XFR        0x380058 // Host transfer control
-#define MO_GPHST_WDTH       0x38005C // Host interface width
-#define MO_GPHST_HDSHK      0x380060 // Host peripheral handshake
-#define MO_GPHST_MUX16      0x380064 // Host muxed 16-bit transfer parameters
-#define MO_GPHST_MODE       0x380068 // Host mode select
-
-#define MO_GPHSTD_GPCNT     0x35C020 // Host down general purpose counter
-#define MO_GPHSTU_GPCNT     0x35C024 // Host up general purpose counter
-#define MO_GPHSTD_GPCNTRL   0x38C030 // Host down general purpose control
-#define MO_GPHSTU_GPCNTRL   0x38C034 // Host up general purpose control
-#define MO_GPHST_DMACNTRL   0x38C040 // Host DMA control
-#define MO_GPHST_XFR_STAT   0x38C044 // Host transfer status
-#define MO_GPHST_SOFT_RST   0x38C06C // Host software reset
-
-/*
- * RISC instructions
- */
-
+#define MO_GPHSTD_DMA       0x350000  
+#define MO_GPHSTU_DMA       0x350008  
+#define MO_GPHSTU_CNTRL     0x380048  
+#define MO_GPHSTD_CNTRL     0x38004C  
+#define MO_GPHSTD_LNGTH     0x380050  
+#define MO_GPHST_WSC        0x380054  
+#define MO_GPHST_XFR        0x380058  
+#define MO_GPHST_WDTH       0x38005C  
+#define MO_GPHST_HDSHK      0x380060  
+#define MO_GPHST_MUX16      0x380064  
+#define MO_GPHST_MODE       0x380068  
+#define MO_GPHSTD_GPCNT     0x35C020  
+#define MO_GPHSTU_GPCNT     0x35C024  
+#define MO_GPHSTD_GPCNTRL   0x38C030  
+#define MO_GPHSTU_GPCNTRL   0x38C034  
+#define MO_GPHST_DMACNTRL   0x38C040  
+#define MO_GPHST_XFR_STAT   0x38C044  
+#define MO_GPHST_SOFT_RST   0x38C06C  
 #define RISC_SYNC		 0x80000000
 #define RISC_SYNC_ODD		 0x80000000
 #define RISC_SYNC_EVEN		 0x80000200
@@ -556,25 +463,15 @@
 #define RISC_WRITECM		 0xC0000000
 #define RISC_WRITECR		 0xD0000000
 #define RISC_IMM		 0x00000001
-
 #define RISC_SOL		 0x08000000
 #define RISC_EOL		 0x04000000
-
 #define RISC_IRQ2		 0x02000000
 #define RISC_IRQ1		 0x01000000
-
 #define RISC_CNT_NONE		 0x00000000
 #define RISC_CNT_INC		 0x00010000
 #define RISC_CNT_RSVR		 0x00020000
 #define RISC_CNT_RESET		 0x00030000
 #define RISC_JMP_SRP		 0x01
-
-/*
- * various constants
- */
-
-// DMA
-/* Interrupt mask/status */
 #define PCI_INT_VIDINT		(1 <<  0)
 #define PCI_INT_AUDINT		(1 <<  1)
 #define PCI_INT_TSINT		(1 <<  2)
@@ -594,19 +491,16 @@
 #define PCI_INT_IR_SMPINT	(1 << 18)
 #define PCI_INT_GPIO_INT0	(1 << 19)
 #define PCI_INT_GPIO_INT1	(1 << 20)
-
 #define SEL_BTSC     0x01
 #define SEL_EIAJ     0x02
 #define SEL_A2       0x04
 #define SEL_SAP      0x08
 #define SEL_NICAM    0x10
 #define SEL_FMRADIO  0x20
-
-// AUD_CTL
 #define AUD_INT_DN_RISCI1	(1 <<  0)
 #define AUD_INT_UP_RISCI1	(1 <<  1)
 #define AUD_INT_RDS_DN_RISCI1	(1 <<  2)
-#define AUD_INT_DN_RISCI2	(1 <<  4) /* yes, 3 is skipped */
+#define AUD_INT_DN_RISCI2	(1 <<  4)  
 #define AUD_INT_UP_RISCI2	(1 <<  5)
 #define AUD_INT_RDS_DN_RISCI2	(1 <<  6)
 #define AUD_INT_DN_SYNC		(1 << 12)
@@ -615,35 +509,29 @@
 #define AUD_INT_OPC_ERR		(1 << 16)
 #define AUD_INT_BER_IRQ		(1 << 20)
 #define AUD_INT_MCHG_IRQ	(1 << 21)
-
 #define EN_BTSC_FORCE_MONO      0
 #define EN_BTSC_FORCE_STEREO    1
 #define EN_BTSC_FORCE_SAP       2
 #define EN_BTSC_AUTO_STEREO     3
 #define EN_BTSC_AUTO_SAP        4
-
 #define EN_A2_FORCE_MONO1       8
 #define EN_A2_FORCE_MONO2       9
 #define EN_A2_FORCE_STEREO      10
 #define EN_A2_AUTO_MONO2        11
 #define EN_A2_AUTO_STEREO       12
-
 #define EN_EIAJ_FORCE_MONO1     16
 #define EN_EIAJ_FORCE_MONO2     17
 #define EN_EIAJ_FORCE_STEREO    18
 #define EN_EIAJ_AUTO_MONO2      19
 #define EN_EIAJ_AUTO_STEREO     20
-
 #define EN_NICAM_FORCE_MONO1    32
 #define EN_NICAM_FORCE_MONO2    33
 #define EN_NICAM_FORCE_STEREO   34
 #define EN_NICAM_AUTO_MONO2     35
 #define EN_NICAM_AUTO_STEREO    36
-
 #define EN_FMRADIO_FORCE_MONO   24
 #define EN_FMRADIO_FORCE_STEREO 25
 #define EN_FMRADIO_AUTO_STEREO  26
-
 #define EN_NICAM_AUTO_FALLBACK  0x00000040
 #define EN_FMRADIO_EN_RDS       0x00000200
 #define EN_NICAM_TRY_AGAIN_BIT  0x00000400
@@ -651,21 +539,16 @@
 #define EN_I2SOUT_ENABLE        0x00002000
 #define EN_I2SIN_STR2DAC        0x00004000
 #define EN_I2SIN_ENABLE         0x00008000
-
 #define EN_DMTRX_SUMDIFF        (0 << 7)
 #define EN_DMTRX_SUMR           (1 << 7)
 #define EN_DMTRX_LR             (2 << 7)
 #define EN_DMTRX_MONO           (3 << 7)
 #define EN_DMTRX_BYPASS         (1 << 11)
-
-// Video
 #define VID_CAPTURE_CONTROL		0x310180
-
 #define CX23880_CAP_CTL_CAPTURE_VBI_ODD  (1<<3)
 #define CX23880_CAP_CTL_CAPTURE_VBI_EVEN (1<<2)
 #define CX23880_CAP_CTL_CAPTURE_ODD      (1<<1)
 #define CX23880_CAP_CTL_CAPTURE_EVEN     (1<<0)
-
 #define VideoInputMux0		 0x0
 #define VideoInputMux1		 0x1
 #define VideoInputMux2		 0x2
@@ -674,11 +557,9 @@
 #define VideoInputComposite	 0x1
 #define VideoInputSVideo	 0x2
 #define VideoInputOther		 0x3
-
 #define Xtal0		 0x1
 #define Xtal1		 0x2
 #define XtalAuto	 0x3
-
 #define VideoFormatAuto		 0x0
 #define VideoFormatNTSC		 0x1
 #define VideoFormatNTSCJapan	 0x2
@@ -695,7 +576,6 @@
 #define VideoFormatPALNC	 0x7
 #define VideoFormatPAL60	 0x8
 #define VideoFormatSECAM	 0x9
-
 #define VideoFormatAuto27MHz		 0x10
 #define VideoFormatNTSC27MHz		 0x11
 #define VideoFormatNTSCJapan27MHz	 0x12
@@ -712,19 +592,15 @@
 #define VideoFormatPALNC27MHz		 0x17
 #define VideoFormatPAL6027MHz		 0x18
 #define VideoFormatSECAM27MHz		 0x19
-
 #define NominalUSECAM	 0x87
 #define NominalVSECAM	 0x85
 #define NominalUNTSC	 0xFE
 #define NominalVNTSC	 0xB4
-
 #define NominalContrast  0xD8
-
 #define HFilterAutoFormat	 0x0
 #define HFilterCIF		 0x1
 #define HFilterQCIF		 0x2
 #define HFilterICON		 0x3
-
 #define VFilter2TapInterpolate  0
 #define VFilter3TapInterpolate  1
 #define VFilter4TapInterpolate  2
@@ -733,7 +609,6 @@
 #define VFilter3TapNoInterpolate  5
 #define VFilter4TapNoInterpolate  6
 #define VFilter5TapNoInterpolate  7
-
 #define ColorFormatRGB32	 0x0000
 #define ColorFormatRGB24	 0x0011
 #define ColorFormatRGB16	 0x0022
@@ -752,27 +627,21 @@
 #define ColorFormatEvenMask      0x050f
 #define ColorFormatOddMask       0x0af0
 #define ColorFormatGamma         0x1000
-
 #define Interlaced		 0x1
 #define NonInterlaced		 0x0
-
 #define FieldEven		 0x1
 #define FieldOdd		 0x0
-
 #define TGReadWriteMode		 0x0
 #define TGEnableMode		 0x1
-
 #define DV_CbAlign		 0x0
 #define DV_Y0Align		 0x1
 #define DV_CrAlign		 0x2
 #define DV_Y1Align		 0x3
-
 #define DVF_Analog		 0x0
 #define DVF_CCIR656		 0x1
 #define DVF_ByteStream		 0x2
 #define DVF_ExtVSYNC		 0x4
 #define DVF_ExtField		 0x5
-
 #define CHANNEL_VID_Y		 0x1
 #define CHANNEL_VID_U		 0x2
 #define CHANNEL_VID_V		 0x3
@@ -787,30 +656,23 @@
 #define CHANNEL_HOST_UP		 0xC
 #define CHANNEL_FIRST		 0x1
 #define CHANNEL_LAST		 0xC
-
 #define GP_COUNT_CONTROL_NONE		 0x0
 #define GP_COUNT_CONTROL_INC		 0x1
 #define GP_COUNT_CONTROL_RESERVED	 0x2
 #define GP_COUNT_CONTROL_RESET		 0x3
-
 #define PLL_PRESCALE_BY_2  2
 #define PLL_PRESCALE_BY_3  3
 #define PLL_PRESCALE_BY_4  4
 #define PLL_PRESCALE_BY_5  5
-
 #define HLNotchFilter4xFsc	 0
 #define HLNotchFilterSquare	 1
 #define HLNotchFilter135NTSC	 2
 #define HLNotchFilter135PAL	 3
-
 #define NTSC_8x_SUB_CARRIER  28.63636E6
 #define PAL_8x_SUB_CARRIER  35.46895E6
-
-// Default analog settings
 #define DEFAULT_HUE_NTSC			0x00
 #define DEFAULT_BRIGHTNESS_NTSC			0x00
 #define DEFAULT_CONTRAST_NTSC			0x39
 #define DEFAULT_SAT_U_NTSC			0x7F
 #define DEFAULT_SAT_V_NTSC			0x5A
-
-#endif /* _CX88_REG_H_ */
+#endif  

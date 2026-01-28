@@ -1,14 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef __ASM_CSKY_JUMP_LABEL_H
 #define __ASM_CSKY_JUMP_LABEL_H
-
 #ifndef __ASSEMBLY__
-
 #include <linux/types.h>
-
 #define JUMP_LABEL_NOP_SIZE 4
-
 static __always_inline bool arch_static_branch(struct static_key *key,
 					       bool branch)
 {
@@ -20,12 +14,10 @@ static __always_inline bool arch_static_branch(struct static_key *key,
 		"	.long		%0 - .			\n"
 		"	.popsection				\n"
 		:  :  "i"(&((char *)key)[branch]) :  : label);
-
 	return false;
 label:
 	return true;
 }
-
 static __always_inline bool arch_static_branch_jump(struct static_key *key,
 						    bool branch)
 {
@@ -37,16 +29,13 @@ static __always_inline bool arch_static_branch_jump(struct static_key *key,
 		"	.long		%0 - .			\n"
 		"	.popsection				\n"
 		:  :  "i"(&((char *)key)[branch]) :  : label);
-
 	return false;
 label:
 	return true;
 }
-
 enum jump_label_type;
 void arch_jump_label_transform_static(struct jump_entry *entry,
 				      enum jump_label_type type);
 #define arch_jump_label_transform_static arch_jump_label_transform_static
-
-#endif  /* __ASSEMBLY__ */
-#endif	/* __ASM_CSKY_JUMP_LABEL_H */
+#endif   
+#endif	 

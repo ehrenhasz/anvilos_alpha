@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * sama5d3xmb_cmp.dts - Device Tree file for SAMA5D3x CMP mother board
- *
- *  Copyright (C) 2016 Atmel,
- */
 #include "sama5d3xcm_cmp.dtsi"
-
 / {
 	compatible = "atmel,sama5d3xmb-cmp", "atmel,sama5d3xcm-cmp", "atmel,sama5d3", "atmel,sama5";
-
 	ahb {
 		apb {
 			mmc0: mmc@f0000000 {
@@ -21,26 +13,17 @@
 					cd-gpios = <&pioD 17 GPIO_ACTIVE_HIGH>;
 				};
 			};
-
 			spi0: spi@f0004000 {
-				dmas = <0>, <0>;	/*  Do not use DMA for spi0 */
-
+				dmas = <0>, <0>;	 
 				flash@0 {
 					compatible = "atmel,at25df321a";
 					spi-max-frequency = <50000000>;
 					reg = <0>;
 				};
 			};
-
 			ssc0: ssc@f0008000 {
 				atmel,clk-from-rk-pin;
 			};
-
-			/*
-			 * i2c0 conflicts with ISI:
-			 * disable it to allow the use of ISI
-			 * can not enable audio when i2c0 disabled
-			 */
 			i2c0: i2c@f0014000 {
 				wm8904: wm8904@1a {
 					compatible = "wlf,wm8904";
@@ -49,7 +32,6 @@
 					clock-names = "mclk";
 				};
 			};
-
 			i2c1: i2c@f0018000 {
 				ov2640: camera@30 {
 					compatible = "ovti,ov2640";
@@ -58,12 +40,10 @@
 					pinctrl-0 = <&pinctrl_pck1_as_isi_mck &pinctrl_sensor_power &pinctrl_sensor_reset>;
 					resetb-gpios = <&pioE 24 GPIO_ACTIVE_LOW>;
 					pwdn-gpios = <&pioE 29 GPIO_ACTIVE_HIGH>;
-					/* use pck1 for the master clock of ov2640 */
 					clocks = <&pmc PMC_TYPE_SYSTEM 9>;
 					clock-names = "xvclk";
 					assigned-clocks = <&pmc PMC_TYPE_SYSTEM 9>;
 					assigned-clock-rates = <25000000>;
-
 					port {
 						ov2640_0: endpoint {
 							remote-endpoint = <&isi_0>;
@@ -72,14 +52,12 @@
 					};
 				};
 			};
-
 			usart1: serial@f0020000 {
-				dmas = <0>, <0>;	/*  Do not use DMA for usart1 */
+				dmas = <0>, <0>;	 
 				pinctrl-names = "default";
 				pinctrl-0 = <&pinctrl_usart1 &pinctrl_usart1_rts_cts>;
 				status = "okay";
 			};
-
 			isi: isi@f0034000 {
 				port {
 					isi_0: endpoint {
@@ -90,7 +68,6 @@
 					};
 				};
 			};
-
 			mmc1: mmc@f8000000 {
 				pinctrl-names = "default";
 				pinctrl-0 = <&pinctrl_mmc1_clk_cmd_dat0 &pinctrl_mmc1_dat1_3 &pinctrl_mmc1_cd>;
@@ -101,7 +78,6 @@
 					cd-gpios = <&pioD 18 GPIO_ACTIVE_HIGH>;
 				};
 			};
-
 			adc0: adc@f8018000 {
 				pinctrl-names = "default", "sleep";
 				pinctrl-0 = <
@@ -122,19 +98,14 @@
 					>;
 				status = "okay";
 			};
-
 			macb1: ethernet@f802c000 {
 				phy-mode = "rmii";
-
 				#address-cells = <1>;
 				#size-cells = <0>;
 				phy0: ethernet-phy@1 {
-					/*interrupt-parent = <&pioE>;*/
-					/*interrupts = <30 IRQ_TYPE_EDGE_FALLING>;*/
 					reg = <1>;
 				};
 			};
-
 			pinctrl@fffff200 {
 				adc0 {
 					pinctrl_adc0_adtrg_sleep: adc0_adtrg_1 {
@@ -162,60 +133,49 @@
 							<AT91_PIOD 24 AT91_PERIPH_GPIO (AT91_PINCTRL_OUTPUT | AT91_PINCTRL_OUTPUT_VAL(0))>;
 					};
 				};
-
 				board {
 					pinctrl_gpio_keys: gpio_keys {
 						atmel,pins =
 							<AT91_PIOE 27 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP>;
 					};
-
 					pinctrl_mmc0_cd: mmc0_cd {
 						atmel,pins =
 							<AT91_PIOD 17 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;
 					};
-
 					pinctrl_mmc1_cd: mmc1_cd {
 						atmel,pins =
 							<AT91_PIOD 18 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;
 					};
-
 					pinctrl_pck0_as_audio_mck: pck0_as_audio_mck {
 						atmel,pins =
 							<AT91_PIOD 30 AT91_PERIPH_B AT91_PINCTRL_NONE>;
 					};
-
 					pinctrl_pck1_as_isi_mck: pck1_as_isi_mck-0 {
 						atmel,pins =
 							<AT91_PIOD 31 AT91_PERIPH_B AT91_PINCTRL_NONE>;
 					};
-
 					pinctrl_sensor_reset: sensor_reset-0 {
 						atmel,pins =
 							<AT91_PIOE 24 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;
 					};
-
 					pinctrl_sensor_power: sensor_power-0 {
 						atmel,pins =
 							<AT91_PIOE 29 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;
 					};
-
 					pinctrl_usba_vbus: usba_vbus {
 						atmel,pins =
 							<AT91_PIOD 29 AT91_PERIPH_GPIO AT91_PINCTRL_DEGLITCH>;
 					};
 				};
 			};
-
 			dbgu: serial@ffffee00 {
-				dmas = <0>, <0>;	/*  Do not use DMA for dbgu */
+				dmas = <0>, <0>;	 
 				status = "okay";
 			};
-
 			watchdog@fffffe40 {
 				status = "okay";
 			};
 		};
-
 		usb0: gadget@500000 {
 			atmel,vbus-gpio = <&pioD 29 GPIO_ACTIVE_HIGH>;
 			pinctrl-names = "default";
@@ -223,12 +183,10 @@
 			status = "okay";
 		};
 	};
-
 	sound {
 		compatible = "atmel,asoc-wm8904";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_pck0_as_audio_mck>;
-
 		atmel,model = "wm8904 @ SAMA5D3EK";
 		atmel,audio-routing =
 			"Headphone Jack", "HPOUTL",
@@ -237,23 +195,17 @@
 			"IN2R", "Line In Jack",
 			"Mic", "MICBIAS",
 			"IN1L", "Mic";
-
 		atmel,ssc-controller = <&ssc0>;
 		atmel,audio-codec = <&wm8904>;
-
 		status = "disabled";
 	};
-
-	/* Conflict with LCD pins */
 	gpio_keys {
 		compatible = "gpio-keys";
 		status = "okay";
-
 		#address-cells = <1>;
 		#size-cells = <0>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_keys>;
-
 		pb_user1 {
 			label = "pb_user1";
 			gpios = <&pioE 27 GPIO_ACTIVE_HIGH>;

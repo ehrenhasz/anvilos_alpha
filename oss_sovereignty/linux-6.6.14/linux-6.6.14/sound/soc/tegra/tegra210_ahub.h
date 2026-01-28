@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tegra210_ahub.h - TEGRA210 AHUB
- *
- * Copyright (c) 2020-2022, NVIDIA CORPORATION.  All rights reserved.
- *
- */
-
 #ifndef __TEGRA210_AHUB__H__
 #define __TEGRA210_AHUB__H__
-
-/* Tegra210 specific */
 #define TEGRA210_XBAR_PART1_RX				0x200
 #define TEGRA210_XBAR_PART2_RX				0x400
 #define TEGRA210_XBAR_RX_STRIDE				0x4
@@ -19,7 +9,6 @@
 #define TEGRA210_XBAR_REG_MASK_2			0xff1cf313
 #define TEGRA210_XBAR_REG_MASK_3			0x0
 #define TEGRA210_XBAR_UPDATE_MAX_REG			3
-/* Tegra186 specific */
 #define TEGRA186_XBAR_PART3_RX				0x600
 #define TEGRA186_XBAR_AUDIO_RX_COUNT			115
 #define TEGRA186_XBAR_REG_MASK_0			0xf3fffff
@@ -27,19 +16,13 @@
 #define TEGRA186_XBAR_REG_MASK_2			0xff3cf311
 #define TEGRA186_XBAR_REG_MASK_3			0x3f0f00ff
 #define TEGRA186_XBAR_UPDATE_MAX_REG			4
-
 #define TEGRA_XBAR_UPDATE_MAX_REG (TEGRA186_XBAR_UPDATE_MAX_REG)
-
 #define TEGRA186_MAX_REGISTER_ADDR (TEGRA186_XBAR_PART3_RX +		\
 	(TEGRA210_XBAR_RX_STRIDE * (TEGRA186_XBAR_AUDIO_RX_COUNT - 1)))
-
 #define TEGRA210_MAX_REGISTER_ADDR (TEGRA210_XBAR_PART2_RX +		\
 	(TEGRA210_XBAR_RX_STRIDE * (TEGRA210_XBAR_AUDIO_RX_COUNT - 1)))
-
 #define MUX_REG(id) (TEGRA210_XBAR_RX_STRIDE * (id))
-
 #define MUX_VALUE(npart, nbit) (1 + (nbit) + (npart) * 32)
-
 #define SOC_VALUE_ENUM_WIDE(xreg, shift, xmax, xtexts, xvalues)		\
 	{								\
 		.reg = xreg,						\
@@ -50,12 +33,10 @@
 		.values = xvalues,					\
 		.mask = xmax ? roundup_pow_of_two(xmax) - 1 : 0		\
 	}
-
 #define SOC_VALUE_ENUM_WIDE_DECL(name, xreg, shift, xtexts, xvalues)	\
 	static struct soc_enum name =					\
 		SOC_VALUE_ENUM_WIDE(xreg, shift, ARRAY_SIZE(xtexts),	\
 				    xtexts, xvalues)
-
 #define MUX_ENUM_CTRL_DECL(ename, id)					\
 	SOC_VALUE_ENUM_WIDE_DECL(ename##_enum, MUX_REG(id), 0,		\
 				 tegra210_ahub_mux_texts,		\
@@ -64,7 +45,6 @@
 		SOC_DAPM_ENUM_EXT("Route", ename##_enum,		\
 				  tegra_ahub_get_value_enum,		\
 				  tegra_ahub_put_value_enum)
-
 #define MUX_ENUM_CTRL_DECL_186(ename, id)				\
 	SOC_VALUE_ENUM_WIDE_DECL(ename##_enum, MUX_REG(id), 0,		\
 				 tegra186_ahub_mux_texts,		\
@@ -73,19 +53,15 @@
 		SOC_DAPM_ENUM_EXT("Route", ename##_enum,		\
 				  tegra_ahub_get_value_enum,		\
 				  tegra_ahub_put_value_enum)
-
 #define MUX_ENUM_CTRL_DECL_234(ename, id) MUX_ENUM_CTRL_DECL_186(ename, id)
-
 #define WIDGETS(sname, ename)						     \
 	SND_SOC_DAPM_AIF_IN(sname " XBAR-RX", NULL, 0, SND_SOC_NOPM, 0, 0),  \
 	SND_SOC_DAPM_AIF_OUT(sname " XBAR-TX", NULL, 0, SND_SOC_NOPM, 0, 0), \
 	SND_SOC_DAPM_MUX(sname " Mux", SND_SOC_NOPM, 0, 0,		     \
 			 &ename##_control)
-
 #define TX_WIDGETS(sname)						    \
 	SND_SOC_DAPM_AIF_IN(sname " XBAR-RX", NULL, 0, SND_SOC_NOPM, 0, 0), \
 	SND_SOC_DAPM_AIF_OUT(sname " XBAR-TX", NULL, 0, SND_SOC_NOPM, 0, 0)
-
 #define DAI(sname)							\
 	{								\
 		.name = "XBAR-" #sname,					\
@@ -110,7 +86,6 @@
 				SNDRV_PCM_FMTBIT_S32_LE,		\
 		},							\
 	}
-
 struct tegra_ahub_soc_data {
 	const struct regmap_config *regmap_config;
 	const struct snd_soc_component_driver *cmpnt_drv;
@@ -119,11 +94,9 @@ struct tegra_ahub_soc_data {
 	unsigned int reg_count;
 	unsigned int num_dais;
 };
-
 struct tegra_ahub {
 	const struct tegra_ahub_soc_data *soc_data;
 	struct regmap *regmap;
 	struct clk *clk;
 };
-
 #endif

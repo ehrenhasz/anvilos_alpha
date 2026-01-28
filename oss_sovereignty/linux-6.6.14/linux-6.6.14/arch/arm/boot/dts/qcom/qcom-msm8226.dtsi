@@ -1,10 +1,4 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
-
 /dts-v1/;
-
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/clock/qcom,gcc-msm8974.h>
 #include <dt-bindings/clock/qcom,mmcc-msm8974.h>
@@ -12,33 +6,27 @@
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/power/qcom-rpmpd.h>
 #include <dt-bindings/reset/qcom,gcc-msm8974.h>
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
 	interrupt-parent = <&intc>;
-
 	chosen { };
-
 	memory@0 {
 		device_type = "memory";
 		reg = <0x0 0x0>;
 	};
-
 	clocks {
 		xo_board: xo_board {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <19200000>;
 		};
-
 		sleep_clk: sleep_clk {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <32768>;
 		};
 	};
-
 	firmware {
 		scm {
 			compatible = "qcom,scm-msm8226", "qcom,scm";
@@ -46,40 +34,32 @@
 			clock-names = "core", "bus", "iface";
 		};
 	};
-
 	pmu {
 		compatible = "arm,cortex-a7-pmu";
 		interrupts = <GIC_PPI 7 (GIC_CPU_MASK_SIMPLE(4) |
 					 IRQ_TYPE_LEVEL_HIGH)>;
 	};
-
 	rpm: remoteproc {
 		compatible = "qcom,msm8226-rpm-proc", "qcom,rpm-proc";
-
 		smd-edge {
 			interrupts = <GIC_SPI 168 IRQ_TYPE_EDGE_RISING>;
 			qcom,ipc = <&apcs 8 0>;
 			qcom,smd-edge = <15>;
-
 			rpm_requests: rpm-requests {
 				compatible = "qcom,rpm-msm8226";
 				qcom,smd-channels = "rpm_requests";
-
 				rpmcc: clock-controller {
 					compatible = "qcom,rpmcc-msm8226", "qcom,rpmcc";
 					#clock-cells = <1>;
 					clocks = <&xo_board>;
 					clock-names = "xo";
 				};
-
 				rpmpd: power-controller {
 					compatible = "qcom,msm8226-rpmpd";
 					#power-domain-cells = <1>;
 					operating-points-v2 = <&rpmpd_opp_table>;
-
 					rpmpd_opp_table: opp-table {
 						compatible = "operating-points-v2";
-
 						rpmpd_opp_ret: opp1 {
 							opp-level = <1>;
 						};
@@ -103,63 +83,48 @@
 			};
 		};
 	};
-
 	reserved-memory {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
-
 		smem_region: smem@3000000 {
 			reg = <0x3000000 0x100000>;
 			no-map;
 		};
-
 		adsp_region: adsp@dc00000 {
 			reg = <0x0dc00000 0x1900000>;
 			no-map;
 		};
 	};
-
 	smem {
 		compatible = "qcom,smem";
-
 		memory-region = <&smem_region>;
 		qcom,rpm-msg-ram = <&rpm_msg_ram>;
-
 		hwlocks = <&tcsr_mutex 3>;
 	};
-
 	smp2p-adsp {
 		compatible = "qcom,smp2p";
 		qcom,smem = <443>, <429>;
-
 		interrupt-parent = <&intc>;
 		interrupts = <GIC_SPI 158 IRQ_TYPE_EDGE_RISING>;
-
 		qcom,ipc = <&apcs 8 10>;
-
 		qcom,local-pid = <0>;
 		qcom,remote-pid = <2>;
-
 		adsp_smp2p_out: master-kernel {
 			qcom,entry-name = "master-kernel";
 			#qcom,smem-state-cells = <1>;
 		};
-
 		adsp_smp2p_in: slave-kernel {
 			qcom,entry-name = "slave-kernel";
-
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
 	};
-
 	soc: soc {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
-
 		intc: interrupt-controller@f9000000 {
 			compatible = "qcom,msm-qgic2";
 			reg = <0xf9000000 0x1000>,
@@ -167,12 +132,10 @@
 			interrupt-controller;
 			#interrupt-cells = <3>;
 		};
-
 		apcs: syscon@f9011000 {
 			compatible = "syscon";
 			reg = <0xf9011000 0x1000>;
 		};
-
 		sdhc_1: mmc@f9824900 {
 			compatible = "qcom,msm8226-sdhci", "qcom,sdhci-msm-v4";
 			reg = <0xf9824900 0x11c>, <0xf9824000 0x800>;
@@ -188,7 +151,6 @@
 			pinctrl-0 = <&sdhc1_default_state>;
 			status = "disabled";
 		};
-
 		sdhc_2: mmc@f98a4900 {
 			compatible = "qcom,msm8226-sdhci", "qcom,sdhci-msm-v4";
 			reg = <0xf98a4900 0x11c>, <0xf98a4000 0x800>;
@@ -204,7 +166,6 @@
 			pinctrl-0 = <&sdhc2_default_state>;
 			status = "disabled";
 		};
-
 		sdhc_3: mmc@f9864900 {
 			compatible = "qcom,msm8226-sdhci", "qcom,sdhci-msm-v4";
 			reg = <0xf9864900 0x11c>, <0xf9864000 0x800>;
@@ -220,7 +181,6 @@
 			pinctrl-0 = <&sdhc3_default_state>;
 			status = "disabled";
 		};
-
 		blsp1_uart1: serial@f991d000 {
 			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
 			reg = <0xf991d000 0x1000>;
@@ -229,7 +189,6 @@
 			clock-names = "core", "iface";
 			status = "disabled";
 		};
-
 		blsp1_uart3: serial@f991f000 {
 			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
 			reg = <0xf991f000 0x1000>;
@@ -238,7 +197,6 @@
 			clock-names = "core", "iface";
 			status = "disabled";
 		};
-
 		blsp1_uart4: serial@f9920000 {
 			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
 			reg = <0xf9920000 0x1000>;
@@ -247,7 +205,6 @@
 			clock-names = "core", "iface";
 			status = "disabled";
 		};
-
 		blsp1_i2c1: i2c@f9923000 {
 			status = "disabled";
 			compatible = "qcom,i2c-qup-v2.1.1";
@@ -260,7 +217,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		blsp1_i2c2: i2c@f9924000 {
 			status = "disabled";
 			compatible = "qcom,i2c-qup-v2.1.1";
@@ -273,7 +229,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		blsp1_i2c3: i2c@f9925000 {
 			status = "disabled";
 			compatible = "qcom,i2c-qup-v2.1.1";
@@ -286,7 +241,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		blsp1_i2c4: i2c@f9926000 {
 			status = "disabled";
 			compatible = "qcom,i2c-qup-v2.1.1";
@@ -299,7 +253,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		blsp1_i2c5: i2c@f9927000 {
 			status = "disabled";
 			compatible = "qcom,i2c-qup-v2.1.1";
@@ -312,7 +265,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		cci: cci@fda0c000 {
 			compatible = "qcom,msm8226-cci";
 			#address-cells = <1>;
@@ -325,13 +277,10 @@
 			clock-names = "camss_top_ahb",
 				      "cci_ahb",
 				      "cci";
-
 			pinctrl-names = "default", "sleep";
 			pinctrl-0 = <&cci_default>;
 			pinctrl-1 = <&cci_sleep>;
-
 			status = "disabled";
-
 			cci_i2c0: i2c-bus@0 {
 				reg = <0>;
 				clock-frequency = <400000>;
@@ -339,7 +288,6 @@
 				#size-cells = <0>;
 			};
 		};
-
 		usb: usb@f9a55000 {
 			compatible = "qcom,ci-hdrc";
 			reg = <0xf9a55000 0x200>,
@@ -362,7 +310,6 @@
 			phys = <&usb_hs_phy>;
 			status = "disabled";
 			#reset-cells = <1>;
-
 			ulpi {
 				usb_hs_phy: phy {
 					compatible = "qcom,usb-hs-phy-msm8226",
@@ -378,27 +325,23 @@
 				};
 			};
 		};
-
 		gcc: clock-controller@fc400000 {
 			compatible = "qcom,gcc-msm8226";
 			reg = <0xfc400000 0x4000>;
 			#clock-cells = <1>;
 			#reset-cells = <1>;
 			#power-domain-cells = <1>;
-
 			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
 				 <&sleep_clk>;
 			clock-names = "xo",
 				      "sleep_clk";
 		};
-
 		mmcc: clock-controller@fd8c0000 {
 			compatible = "qcom,mmcc-msm8226";
 			reg = <0xfd8c0000 0x6000>;
 			#clock-cells = <1>;
 			#reset-cells = <1>;
 			#power-domain-cells = <1>;
-
 			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
 				 <&gcc GCC_MMSS_GPLL0_CLK_SRC>,
 				 <&gcc GPLL0_VOTE>,
@@ -414,7 +357,6 @@
 				      "dsi0pll",
 				      "dsi0pllbyte";
 		};
-
 		tlmm: pinctrl@fd510000 {
 			compatible = "qcom,msm8226-pinctrl";
 			reg = <0xfd510000 0x4000>;
@@ -424,86 +366,72 @@
 			interrupt-controller;
 			#interrupt-cells = <2>;
 			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
-
 			blsp1_i2c1_pins: blsp1-i2c1-state {
 				pins = "gpio2", "gpio3";
 				function = "blsp_i2c1";
 				drive-strength = <2>;
 				bias-disable;
 			};
-
 			blsp1_i2c2_pins: blsp1-i2c2-state {
 				pins = "gpio6", "gpio7";
 				function = "blsp_i2c2";
 				drive-strength = <2>;
 				bias-disable;
 			};
-
 			blsp1_i2c3_pins: blsp1-i2c3-state {
 				pins = "gpio10", "gpio11";
 				function = "blsp_i2c3";
 				drive-strength = <2>;
 				bias-disable;
 			};
-
 			blsp1_i2c4_pins: blsp1-i2c4-state {
 				pins = "gpio14", "gpio15";
 				function = "blsp_i2c4";
 				drive-strength = <2>;
 				bias-disable;
 			};
-
 			blsp1_i2c5_pins: blsp1-i2c5-state {
 				pins = "gpio18", "gpio19";
 				function = "blsp_i2c5";
 				drive-strength = <2>;
 				bias-disable;
 			};
-
 			cci_default: cci-default-state {
 				pins = "gpio29", "gpio30";
 				function = "cci_i2c0";
-
 				drive-strength = <2>;
 				bias-disable;
 			};
-
 			cci_sleep: cci-sleep-state {
 				pins = "gpio29", "gpio30";
 				function = "gpio";
-
 				drive-strength = <2>;
 				bias-disable;
 			};
-
 			sdhc1_default_state: sdhc1-default-state {
 				clk-pins {
 					pins = "sdc1_clk";
 					drive-strength = <10>;
 					bias-disable;
 				};
-
 				cmd-data-pins {
 					pins = "sdc1_cmd", "sdc1_data";
 					drive-strength = <10>;
 					bias-pull-up;
 				};
 			};
-
 			sdhc2_default_state: sdhc2-default-state {
 				clk-pins {
 					pins = "sdc2_clk";
 					drive-strength = <10>;
 					bias-disable;
 				};
-
 				cmd-data-pins {
 					pins = "sdc2_cmd", "sdc2_data";
 					drive-strength = <10>;
 					bias-pull-up;
 				};
 			};
-
 			sdhc3_default_state: sdhc3-default-state {
 				clk-pins {
 					pins = "gpio44";
@@ -511,14 +439,12 @@
 					drive-strength = <8>;
 					bias-disable;
 				};
-
 				cmd-pins {
 					pins = "gpio43";
 					function = "sdc3";
 					drive-strength = <8>;
 					bias-pull-up;
 				};
-
 				data-pins {
 					pins = "gpio39", "gpio40", "gpio41", "gpio42";
 					function = "sdc3";
@@ -527,11 +453,10 @@
 				};
 			};
 		};
-
 		tsens: thermal-sensor@fc4a9000 {
 			compatible = "qcom,msm8226-tsens", "qcom,tsens-v0_1";
-			reg = <0xfc4a9000 0x1000>, /* TM */
-			      <0xfc4a8000 0x1000>; /* SROT */
+			reg = <0xfc4a9000 0x1000>,  
+			      <0xfc4a8000 0x1000>;  
 			nvmem-cells = <&tsens_mode>,
 				      <&tsens_base1>, <&tsens_base2>,
 				      <&tsens_s0_p1>, <&tsens_s0_p2>,
@@ -555,104 +480,84 @@
 			interrupt-names = "uplow";
 			#thermal-sensor-cells = <1>;
 		};
-
 		restart@fc4ab000 {
 			compatible = "qcom,pshold";
 			reg = <0xfc4ab000 0x4>;
 		};
-
 		qfprom: qfprom@fc4bc000 {
 			compatible = "qcom,msm8226-qfprom", "qcom,qfprom";
 			reg = <0xfc4bc000 0x1000>;
 			#address-cells = <1>;
 			#size-cells = <1>;
-
 			tsens_base1: base1@1c1 {
 				reg = <0x1c1 0x2>;
 				bits = <5 8>;
 			};
-
 			tsens_s0_p1: s0-p1@1c2 {
 				reg = <0x1c2 0x2>;
 				bits = <5 6>;
 			};
-
 			tsens_s1_p1: s1-p1@1c4 {
 				reg = <0x1c4 0x1>;
 				bits = <0 6>;
 			};
-
 			tsens_s2_p1: s2-p1@1c4 {
 				reg = <0x1c4 0x2>;
 				bits = <6 6>;
 			};
-
 			tsens_s3_p1: s3-p1@1c5 {
 				reg = <0x1c5 0x2>;
 				bits = <4 6>;
 			};
-
 			tsens_s4_p1: s4-p1@1c6 {
 				reg = <0x1c6 0x1>;
 				bits = <2 6>;
 			};
-
 			tsens_s5_p1: s5-p1@1c7 {
 				reg = <0x1c7 0x1>;
 				bits = <0 6>;
 			};
-
 			tsens_s6_p1: s6-p1@1ca {
 				reg = <0x1ca 0x2>;
 				bits = <4 6>;
 			};
-
 			tsens_base2: base2@1cc {
 				reg = <0x1cc 0x1>;
 				bits = <0 8>;
 			};
-
 			tsens_s0_p2: s0-p2@1cd {
 				reg = <0x1cd 0x1>;
 				bits = <0 6>;
 			};
-
 			tsens_s1_p2: s1-p2@1cd {
 				reg = <0x1cd 0x2>;
 				bits = <6 6>;
 			};
-
 			tsens_s2_p2: s2-p2@1ce {
 				reg = <0x1ce 0x2>;
 				bits = <4 6>;
 			};
-
 			tsens_s3_p2: s3-p2@1cf {
 				reg = <0x1cf 0x1>;
 				bits = <2 6>;
 			};
-
 			tsens_s4_p2: s4-p2@446 {
 				reg = <0x446 0x2>;
 				bits = <4 6>;
 			};
-
 			tsens_s5_p2: s5-p2@447 {
 				reg = <0x447 0x1>;
 				bits = <2 6>;
 			};
-
 			tsens_s6_p2: s6-p2@44e {
 				reg = <0x44e 0x1>;
 				bits = <1 6>;
 			};
-
 			tsens_mode: mode@44f {
 				reg = <0x44f 0x1>;
 				bits = <5 3>;
 			};
 		};
-
 		spmi_bus: spmi@fc4cf000 {
 			compatible = "qcom,spmi-pmic-arb";
 			reg-names = "core", "intr", "cnfg";
@@ -668,21 +573,18 @@
 			interrupt-controller;
 			#interrupt-cells = <4>;
 		};
-
 		rng@f9bff000 {
 			compatible = "qcom,prng";
 			reg = <0xf9bff000 0x200>;
 			clocks = <&gcc GCC_PRNG_AHB_CLK>;
 			clock-names = "core";
 		};
-
 		timer@f9020000 {
 			compatible = "arm,armv7-timer-mem";
 			reg = <0xf9020000 0x1000>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges;
-
 			frame@f9021000 {
 				frame-number = <0>;
 				interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
@@ -690,42 +592,36 @@
 				reg = <0xf9021000 0x1000>,
 				      <0xf9022000 0x1000>;
 			};
-
 			frame@f9023000 {
 				frame-number = <1>;
 				interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>;
 				reg = <0xf9023000 0x1000>;
 				status = "disabled";
 			};
-
 			frame@f9024000 {
 				frame-number = <2>;
 				interrupts = <GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>;
 				reg = <0xf9024000 0x1000>;
 				status = "disabled";
 			};
-
 			frame@f9025000 {
 				frame-number = <3>;
 				interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
 				reg = <0xf9025000 0x1000>;
 				status = "disabled";
 			};
-
 			frame@f9026000 {
 				frame-number = <4>;
 				interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>;
 				reg = <0xf9026000 0x1000>;
 				status = "disabled";
 			};
-
 			frame@f9027000 {
 				frame-number = <5>;
 				interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
 				reg = <0xf9027000 0x1000>;
 				status = "disabled";
 			};
-
 			frame@f9028000 {
 				frame-number = <6>;
 				interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
@@ -733,57 +629,43 @@
 				status = "disabled";
 			};
 		};
-
 		sram@fc190000 {
 			compatible = "qcom,msm8226-rpm-stats";
 			reg = <0xfc190000 0x10000>;
 		};
-
 		rpm_msg_ram: sram@fc428000 {
 			compatible = "qcom,rpm-msg-ram";
 			reg = <0xfc428000 0x4000>;
 		};
-
 		tcsr_mutex: hwlock@fd484000 {
 			compatible = "qcom,msm8226-tcsr-mutex", "qcom,tcsr-mutex";
 			reg = <0xfd484000 0x1000>;
 			#hwlock-cells = <1>;
 		};
-
 		adsp: remoteproc@fe200000 {
 			compatible = "qcom,msm8226-adsp-pil";
 			reg = <0xfe200000 0x100>;
-
 			interrupts-extended = <&intc GIC_SPI 162 IRQ_TYPE_EDGE_RISING>,
 					      <&adsp_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
 					      <&adsp_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
 					      <&adsp_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
 					      <&adsp_smp2p_in 3 IRQ_TYPE_EDGE_RISING>;
 			interrupt-names = "wdog", "fatal", "ready", "handover", "stop-ack";
-
 			power-domains = <&rpmpd MSM8226_VDDCX>;
 			power-domain-names = "cx";
-
 			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>;
 			clock-names = "xo";
-
 			memory-region = <&adsp_region>;
-
 			qcom,smem-states = <&adsp_smp2p_out 0>;
 			qcom,smem-state-names = "stop";
-
 			status = "disabled";
-
 			smd-edge {
 				interrupts = <GIC_SPI 156 IRQ_TYPE_EDGE_RISING>;
-
 				qcom,ipc = <&apcs 8 8>;
 				qcom,smd-edge = <1>;
-
 				label = "lpass";
 			};
 		};
-
 		sram@fdd00000 {
 			compatible = "qcom,msm8226-ocmem";
 			reg = <0xfdd00000 0x2000>,
@@ -792,62 +674,47 @@
 			ranges = <0 0xfec00000 0x20000>;
 			clocks = <&rpmcc RPM_SMD_OCMEMGX_CLK>;
 			clock-names = "core";
-
 			#address-cells = <1>;
 			#size-cells = <1>;
-
 			gmu_sram: gmu-sram@0 {
 				reg = <0x0 0x20000>;
 			};
 		};
-
 		sram@fe805000 {
 			compatible = "qcom,msm8226-imem", "syscon", "simple-mfd";
 			reg = <0xfe805000 0x1000>;
-
 			reboot-mode {
 				compatible = "syscon-reboot-mode";
 				offset = <0x65c>;
-
 				mode-bootloader = <0x77665500>;
 				mode-normal     = <0x77665501>;
 				mode-recovery   = <0x77665502>;
 			};
 		};
-
 		mdss: display-subsystem@fd900000 {
 			compatible = "qcom,mdss";
 			reg = <0xfd900000 0x100>, <0xfd924000 0x1000>;
 			reg-names = "mdss_phys", "vbif_phys";
-
 			power-domains = <&mmcc MDSS_GDSC>;
-
 			clocks = <&mmcc MDSS_AHB_CLK>,
 				 <&mmcc MDSS_AXI_CLK>,
 				 <&mmcc MDSS_VSYNC_CLK>;
 			clock-names = "iface",
 				      "bus",
 				      "vsync";
-
 			interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>;
-
 			interrupt-controller;
 			#interrupt-cells = <1>;
-
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges;
-
 			status = "disabled";
-
 			mdss_mdp: display-controller@fd900000 {
 				compatible = "qcom,msm8226-mdp5", "qcom,mdp5";
 				reg = <0xfd900100 0x22000>;
 				reg-names = "mdp_phys";
-
 				interrupt-parent = <&mdss>;
 				interrupts = <0>;
-
 				clocks = <&mmcc MDSS_AHB_CLK>,
 					 <&mmcc MDSS_AXI_CLK>,
 					 <&mmcc MDSS_MDP_CLK>,
@@ -856,11 +723,9 @@
 					      "bus",
 					      "core",
 					      "vsync";
-
 				ports {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					port@0 {
 						reg = <0>;
 						mdss_mdp_intf1_out: endpoint {
@@ -869,21 +734,17 @@
 					};
 				};
 			};
-
 			mdss_dsi0: dsi@fd922800 {
 				compatible = "qcom,msm8226-dsi-ctrl",
 					     "qcom,mdss-dsi-ctrl";
 				reg = <0xfd922800 0x1f8>;
 				reg-names = "dsi_ctrl";
-
 				interrupt-parent = <&mdss>;
 				interrupts = <4>;
-
 				assigned-clocks = <&mmcc BYTE0_CLK_SRC>,
 						  <&mmcc PCLK0_CLK_SRC>;
 				assigned-clock-parents = <&mdss_dsi0_phy 0>,
 							 <&mdss_dsi0_phy 1>;
-
 				clocks = <&mmcc MDSS_MDP_CLK>,
 					 <&mmcc MDSS_AHB_CLK>,
 					 <&mmcc MDSS_AXI_CLK>,
@@ -898,23 +759,18 @@
 					      "pixel",
 					      "core",
 					      "core_mmss";
-
 				phys = <&mdss_dsi0_phy>;
-
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				ports {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					port@0 {
 						reg = <0>;
 						mdss_dsi0_in: endpoint {
 							remote-endpoint = <&mdss_mdp_intf1_out>;
 						};
 					};
-
 					port@1 {
 						reg = <1>;
 						mdss_dsi0_out: endpoint {
@@ -922,7 +778,6 @@
 					};
 				};
 			};
-
 			mdss_dsi0_phy: phy@fd922a00 {
 				compatible = "qcom,dsi-phy-28nm-8226";
 				reg = <0xfd922a00 0xd4>,
@@ -931,10 +786,8 @@
 				reg-names = "dsi_pll",
 					    "dsi_phy",
 					    "dsi_phy_regulator";
-
 				#clock-cells = <1>;
 				#phy-cells = <0>;
-
 				clocks = <&mmcc MDSS_AHB_CLK>,
 					 <&rpmcc RPM_SMD_XO_CLK_SRC>;
 				clock-names = "iface",
@@ -942,21 +795,17 @@
 			};
 		};
 	};
-
 	thermal-zones {
 		cpu0-thermal {
 			polling-delay-passive = <250>;
 			polling-delay = <1000>;
-
 			thermal-sensors = <&tsens 5>;
-
 			trips {
 				cpu_alert0: trip0 {
 					temperature = <75000>;
 					hysteresis = <2000>;
 					type = "passive";
 				};
-
 				cpu_crit0: trip1 {
 					temperature = <110000>;
 					hysteresis = <2000>;
@@ -964,20 +813,16 @@
 				};
 			};
 		};
-
 		cpu1-thermal {
 			polling-delay-passive = <250>;
 			polling-delay = <1000>;
-
 			thermal-sensors = <&tsens 2>;
-
 			trips {
 				cpu_alert1: trip0 {
 					temperature = <75000>;
 					hysteresis = <2000>;
 					type = "passive";
 				};
-
 				cpu_crit1: trip1 {
 					temperature = <110000>;
 					hysteresis = <2000>;
@@ -986,7 +831,6 @@
 			};
 		};
 	};
-
 	timer {
 		compatible = "arm,armv7-timer";
 		interrupts = <GIC_PPI 2

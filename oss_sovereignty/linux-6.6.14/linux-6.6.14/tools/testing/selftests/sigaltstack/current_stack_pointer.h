@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #if __alpha__
 register unsigned long sp asm("$30");
 #elif __arm__ || __aarch64__ || __csky__ || __m68k__ || __mips__ || __riscv

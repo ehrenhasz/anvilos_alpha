@@ -1,46 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * OMAP3xxx Power/Reset Management (PRM) register definitions
- *
- * Copyright (C) 2007-2009, 2011-2012 Texas Instruments, Inc.
- * Copyright (C) 2008-2010 Nokia Corporation
- * Paul Walmsley
- *
- * The PRM hardware modules on the OMAP2/3 are quite similar to each
- * other.  The PRM on OMAP4 has a new register layout, and is handled
- * in a separate file.
- */
 #ifndef __ARCH_ARM_MACH_OMAP2_PRM3XXX_H
 #define __ARCH_ARM_MACH_OMAP2_PRM3XXX_H
-
 #include "prcm-common.h"
 #include "prm.h"
 #include "prm2xxx_3xxx.h"
-
 #define OMAP34XX_PRM_REGADDR(module, reg)				\
 		OMAP2_L4_IO_ADDRESS(OMAP3430_PRM_BASE + (module) + (reg))
-
-
-/*
- * OMAP3-specific global PRM registers
- * Use {read,write}l_relaxed() with these registers.
- *
- * With a few exceptions, these are the register names beginning with
- * PRM_* on 34xx.  (The exceptions are the IRQSTATUS and IRQENABLE
- * bits.)
- */
-
 #define OMAP3_PRM_REVISION_OFFSET	0x0004
 #define OMAP3430_PRM_REVISION		OMAP34XX_PRM_REGADDR(OCP_MOD, 0x0004)
 #define OMAP3_PRM_SYSCONFIG_OFFSET	0x0014
 #define OMAP3430_PRM_SYSCONFIG		OMAP34XX_PRM_REGADDR(OCP_MOD, 0x0014)
-
 #define OMAP3_PRM_IRQSTATUS_MPU_OFFSET	0x0018
 #define OMAP3430_PRM_IRQSTATUS_MPU	OMAP34XX_PRM_REGADDR(OCP_MOD, 0x0018)
 #define OMAP3_PRM_IRQENABLE_MPU_OFFSET	0x001c
 #define OMAP3430_PRM_IRQENABLE_MPU	OMAP34XX_PRM_REGADDR(OCP_MOD, 0x001c)
-
-
 #define OMAP3_PRM_VC_SMPS_SA_OFFSET	0x0020
 #define OMAP3430_PRM_VC_SMPS_SA		OMAP34XX_PRM_REGADDR(OMAP3430_GR_MOD, 0x0020)
 #define OMAP3_PRM_VC_SMPS_VOL_RA_OFFSET	0x0024
@@ -103,46 +75,28 @@
 #define OMAP3430_PRM_VP2_VOLTAGE	OMAP34XX_PRM_REGADDR(OMAP3430_GR_MOD, 0x00e0)
 #define OMAP3_PRM_VP2_STATUS_OFFSET	0x00e4
 #define OMAP3430_PRM_VP2_STATUS		OMAP34XX_PRM_REGADDR(OMAP3430_GR_MOD, 0x00e4)
-
 #define OMAP3_PRM_CLKSEL_OFFSET	0x0040
 #define OMAP3430_PRM_CLKSEL		OMAP34XX_PRM_REGADDR(OMAP3430_CCR_MOD, 0x0040)
 #define OMAP3_PRM_CLKOUT_CTRL_OFFSET	0x0070
 #define OMAP3430_PRM_CLKOUT_CTRL	OMAP34XX_PRM_REGADDR(OMAP3430_CCR_MOD, 0x0070)
-
-/* OMAP3 specific register offsets */
 #define OMAP3430ES2_PM_WKEN3				0x00f0
 #define OMAP3430ES2_PM_WKST3				0x00b8
-
 #define OMAP3430_PM_MPUGRPSEL				0x00a4
 #define OMAP3430_PM_MPUGRPSEL1				OMAP3430_PM_MPUGRPSEL
 #define OMAP3430ES2_PM_MPUGRPSEL3			0x00f8
-
 #define OMAP3430_PM_IVAGRPSEL				0x00a8
 #define OMAP3430_PM_IVAGRPSEL1				OMAP3430_PM_IVAGRPSEL
 #define OMAP3430ES2_PM_IVAGRPSEL3			0x00f4
-
 #define OMAP3430_PM_PREPWSTST				0x00e8
-
 #define OMAP3430_PRM_IRQSTATUS_IVA2			0x00f8
 #define OMAP3430_PRM_IRQENABLE_IVA2			0x00fc
-
-
 #ifndef __ASSEMBLER__
-
-/*
- * OMAP3 access functions for voltage controller (VC) and
- * voltage proccessor (VP) in the PRM.
- */
 extern u32 omap3_prm_vcvp_read(u8 offset);
 extern void omap3_prm_vcvp_write(u32 val, u8 offset);
 extern u32 omap3_prm_vcvp_rmw(u32 mask, u32 bits, u8 offset);
-
 int __init omap3xxx_prm_init(const struct omap_prcm_init_data *data);
 int omap3xxx_prm_clear_global_cold_reset(void);
 void omap3_prm_save_scratchpad_contents(u32 *ptr);
 void omap3_prm_init_pm(bool has_uart4, bool has_iva);
-
-#endif /* __ASSEMBLER */
-
-
+#endif  
 #endif

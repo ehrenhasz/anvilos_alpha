@@ -1,38 +1,9 @@
-/*
-* Copyright 2016-2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_HWSS_DCN10_H__
 #define __DC_HWSS_DCN10_H__
-
 #include "core_types.h"
 #include "hw_sequencer_private.h"
-
 struct dc;
-
 void dcn10_hw_sequencer_construct(struct dc *dc);
-
 int dcn10_get_vupdate_offset_from_vsync(struct pipe_ctx *pipe_ctx);
 void dcn10_calc_vupdate_position(
 		struct dc *dc,
@@ -191,17 +162,13 @@ void dcn10_plane_atomic_power_down(struct dc *dc,
 bool dcn10_disconnect_pipes(
 		struct dc *dc,
 		struct dc_state *context);
-
 void dcn10_wait_for_pending_cleared(struct dc *dc,
 		struct dc_state *context);
 void dcn10_set_hdr_multiplier(struct pipe_ctx *pipe_ctx);
 void dcn10_verify_allow_pstate_change_high(struct dc *dc);
-
 void dcn10_get_dcc_en_bits(struct dc *dc, int *dcc_en_bits);
-
 void dcn10_update_visual_confirm_color(
 		struct dc *dc,
 		struct pipe_ctx *pipe_ctx,
 		int mpcc_id);
-
-#endif /* __DC_HWSS_DCN10_H__ */
+#endif  

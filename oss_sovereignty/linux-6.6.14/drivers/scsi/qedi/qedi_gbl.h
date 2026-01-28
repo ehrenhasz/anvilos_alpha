@@ -1,32 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic iSCSI Offload Driver
- * Copyright (c) 2016 Cavium Inc.
- */
-
 #ifndef _QEDI_GBL_H_
 #define _QEDI_GBL_H_
-
 #include "qedi_iscsi.h"
-
 #ifdef CONFIG_DEBUG_FS
 extern int qedi_do_not_recover;
 #else
 #define qedi_do_not_recover (0)
 #endif
-
 extern uint qedi_io_tracing;
-
 extern const struct scsi_host_template qedi_host_template;
 extern struct iscsi_transport qedi_iscsi_transport;
 extern const struct qed_iscsi_ops *qedi_ops;
 extern const struct qedi_debugfs_ops qedi_debugfs_ops[];
 extern const struct file_operations qedi_dbg_fops[];
 extern const struct attribute_group *qedi_shost_groups[];
-
 int qedi_alloc_sq(struct qedi_ctx *qedi, struct qedi_endpoint *ep);
 void qedi_free_sq(struct qedi_ctx *qedi, struct qedi_endpoint *ep);
-
 int qedi_send_iscsi_login(struct qedi_conn *qedi_conn,
 			  struct iscsi_task *task);
 int qedi_send_iscsi_logout(struct qedi_conn *qedi_conn,
@@ -70,5 +58,4 @@ void qedi_free_id(struct qedi_portid_tbl *id_tbl, u16 id);
 void qedi_clearsq(struct qedi_ctx *qedi,
 		  struct qedi_conn *qedi_conn,
 		  struct iscsi_task *task);
-
 #endif

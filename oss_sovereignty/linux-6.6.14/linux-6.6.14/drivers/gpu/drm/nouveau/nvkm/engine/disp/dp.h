@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_DISP_DP_H__
 #define __NVKM_DISP_DP_H__
 #include "outp.h"
-
 int nvkm_dp_new(struct nvkm_disp *, int index, struct dcb_output *,
 		struct nvkm_outp **);
 void nvkm_dp_disable(struct nvkm_outp *, struct nvkm_ior *);
 void nvkm_dp_enable(struct nvkm_outp *, bool auxpwr);
-
-/* DPCD Receiver Capabilities */
 #define DPCD_RC00_DPCD_REV                                              0x00000
 #define DPCD_RC01_MAX_LINK_RATE                                         0x00001
 #define DPCD_RC02                                                       0x00002
@@ -22,8 +18,6 @@ void nvkm_dp_enable(struct nvkm_outp *, bool auxpwr);
 #define DPCD_RC0E_AUX_RD_INTERVAL                                          0x7f
 #define DPCD_RC10_SUPPORTED_LINK_RATES(i)                               0x00010
 #define DPCD_RC10_SUPPORTED_LINK_RATES__SIZE                                 16
-
-/* DPCD Link Configuration */
 #define DPCD_LC00_LINK_BW_SET                                           0x00100
 #define DPCD_LC01                                                       0x00101
 #define DPCD_LC01_ENHANCED_FRAME_EN                                        0x80
@@ -48,8 +42,6 @@ void nvkm_dp_enable(struct nvkm_outp *, bool auxpwr);
 #define DPCD_LC10_LANE2_POST_CURSOR2_SET                                   0x03
 #define DPCD_LC15_LINK_RATE_SET                                         0x00115
 #define DPCD_LC15_LINK_RATE_SET_MASK                                       0x07
-
-/* DPCD Link/Sink Status */
 #define DPCD_LS02                                                       0x00202
 #define DPCD_LS02_LANE1_SYMBOL_LOCKED                                      0x40
 #define DPCD_LS02_LANE1_CHANNEL_EQ_DONE                                    0x20
@@ -83,13 +75,10 @@ void nvkm_dp_enable(struct nvkm_outp *, bool auxpwr);
 #define DPCD_LS0C_LANE2_POST_CURSOR2                                       0x30
 #define DPCD_LS0C_LANE1_POST_CURSOR2                                       0x0c
 #define DPCD_LS0C_LANE0_POST_CURSOR2                                       0x03
-
-/* DPCD Sink Control */
 #define DPCD_SC00                                                       0x00600
 #define DPCD_SC00_SET_POWER                                                0x03
 #define DPCD_SC00_SET_POWER_D0                                             0x01
 #define DPCD_SC00_SET_POWER_D3                                             0x03
-
 #define DPCD_LTTPR_REV                                                  0xf0000
 #define DPCD_LTTPR_MODE                                                 0xf0003
 #define DPCD_LTTPR_MODE_TRANSPARENT                                        0x55

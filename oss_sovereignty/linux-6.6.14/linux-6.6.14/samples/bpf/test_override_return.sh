@@ -1,5 +1,3 @@
-#!/bin/bash
-
 rm -r tmpmnt
 rm -f testfile.img
 dd if=/dev/zero of=testfile.img bs=1M seek=1000 count=1

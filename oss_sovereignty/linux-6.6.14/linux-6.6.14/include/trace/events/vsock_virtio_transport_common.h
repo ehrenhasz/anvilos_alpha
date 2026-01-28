@@ -1,21 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM vsock
-
 #if !defined(_TRACE_VSOCK_VIRTIO_TRANSPORT_COMMON_H) || \
     defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_VSOCK_VIRTIO_TRANSPORT_COMMON_H
-
 #include <linux/tracepoint.h>
-
 TRACE_DEFINE_ENUM(VIRTIO_VSOCK_TYPE_STREAM);
 TRACE_DEFINE_ENUM(VIRTIO_VSOCK_TYPE_SEQPACKET);
-
 #define show_type(val) \
 	__print_symbolic(val, \
 			 { VIRTIO_VSOCK_TYPE_STREAM, "STREAM" }, \
 			 { VIRTIO_VSOCK_TYPE_SEQPACKET, "SEQPACKET" })
-
 TRACE_DEFINE_ENUM(VIRTIO_VSOCK_OP_INVALID);
 TRACE_DEFINE_ENUM(VIRTIO_VSOCK_OP_REQUEST);
 TRACE_DEFINE_ENUM(VIRTIO_VSOCK_OP_RESPONSE);
@@ -24,7 +18,6 @@ TRACE_DEFINE_ENUM(VIRTIO_VSOCK_OP_SHUTDOWN);
 TRACE_DEFINE_ENUM(VIRTIO_VSOCK_OP_RW);
 TRACE_DEFINE_ENUM(VIRTIO_VSOCK_OP_CREDIT_UPDATE);
 TRACE_DEFINE_ENUM(VIRTIO_VSOCK_OP_CREDIT_REQUEST);
-
 #define show_op(val) \
 	__print_symbolic(val, \
 			 { VIRTIO_VSOCK_OP_INVALID, "INVALID" }, \
@@ -35,7 +28,6 @@ TRACE_DEFINE_ENUM(VIRTIO_VSOCK_OP_CREDIT_REQUEST);
 			 { VIRTIO_VSOCK_OP_RW, "RW" }, \
 			 { VIRTIO_VSOCK_OP_CREDIT_UPDATE, "CREDIT_UPDATE" }, \
 			 { VIRTIO_VSOCK_OP_CREDIT_REQUEST, "CREDIT_REQUEST" })
-
 TRACE_EVENT(virtio_transport_alloc_pkt,
 	TP_PROTO(
 		 __u32 src_cid, __u32 src_port,
@@ -81,7 +73,6 @@ TRACE_EVENT(virtio_transport_alloc_pkt,
 		  show_op(__entry->op),
 		  __entry->flags)
 );
-
 TRACE_EVENT(virtio_transport_recv_pkt,
 	TP_PROTO(
 		 __u32 src_cid, __u32 src_port,
@@ -138,11 +129,7 @@ TRACE_EVENT(virtio_transport_recv_pkt,
 		  __entry->buf_alloc,
 		  __entry->fwd_cnt)
 );
-
-#endif /* _TRACE_VSOCK_VIRTIO_TRANSPORT_COMMON_H */
-
+#endif  
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE vsock_virtio_transport_common
-
-/* This part must be outside protection */
 #include <trace/define_trace.h>

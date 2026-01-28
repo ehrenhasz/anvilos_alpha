@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR MIT) */
-/*
- * Copyright (c) 2023 Amlogic, Inc. All rights reserved.
- * Author: Huqiang Qin <huqiang.qin@amlogic.com>
- */
-
 #ifndef _DT_BINDINGS_IRQ_MESON_G12A_GPIO_H
 #define _DT_BINDINGS_IRQ_MESON_G12A_GPIO_H
-
-/* IRQID[11:0] - GPIOAO[11:0] */
 #define IRQID_GPIOAO_0		0
 #define IRQID_GPIOAO_1		1
 #define IRQID_GPIOAO_2		2
@@ -20,8 +12,6 @@
 #define IRQID_GPIOAO_9		9
 #define IRQID_GPIOAO_10		10
 #define IRQID_GPIOAO_11		11
-
-/* IRQID[27:12] - GPIOZ[15:0] */
 #define IRQID_GPIOZ_0		12
 #define IRQID_GPIOZ_1		13
 #define IRQID_GPIOZ_2		14
@@ -38,8 +28,6 @@
 #define IRQID_GPIOZ_13		25
 #define IRQID_GPIOZ_14		26
 #define IRQID_GPIOZ_15		27
-
-/* IRQID[36:28] - GPIOH[8:0] */
 #define IRQID_GPIOH_0		28
 #define IRQID_GPIOH_1		29
 #define IRQID_GPIOH_2		30
@@ -49,8 +37,6 @@
 #define IRQID_GPIOH_6		34
 #define IRQID_GPIOH_7		35
 #define IRQID_GPIOH_8		36
-
-/* IRQID[52:37] - BOOT[15:0] */
 #define IRQID_BOOT_0		37
 #define IRQID_BOOT_1		38
 #define IRQID_BOOT_2		39
@@ -67,8 +53,6 @@
 #define IRQID_BOOT_13		50
 #define IRQID_BOOT_14		51
 #define IRQID_BOOT_15		52
-
-/* IRQID[60:53] - GPIOC[7:0] */
 #define IRQID_GPIOC_0		53
 #define IRQID_GPIOC_1		54
 #define IRQID_GPIOC_2		55
@@ -77,8 +61,6 @@
 #define IRQID_GPIOC_5		58
 #define IRQID_GPIOC_6		59
 #define IRQID_GPIOC_7		60
-
-/* IRQID[76:61] - GPIOA[15:0] */
 #define IRQID_GPIOA_0		61
 #define IRQID_GPIOA_1		62
 #define IRQID_GPIOA_2		63
@@ -95,8 +77,6 @@
 #define IRQID_GPIOA_13		74
 #define IRQID_GPIOA_14		75
 #define IRQID_GPIOA_15		76
-
-/* IRQID[96:77] - GPIOX[19:0] */
 #define IRQID_GPIOX_0		77
 #define IRQID_GPIOX_1		78
 #define IRQID_GPIOX_2		79
@@ -117,10 +97,7 @@
 #define IRQID_GPIOX_17		94
 #define IRQID_GPIOX_18		95
 #define IRQID_GPIOX_19		96
-
-/* IRQID[99:97] - GPIOE[2:0] */
 #define IRQID_GPIOE_0		97
 #define IRQID_GPIOE_1		98
 #define IRQID_GPIOE_2		99
-
-#endif /* _DT_BINDINGS_IRQ_MESON_G12A_GPIO_H */
+#endif  

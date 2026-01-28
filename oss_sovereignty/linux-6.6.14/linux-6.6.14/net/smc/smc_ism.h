@@ -1,35 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Shared Memory Communications Direct over ISM devices (SMC-D)
- *
- * SMC-D ISM device structure definitions.
- *
- * Copyright IBM Corp. 2018
- */
-
 #ifndef SMCD_ISM_H
 #define SMCD_ISM_H
-
 #include <linux/uio.h>
 #include <linux/types.h>
 #include <linux/mutex.h>
-
 #include "smc.h"
-
-struct smcd_dev_list {	/* List of SMCD devices */
+struct smcd_dev_list {	 
 	struct list_head list;
-	struct mutex mutex;	/* Protects list of devices */
+	struct mutex mutex;	 
 };
-
-extern struct smcd_dev_list	smcd_dev_list;	/* list of smcd devices */
-
-struct smc_ism_vlanid {			/* VLAN id set on ISM device */
+extern struct smcd_dev_list	smcd_dev_list;	 
+struct smc_ism_vlanid {			 
 	struct list_head list;
-	unsigned short vlanid;		/* Vlan id */
-	refcount_t refcnt;		/* Reference count */
+	unsigned short vlanid;		 
+	refcount_t refcnt;		 
 };
-
 struct smcd_dev;
-
 int smc_ism_cantalk(u64 peer_gid, unsigned short vlan_id, struct smcd_dev *dev);
 void smc_ism_set_conn(struct smc_connection *conn);
 void smc_ism_unset_conn(struct smc_connection *conn);
@@ -45,15 +30,12 @@ bool smc_ism_is_v2_capable(void);
 int smc_ism_init(void);
 void smc_ism_exit(void);
 int smcd_nl_get_device(struct sk_buff *skb, struct netlink_callback *cb);
-
 static inline int smc_ism_write(struct smcd_dev *smcd, u64 dmb_tok,
 				unsigned int idx, bool sf, unsigned int offset,
 				void *data, size_t len)
 {
 	int rc;
-
 	rc = smcd->ops->move_data(smcd, dmb_tok, idx, sf, offset, data, len);
 	return rc < 0 ? rc : 0;
 }
-
 #endif

@@ -1,35 +1,6 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2017 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_PCIERCX_DEFS_H__
 #define __CVMX_PCIERCX_DEFS_H__
-
 #include <uapi/asm/bitfield.h>
-
 #define CVMX_PCIERCX_CFG001(block_id) (0x0000000000000004ull)
 #define CVMX_PCIERCX_CFG006(block_id) (0x0000000000000018ull)
 #define CVMX_PCIERCX_CFG008(block_id) (0x0000000000000020ull)
@@ -50,7 +21,6 @@
 #define CVMX_PCIERCX_CFG452(block_id) (0x0000000000000710ull)
 #define CVMX_PCIERCX_CFG455(block_id) (0x000000000000071Cull)
 #define CVMX_PCIERCX_CFG515(block_id) (0x000000000000080Cull)
-
 union cvmx_pciercx_cfg001 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg001_s {
@@ -81,7 +51,6 @@ union cvmx_pciercx_cfg001 {
 		;))))))))))))))))))))))))
 	} s;
 };
-
 union cvmx_pciercx_cfg006 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg006_s {
@@ -92,7 +61,6 @@ union cvmx_pciercx_cfg006 {
 		;))))
 	} s;
 };
-
 union cvmx_pciercx_cfg008 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg008_s {
@@ -103,7 +71,6 @@ union cvmx_pciercx_cfg008 {
 		;))))
 	} s;
 };
-
 union cvmx_pciercx_cfg009 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg009_s {
@@ -116,21 +83,18 @@ union cvmx_pciercx_cfg009 {
 		;))))))
 	} s;
 };
-
 union cvmx_pciercx_cfg010 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg010_s {
 		uint32_t umem_base;
 	} s;
 };
-
 union cvmx_pciercx_cfg011 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg011_s {
 		uint32_t umem_limit;
 	} s;
 };
-
 union cvmx_pciercx_cfg030 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg030_s {
@@ -156,7 +120,6 @@ union cvmx_pciercx_cfg030 {
 		;)))))))))))))))))))
 	} s;
 };
-
 union cvmx_pciercx_cfg031 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg031_s {
@@ -175,7 +138,6 @@ union cvmx_pciercx_cfg031 {
 		;))))))))))))
 	} s;
 };
-
 union cvmx_pciercx_cfg032 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg032_s {
@@ -202,7 +164,6 @@ union cvmx_pciercx_cfg032 {
 		;))))))))))))))))))))
 	} s;
 };
-
 union cvmx_pciercx_cfg034 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg034_s {
@@ -231,7 +192,6 @@ union cvmx_pciercx_cfg034 {
 		;))))))))))))))))))))))
 	} s;
 };
-
 union cvmx_pciercx_cfg035 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg035_s {
@@ -246,7 +206,6 @@ union cvmx_pciercx_cfg035 {
 		;))))))))
 	} s;
 };
-
 union cvmx_pciercx_cfg040 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg040_s {
@@ -268,7 +227,6 @@ union cvmx_pciercx_cfg040 {
 		;)))))))))))))))
 	} s;
 };
-
 union cvmx_pciercx_cfg070 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg070_s {
@@ -283,7 +241,6 @@ union cvmx_pciercx_cfg070 {
 		;))))))))
 	} s;
 };
-
 union cvmx_pciercx_cfg075 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg075_s {
@@ -294,7 +251,6 @@ union cvmx_pciercx_cfg075 {
 		;))))
 	} s;
 };
-
 union cvmx_pciercx_cfg448 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg448_s {
@@ -303,7 +259,6 @@ union cvmx_pciercx_cfg448 {
 		;))
 	} s;
 };
-
 union cvmx_pciercx_cfg452 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg452_s {
@@ -324,7 +279,6 @@ union cvmx_pciercx_cfg452 {
 		;))))))))))))))
 	} s;
 };
-
 union cvmx_pciercx_cfg455 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg455_s {
@@ -350,7 +304,6 @@ union cvmx_pciercx_cfg455 {
 		;)))))))))))))))))))
 	} s;
 };
-
 union cvmx_pciercx_cfg515 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg515_s {
@@ -364,5 +317,4 @@ union cvmx_pciercx_cfg515 {
 		;)))))))
 	} s;
 };
-
 #endif

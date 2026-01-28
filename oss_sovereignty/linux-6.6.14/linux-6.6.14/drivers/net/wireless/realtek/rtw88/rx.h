@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
-
 #ifndef __RTW_RX_H_
 #define __RTW_RX_H_
-
 enum rtw_rx_desc_enc {
 	RX_DESC_ENC_NONE	= 0,
 	RX_DESC_ENC_WEP40	= 1,
@@ -13,7 +8,6 @@ enum rtw_rx_desc_enc {
 	RX_DESC_ENC_AES		= 4,
 	RX_DESC_ENC_WEP104	= 5,
 };
-
 #define GET_RX_DESC_PHYST(rxdesc)                                              \
 	le32_get_bits(*((__le32 *)(rxdesc) + 0x00), BIT(26))
 #define GET_RX_DESC_ICV_ERR(rxdesc)                                            \
@@ -40,7 +34,6 @@ enum rtw_rx_desc_enc {
 	le32_get_bits(*((__le32 *)(rxdesc) + 0x02), GENMASK(30, 29))
 #define GET_RX_DESC_TSFL(rxdesc)                                               \
 	le32_get_bits(*((__le32 *)(rxdesc) + 0x05), GENMASK(31, 0))
-
 void rtw_rx_stats(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
 		  struct sk_buff *skb);
 void rtw_rx_fill_rx_status(struct rtw_dev *rtwdev,
@@ -48,5 +41,4 @@ void rtw_rx_fill_rx_status(struct rtw_dev *rtwdev,
 			   struct ieee80211_hdr *hdr,
 			   struct ieee80211_rx_status *rx_status,
 			   u8 *phy_status);
-
 #endif

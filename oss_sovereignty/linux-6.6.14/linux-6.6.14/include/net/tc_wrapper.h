@@ -1,27 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __NET_TC_WRAPPER_H
 #define __NET_TC_WRAPPER_H
-
 #include <net/pkt_cls.h>
-
 #if IS_ENABLED(CONFIG_RETPOLINE)
-
 #include <linux/cpufeature.h>
 #include <linux/static_key.h>
 #include <linux/indirect_call_wrapper.h>
-
 #define TC_INDIRECT_SCOPE
-
 extern struct static_key_false tc_skip_wrapper;
-
-/* TC Actions */
 #ifdef CONFIG_NET_CLS_ACT
-
 #define TC_INDIRECT_ACTION_DECLARE(fname)                              \
 	INDIRECT_CALLABLE_DECLARE(int fname(struct sk_buff *skb,       \
 					    const struct tc_action *a, \
 					    struct tcf_result *res))
-
 TC_INDIRECT_ACTION_DECLARE(tcf_bpf_act);
 TC_INDIRECT_ACTION_DECLARE(tcf_connmark_act);
 TC_INDIRECT_ACTION_DECLARE(tcf_csum_act);
@@ -42,13 +32,11 @@ TC_INDIRECT_ACTION_DECLARE(tcf_skbedit_act);
 TC_INDIRECT_ACTION_DECLARE(tcf_skbmod_act);
 TC_INDIRECT_ACTION_DECLARE(tcf_vlan_act);
 TC_INDIRECT_ACTION_DECLARE(tunnel_key_act);
-
 static inline int tc_act(struct sk_buff *skb, const struct tc_action *a,
 			   struct tcf_result *res)
 {
 	if (static_branch_likely(&tc_skip_wrapper))
 		goto skip;
-
 #if IS_BUILTIN(CONFIG_NET_ACT_GACT)
 	if (a->ops->act == tcf_gact_act)
 		return tcf_gact_act(skb, a, res);
@@ -129,21 +117,15 @@ static inline int tc_act(struct sk_buff *skb, const struct tc_action *a,
 	if (a->ops->act == tcf_sample_act)
 		return tcf_sample_act(skb, a, res);
 #endif
-
 skip:
 	return a->ops->act(skb, a, res);
 }
-
-#endif /* CONFIG_NET_CLS_ACT */
-
-/* TC Filters */
+#endif  
 #ifdef CONFIG_NET_CLS
-
 #define TC_INDIRECT_FILTER_DECLARE(fname)                               \
 	INDIRECT_CALLABLE_DECLARE(int fname(struct sk_buff *skb,        \
 					    const struct tcf_proto *tp, \
 					    struct tcf_result *res))
-
 TC_INDIRECT_FILTER_DECLARE(basic_classify);
 TC_INDIRECT_FILTER_DECLARE(cls_bpf_classify);
 TC_INDIRECT_FILTER_DECLARE(cls_cgroup_classify);
@@ -153,13 +135,11 @@ TC_INDIRECT_FILTER_DECLARE(fw_classify);
 TC_INDIRECT_FILTER_DECLARE(mall_classify);
 TC_INDIRECT_FILTER_DECLARE(route4_classify);
 TC_INDIRECT_FILTER_DECLARE(u32_classify);
-
 static inline int tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 				struct tcf_result *res)
 {
 	if (static_branch_likely(&tc_skip_wrapper))
 		goto skip;
-
 #if IS_BUILTIN(CONFIG_NET_CLS_BPF)
 	if (tp->classify == cls_bpf_classify)
 		return cls_bpf_classify(skb, tp, res);
@@ -196,13 +176,10 @@ static inline int tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 	if (tp->classify == route4_classify)
 		return route4_classify(skb, tp, res);
 #endif
-
 skip:
 	return tp->classify(skb, tp, res);
 }
-
-#endif /* CONFIG_NET_CLS */
-
+#endif  
 static inline void tc_wrapper_init(void)
 {
 #ifdef CONFIG_X86
@@ -210,27 +187,20 @@ static inline void tc_wrapper_init(void)
 		static_branch_enable(&tc_skip_wrapper);
 #endif
 }
-
 #else
-
 #define TC_INDIRECT_SCOPE static
-
 static inline int tc_act(struct sk_buff *skb, const struct tc_action *a,
 			   struct tcf_result *res)
 {
 	return a->ops->act(skb, a, res);
 }
-
 static inline int tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
 				struct tcf_result *res)
 {
 	return tp->classify(skb, tp, res);
 }
-
 static inline void tc_wrapper_init(void)
 {
 }
-
 #endif
-
-#endif /* __NET_TC_WRAPPER_H */
+#endif  

@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * cs42l42.h -- CS42L42 ALSA SoC audio driver header
- *
- * Copyright 2016-2022 Cirrus Logic, Inc.
- *
- * Author: James Schulman <james.schulman@cirrus.com>
- * Author: Brian Austin <brian.austin@cirrus.com>
- * Author: Michael White <michael.white@cirrus.com>
- */
-
 #ifndef __CS42L42_H__
 #define __CS42L42_H__
-
 #include <dt-bindings/sound/cs42l42.h>
 #include <linux/device.h>
 #include <linux/gpio.h>
@@ -23,7 +11,6 @@
 #include <sound/cs42l42.h>
 #include <sound/soc-component.h>
 #include <sound/soc-dai.h>
-
 struct  cs42l42_private {
 	struct regmap *regmap;
 	struct device *dev;
@@ -56,15 +43,12 @@ struct  cs42l42_private {
 	bool sdw_waiting_first_unattach;
 	bool init_done;
 };
-
 extern const struct regmap_range_cfg cs42l42_page_range;
 extern const struct regmap_config cs42l42_regmap;
 extern const struct snd_soc_component_driver cs42l42_soc_component;
 extern struct snd_soc_dai_driver cs42l42_dai;
-
 bool cs42l42_readable_register(struct device *dev, unsigned int reg);
 bool cs42l42_volatile_register(struct device *dev, unsigned int reg);
-
 int cs42l42_pll_config(struct snd_soc_component *component,
 		       unsigned int clk, unsigned int sample_rate);
 void cs42l42_src_config(struct snd_soc_component *component, unsigned int sample_rate);
@@ -78,5 +62,4 @@ int cs42l42_common_probe(struct cs42l42_private *cs42l42,
 			 struct snd_soc_dai_driver *dai);
 int cs42l42_init(struct cs42l42_private *cs42l42);
 void cs42l42_common_remove(struct cs42l42_private *cs42l42);
-
-#endif /* __CS42L42_H__ */
+#endif  

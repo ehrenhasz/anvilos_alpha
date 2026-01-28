@@ -1,30 +1,9 @@
-/* bnx2x_dump.h: QLogic Everest network driver.
- *
- * Copyright (c) 2012-2013 Broadcom Corporation
- * Copyright (c) 2014 QLogic Corporation
- * All rights reserved
- *
- * Unless you and QLogic execute a separate written software license
- * agreement governing use of this software, this software is licensed to you
- * under the terms of the GNU General Public License version 2, available
- * at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html (the "GPL").
- *
- * Notwithstanding the above, under no circumstances may you combine this
- * software in any way with any other QLogic software provided under a
- * license other than the GPL, without QLogic's express prior written
- * consent.
- */
-
 #ifndef BNX2X_DUMP_H
 #define BNX2X_DUMP_H
-
-/* WaitP Definitions */
 #define DRV_DUMP_XSTORM_WAITP_ADDRESS    0x2b8a80
 #define DRV_DUMP_TSTORM_WAITP_ADDRESS    0x1b8a80
 #define DRV_DUMP_USTORM_WAITP_ADDRESS    0x338a80
 #define DRV_DUMP_CSTORM_WAITP_ADDRESS    0x238a80
-
-/* Possible Chips */
 #define DUMP_CHIP_E1 1
 #define DUMP_CHIP_E1H 2
 #define DUMP_CHIP_E2 4
@@ -34,14 +13,12 @@
 #define DUMP_PATH_1 1024
 #define NUM_PRESETS 13
 #define NUM_CHIPS 5
-
 struct	dump_header {
-	u32 header_size; /* Size in DWORDs excluding this field */
+	u32 header_size;  
 	u32 version;
 	u32 preset;
-	u32 dump_meta_data; /* OR of CHIP and PATH. */
+	u32 dump_meta_data;  
 };
-
 #define  BNX2X_DUMP_VERSION 0x61111111
 struct reg_addr {
 	u32 addr;
@@ -49,7 +26,6 @@ struct reg_addr {
 	u32 chips;
 	u32 presets;
 };
-
 struct wreg_addr {
 	u32 addr;
 	u32 size;
@@ -58,7 +34,6 @@ struct wreg_addr {
 	u32 chips;
 	u32 presets;
 };
-
 #define PAGE_MODE_VALUES_E2 2
 #define PAGE_READ_REGS_E2 1
 #define PAGE_WRITE_REGS_E2 1
@@ -67,7 +42,6 @@ static const u32 page_write_regs_e2[] = {328476};
 static const struct reg_addr page_read_regs_e2[] = {
 	{0x58000, 4608, DUMP_CHIP_E2, 0x30}
 };
-
 #define PAGE_MODE_VALUES_E3 2
 #define PAGE_READ_REGS_E3 1
 #define PAGE_WRITE_REGS_E3 1
@@ -76,7 +50,6 @@ static const u32 page_write_regs_e3[] = {328476};
 static const struct reg_addr page_read_regs_e3[] = {
 	{0x58000, 4608, DUMP_CHIP_E3A0 | DUMP_CHIP_E3B0, 0x30}
 };
-
 static const struct reg_addr reg_addrs[] = {
 	{ 0x2000, 1, 0x1f, 0xfff},
 	{ 0x2004, 1, 0x1f, 0x1fff},
@@ -1895,9 +1868,7 @@ static const struct reg_addr reg_addrs[] = {
 	{ 0x340000, 2, 0x1f, 0x924},
 	{ 0x3a0000, 40960, 0x1c, 0x1000}
 };
-
 #define REGS_COUNT ARRAY_SIZE(reg_addrs)
-
 static const struct reg_addr idle_reg_addrs[] = {
 	{ 0x2104, 1, 0x1f, 0xfff},
 	{ 0x2110, 2, 0x1f, 0xfff},
@@ -2170,39 +2141,27 @@ static const struct reg_addr idle_reg_addrs[] = {
 	{ 0x338080, 1, 0x1f, 0xfff},
 	{ 0x3380c0, 1, 0x1f, 0xfff}
 };
-
 #define IDLE_REGS_COUNT ARRAY_SIZE(idle_reg_addrs)
-
 static const u32 read_reg_e1[] = {
 	0x1b1000};
-
 static const struct wreg_addr wreg_addr_e1 = {
 	0x1b0c00, 192, 1, read_reg_e1, 0x1f, 0x1fff};
-
 static const u32 read_reg_e1h[] = {
 	0x1b1040, 0x1b1000};
-
 static const struct wreg_addr wreg_addr_e1h = {
 	0x1b0c00, 256, 2, read_reg_e1h, 0x1f, 0x1fff};
-
 static const u32 read_reg_e2[] = {
 	0x1b1040, 0x1b1000};
-
 static const struct wreg_addr wreg_addr_e2 = {
 	0x1b0c00, 128, 2, read_reg_e2, 0x1f, 0x1fff};
-
 static const u32 read_reg_e3[] = {
 	0x1b1040, 0x1b1000};
-
 static const struct wreg_addr wreg_addr_e3 = {
 	0x1b0c00, 128, 2, read_reg_e3, 0x1f, 0x1fff};
-
 static const u32 read_reg_e3b0[] = {
 	0x1b1040, 0x1b1000};
-
 static const struct wreg_addr wreg_addr_e3b0 = {
 	0x1b0c00, 128, 2, read_reg_e3b0, 0x1f, 0x1fff};
-
 static const unsigned int dump_num_registers[NUM_CHIPS][NUM_PRESETS] = {
 	{19758, 17543, 26951, 18705, 17287, 26695, 19812, 31367, 40775, 19788,
 	 25223, 34631, 19074},

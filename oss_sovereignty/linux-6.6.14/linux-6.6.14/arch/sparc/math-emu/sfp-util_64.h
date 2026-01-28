@@ -1,17 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * arch/sparc64/math-emu/sfp-util.h
- *
- * Copyright (C) 1999 Jakub Jelinek (jj@ultra.linux.cz)
- * Copyright (C) 1999 David S. Miller (davem@redhat.com)
- *
- */
-
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/types.h>
 #include <asm/byteorder.h>
-
 #define add_ssaaaa(sh, sl, ah, al, bh, bl) 	\
   __asm__ ("addcc %4,%5,%1\n\t"			\
 	   "add %2,%3,%0\n\t"			\
@@ -25,7 +15,6 @@
 	     "r" ((UDItype)(al)),		\
 	     "r" ((UDItype)(bl))		\
 	   : "cc")
-	   
 #define sub_ddmmss(sh, sl, ah, al, bh, bl) 	\
   __asm__ ("subcc %4,%5,%1\n\t"			\
   	   "sub %2,%3,%0\n\t"			\
@@ -39,7 +28,6 @@
 	     "r" ((UDItype)(al)),		\
 	     "r" ((UDItype)(bl))		\
 	   : "cc")
-
 #define umul_ppmm(wh, wl, u, v)				\
   do {							\
 	  UDItype tmp1, tmp2, tmp3, tmp4;		\
@@ -72,7 +60,6 @@
 	     "r" ((UDItype)(v))				\
 	   : "cc");					\
   } while (0)
-  
 #define udiv_qrnnd(q, r, n1, n0, d) 			\
   do {                                                  \
     UWtype __d1, __d0, __q1, __q0, __r1, __r0, __m;     \
@@ -86,7 +73,7 @@
     if (__r1 < __m)                                     \
       {                                                 \
         __q1--, __r1 += (d);                            \
-        if (__r1 >= (d)) /* i.e. we didn't get carry when adding to __r1 */ \
+        if (__r1 >= (d))   \
           if (__r1 < __m)                               \
             __q1--, __r1 += (d);                        \
       }                                                 \
@@ -108,12 +95,9 @@
     (q) = (UWtype) (__q1 << 32)  | __q0;                \
     (r) = __r0;                                         \
   } while (0)
-
 #define UDIV_NEEDS_NORMALIZATION 1  
-
 #define abort() \
 	return 0
-
 #ifdef __BIG_ENDIAN
 #define __BYTE_ORDER __BIG_ENDIAN
 #else

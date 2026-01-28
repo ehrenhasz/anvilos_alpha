@@ -1,74 +1,8 @@
-# export-to-sqlite.py: export perf data to a sqlite3 database
-# Copyright (c) 2017, Intel Corporation.
-#
-# This program is free software; you can redistribute it and/or modify it
-# under the terms and conditions of the GNU General Public License,
-# version 2, as published by the Free Software Foundation.
-#
-# This program is distributed in the hope it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-# more details.
-
 from __future__ import print_function
-
 import os
 import sys
 import struct
 import datetime
-
-# To use this script you will need to have installed package python-pyside which
-# provides LGPL-licensed Python bindings for Qt.  You will also need the package
-# libqt4-sql-sqlite for Qt sqlite3 support.
-#
-# Examples of installing pyside:
-#
-# ubuntu:
-#
-#	$ sudo apt-get install python-pyside.qtsql libqt4-sql-psql
-#
-#	Alternately, to use Python3 and/or pyside 2, one of the following:
-#
-#		$ sudo apt-get install python3-pyside.qtsql libqt4-sql-psql
-#		$ sudo apt-get install python-pyside2.qtsql libqt5sql5-psql
-#		$ sudo apt-get install python3-pyside2.qtsql libqt5sql5-psql
-# fedora:
-#
-#	$ sudo yum install python-pyside
-#
-#	Alternately, to use Python3 and/or pyside 2, one of the following:
-#		$ sudo yum install python3-pyside
-#		$ pip install --user PySide2
-#		$ pip3 install --user PySide2
-#
-# An example of using this script with Intel PT:
-#
-#	$ perf record -e intel_pt//u ls
-#	$ perf script -s ~/libexec/perf-core/scripts/python/export-to-sqlite.py pt_example branches calls
-#	2017-07-31 14:26:07.326913 Creating database...
-#	2017-07-31 14:26:07.538097 Writing records...
-#	2017-07-31 14:26:09.889292 Adding indexes
-#	2017-07-31 14:26:09.958746 Done
-#
-# To browse the database, sqlite3 can be used e.g.
-#
-#	$ sqlite3 pt_example
-#	sqlite> .header on
-#	sqlite> select * from samples_view where id < 10;
-#	sqlite> .mode column
-#	sqlite> select * from samples_view where id < 10;
-#	sqlite> .tables
-#	sqlite> .schema samples_view
-#	sqlite> .quit
-#
-# An example of using the database is provided by the script
-# exported-sql-viewer.py.  Refer to that script for details.
-#
-# The database structure is practically the same as created by the script
-# export-to-postgresql.py. Refer to that script for details.  A notable
-# difference is  the 'transaction' column of the 'samples' table which is
-# renamed 'transaction_' in sqlite because 'transaction' is a reserved word.
-
 pyside_version_1 = True
 if not "pyside-version-1" in sys.argv:
 	try:
@@ -76,27 +10,17 @@ if not "pyside-version-1" in sys.argv:
 		pyside_version_1 = False
 	except:
 		pass
-
 if pyside_version_1:
 	from PySide.QtSql import *
-
 sys.path.append(os.environ['PERF_EXEC_PATH'] + \
 	'/scripts/python/Perf-Trace-Util/lib/Perf/Trace')
-
-# These perf imports are not used at present
-#from perf_trace_context import *
-#from Core import *
-
 perf_db_export_mode = True
 perf_db_export_calls = False
 perf_db_export_callchains = False
-
 def printerr(*args, **keyword_args):
 	print(*args, file=sys.stderr, **keyword_args)
-
 def printdate(*args, **kw_args):
         print(datetime.datetime.today(), *args, sep=' ', **kw_args)
-
 def usage():
 	printerr("Usage is: export-to-sqlite.py <database name> [<columns>] [<calls>] [<callchains>] [<pyside-version-1>]");
 	printerr("where:  columns            'all' or 'branches'");
@@ -104,22 +28,16 @@ def usage():
 	printerr("        callchains         'callchains' => create call_paths table");
 	printerr("        pyside-version-1   'pyside-version-1' => use pyside version 1");
 	raise Exception("Too few or bad arguments")
-
 if (len(sys.argv) < 2):
 	usage()
-
 dbname = sys.argv[1]
-
 if (len(sys.argv) >= 3):
 	columns = sys.argv[2]
 else:
 	columns = "all"
-
 if columns not in ("all", "branches"):
 	usage()
-
 branches = (columns == "branches")
-
 for i in range(3,len(sys.argv)):
 	if (sys.argv[i] == "calls"):
 		perf_db_export_calls = True
@@ -129,19 +47,15 @@ for i in range(3,len(sys.argv)):
 		pass
 	else:
 		usage()
-
 def do_query(q, s):
 	if (q.exec_(s)):
 		return
 	raise Exception("Query failed: " + q.lastError().text())
-
 def do_query_(q):
 	if (q.exec_()):
 		return
 	raise Exception("Query failed: " + q.lastError().text())
-
 printdate("Creating database ...")
-
 db_exists = False
 try:
 	f = open(dbname)
@@ -149,19 +63,14 @@ try:
 	db_exists = True
 except:
 	pass
-
 if db_exists:
 	raise Exception(dbname + " already exists")
-
 db = QSqlDatabase.addDatabase('QSQLITE')
 db.setDatabaseName(dbname)
 db.open()
-
 query = QSqlQuery(db)
-
 do_query(query, 'PRAGMA journal_mode = OFF')
 do_query(query, 'BEGIN TRANSACTION')
-
 do_query(query, 'CREATE TABLE selected_events ('
 		'id		integer		NOT NULL	PRIMARY KEY,'
 		'name		varchar(80))')
@@ -201,7 +110,6 @@ do_query(query, 'CREATE TABLE symbols ('
 do_query(query, 'CREATE TABLE branch_types ('
 		'id		integer		NOT NULL	PRIMARY KEY,'
 		'name		varchar(80))')
-
 if branches:
 	do_query(query, 'CREATE TABLE samples ('
 		'id		integer		NOT NULL	PRIMARY KEY,'
@@ -252,7 +160,6 @@ else:
 		'insn_count	bigint,'
 		'cyc_count	bigint,'
 		'flags		integer)')
-
 if perf_db_export_calls or perf_db_export_callchains:
 	do_query(query, 'CREATE TABLE call_paths ('
 		'id		integer		NOT NULL	PRIMARY KEY,'
@@ -275,39 +182,32 @@ if perf_db_export_calls:
 		'parent_id	bigint,'
 		'insn_count	bigint,'
 		'cyc_count	bigint)')
-
 do_query(query, 'CREATE TABLE ptwrite ('
 		'id		integer		NOT NULL	PRIMARY KEY,'
 		'payload	bigint,'
 		'exact_ip	integer)')
-
 do_query(query, 'CREATE TABLE cbr ('
 		'id		integer		NOT NULL	PRIMARY KEY,'
 		'cbr		integer,'
 		'mhz		integer,'
 		'percent	integer)')
-
 do_query(query, 'CREATE TABLE mwait ('
 		'id		integer		NOT NULL	PRIMARY KEY,'
 		'hints		integer,'
 		'extensions	integer)')
-
 do_query(query, 'CREATE TABLE pwre ('
 		'id		integer		NOT NULL	PRIMARY KEY,'
 		'cstate		integer,'
 		'subcstate	integer,'
 		'hw		integer)')
-
 do_query(query, 'CREATE TABLE exstop ('
 		'id		integer		NOT NULL	PRIMARY KEY,'
 		'exact_ip	integer)')
-
 do_query(query, 'CREATE TABLE pwrx ('
 		'id		integer		NOT NULL	PRIMARY KEY,'
 		'deepest_cstate	integer,'
 		'last_cstate	integer,'
 		'wake_reason	integer)')
-
 do_query(query, 'CREATE TABLE context_switches ('
 		'id		integer		NOT NULL	PRIMARY KEY,'
 		'machine_id	bigint,'
@@ -318,21 +218,17 @@ do_query(query, 'CREATE TABLE context_switches ('
 		'thread_in_id	bigint,'
 		'comm_in_id	bigint,'
 		'flags		integer)')
-
-# printf was added to sqlite in version 3.8.3
 sqlite_has_printf = False
 try:
 	do_query(query, 'SELECT printf("") FROM machines')
 	sqlite_has_printf = True
 except:
 	pass
-
 def emit_to_hex(x):
 	if sqlite_has_printf:
 		return 'printf("%x", ' + x + ')'
 	else:
 		return x
-
 do_query(query, 'CREATE VIEW machines_view AS '
 	'SELECT '
 		'id,'
@@ -340,7 +236,6 @@ do_query(query, 'CREATE VIEW machines_view AS '
 		'root_dir,'
 		'CASE WHEN id=0 THEN \'unknown\' WHEN pid=-1 THEN \'host\' ELSE \'guest\' END AS host_or_guest'
 	' FROM machines')
-
 do_query(query, 'CREATE VIEW dsos_view AS '
 	'SELECT '
 		'id,'
@@ -350,7 +245,6 @@ do_query(query, 'CREATE VIEW dsos_view AS '
 		'long_name,'
 		'build_id'
 	' FROM dsos')
-
 do_query(query, 'CREATE VIEW symbols_view AS '
 	'SELECT '
 		'id,'
@@ -361,7 +255,6 @@ do_query(query, 'CREATE VIEW symbols_view AS '
 		'sym_end,'
 		'CASE WHEN binding=0 THEN \'local\' WHEN binding=1 THEN \'global\' ELSE \'weak\' END AS binding'
 	' FROM symbols')
-
 do_query(query, 'CREATE VIEW threads_view AS '
 	'SELECT '
 		'id,'
@@ -371,7 +264,6 @@ do_query(query, 'CREATE VIEW threads_view AS '
 		'pid,'
 		'tid'
 	' FROM threads')
-
 do_query(query, 'CREATE VIEW comm_threads_view AS '
 	'SELECT '
 		'comm_id,'
@@ -380,7 +272,6 @@ do_query(query, 'CREATE VIEW comm_threads_view AS '
 		'(SELECT pid FROM threads WHERE id = thread_id) AS pid,'
 		'(SELECT tid FROM threads WHERE id = thread_id) AS tid'
 	' FROM comm_threads')
-
 if perf_db_export_calls or perf_db_export_callchains:
 	do_query(query, 'CREATE VIEW call_paths_view AS '
 		'SELECT '
@@ -422,7 +313,6 @@ if perf_db_export_calls:
 			'parent_call_path_id,'
 			'calls.parent_id'
 		' FROM calls INNER JOIN call_paths ON call_paths.id = call_path_id')
-
 do_query(query, 'CREATE VIEW samples_view AS '
 	'SELECT '
 		'id,'
@@ -447,7 +337,6 @@ do_query(query, 'CREATE VIEW samples_view AS '
 		'CASE WHEN cyc_count=0 THEN CAST(0 AS FLOAT) ELSE ROUND(CAST(insn_count AS FLOAT) / cyc_count, 2) END AS IPC,'
 		'flags'
 	' FROM samples')
-
 do_query(query, 'CREATE VIEW ptwrite_view AS '
 	'SELECT '
 		'ptwrite.id,'
@@ -457,7 +346,6 @@ do_query(query, 'CREATE VIEW ptwrite_view AS '
 		'CASE WHEN exact_ip=0 THEN \'False\' ELSE \'True\' END AS exact_ip'
 	' FROM ptwrite'
 	' INNER JOIN samples ON samples.id = ptwrite.id')
-
 do_query(query, 'CREATE VIEW cbr_view AS '
 	'SELECT '
 		'cbr.id,'
@@ -468,7 +356,6 @@ do_query(query, 'CREATE VIEW cbr_view AS '
 		'percent'
 	' FROM cbr'
 	' INNER JOIN samples ON samples.id = cbr.id')
-
 do_query(query, 'CREATE VIEW mwait_view AS '
 	'SELECT '
 		'mwait.id,'
@@ -478,7 +365,6 @@ do_query(query, 'CREATE VIEW mwait_view AS '
 		+ emit_to_hex('extensions') + ' AS extensions_hex'
 	' FROM mwait'
 	' INNER JOIN samples ON samples.id = mwait.id')
-
 do_query(query, 'CREATE VIEW pwre_view AS '
 	'SELECT '
 		'pwre.id,'
@@ -489,7 +375,6 @@ do_query(query, 'CREATE VIEW pwre_view AS '
 		'CASE WHEN hw=0 THEN \'False\' ELSE \'True\' END AS hw'
 	' FROM pwre'
 	' INNER JOIN samples ON samples.id = pwre.id')
-
 do_query(query, 'CREATE VIEW exstop_view AS '
 	'SELECT '
 		'exstop.id,'
@@ -498,7 +383,6 @@ do_query(query, 'CREATE VIEW exstop_view AS '
 		'CASE WHEN exact_ip=0 THEN \'False\' ELSE \'True\' END AS exact_ip'
 	' FROM exstop'
 	' INNER JOIN samples ON samples.id = exstop.id')
-
 do_query(query, 'CREATE VIEW pwrx_view AS '
 	'SELECT '
 		'pwrx.id,'
@@ -514,7 +398,6 @@ do_query(query, 'CREATE VIEW pwrx_view AS '
 		'END AS wake_reason'
 	' FROM pwrx'
 	' INNER JOIN samples ON samples.id = pwrx.id')
-
 do_query(query, 'CREATE VIEW power_events_view AS '
 	'SELECT '
 		'samples.id,'
@@ -543,7 +426,6 @@ do_query(query, 'CREATE VIEW power_events_view AS '
 	' FROM samples'
 	' INNER JOIN selected_events ON selected_events.id = evsel_id'
 	' WHERE selected_events.name IN (\'cbr\',\'mwait\',\'exstop\',\'pwre\',\'pwrx\')')
-
 do_query(query, 'CREATE VIEW context_switches_view AS '
 	'SELECT '
 		'context_switches.id,'
@@ -566,9 +448,7 @@ do_query(query, 'CREATE VIEW context_switches_view AS '
 	' INNER JOIN threads AS th_in  ON th_in.id    = context_switches.thread_in_id'
 	' INNER JOIN comms AS comm_out ON comm_out.id = context_switches.comm_out_id'
 	' INNER JOIN comms AS comm_in  ON comm_in.id  = context_switches.comm_in_id')
-
 do_query(query, 'END TRANSACTION')
-
 evsel_query = QSqlQuery(db)
 evsel_query.prepare("INSERT INTO selected_events VALUES (?, ?)")
 machine_query = QSqlQuery(db)
@@ -610,11 +490,9 @@ pwrx_query = QSqlQuery(db)
 pwrx_query.prepare("INSERT INTO pwrx VALUES (?, ?, ?, ?)")
 context_switch_query = QSqlQuery(db)
 context_switch_query.prepare("INSERT INTO context_switches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-
 def trace_begin():
 	printdate("Writing records...")
 	do_query(query, 'BEGIN TRANSACTION')
-	# id == 0 means unknown.  It is easier to create records for them than replace the zeroes with NULLs
 	evsel_table(0, "unknown")
 	machine_table(0, 0, "unknown")
 	thread_table(0, 0, 0, -1, -1)
@@ -625,29 +503,23 @@ def trace_begin():
 	if perf_db_export_calls or perf_db_export_callchains:
 		call_path_table(0, 0, 0, 0)
 		call_return_table(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
 unhandled_count = 0
-
 def is_table_empty(table_name):
 	do_query(query, 'SELECT * FROM ' + table_name + ' LIMIT 1');
 	if query.next():
 		return False
 	return True
-
 def drop(table_name):
 	do_query(query, 'DROP VIEW ' + table_name + '_view');
 	do_query(query, 'DROP TABLE ' + table_name);
-
 def trace_end():
 	do_query(query, 'END TRANSACTION')
-
 	printdate("Adding indexes")
 	if perf_db_export_calls:
 		do_query(query, 'CREATE INDEX pcpid_idx ON calls (parent_call_path_id)')
 		do_query(query, 'CREATE INDEX pid_idx ON calls (parent_id)')
 		do_query(query, 'ALTER TABLE comms ADD has_calls boolean')
 		do_query(query, 'UPDATE comms SET has_calls = 1 WHERE comms.id IN (SELECT DISTINCT comm_id FROM calls)')
-
 	printdate("Dropping unused tables")
 	if is_table_empty("ptwrite"):
 		drop("ptwrite")
@@ -661,47 +533,34 @@ def trace_end():
 			drop("cbr")
 	if is_table_empty("context_switches"):
 		drop("context_switches")
-
 	if (unhandled_count):
 		printdate("Warning: ", unhandled_count, " unhandled events")
 	printdate("Done")
-
 def trace_unhandled(event_name, context, event_fields_dict):
 	global unhandled_count
 	unhandled_count += 1
-
 def sched__sched_switch(*x):
 	pass
-
 def bind_exec(q, n, x):
 	for xx in x[0:n]:
 		q.addBindValue(str(xx))
 	do_query_(q)
-
 def evsel_table(*x):
 	bind_exec(evsel_query, 2, x)
-
 def machine_table(*x):
 	bind_exec(machine_query, 3, x)
-
 def thread_table(*x):
 	bind_exec(thread_query, 5, x)
-
 def comm_table(*x):
 	bind_exec(comm_query, 5, x)
-
 def comm_thread_table(*x):
 	bind_exec(comm_thread_query, 3, x)
-
 def dso_table(*x):
 	bind_exec(dso_query, 5, x)
-
 def symbol_table(*x):
 	bind_exec(symbol_query, 6, x)
-
 def branch_type_table(*x):
 	bind_exec(branch_type_query, 2, x)
-
 def sample_table(*x):
 	if branches:
 		for xx in x[0:15]:
@@ -711,13 +570,10 @@ def sample_table(*x):
 		do_query_(sample_query)
 	else:
 		bind_exec(sample_query, 25, x)
-
 def call_path_table(*x):
 	bind_exec(call_path_query, 4, x)
-
 def call_return_table(*x):
 	bind_exec(call_query, 14, x)
-
 def ptwrite(id, raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	flags = data[0]
@@ -727,7 +583,6 @@ def ptwrite(id, raw_buf):
 	ptwrite_query.addBindValue(str(payload))
 	ptwrite_query.addBindValue(str(exact_ip))
 	do_query_(ptwrite_query)
-
 def cbr(id, raw_buf):
 	data = struct.unpack_from("<BBBBII", raw_buf)
 	cbr = data[0]
@@ -738,7 +593,6 @@ def cbr(id, raw_buf):
 	cbr_query.addBindValue(str(MHz))
 	cbr_query.addBindValue(str(percent))
 	do_query_(cbr_query)
-
 def mwait(id, raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	payload = data[1]
@@ -748,7 +602,6 @@ def mwait(id, raw_buf):
 	mwait_query.addBindValue(str(hints))
 	mwait_query.addBindValue(str(extensions))
 	do_query_(mwait_query)
-
 def pwre(id, raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	payload = data[1]
@@ -760,7 +613,6 @@ def pwre(id, raw_buf):
 	pwre_query.addBindValue(str(subcstate))
 	pwre_query.addBindValue(str(hw))
 	do_query_(pwre_query)
-
 def exstop(id, raw_buf):
 	data = struct.unpack_from("<I", raw_buf)
 	flags = data[0]
@@ -768,7 +620,6 @@ def exstop(id, raw_buf):
 	exstop_query.addBindValue(str(id))
 	exstop_query.addBindValue(str(exact_ip))
 	do_query_(exstop_query)
-
 def pwrx(id, raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	payload = data[1]
@@ -780,7 +631,6 @@ def pwrx(id, raw_buf):
 	pwrx_query.addBindValue(str(last_cstate))
 	pwrx_query.addBindValue(str(wake_reason))
 	do_query_(pwrx_query)
-
 def synth_data(id, config, raw_buf, *x):
 	if config == 0:
 		ptwrite(id, raw_buf)
@@ -794,6 +644,5 @@ def synth_data(id, config, raw_buf, *x):
 		pwrx(id, raw_buf)
 	elif config == 5:
 		cbr(id, raw_buf)
-
 def context_switch_table(*x):
 	bind_exec(context_switch_query, 9, x)

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * SharpSL Battery/PM Driver
- *
- * Copyright (c) 2004-2005 Richard Purdie
- */
 #ifndef _MACH_SHARPSL_PM
 #define _MACH_SHARPSL_PM
-
 struct sharpsl_charger_machinfo {
 	void (*init)(void);
 	void (*exit)(void);
@@ -50,59 +43,46 @@ struct sharpsl_charger_machinfo {
 	int status_high_noac;
 	int status_low_noac;
 };
-
 struct battery_thresh {
 	int voltage;
 	int percentage;
 };
-
 struct battery_stat {
-	int ac_status;         /* APM AC Present/Not Present */
-	int mainbat_status;    /* APM Main Battery Status */
-	int mainbat_percent;   /* Main Battery Percentage Charge */
-	int mainbat_voltage;   /* Main Battery Voltage */
+	int ac_status;          
+	int mainbat_status;     
+	int mainbat_percent;    
+	int mainbat_voltage;    
 };
-
 struct sharpsl_pm_status {
 	struct device *dev;
 	struct timer_list ac_timer;
 	struct timer_list chrg_full_timer;
-
 	int charge_mode;
 #define CHRG_ERROR    (-1)
 #define CHRG_OFF      (0)
 #define CHRG_ON       (1)
 #define CHRG_DONE     (2)
-
 	unsigned int flags;
-#define SHARPSL_SUSPENDED       (1 << 0)  /* Device is Suspended */
-#define SHARPSL_ALARM_ACTIVE    (1 << 1)  /* Alarm is for charging event (not user) */
-#define SHARPSL_BL_LIMIT        (1 << 2)  /* Backlight Intensity Limited */
-#define SHARPSL_APM_QUEUED      (1 << 3)  /* APM Event Queued */
-#define SHARPSL_DO_OFFLINE_CHRG (1 << 4)  /* Trigger the offline charger */
-
+#define SHARPSL_SUSPENDED       (1 << 0)   
+#define SHARPSL_ALARM_ACTIVE    (1 << 1)   
+#define SHARPSL_BL_LIMIT        (1 << 2)   
+#define SHARPSL_APM_QUEUED      (1 << 3)   
+#define SHARPSL_DO_OFFLINE_CHRG (1 << 4)   
 	int full_count;
 	unsigned long charge_start_time;
 	struct sharpsl_charger_machinfo *machinfo;
 	struct battery_stat battstat;
 };
-
 extern struct sharpsl_pm_status sharpsl_pm;
-
 extern struct battery_thresh sharpsl_battery_levels_acin[];
 extern struct battery_thresh sharpsl_battery_levels_noac[];
-
 #define SHARPSL_LED_ERROR  2
 #define SHARPSL_LED_ON     1
 #define SHARPSL_LED_OFF    0
-
 void sharpsl_battery_kick(void);
 void sharpsl_pm_led(int val);
-
-/* MAX1111 Channel Definitions */
 #define MAX1111_BATT_VOLT   4u
 #define MAX1111_BATT_TEMP   2u
 #define MAX1111_ACIN_VOLT   6u
 int sharpsl_pm_pxa_read_max1111(int channel);
-
 #endif

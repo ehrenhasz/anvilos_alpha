@@ -1,10 +1,3 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (C) 2017 Marvell Technology Group Ltd.
- *
- * Device Tree file for the Armada 70x0 SoC
- */
-
 / {
 	aliases {
 		gpio1 = &cp0_gpio1;
@@ -13,10 +6,6 @@
 		spi2 = &cp0_spi1;
 	};
 };
-
-/*
- * Instantiate the CP110
- */
 #define CP11X_NAME		cp0
 #define CP11X_BASE		f2000000
 #define CP11X_PCIEx_MEM_BASE(iface) (0xf6000000 + (iface * 0x1000000))
@@ -24,9 +13,7 @@
 #define CP11X_PCIE0_BASE	f2600000
 #define CP11X_PCIE1_BASE	f2620000
 #define CP11X_PCIE2_BASE	f2640000
-
 #include "armada-cp110.dtsi"
-
 #undef CP11X_NAME
 #undef CP11X_BASE
 #undef CP11X_PCIEx_MEM_BASE
@@ -34,19 +21,15 @@
 #undef CP11X_PCIE0_BASE
 #undef CP11X_PCIE1_BASE
 #undef CP11X_PCIE2_BASE
-
 &cp0_gpio1 {
 	status = "okay";
 };
-
 &cp0_gpio2 {
 	status = "okay";
 };
-
 &cp0_syscon0 {
 	cp0_pinctrl: pinctrl {
 		compatible = "marvell,armada-7k-pinctrl";
-
 		nand_pins: nand-pins {
 			marvell,pins =
 			"mpp15", "mpp16", "mpp17", "mpp18",
@@ -55,7 +38,6 @@
 			"mpp27";
 			marvell,function = "dev";
 		};
-
 		nand_rb: nand-rb {
 			marvell,pins = "mpp13";
 			marvell,function = "nf";

@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2020 Intel Corporation */
 #ifndef _ICP_QAT_FW_LA_H_
 #define _ICP_QAT_FW_LA_H_
 #include "icp_qat_fw.h"
-
 enum icp_qat_fw_la_cmd_id {
 	ICP_QAT_FW_LA_CMD_CIPHER = 0,
 	ICP_QAT_FW_LA_CMD_AUTH = 1,
@@ -19,12 +16,10 @@ enum icp_qat_fw_la_cmd_id {
 	ICP_QAT_FW_LA_CMD_CIPHER_PRE_COMP = 11,
 	ICP_QAT_FW_LA_CMD_DELIMITER = 12
 };
-
 #define ICP_QAT_FW_LA_ICV_VER_STATUS_PASS ICP_QAT_FW_COMN_STATUS_FLAG_OK
 #define ICP_QAT_FW_LA_ICV_VER_STATUS_FAIL ICP_QAT_FW_COMN_STATUS_FLAG_ERROR
 #define ICP_QAT_FW_LA_TRNG_STATUS_PASS ICP_QAT_FW_COMN_STATUS_FLAG_OK
 #define ICP_QAT_FW_LA_TRNG_STATUS_FAIL ICP_QAT_FW_COMN_STATUS_FLAG_ERROR
-
 struct icp_qat_fw_la_bulk_req {
 	struct icp_qat_fw_comn_req_hdr comn_hdr;
 	struct icp_qat_fw_comn_req_hdr_cd_pars cd_pars;
@@ -32,7 +27,6 @@ struct icp_qat_fw_la_bulk_req {
 	struct icp_qat_fw_comn_req_rqpars serv_specif_rqpars;
 	struct icp_qat_fw_comn_req_cd_ctrl cd_ctrl;
 };
-
 #define ICP_QAT_FW_LA_USE_UCS_SLICE_TYPE 1
 #define QAT_LA_SLICE_TYPE_BITPOS 14
 #define QAT_LA_SLICE_TYPE_MASK 0x3
@@ -102,90 +96,68 @@ struct icp_qat_fw_la_bulk_req {
 	QAT_LA_CIPH_AUTH_CFG_OFFSET_BITPOS) | \
 	((partial & QAT_LA_PARTIAL_MASK) << \
 	QAT_LA_PARTIAL_BITPOS))
-
 #define ICP_QAT_FW_LA_CIPH_IV_FLD_FLAG_GET(flags) \
 	QAT_FIELD_GET(flags, QAT_LA_CIPH_IV_FLD_BITPOS, \
 	QAT_LA_CIPH_IV_FLD_MASK)
-
 #define ICP_QAT_FW_LA_CIPH_AUTH_CFG_OFFSET_FLAG_GET(flags) \
 	QAT_FIELD_GET(flags, QAT_LA_CIPH_AUTH_CFG_OFFSET_BITPOS, \
 	QAT_LA_CIPH_AUTH_CFG_OFFSET_MASK)
-
 #define ICP_QAT_FW_LA_ZUC_3G_PROTO_FLAG_GET(flags) \
 	QAT_FIELD_GET(flags, QAT_FW_LA_ZUC_3G_PROTO_FLAG_BITPOS, \
 	QAT_FW_LA_ZUC_3G_PROTO_FLAG_MASK)
-
 #define ICP_QAT_FW_LA_GCM_IV_LEN_FLAG_GET(flags) \
 	QAT_FIELD_GET(flags, QAT_LA_GCM_IV_LEN_FLAG_BITPOS, \
 	QAT_LA_GCM_IV_LEN_FLAG_MASK)
-
 #define ICP_QAT_FW_LA_PROTO_GET(flags) \
 	QAT_FIELD_GET(flags, QAT_LA_PROTO_BITPOS, QAT_LA_PROTO_MASK)
-
 #define ICP_QAT_FW_LA_CMP_AUTH_GET(flags) \
 	QAT_FIELD_GET(flags, QAT_LA_CMP_AUTH_RES_BITPOS, \
 	QAT_LA_CMP_AUTH_RES_MASK)
-
 #define ICP_QAT_FW_LA_RET_AUTH_GET(flags) \
 	QAT_FIELD_GET(flags, QAT_LA_RET_AUTH_RES_BITPOS, \
 	QAT_LA_RET_AUTH_RES_MASK)
-
 #define ICP_QAT_FW_LA_DIGEST_IN_BUFFER_GET(flags) \
 	QAT_FIELD_GET(flags, QAT_LA_DIGEST_IN_BUFFER_BITPOS, \
 	QAT_LA_DIGEST_IN_BUFFER_MASK)
-
 #define ICP_QAT_FW_LA_UPDATE_STATE_GET(flags) \
 	QAT_FIELD_GET(flags, QAT_LA_UPDATE_STATE_BITPOS, \
 	QAT_LA_UPDATE_STATE_MASK)
-
 #define ICP_QAT_FW_LA_PARTIAL_GET(flags) \
 	QAT_FIELD_GET(flags, QAT_LA_PARTIAL_BITPOS, \
 	QAT_LA_PARTIAL_MASK)
-
 #define ICP_QAT_FW_LA_CIPH_IV_FLD_FLAG_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, QAT_LA_CIPH_IV_FLD_BITPOS, \
 	QAT_LA_CIPH_IV_FLD_MASK)
-
 #define ICP_QAT_FW_LA_CIPH_AUTH_CFG_OFFSET_FLAG_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, QAT_LA_CIPH_AUTH_CFG_OFFSET_BITPOS, \
 	QAT_LA_CIPH_AUTH_CFG_OFFSET_MASK)
-
 #define ICP_QAT_FW_LA_ZUC_3G_PROTO_FLAG_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, QAT_FW_LA_ZUC_3G_PROTO_FLAG_BITPOS, \
 	QAT_FW_LA_ZUC_3G_PROTO_FLAG_MASK)
-
 #define ICP_QAT_FW_LA_GCM_IV_LEN_FLAG_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, QAT_LA_GCM_IV_LEN_FLAG_BITPOS, \
 	QAT_LA_GCM_IV_LEN_FLAG_MASK)
-
 #define ICP_QAT_FW_LA_PROTO_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, QAT_LA_PROTO_BITPOS, \
 	QAT_LA_PROTO_MASK)
-
 #define ICP_QAT_FW_LA_CMP_AUTH_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, QAT_LA_CMP_AUTH_RES_BITPOS, \
 	QAT_LA_CMP_AUTH_RES_MASK)
-
 #define ICP_QAT_FW_LA_RET_AUTH_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, QAT_LA_RET_AUTH_RES_BITPOS, \
 	QAT_LA_RET_AUTH_RES_MASK)
-
 #define ICP_QAT_FW_LA_DIGEST_IN_BUFFER_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, QAT_LA_DIGEST_IN_BUFFER_BITPOS, \
 	QAT_LA_DIGEST_IN_BUFFER_MASK)
-
 #define ICP_QAT_FW_LA_UPDATE_STATE_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, QAT_LA_UPDATE_STATE_BITPOS, \
 	QAT_LA_UPDATE_STATE_MASK)
-
 #define ICP_QAT_FW_LA_PARTIAL_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, QAT_LA_PARTIAL_BITPOS, \
 	QAT_LA_PARTIAL_MASK)
-
 #define ICP_QAT_FW_LA_SLICE_TYPE_SET(flags, val) \
 	QAT_FIELD_SET(flags, val, QAT_LA_SLICE_TYPE_BITPOS, \
 	QAT_LA_SLICE_TYPE_MASK)
-
 struct icp_qat_fw_cipher_req_hdr_cd_pars {
 	union {
 		struct {
@@ -200,7 +172,6 @@ struct icp_qat_fw_cipher_req_hdr_cd_pars {
 		} s1;
 	} u;
 };
-
 struct icp_qat_fw_cipher_auth_req_hdr_cd_pars {
 	union {
 		struct {
@@ -215,7 +186,6 @@ struct icp_qat_fw_cipher_auth_req_hdr_cd_pars {
 		} sl;
 	} u;
 };
-
 struct icp_qat_fw_cipher_cd_ctrl_hdr {
 	__u8 cipher_state_sz;
 	__u8 cipher_key_sz;
@@ -226,7 +196,6 @@ struct icp_qat_fw_cipher_cd_ctrl_hdr {
 	__u16 resrvd2;
 	__u32 resrvd3[ICP_QAT_FW_NUM_LONGWORDS_3];
 };
-
 struct icp_qat_fw_auth_cd_ctrl_hdr {
 	__u32 resrvd1;
 	__u8 resrvd2;
@@ -246,7 +215,6 @@ struct icp_qat_fw_auth_cd_ctrl_hdr {
 	__u8 outer_res_sz;
 	__u8 outer_prefix_offset;
 };
-
 struct icp_qat_fw_cipher_auth_cd_ctrl_hdr {
 	__u8 cipher_state_sz;
 	__u8 cipher_key_sz;
@@ -269,14 +237,12 @@ struct icp_qat_fw_cipher_auth_cd_ctrl_hdr {
 	__u8 outer_res_sz;
 	__u8 outer_prefix_offset;
 };
-
 #define ICP_QAT_FW_AUTH_HDR_FLAG_DO_NESTED 1
 #define ICP_QAT_FW_AUTH_HDR_FLAG_NO_NESTED 0
 #define ICP_QAT_FW_CCM_GCM_AAD_SZ_MAX	240
 #define ICP_QAT_FW_HASH_REQUEST_PARAMETERS_OFFSET \
 	(sizeof(struct icp_qat_fw_la_cipher_req_params_t))
 #define ICP_QAT_FW_CIPHER_REQUEST_PARAMETERS_OFFSET (0)
-
 struct icp_qat_fw_la_cipher_req_params {
 	__u32 cipher_offset;
 	__u32 cipher_length;
@@ -288,7 +254,6 @@ struct icp_qat_fw_la_cipher_req_params {
 		} s;
 	} u;
 };
-
 struct icp_qat_fw_la_auth_req_params {
 	__u32 auth_off;
 	__u32 auth_len;
@@ -305,7 +270,6 @@ struct icp_qat_fw_la_auth_req_params {
 	__u8 hash_state_sz;
 	__u8 auth_res_sz;
 } __packed;
-
 struct icp_qat_fw_la_auth_req_params_resrvd_flds {
 	__u32 resrvd[ICP_QAT_FW_NUM_LONGWORDS_6];
 	union {
@@ -315,53 +279,43 @@ struct icp_qat_fw_la_auth_req_params_resrvd_flds {
 	__u8 resrvd1;
 	__u16 resrvd2;
 };
-
 struct icp_qat_fw_la_resp {
 	struct icp_qat_fw_comn_resp_hdr comn_resp;
 	__u64 opaque_data;
 	__u32 resrvd[ICP_QAT_FW_NUM_LONGWORDS_4];
 };
-
 #define ICP_QAT_FW_CIPHER_NEXT_ID_GET(cd_ctrl_hdr_t) \
 	((((cd_ctrl_hdr_t)->next_curr_id_cipher) & \
 	  ICP_QAT_FW_COMN_NEXT_ID_MASK) >> (ICP_QAT_FW_COMN_NEXT_ID_BITPOS))
-
 #define ICP_QAT_FW_CIPHER_NEXT_ID_SET(cd_ctrl_hdr_t, val) \
 { (cd_ctrl_hdr_t)->next_curr_id_cipher = \
 	((((cd_ctrl_hdr_t)->next_curr_id_cipher) \
 	& ICP_QAT_FW_COMN_CURR_ID_MASK) | \
 	((val << ICP_QAT_FW_COMN_NEXT_ID_BITPOS) \
 	& ICP_QAT_FW_COMN_NEXT_ID_MASK)) }
-
 #define ICP_QAT_FW_CIPHER_CURR_ID_GET(cd_ctrl_hdr_t) \
 	(((cd_ctrl_hdr_t)->next_curr_id_cipher) \
 	& ICP_QAT_FW_COMN_CURR_ID_MASK)
-
 #define ICP_QAT_FW_CIPHER_CURR_ID_SET(cd_ctrl_hdr_t, val) \
 { (cd_ctrl_hdr_t)->next_curr_id_cipher = \
 	((((cd_ctrl_hdr_t)->next_curr_id_cipher) \
 	& ICP_QAT_FW_COMN_NEXT_ID_MASK) | \
 	((val) & ICP_QAT_FW_COMN_CURR_ID_MASK)) }
-
 #define ICP_QAT_FW_AUTH_NEXT_ID_GET(cd_ctrl_hdr_t) \
 	((((cd_ctrl_hdr_t)->next_curr_id_auth) & ICP_QAT_FW_COMN_NEXT_ID_MASK) \
 	>> (ICP_QAT_FW_COMN_NEXT_ID_BITPOS))
-
 #define ICP_QAT_FW_AUTH_NEXT_ID_SET(cd_ctrl_hdr_t, val) \
 { (cd_ctrl_hdr_t)->next_curr_id_auth = \
 	((((cd_ctrl_hdr_t)->next_curr_id_auth) \
 	& ICP_QAT_FW_COMN_CURR_ID_MASK) | \
 	((val << ICP_QAT_FW_COMN_NEXT_ID_BITPOS) \
 	& ICP_QAT_FW_COMN_NEXT_ID_MASK)) }
-
 #define ICP_QAT_FW_AUTH_CURR_ID_GET(cd_ctrl_hdr_t) \
 	(((cd_ctrl_hdr_t)->next_curr_id_auth) \
 	& ICP_QAT_FW_COMN_CURR_ID_MASK)
-
 #define ICP_QAT_FW_AUTH_CURR_ID_SET(cd_ctrl_hdr_t, val) \
 { (cd_ctrl_hdr_t)->next_curr_id_auth = \
 	((((cd_ctrl_hdr_t)->next_curr_id_auth) \
 	& ICP_QAT_FW_COMN_NEXT_ID_MASK) | \
 	((val) & ICP_QAT_FW_COMN_CURR_ID_MASK)) }
-
 #endif

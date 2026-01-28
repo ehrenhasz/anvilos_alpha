@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2015 Linaro Limited
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_RPMCC_H
 #define _DT_BINDINGS_CLK_MSM_RPMCC_H
-
-/* RPM clocks */
 #define RPM_PXO_CLK				0
 #define RPM_PXO_A_CLK				1
 #define RPM_CXO_CLK				2
@@ -41,8 +34,6 @@
 #define RPM_NSS_FABRIC_0_A_CLK			31
 #define RPM_NSS_FABRIC_1_CLK			32
 #define RPM_NSS_FABRIC_1_A_CLK			33
-
-/* SMD RPM clocks */
 #define RPM_SMD_XO_CLK_SRC				0
 #define RPM_SMD_XO_A_CLK_SRC			1
 #define RPM_SMD_PCNOC_CLK				2
@@ -170,5 +161,4 @@
 #define RPM_SMD_BIMC_FREQ_LOG			124
 #define RPM_SMD_LN_BB_CLK_PIN			125
 #define RPM_SMD_LN_BB_A_CLK_PIN			126
-
 #endif

@@ -1,25 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0+ OR MIT
-/*
- * Copyright (C) 2019 Linaro Ltd.
- */
-
 /dts-v1/;
-
 #include "imx7d.dtsi"
-
 / {
 	model = "96Boards Meerkat96 Board";
 	compatible = "novtech,imx7d-meerkat96", "fsl,imx7d";
-
 	chosen {
 		stdout-path = &uart6;
 	};
-
 	memory@80000000 {
 		device_type = "memory";
-		reg = <0x80000000 0x20000000>; /* 512MB */
+		reg = <0x80000000 0x20000000>;  
 	};
-
 	reg_wlreg_on: regulator-wlreg-on {
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
@@ -32,7 +22,6 @@
 		enable-active-high;
 		regulator-always-on;
 	};
-
 	reg_3p3v: regulator-3p3v {
 		compatible = "regulator-fixed";
 		regulator-name = "3P3V";
@@ -40,14 +29,12 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-always-on;
 	};
-
 	reg_usb_otg1_vbus: regulator-usb-otg1-vbus {
 		compatible = "regulator-fixed";
 		regulator-name = "usb_otg1_vbus";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 	};
-
 	reg_usb_otg2_vbus: regulator-usb-otg2-vbus {
 		compatible = "regulator-fixed";
 		regulator-name = "usb_otg2_vbus";
@@ -56,33 +43,28 @@
 		gpio = <&gpio1 2 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_leds>;
-
 		led1 {
 			label = "green:user1";
 			gpios = <&gpio1 4 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "heartbeat";
 			default-state = "off";
 		};
-
 		led2 {
 			label = "green:user2";
 			gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "mmc0";
 			default-state = "off";
 		};
-
 		led3 {
 			label = "green:user3";
 			gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "mmc1";
 			default-state = "off";
 		};
-
 		led4 {
 			label = "green:user4";
 			gpios = <&gpio1 7 GPIO_ACTIVE_LOW>;
@@ -90,14 +72,12 @@
 			default-state = "off";
 			panic-indicator;
 		};
-
 		led5 {
 			label = "yellow:wlan";
 			gpios = <&gpio1 0 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "phy0tx";
 			default-state = "off";
 		};
-
 		led6 {
 			label = "blue:bt";
 			gpios = <&gpio5 2 GPIO_ACTIVE_HIGH>;
@@ -106,37 +86,31 @@
 		};
 	};
 };
-
 &i2c1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
 };
-
 &i2c2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
 };
-
 &i2c3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";
 };
-
 &i2c4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c4>;
 	status = "okay";
 };
-
 &lcdif {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lcdif>;
 	status = "okay";
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
@@ -144,7 +118,6 @@
 	assigned-clock-parents = <&clks IMX7D_PLL_SYS_MAIN_240M_CLK>;
 	status = "okay";
 };
-
 &uart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3>;
@@ -153,7 +126,6 @@
 	uart-has-rtscts;
 	status = "okay";
 };
-
 &uart6 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart6>;
@@ -161,7 +133,6 @@
 	assigned-clock-parents = <&clks IMX7D_PLL_SYS_MAIN_240M_CLK>;
 	status = "okay";
 };
-
 &uart7 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart7 &pinctrl_bt_gpios>;
@@ -170,25 +141,21 @@
 	uart-has-rtscts;
 	fsl,dte-mode;
 	status = "okay";
-
 	bluetooth {
 		compatible = "brcm,bcm43438-bt";
 		device-wakeup-gpios = <&gpio6 13 GPIO_ACTIVE_HIGH>;
 		host-wakeup-gpios = <&gpio4 17 GPIO_ACTIVE_HIGH>;
 	};
 };
-
 &usbotg1 {
 	vbus-supply = <&reg_usb_otg1_vbus>;
 	status = "okay";
 };
-
 &usbotg2 {
 	vbus-supply = <&reg_usb_otg2_vbus>;
 	dr_mode = "host";
 	status = "okay";
 };
-
 &usdhc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc1>;
@@ -199,7 +166,6 @@
 	broken-cd;
 	status = "okay";
 };
-
 &usdhc3 {
 	#address-cells = <1>;
 	#size-cells = <0>;
@@ -214,7 +180,6 @@
 	vmmc-supply = <&reg_wlreg_on>;
 	vqmmc-supply =<&reg_3p3v>;
 	status = "okay";
-
 	brcmf: wifi@1 {
 		reg = <1>;
 		compatible = "brcm,bcm4329-fmac";
@@ -225,7 +190,6 @@
 		interrupt-names = "host-wake";
 	};
 };
-
 &iomuxc {
 	pinctrl_bt_gpios: btgpiosgrp {
 		fsl,pins = <
@@ -233,7 +197,6 @@
 			MX7D_PAD_ECSPI1_MOSI__GPIO4_IO17	0x1f
 		>;
 	};
-
 	pinctrl_gpio_leds: gpioledsgrp {
 		fsl,pins = <
 			MX7D_PAD_LPSR_GPIO1_IO00__GPIO1_IO0	0x59
@@ -244,35 +207,30 @@
 			MX7D_PAD_SD1_RESET_B__GPIO5_IO2		0x59
 		>;
 	};
-
 	pinctrl_i2c1: i2c1grp {
 		fsl,pins = <
 			MX7D_PAD_I2C1_SDA__I2C1_SDA		0x4000007f
 			MX7D_PAD_I2C1_SCL__I2C1_SCL		0x4000007f
 		>;
 	};
-
 	pinctrl_i2c2: i2c2grp {
 		fsl,pins = <
 			MX7D_PAD_I2C2_SDA__I2C2_SDA		0x4000007f
 			MX7D_PAD_I2C2_SCL__I2C2_SCL		0x4000007f
 		>;
 	};
-
 	pinctrl_i2c3: i2c3grp {
 		fsl,pins = <
 			MX7D_PAD_ENET1_RGMII_RD1__I2C3_SDA	0x4000007f
 			MX7D_PAD_ENET1_RGMII_RD0__I2C3_SCL	0x4000007f
 		>;
 	};
-
 	pinctrl_i2c4: i2c4grp {
 		fsl,pins = <
 			MX7D_PAD_SAI1_RX_BCLK__I2C4_SDA		0x4000007f
 			MX7D_PAD_SAI1_RX_SYNC__I2C4_SCL		0x4000007f
 		>;
 	};
-
 	pinctrl_lcdif: lcdifgrp {
 		fsl,pins = <
 			MX7D_PAD_LCD_DATA00__LCD_DATA0		0x79
@@ -306,14 +264,12 @@
 			MX7D_PAD_LCD_RESET__LCD_RESET		0x79
 		>;
 	};
-
 	pinctrl_uart1: uart1grp {
 		fsl,pins = <
 			MX7D_PAD_UART1_TX_DATA__UART1_DCE_TX	0x79
 			MX7D_PAD_UART1_RX_DATA__UART1_DCE_RX	0x79
 		>;
 	};
-
 	pinctrl_uart3: uart3grp {
 		fsl,pins = <
 			MX7D_PAD_SD3_DATA4__UART3_DCE_RX	0x79
@@ -322,14 +278,12 @@
 			MX7D_PAD_SD3_DATA7__UART3_DCE_CTS	0x79
 		>;
 	};
-
 	pinctrl_uart6: uart6grp {
 		fsl,pins = <
 			MX7D_PAD_SD1_CD_B__UART6_DCE_RX		0x79
 			MX7D_PAD_SD1_WP__UART6_DCE_TX		0x79
 		>;
 	};
-
 	pinctrl_uart7: uart7grp {
 		fsl,pins = <
 			MX7D_PAD_ECSPI2_SCLK__UART7_DTE_TX	0x79
@@ -338,7 +292,6 @@
 			MX7D_PAD_ECSPI2_SS0__UART7_DTE_RTS	0x79
 		>;
 	};
-
 	pinctrl_usdhc1: usdhc1grp {
 		fsl,pins = <
 			MX7D_PAD_SD1_CMD__SD1_CMD		0x59
@@ -349,7 +302,6 @@
 			MX7D_PAD_SD1_DATA3__SD1_DATA3		0x59
 		>;
 	};
-
 	pinctrl_usdhc3: usdhc3grp {
 		fsl,pins = <
 			MX7D_PAD_SD3_CMD__SD3_CMD		0x59
@@ -360,13 +312,11 @@
 			MX7D_PAD_SD3_DATA3__SD3_DATA3		0x59
 		>;
 	};
-
 	pinctrl_wlan_irq: wlanirqgrp {
 		fsl,pins = <
 			MX7D_PAD_SAI1_TX_SYNC__GPIO6_IO14	0x19
 		>;
 	};
-
 	pinctrl_wlreg_on: wlregongrp {
 		fsl,pins = <
 			MX7D_PAD_SAI1_TX_DATA__GPIO6_IO15	0x19

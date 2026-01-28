@@ -1,24 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Codec driver for ST STA350 2.1-channel high-efficiency digital audio system
- *
- * Copyright: 2011 Raumfeld GmbH
- * Author: Sven Brandau <info@brandau.biz>
- *
- * based on code from:
- *      Raumfeld GmbH
- *        Johannes Stezenbach <js@sig21.net>
- *	Wolfson Microelectronics PLC.
- *	  Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
 #ifndef _ASOC_STA_350_H
 #define _ASOC_STA_350_H
-
-/* STA350 register addresses */
-
 #define STA350_REGISTER_COUNT	0x4D
 #define STA350_COEF_COUNT 62
-
 #define STA350_CONFA	0x00
 #define STA350_CONFB    0x01
 #define STA350_CONFC    0x02
@@ -65,7 +48,6 @@
 #define STA350_FDRC1    0x2b
 #define STA350_FDRC2    0x2c
 #define STA350_STATUS   0x2d
-/* reserved: 0x2d - 0x30 */
 #define STA350_EQCFG    0x31
 #define STA350_EATH1    0x32
 #define STA350_ERTH1    0x33
@@ -81,14 +63,11 @@
 #define STA350_RMS1B    0x3d
 #define STA350_RMS1C    0x3e
 #define STA350_EVOLRES  0x3f
-/* reserved: 0x40 - 0x47 */
 #define STA350_NSHAPE   0x48
 #define STA350_CTXB4B1  0x49
 #define STA350_CTXB7B5  0x4a
 #define STA350_MISC1    0x4b
 #define STA350_MISC2    0x4c
-
-/* 0x00 CONFA */
 #define STA350_CONFA_MCS_MASK	0x03
 #define STA350_CONFA_MCS_SHIFT	0
 #define STA350_CONFA_IR_MASK	0x18
@@ -96,23 +75,17 @@
 #define STA350_CONFA_TWRB	BIT(5)
 #define STA350_CONFA_TWAB	BIT(6)
 #define STA350_CONFA_FDRB	BIT(7)
-
-/* 0x01 CONFB */
 #define STA350_CONFB_SAI_MASK	0x0f
 #define STA350_CONFB_SAI_SHIFT	0
 #define STA350_CONFB_SAIFB	BIT(4)
 #define STA350_CONFB_DSCKE	BIT(5)
 #define STA350_CONFB_C1IM	BIT(6)
 #define STA350_CONFB_C2IM	BIT(7)
-
-/* 0x02 CONFC */
 #define STA350_CONFC_OM_MASK	0x03
 #define STA350_CONFC_OM_SHIFT	0
 #define STA350_CONFC_CSZ_MASK	0x3c
 #define STA350_CONFC_CSZ_SHIFT	2
 #define STA350_CONFC_OCRB	BIT(7)
-
-/* 0x03 CONFD */
 #define STA350_CONFD_HPB_SHIFT	0
 #define STA350_CONFD_DEMP_SHIFT	1
 #define STA350_CONFD_DSPB_SHIFT	2
@@ -121,8 +94,6 @@
 #define STA350_CONFD_DRC_SHIFT	5
 #define STA350_CONFD_ZDE_SHIFT	6
 #define STA350_CONFD_SME_SHIFT	7
-
-/* 0x04 CONFE */
 #define STA350_CONFE_MPCV	BIT(0)
 #define STA350_CONFE_MPCV_SHIFT	0
 #define STA350_CONFE_MPC	BIT(1)
@@ -139,8 +110,6 @@
 #define STA350_CONFE_ZCE_SHIFT	6
 #define STA350_CONFE_SVE	BIT(7)
 #define STA350_CONFE_SVE_SHIFT	7
-
-/* 0x05 CONFF */
 #define STA350_CONFF_OCFG_MASK	0x03
 #define STA350_CONFF_OCFG_SHIFT	0
 #define STA350_CONFF_IDE	BIT(2)
@@ -149,8 +118,6 @@
 #define STA350_CONFF_ECLE	BIT(5)
 #define STA350_CONFF_PWDN	BIT(6)
 #define STA350_CONFF_EAPD	BIT(7)
-
-/* 0x06 MMUTE */
 #define STA350_MMUTE_MMUTE		0x01
 #define STA350_MMUTE_MMUTE_SHIFT	0
 #define STA350_MMUTE_C1M		0x02
@@ -161,23 +128,15 @@
 #define STA350_MMUTE_C3M_SHIFT		3
 #define STA350_MMUTE_LOC_MASK		0xC0
 #define STA350_MMUTE_LOC_SHIFT		6
-
-/* 0x0b AUTO1 */
 #define STA350_AUTO1_AMGC_MASK	0x30
 #define STA350_AUTO1_AMGC_SHIFT	4
-
-/* 0x0c AUTO2 */
 #define STA350_AUTO2_AMAME	0x01
 #define STA350_AUTO2_AMAM_MASK	0x0e
 #define STA350_AUTO2_AMAM_SHIFT	1
 #define STA350_AUTO2_XO_MASK	0xf0
 #define STA350_AUTO2_XO_SHIFT	4
-
-/* 0x0d AUTO3 */
 #define STA350_AUTO3_PEQ_MASK	0x1f
 #define STA350_AUTO3_PEQ_SHIFT	0
-
-/* 0x0e 0x0f 0x10 CxCFG */
 #define STA350_CxCFG_TCB_SHIFT	0
 #define STA350_CxCFG_EQBP_SHIFT	1
 #define STA350_CxCFG_VBP_SHIFT	2
@@ -185,23 +144,14 @@
 #define STA350_CxCFG_LS_SHIFT	4
 #define STA350_CxCFG_OM_MASK	0xc0
 #define STA350_CxCFG_OM_SHIFT	6
-
-/* 0x11 TONE */
 #define STA350_TONE_BTC_SHIFT	0
 #define STA350_TONE_TTC_SHIFT	4
-
-/* 0x12 0x13 0x14 0x15 limiter attack/release */
 #define STA350_LxA_SHIFT	0
 #define STA350_LxR_SHIFT	4
-
-/* 0x26 CFUD */
 #define STA350_CFUD_W1		0x01
 #define STA350_CFUD_WA		0x02
 #define STA350_CFUD_R1		0x04
 #define STA350_CFUD_RA		0x08
-
-
-/* biquad filter coefficient table offsets */
 #define STA350_C1_BQ_BASE	0
 #define STA350_C2_BQ_BASE	20
 #define STA350_CH_BQ_NUM	4
@@ -220,15 +170,10 @@
 #define STA350_C2_MIX2		59
 #define STA350_C3_MIX1		60
 #define STA350_C3_MIX2		61
-
-/* miscellaneous register 1 */
 #define STA350_MISC1_CPWMEN	BIT(2)
 #define STA350_MISC1_BRIDGOFF	BIT(5)
 #define STA350_MISC1_NSHHPEN	BIT(6)
 #define STA350_MISC1_RPDNEN	BIT(7)
-
-/* miscellaneous register 2 */
 #define STA350_MISC2_PNDLSL_MASK	0x1c
 #define STA350_MISC2_PNDLSL_SHIFT	2
-
-#endif /* _ASOC_STA_350_H */
+#endif  

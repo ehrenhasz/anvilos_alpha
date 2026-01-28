@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef TESTS_H
 #define TESTS_H
-
 #include <stdbool.h>
-
 #define TEST_ASSERT_VAL(text, cond)					 \
 do {									 \
 	if (!(cond)) {							 \
@@ -11,7 +8,6 @@ do {									 \
 		return -1;						 \
 	}								 \
 } while (0)
-
 #define TEST_ASSERT_EQUAL(text, val, expected)				 \
 do {									 \
 	if (val != expected) {						 \
@@ -20,40 +16,32 @@ do {									 \
 		return -1;						 \
 	}								 \
 } while (0)
-
 enum {
 	TEST_OK   =  0,
 	TEST_FAIL = -1,
 	TEST_SKIP = -2,
 };
-
 struct test_suite;
-
 typedef int (*test_fnptr)(struct test_suite *, int);
-
 struct test_case {
 	const char *name;
 	const char *desc;
 	const char *skip_reason;
 	test_fnptr run_case;
 };
-
 struct test_suite {
 	const char *desc;
 	struct test_case *test_cases;
 	void *priv;
 };
-
 #define DECLARE_SUITE(name) \
 	extern struct test_suite suite__##name;
-
 #define TEST_CASE(description, _name)			\
 	{						\
 		.name = #_name,				\
 		.desc = description,			\
 		.run_case = test__##_name,		\
 	}
-
 #define TEST_CASE_REASON(description, _name, _reason)	\
 	{						\
 		.name = #_name,				\
@@ -61,7 +49,6 @@ struct test_suite {
 		.run_case = test__##_name,		\
 		.skip_reason = _reason,			\
 	}
-
 #define DEFINE_SUITE(description, _name)		\
 	struct test_case tests__##_name[] = {           \
 		TEST_CASE(description, _name),		\
@@ -71,8 +58,6 @@ struct test_suite {
 		.desc = description,			\
 		.test_cases = tests__##_name,		\
 	}
-
-/* Tests */
 DECLARE_SUITE(vmlinux_matches_kallsyms);
 DECLARE_SUITE(openat_syscall_event);
 DECLARE_SUITE(openat_syscall_event_on_all_cpus);
@@ -145,66 +130,37 @@ DECLARE_SUITE(dlfilter);
 DECLARE_SUITE(sigtrap);
 DECLARE_SUITE(event_groups);
 DECLARE_SUITE(symbols);
-
-/*
- * PowerPC and S390 do not support creation of instruction breakpoints using the
- * perf_event interface.
- *
- * ARM requires explicit rounding down of the instruction pointer in Thumb mode,
- * and then requires the single-step to be handled explicitly in the overflow
- * handler to avoid stepping into the SIGIO handler and getting stuck on the
- * breakpointed instruction.
- *
- * Since arm64 has the same issue with arm for the single-step handling, this
- * case also gets stuck on the breakpointed instruction.
- *
- * Just disable the test for these architectures until these issues are
- * resolved.
- */
 #if defined(__powerpc__) || defined(__s390x__) || defined(__arm__) || defined(__aarch64__)
 #define BP_SIGNAL_IS_SUPPORTED 0
 #else
 #define BP_SIGNAL_IS_SUPPORTED 1
 #endif
-
 #ifdef HAVE_DWARF_UNWIND_SUPPORT
 struct thread;
 struct perf_sample;
 int test__arch_unwind_sample(struct perf_sample *sample,
 			     struct thread *thread);
 #endif
-
 #if defined(__arm__)
 DECLARE_SUITE(vectors_page);
 #endif
-
-/*
- * Define test workloads to be used in test suites.
- */
 typedef int (*workload_fnptr)(int argc, const char **argv);
-
 struct test_workload {
 	const char	*name;
 	workload_fnptr	func;
 };
-
 #define DECLARE_WORKLOAD(work) \
 	extern struct test_workload workload__##work
-
 #define DEFINE_WORKLOAD(work) \
 struct test_workload workload__##work = {	\
 	.name = #work,				\
 	.func = work,				\
 }
-
-/* The list of test workloads */
 DECLARE_WORKLOAD(noploop);
 DECLARE_WORKLOAD(thloop);
 DECLARE_WORKLOAD(leafloop);
 DECLARE_WORKLOAD(sqrtloop);
 DECLARE_WORKLOAD(brstack);
 DECLARE_WORKLOAD(datasym);
-
 extern const char *dso_to_test;
-
-#endif /* TESTS_H */
+#endif  

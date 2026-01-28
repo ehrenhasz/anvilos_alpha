@@ -1,46 +1,3 @@
-/*
- *  linux/drivers/scsi/esas2r/esas2r.h
- *      For use with ATTO ExpressSAS R6xx SAS/SATA RAID controllers
- *
- *  Copyright (c) 2001-2013 ATTO Technology, Inc.
- *  (mailto:linuxdrivers@attotech.com)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * NO WARRANTY
- * THE PROGRAM IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT
- * LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Each Recipient is
- * solely responsible for determining the appropriateness of using and
- * distributing the Program and assumes all risks associated with its
- * exercise of rights under this Agreement, including but not limited to
- * the risks and costs of program errors, damage to or loss of data,
- * programs or equipment, and unavailability or interruption of operations.
- *
- * DISCLAIMER OF LIABILITY
- * NEITHER RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- * USE OR DISTRIBUTION OF THE PROGRAM OR THE EXERCISE OF ANY RIGHTS GRANTED
- * HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
- * USA.
- */
-
 #include <linux/kernel.h>
 #include <linux/delay.h>
 #include <linux/pci.h>
@@ -55,15 +12,11 @@
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_eh.h>
 #include <scsi/scsi_tcq.h>
-
 #include "esas2r_log.h"
 #include "atioctl.h"
 #include "atvda.h"
-
 #ifndef ESAS2R_H
 #define ESAS2R_H
-
-/* Global Variables */
 extern struct esas2r_adapter *esas2r_adapters[];
 extern u8 *esas2r_buffered_ioctl;
 extern dma_addr_t esas2r_buffered_ioctl_addr;
@@ -87,8 +40,6 @@ extern int esas2r_max_sectors;
 extern int sg_tablesize;
 extern int interrupt_mode;
 extern int num_io_requests;
-
-/* Macro defintions */
 #define ESAS2R_MAX_ID        255
 #define MAX_ADAPTERS         32
 #define ESAS2R_DRVR_NAME     "esas2r"
@@ -105,7 +56,6 @@ extern int num_io_requests;
 #define ESAS2R_DEFAULT_NUM_SG_LISTS 1024
 #define DEFINED_NUM_TO_STR(num) NUM_TO_STR(num)
 #define NUM_TO_STR(num) #num
-
 #define ESAS2R_SGL_ALIGN    16
 #define ESAS2R_LIST_ALIGN   16
 #define ESAS2R_LIST_EXTRA   ESAS2R_NUM_EXTRA
@@ -120,48 +70,26 @@ extern int num_io_requests;
 #define ESAS2R_INT_DIS_MASK         0
 #define ESAS2R_MAX_TARGETS          256
 #define ESAS2R_KOBJ_NAME_LEN        20
-
-/* u16 (WORD) component macros */
 #define LOBYTE(w) ((u8)(u16)(w))
 #define HIBYTE(w) ((u8)(((u16)(w)) >> 8))
 #define MAKEWORD(lo, hi) ((u16)((u8)(lo) | ((u16)(u8)(hi) << 8)))
-
-/* u32 (DWORD) component macros */
 #define LOWORD(d) ((u16)(u32)(d))
 #define HIWORD(d) ((u16)(((u32)(d)) >> 16))
 #define MAKEDWORD(lo, hi) ((u32)((u16)(lo) | ((u32)(u16)(hi) << 16)))
-
-/* macro to get the lowest nonzero bit of a value */
 #define LOBIT(x) ((x) & (0 - (x)))
-
-/* These functions are provided to access the chip's control registers.
- * The register is specified by its byte offset from the register base
- * for the adapter.
- */
 #define esas2r_read_register_dword(a, reg)                             \
 	readl((void __iomem *)a->regs + (reg) + MW_REG_OFFSET_HWREG)
-
 #define esas2r_write_register_dword(a, reg, data)                      \
 	writel(data, (void __iomem *)(a->regs + (reg) + MW_REG_OFFSET_HWREG))
-
 #define esas2r_flush_register_dword(a, r) esas2r_read_register_dword(a, r)
-
-/* This function is provided to access the chip's data window.   The
- * register is specified by its byte offset from the window base
- * for the adapter.
- */
 #define esas2r_read_data_byte(a, reg)                                  \
 	readb((void __iomem *)a->data_window + (reg))
-
-/* ATTO vendor and device Ids */
 #define ATTO_VENDOR_ID          0x117C
 #define ATTO_DID_INTEL_IOP348   0x002C
 #define ATTO_DID_MV_88RC9580    0x0049
 #define ATTO_DID_MV_88RC9580TS  0x0066
 #define ATTO_DID_MV_88RC9580TSE 0x0067
 #define ATTO_DID_MV_88RC9580TL  0x0068
-
-/* ATTO subsystem device Ids */
 #define ATTO_SSDID_TBT      0x4000
 #define ATTO_TSSC_3808      0x4066
 #define ATTO_TSSC_3808E     0x4067
@@ -172,16 +100,9 @@ extern int num_io_requests;
 #define ATTO_ESAS_R6F0      0x004C
 #define ATTO_ESAS_R644      0x004D
 #define ATTO_ESAS_R648      0x004E
-
-/*
- * flash definitions & structures
- * define the code types
- */
 #define FBT_CPYR        0xAA00
 #define FBT_SETUP       0xAA02
 #define FBT_FLASH_VER   0xAA04
-
-/* offsets to various locations in flash */
 #define FLS_OFFSET_BOOT (u32)(0x00700000)
 #define FLS_OFFSET_NVR  (u32)(0x007C0000)
 #define FLS_OFFSET_CPYR FLS_OFFSET_NVR
@@ -190,18 +111,7 @@ extern int num_io_requests;
 #define FI_NVR_2KB  0x0800
 #define FI_NVR_8KB  0x2000
 #define FM_BUF_SZ   0x800
-
-/*
- * marvell frey (88R9580) register definitions
- * chip revision identifiers
- */
 #define MVR_FREY_B2     0xB2
-
-/*
- * memory window definitions.  window 0 is the data window with definitions
- * of MW_DATA_XXX.  window 1 is the register window with definitions of
- * MW_REG_XXX.
- */
 #define MW_REG_WINDOW_SIZE      (u32)(0x00040000)
 #define MW_REG_OFFSET_HWREG     (u32)(0x00000000)
 #define MW_REG_OFFSET_PCI       (u32)(0x00008000)
@@ -210,17 +120,10 @@ extern int num_io_requests;
 #define MW_DATA_ADDR_SER_FLASH  (u32)(0xEC000000)
 #define MW_DATA_ADDR_SRAM       (u32)(0xF4000000)
 #define MW_DATA_ADDR_PAR_FLASH  (u32)(0xFC000000)
-
-/*
- * the following registers are for the communication
- * list interface (AKA message unit (MU))
- */
 #define MU_IN_LIST_ADDR_LO      (u32)(0x00004000)
 #define MU_IN_LIST_ADDR_HI      (u32)(0x00004004)
-
 #define MU_IN_LIST_WRITE        (u32)(0x00004018)
     #define MU_ILW_TOGGLE       (u32)(0x00004000)
-
 #define MU_IN_LIST_READ         (u32)(0x0000401C)
     #define MU_ILR_TOGGLE       (u32)(0x00004000)
     #define MU_ILIC_LIST        (u32)(0x0000000F)
@@ -228,7 +131,6 @@ extern int num_io_requests;
     #define MU_ILIC_DEST        (u32)(0x00000F00)
     #define MU_ILIC_DEST_DDR    (u32)(0x00000200)
 #define MU_IN_LIST_IFC_CONFIG   (u32)(0x00004028)
-
 #define MU_IN_LIST_CONFIG       (u32)(0x0000402C)
     #define MU_ILC_ENABLE       (u32)(0x00000001)
     #define MU_ILC_ENTRY_MASK   (u32)(0x000000F0)
@@ -236,50 +138,33 @@ extern int num_io_requests;
     #define MU_ILC_DYNAMIC_SRC  (u32)(0x00008000)
     #define MU_ILC_NUMBER_MASK  (u32)(0x7FFF0000)
     #define MU_ILC_NUMBER_SHIFT            16
-
 #define MU_OUT_LIST_ADDR_LO     (u32)(0x00004050)
 #define MU_OUT_LIST_ADDR_HI     (u32)(0x00004054)
-
 #define MU_OUT_LIST_COPY_PTR_LO (u32)(0x00004058)
 #define MU_OUT_LIST_COPY_PTR_HI (u32)(0x0000405C)
-
 #define MU_OUT_LIST_WRITE       (u32)(0x00004068)
     #define MU_OLW_TOGGLE       (u32)(0x00004000)
-
 #define MU_OUT_LIST_COPY        (u32)(0x0000406C)
     #define MU_OLC_TOGGLE       (u32)(0x00004000)
     #define MU_OLC_WRT_PTR      (u32)(0x00003FFF)
-
 #define MU_OUT_LIST_IFC_CONFIG  (u32)(0x00004078)
     #define MU_OLIC_LIST        (u32)(0x0000000F)
     #define MU_OLIC_LIST_F0     (u32)(0x00000000)
     #define MU_OLIC_SOURCE      (u32)(0x00000F00)
     #define MU_OLIC_SOURCE_DDR  (u32)(0x00000200)
-
 #define MU_OUT_LIST_CONFIG      (u32)(0x0000407C)
     #define MU_OLC_ENABLE       (u32)(0x00000001)
     #define MU_OLC_ENTRY_MASK   (u32)(0x000000F0)
     #define MU_OLC_ENTRY_4_DW   (u32)(0x00000020)
     #define MU_OLC_NUMBER_MASK  (u32)(0x7FFF0000)
     #define MU_OLC_NUMBER_SHIFT            16
-
 #define MU_OUT_LIST_INT_STAT    (u32)(0x00004088)
     #define MU_OLIS_INT         (u32)(0x00000001)
-
 #define MU_OUT_LIST_INT_MASK    (u32)(0x0000408C)
     #define MU_OLIS_MASK        (u32)(0x00000001)
-
-/*
- * the maximum size of the communication lists is two greater than the
- * maximum amount of VDA requests.  the extra are to prevent queue overflow.
- */
 #define ESAS2R_MAX_NUM_REQS         256
 #define ESAS2R_NUM_EXTRA            2
 #define ESAS2R_MAX_COMM_LIST_SIZE   (ESAS2R_MAX_NUM_REQS + ESAS2R_NUM_EXTRA)
-
-/*
- * the following registers are for the CPU interface
- */
 #define MU_CTL_STATUS_IN        (u32)(0x00010108)
     #define MU_CTL_IN_FULL_RST  (u32)(0x00000020)
 #define MU_CTL_STATUS_IN_B2     (u32)(0x00010130)
@@ -317,23 +202,14 @@ extern int num_io_requests;
     #define MU_INTSTAT_DRBL     (u32)(0x00001000)
     #define MU_INTSTAT_MASK     (u32)(0x00001010)
 #define MU_INT_MASK_OUT         (u32)(0x0001020C)
-
-/* PCI express registers accessed via window 1 */
 #define MVR_PCI_WIN1_REMAP      (u32)(0x00008438)
     #define MVRPW1R_ENABLE      (u32)(0x00000001)
-
-
-/* structures */
-
-/* inbound list dynamic source entry */
 struct esas2r_inbound_list_source_entry {
 	u64 address;
 	u32 length;
 	#define HWILSE_INTERFACE_F0  0x00000000
 	u32 reserved;
 };
-
-/* PCI data structure in expansion ROM images */
 struct __packed esas2r_boot_header {
 	char signature[4];
 	u16 vendor_id;
@@ -352,14 +228,12 @@ struct __packed esas2r_boot_header {
 	#define INDICATOR_LAST  0x80
 	u8 reserved[2];
 };
-
 struct __packed esas2r_boot_image {
 	u16 signature;
 	u8 reserved[22];
 	u16 header_offset;
 	u16 pnp_offset;
 };
-
 struct __packed esas2r_pc_image {
 	u16 signature;
 	u8 length;
@@ -373,7 +247,6 @@ struct __packed esas2r_pc_image {
 	u16 pnp_offset;
 	struct esas2r_boot_header boot_image;
 };
-
 struct __packed esas2r_efi_image {
 	u16 signature;
 	u16 length;
@@ -397,16 +270,13 @@ struct __packed esas2r_efi_image {
 	u16 reserved2;
 	struct esas2r_boot_header boot_image;
 };
-
 struct esas2r_adapter;
 struct esas2r_sg_context;
 struct esas2r_request;
-
 typedef void (*RQCALLBK)     (struct esas2r_adapter *a,
 			      struct esas2r_request *rq);
 typedef bool (*RQBUILDSGL)   (struct esas2r_adapter *a,
 			      struct esas2r_sg_context *sgc);
-
 struct esas2r_component_header {
 	u8 img_type;
 	#define CH_IT_FW    0x00
@@ -426,9 +296,7 @@ struct esas2r_component_header {
 	u32 length;
 	u32 image_offset;
 };
-
 #define FI_REL_VER_SZ   16
-
 struct esas2r_flash_img_v0 {
 	u8 fi_version;
 	#define FI_VERSION_0    00
@@ -445,7 +313,6 @@ struct esas2r_flash_img_v0 {
 	struct esas2r_component_header cmp_hdr[FI_NUM_COMPS_V0];
 	u8 scratch_buf[FM_BUF_SZ];
 };
-
 struct esas2r_flash_img {
 	u8 fi_version;
 	#define FI_VERSION_1    01
@@ -487,8 +354,6 @@ struct esas2r_flash_img {
 	struct esas2r_component_header cmp_hdr[FI_NUM_COMPS_V1];
 	u8 scratch_buf[FM_BUF_SZ];
 };
-
-/* definitions for flash script (FS) commands */
 struct esas2r_ioctlfs_command {
 	u8 command;
 	#define ESAS2R_FS_CMD_ERASE    0
@@ -503,7 +368,6 @@ struct esas2r_ioctlfs_command {
 	u32 length;
 	u32 image_offset;
 };
-
 struct esas2r_ioctl_fs {
 	u8 version;
 	#define ESAS2R_FS_VER      0
@@ -519,7 +383,6 @@ struct esas2r_ioctl_fs {
 	struct esas2r_ioctlfs_command command;
 	u8 data[1];
 };
-
 struct esas2r_sas_nvram {
 	u8 signature[4];
 	u8 version;
@@ -594,9 +457,7 @@ struct esas2r_sas_nvram {
 	u8 link_down_to;
 	u8 reserved[0xA1];
 };
-
 typedef u32 (*PGETPHYSADDR) (struct esas2r_sg_context *sgc, u64 *addr);
-
 struct esas2r_sg_context {
 	struct esas2r_adapter *adapter;
 	struct esas2r_request *first_req;
@@ -622,7 +483,6 @@ struct esas2r_sg_context {
 	int num_sgel;
 	int sgel_count;
 };
-
 struct esas2r_target {
 	u8 flags;
 	#define TF_PASS_THRU    0x01
@@ -644,7 +504,6 @@ struct esas2r_target {
 	u8 identifier[60];
 	struct atto_vda_ae_lu lu_event;
 };
-
 struct esas2r_request {
 	struct list_head comp_list;
 	struct list_head req_list;
@@ -686,7 +545,6 @@ struct esas2r_request {
 		u8 *task_management_status_ptr;
 	};
 };
-
 struct esas2r_flash_context {
 	struct esas2r_flash_img *fi;
 	RQCALLBK interrupt_cb;
@@ -711,7 +569,6 @@ struct esas2r_flash_context {
 	u8 comp_typ;
 	struct esas2r_sg_context sgc;
 };
-
 struct esas2r_disc_context {
 	u8 disc_evt;
 	#define DCDE_DEV_CHANGE     0x01
@@ -742,7 +599,6 @@ struct esas2r_disc_context {
 	u8 dev_addr_type;
 	u64 sas_addr;
 };
-
 struct esas2r_mem_desc {
 	struct list_head next_desc;
 	void *virt_addr;
@@ -752,7 +608,6 @@ struct esas2r_mem_desc {
 	u32 esas2r_param;
 	u32 size;
 };
-
 enum fw_event_type {
 	fw_event_null,
 	fw_event_lun_change,
@@ -760,7 +615,6 @@ enum fw_event_type {
 	fw_event_not_present,
 	fw_event_vda_ae
 };
-
 struct esas2r_vda_ae {
 	u32 signature;
 #define ESAS2R_VDA_EVENT_SIG  0x4154544F
@@ -769,7 +623,6 @@ struct esas2r_vda_ae {
 	u8 pad[2];
 	union atto_vda_ae vda_ae;
 };
-
 struct esas2r_fw_event_work {
 	struct list_head list;
 	struct delayed_work work;
@@ -777,13 +630,11 @@ struct esas2r_fw_event_work {
 	enum fw_event_type type;
 	u8 data[sizeof(struct esas2r_vda_ae)];
 };
-
 enum state {
 	FW_INVALID_ST,
 	FW_STATUS_ST,
 	FW_COMMAND_ST
 };
-
 struct esas2r_firmware {
 	enum state state;
 	struct esas2r_flash_img header;
@@ -793,7 +644,6 @@ struct esas2r_firmware {
 	void *header_buff;
 	u64 header_buff_phys;
 };
-
 struct esas2r_adapter {
 	struct esas2r_target targetdb[ESAS2R_MAX_TARGETS];
 	struct esas2r_target *targetdb_end;
@@ -928,14 +778,8 @@ struct esas2r_adapter {
 	struct workqueue_struct *fw_event_q;
 	struct list_head fw_event_list;
 	spinlock_t fw_event_lock;
-	u8 fw_events_off;                       /* if '1', then ignore events */
+	u8 fw_events_off;                        
 	char fw_event_q_name[ESAS2R_KOBJ_NAME_LEN];
-	/*
-	 * intr_mode stores the interrupt mode currently being used by this
-	 * adapter. it is based on the interrupt_mode module parameter, but
-	 * can be changed based on the ability (or not) to utilize the
-	 * mode requested by the parameter.
-	 */
 	int intr_mode;
 #define INTR_MODE_LEGACY 0
 #define INTR_MODE_MSI    1
@@ -957,11 +801,6 @@ struct esas2r_adapter {
 	unsigned int sysfs_live_nvram_created:1;
 	unsigned int sysfs_default_nvram_created:1;
 };
-
-/*
- * Function Declarations
- * SCSI functions
- */
 const char *esas2r_info(struct Scsi_Host *);
 int esas2r_write_params(struct esas2r_adapter *a, struct esas2r_request *rq,
 			struct esas2r_sas_nvram *data);
@@ -972,15 +811,11 @@ u8 handle_hba_ioctl(struct esas2r_adapter *a,
 int esas2r_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *cmd);
 int esas2r_show_info(struct seq_file *m, struct Scsi_Host *sh);
 long esas2r_proc_ioctl(struct file *fp, unsigned int cmd, unsigned long arg);
-
-/* SCSI error handler (eh) functions */
 int esas2r_eh_abort(struct scsi_cmnd *cmd);
 int esas2r_device_reset(struct scsi_cmnd *cmd);
 int esas2r_host_reset(struct scsi_cmnd *cmd);
 int esas2r_bus_reset(struct scsi_cmnd *cmd);
 int esas2r_target_reset(struct scsi_cmnd *cmd);
-
-/* Internal functions */
 int esas2r_init_adapter(struct Scsi_Host *host, struct pci_dev *pcid,
 			int index);
 int esas2r_read_fw(struct esas2r_adapter *a, char *buf, long off, int count);
@@ -996,9 +831,7 @@ void esas2r_adapter_tasklet(unsigned long context);
 irqreturn_t esas2r_interrupt(int irq, void *dev_id);
 irqreturn_t esas2r_msi_interrupt(int irq, void *dev_id);
 void esas2r_kickoff_timer(struct esas2r_adapter *a);
-
 extern const struct dev_pm_ops esas2r_pm_ops;
-
 void esas2r_fw_event_off(struct esas2r_adapter *a);
 void esas2r_fw_event_on(struct esas2r_adapter *a);
 bool esas2r_nvram_write(struct esas2r_adapter *a, struct esas2r_request *rq,
@@ -1142,16 +975,11 @@ void esas2r_queue_fw_event(struct esas2r_adapter *a,
 			   enum fw_event_type type,
 			   void *data,
 			   int data_sz);
-
-/* Inline functions */
-
-/* Allocate a chip scatter/gather list entry */
 static inline struct esas2r_mem_desc *esas2r_alloc_sgl(struct esas2r_adapter *a)
 {
 	unsigned long flags;
 	struct list_head *sgl;
 	struct esas2r_mem_desc *result = NULL;
-
 	spin_lock_irqsave(&a->sg_list_lock, flags);
 	if (likely(!list_empty(&a->free_sg_list_head))) {
 		sgl = a->free_sg_list_head.next;
@@ -1159,11 +987,8 @@ static inline struct esas2r_mem_desc *esas2r_alloc_sgl(struct esas2r_adapter *a)
 		list_del_init(sgl);
 	}
 	spin_unlock_irqrestore(&a->sg_list_lock, flags);
-
 	return result;
 }
-
-/* Initialize a scatter/gather context */
 static inline void esas2r_sgc_init(struct esas2r_sg_context *sgc,
 				   struct esas2r_adapter *a,
 				   struct esas2r_request *rq,
@@ -1171,11 +996,6 @@ static inline void esas2r_sgc_init(struct esas2r_sg_context *sgc,
 {
 	sgc->adapter = a;
 	sgc->first_req = rq;
-
-	/*
-	 * set the limit pointer such that an SGE pointer above this value
-	 * would be the first one to overflow the SGL.
-	 */
 	sgc->sge.a64.limit = (struct atto_vda_sge *)((u8 *)rq->vrq
 						     + (sizeof(union
 							       atto_vda_req) /
@@ -1196,12 +1016,10 @@ static inline void esas2r_sgc_init(struct esas2r_sg_context *sgc,
 	}
 	sgc->sge.a64.chain = NULL;
 }
-
 static inline void esas2r_rq_init_request(struct esas2r_request *rq,
 					  struct esas2r_adapter *a)
 {
 	union atto_vda_req *vrq = rq->vrq;
-
 	INIT_LIST_HEAD(&rq->sg_table_head);
 	rq->data_buf = (void *)(vrq + 1);
 	rq->interrupt_cb = NULL;
@@ -1210,130 +1028,74 @@ static inline void esas2r_rq_init_request(struct esas2r_request *rq,
 	rq->timeout = 0;
 	rq->req_stat = RS_PENDING;
 	rq->req_type = RT_INI_REQ;
-
-	/* clear the outbound response */
 	rq->func_rsp.dwords[0] = 0;
 	rq->func_rsp.dwords[1] = 0;
-
-	/*
-	 * clear the size of the VDA request.  esas2r_build_sg_list() will
-	 * only allow the size of the request to grow.  there are some
-	 * management requests that go through there twice and the second
-	 * time through sets a smaller request size.  if this is not modified
-	 * at all we'll set it to the size of the entire VDA request.
-	 */
 	rq->vda_req_sz = RQ_SIZE_DEFAULT;
-
-	/* req_table entry should be NULL at this point - if not, halt */
-
 	if (a->req_table[LOWORD(vrq->scsi.handle)]) {
 		esas2r_bugon();
 	}
-
-	/* fill in the table for this handle so we can get back to the
-	 * request.
-	 */
 	a->req_table[LOWORD(vrq->scsi.handle)] = rq;
-
-	/*
-	 * add a reference number to the handle to make it unique (until it
-	 * wraps of course) while preserving the least significant word
-	 */
 	vrq->scsi.handle = (a->cmd_ref_no++ << 16) | (u16)vrq->scsi.handle;
-
-	/*
-	 * the following formats a SCSI request.  the caller can override as
-	 * necessary.  clear_vda_request can be called to clear the VDA
-	 * request for another type of request.
-	 */
 	vrq->scsi.function = VDA_FUNC_SCSI;
 	vrq->scsi.sense_len = SENSE_DATA_SZ;
-
-	/* clear out sg_list_offset and chain_offset */
 	vrq->scsi.sg_list_offset = 0;
 	vrq->scsi.chain_offset = 0;
 	vrq->scsi.flags = 0;
 	vrq->scsi.reserved = 0;
-
-	/* set the sense buffer to be the data payload buffer */
 	vrq->scsi.ppsense_buf
 		= cpu_to_le64(rq->vrq_md->phys_addr +
 			      sizeof(union atto_vda_req));
 }
-
 static inline void esas2r_rq_free_sg_lists(struct esas2r_request *rq,
 					   struct esas2r_adapter *a)
 {
 	unsigned long flags;
-
 	if (list_empty(&rq->sg_table_head))
 		return;
-
 	spin_lock_irqsave(&a->sg_list_lock, flags);
 	list_splice_tail_init(&rq->sg_table_head, &a->free_sg_list_head);
 	spin_unlock_irqrestore(&a->sg_list_lock, flags);
 }
-
 static inline void esas2r_rq_destroy_request(struct esas2r_request *rq,
 					     struct esas2r_adapter *a)
-
 {
 	esas2r_rq_free_sg_lists(rq, a);
 	a->req_table[LOWORD(rq->vrq->scsi.handle)] = NULL;
 	rq->data_buf = NULL;
 }
-
 static inline bool esas2r_is_tasklet_pending(struct esas2r_adapter *a)
 {
-
 	return test_bit(AF_BUSRST_NEEDED, &a->flags) ||
 	       test_bit(AF_BUSRST_DETECTED, &a->flags) ||
 	       test_bit(AF_CHPRST_NEEDED, &a->flags) ||
 	       test_bit(AF_CHPRST_DETECTED, &a->flags) ||
 	       test_bit(AF_PORT_CHANGE, &a->flags);
-
 }
-
-/*
- * Build the scatter/gather list for an I/O request according to the
- * specifications placed in the esas2r_sg_context.  The caller must initialize
- * struct esas2r_sg_context prior to the initial call by calling
- * esas2r_sgc_init()
- */
 static inline bool esas2r_build_sg_list(struct esas2r_adapter *a,
 					struct esas2r_request *rq,
 					struct esas2r_sg_context *sgc)
 {
 	if (unlikely(le32_to_cpu(rq->vrq->scsi.length) == 0))
 		return true;
-
 	return (*a->build_sgl)(a, sgc);
 }
-
 static inline void esas2r_disable_chip_interrupts(struct esas2r_adapter *a)
 {
 	if (atomic_inc_return(&a->dis_ints_cnt) == 1)
 		esas2r_write_register_dword(a, MU_INT_MASK_OUT,
 					    ESAS2R_INT_DIS_MASK);
 }
-
 static inline void esas2r_enable_chip_interrupts(struct esas2r_adapter *a)
 {
 	if (atomic_dec_return(&a->dis_ints_cnt) == 0)
 		esas2r_write_register_dword(a, MU_INT_MASK_OUT,
 					    ESAS2R_INT_ENB_MASK);
 }
-
-/* Schedule a TASKLET to perform non-interrupt tasks that may require delays
- * or long completion times.
- */
 static inline void esas2r_schedule_tasklet(struct esas2r_adapter *a)
 {
-	/* make sure we don't schedule twice */
 	if (!test_and_set_bit(AF_TASKLET_SCHEDULED, &a->flags))
 		tasklet_hi_schedule(&a->tasklet);
 }
-
 static inline void esas2r_enable_heartbeat(struct esas2r_adapter *a)
 {
 	if (!test_bit(AF_DEGRADED_MODE, &a->flags) &&
@@ -1343,84 +1105,60 @@ static inline void esas2r_enable_heartbeat(struct esas2r_adapter *a)
 	else
 		clear_bit(AF_HEARTBEAT_ENB, &a->flags);
 }
-
 static inline void esas2r_disable_heartbeat(struct esas2r_adapter *a)
 {
 	clear_bit(AF_HEARTBEAT_ENB, &a->flags);
 	clear_bit(AF_HEARTBEAT, &a->flags);
 }
-
-/* Set the initial state for resetting the adapter on the next pass through
- * esas2r_do_deferred.
- */
 static inline void esas2r_local_reset_adapter(struct esas2r_adapter *a)
 {
 	esas2r_disable_heartbeat(a);
-
 	set_bit(AF_CHPRST_NEEDED, &a->flags);
 	set_bit(AF_CHPRST_PENDING, &a->flags);
 	set_bit(AF_DISC_PENDING, &a->flags);
 }
-
-/* See if an interrupt is pending on the adapter. */
 static inline bool esas2r_adapter_interrupt_pending(struct esas2r_adapter *a)
 {
 	u32 intstat;
-
 	if (a->int_mask == 0)
 		return false;
-
 	intstat = esas2r_read_register_dword(a, MU_INT_STATUS_OUT);
-
 	if ((intstat & a->int_mask) == 0)
 		return false;
-
 	esas2r_disable_chip_interrupts(a);
-
 	a->int_stat = intstat;
 	a->int_mask = 0;
-
 	return true;
 }
-
 static inline u16 esas2r_targ_get_id(struct esas2r_target *t,
 				     struct esas2r_adapter *a)
 {
 	return (u16)(uintptr_t)(t - a->targetdb);
 }
-
-/*  Build and start an asynchronous event request */
 static inline void esas2r_start_ae_request(struct esas2r_adapter *a,
 					   struct esas2r_request *rq)
 {
 	unsigned long flags;
-
 	esas2r_build_ae_req(a, rq);
-
 	spin_lock_irqsave(&a->queue_lock, flags);
 	esas2r_start_vda_request(a, rq);
 	spin_unlock_irqrestore(&a->queue_lock, flags);
 }
-
 static inline void esas2r_comp_list_drain(struct esas2r_adapter *a,
 					  struct list_head *comp_list)
 {
 	struct esas2r_request *rq;
 	struct list_head *element, *next;
-
 	list_for_each_safe(element, next, comp_list) {
 		rq = list_entry(element, struct esas2r_request, comp_list);
 		list_del_init(element);
 		esas2r_complete_request(a, rq);
 	}
 }
-
-/* sysfs handlers */
 extern struct bin_attribute bin_attr_fw;
 extern struct bin_attribute bin_attr_fs;
 extern struct bin_attribute bin_attr_vda;
 extern struct bin_attribute bin_attr_hw;
 extern struct bin_attribute bin_attr_live_nvram;
 extern struct bin_attribute bin_attr_default_nvram;
-
-#endif /* ESAS2R_H */
+#endif  

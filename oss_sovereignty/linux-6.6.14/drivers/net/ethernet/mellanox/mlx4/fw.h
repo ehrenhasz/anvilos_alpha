@@ -1,48 +1,11 @@
-/*
- * Copyright (c) 2004, 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005, 2006, 2007, 2008 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2006, 2007 Cisco Systems.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 #ifndef MLX4_FW_H
 #define MLX4_FW_H
-
 #include "mlx4.h"
 #include "icm.h"
-
 struct mlx4_mod_stat_cfg {
 	u8 log_pg_sz;
 	u8 log_pg_sz_m;
 };
-
 struct mlx4_port_cap {
 	u8  link_state;
 	u8  supported_port_types;
@@ -64,7 +27,6 @@ struct mlx4_port_cap {
 	u64 trans_code;
 	u8 dmfs_optimized_state;
 };
-
 struct mlx4_dev_cap {
 	int max_srq_sz;
 	int max_qp_sz;
@@ -133,7 +95,6 @@ struct mlx4_dev_cap {
 	bool wol_port[MLX4_MAX_PORTS + 1];
 	bool map_clock_to_user;
 };
-
 struct mlx4_func_cap {
 	u8	num_ports;
 	u8	flags;
@@ -154,7 +115,6 @@ struct mlx4_func_cap {
 	u64	phys_port_id;
 	u32	extra_flags;
 };
-
 struct mlx4_func {
 	int	bus;
 	int	device;
@@ -164,12 +124,10 @@ struct mlx4_func {
 	int	max_eq;
 	int	rsvd_uars;
 };
-
 struct mlx4_adapter {
 	char board_id[MLX4_BOARD_ID_LEN];
 	u8   inta_pin;
 };
-
 struct mlx4_init_hca_param {
 	u64 qpc_base;
 	u64 rdmarc_base;
@@ -185,7 +143,7 @@ struct mlx4_init_hca_param {
 	u64 global_caps;
 	u8 log_mc_entry_sz;
 	u8 log_mc_hash_sz;
-	u16 hca_core_clock; /* Internal Clock Frequency (in MHz) */
+	u16 hca_core_clock;  
 	u8  log_num_qps;
 	u8  log_num_srqs;
 	u8  log_num_cqs;
@@ -195,17 +153,16 @@ struct mlx4_init_hca_param {
 	u8  log_mc_table_sz;
 	u8  log_mpt_sz;
 	u8  log_uar_sz;
-	u8  mw_enabled;  /* Enable memory windows */
-	u8  uar_page_sz; /* log pg sz in 4k chunks */
-	u8  steering_mode; /* for QUERY_HCA */
-	u8  dmfs_high_steer_mode; /* for QUERY_HCA */
+	u8  mw_enabled;   
+	u8  uar_page_sz;  
+	u8  steering_mode;  
+	u8  dmfs_high_steer_mode;  
 	u64 dev_cap_enabled;
-	u16 cqe_size; /* For use only when CQE stride feature enabled */
-	u16 eqe_size; /* For use only when EQE stride feature enabled */
+	u16 cqe_size;  
+	u16 eqe_size;  
 	u8 rss_ip_frags;
-	u8 phv_check_en; /* for QUERY_HCA */
+	u8 phv_check_en;  
 };
-
 struct mlx4_init_ib_param {
 	int port_width;
 	int vl_cap;
@@ -219,14 +176,12 @@ struct mlx4_init_ib_param {
 	int set_si_guid;
 	u64 si_guid;
 };
-
 struct mlx4_set_ib_param {
 	int set_si_guid;
 	int reset_qkey_viol;
 	u64 si_guid;
 	u32 cap_mask;
 };
-
 void mlx4_dev_cap_dump(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap);
 int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap);
 int mlx4_QUERY_PORT(struct mlx4_dev *dev, int port, struct mlx4_port_cap *port_cap);
@@ -253,5 +208,4 @@ int mlx4_UNMAP_ICM_AUX(struct mlx4_dev *dev);
 int mlx4_NOP(struct mlx4_dev *dev);
 int mlx4_MOD_STAT_CFG(struct mlx4_dev *dev, struct mlx4_mod_stat_cfg *cfg);
 void mlx4_opreq_action(struct work_struct *work);
-
-#endif /* MLX4_FW_H */
+#endif  

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_MMCC_660_H
 #define _DT_BINDINGS_CLK_MSM_MMCC_660_H
-
 #define AHB_CLK_SRC							0
 #define BYTE0_CLK_SRC						1
 #define BYTE1_CLK_SRC						2
@@ -146,7 +140,6 @@
 #define VSYNC_CLK_SRC						137
 #define MDSS_BYTE1_INTF_DIV_CLK				138
 #define AXI_CLK_SRC							139
-
 #define VENUS_GDSC								0
 #define VENUS_CORE0_GDSC						1
 #define MDSS_GDSC								2
@@ -155,8 +148,5 @@
 #define CAMSS_VFE1_GDSC							5
 #define CAMSS_CPP_GDSC							6
 #define BIMC_SMMU_GDSC							7
-
 #define CAMSS_MICRO_BCR				 0
-
 #endif
-

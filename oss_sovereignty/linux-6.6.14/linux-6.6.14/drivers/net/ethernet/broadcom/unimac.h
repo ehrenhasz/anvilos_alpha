@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef __UNIMAC_H
 #define __UNIMAC_H
-
 #define UMAC_HD_BKP_CTRL		0x004
 #define  HD_FC_EN			(1 << 0)
 #define  HD_FC_BKOFF_OK			(1 << 1)
@@ -41,8 +39,8 @@
 #define UMAC_PAUSE_QUANTA		0x018
 #define UMAC_MODE			0x044
 #define  MODE_LINK_STATUS		(1 << 5)
-#define UMAC_FRM_TAG0			0x048		/* outer tag */
-#define UMAC_FRM_TAG1			0x04c		/* inner tag */
+#define UMAC_FRM_TAG0			0x048		 
+#define UMAC_FRM_TAG1			0x04c		 
 #define UMAC_TX_IPG_LEN			0x05c
 #define UMAC_EEE_CTRL			0x064
 #define  EN_LPI_RX_PAUSE		(1 << 0)
@@ -64,5 +62,4 @@
 #define UMAC_TX_FLUSH			0x334
 #define UMAC_RX_FIFO_STATUS		0x338
 #define UMAC_TX_FIFO_STATUS		0x33c
-
 #endif

@@ -1,32 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2012 Marvell Technology Group Ltd.
- *  Author: Haojian Zhuang <haojian.zhuang@marvell.com>
- */
-
 /dts-v1/;
 #include "pxa910.dtsi"
-
 / {
 	model = "Marvell PXA910 DKB Development Board";
 	compatible = "mrvl,pxa910-dkb", "mrvl,pxa910";
-
 	chosen {
 		bootargs = "console=ttyS0,115200 root=/dev/nfs nfsroot=192.168.1.100:/nfsroot/ ip=192.168.1.101:192.168.1.100::255.255.255.0::eth0:on";
 	};
-
 	memory {
 		reg = <0x00000000 0x10000000>;
 	};
 };
-
 &uart1 {
 	status = "okay";
 };
-
 &twsi1 {
 	status = "okay";
-
 	pmic: 88pm860x@34 {
 		compatible = "marvell,88pm860x";
 		reg = <0x34>;
@@ -34,10 +22,8 @@
 		interrupt-parent = <&intc>;
 		interrupt-controller;
 		#interrupt-cells = <1>;
-
 		marvell,88pm860x-irq-read-clr;
 		marvell,88pm860x-slave-addr = <0x11>;
-
 		regulators {
 			BUCK1 {
 				regulator-min-microvolt = <1000000>;
@@ -164,7 +150,6 @@
 		};
 	};
 };
-
 &rtc {
 	status = "okay";
 };

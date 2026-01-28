@@ -1,36 +1,8 @@
-/*
- * Copyright 2012-17 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_MEM_INPUT_DCN20_H__
 #define __DC_MEM_INPUT_DCN20_H__
-
 #include "../dcn10/dcn10_hubp.h"
-
 #define TO_DCN20_HUBP(hubp)\
 	container_of(hubp, struct dcn20_hubp, base)
-
 #define HUBP_REG_LIST_DCN2_COMMON(id)\
 	HUBP_REG_LIST_DCN(id),\
 	HUBP_REG_LIST_DCN_VM(id),\
@@ -60,12 +32,10 @@
 	SRI(DCN_CUR1_TTU_CNTL1, HUBPREQ, id),\
 	SRI(DCSURF_FLIP_CONTROL2, HUBPREQ, id), \
 	SRI(VMID_SETTINGS_0, HUBPREQ, id)
-
 #define HUBP_REG_LIST_DCN20(id)\
 	HUBP_REG_LIST_DCN2_COMMON(id),\
 	SR(DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_MSB),\
 	SR(DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_LSB)
-
 #define HUBP_MASK_SH_LIST_DCN2_SHARE_COMMON(mask_sh)\
 	HUBP_MASK_SH_LIST_DCN_SHARE_COMMON(mask_sh),\
 	HUBP_MASK_SH_LIST_DCN_VM(mask_sh),\
@@ -114,22 +84,16 @@
 	HUBP_SF(HUBPREQ0_DCSURF_FLIP_CONTROL2, SURFACE_GSL_ENABLE, mask_sh),\
 	HUBP_SF(HUBPREQ0_DCSURF_FLIP_CONTROL2, SURFACE_TRIPLE_BUFFER_ENABLE, mask_sh),\
 	HUBP_SF(HUBPREQ0_VMID_SETTINGS_0, VMID, mask_sh)
-
-/*DCN2.x and DCN1.x*/
 #define HUBP_MASK_SH_LIST_DCN2_COMMON(mask_sh)\
 	HUBP_MASK_SH_LIST_DCN2_SHARE_COMMON(mask_sh),\
 	HUBP_SF(HUBP0_DCSURF_TILING_CONFIG, RB_ALIGNED, mask_sh),\
 	HUBP_SF(HUBP0_DCHUBP_REQ_SIZE_CONFIG, MPTE_GROUP_SIZE, mask_sh),\
 	HUBP_SF(HUBP0_DCHUBP_REQ_SIZE_CONFIG_C, MPTE_GROUP_SIZE_C, mask_sh)
-
-/*DCN2.0 specific*/
 #define HUBP_MASK_SH_LIST_DCN20(mask_sh)\
 	HUBP_MASK_SH_LIST_DCN2_COMMON(mask_sh),\
 	HUBP_SF(DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_MSB, DCN_VM_SYSTEM_APERTURE_DEFAULT_SYSTEM, mask_sh),\
 	HUBP_SF(DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_MSB, DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_MSB, mask_sh),\
 	HUBP_SF(DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_LSB, DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_LSB, mask_sh)
-
-/*DCN2.x */
 #define DCN2_HUBP_REG_COMMON_VARIABLE_LIST \
 	HUBP_COMMON_REG_VARIABLE_LIST; \
 	uint32_t DMDATA_ADDRESS_HIGH; \
@@ -146,8 +110,6 @@
 	uint32_t DCN_CUR1_TTU_CNTL0;\
 	uint32_t DCN_CUR1_TTU_CNTL1;\
 	uint32_t VMID_SETTINGS_0
-
-
 #define DCN21_HUBP_REG_COMMON_VARIABLE_LIST \
 	DCN2_HUBP_REG_COMMON_VARIABLE_LIST; \
 	uint32_t FLIP_PARAMETERS_3;\
@@ -156,17 +118,14 @@
 	uint32_t FLIP_PARAMETERS_6;\
 	uint32_t VBLANK_PARAMETERS_5;\
 	uint32_t VBLANK_PARAMETERS_6
-
 #define DCN30_HUBP_REG_COMMON_VARIABLE_LIST \
 	DCN21_HUBP_REG_COMMON_VARIABLE_LIST;\
 	uint32_t DCN_DMDATA_VM_CNTL
-
 #define DCN32_HUBP_REG_COMMON_VARIABLE_LIST \
 	DCN30_HUBP_REG_COMMON_VARIABLE_LIST;\
 	uint32_t DCHUBP_MALL_CONFIG;\
 	uint32_t DCHUBP_VMPG_CONFIG;\
 	uint32_t UCLK_PSTATE_FORCE
-
 #define DCN2_HUBP_REG_FIELD_VARIABLE_LIST(type) \
 	DCN_HUBP_REG_FIELD_BASE_LIST(type); \
 	type DMDATA_ADDRESS_HIGH;\
@@ -191,7 +150,6 @@
 	type SURFACE_GSL_ENABLE;\
 	type SURFACE_TRIPLE_BUFFER_ENABLE;\
 	type VMID
-
 #define DCN21_HUBP_REG_FIELD_VARIABLE_LIST(type) \
 	DCN2_HUBP_REG_FIELD_VARIABLE_LIST(type);\
 	type REFCYC_PER_VM_GROUP_FLIP;\
@@ -201,7 +159,6 @@
 	type REFCYC_PER_PTE_GROUP_FLIP_C; \
 	type REFCYC_PER_META_CHUNK_FLIP_C; \
 	type VM_GROUP_SIZE
-
 #define DCN30_HUBP_REG_FIELD_VARIABLE_LIST(type) \
 	DCN21_HUBP_REG_FIELD_VARIABLE_LIST(type);\
 	type PRIMARY_SURFACE_DCC_IND_BLK;\
@@ -221,13 +178,11 @@
 	type PACK_3TO2_ELEMENT_DISABLE; \
 	type ROW_TTU_MODE; \
 	type NUM_PKRS
-
 #define DCN31_HUBP_REG_FIELD_VARIABLE_LIST(type) \
 	DCN30_HUBP_REG_FIELD_VARIABLE_LIST(type);\
 	type HUBP_UNBOUNDED_REQ_MODE;\
 	type CURSOR_REQ_MODE;\
 	type HUBP_SOFT_RESET
-
 #define DCN32_HUBP_REG_FIELD_VARIABLE_LIST(type) \
 	DCN31_HUBP_REG_FIELD_VARIABLE_LIST(type);\
 	type USE_MALL_SEL; \
@@ -240,19 +195,15 @@
 	type DATA_UCLK_PSTATE_FORCE_VALUE; \
 	type CURSOR_UCLK_PSTATE_FORCE_EN; \
 	type CURSOR_UCLK_PSTATE_FORCE_VALUE
-
 struct dcn_hubp2_registers {
 	DCN32_HUBP_REG_COMMON_VARIABLE_LIST;
 };
-
 struct dcn_hubp2_shift {
 	DCN32_HUBP_REG_FIELD_VARIABLE_LIST(uint8_t);
 };
-
 struct dcn_hubp2_mask {
 	DCN32_HUBP_REG_FIELD_VARIABLE_LIST(uint32_t);
 };
-
 struct dcn20_hubp {
 	struct hubp base;
 	struct dcn_hubp_state state;
@@ -260,7 +211,6 @@ struct dcn20_hubp {
 	const struct dcn_hubp2_shift *hubp_shift;
 	const struct dcn_hubp2_mask *hubp_mask;
 };
-
 bool hubp2_construct(
 		struct dcn20_hubp *hubp2,
 		struct dc_context *ctx,
@@ -268,74 +218,56 @@ bool hubp2_construct(
 		const struct dcn_hubp2_registers *hubp_regs,
 		const struct dcn_hubp2_shift *hubp_shift,
 		const struct dcn_hubp2_mask *hubp_mask);
-
 void hubp2_setup_interdependent(
 		struct hubp *hubp,
 		struct _vcs_dpi_display_dlg_regs_st *dlg_attr,
 		struct _vcs_dpi_display_ttu_regs_st *ttu_attr);
-
 void hubp2_vready_at_or_After_vsync(struct hubp *hubp,
 		struct _vcs_dpi_display_pipe_dest_params_st *pipe_dest);
-
 void hubp2_cursor_set_attributes(
 		struct hubp *hubp,
 		const struct dc_cursor_attributes *attr);
-
 void hubp2_set_vm_system_aperture_settings(struct hubp *hubp,
 		struct vm_system_aperture_param *apt);
-
 enum cursor_lines_per_chunk hubp2_get_lines_per_chunk(
 		unsigned int cursor_width,
 		enum dc_cursor_color_format cursor_mode);
-
 void hubp2_dmdata_set_attributes(
 		struct hubp *hubp,
 		const struct dc_dmdata_attributes *attr);
-
 void hubp2_dmdata_load(
 		struct hubp *hubp,
 		uint32_t dmdata_sw_size,
 		const uint32_t *dmdata_sw_data);
-
 bool hubp2_dmdata_status_done(struct hubp *hubp);
-
 void hubp2_enable_triplebuffer(
 		struct hubp *hubp,
 		bool enable);
-
 bool hubp2_is_triplebuffer_enabled(
 		struct hubp *hubp);
-
 void hubp2_set_flip_control_surface_gsl(struct hubp *hubp, bool enable);
-
 void hubp2_program_deadline(
 		struct hubp *hubp,
 		struct _vcs_dpi_display_dlg_regs_st *dlg_attr,
 		struct _vcs_dpi_display_ttu_regs_st *ttu_attr);
-
 bool hubp2_program_surface_flip_and_addr(
 	struct hubp *hubp,
 	const struct dc_plane_address *address,
 	bool flip_immediate);
-
 void hubp2_dcc_control(struct hubp *hubp, bool enable,
 		enum hubp_ind_block_size independent_64b_blks);
-
 void hubp2_program_size(
 	struct hubp *hubp,
 	enum surface_pixel_format format,
 	const struct plane_size *plane_size,
 	struct dc_plane_dcc_param *dcc);
-
 void hubp2_program_rotation(
 	struct hubp *hubp,
 	enum dc_rotation_angle rotation,
 	bool horizontal_mirror);
-
 void hubp2_program_pixel_format(
 	struct hubp *hubp,
 	enum surface_pixel_format format);
-
 void hubp2_program_surface_config(
 	struct hubp *hubp,
 	enum surface_pixel_format format,
@@ -345,27 +277,16 @@ void hubp2_program_surface_config(
 	struct dc_plane_dcc_param *dcc,
 	bool horizontal_mirror,
 	unsigned int compat_level);
-
 bool hubp2_is_flip_pending(struct hubp *hubp);
-
 void hubp2_set_blank(struct hubp *hubp, bool blank);
 void hubp2_set_blank_regs(struct hubp *hubp, bool blank);
-
 void hubp2_cursor_set_position(
 		struct hubp *hubp,
 		const struct dc_cursor_position *pos,
 		const struct dc_cursor_mi_param *param);
-
 void hubp2_clk_cntl(struct hubp *hubp, bool enable);
-
 void hubp2_vtg_sel(struct hubp *hubp, uint32_t otg_inst);
-
 void hubp2_clear_underflow(struct hubp *hubp);
-
 void hubp2_read_state_common(struct hubp *hubp);
-
 void hubp2_read_state(struct hubp *hubp);
-
-#endif /* __DC_MEM_INPUT_DCN20_H__ */
-
-
+#endif  

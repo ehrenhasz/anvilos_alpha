@@ -1,21 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * shmob_drm_regs.h  --  SH Mobile DRM registers
- *
- * Copyright (C) 2012 Renesas Electronics Corporation
- *
- * Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
-
 #ifndef __SHMOB_DRM_REGS_H__
 #define __SHMOB_DRM_REGS_H__
-
 #include <linux/io.h>
 #include <linux/jiffies.h>
-
 #include "shmob_drm_drv.h"
-
-/* Register definitions */
 #define LDDCKPAT1R		0x400
 #define LDDCKPAT2R		0x404
 #define LDDCKR			0x410
@@ -137,7 +124,6 @@
 #define LDDDSR_WS		(1 << 1)
 #define LDDDSR_BS		(1 << 0)
 #define LDHAJR			0x4a0
-
 #define LDDWD0R			0x800
 #define LDDWDxR_WDACT		(1 << 28)
 #define LDDWDxR_RSW		(1 << 24)
@@ -148,7 +134,6 @@
 #define LDDWAR_WA		(1 << 0)
 #define LDDRAR			0x904
 #define LDDRAR_RA		(1 << 0)
-
 #define LDBCR			0xb00
 #define LDBCR_UPC(n)		(1 << ((n) + 16))
 #define LDBCR_UPF(n)		(1 << ((n) + 8))
@@ -244,10 +229,8 @@
 #define LDBBBGCL_BGG_SHIFT	8
 #define LDBBBGCL_BGB_MASK	(0xff << 0)
 #define LDBBBGCL_BGB_SHIFT	0
-
 #define LCDC_SIDE_B_OFFSET	0x1000
 #define LCDC_MIRROR_OFFSET	0x2000
-
 static inline bool lcdc_is_banked(u32 reg)
 {
 	switch (reg) {
@@ -274,37 +257,30 @@ static inline bool lcdc_is_banked(u32 reg)
 		return reg >= LDBnBBGCL(0) && reg <= LDBnBPPCR(3);
 	}
 }
-
 static inline void lcdc_write_mirror(struct shmob_drm_device *sdev, u32 reg,
 				     u32 data)
 {
 	iowrite32(data, sdev->mmio + reg + LCDC_MIRROR_OFFSET);
 }
-
 static inline void lcdc_write(struct shmob_drm_device *sdev, u32 reg, u32 data)
 {
 	iowrite32(data, sdev->mmio + reg);
 	if (lcdc_is_banked(reg))
 		iowrite32(data, sdev->mmio + reg + LCDC_SIDE_B_OFFSET);
 }
-
 static inline u32 lcdc_read(struct shmob_drm_device *sdev, u32 reg)
 {
 	return ioread32(sdev->mmio + reg);
 }
-
 static inline int lcdc_wait_bit(struct shmob_drm_device *sdev, u32 reg,
 				u32 mask, u32 until)
 {
 	unsigned long timeout = jiffies + msecs_to_jiffies(5);
-
 	while ((lcdc_read(sdev, reg) & mask) != until) {
 		if (time_after(jiffies, timeout))
 			return -ETIMEDOUT;
 		cpu_relax();
 	}
-
 	return 0;
 }
-
-#endif /* __SHMOB_DRM_REGS_H__ */
+#endif  

@@ -1,37 +1,26 @@
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- * Released under the terms of the GNU GPL v2.0.
- */
-
 #include <qlistview.h>
 #if QT_VERSION >= 300
 #include <qsettings.h>
 #else
 class QSettings { };
 #endif
-
 class ConfigList;
 class ConfigItem;
 class ConfigLineEdit;
 class ConfigMainWindow;
-
-
 class ConfigSettings : public QSettings {
 public:
 	ConfigSettings();
-
 #if QT_VERSION >= 300
 	void readListSettings();
 	QValueList<int> readSizes(const QString& key, bool *ok);
 	bool writeSizes(const QString& key, const QValueList<int>& value);
 #endif
-
 	bool showAll;
 	bool showName;
 	bool showRange;
 	bool showData;
 };
-
 class ConfigView : public QVBox {
 	Q_OBJECT
 	typedef class QVBox Parent;
@@ -40,22 +29,18 @@ public:
 	~ConfigView(void);
 	static void updateList(ConfigItem* item);
 	static void updateListAll(void);
-
 public:
 	ConfigList* list;
 	ConfigLineEdit* lineEdit;
-
 	static ConfigView* viewList;
 	ConfigView* nextView;
 };
-
 enum colIdx {
 	promptColIdx, nameColIdx, noColIdx, modColIdx, yesColIdx, dataColIdx, colNr
 };
 enum listMode {
 	singleMode, menuMode, symbolMode, fullMode
 };
-
 class ConfigList : public QListView {
 	Q_OBJECT
 	typedef class QListView Parent;
@@ -66,10 +51,8 @@ public:
 	{
 		return (ConfigView*)Parent::parent();
 	}
-
 protected:
 	ConfigMainWindow* cview;
-
 	void keyPressEvent(QKeyEvent *e);
 	void contentsMousePressEvent(QMouseEvent *e);
 	void contentsMouseReleaseEvent(QMouseEvent *e);
@@ -78,7 +61,6 @@ protected:
 	void focusInEvent(QFocusEvent *e);
 public slots:
 	void setRootMenu(struct menu *menu);
-
 	void updateList(ConfigItem *item);
 	void setValue(ConfigItem* item, tristate val);
 	void changeValue(ConfigItem* item);
@@ -87,7 +69,6 @@ signals:
 	void menuSelected(struct menu *menu);
 	void parentSelected(void);
 	void gotFocus(void);
-
 public:
 	void updateListAll(void)
 	{
@@ -122,27 +103,21 @@ public:
 	}
 	void setAllOpen(bool open);
 	void setParentMenu(void);
-
 	template <class P>
 	void updateMenuList(P*, struct menu*);
-
 	bool updateAll;
-
 	QPixmap symbolYesPix, symbolModPix, symbolNoPix;
 	QPixmap choiceYesPix, choiceNoPix;
 	QPixmap menuPix, menuInvPix, menuBackPix, voidPix;
-
 	bool showAll, showName, showRange, showData;
 	enum listMode mode;
 	struct menu *rootEntry;
 	QColorGroup disabledColorGroup;
 	QColorGroup inactivedColorGroup;
-
 private:
 	int colMap[colNr];
 	int colRevMap[colNr];
 };
-
 class ConfigItem : public QListViewItem {
 	typedef class QListViewItem Parent;
 public:
@@ -197,13 +172,11 @@ public:
 		return Parent::pixmap(listView()->mapIdx(idx));
 	}
 	void paintCell(QPainter* p, const QColorGroup& cg, int column, int width, int align);
-
 	ConfigItem* nextItem;
 	struct menu *menu;
 	bool visible;
 	bool goParent;
 };
-
 class ConfigLineEdit : public QLineEdit {
 	Q_OBJECT
 	typedef class QLineEdit Parent;
@@ -217,11 +190,9 @@ public:
 	}
 	void show(ConfigItem *i);
 	void keyPressEvent(QKeyEvent *e);
-
 public:
 	ConfigItem *item;
 };
-
 class ConfigMainWindow : public QMainWindow {
 	Q_OBJECT
 public:
@@ -245,10 +216,8 @@ public slots:
 	void showIntro(void);
 	void showAbout(void);
 	void saveSettings(void);
-
 protected:
 	void closeEvent(QCloseEvent *e);
-
 	ConfigView *menuView;
 	ConfigList *menuList;
 	ConfigView *configView;
@@ -258,6 +227,5 @@ protected:
 	QAction *backAction;
 	QSplitter* split1;
 	QSplitter* split2;
-
 	bool showDebug;
 };

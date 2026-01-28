@@ -1,25 +1,8 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0
-#
-#  merge_config.sh - Takes a list of config fragment values, and merges
-#  them one by one. Provides warnings on overridden values, and specified
-#  values that did not make it to the resulting .config file (due to missed
-#  dependencies or config symbol removal).
-#
-#  Portions reused from kconf_check and generate_cfg:
-#  http://git.yoctoproject.org/cgit/cgit.cgi/yocto-kernel-tools/tree/tools/kconf_check
-#  http://git.yoctoproject.org/cgit/cgit.cgi/yocto-kernel-tools/tree/tools/generate_cfg
-#
-#  Copyright (c) 2009-2010 Wind River Systems, Inc.
-#  Copyright 2011 Linaro
-
 set -e
-
 clean_up() {
 	rm -f $TMP_FILE
 	rm -f $MERGE_FILE
 }
-
 usage() {
 	echo "Usage: $0 [OPTIONS] [CONFIG [...]]"
 	echo "  -h    display this help text"
@@ -33,7 +16,6 @@ usage() {
 	echo
 	echo "Used prefix: '$CONFIG_PREFIX'. You can redefine it with \$CONFIG_ environment variable."
 }
-
 RUNMAKE=true
 ALLTARGET=alldefconfig
 WARNREDUN=false
@@ -42,7 +24,6 @@ OUTPUT=.
 STRICT=false
 CONFIG_PREFIX=${CONFIG_-CONFIG_}
 WARNOVERRIDE=echo
-
 while true; do
 	case $1 in
 	"-n")
@@ -94,12 +75,10 @@ while true; do
 		;;
 	esac
 done
-
 if [ "$#" -lt 1 ] ; then
 	usage
 	exit
 fi
-
 if [ -z "$KCONFIG_CONFIG" ]; then
 	if [ "$OUTPUT" != . ]; then
 		KCONFIG_CONFIG=$(readlink -m -- "$OUTPUT/.config")
@@ -107,29 +86,20 @@ if [ -z "$KCONFIG_CONFIG" ]; then
 		KCONFIG_CONFIG=.config
 	fi
 fi
-
 INITFILE=$1
 shift;
-
 if [ ! -r "$INITFILE" ]; then
 	echo "The base file '$INITFILE' does not exist.  Exit." >&2
 	exit 1
 fi
-
 MERGE_LIST=$*
 SED_CONFIG_EXP1="s/^\(${CONFIG_PREFIX}[a-zA-Z0-9_]*\)=.*/\1/p"
 SED_CONFIG_EXP2="s/^# \(${CONFIG_PREFIX}[a-zA-Z0-9_]*\) is not set$/\1/p"
-
 TMP_FILE=$(mktemp ./.tmp.config.XXXXXXXXXX)
 MERGE_FILE=$(mktemp ./.merge_tmp.config.XXXXXXXXXX)
-
 echo "Using $INITFILE as base"
-
 trap clean_up EXIT
-
 cat $INITFILE > $TMP_FILE
-
-# Merge files, printing warnings on overridden values
 for ORIG_MERGE_FILE in $MERGE_LIST ; do
 	echo "Merging $ORIG_MERGE_FILE"
 	if [ ! -r "$ORIG_MERGE_FILE" ]; then
@@ -138,7 +108,6 @@ for ORIG_MERGE_FILE in $MERGE_LIST ; do
 	fi
 	cat $ORIG_MERGE_FILE > $MERGE_FILE
 	CFG_LIST=$(sed -n -e "$SED_CONFIG_EXP1" -e "$SED_CONFIG_EXP2" $MERGE_FILE)
-
 	for CFG in $CFG_LIST ; do
 		grep -q -w $CFG $TMP_FILE || continue
 		PREV_VAL=$(grep -w $CFG $TMP_FILE)
@@ -169,12 +138,10 @@ for ORIG_MERGE_FILE in $MERGE_LIST ; do
 	done
 	cat $MERGE_FILE >> $TMP_FILE
 done
-
 if [ "$STRICT_MODE_VIOLATED" = "true" ]; then
 	echo "The fragment redefined a value and strict mode had been passed."
 	exit 1
 fi
-
 if [ "$RUNMAKE" = "false" ]; then
 	cp -T -- "$TMP_FILE" "$KCONFIG_CONFIG"
 	echo "#"
@@ -182,24 +149,12 @@ if [ "$RUNMAKE" = "false" ]; then
 	echo "#"
 	exit
 fi
-
-# If we have an output dir, setup the O= argument, otherwise leave
-# it blank, since O=. will create an unnecessary ./source softlink
 OUTPUT_ARG=""
 if [ "$OUTPUT" != "." ] ; then
 	OUTPUT_ARG="O=$OUTPUT"
 fi
-
-
-# Use the merged file as the starting point for:
-# alldefconfig: Fills in any missing symbols with Kconfig default
-# allnoconfig: Fills in any missing symbols with # CONFIG_* is not set
 make KCONFIG_ALLCONFIG=$TMP_FILE $OUTPUT_ARG $ALLTARGET
-
-
-# Check all specified config values took (might have missed-dependency issues)
 for CFG in $(sed -n -e "$SED_CONFIG_EXP1" -e "$SED_CONFIG_EXP2" $TMP_FILE); do
-
 	REQUESTED_VAL=$(grep -w -e "$CFG" $TMP_FILE)
 	ACTUAL_VAL=$(grep -w -e "$CFG" "$KCONFIG_CONFIG" || true)
 	if [ "x$REQUESTED_VAL" != "x$ACTUAL_VAL" ] ; then

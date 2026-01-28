@@ -1,26 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
-/*
- * include/linux/platform_data/ams-delta-fiq.h
- *
- * Taken from the original Amstrad modifications to fiq.h
- *
- * Copyright (c) 2004 Amstrad Plc
- * Copyright (c) 2006 Matt Callow
- * Copyright (c) 2010 Janusz Krzysztofik
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
 #ifndef __LINUX_PLATFORM_DATA_AMS_DELTA_FIQ_H
 #define __LINUX_PLATFORM_DATA_AMS_DELTA_FIQ_H
-
-/*
- * These are the offsets from the beginning of the fiq_buffer. They are put here
- * since the buffer and header need to be accessed by drivers servicing devices
- * which generate GPIO interrupts - e.g. keyboard, modem, hook switch.
- */
 #define FIQ_MASK		 0
 #define FIQ_STATE		 1
 #define FIQ_KEYS_CNT		 2
@@ -35,7 +14,6 @@
 #define FIQ_IRQ_PEND		11
 #define FIQ_SIR_CODE_L1		12
 #define IRQ_SIR_CODE_L2		13
-
 #define FIQ_CNT_INT_00		14
 #define FIQ_CNT_INT_KEY		15
 #define FIQ_CNT_INT_MDM		16
@@ -52,7 +30,5 @@
 #define FIQ_CNT_INT_13		27
 #define FIQ_CNT_INT_14		28
 #define FIQ_CNT_INT_15		29
-
-#define FIQ_CIRC_BUFF		30      /*Start of circular buffer */
-
+#define FIQ_CIRC_BUFF		30       
 #endif

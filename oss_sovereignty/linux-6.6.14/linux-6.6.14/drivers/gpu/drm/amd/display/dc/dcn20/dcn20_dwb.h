@@ -1,32 +1,7 @@
-/* Copyright 2012-17 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
 #ifndef __DC_DWBC_DCN20_H__
 #define __DC_DWBC_DCN20_H__
-
 #define TO_DCN20_DWBC(dwbc_base) \
 	container_of(dwbc_base, struct dcn20_dwbc, base)
-
 #define DWBC_COMMON_REG_LIST_DCN2_0(inst) \
 	SRI2_DWB(WB_ENABLE, CNV, inst),\
 	SRI2_DWB(WB_EC_CONFIG, CNV, inst),\
@@ -74,7 +49,6 @@
 	SRI2_DWB(WB_SOFT_RESET, CNV, inst),\
 	SRI2_DWB(WB_WARM_UP_MODE_CTL1, CNV, inst),\
 	SRI2_DWB(WB_WARM_UP_MODE_CTL2, CNV, inst)
-
 #define DWBC_COMMON_MASK_SH_LIST_DCN2_0(mask_sh) \
 	SF_DWB(WB_ENABLE, WB_ENABLE, mask_sh),\
 	SF_DWB(WB_EC_CONFIG, DISPCLK_R_WB_GATE_DIS, mask_sh),\
@@ -198,7 +172,6 @@
 	SF_DWB(WB_WARM_UP_MODE_CTL2, DATA_VALUE_WARMUP, mask_sh),\
 	SF_DWB(WB_WARM_UP_MODE_CTL2, MODE_WARMUP, mask_sh),\
 	SF_DWB(WB_WARM_UP_MODE_CTL2, DATA_DEPTH_WARMUP, mask_sh)
-
 #define DWBC_REG_FIELD_LIST_DCN2_0(type) \
 	type WB_ENABLE;\
 	type DISPCLK_R_WB_GATE_DIS;\
@@ -325,9 +298,7 @@
 	type DATA_VALUE_WARMUP;\
 	type MODE_WARMUP;\
 	type DATA_DEPTH_WARMUP; \
-
 struct dcn20_dwbc_registers {
-	/* DCN2.0 */
 	uint32_t WB_ENABLE;
 	uint32_t WB_EC_CONFIG;
 	uint32_t CNV_MODE;
@@ -375,57 +346,40 @@ struct dcn20_dwbc_registers {
 	uint32_t WB_WARM_UP_MODE_CTL1;
 	uint32_t WB_WARM_UP_MODE_CTL2;
 };
-
-
 struct dcn20_dwbc_mask {
 	DWBC_REG_FIELD_LIST_DCN2_0(uint32_t)
 };
-
 struct dcn20_dwbc_shift {
 	DWBC_REG_FIELD_LIST_DCN2_0(uint8_t)
 };
-
 struct dcn20_dwbc {
 	struct dwbc base;
 	const struct dcn20_dwbc_registers *dwbc_regs;
 	const struct dcn20_dwbc_shift *dwbc_shift;
 	const struct dcn20_dwbc_mask *dwbc_mask;
 };
-
 void dcn20_dwbc_construct(struct dcn20_dwbc *dwbc20,
 	struct dc_context *ctx,
 	const struct dcn20_dwbc_registers *dwbc_regs,
 	const struct dcn20_dwbc_shift *dwbc_shift,
 	const struct dcn20_dwbc_mask *dwbc_mask,
 	int inst);
-
 bool dwb2_disable(struct dwbc *dwbc);
-
 bool dwb2_is_enabled(struct dwbc *dwbc);
-
 void dwb2_set_stereo(struct dwbc *dwbc,
 	struct dwb_stereo_params *stereo_params);
-
 void dwb2_set_new_content(struct dwbc *dwbc,
 	bool is_new_content);
-
 void dwb2_config_dwb_cnv(struct dwbc *dwbc,
 	struct dc_dwb_params *params);
-
 void dwb2_set_scaler(struct dwbc *dwbc, struct dc_dwb_params *params);
-
 bool dwb_program_vert_scalar(struct dcn20_dwbc *dwbc20,
 	uint32_t src_height,
 	uint32_t dest_height,
 	struct scaling_taps num_taps,
 	enum dwb_subsample_position subsample_position);
-
 bool dwb_program_horz_scalar(struct dcn20_dwbc *dwbc20,
 	uint32_t src_width,
 	uint32_t dest_width,
 	struct scaling_taps num_taps);
-
-
 #endif
-
-

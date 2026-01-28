@@ -1,24 +1,5 @@
-/* Synopsys DesignWare Core Enterprise Ethernet (XLGMAC) Driver
- *
- * Copyright (c) 2017 Synopsys, Inc. (www.synopsys.com)
- *
- * This program is dual-licensed; you may select either version 2 of
- * the GNU General Public License ("GPL") or BSD license ("BSD").
- *
- * This Synopsys DWC XLGMAC software driver and associated documentation
- * (hereinafter the "Software") is an unsupported proprietary work of
- * Synopsys, Inc. unless otherwise expressly agreed to in writing between
- * Synopsys and you. The Software IS NOT an item of Licensed Software or a
- * Licensed Product under any End User Software License Agreement or
- * Agreement for Licensed Products with Synopsys or any supplement thereto.
- * Synopsys is a registered trademark of Synopsys, Inc. Other names included
- * in the SOFTWARE may be the trademarks of their respective owners.
- */
-
 #ifndef __DWC_XLGMAC_REG_H__
 #define __DWC_XLGMAC_REG_H__
-
-/* MAC register offsets */
 #define MAC_TCR				0x0000
 #define MAC_RCR				0x0004
 #define MAC_PFR				0x0008
@@ -45,14 +26,11 @@
 #define MAC_RSSCR			0x0c80
 #define MAC_RSSAR			0x0c88
 #define MAC_RSSDR			0x0c8c
-
 #define MAC_QTFCR_INC			4
 #define MAC_MACA_INC			4
 #define MAC_HTR_INC			4
 #define MAC_RQC2_INC			4
 #define MAC_RQC2_Q_PER_REG		4
-
-/* MAC register entry bit positions and sizes */
 #define MAC_HWF0R_ADDMACADRSEL_POS	18
 #define MAC_HWF0R_ADDMACADRSEL_LEN	5
 #define MAC_HWF0R_ARPOFFSEL_POS		9
@@ -221,8 +199,6 @@
 #define MAC_VR_SNPSVER_LEN		8
 #define MAC_VR_USERVER_POS		16
 #define MAC_VR_USERVER_LEN		8
-
-/* MMC register offsets */
 #define MMC_CR				0x0800
 #define MMC_RISR			0x0804
 #define MMC_TISR			0x0808
@@ -269,8 +245,6 @@
 #define MMC_RXFIFOOVERFLOW_LO		0x0990
 #define MMC_RXVLANFRAMES_GB_LO		0x0998
 #define MMC_RXWATCHDOGERROR		0x09a0
-
-/* MMC register entry bit positions and sizes */
 #define MMC_CR_CR_POS				0
 #define MMC_CR_CR_LEN				1
 #define MMC_CR_CSR_POS				1
@@ -367,37 +341,23 @@
 #define MMC_TISR_TXPAUSEFRAMES_LEN		1
 #define MMC_TISR_TXVLANFRAMES_G_POS		17
 #define MMC_TISR_TXVLANFRAMES_G_LEN		1
-
-/* MTL register offsets */
 #define MTL_OMR				0x1000
 #define MTL_FDDR			0x1010
 #define MTL_RQDCM0R			0x1030
-
 #define MTL_RQDCM_INC			4
 #define MTL_RQDCM_Q_PER_REG		4
-
-/* MTL register entry bit positions and sizes */
 #define MTL_OMR_ETSALG_POS		5
 #define MTL_OMR_ETSALG_LEN		2
 #define MTL_OMR_RAA_POS			2
 #define MTL_OMR_RAA_LEN			1
-
-/* MTL queue register offsets
- *   Multiple queues can be active.  The first queue has registers
- *   that begin at 0x1100.  Each subsequent queue has registers that
- *   are accessed using an offset of 0x80 from the previous queue.
- */
 #define MTL_Q_BASE			0x1100
 #define MTL_Q_INC			0x80
-
 #define MTL_Q_TQOMR			0x00
 #define MTL_Q_RQOMR			0x40
 #define MTL_Q_RQDR			0x48
 #define MTL_Q_RQFCR			0x50
 #define MTL_Q_IER			0x70
 #define MTL_Q_ISR			0x74
-
-/* MTL queue register entry bit positions and sizes */
 #define MTL_Q_RQDR_PRXQ_POS		16
 #define MTL_Q_RQDR_PRXQ_LEN		14
 #define MTL_Q_RQDR_RXQSTS_POS		4
@@ -430,13 +390,10 @@
 #define MTL_Q_TQOMR_TTC_LEN		3
 #define MTL_Q_TQOMR_TXQEN_POS		2
 #define MTL_Q_TQOMR_TXQEN_LEN		2
-
-/* MTL queue register value */
 #define MTL_RSF_DISABLE			0x00
 #define MTL_RSF_ENABLE			0x01
 #define MTL_TSF_DISABLE			0x00
 #define MTL_TSF_ENABLE			0x01
-
 #define MTL_RX_THRESHOLD_64		0x00
 #define MTL_RX_THRESHOLD_96		0x02
 #define MTL_RX_THRESHOLD_128		0x03
@@ -447,16 +404,13 @@
 #define MTL_TX_THRESHOLD_256		0x05
 #define MTL_TX_THRESHOLD_384		0x06
 #define MTL_TX_THRESHOLD_512		0x07
-
 #define MTL_ETSALG_WRR			0x00
 #define MTL_ETSALG_WFQ			0x01
 #define MTL_ETSALG_DWRR			0x02
 #define MTL_RAA_SP			0x00
 #define MTL_RAA_WSP			0x01
-
 #define MTL_Q_DISABLED			0x00
 #define MTL_Q_ENABLED			0x02
-
 #define MTL_RQDCM0R_Q0MDMACH		0x0
 #define MTL_RQDCM0R_Q1MDMACH		0x00000100
 #define MTL_RQDCM0R_Q2MDMACH		0x00020000
@@ -469,37 +423,22 @@
 #define MTL_RQDCM2R_Q9MDMACH		0x00000900
 #define MTL_RQDCM2R_Q10MDMACH		0x000A0000
 #define MTL_RQDCM2R_Q11MDMACH		0x0B000000
-
-/* MTL traffic class register offsets
- *   Multiple traffic classes can be active.  The first class has registers
- *   that begin at 0x1100.  Each subsequent queue has registers that
- *   are accessed using an offset of 0x80 from the previous queue.
- */
 #define MTL_TC_BASE			MTL_Q_BASE
 #define MTL_TC_INC			MTL_Q_INC
-
 #define MTL_TC_ETSCR			0x10
 #define MTL_TC_ETSSR			0x14
 #define MTL_TC_QWR			0x18
-
-/* MTL traffic class register entry bit positions and sizes */
 #define MTL_TC_ETSCR_TSA_POS		0
 #define MTL_TC_ETSCR_TSA_LEN		2
 #define MTL_TC_QWR_QW_POS		0
 #define MTL_TC_QWR_QW_LEN		21
-
-/* MTL traffic class register value */
 #define MTL_TSA_SP			0x00
 #define MTL_TSA_ETS			0x02
-
-/* DMA register offsets */
 #define DMA_MR				0x3000
 #define DMA_SBMR			0x3004
 #define DMA_ISR				0x3008
 #define DMA_DSR0			0x3020
 #define DMA_DSR1			0x3024
-
-/* DMA register entry bit positions and sizes */
 #define DMA_ISR_MACIS_POS		17
 #define DMA_ISR_MACIS_LEN		1
 #define DMA_ISR_MTLIS_POS		16
@@ -516,8 +455,6 @@
 #define DMA_SBMR_BLEN_256_LEN		1
 #define DMA_SBMR_UNDEF_POS		0
 #define DMA_SBMR_UNDEF_LEN		1
-
-/* DMA register values */
 #define DMA_DSR_RPS_LEN			4
 #define DMA_DSR_TPS_LEN			4
 #define DMA_DSR_Q_LEN			(DMA_DSR_RPS_LEN + DMA_DSR_TPS_LEN)
@@ -528,15 +465,8 @@
 #define DMA_DSRX_TPS_START		4
 #define DMA_TPS_STOPPED			0x00
 #define DMA_TPS_SUSPENDED		0x06
-
-/* DMA channel register offsets
- *   Multiple channels can be active.  The first channel has registers
- *   that begin at 0x3100.  Each subsequent channel has registers that
- *   are accessed using an offset of 0x80 from the previous channel.
- */
 #define DMA_CH_BASE			0x3100
 #define DMA_CH_INC			0x80
-
 #define DMA_CH_CR			0x00
 #define DMA_CH_TCR			0x04
 #define DMA_CH_RCR			0x08
@@ -551,8 +481,6 @@
 #define DMA_CH_IER			0x38
 #define DMA_CH_RIWT			0x3c
 #define DMA_CH_SR			0x60
-
-/* DMA channel register entry bit positions and sizes */
 #define DMA_CH_CR_PBLX8_POS		16
 #define DMA_CH_CR_PBLX8_LEN		1
 #define DMA_CH_CR_SPH_POS		24
@@ -605,8 +533,6 @@
 #define DMA_CH_TCR_ST_LEN		1
 #define DMA_CH_TCR_TSE_POS		12
 #define DMA_CH_TCR_TSE_LEN		1
-
-/* DMA channel register values */
 #define DMA_OSP_DISABLE			0x00
 #define DMA_OSP_ENABLE			0x01
 #define DMA_PBL_1			1
@@ -620,8 +546,6 @@
 #define DMA_PBL_256			256
 #define DMA_PBL_X8_DISABLE		0x00
 #define DMA_PBL_X8_ENABLE		0x01
-
-/* Descriptor/Packet entry bit positions and sizes */
 #define RX_PACKET_ERRORS_CRC_POS		2
 #define RX_PACKET_ERRORS_CRC_LEN		1
 #define RX_PACKET_ERRORS_FRAME_POS		3
@@ -630,7 +554,6 @@
 #define RX_PACKET_ERRORS_LENGTH_LEN		1
 #define RX_PACKET_ERRORS_OVERRUN_POS		1
 #define RX_PACKET_ERRORS_OVERRUN_LEN		1
-
 #define RX_PACKET_ATTRIBUTES_CSUM_DONE_POS	0
 #define RX_PACKET_ATTRIBUTES_CSUM_DONE_LEN	1
 #define RX_PACKET_ATTRIBUTES_VLAN_CTAG_POS	1
@@ -645,7 +568,6 @@
 #define RX_PACKET_ATTRIBUTES_RX_TSTAMP_LEN	1
 #define RX_PACKET_ATTRIBUTES_RSS_HASH_POS	6
 #define RX_PACKET_ATTRIBUTES_RSS_HASH_LEN	1
-
 #define RX_NORMAL_DESC0_OVT_POS			0
 #define RX_NORMAL_DESC0_OVT_LEN			16
 #define RX_NORMAL_DESC2_HL_POS			0
@@ -672,19 +594,16 @@
 #define RX_NORMAL_DESC3_PL_LEN			14
 #define RX_NORMAL_DESC3_RSV_POS			26
 #define RX_NORMAL_DESC3_RSV_LEN			1
-
 #define RX_DESC3_L34T_IPV4_TCP			1
 #define RX_DESC3_L34T_IPV4_UDP			2
 #define RX_DESC3_L34T_IPV4_ICMP			3
 #define RX_DESC3_L34T_IPV6_TCP			9
 #define RX_DESC3_L34T_IPV6_UDP			10
 #define RX_DESC3_L34T_IPV6_ICMP			11
-
 #define RX_CONTEXT_DESC3_TSA_POS		4
 #define RX_CONTEXT_DESC3_TSA_LEN		1
 #define RX_CONTEXT_DESC3_TSD_POS		6
 #define RX_CONTEXT_DESC3_TSD_LEN		1
-
 #define TX_PACKET_ATTRIBUTES_CSUM_ENABLE_POS	0
 #define TX_PACKET_ATTRIBUTES_CSUM_ENABLE_LEN	1
 #define TX_PACKET_ATTRIBUTES_TSO_ENABLE_POS	1
@@ -693,7 +612,6 @@
 #define TX_PACKET_ATTRIBUTES_VLAN_CTAG_LEN	1
 #define TX_PACKET_ATTRIBUTES_PTP_POS		3
 #define TX_PACKET_ATTRIBUTES_PTP_LEN		1
-
 #define TX_CONTEXT_DESC2_MSS_POS		0
 #define TX_CONTEXT_DESC2_MSS_LEN		15
 #define TX_CONTEXT_DESC3_CTXT_POS		30
@@ -704,7 +622,6 @@
 #define TX_CONTEXT_DESC3_VLTV_LEN		1
 #define TX_CONTEXT_DESC3_VT_POS			0
 #define TX_CONTEXT_DESC3_VT_LEN			16
-
 #define TX_NORMAL_DESC2_HL_B1L_POS		0
 #define TX_NORMAL_DESC2_HL_B1L_LEN		14
 #define TX_NORMAL_DESC2_IC_POS			31
@@ -733,12 +650,8 @@
 #define TX_NORMAL_DESC3_TCPPL_LEN		18
 #define TX_NORMAL_DESC3_TSE_POS			18
 #define TX_NORMAL_DESC3_TSE_LEN			1
-
 #define TX_NORMAL_DESC2_VLAN_INSERT		0x2
-
 #define XLGMAC_MTL_REG(pdata, n, reg)					\
 	((pdata)->mac_regs + MTL_Q_BASE + ((n) * MTL_Q_INC) + (reg))
-
 #define XLGMAC_DMA_REG(channel, reg)	((channel)->dma_regs + (reg))
-
-#endif /* __DWC_XLGMAC_REG_H__ */
+#endif  

@@ -1,22 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/****************************************************************************/
-
-/*
- *	mcfsim.h -- ColdFire System Integration Module support.
- *
- *	(C) Copyright 1999-2003, Greg Ungerer (gerg@snapgear.com)
- * 	(C) Copyright 2000, Lineo Inc. (www.lineo.com)
- */
-
-/****************************************************************************/
 #ifndef	mcfsim_h
 #define	mcfsim_h
-/****************************************************************************/
-
-/*
- * Include the appropriate ColdFire CPU specific System Integration Module
- * (SIM) definitions.
- */
 #if defined(CONFIG_M5206) || defined(CONFIG_M5206e)
 #include <asm/m5206sim.h>
 #include <asm/mcfintc.h>
@@ -47,6 +30,4 @@
 #elif defined(CONFIG_M5441x)
 #include <asm/m5441xsim.h>
 #endif
-
-/****************************************************************************/
-#endif	/* mcfsim_h */
+#endif	 

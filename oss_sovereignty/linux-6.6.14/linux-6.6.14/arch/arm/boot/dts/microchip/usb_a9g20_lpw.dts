@@ -1,16 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * usb_a9g20_lpw.dts - Device Tree file for Caloa USB A9G20 Low Power board
- *
- *  Copyright (C) 2013 Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
- */
 /dts-v1/;
 #include "usb_a9g20_common.dtsi"
-
 / {
 	model = "Calao USB A9G20 Low Power";
 	compatible = "calao,usb-a9g20-lpw", "calao,usb-a9g20", "atmel,at91sam9g20", "atmel,at91sam9";
-
 	ahb {
 		apb {
 			spi1: spi@fffcc000 {

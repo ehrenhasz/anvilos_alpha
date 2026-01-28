@@ -1,24 +1,10 @@
-#!/bin/bash
-#
-# mkrootfs.sh - creates a root file system
-#
-
-# TODO: need to add checks here to verify that busybox, uClibc and bzImage
-# exist
-
-
-# command-line settable variables
 BUSYBOX_DIR=..
 UCLIBC_DIR=../../uClibc
 TARGET_DIR=./loop
 FSSIZE=4000
 CLEANUP=1
 MKFS='mkfs.ext2 -F'
-
-# don't-touch variables
 BASE_DIR=`pwd`
-
-
 while getopts 'b:u:s:t:Cm' opt
 do
 	case $opt in
@@ -41,26 +27,15 @@ do
 			;;
 	esac
 done
-
-
-
-
-# clean up from any previous work
 mount | grep -q loop
 [ $? -eq 0 ] && umount $TARGET_DIR
 [ -d $TARGET_DIR ] && rm -rf $TARGET_DIR/
 [ -f rootfs ] && rm -f rootfs
 [ -f rootfs.gz ] && rm -f rootfs.gz
-
-
-# prepare root file system and mount as loopback
 dd if=/dev/zero of=rootfs bs=1k count=$FSSIZE
 $MKFS -i 2000 rootfs
 mkdir $TARGET_DIR
-mount -o loop,exec rootfs $TARGET_DIR # must be root
-
-
-# install uClibc
+mount -o loop,exec rootfs $TARGET_DIR 
 mkdir -p $TARGET_DIR/lib
 cd $UCLIBC_DIR
 make INSTALL_DIR=
@@ -70,32 +45,17 @@ cp -a ld.so-1/d-link/ld-linux-uclibc.so* $BASE_DIR/$TARGET_DIR/lib
 cp -a ld.so-1/libdl/libdl.so* $BASE_DIR/$TARGET_DIR/lib
 cp -a crypt/libcrypt.so* $BASE_DIR/$TARGET_DIR/lib
 cd $BASE_DIR
-
-
-# install busybox and components
 cd $BUSYBOX_DIR
 make distclean
 make CC=$BASE_DIR/$UCLIBC_DIR/extra/gcc-uClibc/i386-uclibc-gcc
 make CONFIG_PREFIX=$BASE_DIR/$TARGET_DIR install
 cd $BASE_DIR
-
-
-# make files in /dev
 mkdir $TARGET_DIR/dev
 ./mkdevs.sh $TARGET_DIR/dev
-
-
-# make files in /etc
 cp -a etc $TARGET_DIR
 ln -s /proc/mounts $TARGET_DIR/etc/mtab
-
-
-# other miscellaneous setup
 mkdir $TARGET_DIR/initrd
 mkdir $TARGET_DIR/proc
-
-
-# Done. Maybe do cleanup.
 if [ $CLEANUP -eq 1 ]
 then
 	umount $TARGET_DIR

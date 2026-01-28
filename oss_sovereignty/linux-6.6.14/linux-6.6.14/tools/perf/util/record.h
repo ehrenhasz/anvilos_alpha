@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _PERF_RECORD_H
 #define _PERF_RECORD_H
-
 #include <time.h>
 #include <stdbool.h>
 #include <linux/types.h>
 #include <linux/stddef.h>
 #include <linux/perf_event.h>
 #include "util/target.h"
-
 struct option;
-
 struct record_opts {
 	struct target target;
 	bool	      inherit_stat;
@@ -80,15 +76,11 @@ struct record_opts {
 	int	      threads_spec;
 	const char    *threads_user_spec;
 };
-
 extern const char * const *record_usage;
 extern struct option *record_options;
-
 int record__parse_freq(const struct option *opt, const char *str, int unset);
-
 static inline bool record_opts__no_switch_events(const struct record_opts *opts)
 {
 	return opts->record_switch_events_set && !opts->record_switch_events;
 }
-
-#endif // _PERF_RECORD_H
+#endif  

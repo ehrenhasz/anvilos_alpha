@@ -1,18 +1,3 @@
-#!/bin/sh
-#
-# config3270 -- Autoconfigure /dev/3270/* and /etc/inittab
-#
-#       Usage:
-#               config3270
-#
-#       Output:
-#               /tmp/mkdev3270
-#
-#       Operation:
-#               1. Run this script
-#               2. Run the script it produces: /tmp/mkdev3270
-#               3. Issue "telinit q" or reboot, as appropriate.
-#
 P=/proc/tty/driver/tty3270
 ROOT=
 D=$ROOT/dev
@@ -25,15 +10,11 @@ GETTYLINE=:2345:respawn:/sbin/mingetty
 INITTAB=$ROOT/etc/inittab
 NINITTAB=$ROOT/etc/NEWinittab
 OINITTAB=$ROOT/etc/OLDinittab
-ADDNOTE=\\"# Additional mingettys for the 3270/tty* driver, tub3270 ---\\"
-
+ADDNOTE=\\"
 if ! ls $P > /dev/null 2>&1; then
 	modprobe tub3270 > /dev/null 2>&1
 fi
 ls $P > /dev/null 2>&1 || exit 1
-
-# Initialize two files, one for /dev/3270 commands and one
-# to replace the /etc/inittab file (old one saved in OLDinittab)
 echo "#!/bin/sh" > $SCR || exit 1
 echo " " >> $SCR
 echo "# Script built by /sbin/config3270" >> $SCR
@@ -45,9 +26,6 @@ echo "echo $ADDNOTE >> $NINITTAB" >> $SCRTMP
 if [ ! -d /dev/dasd ]; then
 	echo mkdir -p $D/$SUBD >> $SCR
 fi
-
-# Now query the tub3270 driver for 3270 device information
-# and add appropriate mknod and mingetty lines to our files
 echo what=config > $P
 while read devno maj min;do
 	if [ $min = 0 ]; then
@@ -68,7 +46,6 @@ while read devno maj min;do
 		echo "echo t$min$GETTYLINE $TTY$devno >> $NINITTAB" >> $SCRTMP
 	fi
 done < $P
-
 echo mv $INITTAB $OINITTAB >> $SCRTMP || exit 1
 echo mv $NINITTAB $INITTAB >> $SCRTMP
 cat $SCRTMP >> $SCR

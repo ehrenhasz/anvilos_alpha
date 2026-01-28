@@ -1,18 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Google Villager board device tree source
- *
- * Copyright 2022 Google LLC.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
-
 #include "sc7280-herobrine-villager.dtsi"
 #include "sc7280-herobrine-audio-wcd9385.dtsi"
-
 &lpass_va_macro {
 	vdd-micb-supply = <&pp1800_l2c>;
 };
-
 &sound {
 	audio-routing =
 			"IN1_HPHL", "HPHL_OUT",

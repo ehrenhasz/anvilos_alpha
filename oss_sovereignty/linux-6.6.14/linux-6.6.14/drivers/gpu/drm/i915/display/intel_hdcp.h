@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
-
 #ifndef __INTEL_HDCP_H__
 #define __INTEL_HDCP_H__
-
 #include <linux/types.h>
-
 #define HDCP_ENCRYPT_STATUS_CHANGE_TIMEOUT_MS	50
-
 struct drm_connector;
 struct drm_connector_state;
 struct drm_i915_private;
@@ -21,7 +13,6 @@ struct intel_hdcp_shim;
 struct intel_digital_port;
 enum port;
 enum transcoder;
-
 void intel_hdcp_atomic_check(struct drm_connector *connector,
 			     struct drm_connector_state *old_state,
 			     struct drm_connector_state *new_state);
@@ -44,5 +35,4 @@ void intel_hdcp_component_init(struct drm_i915_private *i915);
 void intel_hdcp_component_fini(struct drm_i915_private *i915);
 void intel_hdcp_cleanup(struct intel_connector *connector);
 void intel_hdcp_handle_cp_irq(struct intel_connector *connector);
-
-#endif /* __INTEL_HDCP_H__ */
+#endif  

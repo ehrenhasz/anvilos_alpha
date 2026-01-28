@@ -1,64 +1,44 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This dts file supports Dalmore A04.
- * Other board revisions are not supported
- */
-
 /dts-v1/;
-
 #include <dt-bindings/input/input.h>
 #include "tegra114.dtsi"
-
 / {
 	model = "NVIDIA Tegra114 Dalmore evaluation board";
 	compatible = "nvidia,dalmore", "nvidia,tegra114";
-
 	aliases {
 		rtc0 = "/i2c@7000d000/tps65913@58";
 		rtc1 = "/rtc@7000e000";
 		serial0 = &uartd;
 	};
-
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
-
 	memory@80000000 {
 		reg = <0x80000000 0x40000000>;
 	};
-
 	host1x@50000000 {
 		hdmi@54280000 {
 			status = "okay";
-
 			hdmi-supply = <&vdd_5v0_hdmi>;
 			vdd-supply = <&vdd_hdmi_reg>;
 			pll-supply = <&palmas_smps3_reg>;
-
 			nvidia,ddc-i2c-bus = <&hdmi_ddc>;
 			nvidia,hpd-gpio =
 				<&gpio TEGRA_GPIO(N, 7) GPIO_ACTIVE_HIGH>;
 		};
-
 		dsi@54300000 {
 			status = "okay";
-
 			avdd-dsi-csi-supply = <&avdd_1v2_reg>;
-
 			panel@0 {
 				compatible = "panasonic,vvx10f004b00";
 				reg = <0>;
-
 				power-supply = <&avdd_lcd_reg>;
 				backlight = <&backlight>;
 			};
 		};
 	};
-
 	pinmux@70000868 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&state_default>;
-
 		state_default: pinmux {
 			clk1_out_pw4 {
 				nvidia,pins = "clk1_out_pw4";
@@ -723,7 +703,6 @@
 				nvidia,tristate = <TEGRA_PIN_ENABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-
 			drive_sdio1 {
 				nvidia,pins = "drive_sdio1";
 				nvidia,high-speed-mode = <TEGRA_PIN_ENABLE>;
@@ -753,21 +732,17 @@
 			};
 		};
 	};
-
 	serial@70006300 {
 		/delete-property/ dmas;
 		/delete-property/ dma-names;
 		status = "okay";
 	};
-
 	pwm@7000a000 {
 		status = "okay";
 	};
-
 	i2c@7000c000 {
 		status = "okay";
 		clock-frequency = <100000>;
-
 		battery: smart-battery@b {
 			compatible = "ti,bq20z45", "sbs,sbs-battery";
 			reg = <0xb>;
@@ -775,7 +750,6 @@
 			sbs,poll-retry-count = <100>;
 			power-supplies = <&charger>;
 		};
-
 		rt5640: rt5640@1c {
 			compatible = "realtek,rt5640";
 			reg = <0x1c>;
@@ -784,7 +758,6 @@
 			realtek,ldo1-en-gpios =
 				<&gpio TEGRA_GPIO(V, 3) GPIO_ACTIVE_HIGH>;
 		};
-
 		temperature-sensor@4c {
 			compatible = "onnn,nct1008";
 			reg = <0x4c>;
@@ -793,15 +766,12 @@
 			interrupts = <TEGRA_GPIO(O, 4) IRQ_TYPE_EDGE_FALLING>;
 		};
 	};
-
 	hdmi_ddc: i2c@7000c700 {
 		status = "okay";
 	};
-
 	i2c@7000d000 {
 		status = "okay";
 		clock-frequency = <400000>;
-
 		tps51632@43 {
 			compatible = "ti,tps51632";
 			reg = <0x43>;
@@ -811,13 +781,11 @@
 			regulator-boot-on;
 			regulator-always-on;
 		};
-
 		tps65090@48 {
 			compatible = "ti,tps65090";
 			reg = <0x48>;
 			interrupt-parent = <&gpio>;
 			interrupts = <TEGRA_GPIO(J, 0) IRQ_TYPE_LEVEL_HIGH>;
-
 			vsys1-supply = <&vdd_ac_bat_reg>;
 			vsys2-supply = <&vdd_ac_bat_reg>;
 			vsys3-supply = <&vdd_ac_bat_reg>;
@@ -830,63 +798,51 @@
 			infet7-supply = <&tps65090_dcdc2_reg>;
 			vsys-l1-supply = <&vdd_ac_bat_reg>;
 			vsys-l2-supply = <&vdd_ac_bat_reg>;
-
 			charger: charger {
 				compatible = "ti,tps65090-charger";
 				ti,enable-low-current-chrg;
 			};
-
 			regulators {
 				tps65090_dcdc1_reg: dcdc1 {
 					regulator-name = "vdd-sys-5v0";
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				tps65090_dcdc2_reg: dcdc2 {
 					regulator-name = "vdd-sys-3v3";
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				tps65090_dcdc3_reg: dcdc3 {
 					regulator-name = "vdd-ao";
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				vdd_bl_reg: fet1 {
 					regulator-name = "vdd-lcd-bl";
 				};
-
 				fet3 {
 					regulator-name = "vdd-modem-3v3";
 				};
-
 				avdd_lcd_reg: fet4 {
 					regulator-name = "avdd-lcd";
 				};
-
 				fet5 {
 					regulator-name = "vdd-lvds";
 				};
-
 				fet6 {
 					regulator-name = "vdd-sd-slot";
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				fet7 {
 					regulator-name = "vdd-com-3v3";
 				};
-
 				ldo1 {
 					regulator-name = "vdd-sby-5v0";
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				ldo2 {
 					regulator-name = "vdd-sby-3v3";
 					regulator-always-on;
@@ -894,28 +850,22 @@
 				};
 			};
 		};
-
 		palmas: tps65913@58 {
 			compatible = "ti,tps65913", "ti,palmas";
 			reg = <0x58>;
 			interrupts = <0 86 IRQ_TYPE_LEVEL_HIGH>;
-
 			#interrupt-cells = <2>;
 			interrupt-controller;
-
 			ti,system-power-controller;
-
 			palmas_gpio: gpio {
 				compatible = "ti,palmas-gpio";
 				gpio-controller;
 				#gpio-cells = <2>;
 			};
-
 			pinmux {
 				compatible = "ti,tps65913-pinctrl";
 				pinctrl-names = "default";
 				pinctrl-0 = <&palmas_default>;
-
 				palmas_default: pinmux {
 					pin_gpio6 {
 						pins = "gpio6";
@@ -923,7 +873,6 @@
 					};
 				};
 			};
-
 			pmic {
 				compatible = "ti,tps65913-pmic", "ti,palmas-pmic";
 				smps1-in-supply = <&tps65090_dcdc3_reg>;
@@ -943,7 +892,6 @@
 				ldo9-in-supply = <&palmas_smps9_reg>;
 				ldoln-in-supply = <&tps65090_dcdc1_reg>;
 				ldousb-in-supply = <&tps65090_dcdc1_reg>;
-
 				regulators {
 					smps12 {
 						regulator-name = "vddio-ddr";
@@ -952,7 +900,6 @@
 						regulator-always-on;
 						regulator-boot-on;
 					};
-
 					palmas_smps3_reg: smps3 {
 						regulator-name = "vddio-1v8";
 						regulator-min-microvolt = <1800000>;
@@ -960,7 +907,6 @@
 						regulator-always-on;
 						regulator-boot-on;
 					};
-
 					smps45 {
 						regulator-name = "vdd-core";
 						regulator-min-microvolt = <900000>;
@@ -968,7 +914,6 @@
 						regulator-always-on;
 						regulator-boot-on;
 					};
-
 					smps457 {
 						regulator-name = "vdd-core";
 						regulator-min-microvolt = <900000>;
@@ -976,7 +921,6 @@
 						regulator-always-on;
 						regulator-boot-on;
 					};
-
 					smps8 {
 						regulator-name = "avdd-pll";
 						regulator-min-microvolt = <1050000>;
@@ -984,50 +928,42 @@
 						regulator-always-on;
 						regulator-boot-on;
 					};
-
 					palmas_smps9_reg: smps9 {
 						regulator-name = "sdhci-vdd-sd-slot";
 						regulator-min-microvolt = <2800000>;
 						regulator-max-microvolt = <2800000>;
 						regulator-always-on;
 					};
-
 					ldo1 {
 						regulator-name = "avdd-cam1";
 						regulator-min-microvolt = <2800000>;
 						regulator-max-microvolt = <2800000>;
 					};
-
 					ldo2 {
 						regulator-name = "avdd-cam2";
 						regulator-min-microvolt = <2800000>;
 						regulator-max-microvolt = <2800000>;
 					};
-
 					avdd_1v2_reg: ldo3 {
 						regulator-name = "avdd-dsi-csi";
 						regulator-min-microvolt = <1200000>;
 						regulator-max-microvolt = <1200000>;
 					};
-
 					ldo4 {
 						regulator-name = "vpp-fuse";
 						regulator-min-microvolt = <1800000>;
 						regulator-max-microvolt = <1800000>;
 					};
-
 					palmas_ldo6_reg: ldo6 {
 						regulator-name = "vdd-sensor-2v85";
 						regulator-min-microvolt = <2850000>;
 						regulator-max-microvolt = <2850000>;
 					};
-
 					ldo7 {
 						regulator-name = "vdd-af-cam1";
 						regulator-min-microvolt = <2800000>;
 						regulator-max-microvolt = <2800000>;
 					};
-
 					ldo8 {
 						regulator-name = "vdd-rtc";
 						regulator-min-microvolt = <900000>;
@@ -1036,7 +972,6 @@
 						regulator-boot-on;
 						ti,enable-ldo8-tracking;
 					};
-
 					ldo9 {
 						regulator-name = "vddio-sdmmc-2";
 						regulator-min-microvolt = <1800000>;
@@ -1044,13 +979,11 @@
 						regulator-always-on;
 						regulator-boot-on;
 					};
-
 					ldoln {
 						regulator-name = "hvdd-usb";
 						regulator-min-microvolt = <3300000>;
 						regulator-max-microvolt = <3300000>;
 					};
-
 					ldousb {
 						regulator-name = "avdd-usb";
 						regulator-min-microvolt = <3300000>;
@@ -1058,14 +991,12 @@
 						regulator-always-on;
 						regulator-boot-on;
 					};
-
 					regen1 {
 						regulator-name = "rail-3v3";
 						regulator-max-microvolt = <3300000>;
 						regulator-always-on;
 						regulator-boot-on;
 					};
-
 					regen2 {
 						regulator-name = "rail-5v0";
 						regulator-max-microvolt = <5000000>;
@@ -1074,7 +1005,6 @@
 					};
 				};
 			};
-
 			rtc {
 				compatible = "ti,palmas-rtc";
 				interrupt-parent = <&palmas>;
@@ -1082,18 +1012,15 @@
 			};
 		};
 	};
-
 	spi@7000da00 {
 		status = "okay";
 		spi-max-frequency = <25000000>;
-
 		flash@0 {
 			compatible = "winbond,w25q32dw", "jedec,spi-nor";
 			reg = <0>;
 			spi-max-frequency = <20000000>;
 		};
 	};
-
 	pmc@7000e400 {
 		nvidia,invert-interrupt;
 		nvidia,suspend-mode = <1>;
@@ -1104,91 +1031,74 @@
 		nvidia,core-power-req-active-high;
 		nvidia,sys-clock-req-active-high;
 	};
-
 	ahub@70080000 {
 		i2s@70080400 {
 			status = "okay";
 		};
 	};
-
 	mmc@78000400 {
 		cd-gpios = <&gpio TEGRA_GPIO(V, 2) GPIO_ACTIVE_LOW>;
 		wp-gpios = <&gpio TEGRA_GPIO(Q, 4) GPIO_ACTIVE_HIGH>;
 		bus-width = <4>;
 		status = "okay";
 	};
-
 	mmc@78000600 {
 		bus-width = <8>;
 		status = "okay";
 		non-removable;
 	};
-
 	usb@7d000000 {
 		compatible = "nvidia,tegra114-udc";
 		status = "okay";
 		dr_mode = "peripheral";
 	};
-
 	usb-phy@7d000000 {
 		status = "okay";
 	};
-
 	usb@7d008000 {
 		status = "okay";
 	};
-
 	usb-phy@7d008000 {
 		status = "okay";
 		vbus-supply = <&usb3_vbus_reg>;
 	};
-
 	backlight: backlight {
 		compatible = "pwm-backlight";
-
 		enable-gpios = <&gpio TEGRA_GPIO(H, 2) GPIO_ACTIVE_HIGH>;
 		power-supply = <&vdd_bl_reg>;
 		pwms = <&pwm 1 1000000>;
-
 		brightness-levels = <0 4 8 16 32 64 128 255>;
 		default-brightness-level = <6>;
 	};
-
 	clk32k_in: clock-32k {
 		compatible = "fixed-clock";
 		clock-frequency = <32768>;
 		#clock-cells = <0>;
 	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
-
 		key-home {
 			label = "Home";
 			gpios = <&gpio TEGRA_GPIO(I, 5) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_HOME>;
 		};
-
 		key-power {
 			label = "Power";
 			gpios = <&gpio TEGRA_GPIO(Q, 0) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_POWER>;
 			wakeup-source;
 		};
-
 		key-volume-down {
 			label = "Volume Down";
 			gpios = <&gpio TEGRA_GPIO(R, 1) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_VOLUMEDOWN>;
 		};
-
 		key-volume-up {
 			label = "Volume Up";
 			gpios = <&gpio TEGRA_GPIO(R, 2) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_VOLUMEUP>;
 		};
 	};
-
 	vdd_ac_bat_reg: regulator-acbat {
 		compatible = "regulator-fixed";
 		regulator-name = "vdd_ac_bat";
@@ -1196,7 +1106,6 @@
 		regulator-max-microvolt = <5000000>;
 		regulator-always-on;
 	};
-
 	dvdd_ts_reg: regulator-ts {
 		compatible = "regulator-fixed";
 		regulator-name = "dvdd_ts";
@@ -1205,7 +1114,6 @@
 		enable-active-high;
 		gpio = <&gpio TEGRA_GPIO(H, 5) GPIO_ACTIVE_HIGH>;
 	};
-
 	usb1_vbus_reg: regulator-usb1 {
 		compatible = "regulator-fixed";
 		regulator-name = "usb1_vbus";
@@ -1216,7 +1124,6 @@
 		gpio-open-drain;
 		vin-supply = <&tps65090_dcdc1_reg>;
 	};
-
 	usb3_vbus_reg: regulator-usb3 {
 		compatible = "regulator-fixed";
 		regulator-name = "usb2_vbus";
@@ -1227,7 +1134,6 @@
 		gpio-open-drain;
 		vin-supply = <&tps65090_dcdc1_reg>;
 	};
-
 	vdd_hdmi_reg: regulator-hdmi {
 		compatible = "regulator-fixed";
 		regulator-name = "vdd_hdmi_5v0";
@@ -1235,7 +1141,6 @@
 		regulator-max-microvolt = <5000000>;
 		vin-supply = <&tps65090_dcdc1_reg>;
 	};
-
 	vdd_cam_1v8_reg: regulator-cam {
 		compatible = "regulator-fixed";
 		regulator-name = "vdd_cam_1v8_reg";
@@ -1244,7 +1149,6 @@
 		enable-active-high;
 		gpio = <&palmas_gpio 6 0>;
 	};
-
 	vdd_5v0_hdmi: regulator-hdmicon {
 		compatible = "regulator-fixed";
 		regulator-name = "VDD_5V0_HDMI_CON";
@@ -1254,12 +1158,10 @@
 		enable-active-high;
 		vin-supply = <&tps65090_dcdc1_reg>;
 	};
-
 	sound {
 		compatible = "nvidia,tegra-audio-rt5640-dalmore",
 			     "nvidia,tegra-audio-rt5640";
 		nvidia,model = "NVIDIA Tegra Dalmore";
-
 		nvidia,audio-routing =
 			"Headphones", "HPOR",
 			"Headphones", "HPOL",
@@ -1269,20 +1171,15 @@
 			"Speakers", "SPOLN",
 			"Mic Jack", "MICBIAS1",
 			"IN2P", "Mic Jack";
-
 		nvidia,i2s-controller = <&tegra_i2s1>;
 		nvidia,audio-codec = <&rt5640>;
-
 		nvidia,hp-det-gpios = <&gpio TEGRA_GPIO(R, 7) GPIO_ACTIVE_HIGH>;
-
 		clocks = <&tegra_car TEGRA114_CLK_PLL_A>,
 			 <&tegra_car TEGRA114_CLK_PLL_A_OUT0>,
 			 <&tegra_pmc TEGRA_PMC_CLK_OUT_1>;
 		clock-names = "pll_a", "pll_a_out0", "mclk";
-
 		assigned-clocks = <&tegra_car TEGRA114_CLK_EXTERN1>,
 				  <&tegra_pmc TEGRA_PMC_CLK_OUT_1>;
-
 		assigned-clock-parents = <&tegra_car TEGRA114_CLK_PLL_A_OUT0>,
 					 <&tegra_car TEGRA114_CLK_EXTERN1>;
 	};

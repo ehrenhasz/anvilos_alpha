@@ -1,44 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2004-2007 Freescale Semiconductor, Inc. All Rights Reserved.
- */
-
-
 #ifndef __MACH_MX3x_H__
 #define __MACH_MX3x_H__
-
-/*
- * MX31 memory map:
- *
- * Virt		Phys		Size	What
- * ---------------------------------------------------------------------------
- * FC000000	43F00000	1M	AIPS 1
- * FC100000	50000000	1M	SPBA
- * FC200000	53F00000	1M	AIPS 2
- * FC500000	60000000	128M	ROMPATCH
- * FC400000	68000000	128M	AVIC
- *         	70000000	256M	IPU (MAX M2)
- *         	80000000	256M	CSD0 SDRAM/DDR
- *         	90000000	256M	CSD1 SDRAM/DDR
- *         	A0000000	128M	CS0 Flash
- *         	A8000000	128M	CS1 Flash
- *         	B0000000	32M	CS2
- *         	B2000000	32M	CS3
- * F4000000	B4000000	32M	CS4
- *         	B6000000	32M	CS5
- * FC320000	B8000000	64K	NAND, SDRAM, WEIM, M3IF, EMI controllers
- *         	C0000000	64M	PCMCIA/CF
- */
-
-/*
- * L2CC
- */
 #define MX3x_L2CC_BASE_ADDR		0x30000000
 #define MX3x_L2CC_SIZE			SZ_1M
-
-/*
- * AIPS 1
- */
 #define MX3x_AIPS1_BASE_ADDR		0x43f00000
 #define MX3x_AIPS1_SIZE			SZ_1M
 #define MX3x_MAX_BASE_ADDR			(MX3x_AIPS1_BASE_ADDR + 0x04000)
@@ -59,10 +22,6 @@
 #define MX3x_IOMUXC_BASE_ADDR			(MX3x_AIPS1_BASE_ADDR + 0xac000)
 #define MX3x_ECT_IP1_BASE_ADDR			(MX3x_AIPS1_BASE_ADDR + 0xb8000)
 #define MX3x_ECT_IP2_BASE_ADDR			(MX3x_AIPS1_BASE_ADDR + 0xbc000)
-
-/*
- * SPBA global module enabled #0
- */
 #define MX3x_SPBA0_BASE_ADDR		0x50000000
 #define MX3x_SPBA0_SIZE			SZ_1M
 #define MX3x_UART3_BASE_ADDR			(MX3x_SPBA0_BASE_ADDR + 0x0c000)
@@ -71,10 +30,6 @@
 #define MX3x_ATA_DMA_BASE_ADDR			(MX3x_SPBA0_BASE_ADDR + 0x20000)
 #define MX3x_MSHC1_BASE_ADDR			(MX3x_SPBA0_BASE_ADDR + 0x24000)
 #define MX3x_SPBA_CTRL_BASE_ADDR		(MX3x_SPBA0_BASE_ADDR + 0x3c000)
-
-/*
- * AIPS 2
- */
 #define MX3x_AIPS2_BASE_ADDR		0x53f00000
 #define MX3x_AIPS2_SIZE			SZ_1M
 #define MX3x_CCM_BASE_ADDR			(MX3x_AIPS2_BASE_ADDR + 0x80000)
@@ -93,39 +48,23 @@
 #define MX3x_WDOG_BASE_ADDR			(MX3x_AIPS2_BASE_ADDR + 0xdc000)
 #define MX3x_PWM_BASE_ADDR			(MX3x_AIPS2_BASE_ADDR + 0xe0000)
 #define MX3x_RTIC_BASE_ADDR			(MX3x_AIPS2_BASE_ADDR + 0xec000)
-
-/*
- * ROMP and AVIC
- */
 #define MX3x_ROMP_BASE_ADDR		0x60000000
 #define MX3x_ROMP_SIZE			SZ_1M
-
 #define MX3x_AVIC_BASE_ADDR		0x68000000
 #define MX3x_AVIC_SIZE			SZ_1M
-
-/*
- * Memory regions and CS
- */
 #define MX3x_IPU_MEM_BASE_ADDR		0x70000000
 #define MX3x_CSD0_BASE_ADDR		0x80000000
 #define MX3x_CSD1_BASE_ADDR		0x90000000
-
 #define MX3x_CS0_BASE_ADDR		0xa0000000
 #define MX3x_CS1_BASE_ADDR		0xa8000000
 #define MX3x_CS2_BASE_ADDR		0xb0000000
 #define MX3x_CS3_BASE_ADDR		0xb2000000
-
 #define MX3x_CS4_BASE_ADDR		0xb4000000
 #define MX3x_CS4_BASE_ADDR_VIRT		0xf6000000
 #define MX3x_CS4_SIZE			SZ_32M
-
 #define MX3x_CS5_BASE_ADDR		0xb6000000
 #define MX3x_CS5_BASE_ADDR_VIRT		0xf8000000
 #define MX3x_CS5_SIZE			SZ_32M
-
-/*
- * NAND, SDRAM, WEIM, M3IF, EMI controllers
- */
 #define MX3x_X_MEMC_BASE_ADDR		0xb8000000
 #define MX3x_X_MEMC_SIZE		SZ_64K
 #define MX3x_ESDCTL_BASE_ADDR			(MX3x_X_MEMC_BASE_ADDR + 0x1000)
@@ -133,12 +72,7 @@
 #define MX3x_M3IF_BASE_ADDR			(MX3x_X_MEMC_BASE_ADDR + 0x3000)
 #define MX3x_EMI_CTL_BASE_ADDR			(MX3x_X_MEMC_BASE_ADDR + 0x4000)
 #define MX3x_PCMCIA_CTL_BASE_ADDR		MX3x_EMI_CTL_BASE_ADDR
-
 #define MX3x_PCMCIA_MEM_BASE_ADDR	0xbc000000
-
-/*
- * Interrupt numbers
- */
 #include <asm/irq.h>
 #define MX3x_INT_I2C3		(NR_IRQS_LEGACY + 3)
 #define MX3x_INT_I2C2		(NR_IRQS_LEGACY + 4)
@@ -178,7 +112,5 @@
 #define MX3x_INT_EXT_SENSOR61	(NR_IRQS_LEGACY + 61)
 #define MX3x_INT_EXT_WDOG	(NR_IRQS_LEGACY + 62)
 #define MX3x_INT_EXT_TV		(NR_IRQS_LEGACY + 63)
-
-#define MX3x_PROD_SIGNATURE		0x1	/* For MX31 */
-
-#endif /* ifndef __MACH_MX3x_H__ */
+#define MX3x_PROD_SIGNATURE		0x1	 
+#endif  

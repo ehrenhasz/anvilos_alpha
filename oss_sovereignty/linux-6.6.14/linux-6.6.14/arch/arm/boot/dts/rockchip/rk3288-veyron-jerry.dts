@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Google Veyron Jerry Rev 3+ board device tree source
- *
- * Copyright 2015 Google, Inc
- */
-
 /dts-v1/;
 #include "rk3288-veyron-chromebook.dtsi"
 #include "../cros-ec-sbs.dtsi"
-
 / {
 	model = "Google Jerry";
 	compatible = "google,veyron-jerry-rev15", "google,veyron-jerry-rev14",
@@ -19,13 +11,11 @@
 		     "google,veyron-jerry-rev3", "google,veyron-jerry",
 		     "google,veyron", "rockchip,rk3288";
 };
-
 &rk808 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pmic_int_l &dvs_1 &dvs_2>;
 	dvs-gpios = <&gpio7 RK_PB4 GPIO_ACTIVE_HIGH>,
 		    <&gpio7 RK_PB7 GPIO_ACTIVE_HIGH>;
-
 	regulators {
 		mic_vcc: LDO_REG2 {
 			regulator-name = "mic_vcc";
@@ -39,15 +29,12 @@
 		};
 	};
 };
-
 &sdio0 {
 	#address-cells = <1>;
 	#size-cells = <0>;
-
 	mwifiex: wifi@1 {
 		compatible = "marvell,sd8897";
 		reg = <1>;
-
 		marvell,caldata-txpwrlimit-2g = /bits/ 8 <
 0x01 0x00 0x06 0x00 0x08 0x02 0x89 0x01
 0x24 0x00 0x67 0x09 0x14 0x01 0x00 0x0f 0x01 0x0c 0x02 0x0c 0x03 0x0c 0x04 0x0c
@@ -83,7 +70,6 @@
 0x24 0x00 0x67 0x09 0x14 0x0d 0x00 0x0f 0x01 0x0c 0x02 0x0c 0x03 0x0c 0x04 0x0c
 0x05 0x0c 0x06 0x0c 0x07 0x09 0x08 0x09 0x09 0x09 0x0a 0x0c 0x0b 0x0c 0x0c 0x0c
 0x0d 0x09 0x0e 0x09 0x0f 0x09>;
-
 		marvell,caldata-txpwrlimit-5g-sub0 = /bits/ 8 <
 0x01 0x00 0x06 0x00 0xf0 0x01 0x89 0x01
 0x3a 0x00 0x88 0x13 0x14 0x24 0x01 0x0c 0x02 0x0c 0x03 0x0c 0x04 0x0a 0x05 0x0a
@@ -117,7 +103,6 @@
 0x05 0x0a 0x06 0x0a 0x07 0x09 0x08 0x09 0x09 0x09 0x0a 0x0a 0x0b 0x0a 0x0c 0x0a
 0x0d 0x09 0x0e 0x09 0x0f 0x09 0x10 0x05 0x11 0x05 0x12 0x05 0x13 0x05 0x14 0x05
 0x15 0x05 0x16 0x05 0x17 0x05 0x18 0x05 0x19 0x05 0x1a 0x05 0x1b 0x05>;
-
 		marvell,caldata-txpwrlimit-5g-sub1 = /bits/ 8 <
 0x01 0x00 0x06 0x00 0xaa 0x02 0x89 0x01
 0x3a 0x00 0x88 0x13 0x14 0x64 0x01 0x0c 0x02 0x0c 0x03 0x0c 0x04 0x0a 0x05 0x0a
@@ -163,7 +148,6 @@
 0x08 0x08 0x09 0x08 0x0a 0x0a 0x0b 0x0a 0x0c 0x0a 0x0d 0x08 0x0e 0x08 0x0f 0x08
 0x10 0x04 0x11 0x04 0x12 0x05 0x13 0x05 0x14 0x05 0x15 0x05 0x16 0x04 0x17 0x04
 0x18 0x05 0x19 0x05 0x1a 0x05 0x1b 0x05>;
-
 		marvell,caldata-txpwrlimit-5g-sub2 = /bits/ 8 <
 0x01 0x00 0x06 0x00 0x36 0x01 0x89 0x01
 0x3a 0x00 0x88 0x13 0x14 0x95 0x01 0x0b 0x02 0x0b 0x03 0x0b 0x04 0x0a 0x05 0x0a
@@ -188,28 +172,24 @@
 0x1a 0x05 0x1b 0x05>;
 	};
 };
-
 &sdmmc {
 	disable-wp;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_cd_disabled &sdmmc_cd_pin
 			&sdmmc_bus4>;
 };
-
 &vcc_5v {
 	enable-active-high;
 	gpio = <&gpio7 RK_PC5 GPIO_ACTIVE_HIGH>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&drv_5v>;
 };
-
 &vcc50_hdmi {
 	enable-active-high;
 	gpio = <&gpio5 RK_PC3 GPIO_ACTIVE_HIGH>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&vcc50_hdmi_en>;
 };
-
 &gpio0 {
 	gpio-line-names = "PMIC_SLEEP_AP",
 			  "DDRIO_PWROFF",
@@ -219,12 +199,7 @@
 			  "PWR_KEY_L",
 			  "AP_LID_INT_L",
 			  "EC_IN_RW",
-
 			  "AC_PRESENT_AP",
-			  /*
-			   * RECOVERY_SW_L is Chrome OS ABI.  Schematics call
-			   * it REC_MODE_L.
-			   */
 			  "RECOVERY_SW_L",
 			  "OTP_OUT",
 			  "HOST1_PWR_EN",
@@ -232,12 +207,10 @@
 			  "AP_WARM_RESET_H",
 			  "nFAULT2",
 			  "I2C0_SDA_PMIC",
-
 			  "I2C0_SCL_PMIC",
 			  "SUSPEND_L",
 			  "USB_INT";
 };
-
 &gpio2 {
 	gpio-line-names = "CONFIG0",
 			  "CONFIG1",
@@ -247,7 +220,6 @@
 			  "",
 			  "",
 			  "CONFIG3",
-
 			  "",
 			  "EMMC_RST_L",
 			  "",
@@ -255,7 +227,6 @@
 			  "BL_PWR_EN",
 			  "AVDD_1V8_DISP_EN";
 };
-
 &gpio3 {
 	gpio-line-names = "FLASH0_D0",
 			  "FLASH0_D1",
@@ -265,7 +236,6 @@
 			  "FLASH0_D5",
 			  "FLASH0_D6",
 			  "FLASH0_D7",
-
 			  "",
 			  "",
 			  "",
@@ -274,12 +244,10 @@
 			  "",
 			  "",
 			  "",
-
 			  "FLASH0_CS2/EMMC_CMD",
 			  "",
 			  "FLASH0_DQS/EMMC_CLKO";
 };
-
 &gpio4 {
 	gpio-line-names = "",
 			  "",
@@ -289,7 +257,6 @@
 			  "",
 			  "",
 			  "",
-
 			  "",
 			  "",
 			  "",
@@ -298,7 +265,6 @@
 			  "",
 			  "",
 			  "",
-
 			  "UART0_RXD",
 			  "UART0_TXD",
 			  "UART0_CTS",
@@ -307,7 +273,6 @@
 			  "SDIO0_D1",
 			  "SDIO0_D2",
 			  "SDIO0_D3",
-
 			  "SDIO0_CMD",
 			  "SDIO0_CLK",
 			  "BT_DEV_WAKE",
@@ -317,7 +282,6 @@
 			  "WIFI_HOST_WAKE",
 			  "BT_HOST_WAKE";
 };
-
 &gpio5 {
 	gpio-line-names = "",
 			  "",
@@ -327,7 +291,6 @@
 			  "",
 			  "",
 			  "",
-
 			  "",
 			  "",
 			  "",
@@ -336,13 +299,11 @@
 			  "SPI0_CS0",
 			  "SPI0_TXD",
 			  "SPI0_RXD",
-
 			  "",
 			  "",
 			  "",
 			  "VCC50_HDMI_EN";
 };
-
 &gpio6 {
 	gpio-line-names = "I2S0_SCLK",
 			  "I2S0_LRCK_RX",
@@ -352,7 +313,6 @@
 			  "HP_DET_H",
 			  "",
 			  "INT_CODEC",
-
 			  "I2S0_CLK",
 			  "I2C2_SDA",
 			  "I2C2_SCL",
@@ -361,7 +321,6 @@
 			  "",
 			  "",
 			  "",
-
 			  "SDMMC_D0",
 			  "SDMMC_D1",
 			  "SDMMC_D2",
@@ -369,7 +328,6 @@
 			  "SDMMC_CLK",
 			  "SDMMC_CMD";
 };
-
 &gpio7 {
 	gpio-line-names = "LCDC_BL",
 			  "PWM_LOG",
@@ -377,13 +335,8 @@
 			  "TRACKPAD_INT",
 			  "TPM_INT_H",
 			  "SDMMC_DET_L",
-			  /*
-			   * AP_FLASH_WP_L is Chrome OS ABI.  Schematics call
-			   * it FW_WP_AP.
-			   */
 			  "AP_FLASH_WP_L",
 			  "EC_INT",
-
 			  "CPU_NMI",
 			  "DVSOK",
 			  "",
@@ -392,7 +345,6 @@
 			  "nFAULT1",
 			  "LCD_EN",
 			  "DVS2",
-
 			  "VCC5V_GOOD_H",
 			  "I2C4_SDA_TP",
 			  "I2C4_SCL_TP",
@@ -402,7 +354,6 @@
 			  "UART2_RXD",
 			  "UART2_TXD";
 };
-
 &gpio8 {
 	gpio-line-names = "RAM_ID0",
 			  "RAM_ID1",
@@ -412,76 +363,52 @@
 			  "I2C1_SCL_TPM",
 			  "SPI2_CLK",
 			  "SPI2_CS0",
-
 			  "SPI2_RXD",
 			  "SPI2_TXD";
 };
-
 &pinctrl {
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <
-		/* Common for sleep and wake, but no owners */
 		&ddr0_retention
 		&ddrio_pwroff
 		&global_pwroff
-
-		/* Wake only */
 		&suspend_l_wake
 		&bt_dev_wake_awake
 	>;
 	pinctrl-1 = <
-		/* Common for sleep and wake, but no owners */
 		&ddr0_retention
 		&ddrio_pwroff
 		&global_pwroff
-
-		/* Sleep only */
 		&suspend_l_sleep
 		&bt_dev_wake_sleep
 	>;
-
 	buck-5v {
 		drv_5v: drv-5v {
 			rockchip,pins = <7 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	hdmi {
 		vcc50_hdmi_en: vcc50-hdmi-en {
 			rockchip,pins = <5 RK_PC3 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	pmic {
 		dvs_1: dvs-1 {
 			rockchip,pins = <7 RK_PB4 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
-
 		dvs_2: dvs-2 {
 			rockchip,pins = <7 RK_PB7 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 	};
 };
-
 &i2c4 {
 	status = "okay";
-
-	/*
-	 * Trackpad pin control is shared between Elan and Synaptics devices
-	 * so we have to pull it up to the bus level.
-	 */
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c4_xfer &trackpad_int>;
-
 	trackpad@15 {
-		/*
-		 * Remove the inherited pinctrl settings to avoid clashing
-		 * with bus-wide ones.
-		 */
 		/delete-property/pinctrl-names;
 		/delete-property/pinctrl-0;
 	};
-
 	trackpad@2c {
 		compatible = "hid-over-i2c";
 		interrupt-parent = <&gpio7>;

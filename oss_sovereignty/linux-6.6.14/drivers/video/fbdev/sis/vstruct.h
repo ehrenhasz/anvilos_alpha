@@ -1,62 +1,8 @@
-/* $XFree86$ */
-/* $XdotOrg$ */
-/*
- * General structure definitions for universal mode switching modules
- *
- * Copyright (C) 2001-2005 by Thomas Winischhofer, Vienna, Austria
- *
- * If distributed as part of the Linux kernel, the following license terms
- * apply:
- *
- * * This program is free software; you can redistribute it and/or modify
- * * it under the terms of the GNU General Public License as published by
- * * the Free Software Foundation; either version 2 of the named License,
- * * or any later version.
- * *
- * * This program is distributed in the hope that it will be useful,
- * * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * * GNU General Public License for more details.
- * *
- * * You should have received a copy of the GNU General Public License
- * * along with this program; if not, write to the Free Software
- * * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA
- *
- * Otherwise, the following license terms apply:
- *
- * * Redistribution and use in source and binary forms, with or without
- * * modification, are permitted provided that the following conditions
- * * are met:
- * * 1) Redistributions of source code must retain the above copyright
- * *    notice, this list of conditions and the following disclaimer.
- * * 2) Redistributions in binary form must reproduce the above copyright
- * *    notice, this list of conditions and the following disclaimer in the
- * *    documentation and/or other materials provided with the distribution.
- * * 3) The name of the author may not be used to endorse or promote products
- * *    derived from this software without specific prior written permission.
- * *
- * * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Author: 	Thomas Winischhofer <thomas@winischhofer.net>
- *
- */
-
 #ifndef _VSTRUCT_H_
 #define _VSTRUCT_H_
-
 struct SiS_PanelDelayTbl {
  	unsigned char timer[2];
 };
-
 struct SiS_LCDData {
 	unsigned short RVBHCMAX;
 	unsigned short RVBHCFACT;
@@ -65,7 +11,6 @@ struct SiS_LCDData {
 	unsigned short LCDHT;
 	unsigned short LCDVT;
 };
-
 struct SiS_TVData {
 	unsigned short RVBHCMAX;
 	unsigned short RVBHCFACT;
@@ -82,27 +27,22 @@ struct SiS_TVData {
 	unsigned char  RY3COE;
 	unsigned char  RY4COE;
 };
-
 struct SiS_LVDSData {
 	unsigned short VGAHT;
 	unsigned short VGAVT;
 	unsigned short LCDHT;
 	unsigned short LCDVT;
 };
-
 struct SiS_LVDSDes {
 	unsigned short LCDHDES;
 	unsigned short LCDVDES;
 };
-
 struct SiS_LVDSCRT1Data {
 	unsigned char  CR[15];
 };
-
 struct SiS_CHTVRegData {
 	unsigned char  Reg[16];
 };
-
 struct SiS_St {
 	unsigned char  St_ModeID;
 	unsigned short St_ModeFlag;
@@ -114,7 +54,6 @@ struct SiS_St {
 	unsigned char  VB_StTVYFilterIndex;
 	unsigned char  St_PDC;
 };
-
 struct SiS_VBMode {
 	unsigned char  ModeID;
 	unsigned char  VB_TVDelayIndex;
@@ -125,7 +64,6 @@ struct SiS_VBMode {
 	unsigned char  _VB_LCDHIndex;
 	unsigned char  _VB_LCDVIndex;
 };
-
 struct SiS_StandTable_S {
 	unsigned char  CRT_COLS;
 	unsigned char  ROWS;
@@ -137,7 +75,6 @@ struct SiS_StandTable_S {
 	unsigned char  ATTR[0x14];
 	unsigned char  GRC[9];
 };
-
 struct SiS_Ext {
 	unsigned char  Ext_ModeID;
 	unsigned short Ext_ModeFlag;
@@ -150,7 +87,6 @@ struct SiS_Ext {
 	unsigned char  REFindex;
 	signed char    ROMMODEIDX661;
 };
-
 struct SiS_Ext2 {
 	unsigned short Ext_InfoFlag;
 	unsigned char  Ext_CRT1CRTC;
@@ -168,44 +104,34 @@ struct SiS_Ext2 {
 	unsigned char  Ext_CRT1CRTC_WIDE;
 	unsigned char  Ext_CRTVCLK_WIDE;
 };
-
 struct SiS_Part2PortTbl {
  	unsigned char  CR[12];
 };
-
 struct SiS_CRT1Table {
 	unsigned char  CR[17];
 };
-
 struct SiS_MCLKData {
 	unsigned char  SR28,SR29,SR2A;
 	unsigned short CLOCK;
 };
-
 struct SiS_VCLKData {
 	unsigned char  SR2B,SR2C;
 	unsigned short CLOCK;
 };
-
 struct SiS_VBVCLKData {
 	unsigned char  Part4_A,Part4_B;
 	unsigned short CLOCK;
 };
-
 struct SiS_StResInfo_S {
 	unsigned short HTotal;
 	unsigned short VTotal;
 };
-
 struct SiS_ModeResInfo_S {
 	unsigned short HTotal;
 	unsigned short VTotal;
 	unsigned char  XChar;
 	unsigned char  YChar;
 };
-
-/* Defines for SiS_CustomT */
-/* Never change these for sisfb compatibility */
 #define CUT_NONE		 0
 #define CUT_FORCENONE		 1
 #define CUT_BARCO1366		 2
@@ -228,7 +154,6 @@ struct SiS_ModeResInfo_S {
 #define CUT_UNKNOWNLCD		19
 #define CUT_AOP8060		20
 #define CUT_PANEL856		21
-
 struct SiS_Private
 {
 	unsigned char			ChipType;
@@ -239,8 +164,7 @@ struct SiS_Private
 	unsigned char SISIOMEMTYPE	*VideoMemoryAddress;
 	unsigned int			VideoMemorySize;
 	SISIOADDRESS			IOAddress;
-	SISIOADDRESS			IOAddress2;  /* For dual chip XGI volari */
-
+	SISIOADDRESS			IOAddress2;   
 	SISIOADDRESS			RelIO;
 	SISIOADDRESS			SiS_P3c4;
 	SISIOADDRESS			SiS_P3d4;
@@ -342,10 +266,8 @@ struct SiS_Private
 	unsigned short			SiS_ChrontelInit;
 	bool				SiS_SensibleSR11;
 	unsigned short			SiS661LCD2TableSize;
-
 	unsigned short			SiS_PanelMinLVDS;
 	unsigned short			SiS_PanelMin301;
-
 	const struct SiS_St		*SiS_SModeIDTable;
 	const struct SiS_StandTable_S	*SiS_StandTable;
 	const struct SiS_Ext		*SiS_EModeIDTable;
@@ -358,17 +280,11 @@ struct SiS_Private
 	struct SiS_VBVCLKData		*SiS_VBVCLKData;
 	const struct SiS_StResInfo_S	*SiS_StResInfo;
 	const struct SiS_ModeResInfo_S	*SiS_ModeResInfo;
-
 	const unsigned char		*pSiS_OutputSelect;
 	const unsigned char		*pSiS_SoftSetting;
-
 	const unsigned char		*SiS_SR15;
-
 	const struct SiS_PanelDelayTbl	*SiS_PanelDelayTbl;
 	const struct SiS_PanelDelayTbl	*SiS_PanelDelayTblLVDS;
-
-	/* SiS bridge */
-
 	const struct SiS_LCDData	*SiS_ExtLCD1024x768Data;
 	const struct SiS_LCDData	*SiS_St2LCD1024x768Data;
 	const struct SiS_LCDData	*SiS_LCD1280x720Data;
@@ -410,13 +326,9 @@ struct SiS_Private
 	const unsigned char		*SiS_HiTVTextTiming;
 	const unsigned char		*SiS_HiTVGroup3Text;
 #endif
-
 	const struct SiS_Part2PortTbl	*SiS_CRT2Part2_1024x768_1;
 	const struct SiS_Part2PortTbl	*SiS_CRT2Part2_1024x768_2;
 	const struct SiS_Part2PortTbl	*SiS_CRT2Part2_1024x768_3;
-
-	/* LVDS, Chrontel */
-
 	const struct SiS_LVDSData	*SiS_LVDS320x240Data_1;
 	const struct SiS_LVDSData	*SiS_LVDS320x240Data_2;
 	const struct SiS_LVDSData	*SiS_LVDS640x480Data_1;
@@ -437,12 +349,10 @@ struct SiS_Private
 	const struct SiS_LVDSData	*SiS_CHTVUPALNData;
 	const struct SiS_LVDSData	*SiS_CHTVOPALNData;
 	const struct SiS_LVDSData	*SiS_CHTVSOPALData;
-
 	const struct SiS_LVDSDes	*SiS_PanelType04_1a;
 	const struct SiS_LVDSDes	*SiS_PanelType04_2a;
 	const struct SiS_LVDSDes	*SiS_PanelType04_1b;
 	const struct SiS_LVDSDes	*SiS_PanelType04_2b;
-
 	const struct SiS_LVDSCRT1Data	*SiS_LVDSCRT1320x240_1;
 	const struct SiS_LVDSCRT1Data	*SiS_LVDSCRT1320x240_2;
 	const struct SiS_LVDSCRT1Data	*SiS_LVDSCRT1320x240_2_H;
@@ -455,7 +365,6 @@ struct SiS_Private
 	const struct SiS_LVDSCRT1Data	*SiS_CHTVCRT1UPAL;
 	const struct SiS_LVDSCRT1Data	*SiS_CHTVCRT1OPAL;
 	const struct SiS_LVDSCRT1Data	*SiS_CHTVCRT1SOPAL;
-
 	const struct SiS_CHTVRegData	*SiS_CHTVReg_UNTSC;
 	const struct SiS_CHTVRegData	*SiS_CHTVReg_ONTSC;
 	const struct SiS_CHTVRegData	*SiS_CHTVReg_UPAL;
@@ -465,7 +374,6 @@ struct SiS_Private
 	const struct SiS_CHTVRegData	*SiS_CHTVReg_UPALN;
 	const struct SiS_CHTVRegData	*SiS_CHTVReg_OPALN;
 	const struct SiS_CHTVRegData	*SiS_CHTVReg_SOPAL;
-
 	const unsigned char		*SiS_CHTVVCLKUNTSC;
 	const unsigned char		*SiS_CHTVVCLKONTSC;
 	const unsigned char		*SiS_CHTVVCLKUPAL;
@@ -475,7 +383,6 @@ struct SiS_Private
 	const unsigned char		*SiS_CHTVVCLKUPALN;
 	const unsigned char		*SiS_CHTVVCLKOPALN;
 	const unsigned char		*SiS_CHTVVCLKSOPAL;
-
 	unsigned short			PanelXRes, PanelHT;
 	unsigned short			PanelYRes, PanelVT;
 	unsigned short			PanelHRS,  PanelHRE;
@@ -483,7 +390,6 @@ struct SiS_Private
 	unsigned short			PanelVCLKIdx300;
 	unsigned short			PanelVCLKIdx315;
 	bool				Alternate1600x1200;
-
 	bool				UseCustomMode;
 	bool				CRT1UsesCustomMode;
 	unsigned short			CHDisplay;
@@ -508,9 +414,7 @@ struct SiS_Private
 	unsigned short			CModeFlag;
 	unsigned short			CModeFlag_CRT1;
 	unsigned short			CInfoFlag;
-
 	int				LVDSHL;
-
 	bool				Backup;
 	unsigned char			Backup_Mode;
 	unsigned char			Backup_14;
@@ -523,12 +427,9 @@ struct SiS_Private
 	unsigned char			Backup_1b;
 	unsigned char			Backup_1c;
 	unsigned char			Backup_1d;
-
 	unsigned char			Init_P4_0E;
-
 	int				UsePanelScaler;
 	int				CenterScreen;
-
 	unsigned short			CP_Vendor, CP_Product;
 	bool				CP_HaveCustomData;
 	int				CP_PreferredX, CP_PreferredY, CP_PreferredIndex;
@@ -536,7 +437,7 @@ struct SiS_Private
 	unsigned char			CP_PrefSR2B, CP_PrefSR2C;
 	unsigned short			CP_PrefClock;
 	bool				CP_Supports64048075;
-	int				CP_HDisplay[7], CP_VDisplay[7];	/* For Custom LCD panel dimensions */
+	int				CP_HDisplay[7], CP_VDisplay[7];	 
 	int				CP_HTotal[7], CP_VTotal[7];
 	int				CP_HSyncStart[7], CP_VSyncStart[7];
 	int				CP_HSyncEnd[7], CP_VSyncEnd[7];
@@ -546,6 +447,4 @@ struct SiS_Private
 	bool				CP_DataValid[7];
 	bool				CP_HSync_P[7], CP_VSync_P[7], CP_SyncValid[7];
 };
-
 #endif
-

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// src4xxx.h  --  SRC4XXX ALSA SoC audio driver
-//
-// Copyright 2021-2022 Deqx Pty Ltd
-// Author: Matt R Flax <flatmax@flatmax.com>
-
 #ifndef __SRC4XXX_H__
 #define __SRC4XXX_H__
-
 #define SRC4XXX_RES_00 0x00
 #define SRC4XXX_PWR_RST_01 0x01
 #define SRC4XXX_RESET 0x80
@@ -23,7 +15,6 @@
 #define SRC4XXX_ENABLE_PORT_B_SHIFT 3
 #define SRC4XXX_ENABLE_PORT_A 0x10
 #define SRC4XXX_ENABLE_PORT_A_SHIFT 4
-
 #define SRC4XXX_PORTA_CTL_03 0x03
 #define SRC4XXX_BUS_MASTER 0x8
 #define SRC4XXX_BUS_LEFT_J 0x0
@@ -33,20 +24,15 @@
 #define SRC4XXX_BUS_RIGHT_J_20 0x6
 #define SRC4XXX_BUS_RIGHT_J_24 0x7
 #define SRC4XXX_BUS_FMT_MS_MASK 0xf
-
 #define SRC4XXX_PORTA_CTL_04 0x04
 #define SRC4XXX_MCLK_DIV_MASK 0x3
-
 #define SRC4XXX_BUS_FMT(id) (SRC4XXX_PORTA_CTL_03+2*id)
 #define SRC4XXX_BUS_CLK(id) (SRC4XXX_PORTA_CTL_04+2*id)
-
 #define SRC4XXX_PORTB_CTL_05 0x05
 #define SRC4XXX_PORTB_CTL_06 0x06
-
 #define SRC4XXX_TX_CTL_07 0x07
 #define SRC4XXX_TX_MCLK_DIV_MASK 0x60
 #define SRC4XXX_TX_MCLK_DIV_SHIFT 5
-
 #define SRC4XXX_TX_CTL_08 0x08
 #define SRC4XXX_TX_CTL_09 0x09
 #define SRC4XXX_SRC_DIT_IRQ_MSK_0B 0x0B
@@ -81,8 +67,6 @@
 #define SRC4XXX_SCR_CTL_30 0x30
 #define SRC4XXX_SCR_CTL_31 0x31
 #define SRC4XXX_PAGE_SEL_7F 0x7F
-
-// read only registers
 #define SRC4XXX_GLOBAL_ITR_STS_02 0x02
 #define SRC4XXX_SRC_DIT_STS_0A 0x0A
 #define SRC4XXX_NON_AUDIO_D_12 0x12
@@ -105,9 +89,7 @@
 #define SRC4XXX_PC_PREAMBLE_LO_2C 0x2C
 #define SRC4XXX_IO_RATIO_32 0x32
 #define SRC4XXX_IO_RATIO_33 0x33
-
 int src4xxx_probe(struct device *dev, struct regmap *regmap,
 		void (*switch_mode)(struct device *dev));
 extern const struct regmap_config src4xxx_regmap_config;
-
-#endif /* __SRC4XXX_H__ */
+#endif  

@@ -1,37 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * include/asm-xtensa/signal.h
- *
- * Swiped from SH.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2001 - 2005 Tensilica Inc.
- */
-
 #ifndef _UAPI_XTENSA_SIGNAL_H
 #define _UAPI_XTENSA_SIGNAL_H
-
-
 #define _NSIG		64
 #define _NSIG_BPW	32
 #define _NSIG_WORDS	(_NSIG / _NSIG_BPW)
-
 #ifndef __ASSEMBLY__
-
 #include <linux/types.h>
-
-/* Avoid too many header ordering problems.  */
 struct siginfo;
-typedef unsigned long old_sigset_t;		/* at least 32 bits */
+typedef unsigned long old_sigset_t;		 
 typedef struct {
 	unsigned long sig[_NSIG_WORDS];
 } sigset_t;
-
 #endif
-
 #define SIGHUP		 1
 #define SIGINT		 2
 #define SIGQUIT		 3
@@ -63,28 +42,17 @@ typedef struct {
 #define SIGWINCH	28
 #define SIGIO		29
 #define SIGPOLL		SIGIO
-/* #define SIGLOST		29 */
 #define SIGPWR		30
 #define SIGSYS		31
 #define	SIGUNUSED	31
-
-/* These should not be considered constants from userland.  */
 #define SIGRTMIN	32
 #define SIGRTMAX	(_NSIG-1)
-
 #define SA_RESTORER	0x04000000
-
 #define MINSIGSTKSZ	2048
 #define SIGSTKSZ	8192
-
 #ifndef __ASSEMBLY__
-
 #include <asm-generic/signal-defs.h>
-
 #ifndef __KERNEL__
-
-/* Here we must cater to libcs that poke about in kernel headers.  */
-
 struct sigaction {
 	union {
 	  __sighandler_t _sa_handler;
@@ -94,17 +62,13 @@ struct sigaction {
 	unsigned long sa_flags;
 	void (*sa_restorer)(void);
 };
-
 #define sa_handler	_u._sa_handler
 #define sa_sigaction	_u._sa_sigaction
-
-#endif /* __KERNEL__ */
-
+#endif  
 typedef struct sigaltstack {
 	void *ss_sp;
 	int ss_flags;
 	__kernel_size_t ss_size;
 } stack_t;
-
-#endif	/* __ASSEMBLY__ */
-#endif /* _UAPI_XTENSA_SIGNAL_H */
+#endif	 
+#endif  

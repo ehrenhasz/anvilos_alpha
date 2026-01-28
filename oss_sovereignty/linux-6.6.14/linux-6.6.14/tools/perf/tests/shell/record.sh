@@ -1,30 +1,20 @@
-#!/bin/sh
-# perf record tests
-# SPDX-License-Identifier: GPL-2.0
-
 set -e
-
 shelldir=$(dirname "$0")
 . "${shelldir}"/lib/waiting.sh
-
 err=0
 perfdata=$(mktemp /tmp/__perf_test.perf.data.XXXXX)
 testprog="perf test -w thloop"
 testsym="test_loop"
-
 cleanup() {
   rm -rf "${perfdata}"
   rm -rf "${perfdata}".old
-
   trap - EXIT TERM INT
 }
-
 trap_cleanup() {
   cleanup
   exit 1
 }
 trap trap_cleanup EXIT TERM INT
-
 test_per_thread() {
   echo "Basic --per-thread mode test"
   if ! perf record -o /dev/null --quiet ${testprog} 2> /dev/null
@@ -44,17 +34,12 @@ test_per_thread() {
     err=1
     return
   fi
-
-  # run the test program in background (for 30 seconds)
   ${testprog} 30 &
   TESTPID=$!
-
   rm -f "${perfdata}"
-
   wait_for_threads ${TESTPID} 2
   perf record -p "${TESTPID}" --per-thread -o "${perfdata}" sleep 1 2> /dev/null
   kill ${TESTPID}
-
   if [ ! -e "${perfdata}" ]
   then
     echo "Per-thread record [Failed record -p]"
@@ -67,10 +52,8 @@ test_per_thread() {
     err=1
     return
   fi
-
   echo "Basic --per-thread mode test [Success]"
 }
-
 test_register_capture() {
   echo "Register capture test"
   if ! perf list | grep -q 'br_inst_retired.near_call'
@@ -94,7 +77,6 @@ test_register_capture() {
   fi
   echo "Register capture test [Success]"
 }
-
 test_system_wide() {
   echo "Basic --system-wide mode test"
   if ! perf record -aB --synth=no -o "${perfdata}" ${testprog} 2> /dev/null
@@ -123,7 +105,6 @@ test_system_wide() {
   fi
   echo "Basic --system-wide mode test [Success]"
 }
-
 test_workload() {
   echo "Basic target workload test"
   if ! perf record -o "${perfdata}" ${testprog} 2> /dev/null
@@ -153,11 +134,9 @@ test_workload() {
   fi
   echo "Basic target workload test [Success]"
 }
-
 test_per_thread
 test_register_capture
 test_system_wide
 test_workload
-
 cleanup
 exit $err

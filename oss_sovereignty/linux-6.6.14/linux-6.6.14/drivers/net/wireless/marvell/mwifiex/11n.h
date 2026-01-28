@@ -1,17 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: 802.11n
- *
- * Copyright 2011-2020 NXP
- */
-
 #ifndef _MWIFIEX_11N_H_
 #define _MWIFIEX_11N_H_
-
 #include "11n_aggr.h"
 #include "11n_rxreorder.h"
 #include "wmm.h"
-
 int mwifiex_ret_11n_delba(struct mwifiex_private *priv,
 			  struct host_cmd_ds_command *resp);
 int mwifiex_ret_11n_addba_req(struct mwifiex_private *priv,
@@ -52,20 +43,15 @@ int mwifiex_cmd_amsdu_aggr_ctrl(struct host_cmd_ds_command *cmd,
 				struct mwifiex_ds_11n_amsdu_aggr_ctrl *aa_ctrl);
 void mwifiex_del_tx_ba_stream_tbl_by_ra(struct mwifiex_private *priv, u8 *ra);
 u8 mwifiex_get_sec_chan_offset(int chan);
-
 static inline u8
 mwifiex_is_station_ampdu_allowed(struct mwifiex_private *priv,
 				 struct mwifiex_ra_list_tbl *ptr, int tid)
 {
 	struct mwifiex_sta_node *node = mwifiex_get_sta_entry(priv, ptr->ra);
-
 	if (unlikely(!node))
 		return false;
-
 	return (node->ampdu_sta[tid] != BA_STREAM_NOT_ALLOWED) ? true : false;
 }
-
-/* This function checks whether AMPDU is allowed or not for a particular TID. */
 static inline u8
 mwifiex_is_ampdu_allowed(struct mwifiex_private *priv,
 			 struct mwifiex_ra_list_tbl *ptr, int tid)
@@ -77,15 +63,10 @@ mwifiex_is_ampdu_allowed(struct mwifiex_private *priv,
 	} else {
 		if (ptr->tdls_link)
 			return mwifiex_is_station_ampdu_allowed(priv, ptr, tid);
-
 		return (priv->aggr_prio_tbl[tid].ampdu_ap !=
 			BA_STREAM_NOT_ALLOWED) ? true : false;
 	}
 }
-
-/*
- * This function checks whether AMSDU is allowed or not for a particular TID.
- */
 static inline u8
 mwifiex_is_amsdu_allowed(struct mwifiex_private *priv, int tid)
 {
@@ -93,41 +74,27 @@ mwifiex_is_amsdu_allowed(struct mwifiex_private *priv, int tid)
 		 (priv->is_data_rate_auto || !(priv->bitmap_rates[2] & 0x03)))
 		? true : false);
 }
-
-/*
- * This function checks whether a space is available for new BA stream or not.
- */
 static inline u8 mwifiex_space_avail_for_new_ba_stream(
 					struct mwifiex_adapter *adapter)
 {
 	struct mwifiex_private *priv;
 	u8 i;
 	size_t ba_stream_num = 0, ba_stream_max;
-
 	ba_stream_max = MWIFIEX_MAX_TX_BASTREAM_SUPPORTED;
-
 	for (i = 0; i < adapter->priv_num; i++) {
 		priv = adapter->priv[i];
 		if (priv)
 			ba_stream_num += list_count_nodes(
 				&priv->tx_ba_stream_tbl_ptr);
 	}
-
 	if (adapter->fw_api_ver == MWIFIEX_FW_V15) {
 		ba_stream_max =
 			       GETSUPP_TXBASTREAMS(adapter->hw_dot_11n_dev_cap);
 		if (!ba_stream_max)
 			ba_stream_max = MWIFIEX_MAX_TX_BASTREAM_SUPPORTED;
 	}
-
 	return ((ba_stream_num < ba_stream_max) ? true : false);
 }
-
-/*
- * This function finds the correct Tx BA stream to delete.
- *
- * Upon successfully locating, both the TID and the RA are returned.
- */
 static inline u8
 mwifiex_find_stream_to_delete(struct mwifiex_private *priv, int ptr_tid,
 			      int *ptid, u8 *ra)
@@ -135,9 +102,7 @@ mwifiex_find_stream_to_delete(struct mwifiex_private *priv, int ptr_tid,
 	int tid;
 	u8 ret = false;
 	struct mwifiex_tx_ba_stream_tbl *tx_tbl;
-
 	tid = priv->aggr_prio_tbl[ptr_tid].ampdu_user;
-
 	spin_lock_bh(&priv->tx_ba_stream_tbl_lock);
 	list_for_each_entry(tx_tbl, &priv->tx_ba_stream_tbl_ptr, list) {
 		if (tid > priv->aggr_prio_tbl[tx_tbl->tid].ampdu_user) {
@@ -148,13 +113,8 @@ mwifiex_find_stream_to_delete(struct mwifiex_private *priv, int ptr_tid,
 		}
 	}
 	spin_unlock_bh(&priv->tx_ba_stream_tbl_lock);
-
 	return ret;
 }
-
-/*
- * This function checks whether associated station is 11n enabled
- */
 static inline int mwifiex_is_sta_11n_enabled(struct mwifiex_private *priv,
 					     struct mwifiex_sta_node *node)
 {
@@ -163,17 +123,14 @@ static inline int mwifiex_is_sta_11n_enabled(struct mwifiex_private *priv,
 	    ((priv->bss_mode == NL80211_IFTYPE_ADHOC) &&
 	     !priv->adapter->adhoc_11n_enabled))
 		return 0;
-
 	return node->is_11n_enabled;
 }
-
 static inline u8
 mwifiex_tdls_peer_11n_enabled(struct mwifiex_private *priv, const u8 *ra)
 {
 	struct mwifiex_sta_node *node = mwifiex_get_sta_entry(priv, ra);
 	if (node)
 		return node->is_11n_enabled;
-
 	return false;
 }
-#endif /* !_MWIFIEX_11N_H_ */
+#endif  

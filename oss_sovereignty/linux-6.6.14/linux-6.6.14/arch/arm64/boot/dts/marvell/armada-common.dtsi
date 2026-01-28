@@ -1,9 +1,3 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (C) 2016 Marvell Technology Group Ltd.
- */
-
-/* Common definitions used by Armada 7K/8K DTs */
 #define PASTER(x, y) x ## y
 #define EVALUATOR(x, y) PASTER(x, y)
 #define CP11X_LABEL(name) EVALUATOR(CP11X_NAME, EVALUATOR(_, name))

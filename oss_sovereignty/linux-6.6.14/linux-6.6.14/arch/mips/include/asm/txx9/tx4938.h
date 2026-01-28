@@ -1,28 +1,12 @@
-/*
- * Definitions for TX4937/TX4938
- * Copyright (C) 2000-2001 Toshiba Corporation
- *
- * 2003-2005 (c) MontaVista Software, Inc. This file is licensed under the
- * terms of the GNU General Public License version 2. This program is
- * licensed "as is" without any warranty of any kind, whether express
- * or implied.
- *
- * Support for TX4938 in 2.6 - Manish Lachwani (mlachwani@mvista.com)
- */
 #ifndef __ASM_TXX9_TX4938_H
 #define __ASM_TXX9_TX4938_H
-
-/* some controllers are compatible with 4927 */
 #include <asm/txx9/tx4927.h>
-
 #ifdef CONFIG_64BIT
-#define TX4938_REG_BASE 0xffffffffff1f0000UL /* == TX4937_REG_BASE */
+#define TX4938_REG_BASE 0xffffffffff1f0000UL  
 #else
-#define TX4938_REG_BASE 0xff1f0000UL /* == TX4937_REG_BASE */
+#define TX4938_REG_BASE 0xff1f0000UL  
 #endif
-#define TX4938_REG_SIZE 0x00010000 /* == TX4937_REG_SIZE */
-
-/* NDFMC, SRAMC, PCIC1, SPIC: TX4938 only */
+#define TX4938_REG_SIZE 0x00010000  
 #define TX4938_NDFMC_REG	(TX4938_REG_BASE + 0x5000)
 #define TX4938_SRAMC_REG	(TX4938_REG_BASE + 0x6000)
 #define TX4938_PCIC1_REG	(TX4938_REG_BASE + 0x7000)
@@ -39,11 +23,9 @@
 #define TX4938_IRC_REG		(TX4938_REG_BASE + 0xf600)
 #define TX4938_ACLC_REG		(TX4938_REG_BASE + 0xf700)
 #define TX4938_SPI_REG		(TX4938_REG_BASE + 0xf800)
-
 struct tx4938_sramc_reg {
 	u64 cr;
 };
-
 struct tx4938_ccfg_reg {
 	u64 ccfg;
 	u64 crir;
@@ -58,11 +40,6 @@ struct tx4938_ccfg_reg {
 	u64 unused3;
 	u64 jmpadr;
 };
-
-/*
- * IRC
- */
-
 #define TX4938_IR_ECCERR	0
 #define TX4938_IR_WTOERR	1
 #define TX4938_NUM_IR_INT	6
@@ -70,7 +47,7 @@ struct tx4938_ccfg_reg {
 #define TX4938_NUM_IR_SIO	2
 #define TX4938_IR_SIO(n)	(8 + (n))
 #define TX4938_NUM_IR_DMA	4
-#define TX4938_IR_DMA(ch, n)	((ch ? 27 : 10) + (n)) /* 10-13, 27-30 */
+#define TX4938_IR_DMA(ch, n)	((ch ? 27 : 10) + (n))  
 #define TX4938_IR_PIO	14
 #define TX4938_IR_PDMAC 15
 #define TX4938_IR_PCIC	16
@@ -84,18 +61,10 @@ struct tx4938_ccfg_reg {
 #define TX4938_IR_PCIC1 26
 #define TX4938_IR_SPI	31
 #define TX4938_NUM_IR	32
-/* multiplex */
 #define TX4938_IR_ETH0	TX4938_IR_INT(4)
 #define TX4938_IR_ETH1	TX4938_IR_INT(3)
-
-#define TX4938_IRC_INT	2	/* IP[2] in Status register */
-
+#define TX4938_IRC_INT	2	 
 #define TX4938_NUM_PIO	16
-
-/*
- * CCFG
- */
-/* CCFG : Chip Configuration */
 #define TX4938_CCFG_WDRST	0x0000020000000000ULL
 #define TX4938_CCFG_WDREXEN	0x0000010000000000ULL
 #define TX4938_CCFG_BCFG_MASK	0x000000ff00000000ULL
@@ -132,8 +101,6 @@ struct tx4938_ccfg_reg {
 #define TX4938_CCFG_ENDIAN	0x00000004
 #define TX4938_CCFG_HALT	0x00000002
 #define TX4938_CCFG_ACEHOLD	0x00000001
-
-/* PCFG : Pin Configuration */
 #define TX4938_PCFG_ETH0_SEL	0x8000000000000000ULL
 #define TX4938_PCFG_ETH1_SEL	0x4000000000000000ULL
 #define TX4938_PCFG_ATA_SEL	0x2000000000000000ULL
@@ -158,8 +125,6 @@ struct tx4938_ccfg_reg {
 #define TX4938_PCFG_DMASEL2_SIO0	0x00000004
 #define TX4938_PCFG_DMASEL3_DRQ3	0x00000000
 #define TX4938_PCFG_DMASEL3_SIO0	0x00000008
-
-/* CLKCTR : Clock Control */
 #define TX4938_CLKCTR_NDFCKD	0x0001000000000000ULL
 #define TX4938_CLKCTR_NDFRST	0x0000000100000000ULL
 #define TX4938_CLKCTR_ETH1CKD	0x80000000
@@ -192,19 +157,12 @@ struct tx4938_ccfg_reg {
 #define TX4938_CLKCTR_TM2RST	0x00000004
 #define TX4938_CLKCTR_SIO0RST	0x00000002
 #define TX4938_CLKCTR_SIO1RST	0x00000001
-
-/*
- * DMA
- */
-/* bits for MCR */
 #define TX4938_DMA_MCR_EIS(ch)	(0x10000000<<(ch))
 #define TX4938_DMA_MCR_DIS(ch)	(0x01000000<<(ch))
 #define TX4938_DMA_MCR_RSFIF	0x00000080
 #define TX4938_DMA_MCR_FIFUM(ch)	(0x00000008<<(ch))
 #define TX4938_DMA_MCR_RPRT	0x00000002
 #define TX4938_DMA_MCR_MSTEN	0x00000001
-
-/* bits for CCRn */
 #define TX4938_DMA_CCR_IMMCHN	0x20000000
 #define TX4938_DMA_CCR_USEXFSZ	0x10000000
 #define TX4938_DMA_CCR_LE	0x08000000
@@ -234,8 +192,6 @@ struct tx4938_ccfg_reg {
 #define TX4938_DMA_CCR_XFSZ_32W TX4938_DMA_CCR_XFSZ(7)
 #define TX4938_DMA_CCR_MEMIO	0x00000002
 #define TX4938_DMA_CCR_SNGAD	0x00000001
-
-/* bits for CSRn */
 #define TX4938_DMA_CSR_CHNEN	0x00000400
 #define TX4938_DMA_CSR_STLXFER	0x00000200
 #define TX4938_DMA_CSR_CHNACT	0x00000100
@@ -247,7 +203,6 @@ struct tx4938_ccfg_reg {
 #define TX4938_DMA_CSR_CHERR	0x00000004
 #define TX4938_DMA_CSR_DESERR	0x00000002
 #define TX4938_DMA_CSR_SORERR	0x00000001
-
 #define tx4938_sdramcptr	tx4927_sdramcptr
 #define tx4938_ebuscptr		tx4927_ebuscptr
 #define tx4938_pcicptr		tx4927_pcicptr
@@ -258,24 +213,18 @@ struct tx4938_ccfg_reg {
 #define tx4938_pioptr		((struct txx9_pio_reg __iomem *)TX4938_PIO_REG)
 #define tx4938_sramcptr \
 		((struct tx4938_sramc_reg __iomem *)TX4938_SRAMC_REG)
-
-
 #define TX4938_REV_PCODE()	\
 	((__u32)__raw_readq(&tx4938_ccfgptr->crir) >> 16)
-
 #define tx4938_ccfg_clear(bits) tx4927_ccfg_clear(bits)
 #define tx4938_ccfg_set(bits)	tx4927_ccfg_set(bits)
 #define tx4938_ccfg_change(change, new) tx4927_ccfg_change(change, new)
-
 #define TX4938_SDRAMC_CR(ch)	TX4927_SDRAMC_CR(ch)
 #define TX4938_SDRAMC_BA(ch)	TX4927_SDRAMC_BA(ch)
 #define TX4938_SDRAMC_SIZE(ch)	TX4927_SDRAMC_SIZE(ch)
-
 #define TX4938_EBUSC_CR(ch)	TX4927_EBUSC_CR(ch)
 #define TX4938_EBUSC_BA(ch)	TX4927_EBUSC_BA(ch)
 #define TX4938_EBUSC_SIZE(ch)	TX4927_EBUSC_SIZE(ch)
 #define TX4938_EBUSC_WIDTH(ch)	TX4927_EBUSC_WIDTH(ch)
-
 #define tx4938_get_mem_size() tx4927_get_mem_size()
 void tx4938_wdt_init(void);
 void tx4938_setup(void);
@@ -292,21 +241,13 @@ void tx4938_setup_pcierr_irq(void);
 void tx4938_irq_init(void);
 void tx4938_mtd_init(int ch);
 void tx4938_ndfmc_init(unsigned int hold, unsigned int spw);
-
 struct tx4938ide_platform_info {
-	/*
-	 * I/O port shift, for platforms with ports that are
-	 * constantly spaced and need larger than the 1-byte
-	 * spacing used by ata_std_ports().
-	 */
 	unsigned int ioport_shift;
-	unsigned int gbus_clock;	/*  0 means no PIO mode tuning. */
+	unsigned int gbus_clock;	 
 	unsigned int ebus_ch;
 };
-
 void tx4938_ata_init(unsigned int irq, unsigned int shift, int tune);
 void tx4938_dmac_init(int memcpy_chan0, int memcpy_chan1);
 void tx4938_aclc_init(void);
 void tx4938_sramc_init(void);
-
 #endif

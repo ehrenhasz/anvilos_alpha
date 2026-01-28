@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
-
 #ifndef _MLXSW_CORE_ACL_FLEX_ACTIONS_H
 #define _MLXSW_CORE_ACL_FLEX_ACTIONS_H
-
 #include <linux/types.h>
 #include <linux/netdevice.h>
 #include <net/flow_offload.h>
-
 struct mlxsw_afa;
 struct mlxsw_afa_block;
-
 struct mlxsw_afa_ops {
 	int (*kvdl_set_add)(void *priv, u32 *p_kvdl_index,
 			    char *enc_actions, bool is_first);
@@ -38,7 +32,6 @@ struct mlxsw_afa_ops {
 			    bool ingress);
 	bool dummy_first_set;
 };
-
 struct mlxsw_afa *mlxsw_afa_create(unsigned int max_acts_per_set,
 				   const struct mlxsw_afa_ops *ops,
 				   void *ops_priv);
@@ -108,5 +101,4 @@ int mlxsw_afa_block_append_sampler(struct mlxsw_afa_block *block, u16 local_port
 				   u32 rate, u32 trunc_size, bool truncate,
 				   bool ingress,
 				   struct netlink_ext_ack *extack);
-
 #endif

@@ -1,19 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Texas Instruments ICSSG Ethernet driver
- *
- * Copyright (C) 2018-2022 Texas Instruments Incorporated - https://www.ti.com/
- *
- */
-
 #ifndef __NET_TI_ICSSG_STATS_H
 #define __NET_TI_ICSSG_STATS_H
-
 #include "icssg_prueth.h"
-
-#define STATS_TIME_LIMIT_1G_MS    25000    /* 25 seconds @ 1G */
-
+#define STATS_TIME_LIMIT_1G_MS    25000     
 struct miig_stats_regs {
-	/* Rx */
 	u32 rx_packets;
 	u32 rx_broadcast_frames;
 	u32 rx_multicast_frames;
@@ -54,7 +43,6 @@ struct miig_stats_regs {
 	u32 rx_bucket5_frames;
 	u32 rx_bytes;
 	u32 rx_tx_total_bytes;
-	/* Tx */
 	u32 tx_packets;
 	u32 tx_broadcast_frames;
 	u32 tx_multicast_frames;
@@ -76,22 +64,18 @@ struct miig_stats_regs {
 	u32 tx_bucket5_frames;
 	u32 tx_bytes;
 };
-
 #define ICSSG_STATS(field, stats_type)			\
 {							\
 	#field,						\
 	offsetof(struct miig_stats_regs, field),	\
 	stats_type					\
 }
-
 struct icssg_stats {
 	char name[ETH_GSTRING_LEN];
 	u32 offset;
 	bool standard_stats;
 };
-
 static const struct icssg_stats icssg_all_stats[] = {
-	/* Rx */
 	ICSSG_STATS(rx_packets, true),
 	ICSSG_STATS(rx_broadcast_frames, false),
 	ICSSG_STATS(rx_multicast_frames, true),
@@ -132,7 +116,6 @@ static const struct icssg_stats icssg_all_stats[] = {
 	ICSSG_STATS(rx_bucket5_frames, true),
 	ICSSG_STATS(rx_bytes, true),
 	ICSSG_STATS(rx_tx_total_bytes, false),
-	/* Tx */
 	ICSSG_STATS(tx_packets, true),
 	ICSSG_STATS(tx_broadcast_frames, false),
 	ICSSG_STATS(tx_multicast_frames, false),
@@ -154,5 +137,4 @@ static const struct icssg_stats icssg_all_stats[] = {
 	ICSSG_STATS(tx_bucket5_frames, true),
 	ICSSG_STATS(tx_bytes, true),
 };
-
-#endif /* __NET_TI_ICSSG_STATS_H */
+#endif  

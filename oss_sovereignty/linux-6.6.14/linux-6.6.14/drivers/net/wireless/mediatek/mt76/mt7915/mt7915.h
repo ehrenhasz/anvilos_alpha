@@ -1,93 +1,68 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2020 MediaTek Inc. */
-
 #ifndef __MT7915_H
 #define __MT7915_H
-
 #include <linux/interrupt.h>
 #include <linux/ktime.h>
 #include "../mt76_connac.h"
 #include "regs.h"
-
 #define MT7915_MAX_INTERFACES		19
 #define MT7915_WTBL_SIZE		288
 #define MT7916_WTBL_SIZE		544
 #define MT7915_WTBL_RESERVED		(mt7915_wtbl_size(dev) - 1)
 #define MT7915_WTBL_STA			(MT7915_WTBL_RESERVED - \
 					 MT7915_MAX_INTERFACES)
-
 #define MT7915_WATCHDOG_TIME		(HZ / 10)
 #define MT7915_RESET_TIMEOUT		(30 * HZ)
-
 #define MT7915_TX_RING_SIZE		2048
 #define MT7915_TX_MCU_RING_SIZE		256
 #define MT7915_TX_FWDL_RING_SIZE	128
-
 #define MT7915_RX_RING_SIZE		1536
 #define MT7915_RX_MCU_RING_SIZE		512
-
 #define MT7915_FIRMWARE_WA		"mediatek/mt7915_wa.bin"
 #define MT7915_FIRMWARE_WM		"mediatek/mt7915_wm.bin"
 #define MT7915_ROM_PATCH		"mediatek/mt7915_rom_patch.bin"
-
 #define MT7916_FIRMWARE_WA		"mediatek/mt7916_wa.bin"
 #define MT7916_FIRMWARE_WM		"mediatek/mt7916_wm.bin"
 #define MT7916_ROM_PATCH		"mediatek/mt7916_rom_patch.bin"
-
 #define MT7981_FIRMWARE_WA		"mediatek/mt7981_wa.bin"
 #define MT7981_FIRMWARE_WM		"mediatek/mt7981_wm.bin"
 #define MT7981_ROM_PATCH		"mediatek/mt7981_rom_patch.bin"
-
 #define MT7986_FIRMWARE_WA		"mediatek/mt7986_wa.bin"
 #define MT7986_FIRMWARE_WM		"mediatek/mt7986_wm.bin"
 #define MT7986_FIRMWARE_WM_MT7975	"mediatek/mt7986_wm_mt7975.bin"
 #define MT7986_ROM_PATCH		"mediatek/mt7986_rom_patch.bin"
 #define MT7986_ROM_PATCH_MT7975		"mediatek/mt7986_rom_patch_mt7975.bin"
-
 #define MT7915_EEPROM_DEFAULT		"mediatek/mt7915_eeprom.bin"
 #define MT7915_EEPROM_DEFAULT_DBDC	"mediatek/mt7915_eeprom_dbdc.bin"
 #define MT7916_EEPROM_DEFAULT		"mediatek/mt7916_eeprom.bin"
-
 #define MT7981_EEPROM_MT7976_DEFAULT_DBDC	"mediatek/mt7981_eeprom_mt7976_dbdc.bin"
-
 #define MT7986_EEPROM_MT7975_DEFAULT		"mediatek/mt7986_eeprom_mt7975.bin"
 #define MT7986_EEPROM_MT7975_DUAL_DEFAULT	"mediatek/mt7986_eeprom_mt7975_dual.bin"
 #define MT7986_EEPROM_MT7976_DEFAULT		"mediatek/mt7986_eeprom_mt7976.bin"
 #define MT7986_EEPROM_MT7976_DEFAULT_DBDC	"mediatek/mt7986_eeprom_mt7976_dbdc.bin"
 #define MT7986_EEPROM_MT7976_DUAL_DEFAULT	"mediatek/mt7986_eeprom_mt7976_dual.bin"
-
 #define MT7915_EEPROM_SIZE		3584
 #define MT7916_EEPROM_SIZE		4096
-
 #define MT7915_EEPROM_BLOCK_SIZE	16
 #define MT7915_HW_TOKEN_SIZE		4096
 #define MT7915_TOKEN_SIZE		8192
-
-#define MT7915_CFEND_RATE_DEFAULT	0x49	/* OFDM 24M */
-#define MT7915_CFEND_RATE_11B		0x03	/* 11B LP, 11M */
-
+#define MT7915_CFEND_RATE_DEFAULT	0x49	 
+#define MT7915_CFEND_RATE_11B		0x03	 
 #define MT7915_THERMAL_THROTTLE_MAX	100
 #define MT7915_CDEV_THROTTLE_MAX	99
-
 #define MT7915_SKU_RATE_NUM		161
-
 #define MT7915_MAX_TWT_AGRT		16
 #define MT7915_MAX_STA_TWT_AGRT		8
 #define MT7915_MIN_TWT_DUR 64
 #define MT7915_MAX_QUEUE		(MT_RXQ_BAND2 + __MT_MCUQ_MAX + 2)
-
 #define MT7915_WED_RX_TOKEN_SIZE	12288
-
 #define MT7915_CRIT_TEMP_IDX		0
 #define MT7915_MAX_TEMP_IDX		1
 #define MT7915_CRIT_TEMP		110
 #define MT7915_MAX_TEMP			120
-
 struct mt7915_vif;
 struct mt7915_sta;
 struct mt7915_dfs_pulse;
 struct mt7915_dfs_pattern;
-
 enum mt7915_txq_id {
 	MT7915_TXQ_FWDL = 16,
 	MT7915_TXQ_MCU_WM,
@@ -95,7 +70,6 @@ enum mt7915_txq_id {
 	MT7915_TXQ_BAND1,
 	MT7915_TXQ_MCU_WA,
 };
-
 enum mt7915_rxq_id {
 	MT7915_RXQ_BAND0 = 0,
 	MT7915_RXQ_BAND1,
@@ -103,7 +77,6 @@ enum mt7915_rxq_id {
 	MT7915_RXQ_MCU_WA,
 	MT7915_RXQ_MCU_WA_EXT,
 };
-
 enum mt7916_rxq_id {
 	MT7916_RXQ_MCU_WM = 0,
 	MT7916_RXQ_MCU_WA,
@@ -112,7 +85,6 @@ enum mt7916_rxq_id {
 	MT7916_RXQ_BAND0,
 	MT7916_RXQ_BAND1,
 };
-
 struct mt7915_twt_flow {
 	struct list_head list;
 	u64 start_tsf;
@@ -128,30 +100,22 @@ struct mt7915_twt_flow {
 	u8 trigger:1;
 	u8 sched:1;
 };
-
 DECLARE_EWMA(avg_signal, 10, 8)
-
 struct mt7915_sta {
-	struct mt76_wcid wcid; /* must be first */
-
+	struct mt76_wcid wcid;  
 	struct mt7915_vif *vif;
-
 	struct list_head rc_list;
 	u32 airtime_ac[8];
-
 	int ack_signal;
 	struct ewma_avg_signal avg_ack_signal;
-
 	unsigned long changed;
 	unsigned long jiffies;
 	struct mt76_connac_sta_key_conf bip;
-
 	struct {
 		u8 flowid_mask;
 		struct mt7915_twt_flow flow[MT7915_MAX_STA_TWT_AGRT];
 	} twt;
 };
-
 struct mt7915_vif_cap {
 	bool ht_ldpc:1;
 	bool vht_ldpc:1;
@@ -164,110 +128,80 @@ struct mt7915_vif_cap {
 	bool he_su_ebfee:1;
 	bool he_mu_ebfer:1;
 };
-
 struct mt7915_vif {
-	struct mt76_vif mt76; /* must be first */
-
+	struct mt76_vif mt76;  
 	struct mt7915_vif_cap cap;
 	struct mt7915_sta sta;
 	struct mt7915_phy *phy;
-
 	struct ieee80211_tx_queue_params queue_params[IEEE80211_NUM_ACS];
 	struct cfg80211_bitrate_mask bitrate_mask;
 };
-
-/* crash-dump */
 struct mt7915_crash_data {
 	guid_t guid;
 	struct timespec64 timestamp;
-
 	u8 *memdump_buf;
 	size_t memdump_buf_len;
 };
-
 struct mt7915_hif {
 	struct list_head list;
-
 	struct device *dev;
 	void __iomem *regs;
 	int irq;
 };
-
 struct mt7915_phy {
 	struct mt76_phy *mt76;
 	struct mt7915_dev *dev;
-
 	struct ieee80211_sband_iftype_data iftype[NUM_NL80211_BANDS][NUM_NL80211_IFTYPES];
-
 	struct ieee80211_vif *monitor_vif;
-
 	struct thermal_cooling_device *cdev;
 	u8 cdev_state;
 	u8 throttle_state;
-	u32 throttle_temp[2]; /* 0: critical high, 1: maximum */
-
+	u32 throttle_temp[2];  
 	u32 rxfilter;
 	u64 omac_mask;
-
 	u16 noise;
-
 	s16 coverage_class;
 	u8 slottime;
-
 	u8 rdd_state;
-
 	u32 trb_ts;
-
 	u32 rx_ampdu_ts;
 	u32 ampdu_ref;
-
 	struct mt76_mib_stats mib;
 	struct mt76_channel_state state_ts;
-
 #ifdef CONFIG_NL80211_TESTMODE
 	struct {
 		u32 *reg_backup;
-
 		s32 last_freq_offset;
 		u8 last_rcpi[4];
 		s8 last_ib_rssi[4];
 		s8 last_wb_rssi[4];
 		u8 last_snr;
-
 		u8 spe_idx;
 	} test;
 #endif
 };
-
 struct mt7915_dev {
-	union { /* must be first */
+	union {  
 		struct mt76_dev mt76;
 		struct mt76_phy mphy;
 	};
-
 	struct mt7915_hif *hif2;
 	struct mt7915_reg_desc reg;
 	u8 q_id[MT7915_MAX_QUEUE];
 	u32 q_int_mask[MT7915_MAX_QUEUE];
 	u32 wfdma_mask;
-
 	const struct mt76_bus_ops *bus_ops;
 	struct mt7915_phy phy;
-
-	/* monitor rx chain configured channel */
 	struct cfg80211_chan_def rdd2_chandef;
 	struct mt7915_phy *rdd2_phy;
-
 	u16 chainmask;
 	u16 chainshift;
 	u32 hif_idx;
-
 	struct work_struct init_work;
 	struct work_struct rc_work;
 	struct work_struct dump_work;
 	struct work_struct reset_work;
 	wait_queue_head_t reset_wait;
-
 	struct {
 		u32 state;
 		u32 wa_reset_count;
@@ -276,59 +210,46 @@ struct mt7915_dev {
 		bool hw_init_done:1;
 		bool restart:1;
 	} recovery;
-
-	/* protects coredump data */
 	struct mutex dump_mutex;
 #ifdef CONFIG_DEV_COREDUMP
 	struct {
 		struct mt7915_crash_data *crash_data;
 	} coredump;
 #endif
-
 	struct list_head sta_rc_list;
 	struct list_head twt_list;
-
 	u32 hw_pattern;
-
 	bool dbdc_support;
 	bool flash_mode;
 	bool muru_debug;
 	bool ibf;
-
 	struct dentry *debugfs_dir;
 	struct rchan *relay_fwlog;
-
 	void *cal;
-
 	struct {
 		u8 debug_wm;
 		u8 debug_wa;
 		u8 debug_bin;
 	} fw;
-
 	struct {
 		u16 table_mask;
 		u8 n_agrt;
 	} twt;
-
 	struct reset_control *rstc;
 	void __iomem *dcm;
 	void __iomem *sku;
 };
-
 enum {
 	WFDMA0 = 0x0,
 	WFDMA1,
 	WFDMA_EXT,
 	__MT_WFDMA_MAX,
 };
-
 enum {
 	MT_RX_SEL0,
 	MT_RX_SEL1,
-	MT_RX_SEL2, /* monitor chain */
+	MT_RX_SEL2,  
 };
-
 enum mt7915_rdd_cmd {
 	RDD_STOP,
 	RDD_START,
@@ -345,49 +266,38 @@ enum mt7915_rdd_cmd {
 	RDD_RESUME_BF,
 	RDD_IRQ_OFF,
 };
-
 static inline struct mt7915_phy *
 mt7915_hw_phy(struct ieee80211_hw *hw)
 {
 	struct mt76_phy *phy = hw->priv;
-
 	return phy->priv;
 }
-
 static inline struct mt7915_dev *
 mt7915_hw_dev(struct ieee80211_hw *hw)
 {
 	struct mt76_phy *phy = hw->priv;
-
 	return container_of(phy->dev, struct mt7915_dev, mt76);
 }
-
 static inline struct mt7915_phy *
 mt7915_ext_phy(struct mt7915_dev *dev)
 {
 	struct mt76_phy *phy = dev->mt76.phys[MT_BAND1];
-
 	if (!phy)
 		return NULL;
-
 	return phy->priv;
 }
-
 static inline u32 mt7915_check_adie(struct mt7915_dev *dev, bool sku)
 {
 	u32 mask = sku ? MT_CONNINFRA_SKU_MASK : MT_ADIE_TYPE_MASK;
 	if (!is_mt798x(&dev->mt76))
 		return 0;
-
 	return mt76_rr(dev, MT_CONNINFRA_SKU_DEC_ADDR) & mask;
 }
-
 extern const struct ieee80211_ops mt7915_ops;
 extern const struct mt76_testmode_ops mt7915_testmode_ops;
 extern struct pci_driver mt7915_pci_driver;
 extern struct pci_driver mt7915_hif_driver;
 extern struct platform_driver mt798x_wmac_driver;
-
 #ifdef CONFIG_MT798X_WMAC
 int mt7986_wmac_enable(struct mt7915_dev *dev);
 void mt7986_wmac_disable(struct mt7915_dev *dev);
@@ -396,7 +306,6 @@ static inline int mt7986_wmac_enable(struct mt7915_dev *dev)
 {
 	return 0;
 }
-
 static inline void mt7986_wmac_disable(struct mt7915_dev *dev)
 {
 }
@@ -407,7 +316,6 @@ void mt7915_wfsys_reset(struct mt7915_dev *dev);
 irqreturn_t mt7915_irq_handler(int irq, void *dev_instance);
 u64 __mt7915_get_tsf(struct ieee80211_hw *hw, struct mt7915_vif *mvif);
 u32 mt7915_wed_init_buf(void *ptr, dma_addr_t phys, int token_id);
-
 int mt7915_register_device(struct mt7915_dev *dev);
 void mt7915_unregister_device(struct mt7915_dev *dev);
 int mt7915_eeprom_init(struct mt7915_dev *dev);
@@ -504,30 +412,24 @@ int mt7915_mcu_fw_log_2_host(struct mt7915_dev *dev, u8 type, u8 ctrl);
 int mt7915_mcu_fw_dbg_ctrl(struct mt7915_dev *dev, u32 module, u8 level);
 void mt7915_mcu_rx_event(struct mt7915_dev *dev, struct sk_buff *skb);
 void mt7915_mcu_exit(struct mt7915_dev *dev);
-
 static inline u16 mt7915_wtbl_size(struct mt7915_dev *dev)
 {
 	return is_mt7915(&dev->mt76) ? MT7915_WTBL_SIZE : MT7916_WTBL_SIZE;
 }
-
 static inline u16 mt7915_eeprom_size(struct mt7915_dev *dev)
 {
 	return is_mt7915(&dev->mt76) ? MT7915_EEPROM_SIZE : MT7916_EEPROM_SIZE;
 }
-
 void mt7915_dual_hif_set_irq_mask(struct mt7915_dev *dev, bool write_reg,
 				  u32 clear, u32 set);
-
 static inline void mt7915_irq_enable(struct mt7915_dev *dev, u32 mask)
 {
 	if (dev->hif2)
 		mt7915_dual_hif_set_irq_mask(dev, false, 0, mask);
 	else
 		mt76_set_irq_mask(&dev->mt76, 0, 0, mask);
-
 	tasklet_schedule(&dev->mt76.irq_tasklet);
 }
-
 static inline void mt7915_irq_disable(struct mt7915_dev *dev, u32 mask)
 {
 	if (dev->hif2)
@@ -535,10 +437,8 @@ static inline void mt7915_irq_disable(struct mt7915_dev *dev, u32 mask)
 	else
 		mt76_set_irq_mask(&dev->mt76, MT_INT_MASK_CSR, mask, 0);
 }
-
 void mt7915_memcpy_fromio(struct mt7915_dev *dev, void *buf, u32 offset,
 			  size_t len);
-
 void mt7915_mac_init(struct mt7915_dev *dev);
 u32 mt7915_mac_wtbl_lmac_addr(struct mt7915_dev *dev, u16 wcid, u8 dw);
 bool mt7915_mac_wtbl_update(struct mt7915_dev *dev, int idx, u32 mask);
@@ -592,5 +492,4 @@ void mt7915_sta_add_debugfs(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 #endif
 int mt7915_mmio_wed_init(struct mt7915_dev *dev, void *pdev_ptr,
 			 bool pci, int *irq);
-
 #endif

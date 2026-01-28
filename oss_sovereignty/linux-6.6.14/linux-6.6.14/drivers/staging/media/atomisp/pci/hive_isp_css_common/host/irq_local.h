@@ -1,48 +1,23 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010-2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
-
 #ifndef __IRQ_LOCAL_H_INCLUDED__
 #define __IRQ_LOCAL_H_INCLUDED__
-
 #include "irq_global.h"
-
 #include <irq_controller_defs.h>
-
-/* IRQ0_ID */
 #include "hive_isp_css_defs.h"
 #define HIVE_GP_DEV_IRQ_NUM_IRQS	32
-/* IRQ1_ID */
 #include "input_formatter_subsystem_defs.h"
 #define HIVE_IFMT_IRQ_NUM_IRQS		5
-/* IRQ2_ID */
 #include "input_system_defs.h"
-/* IRQ3_ID */
 #include "input_selector_defs.h"
-
 #define	IRQ_ID_OFFSET	32
 #define	IRQ0_ID_OFFSET	0
 #define	IRQ1_ID_OFFSET	IRQ_ID_OFFSET
 #define	IRQ2_ID_OFFSET	(2 * IRQ_ID_OFFSET)
 #define	IRQ3_ID_OFFSET	(3 * IRQ_ID_OFFSET)
 #define	IRQ_END_OFFSET	(4 * IRQ_ID_OFFSET)
-
 #define	IRQ0_ID_N_CHANNEL	HIVE_GP_DEV_IRQ_NUM_IRQS
 #define	IRQ1_ID_N_CHANNEL	HIVE_IFMT_IRQ_NUM_IRQS
 #define	IRQ2_ID_N_CHANNEL	HIVE_ISYS_IRQ_NUM_BITS
 #define	IRQ3_ID_N_CHANNEL	HIVE_ISEL_IRQ_NUM_IRQS
-
 enum virq_id {
 	virq_gpio_pin_0            = IRQ0_ID_OFFSET + HIVE_GP_DEV_IRQ_GPIO_PIN_0_BIT_ID,
 	virq_gpio_pin_1            = IRQ0_ID_OFFSET + HIVE_GP_DEV_IRQ_GPIO_PIN_1_BIT_ID,
@@ -76,13 +51,11 @@ enum virq_id {
 	virq_sw_pin_1              = IRQ0_ID_OFFSET + HIVE_GP_DEV_IRQ_SW_PIN_1_BIT_ID,
 	virq_dma                   = IRQ0_ID_OFFSET + HIVE_GP_DEV_IRQ_DMA_BIT_ID,
 	virq_sp_stream_mon_b       = IRQ0_ID_OFFSET + HIVE_GP_DEV_IRQ_SP_STREAM_MON_B_BIT_ID,
-
 	virq_ifmt0_id              = IRQ1_ID_OFFSET + HIVE_IFMT_IRQ_IFT_PRIM_BIT_ID,
 	virq_ifmt1_id              = IRQ1_ID_OFFSET + HIVE_IFMT_IRQ_IFT_PRIM_B_BIT_ID,
 	virq_ifmt2_id              = IRQ1_ID_OFFSET + HIVE_IFMT_IRQ_IFT_SEC_BIT_ID,
 	virq_ifmt3_id              = IRQ1_ID_OFFSET + HIVE_IFMT_IRQ_MEM_CPY_BIT_ID,
 	virq_ifmt_sideband_changed = IRQ1_ID_OFFSET + HIVE_IFMT_IRQ_SIDEBAND_CHANGED_BIT_ID,
-
 	virq_isys_sof              = IRQ2_ID_OFFSET + HIVE_ISYS_IRQ_CSI_SOF_BIT_ID,
 	virq_isys_eof              = IRQ2_ID_OFFSET + HIVE_ISYS_IRQ_CSI_EOF_BIT_ID,
 	virq_isys_sol              = IRQ2_ID_OFFSET + HIVE_ISYS_IRQ_CSI_SOL_BIT_ID,
@@ -102,19 +75,15 @@ enum virq_id {
 	virq_isys_cio_to_ahb       = IRQ2_ID_OFFSET + HIVE_ISYS_IRQ_CIO2AHB,
 	virq_isys_dma              = IRQ2_ID_OFFSET + HIVE_ISYS_IRQ_DMA_BIT_ID,
 	virq_isys_fifo_monitor     = IRQ2_ID_OFFSET + HIVE_ISYS_IRQ_STREAM_MON_BIT_ID,
-
 	virq_isel_sof              = IRQ3_ID_OFFSET + HIVE_ISEL_IRQ_SYNC_GEN_SOF_BIT_ID,
 	virq_isel_eof              = IRQ3_ID_OFFSET + HIVE_ISEL_IRQ_SYNC_GEN_EOF_BIT_ID,
 	virq_isel_sol              = IRQ3_ID_OFFSET + HIVE_ISEL_IRQ_SYNC_GEN_SOL_BIT_ID,
 	virq_isel_eol              = IRQ3_ID_OFFSET + HIVE_ISEL_IRQ_SYNC_GEN_EOL_BIT_ID,
-
 	N_virq_id                  = IRQ_END_OFFSET
 };
-
 struct virq_info {
 	hrt_data		irq_status_reg[N_IRQ_ID];
 };
-
 struct irq_controller_state {
 	unsigned int	irq_edge;
 	unsigned int	irq_mask;
@@ -122,5 +91,4 @@ struct irq_controller_state {
 	unsigned int	irq_enable;
 	unsigned int	irq_level_not_pulse;
 };
-
-#endif /* __IRQ_LOCAL_H_INCLUDED__ */
+#endif  

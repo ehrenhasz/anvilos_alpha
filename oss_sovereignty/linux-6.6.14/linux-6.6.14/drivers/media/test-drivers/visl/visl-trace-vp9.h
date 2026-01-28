@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #if !defined(_VISL_TRACE_VP9_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _VISL_TRACE_VP9_H_
-
 #include <linux/tracepoint.h>
 #include "visl.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM visl_vp9_controls
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_vp9_frame_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_vp9_frame *f),
 	TP_ARGS(f),
@@ -124,7 +120,6 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_vp9_frame_tmpl,
 		  {V4L2_VP9_REFERENCE_MODE_COMPOUND_REFERENCE, "REFERENCE_MODE_COMPOUND_REFERENCE"},
 		  {V4L2_VP9_REFERENCE_MODE_SELECT, "REFERENCE_MODE_SELECT"}))
 );
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_vp9_compressed_hdr_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_vp9_compressed_hdr *h),
 	TP_ARGS(h),
@@ -200,7 +195,6 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_vp9_compressed_hdr_tmpl,
 				   false)
 	)
 );
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_vp9_compressed_coef_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_vp9_compressed_hdr *h),
 	TP_ARGS(h),
@@ -213,7 +207,6 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_vp9_compressed_coef_tmpl,
 				   false)
 	)
 );
-
 DECLARE_EVENT_CLASS(v4l2_vp9_mv_probs_tmpl,
 	TP_PROTO(const struct v4l2_vp9_mv_probs *p),
 	TP_ARGS(p),
@@ -261,30 +254,23 @@ DECLARE_EVENT_CLASS(v4l2_vp9_mv_probs_tmpl,
 				sizeof(__entry->p.hp[0]))
 	)
 );
-
 DEFINE_EVENT(v4l2_ctrl_vp9_frame_tmpl, v4l2_ctrl_vp9_frame,
 	TP_PROTO(const struct v4l2_ctrl_vp9_frame *f),
 	TP_ARGS(f)
 );
-
 DEFINE_EVENT(v4l2_ctrl_vp9_compressed_hdr_tmpl, v4l2_ctrl_vp9_compressed_hdr,
 	TP_PROTO(const struct v4l2_ctrl_vp9_compressed_hdr *h),
 	TP_ARGS(h)
 );
-
 DEFINE_EVENT(v4l2_ctrl_vp9_compressed_coef_tmpl, v4l2_ctrl_vp9_compressed_coeff,
 	TP_PROTO(const struct v4l2_ctrl_vp9_compressed_hdr *h),
 	TP_ARGS(h)
 );
-
-
 DEFINE_EVENT(v4l2_vp9_mv_probs_tmpl, v4l2_vp9_mv_probs,
 	TP_PROTO(const struct v4l2_vp9_mv_probs *p),
 	TP_ARGS(p)
 );
-
 #endif
-
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH ../../drivers/media/test-drivers/visl

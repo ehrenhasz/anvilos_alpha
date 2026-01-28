@@ -1,28 +1,5 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
-
 #ifndef __SMU_TYPES_H__
 #define __SMU_TYPES_H__
-
 #define SMU_MESSAGE_TYPES			      \
        __SMU_DUMMY_MAP(TestMessage),		      \
        __SMU_DUMMY_MAP(GetSmuVersion),                \
@@ -248,14 +225,12 @@
 	__SMU_DUMMY_MAP(RequestI2cTransaction), \
 	__SMU_DUMMY_MAP(GetMetricsTable), \
 	__SMU_DUMMY_MAP(DALNotPresent),
-
 #undef __SMU_DUMMY_MAP
 #define __SMU_DUMMY_MAP(type)	SMU_MSG_##type
 enum smu_message_type {
 	SMU_MESSAGE_TYPES
 	SMU_MSG_MAX_COUNT,
 };
-
 enum smu_clk_type {
 	SMU_GFXCLK,
 	SMU_VCLK,
@@ -282,7 +257,6 @@ enum smu_clk_type {
 	SMU_OD_VDDGFX_OFFSET,
 	SMU_CLK_COUNT,
 };
-
 #define SMU_FEATURE_MASKS				\
        __SMU_DUMMY_MAP(DPM_PREFETCHER),			\
        __SMU_DUMMY_MAP(DPM_GFXCLK),                    	\
@@ -405,12 +379,10 @@ enum smu_clk_type {
        __SMU_DUMMY_MAP(ATHUB_MMHUB_PG),			\
        __SMU_DUMMY_MAP(BACO_CG),			\
        __SMU_DUMMY_MAP(SOC_CG),
-
 #undef __SMU_DUMMY_MAP
 #define __SMU_DUMMY_MAP(feature)	SMU_FEATURE_##feature##_BIT
 enum smu_feature_mask {
 	SMU_FEATURE_MASKS
 	SMU_FEATURE_COUNT,
 };
-
 #endif

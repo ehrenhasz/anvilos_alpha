@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2011-2013 Freescale Semiconductor, Inc. All Rights Reserved.
- */
 #ifndef __LINUX_REG_PFUZE100_H
 #define __LINUX_REG_PFUZE100_H
-
 #define PFUZE100_SW1AB		0
 #define PFUZE100_SW1C		1
 #define PFUZE100_SW2		2
@@ -22,7 +17,6 @@
 #define PFUZE100_VGEN6		14
 #define PFUZE100_COIN		15
 #define PFUZE100_MAX_REGULATOR	16
-
 #define PFUZE200_SW1AB		0
 #define PFUZE200_SW2		1
 #define PFUZE200_SW3A		2
@@ -37,7 +31,6 @@
 #define PFUZE200_VGEN5		11
 #define PFUZE200_VGEN6		12
 #define PFUZE200_COIN		13
-
 #define PFUZE3000_SW1A		0
 #define PFUZE3000_SW1B		1
 #define PFUZE3000_SW2		2
@@ -51,7 +44,6 @@
 #define PFUZE3000_V33		10
 #define PFUZE3000_VLDO3		11
 #define PFUZE3000_VLDO4		12
-
 #define PFUZE3001_SW1		0
 #define PFUZE3001_SW2		1
 #define PFUZE3001_SW3		2
@@ -62,5 +54,4 @@
 #define PFUZE3001_V33		7
 #define PFUZE3001_VLDO3		8
 #define PFUZE3001_VLDO4		9
-
-#endif /* __LINUX_REG_PFUZE100_H */
+#endif  

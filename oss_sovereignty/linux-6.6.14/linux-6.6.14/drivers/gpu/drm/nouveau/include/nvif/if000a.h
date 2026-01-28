@@ -9,10 +9,8 @@ struct nvif_mem_v0 {
 	__u64 addr;
 	__u8  data[];
 };
-
 struct nvif_mem_ram_vn {
 };
-
 struct nvif_mem_ram_v0 {
 	__u8  version;
 	__u8  pad01[7];

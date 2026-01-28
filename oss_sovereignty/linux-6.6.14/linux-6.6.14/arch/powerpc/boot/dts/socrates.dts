@@ -1,19 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Device Tree Source for the Socrates board (MPC8544).
- *
- * Copyright (c) 2008 Emcraft Systems.
- * Sergei Poselenov, <sposelenov@emcraft.com>
- */
-
 /dts-v1/;
-
 / {
 	model = "abb,socrates";
 	compatible = "abb,socrates";
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	aliases {
 		ethernet0 = &enet0;
 		ethernet1 = &enet1;
@@ -21,68 +11,58 @@
 		serial1 = &serial1;
 		pci0 = &pci0;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		PowerPC,8544@0 {
 			device_type = "cpu";
 			reg = <0>;
 			d-cache-line-size = <32>;
 			i-cache-line-size = <32>;
-			d-cache-size = <0x8000>;	// L1, 32K
-			i-cache-size = <0x8000>;	// L1, 32K
+			d-cache-size = <0x8000>;	 
+			i-cache-size = <0x8000>;	 
 			timebase-frequency = <0>;
 			bus-frequency = <0>;
 			clock-frequency = <0>;
 			next-level-cache = <&L2>;
 		};
 	};
-
 	memory {
 		device_type = "memory";
-		reg = <0x00000000 0x00000000>;	// Filled in by U-Boot
+		reg = <0x00000000 0x00000000>;	 
 	};
-
 	soc8544@e0000000 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		device_type = "soc";
-
 		ranges = <0x00000000 0xe0000000 0x00100000>;
-		bus-frequency = <0>;		// Filled in by U-Boot
+		bus-frequency = <0>;		 
 		compatible = "fsl,mpc8544-immr", "simple-bus";
-
 		ecm-law@0 {
 			compatible = "fsl,ecm-law";
 			reg = <0x0 0x1000>;
 			fsl,num-laws = <10>;
 		};
-
 		ecm@1000 {
 			compatible = "fsl,mpc8544-ecm", "fsl,ecm";
 			reg = <0x1000 0x1000>;
 			interrupts = <17 2>;
 			interrupt-parent = <&mpic>;
 		};
-
 		memory-controller@2000 {
 			compatible = "fsl,mpc8544-memory-controller";
 			reg = <0x2000 0x1000>;
 			interrupt-parent = <&mpic>;
 			interrupts = <18 2>;
 		};
-
 		L2: l2-cache-controller@20000 {
 			compatible = "fsl,mpc8544-l2-cache-controller";
 			reg = <0x20000 0x1000>;
 			cache-line-size = <32>;
-			cache-size = <0x40000>;	// L2, 256K
+			cache-size = <0x40000>;	 
 			interrupt-parent = <&mpic>;
 			interrupts = <16 2>;
 		};
-
 		i2c@3000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -92,7 +72,6 @@
 			interrupts = <43 2>;
 			interrupt-parent = <&mpic>;
 			fsl,preserve-clocking;
-
 			dtt@28 {
 				compatible = "winbond,w83782d";
 				reg = <0x28>;
@@ -114,7 +93,6 @@
 				interrupts = <8 1>;
 			};
 		};
-
 		i2c@3100 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -125,7 +103,6 @@
 			interrupt-parent = <&mpic>;
 			fsl,preserve-clocking;
 		};
-
 		enet0: ethernet@24000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -141,13 +118,11 @@
 			phy-handle = <&phy0>;
 			tbi-handle = <&tbi0>;
 			phy-connection-type = "rgmii-id";
-
 			mdio@520 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				compatible = "fsl,gianfar-mdio";
 				reg = <0x520 0x20>;
-
 				phy0: ethernet-phy@0 {
 					interrupt-parent = <&mpic>;
 					interrupts = <0 1>;
@@ -163,7 +138,6 @@
 				};
 			};
 		};
-
 		enet1: ethernet@26000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -179,19 +153,16 @@
 			phy-handle = <&phy1>;
 			tbi-handle = <&tbi1>;
 			phy-connection-type = "rgmii-id";
-
 			mdio@520 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				compatible = "fsl,gianfar-tbi";
 				reg = <0x520 0x20>;
-
 				tbi1: tbi-phy@11 {
 					reg = <0x11>;
 				};
 			};
 		};
-
 		serial0: serial@4500 {
 			cell-index = <0>;
 			device_type = "serial";
@@ -201,7 +172,6 @@
 			interrupts = <42 2>;
 			interrupt-parent = <&mpic>;
 		};
-
 		serial1: serial@4600 {
 			cell-index = <1>;
 			device_type = "serial";
@@ -211,13 +181,11 @@
 			interrupts = <42 2>;
 			interrupt-parent = <&mpic>;
 		};
-
-		global-utilities@e0000 {	//global utilities block
+		global-utilities@e0000 {	 
 			compatible = "fsl,mpc8548-guts";
 			reg = <0xe0000 0x1000>;
 			fsl,has-rstcr;
 		};
-
 		mpic: pic@40000 {
 			interrupt-controller;
 			#address-cells = <0>;
@@ -227,8 +195,6 @@
 			device_type = "open-pic";
 		};
 	};
-
-
 	localbus {
 		compatible = "fsl,mpc8544-localbus",
 		             "fsl,pq3-localbus",
@@ -238,12 +204,10 @@
 		reg = <0xe0005000 0x40>;
 		interrupt-parent = <&mpic>;
 		interrupts = <19 2>;
-
 		ranges = <0 0 0xfc000000 0x04000000
 			  2 0 0xc8000000 0x04000000
 			  3 0 0xc0000000 0x00100000
-			>; /* Overwritten by U-Boot */
-
+			>;  
 		nor_flash@0,0 {
 			compatible = "amd,s29gl256n", "cfi-flash";
 			bank-width = <2>;
@@ -278,31 +242,26 @@
 				read-only;
 			};
 		};
-
 		display@2,0 {
 			compatible = "fujitsu,lime";
 			reg = <2 0x0 0x4000000>;
 			interrupt-parent = <&mpic>;
 			interrupts = <6 1>;
 		};
-
 		fpga_pic: fpga-pic@3,10 {
 			compatible = "abb,socrates-fpga-pic";
 			reg = <3 0x10 0x10>;
 			interrupt-controller;
-			/* IRQs 2, 10, 11, active low, level-sensitive */
 			interrupts = <2 1 10 1 11 1>;
 			interrupt-parent = <&mpic>;
 			#interrupt-cells = <3>;
 		};
-
 		spi@3,60 {
 			compatible = "abb,socrates-spi";
 			reg = <3 0x60 0x10>;
-			interrupts = <8 4 0>;	// number, type, routing
+			interrupts = <8 4 0>;	 
 			interrupt-parent = <&fpga_pic>;
 		};
-
 		nand@3,70 {
 			compatible = "abb,socrates-nand";
 			reg = <3 0x70 0x04>;
@@ -314,15 +273,13 @@
 				reg = <0x0 0x40000000>;
 			};
 		};
-
 		can@3,100 {
 			compatible = "philips,sja1000";
 			reg = <3 0x100 0x80>;
-			interrupts = <2 8 1>;	// number, type, routing
+			interrupts = <2 8 1>;	 
 			interrupt-parent = <&fpga_pic>;
 		};
 	};
-
 	pci0: pci@e0008000 {
 		#interrupt-cells = <1>;
 		#size-cells = <2>;
@@ -331,12 +288,9 @@
 		device_type = "pci";
 		reg = <0xe0008000 0x1000>;
 		clock-frequency = <66666666>;
-
 		interrupt-map-mask = <0xf800 0x0 0x0 0x7>;
 		interrupt-map = <
-				/* IDSEL 0x11 */
 				 0x8800 0x0 0x0 1 &mpic 5 1
-				/* IDSEL 0x12 */
 				 0x9000 0x0 0x0 1 &mpic 4 1>;
 		interrupt-parent = <&mpic>;
 		interrupts = <24 2>;
@@ -344,5 +298,4 @@
 		ranges = <0x02000000 0x0 0x80000000 0x80000000 0x0 0x20000000
 			  0x01000000 0x0 0x00000000 0xe2000000 0x0 0x01000000>;
 	};
-
 };

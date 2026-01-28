@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2012 - 2018 Microchip Technology Inc., and its subsidiaries.
- * All rights reserved.
- */
-
 #ifndef WILC_CFG80211_H
 #define WILC_CFG80211_H
 #include "netdev.h"
-
 int wilc_cfg80211_init(struct wilc **wilc, struct device *dev, int io_type,
 		       const struct wilc_hif_func *ops);
 struct wilc *wilc_create_wiphy(struct device *dev);

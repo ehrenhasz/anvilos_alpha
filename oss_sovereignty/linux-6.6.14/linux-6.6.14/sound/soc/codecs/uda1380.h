@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Audio support for Philips UDA1380
- *
- * Copyright (c) 2005 Giorgio Padrin <giorgio@mandarinlogiq.org>
- */
-
 #ifndef _UDA1380_H
 #define _UDA1380_H
-
 #define UDA1380_CLK	0x00
 #define UDA1380_IFACE	0x01
 #define UDA1380_PM	0x02
@@ -25,10 +17,7 @@
 #define UDA1380_AGC	0x23
 #define UDA1380_DECSTAT	0x28
 #define UDA1380_RESET	0x7f
-
 #define UDA1380_CACHEREGNUM 0x24
-
-/* Register flags */
 #define R00_EN_ADC	0x0800
 #define R00_EN_DEC	0x0400
 #define R00_EN_DAC	0x0200
@@ -68,5 +57,4 @@
 #define R22_SEL_MIC	0x0004
 #define R22_SKIP_DCFIL	0x0002
 #define R23_AGC_EN	0x0001
-
-#endif /* _UDA1380_H */
+#endif  

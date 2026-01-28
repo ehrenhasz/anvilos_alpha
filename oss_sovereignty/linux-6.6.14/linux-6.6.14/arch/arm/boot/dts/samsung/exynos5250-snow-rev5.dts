@@ -1,37 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Google Snow Rev 5+ board device tree source
- *
- * Copyright (c) 2012 Google, Inc
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com
- */
-
 /dts-v1/;
 #include "exynos5250-snow-common.dtsi"
-
 / {
 	model = "Google Snow Rev 5+";
 	compatible = "google,snow-rev5", "samsung,exynos5250",
 		"samsung,exynos5";
 	chassis-type = "laptop";
-
 	sound {
 		compatible = "google,snow-audio-max98090";
-
 		samsung,model = "Snow-I2S-MAX98090";
 		samsung,audio-codec = <&max98090>;
-
 		cpu {
 			sound-dai = <&i2s0 0>;
 		};
-
 		codec {
 			sound-dai = <&max98090>, <&hdmi>;
 		};
 	};
 };
-
 &i2c_7 {
 	max98090: audio-codec@10 {
 		compatible = "maxim,max98090";
@@ -45,7 +30,6 @@
 		#sound-dai-cells = <0>;
 	};
 };
-
 &pinctrl_0 {
 	max98090_irq: max98090-irq-pins {
 		samsung,pins = "gpx0-4";

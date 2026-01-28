@@ -1,9 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright 2018 NXP.
-
 #include "imx6ull.dtsi"
-
 / {
 	aliases {
 		/delete-property/ ethernet0;
@@ -18,7 +13,6 @@
 		/delete-property/ spi3;
 	};
 };
-
 /delete-node/ &adc1;
 /delete-node/ &ecspi3;
 /delete-node/ &ecspi4;

@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Unisoc SC9863A platform clocks
- *
- * Copyright (C) 2019, Unisoc Communications Inc.
- */
-
 #ifndef _DT_BINDINGS_CLK_SC9863A_H_
 #define _DT_BINDINGS_CLK_SC9863A_H_
-
 #define CLK_MPLL0_GATE		0
 #define CLK_DPLL0_GATE		1
 #define CLK_LPLL_GATE		2
@@ -17,7 +9,6 @@
 #define CLK_MPLL2_GATE		6
 #define CLK_ISPPLL_GATE		7
 #define CLK_PMU_APB_NUM		(CLK_ISPPLL_GATE + 1)
-
 #define CLK_AUDIO_GATE		0
 #define CLK_RPLL		1
 #define CLK_RPLL_390M		2
@@ -25,7 +16,6 @@
 #define CLK_RPLL_195M		4
 #define CLK_RPLL_26M		5
 #define CLK_ANLG_PHY_G5_NUM	(CLK_RPLL_26M + 1)
-
 #define CLK_TWPLL		0
 #define CLK_TWPLL_768M		1
 #define CLK_TWPLL_384M		2
@@ -53,7 +43,6 @@
 #define CLK_ISPPLL		24
 #define CLK_ISPPLL_468M		25
 #define CLK_ANLG_PHY_G1_NUM	(CLK_ISPPLL_468M + 1)
-
 #define CLK_DPLL0		0
 #define CLK_DPLL1		1
 #define CLK_DPLL0_933M		2
@@ -63,13 +52,11 @@
 #define CLK_DPLL0_123M1		6
 #define CLK_DPLL0_50M		7
 #define CLK_ANLG_PHY_G7_NUM	(CLK_DPLL0_50M + 1)
-
 #define CLK_MPLL0		0
 #define CLK_MPLL1		1
 #define CLK_MPLL2		2
 #define CLK_MPLL2_675M		3
 #define CLK_ANLG_PHY_G4_NUM	(CLK_MPLL2_675M + 1)
-
 #define CLK_AP_APB		0
 #define CLK_AP_CE		1
 #define CLK_NANDC_ECC		2
@@ -101,7 +88,6 @@
 #define CLK_SIM0		28
 #define CLK_SIM0_32K		29
 #define CLK_AP_CLK_NUM		(CLK_SIM0_32K + 1)
-
 #define CLK_13M			0
 #define CLK_6M5			1
 #define CLK_4M3			2
@@ -173,7 +159,6 @@
 #define CLK_GIC			68
 #define CLK_PERIPH		69
 #define CLK_AON_CLK_NUM		(CLK_VSP + 1)
-
 #define CLK_OTG_EB		0
 #define CLK_DMA_EB		1
 #define CLK_CE_EB		2
@@ -190,7 +175,6 @@
 #define CLK_DMA_EB2		13
 #define CLK_CE_EB2		14
 #define CLK_AP_AHB_GATE_NUM	(CLK_CE_EB2 + 1)
-
 #define CLK_GPIO_EB		0
 #define CLK_PWM0_EB		1
 #define CLK_PWM1_EB		2
@@ -290,7 +274,6 @@
 #define CLK_SERDES_EB		96
 #define CLK_AON_AP_EMC_EB	97
 #define CLK_AON_APB_GATE_NUM	(CLK_AON_AP_EMC_EB + 1)
-
 #define CLK_MAHB_CKG_EB		0
 #define CLK_MDCAM_EB		1
 #define CLK_MISP_EB		2
@@ -307,12 +290,10 @@
 #define CLK_SENSOR2_EB		13
 #define CLK_MCPHY_CFG_EB	14
 #define CLK_MM_GATE_NUM		(CLK_MCPHY_CFG_EB + 1)
-
 #define CLK_MIPI_CSI		0
 #define CLK_MIPI_CSI_S		1
 #define CLK_MIPI_CSI_M		2
 #define CLK_MM_CLK_NUM		(CLK_MIPI_CSI_M + 1)
-
 #define CLK_SIM0_EB		0
 #define CLK_IIS0_EB		1
 #define CLK_IIS1_EB		2
@@ -335,5 +316,4 @@
 #define CLK_I2C5_EB		19
 #define CLK_I2C6_EB		20
 #define CLK_AP_APB_GATE_NUM	(CLK_I2C6_EB + 1)
-
-#endif /* _DT_BINDINGS_CLK_SC9863A_H_ */
+#endif  

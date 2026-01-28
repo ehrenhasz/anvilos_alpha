@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2020 Kévin L'hôpital <kevin.lhopital@bootlin.com>
- * Copyright 2020-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
-
 #ifndef _SUN8I_A83T_MIPI_CSI2_REG_H_
 #define _SUN8I_A83T_MIPI_CSI2_REG_H_
-
 #define SUN8I_A83T_MIPI_CSI2_VERSION_REG			0x0
 #define SUN8I_A83T_MIPI_CSI2_CTRL_REG				0x4
 #define SUN8I_A83T_MIPI_CSI2_CTRL_INIT_VALUE			0xb8c39bec
@@ -15,7 +7,6 @@
 #define SUN8I_A83T_MIPI_CSI2_RX_PKT_NUM_REG			0x8
 #define SUN8I_A83T_MIPI_CSI2_RX_PKT_NUM_INIT_VALUE		0xb8d257f8
 #define SUN8I_A83T_MIPI_CSI2_RSVD0_REG				0xc
-
 #define SUN8I_A83T_MIPI_CSI2_RSVD1_REG				0x18
 #define SUN8I_A83T_MIPI_CSI2_RSVD1_HW_LOCK_VALUE		0xb8c8a30c
 #define SUN8I_A83T_MIPI_CSI2_RSVD2_REG				0x1c
@@ -122,7 +113,6 @@
 #define SUN8I_A83T_MIPI_CSI2_INT_MSK1_ESC_ENTRY_ERR_2		BIT(2)
 #define SUN8I_A83T_MIPI_CSI2_INT_MSK1_ESC_ENTRY_ERR_1		BIT(1)
 #define SUN8I_A83T_MIPI_CSI2_INT_MSK1_ESC_ENTRY_ERR_0		BIT(0)
-
 #define SUN8I_A83T_MIPI_CSI2_CFG_REG				0x100
 #define SUN8I_A83T_MIPI_CSI2_CFG_INIT_VALUE			0xb8c64f24
 #define SUN8I_A83T_MIPI_CSI2_CFG_SYNC_EN			BIT(31)
@@ -147,5 +137,4 @@
 								 (((ch) - 4) * 8 + 6))
 #define SUN8I_A83T_MIPI_CSI2_VCDT1_CH_DT(ch, t)			(((t) & GENMASK(5, 0)) << \
 								 (((ch) - 4) * 8))
-
 #endif

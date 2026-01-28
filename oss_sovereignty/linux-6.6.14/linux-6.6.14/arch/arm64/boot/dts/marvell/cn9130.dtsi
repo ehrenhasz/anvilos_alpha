@@ -1,17 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (C) 2019 Marvell International Ltd.
- *
- * Device tree for the CN9130 SoC.
- */
-
 #include "armada-ap807-quad.dtsi"
-
 / {
 	model = "Marvell Armada CN9130 SoC";
 	compatible = "marvell,cn9130", "marvell,armada-ap807-quad",
 		     "marvell,armada-ap807";
-
 	aliases {
 		gpio1 = &cp0_gpio1;
 		gpio2 = &cp0_gpio2;
@@ -19,11 +10,6 @@
 		spi2 = &cp0_spi1;
 	};
 };
-
-/*
- * Instantiate the internal CP115
- */
-
 #define CP11X_NAME		cp0
 #define CP11X_BASE		f2000000
 #define CP11X_PCIEx_MEM_BASE(iface) ((iface == 0) ? 0xc0000000 : \
@@ -32,9 +18,7 @@
 #define CP11X_PCIE0_BASE	f2600000
 #define CP11X_PCIE1_BASE	f2620000
 #define CP11X_PCIE2_BASE	f2640000
-
 #include "armada-cp115.dtsi"
-
 #undef CP11X_NAME
 #undef CP11X_BASE
 #undef CP11X_PCIEx_MEM_BASE
@@ -42,11 +26,9 @@
 #undef CP11X_PCIE0_BASE
 #undef CP11X_PCIE1_BASE
 #undef CP11X_PCIE2_BASE
-
 &cp0_gpio1 {
 	status = "okay";
 };
-
 &cp0_gpio2 {
 	status = "okay";
 };

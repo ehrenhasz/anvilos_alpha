@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef LINUX_BCMA_DRIVER_GMAC_CMN_H_
 #define LINUX_BCMA_DRIVER_GMAC_CMN_H_
-
 #include <linux/types.h>
-
 #define BCMA_GMAC_CMN_STAG0		0x000
 #define BCMA_GMAC_CMN_STAG1		0x004
 #define BCMA_GMAC_CMN_STAG2		0x008
@@ -77,19 +74,12 @@
 #define BCMA_GMAC_CMN_UDF_0_D3_D0	0x390
 #define BCMA_GMAC_CMN_UDF_0_D7_D4	0x394
 #define BCMA_GMAC_CMN_UDF_0_D11_D8	0x394
-
 struct bcma_drv_gmac_cmn {
 	struct bcma_device *core;
-
-	/* Drivers accessing BCMA_GMAC_CMN_PHY_ACCESS and
-	 * BCMA_GMAC_CMN_PHY_CTL need to take that mutex first. */
 	struct mutex phy_mutex;
 };
-
-/* Register access */
 #define gmac_cmn_read16(gc, offset)		bcma_read16((gc)->core, offset)
 #define gmac_cmn_read32(gc, offset)		bcma_read32((gc)->core, offset)
 #define gmac_cmn_write16(gc, offset, val)	bcma_write16((gc)->core, offset, val)
 #define gmac_cmn_write32(gc, offset, val)	bcma_write32((gc)->core, offset, val)
-
-#endif /* LINUX_BCMA_DRIVER_GMAC_CMN_H_ */
+#endif  

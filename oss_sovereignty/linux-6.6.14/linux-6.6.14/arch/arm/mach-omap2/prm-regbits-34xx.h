@@ -1,18 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * OMAP3430 Power/Reset Management register bits
- *
- * Copyright (C) 2007-2008 Texas Instruments, Inc.
- * Copyright (C) 2007-2008 Nokia Corporation
- *
- * Written by Paul Walmsley
- */
 #ifndef __ARCH_ARM_MACH_OMAP2_PRM_REGBITS_34XX_H
 #define __ARCH_ARM_MACH_OMAP2_PRM_REGBITS_34XX_H
-
-
 #include "prm3xxx.h"
-
 #define OMAP3430_ERROROFFSET_MASK			(0xff << 24)
 #define OMAP3430_ERRORGAIN_MASK				(0xff << 16)
 #define OMAP3430_INITVOLTAGE_MASK			(0xff << 8)

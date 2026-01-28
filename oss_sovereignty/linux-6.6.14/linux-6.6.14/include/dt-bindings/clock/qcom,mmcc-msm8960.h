@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_MMCC_8960_H
 #define _DT_BINDINGS_CLK_MSM_MMCC_8960_H
-
 #define MMSS_AHB_SRC					0
 #define FAB_AHB_CLK					1
 #define APU_AHB_CLK					2
@@ -133,5 +127,4 @@
 #define VCAP_CLK					124
 #define VCAP_NPL_CLK					125
 #define PLL15						126
-
 #endif

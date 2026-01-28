@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
- */
-
 #ifndef __DT_BINDINGS_CLOCK_IMX27_H
 #define __DT_BINDINGS_CLOCK_IMX27_H
-
 #define IMX27_CLK_DUMMY			0
 #define IMX27_CLK_CKIH			1
 #define IMX27_CLK_CKIL			2
@@ -100,5 +94,4 @@
 #define IMX27_CLK_MSHC_BAUD_GATE	91
 #define IMX27_CLK_CKIH_GATE		92
 #define IMX27_CLK_MAX			93
-
 #endif

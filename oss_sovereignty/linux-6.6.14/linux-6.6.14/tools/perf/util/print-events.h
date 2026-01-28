@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __PERF_PRINT_EVENTS_H
 #define __PERF_PRINT_EVENTS_H
-
 #include <linux/perf_event.h>
 #include <linux/types.h>
 #include <stdbool.h>
-
 struct event_symbol;
-
 struct print_callbacks {
 	void (*print_start)(void *print_state);
 	void (*print_end)(void *print_state);
@@ -28,8 +24,6 @@ struct print_callbacks {
 			const char *unit);
 	bool (*skip_duplicate_pmus)(void *print_state);
 };
-
-/** Print all events, the default when no options are specified. */
 void print_events(const struct print_callbacks *print_cb, void *print_state);
 int print_hwcache_events(const struct print_callbacks *print_cb, void *print_state);
 void print_sdt_events(const struct print_callbacks *print_cb, void *print_state);
@@ -39,5 +33,4 @@ void print_symbol_events(const struct print_callbacks *print_cb, void *print_sta
 void print_tool_events(const struct print_callbacks *print_cb, void *print_state);
 void print_tracepoint_events(const struct print_callbacks *print_cb, void *print_state);
 bool is_event_supported(u8 type, u64 config);
-
-#endif /* __PERF_PRINT_EVENTS_H */
+#endif  

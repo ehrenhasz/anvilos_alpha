@@ -1,23 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
-
 #ifndef _HRT_BITS_H
 #define _HRT_BITS_H
-
 #include "defs.h"
-
 #define _hrt_ones(n) HRTCAT(_hrt_ones_, n)
 #define _hrt_ones_0x0  0x00000000U
 #define _hrt_ones_0x1  0x00000001U
@@ -52,7 +35,6 @@
 #define _hrt_ones_0x1E 0x3FFFFFFFU
 #define _hrt_ones_0x1F 0x7FFFFFFFU
 #define _hrt_ones_0x20 0xFFFFFFFFU
-
 #define _hrt_ones_0  _hrt_ones_0x0
 #define _hrt_ones_1  _hrt_ones_0x1
 #define _hrt_ones_2  _hrt_ones_0x2
@@ -86,7 +68,6 @@
 #define _hrt_ones_30 _hrt_ones_0x1E
 #define _hrt_ones_31 _hrt_ones_0x1F
 #define _hrt_ones_32 _hrt_ones_0x20
-
 #define _hrt_mask(b, n) \
   (_hrt_ones(n) << (b))
 #define _hrt_get_bits(w, b, n) \
@@ -101,5 +82,4 @@
   _hrt_set_bits(w, 0, 16, v)
 #define _hrt_set_upper_half(w, v) \
   _hrt_set_bits(w, 16, 16, v)
-
-#endif /* _HRT_BITS_H */
+#endif  

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright (C) 2018 Xilinx, Inc.
- */
-
 #ifndef _DT_BINDINGS_ZYNQMP_POWER_H
 #define _DT_BINDINGS_ZYNQMP_POWER_H
-
 #define		PD_RPU_0	7
 #define		PD_RPU_1	8
 #define		PD_R5_0_ATCM	15
@@ -41,5 +35,4 @@
 #define		PD_CAN_1	48
 #define		PD_GPU		58
 #define		PD_PCIE		59
-
 #endif

@@ -1,48 +1,24 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# gdb helper commands and functions for Linux kernel debugging
-#
-#  routines to introspect page table
-#
-# Authors:
-#  Dmitrii Bundin <dmitrii.bundin.a@gmail.com>
-#
-
 import gdb
-
 from linux import utils
-
 PHYSICAL_ADDRESS_MASK = gdb.parse_and_eval('0xfffffffffffff')
-
-
 def page_mask(level=1):
-    # 4KB
     if level == 1:
         return gdb.parse_and_eval('(u64) ~0xfff')
-    # 2MB
     elif level == 2:
         return gdb.parse_and_eval('(u64) ~0x1fffff')
-    # 1GB
     elif level == 3:
         return gdb.parse_and_eval('(u64) ~0x3fffffff')
     else:
         raise Exception(f'Unknown page level: {level}')
-
-
-#page_offset_base in case CONFIG_DYNAMIC_MEMORY_LAYOUT is disabled
 POB_NO_DYNAMIC_MEM_LAYOUT = '0xffff888000000000'
 def _page_offset_base():
     pob_symbol = gdb.lookup_global_symbol('page_offset_base')
     pob = pob_symbol.name if pob_symbol else POB_NO_DYNAMIC_MEM_LAYOUT
     return gdb.parse_and_eval(pob)
-
-
 def is_bit_defined_tupled(data, offset):
     return offset, bool(data >> offset & 1)
-
 def content_tupled(data, bit_start, bit_end):
     return (bit_start, bit_end), data >> bit_start & ((1 << (1 + bit_end - bit_start)) - 1)
-
 def entry_va(level, phys_addr, translating_va):
         def start_bit(level):
             if level == 5:
@@ -57,11 +33,9 @@ def entry_va(level, phys_addr, translating_va):
                 return 12
             else:
                 raise Exception(f'Unknown level {level}')
-
         entry_offset =  ((translating_va >> start_bit(level)) & 511) * 8
         entry_va = _page_offset_base() + phys_addr + entry_offset
         return entry_va
-
 class Cr3():
     def __init__(self, cr3, page_levels):
         self.cr3 = cr3
@@ -69,11 +43,9 @@ class Cr3():
         self.page_level_write_through = is_bit_defined_tupled(cr3, 3)
         self.page_level_cache_disabled = is_bit_defined_tupled(cr3, 4)
         self.next_entry_physical_address = cr3 & PHYSICAL_ADDRESS_MASK & page_mask()
-
     def next_entry(self, va):
         next_level = self.page_levels
         return PageHierarchyEntry(entry_va(next_level, self.next_entry_physical_address, va), next_level)
-
     def mk_string(self):
             return f"""\
 cr3:
@@ -83,8 +55,6 @@ cr3:
     {'bit' : <4} {self.page_level_write_through[0]: <10} {'page level write through': <30} {self.page_level_write_through[1]}
     {'bit' : <4} {self.page_level_cache_disabled[0]: <10} {'page level cache disabled': <30} {self.page_level_cache_disabled[1]}
 """
-
-
 class PageHierarchyEntry():
     def __init__(self, address, level):
         data = int.from_bytes(
@@ -132,15 +102,11 @@ class PageHierarchyEntry():
         self.address = address
         self.page_entry_binary_data = data
         self.page_hierarchy_level = level
-
     def next_entry(self, va):
         if self.is_page or not self.entry_present[1]:
             return None
-
         next_level = self.page_hierarchy_level - 1
         return PageHierarchyEntry(entry_va(next_level, self.next_entry_physical_address, va), next_level)
-
-
     def mk_string(self):
         if not self.entry_present[1]:
             return f"""\
@@ -153,7 +119,6 @@ level {self.page_hierarchy_level}:
         elif self.is_page:
             def page_size_line(ps_bit, ps, level):
                 return "" if level == 1 else f"{'bit': <3} {ps_bit: <5} {'page size': <30} {ps}"
-
             return f"""\
 level {self.page_hierarchy_level}:
     {'entry address': <30} {hex(self.address)}
@@ -192,18 +157,13 @@ level {self.page_hierarchy_level}:
     {'bit': <4} {self.hlat_restart_with_ordinary[0]: <10} {'restart to ordinary': <30} {self.hlat_restart_with_ordinary[1]}
     {'bit': <4} {self.executed_disable[0]: <10} {'execute disable': <30} {self.executed_disable[1]}
 """
-
-
 class TranslateVM(gdb.Command):
     """Prints the entire paging structure used to translate a given virtual address.
-
 Having an address space of the currently executed process translates the virtual address
 and prints detailed information of all paging structure levels used for the transaltion.
 Currently supported arch: x86"""
-
     def __init__(self):
         super(TranslateVM, self).__init__('translate-vm', gdb.COMMAND_USER)
-
     def invoke(self, arg, from_tty):
         if utils.is_target_arch("x86"):
             vm_address = gdb.parse_and_eval(f'{arg}')
@@ -217,6 +177,4 @@ Currently supported arch: x86"""
         else:
             gdb.GdbError("Virtual address translation is not"
                          "supported for this arch")
-
-
 TranslateVM()

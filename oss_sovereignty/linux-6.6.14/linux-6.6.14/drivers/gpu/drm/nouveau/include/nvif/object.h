@@ -1,33 +1,28 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVIF_OBJECT_H__
 #define __NVIF_OBJECT_H__
 #include <nvif/os.h>
-
 struct nvif_sclass {
 	s32 oclass;
 	int minver;
 	int maxver;
 };
-
 struct nvif_object {
 	struct nvif_parent *parent;
 	struct nvif_client *client;
 	const char *name;
 	u32 handle;
 	s32 oclass;
-	void *priv; /*XXX: hack */
+	void *priv;  
 	struct {
 		void __iomem *ptr;
 		u64 size;
 	} map;
 };
-
 static inline bool
 nvif_object_constructed(struct nvif_object *object)
 {
 	return object->client != NULL;
 }
-
 int  nvif_object_ctor(struct nvif_object *, const char *name, u32 handle,
 		      s32 oclass, void *, u32, struct nvif_object *);
 void nvif_object_dtor(struct nvif_object *);
@@ -42,10 +37,8 @@ int  nvif_object_map_handle(struct nvif_object *, void *, u32,
 void nvif_object_unmap_handle(struct nvif_object *);
 int  nvif_object_map(struct nvif_object *, void *, u32);
 void nvif_object_unmap(struct nvif_object *);
-
 #define nvif_handle(a) (unsigned long)(void *)(a)
 #define nvif_object(a) (a)->object
-
 #define nvif_rd(a,f,b,c) ({                                                    \
 	struct nvif_object *_object = (a);                                     \
 	u32 _data;                                                             \
@@ -74,14 +67,11 @@ void nvif_object_unmap(struct nvif_object *);
 	nvif_wr32(__object, _addr, (_data & ~(c)) | (d));                      \
 	_data;                                                                 \
 })
-
 #define nvif_mthd(a,b,c,d) nvif_object_mthd((a), (b), (c), (d))
-
 struct nvif_mclass {
 	s32 oclass;
 	int version;
 };
-
 #define nvif_mclass(o,m) ({                                                    \
 	struct nvif_object *object = (o);                                      \
 	struct nvif_sclass *sclass;                                            \
@@ -105,7 +95,6 @@ struct nvif_mclass {
 	}                                                                      \
 	ret;                                                                   \
 })
-
 #define nvif_sclass(o,m,u) ({                                                  \
 	const typeof(m[0]) *_mclass = (m);                                     \
 	s32 _oclass = (u);                                                     \
@@ -121,7 +110,6 @@ struct nvif_mclass {
 	}                                                                      \
 	_cid;                                                                  \
 })
-
 #define NVIF_RD32_(p,o,dr)   nvif_rd32((p), (o) + (dr))
 #define NVIF_WR32_(p,o,dr,f) nvif_wr32((p), (o) + (dr), (f))
 #define NVIF_RD32(p,A...) DRF_RD(NVIF_RD32_,                  (p), 0, ##A)
@@ -134,8 +122,6 @@ struct nvif_mclass {
 #define NVIF_MR32(p,A...) DRF_MR(NVIF_RD32_, NVIF_WR32_, u32, (p), 0, ##A)
 #define NVIF_MV32(p,A...) DRF_MV(NVIF_RD32_, NVIF_WR32_, u32, (p), 0, ##A)
 #define NVIF_MD32(p,A...) DRF_MD(NVIF_RD32_, NVIF_WR32_, u32, (p), 0, ##A)
-
-/*XXX*/
 #include <core/object.h>
 #define nvxx_object(a) ({                                                      \
 	struct nvif_object *_object = (a);                                     \

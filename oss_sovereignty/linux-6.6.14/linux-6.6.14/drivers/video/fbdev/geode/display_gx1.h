@@ -1,45 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * drivers/video/geode/display_gx1.h
- *   -- Geode GX1 display controller
- *
- * Copyright (C) 2005 Arcom Control Systems Ltd.
- *
- * Based on AMD's original 2.4 driver:
- *   Copyright (C) 2004 Advanced Micro Devices, Inc.
- */
 #ifndef __DISPLAY_GX1_H__
 #define __DISPLAY_GX1_H__
-
 unsigned gx1_gx_base(void);
 int gx1_frame_buffer_size(void);
-
 extern const struct geode_dc_ops gx1_dc_ops;
-
-/* GX1 configuration I/O registers */
-
 #define CONFIG_CCR3 0xc3
 #  define CONFIG_CCR3_MAPEN 0x10
 #define CONFIG_GCR  0xb8
-
-/* Memory controller registers */
-
 #define MC_BANK_CFG		0x08
 #  define MC_BCFG_DIMM0_SZ_MASK		0x00000700
 #  define MC_BCFG_DIMM0_PG_SZ_MASK	0x00000070
 #  define MC_BCFG_DIMM0_PG_SZ_NO_DIMM	0x00000070
-
 #define MC_GBASE_ADD		0x14
 #  define MC_GADD_GBADD_MASK		0x000003ff
-
-/* Display controller registers */
-
 #define DC_PAL_ADDRESS		0x70
 #define DC_PAL_DATA		0x74
-
 #define DC_UNLOCK		0x00
 #  define DC_UNLOCK_CODE		0x00004758
-
 #define DC_GENERAL_CFG		0x04
 #  define DC_GCFG_DFLE			0x00000001
 #  define DC_GCFG_CURE			0x00000002
@@ -69,7 +45,6 @@ extern const struct geode_dc_ops gx1_dc_ops;
 #  define DC_GCFG_VRDY			0x20000000
 #  define DC_GCFG_DPCK			0x40000000
 #  define DC_GCFG_DDCK			0x80000000
-
 #define DC_TIMING_CFG		0x08
 #  define DC_TCFG_FPPE			0x00000001
 #  define DC_TCFG_HSYE			0x00000002
@@ -96,7 +71,6 @@ extern const struct geode_dc_ops gx1_dc_ops;
 #  define DC_TCFG_DNA			0x20000000
 #  define DC_TCFG_VNA			0x40000000
 #  define DC_TCFG_VINT			0x80000000
-
 #define DC_OUTPUT_CFG		0x0C
 #  define DC_OCFG_8BPP			0x00000001
 #  define DC_OCFG_555			0x00000002
@@ -114,7 +88,6 @@ extern const struct geode_dc_ops gx1_dc_ops;
 #  define DC_OCFG_PDEH			0x00002000
 #  define DC_OCFG_CFRW			0x00004000
 #  define DC_OCFG_DIAG			0x00008000
-
 #define DC_FB_ST_OFFSET		0x10
 #define DC_CB_ST_OFFSET		0x14
 #define DC_CURS_ST_OFFSET	0x18
@@ -122,17 +95,14 @@ extern const struct geode_dc_ops gx1_dc_ops;
 #define DC_VID_ST_OFFSET	0x20
 #define DC_LINE_DELTA		0x24
 #define DC_BUF_SIZE		0x28
-
 #define DC_H_TIMING_1		0x30
 #define DC_H_TIMING_2		0x34
 #define DC_H_TIMING_3		0x38
 #define DC_FP_H_TIMING		0x3C
-
 #define DC_V_TIMING_1		0x40
 #define DC_V_TIMING_2		0x44
 #define DC_V_TIMING_3		0x48
 #define DC_FP_V_TIMING		0x4C
-
 #define DC_CURSOR_X		0x50
 #define DC_ICON_X		0x54
 #define DC_V_LINE_CNT		0x54
@@ -146,5 +116,4 @@ extern const struct geode_dc_ops gx1_dc_ops;
 #define DC_PAL_DATA		0x74
 #define DC_DFIFO_DIAG		0x78
 #define DC_CFIFO_DIAG		0x7C
-
-#endif /* !__DISPLAY_GX1_H__ */
+#endif  

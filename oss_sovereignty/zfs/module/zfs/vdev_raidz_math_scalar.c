@@ -1,34 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-
-/*
- * Copyright (C) 2016 Gvozden Nešković. All rights reserved.
- */
-
 #include <sys/vdev_raidz_impl.h>
-
-/*
- * Provide native CPU scalar routines.
- * Support 32bit and 64bit CPUs.
- */
 #if ((~(0x0ULL)) >> 24) == 0xffULL
 #define	ELEM_SIZE	4
 typedef uint32_t iv_t;
@@ -36,46 +6,11 @@ typedef uint32_t iv_t;
 #define	ELEM_SIZE	8
 typedef uint64_t iv_t;
 #endif
-
-/*
- * Vector type used in scalar implementation
- *
- * The union is expected to be of native CPU register size. Since addition
- * uses XOR operation, it can be performed an all byte elements at once.
- * Multiplication requires per byte access.
- */
 typedef union {
 	iv_t e;
 	uint8_t b[ELEM_SIZE];
 } v_t;
-
-/*
- * Precomputed lookup tables for multiplication by a constant
- *
- * Reconstruction path requires multiplication by a constant factors. Instead of
- * performing two step lookup (log & exp tables), a direct lookup can be used
- * instead. Multiplication of element 'a' by a constant 'c' is obtained as:
- *
- * 	r = vdev_raidz_mul_lt[c_log][a];
- *
- * where c_log = vdev_raidz_log2[c]. Log of coefficient factors is used because
- * they are faster to obtain while solving the syndrome equations.
- *
- * PERFORMANCE NOTE:
- * Even though the complete lookup table uses 64kiB, only relatively small
- * portion of it is used at the same time. Following shows number of accessed
- * bytes for different cases:
- * 	- 1 failed disk: 256B (1 mul. coefficient)
- * 	- 2 failed disks: 512B (2 mul. coefficients)
- * 	- 3 failed disks: 1536B (6 mul. coefficients)
- *
- * Size of actually accessed lookup table regions is only larger for
- * reconstruction of 3 failed disks, when compared to traditional log/exp
- * method. But since the result is obtained in one lookup step performance is
- * doubled.
- */
 static uint8_t vdev_raidz_mul_lt[256][256] __attribute__((aligned(256)));
-
 static void
 raidz_init_scalar(void)
 {
@@ -83,22 +18,15 @@ raidz_init_scalar(void)
 	for (c = 0; c < 256; c++)
 		for (i = 0; i < 256; i++)
 			vdev_raidz_mul_lt[c][i] = gf_mul(c, i);
-
 }
-
 #define	PREFETCHNTA(ptr, offset)	{}
 #define	PREFETCH(ptr, offset) 		{}
-
 #define	XOR_ACC(src, acc)	acc.e ^= ((v_t *)src)[0].e
 #define	XOR(src, acc)		acc.e ^= src.e
 #define	ZERO(acc)		acc.e = 0
 #define	COPY(src, dst)		dst = src
 #define	LOAD(src, val) 		val = ((v_t *)src)[0]
 #define	STORE(dst, val)		((v_t *)dst)[0] = val
-
-/*
- * Constants used for optimized multiplication by 2.
- */
 static const struct {
 	iv_t mod;
 	iv_t mask;
@@ -114,9 +42,7 @@ static const struct {
 	.msb	= 0x80808080ULL,
 #endif
 };
-
 #define	MUL2_SETUP() {}
-
 #define	MUL2(a)								\
 {									\
 	iv_t _mask;							\
@@ -126,13 +52,11 @@ static const struct {
 	(a).e = ((a).e << 1) & scalar_mul2_consts.mask;			\
 	(a).e = (a).e ^ (_mask & scalar_mul2_consts.mod);		\
 }
-
 #define	MUL4(a) 							\
 {									\
 	MUL2(a);							\
 	MUL2(a);							\
 }
-
 #define	MUL(c, a)							\
 {									\
 	const uint8_t *mul_lt = vdev_raidz_mul_lt[c];			\
@@ -151,91 +75,65 @@ static const struct {
 		break;							\
 	}								\
 }
-
 #define	raidz_math_begin()	{}
 #define	raidz_math_end()	{}
-
 #define	SYN_STRIDE		1
-
 #define	ZERO_DEFINE()		v_t d0
 #define	ZERO_STRIDE		1
 #define	ZERO_D			d0
-
 #define	COPY_DEFINE()		v_t d0
 #define	COPY_STRIDE		1
 #define	COPY_D			d0
-
 #define	ADD_DEFINE()		v_t d0
 #define	ADD_STRIDE		1
 #define	ADD_D			d0
-
 #define	MUL_DEFINE()		v_t d0
 #define	MUL_STRIDE		1
 #define	MUL_D			d0
-
 #define	GEN_P_STRIDE		1
 #define	GEN_P_DEFINE()		v_t p0
 #define	GEN_P_P			p0
-
 #define	GEN_PQ_STRIDE		1
 #define	GEN_PQ_DEFINE()		v_t d0, c0
 #define	GEN_PQ_D		d0
 #define	GEN_PQ_C		c0
-
 #define	GEN_PQR_STRIDE		1
 #define	GEN_PQR_DEFINE()	v_t d0, c0
 #define	GEN_PQR_D		d0
 #define	GEN_PQR_C		c0
-
 #define	SYN_Q_DEFINE()		v_t d0, x0
 #define	SYN_Q_D			d0
 #define	SYN_Q_X			x0
-
-
 #define	SYN_R_DEFINE()		v_t d0, x0
 #define	SYN_R_D			d0
 #define	SYN_R_X			x0
-
-
 #define	SYN_PQ_DEFINE()		v_t d0, x0
 #define	SYN_PQ_D		d0
 #define	SYN_PQ_X		x0
-
-
 #define	REC_PQ_STRIDE		1
 #define	REC_PQ_DEFINE()		v_t x0, y0, t0
 #define	REC_PQ_X		x0
 #define	REC_PQ_Y		y0
 #define	REC_PQ_T		t0
-
-
 #define	SYN_PR_DEFINE()		v_t d0, x0
 #define	SYN_PR_D		d0
 #define	SYN_PR_X		x0
-
 #define	REC_PR_STRIDE		1
 #define	REC_PR_DEFINE()		v_t x0, y0, t0
 #define	REC_PR_X		x0
 #define	REC_PR_Y		y0
 #define	REC_PR_T		t0
-
-
 #define	SYN_QR_DEFINE()		v_t d0, x0
 #define	SYN_QR_D		d0
 #define	SYN_QR_X		x0
-
-
 #define	REC_QR_STRIDE		1
 #define	REC_QR_DEFINE()		v_t x0, y0, t0
 #define	REC_QR_X		x0
 #define	REC_QR_Y		y0
 #define	REC_QR_T		t0
-
-
 #define	SYN_PQR_DEFINE()	v_t d0, x0
 #define	SYN_PQR_D		d0
 #define	SYN_PQR_X		x0
-
 #define	REC_PQR_STRIDE		1
 #define	REC_PQR_DEFINE()	v_t x0, y0, z0, xs0, ys0
 #define	REC_PQR_X		x0
@@ -243,18 +141,14 @@ static const struct {
 #define	REC_PQR_Z		z0
 #define	REC_PQR_XS		xs0
 #define	REC_PQR_YS		ys0
-
 #include "vdev_raidz_math_impl.h"
-
 DEFINE_GEN_METHODS(scalar);
 DEFINE_REC_METHODS(scalar);
-
 boolean_t
 raidz_will_scalar_work(void)
 {
-	return (B_TRUE); /* always */
+	return (B_TRUE);  
 }
-
 const raidz_impl_ops_t vdev_raidz_scalar_impl = {
 	.init = raidz_init_scalar,
 	.fini = NULL,
@@ -263,8 +157,6 @@ const raidz_impl_ops_t vdev_raidz_scalar_impl = {
 	.is_supported = &raidz_will_scalar_work,
 	.name = "scalar"
 };
-
-/* Powers of 2 in the RAID-Z Galois field. */
 const uint8_t vdev_raidz_pow2[256] __attribute__((aligned(256))) = {
 	0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80,
 	0x1d, 0x3a, 0x74, 0xe8, 0xcd, 0x87, 0x13, 0x26,
@@ -299,8 +191,6 @@ const uint8_t vdev_raidz_pow2[256] __attribute__((aligned(256))) = {
 	0x2c, 0x58, 0xb0, 0x7d, 0xfa, 0xe9, 0xcf, 0x83,
 	0x1b, 0x36, 0x6c, 0xd8, 0xad, 0x47, 0x8e, 0x01
 };
-
-/* Logs of 2 in the RAID-Z Galois field. */
 const uint8_t vdev_raidz_log2[256] __attribute__((aligned(256))) = {
 	0x00, 0x00, 0x01, 0x19, 0x02, 0x32, 0x1a, 0xc6,
 	0x03, 0xdf, 0x33, 0xee, 0x1b, 0x68, 0xc7, 0x4b,

@@ -1,36 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2013 Markus Pargmann <mpa@pengutronix.de>, Pengutronix
- */
-
 #ifndef __DTS_IMX27_PINFUNC_H
 #define __DTS_IMX27_PINFUNC_H
-
-/*
- * The pin function ID is a tuple of
- * <pin mux_id>
- * mux_id consists of
- * function + (direction << 2) + (gpio_oconf << 4) + (gpio_iconfa << 8) + (gpio_iconfb << 10)
- *
- * function:      0 - Primary function
- *                1 - Alternate function
- *                2 - GPIO
- * direction:     0 - Input
- *                1 - Output
- * gpio_oconf:    0 - A_IN
- *                1 - B_IN
- *                2 - C_IN
- *                3 - Data Register
- * gpio_iconfa/b: 0 - GPIO_IN
- *                1 - Interrupt Status Register
- *                2 - 0
- *                3 - 1
- *
- * 'pin' is an integer between 0 and 0xbf. imx27 has 6 ports with 32
- * configurable pins each. 'pin' is PORT * 32 + PORT_PIN, PORT_PIN is
- * the pin number on the specific port (between 0 and 31).
- */
-
 #define MX27_PAD_USBH2_CLK__USBH2_CLK                      0x00 0x000
 #define MX27_PAD_USBH2_CLK__GPIO1_0                        0x00 0x032
 #define MX27_PAD_USBH2_DIR__USBH2_DIR                      0x01 0x000
@@ -470,5 +439,4 @@
 #define MX27_PAD_ATA_DATA15__ETMTRACEPKT4                  0xb7 0x005
 #define MX27_PAD_ATA_DATA15__FEC_TX_EN                     0xb7 0x006
 #define MX27_PAD_ATA_DATA15__GPIO6_23                      0xb7 0x032
-
-#endif /* __DTS_IMX27_PINFUNC_H */
+#endif  

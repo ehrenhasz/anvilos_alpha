@@ -1,25 +1,14 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2018 NXP
- * Copyright (c) 2019 Engicam srl
- * Copyright (c) 2020 Amarula Solutions(India)
- */
-
 /dts-v1/;
-
 #include "imx8mp.dtsi"
 #include "imx8mp-icore-mx8mp.dtsi"
 #include <dt-bindings/usb/pd.h>
-
 / {
 	model = "Engicam i.Core MX8M Plus EDIMM2.2 Starter Kit";
 	compatible = "engicam,icore-mx8mp-edimm2.2", "engicam,icore-mx8mp",
 		     "fsl,imx8mp";
-
 	chosen {
 		stdout-path = &uart2;
 	};
-
 	reg_usb1_vbus: regulator-usb1 {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -30,7 +19,6 @@
 		regulator-min-microvolt = <5000000>;
 		regulator-name = "usb1_host_vbus";
 	};
-
 	reg_usdhc2_vmmc: regulator-usdhc2 {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -42,20 +30,16 @@
 		regulator-name = "VSD_3V3";
 	};
 };
-
-/* Ethernet */
 &eqos {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_eqos>;
 	phy-handle = <&ethphy0>;
 	phy-mode = "rgmii-id";
 	status = "okay";
-
 	mdio {
 		compatible = "snps,dwmac-mdio";
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		ethphy0: ethernet-phy@7 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			micrel,led-mode = <0>;
@@ -63,41 +47,31 @@
 		};
 	};
 };
-
-/* console */
 &uart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
 	status = "okay";
 };
-
 &usb3_phy0 {
 	status = "okay";
 };
-
 &usb3_0 {
 	status = "okay";
 };
-
 &usb_dwc3_0 {
 	dr_mode = "host";
 	status = "okay";
 };
-
 &usb3_phy1 {
 	status = "okay";
 };
-
 &usb3_1 {
 	status = "okay";
 };
-
 &usb_dwc3_1 {
 	dr_mode = "host";
 	status = "okay";
 };
-
-/* SDCARD */
 &usdhc2 {
 	cd-gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
 	bus-width = <4>;
@@ -106,7 +80,6 @@
 	vmmc-supply = <&reg_usdhc2_vmmc>;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl_eqos: eqosgrp {
 		fsl,pins = <
@@ -127,14 +100,12 @@
 			MX8MP_IOMUXC_NAND_DATA01__GPIO3_IO07				0x10
 		>;
 	};
-
 	pinctrl_uart2: uart2grp {
 		fsl,pins = <
 			MX8MP_IOMUXC_UART2_RXD__UART2_DCE_RX	0x40
 			MX8MP_IOMUXC_UART2_TXD__UART2_DCE_TX	0x40
 		>;
 	};
-
 	pinctrl_uart3: uart3grp {
 		fsl,pins = <
 			MX8MP_IOMUXC_UART3_RXD__UART3_DCE_RX	0x140
@@ -142,7 +113,6 @@
 			MX8MP_IOMUXC_SD1_STROBE__UART3_DCE_CTS	0x140
 		>;
 	};
-
 	pinctrl_usdhc2: usdhc2grp {
 		fsl,pins = <
 			MX8MP_IOMUXC_SD2_CLK__USDHC2_CLK	0x190
@@ -154,19 +124,16 @@
 			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT	0xc0
 		>;
 	};
-
 	pinctrl_usdhc2_gpio: usdhc2gpiogrp {
 		fsl,pins = <
 			MX8MP_IOMUXC_SD2_CD_B__GPIO2_IO12	0x1c4
 		>;
 	};
-
 	pinctrl_reg_usb1: regusb1grp {
 		fsl,pins = <
 			MX8MP_IOMUXC_GPIO1_IO14__GPIO1_IO14	0x10
 		>;
 	};
-
 	pinctrl_reg_usdhc2_vmmc: regusdhc2vmmcgrp {
 		fsl,pins = <
 			MX8MP_IOMUXC_SD2_RESET_B__GPIO2_IO19	0x40

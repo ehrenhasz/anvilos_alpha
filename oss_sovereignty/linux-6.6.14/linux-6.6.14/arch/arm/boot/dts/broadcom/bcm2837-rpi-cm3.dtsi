@@ -1,14 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
 /dts-v1/;
 #include "bcm2837.dtsi"
 #include "bcm2836-rpi.dtsi"
-
 / {
 	memory@0 {
 		device_type = "memory";
 		reg = <0 0x40000000>;
 	};
-
 	reg_3v3: fixed-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "3V3";
@@ -16,7 +13,6 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-always-on;
 	};
-
 	reg_1v8: fixed-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "1V8";
@@ -25,7 +21,6 @@
 		regulator-always-on;
 	};
 };
-
 &firmware {
 	expgpio: gpio {
 		compatible = "raspberrypi,firmware-gpio";
@@ -42,7 +37,6 @@
 		status = "okay";
 	};
 };
-
 &sdhost {
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdhost_gpio48>;

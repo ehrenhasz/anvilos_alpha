@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2014 Freescale Semiconductor, Inc.
- */
-
 #ifndef __DTS_IMX6SX_PINFUNC_H
 #define __DTS_IMX6SX_PINFUNC_H
-
-/*
- * The pin function ID is a tuple of
- * <mux_reg conf_reg input_reg mux_mode input_val>
- */
 #define MX6SX_PAD_GPIO1_IO00__I2C1_SCL                            0x0014 0x035C 0x07A8 0x0 0x1
 #define MX6SX_PAD_GPIO1_IO00__USDHC1_VSELECT                      0x0014 0x035C 0x0000 0x1 0x0
 #define MX6SX_PAD_GPIO1_IO00__SPDIF_LOCK                          0x0014 0x035C 0x0000 0x2 0x0
@@ -312,20 +302,6 @@
 #define MX6SX_PAD_ENET1_RX_CLK__VDEC_DEBUG_35                     0x008C 0x03D4 0x0000 0x8 0x0
 #define MX6SX_PAD_ENET1_RX_CLK__PCIE_CTRL_DEBUG_29                0x008C 0x03D4 0x0000 0x9 0x0
 #define MX6SX_PAD_ENET1_TX_CLK__ENET1_TX_CLK                      0x0090 0x03D8 0x0000 0x0 0x0
-/*
- * SION bit is necessary for ENET1_REF_CLK1 (ENET2_REF_CLK2 untested) if it is
- * used as clock output of IMX6SX_CLK_ENET_REF (ENET1_TX_CLK) to e.g. supply a
- * PHY in RMII mode. This configuration is valid if:
- *  - bit 1 in field IMX6SX_GPR1_FEC_CLOCK_PAD_DIR_MASK is set
- *  - bit 1 in field IMX6SX_GPR1_FEC_CLOCK_MUX_SEL_MASK unset
- * It seems to be a silicon bug that in this configuration ENET1_TX reference
- * clock isn't provided automatically.  According to i.MX6SX reference manual
- * (IOMUXC_GPR_GPR1 field descriptions: ENET1_CLK_SEL, Rev. 0 from 2/2015) it
- * should be the case.
- * So this might have unwanted side effects for other hardware units that are
- * also connected to that pin and using respective function as input (e.g.
- * UART1's DTR handling on MX6SX_PAD_ENET1_TX_CLK__UART1_DTR_B).
- */
 #define MX6SX_PAD_ENET1_TX_CLK__ENET1_REF_CLK1                    0x0090 0x03D8 0x0760 0x1 0x1
 #define MX6SX_PAD_ENET1_TX_CLK__AUDMUX_AUD4_RXD                   0x0090 0x03D8 0x0644 0x2 0x1
 #define MX6SX_PAD_ENET1_TX_CLK__UART1_DTR_B                       0x0090 0x03D8 0x0000 0x3 0x0
@@ -1576,8 +1552,6 @@
 #define MX6SX_PAD_USB_H_STROBE__I2C4_SCL                          0x02A8 0x05F0 0x07C0 0x3 0x1
 #define MX6SX_PAD_USB_H_STROBE__WDOG3_WDOG_RST_B_DEB              0x02A8 0x05F0 0x0000 0x4 0x0
 #define MX6SX_PAD_USB_H_STROBE__GPIO7_IO_11                       0x02A8 0x05F0 0x0000 0x5 0x0
-
-/* these are not supposed to be used any more and remove them after some time */
 #define MX6SX_PAD_GPIO1_IO04__UART1_RX		MX6SX_PAD_GPIO1_IO04__UART1_DTE_RX
 #define MX6SX_PAD_GPIO1_IO04__UART1_TX		MX6SX_PAD_GPIO1_IO04__UART1_DCE_TX
 #define MX6SX_PAD_GPIO1_IO05__UART1_RX		MX6SX_PAD_GPIO1_IO05__UART1_DCE_RX
@@ -1664,5 +1638,4 @@
 #define MX6SX_PAD_SD4_DATA5__UART5_TX		MX6SX_PAD_SD4_DATA5__UART5_DCE_TX
 #define MX6SX_PAD_SD4_DATA6__UART5_RTS_B	MX6SX_PAD_SD4_DATA6__UART5_DCE_RTS
 #define MX6SX_PAD_SD4_DATA7__UART5_CTS_B	MX6SX_PAD_SD4_DATA7__UART5_DCE_CTS
-
-#endif /* __DTS_IMX6SX_PINFUNC_H */
+#endif  

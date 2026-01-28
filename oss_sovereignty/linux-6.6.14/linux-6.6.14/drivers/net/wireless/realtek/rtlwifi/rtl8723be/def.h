@@ -1,21 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
-
 #ifndef __RTL8723BE_DEF_H__
 #define __RTL8723BE_DEF_H__
-
 #define HAL_PRIME_CHNL_OFFSET_DONT_CARE		0
 #define HAL_PRIME_CHNL_OFFSET_LOWER		1
 #define HAL_PRIME_CHNL_OFFSET_UPPER		2
-
-
 #define RX_MPDU_QUEUE				0
 #define CHIP_8723B				(BIT(1) | BIT(2))
 #define NORMAL_CHIP				BIT(3)
 #define CHIP_VENDOR_SMIC			BIT(8)
-/* Currently only for RTL8723B */
 #define EXT_VENDOR_ID				(BIT(18) | BIT(19))
-
 enum rtl_desc_qsel {
 	QSLT_BK = 0x2,
 	QSLT_BE = 0x0,
@@ -26,13 +18,11 @@ enum rtl_desc_qsel {
 	QSLT_MGNT = 0x12,
 	QSLT_CMD = 0x13,
 };
-
 enum rtl_desc8723e_rate {
 	DESC92C_RATE1M = 0x00,
 	DESC92C_RATE2M = 0x01,
 	DESC92C_RATE5_5M = 0x02,
 	DESC92C_RATE11M = 0x03,
-
 	DESC92C_RATE6M = 0x04,
 	DESC92C_RATE9M = 0x05,
 	DESC92C_RATE12M = 0x06,
@@ -41,7 +31,6 @@ enum rtl_desc8723e_rate {
 	DESC92C_RATE36M = 0x09,
 	DESC92C_RATE48M = 0x0a,
 	DESC92C_RATE54M = 0x0b,
-
 	DESC92C_RATEMCS0 = 0x0c,
 	DESC92C_RATEMCS1 = 0x0d,
 	DESC92C_RATEMCS2 = 0x0e,

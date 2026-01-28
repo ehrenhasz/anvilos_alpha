@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NV50_CLK_H__
 #define __NV50_CLK_H__
 #define nv50_clk(p) container_of((p), struct nv50_clk, base)
 #include "priv.h"
-
 #include <subdev/bus/hwsq.h>
-
 struct nv50_clk_hwsq {
 	struct hwsq base;
 	struct hwsq_reg r_fifo;
@@ -14,12 +11,10 @@ struct nv50_clk_hwsq {
 	struct hwsq_reg r_divs;
 	struct hwsq_reg r_mast;
 };
-
 struct nv50_clk {
 	struct nvkm_clk base;
 	struct nv50_clk_hwsq hwsq;
 };
-
 int nv50_clk_new_(const struct nvkm_clk_func *, struct nvkm_device *, enum nvkm_subdev_type, int,
 		  bool, struct nvkm_clk **);
 int nv50_clk_read(struct nvkm_clk *, enum nv_clk_src);

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2010  Realtek Corporation.*/
-
 #ifndef __RTL8821AE_TABLE__H_
 #define __RTL8821AE_TABLE__H_
-
 #include <linux/types.h>
 extern u32 RTL8821AE_PHY_REG_1TARRAYLEN;
 extern u32 RTL8821AE_PHY_REG_ARRAY[];

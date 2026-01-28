@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_QCM2290_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_QCM2290_H
-
-/* GCC clocks */
 #define GPLL0						0
 #define GPLL0_OUT_AUX2					1
 #define GPLL1						2
@@ -155,8 +148,6 @@
 #define GCC_VIDEO_VENUS_CLK_SRC				145
 #define GCC_VIDEO_VENUS_CTL_CLK				146
 #define GCC_VIDEO_XO_CLK				147
-
-/* GCC resets */
 #define GCC_CAMSS_OPE_BCR				0
 #define GCC_CAMSS_TFE_BCR				1
 #define GCC_CAMSS_TOP_BCR				2
@@ -174,8 +165,6 @@
 #define GCC_QUSB2PHY_PRIM_BCR				14
 #define GCC_USB3_PHY_PRIM_SP0_BCR			15
 #define GCC_USB3PHY_PHY_PRIM_SP0_BCR			16
-
-/* Indexes for GDSCs */
 #define GCC_CAMSS_TOP_GDSC				0
 #define GCC_USB30_PRIM_GDSC				1
 #define GCC_VCODEC0_GDSC				2
@@ -184,5 +173,4 @@
 #define HLOS1_VOTE_TURING_MMU_TBU0_GDSC			5
 #define HLOS1_VOTE_MM_SNOC_MMU_TBU_RT_GDSC		6
 #define HLOS1_VOTE_MM_SNOC_MMU_TBU_NRT_GDSC		7
-
 #endif

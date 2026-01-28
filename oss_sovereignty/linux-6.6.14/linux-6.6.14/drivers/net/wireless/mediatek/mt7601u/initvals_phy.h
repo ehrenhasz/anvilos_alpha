@@ -1,17 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * (c) Copyright 2002-2010, Ralink Technology, Inc.
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
-
 #ifndef __MT7601U_PHY_INITVALS_H
 #define __MT7601U_PHY_INITVALS_H
-
 #define RF_REG_PAIR(bank, reg, value)				\
 	{ MT_MCU_MEMMAP_RF | (bank) << 16 | (reg), value }
-
 static const struct mt76_reg_pair rf_central[] = {
-	/* Bank 0 - for central blocks: BG, PLL, XTAL, LO, ADC/DAC */
 	RF_REG_PAIR(0,	 0, 0x02),
 	RF_REG_PAIR(0,	 1, 0x01),
 	RF_REG_PAIR(0,	 2, 0x11),
@@ -19,19 +10,15 @@ static const struct mt76_reg_pair rf_central[] = {
 	RF_REG_PAIR(0,	 4, 0x0a),
 	RF_REG_PAIR(0,	 5, 0x20),
 	RF_REG_PAIR(0,	 6, 0x00),
-	/* B/G */
 	RF_REG_PAIR(0,	 7, 0x00),
 	RF_REG_PAIR(0,	 8, 0x00),
 	RF_REG_PAIR(0,	 9, 0x00),
 	RF_REG_PAIR(0,	10, 0x00),
 	RF_REG_PAIR(0,	11, 0x21),
-	/* XO */
-	RF_REG_PAIR(0,	13, 0x00),		/* 40mhz xtal */
-	/* RF_REG_PAIR(0,	13, 0x13), */	/* 20mhz xtal */
+	RF_REG_PAIR(0,	13, 0x00),		 
 	RF_REG_PAIR(0,	14, 0x7c),
 	RF_REG_PAIR(0,	15, 0x22),
 	RF_REG_PAIR(0,	16, 0x80),
-	/* PLL */
 	RF_REG_PAIR(0,	17, 0x99),
 	RF_REG_PAIR(0,	18, 0x99),
 	RF_REG_PAIR(0,	19, 0x09),
@@ -47,14 +34,12 @@ static const struct mt76_reg_pair rf_central[] = {
 	RF_REG_PAIR(0,	29, 0x01),
 	RF_REG_PAIR(0,	30, 0x00),
 	RF_REG_PAIR(0,	31, 0x00),
-	/* test ports */
 	RF_REG_PAIR(0,	32, 0x00),
 	RF_REG_PAIR(0,	33, 0x00),
 	RF_REG_PAIR(0,	34, 0x23),
-	RF_REG_PAIR(0,	35, 0x01), /* change setting to reduce spurs */
+	RF_REG_PAIR(0,	35, 0x01),  
 	RF_REG_PAIR(0,	36, 0x00),
 	RF_REG_PAIR(0,	37, 0x00),
-	/* ADC/DAC */
 	RF_REG_PAIR(0,	38, 0x00),
 	RF_REG_PAIR(0,	39, 0x20),
 	RF_REG_PAIR(0,	40, 0x00),
@@ -63,17 +48,14 @@ static const struct mt76_reg_pair rf_central[] = {
 	RF_REG_PAIR(0,	43, 0x02),
 	RF_REG_PAIR(0,	44, 0x00),
 };
-
 static const struct mt76_reg_pair rf_channel[] = {
 	RF_REG_PAIR(4,	 0, 0x01),
 	RF_REG_PAIR(4,	 1, 0x00),
 	RF_REG_PAIR(4,	 2, 0x00),
 	RF_REG_PAIR(4,	 3, 0x00),
-	/* LDO */
 	RF_REG_PAIR(4,	 4, 0x00),
 	RF_REG_PAIR(4,	 5, 0x08),
 	RF_REG_PAIR(4,	 6, 0x00),
-	/* RX */
 	RF_REG_PAIR(4,	 7, 0x5b),
 	RF_REG_PAIR(4,	 8, 0x52),
 	RF_REG_PAIR(4,	 9, 0xb6),
@@ -91,18 +73,16 @@ static const struct mt76_reg_pair rf_channel[] = {
 	RF_REG_PAIR(4,	21, 0x12),
 	RF_REG_PAIR(4,	22, 0x80),
 	RF_REG_PAIR(4,	23, 0xb3),
-	RF_REG_PAIR(4,	24, 0x00), /* reserved */
-	RF_REG_PAIR(4,	25, 0x00), /* reserved */
-	RF_REG_PAIR(4,	26, 0x00), /* reserved */
-	RF_REG_PAIR(4,	27, 0x00), /* reserved */
-	/* LOGEN */
+	RF_REG_PAIR(4,	24, 0x00),  
+	RF_REG_PAIR(4,	25, 0x00),  
+	RF_REG_PAIR(4,	26, 0x00),  
+	RF_REG_PAIR(4,	27, 0x00),  
 	RF_REG_PAIR(4,	28, 0x18),
 	RF_REG_PAIR(4,	29, 0xee),
 	RF_REG_PAIR(4,	30, 0x6b),
 	RF_REG_PAIR(4,	31, 0x31),
 	RF_REG_PAIR(4,	32, 0x5d),
-	RF_REG_PAIR(4,	33, 0x00), /* reserved */
-	/* TX */
+	RF_REG_PAIR(4,	33, 0x00),  
 	RF_REG_PAIR(4,	34, 0x96),
 	RF_REG_PAIR(4,	35, 0x55),
 	RF_REG_PAIR(4,	36, 0x08),
@@ -110,8 +90,8 @@ static const struct mt76_reg_pair rf_channel[] = {
 	RF_REG_PAIR(4,	38, 0xb3),
 	RF_REG_PAIR(4,	39, 0xb3),
 	RF_REG_PAIR(4,	40, 0x03),
-	RF_REG_PAIR(4,	41, 0x00), /* reserved */
-	RF_REG_PAIR(4,	42, 0x00), /* reserved */
+	RF_REG_PAIR(4,	41, 0x00),  
+	RF_REG_PAIR(4,	42, 0x00),  
 	RF_REG_PAIR(4,	43, 0xc5),
 	RF_REG_PAIR(4,	44, 0xc5),
 	RF_REG_PAIR(4,	45, 0xc5),
@@ -119,7 +99,6 @@ static const struct mt76_reg_pair rf_channel[] = {
 	RF_REG_PAIR(4,	47, 0xa8),
 	RF_REG_PAIR(4,	48, 0xef),
 	RF_REG_PAIR(4,	49, 0x1a),
-	/* PA */
 	RF_REG_PAIR(4,	54, 0x07),
 	RF_REG_PAIR(4,	55, 0xa7),
 	RF_REG_PAIR(4,	56, 0xcc),
@@ -129,9 +108,8 @@ static const struct mt76_reg_pair rf_channel[] = {
 	RF_REG_PAIR(4,	60, 0xd7),
 	RF_REG_PAIR(4,	61, 0x10),
 	RF_REG_PAIR(4,	62, 0x1c),
-	RF_REG_PAIR(4,	63, 0x00), /* reserved */
+	RF_REG_PAIR(4,	63, 0x00),  
 };
-
 static const struct mt76_reg_pair rf_vga[] = {
 	RF_REG_PAIR(5,	 0, 0x47),
 	RF_REG_PAIR(5,	 1, 0x00),
@@ -193,14 +171,10 @@ static const struct mt76_reg_pair rf_vga[] = {
 	RF_REG_PAIR(5,	62, 0x00),
 	RF_REG_PAIR(5,	63, 0x00),
 };
-
-/* TODO: BBP178 is set to 0xff for "CCK CH14 OBW" which overrides the settings
- *	 from channel switching. Seems stupid at best.
- */
 static const struct mt76_reg_pair bbp_high_temp[] = {
 	{  75, 0x60 },
 	{  92, 0x02 },
-	{ 178, 0xff }, /* For CCK CH14 OBW */
+	{ 178, 0xff },  
 	{ 195, 0x88 }, { 196, 0x60 },
 }, bbp_high_temp_bw20[] = {
 	{  69, 0x12 },
@@ -217,7 +191,7 @@ static const struct mt76_reg_pair bbp_high_temp[] = {
 	{ 195, 0x81 }, { 196, 0x15 },
 	{ 195, 0x83 }, { 196, 0x16 },
 }, bbp_low_temp[] = {
-	{ 178, 0xff }, /* For CCK CH14 OBW */
+	{ 178, 0xff },  
 }, bbp_low_temp_bw20[] = {
 	{  69, 0x12 },
 	{  75, 0x5e },
@@ -241,7 +215,7 @@ static const struct mt76_reg_pair bbp_high_temp[] = {
 }, bbp_normal_temp[] = {
 	{  75, 0x60 },
 	{  92, 0x02 },
-	{ 178, 0xff }, /* For CCK CH14 OBW */
+	{ 178, 0xff },  
 	{ 195, 0x88 }, { 196, 0x60 },
 }, bbp_normal_temp_bw20[] = {
 	{  69, 0x12 },
@@ -258,9 +232,7 @@ static const struct mt76_reg_pair bbp_high_temp[] = {
 	{ 195, 0x81 }, { 196, 0x15 },
 	{ 195, 0x83 }, { 196, 0x16 },
 };
-
 #define BBP_TABLE(arr) { arr, ARRAY_SIZE(arr), }
-
 static const struct reg_table {
 	const struct mt76_reg_pair *regs;
 	size_t n;
@@ -279,5 +251,4 @@ static const struct reg_table {
 		BBP_TABLE(bbp_low_temp),
 	}
 };
-
 #endif

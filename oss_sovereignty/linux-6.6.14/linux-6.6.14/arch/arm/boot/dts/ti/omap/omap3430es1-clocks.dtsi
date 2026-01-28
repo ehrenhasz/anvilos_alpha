@@ -1,9 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Device Tree Source for OMAP3430 ES1 clock data
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- */
 &cm_clocks {
 	gfx_l3_ck: gfx_l3_ck@b10 {
 		#clock-cells = <0>;
@@ -12,7 +6,6 @@
 		reg = <0x0b10>;
 		ti,bit-shift = <0>;
 	};
-
 	gfx_l3_fck: gfx_l3_fck@b40 {
 		#clock-cells = <0>;
 		compatible = "ti,divider-clock";
@@ -21,7 +14,6 @@
 		reg = <0x0b40>;
 		ti,index-starts-at-one;
 	};
-
 	gfx_l3_ick: gfx_l3_ick {
 		#clock-cells = <0>;
 		compatible = "fixed-factor-clock";
@@ -29,7 +21,6 @@
 		clock-mult = <1>;
 		clock-div = <1>;
 	};
-
 	gfx_cg1_ck: gfx_cg1_ck@b00 {
 		#clock-cells = <0>;
 		compatible = "ti,wait-gate-clock";
@@ -37,7 +28,6 @@
 		reg = <0x0b00>;
 		ti,bit-shift = <1>;
 	};
-
 	gfx_cg2_ck: gfx_cg2_ck@b00 {
 		#clock-cells = <0>;
 		compatible = "ti,wait-gate-clock";
@@ -45,13 +35,11 @@
 		reg = <0x0b00>;
 		ti,bit-shift = <2>;
 	};
-
 	clock@a00 {
 		compatible = "ti,clksel";
 		reg = <0xa00>;
 		#clock-cells = <2>;
 		#address-cells = <0>;
-
 		d2d_26m_fck: clock-d2d-26m-fck {
 			#clock-cells = <0>;
 			compatible = "ti,wait-gate-clock";
@@ -59,7 +47,6 @@
 			clocks = <&sys_ck>;
 			ti,bit-shift = <3>;
 		};
-
 		fshostusb_fck: clock-fshostusb-fck {
 			#clock-cells = <0>;
 			compatible = "ti,wait-gate-clock";
@@ -67,7 +54,6 @@
 			clocks = <&core_48m_fck>;
 			ti,bit-shift = <5>;
 		};
-
 		ssi_ssr_gate_fck_3430es1: clock-ssi-ssr-gate-fck-3430es1 {
 			#clock-cells = <0>;
 			compatible = "ti,composite-no-wait-gate-clock";
@@ -76,13 +62,11 @@
 			ti,bit-shift = <0>;
 		};
 	};
-
 	clock@a40 {
 		compatible = "ti,clksel";
 		reg = <0xa40>;
 		#clock-cells = <2>;
 		#address-cells = <0>;
-
 		ssi_ssr_div_fck_3430es1: clock-ssi-ssr-div-fck-3430es1 {
 			#clock-cells = <0>;
 			compatible = "ti,composite-divider-clock";
@@ -91,7 +75,6 @@
 			ti,bit-shift = <8>;
 			ti,dividers = <0>, <1>, <2>, <3>, <4>, <0>, <6>, <0>, <8>;
 		};
-
 		usb_l4_div_ick: clock-usb-l4-div-ick {
 			#clock-cells = <0>;
 			compatible = "ti,composite-divider-clock";
@@ -102,13 +85,11 @@
 			ti,index-starts-at-one;
 		};
 	};
-
 	ssi_ssr_fck: ssi_ssr_fck_3430es1 {
 		#clock-cells = <0>;
 		compatible = "ti,composite-clock";
 		clocks = <&ssi_ssr_gate_fck_3430es1>, <&ssi_ssr_div_fck_3430es1>;
 	};
-
 	ssi_sst_fck: ssi_sst_fck_3430es1 {
 		#clock-cells = <0>;
 		compatible = "fixed-factor-clock";
@@ -116,13 +97,11 @@
 		clock-mult = <1>;
 		clock-div = <2>;
 	};
-
 	clock@a10 {
 		compatible = "ti,clksel";
 		reg = <0xa10>;
 		#clock-cells = <2>;
 		#address-cells = <0>;
-
 		hsotgusb_ick_3430es1: clock-hsotgusb-ick-3430es1 {
 			#clock-cells = <0>;
 			compatible = "ti,omap3-no-wait-interface-clock";
@@ -130,7 +109,6 @@
 			clocks = <&core_l3_ick>;
 			ti,bit-shift = <4>;
 		};
-
 		fac_ick: clock-fac-ick {
 			#clock-cells = <0>;
 			compatible = "ti,omap3-interface-clock";
@@ -138,7 +116,6 @@
 			clocks = <&core_l4_ick>;
 			ti,bit-shift = <8>;
 		};
-
 		ssi_ick: clock-ssi-ick-3430es1 {
 			#clock-cells = <0>;
 			compatible = "ti,omap3-no-wait-interface-clock";
@@ -146,7 +123,6 @@
 			clocks = <&ssi_l4_ick>;
 			ti,bit-shift = <0>;
 		};
-
 		usb_l4_gate_ick: clock-usb-l4-gate-ick {
 			#clock-cells = <0>;
 			compatible = "ti,composite-interface-clock";
@@ -155,7 +131,6 @@
 			ti,bit-shift = <5>;
 		};
 	};
-
 	ssi_l4_ick: ssi_l4_ick {
 		#clock-cells = <0>;
 		compatible = "fixed-factor-clock";
@@ -163,19 +138,16 @@
 		clock-mult = <1>;
 		clock-div = <1>;
 	};
-
 	usb_l4_ick: usb_l4_ick {
 		#clock-cells = <0>;
 		compatible = "ti,composite-clock";
 		clocks = <&usb_l4_gate_ick>, <&usb_l4_div_ick>;
 	};
-
 	clock@e00 {
 		compatible = "ti,clksel";
 		reg = <0xe00>;
 		#clock-cells = <2>;
 		#address-cells = <0>;
-
 		dss1_alwon_fck: clock-dss1-alwon-fck-3430es1 {
 			#clock-cells = <0>;
 			compatible = "ti,gate-clock";
@@ -185,7 +157,6 @@
 			ti,set-rate-parent;
 		};
 	};
-
 	dss_ick: dss_ick_3430es1@e10 {
 		#clock-cells = <0>;
 		compatible = "ti,omap3-no-wait-interface-clock";
@@ -194,29 +165,24 @@
 		ti,bit-shift = <0>;
 	};
 };
-
 &cm_clockdomains {
 	core_l3_clkdm: core_l3_clkdm {
 		compatible = "ti,clockdomain";
 		clocks = <&sdrc_ick>, <&hsotgusb_ick_3430es1>;
 	};
-
 	gfx_3430es1_clkdm: gfx_3430es1_clkdm {
 		compatible = "ti,clockdomain";
 		clocks = <&gfx_l3_ck>, <&gfx_cg1_ck>, <&gfx_cg2_ck>;
 	};
-
 	dss_clkdm: dss_clkdm {
 		compatible = "ti,clockdomain";
 		clocks = <&dss_tv_fck>, <&dss_96m_fck>, <&dss2_alwon_fck>,
 			 <&dss1_alwon_fck>, <&dss_ick>;
 	};
-
 	d2d_clkdm: d2d_clkdm {
 		compatible = "ti,clockdomain";
 		clocks = <&d2d_26m_fck>;
 	};
-
 	core_l4_clkdm: core_l4_clkdm {
 		compatible = "ti,clockdomain";
 		clocks = <&mmchs2_fck>, <&mmchs1_fck>, <&i2c3_fck>, <&i2c2_fck>,

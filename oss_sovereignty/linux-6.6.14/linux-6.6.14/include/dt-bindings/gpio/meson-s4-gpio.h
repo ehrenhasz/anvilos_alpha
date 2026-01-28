@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (c) 2021 Amlogic, Inc. All rights reserved.
- * Author: Qianggui Song <qianggui.song@amlogic.com>
- */
-
 #ifndef _DT_BINDINGS_MESON_S4_GPIO_H
 #define _DT_BINDINGS_MESON_S4_GPIO_H
-
 #define	GPIOB_0		0
 #define	GPIOB_1		1
 #define	GPIOB_2		2
@@ -21,7 +14,6 @@
 #define	GPIOB_11	11
 #define	GPIOB_12	12
 #define	GPIOB_13	13
-
 #define	GPIOC_0		14
 #define	GPIOC_1		15
 #define	GPIOC_2		16
@@ -30,10 +22,8 @@
 #define	GPIOC_5		19
 #define	GPIOC_6		20
 #define	GPIOC_7		21
-
 #define	GPIOE_0		22
 #define	GPIOE_1		23
-
 #define	GPIOD_0		24
 #define	GPIOD_1		25
 #define	GPIOD_2		26
@@ -46,7 +36,6 @@
 #define	GPIOD_9		33
 #define	GPIOD_10	34
 #define	GPIOD_11	35
-
 #define	GPIOH_0		36
 #define	GPIOH_1		37
 #define	GPIOH_2		38
@@ -59,7 +48,6 @@
 #define	GPIOH_9		45
 #define	GPIOH_10	46
 #define	GPIOH_11	47
-
 #define	GPIOX_0		48
 #define	GPIOX_1		49
 #define	GPIOX_2		50
@@ -80,7 +68,6 @@
 #define	GPIOX_17	65
 #define	GPIOX_18	66
 #define	GPIOX_19	67
-
 #define	GPIOZ_0		68
 #define	GPIOZ_1		69
 #define	GPIOZ_2		70
@@ -94,6 +81,5 @@
 #define	GPIOZ_10	78
 #define	GPIOZ_11	79
 #define	GPIOZ_12	80
-
 #define	GPIO_TEST_N	81
-#endif /* _DT_BINDINGS_MESON_S4_GPIO_H */
+#endif  

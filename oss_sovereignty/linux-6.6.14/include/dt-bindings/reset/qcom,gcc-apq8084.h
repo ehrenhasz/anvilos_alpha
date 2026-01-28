@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_RESET_APQ_GCC_8084_H
 #define _DT_BINDINGS_RESET_APQ_GCC_8084_H
-
 #define GCC_SYSTEM_NOC_BCR		0
 #define GCC_CONFIG_NOC_BCR		1
 #define GCC_PERIPH_NOC_BCR		2
@@ -97,5 +91,4 @@
 #define GCC_CE3_BCR			88
 #define GCC_UFS_BCR			89
 #define GCC_USB30_PHY_COM_BCR		90
-
 #endif

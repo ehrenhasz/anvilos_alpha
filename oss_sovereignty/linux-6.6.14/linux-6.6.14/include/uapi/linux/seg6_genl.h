@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI_LINUX_SEG6_GENL_H
 #define _UAPI_LINUX_SEG6_GENL_H
-
 #define SEG6_GENL_NAME		"SEG6"
 #define SEG6_GENL_VERSION	0x1
-
 enum {
 	SEG6_ATTR_UNSPEC,
 	SEG6_ATTR_DST,
@@ -16,9 +13,7 @@ enum {
 	SEG6_ATTR_HMACINFO,
 	__SEG6_ATTR_MAX,
 };
-
 #define SEG6_ATTR_MAX (__SEG6_ATTR_MAX - 1)
-
 enum {
 	SEG6_CMD_UNSPEC,
 	SEG6_CMD_SETHMAC,
@@ -27,7 +22,5 @@ enum {
 	SEG6_CMD_GET_TUNSRC,
 	__SEG6_CMD_MAX,
 };
-
 #define SEG6_CMD_MAX (__SEG6_CMD_MAX - 1)
-
 #endif

@@ -1,65 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*----------------------------------------
-  PERFORMANCE INSTRUMENTATION  
-  Guillaume Thouvenin           08/10/98
-  David S. Miller               10/06/98
-  ---------------------------------------*/
 #ifndef PERF_COUNTER_API
 #define PERF_COUNTER_API
-
-/* sys_perfctr() interface.  First arg is operation code
- * from enumeration below.  The meaning of further arguments
- * are determined by the operation code.
- *
- * NOTE: This system call is no longer provided, use the perf_events
- *       infrastructure.
- *
- * Pointers which are passed by the user are pointers to 64-bit
- * integers.
- *
- * Once enabled, performance counter state is retained until the
- * process either exits or performs an exec.  That is, performance
- * counters remain enabled for fork/clone children.
- */
 enum perfctr_opcode {
-	/* Enable UltraSparc performance counters, ARG0 is pointer
-	 * to 64-bit accumulator for D0 counter in PIC, ARG1 is pointer
-	 * to 64-bit accumulator for D1 counter.  ARG2 is a pointer to
-	 * the initial PCR register value to use.
-	 */
 	PERFCTR_ON,
-
-	/* Disable UltraSparc performance counters.  The PCR is written
-	 * with zero and the user counter accumulator pointers and
-	 * working PCR register value are forgotten.
-	 */
 	PERFCTR_OFF,
-
-	/* Add current D0 and D1 PIC values into user pointers given
-	 * in PERFCTR_ON operation.  The PIC is cleared before returning.
-	 */
 	PERFCTR_READ,
-
-	/* Clear the PIC register. */
 	PERFCTR_CLRPIC,
-
-	/* Begin using a new PCR value, the pointer to which is passed
-	 * in ARG0.  The PIC is also cleared after the new PCR value is
-	 * written.
-	 */
 	PERFCTR_SETPCR,
-
-	/* Store in pointer given in ARG0 the current PCR register value
-	 * being used.
-	 */
 	PERFCTR_GETPCR
 };
-
 #define  PRIV 0x00000001
 #define  SYS  0x00000002
 #define  USR  0x00000004
-
-/* Pic.S0 Selection Bit Field Encoding, Ultra-I/II  */
 #define  CYCLE_CNT            0x00000000
 #define  INSTR_CNT            0x00000010
 #define  DISPATCH0_IC_MISS    0x00000020
@@ -72,8 +23,6 @@ enum perfctr_opcode {
 #define  EC_WRITE_HIT_RDO     0x000000D0
 #define  EC_SNOOP_INV         0x000000E0
 #define  EC_RD_HIT            0x000000F0
-
-/* Pic.S0 Selection Bit Field Encoding, Ultra-III  */
 #define  US3_CYCLE_CNT	      	0x00000000
 #define  US3_INSTR_CNT	      	0x00000010
 #define  US3_DISPATCH0_IC_MISS	0x00000020
@@ -103,8 +52,6 @@ enum perfctr_opcode {
 #define  US3_MC_READS_3		0x00000230
 #define  US3_MC_STALLS_0	0x00000240
 #define  US3_MC_STALLS_2	0x00000250
-
-/* Pic.S1 Selection Bit Field Encoding, Ultra-I/II  */
 #define  CYCLE_CNT_D1         0x00000000
 #define  INSTR_CNT_D1         0x00000800
 #define  DISPATCH0_IC_MISPRED 0x00001000
@@ -117,8 +64,6 @@ enum perfctr_opcode {
 #define  EC_WB                0x00006800
 #define  EC_SNOOP_CB          0x00007000
 #define  EC_IT_HIT            0x00007800
-
-/* Pic.S1 Selection Bit Field Encoding, Ultra-III  */
 #define  US3_CYCLE_CNT_D1	0x00000000
 #define  US3_INSTR_CNT_D1	0x00000800
 #define  US3_DISPATCH0_MISPRED	0x00001000
@@ -158,10 +103,8 @@ enum perfctr_opcode {
 #define  US3_MC_STALLS_3	0x00013000
 #define  US3_RE_RAW_MISS	0x00013800
 #define  US3_FM_PIPE_COMPLETION	0x00014000
-
 struct vcounter_struct {
   unsigned long long vcnt0;
   unsigned long long vcnt1;
 };
-
-#endif /* !(PERF_COUNTER_API) */
+#endif  

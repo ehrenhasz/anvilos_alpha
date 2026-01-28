@@ -1,29 +1,5 @@
-/*
- * UVD_3_1 Register documentation
- *
- * Copyright (C) 2020  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 #ifndef UVD_3_1_SH_MASK_H
 #define UVD_3_1_SH_MASK_H
-
 #define UVD_SEMA_ADDR_LOW__ADDR_22_3_MASK 0xfffff
 #define UVD_SEMA_ADDR_LOW__ADDR_22_3__SHIFT 0x0
 #define UVD_SEMA_ADDR_HIGH__ADDR_42_23_MASK 0xfffff
@@ -790,7 +766,6 @@
 #define UVD_MIF_RECON1_ADDR_CONFIG__ROW_SIZE__SHIFT 0x1c
 #define UVD_MIF_RECON1_ADDR_CONFIG__NUM_LOWER_PIPES_MASK 0x40000000
 #define UVD_MIF_RECON1_ADDR_CONFIG__NUM_LOWER_PIPES__SHIFT 0x1e
-// UVD_FW_STATUS
 #define UVD_FW_STATUS__BUSY_MASK                           0x00000001L
 #define UVD_FW_STATUS__ACTIVE_MASK                         0x00000002L
 #define UVD_FW_STATUS__SEND_EFUSE_REQ_MASK                 0x00000004L
@@ -800,5 +775,4 @@
 #define UVD_FW_STATUS__INVALID_LEN_MASK                    0x00040000L
 #define UVD_FW_STATUS__INVALID_0_PADDING_MASK              0x00080000L
 #define UVD_FW_STATUS__INVALID_NONCE_MASK                  0x00100000L
-
-#endif /* UVD_3_1_SH_MASK_H */
+#endif  

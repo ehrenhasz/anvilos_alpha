@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2020 Intel Corporation */
 #ifndef _ICP_QAT_FW_INIT_ADMIN_H_
 #define _ICP_QAT_FW_INIT_ADMIN_H_
-
 #include "icp_qat_fw.h"
-
 enum icp_qat_fw_init_admin_cmd_id {
 	ICP_QAT_FW_INIT_AE = 0,
 	ICP_QAT_FW_TRNG_ENABLE = 1,
@@ -21,12 +17,10 @@ enum icp_qat_fw_init_admin_cmd_id {
 	ICP_QAT_FW_TIMER_GET = 19,
 	ICP_QAT_FW_PM_STATE_CONFIG = 128,
 };
-
 enum icp_qat_fw_init_admin_resp_status {
 	ICP_QAT_FW_INIT_RESP_STATUS_SUCCESS = 0,
 	ICP_QAT_FW_INIT_RESP_STATUS_FAIL
 };
-
 struct icp_qat_fw_init_admin_req {
 	__u16 init_cfg_sz;
 	__u8 resrvd1;
@@ -34,7 +28,6 @@ struct icp_qat_fw_init_admin_req {
 	__u32 resrvd2;
 	__u64 opaque_data;
 	__u64 init_cfg_ptr;
-
 	union {
 		struct {
 			__u16 ibuf_size_in_kb;
@@ -48,10 +41,8 @@ struct icp_qat_fw_init_admin_req {
 		};
 		__u32 idle_filter;
 	};
-
 	__u32 resrvd4;
 } __packed;
-
 struct icp_qat_fw_init_admin_resp {
 	__u8 flags;
 	__u8 resrvd1;
@@ -105,7 +96,5 @@ struct icp_qat_fw_init_admin_resp {
 		};
 	};
 } __packed;
-
 #define ICP_QAT_FW_SYNC ICP_QAT_FW_HEARTBEAT_SYNC
-
 #endif

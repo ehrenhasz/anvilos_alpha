@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #include <asm/shmparam.h>
-
 extern void flush_dcache_page(struct page *page);
-
 static inline unsigned long pages_do_alias(unsigned long addr1,
 					   unsigned long addr2)
 {
 	return (addr1 ^ addr2) & (SHMLBA-1);
 }
-
 static inline void clear_user_page(void *addr, unsigned long vaddr,
 				   struct page *page)
 {
@@ -17,7 +12,6 @@ static inline void clear_user_page(void *addr, unsigned long vaddr,
 	if (pages_do_alias((unsigned long) addr, vaddr & PAGE_MASK))
 		flush_dcache_page(page);
 }
-
 static inline void copy_user_page(void *to, void *from, unsigned long vaddr,
 				  struct page *page)
 {

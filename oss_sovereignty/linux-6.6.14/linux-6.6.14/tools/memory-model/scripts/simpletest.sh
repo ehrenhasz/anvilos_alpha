@@ -1,19 +1,4 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0+
-#
-# Give zero status if this is a simple test and non-zero otherwise.
-# Simple tests do not contain locking, RCU, or SRCU.
-#
-# Usage:
-#	simpletest.sh file.litmus
-#
-# Copyright IBM Corporation, 2019
-#
-# Author: Paul E. McKenney <paulmck@linux.ibm.com>
-
-
 litmus=$1
-
 if test -f "$litmus" -a -r "$litmus"
 then
 	:

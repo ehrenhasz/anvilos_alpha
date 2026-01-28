@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2011-2018 Magewell Electronics Co., Ltd. (Nanjing)
- * Author: Yong Deng <yong.deng@magewell.com>
- * Copyright 2021-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
-
 #ifndef _SUN6I_CSI_REG_H_
 #define _SUN6I_CSI_REG_H_
-
 #include <linux/kernel.h>
-
 #define SUN6I_CSI_ADDR_VALUE(a)			((a) >> 2)
-
 #define SUN6I_CSI_EN_REG			0x0
 #define SUN6I_CSI_EN_VER_EN			BIT(30)
 #define SUN6I_CSI_EN_PTN_CYCLE(v)		(((v) << 16) & GENMASK(23, 16))
@@ -22,9 +11,6 @@
 #define SUN6I_CSI_EN_CLK_CNT_EN			BIT(2)
 #define SUN6I_CSI_EN_PTN_GEN_EN			BIT(1)
 #define SUN6I_CSI_EN_CSI_EN			BIT(0)
-
-/* Note that Allwinner manuals and code invert positive/negative definitions. */
-
 #define SUN6I_CSI_IF_CFG_REG			0x4
 #define SUN6I_CSI_IF_CFG_FIELD_DT_PCLK_SHIFT(v)	(((v) << 24) & GENMASK(27, 24))
 #define SUN6I_CSI_IF_CFG_SRC_TYPE_PROGRESSIVE	(0 << 21)
@@ -52,20 +38,16 @@
 #define SUN6I_CSI_IF_CFG_IF_CSI_YUV_COMBINED	(1 << 0)
 #define SUN6I_CSI_IF_CFG_IF_CSI_BT656		(4 << 0)
 #define SUN6I_CSI_IF_CFG_IF_CSI_BT1120		(5 << 0)
-
 #define SUN6I_CSI_CAP_REG			0x8
 #define SUN6I_CSI_CAP_MASK(v)			(((v) << 2) & GENMASK(5, 2))
 #define SUN6I_CSI_CAP_VCAP_ON			BIT(1)
 #define SUN6I_CSI_CAP_SCAP_ON			BIT(0)
-
 #define SUN6I_CSI_SYNC_CNT_REG			0xc
 #define SUN6I_CSI_FIFO_THRS_REG			0x10
 #define SUN6I_CSI_BT656_HEAD_CFG_REG		0x14
-
 #define SUN6I_CSI_PTN_LEN_REG			0x30
 #define SUN6I_CSI_PTN_ADDR_REG			0x34
 #define SUN6I_CSI_VER_REG			0x3c
-
 #define SUN6I_CSI_CH_CFG_REG			0x44
 #define SUN6I_CSI_CH_CFG_PAD_VAL(v)		(((v) << 24) & GENMASK(31, 24))
 #define SUN6I_CSI_CH_CFG_INPUT_FMT(v)		(((v) << 20) & GENMASK(23, 20))
@@ -76,14 +58,9 @@
 #define SUN6I_CSI_CH_CFG_FIELD_SEL_FIELD1	(1 << 10)
 #define SUN6I_CSI_CH_CFG_FIELD_SEL_EITHER	(2 << 10)
 #define SUN6I_CSI_CH_CFG_INPUT_YUV_SEQ(v)	(((v) << 8) & GENMASK(9, 8))
-
 #define SUN6I_CSI_INPUT_FMT_RAW			0
 #define SUN6I_CSI_INPUT_FMT_YUV422		3
 #define SUN6I_CSI_INPUT_FMT_YUV420		4
-
-/* Note that Allwinner manuals and code invert frame/field definitions. */
-
-/* RAW */
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8	0
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_10	1
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_12	2
@@ -96,8 +73,6 @@
 #define SUN6I_CSI_OUTPUT_FMT_FIELD_RGB565	12
 #define SUN6I_CSI_OUTPUT_FMT_FIELD_RGB888	13
 #define SUN6I_CSI_OUTPUT_FMT_FIELD_PRGB888	14
-
-/* YUV */
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_YUV422P	0
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_YUV420P	1
 #define SUN6I_CSI_OUTPUT_FMT_FIELD_YUV420P	2
@@ -112,29 +87,21 @@
 #define SUN6I_CSI_OUTPUT_FMT_FIELD_YUV422MB	11
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_YUV422SP_10	12
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_YUV420SP_10	13
-
-/* YUV Planar */
 #define SUN6I_CSI_INPUT_YUV_SEQ_YUYV		0
 #define SUN6I_CSI_INPUT_YUV_SEQ_YVYU		1
 #define SUN6I_CSI_INPUT_YUV_SEQ_UYVY		2
 #define SUN6I_CSI_INPUT_YUV_SEQ_VYUY		3
-
-/* YUV Semi-planar */
 #define SUN6I_CSI_INPUT_YUV_SEQ_UV		0
 #define SUN6I_CSI_INPUT_YUV_SEQ_VU		1
-
 #define SUN6I_CSI_CH_SCALE_REG			0x4c
 #define SUN6I_CSI_CH_SCALE_QUART_EN		BIT(0)
-
 #define SUN6I_CSI_CH_FIFO0_ADDR_REG		0x50
 #define SUN6I_CSI_CH_FIFO1_ADDR_REG		0x58
 #define SUN6I_CSI_CH_FIFO2_ADDR_REG		0x60
-
 #define SUN6I_CSI_CH_STA_REG			0x6c
 #define SUN6I_CSI_CH_STA_FIELD			BIT(2)
 #define SUN6I_CSI_CH_STA_VCAP			BIT(1)
 #define SUN6I_CSI_CH_STA_SCAP			BIT(0)
-
 #define SUN6I_CSI_CH_INT_EN_REG			0x70
 #define SUN6I_CSI_CH_INT_EN_VS			BIT(7)
 #define SUN6I_CSI_CH_INT_EN_HB_OF		BIT(6)
@@ -144,7 +111,6 @@
 #define SUN6I_CSI_CH_INT_EN_FIFO0_OF		BIT(2)
 #define SUN6I_CSI_CH_INT_EN_FD			BIT(1)
 #define SUN6I_CSI_CH_INT_EN_CD			BIT(0)
-
 #define SUN6I_CSI_CH_INT_STA_REG		0x74
 #define SUN6I_CSI_CH_INT_STA_CLEAR		0xff
 #define SUN6I_CSI_CH_INT_STA_VS			BIT(7)
@@ -155,30 +121,23 @@
 #define SUN6I_CSI_CH_INT_STA_FIFO0_OF		BIT(2)
 #define SUN6I_CSI_CH_INT_STA_FD			BIT(1)
 #define SUN6I_CSI_CH_INT_STA_CD			BIT(0)
-
 #define SUN6I_CSI_CH_FLD1_VSIZE_REG		0x78
 #define SUN6I_CSI_CH_FLD1_VSIZE_VER_LEN(v)	(((v) << 16) & GENMASK(28, 16))
 #define SUN6I_CSI_CH_FLD1_VSIZE_VER_START(v)	((v) & GENMASK(12, 0))
-
 #define SUN6I_CSI_CH_HSIZE_REG			0x80
 #define SUN6I_CSI_CH_HSIZE_LEN(v)		(((v) << 16) & GENMASK(28, 16))
 #define SUN6I_CSI_CH_HSIZE_START(v)		((v) & GENMASK(12, 0))
-
 #define SUN6I_CSI_CH_VSIZE_REG			0x84
 #define SUN6I_CSI_CH_VSIZE_LEN(v)		(((v) << 16) & GENMASK(28, 16))
 #define SUN6I_CSI_CH_VSIZE_START(v)		((v) & GENMASK(12, 0))
-
 #define SUN6I_CSI_CH_BUF_LEN_REG		0x88
 #define SUN6I_CSI_CH_BUF_LEN_CHROMA_LINE(v)	(((v) << 16) & GENMASK(29, 16))
 #define SUN6I_CSI_CH_BUF_LEN_LUMA_LINE(v)	((v) & GENMASK(13, 0))
-
 #define SUN6I_CSI_CH_FLIP_SIZE_REG		0x8c
 #define SUN6I_CSI_CH_FLIP_SIZE_VER_LEN(v)	(((v) << 16) & GENMASK(28, 16))
 #define SUN6I_CSI_CH_FLIP_SIZE_VALID_LEN(v)	((v) & GENMASK(12, 0))
-
 #define SUN6I_CSI_CH_FRM_CLK_CNT_REG		0x90
 #define SUN6I_CSI_CH_ACC_ITNL_CLK_CNT_REG	0x94
 #define SUN6I_CSI_CH_FIFO_STAT_REG		0x98
 #define SUN6I_CSI_CH_PCLK_STAT_REG		0x9c
-
 #endif

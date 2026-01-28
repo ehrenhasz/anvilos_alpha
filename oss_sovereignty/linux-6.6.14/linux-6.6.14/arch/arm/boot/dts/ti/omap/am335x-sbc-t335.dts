@@ -1,24 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * am335x-sbc-t335.dts - Device Tree file for Compulab SBC-T335
- *
- * Copyright (C) 2014 - 2015 CompuLab Ltd. - http://www.compulab.co.il/
- */
-
 #include "am335x-cm-t335.dts"
-
 / {
 	model = "CompuLab CM-T335 on SB-T335";
 	compatible = "compulab,sbc-t335", "compulab,cm-t335", "ti,am33xx";
-
-	/* DRM display driver */
 	panel {
 		compatible = "ti,tilcdc,panel";
 		status = "okay";
 		pinctrl-names = "default", "sleep";
 		pinctrl-0 = <&lcd_pins_default>;
 		pinctrl-1 = <&lcd_pins_sleep>;
-
 		panel-info {
 			ac-bias           = <255>;
 			ac-bias-intrpt    = <0>;
@@ -31,8 +20,7 @@
 			fifo-th           = <0>;
 		};
 		display-timings {
-			/* Timing selection performed by U-Boot */
-			timing0: lcd {/* 800x480p62 */
+			timing0: lcd { 
 				clock-frequency = <30000000>;
 				hactive = <800>;
 				vactive = <480>;
@@ -45,7 +33,7 @@
 				hsync-active = <1>;
 				vsync-active = <1>;
 			};
-			timing1: dvi { /* 1024x768p60 */
+			timing1: dvi {  
 				clock-frequency = <65000000>;
 				hactive = <1024>;
 				hfront-porch = <24>;
@@ -61,26 +49,16 @@
 		};
 	};
 };
-
 &am33xx_pinmux {
-	/* Display */
 	lcd_pins_default: lcd-default-pins {
 		pinctrl-single,pins = <
-			/* gpmc_ad8.lcd_data23 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD8, PIN_OUTPUT, MUX_MODE1)
-			/* gpmc_ad9.lcd_data22 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD9, PIN_OUTPUT, MUX_MODE1)
-			/* gpmc_ad10.lcd_data21 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD10, PIN_OUTPUT, MUX_MODE1)
-			/* gpmc_ad11.lcd_data20 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD11, PIN_OUTPUT, MUX_MODE1)
-			/* gpmc_ad12.lcd_data19 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD12, PIN_OUTPUT, MUX_MODE1)
-			/* gpmc_ad13.lcd_data18 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD13, PIN_OUTPUT, MUX_MODE1)
-			/* gpmc_ad14.lcd_data17 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD14, PIN_OUTPUT, MUX_MODE1)
-			/* gpmc_ad15.lcd_data16 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD15, PIN_OUTPUT, MUX_MODE1)
 			AM33XX_PADCONF(AM335X_PIN_LCD_DATA0, PIN_OUTPUT, MUX_MODE0)
 			AM33XX_PADCONF(AM335X_PIN_LCD_DATA1, PIN_OUTPUT, MUX_MODE0)
@@ -104,24 +82,15 @@
 			AM33XX_PADCONF(AM335X_PIN_LCD_AC_BIAS_EN, PIN_OUTPUT, MUX_MODE0)
 		>;
 	};
-
 	lcd_pins_sleep: lcd-sleep-pins {
 		pinctrl-single,pins = <
-			/* gpmc_ad8.lcd_data23 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD8, PIN_INPUT_PULLDOWN, MUX_MODE7)
-			/* gpmc_ad9.lcd_data22 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD9, PIN_INPUT_PULLDOWN, MUX_MODE7)
-			/* gpmc_ad10.lcd_data21 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD10, PIN_INPUT_PULLDOWN, MUX_MODE7)
-			/* gpmc_ad11.lcd_data20 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD11, PIN_INPUT_PULLDOWN, MUX_MODE7)
-			/* gpmc_ad12.lcd_data19 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD12, PIN_INPUT_PULLDOWN, MUX_MODE7)
-			/* gpmc_ad13.lcd_data18 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD13, PIN_INPUT_PULLDOWN, MUX_MODE7)
-			/* gpmc_ad14.lcd_data17 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD14, PIN_INPUT_PULLDOWN, MUX_MODE7)
-			/* gpmc_ad15.lcd_data16 */
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD15, PIN_INPUT_PULLDOWN, MUX_MODE7)
 			AM33XX_PADCONF(AM335X_PIN_LCD_DATA0, PULL_DISABLE, MUX_MODE7)
 			AM33XX_PADCONF(AM335X_PIN_LCD_DATA1, PULL_DISABLE, MUX_MODE7)
@@ -146,9 +115,7 @@
 		>;
 	};
 };
-
 &i2c0 {
-	/* GPIO extender */
 	gpio_ext: pca9555@26 {
 		compatible = "nxp,pca9555";
 		pinctrl-names = "default";
@@ -169,8 +136,6 @@
 		};
 	};
 };
-
-/* Display */
 &lcdc {
 	status = "okay";
 };

@@ -1,33 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __M68K_UACCESS_H
 #define __M68K_UACCESS_H
-
 #ifdef CONFIG_MMU
-
-/*
- * User space memory access functions
- */
 #include <linux/compiler.h>
 #include <linux/types.h>
 #include <asm/extable.h>
 #include <asm-generic/access_ok.h>
-
-/*
- * Not all varients of the 68k family support the notion of address spaces.
- * The traditional 680x0 parts do, and they use the sfc/dfc registers and
- * the "moves" instruction to access user space from kernel space. Other
- * family members like ColdFire don't support this, and only have a single
- * address space, and use the usual "move" instruction for user space access.
- *
- * Outside of this difference the user space access functions are the same.
- * So lets keep the code simple and just define in what we need to use.
- */
 #ifdef CONFIG_CPU_HAS_ADDRESS_SPACES
 #define	MOVES	"moves"
 #else
 #define	MOVES	"move"
 #endif
-
 #define __put_user_asm(inst, res, x, ptr, bwl, reg, err) \
 asm volatile ("\n"					\
 	"1:	"inst"."#bwl"	%2,%1\n"		\
@@ -45,7 +27,6 @@ asm volatile ("\n"					\
 	"	.previous"				\
 	: "+d" (res), "=m" (*(ptr))			\
 	: #reg (x), "i" (err))
-
 #define __put_user_asm8(inst, res, x, ptr)			\
 do {								\
 	const void *__pu_ptr = (const void __force *)(ptr);	\
@@ -70,12 +51,6 @@ do {								\
 		: "r" (x), "i" (-EFAULT)			\
 		: "memory");					\
 } while (0)
-
-/*
- * These are the main single-value transfer routines.  They automatically
- * use the right size if we just have the right pointer type.
- */
-
 #define __put_user(x, ptr)						\
 ({									\
 	typeof(*(ptr)) __pu_val = (x);					\
@@ -100,8 +75,6 @@ do {								\
 	__pu_err;							\
 })
 #define put_user(x, ptr)	__put_user(x, ptr)
-
-
 #define __get_user_asm(inst, res, x, ptr, type, bwl, reg, err) ({	\
 	type __gu_val;							\
 	asm volatile ("\n"						\
@@ -122,7 +95,6 @@ do {								\
 		: "m" (*(ptr)), "i" (err));				\
 	(x) = (__force typeof(*(ptr)))(__force unsigned long)__gu_val;	\
 })
-
 #define __get_user_asm8(inst, res, x, ptr) 				\
 do {									\
 	const void *__gu_ptr = (const void __force *)(ptr);		\
@@ -154,7 +126,6 @@ do {									\
 		: "memory");						\
 	(x) = __gu_val.t;						\
 } while (0)
-
 #define __get_user(x, ptr)						\
 ({									\
 	int __gu_err = 0;						\
@@ -178,15 +149,12 @@ do {									\
 	__gu_err;							\
 })
 #define get_user(x, ptr) __get_user(x, ptr)
-
 unsigned long __generic_copy_from_user(void *to, const void __user *from, unsigned long n);
 unsigned long __generic_copy_to_user(void __user *to, const void *from, unsigned long n);
-
 #define __suffix0
 #define __suffix1 b
 #define __suffix2 w
 #define __suffix4 l
-
 #define ____constant_copy_from_user_asm(res, to, from, tmp, n1, n2, n3, s1, s2, s3)\
 	asm volatile ("\n"						\
 		"1:	"MOVES"."#s1"	(%2)+,%3\n"			\
@@ -224,18 +192,15 @@ unsigned long __generic_copy_to_user(void __user *to, const void *from, unsigned
 		"	.previous\n"					\
 		: "+d" (res), "+&a" (to), "+a" (from), "=&d" (tmp)	\
 		: : "memory")
-
 #define ___constant_copy_from_user_asm(res, to, from, tmp, n1, n2, n3, s1, s2, s3)\
 	____constant_copy_from_user_asm(res, to, from, tmp, n1, n2, n3, s1, s2, s3)
 #define __constant_copy_from_user_asm(res, to, from, tmp, n1, n2, n3)	\
 	___constant_copy_from_user_asm(res, to, from, tmp, n1, n2, n3,  \
 					__suffix##n1, __suffix##n2, __suffix##n3)
-
 static __always_inline unsigned long
 __constant_copy_from_user(void *to, const void __user *from, unsigned long n)
 {
 	unsigned long res = 0, tmp;
-
 	switch (n) {
 	case 1:
 		__constant_copy_from_user_asm(res, to, from, tmp, 1, 0, 0);
@@ -271,13 +236,10 @@ __constant_copy_from_user(void *to, const void __user *from, unsigned long n)
 		__constant_copy_from_user_asm(res, to, from, tmp, 4, 4, 4);
 		break;
 	default:
-		/* we limit the inlined version to 3 moves */
 		return __generic_copy_from_user(to, from, n);
 	}
-
 	return res;
 }
-
 #define __constant_copy_to_user_asm(res, to, from, tmp, n, s1, s2, s3)	\
 	asm volatile ("\n"						\
 		"	move."#s1"	(%2)+,%3\n"			\
@@ -311,12 +273,10 @@ __constant_copy_from_user(void *to, const void __user *from, unsigned long n)
 		"	.previous\n"					\
 		: "+d" (res), "+a" (to), "+a" (from), "=&d" (tmp)	\
 		: : "memory")
-
 static __always_inline unsigned long
 __constant_copy_to_user(void __user *to, const void *from, unsigned long n)
 {
 	unsigned long res = 0, tmp;
-
 	switch (n) {
 	case 1:
 		__put_user_asm(MOVES, res, *(u8 *)from, (u8 __user *)to,
@@ -355,13 +315,10 @@ __constant_copy_to_user(void __user *to, const void *from, unsigned long n)
 		__constant_copy_to_user_asm(res, to, from, tmp, 12, l, l, l);
 		break;
 	default:
-		/* limit the inlined version to 3 moves */
 		return __generic_copy_to_user(to, from, n);
 	}
-
 	return res;
 }
-
 static inline unsigned long
 raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 {
@@ -369,7 +326,6 @@ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 		return __constant_copy_from_user(to, from, n);
 	return __generic_copy_from_user(to, from, n);
 }
-
 static inline unsigned long
 raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 {
@@ -379,7 +335,6 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 }
 #define INLINE_COPY_FROM_USER
 #define INLINE_COPY_TO_USER
-
 #define __get_kernel_nofault(dst, src, type, err_label)			\
 do {									\
 	type *__gk_dst = (type *)(dst);					\
@@ -408,7 +363,6 @@ do {									\
 	if (unlikely(__gk_err))						\
 		goto err_label;						\
 } while (0)
-
 #define __put_kernel_nofault(dst, src, type, err_label)			\
 do {									\
 	type __pk_src = *(type *)(src);					\
@@ -437,16 +391,11 @@ do {									\
 	if (unlikely(__pk_err))						\
 		goto err_label;						\
 } while (0)
-
 extern long strncpy_from_user(char *dst, const char __user *src, long count);
 extern __must_check long strnlen_user(const char __user *str, long n);
-
 unsigned long __clear_user(void __user *to, unsigned long n);
-
 #define clear_user	__clear_user
-
-#else /* !CONFIG_MMU */
+#else  
 #include <asm-generic/uaccess.h>
 #endif
-
-#endif /* _M68K_UACCESS_H */
+#endif  

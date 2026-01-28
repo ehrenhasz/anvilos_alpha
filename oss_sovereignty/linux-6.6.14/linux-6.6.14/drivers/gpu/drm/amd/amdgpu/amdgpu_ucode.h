@@ -1,103 +1,61 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef __AMDGPU_UCODE_H__
 #define __AMDGPU_UCODE_H__
-
 #include "amdgpu_socbb.h"
-
 struct common_firmware_header {
-	uint32_t size_bytes; /* size of the entire header+image(s) in bytes */
-	uint32_t header_size_bytes; /* size of just the header in bytes */
-	uint16_t header_version_major; /* header version */
-	uint16_t header_version_minor; /* header version */
-	uint16_t ip_version_major; /* IP version */
-	uint16_t ip_version_minor; /* IP version */
+	uint32_t size_bytes;  
+	uint32_t header_size_bytes;  
+	uint16_t header_version_major;  
+	uint16_t header_version_minor;  
+	uint16_t ip_version_major;  
+	uint16_t ip_version_minor;  
 	uint32_t ucode_version;
-	uint32_t ucode_size_bytes; /* size of ucode in bytes */
-	uint32_t ucode_array_offset_bytes; /* payload offset from the start of the header */
-	uint32_t crc32;  /* crc32 checksum of the payload */
+	uint32_t ucode_size_bytes;  
+	uint32_t ucode_array_offset_bytes;  
+	uint32_t crc32;   
 };
-
-/* version_major=1, version_minor=0 */
 struct mc_firmware_header_v1_0 {
 	struct common_firmware_header header;
-	uint32_t io_debug_size_bytes; /* size of debug array in dwords */
-	uint32_t io_debug_array_offset_bytes; /* payload offset from the start of the header */
+	uint32_t io_debug_size_bytes;  
+	uint32_t io_debug_array_offset_bytes;  
 };
-
-/* version_major=1, version_minor=0 */
 struct smc_firmware_header_v1_0 {
 	struct common_firmware_header header;
 	uint32_t ucode_start_addr;
 };
-
-/* version_major=2, version_minor=0 */
 struct smc_firmware_header_v2_0 {
 	struct smc_firmware_header_v1_0 v1_0;
-	uint32_t ppt_offset_bytes; /* soft pptable offset */
-	uint32_t ppt_size_bytes; /* soft pptable size */
+	uint32_t ppt_offset_bytes;  
+	uint32_t ppt_size_bytes;  
 };
-
 struct smc_soft_pptable_entry {
         uint32_t id;
         uint32_t ppt_offset_bytes;
         uint32_t ppt_size_bytes;
 };
-
-/* version_major=2, version_minor=1 */
 struct smc_firmware_header_v2_1 {
         struct smc_firmware_header_v1_0 v1_0;
         uint32_t pptable_count;
         uint32_t pptable_entry_offset;
 };
-
 struct psp_fw_legacy_bin_desc {
 	uint32_t fw_version;
 	uint32_t offset_bytes;
 	uint32_t size_bytes;
 };
-
-/* version_major=1, version_minor=0 */
 struct psp_firmware_header_v1_0 {
 	struct common_firmware_header header;
 	struct psp_fw_legacy_bin_desc sos;
 };
-
-/* version_major=1, version_minor=1 */
 struct psp_firmware_header_v1_1 {
 	struct psp_firmware_header_v1_0 v1_0;
 	struct psp_fw_legacy_bin_desc toc;
 	struct psp_fw_legacy_bin_desc kdb;
 };
-
-/* version_major=1, version_minor=2 */
 struct psp_firmware_header_v1_2 {
 	struct psp_firmware_header_v1_0 v1_0;
 	struct psp_fw_legacy_bin_desc res;
 	struct psp_fw_legacy_bin_desc kdb;
 };
-
-/* version_major=1, version_minor=3 */
 struct psp_firmware_header_v1_3 {
 	struct psp_firmware_header_v1_1 v1_1;
 	struct psp_fw_legacy_bin_desc spl;
@@ -105,14 +63,12 @@ struct psp_firmware_header_v1_3 {
 	struct psp_fw_legacy_bin_desc sys_drv_aux;
 	struct psp_fw_legacy_bin_desc sos_aux;
 };
-
 struct psp_fw_bin_desc {
 	uint32_t fw_type;
 	uint32_t fw_version;
 	uint32_t offset_bytes;
 	uint32_t size_bytes;
 };
-
 enum psp_fw_type {
 	PSP_FW_TYPE_UNKOWN,
 	PSP_FW_TYPE_PSP_SOS,
@@ -127,15 +83,11 @@ enum psp_fw_type {
 	PSP_FW_TYPE_PSP_RAS_DRV,
 	PSP_FW_TYPE_MAX_INDEX,
 };
-
-/* version_major=2, version_minor=0 */
 struct psp_firmware_header_v2_0 {
 	struct common_firmware_header header;
 	uint32_t psp_fw_bin_count;
 	struct psp_fw_bin_desc psp_fw_bin[];
 };
-
-/* version_major=1, version_minor=0 */
 struct ta_firmware_header_v1_0 {
 	struct common_firmware_header header;
 	struct psp_fw_legacy_bin_desc xgmi;
@@ -144,7 +96,6 @@ struct ta_firmware_header_v1_0 {
 	struct psp_fw_legacy_bin_desc dtm;
 	struct psp_fw_legacy_bin_desc securedisplay;
 };
-
 enum ta_fw_type {
 	TA_FW_TYPE_UNKOWN,
 	TA_FW_TYPE_PSP_ASD,
@@ -156,23 +107,17 @@ enum ta_fw_type {
 	TA_FW_TYPE_PSP_SECUREDISPLAY,
 	TA_FW_TYPE_MAX_INDEX,
 };
-
-/* version_major=2, version_minor=0 */
 struct ta_firmware_header_v2_0 {
 	struct common_firmware_header header;
 	uint32_t ta_fw_bin_count;
 	struct psp_fw_bin_desc ta_fw_bin[];
 };
-
-/* version_major=1, version_minor=0 */
 struct gfx_firmware_header_v1_0 {
 	struct common_firmware_header header;
 	uint32_t ucode_feature_version;
-	uint32_t jt_offset; /* jt location */
-	uint32_t jt_size;  /* size of jt */
+	uint32_t jt_offset;  
+	uint32_t jt_size;   
 };
-
-/* version_major=2, version_minor=0 */
 struct gfx_firmware_header_v2_0 {
 	struct common_firmware_header header;
 	uint32_t ucode_feature_version;
@@ -183,8 +128,6 @@ struct gfx_firmware_header_v2_0 {
 	uint32_t ucode_start_addr_lo;
 	uint32_t ucode_start_addr_hi;
 };
-
-/* version_major=1, version_minor=0 */
 struct mes_firmware_header_v1_0 {
 	struct common_firmware_header header;
 	uint32_t mes_ucode_version;
@@ -198,8 +141,6 @@ struct mes_firmware_header_v1_0 {
 	uint32_t mes_data_start_addr_lo;
 	uint32_t mes_data_start_addr_hi;
 };
-
-/* version_major=1, version_minor=0 */
 struct rlc_firmware_header_v1_0 {
 	struct common_firmware_header header;
 	uint32_t ucode_feature_version;
@@ -208,13 +149,11 @@ struct rlc_firmware_header_v1_0 {
 	uint32_t avail_scratch_ram_locations;
 	uint32_t master_pkt_description_offset;
 };
-
-/* version_major=2, version_minor=0 */
 struct rlc_firmware_header_v2_0 {
 	struct common_firmware_header header;
 	uint32_t ucode_feature_version;
-	uint32_t jt_offset; /* jt location */
-	uint32_t jt_size;  /* size of jt */
+	uint32_t jt_offset;  
+	uint32_t jt_size;   
 	uint32_t save_and_restore_offset;
 	uint32_t clear_state_descriptor_offset;
 	uint32_t avail_scratch_ram_locations;
@@ -222,20 +161,18 @@ struct rlc_firmware_header_v2_0 {
 	uint32_t reg_list_format_start;
 	uint32_t reg_list_format_separate_start;
 	uint32_t starting_offsets_start;
-	uint32_t reg_list_format_size_bytes; /* size of reg list format array in bytes */
-	uint32_t reg_list_format_array_offset_bytes; /* payload offset from the start of the header */
-	uint32_t reg_list_size_bytes; /* size of reg list array in bytes */
-	uint32_t reg_list_array_offset_bytes; /* payload offset from the start of the header */
-	uint32_t reg_list_format_separate_size_bytes; /* size of reg list format array in bytes */
-	uint32_t reg_list_format_separate_array_offset_bytes; /* payload offset from the start of the header */
-	uint32_t reg_list_separate_size_bytes; /* size of reg list array in bytes */
-	uint32_t reg_list_separate_array_offset_bytes; /* payload offset from the start of the header */
+	uint32_t reg_list_format_size_bytes;  
+	uint32_t reg_list_format_array_offset_bytes;  
+	uint32_t reg_list_size_bytes;  
+	uint32_t reg_list_array_offset_bytes;  
+	uint32_t reg_list_format_separate_size_bytes;  
+	uint32_t reg_list_format_separate_array_offset_bytes;  
+	uint32_t reg_list_separate_size_bytes;  
+	uint32_t reg_list_separate_array_offset_bytes;  
 };
-
-/* version_major=2, version_minor=1 */
 struct rlc_firmware_header_v2_1 {
 	struct rlc_firmware_header_v2_0 v2_0;
-	uint32_t reg_list_format_direct_reg_list_length; /* length of direct reg list format array */
+	uint32_t reg_list_format_direct_reg_list_length;  
 	uint32_t save_restore_list_cntl_ucode_ver;
 	uint32_t save_restore_list_cntl_feature_ver;
 	uint32_t save_restore_list_cntl_size_bytes;
@@ -249,8 +186,6 @@ struct rlc_firmware_header_v2_1 {
 	uint32_t save_restore_list_srm_size_bytes;
 	uint32_t save_restore_list_srm_offset_bytes;
 };
-
-/* version_major=2, version_minor=2 */
 struct rlc_firmware_header_v2_2 {
 	struct rlc_firmware_header_v2_1 v2_1;
 	uint32_t rlc_iram_ucode_size_bytes;
@@ -258,8 +193,6 @@ struct rlc_firmware_header_v2_2 {
 	uint32_t rlc_dram_ucode_size_bytes;
 	uint32_t rlc_dram_ucode_offset_bytes;
 };
-
-/* version_major=2, version_minor=3 */
 struct rlc_firmware_header_v2_3 {
     struct rlc_firmware_header_v2_2 v2_2;
     uint32_t rlcp_ucode_version;
@@ -271,8 +204,6 @@ struct rlc_firmware_header_v2_3 {
     uint32_t rlcv_ucode_size_bytes;
     uint32_t rlcv_ucode_offset_bytes;
 };
-
-/* version_major=2, version_minor=4 */
 struct rlc_firmware_header_v2_4 {
     struct rlc_firmware_header_v2_3 v2_3;
     uint32_t global_tap_delays_ucode_size_bytes;
@@ -286,36 +217,28 @@ struct rlc_firmware_header_v2_4 {
     uint32_t se3_tap_delays_ucode_size_bytes;
     uint32_t se3_tap_delays_ucode_offset_bytes;
 };
-
-/* version_major=1, version_minor=0 */
 struct sdma_firmware_header_v1_0 {
 	struct common_firmware_header header;
 	uint32_t ucode_feature_version;
 	uint32_t ucode_change_version;
-	uint32_t jt_offset; /* jt location */
-	uint32_t jt_size; /* size of jt */
+	uint32_t jt_offset;  
+	uint32_t jt_size;  
 };
-
-/* version_major=1, version_minor=1 */
 struct sdma_firmware_header_v1_1 {
 	struct sdma_firmware_header_v1_0 v1_0;
 	uint32_t digest_size;
 };
-
-/* version_major=2, version_minor=0 */
 struct sdma_firmware_header_v2_0 {
 	struct common_firmware_header header;
 	uint32_t ucode_feature_version;
-	uint32_t ctx_ucode_size_bytes; /* context thread ucode size */
-	uint32_t ctx_jt_offset; /* context thread jt location */
-	uint32_t ctx_jt_size; /* context thread size of jt */
+	uint32_t ctx_ucode_size_bytes;  
+	uint32_t ctx_jt_offset;  
+	uint32_t ctx_jt_size;  
 	uint32_t ctl_ucode_offset;
-	uint32_t ctl_ucode_size_bytes; /* control thread ucode size */
-	uint32_t ctl_jt_offset; /* control thread jt location */
-	uint32_t ctl_jt_size; /* control thread size of jt */
+	uint32_t ctl_ucode_size_bytes;  
+	uint32_t ctl_jt_offset;  
+	uint32_t ctl_jt_size;  
 };
-
-/* gpu info payload */
 struct gpu_info_firmware_v1_0 {
 	uint32_t gc_num_se;
 	uint32_t gc_num_cu_per_sh;
@@ -333,42 +256,30 @@ struct gpu_info_firmware_v1_0 {
 	uint32_t gc_max_scratch_slots_per_cu;
 	uint32_t gc_lds_size;
 };
-
 struct gpu_info_firmware_v1_1 {
 	struct gpu_info_firmware_v1_0 v1_0;
 	uint32_t num_sc_per_sh;
 	uint32_t num_packer_per_sc;
 };
-
-/* gpu info payload
- * version_major=1, version_minor=1 */
 struct gpu_info_firmware_v1_2 {
 	struct gpu_info_firmware_v1_1 v1_1;
 	struct gpu_info_soc_bounding_box_v1_0 soc_bounding_box;
 };
-
-/* version_major=1, version_minor=0 */
 struct gpu_info_firmware_header_v1_0 {
 	struct common_firmware_header header;
-	uint16_t version_major; /* version */
-	uint16_t version_minor; /* version */
+	uint16_t version_major;  
+	uint16_t version_minor;  
 };
-
-/* version_major=1, version_minor=0 */
 struct dmcu_firmware_header_v1_0 {
 	struct common_firmware_header header;
-	uint32_t intv_offset_bytes; /* interrupt vectors offset from end of header, in bytes */
-	uint32_t intv_size_bytes;  /* size of interrupt vectors, in bytes */
+	uint32_t intv_offset_bytes;  
+	uint32_t intv_size_bytes;   
 };
-
-/* version_major=1, version_minor=0 */
 struct dmcub_firmware_header_v1_0 {
 	struct common_firmware_header header;
-	uint32_t inst_const_bytes; /* size of instruction region, in bytes */
-	uint32_t bss_data_bytes; /* size of bss/data region, in bytes */
+	uint32_t inst_const_bytes;  
+	uint32_t bss_data_bytes;  
 };
-
-/* version_major=1, version_minor=0 */
 struct imu_firmware_header_v1_0 {
     struct common_firmware_header header;
     uint32_t imu_iram_ucode_size_bytes;
@@ -376,8 +287,6 @@ struct imu_firmware_header_v1_0 {
     uint32_t imu_dram_ucode_size_bytes;
     uint32_t imu_dram_ucode_offset_bytes;
 };
-
-/* header is fixed size */
 union amdgpu_firmware_header {
 	struct common_firmware_header common;
 	struct mc_firmware_header_v1_0 mc;
@@ -406,12 +315,7 @@ union amdgpu_firmware_header {
 	struct imu_firmware_header_v1_0 imu;
 	uint8_t raw[0x100];
 };
-
 #define UCODE_MAX_PSP_PACKAGING ((sizeof(union amdgpu_firmware_header) - sizeof(struct common_firmware_header) - 4) / sizeof(struct psp_fw_bin_desc))
-
-/*
- * fw loading support
- */
 enum AMDGPU_UCODE_ID {
 	AMDGPU_UCODE_ID_CAP = 0,
 	AMDGPU_UCODE_ID_SDMA0,
@@ -476,22 +380,17 @@ enum AMDGPU_UCODE_ID {
 	AMDGPU_UCODE_ID_DMCUB,
 	AMDGPU_UCODE_ID_MAXIMUM,
 };
-
-/* engine firmware status */
 enum AMDGPU_UCODE_STATUS {
 	AMDGPU_UCODE_STATUS_INVALID,
 	AMDGPU_UCODE_STATUS_NOT_LOADED,
 	AMDGPU_UCODE_STATUS_LOADED,
 };
-
 enum amdgpu_firmware_load_type {
 	AMDGPU_FW_LOAD_DIRECT = 0,
 	AMDGPU_FW_LOAD_PSP,
 	AMDGPU_FW_LOAD_SMU,
 	AMDGPU_FW_LOAD_RLC_BACKDOOR_AUTO,
 };
-
-/* conform to smu_ucode_xfer_cz.h */
 #define AMDGPU_SDMA0_UCODE_LOADED	0x00000001
 #define AMDGPU_SDMA1_UCODE_LOADED	0x00000002
 #define AMDGPU_CPCE_UCODE_LOADED	0x00000004
@@ -500,42 +399,28 @@ enum amdgpu_firmware_load_type {
 #define AMDGPU_CPMEC1_UCODE_LOADED	0x00000020
 #define AMDGPU_CPMEC2_UCODE_LOADED	0x00000040
 #define AMDGPU_CPRLC_UCODE_LOADED	0x00000100
-
-/* amdgpu firmware info */
 struct amdgpu_firmware_info {
-	/* ucode ID */
 	enum AMDGPU_UCODE_ID ucode_id;
-	/* request_firmware */
 	const struct firmware *fw;
-	/* starting mc address */
 	uint64_t mc_addr;
-	/* kernel linear address */
 	void *kaddr;
-	/* ucode_size_bytes */
 	uint32_t ucode_size;
-	/* starting tmr mc address */
 	uint32_t tmr_mc_addr_lo;
 	uint32_t tmr_mc_addr_hi;
 };
-
 struct amdgpu_firmware {
 	struct amdgpu_firmware_info ucode[AMDGPU_UCODE_ID_MAXIMUM];
 	enum amdgpu_firmware_load_type load_type;
 	struct amdgpu_bo *fw_buf;
 	unsigned int fw_size;
 	unsigned int max_ucodes;
-	/* firmwares are loaded by psp instead of smu from vega10 */
 	const struct amdgpu_psp_funcs *funcs;
 	struct amdgpu_bo *rbuf;
 	struct mutex mutex;
-
-	/* gpu info firmware data pointer */
 	const struct firmware *gpu_info_fw;
-
 	void *fw_buf_ptr;
 	uint64_t fw_buf_mc;
 };
-
 void amdgpu_ucode_print_mc_hdr(const struct common_firmware_header *hdr);
 void amdgpu_ucode_print_smc_hdr(const struct common_firmware_header *hdr);
 void amdgpu_ucode_print_imu_hdr(const struct common_firmware_header *hdr);
@@ -549,18 +434,13 @@ int amdgpu_ucode_request(struct amdgpu_device *adev, const struct firmware **fw,
 void amdgpu_ucode_release(const struct firmware **fw);
 bool amdgpu_ucode_hdr_version(union amdgpu_firmware_header *hdr,
 				uint16_t hdr_major, uint16_t hdr_minor);
-
 int amdgpu_ucode_init_bo(struct amdgpu_device *adev);
 int amdgpu_ucode_create_bo(struct amdgpu_device *adev);
 int amdgpu_ucode_sysfs_init(struct amdgpu_device *adev);
 void amdgpu_ucode_free_bo(struct amdgpu_device *adev);
 void amdgpu_ucode_sysfs_fini(struct amdgpu_device *adev);
-
 enum amdgpu_firmware_load_type
 amdgpu_ucode_get_load_type(struct amdgpu_device *adev, int load_type);
-
 const char *amdgpu_ucode_name(enum AMDGPU_UCODE_ID ucode_id);
-
 void amdgpu_ucode_ip_version_decode(struct amdgpu_device *adev, int block_type, char *ucode_prefix, int len);
-
 #endif

@@ -1,6 +1,5 @@
 #ifndef _LINUX_FBCON_H
 #define _LINUX_FBCON_H
-
 #ifdef CONFIG_FRAMEBUFFER_CONSOLE
 void __init fb_console_init(void);
 void __exit fb_console_exit(void);
@@ -42,5 +41,4 @@ static inline void fbcon_remap_all(struct fb_info *info) {}
 static inline int fbcon_set_con2fb_map_ioctl(void __user *argp) { return 0; }
 static inline int fbcon_get_con2fb_map_ioctl(void __user *argp) { return 0; }
 #endif
-
-#endif /* _LINUX_FBCON_H */
+#endif  

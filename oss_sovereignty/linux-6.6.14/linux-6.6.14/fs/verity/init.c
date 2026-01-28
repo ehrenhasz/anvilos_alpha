@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs-verity module initialization and logging
- *
- * Copyright 2019 Google LLC
- */
-
 #include "fsverity_private.h"
-
 #include <linux/ratelimit.h>
-
 #ifdef CONFIG_SYSCTL
 static struct ctl_table_header *fsverity_sysctl_header;
-
 static struct ctl_table fsverity_sysctl_table[] = {
 #ifdef CONFIG_FS_VERITY_BUILTIN_SIGNATURES
 	{
@@ -26,7 +16,6 @@ static struct ctl_table fsverity_sysctl_table[] = {
 #endif
 	{ }
 };
-
 static void __init fsverity_init_sysctl(void)
 {
 	fsverity_sysctl_header = register_sysctl("fs/verity",
@@ -34,12 +23,11 @@ static void __init fsverity_init_sysctl(void)
 	if (!fsverity_sysctl_header)
 		panic("fsverity sysctl registration failed");
 }
-#else /* CONFIG_SYSCTL */
+#else  
 static inline void fsverity_init_sysctl(void)
 {
 }
-#endif /* !CONFIG_SYSCTL */
-
+#endif  
 void fsverity_msg(const struct inode *inode, const char *level,
 		  const char *fmt, ...)
 {
@@ -47,10 +35,8 @@ void fsverity_msg(const struct inode *inode, const char *level,
 				      DEFAULT_RATELIMIT_BURST);
 	struct va_format vaf;
 	va_list args;
-
 	if (!__ratelimit(&rs))
 		return;
-
 	va_start(args, fmt);
 	vaf.fmt = fmt;
 	vaf.va = &args;
@@ -61,7 +47,6 @@ void fsverity_msg(const struct inode *inode, const char *level,
 		printk("%sfs-verity: %pV\n", level, &vaf);
 	va_end(args);
 }
-
 static int __init fsverity_init(void)
 {
 	fsverity_check_hash_algs();

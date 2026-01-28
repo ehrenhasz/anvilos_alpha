@@ -1,35 +1,9 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2010 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
 #include <sys/zfs_context.h>
 #include <sys/vfs.h>
 #include <sys/fs/zfs.h>
 #include <sys/zfs_znode.h>
 #include <sys/zfs_sa.h>
 #include <sys/zfs_acl.h>
-
 #ifndef _KERNEL
 static
 #endif
@@ -43,10 +17,6 @@ zfs_oldace_byteswap(ace_t *ace, int ace_cnt)
 		ace->a_type = BSWAP_16(ace->a_type);
 	}
 }
-
-/*
- * swap ace_t and ace_object_t
- */
 #ifndef _KERNEL
 static
 #endif
@@ -60,23 +30,10 @@ zfs_ace_byteswap(void *buf, size_t size, boolean_t zfs_layout)
 	uint16_t entry_type;
 	size_t entry_size;
 	int ace_type;
-
 	end = (caddr_t)buf + size;
 	ptr = buf;
-
 	while (ptr < end) {
 		if (zfs_layout) {
-			/*
-			 * Avoid overrun.  Embedded aces can have one
-			 * of several sizes.  We don't know exactly
-			 * how many our present, only the size of the
-			 * buffer containing them.  That size may be
-			 * larger than needed to hold the aces
-			 * present.  As long as we do not do any
-			 * swapping beyond the end of our block we are
-			 * okay.  It is safe to swap any non-ace data
-			 * within the block since it is just zeros.
-			 */
 			if (ptr + sizeof (zfs_ace_hdr_t) > end) {
 				break;
 			}
@@ -88,7 +45,6 @@ zfs_ace_byteswap(void *buf, size_t size, boolean_t zfs_layout)
 			    BSWAP_16(zacep->z_hdr.z_type);
 			entry_type = zacep->z_hdr.z_flags & ACE_TYPE_FLAGS;
 		} else {
-			/* Overrun avoidance */
 			if (ptr + sizeof (ace_t) > end) {
 				break;
 			}
@@ -108,7 +64,6 @@ zfs_ace_byteswap(void *buf, size_t size, boolean_t zfs_layout)
 			break;
 		case ACE_IDENTIFIER_GROUP:
 		default:
-			/* Overrun avoidance */
 			if (zfs_layout) {
 				if (ptr + sizeof (zfs_ace_t) <= end) {
 					zacep->z_fuid = BSWAP_64(zacep->z_fuid);
@@ -135,30 +90,21 @@ zfs_ace_byteswap(void *buf, size_t size, boolean_t zfs_layout)
 		ptr = ptr + entry_size;
 	}
 }
-
 void
 zfs_oldacl_byteswap(void *buf, size_t size)
 {
-	/*
-	 * Arggh, since we don't know how many ACEs are in
-	 * the array, we have to swap the entire block
-	 */
 	zfs_oldace_byteswap((ace_t *)buf, size / sizeof (ace_t));
 }
-
 void
 zfs_acl_byteswap(void *buf, size_t size)
 {
 	zfs_ace_byteswap(buf, size, B_TRUE);
 }
-
 void
 zfs_znode_byteswap(void *buf, size_t size)
 {
 	znode_phys_t *zp = buf;
-
 	ASSERT(size >= sizeof (znode_phys_t));
-
 	zp->zp_crtime[0] = BSWAP_64(zp->zp_crtime[0]);
 	zp->zp_crtime[1] = BSWAP_64(zp->zp_crtime[1]);
 	zp->zp_atime[0] = BSWAP_64(zp->zp_atime[0]);
@@ -181,7 +127,6 @@ zfs_znode_byteswap(void *buf, size_t size)
 	zp->zp_pad[0] = BSWAP_64(zp->zp_pad[0]);
 	zp->zp_pad[1] = BSWAP_64(zp->zp_pad[1]);
 	zp->zp_pad[2] = BSWAP_64(zp->zp_pad[2]);
-
 	zp->zp_acl.z_acl_extern_obj = BSWAP_64(zp->zp_acl.z_acl_extern_obj);
 	zp->zp_acl.z_acl_size = BSWAP_32(zp->zp_acl.z_acl_size);
 	zp->zp_acl.z_acl_version = BSWAP_16(zp->zp_acl.z_acl_version);
@@ -194,7 +139,6 @@ zfs_znode_byteswap(void *buf, size_t size)
 		    ACE_SLOT_CNT);
 	}
 }
-
 #if defined(_KERNEL)
 EXPORT_SYMBOL(zfs_oldacl_byteswap);
 EXPORT_SYMBOL(zfs_acl_byteswap);

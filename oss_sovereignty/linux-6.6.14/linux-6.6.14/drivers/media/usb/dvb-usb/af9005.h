@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Common header-file of the Linux driver for the Afatech 9005
- * USB1.1 DVB-T receiver.
- *
- * Copyright (C) 2007 Luca Olivetti (luca@ventoso.org)
- *
- * Thanks to Afatech who kindly provided information.
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
 #ifndef _DVB_USB_AF9005_H_
 #define _DVB_USB_AF9005_H_
-
 #define DVB_USB_LOG_PREFIX "af9005"
 #include "dvb-usb.h"
-
 extern int dvb_usb_af9005_debug;
 #define deb_info(args...) dprintk(dvb_usb_af9005_debug,0x01,args)
 #define deb_xfer(args...) dprintk(dvb_usb_af9005_debug,0x02,args)
@@ -21,42 +9,28 @@ extern int dvb_usb_af9005_debug;
 #define deb_reg(args...)  dprintk(dvb_usb_af9005_debug,0x08,args)
 #define deb_i2c(args...)  dprintk(dvb_usb_af9005_debug,0x10,args)
 #define deb_fw(args...)   dprintk(dvb_usb_af9005_debug,0x20,args)
-
 extern bool dvb_usb_af9005_led;
-
-/* firmware */
 #define FW_BULKOUT_SIZE 250
 enum {
 	FW_CONFIG,
 	FW_CONFIRM,
 	FW_BOOT
 };
-
-/* af9005 commands */
 #define AF9005_OFDM_REG  0
 #define AF9005_TUNER_REG 1
-
 #define AF9005_REGISTER_RW     0x20
 #define AF9005_REGISTER_RW_ACK 0x21
-
 #define AF9005_CMD_OFDM_REG 0x00
 #define AF9005_CMD_TUNER    0x80
 #define AF9005_CMD_BURST    0x02
 #define AF9005_CMD_AUTOINC  0x04
 #define AF9005_CMD_READ     0x00
 #define AF9005_CMD_WRITE    0x01
-
-/* af9005 registers */
 #define APO_REG_RESET					0xAEFF
-
 #define APO_REG_I2C_RW_CAN_TUNER            0xF000
 #define APO_REG_I2C_RW_SILICON_TUNER        0xF001
-#define APO_REG_GPIO_RW_SILICON_TUNER       0xFFFE	/*  also for OFSM */
-#define APO_REG_TRIGGER_OFSM                0xFFFF	/*  also for OFSM */
-
-/***********************************************************************
- *  Apollo Registers from VLSI					       *
- ***********************************************************************/
+#define APO_REG_GPIO_RW_SILICON_TUNER       0xFFFE	 
+#define APO_REG_TRIGGER_OFSM                0xFFFF	 
 #define xd_p_reg_aagc_inverted_agc	0xA000
 #define	reg_aagc_inverted_agc_pos 0
 #define	reg_aagc_inverted_agc_len 1
@@ -3013,37 +2987,30 @@ enum {
 #define	reg_dummy_103_96_pos 0
 #define	reg_dummy_103_96_len 8
 #define	reg_dummy_103_96_lsb 96
-
 #define xd_p_reg_unplug_flag	0xA615
 #define	reg_unplug_flag_pos 0
 #define	reg_unplug_flag_len 1
 #define	reg_unplug_flag_lsb 104
-
 #define xd_p_reg_api_dca_stes_request   0xA615
 #define reg_api_dca_stes_request_pos 1
 #define reg_api_dca_stes_request_len 1
 #define reg_api_dca_stes_request_lsb 0
-
 #define xd_p_reg_back_to_dca_flag	0xA615
 #define	reg_back_to_dca_flag_pos 2
 #define	reg_back_to_dca_flag_len 1
 #define	reg_back_to_dca_flag_lsb 106
-
 #define xd_p_reg_api_retrain_request    0xA615
 #define reg_api_retrain_request_pos 3
 #define reg_api_retrain_request_len 1
 #define reg_api_retrain_request_lsb 0
-
 #define xd_p_reg_Dyn_Top_Try_flag	0xA615
 #define	reg_Dyn_Top_Try_flag_pos 3
 #define	reg_Dyn_Top_Try_flag_len 1
 #define	reg_Dyn_Top_Try_flag_lsb 107
-
 #define xd_p_reg_API_retrain_freeze_flag	0xA615
 #define	reg_API_retrain_freeze_flag_pos 4
 #define	reg_API_retrain_freeze_flag_len 1
 #define	reg_API_retrain_freeze_flag_lsb 108
-
 #define xd_p_reg_dummy_111_104	0xA615
 #define	reg_dummy_111_104_pos 0
 #define	reg_dummy_111_104_len 8
@@ -3060,77 +3027,62 @@ enum {
 #define	reg_dummy_135_128_pos 0
 #define	reg_dummy_135_128_len 8
 #define	reg_dummy_135_128_lsb 128
-
 #define xd_p_reg_dummy_143_136	0xA619
 #define	reg_dummy_143_136_pos 0
 #define	reg_dummy_143_136_len 8
 #define	reg_dummy_143_136_lsb 136
-
 #define xd_p_reg_CCIR_dis	0xA619
 #define	reg_CCIR_dis_pos 0
 #define	reg_CCIR_dis_len 1
 #define	reg_CCIR_dis_lsb 0
-
 #define xd_p_reg_dummy_151_144	0xA61A
 #define	reg_dummy_151_144_pos 0
 #define	reg_dummy_151_144_len 8
 #define	reg_dummy_151_144_lsb 144
-
 #define xd_p_reg_dummy_159_152	0xA61B
 #define	reg_dummy_159_152_pos 0
 #define	reg_dummy_159_152_len 8
 #define	reg_dummy_159_152_lsb 152
-
 #define xd_p_reg_dummy_167_160	0xA61C
 #define	reg_dummy_167_160_pos 0
 #define	reg_dummy_167_160_len 8
 #define	reg_dummy_167_160_lsb 160
-
 #define xd_p_reg_dummy_175_168	0xA61D
 #define	reg_dummy_175_168_pos 0
 #define	reg_dummy_175_168_len 8
 #define	reg_dummy_175_168_lsb 168
-
 #define xd_p_reg_dummy_183_176	0xA61E
 #define	reg_dummy_183_176_pos 0
 #define	reg_dummy_183_176_len 8
 #define	reg_dummy_183_176_lsb 176
-
 #define xd_p_reg_ofsm_read_rbc_en  0xA61E
 #define reg_ofsm_read_rbc_en_pos 2
 #define reg_ofsm_read_rbc_en_len 1
 #define reg_ofsm_read_rbc_en_lsb 0
-
 #define xd_p_reg_ce_filter_selection_dis  0xA61E
 #define reg_ce_filter_selection_dis_pos 1
 #define reg_ce_filter_selection_dis_len 1
 #define reg_ce_filter_selection_dis_lsb 0
-
 #define xd_p_reg_OFSM_version_control_7_0  0xA611
 #define reg_OFSM_version_control_7_0_pos 0
 #define reg_OFSM_version_control_7_0_len 8
 #define reg_OFSM_version_control_7_0_lsb 0
-
 #define xd_p_reg_OFSM_version_control_15_8  0xA61F
 #define reg_OFSM_version_control_15_8_pos 0
 #define reg_OFSM_version_control_15_8_len 8
 #define reg_OFSM_version_control_15_8_lsb 0
-
 #define xd_p_reg_OFSM_version_control_23_16  0xA620
 #define reg_OFSM_version_control_23_16_pos 0
 #define reg_OFSM_version_control_23_16_len 8
 #define reg_OFSM_version_control_23_16_lsb 0
-
 #define xd_p_reg_dummy_191_184	0xA61F
 #define	reg_dummy_191_184_pos 0
 #define	reg_dummy_191_184_len 8
 #define	reg_dummy_191_184_lsb 184
-
 #define xd_p_reg_dummy_199_192	0xA620
 #define	reg_dummy_199_192_pos 0
 #define	reg_dummy_199_192_len 8
 #define	reg_dummy_199_192_lsb 192
-
 #define xd_p_reg_ce_en	0xABC0
 #define	reg_ce_en_pos 0
 #define	reg_ce_en_len 1
@@ -3439,7 +3391,6 @@ enum {
 #define reg_strong_sginal_detected_pos 2
 #define reg_strong_sginal_detected_len 1
 #define reg_strong_sginal_detected_lsb 0
-
 #define XD_MP2IF_BASE                           0xB000
 #define XD_MP2IF_CSR                        (0x00 + XD_MP2IF_BASE)
 #define XD_MP2IF_DMX_CTRL                       (0x03 + XD_MP2IF_BASE)
@@ -3447,7 +3398,6 @@ enum {
 #define XD_MP2IF_PID_DATA_L                     (0x05 + XD_MP2IF_BASE)
 #define XD_MP2IF_PID_DATA_H                     (0x06 + XD_MP2IF_BASE)
 #define XD_MP2IF_MISC                       (0x07 + XD_MP2IF_BASE)
-
 extern struct dvb_frontend *af9005_fe_attach(struct dvb_usb_device *d);
 extern int af9005_read_ofdm_register(struct dvb_usb_device *d, u16 reg,
 				     u8 * value);
@@ -3471,13 +3421,9 @@ extern int af9005_read_eeprom(struct dvb_usb_device *d, u8 address,
 			      u8 * values, int len);
 extern int af9005_tuner_attach(struct dvb_usb_adapter *adap);
 extern int af9005_led_control(struct dvb_usb_device *d, int onoff);
-
 extern u8 regmask[8];
-
-/* remote control decoder */
 extern int af9005_rc_decode(struct dvb_usb_device *d, u8 * data, int len,
 			    u32 * event, int *state);
 extern struct rc_map_table rc_map_af9005_table[];
 extern int rc_map_af9005_table_size;
-
 #endif

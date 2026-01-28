@@ -1,21 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014- QLogic Corporation.
- * All rights reserved
- * www.qlogic.com
- *
- * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
- */
 #ifndef BFAD_BSG_H
 #define BFAD_BSG_H
-
 #include "bfa_defs.h"
 #include "bfa_defs_fcs.h"
-
-/* Definitions of vendor unique structures and command codes passed in
- * using FC_BSG_HST_VENDOR message code.
- */
 enum {
 	IOCMD_IOC_ENABLE = 0x1,
 	IOCMD_IOC_DISABLE,
@@ -149,13 +135,11 @@ enum {
 	IOCMD_DIAG_DPORT_SHOW,
 	IOCMD_DIAG_DPORT_START,
 };
-
 struct bfa_bsg_gen_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 };
-
 struct bfa_bsg_portlogctl_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -163,13 +147,11 @@ struct bfa_bsg_portlogctl_s {
 	bfa_boolean_t	ctl;
 	int		inst_no;
 };
-
 struct bfa_bsg_fcpim_profile_s {
 	bfa_status_t    status;
 	u16		bfad_num;
 	u16		rsvd;
 };
-
 struct bfa_bsg_itnim_ioprofile_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -178,21 +160,18 @@ struct bfa_bsg_itnim_ioprofile_s {
 	wwn_t		rpwwn;
 	struct bfa_itnim_ioprofile_s ioprofile;
 };
-
 struct bfa_bsg_fcport_stats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	union bfa_fcport_stats_u stats;
 };
-
 struct bfa_bsg_ioc_name_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	char		name[BFA_ADAPTER_SYM_NAME_LEN];
 };
-
 struct bfa_bsg_ioc_info_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -209,30 +188,27 @@ struct bfa_bsg_ioc_info_s {
 	wwn_t		factorypwwn;
 	wwn_t		factorynwwn;
 	mac_t		mac;
-	mac_t		factory_mac; /* Factory mac address */
-	mac_t		current_mac; /* Currently assigned mac address */
+	mac_t		factory_mac;  
+	mac_t		current_mac;  
 	enum bfa_ioc_type_e	ioc_type;
-	u16		pvid; /* Port vlan id */
+	u16		pvid;  
 	u16		rsvd1;
 	u32		host;
-	u32		bandwidth; /* For PF support */
+	u32		bandwidth;  
 	u32		rsvd2;
 };
-
 struct bfa_bsg_ioc_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_ioc_attr_s  ioc_attr;
 };
-
 struct bfa_bsg_ioc_stats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_ioc_stats_s ioc_stats;
 };
-
 struct bfa_bsg_ioc_fwstats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -241,28 +217,24 @@ struct bfa_bsg_ioc_fwstats_s {
 	u32		rsvd1;
 	u64		buf_ptr;
 };
-
 struct bfa_bsg_iocfc_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_iocfc_attr_s	iocfc_attr;
 };
-
 struct bfa_bsg_iocfc_intr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_iocfc_intr_attr_s attr;
 };
-
 struct bfa_bsg_port_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_port_attr_s	attr;
 };
-
 struct bfa_bsg_port_cfg_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -270,13 +242,11 @@ struct bfa_bsg_port_cfg_s {
 	u32		param;
 	u32		rsvd1;
 };
-
 struct bfa_bsg_port_cfg_maxfrsize_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		maxfrsize;
 };
-
 struct bfa_bsg_port_stats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -285,7 +255,6 @@ struct bfa_bsg_port_stats_s {
 	u32		rsvd1;
 	u64		buf_ptr;
 };
-
 struct bfa_bsg_lport_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -293,7 +262,6 @@ struct bfa_bsg_lport_attr_s {
 	wwn_t		pwwn;
 	struct bfa_lport_attr_s port_attr;
 };
-
 struct bfa_bsg_lport_stats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -301,7 +269,6 @@ struct bfa_bsg_lport_stats_s {
 	wwn_t		pwwn;
 	struct bfa_lport_stats_s port_stats;
 };
-
 struct bfa_bsg_lport_iostats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -309,7 +276,6 @@ struct bfa_bsg_lport_iostats_s {
 	wwn_t		pwwn;
 	struct bfa_itnim_iostats_s iostats;
 };
-
 struct bfa_bsg_lport_get_rports_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -319,7 +285,6 @@ struct bfa_bsg_lport_get_rports_s {
 	u32		nrports;
 	u32		rsvd;
 };
-
 struct bfa_bsg_rport_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -330,7 +295,6 @@ struct bfa_bsg_rport_attr_s {
 	u32		rsvd;
 	struct bfa_rport_attr_s attr;
 };
-
 struct bfa_bsg_rport_stats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -339,7 +303,6 @@ struct bfa_bsg_rport_stats_s {
 	wwn_t		rpwwn;
 	struct bfa_rport_stats_s stats;
 };
-
 struct bfa_bsg_rport_scsi_addr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -351,7 +314,6 @@ struct bfa_bsg_rport_scsi_addr_s {
 	u32		target;
 	u32		lun;
 };
-
 struct bfa_bsg_rport_reset_stats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -359,7 +321,6 @@ struct bfa_bsg_rport_reset_stats_s {
 	wwn_t		pwwn;
 	wwn_t		rpwwn;
 };
-
 struct bfa_bsg_rport_set_speed_s {
 	bfa_status_t		status;
 	u16			bfad_num;
@@ -369,7 +330,6 @@ struct bfa_bsg_rport_set_speed_s {
 	wwn_t			pwwn;
 	wwn_t			rpwwn;
 };
-
 struct bfa_bsg_vport_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -377,7 +337,6 @@ struct bfa_bsg_vport_attr_s {
 	wwn_t		vpwwn;
 	struct bfa_vport_attr_s vport_attr;
 };
-
 struct bfa_bsg_vport_stats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -385,14 +344,12 @@ struct bfa_bsg_vport_stats_s {
 	wwn_t		vpwwn;
 	struct bfa_vport_stats_s vport_stats;
 };
-
 struct bfa_bsg_reset_stats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		vf_id;
 	wwn_t		vpwwn;
 };
-
 struct bfa_bsg_fabric_get_lports_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -401,37 +358,31 @@ struct bfa_bsg_fabric_get_lports_s {
 	u32		nports;
 	u32		rsvd;
 };
-
 struct bfa_bsg_trl_speed_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	enum bfa_port_speed speed;
 };
-
 struct bfa_bsg_fcpim_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		param;
 };
-
 struct bfa_bsg_fcpim_modstats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	struct bfa_itnim_iostats_s modstats;
 };
-
 struct bfa_bsg_fcpim_del_itn_stats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	struct bfa_fcpim_del_itn_stats_s modstats;
 };
-
 struct bfa_bsg_fcpim_modstatsclr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 };
-
 struct bfa_bsg_itnim_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -440,7 +391,6 @@ struct bfa_bsg_itnim_attr_s {
 	wwn_t		rpwwn;
 	struct bfa_itnim_attr_s	attr;
 };
-
 struct bfa_bsg_itnim_iostats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -449,7 +399,6 @@ struct bfa_bsg_itnim_iostats_s {
 	wwn_t		rpwwn;
 	struct bfa_itnim_iostats_s iostats;
 };
-
 struct bfa_bsg_itnim_itnstats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -458,14 +407,12 @@ struct bfa_bsg_itnim_itnstats_s {
 	wwn_t		rpwwn;
 	struct bfa_itnim_stats_s itnstats;
 };
-
 struct bfa_bsg_pcifn_cfg_s {
 	bfa_status_t		status;
 	u16			bfad_num;
 	u16			rsvd;
 	struct bfa_ablk_cfg_s	pcifn_cfg;
 };
-
 struct bfa_bsg_pcifn_s {
 	bfa_status_t		status;
 	u16			bfad_num;
@@ -476,42 +423,36 @@ struct bfa_bsg_pcifn_s {
 	enum bfi_pcifn_class	pcifn_class;
 	u8			rsvd[1];
 };
-
 struct bfa_bsg_adapter_cfg_mode_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_adapter_cfg_mode_s	cfg;
 };
-
 struct bfa_bsg_port_cfg_mode_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		instance;
 	struct bfa_port_cfg_mode_s cfg;
 };
-
 struct bfa_bsg_bbcr_enable_s {
 	bfa_status_t    status;
 	u16		bfad_num;
 	u8		bb_scn;
 	u8		rsvd;
 };
-
 struct bfa_bsg_bbcr_attr_s {
 	bfa_status_t    status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_bbcr_attr_s attr;
 };
-
 struct bfa_bsg_faa_attr_s {
 	bfa_status_t		status;
 	u16			bfad_num;
 	u16			rsvd;
 	struct bfa_faa_attr_s	faa_attr;
 };
-
 struct bfa_bsg_cee_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -520,7 +461,6 @@ struct bfa_bsg_cee_attr_s {
 	u32		rsvd1;
 	u64		buf_ptr;
 };
-
 struct bfa_bsg_cee_stats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -529,28 +469,24 @@ struct bfa_bsg_cee_stats_s {
 	u32		rsvd1;
 	u64		buf_ptr;
 };
-
 struct bfa_bsg_sfp_media_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	enum bfa_defs_sfp_media_e media;
 };
-
 struct bfa_bsg_sfp_speed_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	enum bfa_port_speed speed;
 };
-
 struct bfa_bsg_flash_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_flash_attr_s attr;
 };
-
 struct bfa_bsg_flash_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -560,14 +496,12 @@ struct bfa_bsg_flash_s {
 	int		bufsz;
 	u64		buf_ptr;
 };
-
 struct bfa_bsg_diag_get_temp_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_diag_results_tempsensor_s result;
 };
-
 struct bfa_bsg_diag_memtest_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -576,7 +510,6 @@ struct bfa_bsg_diag_memtest_s {
 	struct bfa_diag_memtest_result result;
 	struct bfa_diag_memtest_s memtest;
 };
-
 struct bfa_bsg_diag_loopback_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -587,14 +520,12 @@ struct bfa_bsg_diag_loopback_s {
 	u32		pat;
 	struct bfa_diag_loopback_result_s result;
 };
-
 struct bfa_bsg_diag_dport_show_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_diag_dport_result_s result;
 };
-
 struct bfa_bsg_dport_enable_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -602,7 +533,6 @@ struct bfa_bsg_dport_enable_s {
 	u16		lpcnt;
 	u16		pat;
 };
-
 struct bfa_bsg_diag_fwping_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -611,7 +541,6 @@ struct bfa_bsg_diag_fwping_s {
 	u32		pattern;
 	struct bfa_diag_results_fwping result;
 };
-
 struct bfa_bsg_diag_qtest_s {
 	bfa_status_t	status;
 	u16	bfad_num;
@@ -620,21 +549,18 @@ struct bfa_bsg_diag_qtest_s {
 	u32	queue;
 	struct bfa_diag_qtest_result_s result;
 };
-
 struct bfa_bsg_sfp_show_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct sfp_mem_s sfp;
 };
-
 struct bfa_bsg_diag_led_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_diag_ledtest_s ledtest;
 };
-
 struct bfa_bsg_diag_beacon_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -643,20 +569,17 @@ struct bfa_bsg_diag_beacon_s {
 	bfa_boolean_t   link_e2e_beacon;
 	u32		second;
 };
-
 struct bfa_bsg_diag_lb_stat_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 };
-
 struct bfa_bsg_phy_attr_s {
 	bfa_status_t	status;
 	u16	bfad_num;
 	u16	instance;
 	struct bfa_phy_attr_s	attr;
 };
-
 struct bfa_bsg_phy_s {
 	bfa_status_t	status;
 	u16	bfad_num;
@@ -664,7 +587,6 @@ struct bfa_bsg_phy_s {
 	u64	bufsz;
 	u64	buf_ptr;
 };
-
 struct bfa_bsg_debug_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -674,89 +596,76 @@ struct bfa_bsg_debug_s {
 	u64		buf_ptr;
 	u64		offset;
 };
-
 struct bfa_bsg_phy_stats_s {
 	bfa_status_t	status;
 	u16	bfad_num;
 	u16	instance;
 	struct bfa_phy_stats_s	stats;
 };
-
 struct bfa_bsg_vhba_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		pcifn_id;
 	struct bfa_vhba_attr_s	attr;
 };
-
 struct bfa_bsg_boot_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_boot_cfg_s	cfg;
 };
-
 struct bfa_bsg_preboot_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_boot_pbc_s	cfg;
 };
-
 struct bfa_bsg_ethboot_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct  bfa_ethboot_cfg_s  cfg;
 };
-
 struct bfa_bsg_trunk_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_trunk_attr_s attr;
 };
-
 struct bfa_bsg_qos_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_qos_attr_s	attr;
 };
-
 struct bfa_bsg_qos_vc_attr_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_qos_vc_attr_s attr;
 };
-
 struct bfa_bsg_qos_bw_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	struct bfa_qos_bw_s qos_bw;
 };
-
 struct bfa_bsg_vf_stats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		vf_id;
 	struct bfa_vf_stats_s	stats;
 };
-
 struct bfa_bsg_vf_reset_stats_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		vf_id;
 };
-
 struct bfa_bsg_fcpim_lunmask_query_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	struct bfa_lunmask_cfg_s lun_mask;
 };
-
 struct bfa_bsg_fcpim_lunmask_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -765,17 +674,14 @@ struct bfa_bsg_fcpim_lunmask_s {
 	wwn_t		rpwwn;
 	struct scsi_lun	lun;
 };
-
 struct bfa_bsg_fcpim_throttle_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		vf_id;
 	struct bfa_defs_fcpim_throttle_s throttle;
 };
-
 #define BFA_TFRU_DATA_SIZE		64
 #define BFA_MAX_FRUVPD_TRANSFER_SIZE	0x1000
-
 struct bfa_bsg_tfru_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -784,7 +690,6 @@ struct bfa_bsg_tfru_s {
 	u32		len;
 	u8		data[BFA_TFRU_DATA_SIZE];
 };
-
 struct bfa_bsg_fruvpd_s {
 	bfa_status_t	status;
 	u16		bfad_num;
@@ -795,14 +700,12 @@ struct bfa_bsg_fruvpd_s {
 	u8		trfr_cmpl;
 	u8		rsvd2[3];
 };
-
 struct bfa_bsg_fruvpd_max_size_s {
 	bfa_status_t	status;
 	u16		bfad_num;
 	u16		rsvd;
 	u32		max_size;
 };
-
 struct bfa_bsg_fcpt_s {
 	bfa_status_t    status;
 	u16		vf_id;
@@ -814,16 +717,13 @@ struct bfa_bsg_fcpt_s {
 	struct fchs_s	fchs;
 };
 #define bfa_bsg_fcpt_t struct bfa_bsg_fcpt_s
-
 #pragma pack(1)
 struct bfa_bsg_data {
 	int payload_len;
 	u64 payload;
 };
 #pragma pack()
-
 #define bfad_chk_iocmd_sz(__payload_len, __hdrsz, __bufsz)	\
 	(((__payload_len) != ((__hdrsz) + (__bufsz))) ?		\
 	 BFA_STATUS_FAILED : BFA_STATUS_OK)
-
-#endif /* BFAD_BSG_H */
+#endif  

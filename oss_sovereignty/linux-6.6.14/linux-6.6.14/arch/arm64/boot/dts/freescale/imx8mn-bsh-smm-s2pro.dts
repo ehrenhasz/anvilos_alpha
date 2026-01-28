@@ -1,23 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2021 Collabora Ltd.
- * Copyright 2021 BSH Hausgeraete GmbH
- */
-
 /dts-v1/;
-
 #include "imx8mn-bsh-smm-s2-common.dtsi"
 #include <dt-bindings/sound/tlv320aic31xx.h>
-
 / {
 	model = "BSH SMM S2 PRO";
 	compatible = "bsh,imx8mn-bsh-smm-s2pro", "fsl,imx8mn";
-
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0x0 0x40000000 0x0 0x20000000>;
 	};
-
 	sound-tlv320aic31xx {
 		compatible = "fsl,imx-audio-tlv320aic31xx";
 		model = "tlv320aic31xx-hifi";
@@ -29,7 +19,6 @@
 			"Ext Spk", "SPR";
 		mclk-id = <PLL_CLKIN_BCLK>;
 	};
-
 	vdd_input: vdd_input {
 		compatible = "regulator-fixed";
 		regulator-name = "vdd_input";
@@ -37,19 +26,16 @@
 		regulator-max-microvolt = <5000000>;
 	};
 };
-
 &easrc {
 	fsl,asrc-rate = <48000>;
 	fsl,asrc-format = <10>;
 	status = "okay";
 };
-
 &i2c2 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
-
 	tlv320dac3101: audio-codec@18 {
 		compatible = "ti,tlv320dac3101";
 		pinctrl-names = "default";
@@ -67,7 +53,6 @@
 		clocks = <&clk IMX8MN_CLK_SAI3_ROOT>;
 	};
 };
-
 &sai3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_sai3>;
@@ -77,8 +62,6 @@
 	fsl,sai-mclk-direction-output;
 	status = "okay";
 };
-
-/* eMMC */
 &usdhc1 {
 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
 	pinctrl-0 = <&pinctrl_usdhc1>;
@@ -88,14 +71,12 @@
 	non-removable;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl_dac_rst: dacrstgrp {
 		fsl,pins = <
-			MX8MN_IOMUXC_GPIO1_IO06_GPIO1_IO6		0x19 /* DAC_RST */
+			MX8MN_IOMUXC_GPIO1_IO06_GPIO1_IO6		0x19  
 		>;
 	};
-
 	pinctrl_espi2: espi2grp {
 		fsl,pins = <
 			MX8MN_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK		0x082
@@ -104,14 +85,12 @@
 			MX8MN_IOMUXC_ECSPI2_SS0_ECSPI2_SS0		0x040
 		>;
 	};
-
 	pinctrl_i2c2: i2c2grp {
 		fsl,pins = <
 			MX8MN_IOMUXC_I2C2_SCL_I2C2_SCL			0x400000c3
 			MX8MN_IOMUXC_I2C2_SDA_I2C2_SDA			0x400000c3
 		>;
 	};
-
 	pinctrl_sai3: sai3grp {
 		fsl,pins = <
 			MX8MN_IOMUXC_SAI3_TXFS_SAI3_TX_SYNC		0xd6
@@ -119,7 +98,6 @@
 			MX8MN_IOMUXC_SAI3_TXD_SAI3_TX_DATA0		0xd6
 		>;
 	};
-
 	pinctrl_usdhc1: usdhc1grp {
 		fsl,pins = <
 			MX8MN_IOMUXC_SD1_CLK_USDHC1_CLK			0x40000090
@@ -135,7 +113,6 @@
 			MX8MN_IOMUXC_SD1_STROBE_USDHC1_STROBE		0x090
 		>;
 	};
-
 	pinctrl_usdhc1_100mhz: usdhc1-100mhzgrp {
 		fsl,pins = <
 			MX8MN_IOMUXC_SD1_CLK_USDHC1_CLK			0x40000094
@@ -151,7 +128,6 @@
 			MX8MN_IOMUXC_SD1_STROBE_USDHC1_STROBE		0x094
 		>;
 	};
-
 	pinctrl_usdhc1_200mhz: usdhc1-200mhzgrp {
 		fsl,pins = <
 			MX8MN_IOMUXC_SD1_CLK_USDHC1_CLK			0x40000096

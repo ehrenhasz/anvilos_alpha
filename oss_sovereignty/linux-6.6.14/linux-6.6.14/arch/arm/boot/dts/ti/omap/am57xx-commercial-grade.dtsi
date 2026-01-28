@@ -1,24 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0
 &cpu_alert0 {
-	temperature = <80000>; /* milliCelsius */
+	temperature = <80000>;  
 };
-
 &cpu_crit {
-	temperature = <90000>; /* milliCelsius */
+	temperature = <90000>;  
 };
-
 &gpu_crit {
-	temperature = <90000>; /* milliCelsius */
+	temperature = <90000>;  
 };
-
 &core_crit {
-	temperature = <90000>; /* milliCelsius */
+	temperature = <90000>;  
 };
-
 &dspeve_crit {
-	temperature = <90000>; /* milliCelsius */
+	temperature = <90000>;  
 };
-
 &iva_crit {
-	temperature = <90000>; /* milliCelsius */
+	temperature = <90000>;  
 };

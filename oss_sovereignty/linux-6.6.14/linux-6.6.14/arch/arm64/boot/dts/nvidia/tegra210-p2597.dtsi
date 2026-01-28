@@ -1,49 +1,36 @@
-// SPDX-License-Identifier: GPL-2.0
-
 #include <dt-bindings/gpio/tegra-gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/pinctrl/pinctrl-tegra.h>
-
 / {
 	model = "NVIDIA Tegra210 P2597 I/O board";
 	compatible = "nvidia,p2597", "nvidia,tegra210";
-
 	aliases {
 		ethernet = "/usb@70090000/ethernet@1";
 	};
-
 	host1x@50000000 {
 		dpaux@54040000 {
 			status = "okay";
 		};
-
 		vi@54080000 {
 			status = "okay";
-
 			avdd-dsi-csi-supply = <&vdd_dsi_csi>;
-
 			csi@838 {
 				status = "okay";
 			};
 		};
-
 		sor@54580000 {
 			status = "okay";
-
 			avdd-io-hdmi-dp-supply = <&avdd_1v05>;
 			vdd-hdmi-dp-pll-supply = <&vdd_1v8>;
 			hdmi-supply = <&vdd_hdmi>;
-
 			nvidia,ddc-i2c-bus = <&hdmi_ddc>;
 			nvidia,hpd-gpio = <&gpio TEGRA_GPIO(CC, 1)
 					   GPIO_ACTIVE_LOW>;
 		};
 	};
-
 	pinmux: pinmux@700008d4 {
 		pinctrl-names = "boot";
 		pinctrl-0 = <&state_boot>;
-
 		state_boot: pinmux {
 			pex_l0_rst_n_pa0 {
 				nvidia,pins = "pex_l0_rst_n_pa0";
@@ -1295,14 +1282,12 @@
 				nvidia,open-drain = <TEGRA_PIN_DISABLE>;
 			};
 		};
-
 		dvfs_pwm_active_state: pinmux-dvfs-pwm-active {
 			dvfs_pwm_pbb1 {
 				nvidia,pins = "dvfs_pwm_pbb1";
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
 		};
-
 		dvfs_pwm_inactive_state: pinmux-dvfs-pwm-inactive {
 			dvfs_pwm_pbb1 {
 				nvidia,pins = "dvfs_pwm_pbb1";
@@ -1310,48 +1295,37 @@
 			};
 		};
 	};
-
 	pwm@7000a000 {
 		status = "okay";
 	};
-
 	i2c@7000c400 {
 		status = "okay";
 		clock-frequency = <100000>;
-
 		exp1: gpio@74 {
 			compatible = "ti,tca9539";
 			reg = <0x74>;
-
 			#gpio-cells = <2>;
 			gpio-controller;
 		};
-
 		exp2: gpio@77 {
 			compatible = "ti,tca9539";
 			reg = <0x77>;
-
 			#gpio-cells = <2>;
 			gpio-controller;
 		};
 	};
-
-	/* HDMI DDC */
 	hdmi_ddc: i2c@7000c700 {
 		status = "okay";
 		clock-frequency = <100000>;
 	};
-
 	sata@70020000 {
 		status = "okay";
 		phys = <&{/padctl@7009f000/pads/sata/lanes/sata-0}>;
 	};
-
 	hda@70030000 {
 		nvidia,model = "NVIDIA Jetson TX1 HDA";
 		status = "okay";
 	};
-
 	usb@70090000 {
 		phys = <&{/padctl@7009f000/pads/usb2/lanes/usb2-0}>,
 		       <&{/padctl@7009f000/pads/usb2/lanes/usb2-1}>,
@@ -1364,97 +1338,77 @@
 		dvddio-pex-supply = <&vdd_pex_1v05>;
 		hvddio-pex-supply = <&vdd_1v8>;
 		avdd-usb-supply = <&vdd_3v3_sys>;
-
 		status = "okay";
-
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		ethernet@1 {
 			compatible = "usb955,9ff";
 			reg = <1>;
 		};
 	};
-
 	padctl@7009f000 {
 		status = "okay";
-
 		avdd-pll-utmip-supply = <&vdd_1v8>;
 		avdd-pll-uerefe-supply = <&avdd_1v05_pll>;
 		dvdd-pex-pll-supply = <&vdd_pex_1v05>;
 		hvdd-pex-pll-e-supply = <&vdd_1v8>;
-
 		pads {
 			usb2 {
 				status = "okay";
-
 				lanes {
 					micro_b: usb2-0 {
 						nvidia,function = "xusb";
 						status = "okay";
 					};
-
 					usb2-1 {
 						nvidia,function = "xusb";
 						status = "okay";
 					};
-
 					usb2-2 {
 						nvidia,function = "xusb";
 						status = "okay";
 					};
-
 					usb2-3 {
 						nvidia,function = "xusb";
 						status = "okay";
 					};
 				};
 			};
-
 			pcie {
 				status = "okay";
-
 				lanes {
 					pcie-0 {
 						nvidia,function = "pcie-x1";
 						status = "okay";
 					};
-
 					pcie-1 {
 						nvidia,function = "pcie-x4";
 						status = "okay";
 					};
-
 					pcie-2 {
 						nvidia,function = "pcie-x4";
 						status = "okay";
 					};
-
 					pcie-3 {
 						nvidia,function = "pcie-x4";
 						status = "okay";
 					};
-
 					pcie-4 {
 						nvidia,function = "pcie-x4";
 						status = "okay";
 					};
-
 					pcie-5 {
 						nvidia,function = "usb3-ss";
 						status = "okay";
 					};
-
 					pcie-6 {
 						nvidia,function = "usb3-ss";
 						status = "okay";
 					};
 				};
 			};
-
 			sata {
 				status = "okay";
-
 				lanes {
 					sata-0 {
 						nvidia,function = "sata";
@@ -1463,14 +1417,12 @@
 				};
 			};
 		};
-
 		ports {
 			usb2-0 {
 				status = "okay";
 				vbus-supply = <&vdd_usb_vbus_otg>;
 				usb-role-switch;
 				mode = "otg";
-
 				connector {
 					compatible = "gpio-usb-b-connector",
 						     "usb-b-connector";
@@ -1481,47 +1433,37 @@
 					id-gpios = <&pmic 0 GPIO_ACTIVE_HIGH>;
 				};
 			};
-
 			usb2-1 {
 				status = "okay";
 				vbus-supply = <&vdd_5v0_rtl>;
 				mode = "host";
 			};
-
 			usb2-2 {
 				status = "okay";
 				vbus-supply = <&vdd_usb_vbus>;
 				mode = "host";
 			};
-
 			usb2-3 {
 				status = "okay";
 				mode = "host";
 			};
-
 			usb3-0 {
 				nvidia,usb2-companion = <1>;
 				status = "okay";
 			};
-
 			usb3-1 {
 				nvidia,usb2-companion = <2>;
 				status = "okay";
 			};
 		};
 	};
-
-	/* MMC/SD */
 	mmc@700b0000 {
 		status = "okay";
 		bus-width = <4>;
-
 		cd-gpios = <&gpio TEGRA_GPIO(Z, 1) GPIO_ACTIVE_LOW>;
-
 		vqmmc-supply = <&vddio_sdmmc>;
 		vmmc-supply = <&vdd_3v3_sd>;
 	};
-
 	usb@700d0000 {
 		status = "okay";
 		phys = <&micro_b>;
@@ -1529,31 +1471,26 @@
 		avddio-usb-supply = <&vdd_3v3_sys>;
 		hvdd-usb-supply = <&vdd_1v8>;
 	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
 		label = "gpio-keys";
-
 		key-power {
 			label = "Power";
 			gpios = <&gpio TEGRA_GPIO(X, 5) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_POWER>;
 			wakeup-source;
 		};
-
 		key-volume-down {
 			label = "Volume Down";
 			gpios = <&gpio TEGRA_GPIO(Y, 0) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_VOLUMEDOWN>;
 		};
-
 		key-volume-up {
 			label = "Volume Up";
 			gpios = <&gpio TEGRA_GPIO(X, 6) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_VOLUMEUP>;
 		};
 	};
-
 	vdd_sys_mux: regulator-vdd-sys-mux {
 		compatible = "regulator-fixed";
 		regulator-name = "VDD_SYS_MUX";
@@ -1562,7 +1499,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
 	vdd_5v0_sys: regulator-vdd-5v0-sys {
 		compatible = "regulator-fixed";
 		regulator-name = "VDD_5V0_SYS";
@@ -1574,7 +1510,6 @@
 		enable-active-high;
 		vin-supply = <&vdd_sys_mux>;
 	};
-
 	vdd_3v3_sys: regulator-vdd-3v3-sys {
 		compatible = "regulator-fixed";
 		regulator-name = "VDD_3V3_SYS";
@@ -1585,10 +1520,8 @@
 		gpio = <&pmic 3 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		vin-supply = <&vdd_sys_mux>;
-
 		regulator-enable-ramp-delay = <160>;
 	};
-
 	vdd_5v0_io: regulator-vdd-5v0-io {
 		compatible = "regulator-fixed";
 		regulator-name = "VDD_5V0_IO_SYS";
@@ -1597,7 +1530,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
 	vdd_3v3_sd: regulator-vdd-3v3-sd {
 		compatible = "regulator-fixed";
 		regulator-name = "VDD_3V3_SD";
@@ -1606,10 +1538,8 @@
 		gpio = <&gpio TEGRA_GPIO(Z, 4) GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		vin-supply = <&vdd_3v3_sys>;
-
 		regulator-enable-ramp-delay = <472>;
 	};
-
 	vdd_dsi_csi: regulator-vdd-dsi-csi {
 		compatible = "regulator-fixed";
 		regulator-name = "AVDD_DSI_CSI_1V2";
@@ -1617,7 +1547,6 @@
 		regulator-max-microvolt = <1200000>;
 		vin-supply = <&vdd_sys_1v2>;
 	};
-
 	vdd_3v3_dis: regulator-vdd-3v3-dis {
 		compatible = "regulator-fixed";
 		regulator-name = "VDD_DIS_3V3_LCD";
@@ -1628,7 +1557,6 @@
 		enable-active-high;
 		vin-supply = <&vdd_3v3_sys>;
 	};
-
 	vdd_1v8_dis: regulator-vdd-1v8-dis {
 		compatible = "regulator-fixed";
 		regulator-name = "VDD_LCD_1V8_DIS";
@@ -1639,7 +1567,6 @@
 		enable-active-high;
 		vin-supply = <&vdd_1v8>;
 	};
-
 	vdd_5v0_rtl: regulator-vdd-5v0-rtl {
 		compatible = "regulator-fixed";
 		regulator-name = "RTL_5V";
@@ -1649,7 +1576,6 @@
 		enable-active-high;
 		vin-supply = <&vdd_5v0_sys>;
 	};
-
 	vdd_usb_vbus: regulator-vdd-usb-vbus {
 		compatible = "regulator-fixed";
 		regulator-name = "USB_VBUS_EN1";
@@ -1659,7 +1585,6 @@
 		enable-active-high;
 		vin-supply = <&vdd_5v0_sys>;
 	};
-
 	vdd_hdmi: regulator-vdd-hdmi {
 		compatible = "regulator-fixed";
 		regulator-name = "VDD_HDMI_5V0";
@@ -1669,7 +1594,6 @@
 		enable-active-high;
 		vin-supply = <&vdd_5v0_sys>;
 	};
-
 	vdd_cam_1v2: regulator-vdd-cam-1v2 {
 		compatible = "regulator-fixed";
 		regulator-name = "vdd-cam-1v2";
@@ -1679,7 +1603,6 @@
 		enable-active-high;
 		vin-supply = <&vdd_3v3_sys>;
 	};
-
 	vdd_cam_2v8: regulator-vdd-cam-2v8 {
 		compatible = "regulator-fixed";
 		regulator-name = "vdd-cam-2v8";
@@ -1689,7 +1612,6 @@
 		enable-active-high;
 		vin-supply = <&vdd_3v3_sys>;
 	};
-
 	vdd_cam_1v8: regulator-vdd-cam-1v8 {
 		compatible = "regulator-fixed";
 		regulator-name = "vdd-cam-1v8";
@@ -1699,7 +1621,6 @@
 		enable-active-high;
 		vin-supply = <&vdd_3v3_sys>;
 	};
-
 	vdd_usb_vbus_otg: regulator-vdd-usb-vbus-otg {
 		compatible = "regulator-fixed";
 		regulator-name = "USB_VBUS_EN0";

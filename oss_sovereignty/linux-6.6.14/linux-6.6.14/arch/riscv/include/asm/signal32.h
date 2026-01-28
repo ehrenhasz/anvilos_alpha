@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef __ASM_SIGNAL32_H
 #define __ASM_SIGNAL32_H
-
 #if IS_ENABLED(CONFIG_COMPAT)
 int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
 			  struct pt_regs *regs);
@@ -14,5 +11,4 @@ int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
 	return -1;
 }
 #endif
-
 #endif

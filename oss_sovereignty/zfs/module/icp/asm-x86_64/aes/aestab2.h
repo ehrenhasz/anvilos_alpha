@@ -1,56 +1,15 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
 #ifndef _AESTAB2_H
 #define	_AESTAB2_H
-
 #ifdef	__cplusplus
 extern "C" {
 #endif
-
-/*
- * To create this file for OpenSolaris:
- * 1. Compile and run tablegen.c, from aes-src-04-03-08.zip,
- *	after defining ASM_AMD64_C
- * 2. mv aestab2.c aestab2.h
- * 3. Add __cplusplus and _AESTAB2_H header guards
- * 3. Add #include <aes_impl.h>
- * 4. Change "uint_32t" to "uint32_t"
- * 5. Change all variables to "static const"
- * 6. Cstyle and hdrchk this file
- */
-
 #include <aes/aes_impl.h>
-
 static const uint32_t t_rc[RC_LENGTH] =
 {
 	0x00000001, 0x00000002, 0x00000004, 0x00000008,
 	0x00000010, 0x00000020, 0x00000040, 0x00000080,
 	0x0000001b, 0x00000036
 };
-
 static const uint32_t t_ls[4][256] =
 {
 	{
@@ -318,7 +277,6 @@ static const uint32_t t_ls[4][256] =
 	0xb0000000, 0x54000000, 0xbb000000, 0x16000000
 	}
 };
-
 static const uint32_t t_im[4][256] =
 {
 	{
@@ -586,9 +544,7 @@ static const uint32_t t_im[4][256] =
 	0x9fbe805d, 0x91b58d54, 0x83a89a4f, 0x8da39746
 	}
 };
-
 #ifdef	__cplusplus
 }
 #endif
-
-#endif	/* _AESTAB2_H */
+#endif	 

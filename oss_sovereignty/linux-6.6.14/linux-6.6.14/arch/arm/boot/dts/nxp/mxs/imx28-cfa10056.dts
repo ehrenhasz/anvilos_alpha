@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013 Free Electrons
- */
-
-/*
- * The CFA-10055 is an expansion board for the CFA-10036 module and
- * CFA-10037, thus we need to include the CFA-10037 DTS.
- */
 #include "imx28-cfa10037.dts"
-
 / {
 	model = "Crystalfontz CFA-10056 Board";
 	compatible = "crystalfontz,cfa10056", "crystalfontz,cfa10037", "crystalfontz,cfa10036", "fsl,imx28";
-
 	spi-2 {
 		compatible = "spi-gpio";
 		pinctrl-names = "default";
@@ -25,7 +14,6 @@
 		num-chipselects = <1>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		hx8369: hx8369@0 {
 			compatible = "himax,hx8369a", "himax,hx8369";
 			reg = <0>;
@@ -36,7 +24,6 @@
 		};
 	};
 };
-
 &pinctrl {
 	spi2_pins_cfa10056: spi2-cfa10056@0 {
 		reg = <0>;
@@ -50,7 +37,6 @@
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_ENABLE>;
 	};
-
 	lcdif_pins_cfa10056: lcdif-10056@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
@@ -63,7 +49,6 @@
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_DISABLE>;
 	};
-
 	lcdif_pins_cfa10056_pullup: lcdif-10056-pullup@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
@@ -74,7 +59,6 @@
 		fsl,pull-up = <MXS_PULL_ENABLE>;
 	};
 };
-
 &lcdif {
 	pinctrl-names = "default";
 	pinctrl-0 = <&lcdif_24bit_pins_a
@@ -82,11 +66,9 @@
 			&lcdif_pins_cfa10056_pullup >;
 	display = <&display0>;
 	status = "okay";
-
 	display0: display0 {
 		bits-per-pixel = <32>;
 		bus-width = <24>;
-
 		display-timings {
 			native-mode = <&timing0>;
 			timing0: timing0 {

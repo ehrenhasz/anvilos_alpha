@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2016 Andreas Färber
- */
-
 #include "meson-gx.dtsi"
 #include "meson-gx-mali450.dtsi"
 #include <dt-bindings/gpio/meson-gxbb-gpio.h>
@@ -10,10 +5,8 @@
 #include <dt-bindings/clock/gxbb-clkc.h>
 #include <dt-bindings/clock/gxbb-aoclkc.h>
 #include <dt-bindings/reset/gxbb-aoclkc.h>
-
 / {
 	compatible = "amlogic,meson-gxbb";
-
 	soc {
 		usb0_phy: phy@c0000000 {
 			compatible = "amlogic,meson-gxbb-usb2-phy";
@@ -24,7 +17,6 @@
 			clock-names = "usb_general", "usb";
 			status = "disabled";
 		};
-
 		usb1_phy: phy@c0000020 {
 			compatible = "amlogic,meson-gxbb-usb2-phy";
 			#phy-cells = <0>;
@@ -34,7 +26,6 @@
 			clock-names = "usb_general", "usb";
 			status = "disabled";
 		};
-
 		usb0: usb@c9000000 {
 			compatible = "amlogic,meson-gxbb-usb", "snps,dwc2";
 			reg = <0x0 0xc9000000 0x0 0x40000>;
@@ -46,7 +37,6 @@
 			dr_mode = "host";
 			status = "disabled";
 		};
-
 		usb1: usb@c9100000 {
 			compatible = "amlogic,meson-gxbb-usb", "snps,dwc2";
 			reg = <0x0 0xc9100000 0x0 0x40000>;
@@ -60,7 +50,6 @@
 		};
 	};
 };
-
 &aiu {
 	compatible = "amlogic,aiu-gxbb", "amlogic,aiu";
 	clocks = <&clkc CLKID_AIU_GLUE>,
@@ -83,14 +72,12 @@
 		      "spdif_mclk_sel";
 	resets = <&reset RESET_AIU>;
 };
-
 &aobus {
 	pinctrl_aobus: pinctrl@14 {
 		compatible = "amlogic,meson-gxbb-aobus-pinctrl";
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		gpio_ao: bank@14 {
 			reg = <0x0 0x00014 0x0 0x8>,
 			      <0x0 0x0002c 0x0 0x4>,
@@ -100,7 +87,6 @@
 			#gpio-cells = <2>;
 			gpio-ranges = <&pinctrl_aobus 0 0 14>;
 		};
-
 		uart_ao_a_pins: uart_ao_a {
 			mux {
 				groups = "uart_tx_ao_a", "uart_rx_ao_a";
@@ -108,7 +94,6 @@
 				bias-disable;
 			};
 		};
-
 		uart_ao_a_cts_rts_pins: uart_ao_a_cts_rts {
 			mux {
 				groups = "uart_cts_ao_a",
@@ -117,7 +102,6 @@
 				bias-disable;
 			};
 		};
-
 		uart_ao_b_pins: uart_ao_b {
 			mux {
 				groups = "uart_tx_ao_b", "uart_rx_ao_b";
@@ -125,7 +109,6 @@
 				bias-disable;
 			};
 		};
-
 		uart_ao_b_cts_rts_pins: uart_ao_b_cts_rts {
 			mux {
 				groups = "uart_cts_ao_b",
@@ -134,7 +117,6 @@
 				bias-disable;
 			};
 		};
-
 		remote_input_ao_pins: remote_input_ao {
 			mux {
 				groups = "remote_input_ao";
@@ -142,7 +124,6 @@
 				bias-disable;
 			};
 		};
-
 		i2c_ao_pins: i2c_ao {
 			mux {
 				groups = "i2c_sck_ao",
@@ -151,7 +132,6 @@
 				bias-disable;
 			};
 		};
-
 		pwm_ao_a_3_pins: pwm_ao_a_3 {
 			mux {
 				groups = "pwm_ao_a_3";
@@ -159,7 +139,6 @@
 				bias-disable;
 			};
 		};
-
 		pwm_ao_a_6_pins: pwm_ao_a_6 {
 			mux {
 				groups = "pwm_ao_a_6";
@@ -167,7 +146,6 @@
 				bias-disable;
 			};
 		};
-
 		pwm_ao_a_12_pins: pwm_ao_a_12 {
 			mux {
 				groups = "pwm_ao_a_12";
@@ -175,7 +153,6 @@
 				bias-disable;
 			};
 		};
-
 		pwm_ao_b_pins: pwm_ao_b {
 			mux {
 				groups = "pwm_ao_b";
@@ -183,7 +160,6 @@
 				bias-disable;
 			};
 		};
-
 		i2s_am_clk_pins: i2s_am_clk {
 			mux {
 				groups = "i2s_am_clk";
@@ -191,7 +167,6 @@
 				bias-disable;
 			};
 		};
-
 		i2s_out_ao_clk_pins: i2s_out_ao_clk {
 			mux {
 				groups = "i2s_out_ao_clk";
@@ -199,7 +174,6 @@
 				bias-disable;
 			};
 		};
-
 		i2s_out_lr_clk_pins: i2s_out_lr_clk {
 			mux {
 				groups = "i2s_out_lr_clk";
@@ -207,7 +181,6 @@
 				bias-disable;
 			};
 		};
-
 		i2s_out_ch01_ao_pins: i2s_out_ch01_ao {
 			mux {
 				groups = "i2s_out_ch01_ao";
@@ -215,7 +188,6 @@
 				bias-disable;
 			};
 		};
-
 		i2s_out_ch23_ao_pins: i2s_out_ch23_ao {
 			mux {
 				groups = "i2s_out_ch23_ao";
@@ -223,7 +195,6 @@
 				bias-disable;
 			};
 		};
-
 		i2s_out_ch45_ao_pins: i2s_out_ch45_ao {
 			mux {
 				groups = "i2s_out_ch45_ao";
@@ -231,14 +202,12 @@
 				bias-disable;
 			};
 		};
-
 		spdif_out_ao_6_pins: spdif_out_ao_6 {
 			mux {
 				groups = "spdif_out_ao_6";
 				function = "spdif_out_ao";
 			};
 		};
-
 		spdif_out_ao_13_pins: spdif_out_ao_13 {
 			mux {
 				groups = "spdif_out_ao_13";
@@ -246,7 +215,6 @@
 				bias-disable;
 			};
 		};
-
 		ao_cec_pins: ao_cec {
 			mux {
 				groups = "ao_cec";
@@ -254,7 +222,6 @@
 				bias-disable;
 			};
 		};
-
 		ee_cec_pins: ee_cec {
 			mux {
 				groups = "ee_cec";
@@ -264,7 +231,6 @@
 		};
 	};
 };
-
 &cbus {
 	spifc: spi@8c80 {
 		compatible = "amlogic,meson-gxbb-spifc";
@@ -275,22 +241,18 @@
 		status = "disabled";
 	};
 };
-
 &cec_AO {
 	clocks = <&clkc_AO CLKID_AO_CEC_32K>;
 	clock-names = "core";
 };
-
 &clkc_AO {
 	compatible = "amlogic,meson-gxbb-aoclkc", "amlogic,meson-gx-aoclkc";
 	clocks = <&xtal>, <&clkc CLKID_CLK81>;
 	clock-names = "xtal", "mpeg-clk";
 };
-
 &efuse {
 	clocks = <&clkc CLKID_EFUSE>;
 };
-
 &ethmac {
 	clocks = <&clkc CLKID_ETH>,
 		 <&clkc CLKID_FCLK_DIV2>,
@@ -298,13 +260,11 @@
 		 <&clkc CLKID_FCLK_DIV2>;
 	clock-names = "stmmaceth", "clkin0", "clkin1", "timing-adjustment";
 };
-
 &gpio_intc {
 	compatible = "amlogic,meson-gxbb-gpio-intc",
 		     "amlogic,meson-gpio-intc";
 	status = "okay";
 };
-
 &hdmi_tx {
 	compatible = "amlogic,meson-gxbb-dw-hdmi", "amlogic,meson-gx-dw-hdmi";
 	resets = <&reset RESET_HDMITX_CAPB3>,
@@ -316,7 +276,6 @@
 		 <&clkc CLKID_GCLK_VENCI_INT0>;
 	clock-names = "isfr", "iahb", "venci";
 };
-
 &sysctrl {
 	clkc: clock-controller {
 		compatible = "amlogic,gxbb-clkc";
@@ -325,45 +284,35 @@
 		clock-names = "xtal";
 	};
 };
-
 &hwrng {
 	clocks = <&clkc CLKID_RNG0>;
 	clock-names = "core";
 };
-
 &i2c_A {
 	clocks = <&clkc CLKID_I2C>;
 };
-
 &i2c_AO {
 	clocks = <&clkc CLKID_AO_I2C>;
 };
-
 &i2c_B {
 	clocks = <&clkc CLKID_I2C>;
 };
-
 &i2c_C {
 	clocks = <&clkc CLKID_I2C>;
 };
-
 &mali {
 	compatible = "amlogic,meson-gxbb-mali", "arm,mali-450";
-
 	clocks = <&clkc CLKID_CLK81>, <&clkc CLKID_MALI>;
 	clock-names = "bus", "core";
-
 	assigned-clocks = <&clkc CLKID_GP0_PLL>;
 	assigned-clock-rates = <744000000>;
 };
-
 &periphs {
 	pinctrl_periphs: pinctrl@4b0 {
 		compatible = "amlogic,meson-gxbb-periphs-pinctrl";
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		gpio: bank@4b0 {
 			reg = <0x0 0x004b0 0x0 0x28>,
 			      <0x0 0x004e8 0x0 0x14>,
@@ -374,7 +323,6 @@
 			#gpio-cells = <2>;
 			gpio-ranges = <&pinctrl_periphs 0 0 119>;
 		};
-
 		emmc_pins: emmc {
 			mux-0 {
 				groups = "emmc_nand_d07",
@@ -382,14 +330,12 @@
 				function = "emmc";
 				bias-pull-up;
 			};
-
 			mux-1 {
 				groups = "emmc_clk";
 				function = "emmc";
 				bias-disable;
 			};
 		};
-
 		emmc_ds_pins: emmc-ds {
 			mux {
 				groups = "emmc_ds";
@@ -397,7 +343,6 @@
 				bias-pull-down;
 			};
 		};
-
 		emmc_clk_gate_pins: emmc_clk_gate {
 			mux {
 				groups = "BOOT_8";
@@ -405,7 +350,6 @@
 				bias-pull-down;
 			};
 		};
-
 		nor_pins: nor {
 			mux {
 				groups = "nor_d",
@@ -416,7 +360,6 @@
 				bias-disable;
 			};
 		};
-
 		spi_pins: spi-pins {
 			mux {
 				groups = "spi_miso",
@@ -426,21 +369,18 @@
 				bias-disable;
 			};
 		};
-
 		spi_idle_high_pins: spi-idle-high-pins {
 			mux {
 				groups = "spi_sclk";
 				bias-pull-up;
 			};
 		};
-
 		spi_idle_low_pins: spi-idle-low-pins {
 			mux {
 				groups = "spi_sclk";
 				bias-pull-down;
 			};
 		};
-
 		spi_ss0_pins: spi-ss0 {
 			mux {
 				groups = "spi_ss0";
@@ -448,7 +388,6 @@
 				bias-disable;
 			};
 		};
-
 		sdcard_pins: sdcard {
 			mux-0 {
 				groups = "sdcard_d0",
@@ -459,14 +398,12 @@
 				function = "sdcard";
 				bias-pull-up;
 			};
-
 			mux-1 {
 				groups = "sdcard_clk";
 				function = "sdcard";
 				bias-disable;
 			};
 		};
-
 		sdcard_clk_gate_pins: sdcard_clk_gate {
 			mux {
 				groups = "CARD_2";
@@ -474,7 +411,6 @@
 				bias-pull-down;
 			};
 		};
-
 		sdio_pins: sdio {
 			mux-0 {
 				groups = "sdio_d0",
@@ -485,14 +421,12 @@
 				function = "sdio";
 				bias-pull-up;
 			};
-
 			mux-1 {
 				groups = "sdio_clk";
 				function = "sdio";
 				bias-disable;
 			};
 		};
-
 		sdio_clk_gate_pins: sdio_clk_gate {
 			mux {
 				groups = "GPIOX_4";
@@ -500,7 +434,6 @@
 				bias-pull-down;
 			};
 		};
-
 		sdio_irq_pins: sdio_irq {
 			mux {
 				groups = "sdio_irq";
@@ -508,7 +441,6 @@
 				bias-disable;
 			};
 		};
-
 		uart_a_pins: uart_a {
 			mux {
 				groups = "uart_tx_a",
@@ -517,7 +449,6 @@
 				bias-disable;
 			};
 		};
-
 		uart_a_cts_rts_pins: uart_a_cts_rts {
 			mux {
 				groups = "uart_cts_a",
@@ -526,7 +457,6 @@
 				bias-disable;
 			};
 		};
-
 		uart_b_pins: uart_b {
 			mux {
 				groups = "uart_tx_b",
@@ -535,7 +465,6 @@
 				bias-disable;
 			};
 		};
-
 		uart_b_cts_rts_pins: uart_b_cts_rts {
 			mux {
 				groups = "uart_cts_b",
@@ -544,7 +473,6 @@
 				bias-disable;
 			};
 		};
-
 		uart_c_pins: uart_c {
 			mux {
 				groups = "uart_tx_c",
@@ -553,7 +481,6 @@
 				bias-disable;
 			};
 		};
-
 		uart_c_cts_rts_pins: uart_c_cts_rts {
 			mux {
 				groups = "uart_cts_c",
@@ -562,7 +489,6 @@
 				bias-disable;
 			};
 		};
-
 		i2c_a_pins: i2c_a {
 			mux {
 				groups = "i2c_sck_a",
@@ -571,7 +497,6 @@
 				bias-disable;
 			};
 		};
-
 		i2c_b_pins: i2c_b {
 			mux {
 				groups = "i2c_sck_b",
@@ -580,7 +505,6 @@
 				bias-disable;
 			};
 		};
-
 		i2c_c_pins: i2c_c {
 			mux {
 				groups = "i2c_sck_c",
@@ -589,7 +513,6 @@
 				bias-disable;
 			};
 		};
-
 		eth_rgmii_pins: eth-rgmii {
 			mux {
 				groups = "eth_mdio",
@@ -610,7 +533,6 @@
 				bias-disable;
 			};
 		};
-
 		eth_rmii_pins: eth-rmii {
 			mux {
 				groups = "eth_mdio",
@@ -626,7 +548,6 @@
 				bias-disable;
 			};
 		};
-
 		pwm_a_x_pins: pwm_a_x {
 			mux {
 				groups = "pwm_a_x";
@@ -634,7 +555,6 @@
 				bias-disable;
 			};
 		};
-
 		pwm_a_y_pins: pwm_a_y {
 			mux {
 				groups = "pwm_a_y";
@@ -642,7 +562,6 @@
 				bias-disable;
 			};
 		};
-
 		pwm_b_pins: pwm_b {
 			mux {
 				groups = "pwm_b";
@@ -650,7 +569,6 @@
 				bias-disable;
 			};
 		};
-
 		pwm_d_pins: pwm_d {
 			mux {
 				groups = "pwm_d";
@@ -658,7 +576,6 @@
 				bias-disable;
 			};
 		};
-
 		pwm_e_pins: pwm_e {
 			mux {
 				groups = "pwm_e";
@@ -666,7 +583,6 @@
 				bias-disable;
 			};
 		};
-
 		pwm_f_x_pins: pwm_f_x {
 			mux {
 				groups = "pwm_f_x";
@@ -674,7 +590,6 @@
 				bias-disable;
 			};
 		};
-
 		pwm_f_y_pins: pwm_f_y {
 			mux {
 				groups = "pwm_f_y";
@@ -682,7 +597,6 @@
 				bias-disable;
 			};
 		};
-
 		hdmi_hpd_pins: hdmi_hpd {
 			mux {
 				groups = "hdmi_hpd";
@@ -690,7 +604,6 @@
 				bias-disable;
 			};
 		};
-
 		hdmi_i2c_pins: hdmi_i2c {
 			mux {
 				groups = "hdmi_sda", "hdmi_scl";
@@ -698,7 +611,6 @@
 				bias-disable;
 			};
 		};
-
 		i2sout_ch23_y_pins: i2sout_ch23_y {
 			mux {
 				groups = "i2sout_ch23_y";
@@ -706,7 +618,6 @@
 				bias-disable;
 			};
 		};
-
 		i2sout_ch45_y_pins: i2sout_ch45_y {
 			mux {
 				groups = "i2sout_ch45_y";
@@ -714,7 +625,6 @@
 				bias-disable;
 			};
 		};
-
 		i2sout_ch67_y_pins: i2sout_ch67_y {
 			mux {
 				groups = "i2sout_ch67_y";
@@ -722,7 +632,6 @@
 				bias-disable;
 			};
 		};
-
 		spdif_out_y_pins: spdif_out_y {
 			mux {
 				groups = "spdif_out_y";
@@ -732,7 +641,6 @@
 		};
 	};
 };
-
 &pwrc {
 	resets = <&reset RESET_VIU>,
 		 <&reset RESET_VENC>,
@@ -752,32 +660,25 @@
 	clocks = <&clkc CLKID_VPU>,
 	         <&clkc CLKID_VAPB>;
 	clock-names = "vpu", "vapb";
-	/*
-	 * VPU clocking is provided by two identical clock paths
-	 * VPU_0 and VPU_1 muxed to a single clock by a glitch
-	 * free mux to safely change frequency while running.
-	 * Same for VAPB but with a final gate after the glitch free mux.
-	 */
 	assigned-clocks = <&clkc CLKID_VPU_0_SEL>,
 			  <&clkc CLKID_VPU_0>,
-			  <&clkc CLKID_VPU>, /* Glitch free mux */
+			  <&clkc CLKID_VPU>,  
 			  <&clkc CLKID_VAPB_0_SEL>,
 			  <&clkc CLKID_VAPB_0>,
-			  <&clkc CLKID_VAPB_SEL>; /* Glitch free mux */
+			  <&clkc CLKID_VAPB_SEL>;  
 	assigned-clock-parents = <&clkc CLKID_FCLK_DIV3>,
-				 <0>, /* Do Nothing */
+				 <0>,  
 				 <&clkc CLKID_VPU_0>,
 				 <&clkc CLKID_FCLK_DIV4>,
-				 <0>, /* Do Nothing */
+				 <0>,  
 				 <&clkc CLKID_VAPB_0>;
-	assigned-clock-rates = <0>, /* Do Nothing */
+	assigned-clock-rates = <0>,  
 			       <666666666>,
-			       <0>, /* Do Nothing */
-			       <0>, /* Do Nothing */
+			       <0>,  
+			       <0>,  
 			       <250000000>,
-			       <0>; /* Do Nothing */
+			       <0>;  
 };
-
 &saradc {
 	compatible = "amlogic,meson-gxbb-saradc", "amlogic,meson-saradc";
 	clocks = <&xtal>,
@@ -786,7 +687,6 @@
 		 <&clkc CLKID_SAR_ADC_SEL>;
 	clock-names = "clkin", "core", "adc_clk", "adc_sel";
 };
-
 &sd_emmc_a {
 	clocks = <&clkc CLKID_SD_EMMC_A>,
 		 <&clkc CLKID_SD_EMMC_A_CLK0>,
@@ -794,7 +694,6 @@
 	clock-names = "core", "clkin0", "clkin1";
 	resets = <&reset RESET_SD_EMMC_A>;
 };
-
 &sd_emmc_b {
 	clocks = <&clkc CLKID_SD_EMMC_B>,
 		 <&clkc CLKID_SD_EMMC_B_CLK0>,
@@ -802,7 +701,6 @@
 	clock-names = "core", "clkin0", "clkin1";
 	resets = <&reset RESET_SD_EMMC_B>;
 };
-
 &sd_emmc_c {
 	clocks = <&clkc CLKID_SD_EMMC_C>,
 		 <&clkc CLKID_SD_EMMC_C_CLK0>,
@@ -810,54 +708,44 @@
 	clock-names = "core", "clkin0", "clkin1";
 	resets = <&reset RESET_SD_EMMC_C>;
 };
-
 &simplefb_hdmi {
 	clocks = <&clkc CLKID_HDMI_PCLK>,
 		 <&clkc CLKID_CLK81>,
 		 <&clkc CLKID_GCLK_VENCI_INT0>;
 };
-
 &spicc {
 	clocks = <&clkc CLKID_SPICC>;
 	clock-names = "core";
 	resets = <&reset RESET_PERIPHS_SPICC>;
 	num-cs = <1>;
 };
-
 &spifc {
 	clocks = <&clkc CLKID_SPI>;
 };
-
 &uart_A {
 	clocks = <&xtal>, <&clkc CLKID_UART0>, <&xtal>;
 	clock-names = "xtal", "pclk", "baud";
 };
-
 &uart_AO {
 	clocks = <&xtal>, <&clkc_AO CLKID_AO_UART1>, <&xtal>;
 	clock-names = "xtal", "pclk", "baud";
 };
-
 &uart_AO_B {
 	clocks = <&xtal>, <&clkc_AO CLKID_AO_UART2>, <&xtal>;
 	clock-names = "xtal", "pclk", "baud";
 };
-
 &uart_B {
 	clocks = <&xtal>, <&clkc CLKID_UART1>, <&xtal>;
 	clock-names = "xtal", "pclk", "baud";
 };
-
 &uart_C {
 	clocks = <&xtal>, <&clkc CLKID_UART2>, <&xtal>;
 	clock-names = "xtal", "pclk", "baud";
 };
-
 &vpu {
 	compatible = "amlogic,meson-gxbb-vpu", "amlogic,meson-gx-vpu";
 	power-domains = <&pwrc PWRC_GXBB_VPU_ID>;
 };
-
 &vdec {
 	compatible = "amlogic,gxbb-vdec", "amlogic,gx-vdec";
 	clocks = <&clkc CLKID_DOS_PARSER>,

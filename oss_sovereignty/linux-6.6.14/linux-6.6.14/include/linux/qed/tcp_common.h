@@ -1,19 +1,6 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
-
 #ifndef __TCP_COMMON__
 #define __TCP_COMMON__
-
-/********************/
-/* TCP FW CONSTANTS */
-/********************/
-
 #define TCP_INVALID_TIMEOUT_VAL	-1
-
-/* OOO opaque data received from LL2 */
 struct ooo_opaque {
 	__le32 cid;
 	u8 drop_isle;
@@ -21,30 +8,22 @@ struct ooo_opaque {
 	u8 ooo_opcode;
 	u8 ooo_isle;
 };
-
-/* tcp connect mode enum */
 enum tcp_connect_mode {
 	TCP_CONNECT_ACTIVE,
 	TCP_CONNECT_PASSIVE,
 	MAX_TCP_CONNECT_MODE
 };
-
-/* tcp function init parameters */
 struct tcp_init_params {
 	__le32 two_msl_timer;
 	__le16 tx_sws_timer;
 	u8 max_fin_rt;
 	u8 reserved[9];
 };
-
-/* tcp IPv4/IPv6 enum */
 enum tcp_ip_version {
 	TCP_IPV4,
 	TCP_IPV6,
 	MAX_TCP_IP_VERSION
 };
-
-/* tcp offload parameters */
 struct tcp_offload_params {
 	__le16 local_mac_addr_lo;
 	__le16 local_mac_addr_mid;
@@ -119,8 +98,6 @@ struct tcp_offload_params {
 	__le16 da_timeout_value;
 	__le32 reserved3;
 };
-
-/* tcp offload parameters */
 struct tcp_offload_params_opt2 {
 	__le16 local_mac_addr_lo;
 	__le16 local_mac_addr_mid;
@@ -163,8 +140,6 @@ struct tcp_offload_params_opt2 {
 	__le32 max_rt_time;
 	__le32 reserved3[16];
 };
-
-/* tcp IPv4/IPv6 enum */
 enum tcp_seg_placement_event {
 	TCP_EVENT_ADD_PEN,
 	TCP_EVENT_ADD_NEW_ISLE,
@@ -175,8 +150,6 @@ enum tcp_seg_placement_event {
 	TCP_EVENT_NOP,
 	MAX_TCP_SEG_PLACEMENT_EVENT
 };
-
-/* tcp init parameters */
 struct tcp_update_params {
 	__le16 flags;
 #define TCP_UPDATE_PARAMS_REMOTE_MAC_ADDR_CHANGED_MASK		0x1
@@ -225,8 +198,6 @@ struct tcp_update_params {
 	u8 ka_max_probe_cnt;
 	u8 reserved1[7];
 };
-
-/* toe upload parameters */
 struct tcp_upload_params {
 	__le32 rcv_next;
 	__le32 snd_una;
@@ -251,5 +222,4 @@ struct tcp_upload_params {
 	u8 rt_cnt;
 	__le32 reserved;
 };
-
-#endif /* __TCP_COMMON__ */
+#endif  

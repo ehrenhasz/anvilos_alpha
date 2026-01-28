@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * max98371.h -- MAX98371 ALSA SoC Audio driver
- *
- * Copyright 2011-2012 Maxim Integrated Products
- */
-
 #ifndef _MAX98371_H
 #define _MAX98371_H
-
 #define MAX98371_IRQ_CLEAR1			0x01
 #define MAX98371_IRQ_CLEAR2			0x02
 #define MAX98371_IRQ_CLEAR3			0x03
@@ -55,8 +47,6 @@
 #define MAX98371_GLOBAL_ENABLE			0x50
 #define MAX98371_SOFT_RESET			0x51
 #define MAX98371_VERSION			0xFF
-
-
 struct max98371_priv {
 	struct regmap *regmap;
 };

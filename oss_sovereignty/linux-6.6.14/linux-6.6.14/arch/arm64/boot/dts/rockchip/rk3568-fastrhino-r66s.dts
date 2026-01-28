@@ -1,16 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-
 #include "rk3568-fastrhino-r66s.dtsi"
-
 / {
 	model = "Lunzn FastRhino R66S";
 	compatible = "lunzn,fastrhino-r66s", "rockchip,rk3568";
-
 	aliases {
 		mmc0 = &sdmmc0;
 	};
 };
-
 &sdmmc0 {
 	bus-width = <4>;
 	cap-mmc-highspeed;

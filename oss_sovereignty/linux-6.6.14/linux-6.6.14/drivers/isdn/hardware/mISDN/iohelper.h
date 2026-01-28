@@ -1,27 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * iohelper.h
- *		helper for define functions to access ISDN hardware
- *              supported are memory mapped IO
- *		indirect port IO (one port for address, one for data)
- *
- * Author       Karsten Keil <keil@isdn4linux.de>
- *
- * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
- */
-
 #ifndef _IOHELPER_H
 #define _IOHELPER_H
-
 typedef u8 (read_reg_func)(void *hwp, u8 offset);
 typedef void (write_reg_func)(void *hwp, u8 offset, u8 value);
 typedef void (fifo_func)(void *hwp, u8 offset, u8 *datap, int size);
-
 struct _ioport {
 	u32 port;
 	u32 ale;
 };
-
 #define IOFUNC_IO(name, hws, ap)					\
 	static u8 Read##name##_IO(void *p, u8 off) {			\
 		struct hws *hw = p;					\
@@ -39,7 +24,6 @@ struct _ioport {
 		struct hws *hw = p;					\
 		outsb(hw->ap.port + off, dp, size);			\
 	}
-
 #define IOFUNC_IND(name, hws, ap)					\
 	static u8 Read##name##_IND(void *p, u8 off) {			\
 		struct hws *hw = p;					\
@@ -61,7 +45,6 @@ struct _ioport {
 		outb(off, hw->ap.ale);					\
 		outsb(hw->ap.port, dp, size);				\
 	}
-
 #define IOFUNC_MEMIO(name, hws, typ, adr)				\
 	static u8 Read##name##_MIO(void *p, u8 off) {			\
 		struct hws *hw = p;					\
@@ -81,7 +64,6 @@ struct _ioport {
 		while (size--)						\
 			writeb(*dp++, ((typ *)hw->adr) + off);		\
 	}
-
 #define ASSIGN_FUNC(typ, name, dest)	do {			\
 		dest.read_reg = &Read##name##_##typ;		\
 		dest.write_reg = &Write##name##_##typ;		\
@@ -92,5 +74,4 @@ struct _ioport {
 		ASSIGN_FUNC(typ, ISAC, target.isac);	\
 		ASSIGN_FUNC(typ, IPAC, target);		\
 	} while (0)
-
 #endif

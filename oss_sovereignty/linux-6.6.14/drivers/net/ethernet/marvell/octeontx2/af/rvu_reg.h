@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2018 Marvell.
- *
- */
-
 #ifndef RVU_REG_H
 #define RVU_REG_H
-
-/* Admin function registers */
 #define RVU_AF_MSIXTR_BASE                  (0x10)
 #define RVU_AF_ECO                          (0x20)
 #define RVU_AF_BLK_RST                      (0x30)
@@ -51,8 +42,6 @@
 #define RVU_AF_SMMU_ADDR_RSP_STS	    (0x6010)
 #define RVU_AF_SMMU_ADDR_TLN		    (0x6018)
 #define RVU_AF_SMMU_TLN_FLIT0		    (0x6020)
-
-/* Admin function's privileged PF/VF registers */
 #define RVU_PRIV_CONST                      (0x8000000)
 #define RVU_PRIV_GEN_CFG                    (0x8000010)
 #define RVU_PRIV_CLK_CFG                    (0x8000020)
@@ -75,8 +64,6 @@
 #define RVU_PRIV_HWVFX_SSOW_CFG             (0x8001330)
 #define RVU_PRIV_HWVFX_TIM_CFG              (0x8001340)
 #define RVU_PRIV_HWVFX_CPTX_CFG(a)          (0x8001350 | (a) << 3)
-
-/* RVU PF registers */
 #define	RVU_PF_VFX_PFVF_MBOX0		    (0x00000)
 #define	RVU_PF_VFX_PFVF_MBOX1		    (0x00008)
 #define RVU_PF_VFX_PFVF_MBOXX(a, b)         (0x0 | (a) << 12 | (b) << 3)
@@ -109,12 +96,8 @@
 #define RVU_PF_MSIX_PBAX(a)                 (0xF0000 | (a) << 3)
 #define RVU_PF_VF_MBOX_ADDR                 (0xC40)
 #define RVU_PF_LMTLINE_ADDR                 (0xC48)
-
-/* RVU VF registers */
 #define	RVU_VF_VFPF_MBOX0		    (0x00000)
 #define	RVU_VF_VFPF_MBOX1		    (0x00008)
-
-/* NPA block's admin function registers */
 #define NPA_AF_BLK_RST                  (0x0000)
 #define NPA_AF_CONST                    (0x0010)
 #define NPA_AF_CONST1                   (0x0018)
@@ -162,8 +145,6 @@
 #define NPA_PRIV_LFX_CFG		(0x10010)
 #define NPA_PRIV_LFX_INT_CFG		(0x10020)
 #define NPA_AF_RVU_LF_CFG_DEBUG         (0x10030)
-
-/* NIX block's admin function registers */
 #define NIX_AF_CFG			(0x0000)
 #define NIX_AF_STATUS			(0x0010)
 #define NIX_AF_NDC_CFG			(0x0018)
@@ -268,12 +249,11 @@
 #define NIX_AF_TX_NPC_CAPTURE_INFO	(0x0670)
 #define NIX_AF_SEB_CFG			(0x05F0)
 #define NIX_PTP_1STEP_EN		BIT_ULL(2)
-
 #define NIX_AF_DEBUG_NPC_RESP_DATAX(a)          (0x680 | (a) << 3)
 #define NIX_AF_SMQX_CFG(a)                      (0x700 | (a) << 16)
 #define NIX_AF_SQM_DBG_CTL_STATUS               (0x750)
-#define NIX_AF_DWRR_SDP_MTU                     (0x790) /* All CN10K except CN10KB */
-#define NIX_AF_DWRR_MTUX(a)			(0x790 | (a) << 16) /* Only for CN10KB */
+#define NIX_AF_DWRR_SDP_MTU                     (0x790)  
+#define NIX_AF_DWRR_MTUX(a)			(0x790 | (a) << 16)  
 #define NIX_AF_DWRR_RPM_MTU                     (0x7A0)
 #define NIX_AF_PSE_CHANNEL_LEVEL                (0x800)
 #define NIX_AF_PSE_SHAPER_CFG                   (0x810)
@@ -429,17 +409,13 @@
 #define NIX_AF_RX_ACTIVE_CYCLES_PCX(a)	(0x4800 | (a) << 16)
 #define NIX_AF_LINKX_CFG(a)		(0x4010 | (a) << 17)
 #define NIX_AF_MDQX_IN_MD_COUNT(a)	(0x14e0 | (a) << 16)
-
 #define NIX_PRIV_AF_INT_CFG		(0x8000000)
 #define NIX_PRIV_LFX_CFG		(0x8000010)
 #define NIX_PRIV_LFX_INT_CFG		(0x8000020)
 #define NIX_AF_RVU_LF_CFG_DEBUG		(0x8000030)
-
 #define NIX_AF_LINKX_BASE_MASK		GENMASK_ULL(11, 0)
 #define NIX_AF_LINKX_RANGE_MASK		GENMASK_ULL(19, 16)
 #define NIX_AF_LINKX_MCS_CNT_MASK	GENMASK_ULL(33, 32)
-
-/* SSO */
 #define SSO_AF_CONST			(0x1000)
 #define SSO_AF_CONST1			(0x1008)
 #define SSO_AF_BLK_RST			(0x10f8)
@@ -447,22 +423,16 @@
 #define SSO_AF_RVU_LF_CFG_DEBUG		(0x3800)
 #define SSO_PRIV_LFX_HWGRP_CFG		(0x10000)
 #define SSO_PRIV_LFX_HWGRP_INT_CFG	(0x20000)
-
-/* SSOW */
 #define SSOW_AF_RVU_LF_HWS_CFG_DEBUG	(0x0010)
 #define SSOW_AF_LF_HWS_RST		(0x0030)
 #define SSOW_PRIV_LFX_HWS_CFG		(0x1000)
 #define SSOW_PRIV_LFX_HWS_INT_CFG	(0x2000)
-
-/* TIM */
 #define TIM_AF_CONST			(0x90)
 #define TIM_PRIV_LFX_CFG		(0x20000)
 #define TIM_PRIV_LFX_INT_CFG		(0x24000)
 #define TIM_AF_RVU_LF_CFG_DEBUG		(0x30000)
 #define TIM_AF_BLK_RST			(0x10)
 #define TIM_AF_LF_RST			(0x20)
-
-/* CPT */
 #define CPT_AF_CONSTANTS0               (0x0000)
 #define CPT_AF_CONSTANTS1               (0x1000)
 #define CPT_AF_DIAG                     (0x3000)
@@ -539,24 +509,18 @@
 #define CPT_AF_RXC_ACTIVE_STS           (0x50028ull)
 #define CPT_AF_RXC_ZOMBIE_STS           (0x50030ull)
 #define CPT_AF_X2PX_LINK_CFG(a)         (0x51000ull | (u64)(a) << 3)
-
 #define AF_BAR2_ALIASX(a, b)            (0x9100000ull | (a) << 12 | (b))
 #define CPT_AF_BAR2_SEL                 0x9000000
 #define CPT_AF_BAR2_ALIASX(a, b)        AF_BAR2_ALIASX(a, b)
-
 #define CPT_AF_LF_CTL2_SHIFT 3
 #define CPT_AF_LF_SSO_PF_FUNC_SHIFT 32
-
 #define CPT_LF_CTL                      0x10
 #define CPT_LF_INPROG                   0x40
 #define CPT_LF_Q_SIZE                   0x100
 #define CPT_LF_Q_INST_PTR               0x110
 #define CPT_LF_Q_GRP_PTR                0x120
 #define CPT_LF_CTX_FLUSH                0x510
-
 #define NPC_AF_BLK_RST                  (0x00040)
-
-/* NPC */
 #define NPC_AF_CFG			(0x00000)
 #define NPC_AF_ACTIVE_PC		(0x00010)
 #define NPC_AF_CONST			(0x00020)
@@ -611,7 +575,6 @@
 #define NPC_AF_MCAM_DBG			(0x3001000)
 #define NPC_AF_DBG_DATAX(a)		(0x3001400 | (a) << 4)
 #define NPC_AF_DBG_RESULTX(a)		(0x3001800 | (a) << 4)
-
 #define NPC_AF_EXACT_MEM_ENTRY(a, b)	(0x300000 | (a) << 15 | (b) << 3)
 #define NPC_AF_EXACT_CAM_ENTRY(a)	(0xC00 | (a) << 3)
 #define NPC_AF_INTFX_EXACT_MASK(a)	(0x660 | (a) << 3)
@@ -620,7 +583,6 @@
 #define NPC_AF_INTFX_EXACT_SECRET0(a)	(0xE00 | (a) << 3)
 #define NPC_AF_INTFX_EXACT_SECRET1(a)	(0xE20 | (a) << 3)
 #define NPC_AF_INTFX_EXACT_SECRET2(a)	(0xE40 | (a) << 3)
-
 #define NPC_AF_MCAMEX_BANKX_CAMX_INTF(a, b, c) ({			   \
 	u64 offset;							   \
 									   \
@@ -628,7 +590,6 @@
 	if (rvu->hw->npc_ext_set)					   \
 		offset = (0x8000000ull | (a) << 8 | (b) << 22 | (c) << 3); \
 	offset; })
-
 #define NPC_AF_MCAMEX_BANKX_CAMX_W0(a, b, c) ({				   \
 	u64 offset;							   \
 									   \
@@ -636,7 +597,6 @@
 	if (rvu->hw->npc_ext_set)					   \
 		offset = (0x8000010ull | (a) << 8 | (b) << 22 | (c) << 3); \
 	offset; })
-
 #define NPC_AF_MCAMEX_BANKX_CAMX_W1(a, b, c) ({				   \
 	u64 offset;							   \
 									   \
@@ -644,7 +604,6 @@
 	if (rvu->hw->npc_ext_set)					   \
 		offset = (0x8000020ull | (a) << 8 | (b) << 22 | (c) << 3); \
 	offset; })
-
 #define NPC_AF_MCAMEX_BANKX_CFG(a, b) ({				   \
 	u64 offset;							   \
 									   \
@@ -652,7 +611,6 @@
 	if (rvu->hw->npc_ext_set)					   \
 		offset = (0x8000038ull | (a) << 8 | (b) << 22);		   \
 	offset; })
-
 #define NPC_AF_MCAMEX_BANKX_ACTION(a, b) ({				   \
 	u64 offset;							   \
 									   \
@@ -660,7 +618,6 @@
 	if (rvu->hw->npc_ext_set)					   \
 		offset = (0x8000040ull | (a) << 8 | (b) << 22);		   \
 	offset; })							   \
-
 #define NPC_AF_MCAMEX_BANKX_TAG_ACT(a, b) ({				   \
 	u64 offset;							   \
 									   \
@@ -668,7 +625,6 @@
 	if (rvu->hw->npc_ext_set)					   \
 		offset = (0x8000048ull | (a) << 8 | (b) << 22);		   \
 	offset; })							   \
-
 #define NPC_AF_MCAMEX_BANKX_STAT_ACT(a, b) ({				   \
 	u64 offset;							   \
 									   \
@@ -676,7 +632,6 @@
 	if (rvu->hw->npc_ext_set)					   \
 		offset = (0x8000050ull | (a) << 8 | (b) << 22);		   \
 	offset; })							   \
-
 #define NPC_AF_MATCH_STATX(a) ({					   \
 	u64 offset;							   \
 									   \
@@ -684,8 +639,6 @@
 	if (rvu->hw->npc_ext_set)					   \
 		offset = (0x8000078ull | (a) << 8);			   \
 	offset; })							   \
-
-/* NDC */
 #define NDC_AF_CONST			(0x00000)
 #define NDC_AF_CLK_EN			(0x00020)
 #define NDC_AF_CTL			(0x00030)
@@ -714,8 +667,6 @@
 #define NDC_AF_BANKX_MISS_PC(a)		(0x01100 | (a) << 3)
 #define NDC_AF_BANKX_LINEX_METADATA(a, b) \
 		(0x10000 | (a) << 12 | (b) << 3)
-
-/* LBK */
 #define LBK_CONST			(0x10ull)
 #define LBK_LINK_CFG_P2X		(0x400ull)
 #define LBK_LINK_CFG_X2P		(0x408ull)
@@ -726,13 +677,10 @@
 #define LBK_LINK_CFG_RANGE_MASK		GENMASK_ULL(19, 16)
 #define LBK_LINK_CFG_ID_MASK		GENMASK_ULL(11, 6)
 #define LBK_LINK_CFG_BASE_MASK		GENMASK_ULL(5, 0)
-
-/* APR */
 #define	APR_AF_LMT_CFG			(0x000ull)
 #define	APR_AF_LMT_MAP_BASE		(0x008ull)
 #define	APR_AF_LMT_CTL			(0x010ull)
 #define APR_LMT_MAP_ENT_DIS_SCH_CMP_SHIFT	23
 #define APR_LMT_MAP_ENT_SCH_ENA_SHIFT		22
 #define APR_LMT_MAP_ENT_DIS_LINE_PREF_SHIFT	21
-
-#endif /* RVU_REG_H */
+#endif  

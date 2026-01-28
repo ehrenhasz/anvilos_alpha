@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * SGI PCI Xtalk Bridge
- */
-
 #ifndef PLATFORM_DATA_XTALK_BRIDGE_H
 #define PLATFORM_DATA_XTALK_BRIDGE_H
-
 #include <asm/sn/types.h>
-
 struct xtalk_bridge_platform_data {
 	struct resource	mem;
 	struct resource io;
@@ -18,5 +11,4 @@ struct xtalk_bridge_platform_data {
 	nasid_t	nasid;
 	int	masterwid;
 };
-
-#endif /* PLATFORM_DATA_XTALK_BRIDGE_H */
+#endif  

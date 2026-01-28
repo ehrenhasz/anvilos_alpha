@@ -1,25 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright IBM Corp. 1999, 2011
- *
- * Author(s): Martin Schwidefsky <schwidefsky@de.ibm.com>,
- */
-
 #ifndef __ASM_CMPXCHG_H
 #define __ASM_CMPXCHG_H
-
 #include <linux/mmdebug.h>
 #include <linux/types.h>
 #include <linux/bug.h>
-
 void __xchg_called_with_bad_pointer(void);
-
 static __always_inline unsigned long
 __arch_xchg(unsigned long x, unsigned long address, int size)
 {
 	unsigned long old;
 	int shift;
-
 	switch (size) {
 	case 1:
 		shift = (3 ^ (address & 3)) << 3;
@@ -71,7 +60,6 @@ __arch_xchg(unsigned long x, unsigned long address, int size)
 	__xchg_called_with_bad_pointer();
 	return x;
 }
-
 #define arch_xchg(ptr, x)						\
 ({									\
 	__typeof__(*(ptr)) __ret;					\
@@ -81,9 +69,7 @@ __arch_xchg(unsigned long x, unsigned long address, int size)
 			    sizeof(*(ptr)));				\
 	__ret;								\
 })
-
 void __cmpxchg_called_with_bad_pointer(void);
-
 static __always_inline unsigned long __cmpxchg(unsigned long address,
 					       unsigned long old,
 					       unsigned long new, int size)
@@ -91,7 +77,6 @@ static __always_inline unsigned long __cmpxchg(unsigned long address,
 	switch (size) {
 	case 1: {
 		unsigned int prev, shift, mask;
-
 		shift = (3 ^ (address & 3)) << 3;
 		address ^= address & 3;
 		old = (old & 0xff) << shift;
@@ -121,7 +106,6 @@ static __always_inline unsigned long __cmpxchg(unsigned long address,
 	}
 	case 2: {
 		unsigned int prev, shift, mask;
-
 		shift = (2 ^ (address & 2)) << 3;
 		address ^= address & 2;
 		old = (old & 0xffff) << shift;
@@ -151,7 +135,6 @@ static __always_inline unsigned long __cmpxchg(unsigned long address,
 	}
 	case 4: {
 		unsigned int prev = old;
-
 		asm volatile(
 			"	cs	%[prev],%[new],%[address]\n"
 			: [prev] "+&d" (prev),
@@ -162,7 +145,6 @@ static __always_inline unsigned long __cmpxchg(unsigned long address,
 	}
 	case 8: {
 		unsigned long prev = old;
-
 		asm volatile(
 			"	csg	%[prev],%[new],%[address]\n"
 			: [prev] "+&d" (prev),
@@ -175,7 +157,6 @@ static __always_inline unsigned long __cmpxchg(unsigned long address,
 	__cmpxchg_called_with_bad_pointer();
 	return old;
 }
-
 #define arch_cmpxchg(ptr, o, n)						\
 ({									\
 	__typeof__(*(ptr)) __ret;					\
@@ -185,13 +166,10 @@ static __always_inline unsigned long __cmpxchg(unsigned long address,
 			  (unsigned long)(n), sizeof(*(ptr)));		\
 	__ret;								\
 })
-
 #define arch_cmpxchg64		arch_cmpxchg
 #define arch_cmpxchg_local	arch_cmpxchg
 #define arch_cmpxchg64_local	arch_cmpxchg
-
 #define system_has_cmpxchg128()		1
-
 static __always_inline u128 arch_cmpxchg128(volatile u128 *ptr, u128 old, u128 new)
 {
 	asm volatile(
@@ -201,7 +179,5 @@ static __always_inline u128 arch_cmpxchg128(volatile u128 *ptr, u128 old, u128 n
 		: "memory", "cc");
 	return old;
 }
-
 #define arch_cmpxchg128		arch_cmpxchg128
-
-#endif /* __ASM_CMPXCHG_H */
+#endif  

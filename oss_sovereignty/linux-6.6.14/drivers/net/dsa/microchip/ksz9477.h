@@ -1,16 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Microchip KSZ9477 series Header file
- *
- * Copyright (C) 2017-2022 Microchip Technology Inc.
- */
-
 #ifndef __KSZ9477_H
 #define __KSZ9477_H
-
 #include <net/dsa.h>
 #include "ksz_common.h"
-
 int ksz9477_setup(struct dsa_switch *ds);
 u32 ksz9477_get_port_addr(int port, int offset);
 void ksz9477_cfg_port_member(struct ksz_device *dev, int port, u8 member);
@@ -56,5 +47,4 @@ int ksz9477_reset_switch(struct ksz_device *dev);
 int ksz9477_switch_init(struct ksz_device *dev);
 void ksz9477_switch_exit(struct ksz_device *dev);
 void ksz9477_port_queue_split(struct ksz_device *dev, int port);
-
 #endif

@@ -1,111 +1,82 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
 /dts-v1/;
 #include "mt8186.dtsi"
-
 / {
 	model = "MediaTek MT8186 evaluation board";
 	chassis-type = "embedded";
 	compatible = "mediatek,mt8186-evb", "mediatek,mt8186";
-
 	aliases {
 		serial0 = &uart0;
 	};
-
 	chosen {
 		stdout-path = "serial0:921600n8";
 	};
-
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0 0x40000000 0 0x80000000>;
 	};
 };
-
 &i2c0 {
 	status = "okay";
-
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c0_pins>;
 };
-
 &i2c1 {
 	status = "okay";
-
 	clock-frequency = <400000>;
 	i2c-scl-internal-delay-ns = <8000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pins>;
 };
-
 &i2c2 {
 	status = "okay";
-
 	clock-frequency = <400000>;
 	i2c-scl-internal-delay-ns = <10000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c2_pins>;
 };
-
 &i2c3 {
 	status = "okay";
-
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c3_pins>;
 };
-
 &i2c4 {
 	status = "okay";
-
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c4_pins>;
 };
-
 &i2c5 {
 	status = "okay";
-
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c5_pins>;
 };
-
 &i2c6 {
 	status = "okay";
-
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c6_pins>;
 };
-
 &i2c7 {
 	status = "okay";
-
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c7_pins>;
 };
-
 &i2c8 {
 	status = "okay";
-
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c8_pins>;
 };
-
 &i2c9 {
 	status = "okay";
-
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c9_pins>;
 };
-
 &pio {
 	i2c0_pins: i2c0-default-pins {
 		pins-bus {
@@ -116,7 +87,6 @@
 			input-enable;
 		};
 	};
-
 	i2c1_pins: i2c1-default-pins {
 		pins-bus {
 			pinmux = <PINMUX_GPIO130__FUNC_SDA1>,
@@ -126,7 +96,6 @@
 			input-enable;
 		};
 	};
-
 	i2c2_pins: i2c2-default-pins {
 		pins-bus {
 			pinmux = <PINMUX_GPIO132__FUNC_SDA2>,
@@ -136,7 +105,6 @@
 			input-enable;
 		};
 	};
-
 	i2c3_pins: i2c3-default-pins {
 		pins-bus {
 			pinmux = <PINMUX_GPIO134__FUNC_SDA3>,
@@ -146,7 +114,6 @@
 			input-enable;
 		};
 	};
-
 	i2c4_pins: i2c4-default-pins {
 		pins-bus {
 			pinmux = <PINMUX_GPIO136__FUNC_SDA4>,
@@ -156,7 +123,6 @@
 			input-enable;
 		};
 	};
-
 	i2c5_pins: i2c5-default-pins {
 		pins-bus {
 			pinmux = <PINMUX_GPIO138__FUNC_SDA5>,
@@ -166,7 +132,6 @@
 			input-enable;
 		};
 	};
-
 	i2c6_pins: i2c6-default-pins {
 		pins-bus {
 			pinmux = <PINMUX_GPIO140__FUNC_SDA6>,
@@ -176,7 +141,6 @@
 			input-enable;
 		};
 	};
-
 	i2c7_pins: i2c7-default-pins {
 		pins-bus {
 			pinmux = <PINMUX_GPIO142__FUNC_SDA7>,
@@ -186,7 +150,6 @@
 			input-enable;
 		};
 	};
-
 	i2c8_pins: i2c8-default-pins {
 		pins-bus {
 			pinmux = <PINMUX_GPIO144__FUNC_SDA8>,
@@ -196,7 +159,6 @@
 			input-enable;
 		};
 	};
-
 	i2c9_pins: i2c9-default-pins {
 		pins-bus {
 			pinmux = <PINMUX_GPIO146__FUNC_SDA9>,
@@ -207,15 +169,12 @@
 		};
 	};
 };
-
 &u3phy0 {
 	status = "okay";
 };
-
 &u3phy1 {
 	status = "okay";
 };
-
 &uart0 {
 	status = "okay";
 };

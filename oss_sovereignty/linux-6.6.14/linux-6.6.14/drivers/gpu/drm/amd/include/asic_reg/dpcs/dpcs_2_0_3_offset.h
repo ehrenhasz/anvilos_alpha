@@ -1,28 +1,5 @@
-/*
- * Copyright (C) 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 #ifndef _dpcs_2_0_3_OFFSET_HEADER
 #define _dpcs_2_0_3_OFFSET_HEADER
-// addressBlock: dpcssysa_dpcs0_dpcstx0_dispdec
-// base address: 0x0
 #define mmDPCSTX0_DPCSTX_TX_CLOCK_CNTL                                                                 0x2928
 #define mmDPCSTX0_DPCSTX_TX_CLOCK_CNTL_BASE_IDX                                                        2
 #define mmDPCSTX0_DPCSTX_TX_CNTL                                                                       0x2929
@@ -35,10 +12,6 @@
 #define mmDPCSTX0_DPCSTX_PLL_UPDATE_ADDR_BASE_IDX                                                      2
 #define mmDPCSTX0_DPCSTX_PLL_UPDATE_DATA                                                               0x292d
 #define mmDPCSTX0_DPCSTX_PLL_UPDATE_DATA_BASE_IDX                                                      2
-
-
-// addressBlock: dpcssysa_dpcs0_rdpcstx0_dispdec
-// base address: 0x0
 #define mmRDPCSTX0_RDPCSTX_CNTL                                                                        0x2930
 #define mmRDPCSTX0_RDPCSTX_CNTL_BASE_IDX                                                               2
 #define mmRDPCSTX0_RDPCSTX_CLOCK_CNTL                                                                  0x2931
@@ -83,10 +56,6 @@
 #define mmRDPCSTX0_RDPCSTX_PHY_CNTL13_BASE_IDX                                                         2
 #define mmRDPCSTX0_RDPCSTX_PHY_CNTL14                                                                  0x294e
 #define mmRDPCSTX0_RDPCSTX_PHY_CNTL14_BASE_IDX                                                         2
-
-
-// addressBlock: dpcssysa_dpcs0_dpcstx1_dispdec
-// base address: 0x360
 #define mmDPCSTX1_DPCSTX_TX_CLOCK_CNTL                                                                 0x2a00
 #define mmDPCSTX1_DPCSTX_TX_CLOCK_CNTL_BASE_IDX                                                        2
 #define mmDPCSTX1_DPCSTX_TX_CNTL                                                                       0x2a01
@@ -99,10 +68,6 @@
 #define mmDPCSTX1_DPCSTX_PLL_UPDATE_ADDR_BASE_IDX                                                      2
 #define mmDPCSTX1_DPCSTX_PLL_UPDATE_DATA                                                               0x2a05
 #define mmDPCSTX1_DPCSTX_PLL_UPDATE_DATA_BASE_IDX                                                      2
-
-
-// addressBlock: dpcssysa_dpcs0_rdpcstx1_dispdec
-// base address: 0x360
 #define mmRDPCSTX1_RDPCSTX_CNTL                                                                        0x2a08
 #define mmRDPCSTX1_RDPCSTX_CNTL_BASE_IDX                                                               2
 #define mmRDPCSTX1_RDPCSTX_CLOCK_CNTL                                                                  0x2a09
@@ -147,5 +112,4 @@
 #define mmRDPCSTX1_RDPCSTX_PHY_CNTL13_BASE_IDX                                                         2
 #define mmRDPCSTX1_RDPCSTX_PHY_CNTL14                                                                  0x2a26
 #define mmRDPCSTX1_RDPCSTX_PHY_CNTL14_BASE_IDX                                                         2
-
 #endif

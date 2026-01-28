@@ -1,23 +1,15 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright 2020 Gateworks Corporation
- */
-
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/phy/phy-imx8-pcie.h>
-
 / {
 	aliases {
 		usb0 = &usbotg1;
 		usb1 = &usbotg2;
 	};
-
 	led-controller {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_leds>;
-
 		led-0 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_GREEN>;
@@ -25,7 +17,6 @@
 			default-state = "on";
 			linux,default-trigger = "heartbeat";
 		};
-
 		led-1 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_RED>;
@@ -33,13 +24,11 @@
 			default-state = "off";
 		};
 	};
-
 	pcie0_refclk: pcie0-refclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <100000000>;
 	};
-
 	pps {
 		compatible = "pps-gpio";
 		pinctrl-names = "default";
@@ -47,7 +36,6 @@
 		gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
-
 	reg_usb_otg1_vbus: regulator-usb-otg1 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_reg_usb1_en>;
@@ -59,35 +47,29 @@
 		regulator-max-microvolt = <5000000>;
 	};
 };
-
-/* off-board header */
 &ecspi2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_spi2>;
 	cs-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &gpio1 {
 	gpio-line-names = "", "", "", "", "", "", "pci_usb_sel", "dio0",
 		"", "dio1", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "";
 };
-
 &gpio4 {
 	gpio-line-names = "", "", "", "dio2", "dio3", "", "", "pci_wdis#",
 		"", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "";
 };
-
 &i2c2 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
-
 	accelerometer@19 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_accel>;
@@ -99,15 +81,12 @@
 		interrupt-names = "INT1";
 	};
 };
-
-/* off-board header */
 &i2c3 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";
 };
-
 &pcie_phy {
 	fsl,refclk-pad-mode = <IMX8_PCIE_REFCLK_PAD_INPUT>;
 	fsl,clkreq-unsupported;
@@ -115,7 +94,6 @@
 	clock-names = "ref";
 	status = "okay";
 };
-
 &pcie0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie0>;
@@ -129,82 +107,68 @@
 				 <&clk IMX8MM_SYS_PLL2_250M>;
 	status = "okay";
 };
-
-/* GPS */
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
 };
-
-/* off-board header */
 &uart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3>;
 	status = "okay";
 };
-
 &usbotg1 {
 	dr_mode = "otg";
 	over-current-active-low;
 	vbus-supply = <&reg_usb_otg1_vbus>;
 	status = "okay";
 };
-
 &usbotg2 {
 	dr_mode = "host";
 	disable-over-current;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
-
 	pinctrl_hog: hoggrp {
 		fsl,pins = <
-			MX8MM_IOMUXC_SPDIF_TX_GPIO5_IO3		0x40000041 /* PLUG_TEST */
-			MX8MM_IOMUXC_GPIO1_IO06_GPIO1_IO6	0x40000041 /* PCI_USBSEL */
-			MX8MM_IOMUXC_SAI1_RXD5_GPIO4_IO7	0x40000041 /* PCIE_WDIS# */
-			MX8MM_IOMUXC_GPIO1_IO07_GPIO1_IO7	0x40000041 /* DIO0 */
-			MX8MM_IOMUXC_GPIO1_IO09_GPIO1_IO9	0x40000041 /* DIO1 */
-			MX8MM_IOMUXC_SAI1_RXD1_GPIO4_IO3	0x40000041 /* DIO2 */
-			MX8MM_IOMUXC_SAI1_RXD2_GPIO4_IO4	0x40000041 /* DIO2 */
+			MX8MM_IOMUXC_SPDIF_TX_GPIO5_IO3		0x40000041  
+			MX8MM_IOMUXC_GPIO1_IO06_GPIO1_IO6	0x40000041  
+			MX8MM_IOMUXC_SAI1_RXD5_GPIO4_IO7	0x40000041  
+			MX8MM_IOMUXC_GPIO1_IO07_GPIO1_IO7	0x40000041  
+			MX8MM_IOMUXC_GPIO1_IO09_GPIO1_IO9	0x40000041  
+			MX8MM_IOMUXC_SAI1_RXD1_GPIO4_IO3	0x40000041  
+			MX8MM_IOMUXC_SAI1_RXD2_GPIO4_IO4	0x40000041  
 		>;
 	};
-
 	pinctrl_accel: accelgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI1_RXD3_GPIO4_IO5	0x159
 		>;
 	};
-
 	pinctrl_gpio_leds: gpioledgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SPDIF_EXT_CLK_GPIO5_IO5	0x19
 			MX8MM_IOMUXC_SPDIF_RX_GPIO5_IO4		0x19
 		>;
 	};
-
 	pinctrl_i2c3: i2c3grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C3_SCL_I2C3_SCL		0x400001c3
 			MX8MM_IOMUXC_I2C3_SDA_I2C3_SDA		0x400001c3
 		>;
 	};
-
 	pinctrl_pcie0: pcie0grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI1_RXD4_GPIO4_IO6	0x41
 		>;
 	};
-
 	pinctrl_pps: ppsgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO15_GPIO1_IO15	0x41
 		>;
 	};
-
 	pinctrl_reg_usb1_en: regusb1grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO10_GPIO1_IO10	0x41
@@ -212,7 +176,6 @@
 			MX8MM_IOMUXC_GPIO1_IO13_USB1_OTG_OC	0x41
 		>;
 	};
-
 	pinctrl_spi2: spi2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK	0xd6
@@ -221,14 +184,12 @@
 			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13	0xd6
 		>;
 	};
-
 	pinctrl_uart1: uart1grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_UART1_RXD_UART1_DCE_RX	0x140
 			MX8MM_IOMUXC_UART1_TXD_UART1_DCE_TX	0x140
 		>;
 	};
-
 	pinctrl_uart3: uart3grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_UART3_RXD_UART3_DCE_RX	0x140

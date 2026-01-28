@@ -1,24 +1,16 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-// Copyright (C) 2020 Arm Ltd.
-// based on the H6 dtsi, which is:
-//   Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
-
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/clock/sun50i-h616-ccu.h>
 #include <dt-bindings/clock/sun50i-h6-r-ccu.h>
 #include <dt-bindings/clock/sun6i-rtc.h>
 #include <dt-bindings/reset/sun50i-h616-ccu.h>
 #include <dt-bindings/reset/sun50i-h6-r-ccu.h>
-
 / {
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu0: cpu@0 {
 			compatible = "arm,cortex-a53";
 			device_type = "cpu";
@@ -26,7 +18,6 @@
 			enable-method = "psci";
 			clocks = <&ccu CLK_CPUX>;
 		};
-
 		cpu1: cpu@1 {
 			compatible = "arm,cortex-a53";
 			device_type = "cpu";
@@ -34,7 +25,6 @@
 			enable-method = "psci";
 			clocks = <&ccu CLK_CPUX>;
 		};
-
 		cpu2: cpu@2 {
 			compatible = "arm,cortex-a53";
 			device_type = "cpu";
@@ -42,7 +32,6 @@
 			enable-method = "psci";
 			clocks = <&ccu CLK_CPUX>;
 		};
-
 		cpu3: cpu@3 {
 			compatible = "arm,cortex-a53";
 			device_type = "cpu";
@@ -51,30 +40,21 @@
 			clocks = <&ccu CLK_CPUX>;
 		};
 	};
-
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
-		/*
-		 * 256 KiB reserved for Trusted Firmware-A (BL31).
-		 * This is added by BL31 itself, but some bootloaders fail
-		 * to propagate this into the DTB handed to kernels.
-		 */
 		secmon@40000000 {
 			reg = <0x0 0x40000000 0x0 0x40000>;
 			no-map;
 		};
 	};
-
 	osc24M: osc24M-clk {
 		#clock-cells = <0>;
 		compatible = "fixed-clock";
 		clock-frequency = <24000000>;
 		clock-output-names = "osc24M";
 	};
-
 	pmu {
 		compatible = "arm,cortex-a53-pmu";
 		interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>,
@@ -83,12 +63,10 @@
 			     <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
 	};
-
 	psci {
 		compatible = "arm,psci-0.2";
 		method = "smc";
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		arm,no-tick-in-suspend;
@@ -101,20 +79,17 @@
 			     <GIC_PPI 10
 			(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
 	};
-
 	soc {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <0x0 0x0 0x0 0x40000000>;
-
 		syscon: syscon@3000000 {
 			compatible = "allwinner,sun50i-h616-system-control";
 			reg = <0x03000000 0x1000>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges;
-
 			sram_c: sram@28000 {
 				compatible = "mmio-sram";
 				reg = <0x00028000 0x30000>;
@@ -123,7 +98,6 @@
 				ranges = <0 0x00028000 0x30000>;
 			};
 		};
-
 		ccu: clock@3001000 {
 			compatible = "allwinner,sun50i-h616-ccu";
 			reg = <0x03001000 0x1000>;
@@ -132,7 +106,6 @@
 			#clock-cells = <1>;
 			#reset-cells = <1>;
 		};
-
 		watchdog: watchdog@30090a0 {
 			compatible = "allwinner,sun50i-h616-wdt",
 				     "allwinner,sun6i-a31-wdt";
@@ -140,7 +113,6 @@
 			interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&osc24M>;
 		};
-
 		pio: pinctrl@300b000 {
 			compatible = "allwinner,sun50i-h616-pinctrl";
 			reg = <0x0300b000 0x400>;
@@ -158,7 +130,6 @@
 			#gpio-cells = <3>;
 			interrupt-controller;
 			#interrupt-cells = <3>;
-
 			ext_rgmii_pins: rgmii-pins {
 				pins = "PI0", "PI1", "PI2", "PI3", "PI4",
 				       "PI5", "PI7", "PI8", "PI9", "PI10",
@@ -167,22 +138,18 @@
 				function = "emac0";
 				drive-strength = <40>;
 			};
-
 			i2c0_pins: i2c0-pins {
 				pins = "PI6", "PI7";
 				function = "i2c0";
 			};
-
 			i2c3_ph_pins: i2c3-ph-pins {
 				pins = "PH4", "PH5";
 				function = "i2c3";
 			};
-
 			ir_rx_pin: ir-rx-pin {
 				pins = "PH10";
 				function = "ir_rx";
 			};
-
 			mmc0_pins: mmc0-pins {
 				pins = "PF0", "PF1", "PF2", "PF3",
 				       "PF4", "PF5";
@@ -190,7 +157,6 @@
 				drive-strength = <30>;
 				bias-pull-up;
 			};
-
 			/omit-if-no-ref/
 			mmc1_pins: mmc1-pins {
 				pins = "PG0", "PG1", "PG2", "PG3",
@@ -199,7 +165,6 @@
 				drive-strength = <30>;
 				bias-pull-up;
 			};
-
 			mmc2_pins: mmc2-pins {
 				pins = "PC0", "PC1", "PC5", "PC6",
 				       "PC8", "PC9", "PC10", "PC11",
@@ -208,49 +173,41 @@
 				drive-strength = <30>;
 				bias-pull-up;
 			};
-
 			/omit-if-no-ref/
 			spi0_pins: spi0-pins {
 				pins = "PC0", "PC2", "PC4";
 				function = "spi0";
 			};
-
 			/omit-if-no-ref/
 			spi0_cs0_pin: spi0-cs0-pin {
 				pins = "PC3";
 				function = "spi0";
 			};
-
 			/omit-if-no-ref/
 			spi1_pins: spi1-pins {
 				pins = "PH6", "PH7", "PH8";
 				function = "spi1";
 			};
-
 			/omit-if-no-ref/
 			spi1_cs0_pin: spi1-cs0-pin {
 				pins = "PH5";
 				function = "spi1";
 			};
-
 			uart0_ph_pins: uart0-ph-pins {
 				pins = "PH0", "PH1";
 				function = "uart0";
 			};
-
 			/omit-if-no-ref/
 			uart1_pins: uart1-pins {
 				pins = "PG6", "PG7";
 				function = "uart1";
 			};
-
 			/omit-if-no-ref/
 			uart1_rts_cts_pins: uart1-rts-cts-pins {
 				pins = "PG8", "PG9";
 				function = "uart1";
 			};
 		};
-
 		gic: interrupt-controller@3021000 {
 			compatible = "arm,gic-400";
 			reg = <0x03021000 0x1000>,
@@ -261,7 +218,6 @@
 			interrupt-controller;
 			#interrupt-cells = <3>;
 		};
-
 		mmc0: mmc@4020000 {
 			compatible = "allwinner,sun50i-h616-mmc",
 				     "allwinner,sun50i-a100-mmc";
@@ -282,7 +238,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		mmc1: mmc@4021000 {
 			compatible = "allwinner,sun50i-h616-mmc",
 				     "allwinner,sun50i-a100-mmc";
@@ -303,7 +258,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		mmc2: mmc@4022000 {
 			compatible = "allwinner,sun50i-h616-emmc",
 				     "allwinner,sun50i-a100-emmc";
@@ -324,7 +278,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		uart0: serial@5000000 {
 			compatible = "snps,dw-apb-uart";
 			reg = <0x05000000 0x400>;
@@ -335,7 +288,6 @@
 			resets = <&ccu RST_BUS_UART0>;
 			status = "disabled";
 		};
-
 		uart1: serial@5000400 {
 			compatible = "snps,dw-apb-uart";
 			reg = <0x05000400 0x400>;
@@ -346,7 +298,6 @@
 			resets = <&ccu RST_BUS_UART1>;
 			status = "disabled";
 		};
-
 		uart2: serial@5000800 {
 			compatible = "snps,dw-apb-uart";
 			reg = <0x05000800 0x400>;
@@ -357,7 +308,6 @@
 			resets = <&ccu RST_BUS_UART2>;
 			status = "disabled";
 		};
-
 		uart3: serial@5000c00 {
 			compatible = "snps,dw-apb-uart";
 			reg = <0x05000c00 0x400>;
@@ -368,7 +318,6 @@
 			resets = <&ccu RST_BUS_UART3>;
 			status = "disabled";
 		};
-
 		uart4: serial@5001000 {
 			compatible = "snps,dw-apb-uart";
 			reg = <0x05001000 0x400>;
@@ -379,7 +328,6 @@
 			resets = <&ccu RST_BUS_UART4>;
 			status = "disabled";
 		};
-
 		uart5: serial@5001400 {
 			compatible = "snps,dw-apb-uart";
 			reg = <0x05001400 0x400>;
@@ -390,7 +338,6 @@
 			resets = <&ccu RST_BUS_UART5>;
 			status = "disabled";
 		};
-
 		i2c0: i2c@5002000 {
 			compatible = "allwinner,sun50i-h616-i2c",
 				     "allwinner,sun8i-v536-i2c",
@@ -405,7 +352,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		i2c1: i2c@5002400 {
 			compatible = "allwinner,sun50i-h616-i2c",
 				     "allwinner,sun8i-v536-i2c",
@@ -418,7 +364,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		i2c2: i2c@5002800 {
 			compatible = "allwinner,sun50i-h616-i2c",
 				     "allwinner,sun8i-v536-i2c",
@@ -431,7 +376,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		i2c3: i2c@5002c00 {
 			compatible = "allwinner,sun50i-h616-i2c",
 				     "allwinner,sun8i-v536-i2c",
@@ -444,7 +388,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		i2c4: i2c@5003000 {
 			compatible = "allwinner,sun50i-h616-i2c",
 				     "allwinner,sun8i-v536-i2c",
@@ -457,7 +400,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		spi0: spi@5010000 {
 			compatible = "allwinner,sun50i-h616-spi",
 				     "allwinner,sun8i-h3-spi";
@@ -470,7 +412,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		spi1: spi@5011000 {
 			compatible = "allwinner,sun50i-h616-spi",
 				     "allwinner,sun8i-h3-spi";
@@ -483,7 +424,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		emac0: ethernet@5020000 {
 			compatible = "allwinner,sun50i-h616-emac0",
 				     "allwinner,sun50i-a64-emac";
@@ -496,14 +436,12 @@
 			reset-names = "stmmaceth";
 			syscon = <&syscon>;
 			status = "disabled";
-
 			mdio0: mdio {
 				compatible = "snps,dwmac-mdio";
 				#address-cells = <1>;
 				#size-cells = <0>;
 			};
 		};
-
 		usbotg: usb@5100000 {
 			compatible = "allwinner,sun50i-h616-musb",
 				     "allwinner,sun8i-h3-musb";
@@ -517,7 +455,6 @@
 			extcon = <&usbphy 0>;
 			status = "disabled";
 		};
-
 		usbphy: phy@5100400 {
 			compatible = "allwinner,sun50i-h616-usb-phy";
 			reg = <0x05100400 0x24>,
@@ -551,7 +488,6 @@
 			status = "disabled";
 			#phy-cells = <1>;
 		};
-
 		ehci0: usb@5101000 {
 			compatible = "allwinner,sun50i-h616-ehci",
 				     "generic-ehci";
@@ -566,7 +502,6 @@
 			phy-names = "usb";
 			status = "disabled";
 		};
-
 		ohci0: usb@5101400 {
 			compatible = "allwinner,sun50i-h616-ohci",
 				     "generic-ohci";
@@ -579,7 +514,6 @@
 			phy-names = "usb";
 			status = "disabled";
 		};
-
 		ehci1: usb@5200000 {
 			compatible = "allwinner,sun50i-h616-ehci",
 				     "generic-ehci";
@@ -594,7 +528,6 @@
 			phy-names = "usb";
 			status = "disabled";
 		};
-
 		ohci1: usb@5200400 {
 			compatible = "allwinner,sun50i-h616-ohci",
 				     "generic-ohci";
@@ -607,7 +540,6 @@
 			phy-names = "usb";
 			status = "disabled";
 		};
-
 		ehci2: usb@5310000 {
 			compatible = "allwinner,sun50i-h616-ehci",
 				     "generic-ehci";
@@ -622,7 +554,6 @@
 			phy-names = "usb";
 			status = "disabled";
 		};
-
 		ohci2: usb@5310400 {
 			compatible = "allwinner,sun50i-h616-ohci",
 				     "generic-ohci";
@@ -635,7 +566,6 @@
 			phy-names = "usb";
 			status = "disabled";
 		};
-
 		ehci3: usb@5311000 {
 			compatible = "allwinner,sun50i-h616-ehci",
 				     "generic-ehci";
@@ -650,7 +580,6 @@
 			phy-names = "usb";
 			status = "disabled";
 		};
-
 		ohci3: usb@5311400 {
 			compatible = "allwinner,sun50i-h616-ohci",
 				     "generic-ohci";
@@ -663,7 +592,6 @@
 			phy-names = "usb";
 			status = "disabled";
 		};
-
 		rtc: rtc@7000000 {
 			compatible = "allwinner,sun50i-h616-rtc";
 			reg = <0x07000000 0x400>;
@@ -674,7 +602,6 @@
 				      "pll-32k";
 			#clock-cells = <1>;
 		};
-
 		r_ccu: clock@7010000 {
 			compatible = "allwinner,sun50i-h616-r-ccu";
 			reg = <0x07010000 0x210>;
@@ -684,7 +611,6 @@
 			#clock-cells = <1>;
 			#reset-cells = <1>;
 		};
-
 		r_pio: pinctrl@7022000 {
 			compatible = "allwinner,sun50i-h616-r-pinctrl";
 			reg = <0x07022000 0x400>;
@@ -693,19 +619,16 @@
 			clock-names = "apb", "hosc", "losc";
 			gpio-controller;
 			#gpio-cells = <3>;
-
 			/omit-if-no-ref/
 			r_i2c_pins: r-i2c-pins {
 				pins = "PL0", "PL1";
 				function = "s_i2c";
 			};
-
 			r_rsb_pins: r-rsb-pins {
 				pins = "PL0", "PL1";
 				function = "s_rsb";
 			};
 		};
-
 		ir: ir@7040000 {
 			compatible = "allwinner,sun50i-h616-ir",
 				     "allwinner,sun6i-a31-ir";
@@ -719,7 +642,6 @@
 			pinctrl-0 = <&ir_rx_pin>;
 			status = "disabled";
 		};
-
 		r_i2c: i2c@7081400 {
 			compatible = "allwinner,sun50i-h616-i2c",
 				     "allwinner,sun8i-v536-i2c",
@@ -732,7 +654,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-
 		r_rsb: rsb@7083000 {
 			compatible = "allwinner,sun50i-h616-rsb",
 				     "allwinner,sun8i-a23-rsb";

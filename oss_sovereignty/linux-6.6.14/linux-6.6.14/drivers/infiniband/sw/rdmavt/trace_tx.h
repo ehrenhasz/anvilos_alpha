@@ -1,19 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2016 Intel Corporation.
- */
 #if !defined(__RVT_TRACE_TX_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __RVT_TRACE_TX_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #include <rdma/ib_verbs.h>
 #include <rdma/rdmavt_qp.h>
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rvt_tx
-
 #define wr_opcode_name(opcode) { IB_WR_##opcode, #opcode  }
 #define show_wr_opcode(opcode)                             \
 __print_symbolic(opcode,                                   \
@@ -40,10 +32,8 @@ __print_symbolic(opcode,                                   \
 	wr_opcode_name(RESERVED8),                         \
 	wr_opcode_name(RESERVED9),                         \
 	wr_opcode_name(RESERVED10))
-
 #define POS_PRN \
 "[%s] wqe %p wr_id %llx send_flags %x qpn %x qpt %u psn %x lpsn %x ssn %x length %u opcode 0x%.2x,%s size %u avail %u head %u last %u pid %u num_sge %u wr_num_sge %u"
-
 TRACE_EVENT(
 	rvt_post_one_wr,
 	TP_PROTO(struct rvt_qp *qp, struct rvt_swqe *wqe, int wr_num_sge),
@@ -110,7 +100,6 @@ TRACE_EVENT(
 		__entry->wr_num_sge
 	)
 );
-
 TRACE_EVENT(
 	rvt_qp_send_completion,
 	TP_PROTO(struct rvt_qp *qp, struct rvt_swqe *wqe, u32 idx),
@@ -153,11 +142,9 @@ TRACE_EVENT(
 		__entry->send_flags
 	)
 );
-#endif /* __RVT_TRACE_TX_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE trace_tx
 #include <trace/define_trace.h>
-

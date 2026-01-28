@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2004-2007 Freescale Semiconductor, Inc. All Rights Reserved.
- * Copyright 2008 Juergen Beisert, kernel@pengutronix.de
- *
- * This contains hardware definitions that are common between i.MX21 and
- * i.MX27.
- */
-
 #ifndef __MACH_MX2x_H__
 #define __MACH_MX2x_H__
-
-/* The following addresses are common between i.MX21 and i.MX27 */
-
-/* Register offsets */
 #define MX2x_AIPI_BASE_ADDR		0x10000000
 #define MX2x_AIPI_SIZE			SZ_1M
 #define MX2x_DMA_BASE_ADDR			(MX2x_AIPI_BASE_ADDR + 0x01000)
@@ -47,14 +34,10 @@
 #define MX2x_SYSCTRL_BASE_ADDR			(MX2x_AIPI_BASE_ADDR + 0x27800)
 #define MX2x_JAM_BASE_ADDR			(MX2x_AIPI_BASE_ADDR + 0x3e000)
 #define MX2x_MAX_BASE_ADDR			(MX2x_AIPI_BASE_ADDR + 0x3f000)
-
 #define MX2x_AVIC_BASE_ADDR		0x10040000
-
 #define MX2x_SAHB1_BASE_ADDR		0x80000000
 #define MX2x_SAHB1_SIZE			SZ_1M
 #define MX2x_CSI_BASE_ADDR			(MX2x_SAHB1_BASE_ADDR + 0x0000)
-
-/* fixed interrupt numbers */
 #include <asm/irq.h>
 #define MX2x_INT_CSPI3		(NR_IRQS_LEGACY + 6)
 #define MX2x_INT_GPIO		(NR_IRQS_LEGACY + 8)
@@ -99,8 +82,6 @@
 #define MX2x_INT_EMMAPP		(NR_IRQS_LEGACY + 52)
 #define MX2x_INT_SLCDC		(NR_IRQS_LEGACY + 60)
 #define MX2x_INT_LCDC		(NR_IRQS_LEGACY + 61)
-
-/* fixed DMA request numbers */
 #define MX2x_DMA_REQ_CSPI3_RX	1
 #define MX2x_DMA_REQ_CSPI3_TX	2
 #define MX2x_DMA_REQ_EXT	3
@@ -128,5 +109,4 @@
 #define MX2x_DMA_REQ_UART1_TX	27
 #define MX2x_DMA_REQ_CSI_STAT	30
 #define MX2x_DMA_REQ_CSI_RX	31
-
-#endif /* ifndef __MACH_MX2x_H__ */
+#endif  

@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Hantro VPU codec driver
- *
- * Copyright 2018 Google LLC.
- *	Tomasz Figa <tfiga@chromium.org>
- */
-
 #ifndef HANTRO_H1_REGS_H_
 #define HANTRO_H1_REGS_H_
-
-/* Encoder registers. */
 #define H1_REG_INTERRUPT				0x004
 #define     H1_REG_INTERRUPT_FRAME_RDY			BIT(2)
 #define     H1_REG_INTERRUPT_DIS_BIT			BIT(1)
@@ -150,5 +140,4 @@
 #define H1_REG_VP8_CTRL1				0x280
 #define H1_REG_VP8_BIT_COST_GOLDEN			0x284
 #define H1_REG_VP8_LOOP_FLT_DELTA(i)			(0x288 + ((i) * 0x4))
-
-#endif /* HANTRO_H1_REGS_H_ */
+#endif  

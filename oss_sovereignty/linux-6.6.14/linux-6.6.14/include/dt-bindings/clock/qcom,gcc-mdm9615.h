@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- * Copyright (c) BayLibre, SAS.
- * Author : Neil Armstrong <narmstrong@baylibre.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_MDM_GCC_9615_H
 #define _DT_BINDINGS_CLK_MDM_GCC_9615_H
-
 #define AFAB_CLK_SRC				0
 #define AFAB_CORE_CLK				1
 #define SFAB_MSS_Q6_SW_A_CLK			2
@@ -317,5 +309,4 @@
 #define USB_HS1_SYSTEM_CLK			307
 #define EBI2_CLK				308
 #define EBI2_AON_CLK				309
-
 #endif

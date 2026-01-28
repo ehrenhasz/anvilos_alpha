@@ -1,31 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Platform data for ST STA350 ASoC codec driver.
- *
- * Copyright: 2014 Raumfeld GmbH
- * Author: Sven Brandau <info@brandau.biz>
- */
 #ifndef __LINUX_SND__STA350_H
 #define __LINUX_SND__STA350_H
-
 #define STA350_OCFG_2CH		0
 #define STA350_OCFG_2_1CH	1
 #define STA350_OCFG_1CH		3
-
 #define STA350_OM_CH1		0
 #define STA350_OM_CH2		1
 #define STA350_OM_CH3		2
-
 #define STA350_THERMAL_ADJUSTMENT_ENABLE	1
 #define STA350_THERMAL_RECOVERY_ENABLE		2
 #define STA350_FAULT_DETECT_RECOVERY_BYPASS	1
-
 #define STA350_FFX_PM_DROP_COMP			0
 #define STA350_FFX_PM_TAPERED_COMP		1
 #define STA350_FFX_PM_FULL_POWER		2
 #define STA350_FFX_PM_VARIABLE_DROP_COMP	3
-
-
 struct sta350_platform_data {
 	u8 output_conf;
 	u8 ch1_output_mapping;
@@ -49,5 +36,4 @@ struct sta350_platform_data {
 	unsigned int noise_shape_dc_cut:1;
 	unsigned int powerdown_master_vol:1;
 };
-
-#endif /* __LINUX_SND__STA350_H */
+#endif  

@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
-
 #ifndef __RTL8723E_HW_H__
 #define __RTL8723E_HW_H__
-
 #define CHK_SVID_SMID(_val1, _val2)				\
 	((rtlefuse->eeprom_svid == (_val1)) &&			\
 	 (rtlefuse->eeprom_smid == (_val2)))
-
 void rtl8723e_get_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val);
 void rtl8723e_read_eeprom_info(struct ieee80211_hw *hw);
-
 void rtl8723e_interrupt_recognized(struct ieee80211_hw *hw,
 				   struct rtl_int *int_vec);
 int rtl8723e_hw_init(struct ieee80211_hw *hw);
@@ -35,12 +29,10 @@ void rtl8723e_enable_hw_security_config(struct ieee80211_hw *hw);
 void rtl8723e_set_key(struct ieee80211_hw *hw, u32 key_index,
 		      u8 *p_macaddr, bool is_group, u8 enc_algo,
 		      bool is_wepkey, bool clear_all);
-
 void rtl8723e_read_bt_coexist_info_from_hwpg(struct ieee80211_hw *hw,
 					     bool autoload_fail, u8 *hwinfo);
 void rtl8723e_bt_reg_init(struct ieee80211_hw *hw);
 void rtl8723e_bt_hw_init(struct ieee80211_hw *hw);
 void rtl8723e_suspend(struct ieee80211_hw *hw);
 void rtl8723e_resume(struct ieee80211_hw *hw);
-
 #endif

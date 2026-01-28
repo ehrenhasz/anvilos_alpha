@@ -1,42 +1,30 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2015 Heiko Stuebner <heiko@sntech.de>
- */
-
 /dts-v1/;
 #include "rk3368.dtsi"
 #include <dt-bindings/input/input.h>
-
 / {
 	model = "Rockchip R88";
 	compatible = "rockchip,r88", "rockchip,rk3368";
-
 	aliases {
 		mmc0 = &sdio0;
 		mmc1 = &emmc;
 	};
-
 	chosen {
 		stdout-path = "serial2:115200n8";
 	};
-
 	memory {
 		device_type = "memory";
 		reg = <0x0 0x0 0x0 0x40000000>;
 	};
-
 	emmc_pwrseq: emmc-pwrseq {
 		compatible = "mmc-pwrseq-emmc";
 		pinctrl-0 = <&emmc_reset>;
 		pinctrl-names = "default";
 		reset-gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_HIGH>;
 	};
-
 	keys: gpio-keys {
 		compatible = "gpio-keys";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pwr_key>;
-
 		key-power {
 			wakeup-source;
 			gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_LOW>;
@@ -44,10 +32,8 @@
 			linux,code = <KEY_POWER>;
 		};
 	};
-
 	leds: gpio-leds {
 		compatible = "gpio-leds";
-
 		work_led: led-0 {
 			gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_HIGH>;
 			label = "r88:green:led";
@@ -55,29 +41,22 @@
 			pinctrl-0 = <&led_ctl>;
 		};
 	};
-
 	ir: ir-receiver {
 		compatible = "gpio-ir-receiver";
 		gpios = <&gpio3 RK_PD6 GPIO_ACTIVE_LOW>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&ir_int>;
 	};
-
 	sdio_pwrseq: sdio-pwrseq {
 		compatible = "mmc-pwrseq-simple";
 		clocks = <&hym8563>;
 		clock-names = "ext_clock";
 		pinctrl-names = "default";
 		pinctrl-0 = <&bt_rst>, <&wifi_reg_on>;
-
 		reset-gpios =
-			/* BT_RST_N */
 			<&gpio3 RK_PA5 GPIO_ACTIVE_LOW>,
-
-			/* WL_REG_ON */
 			<&gpio3 RK_PA4 GPIO_ACTIVE_LOW>;
 	};
-
 	vcc_18: vcc18-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_18";
@@ -87,8 +66,6 @@
 		regulator-boot-on;
 		vin-supply = <&vcc_sys>;
 	};
-
-	/* supplies both host and otg */
 	vcc_host: vcc-host-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -100,7 +77,6 @@
 		regulator-boot-on;
 		vin-supply = <&vcc_sys>;
 	};
-
 	vcc_io: vcc-io-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_io";
@@ -110,7 +86,6 @@
 		regulator-boot-on;
 		vin-supply = <&vcc_sys>;
 	};
-
 	vcc_lan: vcc-lan-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_lan";
@@ -120,7 +95,6 @@
 		regulator-boot-on;
 		vin-supply = <&vcc_io>;
 	};
-
 	vcc_sys: vcc-sys-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_sys";
@@ -129,7 +103,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
 	vccio_wl: vccio-wl-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vccio_wl";
@@ -139,7 +112,6 @@
 		regulator-boot-on;
 		vin-supply = <&vcc_io>;
 	};
-
 	vdd_10: vdd-10-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vdd_10";
@@ -150,7 +122,6 @@
 		vin-supply = <&vcc_sys>;
 	};
 };
-
 &emmc {
 	bus-width = <8>;
 	cap-mmc-highspeed;
@@ -160,7 +131,6 @@
 	pinctrl-0 = <&emmc_clk &emmc_cmd &emmc_bus8>;
 	status = "okay";
 };
-
 &gmac {
 	phy-supply = <&vcc_lan>;
 	phy-mode = "rmii";
@@ -174,10 +144,8 @@
 	rx_delay = <0x10>;
 	status = "okay";
 };
-
 &i2c0 {
 	status = "okay";
-
 	vdd_cpu: syr827@40 {
 		compatible = "silergy,syr827";
 		reg = <0x40>;
@@ -191,25 +159,20 @@
 		regulator-boot-on;
 		vin-supply = <&vcc_sys>;
 	};
-
 	hym8563: rtc@51 {
 		compatible = "haoyu,hym8563";
 		reg = <0x51>;
 		#clock-cells = <0>;
 		clock-output-names = "xin32k";
-		/* rtc_int is not connected */
 	};
 };
-
 &io_domains {
 	status = "okay";
-
 	audio-supply = <&vcc_io>;
 	gpio30-supply = <&vcc_io>;
 	gpio1830-supply = <&vcc_io>;
 	wifi-supply = <&vccio_wl>;
 };
-
 &sdio0 {
 	assigned-clocks = <&cru SCLK_SDIO0>;
 	assigned-clock-parents = <&cru PLL_CPLL>;
@@ -225,18 +188,15 @@
 	vqmmc-supply = <&vccio_wl>;
 	status = "okay";
 };
-
 &pinctrl {
 	pcfg_pull_none_drv_8ma: pcfg-pull-none-drv-8ma {
 		bias-disable;
 		drive-strength = <8>;
 	};
-
 	pcfg_pull_up_drv_8ma: pcfg-pull-up-drv-8ma {
 		bias-pull-up;
 		drive-strength = <8>;
 	};
-
 	emmc {
 		emmc_bus8: emmc-bus8 {
 			rockchip,pins = <1 RK_PC2 2 &pcfg_pull_up_drv_8ma>,
@@ -248,90 +208,72 @@
 					<1 RK_PD0 2 &pcfg_pull_up_drv_8ma>,
 					<1 RK_PD1 2 &pcfg_pull_up_drv_8ma>;
 		};
-
 		emmc-clk {
 			rockchip,pins = <2 RK_PA4 2 &pcfg_pull_none_drv_8ma>;
 		};
-
 		emmc-cmd {
 			rockchip,pins = <1 RK_PD2 2 &pcfg_pull_up_drv_8ma>;
 		};
-
 		emmc_reset: emmc-reset {
 			rockchip,pins = <2 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	ir {
 		ir_int: ir-int {
 			rockchip,pins = <3 RK_PD6 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
-
 	keys {
 		pwr_key: pwr-key {
 			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
-
 	leds {
 		stby_pwren: stby-pwren {
 			rockchip,pins = <0 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
-
 		led_ctl: led-ctl {
 			rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	sdio {
 		wifi_reg_on: wifi-reg-on {
 			rockchip,pins = <3 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
-
 		bt_rst: bt-rst {
 			rockchip,pins = <3 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	usb {
 		host_vbus_drv: host-vbus-drv {
 			rockchip,pins = <0 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
-
 &pmu_io_domains {
 	status = "okay";
-
 	pmu-supply = <&vcc_io>;
 	vop-supply = <&vcc_io>;
 };
-
 &saradc {
 	vref-supply = <&vcc_18>;
 	status = "okay";
 };
-
 &tsadc {
-	rockchip,hw-tshut-mode = <0>; /* tshut mode 0:CRU 1:GPIO */
-	rockchip,hw-tshut-polarity = <0>; /* tshut polarity 0:LOW 1:HIGH */
+	rockchip,hw-tshut-mode = <0>;  
+	rockchip,hw-tshut-polarity = <0>;  
 	status = "okay";
 };
-
 &uart2 {
 	status = "okay";
 };
-
 &usb_host0_ehci {
 	status = "okay";
 };
-
 &usb_otg {
 	dr_mode = "host";
 	status = "okay";
 };
-
 &wdt {
 	status = "okay";
 };

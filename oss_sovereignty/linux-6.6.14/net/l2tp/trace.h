@@ -1,20 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM l2tp
-
 #if !defined(_TRACE_L2TP_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_L2TP_H
-
 #include <linux/tracepoint.h>
 #include <linux/l2tp.h>
 #include "l2tp_core.h"
-
 #define encap_type_name(e) { L2TP_ENCAPTYPE_##e, #e }
 #define show_encap_type_name(val) \
 	__print_symbolic(val, \
 			encap_type_name(UDP), \
 			encap_type_name(IP))
-
 #define pw_type_name(p) { L2TP_PWTYPE_##p, #p }
 #define show_pw_type_name(val) \
 	__print_symbolic(val, \
@@ -23,7 +18,6 @@
 	pw_type_name(PPP), \
 	pw_type_name(PPP_AC), \
 	pw_type_name(IP))
-
 DECLARE_EVENT_CLASS(tunnel_only_evt,
 	TP_PROTO(struct l2tp_tunnel *tunnel),
 	TP_ARGS(tunnel),
@@ -35,7 +29,6 @@ DECLARE_EVENT_CLASS(tunnel_only_evt,
 	),
 	TP_printk("%s", __entry->name)
 );
-
 DECLARE_EVENT_CLASS(session_only_evt,
 	TP_PROTO(struct l2tp_session *session),
 	TP_ARGS(session),
@@ -47,7 +40,6 @@ DECLARE_EVENT_CLASS(session_only_evt,
 	),
 	TP_printk("%s", __entry->name)
 );
-
 TRACE_EVENT(register_tunnel,
 	TP_PROTO(struct l2tp_tunnel *tunnel),
 	TP_ARGS(tunnel),
@@ -76,17 +68,14 @@ TRACE_EVENT(register_tunnel,
 		__entry->ptid,
 		__entry->fd)
 );
-
 DEFINE_EVENT(tunnel_only_evt, delete_tunnel,
 	TP_PROTO(struct l2tp_tunnel *tunnel),
 	TP_ARGS(tunnel)
 );
-
 DEFINE_EVENT(tunnel_only_evt, free_tunnel,
 	TP_PROTO(struct l2tp_tunnel *tunnel),
 	TP_ARGS(tunnel)
 );
-
 TRACE_EVENT(register_session,
 	TP_PROTO(struct l2tp_session *session),
 	TP_ARGS(session),
@@ -114,27 +103,22 @@ TRACE_EVENT(register_session,
 		__entry->sid,
 		__entry->psid)
 );
-
 DEFINE_EVENT(session_only_evt, delete_session,
 	TP_PROTO(struct l2tp_session *session),
 	TP_ARGS(session)
 );
-
 DEFINE_EVENT(session_only_evt, free_session,
 	TP_PROTO(struct l2tp_session *session),
 	TP_ARGS(session)
 );
-
 DEFINE_EVENT(session_only_evt, session_seqnum_lns_enable,
 	TP_PROTO(struct l2tp_session *session),
 	TP_ARGS(session)
 );
-
 DEFINE_EVENT(session_only_evt, session_seqnum_lns_disable,
 	TP_PROTO(struct l2tp_session *session),
 	TP_ARGS(session)
 );
-
 DECLARE_EVENT_CLASS(session_seqnum_evt,
 	TP_PROTO(struct l2tp_session *session),
 	TP_ARGS(session),
@@ -153,17 +137,14 @@ DECLARE_EVENT_CLASS(session_seqnum_evt,
 		__entry->ns,
 		__entry->nr)
 );
-
 DEFINE_EVENT(session_seqnum_evt, session_seqnum_update,
 	TP_PROTO(struct l2tp_session *session),
 	TP_ARGS(session)
 );
-
 DEFINE_EVENT(session_seqnum_evt, session_seqnum_reset,
 	TP_PROTO(struct l2tp_session *session),
 	TP_ARGS(session)
 );
-
 DECLARE_EVENT_CLASS(session_pkt_discard_evt,
 	TP_PROTO(struct l2tp_session *session, u32 pkt_ns),
 	TP_ARGS(session, pkt_ns),
@@ -185,25 +166,19 @@ DECLARE_EVENT_CLASS(session_pkt_discard_evt,
 		__entry->my_nr,
 		__entry->reorder_q_len)
 );
-
 DEFINE_EVENT(session_pkt_discard_evt, session_pkt_expired,
 	TP_PROTO(struct l2tp_session *session, u32 pkt_ns),
 	TP_ARGS(session, pkt_ns)
 );
-
 DEFINE_EVENT(session_pkt_discard_evt, session_pkt_outside_rx_window,
 	TP_PROTO(struct l2tp_session *session, u32 pkt_ns),
 	TP_ARGS(session, pkt_ns)
 );
-
 DEFINE_EVENT(session_pkt_discard_evt, session_pkt_oos,
 	TP_PROTO(struct l2tp_session *session, u32 pkt_ns),
 	TP_ARGS(session, pkt_ns)
 );
-
-#endif /* _TRACE_L2TP_H */
-
-/* This part must be outside protection */
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE

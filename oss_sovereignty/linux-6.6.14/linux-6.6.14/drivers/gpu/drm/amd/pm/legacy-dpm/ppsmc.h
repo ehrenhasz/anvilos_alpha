@@ -1,39 +1,13 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef PP_SMC_H
 #define PP_SMC_H
-
 #pragma pack(push, 1)
-
 #define PPSMC_SWSTATE_FLAG_DC                           0x01
 #define PPSMC_SWSTATE_FLAG_UVD                          0x02
 #define PPSMC_SWSTATE_FLAG_VCE                          0x04
 #define PPSMC_SWSTATE_FLAG_PCIE_X1                      0x08
-
 #define PPSMC_THERMAL_PROTECT_TYPE_INTERNAL             0x00
 #define PPSMC_THERMAL_PROTECT_TYPE_EXTERNAL             0x01
 #define PPSMC_THERMAL_PROTECT_TYPE_NONE                 0xff
-
 #define PPSMC_SYSTEMFLAG_GPIO_DC                        0x01
 #define PPSMC_SYSTEMFLAG_STEPVDDC                       0x02
 #define PPSMC_SYSTEMFLAG_GDDR5                          0x04
@@ -41,34 +15,26 @@
 #define PPSMC_SYSTEMFLAG_REGULATOR_HOT                  0x10
 #define PPSMC_SYSTEMFLAG_REGULATOR_HOT_ANALOG           0x20
 #define PPSMC_SYSTEMFLAG_REGULATOR_HOT_PROG_GPIO        0x40
-
 #define PPSMC_EXTRAFLAGS_AC2DC_ACTION_MASK              0x07
 #define PPSMC_EXTRAFLAGS_AC2DC_DONT_WAIT_FOR_VBLANK     0x08
 #define PPSMC_EXTRAFLAGS_AC2DC_ACTION_GOTODPMLOWSTATE   0x00
 #define PPSMC_EXTRAFLAGS_AC2DC_ACTION_GOTOINITIALSTATE  0x01
 #define PPSMC_EXTRAFLAGS_AC2DC_GPIO5_POLARITY_HIGH      0x02
-
 #define PPSMC_DISPLAY_WATERMARK_LOW                     0
 #define PPSMC_DISPLAY_WATERMARK_HIGH                    1
-
 #define PPSMC_STATEFLAG_AUTO_PULSE_SKIP    0x01
 #define PPSMC_STATEFLAG_POWERBOOST         0x02
 #define PPSMC_STATEFLAG_DEEPSLEEP_THROTTLE 0x20
 #define PPSMC_STATEFLAG_DEEPSLEEP_BYPASS   0x40
-
 #define FDO_MODE_HARDWARE 0
 #define FDO_MODE_PIECE_WISE_LINEAR 1
-
 enum FAN_CONTROL {
 	FAN_CONTROL_FUZZY,
 	FAN_CONTROL_TABLE
 };
-
 #define PPSMC_Result_OK             ((uint8_t)0x01)
 #define PPSMC_Result_Failed         ((uint8_t)0xFF)
-
 typedef uint8_t PPSMC_Result;
-
 #define PPSMC_MSG_Halt                      ((uint8_t)0x10)
 #define PPSMC_MSG_Resume                    ((uint8_t)0x11)
 #define PPSMC_MSG_ZeroLevelsDisabled        ((uint8_t)0x13)
@@ -111,8 +77,6 @@ typedef uint8_t PPSMC_Result;
 #define PPSMC_MSG_ThrottleOVRDSCLKDS        ((uint8_t)0x96)
 #define PPSMC_MSG_CancelThrottleOVRDSCLKDS  ((uint8_t)0x97)
 #define PPSMC_MSG_EnableACDCGPIOInterrupt   ((uint16_t) 0x149)
-
-/* CI/KV/KB */
 #define PPSMC_MSG_UVDDPM_SetEnabledMask       ((uint16_t) 0x12D)
 #define PPSMC_MSG_VCEDPM_SetEnabledMask       ((uint16_t) 0x12E)
 #define PPSMC_MSG_ACPDPM_SetEnabledMask       ((uint16_t) 0x12F)
@@ -165,14 +129,10 @@ typedef uint8_t PPSMC_Result;
 #define PPSMC_MSG_Remove_DC_Clamp             ((uint16_t) 0x191)
 #define PPSMC_MSG_SetFanPwmMax                ((uint16_t) 0x19A)
 #define PPSMC_MSG_SetFanRpmMax                ((uint16_t) 0x205)
-
 #define PPSMC_MSG_ENABLE_THERMAL_DPM          ((uint16_t) 0x19C)
 #define PPSMC_MSG_DISABLE_THERMAL_DPM         ((uint16_t) 0x19D)
-
 #define PPSMC_MSG_API_GetSclkFrequency        ((uint16_t) 0x200)
 #define PPSMC_MSG_API_GetMclkFrequency        ((uint16_t) 0x201)
-
-/* TN */
 #define PPSMC_MSG_DPM_Config                ((uint32_t) 0x102)
 #define PPSMC_MSG_DPM_ForceState            ((uint32_t) 0x104)
 #define PPSMC_MSG_PG_SIMD_Config            ((uint32_t) 0x108)
@@ -186,15 +146,11 @@ typedef uint8_t PPSMC_Result;
 #define PPSMC_MSG_EnableBAPM                ((uint32_t) 0x120)
 #define PPSMC_MSG_DisableBAPM               ((uint32_t) 0x121)
 #define PPSMC_MSG_UVD_DPM_Config            ((uint32_t) 0x124)
-
 #define PPSMC_MSG_DRV_DRAM_ADDR_HI            ((uint16_t) 0x250)
 #define PPSMC_MSG_DRV_DRAM_ADDR_LO            ((uint16_t) 0x251)
 #define PPSMC_MSG_SMU_DRAM_ADDR_HI            ((uint16_t) 0x252)
 #define PPSMC_MSG_SMU_DRAM_ADDR_LO            ((uint16_t) 0x253)
 #define PPSMC_MSG_LoadUcodes                  ((uint16_t) 0x254)
-
 typedef uint16_t PPSMC_Msg;
-
 #pragma pack(pop)
-
 #endif

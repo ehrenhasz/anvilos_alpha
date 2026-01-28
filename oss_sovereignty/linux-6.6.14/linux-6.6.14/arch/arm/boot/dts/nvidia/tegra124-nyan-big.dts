@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 /dts-v1/;
-
 #include "tegra124-nyan.dtsi"
-
 #include "tegra124-nyan-big-emc.dtsi"
-
 / {
 	model = "Acer Chromebook 13 CB5-311";
 	compatible = "google,nyan-big-rev7", "google,nyan-big-rev6",
@@ -12,7 +8,6 @@
 		     "google,nyan-big-rev3", "google,nyan-big-rev2",
 		     "google,nyan-big-rev1", "google,nyan-big-rev0",
 		     "google,nyan-big", "google,nyan", "nvidia,tegra124";
-
 	host1x@50000000 {
 		dpaux@545c0000 {
 			aux-bus {
@@ -24,11 +19,9 @@
 			};
 		};
 	};
-
 	pinmux@70000868 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinmux_default>;
-
 		pinmux_default: pinmux {
 			clk_32k_out_pa0 {
 				nvidia,pins = "clk_32k_out_pa0";
@@ -1334,11 +1327,9 @@
 			};
 		};
 	};
-
-	mmc@700b0400 { /* SD Card on this bus */
+	mmc@700b0400 {  
 		wp-gpios = <&gpio TEGRA_GPIO(Q, 4) GPIO_ACTIVE_LOW>;
 	};
-
 	sound {
 		compatible = "nvidia,tegra-audio-max98090-nyan-big",
 			     "nvidia,tegra-audio-max98090-nyan",

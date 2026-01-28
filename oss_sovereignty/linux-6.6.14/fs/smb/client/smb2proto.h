@@ -1,25 +1,9 @@
-/* SPDX-License-Identifier: LGPL-2.1 */
-/*
- *
- *   Copyright (c) International Business Machines  Corp., 2002, 2011
- *                 Etersoft, 2012
- *   Author(s): Steve French (sfrench@us.ibm.com)
- *              Pavel Shilovsky (pshilovsky@samba.org) 2012
- *
- */
 #ifndef _SMB2PROTO_H
 #define _SMB2PROTO_H
 #include <linux/nls.h>
 #include <linux/key-type.h>
-
 struct statfs;
 struct smb_rqst;
-
-/*
- *****************************************************************
- * All Prototypes
- *****************************************************************
- */
 extern int map_smb2_to_linux_error(char *buf, bool log_err);
 extern int smb2_check_message(char *buf, unsigned int length,
 			      struct TCP_Server_Info *server);
@@ -28,7 +12,6 @@ extern char *smb2_get_data_area_len(int *off, int *len,
 				    struct smb2_hdr *shdr);
 extern __le16 *cifs_convert_path_to_utf16(const char *from,
 					  struct cifs_sb_info *cifs_sb);
-
 extern int smb2_verify_signature(struct smb_rqst *, struct TCP_Server_Info *);
 extern int smb2_check_receive(struct mid_q_entry *mid,
 			      struct TCP_Server_Info *server, bool log_error);
@@ -106,11 +89,6 @@ extern unsigned long smb_rqst_len(struct TCP_Server_Info *server,
 extern void smb2_set_next_command(struct cifs_tcon *tcon,
 				  struct smb_rqst *rqst);
 extern void smb2_set_related(struct smb_rqst *rqst);
-
-/*
- * SMB2 Worker functions - most of protocol specific implementation details
- * are contained within these calls.
- */
 extern int SMB2_negotiate(const unsigned int xid,
 			  struct cifs_ses *ses,
 			  struct TCP_Server_Info *server);
@@ -136,7 +114,7 @@ extern void SMB2_open_free(struct smb_rqst *rqst);
 extern int SMB2_ioctl(const unsigned int xid, struct cifs_tcon *tcon,
 		     u64 persistent_fid, u64 volatile_fid, u32 opcode,
 		     char *in_data, u32 indatalen, u32 maxoutlen,
-		     char **out_data, u32 *plen /* returned data len */);
+		     char **out_data, u32 *plen  );
 extern int SMB2_ioctl_init(struct cifs_tcon *tcon,
 			   struct TCP_Server_Info *server,
 			   struct smb_rqst *rqst,
@@ -147,8 +125,7 @@ extern void SMB2_ioctl_free(struct smb_rqst *rqst);
 extern int SMB2_change_notify(const unsigned int xid, struct cifs_tcon *tcon,
 			u64 persistent_fid, u64 volatile_fid, bool watch_tree,
 			u32 completion_filter, u32 max_out_data_len,
-			char **out_data, u32 *plen /* returned data len */);
-
+			char **out_data, u32 *plen  );
 extern int __SMB2_close(const unsigned int xid, struct cifs_tcon *tcon,
 			u64 persistent_fid, u64 volatile_fid,
 			struct smb2_file_network_open_info *pbuf);
@@ -248,7 +225,6 @@ extern int smb2_lockv(const unsigned int xid, struct cifs_tcon *tcon,
 extern int SMB2_lease_break(const unsigned int xid, struct cifs_tcon *tcon,
 			    __u8 *lease_key, const __le32 lease_state);
 extern int smb3_validate_negotiate(const unsigned int, struct cifs_tcon *);
-
 extern enum securityEnum smb2_select_sectype(struct TCP_Server_Info *,
 					enum securityEnum);
 int smb2_parse_contexts(struct TCP_Server_Info *server,
@@ -257,7 +233,6 @@ int smb2_parse_contexts(struct TCP_Server_Info *server,
 			char *lease_key, __u8 *oplock,
 			struct smb2_file_all_info *buf,
 			struct create_posix_rsp *posix);
-
 extern int smb3_encryption_required(const struct cifs_tcon *tcon);
 extern int smb2_validate_iov(unsigned int offset, unsigned int buffer_length,
 			     struct kvec *iov, unsigned int min_buf_size);
@@ -278,7 +253,6 @@ extern int smb2_query_info_compound(const unsigned int xid,
 				    u32 class, u32 type, u32 output_len,
 				    struct kvec *rsp, int *buftype,
 				    struct cifs_sb_info *cifs_sb);
-/* query path info from the server using SMB311 POSIX extensions*/
 int smb311_posix_query_path_info(const unsigned int xid,
 				 struct cifs_tcon *tcon,
 				 struct cifs_sb_info *cifs_sb,
@@ -289,4 +263,4 @@ int smb311_posix_query_path_info(const unsigned int xid,
 int posix_info_parse(const void *beg, const void *end,
 		     struct smb2_posix_info_parsed *out);
 int posix_info_sid_size(const void *beg, const void *end);
-#endif			/* _SMB2PROTO_H */
+#endif			 

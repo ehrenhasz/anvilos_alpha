@@ -1,28 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 1999-2013 Petko Manolov (petkan@nucleusys.com)
- */
-
-
 #ifndef	PEGASUS_DEV
-
 #define	PEGASUS_II		0x80000000
 #define	HAS_HOME_PNA		0x40000000
-
 #define	PEGASUS_MTU		1536
-
 #define	EPROM_WRITE		0x01
 #define	EPROM_READ		0x02
 #define	EPROM_DONE		0x04
 #define	EPROM_WR_ENABLE		0x10
 #define	EPROM_LOAD		0x20
-
 #define	PHY_DONE		0x80
 #define	PHY_READ		0x40
 #define	PHY_WRITE		0x20
 #define	DEFAULT_GPIO_RESET	0x24
 #define	DEFAULT_GPIO_SET	0x26
-
 #define	PEGASUS_PRESENT		0x00000001
 #define	PEGASUS_TX_BUSY		0x00000004
 #define	PEGASUS_RX_BUSY		0x00000008
@@ -30,28 +19,22 @@
 #define	CTRL_URB_SLEEP		0x00000020
 #define	PEGASUS_UNPLUG		0x00000040
 #define	PEGASUS_RX_URB_FAIL	0x00000080
-
 #define	RX_MULTICAST		2
 #define	RX_PROMISCUOUS		4
-
 #define	REG_TIMEOUT		(HZ)
 #define	PEGASUS_TX_TIMEOUT	(HZ*10)
-
 #define	TX_UNDERRUN		0x80
 #define	EXCESSIVE_COL		0x40
 #define	LATE_COL		0x20
 #define	NO_CARRIER		0x10
 #define	LOSS_CARRIER		0x08
 #define	JABBER_TIMEOUT		0x04
-
 #define	LINK_STATUS		0x01
-
 #define	PEGASUS_REQT_READ	0xc0
 #define	PEGASUS_REQT_WRITE	0x40
 #define	PEGASUS_REQ_GET_REGS	0xf0
 #define	PEGASUS_REQ_SET_REGS	0xf1
 #define	PEGASUS_REQ_SET_REG	PEGASUS_REQ_SET_REGS
-
 enum pegasus_registers {
 	EthCtrl0 = 0,
 	EthCtrl1 = 1,
@@ -59,10 +42,10 @@ enum pegasus_registers {
 	EthID = 0x10,
 	Reg1d = 0x1d,
 	EpromOffset = 0x20,
-	EpromData = 0x21,	/* 0x21 low, 0x22 high byte */
+	EpromData = 0x21,	 
 	EpromCtrl = 0x23,
 	PhyAddr = 0x25,
-	PhyData = 0x26,		/* 0x26 low, 0x27 high byte */
+	PhyData = 0x26,		 
 	PhyCtrl = 0x28,
 	UsbStst = 0x2a,
 	EthTxStat0 = 0x2b,
@@ -74,8 +57,6 @@ enum pegasus_registers {
 	Gpio1 = 0x7f,
 	Reg81 = 0x81,
 };
-
-
 typedef struct pegasus {
 	struct usb_device	*usb;
 	struct usb_interface	*intf;
@@ -98,15 +79,12 @@ typedef struct pegasus {
 	__u8			phy;
 	__u8			gpio_res;
 } pegasus_t;
-
-
 struct usb_eth_dev {
 	char	*name;
 	__u16	vendor;
 	__u16	device;
-	__u32	private; /* LSB is gpio reset value */
+	__u32	private;  
 };
-
 #define	VENDOR_3COM		0x0506
 #define	VENDOR_ABOCOM		0x07b8
 #define	VENDOR_ACCTON		0x083a
@@ -139,10 +117,7 @@ struct usb_eth_dev {
 #define	VENDOR_SMC		0x0707
 #define	VENDOR_SOHOWARE		0x15e8
 #define	VENDOR_SIEMENS		0x067c
-
-
-#else	/* PEGASUS_DEV */
-
+#else	 
 PEGASUS_DEV("3Com USB Ethernet 3C460B", VENDOR_3COM, 0x4601,
 		DEFAULT_GPIO_RESET | PEGASUS_II)
 PEGASUS_DEV("ATEN USB Ethernet UC-110T", VENDOR_ATEN, 0x2007,
@@ -191,10 +166,6 @@ PEGASUS_DEV("AEI USB Fast Ethernet Adapter", VENDOR_AEILAB, 0x1701,
 		DEFAULT_GPIO_RESET | PEGASUS_II)
 PEGASUS_DEV("Allied Telesyn Int. AT-USB100", VENDOR_ALLIEDTEL, 0xb100,
 		DEFAULT_GPIO_RESET | PEGASUS_II)
-/*
- * Distinguish between this Belkin adaptor and the Belkin bluetooth adaptors
- * with the same product IDs by checking the device class too.
- */
 PEGASUS_DEV_CLASS("Belkin F5D5050 USB Ethernet", VENDOR_BELKIN, 0x0121, 0x00,
 		DEFAULT_GPIO_RESET | PEGASUS_II)
 PEGASUS_DEV("Belkin F5U122 10/100 USB Ethernet", VENDOR_BELKIN, 0x0122,
@@ -299,6 +270,4 @@ PEGASUS_DEV("SOHOware NUB110 Ethernet", VENDOR_SOHOWARE, 0x9110,
 		DEFAULT_GPIO_RESET | PEGASUS_II)
 PEGASUS_DEV("SpeedStream USB 10/100 Ethernet", VENDOR_SIEMENS, 0x1001,
 		DEFAULT_GPIO_RESET | PEGASUS_II)
-
-
-#endif	/* PEGASUS_DEV */
+#endif	 

@@ -1,31 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device Tree Source for AM642 SoC family in Dual core configuration
- *
- * Copyright (C) 2020-2021 Texas Instruments Incorporated - https://www.ti.com/
- */
-
 /dts-v1/;
-
 #include "k3-am64.dtsi"
-
 / {
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu-map {
 			cluster0: cluster0 {
 				core0 {
 					cpu = <&cpu0>;
 				};
-
 				core1 {
 					cpu = <&cpu1>;
 				};
 			};
 		};
-
 		cpu0: cpu@0 {
 			compatible = "arm,cortex-a53";
 			reg = <0x000>;
@@ -39,7 +27,6 @@
 			d-cache-sets = <128>;
 			next-level-cache = <&L2_0>;
 		};
-
 		cpu1: cpu@1 {
 			compatible = "arm,cortex-a53";
 			reg = <0x001>;
@@ -54,7 +41,6 @@
 			next-level-cache = <&L2_0>;
 		};
 	};
-
 	L2_0: l2-cache0 {
 		compatible = "cache";
 		cache-level = <2>;

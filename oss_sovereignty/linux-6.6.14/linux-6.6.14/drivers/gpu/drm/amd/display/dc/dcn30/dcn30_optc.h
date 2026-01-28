@@ -1,35 +1,7 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_OPTC_DCN30_H__
 #define __DC_OPTC_DCN30_H__
-
 #include "dcn20/dcn20_optc.h"
-
 #define V_TOTAL_REGS_DCN30_SRI(inst)
-
 #define OPTC_COMMON_REG_LIST_DCN3_BASE(inst) \
 	SRI(OTG_VSTARTUP_PARAM, OTG, inst),\
 	SRI(OTG_VUPDATE_PARAM, OTG, inst),\
@@ -92,8 +64,6 @@
 	SR(GSL_SOURCE_SELECT),\
 	SRI(OTG_TRIGA_MANUAL_TRIG, OTG, inst),\
 	SRI(OTG_DRR_CONTROL, OTG, inst)
-
-
 #define OPTC_COMMON_REG_LIST_DCN3_0(inst) \
 	OPTC_COMMON_REG_LIST_DCN3_BASE(inst),\
 	SRI(OTG_GLOBAL_CONTROL1, OTG, inst),\
@@ -110,9 +80,7 @@
 	SRI(OPTC_WIDTH_CONTROL, ODM, inst),\
 	SRI(OPTC_MEMORY_CONFIG, ODM, inst),\
 	SR(DWB_SOURCE_SELECT)
-
 #define DCN30_VTOTAL_REGS_SF(mask_sh)
-
 #define OPTC_COMMON_MASK_SH_LIST_DCN3_BASE(mask_sh)\
 	SF(OTG0_OTG_VSTARTUP_PARAM, VSTARTUP_START, mask_sh),\
 	SF(OTG0_OTG_VUPDATE_PARAM, VUPDATE_OFFSET, mask_sh),\
@@ -245,7 +213,6 @@
 	SF(GSL_SOURCE_SELECT, GSL2_READY_SOURCE_SEL, mask_sh),\
 	SF(OTG0_OTG_GLOBAL_CONTROL2, MANUAL_FLOW_CONTROL_SEL, mask_sh),\
 	SF(OTG0_OTG_DRR_CONTROL, OTG_V_TOTAL_LAST_USED_BY_DRR, mask_sh)
-
 #define OPTC_COMMON_MASK_SH_LIST_DCN3_0(mask_sh)\
 	OPTC_COMMON_MASK_SH_LIST_DCN3_BASE(mask_sh),\
 	SF(OTG0_OTG_GLOBAL_CONTROL2, GLOBAL_UPDATE_LOCK_EN, mask_sh),\
@@ -282,7 +249,6 @@
 	SF(OTG0_OTG_DOUBLE_BUFFER_CONTROL, OTG_DRR_TIMING_DBUF_UPDATE_PENDING, mask_sh),\
 	SF(OTG0_OTG_DOUBLE_BUFFER_CONTROL, OTG_DRR_TIMING_DBUF_UPDATE_MODE, mask_sh),\
 	SF(OTG0_OTG_DOUBLE_BUFFER_CONTROL, OTG_BLANK_DATA_DOUBLE_BUFFER_EN, mask_sh)
-
 #define OPTC_COMMON_MASK_SH_LIST_DCN30(mask_sh)\
 	OPTC_COMMON_MASK_SH_LIST_DCN3_BASE(mask_sh),\
 	SF(OTG0_OTG_GLOBAL_CONTROL2, GLOBAL_UPDATE_LOCK_EN, mask_sh),\
@@ -320,35 +286,23 @@
 	SF(OTG0_OTG_H_TIMING_CNTL, OTG_H_TIMING_DIV_MODE, mask_sh),\
 	SF(OTG0_OTG_DOUBLE_BUFFER_CONTROL, OTG_DRR_TIMING_DBUF_UPDATE_PENDING, mask_sh),\
 	SF(OTG0_OTG_DOUBLE_BUFFER_CONTROL, OTG_DRR_TIMING_DBUF_UPDATE_MODE, mask_sh)
-
 void dcn30_timing_generator_init(struct optc *optc1);
-
 void optc3_set_out_mux(struct timing_generator *optc, enum otg_out_mux_dest dest);
-
 void optc3_lock(struct timing_generator *optc);
-
 void optc3_lock_doublebuffer_enable(struct timing_generator *optc);
-
 void optc3_lock_doublebuffer_disable(struct timing_generator *optc);
-
 void optc3_set_drr_trigger_window(struct timing_generator *optc,
 		uint32_t window_start, uint32_t window_end);
-
 void optc3_triplebuffer_lock(struct timing_generator *optc);
-
 void optc3_program_blank_color(struct timing_generator *optc,
 		const struct tg_color *blank_color);
-
 void optc3_set_vtotal_change_limit(struct timing_generator *optc,
 		uint32_t limit);
-
 void optc3_set_dsc_config(struct timing_generator *optc,
 		enum optc_dsc_mode dsc_mode,
 		uint32_t dsc_bytes_per_pixel,
 		uint32_t dsc_slice_width);
-
 void optc3_set_timing_db_mode(struct timing_generator *optc, bool enable);
-
 void optc3_set_odm_bypass(struct timing_generator *optc,
 		const struct dc_crtc_timing *dc_crtc_timing);
 void optc3_set_odm_combine(struct timing_generator *optc, int *opp_id, int opp_cnt,
@@ -356,4 +310,4 @@ void optc3_set_odm_combine(struct timing_generator *optc, int *opp_id, int opp_c
 void optc3_wait_drr_doublebuffer_pending_clear(struct timing_generator *optc);
 void optc3_tg_init(struct timing_generator *optc);
 void optc3_set_vtotal_min_max(struct timing_generator *optc, int vtotal_min, int vtotal_max);
-#endif /* __DC_OPTC_DCN30_H__ */
+#endif  

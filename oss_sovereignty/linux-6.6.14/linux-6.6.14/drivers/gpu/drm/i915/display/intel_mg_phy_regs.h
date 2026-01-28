@@ -1,16 +1,8 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
-
 #ifndef __INTEL_MG_PHY_REGS__
 #define __INTEL_MG_PHY_REGS__
-
 #include "intel_display_reg_defs.h"
-
 #define MG_PHY_PORT_LN(ln, tc_port, ln0p1, ln0p2, ln1p1) \
 	_MMIO(_PORT(tc_port, ln0p1, ln0p2) + (ln) * ((ln1p1) - (ln0p1)))
-
 #define MG_TX_LINK_PARAMS_TX1LN0_PORT1		0x16812C
 #define MG_TX_LINK_PARAMS_TX1LN1_PORT1		0x16852C
 #define MG_TX_LINK_PARAMS_TX1LN0_PORT2		0x16912C
@@ -19,7 +11,6 @@
 	MG_PHY_PORT_LN(ln, tc_port, MG_TX_LINK_PARAMS_TX1LN0_PORT1, \
 		       MG_TX_LINK_PARAMS_TX1LN0_PORT2, \
 		       MG_TX_LINK_PARAMS_TX1LN1_PORT1)
-
 #define MG_TX_LINK_PARAMS_TX2LN0_PORT1		0x1680AC
 #define MG_TX_LINK_PARAMS_TX2LN1_PORT1		0x1684AC
 #define MG_TX_LINK_PARAMS_TX2LN0_PORT2		0x1690AC
@@ -29,7 +20,6 @@
 		       MG_TX_LINK_PARAMS_TX2LN0_PORT2, \
 		       MG_TX_LINK_PARAMS_TX2LN1_PORT1)
 #define   CRI_USE_FS32			(1 << 5)
-
 #define MG_TX_PISO_READLOAD_TX1LN0_PORT1		0x16814C
 #define MG_TX_PISO_READLOAD_TX1LN1_PORT1		0x16854C
 #define MG_TX_PISO_READLOAD_TX1LN0_PORT2		0x16914C
@@ -38,7 +28,6 @@
 	MG_PHY_PORT_LN(ln, tc_port, MG_TX_PISO_READLOAD_TX1LN0_PORT1, \
 		       MG_TX_PISO_READLOAD_TX1LN0_PORT2, \
 		       MG_TX_PISO_READLOAD_TX1LN1_PORT1)
-
 #define MG_TX_PISO_READLOAD_TX2LN0_PORT1		0x1680CC
 #define MG_TX_PISO_READLOAD_TX2LN1_PORT1		0x1684CC
 #define MG_TX_PISO_READLOAD_TX2LN0_PORT2		0x1690CC
@@ -48,7 +37,6 @@
 		       MG_TX_PISO_READLOAD_TX2LN0_PORT2, \
 		       MG_TX_PISO_READLOAD_TX2LN1_PORT1)
 #define   CRI_CALCINIT					(1 << 1)
-
 #define MG_TX_SWINGCTRL_TX1LN0_PORT1		0x168148
 #define MG_TX_SWINGCTRL_TX1LN1_PORT1		0x168548
 #define MG_TX_SWINGCTRL_TX1LN0_PORT2		0x169148
@@ -57,7 +45,6 @@
 	MG_PHY_PORT_LN(ln, tc_port, MG_TX_SWINGCTRL_TX1LN0_PORT1, \
 		       MG_TX_SWINGCTRL_TX1LN0_PORT2, \
 		       MG_TX_SWINGCTRL_TX1LN1_PORT1)
-
 #define MG_TX_SWINGCTRL_TX2LN0_PORT1		0x1680C8
 #define MG_TX_SWINGCTRL_TX2LN1_PORT1		0x1684C8
 #define MG_TX_SWINGCTRL_TX2LN0_PORT2		0x1690C8
@@ -68,7 +55,6 @@
 		       MG_TX_SWINGCTRL_TX2LN1_PORT1)
 #define   CRI_TXDEEMPH_OVERRIDE_17_12(x)		((x) << 0)
 #define   CRI_TXDEEMPH_OVERRIDE_17_12_MASK		(0x3F << 0)
-
 #define MG_TX_DRVCTRL_TX1LN0_TXPORT1			0x168144
 #define MG_TX_DRVCTRL_TX1LN1_TXPORT1			0x168544
 #define MG_TX_DRVCTRL_TX1LN0_TXPORT2			0x169144
@@ -81,7 +67,6 @@
 	MG_PHY_PORT_LN(ln, tc_port, MG_TX_DRVCTRL_TX1LN0_TXPORT1, \
 		       MG_TX_DRVCTRL_TX1LN0_TXPORT2, \
 		       MG_TX_DRVCTRL_TX1LN1_TXPORT1)
-
 #define MG_TX_DRVCTRL_TX2LN0_PORT1			0x1680C4
 #define MG_TX_DRVCTRL_TX2LN1_PORT1			0x1684C4
 #define MG_TX_DRVCTRL_TX2LN0_PORT2			0x1690C4
@@ -97,7 +82,6 @@
 #define   CRI_TXDEEMPH_OVERRIDE_5_0_MASK		(0x3F << 16)
 #define   CRI_LOADGEN_SEL(x)				((x) << 12)
 #define   CRI_LOADGEN_SEL_MASK				(0x3 << 12)
-
 #define MG_CLKHUB_LN0_PORT1			0x16839C
 #define MG_CLKHUB_LN1_PORT1			0x16879C
 #define MG_CLKHUB_LN0_PORT2			0x16939C
@@ -107,7 +91,6 @@
 		       MG_CLKHUB_LN0_PORT2, \
 		       MG_CLKHUB_LN1_PORT1)
 #define   CFG_LOW_RATE_LKREN_EN				(1 << 11)
-
 #define MG_TX_DCC_TX1LN0_PORT1			0x168110
 #define MG_TX_DCC_TX1LN1_PORT1			0x168510
 #define MG_TX_DCC_TX1LN0_PORT2			0x169110
@@ -127,7 +110,6 @@
 #define   CFG_AMI_CK_DIV_OVERRIDE_VAL(x)	((x) << 25)
 #define   CFG_AMI_CK_DIV_OVERRIDE_VAL_MASK	(0x3 << 25)
 #define   CFG_AMI_CK_DIV_OVERRIDE_EN		(1 << 24)
-
 #define MG_DP_MODE_LN0_ACU_PORT1			0x1683A0
 #define MG_DP_MODE_LN1_ACU_PORT1			0x1687A0
 #define MG_DP_MODE_LN0_ACU_PORT2			0x1693A0
@@ -138,7 +120,6 @@
 		       MG_DP_MODE_LN1_ACU_PORT1)
 #define   MG_DP_MODE_CFG_DP_X2_MODE			(1 << 7)
 #define   MG_DP_MODE_CFG_DP_X1_MODE			(1 << 6)
-
 #define FIA1_BASE			0x163000
 #define FIA2_BASE			0x16E000
 #define FIA3_BASE			0x16F000
@@ -146,8 +127,6 @@
 							   FIA1_BASE, FIA1_BASE,\
 							   FIA2_BASE, FIA3_BASE)
 #define _MMIO_FIA(fia, off)		_MMIO(_FIA(fia) + (off))
-
-/* ICL PHY DFLEX registers */
 #define PORT_TX_DFLEXDPMLE1(fia)		_MMIO_FIA((fia),  0x008C0)
 #define   DFLEXDPMLE1_DPMLETC_MASK(idx)		(0xf << (4 * (idx)))
 #define   DFLEXDPMLE1_DPMLETC_ML0(idx)		(1 << (4 * (idx)))
@@ -155,7 +134,6 @@
 #define   DFLEXDPMLE1_DPMLETC_ML3(idx)		(8 << (4 * (idx)))
 #define   DFLEXDPMLE1_DPMLETC_ML3_2(idx)	(12 << (4 * (idx)))
 #define   DFLEXDPMLE1_DPMLETC_ML3_0(idx)	(15 << (4 * (idx)))
-
 #define _MG_REFCLKIN_CTL_PORT1				0x16892C
 #define _MG_REFCLKIN_CTL_PORT2				0x16992C
 #define   MG_REFCLKIN_CTL_OD_2_MUX(x)			((x) << 8)
@@ -163,7 +141,6 @@
 #define MG_REFCLKIN_CTL(tc_port) _MMIO_PORT((tc_port), \
 					    _MG_REFCLKIN_CTL_PORT1, \
 					    _MG_REFCLKIN_CTL_PORT2)
-
 #define _MG_CLKTOP2_CORECLKCTL1_PORT1			0x1688D8
 #define _MG_CLKTOP2_CORECLKCTL1_PORT2			0x1698D8
 #define   MG_CLKTOP2_CORECLKCTL1_B_DIVRATIO(x)		((x) << 16)
@@ -173,7 +150,6 @@
 #define MG_CLKTOP2_CORECLKCTL1(tc_port) _MMIO_PORT((tc_port), \
 						   _MG_CLKTOP2_CORECLKCTL1_PORT1, \
 						   _MG_CLKTOP2_CORECLKCTL1_PORT2)
-
 #define _MG_CLKTOP2_HSCLKCTL_PORT1			0x1688D4
 #define _MG_CLKTOP2_HSCLKCTL_PORT2			0x1698D4
 #define   MG_CLKTOP2_HSCLKCTL_CORE_INPUTSEL(x)		((x) << 16)
@@ -191,7 +167,6 @@
 #define MG_CLKTOP2_HSCLKCTL(tc_port) _MMIO_PORT((tc_port), \
 						_MG_CLKTOP2_HSCLKCTL_PORT1, \
 						_MG_CLKTOP2_HSCLKCTL_PORT2)
-
 #define _MG_PLL_DIV0_PORT1				0x168A00
 #define _MG_PLL_DIV0_PORT2				0x169A00
 #define   MG_PLL_DIV0_FRACNEN_H				(1 << 30)
@@ -202,7 +177,6 @@
 #define   MG_PLL_DIV0_FBDIV_INT(x)			((x) << 0)
 #define MG_PLL_DIV0(tc_port) _MMIO_PORT((tc_port), _MG_PLL_DIV0_PORT1, \
 					_MG_PLL_DIV0_PORT2)
-
 #define _MG_PLL_DIV1_PORT1				0x168A04
 #define _MG_PLL_DIV1_PORT2				0x169A04
 #define   MG_PLL_DIV1_IREF_NDIVRATIO(x)			((x) << 16)
@@ -215,7 +189,6 @@
 #define   MG_PLL_DIV1_FBPREDIV(x)			((x) << 0)
 #define MG_PLL_DIV1(tc_port) _MMIO_PORT((tc_port), _MG_PLL_DIV1_PORT1, \
 					_MG_PLL_DIV1_PORT2)
-
 #define _MG_PLL_LF_PORT1				0x168A08
 #define _MG_PLL_LF_PORT2				0x169A08
 #define   MG_PLL_LF_TDCTARGETCNT(x)			((x) << 24)
@@ -226,7 +199,6 @@
 #define   MG_PLL_LF_PROP_COEFF(x)			((x) << 0)
 #define MG_PLL_LF(tc_port) _MMIO_PORT((tc_port), _MG_PLL_LF_PORT1, \
 				      _MG_PLL_LF_PORT2)
-
 #define _MG_PLL_FRAC_LOCK_PORT1				0x168A0C
 #define _MG_PLL_FRAC_LOCK_PORT2				0x169A0C
 #define   MG_PLL_FRAC_LOCK_TRUELOCK_CRIT_32		(1 << 18)
@@ -238,7 +210,6 @@
 #define MG_PLL_FRAC_LOCK(tc_port) _MMIO_PORT((tc_port), \
 					     _MG_PLL_FRAC_LOCK_PORT1, \
 					     _MG_PLL_FRAC_LOCK_PORT2)
-
 #define _MG_PLL_SSC_PORT1				0x168A10
 #define _MG_PLL_SSC_PORT2				0x169A10
 #define   MG_PLL_SSC_EN					(1 << 28)
@@ -249,7 +220,6 @@
 #define   MG_PLL_SSC_STEPSIZE(x)			((x) << 0)
 #define MG_PLL_SSC(tc_port) _MMIO_PORT((tc_port), _MG_PLL_SSC_PORT1, \
 				       _MG_PLL_SSC_PORT2)
-
 #define _MG_PLL_BIAS_PORT1				0x168A14
 #define _MG_PLL_BIAS_PORT2				0x169A14
 #define   MG_PLL_BIAS_BIAS_GB_SEL(x)			((x) << 30)
@@ -267,7 +237,6 @@
 #define   MG_PLL_BIAS_IREFTRIM_MASK			(0x1f << 0)
 #define MG_PLL_BIAS(tc_port) _MMIO_PORT((tc_port), _MG_PLL_BIAS_PORT1, \
 					_MG_PLL_BIAS_PORT2)
-
 #define _MG_PLL_TDC_COLDST_BIAS_PORT1			0x168A18
 #define _MG_PLL_TDC_COLDST_BIAS_PORT2			0x169A18
 #define   MG_PLL_TDC_COLDST_IREFINT_EN			(1 << 27)
@@ -278,5 +247,4 @@
 #define MG_PLL_TDC_COLDST_BIAS(tc_port) _MMIO_PORT((tc_port), \
 						   _MG_PLL_TDC_COLDST_BIAS_PORT1, \
 						   _MG_PLL_TDC_COLDST_BIAS_PORT2)
-
-#endif /* __INTEL_MG_PHY_REGS__ */
+#endif  

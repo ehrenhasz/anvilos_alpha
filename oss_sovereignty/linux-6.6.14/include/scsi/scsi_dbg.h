@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _SCSI_SCSI_DBG_H
 #define _SCSI_SCSI_DBG_H
-
 struct scsi_cmnd;
 struct scsi_device;
 struct scsi_sense_hdr;
-
 extern void scsi_print_command(struct scsi_cmnd *);
 extern size_t __scsi_format_command(char *, size_t,
 				   const unsigned char *, size_t);
@@ -16,7 +13,6 @@ extern void __scsi_print_sense(const struct scsi_device *, const char *name,
 			       const unsigned char *sense_buffer,
 			       int sense_len);
 extern void scsi_print_result(const struct scsi_cmnd *, const char *, int);
-
 #ifdef CONFIG_SCSI_CONSTANTS
 extern bool scsi_opcode_sa_name(int, int, const char **, const char **);
 extern const char *scsi_sense_key_string(unsigned char);
@@ -50,38 +46,31 @@ scsi_opcode_sa_name(int cmd, int sa,
 		return false;
 	}
 }
-
 static inline const char *
 scsi_sense_key_string(unsigned char key)
 {
 	return NULL;
 }
-
 static inline const char *
 scsi_extd_sense_format(unsigned char asc, unsigned char ascq, const char **fmt)
 {
 	*fmt = NULL;
 	return NULL;
 }
-
 static inline const char *
 scsi_mlreturn_string(int result)
 {
 	return NULL;
 }
-
 static inline const char *
 scsi_hostbyte_string(int result)
 {
 	return NULL;
 }
-
 static inline const char *
 scsi_driverbyte_string(int result)
 {
 	return NULL;
 }
-
 #endif
-
-#endif /* _SCSI_SCSI_DBG_H */
+#endif  

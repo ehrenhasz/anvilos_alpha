@@ -1,23 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * arch/arm/mach-dove/common.h
- *
- * Core functions for Marvell Dove 88AP510 System On Chip
- */
-
 #ifndef __ARCH_DOVE_COMMON_H
 #define __ARCH_DOVE_COMMON_H
-
 #include <linux/reboot.h>
-
 struct mv643xx_eth_platform_data;
 struct mv_sata_platform_data;
-
 extern void dove_timer_init(void);
-
-/*
- * Basic Dove init functions used early by machine-setup.
- */
 void dove_map_io(void);
 void dove_init(void);
 void dove_init_early(void);
@@ -42,5 +28,4 @@ void dove_i2c_init(void);
 void dove_sdio0_init(void);
 void dove_sdio1_init(void);
 void dove_restart(enum reboot_mode, const char *);
-
 #endif

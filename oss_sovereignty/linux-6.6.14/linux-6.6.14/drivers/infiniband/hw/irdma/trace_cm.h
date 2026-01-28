@@ -1,22 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2019 - 2021 Intel Corporation */
 #if !defined(__TRACE_CM_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __TRACE_CM_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #include "main.h"
-
 const char *print_ip_addr(struct trace_seq *p, u32 *addr, u16 port, bool ivp4);
 const char *parse_iw_event_type(enum iw_cm_event_type iw_type);
 const char *parse_cm_event_type(enum irdma_cm_event_type cm_type);
 const char *parse_cm_state(enum irdma_cm_node_state);
 #define __print_ip_addr(addr, port, ipv4) print_ip_addr(p, addr, port, ipv4)
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM irdma_cm
-
 TRACE_EVENT(irdma_create_listen,
 	    TP_PROTO(struct irdma_device *iwdev, struct irdma_cm_info *cm_info),
 	    TP_ARGS(iwdev, cm_info),
@@ -37,7 +30,6 @@ TRACE_EVENT(irdma_create_listen,
 				      __entry->lport, __entry->ipv4)
 		    )
 );
-
 TRACE_EVENT(irdma_dec_refcnt_listen,
 	    TP_PROTO(struct irdma_cm_listener *listener, void *caller),
 	    TP_ARGS(listener, caller),
@@ -61,7 +53,6 @@ TRACE_EVENT(irdma_dec_refcnt_listen,
 				      __entry->lport, __entry->ipv4)
 		    )
 );
-
 DECLARE_EVENT_CLASS(listener_template,
 		    TP_PROTO(struct irdma_cm_listener *listener),
 		    TP_ARGS(listener),
@@ -88,15 +79,12 @@ DECLARE_EVENT_CLASS(listener_template,
 					      __entry->lport, __entry->ipv4)
 			    )
 );
-
 DEFINE_EVENT(listener_template, irdma_find_listener,
 	     TP_PROTO(struct irdma_cm_listener *listener),
 	     TP_ARGS(listener));
-
 DEFINE_EVENT(listener_template, irdma_del_multiple_qhash,
 	     TP_PROTO(struct irdma_cm_listener *listener),
 	     TP_ARGS(listener));
-
 TRACE_EVENT(irdma_negotiate_mpa_v2,
 	    TP_PROTO(struct irdma_cm_node *cm_node),
 	    TP_ARGS(cm_node),
@@ -114,7 +102,6 @@ TRACE_EVENT(irdma_negotiate_mpa_v2,
 		      __entry->ird_size
 		    )
 );
-
 DECLARE_EVENT_CLASS(tos_template,
 		    TP_PROTO(struct irdma_device *iwdev, u8 tos, u8 user_pri),
 		    TP_ARGS(iwdev, tos, user_pri),
@@ -132,15 +119,12 @@ DECLARE_EVENT_CLASS(tos_template,
 			      __entry->user_pri
 			    )
 );
-
 DEFINE_EVENT(tos_template, irdma_listener_tos,
 	     TP_PROTO(struct irdma_device *iwdev, u8 tos, u8 user_pri),
 	     TP_ARGS(iwdev, tos, user_pri));
-
 DEFINE_EVENT(tos_template, irdma_dcb_tos,
 	     TP_PROTO(struct irdma_device *iwdev, u8 tos, u8 user_pri),
 	     TP_ARGS(iwdev, tos, user_pri));
-
 DECLARE_EVENT_CLASS(qhash_template,
 		    TP_PROTO(struct irdma_device *iwdev,
 			     struct irdma_cm_listener *listener,
@@ -170,19 +154,16 @@ DECLARE_EVENT_CLASS(qhash_template,
 					      __entry->lport, __entry->ipv4)
 		    )
 );
-
 DEFINE_EVENT(qhash_template, irdma_add_mqh_6,
 	     TP_PROTO(struct irdma_device *iwdev,
 		      struct irdma_cm_listener *listener,
 		      const char *dev_addr),
 	     TP_ARGS(iwdev, listener, dev_addr));
-
 DEFINE_EVENT(qhash_template, irdma_add_mqh_4,
 	     TP_PROTO(struct irdma_device *iwdev,
 		      struct irdma_cm_listener *listener,
 		      const char *dev_addr),
 	     TP_ARGS(iwdev, listener, dev_addr));
-
 TRACE_EVENT(irdma_addr_resolve,
 	    TP_PROTO(struct irdma_device *iwdev, char *dev_addr),
 	    TP_ARGS(iwdev, dev_addr),
@@ -196,7 +177,6 @@ TRACE_EVENT(irdma_addr_resolve,
 		      __get_dynamic_array(mac)
 		    )
 );
-
 TRACE_EVENT(irdma_send_cm_event,
 	    TP_PROTO(struct irdma_cm_node *cm_node, struct iw_cm_id *cm_id,
 		     enum iw_cm_event_type type, int status, void *caller),
@@ -252,7 +232,6 @@ TRACE_EVENT(irdma_send_cm_event,
 				      __entry->rport, __entry->ipv4)
 		    )
 );
-
 TRACE_EVENT(irdma_send_cm_event_no_node,
 	    TP_PROTO(struct iw_cm_id *cm_id, enum iw_cm_event_type type,
 		     int status, void *caller),
@@ -274,7 +253,6 @@ TRACE_EVENT(irdma_send_cm_event_no_node,
 		      __entry->status
 		    )
 );
-
 DECLARE_EVENT_CLASS(cm_node_template,
 		    TP_PROTO(struct irdma_cm_node *cm_node,
 			     enum irdma_cm_event_type type, void *caller),
@@ -324,47 +302,38 @@ DECLARE_EVENT_CLASS(cm_node_template,
 					      __entry->rport, __entry->ipv4)
 		    )
 );
-
 DEFINE_EVENT(cm_node_template, irdma_create_event,
 	     TP_PROTO(struct irdma_cm_node *cm_node,
 		      enum irdma_cm_event_type type, void *caller),
 	     TP_ARGS(cm_node, type, caller));
-
 DEFINE_EVENT(cm_node_template, irdma_accept,
 	     TP_PROTO(struct irdma_cm_node *cm_node,
 		      enum irdma_cm_event_type type, void *caller),
 	     TP_ARGS(cm_node, type, caller));
-
 DEFINE_EVENT(cm_node_template, irdma_connect,
 	     TP_PROTO(struct irdma_cm_node *cm_node,
 		      enum irdma_cm_event_type type, void *caller),
 	     TP_ARGS(cm_node, type, caller));
-
 DEFINE_EVENT(cm_node_template, irdma_reject,
 	     TP_PROTO(struct irdma_cm_node *cm_node,
 		      enum irdma_cm_event_type type, void *caller),
 	     TP_ARGS(cm_node, type, caller));
-
 DEFINE_EVENT(cm_node_template, irdma_find_node,
 	     TP_PROTO(struct irdma_cm_node *cm_node,
 		      enum irdma_cm_event_type type, void *caller),
 	     TP_ARGS(cm_node, type, caller));
-
 DEFINE_EVENT(cm_node_template, irdma_send_reset,
 	     TP_PROTO(struct irdma_cm_node *cm_node,
 		      enum irdma_cm_event_type type, void *caller),
 	     TP_ARGS(cm_node, type, caller));
-
 DEFINE_EVENT(cm_node_template, irdma_rem_ref_cm_node,
 	     TP_PROTO(struct irdma_cm_node *cm_node,
 		      enum irdma_cm_event_type type, void *caller),
 	     TP_ARGS(cm_node, type, caller));
-
 DEFINE_EVENT(cm_node_template, irdma_cm_event_handler,
 	     TP_PROTO(struct irdma_cm_node *cm_node,
 		      enum irdma_cm_event_type type, void *caller),
 	     TP_ARGS(cm_node, type, caller));
-
 TRACE_EVENT(open_err_template,
 	    TP_PROTO(struct irdma_cm_node *cm_node, bool reset, void *caller),
 	    TP_ARGS(cm_node, reset, caller),
@@ -388,15 +357,12 @@ TRACE_EVENT(open_err_template,
 		      parse_cm_state(__entry->state)
 		    )
 );
-
 DEFINE_EVENT(open_err_template, irdma_active_open_err,
 	     TP_PROTO(struct irdma_cm_node *cm_node, bool reset, void *caller),
 	     TP_ARGS(cm_node, reset, caller));
-
 DEFINE_EVENT(open_err_template, irdma_passive_open_err,
 	     TP_PROTO(struct irdma_cm_node *cm_node, bool reset, void *caller),
 	     TP_ARGS(cm_node, reset, caller));
-
 DECLARE_EVENT_CLASS(cm_node_ah_template,
 		    TP_PROTO(struct irdma_cm_node *cm_node),
 		    TP_ARGS(cm_node),
@@ -442,17 +408,13 @@ DECLARE_EVENT_CLASS(cm_node_ah_template,
 					      __entry->rport, __entry->ipv4)
 		    )
 );
-
 DEFINE_EVENT(cm_node_ah_template, irdma_cm_free_ah,
 	     TP_PROTO(struct irdma_cm_node *cm_node),
 	     TP_ARGS(cm_node));
-
 DEFINE_EVENT(cm_node_ah_template, irdma_create_ah,
 	     TP_PROTO(struct irdma_cm_node *cm_node),
 	     TP_ARGS(cm_node));
-
-#endif  /* __TRACE_CM_H */
-
+#endif   
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH .

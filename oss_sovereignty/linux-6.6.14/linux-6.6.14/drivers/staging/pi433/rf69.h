@@ -1,22 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * hardware abstraction/register access for HopeRf rf69 radio module
- *
- * Copyright (C) 2016 Wolf-Entwicklungen
- *	Marcus Wolf <linux@wolf-entwicklungen.de>
- */
 #ifndef RF69_H
 #define RF69_H
-
 #include "rf69_enum.h"
 #include "rf69_registers.h"
-
-/* NOTE: Modifying FREQUENCY value impacts CE certification */
-#define F_OSC		32000000	/* Hz */
-#define FREQUENCY	433920000	/* Hz */
-#define FIFO_SIZE	66		/* bytes */
-#define FIFO_THRESHOLD	15		/* bytes */
-
+#define F_OSC		32000000	 
+#define FREQUENCY	433920000	 
+#define FIFO_SIZE	66		 
+#define FIFO_THRESHOLD	15		 
 u8 rf69_read_reg(struct spi_device *spi, u8 addr);
 int rf69_get_version(struct spi_device *spi);
 int rf69_set_mode(struct spi_device *spi, enum mode mode);
@@ -63,8 +52,6 @@ int rf69_set_tx_start_condition(struct spi_device *spi,
 				enum tx_start_condition tx_start_condition);
 int rf69_set_fifo_threshold(struct spi_device *spi, u8 threshold);
 int rf69_set_dagc(struct spi_device *spi, enum dagc dagc);
-
 int rf69_read_fifo(struct spi_device *spi, u8 *buffer, unsigned int size);
 int rf69_write_fifo(struct spi_device *spi, u8 *buffer, unsigned int size);
-
 #endif

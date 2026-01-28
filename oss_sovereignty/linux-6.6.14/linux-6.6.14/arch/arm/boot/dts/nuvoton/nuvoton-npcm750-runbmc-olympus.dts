@@ -1,18 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Nuvoton Technology <kwliu@nuvoton.com>
-// Copyright (c) 2019 Quanta Computer Inc. <Samuel.Jiang@quantatw.com>
-
 /dts-v1/;
 #include "nuvoton-npcm750.dtsi"
 #include "nuvoton-npcm750-runbmc-olympus-pincfg.dtsi"
-
 #include <dt-bindings/i2c/i2c.h>
 #include <dt-bindings/gpio/gpio.h>
-
 / {
 	model = "Nuvoton npcm750 RunBMC Olympus";
 	compatible = "nuvoton,npcm750";
-
 	aliases {
 		ethernet1 = &gmac0;
 		serial0 = &serial0;
@@ -38,75 +31,64 @@
 		fiu0 = &fiu0;
 		fiu1 = &fiu3;
 	};
-
 	chosen {
 		stdout-path = &serial3;
 	};
-
 	memory {
 		reg = <0 0x40000000>;
 	};
-
 	iio-hwmon {
 		compatible = "iio-hwmon";
 		io-channels = <&adc 0>, <&adc 1>, <&adc 2>, <&adc 3>,
 			<&adc 4>, <&adc 5>, <&adc 6>, <&adc 7>;
 	};
-
 	leds {
 		compatible = "gpio-leds";
 		heartbeat {
 		label = "heartbeat";
 			gpios = <&gpio3 14 1>;
 		};
-
 		identify {
 			label = "identify";
 			gpios = <&gpio3 15 1>;
 		};
 	};
-
 	jtag {
 		compatible = "nuvoton,npcm750-jtag";
 		enable_pspi_jtag = <1>;
 		pspi-index = <2>;
 		tck {
 			label = "tck";
-			gpios = <&gpio0 19 0>; /* gpio19 */
+			gpios = <&gpio0 19 0>;  
 			regbase = <0xf0010000 0x1000>;
 		};
-
 		tdi {
 			label = "tdi";
-			gpios = <&gpio0 18 0>; /* gpio18 */
+			gpios = <&gpio0 18 0>;  
 			regbase = <0xf0010000 0x1000>;
 		};
-
 		tdo {
 			label = "tdo";
-			gpios = <&gpio0 17 0>; /* gpio17 */
+			gpios = <&gpio0 17 0>;  
 			regbase = <0xf0010000 0x1000>;
 		};
 		tms {
 			label = "tms";
-			gpios = <&gpio0 16 0>; /* gpio16 */
+			gpios = <&gpio0 16 0>;  
 			regbase = <0xf0010000 0x1000>;
 		};
 	};
 };
-
 &fiu0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0cs1_pins>;
 	status = "okay";
-
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0>;
 		spi-rx-bus-width = <2>;
-
 		partitions {
 			compatible = "fixed-partitions";
 			#address-cells = <1>;
@@ -138,14 +120,12 @@
 			};
 		};
 	};
-
 	flash@1 {
 		compatible = "jedec,spi-nor";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <1>;
 		npcm,fiu-rx-bus-width = <2>;
-
 		partitions {
 			compatible = "fixed-partitions";
 			#address-cells = <1>;
@@ -161,18 +141,15 @@
 		};
 	};
 };
-
 &fiu3 {
 	pinctrl-0 = <&spi3_pins>;
 	status = "okay";
-
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0>;
 		spi-rx-bus-width = <2>;
-
 		partitions {
 			compatible = "fixed-partitions";
 			#address-cells = <1>;
@@ -188,89 +165,74 @@
 		};
 	};
 };
-
 &gcr {
 	mux-controller {
 		compatible = "mmio-mux";
 		#mux-control-cells = <1>;
-
 		mux-reg-masks = <0x38 0x07>;
 		idle-states = <6>;
 	};
 };
-
 &gmac0 {
 	phy-mode = "rgmii-id";
 	snps,eee-force-disable;
 	status = "okay";
 };
-
 &i2c1 {
 	status = "okay";
-
 	i2c-mux@70 {
 		compatible = "nxp,pca9548";
 		#address-cells = <1>;
 		#size-cells = <0>;
 		reg = <0x70>;
 		i2c-mux-idle-disconnect;
-
 		i2c_slot1a: i2c-bus@0 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <0>;
 		};
-
 		i2c_slot1b: i2c-bus@1 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <1>;
 		};
-
 		i2c_slot2a: i2c-bus@2 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <2>;
 		};
-
 		i2c_slot2b: i2c-bus@3 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <3>;
 		};
-
 		i2c_slot3: i2c-bus@4 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <4>;
 		};
-
 		i2c_slot4: i2c-bus@5 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <5>;
 		};
-
 		i2c_slot5: i2c-bus@6 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <6>;
 		};
 	};
-
 	i2c-mux@71 {
 		compatible = "nxp,pca9546";
 		reg = <0x71>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 		i2c-mux-idle-disconnect;
-
 		i2c_m2_s1: i2c-bus@0 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <0>;
 		};
-
 		i2c_m2_s2: i2c-bus@1 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -281,7 +243,6 @@
 			#size-cells = <0>;
 			reg = <2>;
 		};
-
 		i2c_m2_s4: i2c-bus@3 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -289,46 +250,36 @@
 		};
 	};
 };
-
 &i2c2 {
 	status = "okay";
-
 	tmp421@4c {
 		compatible = "ti,tmp421";
 		reg = <0x4c>;
 	};
-
 	power-supply@58 {
 		compatible = "delta,dps800";
 		reg = <0x58>;
 	};
 };
-
 &i2c3 {
 	status = "okay";
 };
-
 &i2c4 {
 	status = "okay";
-
 	eeprom@54 {
 		compatible = "atmel,24c64";
 		reg = <0x54>;
 	};
 };
-
 &i2c5 {
 	status = "okay";
-
 	i2c-slave-mqueue@10 {
 		compatible = "i2c-slave-mqueue";
 		reg = <(I2C_OWN_SLAVE_ADDRESS | 0x10)>;
 	};
 };
-
 &i2c6 {
 	status = "okay";
-
 	ina219@40 {
 		compatible = "ti,ina219";
 		reg = <0x40>;
@@ -382,45 +333,35 @@
 		reg = <0x77>;
 	};
 };
-
 &i2c7 {
 	status = "okay";
-
 	tmp421@4c {
 		compatible = "ti,tmp421";
 		reg = <0x4c>;
 	};
 };
-
 &i2c8 {
 	status = "okay";
-
 	adm1278@11 {
 		compatible = "adm1278";
 		reg = <0x11>;
 		Rsense = <500>;
 	};
 };
-
 &i2c9 {
 	status = "okay";
 };
-
 &i2c10 {
 	status = "okay";
-
 	gpio: pca9555@27 {
 		compatible = "nxp,pca9555";
 		reg = <0x27>;
-
 		gpio-controller;
 		#gpio-cells = <2>;
 	};
 };
-
 &i2c11 {
 	status = "okay";
-
 	pca9539_g1a: pca9539-g1a@74 {
 		compatible = "nxp,pca9539";
 		reg = <0x74>;
@@ -518,7 +459,6 @@
 			line-name = "FM_CPU_CATERR_LVT3_N";
 		};
 	};
-
 	pca9539_g1b: pca9539-g1b@75 {
 		compatible = "nxp,pca9539";
 		reg = <0x75>;
@@ -616,10 +556,8 @@
 		};
 	};
 };
-
 &i2c12 {
 	status = "okay";
-
 	pca9539_g2a: pca9539-g2a@74 {
 		compatible = "nxp,pca9539";
 		reg = <0x74>;
@@ -717,7 +655,6 @@
 			line-name = "FM_BIOS_POST_CMPLT_N";
 		};
 	};
-
 	pca9539_g2b: pca9539-g2b@75 {
 		compatible = "nxp,pca9539";
 		reg = <0x75>;
@@ -815,10 +752,8 @@
 		};
 	};
 };
-
 &i2c13 {
 	status = "okay";
-
 	tmp75@4a {
 		compatible = "ti,tmp75";
 		reg = <0x4a>;
@@ -831,7 +766,6 @@
 		status = "okay";
 	};
 };
-
 &pwm_fan {
 	pinctrl-names = "default";
 	pinctrl-0 = <   &pwm0_pins &pwm1_pins
@@ -842,7 +776,6 @@
 			&fanin8_pins &fanin9_pins
 			&fanin10_pins &fanin11_pins>;
 	status = "okay";
-
 	fan@0 {
 		reg = <0x00>;
 		fan-tach-ch = /bits/ 8 <0x00 0x01>;
@@ -884,65 +817,50 @@
 		cooling-levels = /bits/ 8 <127 255>;
 	};
 };
-
 &ehci1 {
 	status = "okay";
 };
-
 &watchdog1 {
 	status = "okay";
 };
-
 &rng {
 	status = "okay";
 };
-
 &serial0 {
 	status = "okay";
 };
-
 &serial1 {
 	status = "okay";
 };
-
 &serial2 {
 	status = "okay";
 };
-
 &serial3 {
 	status = "okay";
 };
-
 &adc {
 	#io-channel-cells = <1>;
 	status = "okay";
 };
-
 &kcs1 {
 	status = "okay";
 };
-
 &kcs2 {
 	status = "okay";
 };
-
 &kcs3 {
 	status = "okay";
 };
-
 &spi0 {
 	cs-gpios = <&gpio6 11 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &spi1 {
 	status = "okay";
 };
-
 &pinctrl {
 	pinctrl-names = "default";
 	pinctrl-0 = <
-			/******* RunBMC inside Module pins *******/
 			&gpio0ol_pins
 			&gpio1ol_pins
 			&gpio2ol_pins
@@ -972,7 +890,6 @@
 			&gpio215ol_pins
 			&gpio216ol_pins
 			&gpio217ol_pins
-			/******* RunBMC outside Connector pins *******/
 			&gpio5_pins
 			&gpio6_pins
 			&gpio7_pins

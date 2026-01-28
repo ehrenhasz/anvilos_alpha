@@ -1,27 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * AD193X Audio Codec driver
- *
- * Copyright 2010 Analog Devices Inc.
- */
-
 #ifndef __AD193X_H__
 #define __AD193X_H__
-
 #include <linux/regmap.h>
-
 struct device;
-
 enum ad193x_type {
 	AD193X,
 	AD1933,
 	AD1934,
 };
-
 extern const struct regmap_config ad193x_regmap_config;
 int ad193x_probe(struct device *dev, struct regmap *regmap,
 		 enum ad193x_type type);
-
 #define AD193X_PLL_CLK_CTRL0    0x00
 #define AD193X_PLL_POWERDOWN           0x01
 #define AD193X_PLL_INPUT_MASK   0x6
@@ -96,15 +84,11 @@ int ad193x_probe(struct device *dev, struct regmap *regmap,
 #define AD193X_ADC_BCLK_INV     (1 << 1)
 #define AD193X_ADC_FMT_MASK	(AD193X_ADC_LCR_MASTER | \
 	AD193X_ADC_BCLK_MASTER | AD193X_ADC_LEFT_HIGH | AD193X_ADC_BCLK_INV)
-
 #define AD193X_2_CHANNELS   0
 #define AD193X_4_CHANNELS   1
 #define AD193X_8_CHANNELS   2
 #define AD193X_16_CHANNELS  3
-
 #define AD193X_NUM_REGS          17
-
 #define AD193X_SYSCLK_PLL	0
 #define AD193X_SYSCLK_MCLK	1
-
 #endif

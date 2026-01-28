@@ -1,20 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix
- * Copyright 2012 Steffen Trumtrar <s.trumtrar@pengutronix.de>, Pengutronix
- */
-
 /dts-v1/;
 #include "imx53-tqma53.dtsi"
-
 / {
 	model = "TQ MBa53 starter kit";
 	compatible = "tq,mba53", "tq,tqma53", "fsl,imx53";
-
 	chosen {
 		stdout-path = &uart2;
 	};
-
 	backlight {
 		compatible = "pwm-backlight";
 		pwms = <&pwm2 0 50000>;
@@ -23,28 +14,24 @@
 		enable-gpios = <&gpio7 7 0>;
 		power-supply = <&reg_backlight>;
 	};
-
 	disp1: disp1 {
 		compatible = "fsl,imx-parallel-display";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_disp1_1>;
 		interface-pix-fmt = "rgb24";
 		status = "disabled";
-
 		port {
 			display1_in: endpoint {
 				remote-endpoint = <&ipu_di1_disp1>;
 			};
 		};
 	};
-
 	reg_backlight: regulator-backlight {
 		compatible = "regulator-fixed";
 		regulator-name = "lcd-supply";
 		gpio = <&gpio2 5 0>;
 		startup-delay-us = <5000>;
 	};
-
 	reg_3p2v: regulator-3p2v {
 		compatible = "regulator-fixed";
 		regulator-name = "3P2V";
@@ -52,7 +39,6 @@
 		regulator-max-microvolt = <3200000>;
 		regulator-always-on;
 	};
-
 	sound {
 		compatible = "tq,imx53-mba53-sgtl5000",
 			     "fsl,imx-audio-sgtl5000";
@@ -67,13 +53,11 @@
 		mux-ext-port = <5>;
 	};
 };
-
 &ldb {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lvds1_1>;
 	status = "disabled";
 };
-
 &iomuxc {
 	lvds1 {
 		pinctrl_lvds1_1: lvds1-grp1 {
@@ -85,7 +69,6 @@
 				MX53_PAD_LVDS0_TX0_P__LDB_LVDS0_TX0 0x80000000
 			>;
 		};
-
 		pinctrl_lvds1_2: lvds1-grp2 {
 			fsl,pins = <
 				MX53_PAD_LVDS1_TX3_P__LDB_LVDS1_TX3 0x80000000
@@ -96,14 +79,13 @@
 			>;
 		};
 	};
-
 	disp1 {
 		pinctrl_disp1_1: disp1-grp1 {
 			fsl,pins = <
-				MX53_PAD_EIM_A16__IPU_DI1_DISP_CLK 0x80000000 /* DISP1_CLK */
-				MX53_PAD_EIM_DA10__IPU_DI1_PIN15   0x80000000 /* DISP1_DRDY */
-				MX53_PAD_EIM_D23__IPU_DI1_PIN2     0x80000000 /* DISP1_HSYNC */
-				MX53_PAD_EIM_EB3__IPU_DI1_PIN3     0x80000000 /* DISP1_VSYNC */
+				MX53_PAD_EIM_A16__IPU_DI1_DISP_CLK 0x80000000  
+				MX53_PAD_EIM_DA10__IPU_DI1_PIN15   0x80000000  
+				MX53_PAD_EIM_D23__IPU_DI1_PIN2     0x80000000  
+				MX53_PAD_EIM_EB3__IPU_DI1_PIN3     0x80000000  
 				MX53_PAD_EIM_D26__IPU_DISP1_DAT_22 0x80000000
 				MX53_PAD_EIM_D27__IPU_DISP1_DAT_23 0x80000000
 				MX53_PAD_EIM_D30__IPU_DISP1_DAT_21 0x80000000
@@ -131,32 +113,26 @@
 			>;
 		};
 	};
-
 	tve {
 		pinctrl_vga_sync_1: vgasync-grp1 {
 			fsl,pins = <
-				/* VGA_VSYNC, HSYNC with max drive strength */
 				MX53_PAD_EIM_CS1__IPU_DI1_PIN6	   0xe6
 				MX53_PAD_EIM_DA15__IPU_DI1_PIN4	   0xe6
 			>;
 		};
 	};
 };
-
 &ipu_di1_disp1 {
 	remote-endpoint = <&display1_in>;
 };
-
 &cspi {
 	status = "okay";
 };
-
 &audmux {
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_audmux>;
 };
-
 &i2c2 {
 	codec: sgtl5000@a {
 		compatible = "fsl,sgtl5000";
@@ -166,7 +142,6 @@
 		VDDA-supply = <&reg_3p2v>;
 		VDDIO-supply = <&reg_3p2v>;
 	};
-
 	expander: pca9554@20 {
 		compatible = "pca9554";
 		reg = <0x20>;
@@ -174,63 +149,49 @@
 		#gpio-cells = <2>;
 		gpio-controller;
 	};
-
 	sensor2: lm75@49 {
 		compatible = "lm75";
 		reg = <0x49>;
 	};
 };
-
 &fec {
 	phy-reset-gpios = <&gpio7 6 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &esdhc2 {
 	status = "okay";
 };
-
 &uart3 {
 	status = "okay";
 };
-
 &ecspi1 {
 	status = "okay";
 };
-
 &usbotg {
 	dr_mode = "host";
 	status = "okay";
 };
-
 &usbh1 {
 	status = "okay";
 };
-
 &uart1 {
 	status = "okay";
 };
-
 &ssi2 {
 	status = "okay";
 };
-
 &uart2 {
 	status = "okay";
 };
-
 &can1 {
 	status = "okay";
 };
-
 &can2 {
 	status = "okay";
 };
-
 &i2c3 {
 	status = "okay";
 };
-
 &tve {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_vga_sync_1>;

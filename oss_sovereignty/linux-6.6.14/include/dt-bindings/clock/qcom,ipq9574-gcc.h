@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2018-2023 The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLOCK_IPQ_GCC_9574_H
 #define _DT_BINDINGS_CLOCK_IPQ_GCC_9574_H
-
 #define GPLL0_MAIN					0
 #define GPLL0						1
 #define GPLL2_MAIN					2

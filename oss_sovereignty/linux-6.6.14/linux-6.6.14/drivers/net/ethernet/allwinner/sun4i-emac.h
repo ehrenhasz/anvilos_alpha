@@ -1,20 +1,5 @@
-/*
- * Allwinner EMAC Fast Ethernet driver for Linux.
- *
- * Copyright 2012 Stefan Roese <sr@denx.de>
- * Copyright 2013 Maxime Ripard <maxime.ripard@free-electrons.com>
- *
- * Based on the Linux driver provided by Allwinner:
- * Copyright (C) 1997  Sten Wang
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
-
 #ifndef _SUN4I_EMAC_H_
 #define _SUN4I_EMAC_H_
-
 #define EMAC_CTL_REG		(0x00)
 #define EMAC_CTL_RESET			(1 << 0)
 #define EMAC_CTL_TX_EN			(1 << 1)
@@ -118,9 +103,7 @@
 #define EMAC_SAFX_H_REG2	(0xb8)
 #define EMAC_SAFX_L_REG3	(0xbc)
 #define EMAC_SAFX_H_REG3	(0xc0)
-
 #define EMAC_PHY_DUPLEX		(1 << 8)
-
 #define EMAC_EEPROM_MAGIC	(0x444d394b)
 #define EMAC_UNDOCUMENTED_MAGIC	(0x0143414d)
-#endif /* _SUN4I_EMAC_H_ */
+#endif  

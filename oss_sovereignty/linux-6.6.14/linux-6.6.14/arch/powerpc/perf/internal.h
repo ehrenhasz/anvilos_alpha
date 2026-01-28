@@ -1,7 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2019 Madhavan Srinivasan, IBM Corporation.
-
 int __init init_ppc970_pmu(void);
 int __init init_power5_pmu(void);
 int __init init_power5p_pmu(void);

@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef __ASM_KGDB_H_
 #define __ASM_KGDB_H_
-
 #ifdef __KERNEL__
-
 #define GDB_SIZEOF_REG sizeof(unsigned long)
-
 #define DBG_MAX_REG_NUM (36)
 #define NUMREGBYTES ((DBG_MAX_REG_NUM) * GDB_SIZEOF_REG)
 #define CACHE_FLUSH_IS_SAFE     1
@@ -16,11 +11,8 @@
 #else
 #define BREAK_INSTR_SIZE	4
 #endif
-
 #ifndef	__ASSEMBLY__
-
 extern unsigned long kgdb_compiled_break;
-
 static inline void arch_kgdb_breakpoint(void)
 {
 	asm(".global kgdb_compiled_break\n"
@@ -28,9 +20,7 @@ static inline void arch_kgdb_breakpoint(void)
 	    "kgdb_compiled_break: ebreak\n"
 	    ".option rvc\n");
 }
-
-#endif /* !__ASSEMBLY__ */
-
+#endif  
 #define DBG_REG_ZERO "zero"
 #define DBG_REG_RA "ra"
 #define DBG_REG_SP "sp"
@@ -67,7 +57,6 @@ static inline void arch_kgdb_breakpoint(void)
 #define DBG_REG_STATUS "sstatus"
 #define DBG_REG_BADADDR "stval"
 #define DBG_REG_CAUSE "scause"
-
 #define DBG_REG_ZERO_OFF 0
 #define DBG_REG_RA_OFF 1
 #define DBG_REG_SP_OFF 2
@@ -104,10 +93,7 @@ static inline void arch_kgdb_breakpoint(void)
 #define DBG_REG_STATUS_OFF 33
 #define DBG_REG_BADADDR_OFF 34
 #define DBG_REG_CAUSE_OFF 35
-
 extern const char riscv_gdb_stub_feature[64];
-
 #define kgdb_arch_gdb_stub_feature riscv_gdb_stub_feature
-
 #endif
 #endif

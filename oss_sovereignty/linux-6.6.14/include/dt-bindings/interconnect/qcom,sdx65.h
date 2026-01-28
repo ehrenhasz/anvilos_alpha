@@ -1,21 +1,13 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- */
-
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SDX65_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SDX65_H
-
 #define MASTER_LLCC	0
 #define SLAVE_EBI1	1
-
 #define MASTER_TCU_0		0
 #define MASTER_SNOC_GC_MEM_NOC	1
 #define MASTER_APPSS_PROC	2
 #define SLAVE_LLCC		3
 #define SLAVE_MEM_NOC_SNOC	4
 #define SLAVE_MEM_NOC_PCIE_SNOC	5
-
 #define MASTER_AUDIO		0
 #define MASTER_BLSP_1		1
 #define MASTER_QDSS_BAM		2
@@ -63,5 +55,4 @@
 #define SLAVE_PCIE_0		44
 #define SLAVE_QDSS_STM		45
 #define SLAVE_TCU		46
-
 #endif

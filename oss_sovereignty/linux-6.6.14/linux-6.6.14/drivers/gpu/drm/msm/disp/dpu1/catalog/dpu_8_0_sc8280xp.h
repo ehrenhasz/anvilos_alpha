@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DPU_8_0_SC8280XP_H
 #define _DPU_8_0_SC8280XP_H
-
 static const struct dpu_caps sc8280xp_dpu_caps = {
 	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
 	.max_mixer_blendstages = 11,
@@ -18,7 +11,6 @@ static const struct dpu_caps sc8280xp_dpu_caps = {
 	.max_linewidth = 5120,
 	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
 };
-
 static const struct dpu_mdp_cfg sc8280xp_mdp = {
 	.name = "top_0",
 	.base = 0x0, .len = 0x494,
@@ -35,8 +27,6 @@ static const struct dpu_mdp_cfg sc8280xp_mdp = {
 		[DPU_CLK_CTRL_REG_DMA] = { .reg_off = 0x2bc, .bit_off = 20 },
 	},
 };
-
-/* FIXME: get rid of DPU_CTL_SPLIT_DISPLAY in favour of proper ACTIVE_CTL support */
 static const struct dpu_ctl_cfg sc8280xp_ctl[] = {
 	{
 		.name = "ctl_0", .id = CTL_0,
@@ -70,7 +60,6 @@ static const struct dpu_ctl_cfg sc8280xp_ctl[] = {
 		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 23),
 	},
 };
-
 static const struct dpu_sspp_cfg sc8280xp_sspp[] = {
 	{
 		.name = "sspp_0", .id = SSPP_VIG0,
@@ -138,7 +127,6 @@ static const struct dpu_sspp_cfg sc8280xp_sspp[] = {
 		.clk_ctrl = DPU_CLK_CTRL_DMA3,
 	},
 };
-
 static const struct dpu_lm_cfg sc8280xp_lm[] = {
 	{
 		.name = "lm_0", .id = LM_0,
@@ -188,7 +176,6 @@ static const struct dpu_lm_cfg sc8280xp_lm[] = {
 		.pingpong = PINGPONG_5,
 	},
 };
-
 static const struct dpu_dspp_cfg sc8280xp_dspp[] = {
 	{
 		.name = "dspp_0", .id = DSPP_0,
@@ -212,7 +199,6 @@ static const struct dpu_dspp_cfg sc8280xp_dspp[] = {
 		.sblk = &sdm845_dspp_sblk,
 	},
 };
-
 static const struct dpu_pingpong_cfg sc8280xp_pp[] = {
 	{
 		.name = "pingpong_0", .id = PINGPONG_0,
@@ -264,7 +250,6 @@ static const struct dpu_pingpong_cfg sc8280xp_pp[] = {
 		.intr_rdptr = -1,
 	},
 };
-
 static const struct dpu_merge_3d_cfg sc8280xp_merge_3d[] = {
 	{
 		.name = "merge_3d_0", .id = MERGE_3D_0,
@@ -277,12 +262,6 @@ static const struct dpu_merge_3d_cfg sc8280xp_merge_3d[] = {
 		.base = 0x50000, .len = 0x8,
 	},
 };
-
-/*
- * NOTE: Each display compression engine (DCE) contains dual hard
- * slice DSC encoders so both share same base address but with
- * its own different sub block address.
- */
 static const struct dpu_dsc_cfg sc8280xp_dsc[] = {
 	{
 		.name = "dce_0_0", .id = DSC_0,
@@ -316,8 +295,6 @@ static const struct dpu_dsc_cfg sc8280xp_dsc[] = {
 		.sblk = &dsc_sblk_1,
 	},
 };
-
-/* TODO: INTF 3, 8 and 7 are used for MST, marked as INTF_NONE for now */
 static const struct dpu_intf_cfg sc8280xp_intf[] = {
 	{
 		.name = "intf_0", .id = INTF_0,
@@ -411,7 +388,6 @@ static const struct dpu_intf_cfg sc8280xp_intf[] = {
 		.intr_tear_rd_ptr = -1,
 	},
 };
-
 static const struct dpu_perf_cfg sc8280xp_perf_data = {
 	.max_bw_low = 13600000,
 	.max_bw_high = 18200000,
@@ -430,7 +406,6 @@ static const struct dpu_perf_cfg sc8280xp_perf_data = {
 		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
 		.entries = sc7180_qos_nrt
 		},
-		/* TODO: macrotile-qseed is different from macrotile */
 	},
 	.cdp_cfg = {
 		{.rd_enable = 1, .wr_enable = 1},
@@ -439,12 +414,10 @@ static const struct dpu_perf_cfg sc8280xp_perf_data = {
 	.clk_inefficiency_factor = 105,
 	.bw_inefficiency_factor = 120,
 };
-
 static const struct dpu_mdss_version sc8280xp_mdss_ver = {
 	.core_major_ver = 8,
 	.core_minor_ver = 0,
 };
-
 const struct dpu_mdss_cfg dpu_sc8280xp_cfg = {
 	.mdss_ver = &sc8280xp_mdss_ver,
 	.caps = &sc8280xp_dpu_caps,
@@ -469,5 +442,4 @@ const struct dpu_mdss_cfg dpu_sc8280xp_cfg = {
 	.vbif = sdm845_vbif,
 	.perf = &sc8280xp_perf_data,
 };
-
 #endif

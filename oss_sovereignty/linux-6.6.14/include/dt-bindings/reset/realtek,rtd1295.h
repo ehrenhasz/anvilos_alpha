@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause) */
-/*
- * Realtek RTD1295 reset controllers
- *
- * Copyright (c) 2017 Andreas Färber
- */
 #ifndef DT_BINDINGS_RESET_RTD1295_H
 #define DT_BINDINGS_RESET_RTD1295_H
-
-/* soft reset 1 */
 #define RTD1295_RSTN_MISC		0
 #define RTD1295_RSTN_NAT		1
 #define RTD1295_RSTN_USB3_PHY0_POW	2
@@ -40,8 +32,6 @@
 #define RTD1295_RSTN_NF			29
 #define RTD1295_RSTN_MIPI		30
 #define RTD1295_RSTN_RSA		31
-
-/* soft reset 2 */
 #define RTD1295_RSTN_ACPU		0
 #define RTD1295_RSTN_JPEG		1
 #define RTD1295_RSTN_USB_PHY3		2
@@ -74,11 +64,7 @@
 #define RTD1295_RSTN_MISC_SC		29
 #define RTD1295_RSTN_CBUS_TX		30
 #define RTD1295_RSTN_SDS_PHY		31
-
-/* soft reset 3 */
 #define RTD1295_RSTN_SB2		0
-
-/* soft reset 4 */
 #define RTD1295_RSTN_DCPHY_CRT		0
 #define RTD1295_RSTN_DCPHY_ALERT_RX	1
 #define RTD1295_RSTN_DCPHY_PTR		2
@@ -95,8 +81,6 @@
 #define RTD1295_RSTN_PCIE0_PHY_MDIO	13
 #define RTD1295_RSTN_PCIE1_PHY_MDIO	14
 #define RTD1295_RSTN_DISP		15
-
-/* iso reset */
 #define RTD1295_ISO_RSTN_IR		1
 #define RTD1295_ISO_RSTN_CEC0		2
 #define RTD1295_ISO_RSTN_CEC1		3
@@ -110,5 +94,4 @@
 #define RTD1295_ISO_RSTN_I2C_0		11
 #define RTD1295_ISO_RSTN_I2C_1		12
 #define RTD1295_ISO_RSTN_CBUS		13
-
 #endif

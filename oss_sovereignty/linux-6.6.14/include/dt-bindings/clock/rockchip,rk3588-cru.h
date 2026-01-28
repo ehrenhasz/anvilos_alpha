@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Copyright (c) 2021 Rockchip Electronics Co. Ltd.
- * Copyright (c) 2022 Collabora Ltd.
- *
- * Author: Elaine Zhang <zhangqing@rock-chips.com>
- * Author: Sebastian Reichel <sebastian.reichel@collabora.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3588_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_RK3588_H
-
-/* cru-clocks indices */
-
 #define PLL_B0PLL			0
 #define PLL_B1PLL			1
 #define PLL_LPLL			2
@@ -733,11 +721,7 @@
 #define ACLK_AV1_PRE			718
 #define PCLK_AV1_PRE			719
 #define HCLK_SDIO_PRE			720
-
 #define CLK_NR_CLKS			(HCLK_SDIO_PRE + 1)
-
-/* scmi-clocks indices */
-
 #define SCMI_CLK_CPUL			0
 #define SCMI_CLK_DSU			1
 #define SCMI_CLK_CPUB01			2
@@ -762,5 +746,4 @@
 #define SCMI_CRYPTO_PKA			21
 #define SCMI_SPLL			22
 #define SCMI_HCLK_SD			23
-
 #endif

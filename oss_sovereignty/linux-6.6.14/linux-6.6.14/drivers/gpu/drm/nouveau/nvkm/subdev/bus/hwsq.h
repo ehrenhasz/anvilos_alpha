@@ -1,23 +1,19 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_BUS_HWSQ_H__
 #define __NVKM_BUS_HWSQ_H__
 #include <subdev/bus.h>
-
 struct hwsq {
 	struct nvkm_subdev *subdev;
 	struct nvkm_hwsq *hwsq;
 	int sequence;
 };
-
 struct hwsq_reg {
 	int sequence;
 	bool force;
 	u32 addr;
-	u32 stride; /* in bytes */
+	u32 stride;  
 	u32 mask;
 	u32 data;
 };
-
 static inline struct hwsq_reg
 hwsq_stride(u32 addr, u32 stride, u32 mask)
 {
@@ -30,7 +26,6 @@ hwsq_stride(u32 addr, u32 stride, u32 mask)
 		.data = 0xdeadbeef,
 	};
 }
-
 static inline struct hwsq_reg
 hwsq_reg2(u32 addr1, u32 addr2)
 {
@@ -43,7 +38,6 @@ hwsq_reg2(u32 addr1, u32 addr2)
 		.data = 0xdeadbeef,
 	};
 }
-
 static inline struct hwsq_reg
 hwsq_reg(u32 addr)
 {
@@ -56,21 +50,17 @@ hwsq_reg(u32 addr)
 		.data = 0xdeadbeef,
 	};
 }
-
 static inline int
 hwsq_init(struct hwsq *ram, struct nvkm_subdev *subdev)
 {
 	int ret;
-
 	ret = nvkm_hwsq_init(subdev, &ram->hwsq);
 	if (ret)
 		return ret;
-
 	ram->sequence++;
 	ram->subdev = subdev;
 	return 0;
 }
-
 static inline int
 hwsq_exec(struct hwsq *ram, bool exec)
 {
@@ -81,7 +71,6 @@ hwsq_exec(struct hwsq *ram, bool exec)
 	}
 	return ret;
 }
-
 static inline u32
 hwsq_rd32(struct hwsq *ram, struct hwsq_reg *reg)
 {
@@ -90,29 +79,23 @@ hwsq_rd32(struct hwsq *ram, struct hwsq_reg *reg)
 		reg->data = nvkm_rd32(device, reg->addr);
 	return reg->data;
 }
-
 static inline void
 hwsq_wr32(struct hwsq *ram, struct hwsq_reg *reg, u32 data)
 {
 	u32 mask, off = 0;
-
 	reg->sequence = ram->sequence;
 	reg->data = data;
-
 	for (mask = reg->mask; mask > 0; mask = (mask & ~1) >> 1) {
 		if (mask & 1)
 			nvkm_hwsq_wr32(ram->hwsq, reg->addr+off, reg->data);
-
 		off += reg->stride;
 	}
 }
-
 static inline void
 hwsq_nuke(struct hwsq *ram, struct hwsq_reg *reg)
 {
 	reg->force = true;
 }
-
 static inline u32
 hwsq_mask(struct hwsq *ram, struct hwsq_reg *reg, u32 mask, u32 data)
 {
@@ -121,25 +104,21 @@ hwsq_mask(struct hwsq *ram, struct hwsq_reg *reg, u32 mask, u32 data)
 		hwsq_wr32(ram, reg, (temp & ~mask) | data);
 	return temp;
 }
-
 static inline void
 hwsq_setf(struct hwsq *ram, u8 flag, int data)
 {
 	nvkm_hwsq_setf(ram->hwsq, flag, data);
 }
-
 static inline void
 hwsq_wait(struct hwsq *ram, u8 flag, u8 data)
 {
 	nvkm_hwsq_wait(ram->hwsq, flag, data);
 }
-
 static inline void
 hwsq_wait_vblank(struct hwsq *ram)
 {
 	nvkm_hwsq_wait_vblank(ram->hwsq);
 }
-
 static inline void
 hwsq_nsec(struct hwsq *ram, u32 nsec)
 {

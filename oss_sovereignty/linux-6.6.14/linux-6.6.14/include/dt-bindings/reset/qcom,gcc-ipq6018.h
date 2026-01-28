@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_RESET_IPQ_GCC_6018_H
 #define _DT_BINDINGS_RESET_IPQ_GCC_6018_H
-
 #define GCC_BLSP1_BCR				0
 #define GCC_BLSP1_QUP1_BCR			1
 #define GCC_BLSP1_UART1_BCR			2
@@ -153,5 +147,4 @@
 #define GCC_Q6_AXIM2_ARES			144
 #define GCC_Q6_AXIM_ARES			145
 #define GCC_UBI0_CORE_ARES			146
-
 #endif

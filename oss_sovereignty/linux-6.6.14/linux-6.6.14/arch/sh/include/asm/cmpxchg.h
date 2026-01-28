@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_SH_CMPXCHG_H
 #define __ASM_SH_CMPXCHG_H
-
-/*
- * Atomic operations that C can't guarantee us.  Useful for
- * resource counting etc..
- */
-
 #include <linux/compiler.h>
 #include <linux/types.h>
-
 #if defined(CONFIG_GUSA_RB)
 #include <asm/cmpxchg-grb.h>
 #elif defined(CONFIG_CPU_SH4A)
@@ -19,9 +11,7 @@
 #else
 #include <asm/cmpxchg-irq.h>
 #endif
-
 extern void __xchg_called_with_bad_pointer(void);
-
 #define __arch_xchg(ptr, x, size)				\
 ({							\
 	unsigned long __xchg__res;			\
@@ -44,14 +34,9 @@ extern void __xchg_called_with_bad_pointer(void);
 							\
 	__xchg__res;					\
 })
-
 #define arch_xchg(ptr,x)	\
 	((__typeof__(*(ptr)))__arch_xchg((ptr),(unsigned long)(x), sizeof(*(ptr))))
-
-/* This function doesn't exist, so you'll get a linker error
- * if something tries to do an invalid cmpxchg(). */
 extern void __cmpxchg_called_with_bad_pointer(void);
-
 static inline unsigned long __cmpxchg(volatile void * ptr, unsigned long old,
 		unsigned long new, int size)
 {
@@ -62,7 +47,6 @@ static inline unsigned long __cmpxchg(volatile void * ptr, unsigned long old,
 	__cmpxchg_called_with_bad_pointer();
 	return old;
 }
-
 #define arch_cmpxchg(ptr,o,n)						 \
   ({									 \
      __typeof__(*(ptr)) _o_ = (o);					 \
@@ -70,5 +54,4 @@ static inline unsigned long __cmpxchg(volatile void * ptr, unsigned long old,
      (__typeof__(*(ptr))) __cmpxchg((ptr), (unsigned long)_o_,		 \
 				    (unsigned long)_n_, sizeof(*(ptr))); \
   })
-
-#endif /* __ASM_SH_CMPXCHG_H */
+#endif  

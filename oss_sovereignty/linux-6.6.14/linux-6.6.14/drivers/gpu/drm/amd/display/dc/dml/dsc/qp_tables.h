@@ -1,30 +1,3 @@
-
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
-
 static const qp_table   qp_table_422_10bpc_min = {
 	{   6, { 0, 4, 5, 6, 6, 6, 6, 7, 7, 8, 9, 9, 9, 12, 16} },
 	{ 6.5, { 0, 4, 5, 6, 6, 6, 6, 7, 7, 8, 9, 9, 9, 12, 16} },
@@ -56,8 +29,6 @@ static const qp_table   qp_table_422_10bpc_min = {
 	{19.5, { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 4} },
 	{  20, { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 3} }
 };
-
-
 static const qp_table   qp_table_444_8bpc_max = {
 	{   6, { 4, 6, 8, 8, 9, 9, 9, 10, 11, 12, 12, 12, 12, 13, 15} },
 	{ 6.5, { 4, 6, 7, 8, 8, 8, 9, 10, 11, 11, 12, 12, 12, 13, 15} },
@@ -97,8 +68,6 @@ static const qp_table   qp_table_444_8bpc_max = {
 	{23.5, { 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4} },
 	{  24, { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 4} }
 };
-
-
 static const qp_table   qp_table_420_12bpc_max = {
 	{   4, {11, 12, 13, 14, 15, 15, 15, 16, 17, 18, 18, 19, 19, 21, 22} },
 	{ 4.5, {10, 11, 12, 13, 14, 15, 15, 16, 17, 18, 18, 19, 19, 20, 21} },
@@ -130,8 +99,6 @@ static const qp_table   qp_table_420_12bpc_max = {
 	{17.5, { 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 6} },
 	{  18, { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 5} }
 };
-
-
 static const qp_table   qp_table_444_10bpc_min = {
 	{   6, { 0, 4, 7, 7, 9, 9, 9, 9, 9, 10, 10, 10, 10, 12, 18} },
 	{ 6.5, { 0, 4, 6, 7, 8, 8, 9, 9, 9, 9, 10, 10, 10, 12, 18} },
@@ -183,8 +150,6 @@ static const qp_table   qp_table_444_10bpc_min = {
 	{29.5, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3} },
 	{  30, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 3} }
 };
-
-
 static const qp_table   qp_table_420_8bpc_max = {
 	{   4, { 4, 4, 5, 6, 7, 7, 7, 8, 9, 10, 10, 11, 11, 13, 14} },
 	{ 4.5, { 4, 4, 5, 6, 7, 7, 7, 8, 9, 10, 10, 11, 11, 12, 13} },
@@ -204,8 +169,6 @@ static const qp_table   qp_table_420_8bpc_max = {
 	{11.5, { 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 5} },
 	{  12, { 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 4} }
 };
-
-
 static const qp_table   qp_table_444_8bpc_min = {
 	{   6, { 0, 1, 3, 3, 5, 5, 5, 5, 5, 6, 6, 6, 6, 9, 14} },
 	{ 6.5, { 0, 1, 2, 3, 4, 4, 5, 5, 5, 5, 6, 6, 6, 9, 14} },
@@ -245,8 +208,6 @@ static const qp_table   qp_table_444_8bpc_min = {
 	{23.5, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 3} },
 	{  24, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3} }
 };
-
-
 static const qp_table   qp_table_444_12bpc_min = {
 	{   6, { 0, 5, 11, 11, 13, 13, 13, 13, 13, 14, 14, 14, 14, 17, 22} },
 	{ 6.5, { 0, 5, 10, 11, 12, 12, 13, 13, 13, 13, 14, 14, 14, 17, 22} },
@@ -310,8 +271,6 @@ static const qp_table   qp_table_444_12bpc_min = {
 	{35.5, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 4} },
 	{  36, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 3} }
 };
-
-
 static const qp_table   qp_table_420_12bpc_min = {
 	{   4, { 0, 4, 9, 10, 11, 11, 11, 11, 11, 11, 13, 13, 13, 15, 21} },
 	{ 4.5, { 0, 4, 8, 9, 10, 11, 11, 11, 11, 11, 13, 13, 13, 15, 20} },
@@ -343,8 +302,6 @@ static const qp_table   qp_table_420_12bpc_min = {
 	{17.5, { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 3, 5} },
 	{  18, { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 4} }
 };
-
-
 static const qp_table   qp_table_422_12bpc_min = {
 	{   6, { 0, 4, 9, 10, 11, 11, 11, 11, 11, 11, 13, 13, 13, 16, 20} },
 	{ 6.5, { 0, 4, 9, 10, 11, 11, 11, 11, 11, 11, 13, 13, 13, 16, 20} },
@@ -384,8 +341,6 @@ static const qp_table   qp_table_422_12bpc_min = {
 	{23.5, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 4} },
 	{  24, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 4} }
 };
-
-
 static const qp_table   qp_table_422_12bpc_max = {
 	{   6, {12, 12, 13, 14, 15, 15, 15, 16, 17, 18, 18, 19, 19, 20, 21} },
 	{ 6.5, {12, 12, 13, 14, 15, 15, 15, 16, 17, 18, 18, 19, 19, 20, 21} },
@@ -425,8 +380,6 @@ static const qp_table   qp_table_422_12bpc_max = {
 	{23.5, { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 5} },
 	{  24, { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 5} }
 };
-
-
 static const qp_table   qp_table_444_12bpc_max = {
 	{   6, {12, 14, 16, 16, 17, 17, 17, 18, 19, 20, 20, 20, 20, 21, 23} },
 	{ 6.5, {12, 14, 15, 16, 16, 16, 17, 18, 19, 19, 20, 20, 20, 21, 23} },
@@ -490,8 +443,6 @@ static const qp_table   qp_table_444_12bpc_max = {
 	{35.5, { 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 5} },
 	{  36, { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 4} }
 };
-
-
 static const qp_table   qp_table_420_8bpc_min = {
 	{   4, { 0, 0, 1, 1, 3, 3, 3, 3, 3, 3, 5, 5, 5, 9, 13} },
 	{ 4.5, { 0, 0, 1, 1, 3, 3, 3, 3, 3, 3, 5, 5, 5, 8, 12} },
@@ -511,8 +462,6 @@ static const qp_table   qp_table_420_8bpc_min = {
 	{11.5, { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 4} },
 	{  12, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 3} }
 };
-
-
 static const qp_table   qp_table_422_8bpc_min = {
 	{   6, { 0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 5, 5, 5, 8, 12} },
 	{ 6.5, { 0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 5, 5, 5, 8, 12} },
@@ -536,8 +485,6 @@ static const qp_table   qp_table_422_8bpc_min = {
 	{15.5, { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 3} },
 	{  16, { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 3} }
 };
-
-
 static const qp_table   qp_table_422_10bpc_max = {
 	{   6, { 8, 8, 9, 10, 11, 11, 11, 12, 13, 14, 14, 15, 15, 16, 17} },
 	{ 6.5, { 8, 8, 9, 10, 11, 11, 11, 12, 13, 14, 14, 15, 15, 16, 17} },
@@ -569,8 +516,6 @@ static const qp_table   qp_table_422_10bpc_max = {
 	{19.5, { 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 5} },
 	{  20, { 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 4} }
 };
-
-
 static const qp_table qp_table_420_10bpc_max = {
 	{   4, { 8, 8, 9, 10, 11, 11, 11, 12, 13, 14, 14, 15, 15, 17, 18} },
 	{ 4.5, { 8, 8, 9, 10, 11, 11, 11, 12, 13, 14, 14, 15, 15, 16, 17} },
@@ -596,8 +541,6 @@ static const qp_table qp_table_420_10bpc_max = {
 	{14.5, { 0, 0, 0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 5} },
 	{  15, { 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 3, 5} }
 };
-
-
 static const qp_table   qp_table_420_10bpc_min = {
 	{   4, { 0, 4, 4, 5, 7, 7, 7, 7, 7, 7, 9, 9, 9, 13, 17} },
 	{ 4.5, { 0, 4, 4, 5, 7, 7, 7, 7, 7, 7, 9, 9, 9, 12, 16} },
@@ -623,8 +566,6 @@ static const qp_table   qp_table_420_10bpc_min = {
 	{14.5, { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 4} },
 	{  15, { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 4} }
 };
-
-
 static const qp_table   qp_table_444_10bpc_max = {
 	{   6, { 8, 10, 12, 12, 13, 13, 13, 14, 15, 16, 16, 16, 16, 17, 19} },
 	{ 6.5, { 8, 10, 11, 12, 12, 12, 13, 14, 15, 15, 16, 16, 16, 17, 19} },
@@ -676,8 +617,6 @@ static const qp_table   qp_table_444_10bpc_max = {
 	{29.5, { 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4} },
 	{  30, { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 4} }
 };
-
-
 static const qp_table   qp_table_422_8bpc_max = {
 	{   6, { 4, 4, 5, 6, 7, 7, 7, 8, 9, 10, 10, 11, 11, 12, 13} },
 	{ 6.5, { 4, 4, 5, 6, 7, 7, 7, 8, 9, 10, 10, 11, 11, 12, 13} },
@@ -701,4 +640,3 @@ static const qp_table   qp_table_422_8bpc_max = {
 	{15.5, { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 4} },
 	{  16, { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 4} }
 };
-

@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Nuvoton Technology
-
 #include "nuvoton-common-npcm7xx.dtsi"
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
 	interrupt-parent = <&gic>;
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
 		enable-method = "nuvoton,npcm750-smp";
-
 		cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a9";
@@ -21,7 +15,6 @@
 			reg = <0>;
 			next-level-cache = <&l2>;
 		};
-
 		cpu@1 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a9";
@@ -31,7 +24,6 @@
 			next-level-cache = <&l2>;
 		};
 	};
-
 	soc {
 		timer@3fe600 {
 			compatible = "arm,cortex-a9-twd-timer";

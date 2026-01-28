@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
-
 #ifndef __INTEL_DDI_H__
 #define __INTEL_DDI_H__
-
 #include "i915_reg_defs.h"
-
 struct drm_connector_state;
 struct drm_i915_private;
 struct intel_atomic_state;
@@ -22,7 +15,6 @@ struct intel_shared_dpll;
 enum pipe;
 enum port;
 enum transcoder;
-
 i915_reg_t dp_tp_ctl_reg(struct intel_encoder *encoder,
 			 const struct intel_crtc_state *crtc_state);
 i915_reg_t dp_tp_status_reg(struct intel_encoder *encoder,
@@ -77,5 +69,4 @@ int intel_ddi_level(struct intel_encoder *encoder,
 void intel_ddi_update_active_dpll(struct intel_atomic_state *state,
 				  struct intel_encoder *encoder,
 				  struct intel_crtc *crtc);
-
-#endif /* __INTEL_DDI_H__ */
+#endif  

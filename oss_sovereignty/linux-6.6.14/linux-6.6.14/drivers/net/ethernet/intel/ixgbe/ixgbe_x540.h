@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 1999 - 2018 Intel Corporation. */
-
 #include "ixgbe_type.h"
-
 s32 ixgbe_get_invariants_X540(struct ixgbe_hw *hw);
 s32 ixgbe_setup_mac_link_X540(struct ixgbe_hw *hw, ixgbe_link_speed speed,
 			      bool autoneg_wait_to_complete);

@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 /dts-v1/;
 /include/ "xtfpga.dtsi"
 /include/ "xtfpga-flash-16m.dtsi"
-
 / {
 	compatible = "cdns,xtensa-lx200";
 	memory@0 {

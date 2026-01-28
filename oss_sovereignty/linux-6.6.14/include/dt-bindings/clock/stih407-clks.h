@@ -1,16 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants clk index STMicroelectronics
- * STiH407 SoC.
- */
 #ifndef _DT_BINDINGS_CLK_STIH407
 #define _DT_BINDINGS_CLK_STIH407
-
-/* CLOCKGEN A0 */
 #define CLK_IC_LMI0		0
 #define CLK_IC_LMI1		1
-
-/* CLOCKGEN C0 */
 #define CLK_ICN_GPU		0
 #define CLK_FDMA		1
 #define CLK_NAND		2
@@ -54,14 +45,10 @@
 #define CLK_MAIN_DISP		29
 #define CLK_AUX_DISP		30
 #define CLK_COMPO_DVP		31
-
-/* CLOCKGEN D0 */
 #define CLK_PCM_0		0
 #define CLK_PCM_1		1
 #define CLK_PCM_2		2
 #define CLK_SPDIFF		3
-
-/* CLOCKGEN D2 */
 #define CLK_PIX_MAIN_DISP	0
 #define CLK_PIX_PIP		1
 #define CLK_PIX_GDP1		2
@@ -78,8 +65,6 @@
 #define CLK_PIX_HDMI		13
 #define CLK_TMDS_HDMI		14
 #define CLK_REF_HDMIPHY		15
-
-/* CLOCKGEN D3 */
 #define CLK_STFE_FRC1		0
 #define CLK_TSOUT_0		1
 #define CLK_TSOUT_1		2

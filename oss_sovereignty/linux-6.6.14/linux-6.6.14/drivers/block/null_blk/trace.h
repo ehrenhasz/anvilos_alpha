@@ -1,25 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * null_blk device driver tracepoints.
- *
- * Copyright (C) 2020 Western Digital Corporation or its affiliates.
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM nullb
-
 #if !defined(_TRACE_NULLB_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_NULLB_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #include "null_blk.h"
-
 const char *nullb_trace_disk_name(struct trace_seq *p, char *name);
-
 #define __print_disk_name(name) nullb_trace_disk_name(p, name)
-
 #ifndef TRACE_HEADER_MULTI_READ
 static inline void __assign_disk_name(char *name, struct gendisk *disk)
 {
@@ -29,7 +16,6 @@ static inline void __assign_disk_name(char *name, struct gendisk *disk)
 		memset(name, 0, DISK_NAME_LEN);
 }
 #endif
-
 TRACE_EVENT(nullb_zone_op,
 	    TP_PROTO(struct nullb_cmd *cmd, unsigned int zone_no,
 		     unsigned int zone_cond),
@@ -52,7 +38,6 @@ TRACE_EVENT(nullb_zone_op,
 		      __entry->zone_no,
 		      blk_zone_cond_str(__entry->zone_cond))
 );
-
 TRACE_EVENT(nullb_report_zones,
 	    TP_PROTO(struct nullb *nullb, unsigned int nr_zones),
 	    TP_ARGS(nullb, nr_zones),
@@ -67,13 +52,9 @@ TRACE_EVENT(nullb_report_zones,
 	    TP_printk("%s nr_zones=%u",
 		      __print_disk_name(__entry->disk), __entry->nr_zones)
 );
-
-#endif /* _TRACE_NULLB_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
-
-/* This part must be outside protection */
 #include <trace/define_trace.h>

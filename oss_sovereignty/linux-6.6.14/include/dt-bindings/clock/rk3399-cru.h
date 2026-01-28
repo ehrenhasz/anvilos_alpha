@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2016 Rockchip Electronics Co. Ltd.
- * Author: Xing Zheng <zhengxing@rock-chips.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3399_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_RK3399_H
-
-/* core clocks */
 #define PLL_APLLL			1
 #define PLL_APLLB			2
 #define PLL_DPLL			3
@@ -17,8 +9,6 @@
 #define PLL_VPLL			7
 #define ARMCLKL				8
 #define ARMCLKB				9
-
-/* sclk gates (special clocks) */
 #define SCLK_I2C1			65
 #define SCLK_I2C2			66
 #define SCLK_I2C3			67
@@ -125,7 +115,6 @@
 #define SCLK_DDRC			168
 #define SCLK_TESTCLKOUT1		169
 #define SCLK_TESTCLKOUT2		170
-
 #define DCLK_VOP0			180
 #define DCLK_VOP1			181
 #define DCLK_VOP0_DIV			182
@@ -133,10 +122,7 @@
 #define DCLK_M0_PERILP			184
 #define DCLK_VOP0_FRAC			185
 #define DCLK_VOP1_FRAC			186
-
 #define FCLK_CM0S			190
-
-/* aclk gates */
 #define ACLK_PERIHP			192
 #define ACLK_PERIHP_NOC			193
 #define ACLK_PERILP0			194
@@ -210,8 +196,6 @@
 #define ACLK_GIC_PRE			262
 #define ACLK_VOP0_PRE			263
 #define ACLK_VOP1_PRE			264
-
-/* pclk gates */
 #define PCLK_PERIHP			320
 #define PCLK_PERIHP_NOC			321
 #define PCLK_PERILP0			322
@@ -283,8 +267,6 @@
 #define PCLK_UPHY1_TCPHY_G		388
 #define PCLK_UPHY1_TCPD_G		389
 #define PCLK_ALIVE			390
-
-/* hclk gates */
 #define HCLK_PERIHP			448
 #define HCLK_PERILP0			449
 #define HCLK_PERILP1			450
@@ -334,13 +316,8 @@
 #define HCLK_SDIO			494
 #define HCLK_SDIO_NOC			495
 #define HCLK_SDIOAUDIO_NOC		496
-
 #define CLK_NR_CLKS			(HCLK_SDIOAUDIO_NOC + 1)
-
-/* pmu-clocks indices */
-
 #define PLL_PPLL			1
-
 #define SCLK_32K_SUSPEND_PMU		2
 #define SCLK_SPI3_PMU			3
 #define SCLK_TIMER12_PMU		4
@@ -351,7 +328,6 @@
 #define SCLK_I2C0_PMU			9
 #define SCLK_I2C4_PMU			10
 #define SCLK_I2C8_PMU			11
-
 #define PCLK_SRC_PMU			19
 #define PCLK_PMU			20
 #define PCLK_PMUGRF_PMU			21
@@ -369,7 +345,6 @@
 #define PCLK_MAILBOX_PMU		33
 #define PCLK_UART4_PMU			34
 #define PCLK_WDT_M0_PMU			35
-
 #define FCLK_CM0S_SRC_PMU		44
 #define FCLK_CM0S_PMU			45
 #define SCLK_CM0S_PMU			46
@@ -377,12 +352,7 @@
 #define DCLK_CM0S_PMU			48
 #define PCLK_INTR_ARB_PMU		49
 #define HCLK_NOC_PMU			50
-
 #define CLKPMU_NR_CLKS			(HCLK_NOC_PMU + 1)
-
-/* soft-reset indices */
-
-/* cru_softrst_con0 */
 #define SRST_CORE_L0			0
 #define SRST_CORE_B0			1
 #define SRST_CORE_PO_L0			2
@@ -395,8 +365,6 @@
 #define SRST_A_CCIM0_NOC		9
 #define SRST_A_CCIM1_NOC		10
 #define SRST_DBG_NOC			11
-
-/* cru_softrst_con1 */
 #define SRST_CORE_L0_T			16
 #define SRST_CORE_L1			17
 #define SRST_CORE_L2			18
@@ -412,8 +380,6 @@
 #define SRST_ADB_L_T			29
 #define SRST_A_RKPERF_L			30
 #define SRST_PVTM_CORE_L		31
-
-/* cru_softrst_con2 */
 #define SRST_CORE_B0_T			32
 #define SRST_CORE_B1			33
 #define SRST_CORE_PO_B0_T		36
@@ -425,8 +391,6 @@
 #define SRST_ADB_B_T			45
 #define SRST_A_RKPERF_B			46
 #define SRST_PVTM_CORE_B		47
-
-/* cru_softrst_con3 */
 #define SRST_A_CCI_T			50
 #define SRST_A_CCIM0_NOC_T		51
 #define SRST_A_CCIM1_NOC_T		52
@@ -436,8 +400,6 @@
 #define SRST_DBG_CXCS			56
 #define SRST_CCI_TRACE			57
 #define SRST_P_CCI_GRF			58
-
-/* cru_softrst_con4 */
 #define SRST_A_CENTER_MAIN_NOC		64
 #define SRST_A_CENTER_PERI_NOC		65
 #define SRST_P_CENTER_MAIN		66
@@ -454,8 +416,6 @@
 #define SRST_DDRPHY1			77
 #define SRST_DDR_CIC			78
 #define SRST_PVTM_DDR			79
-
-/* cru_softrst_con5 */
 #define SRST_A_VCODEC_NOC		80
 #define SRST_A_VCODEC			81
 #define SRST_H_VCODEC_NOC		82
@@ -466,8 +426,6 @@
 #define SRST_H_VDU			91
 #define SRST_VDU_CORE			92
 #define SRST_VDU_CA			93
-
-/* cru_softrst_con6 */
 #define SRST_A_IEP_NOC			96
 #define SRST_A_VOP_IEP			97
 #define SRST_A_IEP			98
@@ -481,8 +439,6 @@
 #define SRST_EMMC_NOC			108
 #define SRST_EMMC			109
 #define SRST_EMMC_GRF			110
-
-/* cru_softrst_con7 */
 #define SRST_A_PERIHP_NOC		112
 #define SRST_P_PERIHP_GRF		113
 #define SRST_H_PERIHP_NOC		114
@@ -499,8 +455,6 @@
 #define SRST_AHB1TOM			125
 #define SRST_P_PERIHP_NOC		126
 #define SRST_HSICPHY			127
-
-/* cru_softrst_con8 */
 #define SRST_A_PCIE			128
 #define SRST_P_PCIE			129
 #define SRST_PCIE_CORE			130
@@ -515,8 +469,6 @@
 #define SRST_P_GMAC_GRF			140
 #define SRST_HSICPHY_POR		142
 #define SRST_HSICPHY_UTMI		143
-
-/* cru_softrst_con9 */
 #define SRST_USB2PHY0_POR		144
 #define SRST_USB2PHY0_UTMI_PORT0	145
 #define SRST_USB2PHY0_UTMI_PORT1	146
@@ -531,8 +483,6 @@
 #define SRST_UPHY1_PIPE_L00		156
 #define SRST_UPHY1			157
 #define SRST_UPHY1_TCPDPWRUP		158
-
-/* cru_softrst_con10 */
 #define SRST_A_PERILP0_NOC		160
 #define SRST_A_DCF			161
 #define SRST_GIC500			162
@@ -549,8 +499,6 @@
 #define SRST_ROM			173
 #define SRST_CRYPTO0_S			174
 #define SRST_CRYPTO0_M			175
-
-/* cru_softrst_con11 */
 #define SRST_P_DCF			176
 #define SRST_CM0S_NOC			177
 #define SRST_CM0S			178
@@ -565,8 +513,6 @@
 #define SRST_GIC_NOC			188
 #define SRST_SD_NOC			189
 #define SRST_SDIOAUDIO_BRG		190
-
-/* cru_softrst_con12 */
 #define SRST_H_PERILP1			192
 #define SRST_H_PERILP1_NOC		193
 #define SRST_H_I2S0_8CH			194
@@ -583,8 +529,6 @@
 #define SRST_P_I2C4			205
 #define SRST_P_I2C5			206
 #define SRST_P_MAILBOX0			207
-
-/* cru_softrst_con13 */
 #define SRST_P_UART0			208
 #define SRST_P_UART1			209
 #define SRST_P_UART2			210
@@ -601,8 +545,6 @@
 #define SRST_SPI2			221
 #define SRST_SPI3			222
 #define SRST_SPI4			223
-
-/* cru_softrst_con14 */
 #define SRST_I2S0_8CH			224
 #define SRST_I2S1_8CH			225
 #define SRST_I2S2_8CH			226
@@ -619,8 +561,6 @@
 #define SRST_I2C4			237
 #define SRST_I2C5			238
 #define SRST_SDIOAUDIO_NOC		239
-
-/* cru_softrst_con15 */
 #define SRST_A_VIO_NOC			240
 #define SRST_A_HDCP_NOC			241
 #define SRST_A_HDCP			242
@@ -636,8 +576,6 @@
 #define SRST_P_MIPI_DSI1		252
 #define SRST_DP_CORE			253
 #define SRST_DP_I2S			254
-
-/* cru_softrst_con16 */
 #define SRST_GASKET			256
 #define SRST_VIO_GRF			258
 #define SRST_DPTX_SPDIF_REC		259
@@ -651,8 +589,6 @@
 #define SRST_H_ISP1			269
 #define SRST_ISP0			270
 #define SRST_ISP1			271
-
-/* cru_softrst_con17 */
 #define SRST_A_VOP0_NOC			272
 #define SRST_A_VOP1_NOC			273
 #define SRST_A_VOP0			274
@@ -667,8 +603,6 @@
 #define SRST_VOP1_PWM			283
 #define SRST_P_EDP_NOC			284
 #define SRST_P_EDP_CTRL			285
-
-/* cru_softrst_con18 */
 #define SRST_A_GPU			288
 #define SRST_A_GPU_NOC			289
 #define SRST_A_GPU_GRF			290
@@ -678,8 +612,6 @@
 #define SRST_A_USB3_OTG1		294
 #define SRST_A_USB3_GRF			295
 #define SRST_PMU			296
-
-/* cru_softrst_con19 */
 #define SRST_P_TIMER0_5			304
 #define SRST_TIMER0			305
 #define SRST_TIMER1			306
@@ -696,8 +628,6 @@
 #define SRST_TIMER11			317
 #define SRST_P_INTR_ARB_PMU		318
 #define SRST_P_ALIVE_SGRF		319
-
-/* cru_softrst_con20 */
 #define SRST_P_GPIO2			320
 #define SRST_P_GPIO3			321
 #define SRST_P_GPIO4			322
@@ -712,10 +642,6 @@
 #define SRST_P_UPHY1_TCPHY		333
 #define SRST_P_UPHY0_TCPDCTRL		334
 #define SRST_P_UPHY1_TCPDCTRL		335
-
-/* pmu soft-reset indices */
-
-/* pmu_cru_softrst_con0 */
 #define SRST_P_NOC			0
 #define SRST_P_INTMEM			1
 #define SRST_H_CM0S			2
@@ -730,8 +656,6 @@
 #define SRST_P_UART4			11
 #define SRST_UART4			12
 #define SRST_P_WDT			13
-
-/* pmu_cru_softrst_con1 */
 #define SRST_P_I2C6			16
 #define SRST_P_I2C7			17
 #define SRST_P_I2C8			18
@@ -747,5 +671,4 @@
 #define SRST_I2C6			28
 #define SRST_I2C7			29
 #define SRST_I2C8			30
-
 #endif

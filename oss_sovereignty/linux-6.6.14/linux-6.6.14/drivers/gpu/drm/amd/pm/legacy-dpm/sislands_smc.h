@@ -1,34 +1,8 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef PP_SISLANDS_SMC_H
 #define PP_SISLANDS_SMC_H
-
 #include "ppsmc.h"
-
 #pragma pack(push, 1)
-
 #define SISLANDS_MAX_SMC_PERFORMANCE_LEVELS_PER_SWSTATE 16
-
 struct PP_SIslands_Dpm2PerfLevel {
     uint8_t MaxPS;
     uint8_t TgtAct;
@@ -43,9 +17,7 @@ struct PP_SIslands_Dpm2PerfLevel {
     uint16_t PwrEfficiencyRatio;
     uint8_t Reserved[4];
 };
-
 typedef struct PP_SIslands_Dpm2PerfLevel PP_SIslands_Dpm2PerfLevel;
-
 struct PP_SIslands_DPM2Status {
     uint32_t    dpm2Flags;
     uint8_t     CurrPSkip;
@@ -63,9 +35,7 @@ struct PP_SIslands_DPM2Status {
     uint32_t    SwitchDownCounter;
     uint32_t    SysScalingFactor;
 };
-
 typedef struct PP_SIslands_DPM2Status PP_SIslands_DPM2Status;
-
 struct PP_SIslands_DPM2Parameters {
     uint32_t    TDPLimit;
     uint32_t    NearTDPLimit;
@@ -74,7 +44,6 @@ struct PP_SIslands_DPM2Parameters {
     uint32_t    MinLimitDelta;
 };
 typedef struct PP_SIslands_DPM2Parameters PP_SIslands_DPM2Parameters;
-
 struct PP_SIslands_PAPMStatus {
     uint32_t    EstimatedDGPU_T;
     uint32_t    EstimatedDGPU_P;
@@ -84,7 +53,6 @@ struct PP_SIslands_PAPMStatus {
     uint8_t     reserved[3];
 };
 typedef struct PP_SIslands_PAPMStatus PP_SIslands_PAPMStatus;
-
 struct PP_SIslands_PAPMParameters {
     uint32_t    NearTDPLimitTherm;
     uint32_t    NearTDPLimitPAPM;
@@ -94,7 +62,6 @@ struct PP_SIslands_PAPMParameters {
     uint32_t    dGPU_T_Hysteresis;
 };
 typedef struct PP_SIslands_PAPMParameters PP_SIslands_PAPMParameters;
-
 struct SISLANDS_SMC_SCLK_VALUE {
     uint32_t    vCG_SPLL_FUNC_CNTL;
     uint32_t    vCG_SPLL_FUNC_CNTL_2;
@@ -104,9 +71,7 @@ struct SISLANDS_SMC_SCLK_VALUE {
     uint32_t    vCG_SPLL_SPREAD_SPECTRUM_2;
     uint32_t    sclk_value;
 };
-
 typedef struct SISLANDS_SMC_SCLK_VALUE SISLANDS_SMC_SCLK_VALUE;
-
 struct SISLANDS_SMC_MCLK_VALUE {
     uint32_t    vMPLL_FUNC_CNTL;
     uint32_t    vMPLL_FUNC_CNTL_1;
@@ -119,17 +84,13 @@ struct SISLANDS_SMC_MCLK_VALUE {
     uint32_t    vMPLL_SS2;
     uint32_t    mclk_value;
 };
-
 typedef struct SISLANDS_SMC_MCLK_VALUE SISLANDS_SMC_MCLK_VALUE;
-
 struct SISLANDS_SMC_VOLTAGE_VALUE {
     uint16_t    value;
     uint8_t     index;
     uint8_t     phase_settings;
 };
-
 typedef struct SISLANDS_SMC_VOLTAGE_VALUE SISLANDS_SMC_VOLTAGE_VALUE;
-
 struct SISLANDS_SMC_HW_PERFORMANCE_LEVEL {
     uint8_t                     ACIndex;
     uint8_t                     displayWatermark;
@@ -159,18 +120,14 @@ struct SISLANDS_SMC_HW_PERFORMANCE_LEVEL {
     uint32_t                    reserved[2];
     PP_SIslands_Dpm2PerfLevel   dpm2;
 };
-
 #define SISLANDS_SMC_STROBE_RATIO    0x0F
 #define SISLANDS_SMC_STROBE_ENABLE   0x10
-
 #define SISLANDS_SMC_MC_EDC_RD_FLAG  0x01
 #define SISLANDS_SMC_MC_EDC_WR_FLAG  0x02
 #define SISLANDS_SMC_MC_RTT_ENABLE   0x04
 #define SISLANDS_SMC_MC_STUTTER_EN   0x08
 #define SISLANDS_SMC_MC_PG_EN        0x10
-
 typedef struct SISLANDS_SMC_HW_PERFORMANCE_LEVEL SISLANDS_SMC_HW_PERFORMANCE_LEVEL;
-
 struct SISLANDS_SMC_SWSTATE {
 	uint8_t                             flags;
 	uint8_t                             levelCount;
@@ -178,9 +135,7 @@ struct SISLANDS_SMC_SWSTATE {
 	uint8_t                             padding3;
 	SISLANDS_SMC_HW_PERFORMANCE_LEVEL   levels[];
 };
-
 typedef struct SISLANDS_SMC_SWSTATE SISLANDS_SMC_SWSTATE;
-
 struct SISLANDS_SMC_SWSTATE_SINGLE {
 	uint8_t                             flags;
 	uint8_t                             levelCount;
@@ -188,21 +143,16 @@ struct SISLANDS_SMC_SWSTATE_SINGLE {
 	uint8_t                             padding3;
 	SISLANDS_SMC_HW_PERFORMANCE_LEVEL   level;
 };
-
 #define SISLANDS_SMC_VOLTAGEMASK_VDDC  0
 #define SISLANDS_SMC_VOLTAGEMASK_MVDD  1
 #define SISLANDS_SMC_VOLTAGEMASK_VDDCI 2
 #define SISLANDS_SMC_VOLTAGEMASK_VDDC_PHASE_SHEDDING 3
 #define SISLANDS_SMC_VOLTAGEMASK_MAX   4
-
 struct SISLANDS_SMC_VOLTAGEMASKTABLE {
     uint32_t lowMask[SISLANDS_SMC_VOLTAGEMASK_MAX];
 };
-
 typedef struct SISLANDS_SMC_VOLTAGEMASKTABLE SISLANDS_SMC_VOLTAGEMASKTABLE;
-
 #define SISLANDS_MAX_NO_VREG_STEPS 32
-
 struct SISLANDS_SMC_STATETABLE {
 	uint8_t					thermalProtectType;
 	uint8_t					systemFlags;
@@ -218,9 +168,7 @@ struct SISLANDS_SMC_STATETABLE {
 	SISLANDS_SMC_SWSTATE			driverState;
 	SISLANDS_SMC_HW_PERFORMANCE_LEVEL	dpmLevels[SISLANDS_MAX_SMC_PERFORMANCE_LEVELS_PER_SWSTATE];
 };
-
 typedef struct SISLANDS_SMC_STATETABLE SISLANDS_SMC_STATETABLE;
-
 #define SI_SMC_SOFT_REGISTER_mclk_chg_timeout         0x0
 #define SI_SMC_SOFT_REGISTER_delay_vreg               0xC
 #define SI_SMC_SOFT_REGISTER_delay_acpi               0x28
@@ -241,7 +189,6 @@ typedef struct SISLANDS_SMC_STATETABLE SISLANDS_SMC_STATETABLE;
 #define SI_SMC_SOFT_REGISTER_svi_rework_plat_type     0x118
 #define SI_SMC_SOFT_REGISTER_svi_rework_gpio_id_svd   0x11c
 #define SI_SMC_SOFT_REGISTER_svi_rework_gpio_id_svc   0x120
-
 struct PP_SIslands_FanTable {
 	uint8_t  fdo_mode;
 	uint8_t  padding;
@@ -263,15 +210,11 @@ struct PP_SIslands_FanTable {
 	uint8_t  temp_src;
 	int8_t  padding2;
 };
-
 typedef struct PP_SIslands_FanTable PP_SIslands_FanTable;
-
 #define SMC_SISLANDS_LKGE_LUT_NUM_OF_TEMP_ENTRIES 16
 #define SMC_SISLANDS_LKGE_LUT_NUM_OF_VOLT_ENTRIES 32
-
 #define SMC_SISLANDS_SCALE_I  7
 #define SMC_SISLANDS_SCALE_R 12
-
 struct PP_SIslands_CacConfig {
     uint16_t   cac_lkge_lut[SMC_SISLANDS_LKGE_LUT_NUM_OF_TEMP_ENTRIES][SMC_SISLANDS_LKGE_LUT_NUM_OF_VOLT_ENTRIES];
     uint32_t   lkge_lut_V0;
@@ -288,34 +231,25 @@ struct PP_SIslands_CacConfig {
     uint32_t   lkge_lut_T0;
     uint32_t   lkge_lut_Tstep;
 };
-
 typedef struct PP_SIslands_CacConfig PP_SIslands_CacConfig;
-
 #define SMC_SISLANDS_MC_REGISTER_ARRAY_SIZE 16
 #define SMC_SISLANDS_MC_REGISTER_ARRAY_SET_COUNT 20
-
 struct SMC_SIslands_MCRegisterAddress {
     uint16_t s0;
     uint16_t s1;
 };
-
 typedef struct SMC_SIslands_MCRegisterAddress SMC_SIslands_MCRegisterAddress;
-
 struct SMC_SIslands_MCRegisterSet {
     uint32_t value[SMC_SISLANDS_MC_REGISTER_ARRAY_SIZE];
 };
-
 typedef struct SMC_SIslands_MCRegisterSet SMC_SIslands_MCRegisterSet;
-
 struct SMC_SIslands_MCRegisters {
     uint8_t                             last;
     uint8_t                             reserved[3];
     SMC_SIslands_MCRegisterAddress      address[SMC_SISLANDS_MC_REGISTER_ARRAY_SIZE];
     SMC_SIslands_MCRegisterSet          data[SMC_SISLANDS_MC_REGISTER_ARRAY_SET_COUNT];
 };
-
 typedef struct SMC_SIslands_MCRegisters SMC_SIslands_MCRegisters;
-
 struct SMC_SIslands_MCArbDramTimingRegisterSet {
     uint32_t mc_arb_dram_timing;
     uint32_t mc_arb_dram_timing2;
@@ -323,22 +257,17 @@ struct SMC_SIslands_MCArbDramTimingRegisterSet {
     uint8_t  mc_arb_burst_time;
     uint8_t  padding[2];
 };
-
 typedef struct SMC_SIslands_MCArbDramTimingRegisterSet SMC_SIslands_MCArbDramTimingRegisterSet;
-
 struct SMC_SIslands_MCArbDramTimingRegisters {
     uint8_t                                     arb_current;
     uint8_t                                     reserved[3];
     SMC_SIslands_MCArbDramTimingRegisterSet     data[16];
 };
-
 typedef struct SMC_SIslands_MCArbDramTimingRegisters SMC_SIslands_MCArbDramTimingRegisters;
-
 struct SMC_SISLANDS_SPLL_DIV_TABLE {
     uint32_t    freq[256];
     uint32_t    ss[256];
 };
-
 #define SMC_SISLANDS_SPLL_DIV_TABLE_FBDIV_MASK  0x01ffffff
 #define SMC_SISLANDS_SPLL_DIV_TABLE_FBDIV_SHIFT 0
 #define SMC_SISLANDS_SPLL_DIV_TABLE_PDIV_MASK   0xfe000000
@@ -347,13 +276,9 @@ struct SMC_SISLANDS_SPLL_DIV_TABLE {
 #define SMC_SISLANDS_SPLL_DIV_TABLE_CLKV_SHIFT  0
 #define SMC_SISLANDS_SPLL_DIV_TABLE_CLKS_MASK   0xfff00000
 #define SMC_SISLANDS_SPLL_DIV_TABLE_CLKS_SHIFT  20
-
 typedef struct SMC_SISLANDS_SPLL_DIV_TABLE SMC_SISLANDS_SPLL_DIV_TABLE;
-
 #define SMC_SISLANDS_DTE_MAX_FILTER_STAGES 5
-
 #define SMC_SISLANDS_DTE_MAX_TEMPERATURE_DEPENDENT_ARRAY_SIZE 16
-
 struct Smc_SIslands_DTE_Configuration {
     uint32_t tau[SMC_SISLANDS_DTE_MAX_FILTER_STAGES];
     uint32_t R[SMC_SISLANDS_DTE_MAX_FILTER_STAGES];
@@ -369,13 +294,9 @@ struct Smc_SIslands_DTE_Configuration {
     uint32_t Tdep_R[SMC_SISLANDS_DTE_MAX_TEMPERATURE_DEPENDENT_ARRAY_SIZE];
     uint32_t Tthreshold;
 };
-
 typedef struct Smc_SIslands_DTE_Configuration Smc_SIslands_DTE_Configuration;
-
 #define SMC_SISLANDS_DTE_STATUS_FLAG_DTE_ON 1
-
 #define SISLANDS_SMC_FIRMWARE_HEADER_LOCATION 0x10000
-
 #define SISLANDS_SMC_FIRMWARE_HEADER_version                   0x0
 #define SISLANDS_SMC_FIRMWARE_HEADER_flags                     0x4
 #define SISLANDS_SMC_FIRMWARE_HEADER_softRegisters             0xC
@@ -387,9 +308,7 @@ typedef struct Smc_SIslands_DTE_Configuration Smc_SIslands_DTE_Configuration;
 #define SISLANDS_SMC_FIRMWARE_HEADER_spllTable                 0x38
 #define SISLANDS_SMC_FIRMWARE_HEADER_DteConfiguration          0x40
 #define SISLANDS_SMC_FIRMWARE_HEADER_PAPMParameters            0x48
-
 #pragma pack(pop)
-
 int amdgpu_si_copy_bytes_to_smc(struct amdgpu_device *adev,
 				u32 smc_start_address,
 				const u8 *src, u32 byte_count, u32 limit);
@@ -405,6 +324,4 @@ int amdgpu_si_read_smc_sram_dword(struct amdgpu_device *adev, u32 smc_address,
 				  u32 *value, u32 limit);
 int amdgpu_si_write_smc_sram_dword(struct amdgpu_device *adev, u32 smc_address,
 				   u32 value, u32 limit);
-
 #endif
-

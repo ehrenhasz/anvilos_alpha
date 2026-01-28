@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2013 Freescale Semiconductor, Inc.
- */
-
 #ifndef __DT_BINDINGS_CLOCK_VF610_H
 #define __DT_BINDINGS_CLOCK_VF610_H
-
 #define VF610_CLK_DUMMY			0
 #define VF610_CLK_SIRC_128K		1
 #define VF610_CLK_SIRC_32K		2
@@ -198,5 +192,4 @@
 #define VF610_CLK_CAAM			189
 #define VF610_CLK_CRC			190
 #define VF610_CLK_END			191
-
-#endif /* __DT_BINDINGS_CLOCK_VF610_H */
+#endif  

@@ -1,23 +1,14 @@
-/*
- * Copyright (c) 2016 by Delphix. All rights reserved.
- */
-
 #include <sys/lua/lua.h>
-
-
 ssize_t
 lcompat_sprintf(char *buf, size_t size, const char *fmt, ...)
 {
 	ssize_t res;
 	va_list args;
-
 	va_start(args, fmt);
 	res = vsnprintf(buf, size, fmt, args);
 	va_end(args);
-
 	return (res);
 }
-
 int64_t
 lcompat_strtoll(const char *str, char **ptr)
 {
@@ -26,7 +17,6 @@ lcompat_strtoll(const char *str, char **ptr)
 	int digits;
 	int64_t value;
 	boolean_t is_negative;
-
 	cp = str;
 	while (*cp == ' ' || *cp == '\t' || *cp == '\n') {
 		cp++;
@@ -36,7 +26,6 @@ lcompat_strtoll(const char *str, char **ptr)
 		cp++;
 	}
 	base = 10;
-
 	if (*cp == '0') {
 		base = 8;
 		cp++;
@@ -45,7 +34,6 @@ lcompat_strtoll(const char *str, char **ptr)
 			cp++;
 		}
 	}
-
 	value = 0;
 	for (; *cp != '\0'; cp++) {
 		if (*cp >= '0' && *cp <= '9') {
@@ -62,7 +50,6 @@ lcompat_strtoll(const char *str, char **ptr)
 		}
 		value = (value * base) + digits;
 	}
-
 	if (ptr != NULL) {
 		*ptr = (char *)cp;
 	}
@@ -71,14 +58,12 @@ lcompat_strtoll(const char *str, char **ptr)
 	}
 	return (value);
 }
-
 int64_t
 lcompat_pow(int64_t x, int64_t y)
 {
 	int64_t result = 1;
 	if (y < 0)
 		return (0);
-
 	while (y) {
 		if (y & 1)
 			result *= x;
@@ -87,7 +72,6 @@ lcompat_pow(int64_t x, int64_t y)
 	}
 	return (result);
 }
-
 int
 lcompat_hashnum(int64_t x)
 {

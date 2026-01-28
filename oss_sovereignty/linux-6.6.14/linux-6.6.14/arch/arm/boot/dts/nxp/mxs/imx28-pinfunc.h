@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Header providing constants for i.MX28 pinctrl bindings.
- *
- * Copyright (C) 2013 Lothar Waßmann <LW@KARO-electronics.de>
- */
-
 #ifndef __DT_BINDINGS_MX28_PINCTRL_H__
 #define __DT_BINDINGS_MX28_PINCTRL_H__
-
 #include "mxs-pinfunc.h"
-
 #define MX28_PAD_GPMI_D00__GPMI_D0			0x0000
 #define MX28_PAD_GPMI_D01__GPMI_D1			0x0010
 #define MX28_PAD_GPMI_D02__GPMI_D2			0x0020
@@ -496,5 +487,4 @@
 #define MX28_PAD_ENET0_CRS__GPIO_4_15			0x40f3
 #define MX28_PAD_ENET_CLK__GPIO_4_16			0x4103
 #define MX28_PAD_JTAG_RTCK__GPIO_4_20			0x4143
-
-#endif /* __DT_BINDINGS_MX28_PINCTRL_H__ */
+#endif  

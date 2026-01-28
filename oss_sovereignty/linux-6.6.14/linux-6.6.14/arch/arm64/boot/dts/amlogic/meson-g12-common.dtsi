@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2018 Amlogic, Inc. All rights reserved.
- */
-
 #include <dt-bindings/phy/phy.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/clock/g12a-clkc.h>
@@ -12,23 +7,19 @@
 #include <dt-bindings/interrupt-controller/amlogic,meson-g12a-gpio-intc.h>
 #include <dt-bindings/reset/amlogic,meson-g12a-reset.h>
 #include <dt-bindings/thermal/thermal.h>
-
 / {
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	aliases {
-		mmc0 = &sd_emmc_b; /* SD card */
-		mmc1 = &sd_emmc_c; /* eMMC */
-		mmc2 = &sd_emmc_a; /* SDIO */
+		mmc0 = &sd_emmc_b;  
+		mmc1 = &sd_emmc_c;  
+		mmc2 = &sd_emmc_a;  
 	};
-
 	chosen {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		simplefb_cvbs: framebuffer-cvbs {
 			compatible = "amlogic,simple-framebuffer",
 				     "simple-framebuffer";
@@ -38,7 +29,6 @@
 				 <&clkc CLKID_VPU_INTR>;
 			status = "disabled";
 		};
-
 		simplefb_hdmi: framebuffer-hdmi {
 			compatible = "amlogic,simple-framebuffer",
 				    "simple-framebuffer";
@@ -49,7 +39,6 @@
 			status = "disabled";
 		};
 	};
-
 	efuse: efuse {
 		compatible = "amlogic,meson-gxbb-efuse";
 		clocks = <&clkc CLKID_EFUSE>;
@@ -58,10 +47,8 @@
 		read-only;
 		secure-monitor = <&sm>;
 	};
-
 	gpu_opp_table: opp-table-gpu {
 		compatible = "operating-points-v2";
-
 		opp-124999998 {
 			opp-hz = /bits/ 64 <124999998>;
 			opp-microvolt = <800000>;
@@ -91,29 +78,22 @@
 			opp-microvolt = <800000>;
 		};
 	};
-
 	psci {
 		compatible = "arm,psci-1.0";
 		method = "smc";
 	};
-
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
-		/* 3 MiB reserved for ARM Trusted Firmware (BL31) */
 		secmon_reserved: secmon@5000000 {
 			reg = <0x0 0x05000000 0x0 0x300000>;
 			no-map;
 		};
-
-		/* 32 MiB reserved for ARM Trusted Firmware (BL32) */
 		secmon_reserved_bl32: secmon@5300000 {
 			reg = <0x0 0x05300000 0x0 0x2000000>;
 			no-map;
 		};
-
 		linux,cma {
 			compatible = "shared-dma-pool";
 			reusable;
@@ -122,17 +102,14 @@
 			linux,cma-default;
 		};
 	};
-
 	sm: secure-monitor {
 		compatible = "amlogic,meson-gxbb-sm";
 	};
-
 	soc {
 		compatible = "simple-bus";
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		pcie: pcie@fc000000 {
 			compatible = "amlogic,g12a-pcie", "snps,dw-pcie";
 			reg = <0x0 0xfc000000 0x0 0x400000>,
@@ -149,7 +126,6 @@
 			device_type = "pci";
 			ranges = <0x81000000 0 0 0x0 0xfc600000 0 0x00100000>,
 				 <0x82000000 0 0xfc700000 0x0 0xfc700000 0 0x1900000>;
-
 			clocks = <&clkc CLKID_PCIE_PHY
 				  &clkc CLKID_PCIE_COMB
 				  &clkc CLKID_PCIE_PLL>;
@@ -165,7 +141,6 @@
 			phy-names = "pcie";
 			status = "disabled";
 		};
-
 		ethmac: ethernet@ff3f0000 {
 			compatible = "amlogic,meson-g12a-dwmac",
 				     "snps,dwmac-3.70a",
@@ -183,21 +158,18 @@
 			rx-fifo-depth = <4096>;
 			tx-fifo-depth = <2048>;
 			status = "disabled";
-
 			mdio0: mdio {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				compatible = "snps,dwmac-mdio";
 			};
 		};
-
 		apb: bus@ff600000 {
 			compatible = "simple-bus";
 			reg = <0x0 0xff600000 0x0 0x200000>;
 			#address-cells = <2>;
 			#size-cells = <2>;
 			ranges = <0x0 0x0 0x0 0xff600000 0x0 0x200000>;
-
 			hdmi_tx: hdmi-tx@0 {
 				compatible = "amlogic,meson-g12a-dw-hdmi";
 				reg = <0x0 0x0 0x0 0x10000>;
@@ -214,29 +186,22 @@
 				#size-cells = <0>;
 				#sound-dai-cells = <0>;
 				status = "disabled";
-
-				/* VPU VENC Input */
 				hdmi_tx_venc_port: port@0 {
 					reg = <0>;
-
 					hdmi_tx_in: endpoint {
 						remote-endpoint = <&hdmi_tx_out>;
 					};
 				};
-
-				/* TMDS Output */
 				hdmi_tx_tmds_port: port@1 {
 					reg = <1>;
 				};
 			};
-
 			apb_efuse: bus@30000 {
 				compatible = "simple-bus";
 				reg = <0x0 0x30000 0x0 0x2000>;
 				#address-cells = <2>;
 				#size-cells = <2>;
 				ranges = <0x0 0x0 0x0 0x30000 0x0 0x2000>;
-
 				hwrng: rng@218 {
 					compatible = "amlogic,meson-rng";
 					reg = <0x0 0x218 0x0 0x4>;
@@ -244,7 +209,6 @@
 					clock-names = "core";
 				};
 			};
-
 			acodec: audio-controller@32000 {
 				compatible = "amlogic,t9015";
 				reg = <0x0 0x32000 0x0 0x14>;
@@ -255,20 +219,17 @@
 				resets = <&reset RESET_AUDIO_CODEC>;
 				status = "disabled";
 			};
-
 			periphs: bus@34400 {
 				compatible = "simple-bus";
 				reg = <0x0 0x34400 0x0 0x400>;
 				#address-cells = <2>;
 				#size-cells = <2>;
 				ranges = <0x0 0x0 0x0 0x34400 0x0 0x400>;
-
 				periphs_pinctrl: pinctrl@40 {
 					compatible = "amlogic,meson-g12a-periphs-pinctrl";
 					#address-cells = <2>;
 					#size-cells = <2>;
 					ranges;
-
 					gpio: bank@40 {
 						reg = <0x0 0x40  0x0 0x4c>,
 						      <0x0 0xe8  0x0 0x18>,
@@ -284,7 +245,6 @@
 						#gpio-cells = <2>;
 						gpio-ranges = <&periphs_pinctrl 0 0 86>;
 					};
-
 					cec_ao_a_h_pins: cec_ao_a_h {
 						mux {
 							groups = "cec_ao_a_h";
@@ -292,7 +252,6 @@
 							bias-disable;
 						};
 					};
-
 					cec_ao_b_h_pins: cec_ao_b_h {
 						mux {
 							groups = "cec_ao_b_h";
@@ -300,7 +259,6 @@
 							bias-disable;
 						};
 					};
-
 					emmc_ctrl_pins: emmc-ctrl {
 						mux-0 {
 							groups = "emmc_cmd";
@@ -308,7 +266,6 @@
 							bias-pull-up;
 							drive-strength-microamp = <4000>;
 						};
-
 						mux-1 {
 							groups = "emmc_clk";
 							function = "emmc";
@@ -316,7 +273,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					emmc_data_4b_pins: emmc-data-4b {
 						mux-0 {
 							groups = "emmc_nand_d0",
@@ -328,7 +284,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					emmc_data_8b_pins: emmc-data-8b {
 						mux-0 {
 							groups = "emmc_nand_d0",
@@ -344,7 +299,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					emmc_ds_pins: emmc-ds {
 						mux {
 							groups = "emmc_nand_ds";
@@ -353,7 +307,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					emmc_clk_gate_pins: emmc_clk_gate {
 						mux {
 							groups = "BOOT_8";
@@ -362,7 +315,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					hdmitx_ddc_pins: hdmitx_ddc {
 						mux {
 							groups = "hdmitx_sda",
@@ -372,7 +324,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					hdmitx_hpd_pins: hdmitx_hpd {
 						mux {
 							groups = "hdmitx_hpd_in";
@@ -380,18 +331,14 @@
 							bias-disable;
 						};
 					};
-
-
 					i2c0_sda_c_pins: i2c0-sda-c {
 						mux {
 							groups = "i2c0_sda_c";
 							function = "i2c0";
 							bias-disable;
 							drive-strength-microamp = <3000>;
-
 						};
 					};
-
 					i2c0_sck_c_pins: i2c0-sck-c {
 						mux {
 							groups = "i2c0_sck_c";
@@ -400,7 +347,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c0_sda_z0_pins: i2c0-sda-z0 {
 						mux {
 							groups = "i2c0_sda_z0";
@@ -409,7 +355,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c0_sck_z1_pins: i2c0-sck-z1 {
 						mux {
 							groups = "i2c0_sck_z1";
@@ -418,7 +363,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c0_sda_z7_pins: i2c0-sda-z7 {
 						mux {
 							groups = "i2c0_sda_z7";
@@ -427,7 +371,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c0_sda_z8_pins: i2c0-sda-z8 {
 						mux {
 							groups = "i2c0_sda_z8";
@@ -436,7 +379,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c1_sda_x_pins: i2c1-sda-x {
 						mux {
 							groups = "i2c1_sda_x";
@@ -445,7 +387,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c1_sck_x_pins: i2c1-sck-x {
 						mux {
 							groups = "i2c1_sck_x";
@@ -454,7 +395,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c1_sda_h2_pins: i2c1-sda-h2 {
 						mux {
 							groups = "i2c1_sda_h2";
@@ -463,7 +403,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c1_sck_h3_pins: i2c1-sck-h3 {
 						mux {
 							groups = "i2c1_sck_h3";
@@ -472,7 +411,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c1_sda_h6_pins: i2c1-sda-h6 {
 						mux {
 							groups = "i2c1_sda_h6";
@@ -481,7 +419,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c1_sck_h7_pins: i2c1-sck-h7 {
 						mux {
 							groups = "i2c1_sck_h7";
@@ -490,7 +427,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c2_sda_x_pins: i2c2-sda-x {
 						mux {
 							groups = "i2c2_sda_x";
@@ -499,7 +435,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c2_sck_x_pins: i2c2-sck-x {
 						mux {
 							groups = "i2c2_sck_x";
@@ -508,7 +443,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c2_sda_z_pins: i2c2-sda-z {
 						mux {
 							groups = "i2c2_sda_z";
@@ -517,7 +451,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c2_sck_z_pins: i2c2-sck-z {
 						mux {
 							groups = "i2c2_sck_z";
@@ -526,7 +459,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c3_sda_h_pins: i2c3-sda-h {
 						mux {
 							groups = "i2c3_sda_h";
@@ -535,7 +467,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c3_sck_h_pins: i2c3-sck-h {
 						mux {
 							groups = "i2c3_sck_h";
@@ -544,7 +475,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c3_sda_a_pins: i2c3-sda-a {
 						mux {
 							groups = "i2c3_sda_a";
@@ -553,7 +483,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c3_sck_a_pins: i2c3-sck-a {
 						mux {
 							groups = "i2c3_sck_a";
@@ -562,7 +491,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					mclk0_a_pins: mclk0-a {
 						mux {
 							groups = "mclk0_a";
@@ -571,7 +499,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					mclk1_a_pins: mclk1-a {
 						mux {
 							groups = "mclk1_a";
@@ -580,7 +507,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					mclk1_x_pins: mclk1-x {
 						mux {
 							groups = "mclk1_x";
@@ -589,7 +515,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					mclk1_z_pins: mclk1-z {
 						mux {
 							groups = "mclk1_z";
@@ -598,7 +523,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					nor_pins: nor {
 						mux {
 							groups = "nor_d",
@@ -609,7 +533,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din0_a_pins: pdm-din0-a {
 						mux {
 							groups = "pdm_din0_a";
@@ -617,7 +540,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din0_c_pins: pdm-din0-c {
 						mux {
 							groups = "pdm_din0_c";
@@ -625,7 +547,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din0_x_pins: pdm-din0-x {
 						mux {
 							groups = "pdm_din0_x";
@@ -633,7 +554,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din0_z_pins: pdm-din0-z {
 						mux {
 							groups = "pdm_din0_z";
@@ -641,7 +561,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din1_a_pins: pdm-din1-a {
 						mux {
 							groups = "pdm_din1_a";
@@ -649,7 +568,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din1_c_pins: pdm-din1-c {
 						mux {
 							groups = "pdm_din1_c";
@@ -657,7 +575,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din1_x_pins: pdm-din1-x {
 						mux {
 							groups = "pdm_din1_x";
@@ -665,7 +582,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din1_z_pins: pdm-din1-z {
 						mux {
 							groups = "pdm_din1_z";
@@ -673,7 +589,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din2_a_pins: pdm-din2-a {
 						mux {
 							groups = "pdm_din2_a";
@@ -681,7 +596,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din2_c_pins: pdm-din2-c {
 						mux {
 							groups = "pdm_din2_c";
@@ -689,7 +603,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din2_x_pins: pdm-din2-x {
 						mux {
 							groups = "pdm_din2_x";
@@ -697,7 +610,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din2_z_pins: pdm-din2-z {
 						mux {
 							groups = "pdm_din2_z";
@@ -705,7 +617,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din3_a_pins: pdm-din3-a {
 						mux {
 							groups = "pdm_din3_a";
@@ -713,7 +624,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din3_c_pins: pdm-din3-c {
 						mux {
 							groups = "pdm_din3_c";
@@ -721,7 +631,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din3_x_pins: pdm-din3-x {
 						mux {
 							groups = "pdm_din3_x";
@@ -729,7 +638,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_din3_z_pins: pdm-din3-z {
 						mux {
 							groups = "pdm_din3_z";
@@ -737,7 +645,6 @@
 							bias-disable;
 						};
 					};
-
 					pdm_dclk_a_pins: pdm-dclk-a {
 						mux {
 							groups = "pdm_dclk_a";
@@ -746,7 +653,6 @@
 							drive-strength-microamp = <500>;
 						};
 					};
-
 					pdm_dclk_c_pins: pdm-dclk-c {
 						mux {
 							groups = "pdm_dclk_c";
@@ -755,7 +661,6 @@
 							drive-strength-microamp = <500>;
 						};
 					};
-
 					pdm_dclk_x_pins: pdm-dclk-x {
 						mux {
 							groups = "pdm_dclk_x";
@@ -764,7 +669,6 @@
 							drive-strength-microamp = <500>;
 						};
 					};
-
 					pdm_dclk_z_pins: pdm-dclk-z {
 						mux {
 							groups = "pdm_dclk_z";
@@ -773,7 +677,6 @@
 							drive-strength-microamp = <500>;
 						};
 					};
-
 					pwm_a_pins: pwm-a {
 						mux {
 							groups = "pwm_a";
@@ -781,7 +684,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_b_x7_pins: pwm-b-x7 {
 						mux {
 							groups = "pwm_b_x7";
@@ -789,7 +691,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_b_x19_pins: pwm-b-x19 {
 						mux {
 							groups = "pwm_b_x19";
@@ -797,7 +698,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_c_c_pins: pwm-c-c {
 						mux {
 							groups = "pwm_c_c";
@@ -805,7 +705,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_c_x5_pins: pwm-c-x5 {
 						mux {
 							groups = "pwm_c_x5";
@@ -813,7 +712,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_c_x8_pins: pwm-c-x8 {
 						mux {
 							groups = "pwm_c_x8";
@@ -821,7 +719,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_d_x3_pins: pwm-d-x3 {
 						mux {
 							groups = "pwm_d_x3";
@@ -829,7 +726,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_d_x6_pins: pwm-d-x6 {
 						mux {
 							groups = "pwm_d_x6";
@@ -837,7 +733,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_e_pins: pwm-e {
 						mux {
 							groups = "pwm_e";
@@ -845,7 +740,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_f_z_pins: pwm-f-z {
 						mux {
 							groups = "pwm_f_z";
@@ -853,7 +747,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_f_a_pins: pwm-f-a {
 						mux {
 							groups = "pwm_f_a";
@@ -861,7 +754,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_f_x_pins: pwm-f-x {
 						mux {
 							groups = "pwm_f_x";
@@ -869,7 +761,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_f_h_pins: pwm-f-h {
 						mux {
 							groups = "pwm_f_h";
@@ -877,7 +768,6 @@
 							bias-disable;
 						};
 					};
-
 					sdcard_c_pins: sdcard_c {
 						mux-0 {
 							groups = "sdcard_d0_c",
@@ -889,7 +779,6 @@
 							bias-pull-up;
 							drive-strength-microamp = <4000>;
 						};
-
 						mux-1 {
 							groups = "sdcard_clk_c";
 							function = "sdcard";
@@ -897,7 +786,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					sdcard_clk_gate_c_pins: sdcard_clk_gate_c {
 						mux {
 							groups = "GPIOC_4";
@@ -906,7 +794,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					sdcard_z_pins: sdcard_z {
 						mux-0 {
 							groups = "sdcard_d0_z",
@@ -918,7 +805,6 @@
 							bias-pull-up;
 							drive-strength-microamp = <4000>;
 						};
-
 						mux-1 {
 							groups = "sdcard_clk_z";
 							function = "sdcard";
@@ -926,7 +812,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					sdcard_clk_gate_z_pins: sdcard_clk_gate_z {
 						mux {
 							groups = "GPIOZ_6";
@@ -935,7 +820,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					sdio_pins: sdio {
 						mux {
 							groups = "sdio_d0",
@@ -949,7 +833,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					sdio_clk_gate_pins: sdio_clk_gate {
 						mux {
 							groups = "GPIOX_4";
@@ -958,7 +841,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					spdif_in_a10_pins: spdif-in-a10 {
 						mux {
 							groups = "spdif_in_a10";
@@ -966,7 +848,6 @@
 							bias-disable;
 						};
 					};
-
 					spdif_in_a12_pins: spdif-in-a12 {
 						mux {
 							groups = "spdif_in_a12";
@@ -974,7 +855,6 @@
 							bias-disable;
 						};
 					};
-
 					spdif_in_h_pins: spdif-in-h {
 						mux {
 							groups = "spdif_in_h";
@@ -982,7 +862,6 @@
 							bias-disable;
 						};
 					};
-
 					spdif_out_h_pins: spdif-out-h {
 						mux {
 							groups = "spdif_out_h";
@@ -991,7 +870,6 @@
 							bias-disable;
 						};
 					};
-
 					spdif_out_a11_pins: spdif-out-a11 {
 						mux {
 							groups = "spdif_out_a11";
@@ -1000,7 +878,6 @@
 							bias-disable;
 						};
 					};
-
 					spdif_out_a13_pins: spdif-out-a13 {
 						mux {
 							groups = "spdif_out_a13";
@@ -1009,7 +886,6 @@
 							bias-disable;
 						};
 					};
-
 					spicc0_x_pins: spicc0-x {
 						mux {
 							groups = "spi0_mosi_x",
@@ -1020,7 +896,6 @@
 							bias-disable;
 						};
 					};
-
 					spicc0_ss0_x_pins: spicc0-ss0-x {
 						mux {
 							groups = "spi0_ss0_x";
@@ -1029,7 +904,6 @@
 							bias-disable;
 						};
 					};
-
 					spicc0_c_pins: spicc0-c {
 						mux {
 							groups = "spi0_mosi_c",
@@ -1041,7 +915,6 @@
 							bias-disable;
 						};
 					};
-
 					spicc1_pins: spicc1 {
 						mux {
 							groups = "spi1_mosi",
@@ -1051,7 +924,6 @@
 							drive-strength-microamp = <4000>;
 						};
 					};
-
 					spicc1_ss0_pins: spicc1-ss0 {
 						mux {
 							groups = "spi1_ss0";
@@ -1060,7 +932,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_a_din0_pins: tdm-a-din0 {
 						mux {
 							groups = "tdm_a_din0";
@@ -1068,8 +939,6 @@
 							bias-disable;
 						};
 					};
-
-
 					tdm_a_din1_pins: tdm-a-din1 {
 						mux {
 							groups = "tdm_a_din1";
@@ -1077,7 +946,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_a_dout0_pins: tdm-a-dout0 {
 						mux {
 							groups = "tdm_a_dout0";
@@ -1086,7 +954,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_a_dout1_pins: tdm-a-dout1 {
 						mux {
 							groups = "tdm_a_dout1";
@@ -1095,7 +962,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_a_fs_pins: tdm-a-fs {
 						mux {
 							groups = "tdm_a_fs";
@@ -1104,7 +970,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_a_sclk_pins: tdm-a-sclk {
 						mux {
 							groups = "tdm_a_sclk";
@@ -1113,7 +978,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_a_slv_fs_pins: tdm-a-slv-fs {
 						mux {
 							groups = "tdm_a_slv_fs";
@@ -1121,8 +985,6 @@
 							bias-disable;
 						};
 					};
-
-
 					tdm_a_slv_sclk_pins: tdm-a-slv-sclk {
 						mux {
 							groups = "tdm_a_slv_sclk";
@@ -1130,7 +992,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_b_din0_pins: tdm-b-din0 {
 						mux {
 							groups = "tdm_b_din0";
@@ -1138,7 +999,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_b_din1_pins: tdm-b-din1 {
 						mux {
 							groups = "tdm_b_din1";
@@ -1146,7 +1006,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_b_din2_pins: tdm-b-din2 {
 						mux {
 							groups = "tdm_b_din2";
@@ -1154,7 +1013,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_b_din3_a_pins: tdm-b-din3-a {
 						mux {
 							groups = "tdm_b_din3_a";
@@ -1162,7 +1020,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_b_din3_h_pins: tdm-b-din3-h {
 						mux {
 							groups = "tdm_b_din3_h";
@@ -1170,7 +1027,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_b_dout0_pins: tdm-b-dout0 {
 						mux {
 							groups = "tdm_b_dout0";
@@ -1179,7 +1035,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_b_dout1_pins: tdm-b-dout1 {
 						mux {
 							groups = "tdm_b_dout1";
@@ -1188,7 +1043,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_b_dout2_pins: tdm-b-dout2 {
 						mux {
 							groups = "tdm_b_dout2";
@@ -1197,7 +1051,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_b_dout3_a_pins: tdm-b-dout3-a {
 						mux {
 							groups = "tdm_b_dout3_a";
@@ -1206,7 +1059,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_b_dout3_h_pins: tdm-b-dout3-h {
 						mux {
 							groups = "tdm_b_dout3_h";
@@ -1215,7 +1067,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_b_fs_pins: tdm-b-fs {
 						mux {
 							groups = "tdm_b_fs";
@@ -1224,7 +1075,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_b_sclk_pins: tdm-b-sclk {
 						mux {
 							groups = "tdm_b_sclk";
@@ -1233,7 +1083,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_b_slv_fs_pins: tdm-b-slv-fs {
 						mux {
 							groups = "tdm_b_slv_fs";
@@ -1241,7 +1090,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_b_slv_sclk_pins: tdm-b-slv-sclk {
 						mux {
 							groups = "tdm_b_slv_sclk";
@@ -1249,7 +1097,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_c_din0_a_pins: tdm-c-din0-a {
 						mux {
 							groups = "tdm_c_din0_a";
@@ -1257,7 +1104,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_c_din0_z_pins: tdm-c-din0-z {
 						mux {
 							groups = "tdm_c_din0_z";
@@ -1265,7 +1111,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_c_din1_a_pins: tdm-c-din1-a {
 						mux {
 							groups = "tdm_c_din1_a";
@@ -1273,7 +1118,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_c_din1_z_pins: tdm-c-din1-z {
 						mux {
 							groups = "tdm_c_din1_z";
@@ -1281,7 +1125,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_c_din2_a_pins: tdm-c-din2-a {
 						mux {
 							groups = "tdm_c_din2_a";
@@ -1289,7 +1132,6 @@
 							bias-disable;
 						};
 					};
-
 					eth_leds_pins: eth-leds {
 						mux {
 							groups = "eth_link_led",
@@ -1298,7 +1140,6 @@
 							bias-disable;
 						};
 					};
-
 					eth_pins: eth {
 						mux {
 							groups = "eth_mdio",
@@ -1315,7 +1156,6 @@
 							bias-disable;
 						};
 					};
-
 					eth_rgmii_pins: eth-rgmii {
 						mux {
 							groups = "eth_rxd2_rgmii",
@@ -1328,7 +1168,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_c_din2_z_pins: tdm-c-din2-z {
 						mux {
 							groups = "tdm_c_din2_z";
@@ -1336,7 +1175,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_c_din3_a_pins: tdm-c-din3-a {
 						mux {
 							groups = "tdm_c_din3_a";
@@ -1344,7 +1182,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_c_din3_z_pins: tdm-c-din3-z {
 						mux {
 							groups = "tdm_c_din3_z";
@@ -1352,7 +1189,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_c_dout0_a_pins: tdm-c-dout0-a {
 						mux {
 							groups = "tdm_c_dout0_a";
@@ -1361,7 +1197,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_c_dout0_z_pins: tdm-c-dout0-z {
 						mux {
 							groups = "tdm_c_dout0_z";
@@ -1370,7 +1205,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_c_dout1_a_pins: tdm-c-dout1-a {
 						mux {
 							groups = "tdm_c_dout1_a";
@@ -1379,7 +1213,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_c_dout1_z_pins: tdm-c-dout1-z {
 						mux {
 							groups = "tdm_c_dout1_z";
@@ -1388,7 +1221,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_c_dout2_a_pins: tdm-c-dout2-a {
 						mux {
 							groups = "tdm_c_dout2_a";
@@ -1397,7 +1229,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_c_dout2_z_pins: tdm-c-dout2-z {
 						mux {
 							groups = "tdm_c_dout2_z";
@@ -1406,7 +1237,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_c_dout3_a_pins: tdm-c-dout3-a {
 						mux {
 							groups = "tdm_c_dout3_a";
@@ -1415,7 +1245,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_c_dout3_z_pins: tdm-c-dout3-z {
 						mux {
 							groups = "tdm_c_dout3_z";
@@ -1424,7 +1253,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_c_fs_a_pins: tdm-c-fs-a {
 						mux {
 							groups = "tdm_c_fs_a";
@@ -1433,7 +1261,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_c_fs_z_pins: tdm-c-fs-z {
 						mux {
 							groups = "tdm_c_fs_z";
@@ -1442,7 +1269,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_c_sclk_a_pins: tdm-c-sclk-a {
 						mux {
 							groups = "tdm_c_sclk_a";
@@ -1451,7 +1277,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_c_sclk_z_pins: tdm-c-sclk-z {
 						mux {
 							groups = "tdm_c_sclk_z";
@@ -1460,7 +1285,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_c_slv_fs_a_pins: tdm-c-slv-fs-a {
 						mux {
 							groups = "tdm_c_slv_fs_a";
@@ -1468,7 +1292,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_c_slv_fs_z_pins: tdm-c-slv-fs-z {
 						mux {
 							groups = "tdm_c_slv_fs_z";
@@ -1476,7 +1299,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_c_slv_sclk_a_pins: tdm-c-slv-sclk-a {
 						mux {
 							groups = "tdm_c_slv_sclk_a";
@@ -1484,7 +1306,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_c_slv_sclk_z_pins: tdm-c-slv-sclk-z {
 						mux {
 							groups = "tdm_c_slv_sclk_z";
@@ -1492,7 +1313,6 @@
 							bias-disable;
 						};
 					};
-
 					uart_a_pins: uart-a {
 						mux {
 							groups = "uart_a_tx",
@@ -1501,7 +1321,6 @@
 							bias-disable;
 						};
 					};
-
 					uart_a_cts_rts_pins: uart-a-cts-rts {
 						mux {
 							groups = "uart_a_cts",
@@ -1510,7 +1329,6 @@
 							bias-disable;
 						};
 					};
-
 					uart_b_pins: uart-b {
 						mux {
 							groups = "uart_b_tx",
@@ -1519,7 +1337,6 @@
 							bias-disable;
 						};
 					};
-
 					uart_c_pins: uart-c {
 						mux {
 							groups = "uart_c_tx",
@@ -1528,7 +1345,6 @@
 							bias-disable;
 						};
 					};
-
 					uart_c_cts_rts_pins: uart-c-cts-rts {
 						mux {
 							groups = "uart_c_cts",
@@ -1539,7 +1355,6 @@
 					};
 				};
 			};
-
 			cpu_temp: temperature-sensor@34800 {
 				compatible = "amlogic,g12a-cpu-thermal",
 					     "amlogic,g12a-thermal";
@@ -1549,7 +1364,6 @@
 				#thermal-sensor-cells = <0>;
 				amlogic,ao-secure = <&sec_AO>;
 			};
-
 			ddr_temp: temperature-sensor@34c00 {
 				compatible = "amlogic,g12a-ddr-thermal",
 					     "amlogic,g12a-thermal";
@@ -1559,7 +1373,6 @@
 				#thermal-sensor-cells = <0>;
 				amlogic,ao-secure = <&sec_AO>;
 			};
-
 			usb2_phy0: phy@36000 {
 				compatible = "amlogic,g12a-usb2-phy";
 				reg = <0x0 0x36000 0x0 0x2000>;
@@ -1569,25 +1382,21 @@
 				reset-names = "phy";
 				#phy-cells = <0>;
 			};
-
 			dmc: bus@38000 {
 				compatible = "simple-bus";
 				#address-cells = <2>;
 				#size-cells = <2>;
 				ranges = <0x0 0x0 0x0 0x38000 0x0 0x2000>;
-
 				canvas: video-lut@48 {
 					compatible = "amlogic,canvas";
 					reg = <0x0 0x48 0x0 0x14>;
 				};
-
 				pmu: pmu@80 {
 					reg = <0x0 0x80 0x0 0x40>,
 					      <0x0 0xc00 0x0 0x40>;
 					interrupts = <GIC_SPI 52 IRQ_TYPE_EDGE_RISING>;
 				};
 			};
-
 			usb2_phy1: phy@3a000 {
 				compatible = "amlogic,g12a-usb2-phy";
 				reg = <0x0 0x3a000 0x0 0x2000>;
@@ -1597,26 +1406,22 @@
 				reset-names = "phy";
 				#phy-cells = <0>;
 			};
-
 			hiu: bus@3c000 {
 				compatible = "simple-bus";
 				reg = <0x0 0x3c000 0x0 0x1400>;
 				#address-cells = <2>;
 				#size-cells = <2>;
 				ranges = <0x0 0x0 0x0 0x3c000 0x0 0x1400>;
-
 				hhi: system-controller@0 {
 					compatible = "amlogic,meson-gx-hhi-sysctrl",
 						     "simple-mfd", "syscon";
 					reg = <0 0 0 0x400>;
-
 					clkc: clock-controller {
 						compatible = "amlogic,g12a-clkc";
 						#clock-cells = <1>;
 						clocks = <&xtal>;
 						clock-names = "xtal";
 					};
-
 					pwrc: power-controller {
 						compatible = "amlogic,meson-g12a-pwrc";
 						#power-domain-cells = <1>;
@@ -1638,34 +1443,27 @@
 						clocks = <&clkc CLKID_VPU>,
 							 <&clkc CLKID_VAPB>;
 						clock-names = "vpu", "vapb";
-						/*
-						 * VPU clocking is provided by two identical clock paths
-						 * VPU_0 and VPU_1 muxed to a single clock by a glitch
-						 * free mux to safely change frequency while running.
-						 * Same for VAPB but with a final gate after the glitch free mux.
-						 */
 						assigned-clocks = <&clkc CLKID_VPU_0_SEL>,
 								  <&clkc CLKID_VPU_0>,
-								  <&clkc CLKID_VPU>, /* Glitch free mux */
+								  <&clkc CLKID_VPU>,  
 								  <&clkc CLKID_VAPB_0_SEL>,
 								  <&clkc CLKID_VAPB_0>,
-								  <&clkc CLKID_VAPB_SEL>; /* Glitch free mux */
+								  <&clkc CLKID_VAPB_SEL>;  
 						assigned-clock-parents = <&clkc CLKID_FCLK_DIV3>,
-									 <0>, /* Do Nothing */
+									 <0>,  
 									 <&clkc CLKID_VPU_0>,
 									 <&clkc CLKID_FCLK_DIV4>,
-									 <0>, /* Do Nothing */
+									 <0>,  
 									 <&clkc CLKID_VAPB_0>;
-						assigned-clock-rates = <0>, /* Do Nothing */
+						assigned-clock-rates = <0>,  
 								       <666666666>,
-								       <0>, /* Do Nothing */
-								       <0>, /* Do Nothing */
+								       <0>,  
+								       <0>,  
 								       <250000000>,
-								       <0>; /* Do Nothing */
+								       <0>;  
 					};
 				};
 			};
-
 			usb3_pcie_phy: phy@46000 {
 				compatible = "amlogic,g12a-usb3-pcie-phy";
 				reg = <0x0 0x46000 0x0 0x2000>;
@@ -1677,7 +1475,6 @@
 				assigned-clock-rates = <100000000>;
 				#phy-cells = <1>;
 			};
-
 			eth_phy: mdio-multiplexer@4c000 {
 				compatible = "amlogic,g12a-mdio-mux";
 				reg = <0x0 0x4c000 0x0 0xa4>;
@@ -1688,18 +1485,15 @@
 				mdio-parent-bus = <&mdio0>;
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				ext_mdio: mdio@0 {
 					reg = <0>;
 					#address-cells = <1>;
 					#size-cells = <0>;
 				};
-
 				int_mdio: mdio@1 {
 					reg = <1>;
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					internal_ephy: ethernet-phy@8 {
 						compatible = "ethernet-phy-id0180.3301",
 							     "ethernet-phy-ieee802.3-c22";
@@ -1710,14 +1504,12 @@
 				};
 			};
 		};
-
 		aobus: bus@ff800000 {
 			compatible = "simple-bus";
 			reg = <0x0 0xff800000 0x0 0x100000>;
 			#address-cells = <2>;
 			#size-cells = <2>;
 			ranges = <0x0 0x0 0x0 0xff800000 0x0 0x100000>;
-
 			rti: sys-ctrl@0 {
 				compatible = "amlogic,meson-gx-ao-sysctrl",
 					     "simple-mfd", "syscon";
@@ -1725,7 +1517,6 @@
 				#address-cells = <2>;
 				#size-cells = <2>;
 				ranges = <0x0 0x0 0x0 0x0 0x0 0x100>;
-
 				clkc_AO: clock-controller {
 					compatible = "amlogic,meson-g12a-aoclkc";
 					#clock-cells = <1>;
@@ -1733,13 +1524,11 @@
 					clocks = <&xtal>, <&clkc CLKID_CLK81>;
 					clock-names = "xtal", "mpeg-clk";
 				};
-
 				ao_pinctrl: pinctrl {
 					compatible = "amlogic,meson-g12a-aobus-pinctrl";
 					#address-cells = <2>;
 					#size-cells = <2>;
 					ranges;
-
 					gpio_ao: bank@14 {
 						reg = <0x0 0x14 0x0 0x8>,
 						      <0x0 0x1c 0x0 0x8>,
@@ -1751,7 +1540,6 @@
 						#gpio-cells = <2>;
 						gpio-ranges = <&ao_pinctrl 0 0 15>;
 					};
-
 					i2c_ao_sck_pins: i2c_ao_sck_pins {
 						mux {
 							groups = "i2c_ao_sck";
@@ -1760,7 +1548,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c_ao_sda_pins: i2c_ao_sda {
 						mux {
 							groups = "i2c_ao_sda";
@@ -1769,7 +1556,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c_ao_sck_e_pins: i2c_ao_sck_e {
 						mux {
 							groups = "i2c_ao_sck_e";
@@ -1778,7 +1564,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					i2c_ao_sda_e_pins: i2c_ao_sda_e {
 						mux {
 							groups = "i2c_ao_sda_e";
@@ -1787,7 +1572,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					mclk0_ao_pins: mclk0-ao {
 						mux {
 							groups = "mclk0_ao";
@@ -1796,7 +1580,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_ao_b_din0_pins: tdm-ao-b-din0 {
 						mux {
 							groups = "tdm_ao_b_din0";
@@ -1804,7 +1587,6 @@
 							bias-disable;
 						};
 					};
-
 					spdif_ao_out_pins: spdif-ao-out {
 						mux {
 							groups = "spdif_ao_out";
@@ -1813,7 +1595,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_ao_b_din1_pins: tdm-ao-b-din1 {
 						mux {
 							groups = "tdm_ao_b_din1";
@@ -1821,7 +1602,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_ao_b_din2_pins: tdm-ao-b-din2 {
 						mux {
 							groups = "tdm_ao_b_din2";
@@ -1829,7 +1609,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_ao_b_dout0_pins: tdm-ao-b-dout0 {
 						mux {
 							groups = "tdm_ao_b_dout0";
@@ -1838,7 +1617,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_ao_b_dout1_pins: tdm-ao-b-dout1 {
 						mux {
 							groups = "tdm_ao_b_dout1";
@@ -1847,7 +1625,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_ao_b_dout2_pins: tdm-ao-b-dout2 {
 						mux {
 							groups = "tdm_ao_b_dout2";
@@ -1856,7 +1633,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_ao_b_fs_pins: tdm-ao-b-fs {
 						mux {
 							groups = "tdm_ao_b_fs";
@@ -1865,7 +1641,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_ao_b_sclk_pins: tdm-ao-b-sclk {
 						mux {
 							groups = "tdm_ao_b_sclk";
@@ -1874,7 +1649,6 @@
 							drive-strength-microamp = <3000>;
 						};
 					};
-
 					tdm_ao_b_slv_fs_pins: tdm-ao-b-slv-fs {
 						mux {
 							groups = "tdm_ao_b_slv_fs";
@@ -1882,7 +1656,6 @@
 							bias-disable;
 						};
 					};
-
 					tdm_ao_b_slv_sclk_pins: tdm-ao-b-slv-sclk {
 						mux {
 							groups = "tdm_ao_b_slv_sclk";
@@ -1890,7 +1663,6 @@
 							bias-disable;
 						};
 					};
-
 					uart_ao_a_pins: uart-a-ao {
 						mux {
 							groups = "uart_ao_a_tx",
@@ -1899,7 +1671,6 @@
 							bias-disable;
 						};
 					};
-
 					uart_ao_a_cts_rts_pins: uart-ao-a-cts-rts {
 						mux {
 							groups = "uart_ao_a_cts",
@@ -1908,7 +1679,6 @@
 							bias-disable;
 						};
 					};
-
 					uart_ao_b_2_3_pins: uart-ao-b-2-3 {
 						mux {
 							groups = "uart_ao_b_tx_2",
@@ -1917,7 +1687,6 @@
 							bias-disable;
 						};
 					};
-
 					uart_ao_b_8_9_pins: uart-ao-b-8-9 {
 						mux {
 							groups = "uart_ao_b_tx_8",
@@ -1926,7 +1695,6 @@
 							bias-disable;
 						};
 					};
-
 					uart_ao_b_cts_rts_pins: uart-ao-b-cts-rts {
 						mux {
 							groups = "uart_ao_b_cts",
@@ -1935,7 +1703,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_a_e_pins: pwm-a-e {
 						mux {
 							groups = "pwm_a_e";
@@ -1943,7 +1710,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_ao_a_pins: pwm-ao-a {
 						mux {
 							groups = "pwm_ao_a";
@@ -1951,7 +1717,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_ao_b_pins: pwm-ao-b {
 						mux {
 							groups = "pwm_ao_b";
@@ -1959,7 +1724,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_ao_c_4_pins: pwm-ao-c-4 {
 						mux {
 							groups = "pwm_ao_c_4";
@@ -1967,7 +1731,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_ao_c_6_pins: pwm-ao-c-6 {
 						mux {
 							groups = "pwm_ao_c_6";
@@ -1975,7 +1738,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_ao_d_5_pins: pwm-ao-d-5 {
 						mux {
 							groups = "pwm_ao_d_5";
@@ -1983,7 +1745,6 @@
 							bias-disable;
 						};
 					};
-
 					pwm_ao_d_10_pins: pwm-ao-d-10 {
 						mux {
 							groups = "pwm_ao_d_10";
@@ -1991,14 +1752,12 @@
 							bias-disable;
 						};
 					};
-
 					pwm_ao_d_e_pins: pwm-ao-d-e {
 						mux {
 							groups = "pwm_ao_d_e";
 							function = "pwm_ao_d";
 						};
 					};
-
 					remote_input_ao_pins: remote-input-ao {
 						mux {
 							groups = "remote_ao_input";
@@ -2008,12 +1767,10 @@
 					};
 				};
 			};
-
 			vrtc: rtc@a8 {
 				compatible = "amlogic,meson-vrtc";
 				reg = <0x0 0x000a8 0x0 0x4>;
 			};
-
 			cec_AO: cec@100 {
 				compatible = "amlogic,meson-gx-ao-cec";
 				reg = <0x0 0x00100 0x0 0x14>;
@@ -2022,13 +1779,11 @@
 				clock-names = "core";
 				status = "disabled";
 			};
-
 			sec_AO: ao-secure@140 {
 				compatible = "amlogic,meson-gx-ao-secure", "syscon";
 				reg = <0x0 0x140 0x0 0x140>;
 				amlogic,has-chip-id;
 			};
-
 			cecb_AO: cec@280 {
 				compatible = "amlogic,meson-g12a-ao-cec";
 				reg = <0x0 0x00280 0x0 0x1c>;
@@ -2037,14 +1792,12 @@
 				clock-names = "oscin";
 				status = "disabled";
 			};
-
 			pwm_AO_cd: pwm@2000 {
 				compatible = "amlogic,meson-g12a-ao-pwm-cd";
 				reg = <0x0 0x2000 0x0 0x20>;
 				#pwm-cells = <3>;
 				status = "disabled";
 			};
-
 			uart_AO: serial@3000 {
 				compatible = "amlogic,meson-g12a-uart",
 					     "amlogic,meson-gx-uart",
@@ -2055,7 +1808,6 @@
 				clock-names = "xtal", "pclk", "baud";
 				status = "disabled";
 			};
-
 			uart_AO_B: serial@4000 {
 				compatible = "amlogic,meson-g12a-uart",
 					     "amlogic,meson-gx-uart",
@@ -2066,7 +1818,6 @@
 				clock-names = "xtal", "pclk", "baud";
 				status = "disabled";
 			};
-
 			i2c_AO: i2c@5000 {
 				compatible = "amlogic,meson-axg-i2c";
 				status = "disabled";
@@ -2076,21 +1827,18 @@
 				#size-cells = <0>;
 				clocks = <&clkc CLKID_I2C>;
 			};
-
 			pwm_AO_ab: pwm@7000 {
 				compatible = "amlogic,meson-g12a-ao-pwm-ab";
 				reg = <0x0 0x7000 0x0 0x20>;
 				#pwm-cells = <3>;
 				status = "disabled";
 			};
-
 			ir: ir@8000 {
 				compatible = "amlogic,meson-gxbb-ir";
 				reg = <0x0 0x8000 0x0 0x20>;
 				interrupts = <GIC_SPI 196 IRQ_TYPE_EDGE_RISING>;
 				status = "disabled";
 			};
-
 			saradc: adc@9000 {
 				compatible = "amlogic,meson-g12a-saradc",
 					     "amlogic,meson-saradc";
@@ -2105,7 +1853,6 @@
 				status = "disabled";
 			};
 		};
-
 		vdec: video-decoder@ff620000 {
 			compatible = "amlogic,g12a-vdec";
 			reg = <0x0 0xff620000 0x0 0x10000>,
@@ -2114,10 +1861,8 @@
 			interrupts = <GIC_SPI 44 IRQ_TYPE_EDGE_RISING>,
 				     <GIC_SPI 32 IRQ_TYPE_EDGE_RISING>;
 			interrupt-names = "vdec", "esparser";
-
 			amlogic,ao-sysctrl = <&rti>;
 			amlogic,canvas = <&canvas>;
-
 			clocks = <&clkc CLKID_PARSER>,
 				 <&clkc CLKID_DOS>,
 				 <&clkc CLKID_VDEC_1>,
@@ -2128,7 +1873,6 @@
 			resets = <&reset RESET_PARSER>;
 			reset-names = "esparser";
 		};
-
 		vpu: vpu@ff900000 {
 			compatible = "amlogic,meson-g12a-vpu";
 			reg = <0x0 0xff900000 0x0 0x100000>,
@@ -2138,22 +1882,16 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			amlogic,canvas = <&canvas>;
-
-			/* CVBS VDAC output port */
 			cvbs_vdac_port: port@0 {
 				reg = <0>;
 			};
-
-			/* HDMI-TX output port */
 			hdmi_tx_port: port@1 {
 				reg = <1>;
-
 				hdmi_tx_out: endpoint {
 					remote-endpoint = <&hdmi_tx_in>;
 				};
 			};
 		};
-
 		gic: interrupt-controller@ffc01000 {
 			compatible = "arm,gic-400";
 			reg = <0x0 0xffc01000 0 0x1000>,
@@ -2166,20 +1904,17 @@
 			#interrupt-cells = <3>;
 			#address-cells = <0>;
 		};
-
 		cbus: bus@ffd00000 {
 			compatible = "simple-bus";
 			reg = <0x0 0xffd00000 0x0 0x100000>;
 			#address-cells = <2>;
 			#size-cells = <2>;
 			ranges = <0x0 0x0 0x0 0xffd00000 0x0 0x100000>;
-
 			reset: reset-controller@1004 {
 				compatible = "amlogic,meson-axg-reset";
 				reg = <0x0 0x1004 0x0 0x9c>;
 				#reset-cells = <1>;
 			};
-
 			gpio_intc: interrupt-controller@f080 {
 				compatible = "amlogic,meson-g12a-gpio-intc",
 					     "amlogic,meson-gpio-intc";
@@ -2188,13 +1923,11 @@
 				#interrupt-cells = <2>;
 				amlogic,channel-interrupts = <64 65 66 67 68 69 70 71>;
 			};
-
 			watchdog: watchdog@f0d0 {
 				compatible = "amlogic,meson-gxbb-wdt";
 				reg = <0x0 0xf0d0 0x0 0x10>;
 				clocks = <&xtal>;
 			};
-
 			spicc0: spi@13000 {
 				compatible = "amlogic,meson-g12a-spicc";
 				reg = <0x0 0x13000 0x0 0x44>;
@@ -2206,7 +1939,6 @@
 				#size-cells = <0>;
 				status = "disabled";
 			};
-
 			spicc1: spi@15000 {
 				compatible = "amlogic,meson-g12a-spicc";
 				reg = <0x0 0x15000 0x0 0x44>;
@@ -2218,7 +1950,6 @@
 				#size-cells = <0>;
 				status = "disabled";
 			};
-
 			spifc: spi@14000 {
 				compatible = "amlogic,meson-gxbb-spifc";
 				status = "disabled";
@@ -2227,28 +1958,24 @@
 				#size-cells = <0>;
 				clocks = <&clkc CLKID_CLK81>;
 			};
-
 			pwm_ef: pwm@19000 {
 				compatible = "amlogic,meson-g12a-ee-pwm";
 				reg = <0x0 0x19000 0x0 0x20>;
 				#pwm-cells = <3>;
 				status = "disabled";
 			};
-
 			pwm_cd: pwm@1a000 {
 				compatible = "amlogic,meson-g12a-ee-pwm";
 				reg = <0x0 0x1a000 0x0 0x20>;
 				#pwm-cells = <3>;
 				status = "disabled";
 			};
-
 			pwm_ab: pwm@1b000 {
 				compatible = "amlogic,meson-g12a-ee-pwm";
 				reg = <0x0 0x1b000 0x0 0x20>;
 				#pwm-cells = <3>;
 				status = "disabled";
 			};
-
 			i2c3: i2c@1c000 {
 				compatible = "amlogic,meson-axg-i2c";
 				status = "disabled";
@@ -2258,7 +1985,6 @@
 				#size-cells = <0>;
 				clocks = <&clkc CLKID_I2C>;
 			};
-
 			i2c2: i2c@1d000 {
 				compatible = "amlogic,meson-axg-i2c";
 				status = "disabled";
@@ -2268,7 +1994,6 @@
 				#size-cells = <0>;
 				clocks = <&clkc CLKID_I2C>;
 			};
-
 			i2c1: i2c@1e000 {
 				compatible = "amlogic,meson-axg-i2c";
 				status = "disabled";
@@ -2278,7 +2003,6 @@
 				#size-cells = <0>;
 				clocks = <&clkc CLKID_I2C>;
 			};
-
 			i2c0: i2c@1f000 {
 				compatible = "amlogic,meson-axg-i2c";
 				status = "disabled";
@@ -2288,12 +2012,10 @@
 				#size-cells = <0>;
 				clocks = <&clkc CLKID_I2C>;
 			};
-
 			clk_msr: clock-measure@18000 {
 				compatible = "amlogic,meson-g12a-clk-measure";
 				reg = <0x0 0x18000 0x0 0x10>;
 			};
-
 			uart_C: serial@22000 {
 				compatible = "amlogic,meson-g12a-uart",
 					     "amlogic,meson-gx-uart";
@@ -2303,7 +2025,6 @@
 				clock-names = "xtal", "pclk", "baud";
 				status = "disabled";
 			};
-
 			uart_B: serial@23000 {
 				compatible = "amlogic,meson-g12a-uart",
 					     "amlogic,meson-gx-uart";
@@ -2313,7 +2034,6 @@
 				clock-names = "xtal", "pclk", "baud";
 				status = "disabled";
 			};
-
 			uart_A: serial@24000 {
 				compatible = "amlogic,meson-g12a-uart",
 					     "amlogic,meson-gx-uart";
@@ -2325,7 +2045,6 @@
 				fifo-size = <128>;
 			};
 		};
-
 		sd_emmc_a: mmc@ffe03000 {
 			compatible = "amlogic,meson-axg-mmc";
 			reg = <0x0 0xffe03000 0x0 0x800>;
@@ -2337,7 +2056,6 @@
 			clock-names = "core", "clkin0", "clkin1";
 			resets = <&reset RESET_SD_EMMC_A>;
 		};
-
 		sd_emmc_b: mmc@ffe05000 {
 			compatible = "amlogic,meson-axg-mmc";
 			reg = <0x0 0xffe05000 0x0 0x800>;
@@ -2349,7 +2067,6 @@
 			clock-names = "core", "clkin0", "clkin1";
 			resets = <&reset RESET_SD_EMMC_B>;
 		};
-
 		sd_emmc_c: mmc@ffe07000 {
 			compatible = "amlogic,meson-axg-mmc";
 			reg = <0x0 0xffe07000 0x0 0x800>;
@@ -2361,7 +2078,6 @@
 			clock-names = "core", "clkin0", "clkin1";
 			resets = <&reset RESET_SD_EMMC_C>;
 		};
-
 		usb: usb@ffe09000 {
 			status = "disabled";
 			compatible = "amlogic,meson-g12a-usb-ctrl";
@@ -2370,16 +2086,12 @@
 			#address-cells = <2>;
 			#size-cells = <2>;
 			ranges;
-
 			clocks = <&clkc CLKID_USB>;
 			resets = <&reset RESET_USB>;
-
 			dr_mode = "otg";
-
 			phys = <&usb2_phy0>, <&usb2_phy1>,
 			       <&usb3_pcie_phy PHY_TYPE_USB3>;
 			phy-names = "usb2-phy0", "usb2-phy1", "usb3-phy0";
-
 			dwc2: usb@ff400000 {
 				compatible = "amlogic,meson-g12a-usb", "snps,dwc2";
 				reg = <0x0 0xff400000 0x0 0x40000>;
@@ -2393,7 +2105,6 @@
 				g-np-tx-fifo-size = <128>;
 				g-tx-fifo-size = <128 128 16 16 16>;
 			};
-
 			dwc3: usb@ff500000 {
 				compatible = "snps,dwc3";
 				reg = <0x0 0xff500000 0x0 0x100000>;
@@ -2404,7 +2115,6 @@
 				snps,parkmode-disable-ss-quirk;
 			};
 		};
-
 		mali: gpu@ffe40000 {
 			compatible = "amlogic,meson-g12a-mali", "arm,mali-bifrost";
 			reg = <0x0 0xffe40000 0x0 0x40000>;
@@ -2419,53 +2129,45 @@
 			#cooling-cells = <2>;
 		};
 	};
-
 	thermal-zones {
 		cpu_thermal: cpu-thermal {
 			polling-delay = <1000>;
 			polling-delay-passive = <100>;
 			thermal-sensors = <&cpu_temp>;
-
 			trips {
 				cpu_passive: cpu-passive {
-					temperature = <85000>; /* millicelsius */
-					hysteresis = <2000>; /* millicelsius */
+					temperature = <85000>;  
+					hysteresis = <2000>;  
 					type = "passive";
 				};
-
 				cpu_hot: cpu-hot {
-					temperature = <95000>; /* millicelsius */
-					hysteresis = <2000>; /* millicelsius */
+					temperature = <95000>;  
+					hysteresis = <2000>;  
 					type = "hot";
 				};
-
 				cpu_critical: cpu-critical {
-					temperature = <110000>; /* millicelsius */
-					hysteresis = <2000>; /* millicelsius */
+					temperature = <110000>;  
+					hysteresis = <2000>;  
 					type = "critical";
 				};
 			};
 		};
-
 		ddr_thermal: ddr-thermal {
 			polling-delay = <1000>;
 			polling-delay-passive = <100>;
 			thermal-sensors = <&ddr_temp>;
-
 			trips {
 				ddr_passive: ddr-passive {
-					temperature = <85000>; /* millicelsius */
-					hysteresis = <2000>; /* millicelsius */
+					temperature = <85000>;  
+					hysteresis = <2000>;  
 					type = "passive";
 				};
-
 				ddr_critical: ddr-critical {
-					temperature = <110000>; /* millicelsius */
-					hysteresis = <2000>; /* millicelsius */
+					temperature = <110000>;  
+					hysteresis = <2000>;  
 					type = "critical";
 				};
 			};
-
 			cooling-maps {
 				map {
 					trip = <&ddr_passive>;
@@ -2474,7 +2176,6 @@
 			};
 		};
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts = <GIC_PPI 13
@@ -2487,14 +2188,12 @@
 			(GIC_CPU_MASK_RAW(0xff) | IRQ_TYPE_LEVEL_LOW)>;
 		arm,no-tick-in-suspend;
 	};
-
 	xtal: xtal-clk {
 		compatible = "fixed-clock";
 		clock-frequency = <24000000>;
 		clock-output-names = "xtal";
 		#clock-cells = <0>;
 	};
-
 	npu: npu@ff100000 {
 		compatible = "vivante,gc";
 		reg = <0x0 0xff100000 0x0 0x20000>;

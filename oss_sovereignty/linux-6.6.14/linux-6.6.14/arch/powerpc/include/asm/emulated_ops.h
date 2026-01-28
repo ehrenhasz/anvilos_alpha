@@ -1,22 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright 2007 Sony Corporation
- */
-
 #ifndef _ASM_POWERPC_EMULATED_OPS_H
 #define _ASM_POWERPC_EMULATED_OPS_H
-
 #include <linux/atomic.h>
 #include <linux/perf_event.h>
-
-
 #ifdef CONFIG_PPC_EMULATED_STATS
-
 struct ppc_emulated_entry {
 	const char *name;
 	atomic_t val;
 };
-
 extern struct ppc_emulated {
 #ifdef CONFIG_ALTIVEC
 	struct ppc_emulated_entry altivec;
@@ -49,36 +39,27 @@ extern struct ppc_emulated {
 	struct ppc_emulated_entry lxvb16x;
 #endif
 } ppc_emulated;
-
 extern u32 ppc_warn_emulated;
-
 extern void ppc_warn_emulated_print(const char *type);
-
 #define __PPC_WARN_EMULATED(type)					 \
 	do {								 \
 		atomic_inc(&ppc_emulated.type.val);			 \
 		if (ppc_warn_emulated)					 \
 			ppc_warn_emulated_print(ppc_emulated.type.name); \
 	} while (0)
-
-#else /* !CONFIG_PPC_EMULATED_STATS */
-
+#else  
 #define __PPC_WARN_EMULATED(type)	do { } while (0)
-
-#endif /* !CONFIG_PPC_EMULATED_STATS */
-
+#endif  
 #define PPC_WARN_EMULATED(type, regs)					\
 	do {								\
 		perf_sw_event(PERF_COUNT_SW_EMULATION_FAULTS,		\
 			1, regs, 0);					\
 		__PPC_WARN_EMULATED(type);				\
 	} while (0)
-
 #define PPC_WARN_ALIGNMENT(type, regs)					\
 	do {								\
 		perf_sw_event(PERF_COUNT_SW_ALIGNMENT_FAULTS,		\
 			1, regs, regs->dar);				\
 		__PPC_WARN_EMULATED(type);				\
 	} while (0)
-
-#endif /* _ASM_POWERPC_EMULATED_OPS_H */
+#endif  

@@ -1,41 +1,10 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DAL_DCN31_HPO_DP_STREAM_ENCODER_H__
 #define __DAL_DCN31_HPO_DP_STREAM_ENCODER_H__
-
 #include "dcn30/dcn30_vpg.h"
 #include "dcn31/dcn31_apg.h"
 #include "stream_encoder.h"
-
-
 #define DCN3_1_HPO_DP_STREAM_ENC_FROM_HPO_STREAM_ENC(hpo_dp_stream_encoder)\
 	container_of(hpo_dp_stream_encoder, struct dcn31_hpo_dp_stream_encoder, base)
-
-
-/* Define MSA_DATA_LANE_[0-3] fields to make programming easier */
 #define DP_SYM32_ENC_VID_MSA__MSA_DATA_LANE_0__SHIFT   0x0
 #define DP_SYM32_ENC_VID_MSA__MSA_DATA_LANE_1__SHIFT   0x8
 #define DP_SYM32_ENC_VID_MSA__MSA_DATA_LANE_2__SHIFT   0x10
@@ -44,8 +13,6 @@
 #define DP_SYM32_ENC_VID_MSA__MSA_DATA_LANE_1_MASK     0x0000FF00L
 #define DP_SYM32_ENC_VID_MSA__MSA_DATA_LANE_2_MASK     0x00FF0000L
 #define DP_SYM32_ENC_VID_MSA__MSA_DATA_LANE_3_MASK     0xFF000000L
-
-
 #define DCN3_1_HPO_DP_STREAM_ENC_REG_LIST(id) \
 	SR(DP_STREAM_MAPPER_CONTROL0),\
 	SR(DP_STREAM_MAPPER_CONTROL1),\
@@ -82,7 +49,6 @@
 	SRI(DP_SYM32_ENC_SDP_AUDIO_CONTROL0, DP_SYM32_ENC, id),\
 	SRI(DP_SYM32_ENC_VID_CRC_CONTROL, DP_SYM32_ENC, id), \
 	SRI(DP_SYM32_ENC_HBLANK_CONTROL, DP_SYM32_ENC, id)
-
 #define DCN3_1_HPO_DP_STREAM_ENC_REGS \
 	uint32_t DP_STREAM_MAPPER_CONTROL0;\
 	uint32_t DP_STREAM_MAPPER_CONTROL1;\
@@ -119,8 +85,6 @@
 	uint32_t DP_SYM32_ENC_SDP_AUDIO_CONTROL0;\
 	uint32_t DP_SYM32_ENC_VID_CRC_CONTROL;\
 	uint32_t DP_SYM32_ENC_HBLANK_CONTROL
-
-
 #define DCN3_1_HPO_DP_STREAM_ENC_MASK_SH_LIST(mask_sh)\
 	SE_SF(DP_STREAM_MAPPER_CONTROL0, DP_STREAM_LINK_TARGET, mask_sh),\
 	SE_SF(DP_STREAM_ENC0_DP_STREAM_ENC_CLOCK_CONTROL, DP_STREAM_ENC_CLOCK_EN, mask_sh),\
@@ -164,8 +128,6 @@
 	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_VID_CRC_CONTROL, CRC_ENABLE, mask_sh),\
 	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_VID_CRC_CONTROL, CRC_CONT_MODE_ENABLE, mask_sh),\
 	SE_SF(DP_SYM32_ENC0_DP_SYM32_ENC_HBLANK_CONTROL, HBLANK_MINIMUM_SYMBOL_WIDTH, mask_sh)
-
-
 #define DCN3_1_HPO_DP_STREAM_ENC_REG_FIELD_LIST(type) \
 	type DP_STREAM_LINK_TARGET;\
 	type DP_STREAM_ENC_CLOCK_EN;\
@@ -207,28 +169,21 @@
 	type CRC_ENABLE;\
 	type CRC_CONT_MODE_ENABLE;\
 	type HBLANK_MINIMUM_SYMBOL_WIDTH
-
-
 struct dcn31_hpo_dp_stream_encoder_registers {
 	DCN3_1_HPO_DP_STREAM_ENC_REGS;
 };
-
 struct dcn31_hpo_dp_stream_encoder_shift {
 	DCN3_1_HPO_DP_STREAM_ENC_REG_FIELD_LIST(uint8_t);
 };
-
 struct dcn31_hpo_dp_stream_encoder_mask {
 	DCN3_1_HPO_DP_STREAM_ENC_REG_FIELD_LIST(uint32_t);
 };
-
 struct dcn31_hpo_dp_stream_encoder {
 	struct hpo_dp_stream_encoder base;
 	const struct dcn31_hpo_dp_stream_encoder_registers *regs;
 	const struct dcn31_hpo_dp_stream_encoder_shift *hpo_se_shift;
 	const struct dcn31_hpo_dp_stream_encoder_mask *hpo_se_mask;
 };
-
-
 void dcn31_hpo_dp_stream_encoder_construct(
 	struct dcn31_hpo_dp_stream_encoder *enc3,
 	struct dc_context *ctx,
@@ -240,6 +195,4 @@ void dcn31_hpo_dp_stream_encoder_construct(
 	const struct dcn31_hpo_dp_stream_encoder_registers *regs,
 	const struct dcn31_hpo_dp_stream_encoder_shift *hpo_se_shift,
 	const struct dcn31_hpo_dp_stream_encoder_mask *hpo_se_mask);
-
-
-#endif   // __DAL_DCN31_HPO_STREAM_ENCODER_H__
+#endif    

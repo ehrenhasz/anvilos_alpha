@@ -1,60 +1,44 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * Copyright (c) STMicroelectronics 2019 - All Rights Reserved
- * Copyright (c) 2020 Engicam srl
- * Copyright (c) 2020 Amarula Solutions(India)
- */
-
 / {
 	compatible = "engicam,microgea-stm32mp1", "st,stm32mp157";
-
 	memory@c0000000 {
 		device_type = "memory";
 		reg = <0xc0000000 0x10000000>;
 	};
-
 	reserved-memory {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
-
 		mcuram2: mcuram2@10000000 {
 			compatible = "shared-dma-pool";
 			reg = <0x10000000 0x40000>;
 			no-map;
 		};
-
 		vdev0vring0: vdev0vring0@10040000 {
 			compatible = "shared-dma-pool";
 			reg = <0x10040000 0x1000>;
 			no-map;
 		};
-
 		vdev0vring1: vdev0vring1@10041000 {
 			compatible = "shared-dma-pool";
 			reg = <0x10041000 0x1000>;
 			no-map;
 		};
-
 		vdev0buffer: vdev0buffer@10042000 {
 			compatible = "shared-dma-pool";
 			reg = <0x10042000 0x4000>;
 			no-map;
 		};
-
 		mcuram: mcuram@30000000 {
 			compatible = "shared-dma-pool";
 			reg = <0x30000000 0x40000>;
 			no-map;
 		};
-
 		retram: retram@38000000 {
 			compatible = "shared-dma-pool";
 			reg = <0x38000000 0x10000>;
 			no-map;
 		};
 	};
-
 	vin: regulator-vin {
 		compatible = "regulator-fixed";
 		regulator-name = "vin";
@@ -62,7 +46,6 @@
 		regulator-max-microvolt = <5000000>;
 		regulator-always-on;
 	};
-
 	vddcore: regulator-vddcore {
 		compatible = "regulator-fixed";
 		regulator-name = "vddcore";
@@ -71,7 +54,6 @@
 		regulator-always-on;
 		vin-supply = <&vin>;
 	};
-
 	vdd: regulator-vdd {
 		compatible = "regulator-fixed";
 		regulator-name = "vdd";
@@ -80,7 +62,6 @@
 		regulator-always-on;
 		vin-supply = <&vin>;
 	};
-
 	vddq_ddr: regulator-vddq-ddr {
 		compatible = "regulator-fixed";
 		regulator-name = "vddq_ddr";
@@ -90,20 +71,16 @@
 		vin-supply = <&vin>;
 	};
 };
-
 &dts {
 	status = "okay";
 };
-
 &fmc {
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&fmc_pins_a>;
 	pinctrl-1 = <&fmc_sleep_pins_a>;
 	status = "okay";
-
 	nand-controller@4,0 {
 		status = "okay";
-
 		nand@0 {
 			reg = <0>;
 			nand-on-flash-bbt;
@@ -112,16 +89,13 @@
 		};
 	};
 };
-
 &ipcc {
 	status = "okay";
 };
-
 &iwdg2 {
 	timeout-sec = <32>;
 	status = "okay";
 };
-
 &m4_rproc {
 	memory-region = <&retram>, <&mcuram>, <&mcuram2>, <&vdev0vring0>,
 			<&vdev0vring1>, <&vdev0buffer>;
@@ -131,15 +105,12 @@
 	interrupts = <68 1>;
 	status = "okay";
 };
-
 &rng1 {
 	status = "okay";
 };
-
 &rtc {
 	status = "okay";
 };
-
 &vrefbuf {
 	regulator-min-microvolt = <2500000>;
 	regulator-max-microvolt = <2500000>;

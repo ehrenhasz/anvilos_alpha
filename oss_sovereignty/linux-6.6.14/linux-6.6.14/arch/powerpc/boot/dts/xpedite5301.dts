@@ -1,11 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008 Extreme Engineering Solutions, Inc.
- * Based on MPC8572DS device tree from Freescale Semiconductor, Inc.
- *
- * XPedite5301 PMC/XMC module based on MPC8572E
- */
-
 /dts-v1/;
 / {
 	model = "xes,xpedite5301";
@@ -13,8 +5,7 @@
 	#address-cells = <2>;
 	#size-cells = <2>;
 	form-factor = "PMC/XMC";
-	boot-bank = <0x0>;	/* 0: Primary flash, 1: Secondary flash */
-
+	boot-bank = <0x0>;	 
 	aliases {
 		ethernet0 = &enet0;
 		ethernet1 = &enet1;
@@ -23,43 +14,38 @@
 		pci1 = &pci1;
 		pci2 = &pci2;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		PowerPC,8572@0 {
 			device_type = "cpu";
 			reg = <0x0>;
-			d-cache-line-size = <32>;	// 32 bytes
-			i-cache-line-size = <32>;	// 32 bytes
-			d-cache-size = <0x8000>;		// L1, 32K
-			i-cache-size = <0x8000>;		// L1, 32K
+			d-cache-line-size = <32>;	 
+			i-cache-line-size = <32>;	 
+			d-cache-size = <0x8000>;		 
+			i-cache-size = <0x8000>;		 
 			timebase-frequency = <0>;
 			bus-frequency = <0>;
 			clock-frequency = <0>;
 			next-level-cache = <&L2>;
 		};
-
 		PowerPC,8572@1 {
 			device_type = "cpu";
 			reg = <0x1>;
-			d-cache-line-size = <32>;	// 32 bytes
-			i-cache-line-size = <32>;	// 32 bytes
-			d-cache-size = <0x8000>;		// L1, 32K
-			i-cache-size = <0x8000>;		// L1, 32K
+			d-cache-line-size = <32>;	 
+			i-cache-line-size = <32>;	 
+			d-cache-size = <0x8000>;		 
+			i-cache-size = <0x8000>;		 
 			timebase-frequency = <0>;
 			bus-frequency = <0>;
 			clock-frequency = <0>;
 			next-level-cache = <&L2>;
 		};
 	};
-
 	memory {
 		device_type = "memory";
-		reg = <0x0 0x0 0x0 0x0>;	// Filled in by U-Boot
+		reg = <0x0 0x0 0x0 0x0>;	 
 	};
-
 	localbus@ef005000 {
 		#address-cells = <2>;
 		#size-cells = <1>;
@@ -67,136 +53,116 @@
 		reg = <0 0xef005000 0 0x1000>;
 		interrupts = <19 2>;
 		interrupt-parent = <&mpic>;
-		/* Local bus region mappings */
-		ranges = <0 0 0 0xf8000000 0x8000000 /* CS0: Boot flash */
-			  1 0 0 0xf0000000 0x8000000 /* CS1: Alternate flash */
-			  2 0 0 0xef800000 0x40000   /* CS2: NAND CE1 */
-			  3 0 0 0xef840000 0x40000>; /* CS3: NAND CE2 */
-
+		ranges = <0 0 0 0xf8000000 0x8000000  
+			  1 0 0 0xf0000000 0x8000000  
+			  2 0 0 0xef800000 0x40000    
+			  3 0 0 0xef840000 0x40000>;  
 		nor-boot@0,0 {
 			compatible = "amd,s29gl01gp", "cfi-flash";
 			bank-width = <2>;
-			reg = <0 0 0x8000000>; /* 128MB */
+			reg = <0 0 0x8000000>;  
 			#address-cells = <1>;
 			#size-cells = <1>;
 			partition@0 {
 				label = "Primary user space";
-				reg = <0x00000000 0x6f00000>; /* 111 MB */
+				reg = <0x00000000 0x6f00000>;  
 			};
 			partition@6f00000 {
 				label = "Primary kernel";
-				reg = <0x6f00000 0x1000000>; /* 16 MB */
+				reg = <0x6f00000 0x1000000>;  
 			};
 			partition@7f00000 {
 				label = "Primary DTB";
-				reg = <0x7f00000 0x40000>; /* 256 KB */
+				reg = <0x7f00000 0x40000>;  
 			};
 			partition@7f40000 {
 				label = "Primary U-Boot environment";
-				reg = <0x7f40000 0x40000>; /* 256 KB */
+				reg = <0x7f40000 0x40000>;  
 			};
 			partition@7f80000 {
 				label = "Primary U-Boot";
-				reg = <0x7f80000 0x80000>; /* 512 KB */
+				reg = <0x7f80000 0x80000>;  
 				read-only;
 			};
 		};
-
 		nor-alternate@1,0 {
 			compatible = "amd,s29gl01gp", "cfi-flash";
 			bank-width = <2>;
-			//reg = <0xf0000000 0x08000000>; /* 128MB */
-			reg = <1 0 0x8000000>; /* 128MB */
+			reg = <1 0 0x8000000>;  
 			#address-cells = <1>;
 			#size-cells = <1>;
 			partition@0 {
 				label = "Secondary user space";
-				reg = <0x00000000 0x6f00000>; /* 111 MB */
+				reg = <0x00000000 0x6f00000>;  
 			};
 			partition@6f00000 {
 				label = "Secondary kernel";
-				reg = <0x6f00000 0x1000000>; /* 16 MB */
+				reg = <0x6f00000 0x1000000>;  
 			};
 			partition@7f00000 {
 				label = "Secondary DTB";
-				reg = <0x7f00000 0x40000>; /* 256 KB */
+				reg = <0x7f00000 0x40000>;  
 			};
 			partition@7f40000 {
 				label = "Secondary U-Boot environment";
-				reg = <0x7f40000 0x40000>; /* 256 KB */
+				reg = <0x7f40000 0x40000>;  
 			};
 			partition@7f80000 {
 				label = "Secondary U-Boot";
-				reg = <0x7f80000 0x80000>; /* 512 KB */
+				reg = <0x7f80000 0x80000>;  
 				read-only;
 			};
 		};
-
 		nand@2,0 {
 			#address-cells = <1>;
 			#size-cells = <1>;
-			/*
-			 * Actual part could be ST Micro NAND08GW3B2A (1 GB),
-			 * Micron MT29F8G08DAA (2x 512 MB), or Micron
-			 * MT29F16G08FAA (2x 1 GB), depending on the build
-			 * configuration
-			 */
 			compatible = "fsl,mpc8572-fcm-nand",
 				     "fsl,elbc-fcm-nand";
 			reg = <2 0 0x40000>;
-			/* U-Boot should fix this up if chip size > 1 GB */
 			partition@0 {
 				label = "NAND Filesystem";
 				reg = <0 0x40000000>;
 			};
 		};
-
 	};
-
 	soc8572@ef000000 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		device_type = "soc";
 		compatible = "fsl,mpc8572-immr", "simple-bus";
 		ranges = <0x0 0 0xef000000 0x100000>;
-		bus-frequency = <0>;		// Filled out by uboot.
-
+		bus-frequency = <0>;		 
 		ecm-law@0 {
 			compatible = "fsl,ecm-law";
 			reg = <0x0 0x1000>;
 			fsl,num-laws = <12>;
 		};
-
 		ecm@1000 {
 			compatible = "fsl,mpc8572-ecm", "fsl,ecm";
 			reg = <0x1000 0x1000>;
 			interrupts = <17 2>;
 			interrupt-parent = <&mpic>;
 		};
-
 		memory-controller@2000 {
 			compatible = "fsl,mpc8572-memory-controller";
 			reg = <0x2000 0x1000>;
 			interrupt-parent = <&mpic>;
 			interrupts = <18 2>;
 		};
-
 		memory-controller@6000 {
 			compatible = "fsl,mpc8572-memory-controller";
 			reg = <0x6000 0x1000>;
 			interrupt-parent = <&mpic>;
 			interrupts = <18 2>;
 		};
-
 		L2: l2-cache-controller@20000 {
 			compatible = "fsl,mpc8572-l2-cache-controller";
 			reg = <0x20000 0x1000>;
-			cache-line-size = <32>;	// 32 bytes
-			cache-size = <0x100000>; // L2, 1M
+			cache-line-size = <32>;	 
+			cache-size = <0x100000>;  
 			interrupt-parent = <&mpic>;
 			interrupts = <16 2>;
 		};
-
 		i2c@3000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -206,38 +172,31 @@
 			interrupts = <43 2>;
 			interrupt-parent = <&mpic>;
 			dfsrr;
-
 			temp-sensor@48 {
 				compatible = "dallas,ds1631", "dallas,ds1621";
 				reg = <0x48>;
 			};
-
 			temp-sensor@4c {
 				compatible = "adi,adt7461";
 				reg = <0x4c>;
 			};
-
 			cpu-supervisor@51 {
 				compatible = "dallas,ds4510";
 				reg = <0x51>;
 			};
-
 			eeprom@54 {
 				compatible = "atmel,at24c128b";
 				reg = <0x54>;
 			};
-
 			rtc@68 {
 				compatible = "st,m41t00",
 				             "dallas,ds1338";
 				reg = <0x68>;
 			};
-
 			pcie-switch@70 {
 				compatible = "plx,pex8518";
 				reg = <0x70>;
 			};
-
 			gpio1: gpio@18 {
 				compatible = "nxp,pca9557";
 				reg = <0x18>;
@@ -245,7 +204,6 @@
 				gpio-controller;
 				polarity = <0x00>;
 			};
-
 			gpio2: gpio@1c {
 				compatible = "nxp,pca9557";
 				reg = <0x1c>;
@@ -253,7 +211,6 @@
 				gpio-controller;
 				polarity = <0x00>;
 			};
-
 			gpio3: gpio@1e {
 				compatible = "nxp,pca9557";
 				reg = <0x1e>;
@@ -261,7 +218,6 @@
 				gpio-controller;
 				polarity = <0x00>;
 			};
-
 			gpio4: gpio@1f {
 				compatible = "nxp,pca9557";
 				reg = <0x1f>;
@@ -270,7 +226,6 @@
 				polarity = <0x00>;
 			};
 		};
-
 		i2c@3100 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -281,7 +236,6 @@
 			interrupt-parent = <&mpic>;
 			dfsrr;
 		};
-
 		dma@c300 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -322,7 +276,6 @@
 				interrupts = <79 2>;
 			};
 		};
-
 		dma@21300 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -363,8 +316,6 @@
 				interrupts = <23 2>;
 			};
 		};
-
-		/* eTSEC 1 */
 		enet0: ethernet@24000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -380,13 +331,11 @@
 			tbi-handle = <&tbi0>;
 			phy-handle = <&phy0>;
 			phy-connection-type = "sgmii";
-
 			mdio@520 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				compatible = "fsl,gianfar-mdio";
 				reg = <0x520 0x20>;
-
 				phy0: ethernet-phy@1 {
 					interrupt-parent = <&mpic>;
 					interrupts = <8 1>;
@@ -403,8 +352,6 @@
 				};
 			};
 		};
-
-		/* eTSEC 2 */
 		enet1: ethernet@25000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -420,21 +367,17 @@
 			tbi-handle = <&tbi1>;
 			phy-handle = <&phy1>;
 			phy-connection-type = "sgmii";
-
 			mdio@520 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				compatible = "fsl,gianfar-tbi";
 				reg = <0x520 0x20>;
-
 				tbi1: tbi-phy@11 {
 					reg = <0x11>;
 					device_type = "tbi-phy";
 				};
 			};
 		};
-
-		/* UART0 */
 		serial0: serial@4500 {
 			cell-index = <0>;
 			device_type = "serial";
@@ -444,8 +387,6 @@
 			interrupts = <42 2>;
 			interrupt-parent = <&mpic>;
 		};
-
-		/* UART1 */
 		serial1: serial@4600 {
 			cell-index = <1>;
 			device_type = "serial";
@@ -455,13 +396,11 @@
 			interrupts = <42 2>;
 			interrupt-parent = <&mpic>;
 		};
-
-		global-utilities@e0000 {	//global utilities block
+		global-utilities@e0000 {	 
 			compatible = "fsl,mpc8572-guts";
 			reg = <0xe0000 0x1000>;
 			fsl,has-rstcr;
 		};
-
 		msi@41600 {
 			compatible = "fsl,mpc8572-msi", "fsl,mpic-msi";
 			reg = <0x41600 0x80>;
@@ -477,7 +416,6 @@
 				0xe7 0>;
 			interrupt-parent = <&mpic>;
 		};
-
 		crypto@30000 {
 			compatible = "fsl,sec3.0", "fsl,sec2.4", "fsl,sec2.2",
 				     "fsl,sec2.1", "fsl,sec2.0";
@@ -489,7 +427,6 @@
 			fsl,exec-units-mask = <0x9fe>;
 			fsl,descriptor-types-mask = <0x3ab0ebf>;
 		};
-
 		mpic: pic@40000 {
 			interrupt-controller;
 			#address-cells = <0>;
@@ -498,7 +435,6 @@
 			compatible = "chrp,open-pic";
 			device_type = "open-pic";
 		};
-
 		gpio0: gpio@f000 {
 			compatible = "fsl,mpc8572-gpio";
 			reg = <0xf000 0x1000>;
@@ -507,47 +443,38 @@
 			#gpio-cells = <2>;
 			gpio-controller;
 		};
-
 		gpio-leds {
 			compatible = "gpio-leds";
-
 			heartbeat {
 				label = "Heartbeat";
 				gpios = <&gpio0 4 1>;
 				linux,default-trigger = "heartbeat";
 			};
-
 			yellow {
 				label = "Yellow";
 				gpios = <&gpio0 5 1>;
 			};
-
 			red {
 				label = "Red";
 				gpios = <&gpio0 6 1>;
 			};
-
 			green {
 				label = "Green";
 				gpios = <&gpio0 7 1>;
 			};
 		};
-
-		/* PME (pattern-matcher) */
 		pme@10000 {
 			compatible = "fsl,mpc8572-pme", "pme8572";
 			reg = <0x10000 0x5000>;
 			interrupts = <57 2 64 2 65 2 66 2 67 2>;
 			interrupt-parent = <&mpic>;
 		};
-
 		tlu@2f000 {
 			compatible = "fsl,mpc8572-tlu", "fsl_tlu";
 			reg = <0x2f000 0x1000>;
 			interrupts = <61 2>;
 			interrupt-parent = <&mpic>;
 		};
-
 		tlu@15000 {
 			compatible = "fsl,mpc8572-tlu", "fsl_tlu";
 			reg = <0x15000 0x1000>;
@@ -555,13 +482,6 @@
 			interrupt-parent = <&mpic>;
 		};
 	};
-
-	/*
-	 * PCI Express controller 3 @ ef008000 is not used.
-	 * This would have been pci0 on other mpc85xx platforms.
-	 */
-
-	/* PCI Express controller 2, wired to XMC P15 connector */
 	pci1: pcie@ef009000 {
 		compatible = "fsl,mpc8548-pcie";
 		device_type = "pci";
@@ -577,7 +497,6 @@
 		interrupts = <25 2>;
 		interrupt-map-mask = <0xf800 0x0 0x0 0x7>;
 		interrupt-map = <
-			/* IDSEL 0x0 */
 			0x0 0x0 0x0 0x1 &mpic 0x4 0x1
 			0x0 0x0 0x0 0x2 &mpic 0x5 0x1
 			0x0 0x0 0x0 0x3 &mpic 0x6 0x1
@@ -591,14 +510,11 @@
 			ranges = <0x2000000 0x0 0xc0000000
 				  0x2000000 0x0 0xc0000000
 				  0x0 0x10000000
-
 				  0x1000000 0x0 0x0
 				  0x1000000 0x0 0x0
 				  0x0 0x100000>;
 		};
 	};
-
-	/* PCI Express controller 1, wired to PEX8112 for PMC interface */
 	pci2: pcie@ef00a000 {
 		compatible = "fsl,mpc8548-pcie";
 		device_type = "pci";
@@ -614,7 +530,6 @@
 		interrupts = <26 2>;
 		interrupt-map-mask = <0xf800 0x0 0x0 0x7>;
 		interrupt-map = <
-			/* IDSEL 0x0 */
 			0x0 0x0 0x0 0x1 &mpic 0x0 0x1
 			0x0 0x0 0x0 0x2 &mpic 0x1 0x1
 			0x0 0x0 0x0 0x3 &mpic 0x2 0x1
@@ -628,7 +543,6 @@
 			ranges = <0x2000000 0x0 0x80000000
 				  0x2000000 0x0 0x80000000
 				  0x0 0x40000000
-
 				  0x1000000 0x0 0x0
 				  0x1000000 0x0 0x0
 				  0x0 0x100000>;

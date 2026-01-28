@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
-
 #ifndef _SIW_MEM_H
 #define _SIW_MEM_H
-
 struct siw_umem *siw_umem_get(u64 start, u64 len, bool writable);
 void siw_umem_release(struct siw_umem *umem, bool dirty);
 struct siw_pbl *siw_pbl_alloc(u32 num_buf);
@@ -23,47 +17,32 @@ int siw_mr_add_mem(struct siw_mr *mr, struct ib_pd *pd, void *mem_obj,
 		   u64 start, u64 len, int rights);
 void siw_mr_drop_mem(struct siw_mr *mr);
 void siw_free_mem(struct kref *ref);
-
 static inline void siw_mem_put(struct siw_mem *mem)
 {
 	kref_put(&mem->ref, siw_free_mem);
 }
-
 static inline void siw_unref_mem_sgl(struct siw_mem **mem, unsigned int num_sge)
 {
 	while (num_sge) {
 		if (*mem == NULL)
 			break;
-
 		siw_mem_put(*mem);
 		*mem = NULL;
 		mem++;
 		num_sge--;
 	}
 }
-
-#define CHUNK_SHIFT 9 /* sets number of pages per chunk */
+#define CHUNK_SHIFT 9  
 #define PAGES_PER_CHUNK (_AC(1, UL) << CHUNK_SHIFT)
 #define CHUNK_MASK (~(PAGES_PER_CHUNK - 1))
 #define PAGE_CHUNK_SIZE (PAGES_PER_CHUNK * sizeof(struct page *))
-
-/*
- * siw_get_upage()
- *
- * Get page pointer for address on given umem.
- *
- * @umem: two dimensional list of page pointers
- * @addr: user virtual address
- */
 static inline struct page *siw_get_upage(struct siw_umem *umem, u64 addr)
 {
 	unsigned int page_idx = (addr - umem->fp_addr) >> PAGE_SHIFT,
 		     chunk_idx = page_idx >> CHUNK_SHIFT,
 		     page_in_chunk = page_idx & ~CHUNK_MASK;
-
 	if (likely(page_idx < umem->num_pages))
 		return umem->page_chunk[chunk_idx].plist[page_in_chunk];
-
 	return NULL;
 }
 #endif

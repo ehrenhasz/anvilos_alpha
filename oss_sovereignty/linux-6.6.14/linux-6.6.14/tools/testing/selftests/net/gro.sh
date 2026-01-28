@@ -1,6 +1,3 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-
 readonly SERVER_MAC="aa:00:00:00:00:02"
 readonly CLIENT_MAC="aa:00:00:00:00:01"
 readonly TESTS=("data" "ack" "flags" "tcp" "ip" "large")
@@ -8,7 +5,6 @@ readonly PROTOS=("ipv4" "ipv6")
 dev=""
 test="all"
 proto="ipv4"
-
 run_test() {
   local server_pid=0
   local exit_code=0
@@ -16,17 +12,12 @@ run_test() {
   local test=$2
   local ARGS=( "--${protocol}" "--dmac" "${SERVER_MAC}" \
   "--smac" "${CLIENT_MAC}" "--test" "${test}" "--verbose" )
-
   setup_ns
-  # Each test is run 3 times to deflake, because given the receive timing,
-  # not all packets that should coalesce will be considered in the same flow
-  # on every try.
   for tries in {1..3}; do
-    # Actual test starts here
     ip netns exec server_ns ./gro "${ARGS[@]}" "--rx" "--iface" "server" \
       1>>log.txt &
     server_pid=$!
-    sleep 0.5  # to allow for socket init
+    sleep 0.5  
     ip netns exec client_ns ./gro "${ARGS[@]}" "--iface" "client" \
       1>>log.txt
     wait "${server_pid}"
@@ -38,7 +29,6 @@ run_test() {
   cleanup_ns
   echo ${exit_code}
 }
-
 run_all_tests() {
   local failed_tests=()
   for proto in "${PROTOS[@]}"; do
@@ -50,7 +40,7 @@ run_all_tests() {
       fi;
     done;
   done
-  if [[ ${#failed_tests[@]} -ne 0 ]]; then
+  if [[ ${
     echo "failed tests: ${failed_tests[*]}. \
     Please see log.txt for more logs"
     exit 1
@@ -58,7 +48,6 @@ run_all_tests() {
     echo "All Tests Succeeded!"
   fi;
 }
-
 usage() {
   echo "Usage: $0 \
   [-i <DEV>] \
@@ -66,7 +55,6 @@ usage() {
   [-p <ipv4|ipv6>]" 1>&2;
   exit 1;
 }
-
 while getopts "i:t:p:" opt; do
   case "${opt}" in
     i)
@@ -83,13 +71,11 @@ while getopts "i:t:p:" opt; do
       ;;
   esac
 done
-
 if [ -n "$dev" ]; then
 	source setup_loopback.sh
 else
 	source setup_veth.sh
 fi
-
 setup
 trap cleanup EXIT
 if [[ "${test}" == "all" ]]; then

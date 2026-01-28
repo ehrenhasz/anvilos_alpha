@@ -1,49 +1,33 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Afatech AF9033 demodulator driver
- *
- * Copyright (C) 2009 Antti Palosaari <crope@iki.fi>
- * Copyright (C) 2012 Antti Palosaari <crope@iki.fi>
- */
-
 #ifndef AF9033_PRIV_H
 #define AF9033_PRIV_H
-
 #include <media/dvb_frontend.h>
 #include "af9033.h"
 #include <linux/math64.h>
 #include <linux/regmap.h>
 #include <linux/kernel.h>
 #include <linux/int_log.h>
-
 struct reg_val {
 	u32 reg;
 	u8  val;
 };
-
 struct reg_val_mask {
 	u32 reg;
 	u8  val;
 	u8  mask;
 };
-
 struct coeff {
 	u32 clock;
 	u32 bandwidth_hz;
 	u8 val[36];
 };
-
 struct clock_adc {
 	u32 clock;
 	u32 adc;
 };
-
 struct val_snr {
 	u32 val;
 	u8 snr;
 };
-
-/* Xtal clock vs. ADC clock lookup table */
 static const struct clock_adc clock_adc_lut[] = {
 	{ 16384000, 20480000 },
 	{ 20480000, 20480000 },
@@ -57,10 +41,7 @@ static const struct clock_adc clock_adc_lut[] = {
 	{ 22000000, 20625000 },
 	{ 12000000, 20250000 },
 };
-
-/* Pre-calculated coeff lookup table */
 static const struct coeff coeff_lut[] = {
-	/* 12.000 MHz */
 	{ 12000000, 8000000, {
 		0x01, 0xce, 0x55, 0xc9, 0x00, 0xe7, 0x2a, 0xe4, 0x00, 0x73,
 		0x99, 0x0f, 0x00, 0x73, 0x95, 0x72, 0x00, 0x73, 0x91, 0xd5,
@@ -80,10 +61,6 @@ static const struct coeff coeff_lut[] = {
 		0xb0, 0x15, 0xf4, 0x02, 0x5b, 0x01 }
 	},
 };
-
-/*
- * Afatech AF9033 demod init
- */
 static const struct reg_val ofsm_init[] = {
 	{ 0x800051, 0x01 },
 	{ 0x800070, 0x0a },
@@ -194,11 +171,6 @@ static const struct reg_val ofsm_init[] = {
 	{ 0x80fb06, 0x03 },
 	{ 0x80fd8b, 0x00 },
 };
-
-/*
- * Infineon TUA 9001 tuner init
- * AF9033_TUNER_TUA9001    = 0x27
- */
 static const struct reg_val tuner_init_tua9001[] = {
 	{ 0x800046, 0x27 },
 	{ 0x800057, 0x00 },
@@ -238,11 +210,6 @@ static const struct reg_val tuner_init_tua9001[] = {
 	{ 0x80f077, 0x01 },
 	{ 0x80f1e6, 0x00 },
 };
-
-/*
- * Fitipower FC0011 tuner init
- * AF9033_TUNER_FC0011    = 0x28
- */
 static const struct reg_val tuner_init_fc0011[] = {
 	{ 0x800046, 0x28 },
 	{ 0x800057, 0x00 },
@@ -301,11 +268,6 @@ static const struct reg_val tuner_init_fc0011[] = {
 	{ 0x80f077, 0x01 },
 	{ 0x80f1e6, 0x00 },
 };
-
-/*
- * Fitipower FC0012 tuner init
- * AF9033_TUNER_FC0012    = 0x2e
- */
 static const struct reg_val tuner_init_fc0012[] = {
 	{ 0x800046, 0x2e },
 	{ 0x800057, 0x00 },
@@ -346,11 +308,6 @@ static const struct reg_val tuner_init_fc0012[] = {
 	{ 0x80f077, 0x01 },
 	{ 0x80f1e6, 0x00 },
 };
-
-/*
- * MaxLinear MxL5007T tuner init
- * AF9033_TUNER_MXL5007T    = 0xa0
- */
 static const struct reg_val tuner_init_mxl5007t[] = {
 	{ 0x800046, 0x1b },
 	{ 0x800057, 0x01 },
@@ -383,11 +340,6 @@ static const struct reg_val tuner_init_mxl5007t[] = {
 	{ 0x80f077, 0x02 },
 	{ 0x80f1e6, 0x00 },
 };
-
-/*
- * NXP TDA18218HN tuner init
- * AF9033_TUNER_TDA18218    = 0xa1
- */
 static const struct reg_val tuner_init_tda18218[] = {
 	{0x800046, 0xa1},
 	{0x800057, 0x01},
@@ -419,11 +371,6 @@ static const struct reg_val tuner_init_tda18218[] = {
 	{0x80f077, 0x02},
 	{0x80f1e6, 0x00},
 };
-
-/*
- * FCI FC2580 tuner init
- * AF9033_TUNER_FC2580      = 0x32
- */
 static const struct reg_val tuner_init_fc2580[] = {
 	{ 0x800046, 0x32 },
 	{ 0x800057, 0x01 },
@@ -460,10 +407,6 @@ static const struct reg_val tuner_init_fc2580[] = {
 	{ 0x80f077, 0x01 },
 	{ 0x80f1e6, 0x01 },
 };
-
-/*
- * IT9133 AX demod init
- */
 static const struct reg_val ofsm_init_it9135_v1[] = {
 	{ 0x800051, 0x01 },
 	{ 0x800070, 0x0a },
@@ -574,11 +517,6 @@ static const struct reg_val ofsm_init_it9135_v1[] = {
 	{ 0x80fb06, 0x03 },
 	{ 0x80fd8b, 0x00 },
 };
-
-/*
- * ITE Tech IT9133 AX Omega tuner init
- * AF9033_TUNER_IT9135_38   = 0x38
- */
 static const struct reg_val tuner_init_it9135_38[] = {
 	{ 0x800043, 0x00 },
 	{ 0x800046, 0x38 },
@@ -793,11 +731,6 @@ static const struct reg_val tuner_init_it9135_38[] = {
 	{ 0x80fb06, 0x03 },
 	{ 0x80fd8b, 0x00 },
 };
-
-/*
- * ITE Tech IT9133 AX Omega LNA config 1 tuner init
- * AF9033_TUNER_IT9135_51   = 0x51
- */
 static const struct reg_val tuner_init_it9135_51[] = {
 	{ 0x800043, 0x00 },
 	{ 0x800046, 0x51 },
@@ -1012,11 +945,6 @@ static const struct reg_val tuner_init_it9135_51[] = {
 	{ 0x80fb06, 0x03 },
 	{ 0x80fd8b, 0x00 },
 };
-
-/*
- * ITE Tech IT9133 AX Omega LNA config 2 tuner init
- * AF9033_TUNER_IT9135_52   = 0x52
- */
 static const struct reg_val tuner_init_it9135_52[] = {
 	{ 0x800043, 0x00 },
 	{ 0x800046, 0x52 },
@@ -1231,10 +1159,6 @@ static const struct reg_val tuner_init_it9135_52[] = {
 	{ 0x80fb06, 0x03 },
 	{ 0x80fd8b, 0x00 },
 };
-
-/*
- * ITE Tech IT9133 BX demod init
- */
 static const struct reg_val ofsm_init_it9135_v2[] = {
 	{ 0x800051, 0x01 },
 	{ 0x800070, 0x0a },
@@ -1332,11 +1256,6 @@ static const struct reg_val ofsm_init_it9135_v2[] = {
 	{ 0x80fb06, 0x03 },
 	{ 0x80fd8b, 0x00 },
 };
-
-/*
- * ITE Tech IT9133 BX Omega tuner init
- * AF9033_TUNER_IT9135_60   = 0x60
- */
 static const struct reg_val tuner_init_it9135_60[] = {
 	{ 0x800043, 0x00 },
 	{ 0x800046, 0x60 },
@@ -1548,11 +1467,6 @@ static const struct reg_val tuner_init_it9135_60[] = {
 	{ 0x80fb06, 0x03 },
 	{ 0x80fd8b, 0x00 },
 };
-
-/*
- * ITE Tech IT9133 BX Omega LNA config 1 tuner init
- * AF9033_TUNER_IT9135_61   = 0x61
- */
 static const struct reg_val tuner_init_it9135_61[] = {
 	{ 0x800043, 0x00 },
 	{ 0x800046, 0x61 },
@@ -1764,11 +1678,6 @@ static const struct reg_val tuner_init_it9135_61[] = {
 	{ 0x80fb06, 0x03 },
 	{ 0x80fd8b, 0x00 },
 };
-
-/*
- * ITE Tech IT9133 BX Omega LNA config 2 tuner init
- * AF9033_TUNER_IT9135_62   = 0x62
- */
 static const struct reg_val tuner_init_it9135_62[] = {
 	{ 0x800043, 0x00 },
 	{ 0x800046, 0x62 },
@@ -1981,11 +1890,9 @@ static const struct reg_val tuner_init_it9135_62[] = {
 	{ 0x80fb06, 0x03 },
 	{ 0x80fd8b, 0x00 },
 };
-
-/* NorDig power reference table */
 static const int power_reference[][5] = {
-	{-93, -91, -90, -89, -88}, /* QPSK 1/2 ~ 7/8 */
-	{-87, -85, -84, -83, -82}, /* 16QAM 1/2 ~ 7/8 */
-	{-82, -80, -78, -77, -76}, /* 64QAM 1/2 ~ 7/8 */
+	{-93, -91, -90, -89, -88},  
+	{-87, -85, -84, -83, -82},  
+	{-82, -80, -78, -77, -76},  
 };
-#endif /* AF9033_PRIV_H */
+#endif  

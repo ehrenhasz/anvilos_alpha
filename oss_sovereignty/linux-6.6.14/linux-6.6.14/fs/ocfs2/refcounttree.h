@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * refcounttree.h
- *
- * Copyright (C) 2009 Oracle.  All rights reserved.
- */
 #ifndef OCFS2_REFCOUNTTREE_H
 #define OCFS2_REFCOUNTTREE_H
-
 struct ocfs2_refcount_tree {
 	struct rb_node rf_node;
 	u64 rf_blkno;
@@ -15,14 +8,11 @@ struct ocfs2_refcount_tree {
 	struct rw_semaphore rf_sem;
 	struct ocfs2_lock_res rf_lockres;
 	int rf_removed;
-
-	/* the following 4 fields are used by caching_info. */
 	spinlock_t rf_lock;
 	struct ocfs2_caching_info rf_ci;
 	struct mutex rf_io_mutex;
 	struct super_block *rf_sb;
 };
-
 void ocfs2_purge_refcount_trees(struct ocfs2_super *osb);
 int ocfs2_lock_refcount_tree(struct ocfs2_super *osb, u64 ref_blkno, int rw,
 			     struct ocfs2_refcount_tree **tree,
@@ -30,7 +20,6 @@ int ocfs2_lock_refcount_tree(struct ocfs2_super *osb, u64 ref_blkno, int rw,
 void ocfs2_unlock_refcount_tree(struct ocfs2_super *osb,
 				struct ocfs2_refcount_tree *tree,
 				int rw);
-
 int ocfs2_decrease_refcount(struct inode *inode,
 			    handle_t *handle, u32 cpos, u32 len,
 			    struct ocfs2_alloc_context *meta_ac,
@@ -45,23 +34,14 @@ int ocfs2_prepare_refcount_change_for_del(struct inode *inode,
 int ocfs2_refcount_cow(struct inode *inode,
 		       struct buffer_head *di_bh,
 		       u32 cpos, u32 write_len, u32 max_cpos);
-
 typedef int (ocfs2_post_refcount_func)(struct inode *inode,
 				       handle_t *handle,
 				       void *para);
-/*
- * Some refcount caller need to do more work after we modify the data b-tree
- * during refcount operation(including CoW and add refcount flag), and make the
- * transaction complete. So it must give us this structure so that we can do it
- * within our transaction.
- *
- */
 struct ocfs2_post_refcount {
-	int credits;			/* credits it need for journal. */
-	ocfs2_post_refcount_func *func;	/* real function. */
+	int credits;			 
+	ocfs2_post_refcount_func *func;	 
 	void *para;
 };
-
 int ocfs2_refcounted_xattr_delete_need(struct inode *inode,
 				       struct ocfs2_caching_info *ref_ci,
 				       struct buffer_head *ref_root_bh,
@@ -123,5 +103,4 @@ void ocfs2_reflink_inodes_unlock(struct inode *s_inode,
 int ocfs2_reflink_update_dest(struct inode *dest,
 			      struct buffer_head *d_bh,
 			      loff_t newlen);
-
-#endif /* OCFS2_REFCOUNTTREE_H */
+#endif  

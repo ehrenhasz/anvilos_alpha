@@ -1,23 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0
 /dts-v1/;
-
 #include "kirkwood.dtsi"
 #include "kirkwood-6281.dtsi"
-
 / {
 	model = "Seagate FreeAgent Dockstar";
 	compatible = "seagate,dockstar", "marvell,kirkwood-88f6281", "marvell,kirkwood";
-
 	memory {
 		device_type = "memory";
 		reg = <0x00000000 0x8000000>;
 	};
-
 	chosen {
 		bootargs = "console=ttyS0,115200n8 earlyprintk root=/dev/sda1 rootdelay=10";
 		stdout-path = &uart0;
 	};
-
 	ocp@f1000000 {
 		pinctrl: pin-controller@10000 {
 			pmx_usb_power_enable: pmx-usb-power-enable {
@@ -41,7 +35,6 @@
 		compatible = "gpio-leds";
 		pinctrl-0 = <&pmx_led_green &pmx_led_orange>;
 		pinctrl-names = "default";
-
 		health {
 			label = "status:green:health";
 			gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
@@ -58,7 +51,6 @@
 		#size-cells = <0>;
 		pinctrl-0 = <&pmx_usb_power_enable>;
 		pinctrl-names = "default";
-
 		usb_power: regulator@1 {
 			compatible = "regulator-fixed";
 			reg = <1>;
@@ -72,36 +64,29 @@
 		};
 	};
 };
-
 &nand {
 	status = "okay";
-
 	partition@0 {
 		label = "u-boot";
 		reg = <0x0000000 0x100000>;
 		read-only;
 	};
-
 	partition@100000 {
 		label = "uImage";
 		reg = <0x0100000 0x400000>;
 	};
-
 	partition@500000 {
 		label = "data";
 		reg = <0x0500000 0xfb00000>;
 	};
 };
-
 &mdio {
 	status = "okay";
-
 	ethphy0: ethernet-phy@0 {
 		compatible = "marvell,88e1116";
 		reg = <0>;
 	};
 };
-
 &eth0 {
 	status = "okay";
 	ethernet0-port@0 {

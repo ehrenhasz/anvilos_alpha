@@ -1,44 +1,36 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef __ASM_GENERIC_TERMBITS_H
 #define __ASM_GENERIC_TERMBITS_H
-
 #include <asm-generic/termbits-common.h>
-
 typedef unsigned int	tcflag_t;
-
 #define NCCS 19
 struct termios {
-	tcflag_t c_iflag;		/* input mode flags */
-	tcflag_t c_oflag;		/* output mode flags */
-	tcflag_t c_cflag;		/* control mode flags */
-	tcflag_t c_lflag;		/* local mode flags */
-	cc_t c_line;			/* line discipline */
-	cc_t c_cc[NCCS];		/* control characters */
+	tcflag_t c_iflag;		 
+	tcflag_t c_oflag;		 
+	tcflag_t c_cflag;		 
+	tcflag_t c_lflag;		 
+	cc_t c_line;			 
+	cc_t c_cc[NCCS];		 
 };
-
 struct termios2 {
-	tcflag_t c_iflag;		/* input mode flags */
-	tcflag_t c_oflag;		/* output mode flags */
-	tcflag_t c_cflag;		/* control mode flags */
-	tcflag_t c_lflag;		/* local mode flags */
-	cc_t c_line;			/* line discipline */
-	cc_t c_cc[NCCS];		/* control characters */
-	speed_t c_ispeed;		/* input speed */
-	speed_t c_ospeed;		/* output speed */
+	tcflag_t c_iflag;		 
+	tcflag_t c_oflag;		 
+	tcflag_t c_cflag;		 
+	tcflag_t c_lflag;		 
+	cc_t c_line;			 
+	cc_t c_cc[NCCS];		 
+	speed_t c_ispeed;		 
+	speed_t c_ospeed;		 
 };
-
 struct ktermios {
-	tcflag_t c_iflag;		/* input mode flags */
-	tcflag_t c_oflag;		/* output mode flags */
-	tcflag_t c_cflag;		/* control mode flags */
-	tcflag_t c_lflag;		/* local mode flags */
-	cc_t c_line;			/* line discipline */
-	cc_t c_cc[NCCS];		/* control characters */
-	speed_t c_ispeed;		/* input speed */
-	speed_t c_ospeed;		/* output speed */
+	tcflag_t c_iflag;		 
+	tcflag_t c_oflag;		 
+	tcflag_t c_cflag;		 
+	tcflag_t c_lflag;		 
+	cc_t c_line;			 
+	cc_t c_cc[NCCS];		 
+	speed_t c_ispeed;		 
+	speed_t c_ospeed;		 
 };
-
-/* c_cc characters */
 #define VINTR		 0
 #define VQUIT		 1
 #define VERASE		 2
@@ -56,15 +48,11 @@ struct ktermios {
 #define VWERASE		14
 #define VLNEXT		15
 #define VEOL2		16
-
-/* c_iflag bits */
 #define IUCLC	0x0200
 #define IXON	0x0400
 #define IXOFF	0x1000
 #define IMAXBEL	0x2000
 #define IUTF8	0x4000
-
-/* c_oflag bits */
 #define OLCUC	0x00002
 #define ONLCR	0x00004
 #define NLDLY	0x00100
@@ -90,8 +78,6 @@ struct ktermios {
 #define FFDLY	0x08000
 #define   FF0	0x00000
 #define   FF1	0x08000
-
-/* c_cflag bit meaning */
 #define CBAUD		0x0000100f
 #define CSIZE		0x00000030
 #define   CS5		0x00000000
@@ -121,9 +107,7 @@ struct ktermios {
 #define   B3000000	0x0000100d
 #define   B3500000	0x0000100e
 #define   B4000000	0x0000100f
-#define CIBAUD		0x100f0000	/* input baud rate */
-
-/* c_lflag bits */
+#define CIBAUD		0x100f0000	 
 #define ISIG	0x00001
 #define ICANON	0x00002
 #define XCASE	0x00004
@@ -140,10 +124,7 @@ struct ktermios {
 #define PENDIN	0x04000
 #define IEXTEN	0x08000
 #define EXTPROC	0x10000
-
-/* tcsetattr uses these */
 #define	TCSANOW		0
 #define	TCSADRAIN	1
 #define	TCSAFLUSH	2
-
-#endif /* __ASM_GENERIC_TERMBITS_H */
+#endif  

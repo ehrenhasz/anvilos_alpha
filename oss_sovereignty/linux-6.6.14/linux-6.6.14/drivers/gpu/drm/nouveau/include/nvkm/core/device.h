@@ -1,17 +1,14 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_DEVICE_H__
 #define __NVKM_DEVICE_H__
 #include <core/oclass.h>
 #include <core/intr.h>
 enum nvkm_subdev_type;
-
 enum nvkm_device_type {
 	NVKM_DEVICE_PCI,
 	NVKM_DEVICE_AGP,
 	NVKM_DEVICE_PCIE,
 	NVKM_DEVICE_TEGRA,
 };
-
 struct nvkm_device {
 	const struct nvkm_device_func *func;
 	const struct nvkm_device_quirk *quirk;
@@ -21,15 +18,11 @@ struct nvkm_device {
 	const char *name;
 	const char *cfgopt;
 	const char *dbgopt;
-
 	struct list_head head;
 	struct mutex mutex;
 	int refcount;
-
 	void __iomem *pri;
-
 	u32 debug;
-
 	const struct nvkm_device_chip *chip;
 	enum {
 		NV_04    = 0x04,
@@ -50,18 +43,15 @@ struct nvkm_device {
 	u32 chipset;
 	u8  chiprev;
 	u32 crystal;
-
 	struct {
 		struct notifier_block nb;
 	} acpi;
-
 #define NVKM_LAYOUT_ONCE(type,data,ptr) data *ptr;
 #define NVKM_LAYOUT_INST(type,data,ptr,cnt) data *ptr[cnt];
 #include <core/layout.h>
 #undef NVKM_LAYOUT_INST
 #undef NVKM_LAYOUT_ONCE
 	struct list_head subdev;
-
 	struct {
 		struct list_head intr;
 		struct list_head prio[NVKM_INTR_PRIO_NR];
@@ -72,10 +62,8 @@ struct nvkm_device {
 		bool legacy_done;
 	} intr;
 };
-
 struct nvkm_subdev *nvkm_device_subdev(struct nvkm_device *, int type, int inst);
 struct nvkm_engine *nvkm_device_engine(struct nvkm_device *, int type, int inst);
-
 struct nvkm_device_func {
 	struct nvkm_device_pci *(*pci)(struct nvkm_device *);
 	struct nvkm_device_tegra *(*tegra)(struct nvkm_device *);
@@ -88,12 +76,10 @@ struct nvkm_device_func {
 	resource_size_t (*resource_size)(struct nvkm_device *, unsigned bar);
 	bool cpu_coherent;
 };
-
 struct nvkm_device_quirk {
 	u8 tv_pin_mask;
 	u8 tv_gpio;
 };
-
 struct nvkm_device_chip {
 	const char *name;
 #define NVKM_LAYOUT_ONCE(type,data,ptr,...)                                                  \
@@ -106,11 +92,8 @@ struct nvkm_device_chip {
 #undef NVKM_LAYOUT_INST
 #undef NVKM_LAYOUT_ONCE
 };
-
 struct nvkm_device *nvkm_device_find(u64 name);
 int nvkm_device_list(u64 *name, int size);
-
-/* privileged register interface accessor macros */
 #define nvkm_rd08(d,a) ioread8((d)->pri + (a))
 #define nvkm_rd16(d,a) ioread16_native((d)->pri + (a))
 #define nvkm_rd32(d,a) ioread32_native((d)->pri + (a))
@@ -123,18 +106,13 @@ int nvkm_device_list(u64 *name, int size);
 	nvkm_wr32(_device, _addr, (_temp & ~(m)) | (v));                       \
 	_temp;                                                                 \
 })
-
 void nvkm_device_del(struct nvkm_device **);
-
 struct nvkm_device_oclass {
 	int (*ctor)(struct nvkm_device *, const struct nvkm_oclass *,
 		    void *data, u32 size, struct nvkm_object **);
 	struct nvkm_sclass base;
 };
-
 extern const struct nvkm_sclass nvkm_udevice_sclass;
-
-/* device logging */
 #define nvdev_printk_(d,l,p,f,a...) do {                                       \
 	const struct nvkm_device *_device = (d);                               \
 	if (_device->debug >= (l))                                             \

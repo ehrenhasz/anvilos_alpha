@@ -1,18 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (C) 2001 Ben. Herrenschmidt (benh@kernel.crashing.org)
- *
- *  Modifications for ppc64:
- *      Copyright (C) 2003 Dave Engebretsen <engebret@us.ibm.com>
- */
-
-/* NOTE:
- * Unlike ppc32, ppc64 will only call cpu_setup() for the boot CPU, it's
- * the responsibility of the appropriate CPU save/restore functions to
- * eventually copy these settings over. Those save/restore aren't yet
- * part of the cputable though. That has to be fixed for both ppc32
- * and ppc64
- */
 #define COMMON_USER_PPC64	(PPC_FEATURE_32 | PPC_FEATURE_HAS_FPU | \
 				 PPC_FEATURE_HAS_MMU | PPC_FEATURE_64)
 #define COMMON_USER_POWER4	(COMMON_USER_PPC64 | PPC_FEATURE_POWER4)
@@ -59,9 +44,8 @@
 				 PPC_FEATURE2_DSCR | \
 				 PPC_FEATURE2_ISEL | PPC_FEATURE2_TAR | \
 				 PPC_FEATURE2_VEC_CRYPTO)
-
 static struct cpu_spec cpu_specs[] __initdata = {
-	{	/* PPC970 */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x00390000,
 		.cpu_name		= "PPC970",
@@ -76,7 +60,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.cpu_restore		= __restore_cpu_ppc970,
 		.platform		= "ppc970",
 	},
-	{	/* PPC970FX */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x003c0000,
 		.cpu_name		= "PPC970FX",
@@ -91,7 +75,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.cpu_restore		= __restore_cpu_ppc970,
 		.platform		= "ppc970",
 	},
-	{	/* PPC970MP DD1.0 - no DEEPNAP, use regular 970 init */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x00440100,
 		.cpu_name		= "PPC970MP",
@@ -106,7 +90,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.cpu_restore		= __restore_cpu_ppc970,
 		.platform		= "ppc970",
 	},
-	{	/* PPC970MP */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x00440000,
 		.cpu_name		= "PPC970MP",
@@ -121,7 +105,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.cpu_restore		= __restore_cpu_ppc970,
 		.platform		= "ppc970",
 	},
-	{	/* PPC970GX */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x00450000,
 		.cpu_name		= "PPC970GX",
@@ -135,7 +119,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.cpu_setup		= __setup_cpu_ppc970,
 		.platform		= "ppc970",
 	},
-	{	/* Power5 GR */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x003a0000,
 		.cpu_name		= "POWER5 (gr)",
@@ -148,7 +132,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.pmc_type		= PPC_PMC_IBM,
 		.platform		= "power5",
 	},
-	{	/* Power5++ */
+	{	 
 		.pvr_mask		= 0xffffff00,
 		.pvr_value		= 0x003b0300,
 		.cpu_name		= "POWER5+ (gs)",
@@ -160,7 +144,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.num_pmcs		= 6,
 		.platform		= "power5+",
 	},
-	{	/* Power5 GS */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x003b0000,
 		.cpu_name		= "POWER5+ (gs)",
@@ -173,7 +157,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.pmc_type		= PPC_PMC_IBM,
 		.platform		= "power5+",
 	},
-	{	/* POWER6 in P5+ mode; 2.04-compliant processor */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x0f000001,
 		.cpu_name		= "POWER5+",
@@ -184,7 +168,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.dcache_bsize		= 128,
 		.platform		= "power5+",
 	},
-	{	/* Power6 */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x003e0000,
 		.cpu_name		= "POWER6 (raw)",
@@ -197,7 +181,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.pmc_type		= PPC_PMC_IBM,
 		.platform		= "power6x",
 	},
-	{	/* 2.05-compliant processor, i.e. Power6 "architected" mode */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x0f000002,
 		.cpu_name		= "POWER6 (architected)",
@@ -208,7 +192,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.dcache_bsize		= 128,
 		.platform		= "power6",
 	},
-	{	/* 2.06-compliant processor, i.e. Power7 "architected" mode */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x0f000003,
 		.cpu_name		= "POWER7 (architected)",
@@ -223,7 +207,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check_early	= __machine_check_early_realmode_p7,
 		.platform		= "power7",
 	},
-	{	/* 2.07-compliant processor, i.e. Power8 "architected" mode */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x0f000004,
 		.cpu_name		= "POWER8 (architected)",
@@ -238,7 +222,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check_early	= __machine_check_early_realmode_p8,
 		.platform		= "power8",
 	},
-	{	/* 3.00-compliant processor, i.e. Power9 "architected" mode */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x0f000005,
 		.cpu_name		= "POWER9 (architected)",
@@ -252,7 +236,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.cpu_restore		= __restore_cpu_power9,
 		.platform		= "power9",
 	},
-	{	/* 3.1-compliant processor, i.e. Power10 "architected" mode */
+	{	 
 		.pvr_mask		= 0xffffffff,
 		.pvr_value		= 0x0f000006,
 		.cpu_name		= "POWER10 (architected)",
@@ -266,7 +250,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.cpu_restore		= __restore_cpu_power10,
 		.platform		= "power10",
 	},
-	{	/* Power7 */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x003f0000,
 		.cpu_name		= "POWER7 (raw)",
@@ -283,7 +267,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check_early	= __machine_check_early_realmode_p7,
 		.platform		= "power7",
 	},
-	{	/* Power7+ */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x004A0000,
 		.cpu_name		= "POWER7+ (raw)",
@@ -300,7 +284,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check_early	= __machine_check_early_realmode_p7,
 		.platform		= "power7+",
 	},
-	{	/* Power8E */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x004b0000,
 		.cpu_name		= "POWER8E (raw)",
@@ -317,7 +301,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check_early	= __machine_check_early_realmode_p8,
 		.platform		= "power8",
 	},
-	{	/* Power8NVL */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x004c0000,
 		.cpu_name		= "POWER8NVL (raw)",
@@ -334,7 +318,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check_early	= __machine_check_early_realmode_p8,
 		.platform		= "power8",
 	},
-	{	/* Power8 */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x004d0000,
 		.cpu_name		= "POWER8 (raw)",
@@ -351,7 +335,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check_early	= __machine_check_early_realmode_p8,
 		.platform		= "power8",
 	},
-	{	/* Power9 DD2.0 */
+	{	 
 		.pvr_mask		= 0xffffefff,
 		.pvr_value		= 0x004e0200,
 		.cpu_name		= "POWER9 (raw)",
@@ -368,7 +352,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check_early	= __machine_check_early_realmode_p9,
 		.platform		= "power9",
 	},
-	{	/* Power9 DD 2.1 */
+	{	 
 		.pvr_mask		= 0xffffefff,
 		.pvr_value		= 0x004e0201,
 		.cpu_name		= "POWER9 (raw)",
@@ -385,7 +369,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check_early	= __machine_check_early_realmode_p9,
 		.platform		= "power9",
 	},
-	{	/* Power9 DD2.2 */
+	{	 
 		.pvr_mask		= 0xffffefff,
 		.pvr_value		= 0x004e0202,
 		.cpu_name		= "POWER9 (raw)",
@@ -402,7 +386,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check_early	= __machine_check_early_realmode_p9,
 		.platform		= "power9",
 	},
-	{	/* Power9 DD2.3 or later */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x004e0000,
 		.cpu_name		= "POWER9 (raw)",
@@ -419,7 +403,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check_early	= __machine_check_early_realmode_p9,
 		.platform		= "power9",
 	},
-	{	/* Power10 */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x00800000,
 		.cpu_name		= "POWER10 (raw)",
@@ -436,7 +420,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check_early	= __machine_check_early_realmode_p10,
 		.platform		= "power10",
 	},
-	{	/* Cell Broadband Engine */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x00700000,
 		.cpu_name		= "Cell Broadband Engine",
@@ -450,7 +434,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.pmc_type		= PPC_PMC_IBM,
 		.platform		= "ppc-cell-be",
 	},
-	{	/* PA Semi PA6T */
+	{	 
 		.pvr_mask		= 0x7fff0000,
 		.pvr_value		= 0x00900000,
 		.cpu_name		= "PA6T",
@@ -465,7 +449,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.cpu_restore		= __restore_cpu_pa6t,
 		.platform		= "pa6t",
 	},
-	{	/* default match */
+	{	 
 		.pvr_mask		= 0x00000000,
 		.pvr_value		= 0x00000000,
 		.cpu_name		= "POWER5 (compatible)",

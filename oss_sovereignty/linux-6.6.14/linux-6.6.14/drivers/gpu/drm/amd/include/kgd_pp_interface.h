@@ -1,50 +1,20 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-
 #ifndef __KGD_PP_INTERFACE_H__
 #define __KGD_PP_INTERFACE_H__
-
 extern const struct amdgpu_ip_block_version pp_smu_ip_block;
 extern const struct amdgpu_ip_block_version smu_v11_0_ip_block;
 extern const struct amdgpu_ip_block_version smu_v12_0_ip_block;
 extern const struct amdgpu_ip_block_version smu_v13_0_ip_block;
-
 enum smu_event_type {
 	SMU_EVENT_RESET_COMPLETE = 0,
 };
-
 struct amd_vce_state {
-	/* vce clocks */
 	u32 evclk;
 	u32 ecclk;
-	/* gpu clocks */
 	u32 sclk;
 	u32 mclk;
 	u8 clk_idx;
 	u8 pstate;
 };
-
-
 enum amd_dpm_forced_level {
 	AMD_DPM_FORCED_LEVEL_AUTO = 0x1,
 	AMD_DPM_FORCED_LEVEL_MANUAL = 0x2,
@@ -57,16 +27,12 @@ enum amd_dpm_forced_level {
 	AMD_DPM_FORCED_LEVEL_PROFILE_EXIT = 0x100,
 	AMD_DPM_FORCED_LEVEL_PERF_DETERMINISM = 0x200,
 };
-
 enum amd_pm_state_type {
-	/* not used for dpm */
 	POWER_STATE_TYPE_DEFAULT,
 	POWER_STATE_TYPE_POWERSAVE,
-	/* user selectable states */
 	POWER_STATE_TYPE_BATTERY,
 	POWER_STATE_TYPE_BALANCED,
 	POWER_STATE_TYPE_PERFORMANCE,
-	/* internal states */
 	POWER_STATE_TYPE_INTERNAL_UVD,
 	POWER_STATE_TYPE_INTERNAL_UVD_SD,
 	POWER_STATE_TYPE_INTERNAL_UVD_HD,
@@ -78,24 +44,20 @@ enum amd_pm_state_type {
 	POWER_STATE_TYPE_INTERNAL_ULV,
 	POWER_STATE_TYPE_INTERNAL_3DPERF,
 };
-
 #define AMD_MAX_VCE_LEVELS 6
-
 enum amd_vce_level {
-	AMD_VCE_LEVEL_AC_ALL = 0,     /* AC, All cases */
-	AMD_VCE_LEVEL_DC_EE = 1,      /* DC, entropy encoding */
-	AMD_VCE_LEVEL_DC_LL_LOW = 2,  /* DC, low latency queue, res <= 720 */
-	AMD_VCE_LEVEL_DC_LL_HIGH = 3, /* DC, low latency queue, 1080 >= res > 720 */
-	AMD_VCE_LEVEL_DC_GP_LOW = 4,  /* DC, general purpose queue, res <= 720 */
-	AMD_VCE_LEVEL_DC_GP_HIGH = 5, /* DC, general purpose queue, 1080 >= res > 720 */
+	AMD_VCE_LEVEL_AC_ALL = 0,      
+	AMD_VCE_LEVEL_DC_EE = 1,       
+	AMD_VCE_LEVEL_DC_LL_LOW = 2,   
+	AMD_VCE_LEVEL_DC_LL_HIGH = 3,  
+	AMD_VCE_LEVEL_DC_GP_LOW = 4,   
+	AMD_VCE_LEVEL_DC_GP_HIGH = 5,  
 };
-
 enum amd_fan_ctrl_mode {
 	AMD_FAN_CTRL_NONE = 0,
 	AMD_FAN_CTRL_MANUAL = 1,
 	AMD_FAN_CTRL_AUTO = 2,
 };
-
 enum pp_clock_type {
 	PP_SCLK,
 	PP_MCLK,
@@ -114,7 +76,6 @@ enum pp_clock_type {
 	OD_VDDGFX_OFFSET,
 	OD_CCLK,
 };
-
 enum amd_pp_sensors {
 	AMDGPU_PP_SENSOR_GFX_SCLK = 0,
 	AMDGPU_PP_SENSOR_CPU_CLK,
@@ -145,7 +106,6 @@ enum amd_pp_sensors {
 	AMDGPU_PP_SENSOR_PEAK_PSTATE_SCLK,
 	AMDGPU_PP_SENSOR_PEAK_PSTATE_MCLK,
 };
-
 enum amd_pp_task {
 	AMD_PP_TASK_DISPLAY_CONFIG_CHANGE,
 	AMD_PP_TASK_ENABLE_USER_STATE,
@@ -153,7 +113,6 @@ enum amd_pp_task {
 	AMD_PP_TASK_COMPLETE_INIT,
 	AMD_PP_TASK_MAX
 };
-
 enum PP_SMC_POWER_PROFILE {
 	PP_SMC_POWER_PROFILE_BOOTUP_DEFAULT = 0x0,
 	PP_SMC_POWER_PROFILE_FULLSCREEN3D = 0x1,
@@ -167,18 +126,13 @@ enum PP_SMC_POWER_PROFILE {
 	PP_SMC_POWER_PROFILE_UNCAPPED	  = 0x9,
 	PP_SMC_POWER_PROFILE_COUNT,
 };
-
 extern const char * const amdgpu_pp_profile_name[PP_SMC_POWER_PROFILE_COUNT];
-
-
-
 enum {
 	PP_GROUP_UNKNOWN = 0,
 	PP_GROUP_GFX = 1,
 	PP_GROUP_SYS,
 	PP_GROUP_MAX
 };
-
 enum PP_OD_DPM_TABLE_COMMAND {
 	PP_OD_EDIT_SCLK_VDDC_TABLE,
 	PP_OD_EDIT_MCLK_VDDC_TABLE,
@@ -188,51 +142,26 @@ enum PP_OD_DPM_TABLE_COMMAND {
 	PP_OD_COMMIT_DPM_TABLE,
 	PP_OD_EDIT_VDDGFX_OFFSET
 };
-
 struct pp_states_info {
 	uint32_t nums;
 	uint32_t states[16];
 };
-
 enum PP_HWMON_TEMP {
 	PP_TEMP_EDGE = 0,
 	PP_TEMP_JUNCTION,
 	PP_TEMP_MEM,
 	PP_TEMP_MAX
 };
-
 enum pp_mp1_state {
 	PP_MP1_STATE_NONE,
 	PP_MP1_STATE_SHUTDOWN,
 	PP_MP1_STATE_UNLOAD,
 	PP_MP1_STATE_RESET,
 };
-
 enum pp_df_cstate {
 	DF_CSTATE_DISALLOW = 0,
 	DF_CSTATE_ALLOW,
 };
-
-/**
- * DOC: amdgpu_pp_power
- *
- * APU power is managed to system-level requirements through the PPT
- * (package power tracking) feature. PPT is intended to limit power to the
- * requirements of the power source and could be dynamically updated to
- * maximize APU performance within the system power budget.
- *
- * Two types of power measurement can be requested, where supported, with
- * :c:type:`enum pp_power_type <pp_power_type>`.
- */
-
-/**
- * enum pp_power_limit_level - Used to query the power limits
- *
- * @PP_PWR_LIMIT_MIN: Minimum Power Limit
- * @PP_PWR_LIMIT_CURRENT: Current Power Limit
- * @PP_PWR_LIMIT_DEFAULT: Default Power Limit
- * @PP_PWR_LIMIT_MAX: Maximum Power Limit
- */
 enum pp_power_limit_level
 {
 	PP_PWR_LIMIT_MIN = -1,
@@ -240,27 +169,15 @@ enum pp_power_limit_level
 	PP_PWR_LIMIT_DEFAULT,
 	PP_PWR_LIMIT_MAX,
 };
-
-/**
- * enum pp_power_type - Used to specify the type of the requested power
- *
- * @PP_PWR_TYPE_SUSTAINED: manages the configurable, thermally significant
- * moving average of APU power (default ~5000 ms).
- * @PP_PWR_TYPE_FAST: manages the ~10 ms moving average of APU power,
- * where supported.
- */
 enum pp_power_type
 {
 	PP_PWR_TYPE_SUSTAINED,
 	PP_PWR_TYPE_FAST,
 };
-
 #define PP_GROUP_MASK        0xF0000000
 #define PP_GROUP_SHIFT       28
-
 #define PP_BLOCK_MASK        0x0FFFFF00
 #define PP_BLOCK_SHIFT       8
-
 #define PP_BLOCK_GFX_CG         0x01
 #define PP_BLOCK_GFX_MG         0x02
 #define PP_BLOCK_GFX_3D         0x04
@@ -272,12 +189,10 @@ enum pp_power_type
 #define PP_BLOCK_SYS_DRM        0x08
 #define PP_BLOCK_SYS_HDP        0x10
 #define PP_BLOCK_SYS_SDMA       0x20
-
 #define PP_STATE_MASK           0x0000000F
 #define PP_STATE_SHIFT          0
 #define PP_STATE_SUPPORT_MASK   0x000000F0
 #define PP_STATE_SUPPORT_SHIFT  0
-
 #define PP_STATE_CG             0x01
 #define PP_STATE_LS             0x02
 #define PP_STATE_DS             0x04
@@ -286,16 +201,12 @@ enum pp_power_type
 #define PP_STATE_SUPPORT_LS     0x20
 #define PP_STATE_SUPPORT_DS     0x40
 #define PP_STATE_SUPPORT_SD     0x80
-
 #define PP_CG_MSG_ID(group, block, support, state) \
 		((group) << PP_GROUP_SHIFT | (block) << PP_BLOCK_SHIFT | \
 		(support) << PP_STATE_SUPPORT_SHIFT | (state) << PP_STATE_SHIFT)
-
 #define XGMI_MODE_PSTATE_D3 0
 #define XGMI_MODE_PSTATE_D0 1
-
 #define NUM_HBM_INSTANCES 4
-
 struct seq_file;
 enum amd_pp_clock_type;
 struct amd_pp_simple_clock_info;
@@ -308,9 +219,7 @@ struct amd_pp_clocks;
 struct pp_smu_wm_range_sets;
 struct pp_smu_nv_clock_table;
 struct dpm_clocks;
-
 struct amd_pm_funcs {
-/* export for dpm on ci and si */
 	int (*pre_set_power_state)(void *handle);
 	int (*set_power_state)(void *handle);
 	void (*post_set_power_state)(void *handle);
@@ -322,7 +231,6 @@ struct amd_pm_funcs {
 				void  *cps,
 				void  *rps,
 				bool  *equal);
-/* export for sysfs */
 	int (*set_fan_control_mode)(void *handle, u32 mode);
 	int (*get_fan_control_mode)(void *handle, u32 *fan_mode);
 	int (*set_fan_speed_pwm)(void *handle, u32 speed);
@@ -347,7 +255,6 @@ struct amd_pm_funcs {
 	int (*set_pp_table)(void *handle, const char *buf, size_t size);
 	void (*debugfs_print_current_performance_level)(void *handle, struct seq_file *m);
 	int (*switch_power_profile)(void *handle, enum PP_SMC_POWER_PROFILE type, bool en);
-/* export to amdgpu */
 	struct amd_vce_state *(*get_vce_clock_state)(void *handle, u32 idx);
 	int (*dispatch_tasks)(void *handle, enum amd_pp_task task_id,
 			enum amd_pm_state_type *user_state);
@@ -368,7 +275,6 @@ struct amd_pm_funcs {
 	int (*set_mp1_state)(void *handle, enum pp_mp1_state mp1_state);
 	int (*smu_i2c_bus_access)(void *handle, bool acquire);
 	int (*gfx_state_change_set)(void *handle, uint32_t state);
-/* export to DC */
 	u32 (*get_sclk)(void *handle, bool low);
 	u32 (*get_mclk)(void *handle, bool low);
 	int (*display_configuration_change)(void *handle,
@@ -422,41 +328,25 @@ struct amd_pm_funcs {
 	int (*get_smu_prv_buf_details)(void *handle, void **addr, size_t *size);
 	void (*pm_compute_clocks)(void *handle);
 };
-
 struct metrics_table_header {
 	uint16_t			structure_size;
 	uint8_t				format_revision;
 	uint8_t				content_revision;
 };
-
-/*
- * gpu_metrics_v1_0 is not recommended as it's not naturally aligned.
- * Use gpu_metrics_v1_1 or later instead.
- */
 struct gpu_metrics_v1_0 {
 	struct metrics_table_header	common_header;
-
-	/* Driver attached timestamp (in ns) */
 	uint64_t			system_clock_counter;
-
-	/* Temperature */
 	uint16_t			temperature_edge;
 	uint16_t			temperature_hotspot;
 	uint16_t			temperature_mem;
 	uint16_t			temperature_vrgfx;
 	uint16_t			temperature_vrsoc;
 	uint16_t			temperature_vrmem;
-
-	/* Utilization */
 	uint16_t			average_gfx_activity;
-	uint16_t			average_umc_activity; // memory controller
-	uint16_t			average_mm_activity; // UVD or VCN
-
-	/* Power/Energy */
+	uint16_t			average_umc_activity;  
+	uint16_t			average_mm_activity;  
 	uint16_t			average_socket_power;
 	uint32_t			energy_accumulator;
-
-	/* Average clocks */
 	uint16_t			average_gfxclk_frequency;
 	uint16_t			average_socclk_frequency;
 	uint16_t			average_uclk_frequency;
@@ -464,8 +354,6 @@ struct gpu_metrics_v1_0 {
 	uint16_t			average_dclk0_frequency;
 	uint16_t			average_vclk1_frequency;
 	uint16_t			average_dclk1_frequency;
-
-	/* Current clocks */
 	uint16_t			current_gfxclk;
 	uint16_t			current_socclk;
 	uint16_t			current_uclk;
@@ -473,42 +361,25 @@ struct gpu_metrics_v1_0 {
 	uint16_t			current_dclk0;
 	uint16_t			current_vclk1;
 	uint16_t			current_dclk1;
-
-	/* Throttle status */
 	uint32_t			throttle_status;
-
-	/* Fans */
 	uint16_t			current_fan_speed;
-
-	/* Link width/speed */
 	uint8_t				pcie_link_width;
-	uint8_t				pcie_link_speed; // in 0.1 GT/s
+	uint8_t				pcie_link_speed;  
 };
-
 struct gpu_metrics_v1_1 {
 	struct metrics_table_header	common_header;
-
-	/* Temperature */
 	uint16_t			temperature_edge;
 	uint16_t			temperature_hotspot;
 	uint16_t			temperature_mem;
 	uint16_t			temperature_vrgfx;
 	uint16_t			temperature_vrsoc;
 	uint16_t			temperature_vrmem;
-
-	/* Utilization */
 	uint16_t			average_gfx_activity;
-	uint16_t			average_umc_activity; // memory controller
-	uint16_t			average_mm_activity; // UVD or VCN
-
-	/* Power/Energy */
+	uint16_t			average_umc_activity;  
+	uint16_t			average_mm_activity;  
 	uint16_t			average_socket_power;
 	uint64_t			energy_accumulator;
-
-	/* Driver attached timestamp (in ns) */
 	uint64_t			system_clock_counter;
-
-	/* Average clocks */
 	uint16_t			average_gfxclk_frequency;
 	uint16_t			average_socclk_frequency;
 	uint16_t			average_uclk_frequency;
@@ -516,8 +387,6 @@ struct gpu_metrics_v1_1 {
 	uint16_t			average_dclk0_frequency;
 	uint16_t			average_vclk1_frequency;
 	uint16_t			average_dclk1_frequency;
-
-	/* Current clocks */
 	uint16_t			current_gfxclk;
 	uint16_t			current_socclk;
 	uint16_t			current_uclk;
@@ -525,49 +394,29 @@ struct gpu_metrics_v1_1 {
 	uint16_t			current_dclk0;
 	uint16_t			current_vclk1;
 	uint16_t			current_dclk1;
-
-	/* Throttle status */
 	uint32_t			throttle_status;
-
-	/* Fans */
 	uint16_t			current_fan_speed;
-
-	/* Link width/speed */
 	uint16_t			pcie_link_width;
-	uint16_t			pcie_link_speed; // in 0.1 GT/s
-
+	uint16_t			pcie_link_speed;  
 	uint16_t			padding;
-
 	uint32_t			gfx_activity_acc;
 	uint32_t			mem_activity_acc;
-
 	uint16_t			temperature_hbm[NUM_HBM_INSTANCES];
 };
-
 struct gpu_metrics_v1_2 {
 	struct metrics_table_header	common_header;
-
-	/* Temperature */
 	uint16_t			temperature_edge;
 	uint16_t			temperature_hotspot;
 	uint16_t			temperature_mem;
 	uint16_t			temperature_vrgfx;
 	uint16_t			temperature_vrsoc;
 	uint16_t			temperature_vrmem;
-
-	/* Utilization */
 	uint16_t			average_gfx_activity;
-	uint16_t			average_umc_activity; // memory controller
-	uint16_t			average_mm_activity; // UVD or VCN
-
-	/* Power/Energy */
+	uint16_t			average_umc_activity;  
+	uint16_t			average_mm_activity;  
 	uint16_t			average_socket_power;
 	uint64_t			energy_accumulator;
-
-	/* Driver attached timestamp (in ns) */
 	uint64_t			system_clock_counter;
-
-	/* Average clocks */
 	uint16_t			average_gfxclk_frequency;
 	uint16_t			average_socclk_frequency;
 	uint16_t			average_uclk_frequency;
@@ -575,8 +424,6 @@ struct gpu_metrics_v1_2 {
 	uint16_t			average_dclk0_frequency;
 	uint16_t			average_vclk1_frequency;
 	uint16_t			average_dclk1_frequency;
-
-	/* Current clocks */
 	uint16_t			current_gfxclk;
 	uint16_t			current_socclk;
 	uint16_t			current_uclk;
@@ -584,52 +431,30 @@ struct gpu_metrics_v1_2 {
 	uint16_t			current_dclk0;
 	uint16_t			current_vclk1;
 	uint16_t			current_dclk1;
-
-	/* Throttle status (ASIC dependent) */
 	uint32_t			throttle_status;
-
-	/* Fans */
 	uint16_t			current_fan_speed;
-
-	/* Link width/speed */
 	uint16_t			pcie_link_width;
-	uint16_t			pcie_link_speed; // in 0.1 GT/s
-
+	uint16_t			pcie_link_speed;  
 	uint16_t			padding;
-
 	uint32_t			gfx_activity_acc;
 	uint32_t			mem_activity_acc;
-
 	uint16_t			temperature_hbm[NUM_HBM_INSTANCES];
-
-	/* PMFW attached timestamp (10ns resolution) */
 	uint64_t			firmware_timestamp;
 };
-
 struct gpu_metrics_v1_3 {
 	struct metrics_table_header	common_header;
-
-	/* Temperature */
 	uint16_t			temperature_edge;
 	uint16_t			temperature_hotspot;
 	uint16_t			temperature_mem;
 	uint16_t			temperature_vrgfx;
 	uint16_t			temperature_vrsoc;
 	uint16_t			temperature_vrmem;
-
-	/* Utilization */
 	uint16_t			average_gfx_activity;
-	uint16_t			average_umc_activity; // memory controller
-	uint16_t			average_mm_activity; // UVD or VCN
-
-	/* Power/Energy */
+	uint16_t			average_umc_activity;  
+	uint16_t			average_mm_activity;  
 	uint16_t			average_socket_power;
 	uint64_t			energy_accumulator;
-
-	/* Driver attached timestamp (in ns) */
 	uint64_t			system_clock_counter;
-
-	/* Average clocks */
 	uint16_t			average_gfxclk_frequency;
 	uint16_t			average_socclk_frequency;
 	uint16_t			average_uclk_frequency;
@@ -637,8 +462,6 @@ struct gpu_metrics_v1_3 {
 	uint16_t			average_dclk0_frequency;
 	uint16_t			average_vclk1_frequency;
 	uint16_t			average_dclk1_frequency;
-
-	/* Current clocks */
 	uint16_t			current_gfxclk;
 	uint16_t			current_socclk;
 	uint16_t			current_uclk;
@@ -646,286 +469,175 @@ struct gpu_metrics_v1_3 {
 	uint16_t			current_dclk0;
 	uint16_t			current_vclk1;
 	uint16_t			current_dclk1;
-
-	/* Throttle status */
 	uint32_t			throttle_status;
-
-	/* Fans */
 	uint16_t			current_fan_speed;
-
-	/* Link width/speed */
 	uint16_t			pcie_link_width;
-	uint16_t			pcie_link_speed; // in 0.1 GT/s
-
+	uint16_t			pcie_link_speed;  
 	uint16_t			padding;
-
 	uint32_t			gfx_activity_acc;
 	uint32_t			mem_activity_acc;
-
 	uint16_t			temperature_hbm[NUM_HBM_INSTANCES];
-
-	/* PMFW attached timestamp (10ns resolution) */
 	uint64_t			firmware_timestamp;
-
-	/* Voltage (mV) */
 	uint16_t			voltage_soc;
 	uint16_t			voltage_gfx;
 	uint16_t			voltage_mem;
-
 	uint16_t			padding1;
-
-	/* Throttle status (ASIC independent) */
 	uint64_t			indep_throttle_status;
 };
-
-/*
- * gpu_metrics_v2_0 is not recommended as it's not naturally aligned.
- * Use gpu_metrics_v2_1 or later instead.
- */
 struct gpu_metrics_v2_0 {
 	struct metrics_table_header	common_header;
-
-	/* Driver attached timestamp (in ns) */
 	uint64_t			system_clock_counter;
-
-	/* Temperature */
-	uint16_t			temperature_gfx; // gfx temperature on APUs
-	uint16_t			temperature_soc; // soc temperature on APUs
-	uint16_t			temperature_core[8]; // CPU core temperature on APUs
+	uint16_t			temperature_gfx;  
+	uint16_t			temperature_soc;  
+	uint16_t			temperature_core[8];  
 	uint16_t			temperature_l3[2];
-
-	/* Utilization */
 	uint16_t			average_gfx_activity;
-	uint16_t			average_mm_activity; // UVD or VCN
-
-	/* Power/Energy */
-	uint16_t			average_socket_power; // dGPU + APU power on A + A platform
+	uint16_t			average_mm_activity;  
+	uint16_t			average_socket_power;  
 	uint16_t			average_cpu_power;
 	uint16_t			average_soc_power;
 	uint16_t			average_gfx_power;
-	uint16_t			average_core_power[8]; // CPU core power on APUs
-
-	/* Average clocks */
+	uint16_t			average_core_power[8];  
 	uint16_t			average_gfxclk_frequency;
 	uint16_t			average_socclk_frequency;
 	uint16_t			average_uclk_frequency;
 	uint16_t			average_fclk_frequency;
 	uint16_t			average_vclk_frequency;
 	uint16_t			average_dclk_frequency;
-
-	/* Current clocks */
 	uint16_t			current_gfxclk;
 	uint16_t			current_socclk;
 	uint16_t			current_uclk;
 	uint16_t			current_fclk;
 	uint16_t			current_vclk;
 	uint16_t			current_dclk;
-	uint16_t			current_coreclk[8]; // CPU core clocks
+	uint16_t			current_coreclk[8];  
 	uint16_t			current_l3clk[2];
-
-	/* Throttle status */
 	uint32_t			throttle_status;
-
-	/* Fans */
 	uint16_t			fan_pwm;
-
 	uint16_t			padding;
 };
-
 struct gpu_metrics_v2_1 {
 	struct metrics_table_header	common_header;
-
-	/* Temperature */
-	uint16_t			temperature_gfx; // gfx temperature on APUs
-	uint16_t			temperature_soc; // soc temperature on APUs
-	uint16_t			temperature_core[8]; // CPU core temperature on APUs
+	uint16_t			temperature_gfx;  
+	uint16_t			temperature_soc;  
+	uint16_t			temperature_core[8];  
 	uint16_t			temperature_l3[2];
-
-	/* Utilization */
 	uint16_t			average_gfx_activity;
-	uint16_t			average_mm_activity; // UVD or VCN
-
-	/* Driver attached timestamp (in ns) */
+	uint16_t			average_mm_activity;  
 	uint64_t			system_clock_counter;
-
-	/* Power/Energy */
-	uint16_t			average_socket_power; // dGPU + APU power on A + A platform
+	uint16_t			average_socket_power;  
 	uint16_t			average_cpu_power;
 	uint16_t			average_soc_power;
 	uint16_t			average_gfx_power;
-	uint16_t			average_core_power[8]; // CPU core power on APUs
-
-	/* Average clocks */
+	uint16_t			average_core_power[8];  
 	uint16_t			average_gfxclk_frequency;
 	uint16_t			average_socclk_frequency;
 	uint16_t			average_uclk_frequency;
 	uint16_t			average_fclk_frequency;
 	uint16_t			average_vclk_frequency;
 	uint16_t			average_dclk_frequency;
-
-	/* Current clocks */
 	uint16_t			current_gfxclk;
 	uint16_t			current_socclk;
 	uint16_t			current_uclk;
 	uint16_t			current_fclk;
 	uint16_t			current_vclk;
 	uint16_t			current_dclk;
-	uint16_t			current_coreclk[8]; // CPU core clocks
+	uint16_t			current_coreclk[8];  
 	uint16_t			current_l3clk[2];
-
-	/* Throttle status */
 	uint32_t			throttle_status;
-
-	/* Fans */
 	uint16_t			fan_pwm;
-
 	uint16_t			padding[3];
 };
-
 struct gpu_metrics_v2_2 {
 	struct metrics_table_header	common_header;
-
-	/* Temperature */
-	uint16_t			temperature_gfx; // gfx temperature on APUs
-	uint16_t			temperature_soc; // soc temperature on APUs
-	uint16_t			temperature_core[8]; // CPU core temperature on APUs
+	uint16_t			temperature_gfx;  
+	uint16_t			temperature_soc;  
+	uint16_t			temperature_core[8];  
 	uint16_t			temperature_l3[2];
-
-	/* Utilization */
 	uint16_t			average_gfx_activity;
-	uint16_t			average_mm_activity; // UVD or VCN
-
-	/* Driver attached timestamp (in ns) */
+	uint16_t			average_mm_activity;  
 	uint64_t			system_clock_counter;
-
-	/* Power/Energy */
-	uint16_t			average_socket_power; // dGPU + APU power on A + A platform
+	uint16_t			average_socket_power;  
 	uint16_t			average_cpu_power;
 	uint16_t			average_soc_power;
 	uint16_t			average_gfx_power;
-	uint16_t			average_core_power[8]; // CPU core power on APUs
-
-	/* Average clocks */
+	uint16_t			average_core_power[8];  
 	uint16_t			average_gfxclk_frequency;
 	uint16_t			average_socclk_frequency;
 	uint16_t			average_uclk_frequency;
 	uint16_t			average_fclk_frequency;
 	uint16_t			average_vclk_frequency;
 	uint16_t			average_dclk_frequency;
-
-	/* Current clocks */
 	uint16_t			current_gfxclk;
 	uint16_t			current_socclk;
 	uint16_t			current_uclk;
 	uint16_t			current_fclk;
 	uint16_t			current_vclk;
 	uint16_t			current_dclk;
-	uint16_t			current_coreclk[8]; // CPU core clocks
+	uint16_t			current_coreclk[8];  
 	uint16_t			current_l3clk[2];
-
-	/* Throttle status (ASIC dependent) */
 	uint32_t			throttle_status;
-
-	/* Fans */
 	uint16_t			fan_pwm;
-
 	uint16_t			padding[3];
-
-	/* Throttle status (ASIC independent) */
 	uint64_t			indep_throttle_status;
 };
-
 struct gpu_metrics_v2_3 {
 	struct metrics_table_header	common_header;
-
-	/* Temperature */
-	uint16_t			temperature_gfx; // gfx temperature on APUs
-	uint16_t			temperature_soc; // soc temperature on APUs
-	uint16_t			temperature_core[8]; // CPU core temperature on APUs
+	uint16_t			temperature_gfx;  
+	uint16_t			temperature_soc;  
+	uint16_t			temperature_core[8];  
 	uint16_t			temperature_l3[2];
-
-	/* Utilization */
 	uint16_t			average_gfx_activity;
-	uint16_t			average_mm_activity; // UVD or VCN
-
-	/* Driver attached timestamp (in ns) */
+	uint16_t			average_mm_activity;  
 	uint64_t			system_clock_counter;
-
-	/* Power/Energy */
-	uint16_t			average_socket_power; // dGPU + APU power on A + A platform
+	uint16_t			average_socket_power;  
 	uint16_t			average_cpu_power;
 	uint16_t			average_soc_power;
 	uint16_t			average_gfx_power;
-	uint16_t			average_core_power[8]; // CPU core power on APUs
-
-	/* Average clocks */
+	uint16_t			average_core_power[8];  
 	uint16_t			average_gfxclk_frequency;
 	uint16_t			average_socclk_frequency;
 	uint16_t			average_uclk_frequency;
 	uint16_t			average_fclk_frequency;
 	uint16_t			average_vclk_frequency;
 	uint16_t			average_dclk_frequency;
-
-	/* Current clocks */
 	uint16_t			current_gfxclk;
 	uint16_t			current_socclk;
 	uint16_t			current_uclk;
 	uint16_t			current_fclk;
 	uint16_t			current_vclk;
 	uint16_t			current_dclk;
-	uint16_t			current_coreclk[8]; // CPU core clocks
+	uint16_t			current_coreclk[8];  
 	uint16_t			current_l3clk[2];
-
-	/* Throttle status (ASIC dependent) */
 	uint32_t			throttle_status;
-
-	/* Fans */
 	uint16_t			fan_pwm;
-
 	uint16_t			padding[3];
-
-	/* Throttle status (ASIC independent) */
 	uint64_t			indep_throttle_status;
-
-	/* Average Temperature */
-	uint16_t			average_temperature_gfx; // average gfx temperature on APUs
-	uint16_t			average_temperature_soc; // average soc temperature on APUs
-	uint16_t			average_temperature_core[8]; // average CPU core temperature on APUs
+	uint16_t			average_temperature_gfx;  
+	uint16_t			average_temperature_soc;  
+	uint16_t			average_temperature_core[8];  
 	uint16_t			average_temperature_l3[2];
 };
-
 struct gpu_metrics_v2_4 {
 	struct metrics_table_header	common_header;
-
-	/* Temperature (unit: centi-Celsius) */
 	uint16_t			temperature_gfx;
 	uint16_t			temperature_soc;
 	uint16_t			temperature_core[8];
 	uint16_t			temperature_l3[2];
-
-	/* Utilization (unit: centi) */
 	uint16_t			average_gfx_activity;
 	uint16_t			average_mm_activity;
-
-	/* Driver attached timestamp (in ns) */
 	uint64_t			system_clock_counter;
-
-	/* Power/Energy (unit: mW) */
 	uint16_t			average_socket_power;
 	uint16_t			average_cpu_power;
 	uint16_t			average_soc_power;
 	uint16_t			average_gfx_power;
 	uint16_t			average_core_power[8];
-
-	/* Average clocks (unit: MHz) */
 	uint16_t			average_gfxclk_frequency;
 	uint16_t			average_socclk_frequency;
 	uint16_t			average_uclk_frequency;
 	uint16_t			average_fclk_frequency;
 	uint16_t			average_vclk_frequency;
 	uint16_t			average_dclk_frequency;
-
-	/* Current clocks (unit: MHz) */
 	uint16_t			current_gfxclk;
 	uint16_t			current_socclk;
 	uint16_t			current_uclk;
@@ -934,30 +646,17 @@ struct gpu_metrics_v2_4 {
 	uint16_t			current_dclk;
 	uint16_t			current_coreclk[8];
 	uint16_t			current_l3clk[2];
-
-	/* Throttle status (ASIC dependent) */
 	uint32_t			throttle_status;
-
-	/* Fans */
 	uint16_t			fan_pwm;
-
 	uint16_t			padding[3];
-
-	/* Throttle status (ASIC independent) */
 	uint64_t			indep_throttle_status;
-
-	/* Average Temperature (unit: centi-Celsius) */
 	uint16_t			average_temperature_gfx;
 	uint16_t			average_temperature_soc;
 	uint16_t			average_temperature_core[8];
 	uint16_t			average_temperature_l3[2];
-
-	/* Power/Voltage (unit: mV) */
 	uint16_t			average_cpu_voltage;
 	uint16_t			average_soc_voltage;
 	uint16_t			average_gfx_voltage;
-
-	/* Power/Current (unit: mA) */
 	uint16_t			average_cpu_current;
 	uint16_t			average_soc_current;
 	uint16_t			average_gfx_current;

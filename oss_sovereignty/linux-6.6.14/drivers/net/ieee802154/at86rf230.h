@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AT86RF230/RF231 driver
- *
- * Copyright (C) 2009-2012 Siemens AG
- *
- * Written by:
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
- */
-
 #ifndef _AT86RF230_H
 #define _AT86RF230_H
-
 #define RG_TRX_STATUS	(0x01)
 #define SR_TRX_STATUS		0x01, 0x1f, 0
 #define SR_RESERVED_01_3	0x01, 0x20, 5
@@ -167,12 +155,10 @@
 #define RG_CSMA_BE	(0x2f)
 #define SR_MIN_BE		0x2f, 0x0f, 0
 #define SR_MAX_BE		0x2f, 0xf0, 4
-
 #define CMD_REG		0x80
 #define CMD_REG_MASK	0x3f
 #define CMD_WRITE	0x40
 #define CMD_FB		0x20
-
 #define IRQ_BAT_LOW	BIT(7)
 #define IRQ_TRX_UR	BIT(6)
 #define IRQ_AMI		BIT(5)
@@ -181,21 +167,16 @@
 #define IRQ_RX_START	BIT(2)
 #define IRQ_PLL_UNL	BIT(1)
 #define IRQ_PLL_LOCK	BIT(0)
-
 #define IRQ_ACTIVE_HIGH	0
 #define IRQ_ACTIVE_LOW	1
-
-#define STATE_P_ON		0x00	/* BUSY */
+#define STATE_P_ON		0x00	 
 #define STATE_BUSY_RX		0x01
 #define STATE_BUSY_TX		0x02
 #define STATE_FORCE_TRX_OFF	0x03
-#define STATE_FORCE_TX_ON	0x04	/* IDLE */
-/* 0x05 */				/* INVALID_PARAMETER */
+#define STATE_FORCE_TX_ON	0x04	 
 #define STATE_RX_ON		0x06
-/* 0x07 */				/* SUCCESS */
 #define STATE_TRX_OFF		0x08
 #define STATE_TX_ON		0x09
-/* 0x0a - 0x0e */			/* 0x0a - UNSUPPORTED_ATTRIBUTE */
 #define STATE_SLEEP		0x0F
 #define STATE_PREP_DEEP_SLEEP	0x10
 #define STATE_BUSY_RX_AACK	0x11
@@ -206,15 +187,12 @@
 #define STATE_RX_AACK_ON_NOCLK	0x1D
 #define STATE_BUSY_RX_AACK_NOCLK 0x1E
 #define STATE_TRANSITION_IN_PROGRESS 0x1F
-
 #define TRX_STATE_MASK		(0x1F)
 #define TRAC_MASK(x)		((x & 0xe0) >> 5)
-
 #define TRAC_SUCCESS			0
 #define TRAC_SUCCESS_DATA_PENDING	1
 #define TRAC_SUCCESS_WAIT_FOR_ACK	2
 #define TRAC_CHANNEL_ACCESS_FAILURE	3
 #define TRAC_NO_ACK			5
 #define TRAC_INVALID			7
-
-#endif /* !_AT86RF230_H */
+#endif  

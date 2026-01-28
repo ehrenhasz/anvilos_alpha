@@ -1,25 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 DENX Software Engineering GmbH
- * Heiko Schocher <hs@denx.de>
- */
 #include <dt-bindings/interrupt-controller/irq.h>
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
 	chosen { };
 	aliases { };
-
 	memory@c0000000 {
 		device_type = "memory";
 		reg = <0xc0000000 0x0>;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu: cpu@0 {
 			compatible = "arm,arm926ej-s";
 			device_type = "cpu";
@@ -28,44 +19,31 @@
 			operating-points-v2 = <&opp_table>;
 		};
 	};
-
 	opp_table: opp-table {
 		compatible = "operating-points-v2";
-
 		opp_100: opp100-100000000 {
 			opp-hz = /bits/ 64 <100000000>;
 			opp-microvolt = <1000000 950000 1050000>;
 		};
-
 		opp_200: opp110-200000000 {
 			opp-hz = /bits/ 64 <200000000>;
 			opp-microvolt = <1100000 1050000 1160000>;
 		};
-
 		opp_300: opp120-300000000 {
 			opp-hz = /bits/ 64 <300000000>;
 			opp-microvolt = <1200000 1140000 1320000>;
 		};
-
-		/*
-		 * Original silicon was 300MHz max, so higher frequencies
-		 * need to be enabled on a per-board basis if the chip is
-		 * capable.
-		 */
-
 		opp_375: opp120-375000000 {
 			status = "disabled";
 			opp-hz = /bits/ 64 <375000000>;
 			opp-microvolt = <1200000 1140000 1320000>;
 		};
-
 		opp_456: opp130-456000000 {
 			status = "disabled";
 			opp-hz = /bits/ 64 <456000000>;
 			opp-microvolt = <1300000 1250000 1350000>;
 		};
 	};
-
 	arm {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -118,7 +96,6 @@
 		#size-cells = <1>;
 		ranges = <0x0 0x01c00000 0x400000>;
 		interrupt-parent = <&intc>;
-
 		psc0: clock-controller@10000 {
 			compatible = "ti,da850-psc0";
 			reg = <0x10000 0x1000>;
@@ -137,7 +114,6 @@
 			reg = <0x11000 0x1000>;
 			clocks = <&ref_clk>, <&pll1_sysclk 3>;
 			clock-names = "clksrc", "extclksrc";
-
 			pll0_pllout: pllout {
 				#clock-cells = <0>;
 			};
@@ -158,212 +134,152 @@
 			pinctrl-single,bit-per-mux;
 			pinctrl-single,register-width = <32>;
 			pinctrl-single,function-mask = <0xf>;
-			/* pin base, nr pins & gpio function */
 			pinctrl-single,gpio-range = <&range   0 17 0x8>,
 						    <&range  17  8 0x4>,
 						    <&range  26  8 0x4>,
 						    <&range  34 80 0x8>,
 						    <&range 129 31 0x8>;
 			status = "disabled";
-
 			range: gpio-range {
 				#pinctrl-single,gpio-range-cells = <3>;
 			};
-
 			serial0_rtscts_pins: serial0-rtscts-pins {
 				pinctrl-single,bits = <
-					/* UART0_RTS UART0_CTS */
 					0x0c 0x22000000 0xff000000
 				>;
 			};
 			serial0_rxtx_pins: serial0-rxtx-pins {
 				pinctrl-single,bits = <
-					/* UART0_TXD UART0_RXD */
 					0x0c 0x00220000 0x00ff0000
 				>;
 			};
 			serial1_rtscts_pins: serial1-rtscts-pins {
 				pinctrl-single,bits = <
-					/* UART1_CTS UART1_RTS */
 					0x00 0x00440000 0x00ff0000
 				>;
 			};
 			serial1_rxtx_pins: serial1-rxtx-pins {
 				pinctrl-single,bits = <
-					/* UART1_TXD UART1_RXD */
 					0x10 0x22000000 0xff000000
 				>;
 			};
 			serial2_rtscts_pins: serial2-rtscts-pins {
 				pinctrl-single,bits = <
-					/* UART2_CTS UART2_RTS */
 					0x00 0x44000000 0xff000000
 				>;
 			};
 			serial2_rxtx_pins: serial2-rxtx-pins {
 				pinctrl-single,bits = <
-					/* UART2_TXD UART2_RXD */
 					0x10 0x00220000 0x00ff0000
 				>;
 			};
 			i2c0_pins: i2c0-pins {
 				pinctrl-single,bits = <
-					/* I2C0_SDA,I2C0_SCL */
 					0x10 0x00002200 0x0000ff00
 				>;
 			};
 			i2c1_pins: i2c1-pins {
 				pinctrl-single,bits = <
-					/* I2C1_SDA, I2C1_SCL */
 					0x10 0x00440000 0x00ff0000
 				>;
 			};
 			mmc0_pins: mmc-pins {
 				pinctrl-single,bits = <
-					/* MMCSD0_DAT[3] MMCSD0_DAT[2]
-					 * MMCSD0_DAT[1] MMCSD0_DAT[0]
-					 * MMCSD0_CMD    MMCSD0_CLK
-					 */
 					0x28 0x00222222  0x00ffffff
 				>;
 			};
 			ehrpwm0a_pins: ehrpwm0a-pins {
 				pinctrl-single,bits = <
-					/* EPWM0A */
 					0xc 0x00000002 0x0000000f
 				>;
 			};
 			ehrpwm0b_pins: ehrpwm0b-pins {
 				pinctrl-single,bits = <
-					/* EPWM0B */
 					0xc 0x00000020 0x000000f0
 				>;
 			};
 			ehrpwm1a_pins: ehrpwm1a-pins {
 				pinctrl-single,bits = <
-					/* EPWM1A */
 					0x14 0x00000002 0x0000000f
 				>;
 			};
 			ehrpwm1b_pins: ehrpwm1b-pins {
 				pinctrl-single,bits = <
-					/* EPWM1B */
 					0x14 0x00000020 0x000000f0
 				>;
 			};
 			ecap0_pins: ecap0-pins {
 				pinctrl-single,bits = <
-					/* ECAP0_APWM0 */
 					0x8 0x20000000 0xf0000000
 				>;
 			};
 			ecap1_pins: ecap1-pins {
 				pinctrl-single,bits = <
-					/* ECAP1_APWM1 */
 					0x4 0x40000000 0xf0000000
 				>;
 			};
 			ecap2_pins: ecap2-pins {
 				pinctrl-single,bits = <
-					/* ECAP2_APWM2 */
 					0x4 0x00000004 0x0000000f
 				>;
 			};
 			spi0_pins: spi0-pins {
 				pinctrl-single,bits = <
-					/* SIMO, SOMI, CLK */
 					0xc 0x00001101 0x0000ff0f
 				>;
 			};
 			spi0_cs0_pin: spi0-cs0-pins {
 				pinctrl-single,bits = <
-					/* CS0 */
 					0x10 0x00000010 0x000000f0
 				>;
 			};
 			spi0_cs3_pin: spi0-cs3-pins {
 				pinctrl-single,bits = <
-					/* CS3 */
 					0xc 0x01000000 0x0f000000
 				>;
 			};
 			spi1_pins: spi1-pins {
 				pinctrl-single,bits = <
-					/* SIMO, SOMI, CLK */
 					0x14 0x00110100 0x00ff0f00
 				>;
 			};
 			spi1_cs0_pin: spi1-cs0-pins {
 				pinctrl-single,bits = <
-					/* CS0 */
 					0x14 0x00000010 0x000000f0
 				>;
 			};
 			mdio_pins: mdio-pins {
 				pinctrl-single,bits = <
-					/* MDIO_CLK, MDIO_D */
 					0x10 0x00000088 0x000000ff
 				>;
 			};
 			mii_pins: mii-pins {
 				pinctrl-single,bits = <
-					/*
-					 * MII_TXEN, MII_TXCLK, MII_COL
-					 * MII_TXD_3, MII_TXD_2, MII_TXD_1
-					 * MII_TXD_0
-					 */
 					0x8 0x88888880 0xfffffff0
-					/*
-					 * MII_RXER, MII_CRS, MII_RXCLK
-					 * MII_RXDV, MII_RXD_3, MII_RXD_2
-					 * MII_RXD_1, MII_RXD_0
-					 */
 					0xc 0x88888888 0xffffffff
 				>;
 			};
 			lcd_pins: lcd-pins {
 				pinctrl-single,bits = <
-					/*
-					 * LCD_D[2], LCD_D[3], LCD_D[4], LCD_D[5],
-					 * LCD_D[6], LCD_D[7]
-					 */
 					0x40 0x22222200 0xffffff00
-					/*
-					 * LCD_D[10], LCD_D[11], LCD_D[12], LCD_D[13],
-					 * LCD_D[14], LCD_D[15], LCD_D[0], LCD_D[1]
-					 */
 					0x44 0x22222222 0xffffffff
-					/* LCD_D[8], LCD_D[9] */
 					0x48 0x00000022 0x000000ff
-
-					/* LCD_PCLK */
 					0x48 0x02000000 0x0f000000
-					/* LCD_AC_ENB_CS, LCD_VSYNC, LCD_HSYNC */
 					0x4c 0x02000022 0x0f0000ff
 				>;
 			};
 			vpif_capture_pins: vpif-capture-pins {
 				pinctrl-single,bits = <
-					/* VP_DIN[2..7], VP_CLKIN1, VP_CLKIN0 */
 					0x38 0x11111111 0xffffffff
-					/* VP_DIN[10..15,0..1] */
 					0x3c 0x11111111 0xffffffff
-					/* VP_DIN[8..9] */
 					0x40 0x00000011 0x000000ff
 				>;
 			};
 			vpif_display_pins: vpif-display-pins {
 				pinctrl-single,bits = <
-					/* VP_DOUT[2..7] */
 					0x40 0x11111100 0xffffff00
-					/* VP_DOUT[10..15,0..1] */
 					0x44 0x11111111 0xffffffff
-					/*  VP_DOUT[8..9] */
 					0x48 0x00000011 0x000000ff
-					/*
-					 * VP_CLKOUT3, VP_CLKIN3,
-					 * VP_CLKOUT2, VP_CLKIN2
-					 */
 					0x4c 0x00111100 0x00ffff00
 				>;
 			};
@@ -376,7 +292,6 @@
 		cfgchip: chip-controller@1417c {
 			compatible = "ti,da830-cfgchip", "syscon", "simple-mfd";
 			reg = <0x1417c 0x14>;
-
 			usb_phy: usb-phy {
 				compatible = "ti,da830-usb-phy";
 				#phy-cells = <1>;
@@ -418,13 +333,11 @@
 		};
 		edma0: edma@0 {
 			compatible = "ti,edma3-tpcc";
-			/* eDMA3 CC0: 0x01c0 0000 - 0x01c0 7fff */
 			reg = <0x0 0x8000>;
 			reg-names = "edma3_cc";
 			interrupts = <11>, <12>;
 			interrupt-names = "edma3_ccint", "edma3_ccerrint";
 			#dma-cells = <2>;
-
 			ti,tptcs = <&edma0_tptc0 7>, <&edma0_tptc1 0>;
 			power-domains = <&psc0 0>;
 		};
@@ -444,13 +357,11 @@
 		};
 		edma1: edma@230000 {
 			compatible = "ti,edma3-tpcc";
-			/* eDMA3 CC1: 0x01e3 0000 - 0x01e3 7fff */
 			reg = <0x230000 0x8000>;
 			reg-names = "edma3_cc";
 			interrupts = <93>, <94>;
 			interrupt-names = "edma3_ccint", "edma3_ccerrint";
 			#dma-cells = <2>;
-
 			ti,tptcs = <&edma1_tptc0 7>;
 			power-domains = <&psc1 0>;
 		};
@@ -548,14 +459,10 @@
 			interrupts = <92>;
 			power-domains = <&psc1 9>;
 			status = "disabled";
-
-			/* VPIF capture port */
 			port@0 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 			};
-
-			/* VPIF display port */
 			port@1 {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -657,10 +564,8 @@
 			clocks = <&psc1 1>;
 			clock-ranges;
 			status = "disabled";
-
 			#address-cells = <1>;
 			#size-cells = <1>;
-
 			dmas = <&cppi41dma 0 0 &cppi41dma 1 0
 				&cppi41dma 2 0 &cppi41dma 3 0
 				&cppi41dma 0 1 &cppi41dma 1 1
@@ -668,7 +573,6 @@
 			dma-names =
 				"rx1", "rx2", "rx3", "rx4",
 				"tx1", "tx2", "tx3", "tx4";
-
 			cppi41dma: dma-controller@201000 {
 				compatible = "ti,da830-cppi41";
 				reg = <0x201000 0x1000
@@ -678,7 +582,6 @@
 					    "scheduler", "queuemgr";
 				interrupts = <58>;
 				#dma-cells = <2>;
-				/* For backwards compatibility: */
 				#dma-channels = <4>;
 				dma-channels = <4>;
 				power-domains = <&psc1 1>;
@@ -698,7 +601,6 @@
 			reg = <0x21a000 0x1000>;
 			clocks = <&ref_clk>;
 			clock-names = "clksrc";
-
 			pll1_sysclk: sysclk {
 				#clock-cells = <1>;
 			};
@@ -912,7 +814,6 @@
 			reg = <0x22c00c 0x8>;
 			status = "disabled";
 		};
-
 		mcasp0: mcasp@100000 {
 			compatible = "ti,da830-mcasp-audio";
 			reg = <0x100000 0x2000>,
@@ -926,7 +827,6 @@
 				<&edma0 0 1>;
 			dma-names = "tx", "rx";
 		};
-
 		lcdc: display@213000 {
 			compatible = "ti,da850-tilcdc";
 			reg = <0x213000 0x1000>;
@@ -942,7 +842,6 @@
 		compatible = "ti,da850-aemif";
 		#address-cells = <2>;
 		#size-cells = <1>;
-
 		reg = <0x68000000 0x00008000>;
 		ranges = <0 0 0x60000000 0x08000000
 			  1 0 0x68000000 0x00008000>;

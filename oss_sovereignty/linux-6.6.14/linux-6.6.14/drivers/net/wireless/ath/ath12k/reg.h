@@ -1,19 +1,9 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2019-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
-
 #ifndef ATH12K_REG_H
 #define ATH12K_REG_H
-
 #include <linux/kernel.h>
 #include <net/regulatory.h>
-
 struct ath12k_base;
 struct ath12k;
-
-/* DFS regdomains supported by Firmware */
 enum ath12k_dfs_region {
 	ATH12K_DFS_REG_UNSET,
 	ATH12K_DFS_REG_FCC,
@@ -24,7 +14,6 @@ enum ath12k_dfs_region {
 	ATH12K_DFS_REG_MKK_N,
 	ATH12K_DFS_REG_UNDEF,
 };
-
 enum ath12k_reg_cc_code {
 	REG_SET_CC_STATUS_PASS = 0,
 	REG_CURRENT_ALPHA2_NOT_FOUND = 1,
@@ -33,7 +22,6 @@ enum ath12k_reg_cc_code {
 	REG_SET_CC_STATUS_NO_MEMORY = 4,
 	REG_SET_CC_STATUS_FAIL = 5,
 };
-
 struct ath12k_reg_rule {
 	u16 start_freq;
 	u16 end_freq;
@@ -44,7 +32,6 @@ struct ath12k_reg_rule {
 	bool psd_flag;
 	u16 psd_eirp;
 };
-
 struct ath12k_reg_info {
 	enum ath12k_reg_cc_code status_code;
 	u8 num_phy;
@@ -66,9 +53,6 @@ struct ath12k_reg_info {
 	enum wmi_reg_6g_client_type client_type;
 	bool rnr_tpe_usable;
 	bool unspecified_ap_usable;
-	/* TODO: All 6G related info can be stored only for required
-	 * combination instead of all types, to optimize memory usage.
-	 */
 	u8 domain_code_6g_ap[WMI_REG_CURRENT_MAX_AP_TYPE];
 	u8 domain_code_6g_client[WMI_REG_CURRENT_MAX_AP_TYPE][WMI_REG_MAX_CLIENT_TYPE];
 	u32 domain_code_6g_super_id;
@@ -82,7 +66,6 @@ struct ath12k_reg_info {
 	struct ath12k_reg_rule *reg_rules_6g_client_ptr
 		[WMI_REG_CURRENT_MAX_AP_TYPE][WMI_REG_MAX_CLIENT_TYPE];
 };
-
 void ath12k_reg_init(struct ath12k *ar);
 void ath12k_reg_free(struct ath12k_base *ab);
 void ath12k_regd_update_work(struct work_struct *work);
@@ -91,5 +74,4 @@ struct ieee80211_regdomain *ath12k_reg_build_regd(struct ath12k_base *ab,
 						  bool intersect);
 int ath12k_regd_update(struct ath12k *ar, bool init);
 int ath12k_reg_update_chan_list(struct ath12k *ar);
-
 #endif

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  i2c_pxa.h
- *
- *  Copyright (C) 2002 Intrinsyc Software Inc.
- */
 #ifndef _I2C_PXA_H_
 #define _I2C_PXA_H_
-
 struct i2c_pxa_platform_data {
 	unsigned int		class;
 	unsigned int		use_pio :1;

@@ -1,50 +1,38 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __CODA_PSDEV_H
 #define __CODA_PSDEV_H
-
 #include <linux/backing-dev.h>
 #include <linux/magic.h>
 #include <linux/mutex.h>
-
 #define CODA_PSDEV_MAJOR 67
-#define MAX_CODADEVS  5	   /* how many do we allow */
-
+#define MAX_CODADEVS  5	    
 struct kstatfs;
-
-/* messages between coda filesystem in kernel and Venus */
 struct upc_req {
 	struct list_head	uc_chain;
 	caddr_t			uc_data;
 	u_short			uc_flags;
-	u_short			uc_inSize;  /* Size is at most 5000 bytes */
+	u_short			uc_inSize;   
 	u_short			uc_outSize;
-	u_short			uc_opcode;  /* copied from data to save lookup */
+	u_short			uc_opcode;   
 	int			uc_unique;
-	wait_queue_head_t	uc_sleep;   /* process' wait queue */
+	wait_queue_head_t	uc_sleep;    
 };
-
 #define CODA_REQ_ASYNC  0x1
 #define CODA_REQ_READ   0x2
 #define CODA_REQ_WRITE  0x4
 #define CODA_REQ_ABORT  0x8
-
-/* communication pending/processing queues */
 struct venus_comm {
 	u_long		    vc_seq;
-	wait_queue_head_t   vc_waitq; /* Venus wait queue */
+	wait_queue_head_t   vc_waitq;  
 	struct list_head    vc_pending;
 	struct list_head    vc_processing;
 	int                 vc_inuse;
 	struct super_block *vc_sb;
 	struct mutex	    vc_mutex;
 };
-
 static inline struct venus_comm *coda_vcp(struct super_block *sb)
 {
 	return (struct venus_comm *)((sb)->s_fs_info);
 }
-
-/* upcalls */
 int venus_rootfid(struct super_block *sb, struct CodaFid *fidp);
 int venus_getattr(struct super_block *sb, struct CodaFid *fid,
 		  struct coda_vattr *attr);
@@ -86,10 +74,5 @@ int venus_statfs(struct dentry *dentry, struct kstatfs *sfs);
 int venus_access_intent(struct super_block *sb, struct CodaFid *fid,
 			bool *access_intent_supported,
 			size_t count, loff_t ppos, int type);
-
-/*
- * Statistics
- */
-
 extern struct venus_comm coda_comms[];
 #endif

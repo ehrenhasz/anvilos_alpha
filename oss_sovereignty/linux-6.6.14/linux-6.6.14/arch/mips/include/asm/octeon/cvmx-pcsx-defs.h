@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (C) 2003-2018 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_PCSX_DEFS_H__
 #define __CVMX_PCSX_DEFS_H__
-
 static inline uint64_t CVMX_PCSX_ANX_ADV_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -45,7 +17,6 @@ static inline uint64_t CVMX_PCSX_ANX_ADV_REG(unsigned long offset, unsigned long
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001010ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_ANX_EXT_ST_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -63,7 +34,6 @@ static inline uint64_t CVMX_PCSX_ANX_EXT_ST_REG(unsigned long offset, unsigned l
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001028ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_ANX_LP_ABIL_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -81,7 +51,6 @@ static inline uint64_t CVMX_PCSX_ANX_LP_ABIL_REG(unsigned long offset, unsigned 
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001018ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_ANX_RESULTS_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -99,7 +68,6 @@ static inline uint64_t CVMX_PCSX_ANX_RESULTS_REG(unsigned long offset, unsigned 
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001020ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_INTX_EN_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -117,7 +85,6 @@ static inline uint64_t CVMX_PCSX_INTX_EN_REG(unsigned long offset, unsigned long
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001088ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_INTX_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -135,7 +102,6 @@ static inline uint64_t CVMX_PCSX_INTX_REG(unsigned long offset, unsigned long bl
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001080ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_LINKX_TIMER_COUNT_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -153,7 +119,6 @@ static inline uint64_t CVMX_PCSX_LINKX_TIMER_COUNT_REG(unsigned long offset, uns
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001040ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_LOG_ANLX_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -171,7 +136,6 @@ static inline uint64_t CVMX_PCSX_LOG_ANLX_REG(unsigned long offset, unsigned lon
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001090ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_MISCX_CTL_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -189,7 +153,6 @@ static inline uint64_t CVMX_PCSX_MISCX_CTL_REG(unsigned long offset, unsigned lo
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001078ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_MRX_CONTROL_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -207,7 +170,6 @@ static inline uint64_t CVMX_PCSX_MRX_CONTROL_REG(unsigned long offset, unsigned 
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001000ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_MRX_STATUS_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -225,7 +187,6 @@ static inline uint64_t CVMX_PCSX_MRX_STATUS_REG(unsigned long offset, unsigned l
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001008ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_RXX_STATES_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -243,7 +204,6 @@ static inline uint64_t CVMX_PCSX_RXX_STATES_REG(unsigned long offset, unsigned l
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001058ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_RXX_SYNC_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -261,7 +221,6 @@ static inline uint64_t CVMX_PCSX_RXX_SYNC_REG(unsigned long offset, unsigned lon
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001050ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_SGMX_AN_ADV_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -279,7 +238,6 @@ static inline uint64_t CVMX_PCSX_SGMX_AN_ADV_REG(unsigned long offset, unsigned 
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001068ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_SGMX_LP_ADV_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -297,7 +255,6 @@ static inline uint64_t CVMX_PCSX_SGMX_LP_ADV_REG(unsigned long offset, unsigned 
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001070ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_TXX_STATES_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -315,7 +272,6 @@ static inline uint64_t CVMX_PCSX_TXX_STATES_REG(unsigned long offset, unsigned l
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001060ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 static inline uint64_t CVMX_PCSX_TX_RXX_POLARITY_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -333,9 +289,7 @@ static inline uint64_t CVMX_PCSX_TX_RXX_POLARITY_REG(unsigned long offset, unsig
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0001048ull) + ((offset) + (block_id) * 0x20000ull) * 1024;
 }
-
 void __cvmx_interrupt_pcsx_intx_en_reg_enable(int index, int block);
-
 union cvmx_pcsx_anx_adv_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_anx_adv_reg_s {
@@ -362,7 +316,6 @@ union cvmx_pcsx_anx_adv_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_anx_ext_st_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_anx_ext_st_reg_s {
@@ -383,7 +336,6 @@ union cvmx_pcsx_anx_ext_st_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_anx_lp_abil_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_anx_lp_abil_reg_s {
@@ -410,7 +362,6 @@ union cvmx_pcsx_anx_lp_abil_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_anx_results_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_anx_results_reg_s {
@@ -431,7 +382,6 @@ union cvmx_pcsx_anx_results_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_intx_en_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_intx_en_reg_s {
@@ -499,7 +449,6 @@ union cvmx_pcsx_intx_en_reg {
 #endif
 	} cn52xx;
 };
-
 union cvmx_pcsx_intx_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_intx_reg_s {
@@ -567,7 +516,6 @@ union cvmx_pcsx_intx_reg {
 #endif
 	} cn52xx;
 };
-
 union cvmx_pcsx_linkx_timer_count_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_linkx_timer_count_reg_s {
@@ -580,7 +528,6 @@ union cvmx_pcsx_linkx_timer_count_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_log_anlx_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_log_anlx_reg_s {
@@ -597,7 +544,6 @@ union cvmx_pcsx_log_anlx_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_miscx_ctl_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_miscx_ctl_reg_s {
@@ -622,7 +568,6 @@ union cvmx_pcsx_miscx_ctl_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_mrx_control_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_mrx_control_reg_s {
@@ -657,7 +602,6 @@ union cvmx_pcsx_mrx_control_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_mrx_status_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_mrx_status_reg_s {
@@ -700,7 +644,6 @@ union cvmx_pcsx_mrx_status_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_rxx_states_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_rxx_states_reg_s {
@@ -723,7 +666,6 @@ union cvmx_pcsx_rxx_states_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_rxx_sync_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_rxx_sync_reg_s {
@@ -738,7 +680,6 @@ union cvmx_pcsx_rxx_sync_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_sgmx_an_adv_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_sgmx_an_adv_reg_s {
@@ -763,7 +704,6 @@ union cvmx_pcsx_sgmx_an_adv_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_sgmx_lp_adv_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_sgmx_lp_adv_reg_s {
@@ -786,7 +726,6 @@ union cvmx_pcsx_sgmx_lp_adv_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_txx_states_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_txx_states_reg_s {
@@ -803,7 +742,6 @@ union cvmx_pcsx_txx_states_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsx_tx_rxx_polarity_reg {
 	uint64_t u64;
 	struct cvmx_pcsx_tx_rxx_polarity_reg_s {
@@ -822,5 +760,4 @@ union cvmx_pcsx_tx_rxx_polarity_reg {
 #endif
 	} s;
 };
-
 #endif

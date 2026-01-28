@@ -1,21 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM maple_tree
-
 #if !defined(_TRACE_MM_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_MM_H
-
-
 #include <linux/tracepoint.h>
-
 struct ma_state;
-
 TRACE_EVENT(ma_op,
-
 	TP_PROTO(const char *fn, struct ma_state *mas),
-
 	TP_ARGS(fn, mas),
-
 	TP_STRUCT__entry(
 			__field(const char *, fn)
 			__field(unsigned long, min)
@@ -24,7 +15,6 @@ TRACE_EVENT(ma_op,
 			__field(unsigned long, last)
 			__field(void *, node)
 	),
-
 	TP_fast_assign(
 			__entry->fn		= fn;
 			__entry->min		= mas->min;
@@ -33,7 +23,6 @@ TRACE_EVENT(ma_op,
 			__entry->last		= mas->last;
 			__entry->node		= mas->node;
 	),
-
 	TP_printk("%s\tNode: %p (%lu %lu) range: %lu-%lu",
 		  __entry->fn,
 		  (void *) __entry->node,
@@ -44,11 +33,8 @@ TRACE_EVENT(ma_op,
 	)
 )
 TRACE_EVENT(ma_read,
-
 	TP_PROTO(const char *fn, struct ma_state *mas),
-
 	TP_ARGS(fn, mas),
-
 	TP_STRUCT__entry(
 			__field(const char *, fn)
 			__field(unsigned long, min)
@@ -57,7 +43,6 @@ TRACE_EVENT(ma_read,
 			__field(unsigned long, last)
 			__field(void *, node)
 	),
-
 	TP_fast_assign(
 			__entry->fn		= fn;
 			__entry->min		= mas->min;
@@ -66,7 +51,6 @@ TRACE_EVENT(ma_read,
 			__entry->last		= mas->last;
 			__entry->node		= mas->node;
 	),
-
 	TP_printk("%s\tNode: %p (%lu %lu) range: %lu-%lu",
 		  __entry->fn,
 		  (void *) __entry->node,
@@ -76,14 +60,10 @@ TRACE_EVENT(ma_read,
 		  (unsigned long) __entry->last
 	)
 )
-
 TRACE_EVENT(ma_write,
-
 	TP_PROTO(const char *fn, struct ma_state *mas, unsigned long piv,
 		 void *val),
-
 	TP_ARGS(fn, mas, piv, val),
-
 	TP_STRUCT__entry(
 			__field(const char *, fn)
 			__field(unsigned long, min)
@@ -94,7 +74,6 @@ TRACE_EVENT(ma_write,
 			__field(void *, val)
 			__field(void *, node)
 	),
-
 	TP_fast_assign(
 			__entry->fn		= fn;
 			__entry->min		= mas->min;
@@ -105,7 +84,6 @@ TRACE_EVENT(ma_write,
 			__entry->val		= val;
 			__entry->node		= mas->node;
 	),
-
 	TP_printk("%s\tNode %p (%lu %lu) range:%lu-%lu piv (%lu) val %p",
 		  __entry->fn,
 		  (void *) __entry->node,
@@ -117,7 +95,5 @@ TRACE_EVENT(ma_write,
 		  (void *) __entry->val
 	)
 )
-#endif /* _TRACE_MM_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __ASM_CSKY_CMPXCHG_H
 #define __ASM_CSKY_CMPXCHG_H
-
 #ifdef CONFIG_SMP
 #include <linux/bug.h>
 #include <asm/barrier.h>
-
 #define __xchg_relaxed(new, ptr, size)				\
 ({								\
 	__typeof__(ptr) __ptr = (ptr);				\
@@ -49,10 +45,8 @@
 	}							\
 	__ret;							\
 })
-
 #define arch_xchg_relaxed(ptr, x) \
 		(__xchg_relaxed((x), (ptr), sizeof(*(ptr))))
-
 #define __cmpxchg_relaxed(ptr, old, new, size)			\
 ({								\
 	__typeof__(ptr) __ptr = (ptr);				\
@@ -79,10 +73,8 @@
 	}							\
 	__ret;							\
 })
-
 #define arch_cmpxchg_relaxed(ptr, o, n) \
 	(__cmpxchg_relaxed((ptr), (o), (n), sizeof(*(ptr))))
-
 #define __cmpxchg_acquire(ptr, old, new, size)			\
 ({								\
 	__typeof__(ptr) __ptr = (ptr);				\
@@ -110,10 +102,8 @@
 	}							\
 	__ret;							\
 })
-
 #define arch_cmpxchg_acquire(ptr, o, n) \
 	(__cmpxchg_acquire((ptr), (o), (n), sizeof(*(ptr))))
-
 #define __cmpxchg(ptr, old, new, size)				\
 ({								\
 	__typeof__(ptr) __ptr = (ptr);				\
@@ -142,14 +132,11 @@
 	}							\
 	__ret;							\
 })
-
 #define arch_cmpxchg(ptr, o, n)					\
 	(__cmpxchg((ptr), (o), (n), sizeof(*(ptr))))
-
 #define arch_cmpxchg_local(ptr, o, n)				\
 	(__cmpxchg_relaxed((ptr), (o), (n), sizeof(*(ptr))))
 #else
 #include <asm-generic/cmpxchg.h>
 #endif
-
-#endif /* __ASM_CSKY_CMPXCHG_H */
+#endif  

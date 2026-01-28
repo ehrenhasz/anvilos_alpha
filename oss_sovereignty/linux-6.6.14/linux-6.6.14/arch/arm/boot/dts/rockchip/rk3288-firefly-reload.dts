@@ -1,32 +1,21 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Device tree file for Firefly Rockchip RK3288 Core board
- * Copyright (c) 2016 Randy Li <ayaka@soulik.info>
- */
-
 /dts-v1/;
 #include "rk3288-firefly-reload-core.dtsi"
-
 / {
 	model = "Firefly-RK3288-reload";
 	compatible = "firefly,firefly-rk3288-reload", "rockchip,rk3288";
-
 	adc-keys {
 		compatible = "adc-keys";
 		io-channels = <&saradc 1>;
 		io-channel-names = "buttons";
 		keyup-threshold-microvolt = <1800000>;
-
 		button-recovery {
 			label = "Recovery";
 			linux,code = <KEY_VENDOR>;
 			press-threshold-microvolt = <0>;
 		};
 	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
-
 		key-power {
 			wakeup-source;
 			gpios = <&gpio0 RK_PA5 GPIO_ACTIVE_LOW>;
@@ -36,15 +25,12 @@
 			pinctrl-0 = <&pwr_key>;
 		};
 	};
-
 	ir-receiver {
 		compatible = "gpio-ir-receiver";
 		gpios = <&gpio7 RK_PA0 GPIO_ACTIVE_LOW>;
 	};
-
 	leds {
 		compatible = "gpio-leds";
-
 		power_led: led-0 {
 			gpios = <&gpio8 RK_PA2 GPIO_ACTIVE_LOW>;
 			label = "firefly:blue:power";
@@ -52,7 +38,6 @@
 			pinctrl-0 = <&power_led_pin>;
 			panic-indicator;
 		};
-
 		work_led: led-1 {
 			gpios = <&gpio8 RK_PA1 GPIO_ACTIVE_LOW>;
 			label = "firefly:blue:user";
@@ -61,7 +46,6 @@
 			pinctrl-0 = <&work_led_pin>;
 		};
 	};
-
 	sdio_pwrseq: sdio-pwrseq {
 		compatible = "mmc-pwrseq-simple";
 		clocks = <&hym8563>;
@@ -70,21 +54,18 @@
 		pinctrl-0 = <&wifi_enable>;
 		reset-gpios = <&gpio4 RK_PD4 GPIO_ACTIVE_LOW>;
 	};
-
 	sound {
 		compatible = "simple-audio-card";
 		simple-audio-card,name = "SPDIF";
-		simple-audio-card,dai-link@1 {  /* S/PDIF - S/PDIF */
+		simple-audio-card,dai-link@1 {   
 			cpu { sound-dai = <&spdif>; };
 			codec { sound-dai = <&spdif_out>; };
 		};
 	};
-
 	spdif_out: spdif-out {
 		compatible = "linux,spdif-dit";
 		#sound-dai-cells = <0>;
 	};
-
 	vcc_host_5v: usb-host-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -97,7 +78,6 @@
 		regulator-always-on;
 		vin-supply = <&vcc_5v>;
 	};
-
 	vcc_5v: vcc_sys: vsys-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_5v";
@@ -106,7 +86,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
 	vcc_sd: sdmmc-regulator {
 		compatible = "regulator-fixed";
 		gpio = <&gpio7 RK_PB3 GPIO_ACTIVE_LOW>;
@@ -118,7 +97,6 @@
 		startup-delay-us = <100000>;
 		vin-supply = <&vcc_io>;
 	};
-
 	vcc_otg_5v: usb-otg-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -131,7 +109,6 @@
 		regulator-always-on;
 		vin-supply = <&vcc_5v>;
 	};
-
 	dovdd_1v8: dovdd-1v8-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -143,7 +120,6 @@
 		regulator-max-microvolt = <1800000>;
 		vin-supply = <&vcc_io>;
 	};
-
 	vcc28_dvp: vcc28-dvp-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -155,7 +131,6 @@
 		regulator-max-microvolt = <2800000>;
 		vin-supply = <&vcc_io>;
 	};
-
 	af_28: af_28-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -167,7 +142,6 @@
 		regulator-max-microvolt = <2800000>;
 		vin-supply = <&vcc_io>;
 	};
-
 	dvdd_1v2: af_28-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -179,7 +153,6 @@
 		regulator-max-microvolt = <1200000>;
 		vin-supply = <&vcc_io>;
 	};
-
 	vbat_wl: wifi-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vbat_wl";
@@ -188,14 +161,12 @@
 		vin-supply = <&vcc_io>;
 	};
 };
-
 &hdmi {
 	ddc-i2c-bus = <&i2c5>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&hdmi_cec_c0>;
 	status = "okay";
 };
-
 &i2c0 {
 	hym8563: hym8563@51 {
 		compatible = "haoyu,hym8563";
@@ -209,10 +180,8 @@
 		pinctrl-0 = <&rtc_int>;
 	};
 };
-
 &i2c2 {
 	status = "okay";
-
 	codec: es8328@10 {
 		compatible = "everest,es8328";
 		DVDD-supply = <&vcca_33>;
@@ -224,20 +193,16 @@
 		reg = <0x10>;
 	};
 };
-
 &i2c5 {
 	status = "okay";
 };
-
 &i2s {
 	status = "okay";
 };
-
 &saradc {
 	vref-supply = <&vcc_18>;
 	status = "okay";
 };
-
 &sdmmc {
 	bus-width = <4>;
 	cap-mmc-highspeed;
@@ -250,7 +215,6 @@
 	vqmmc-supply = <&vccio_sd>;
 	status = "okay";
 };
-
 &sdio0 {
 	bus-width = <4>;
 	cap-sd-highspeed;
@@ -267,123 +231,96 @@
 	vqmmc-supply = <&vccio_wl>;
 	status = "okay";
 };
-
 &spdif {
 	status = "okay";
 };
-
 &uart0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart0_xfer>, <&uart0_cts>, <&uart0_rts>;
 	status = "okay";
 };
-
 &uart1 {
 	status = "okay";
 };
-
 &uart2 {
 	status = "okay";
 };
-
 &uart3 {
 	status = "okay";
 };
-
 &usbphy {
 	status = "okay";
 };
-
 &usb_host1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&usbhub_rst>;
 	status = "okay";
 };
-
 &usb_otg {
 	status = "okay";
 };
-
 &pinctrl {
 	ir {
 		ir_int: ir-int {
 			rockchip,pins = <7 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
-
 	dvp {
 		dvp_pwr: dvp-pwr {
 			rockchip,pins = <0 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
-
 		cif_pwr: cif-pwr {
 			rockchip,pins = <7 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	hym8563 {
 		rtc_int: rtc-int {
 			rockchip,pins = <7 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
-
 	keys {
 		pwr_key: pwr-key {
 			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
-
 	leds {
 		power_led_pin: power-led-pin {
 			rockchip,pins = <8 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
-
 		work_led_pin: work-led-pin {
 			rockchip,pins = <8 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	sdmmc {
-		/*
-		 * Default drive strength isn't enough to achieve even
-		 * high-speed mode on firefly board so bump up to 12ma.
-		 */
 		sdmmc_bus4: sdmmc-bus4 {
 			rockchip,pins = <6 RK_PC0 1 &pcfg_pull_up_drv_12ma>,
 					<6 RK_PC1 1 &pcfg_pull_up_drv_12ma>,
 					<6 RK_PC2 1 &pcfg_pull_up_drv_12ma>,
 					<6 RK_PC3 1 &pcfg_pull_up_drv_12ma>;
 		};
-
 		sdmmc_clk: sdmmc-clk {
 			rockchip,pins = <6 RK_PC4 1 &pcfg_pull_none_12ma>;
 		};
-
 		sdmmc_cmd: sdmmc-cmd {
 			rockchip,pins = <6 RK_PC5 1 &pcfg_pull_up_drv_12ma>;
 		};
-
 		sdmmc_pwr: sdmmc-pwr {
 			rockchip,pins = <7 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	sdio {
 		wifi_enable: wifi-enable {
 			rockchip,pins = <4 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	usb_host {
 		host_vbus_drv: host-vbus-drv {
 			rockchip,pins = <0 RK_PB6 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
-
 		usbhub_rst: usbhub-rst {
 			rockchip,pins = <8 RK_PA3 RK_FUNC_GPIO &pcfg_output_high>;
 		};
 	};
-
 	usb_otg {
 		otg_vbus_drv: otg-vbus-drv {
 			rockchip,pins = <0 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
