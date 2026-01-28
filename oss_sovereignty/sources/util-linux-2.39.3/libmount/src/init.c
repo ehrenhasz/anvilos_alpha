@@ -1,20 +1,7 @@
-/* SPDX-License-Identifier: LGPL-2.1-or-later */
-/*
- * This file is part of libmount from util-linux project.
- *
- * Copyright (C) 2008-2018 Karel Zak <kzak@redhat.com>
- *
- * libmount is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or
- * (at your option) any later version.
- */
 
-/**
- * SECTION: init
- * @title: Library initialization
- * @short_description: initialize debugging
- */
+
+
+
 
 #include <stdarg.h>
 
@@ -44,16 +31,7 @@ UL_DEBUG_DEFINE_MASKNAMES(libmount) =
 	{ NULL, 0 }
 };
 
-/**
- * mnt_init_debug:
- * @mask: debug mask (0xffff to enable full debugging)
- *
- * If the @mask is not specified, then this function reads
- * the LIBMOUNT_DEBUG environment variable to get the mask.
- *
- * Already initialized debugging stuff cannot be changed. Calling
- * this function twice has no effect.
- */
+
 void mnt_init_debug(int mask)
 {
 	if (libmount_debug_mask)
@@ -104,5 +82,5 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-#endif /* TEST_PROGRAM */
+#endif 
 

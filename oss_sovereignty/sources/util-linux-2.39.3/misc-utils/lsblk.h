@@ -1,8 +1,4 @@
-/*
- * Copyright (C) 2010-2018 Red Hat, Inc. All rights reserved.
- * Written by Milan Broz <gmazyland@gmail.com>
- *            Karel Zak <kzak@redhat.com>
- */
+
 #ifndef UTIL_LINUX_LSBLK_H
 #define UTIL_LINUX_LSBLK_H
 
@@ -33,68 +29,64 @@ UL_DEBUG_DECLARE_MASK(lsblk);
 #include "debugobj.h"
 
 struct lsblk {
-	struct libscols_table *table;	/* output table */
-	struct libscols_column *sort_col;/* sort output by this column */
+	struct libscols_table *table;	
+	struct libscols_column *sort_col;
 
-	int sort_id;			/* id of the sort column */
-	int tree_id;			/* od of column used for tree */
+	int sort_id;			
+	int tree_id;			
 
 	int dedup_id;
 
 
 	const char *sysroot;
-	int flags;			/* LSBLK_* */
+	int flags;			
 
-	unsigned int all_devices:1;	/* print all devices, including empty */
-	unsigned int bytes:1;		/* print SIZE in bytes */
-	unsigned int inverse:1;		/* print inverse dependencies */
-	unsigned int merge:1;           /* merge sub-trees */
-	unsigned int nodeps:1;		/* don't print slaves/holders */
-	unsigned int scsi:1;		/* print only device with HCTL (SCSI) */
-	unsigned int nvme:1;		/* print NVMe device only */
-	unsigned int virtio:1;		/* print virtio device only */
-	unsigned int paths:1;		/* print devnames with "/dev" prefix */
-	unsigned int sort_hidden:1;	/* sort column not between output columns */
-	unsigned int dedup_hidden :1;	/* deduplication column not between output columns */
-	unsigned int force_tree_order:1;/* sort lines by parent->tree relation */
-	unsigned int noempty:1;		/* hide empty devices */
+	unsigned int all_devices:1;	
+	unsigned int bytes:1;		
+	unsigned int inverse:1;		
+	unsigned int merge:1;           
+	unsigned int nodeps:1;		
+	unsigned int scsi:1;		
+	unsigned int nvme:1;		
+	unsigned int virtio:1;		
+	unsigned int paths:1;		
+	unsigned int sort_hidden:1;	
+	unsigned int dedup_hidden :1;	
+	unsigned int force_tree_order:1;
+	unsigned int noempty:1;		
 };
 
-extern struct lsblk *lsblk;     /* global handler */
+extern struct lsblk *lsblk;     
 
 struct lsblk_devprop {
-	/* udev / blkid based */
-	char *fstype;		/* detected fs, NULL or "?" if cannot detect */
-	char *fsversion;	/* filesystem version */
-	char *uuid;		/* filesystem UUID (or stack uuid) */
-	char *ptuuid;		/* partition table UUID */
-	char *pttype;		/* partition table type */
-	char *label;		/* filesystem label */
-	char *parttype;		/* partition type UUID */
-	char *partuuid;		/* partition UUID */
-	char *partlabel;	/* partition label */
-	char *partflags;	/* partition flags */
-	char *partn;		/* partition number */
-	char *wwn;		/* storage WWN */
-	char *serial;		/* disk serial number */
-	char *model;		/* disk model */
-	char *idlink;		/* /dev/disk/by-id/<name> */
-	char *revision;		/* firmware revision/version */
+	
+	char *fstype;		
+	char *fsversion;	
+	char *uuid;		
+	char *ptuuid;		
+	char *pttype;		
+	char *label;		
+	char *parttype;		
+	char *partuuid;		
+	char *partlabel;	
+	char *partflags;	
+	char *partn;		
+	char *wwn;		
+	char *serial;		
+	char *model;		
+	char *idlink;		
+	char *revision;		
 
-	/* lsblk specific (for --sysroot only)  */
-	char *owner;		/* user name */
-	char *group;		/* group name */
-	char *mode;		/* access mode in ls(1)-like notation */
+	
+	char *owner;		
+	char *group;		
+	char *mode;		
 };
 
-/* Device dependence
- *
- * Note that the same device may be slave/holder for more another devices. It
- * means we need to allocate list member rather than use @child directly.
- */
+
 struct lsblk_devdep {
-	struct list_head        ls_childs;	/* item in parent->childs */
-	struct list_head	ls_parents;	/* item in child->parents */
+	struct list_head        ls_childs;	
+	struct list_head	ls_parents;	
 
 	struct lsblk_device	*child;
 	struct lsblk_device	*parent;
@@ -103,41 +95,40 @@ struct lsblk_devdep {
 struct lsblk_device {
 	int	refcount;
 
-	struct list_head	childs;		/* list with lsblk_devdep */
+	struct list_head	childs;		
 	struct list_head	parents;
-	struct list_head	ls_roots;	/* item in devtree->roots list */
-	struct list_head	ls_devices;	/* item in devtree->devices list */
+	struct list_head	ls_roots;	
+	struct list_head	ls_devices;	
 
-	struct lsblk_device	*wholedisk;	/* for partitions */
+	struct lsblk_device	*wholedisk;	
 
 	struct libscols_line	*scols_line;
 
 	struct lsblk_devprop	*properties;
 	struct stat	st;
 
-	char *name;		/* kernel name in /sys/block */
-	char *dm_name;		/* DM name (dm/block) */
+	char *name;		
+	char *dm_name;		
 
-	char *filename;		/* path to device node */
-	char *dedupkey;		/* de-duplication key */
+	char *filename;		
+	char *dedupkey;		
 
 	struct path_cxt	*sysfs;
 
-	struct libmnt_fs **fss;	/* filesystems attached to the device */
-	size_t nfss;		/* number of items in fss[] */
+	struct libmnt_fs **fss;	
+	size_t nfss;		
 
-	struct statvfs fsstat;	/* statvfs() result */
+	struct statvfs fsstat;	
 
-	int npartitions;	/* # of partitions this device has */
-	int nholders;		/* # of devices mapped directly to this device
-				 * /sys/block/.../holders */
-	int nslaves;		/* # of devices this device maps to */
-	int maj, min;		/* devno */
+	int npartitions;	
+	int nholders;		
+	int nslaves;		
+	int maj, min;		
 
-	uint64_t discard_granularity;	/* sunknown:-1, yes:1, not:0 */
+	uint64_t discard_granularity;	
 
-	uint64_t size;		/* device size */
-	int removable;		/* unknown:-1, yes:1, not:0 */
+	uint64_t size;		
+	int removable;		
 
 	unsigned int	is_mounted : 1,
 			is_swap : 1,
@@ -149,45 +140,33 @@ struct lsblk_device {
 
 #define device_is_partition(_x)		((_x)->wholedisk != NULL)
 
-/* Unfortunately, pktcdvd dependence on block device is not defined by
- * slave/holder symlinks. The struct lsblk_devnomap represents one line in
- * /sys/class/pktcdvd/device_map
- */
+
 struct lsblk_devnomap {
-	dev_t slave;		/* packet device devno */
-	dev_t holder;		/* block device devno */
+	dev_t slave;		
+	dev_t holder;		
 
 	struct list_head ls_devnomap;
 };
 
 
-/*
- * Note that lsblk tree uses bottom devices (devices without slaves) as root
- * of the tree, and partitions are interpreted as a dependence too; it means:
- *    sda -> sda1 -> md0
- *
- * The flag 'is_inverted' turns the tree over (root is device without holders):
- *    md0 -> sda1 -> sda
- */
+
 struct lsblk_devtree {
 	int	refcount;
 
-	struct list_head	roots;		/* tree root devices */
-	struct list_head	devices;	/* all devices */
-	struct list_head	pktcdvd_map;	/* devnomap->ls_devnomap */
+	struct list_head	roots;		
+	struct list_head	devices;	
+	struct list_head	pktcdvd_map;	
 
-	unsigned int	is_inverse : 1,		/* inverse tree */
+	unsigned int	is_inverse : 1,		
 			pktcdvd_read : 1;
 };
 
 
-/*
- * Generic iterator
- */
+
 struct lsblk_iter {
-	struct list_head        *p;		/* current position */
-	struct list_head        *head;		/* start position */
-	int			direction;	/* LSBLK_ITER_{FOR,BACK}WARD */
+	struct list_head        *p;		
+	struct list_head        *head;		
+	int			direction;	
 };
 
 #define LSBLK_ITER_FORWARD	0
@@ -211,7 +190,7 @@ struct lsblk_iter {
 	} while(0)
 
 
-/* lsblk-mnt.c */
+
 extern void lsblk_mnt_init(void);
 extern void lsblk_mnt_deinit(void);
 
@@ -219,14 +198,14 @@ extern void lsblk_device_free_filesystems(struct lsblk_device *dev);
 extern const char *lsblk_device_get_mountpoint(struct lsblk_device *dev);
 extern struct libmnt_fs **lsblk_device_get_filesystems(struct lsblk_device *dev, size_t *n);
 
-/* lsblk-properties.c */
+
 extern void lsblk_device_free_properties(struct lsblk_devprop *p);
 extern struct lsblk_devprop *lsblk_device_get_properties(struct lsblk_device *dev);
 extern void lsblk_properties_deinit(void);
 
 extern const char *lsblk_parttype_code_to_string(const char *code, const char *pttype);
 
-/* lsblk-devtree.c */
+
 void lsblk_reset_iter(struct lsblk_iter *itr, int direction);
 struct lsblk_device *lsblk_new_device(void);
 void lsblk_ref_device(struct lsblk_device *dev);
@@ -262,4 +241,4 @@ struct lsblk_device *lsblk_devtree_get_device(struct lsblk_devtree *tr, const ch
 int lsblk_devtree_remove_device(struct lsblk_devtree *tr, struct lsblk_device *dev);
 int lsblk_devtree_deduplicate_devices(struct lsblk_devtree *tr);
 
-#endif /* UTIL_LINUX_LSBLK_H */
+#endif 

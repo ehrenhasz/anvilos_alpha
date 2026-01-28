@@ -30,7 +30,7 @@ function ci_code_size_setup {
 function ci_code_size_build {
     PORTS_TO_CHECK=bmusxpd
     SUBMODULES="lib/asf4 lib/berkeley-db-1.xx lib/mbedtls lib/micropython-lib lib/nxp_driver lib/pico-sdk lib/stm32lib lib/tinyusb"
-    git checkout -b pull_request # save the current location
+    git checkout -b pull_request 
     git remote add upstream https://github.com/micropython/micropython.git
     git fetch --depth=100 upstream master
     git merge-base upstream/master HEAD || git fetch --unshallow upstream master
@@ -500,5 +500,5 @@ function ci_zephyr_build {
     docker exec zephyr-ci west build -p auto -b qemu_x86 -- -DCONF_FILE=prj_minimal.conf
     docker exec zephyr-ci west build -p auto -b frdm_k64f
     docker exec zephyr-ci west build -p auto -b mimxrt1050_evk
-    docker exec zephyr-ci west build -p auto -b nucleo_wb55rg # for bluetooth
+    docker exec zephyr-ci west build -p auto -b nucleo_wb55rg 
 }

@@ -24,7 +24,7 @@ then
 	if [ -f "${top_srcdir}/${GITREV}" ]
 	then
 		ZFS_GITREV=$(sed -n \
-			'1s/^#define[[:blank:]]ZFS_META_GITREV "\([^"]*\)"$/\1/p' \
+			'1s/^
 			"${top_srcdir}/${GITREV}")
 	fi
 elif [ "${dist}" = yes ]
@@ -33,7 +33,7 @@ then
 fi
 ZFS_GITREV=${ZFS_GITREV:-unknown}
 GITREVTMP="${GITREV}~"
-printf '#define\tZFS_META_GITREV "%s"\n' "${ZFS_GITREV}" >"${GITREVTMP}"
+printf '
 GITREV="${distdir}/${GITREV}"
 if cmp -s "${GITREV}" "${GITREVTMP}"
 then

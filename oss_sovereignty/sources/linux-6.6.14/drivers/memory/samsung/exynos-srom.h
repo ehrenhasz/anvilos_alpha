@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Exynos SROMC register definitions
- */
+
+
 
 #ifndef __EXYNOS_SROM_H
 #define __EXYNOS_SROM_H __FILE__
@@ -19,7 +14,7 @@
 #define EXYNOS_SROM_BC4		EXYNOS_SROMREG(0x14)
 #define EXYNOS_SROM_BC5		EXYNOS_SROMREG(0x18)
 
-/* one register BW holds 4 x 4-bit packed settings for NCS0 - NCS3 */
+
 
 #define EXYNOS_SROM_BW__DATAWIDTH__SHIFT	0
 #define EXYNOS_SROM_BW__ADDRMODE__SHIFT		1
@@ -35,7 +30,7 @@
 #define EXYNOS_SROM_BW__NCS4__SHIFT		16
 #define EXYNOS_SROM_BW__NCS5__SHIFT		20
 
-/* applies to same to BCS0 - BCS3 */
+
 
 #define EXYNOS_SROM_BCX__PMC__SHIFT		0
 #define EXYNOS_SROM_BCX__TACP__SHIFT		4
@@ -45,4 +40,4 @@
 #define EXYNOS_SROM_BCX__TCOS__SHIFT		24
 #define EXYNOS_SROM_BCX__TACS__SHIFT		28
 
-#endif /* __EXYNOS_SROM_H */
+#endif 

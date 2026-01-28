@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2010 Yong Shen <yong.shen@linaro.org>
- * Copyright 2009-2010 Pengutronix
- * Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>
- */
+
+
 #ifndef __LINUX_MFD_MC13783_H
 #define __LINUX_MFD_MC13783_H
 
@@ -84,4 +80,4 @@
 #define MC13783_IRQ_ALSPTH	44
 #define MC13783_IRQ_AHSSHORT	45
 
-#endif /* ifndef __LINUX_MFD_MC13783_H */
+#endif 

@@ -51,7 +51,7 @@ def test_one(site, opts):
             try:
                 b = s.read(128)
             except OSError as err:
-                if err.errno == 2:  # 2=ssl.SSL_ERROR_WANT_READ:
+                if err.errno == 2:  
                     continue
                 raise
             if b is None:

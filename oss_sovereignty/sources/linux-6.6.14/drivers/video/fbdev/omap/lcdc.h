@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef LCDC_H
 #define LCDC_H
-/*
- * Copyright (C) 2004 Nokia Corporation
- * Author: Imre Deak <imre.deak@nokia.com>
- */
+
 #define OMAP_LCDC_BASE			0xfffec000
 #define OMAP_LCDC_SIZE			256
 #define OMAP_LCDC_IRQ			INT_LCD_CTRL

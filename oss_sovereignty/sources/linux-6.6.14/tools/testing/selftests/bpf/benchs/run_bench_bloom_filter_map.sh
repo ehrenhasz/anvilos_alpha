@@ -4,7 +4,7 @@ header "Bloom filter map"
 for v in 2 4 8 16 40; do
 for t in 1 4 8 12 16; do
 for h in {1..10}; do
-subtitle "value_size: $v bytes, # threads: $t, # hashes: $h"
+subtitle "value_size: $v bytes, 
 	for e in 10000 50000 75000 100000 250000 500000 750000 1000000 2500000 5000000; do
 		printf "%'d entries -\n" $e
 		printf "\t"
@@ -24,7 +24,7 @@ done
 header "Hashmap without bloom filter vs. hashmap with bloom filter (throughput, 8 threads)"
 for v in 2 4 8 16 40; do
 for h in {1..10}; do
-subtitle "value_size: $v, # hashes: $h"
+subtitle "value_size: $v, 
 	for e in 10000 50000 75000 100000 250000 500000 750000 1000000 2500000 5000000; do
 		printf "%'d entries -\n" $e
 		printf "\t"

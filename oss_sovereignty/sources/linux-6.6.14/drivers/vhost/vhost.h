@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _VHOST_H
 #define _VHOST_H
 
@@ -28,7 +28,7 @@ struct vhost_work {
 
 struct vhost_worker {
 	struct vhost_task	*vtsk;
-	/* Used to serialize device wide flushing with worker swapping. */
+	
 	struct mutex		mutex;
 	struct llist_head	work_list;
 	u64			kcov_handle;
@@ -36,8 +36,8 @@ struct vhost_worker {
 	int			attachment_cnt;
 };
 
-/* Poll a file (eventfd or socket) */
-/* Note: there's nothing vhost specific about this structure. */
+
+
 struct vhost_poll {
 	poll_table		table;
 	wait_queue_head_t	*wqh;
@@ -75,12 +75,12 @@ struct vhost_vring_call {
 	struct irq_bypass_producer producer;
 };
 
-/* The virtqueue structure describes a queue attached to a device. */
+
 struct vhost_virtqueue {
 	struct vhost_dev *dev;
 	struct vhost_worker __rcu *worker;
 
-	/* The actual ring of buffers. */
+	
 	struct mutex mutex;
 	unsigned int num;
 	vring_desc_t __user *desc;
@@ -94,32 +94,28 @@ struct vhost_virtqueue {
 
 	struct vhost_poll poll;
 
-	/* The routine to call when the Guest pings us, or timeout. */
+	
 	vhost_work_fn_t handle_kick;
 
-	/* Last available index we saw.
-	 * Values are limited to 0x7fff, and the high bit is used as
-	 * a wrap counter when using VIRTIO_F_RING_PACKED. */
+	
 	u16 last_avail_idx;
 
-	/* Caches available index value from user. */
+	
 	u16 avail_idx;
 
-	/* Last index we used.
-	 * Values are limited to 0x7fff, and the high bit is used as
-	 * a wrap counter when using VIRTIO_F_RING_PACKED. */
+	
 	u16 last_used_idx;
 
-	/* Used flags */
+	
 	u16 used_flags;
 
-	/* Last used index value we have signalled on */
+	
 	u16 signalled_used;
 
-	/* Last used index value we have signalled on */
+	
 	bool signalled_used_valid;
 
-	/* Log writes to used structure. */
+	
 	bool log_used;
 	u64 log_addr;
 
@@ -127,22 +123,21 @@ struct vhost_virtqueue {
 	struct iovec iotlb_iov[64];
 	struct iovec *indirect;
 	struct vring_used_elem *heads;
-	/* Protected by virtqueue mutex. */
+	
 	struct vhost_iotlb *umem;
 	struct vhost_iotlb *iotlb;
 	void *private_data;
 	u64 acked_features;
 	u64 acked_backend_features;
-	/* Log write descriptors */
+	
 	void __user *log_base;
 	struct vhost_log *log;
 	struct iovec log_iov[64];
 
-	/* Ring endianness. Defaults to legacy native endianness.
-	 * Set to true when starting a modern virtio device. */
+	
 	bool is_le;
 #ifdef CONFIG_VHOST_CROSS_ENDIAN_LEGACY
-	/* Ring endianness requested by userspace for cross-endian support. */
+	
 	bool user_be;
 #endif
 	u32 busyloop_timeout;
@@ -261,28 +256,14 @@ enum {
 			 (1ULL << VIRTIO_F_VERSION_1)
 };
 
-/**
- * vhost_vq_set_backend - Set backend.
- *
- * @vq            Virtqueue.
- * @private_data  The private data.
- *
- * Context: Need to call with vq->mutex acquired.
- */
+
 static inline void vhost_vq_set_backend(struct vhost_virtqueue *vq,
 					void *private_data)
 {
 	vq->private_data = private_data;
 }
 
-/**
- * vhost_vq_get_backend - Get backend.
- *
- * @vq            Virtqueue.
- *
- * Context: Need to call with vq->mutex acquired.
- * Return: Private data previously set with vhost_vq_set_backend.
- */
+
 static inline void *vhost_vq_get_backend(struct vhost_virtqueue *vq)
 {
 	return vq->private_data;
@@ -310,7 +291,7 @@ static inline bool vhost_is_little_endian(struct vhost_virtqueue *vq)
 }
 #endif
 
-/* Memory accessors */
+
 static inline u16 vhost16_to_cpu(struct vhost_virtqueue *vq, __virtio16 val)
 {
 	return __virtio16_to_cpu(vhost_is_little_endian(vq), val);

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_SYMBOL_CONF
 #define __PERF_SYMBOL_CONF 1
 
@@ -81,4 +81,4 @@ struct symbol_conf {
 
 extern struct symbol_conf symbol_conf;
 
-#endif // __PERF_SYMBOL_CONF
+#endif 

@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GPU_CC_SM8350_H
 #define _DT_BINDINGS_CLK_QCOM_GPU_CC_SM8350_H
 
-/* GPU_CC clocks */
+
 #define GPU_CC_AHB_CLK			0
 #define GPU_CC_CB_CLK			1
 #define GPU_CC_CRC_AHB_CLK		2
@@ -35,7 +33,7 @@
 #define GPU_CC_PLL1			25
 #define GPU_CC_SLEEP_CLK		26
 
-/* GPU_CC resets */
+
 #define GPUCC_GPU_CC_ACD_BCR		0
 #define GPUCC_GPU_CC_CB_BCR		1
 #define GPUCC_GPU_CC_CX_BCR		2
@@ -45,7 +43,7 @@
 #define GPUCC_GPU_CC_GX_BCR		6
 #define GPUCC_GPU_CC_XO_BCR		7
 
-/* GPU_CC GDSCRs */
+
 #define GPU_CX_GDSC			0
 #define GPU_GX_GDSC			1
 

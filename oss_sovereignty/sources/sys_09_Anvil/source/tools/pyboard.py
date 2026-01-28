@@ -186,15 +186,15 @@ class Pyboard:
                     if os.name == "nt":
                         self.serial = serial.Serial(**serial_kwargs)
                         self.serial.port = device
-                        portinfo = list(serial.tools.list_ports.grep(device))  # type: ignore
+                        portinfo = list(serial.tools.list_ports.grep(device))  
                         if portinfo and portinfo[0].manufacturer != "Microsoft":
-                            self.serial.dtr = False  # DTR False = gpio0 High = Normal boot
-                            self.serial.rts = False  # RTS False = EN High = MCU enabled
+                            self.serial.dtr = False  
+                            self.serial.rts = False  
                         self.serial.open()
                     else:
                         self.serial = serial.Serial(device, **serial_kwargs)
                     break
-                except (OSError, IOError):  # Py2 and Py3 have different errors
+                except (OSError, IOError):  
                     if wait == 0:
                         continue
                     if attempt == 0:
@@ -235,18 +235,18 @@ class Pyboard:
                 time.sleep(0.01)
         return data
     def enter_raw_repl(self, soft_reset=True):
-        self.serial.write(b"\r\x03\x03")  # ctrl-C twice: interrupt any running program
+        self.serial.write(b"\r\x03\x03")  
         n = self.serial.inWaiting()
         while n > 0:
             self.serial.read(n)
             n = self.serial.inWaiting()
-        self.serial.write(b"\r\x01")  # ctrl-A: enter raw REPL
+        self.serial.write(b"\r\x01")  
         if soft_reset:
             data = self.read_until(1, b"raw REPL; CTRL-B to exit\r\n>")
             if not data.endswith(b"raw REPL; CTRL-B to exit\r\n>"):
                 print(data)
                 raise PyboardError("could not enter raw repl")
-            self.serial.write(b"\x04")  # ctrl-D: soft reset
+            self.serial.write(b"\x04")  
             data = self.read_until(1, b"soft reboot\r\n")
             if not data.endswith(b"soft reboot\r\n"):
                 print(data)
@@ -257,7 +257,7 @@ class Pyboard:
             raise PyboardError("could not enter raw repl")
         self.in_raw_repl = True
     def exit_raw_repl(self):
-        self.serial.write(b"\r\x02")  # ctrl-B: enter friendly REPL
+        self.serial.write(b"\r\x02")  
         self.in_raw_repl = False
     def follow(self, timeout, data_consumer=None):
         data = self.read_until(1, b"\x04", timeout=timeout, data_consumer=data_consumer)
@@ -559,7 +559,7 @@ class _FS:
     if path == '_injected.mpy':
       return tuple(0 for _ in range(10))
     else:
-      raise OSError(-2) # ENOENT
+      raise OSError(-2) 
   def open(self, path, mode):
     return self.File()
 os.mount(_FS(), '/_')

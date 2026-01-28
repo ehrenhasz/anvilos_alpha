@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2007-2014 Nicira, Inc.
- */
+
+
 
 #ifndef DATAPATH_H
 #define DATAPATH_H 1
@@ -24,23 +22,7 @@
 #define DP_VPORT_HASH_BUCKETS       1024
 #define DP_MASKS_REBALANCE_INTERVAL 4000
 
-/**
- * struct dp_stats_percpu - per-cpu packet processing statistics for a given
- * datapath.
- * @n_hit: Number of received packets for which a matching flow was found in
- * the flow table.
- * @n_miss: Number of received packets that had no matching flow in the flow
- * table.  The sum of @n_hit and @n_miss is the number of packets that have
- * been received by the datapath.
- * @n_lost: Number of received packets that had no matching flow in the flow
- * table that could not be sent to userspace (normally due to an overflow in
- * one of the datapath's queues).
- * @n_mask_hit: Number of masks looked up for flow match.
- *   @n_mask_hit / (@n_hit + @n_missed)  will be the average masks looked
- *   up per packet.
- * @n_cache_hit: The number of received packets that had their mask found using
- * the mask cache.
- */
+
 struct dp_stats_percpu {
 	u64 n_hit;
 	u64 n_missed;
@@ -50,72 +32,41 @@ struct dp_stats_percpu {
 	struct u64_stats_sync syncp;
 };
 
-/**
- * struct dp_nlsk_pids - array of netlink portids of for a datapath.
- *                       This is used when OVS_DP_F_DISPATCH_UPCALL_PER_CPU
- *                       is enabled and must be protected by rcu.
- * @rcu: RCU callback head for deferred destruction.
- * @n_pids: Size of @pids array.
- * @pids: Array storing the Netlink socket PIDs indexed by CPU ID for packets
- *       that miss the flow table.
- */
+
 struct dp_nlsk_pids {
 	struct rcu_head rcu;
 	u32 n_pids;
 	u32 pids[];
 };
 
-/**
- * struct datapath - datapath for flow-based packet switching
- * @rcu: RCU callback head for deferred destruction.
- * @list_node: Element in global 'dps' list.
- * @table: flow table.
- * @ports: Hash table for ports.  %OVSP_LOCAL port always exists.  Protected by
- * ovs_mutex and RCU.
- * @stats_percpu: Per-CPU datapath statistics.
- * @net: Reference to net namespace.
- * @max_headroom: the maximum headroom of all vports in this datapath; it will
- * be used by all the internal vports in this dp.
- * @upcall_portids: RCU protected 'struct dp_nlsk_pids'.
- *
- * Context: See the comment on locking at the top of datapath.c for additional
- * locking information.
- */
+
 struct datapath {
 	struct rcu_head rcu;
 	struct list_head list_node;
 
-	/* Flow table. */
+	
 	struct flow_table table;
 
-	/* Switch ports. */
+	
 	struct hlist_head *ports;
 
-	/* Stats. */
+	
 	struct dp_stats_percpu __percpu *stats_percpu;
 
-	/* Network namespace ref. */
+	
 	possible_net_t net;
 
 	u32 user_features;
 
 	u32 max_headroom;
 
-	/* Switch meters. */
+	
 	struct dp_meter_table meter_tbl;
 
 	struct dp_nlsk_pids __rcu *upcall_portids;
 };
 
-/**
- * struct ovs_skb_cb - OVS data in skb CB
- * @input_vport: The original vport packet came in on. This value is cached
- * when a packet is received by OVS.
- * @mru: The maximum received fragement size; 0 if the packet is not
- * fragmented.
- * @acts_origlen: The netlink size of the flow actions applied to this skb.
- * @cutlen: The number of bytes from the packet end to be removed.
- */
+
 struct ovs_skb_cb {
 	struct vport		*input_vport;
 	u16			mru;
@@ -124,17 +75,7 @@ struct ovs_skb_cb {
 };
 #define OVS_CB(skb) ((struct ovs_skb_cb *)(skb)->cb)
 
-/**
- * struct dp_upcall - metadata to include with a packet to send to userspace
- * @cmd: One of %OVS_PACKET_CMD_*.
- * @userdata: If nonnull, its variable-length value is passed to userspace as
- * %OVS_PACKET_ATTR_USERDATA.
- * @portid: Netlink portid to which packet should be sent.  If @portid is 0
- * then no packet is sent and the packet is accounted in the datapath's @n_lost
- * counter.
- * @egress_tun_info: If nonnull, becomes %OVS_PACKET_ATTR_EGRESS_TUN_KEY.
- * @mru: If not zero, Maximum received IP fragment size.
- */
+
 struct dp_upcall_info {
 	struct ip_tunnel_info *egress_tun_info;
 	const struct nlattr *userdata;
@@ -145,11 +86,7 @@ struct dp_upcall_info {
 	u16 mru;
 };
 
-/**
- * struct ovs_net - Per net-namespace data for ovs.
- * @dps: List of datapaths to enable dumping them all out.
- * Protected by genl_mutex.
- */
+
 struct ovs_net {
 	struct list_head dps;
 	struct work_struct dp_notify_work;
@@ -158,17 +95,11 @@ struct ovs_net {
 	struct ovs_ct_limit_info *ct_limit_info;
 #endif
 
-	/* Module reference for configuring conntrack. */
+	
 	bool xt_label;
 };
 
-/**
- * enum ovs_pkt_hash_types - hash info to include with a packet
- * to send to userspace.
- * @OVS_PACKET_HASH_SW_BIT: indicates hash was computed in software stack.
- * @OVS_PACKET_HASH_L4_BIT: indicates hash is a canonical 4-tuple hash
- * over transport ports.
- */
+
 enum ovs_pkt_hash_types {
 	OVS_PACKET_HASH_SW_BIT = (1ULL << 32),
 	OVS_PACKET_HASH_L4_BIT = (1ULL << 33),
@@ -220,7 +151,7 @@ static inline struct vport *ovs_vport_ovsl(const struct datapath *dp, int port_n
 	return ovs_lookup_vport(dp, port_no);
 }
 
-/* Must be called with rcu_read_lock. */
+
 static inline struct datapath *get_dp_rcu(struct net *net, int dp_ifindex)
 {
 	struct net_device *dev = dev_get_by_index_rcu(net, dp_ifindex);
@@ -235,9 +166,7 @@ static inline struct datapath *get_dp_rcu(struct net *net, int dp_ifindex)
 	return NULL;
 }
 
-/* The caller must hold either ovs_mutex or rcu_read_lock to keep the
- * returned dp pointer valid.
- */
+
 static inline struct datapath *get_dp(struct net *net, int dp_ifindex)
 {
 	struct datapath *dp;
@@ -273,7 +202,7 @@ void ovs_dp_notify_wq(struct work_struct *work);
 int action_fifos_init(void);
 void action_fifos_exit(void);
 
-/* 'KEY' must not have any bits set outside of the 'MASK' */
+
 #define OVS_MASKED(OLD, KEY, MASK) ((KEY) | ((OLD) & ~(MASK)))
 #define OVS_SET_MASKED(OLD, KEY, MASK) ((OLD) = OVS_MASKED(OLD, KEY, MASK))
 
@@ -282,4 +211,4 @@ do {								\
 	if (logging_allowed && net_ratelimit())			\
 		pr_info("netlink: " fmt "\n", ##__VA_ARGS__);	\
 } while (0)
-#endif /* datapath.h */
+#endif 

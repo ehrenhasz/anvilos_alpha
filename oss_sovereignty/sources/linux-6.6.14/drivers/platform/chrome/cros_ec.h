@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ChromeOS Embedded Controller core interface.
- *
- * Copyright (C) 2020 Google LLC
- */
+
+
 
 #ifndef __CROS_EC_H
 #define __CROS_EC_H
@@ -22,4 +18,4 @@ void cros_ec_resume_complete(struct cros_ec_device *ec_dev);
 
 irqreturn_t cros_ec_irq_thread(int irq, void *data);
 
-#endif /* __CROS_EC_H */
+#endif 

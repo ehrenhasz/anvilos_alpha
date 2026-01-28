@@ -11,10 +11,10 @@ for x in (
 ):
     print(binascii.unhexlify(x))
 try:
-    a = binascii.unhexlify(b"0")  # odd buffer length
+    a = binascii.unhexlify(b"0")  
 except ValueError:
     print("ValueError")
 try:
-    a = binascii.unhexlify(b"gg")  # digit not hex
+    a = binascii.unhexlify(b"gg")  
 except ValueError:
     print("ValueError")

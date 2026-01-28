@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+
 #ifndef _DT_BINDINGS_POWER_MT6795_POWER_H
 #define _DT_BINDINGS_POWER_MT6795_POWER_H
 
@@ -13,4 +13,4 @@
 #define MT6795_POWER_DOMAIN_MFG		8
 #define MT6795_POWER_DOMAIN_MODEM	9
 
-#endif /* _DT_BINDINGS_POWER_MT6795_POWER_H */
+#endif 

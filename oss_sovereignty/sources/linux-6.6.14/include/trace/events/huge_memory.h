@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM huge_memory
 
@@ -244,5 +244,5 @@ TRACE_EVENT(mm_khugepaged_collapse_file,
 		__print_symbolic(__entry->result, SCAN_STATUS))
 );
 
-#endif /* __HUGE_MEMORY_H */
+#endif 
 #include <trace/define_trace.h>

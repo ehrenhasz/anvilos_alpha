@@ -1,23 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 
-/* Stage 5 definitions for creating trace events */
 
-/*
- * remember the offset of each array from the beginning of the event.
- */
+
+
+
 
 #undef __entry
 #define __entry entry
 
-/*
- * Fields should never declare an array: i.e. __field(int, arr[5])
- * If they do, it will cause issues in parsing and possibly corrupt the
- * events. To prevent that from happening, test the sizeof() a fictitious
- * type called "struct _test_no_array_##item" which will fail if "item"
- * contains array elements (like "arr[5]").
- *
- * If you hit this, use __array(int, arr, 5) instead.
- */
+
 #undef __field
 #define __field(type, item)					\
 	{ (void)sizeof(struct _test_no_array_##item *); }
@@ -72,10 +62,7 @@
 
 #undef __rel_string_len
 #define __rel_string_len(item, src, len) __rel_dynamic_array(char, item, (len) + 1)
-/*
- * __bitmask_size_in_bytes_raw is the number of bytes needed to hold
- * num_possible_cpus().
- */
+
 #define __bitmask_size_in_bytes_raw(nr_bits)	\
 	(((nr_bits) + 7) / 8)
 
@@ -83,11 +70,7 @@
 	((__bitmask_size_in_bytes_raw(nr_bits) +		\
 	  ((BITS_PER_LONG / 8) - 1)) / (BITS_PER_LONG / 8))
 
-/*
- * __bitmask_size_in_bytes is the number of bytes needed to hold
- * num_possible_cpus() padded out to the nearest long. This is what
- * is saved in the buffer, just to be consistent.
- */
+
 #define __bitmask_size_in_bytes(nr_bits)				\
 	(__bitmask_size_in_longs(nr_bits) * (BITS_PER_LONG / 8))
 

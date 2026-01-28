@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for PMBus chip drivers.
-#
+
+
+
+
 
 obj-$(CONFIG_PMBUS)		+= pmbus_core.o
 obj-$(CONFIG_SENSORS_PMBUS)	+= pmbus.o

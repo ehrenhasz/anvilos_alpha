@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2019-2021, Intel Corporation. */
+
+
 
 #ifndef _ICE_ESWITCH_H_
 #define _ICE_ESWITCH_H_
@@ -25,7 +25,7 @@ void ice_eswitch_set_target_vsi(struct sk_buff *skb,
 				struct ice_tx_offload_params *off);
 netdev_tx_t
 ice_eswitch_port_start_xmit(struct sk_buff *skb, struct net_device *netdev);
-#else /* CONFIG_ICE_SWITCHDEV */
+#else 
 static inline void ice_eswitch_release(struct ice_pf *pf) { }
 
 static inline void ice_eswitch_stop_all_tx_queues(struct ice_pf *pf) { }
@@ -68,5 +68,5 @@ ice_eswitch_port_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
 	return NETDEV_TX_BUSY;
 }
-#endif /* CONFIG_ICE_SWITCHDEV */
-#endif /* _ICE_ESWITCH_H_ */
+#endif 
+#endif 

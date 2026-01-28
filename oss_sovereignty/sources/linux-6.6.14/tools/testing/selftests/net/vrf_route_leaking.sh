@@ -20,9 +20,9 @@ R2_N2_IP6=2001:db8:16:2::254
 log_section()
 {
 	echo
-	echo "###########################################################################"
+	echo "
 	echo "$*"
-	echo "###########################################################################"
+	echo "
 	echo
 }
 log_test()
@@ -324,7 +324,7 @@ ipv6_ping_frag_asym()
 usage()
 {
         cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
 	-4          Run IPv4 tests only
 	-6          Run IPv6 tests only
         -t TEST     Run only TEST

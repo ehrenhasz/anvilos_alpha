@@ -1,8 +1,8 @@
 import re
 import subprocess
 import sys
-verbosity = 0  # Show what's going on, 0 1 or 2.
-suggestions = 1  # Set to 0 to not include lengthy suggestions in error messages.
+verbosity = 0  
+suggestions = 1  
 ignore_prefixes = []
 def verbose(*args):
     if verbosity:
@@ -80,11 +80,11 @@ def run(args):
         filename = args[-1]
         verbose("checking commit message from", filename)
         with open(args[-1]) as f:
-            lines = [line.rstrip("\r\n") for line in f if not line.startswith("#")]
+            lines = [line.rstrip("\r\n") for line in f if not line.startswith("
             while not lines[-1]:
                 lines.pop()
             verify_message_body(lines, err)
-    else:  # Normal operation, pass arguments to git log
+    else:  
         for sha in git_log("%h", *args):
             verify(sha, err)
     if err.has_errors or err.has_warnings:
@@ -109,8 +109,8 @@ def show_help():
     print("      see https://www.git-scm.com/docs/git-log")
     print("      passing no arguments at all will verify all commits")
     print("examples:")
-    print("verifygitlog.py -n10  # Check last 10 commits")
-    print("verifygitlog.py -v master..HEAD  # Check commits since master")
+    print("verifygitlog.py -n10  
+    print("verifygitlog.py -v master..HEAD  
 if __name__ == "__main__":
     args = sys.argv[1:]
     verbosity = args.count("-v")

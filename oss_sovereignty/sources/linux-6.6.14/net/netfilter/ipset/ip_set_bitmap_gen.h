@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) 2013 Jozsef Kadlecsik <kadlec@netfilter.org> */
+
+
 
 #ifndef __IP_SET_BITMAP_IP_GEN_H
 #define __IP_SET_BITMAP_IP_GEN_H
@@ -80,7 +80,7 @@ mtype_flush(struct ip_set *set)
 	set->ext_size = 0;
 }
 
-/* Calculate the actual memory size of the set data */
+
 static size_t
 mtype_memsize(const struct mtype *map, size_t dsize)
 {
@@ -144,7 +144,7 @@ mtype_add(struct ip_set *set, void *value, const struct ip_set_ext *ext,
 			set_bit(e->id, map->members);
 			return -IPSET_ERR_EXIST;
 		}
-		/* Element is re-added, cleanup extensions */
+		
 		ip_set_ext_destroy(set, x);
 	}
 	if (ret > 0)
@@ -164,7 +164,7 @@ mtype_add(struct ip_set *set, void *value, const struct ip_set_ext *ext,
 	if (SET_WITH_SKBINFO(set))
 		ip_set_init_skbinfo(ext_skbinfo(x, set), ext);
 
-	/* Activate element */
+	
 	set_bit(e->id, map->members);
 	set->elements++;
 
@@ -212,7 +212,7 @@ mtype_list(const struct ip_set *set,
 	adt = nla_nest_start(skb, IPSET_ATTR_ADT);
 	if (!adt)
 		return -EMSGSIZE;
-	/* Extensions may be replaced */
+	
 	rcu_read_lock();
 	for (; cb->args[IPSET_CB_ARG0] < map->elements;
 	     cb->args[IPSET_CB_ARG0]++) {
@@ -244,7 +244,7 @@ mtype_list(const struct ip_set *set,
 	}
 	nla_nest_end(skb, adt);
 
-	/* Set listing finished */
+	
 	cb->args[IPSET_CB_ARG0] = 0;
 
 	goto out;
@@ -269,9 +269,7 @@ mtype_gc(struct timer_list *t)
 	void *x;
 	u32 id;
 
-	/* We run parallel with other readers (test element)
-	 * but adding/deleting new entries is locked out
-	 */
+	
 	spin_lock_bh(&set->lock);
 	for (id = 0; id < map->elements; id++)
 		if (mtype_gc_test(id, map, set->dsize)) {
@@ -303,4 +301,4 @@ static const struct ip_set_type_variant mtype = {
 	.same_set = mtype_same_set,
 };
 
-#endif /* __IP_SET_BITMAP_IP_GEN_H */
+#endif 

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- *
- * Derived from original vfio:
- * Copyright 2010 Cisco Systems, Inc.  All rights reserved.
- * Author: Tom Lyon, pugs@cisco.com
- */
+
+
 
 #include <linux/mutex.h>
 #include <linux/pci.h>
@@ -98,7 +91,7 @@ struct vfio_pci_core_device {
 	struct rw_semaphore	memory_lock;
 };
 
-/* Will be exported for vfio pci drivers usage */
+
 int vfio_pci_core_register_dev_region(struct vfio_pci_core_device *vdev,
 				      unsigned int type, unsigned int subtype,
 				      const struct vfio_pci_regops *ops,
@@ -130,4 +123,4 @@ void vfio_pci_core_finish_enable(struct vfio_pci_core_device *vdev);
 pci_ers_result_t vfio_pci_core_aer_err_detected(struct pci_dev *pdev,
 						pci_channel_state_t state);
 
-#endif /* VFIO_PCI_CORE_H */
+#endif 

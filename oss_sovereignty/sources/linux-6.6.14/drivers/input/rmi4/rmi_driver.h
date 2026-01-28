@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2011-2016 Synaptics Incorporated
- * Copyright (c) 2011 Unixphere
- */
+
+
 
 #ifndef _RMI_DRIVER_H
 #define _RMI_DRIVER_H
@@ -49,7 +46,7 @@ struct pdt_entry {
 #define RMI_REG_DESC_PRESENSE_BITS	(32 * BITS_PER_BYTE)
 #define RMI_REG_DESC_SUBPACKET_BITS	(37 * BITS_PER_BYTE)
 
-/* describes a single packet register */
+
 struct rmi_register_desc_item {
 	u16 reg;
 	unsigned long reg_size;
@@ -58,10 +55,7 @@ struct rmi_register_desc_item {
 				RMI_REG_DESC_SUBPACKET_BITS)];
 };
 
-/*
- * describes the packet registers for a particular type
- * (ie query, control, data)
- */
+
 struct rmi_register_descriptor {
 	unsigned long struct_size;
 	unsigned long presense_map[BITS_TO_LONGS(RMI_REG_DESC_PRESENSE_BITS)];
@@ -74,10 +68,7 @@ int rmi_read_register_desc(struct rmi_device *d, u16 addr,
 const struct rmi_register_desc_item *rmi_get_register_desc_item(
 				struct rmi_register_descriptor *rdesc, u16 reg);
 
-/*
- * Calculate the total size of all of the registers described in the
- * descriptor.
- */
+
 size_t rmi_register_desc_calc_size(struct rmi_register_descriptor *rdesc);
 int rmi_register_desc_calc_reg_offset(
 			struct rmi_register_descriptor *rdesc, u16 reg);
@@ -127,7 +118,7 @@ static inline int rmi_f34_create_sysfs(struct rmi_device *rmi_dev)
 static inline void rmi_f34_remove_sysfs(struct rmi_device *rmi_dev)
 {
 }
-#endif /* CONFIG_RMI_F34 */
+#endif 
 
 extern struct rmi_function_handler rmi_f01_handler;
 extern struct rmi_function_handler rmi_f03_handler;

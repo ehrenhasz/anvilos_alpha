@@ -1,4 +1,4 @@
-/* Memory configuration */
+
 #if defined MICROPY_HW_FLASH_RESERVED
 reserved_size = MICROPY_HW_FLASH_RESERVED;
 #endif
@@ -27,12 +27,12 @@ dtcm_size           = 0x00008000;
 ocrm_start          = 0x20200000;
 ocrm_size           = 0x00010000;
 
-/* 24kiB stack. */
+
 __stack_size__ = 0x5000;
 _estack = __StackTop;
 _sstack = __StackLimit;
 
-/* Use second OCRAM bank for GC heap. */
-/* Use all OCRAM for the GC heap. */
+
+
 _gc_heap_start = ORIGIN(m_ocrm);
 _gc_heap_end = ORIGIN(m_ocrm) + LENGTH(m_ocrm);

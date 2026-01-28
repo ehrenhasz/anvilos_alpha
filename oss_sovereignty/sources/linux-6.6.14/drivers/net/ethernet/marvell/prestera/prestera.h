@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved. */
+
+
 
 #ifndef _PRESTERA_H_
 #define _PRESTERA_H_
@@ -158,7 +158,7 @@ struct prestera_port {
 	struct phylink *phy_link;
 	struct phylink_pcs phylink_pcs;
 
-	/* protects state_mac */
+	
 	spinlock_t state_mac_lock;
 };
 
@@ -169,13 +169,13 @@ struct prestera_device {
 	struct prestera_fw_rev fw_rev;
 	void *priv;
 
-	/* called by device driver to handle received packets */
+	
 	void (*recv_pkt)(struct prestera_device *dev);
 
-	/* called by device driver to pass event up to the higher layer */
+	
 	int (*recv_msg)(struct prestera_device *dev, void *msg, size_t size);
 
-	/* called by higher layer to send request to the firmware */
+	
 	int (*send_req)(struct prestera_device *dev, int qid, void *in_msg,
 			size_t in_size, void *out_msg, size_t out_size,
 			unsigned int wait);
@@ -256,13 +256,13 @@ struct prestera_event {
 };
 
 enum prestera_if_type {
-	/* the interface is of port type (dev,port) */
+	
 	PRESTERA_IF_PORT_E = 0,
 
-	/* the interface is of lag type (lag-id) */
+	
 	PRESTERA_IF_LAG_E = 1,
 
-	/* the interface is of Vid type (vlan-id) */
+	
 	PRESTERA_IF_VID_E = 3,
 };
 
@@ -322,8 +322,8 @@ struct prestera_router {
 	struct notifier_block inetaddr_valid_nb;
 	struct notifier_block fib_nb;
 	struct notifier_block netevent_nb;
-	u8 *nhgrp_hw_state_cache; /* Bitmap cached hw state of nhs */
-	unsigned long nhgrp_hw_cache_kick; /* jiffies */
+	u8 *nhgrp_hw_state_cache; 
+	unsigned long nhgrp_hw_cache_kick; 
 	struct {
 		struct delayed_work dw;
 	} neighs_update;
@@ -414,4 +414,4 @@ struct prestera_flood_domain_port *
 prestera_flood_domain_port_find(struct prestera_flood_domain *flood_domain,
 				struct net_device *dev, u16 vid);
 
-#endif /* _PRESTERA_H_ */
+#endif 

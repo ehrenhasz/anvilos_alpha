@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 CFLAGS += -I. -I../../include -I../../../lib -g -Og -Wall \
 	  -D_LGPL_SOURCE -fsanitize=address -fsanitize=undefined
@@ -64,14 +64,14 @@ maple.o: ../../../lib/maple_tree.c ../../../lib/test_maple_tree.c
 
 generated/map-shift.h:
 	@if ! grep -qws $(SHIFT) generated/map-shift.h; then		\
-		echo "#define XA_CHUNK_SHIFT $(SHIFT)" >		\
+		echo "
 				generated/map-shift.h;			\
 	fi
 
 generated/bit-length.h: FORCE
 	@if ! grep -qws CONFIG_$(LONG_BIT)BIT generated/bit-length.h; then   \
 		echo "Generating $@";                                        \
-		echo "#define CONFIG_$(LONG_BIT)BIT 1" > $@;                 \
+		echo "
 	fi
 
 FORCE: ;

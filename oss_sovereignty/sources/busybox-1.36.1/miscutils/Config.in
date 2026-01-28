@@ -1,8 +1,8 @@
-# DO NOT EDIT. This file is generated from Config.src
-#
-# For a description of the syntax of this configuration file,
-# see docs/Kconfig-language.txt.
-#
+
+
+
+
+
 
 menu "Miscellaneous Utilities"
 
@@ -89,7 +89,7 @@ config DC
 	     Also note that, like the FreeBSD dc, extended registers are not
 	     allowed unless the "-x" option is given.
 
-if BC || DC  # for menuconfig indenting
+if BC || DC  
 
 config FEATURE_DC_BIG
 	bool "Use bc code base for dc (larger, more features)"
@@ -132,7 +132,7 @@ config BEEP
 
 config FEATURE_BEEP_FREQ
 	int "default frequency"
-	range 20 50000	# allowing 0 here breaks the build
+	range 20 50000	
 	default 4000
 	depends on BEEP
 	help
@@ -229,7 +229,7 @@ config CROND
 	This is a port of dcron from slackware. It uses files of the
 	format /var/spool/cron/crontabs/<username> files, for example:
 		$ cat /var/spool/cron/crontabs/root
-		# Run daily cron jobs at 4:40 every day:
+		
 		40 4 * * * /etc/cron/daily > /dev/null 2>&1
 
 config FEATURE_CROND_D
@@ -357,26 +357,26 @@ config FBSPLASH
 	    "exit" - well you guessed it
 config FLASH_ERASEALL
 	bool "flash_eraseall (5.9 kb)"
-	default n  # doesn't build on Ubuntu 8.04
+	default n  
 	help
 	The flash_eraseall binary from mtd-utils as of git head c4c6a59eb.
 	This utility is used to erase the whole MTD device.
 config FLASH_LOCK
 	bool "flash_lock (2.1 kb)"
-	default n  # doesn't build on Ubuntu 8.04
+	default n  
 	help
 	The flash_lock binary from mtd-utils as of git head 5ec0c10d0. This
 	utility locks part or all of the flash device.
 
 config FLASH_UNLOCK
 	bool "flash_unlock (1.3 kb)"
-	default n  # doesn't build on Ubuntu 8.04
+	default n  
 	help
 	The flash_unlock binary from mtd-utils as of git head 5ec0c10d0. This
 	utility unlocks part or all of the flash device.
 config FLASHCP
 	bool "flashcp (5.3 kb)"
-	default n  # doesn't build on Ubuntu 8.04
+	default n  
 	help
 	The flashcp binary, inspired by mtd-utils as of git head 5eceb74f7.
 	This utility is used to copy images into a MTD device.
@@ -473,7 +473,7 @@ config I2CTRANSFER
 
 config INOTIFYD
 	bool "inotifyd (3.6 kb)"
-	default n  # doesn't build on Knoppix 5
+	default n  
 	help
 	Simple inotify daemon. Reports filesystem changes. Requires
 	kernel >= 2.6.13
@@ -676,7 +676,7 @@ config READAHEAD
 	run this applet as a background job.
 config RFKILL
 	bool "rfkill (4.4 kb)"
-	default n # doesn't build on Ubuntu 9.04
+	default n 
 	help
 	Enable/disable wireless devices.
 
@@ -804,7 +804,7 @@ config WATCHDOG
 config FEATURE_WATCHDOG_OPEN_TWICE
 	bool "Open watchdog device twice, closing it gracefully in between"
 	depends on WATCHDOG
-	default n   # this behavior was essentially a hack for a broken driver
+	default n   
 	help
 	When enabled, the watchdog device is opened and then immediately
 	magic-closed, before being opened a second time. This may be necessary

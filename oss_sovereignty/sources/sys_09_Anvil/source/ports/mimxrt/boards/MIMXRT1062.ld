@@ -1,4 +1,4 @@
-/* Memory configuration */
+
 #if MICROPY_HW_FLASH_RESERVED
 reserved_size = MICROPY_HW_FLASH_RESERVED;
 #endif
@@ -34,7 +34,7 @@ sdram_start         = 0x80000000;
 sdram_size          = MICROPY_HW_SDRAM_SIZE;
 #endif
 
-/* 32kiB stack. */
+
 __stack_size__ = 0x8000;
 _estack = __StackTop;
 _sstack = __StackLimit;
@@ -43,7 +43,7 @@ _sstack = __StackLimit;
 _gc_heap_start = ORIGIN(m_sdram);
 _gc_heap_end = ORIGIN(m_sdram) + LENGTH(m_sdram);
 #else
-/* Use second OCRAM bank for GC heap. */
+
 _gc_heap_start = ORIGIN(m_ocrm);
 _gc_heap_end = ORIGIN(m_ocrm) + LENGTH(m_ocrm);
 #endif

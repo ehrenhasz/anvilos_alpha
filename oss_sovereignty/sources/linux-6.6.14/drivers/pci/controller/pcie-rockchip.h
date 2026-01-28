@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Rockchip AXI PCIe controller driver
- *
- * Copyright (c) 2018 Rockchip, Inc.
- *
- * Author: Shawn Lin <shawn.lin@rock-chips.com>
- *
- */
+
+
 
 #ifndef _PCIE_ROCKCHIP_H
 #define _PCIE_ROCKCHIP_H
@@ -15,10 +8,7 @@
 #include <linux/pci.h>
 #include <linux/pci-ecam.h>
 
-/*
- * The upper 16 bits of PCIE_CLIENT_CONFIG are a write mask for the lower 16
- * bits.  This allows atomic updates of the register without locking.
- */
+
 #define HIWORD_UPDATE(mask, val)	(((mask) << 16) | (val))
 #define HIWORD_UPDATE_BIT(val)		HIWORD_UPDATE(val, val)
 
@@ -175,9 +165,9 @@
 #define   PCIE_CORE_IB_REGION_ADDR0_LO_ADDR	PCIE_ADDR_MASK
 #define PCIE_RP_IB_ADDR1		(PCIE_CORE_AXI_INBOUND_BASE + 0x4)
 
-/* Size of one AXI Region (not Region 0) */
+
 #define AXI_REGION_SIZE				BIT(20)
-/* Size of Region 0, equal to sum of sizes of other regions */
+
 #define AXI_REGION_0_SIZE			(32 * (0x1 << 20))
 #define OB_REG_SIZE_SHIFT			5
 #define IB_ROOT_PORT_REG_SIZE_SHIFT		3
@@ -288,8 +278,8 @@
 		 ROCKCHIP_PCIE_CORE_EP_FUNC_BAR_CFG_BAR_CTRL_MASK(b))
 
 struct rockchip_pcie {
-	void	__iomem *reg_base;		/* DT axi-base */
-	void	__iomem *apb_base;		/* DT apb-base */
+	void	__iomem *reg_base;		
+	void	__iomem *apb_base;		
 	bool    legacy_phy;
 	struct  phy *phys[MAX_LANE_NUM];
 	struct	reset_control *core_rst;
@@ -303,10 +293,10 @@ struct rockchip_pcie {
 	struct	clk *aclk_perf_pcie;
 	struct	clk *hclk_pcie;
 	struct	clk *clk_pcie_pm;
-	struct	regulator *vpcie12v; /* 12V power supply */
-	struct	regulator *vpcie3v3; /* 3.3V power supply */
-	struct	regulator *vpcie1v8; /* 1.8V power supply */
-	struct	regulator *vpcie0v9; /* 0.9V power supply */
+	struct	regulator *vpcie12v; 
+	struct	regulator *vpcie3v3; 
+	struct	regulator *vpcie1v8; 
+	struct	regulator *vpcie0v9; 
 	struct	gpio_desc *ep_gpio;
 	u32	lanes;
 	u8      lanes_map;
@@ -340,4 +330,4 @@ void rockchip_pcie_disable_clocks(void *data);
 void rockchip_pcie_cfg_configuration_accesses(
 		struct rockchip_pcie *rockchip, u32 type);
 
-#endif /* _PCIE_ROCKCHIP_H */
+#endif 

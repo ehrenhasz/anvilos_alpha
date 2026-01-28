@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Driver for CPM (SCC/SMC) serial ports
- *
- *  Copyright (C) 2004 Freescale Semiconductor, Inc.
- *
- *  2006 (c) MontaVista Software, Inc.
- *	Vitaly Bordug <vbordug@ru.mvista.com>
- */
+
+
 #ifndef CPM_UART_H
 #define CPM_UART_H
 
@@ -68,28 +61,26 @@ struct uart_cpm_port {
 	void			*mem_addr;
 	dma_addr_t		 dma_addr;
 	u32			mem_size;
-	/* wait on close if needed */
+	
 	int			wait_closing;
-	/* value to combine with opcode to form cpm command */
+	
 	u32			command;
 	struct gpio_desc	*gpios[NUM_GPIOS];
 };
 
-/*
-   virtual to phys transtalion
-*/
+
 static inline unsigned long cpu2cpm_addr(void *addr,
                                          struct uart_cpm_port *pinfo)
 {
 	int offset;
 	u32 val = (u32)addr;
 	u32 mem = (u32)pinfo->mem_addr;
-	/* sane check */
+	
 	if (likely(val >= mem && val < mem + pinfo->mem_size)) {
 		offset = val - mem;
 		return pinfo->dma_addr + offset;
 	}
-	/* something nasty happened */
+	
 	BUG();
 	return 0;
 }
@@ -100,15 +91,15 @@ static inline void *cpm2cpu_addr(unsigned long addr,
 	int offset;
 	u32 val = addr;
 	u32 dma = (u32)pinfo->dma_addr;
-	/* sane check */
+	
 	if (likely(val >= dma && val < dma + pinfo->mem_size)) {
 		offset = val - dma;
 		return pinfo->mem_addr + offset;
 	}
-	/* something nasty happened */
+	
 	BUG();
 	return NULL;
 }
 
 
-#endif /* CPM_UART_H */
+#endif 

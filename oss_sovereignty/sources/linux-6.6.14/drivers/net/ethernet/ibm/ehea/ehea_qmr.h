@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  linux/drivers/net/ethernet/ibm/ehea/ehea_qmr.h
- *
- *  eHEA ethernet device driver for IBM eServer System p
- *
- *  (C) Copyright IBM Corp. 2006
- *
- *  Authors:
- *       Christoph Raisch <raisch@de.ibm.com>
- *       Jan-Bernd Themann <themann@de.ibm.com>
- *       Thomas Klein <tklein@de.ibm.com>
- */
+
+
 
 #ifndef __EHEA_QMR_H__
 #define __EHEA_QMR_H__
@@ -19,9 +8,7 @@
 #include "ehea.h"
 #include "ehea_hw.h"
 
-/*
- * page size of ehea hardware queues
- */
+
 
 #define EHEA_PAGESHIFT         12
 #define EHEA_PAGESIZE          (1UL << EHEA_PAGESHIFT)
@@ -35,17 +22,9 @@
 #error eHEA module cannot work if kernel sectionsize < ehea sectionsize
 #endif
 
-/* Some abbreviations used here:
- *
- * WQE  - Work Queue Entry
- * SWQE - Send Work Queue Entry
- * RWQE - Receive Work Queue Entry
- * CQE  - Completion Queue Entry
- * EQE  - Event Queue Entry
- * MR   - Memory Region
- */
 
-/* Use of WR_ID field for EHEA */
+
+
 #define EHEA_WR_ID_COUNT   EHEA_BMASK_IBM(0, 19)
 #define EHEA_WR_ID_TYPE    EHEA_BMASK_IBM(20, 23)
 #define EHEA_SWQE2_TYPE    0x1
@@ -61,12 +40,12 @@ struct ehea_vsgentry {
 	u32 len;
 };
 
-/* maximum number of sg entries allowed in a WQE */
+
 #define EHEA_MAX_WQE_SG_ENTRIES  	252
 #define SWQE2_MAX_IMM            	(0xD0 - 0x30)
 #define SWQE3_MAX_IMM            	224
 
-/* tx control flags for swqe */
+
 #define EHEA_SWQE_CRC                   0x8000
 #define EHEA_SWQE_IP_CHECKSUM           0x4000
 #define EHEA_SWQE_TCP_CHECKSUM          0x2000
@@ -80,7 +59,7 @@ struct ehea_vsgentry {
 #define EHEA_SWQE_BIND                  0x0020
 #define EHEA_SWQE_PURGE                 0x0010
 
-/* sizeof(struct ehea_swqe) less the union */
+
 #define SWQE_HEADER_SIZE		32
 
 struct ehea_swqe {
@@ -95,27 +74,27 @@ struct ehea_swqe {
 	u8 reserved2;
 	u16 reserved2b;
 	u8 wrap_tag;
-	u8 descriptors;		/* number of valid descriptors in WQE */
+	u8 descriptors;		
 	u16 reserved3;
 	u16 reserved4;
 	u16 mss;
 	u32 reserved5;
 	union {
-		/*  Send WQE Format 1 */
+		
 		struct {
 			struct ehea_vsgentry sg_list[EHEA_MAX_WQE_SG_ENTRIES];
 		} no_immediate_data;
 
-		/*  Send WQE Format 2 */
+		
 		struct {
 			struct ehea_vsgentry sg_entry;
-			/* 0x30 */
+			
 			u8 immediate_data[SWQE2_MAX_IMM];
-			/* 0xd0 */
+			
 			struct ehea_vsgentry sg_list[EHEA_MAX_WQE_SG_ENTRIES-1];
 		} immdata_desc __packed;
 
-		/*  Send WQE Format 3 */
+		
 		struct {
 			u8 immediate_data[SWQE3_MAX_IMM];
 		} immdata_nodesc;
@@ -123,7 +102,7 @@ struct ehea_swqe {
 };
 
 struct ehea_rwqe {
-	u64 wr_id;		/* work request ID */
+	u64 wr_id;		
 	u8 reserved1[5];
 	u8 data_segments;
 	u16 reserved2;
@@ -142,11 +121,11 @@ struct ehea_rwqe {
 #define EHEA_CQE_STAT_ERR_IP       0x2000
 #define EHEA_CQE_STAT_ERR_CRC      0x1000
 
-/* Defines which bad send cqe stati lead to a port reset */
+
 #define EHEA_CQE_STAT_RESET_MASK   0x0002
 
 struct ehea_cqe {
-	u64 wr_id;		/* work request ID from WQE */
+	u64 wr_id;		
 	u8 type;
 	u8 valid;
 	u16 status;
@@ -182,7 +161,7 @@ struct ehea_cqe {
 #define EHEA_AER_RESTYPE_CQ  0x4
 #define EHEA_AER_RESTYPE_EQ  0x3
 
-/* Defines which affiliated errors lead to a port reset */
+
 #define EHEA_AER_RESET_MASK   0xFFFFFFFFFEFFFFFFULL
 #define EHEA_AERR_RESET_MASK  0xFFFFFFFFFFFFFFFFULL
 
@@ -213,7 +192,7 @@ static inline void hw_qeit_inc(struct hw_queue *queue)
 	queue->current_q_offset += queue->qe_size;
 	if (queue->current_q_offset >= queue->queue_length) {
 		queue->current_q_offset = 0;
-		/* toggle the valid flag */
+		
 		queue->toggle_state = (~queue->toggle_state) & 1;
 	}
 }
@@ -232,7 +211,7 @@ static inline void *hw_qeit_get_inc_valid(struct hw_queue *queue)
 	void *pref;
 
 	if ((valid >> 7) == (queue->toggle_state & 1)) {
-		/* this is a good one */
+		
 		hw_qeit_inc(queue);
 		pref = hw_qeit_calc(queue, queue->current_q_offset);
 		prefetch(pref);
@@ -349,8 +328,8 @@ static inline struct ehea_cqe *ehea_poll_cq(struct ehea_cq *my_cq)
 #define EHEA_EQ_REGISTER_ORIG 0
 
 enum ehea_eq_type {
-	EHEA_EQ = 0,		/* event queue              */
-	EHEA_NEQ		/* notification event queue */
+	EHEA_EQ = 0,		
+	EHEA_NEQ		
 };
 
 struct ehea_eq *ehea_create_eq(struct ehea_adapter *adapter,
@@ -387,4 +366,4 @@ int ehea_create_busmap(void);
 void ehea_destroy_busmap(void);
 u64 ehea_map_vaddr(void *caddr);
 
-#endif	/* __EHEA_QMR_H__ */
+#endif	

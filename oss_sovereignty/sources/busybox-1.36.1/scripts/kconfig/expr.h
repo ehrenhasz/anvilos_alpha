@@ -1,7 +1,4 @@
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- * Released under the terms of the GNU GPL v2.0.
- */
+
 
 #ifndef EXPR_H
 #define EXPR_H
@@ -132,7 +129,7 @@ struct menu {
 	struct property *prompt;
 	struct expr *dep;
 	unsigned int flags;
-	//char *help;
+	
 	struct file *file;
 	int lineno;
 	void *data;
@@ -173,7 +170,7 @@ void expr_extract_eq(enum expr_type type, struct expr **ep, struct expr **ep1, s
 struct expr *expr_trans_compare(struct expr *e, enum expr_type type, struct symbol *sym);
 
 void expr_fprint(struct expr *e, FILE *out);
-struct gstr; /* forward */
+struct gstr; 
 void expr_gstr_print(struct expr *e, struct gstr *gs);
 
 static inline int expr_is_yes(struct expr *e)
@@ -191,4 +188,4 @@ static inline int expr_is_no(struct expr *e)
 }
 #endif
 
-#endif /* EXPR_H */
+#endif 

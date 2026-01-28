@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2018 Glenn Ruben Bakke
- * Copyright (c) 2018 Ayke van Laethem
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 
 #ifndef NRFX_CONFIG_H
 #define NRFX_CONFIG_H
@@ -31,7 +6,7 @@
 #include "py/mpconfig.h"
 #include "nrf.h"
 
-// Port specific defines
+
 #ifndef NRFX_LOG_ENABLED
 #define NRFX_LOG_ENABLED 0
 #endif
@@ -39,7 +14,7 @@
 #define NRFX_LOG_UART_DISABLED 1
 
 
-// NRFX configurations
+
 
 #if NRF51 || NRF52832
   #define GPIO_COUNT 1
@@ -50,8 +25,8 @@
 #endif
 
 #if defined(NRF52840)
-// for tinyusb
-// #define NRFX_IRQ_IS_ENABLED 1
+
+
 #define NRFX_POWER_ENABLED 1
 #define NRFX_POWER_DEFAULT_CONFIG_IRQ_PRIORITY 2
 #define NRFX_SYSTICK_ENABLED 1
@@ -121,15 +96,15 @@
   #define NRFX_SPIM0_ENABLED 1
   #define NRFX_SPIM1_ENABLED 1
 
-// 0 NRF_GPIO_PIN_NOPULL
-// 1 NRF_GPIO_PIN_PULLDOWN
-// 3 NRF_GPIO_PIN_PULLUP
-  #define NRFX_SPIM_MISO_PULL_CFG 1
-#endif // NRF51
 
-// 0 NRF_GPIO_PIN_NOPULL
-// 1 NRF_GPIO_PIN_PULLDOWN
-// 3 NRF_GPIO_PIN_PULLUP
+
+
+  #define NRFX_SPIM_MISO_PULL_CFG 1
+#endif 
+
+
+
+
 #define NRFX_SPI_MISO_PULL_CFG 1
 #define NRFX_SPIM_MISO_PULL_CFG 1
 
@@ -154,7 +129,7 @@
 
 #define NRFX_NVMC_ENABLED 1
 
-// Peripheral Resource Sharing
+
 #if defined(NRF51) || defined(NRF52832)
   #define NRFX_PRS_BOX_0_ENABLED (NRFX_TWI_ENABLED && NRFX_TWI0_ENABLED && NRFX_SPI_ENABLED && NRFX_SPI0_ENABLED)
   #define NRFX_PRS_BOX_1_ENABLED (NRFX_TWI_ENABLED && NRFX_TWI1_ENABLED && NRFX_SPI_ENABLED && NRFX_SPI1_ENABLED)
@@ -242,4 +217,4 @@
 
 #endif
 
-#endif // NRFX_CONFIG_H
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_SORT_H
 #define __PERF_SORT_H
 #include <regex.h>
@@ -60,16 +60,16 @@ struct namespace_id {
 struct hist_entry_diff {
 	bool	computed;
 	union {
-		/* PERF_HPP__DELTA */
+		
 		double	period_ratio_delta;
 
-		/* PERF_HPP__RATIO */
+		
 		double	period_ratio;
 
-		/* HISTC_WEIGHTED_DIFF */
+		
 		s64	wdiff;
 
-		/* PERF_HPP_DIFF__CYCLES */
+		
 		s64	cycles;
 	};
 	struct stats	stats;
@@ -81,12 +81,7 @@ struct hist_entry_ops {
 	void	(*free)(void *ptr);
 };
 
-/**
- * struct hist_entry - histogram entry
- *
- * @row_offset - offset from the first callchain expanded to appear on screen
- * @nr_rows - rows expanded in callchain, recalculated on folding/unfolding
- */
+
 struct hist_entry {
 	struct rb_node		rb_node_in;
 	struct rb_node		rb_node;
@@ -113,7 +108,7 @@ struct hist_entry {
 	u8			depth;
 	struct simd_flags	simd_flags;
 
-	/* We are added by hists__add_dummy_entry. */
+	
 	bool			dummy;
 	bool			leaf;
 
@@ -122,13 +117,9 @@ struct hist_entry {
 
 	u16			callchain_size;
 	union {
-		/*
-		 * Since perf diff only supports the stdio output, TUI
-		 * fields are only accessed from perf report (or perf
-		 * top).  So make it a union to reduce memory usage.
-		 */
+		
 		struct hist_entry_diff	diff;
-		struct /* for TUI */ {
+		struct  {
 			u16	row_offset;
 			u16	nr_rows;
 			bool	init_have_children;
@@ -155,14 +146,14 @@ struct hist_entry {
 	struct hist_entry	*parent_he;
 	struct hist_entry_ops	*ops;
 	union {
-		/* this is for hierarchical entry structure */
+		
 		struct {
 			struct rb_root_cached	hroot_in;
 			struct rb_root_cached   hroot_out;
-		};				/* non-leaf entries */
-		struct rb_root	sorted_chain;	/* leaf entry has callchains */
+		};				
+		struct rb_root	sorted_chain;	
 	};
-	struct callchain_root	callchain[0]; /* must be last member */
+	struct callchain_root	callchain[0]; 
 };
 
 static __pure inline bool hist_entry__has_callchains(struct hist_entry *he)
@@ -214,7 +205,7 @@ enum sort_mode {
 };
 
 enum sort_type {
-	/* common sort keys */
+	
 	SORT_PID,
 	SORT_COMM,
 	SORT_DSO,
@@ -244,7 +235,7 @@ enum sort_type {
 	SORT_GLOBAL_RETIRE_LAT,
 	SORT_SIMD,
 
-	/* branch stack specific sort keys */
+	
 	__SORT_BRANCH_STACK,
 	SORT_DSO_FROM = __SORT_BRANCH_STACK,
 	SORT_DSO_TO,
@@ -260,7 +251,7 @@ enum sort_type {
 	SORT_ADDR_FROM,
 	SORT_ADDR_TO,
 
-	/* memory mode specific sort keys */
+	
 	__SORT_MEMORY_MODE,
 	SORT_MEM_DADDR_SYMBOL = __SORT_MEMORY_MODE,
 	SORT_MEM_DADDR_DSO,
@@ -275,9 +266,7 @@ enum sort_type {
 	SORT_MEM_BLOCKED,
 };
 
-/*
- * configurable sorting bits
- */
+
 
 struct sort_entry {
 	const char *se_header;
@@ -332,4 +321,4 @@ sort__dcacheline_cmp(struct hist_entry *left, struct hist_entry *right);
 int64_t
 _sort__sym_cmp(struct symbol *sym_l, struct symbol *sym_r);
 char *hist_entry__srcline(struct hist_entry *he);
-#endif	/* __PERF_SORT_H */
+#endif	

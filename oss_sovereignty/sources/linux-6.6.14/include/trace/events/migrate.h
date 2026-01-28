@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM migrate
 
@@ -24,10 +24,7 @@
 	EM( MR_LONGTERM_PIN,	"longterm_pin")			\
 	EMe(MR_DEMOTION,	"demotion")
 
-/*
- * First define the enums in the above macros to be exported to userspace
- * via TRACE_DEFINE_ENUM().
- */
+
 #undef EM
 #undef EMe
 #define EM(a, b)	TRACE_DEFINE_ENUM(a);
@@ -36,10 +33,7 @@
 MIGRATE_MODE
 MIGRATE_REASON
 
-/*
- * Now redefine the EM() and EMe() macros to map the enums to the strings
- * that will be printed in the output.
- */
+
 #undef EM
 #undef EMe
 #define EM(a, b)	{a, b},
@@ -136,7 +130,7 @@ DEFINE_EVENT(migration_pte, remove_migration_pte,
 	TP_ARGS(addr, pte, order)
 );
 
-#endif /* _TRACE_MIGRATE_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

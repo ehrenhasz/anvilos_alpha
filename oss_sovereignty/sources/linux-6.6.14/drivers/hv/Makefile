@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 obj-$(CONFIG_HYPERV)		+= hv_vmbus.o
 obj-$(CONFIG_HYPERV_UTILS)	+= hv_utils.o
 obj-$(CONFIG_HYPERV_BALLOON)	+= hv_balloon.o
@@ -12,5 +12,5 @@ hv_vmbus-y := vmbus_drv.o \
 hv_vmbus-$(CONFIG_HYPERV_TESTING)	+= hv_debugfs.o
 hv_utils-y := hv_util.o hv_kvp.o hv_snapshot.o hv_fcopy.o hv_utils_transport.o
 
-# Code that must be built-in
+
 obj-$(subst m,y,$(CONFIG_HYPERV)) += hv_common.o

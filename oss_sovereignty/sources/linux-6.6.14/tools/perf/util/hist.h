@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_HIST_H
 #define __PERF_HIST_H
 
@@ -82,7 +82,7 @@ enum hist_column {
 	HISTC_ADDR_TO,
 	HISTC_ADDR,
 	HISTC_SIMD,
-	HISTC_NR_COLS, /* Last entry */
+	HISTC_NR_COLS, 
 };
 
 struct thread;
@@ -137,7 +137,7 @@ struct hist_entry_iter {
 	void *priv;
 
 	const struct hist_iter_ops *ops;
-	/* user-defined callback function (optional) */
+	
 	int (*add_entry_cb)(struct hist_entry_iter *iter,
 			    struct addr_location *al, bool single, void *arg);
 };
@@ -365,7 +365,7 @@ static inline void perf_hpp__prepend_sort_field(struct perf_hpp_fmt *format)
 extern struct perf_hpp_fmt perf_hpp__format[];
 
 enum {
-	/* Matches perf_hpp__format array. */
+	
 	PERF_HPP__OVERHEAD,
 	PERF_HPP__OVERHEAD_SYS,
 	PERF_HPP__OVERHEAD_US,
@@ -597,4 +597,4 @@ static inline int hists__scnprintf_title(struct hists *hists, char *bf, size_t s
 	return __hists__scnprintf_title(hists, bf, size, true);
 }
 
-#endif	/* __PERF_HIST_H */
+#endif	

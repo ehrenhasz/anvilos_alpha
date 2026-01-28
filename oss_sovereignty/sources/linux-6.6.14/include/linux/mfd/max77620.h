@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Defining registers address and its bit definitions of MAX77620 and MAX20024
- *
- * Copyright (C) 2016 NVIDIA CORPORATION. All rights reserved.
- */
+
+
 
 #ifndef _MFD_MAX77620_H_
 #define _MFD_MAX77620_H_
 
 #include <linux/types.h>
 
-/* GLOBAL, PMIC, GPIO, FPS, ONOFFC, CID Registers */
+
 #define MAX77620_REG_CNFGGLBL1			0x00
 #define MAX77620_REG_CNFGGLBL2			0x01
 #define MAX77620_REG_CNFGGLBL3			0x02
@@ -34,7 +30,7 @@
 #define MAX77620_REG_STATSD			0x14
 #define MAX77620_REG_ONOFFSTAT			0x15
 
-/* SD and LDO Registers */
+
 #define MAX77620_REG_SD0			0x16
 #define MAX77620_REG_SD1			0x17
 #define MAX77620_REG_SD2			0x18
@@ -70,11 +66,11 @@
 
 #define MAX77620_LDO_SLEW_RATE_MASK		0x1
 
-/* LDO Configuration 3 */
+
 #define MAX77620_TRACK4_MASK			BIT(5)
 #define MAX77620_TRACK4_SHIFT			5
 
-/* Voltage */
+
 #define MAX77620_SDX_VOLT_MASK			0xFF
 #define MAX77620_SD0_VOLT_MASK			0x3F
 #define MAX77620_SD1_VOLT_MASK			0x7F
@@ -94,7 +90,7 @@
 #define MAX77620_REG_ONOFFCNFG1			0x41
 #define MAX77620_REG_ONOFFCNFG2			0x42
 
-/* FPS Registers */
+
 #define MAX77620_REG_FPS_CFG0			0x43
 #define MAX77620_REG_FPS_CFG1			0x44
 #define MAX77620_REG_FPS_CFG2			0x45
@@ -127,9 +123,7 @@
 #define MAX77620_FPS_ENFPS_SW_MASK		0x01
 #define MAX77620_FPS_ENFPS_SW			0x01
 
-/* Minimum and maximum FPS period time (in microseconds) are
- * different for MAX77620 and Max20024.
- */
+
 #define MAX77620_FPS_PERIOD_MIN_US		40
 #define MAX20024_FPS_PERIOD_MIN_US		20
 
@@ -153,16 +147,16 @@
 #define MAX77620_CID_DIDM_MASK			0xF0
 #define MAX77620_CID_DIDM_SHIFT			4
 
-/* CNCG2SD */
+
 #define MAX77620_SD_CNF2_ROVS_EN_SD1		BIT(1)
 #define MAX77620_SD_CNF2_ROVS_EN_SD0		BIT(2)
 
-/* Device Identification Metal */
+
 #define MAX77620_CID5_DIDM(n)			(((n) >> 4) & 0xF)
-/* Device Indentification OTP */
+
 #define MAX77620_CID5_DIDO(n)			((n) & 0xF)
 
-/* SD CNFG1 */
+
 #define MAX77620_SD_SR_MASK			0xC0
 #define MAX77620_SD_SR_SHIFT			6
 #define MAX77620_SD_POWER_MODE_MASK		0x30
@@ -182,7 +176,7 @@
 #define MAX77620_SD_CFG1_FSRADE_SD_DISABLE	0
 #define MAX77620_SD_CFG1_FSRADE_SD_ENABLE	BIT(0)
 
-/* LDO_CNFG2 */
+
 #define MAX77620_LDO_POWER_MODE_MASK		0xC0
 #define MAX77620_LDO_POWER_MODE_SHIFT		6
 #define MAX20024_LDO_CFG2_MPOK_MASK		BIT(2)
@@ -270,7 +264,7 @@
 #define MAX77620_CNFGGLBL1_LBDAC		0x0E
 #define MAX77620_CNFGGLBL1_LBRSTEN		BIT(0)
 
-/* CNFG BBC registers */
+
 #define MAX77620_CNFGBBC_ENABLE			BIT(0)
 #define MAX77620_CNFGBBC_CURRENT_MASK		0x06
 #define MAX77620_CNFGBBC_CURRENT_SHIFT		1
@@ -282,21 +276,21 @@
 
 #define MAX77620_FPS_COUNT			3
 
-/* Interrupts */
+
 enum {
-	MAX77620_IRQ_TOP_GLBL,		/* Low-Battery */
-	MAX77620_IRQ_TOP_SD,		/* SD power fail */
-	MAX77620_IRQ_TOP_LDO,		/* LDO power fail */
-	MAX77620_IRQ_TOP_GPIO,		/* TOP GPIO internal int to MAX77620 */
-	MAX77620_IRQ_TOP_RTC,		/* RTC */
-	MAX77620_IRQ_TOP_32K,		/* 32kHz oscillator */
-	MAX77620_IRQ_TOP_ONOFF,		/* ON/OFF oscillator */
-	MAX77620_IRQ_LBT_MBATLOW,	/* Thermal alarm status, > 120C */
-	MAX77620_IRQ_LBT_TJALRM1,	/* Thermal alarm status, > 120C */
-	MAX77620_IRQ_LBT_TJALRM2,	/* Thermal alarm status, > 140C */
+	MAX77620_IRQ_TOP_GLBL,		
+	MAX77620_IRQ_TOP_SD,		
+	MAX77620_IRQ_TOP_LDO,		
+	MAX77620_IRQ_TOP_GPIO,		
+	MAX77620_IRQ_TOP_RTC,		
+	MAX77620_IRQ_TOP_32K,		
+	MAX77620_IRQ_TOP_ONOFF,		
+	MAX77620_IRQ_LBT_MBATLOW,	
+	MAX77620_IRQ_LBT_TJALRM1,	
+	MAX77620_IRQ_LBT_TJALRM2,	
 };
 
-/* GPIOs */
+
 enum {
 	MAX77620_GPIO0,
 	MAX77620_GPIO1,
@@ -309,7 +303,7 @@ enum {
 	MAX77620_GPIO_NR,
 };
 
-/* FPS Source */
+
 enum max77620_fps_src {
 	MAX77620_FPS_SRC_0,
 	MAX77620_FPS_SRC_1,
@@ -330,7 +324,7 @@ struct max77620_chip {
 
 	int chip_irq;
 
-	/* chip id */
+	
 	enum max77620_chip_id chip_id;
 
 	bool sleep_enable;
@@ -342,4 +336,4 @@ struct max77620_chip {
 	struct regmap_irq_chip_data *gpio_irq_data;
 };
 
-#endif /* _MFD_MAX77620_H_ */
+#endif 

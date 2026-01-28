@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  arch/arm/include/asm/hardware/vic.h
- *
- *  Copyright (c) ARM Limited 2003.  All rights reserved.
- */
+
+
 #ifndef __ASM_ARM_HARDWARE_VIC_H
 #define __ASM_ARM_HARDWARE_VIC_H
 

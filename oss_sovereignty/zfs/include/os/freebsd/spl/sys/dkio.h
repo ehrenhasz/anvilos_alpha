@@ -1,5 +1,0 @@
-#ifndef _OPENSOLARIS_SYS_DKIO_H_
-#define	_OPENSOLARIS_SYS_DKIO_H_
-#define	DKIOC		(0x04 << 8)
-#define	DKIOCFLUSHWRITECACHE	(DKIOC|34)	 
-#endif  

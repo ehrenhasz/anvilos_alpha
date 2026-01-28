@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+
 
 #ifndef __DT_BINDINGS_CLOCK_BCM6358_H
 #define __DT_BINDINGS_CLOCK_BCM6358_H
@@ -15,4 +15,4 @@
 #define BCM6358_CLK_USBSU	20
 #define BCM6358_CLK_EPHY	21
 
-#endif /* __DT_BINDINGS_CLOCK_BCM6358_H */
+#endif 

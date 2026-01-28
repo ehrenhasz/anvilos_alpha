@@ -12,11 +12,11 @@ class FlashBdev:
             off = 0
         esp.flash_write((n + self.start_sec) * self.SEC_SIZE + off, buf)
     def ioctl(self, op, arg):
-        if op == 4:  # MP_BLOCKDEV_IOCTL_BLOCK_COUNT
+        if op == 4:  
             return self.blocks
-        if op == 5:  # MP_BLOCKDEV_IOCTL_BLOCK_SIZE
+        if op == 5:  
             return self.SEC_SIZE
-        if op == 6:  # MP_BLOCKDEV_IOCTL_BLOCK_ERASE
+        if op == 6:  
             esp.flash_erase(arg + self.start_sec)
             return 0
 size = esp.flash_size()
@@ -25,5 +25,5 @@ if size < 1024 * 1024:
 else:
     start_sec = esp.flash_user_start() // FlashBdev.SEC_SIZE
     if start_sec < 256:
-        start_sec += 1  # Reserve space for native code
+        start_sec += 1  
     bdev = FlashBdev(start_sec, (size - 20480) // FlashBdev.SEC_SIZE - start_sec)

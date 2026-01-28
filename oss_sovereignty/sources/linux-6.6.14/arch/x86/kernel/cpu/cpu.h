@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef ARCH_X86_CPU_H
 #define ARCH_X86_CPU_H
 
-/* attempt to consolidate cpu attributes */
+
 struct cpu_dev {
 	const char	*c_vendor;
 
-	/* some have two possibilities for cpuid string */
+	
 	const char	*c_ident[2];
 
 	void            (*c_early_init)(struct cpuinfo_x86 *);
@@ -16,11 +16,11 @@ struct cpu_dev {
 	void		(*c_detect_tlb)(struct cpuinfo_x86 *);
 	int		c_x86_vendor;
 #ifdef CONFIG_X86_32
-	/* Optional vendor specific routine to obtain the cache size. */
+	
 	unsigned int	(*legacy_cache_size)(struct cpuinfo_x86 *,
 					     unsigned int);
 
-	/* Family/stepping-based lookup table for model names. */
+	
 	struct legacy_cpu_model_info {
 		int		family;
 		const char	*model_names[16];
@@ -32,7 +32,7 @@ struct _tlb_table {
 	unsigned char descriptor;
 	char tlb_type;
 	unsigned int entries;
-	/* unsigned int ways; */
+	
 	char info[128];
 };
 
@@ -59,7 +59,7 @@ void tsx_ap_init(void);
 #else
 static inline void tsx_init(void) { }
 static inline void tsx_ap_init(void) { }
-#endif /* CONFIG_CPU_SUP_INTEL */
+#endif 
 
 extern void init_spectral_chicken(struct cpuinfo_x86 *c);
 
@@ -93,4 +93,4 @@ static inline bool spectre_v2_in_eibrs_mode(enum spectre_v2_mitigation mode)
 	       mode == SPECTRE_V2_EIBRS_RETPOLINE ||
 	       mode == SPECTRE_V2_EIBRS_LFENCE;
 }
-#endif /* ARCH_X86_CPU_H */
+#endif 

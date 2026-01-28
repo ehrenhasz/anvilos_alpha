@@ -1,21 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell CN10K RPM driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+
 
 #ifndef RPM_H
 #define RPM_H
 
 #include <linux/bits.h>
 
-/* PCI device IDs */
+
 #define PCI_DEVID_CN10K_RPM		0xA060
 #define PCI_SUBSYS_DEVID_CNF10KB_RPM	0xBC00
 #define PCI_DEVID_CN10KB_RPM		0xA09F
 
-/* Registers */
+
 #define RPMX_CMRX_CFG			0x00
 #define RPMX_RX_TS_PREPEND              BIT_ULL(22)
 #define RPMX_TX_PTP_1S_SUPPORT          BIT_ULL(17)
@@ -81,7 +77,7 @@
 #define RPMX_TS_BINARY_MODE				BIT_ULL(11)
 #define RPMX_CONST1					0x2008
 
-/* FEC stats */
+
 #define RPMX_MTI_STAT_STATN_CONTROL			0x10018
 #define RPMX_MTI_STAT_DATA_HI_CDC			0x10038
 #define RPMX_RSFEC_RX_CAPTURE				BIT_ULL(27)
@@ -93,7 +89,7 @@
 #define RPMX_MTI_FCFECX_VL1_NCCW_LO			0x38630
 #define RPMX_MTI_FCFECX_CW_HI				0x38638
 
-/* CN10KB CSR Declaration */
+
 #define  RPM2_CMRX_SW_INT				0x1b0
 #define  RPM2_CMRX_SW_INT_ENA_W1S			0x1c8
 #define  RPM2_LMAC_FWI					0x12
@@ -109,7 +105,7 @@
 #define  RPM2_USX_PCSX_CONTROL1				0x80000
 #define  RPM2_USX_PCS_LBK				BIT_ULL(14)
 
-/* Function Declarations */
+
 int rpm_get_nr_lmacs(void *rpmd);
 u8 rpm_get_lmac_type(void *rpmd, int lmac_id);
 u32 rpm_get_lmac_fifo_len(void *rpmd, int lmac_id);
@@ -134,4 +130,4 @@ int rpm2_get_nr_lmacs(void *rpmd);
 bool is_dev_rpm2(void *rpmd);
 int rpm_get_fec_stats(void *cgxd, int lmac_id, struct cgx_fec_stats_rsp *rsp);
 int rpm_lmac_reset(void *rpmd, int lmac_id, u8 pf_req_flr);
-#endif /* RPM_H */
+#endif 

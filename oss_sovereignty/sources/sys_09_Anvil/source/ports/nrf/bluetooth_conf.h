@@ -1,7 +1,7 @@
 #ifndef BLUETOOTH_CONF_H__
 #define BLUETOOTH_CONF_H__
 
-// SD specific configurations.
+
 
 #if (BLUETOOTH_SD == 110)
 
@@ -33,7 +33,7 @@
 #error "SD not supported"
 #endif
 
-// Default defines.
+
 
 #ifndef MICROPY_PY_BLE
 #define MICROPY_PY_BLE                  (0)

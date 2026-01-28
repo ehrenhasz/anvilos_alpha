@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019 MediaTek Inc.
- * Author: Andy Teng <andy.teng@mediatek.com>
- *
- */
+
+
 
 #ifndef __PINCTRL_MTK_MT6779_H
 #define __PINCTRL_MTK_MT6779_H
@@ -2082,4 +2078,4 @@ static const struct mtk_pin_desc mtk_pins_mt6779[] = {
 	),
 };
 
-#endif /* __PINCTRL-MTK-MT6779_H */
+#endif 

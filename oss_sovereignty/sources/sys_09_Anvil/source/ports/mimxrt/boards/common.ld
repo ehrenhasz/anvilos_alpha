@@ -1,38 +1,15 @@
-/*
-** ###################################################################
-** Linker script inspired by NXP linker script for MIMXRT10xx
-**
-** Copyright for original linker script:
-**     Copyright 2016 Freescale Semiconductor, Inc.
-**     Copyright 2016-2018 NXP
-**     SPDX-License-Identifier: BSD-3-Clause
-**
-**     http:                 www.nxp.com
-**     mail:                 support@nxp.com
-**
-** Integrated ideas from CircuitPython:
-** SPDX-License-Identifier: The MIT License (MIT)
-** SPDX-FileCopyrightText: Copyright (c) 2020 Scott Shawcroft (tannewt)
-**
-** Copyright (c) 2021 Philipp Ebensberger
-**
-** ###################################################################
-*/
 
-/* Entry Point */
+
+
 ENTRY(Reset_Handler)
 
 HEAP_SIZE  = DEFINED(__heap_size__)  ? __heap_size__  : 0x0400;
 STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x0400;
 
-/* Reserved Area
- * Users can create a reserved area at the end of the flash memory via
- * 'reserved_size' variable. The size of the reserved area should be a multiple
- * of the sector size of the flash memory!
- */
+
 reserved_size = DEFINED(reserved_size) ? reserved_size : 0k;
 
-/* Specify the memory areas */
+
 MEMORY
 {
   m_flash_config (RX) : ORIGIN = flash_config_start,    LENGTH = flash_config_size
@@ -40,7 +17,7 @@ MEMORY
   m_interrupts   (RX) : ORIGIN = interrupts_start,      LENGTH = interrupts_size
   m_text         (RX) : ORIGIN = text_start,            LENGTH = text_size
   m_vfs          (RX) : ORIGIN = vfs_start,             LENGTH = vfs_size
-  /* Teensy uses the last bit of flash for recovery. */
+  
   m_reserved     (RX) : ORIGIN = (vfs_start + vfs_size), LENGTH = reserved_size
   m_itcm         (RX) : ORIGIN = itcm_start,            LENGTH = itcm_size
   m_dtcm         (RW) : ORIGIN = dtcm_start,            LENGTH = dtcm_size
@@ -51,7 +28,7 @@ MEMORY
   #endif
 }
 
-/* Define output sections */
+
 SECTIONS
 {
   __flash_start = flash_start;
@@ -65,7 +42,7 @@ SECTIONS
   {
     . = ALIGN(4);
     __FLASH_BASE = .;
-    KEEP(* (.boot_hdr.conf))     /* flash config section */
+    KEEP(* (.boot_hdr.conf))     
     . = ALIGN(4);
   } > m_flash_config
 
@@ -74,34 +51,34 @@ SECTIONS
   .ivt : AT(ivt_begin)
   {
     . = ALIGN(4);
-    KEEP(* (.boot_hdr.ivt))           /* ivt section */
-    KEEP(* (.boot_hdr.boot_data))     /* boot section */
-    KEEP(* (.boot_hdr.dcd_data))      /* dcd section */
+    KEEP(* (.boot_hdr.ivt))           
+    KEEP(* (.boot_hdr.boot_data))     
+    KEEP(* (.boot_hdr.dcd_data))      
     . = ALIGN(4);
   } > m_ivt
 
-  /* The startup code goes first into internal RAM */
+  
   .interrupts :
   {
     __Vectors = .;
     __vector_table = .;
     . = ALIGN(4);
-    KEEP(*(.isr_vector))     /* Startup code */
+    KEEP(*(.isr_vector))     
     . = ALIGN(4);
   } > m_interrupts
 
   __VECTOR_RAM = __Vectors;
   __RAM_VECTOR_TABLE_SIZE_BYTES = 0x0;
 
-  /* The program code and other data goes into internal RAM */
+  
   .text :
   {
     . = ALIGN(4);
-    *(EXCLUDE_FILE(*fsl_flexspi.o *gc.o *vm.o *parse*.o *runtime*.o *map.o *mpirq.o ) .text*) /* .text* sections (code) */
-    *(.rodata)               /* .rodata sections (constants, strings, etc.) */
-    *(.rodata*)              /* .rodata* sections (constants, strings, etc.) */
-    *(.glue_7)               /* glue arm to thumb code */
-    *(.glue_7t)              /* glue thumb to arm code */
+    *(EXCLUDE_FILE(*fsl_flexspi.o *gc.o *vm.o *parse*.o *runtime*.o *map.o *mpirq.o ) .text*) 
+    *(.rodata)               
+    *(.rodata*)              
+    *(.glue_7)               
+    *(.glue_7t)              
     *(.eh_frame)
     KEEP (*(.init))
     KEEP (*(.fini))
@@ -123,21 +100,10 @@ SECTIONS
  .ctors :
   {
     __CTOR_LIST__ = .;
-    /* gcc uses crtbegin.o to find the start of
-       the constructors, so we make sure it is
-       first.  Because this is a wildcard, it
-       doesn't matter if the user does not
-       actually link against crtbegin.o; the
-       linker won't look for a file to match a
-       wildcard.  The wildcard also means that it
-       doesn't matter which directory crtbegin.o
-       is in.  */
+    
     KEEP (*crtbegin.o(.ctors))
     KEEP (*crtbegin?.o(.ctors))
-    /* We don't want to include the .ctor section from
-       from the crtend.o file until after the sorted ctors.
-       The .ctor section from the crtend file contains the
-       end of ctors marker and it must be last */
+    
     KEEP (*(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors))
     KEEP (*(SORT(.ctors.*)))
     KEEP (*(.ctors))
@@ -178,21 +144,21 @@ SECTIONS
     PROVIDE_HIDDEN (__fini_array_end = .);
   } > m_text
 
-  __etext = .;    /* define a global symbol at end of code */
-  __DATA_ROM = .; /* Symbol is used by startup for data initialization */
+  __etext = .;    
+  __DATA_ROM = .; 
 
   .data : AT(__DATA_ROM)
   {
     . = ALIGN(4);
     __DATA_RAM = .;
-    __data_start__ = .;      /* create a global symbol at data start */
+    __data_start__ = .;      
     __data_section_table = .;
     *(m_usb_dma_init_data)
-    *(.data)                 /* .data sections */
-    *(.data*)                /* .data* sections */
+    *(.data)                 
+    *(.data*)                
     KEEP(*(.jcr*))
     . = ALIGN(4);
-    __data_end__ = .;        /* define a global symbol at data end */
+    __data_end__ = .;        
     __data_section_table_end = .;
   } > m_dtcm
 
@@ -202,7 +168,7 @@ SECTIONS
     . = ALIGN(4);
     __ram_function_start__ = .;
     *(.ram_functions*)
-    /* remaining .text and .rodata; i.e. stuff we exclude above because we want it in RAM */
+    
     *(.text*)
     . = ALIGN(4);
     __ram_function_end__ = .;
@@ -211,17 +177,17 @@ SECTIONS
   __NDATA_ROM = __RAM_FUNCTIONS_ROM + (__ram_function_end__ - __ram_function_start__);
   .ncache.init : AT(__NDATA_ROM)
   {
-    __noncachedata_start__ = .;   /* create a global symbol at ncache data start */
+    __noncachedata_start__ = .;   
     *(NonCacheable.init)
     . = ALIGN(4);
-    __noncachedata_init_end__ = .;   /* create a global symbol at initialized ncache data end */
+    __noncachedata_init_end__ = .;   
   } > m_dtcm
   . = __noncachedata_init_end__;
   .ncache :
   {
     *(NonCacheable)
     . = ALIGN(4);
-    __noncachedata_end__ = .;     /* define a global symbol at ncache data end */
+    __noncachedata_end__ = .;     
   } > m_dtcm
 
   __DATA_END = __NDATA_ROM + (__noncachedata_end__ - __noncachedata_start__);
@@ -229,10 +195,10 @@ SECTIONS
   text_end = ORIGIN(m_text) + LENGTH(m_text);
   ASSERT(__DATA_END <= text_end, "region m_text overflowed with text and data")
 
-  /* Uninitialized data section */
+  
   .bss :
   {
-    /* This is used by the startup in order to initialize the .bss section */
+    
     . = ALIGN(4);
     __START_BSS = .;
     __bss_start__ = .;
@@ -255,7 +221,7 @@ SECTIONS
     __HeapBase = .;
     . += HEAP_SIZE;
     __HeapLimit = .;
-    __heap_limit = .; /* Add for _sbrk */
+    __heap_limit = .; 
   } > m_dtcm
 
   .stack :
@@ -266,7 +232,7 @@ SECTIONS
 
   _flashimagelen = __FLASH_DATA_END - flash_start;
 
-  /* Initializes stack on the end of block */
+  
   __StackTop   = ORIGIN(m_dtcm) + LENGTH(m_dtcm);
   __StackLimit = __StackTop - STACK_SIZE;
   _vStackTop = __StackTop;

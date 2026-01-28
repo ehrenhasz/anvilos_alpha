@@ -54,7 +54,7 @@ time.sleep_us(50)
 print(pin_irq_count_trigger == 1)
 print(pin_irq_count_total == 1)
 pin1_irq()
-print(pin_irq_count_trigger == 1)  # no flags since the irq was manually triggered
+print(pin_irq_count_trigger == 1)  
 print(pin_irq_count_total == 2)
 pin1_irq.disable()
 pin_irq_count_trigger = 0
@@ -90,7 +90,7 @@ except:
 try:
     pin0_irq = pin0.irq(
         trigger=Pin.IRQ_RISING, wake=machine.SLEEP
-    )  # GP16 can't wake up from DEEPSLEEP
+    )  
 except:
     print("Exception")
 pin0_irq.disable()

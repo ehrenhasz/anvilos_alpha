@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef __QCOM_AOSS_H__
 #define __QCOM_AOSS_H__

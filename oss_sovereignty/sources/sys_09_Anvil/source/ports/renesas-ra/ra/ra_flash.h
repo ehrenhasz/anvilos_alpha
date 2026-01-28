@@ -1,26 +1,4 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2021 Renesas Electronics Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 
 #ifndef RA_FLASH_H_
 #define RA_FLASH_H_
@@ -33,7 +11,7 @@
 #define SELECT(ic, attr)        ic##_##attr
 #define FLASH(ic, attr)         SELECT(ic, attr)
 #define CHIP                    AT25SF128A
-// #define CHIP                    W25Q128JV
+
 
 #define W25Q128JV_SECTOR_SIZE   4096ul
 #define W25Q128JV_NUM_BLOCKS    4096ul
@@ -73,4 +51,4 @@ bool FLASH_SECTION internal_flash_isblockerased(uint8_t *addr, uint32_t BlockLen
 bool FLASH_SECTION internal_flash_eraseblock(uint8_t *addr);
 bool FLASH_SECTION internal_flash_init(void);
 
-#endif /* RA_FLASH_H_ */
+#endif 

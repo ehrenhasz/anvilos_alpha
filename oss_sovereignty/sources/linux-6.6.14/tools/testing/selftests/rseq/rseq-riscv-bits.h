@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
+
 
 #include "rseq-bits-template.h"
 
@@ -28,7 +28,7 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_storev)(intptr_t *v, intptr_t expect, i
 				  RSEQ_ASM_OP_FINAL_STORE(newv, v, 3)
 				  RSEQ_INJECT_ASM(5)
 				  RSEQ_ASM_DEFINE_ABORT(4, abort)
-				  : /* gcc asm goto does not allow outputs */
+				  : 
 				  : [cpu_id]		"r" (cpu),
 				    [current_cpu_id]	"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 				    [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
@@ -85,7 +85,7 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpnev_storeoffp_load)(intptr_t *v, intptr_t e
 				  RSEQ_ASM_OP_R_FINAL_STORE(v, 3)
 				  RSEQ_INJECT_ASM(5)
 				  RSEQ_ASM_DEFINE_ABORT(4, abort)
-				  : /* gcc asm goto does not allow outputs */
+				  : 
 				  : [cpu_id]		"r" (cpu),
 				    [current_cpu_id]	"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 				    [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
@@ -135,7 +135,7 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_addv)(intptr_t *v, intptr_t count, int cpu)
 				  RSEQ_ASM_OP_R_FINAL_STORE(v, 3)
 				  RSEQ_INJECT_ASM(4)
 				  RSEQ_ASM_DEFINE_ABORT(4, abort)
-				  : /* gcc asm goto does not allow outputs */
+				  : 
 				  : [cpu_id]		"r" (cpu),
 				    [current_cpu_id]	"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 				    [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
@@ -188,7 +188,7 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_cmpeqv_storev)(intptr_t *v, intptr_t ex
 				  RSEQ_ASM_OP_FINAL_STORE(newv, v, 3)
 				  RSEQ_INJECT_ASM(6)
 				  RSEQ_ASM_DEFINE_ABORT(4, abort)
-				  : /* gcc asm goto does not allow outputs */
+				  : 
 				  : [cpu_id]		"r" (cpu),
 				    [current_cpu_id]	"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 				    [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
@@ -224,10 +224,7 @@ error3:
 
 #define RSEQ_ARCH_HAS_OFFSET_DEREF_ADDV
 
-/*
- *   pval = *(ptr+off)
- *  *pval += inc;
- */
+
 static inline __always_inline
 int RSEQ_TEMPLATE_IDENTIFIER(rseq_offset_deref_addv)(intptr_t *ptr, off_t off, intptr_t inc, int cpu)
 {
@@ -246,7 +243,7 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_offset_deref_addv)(intptr_t *ptr, off_t off, i
 				  RSEQ_ASM_OP_R_DEREF_ADDV(ptr, off, 3)
 				  RSEQ_INJECT_ASM(4)
 				  RSEQ_ASM_DEFINE_ABORT(4, abort)
-				  : /* gcc asm goto does not allow outputs */
+				  : 
 				  : [cpu_id]			"r" (cpu),
 				    [current_cpu_id]		"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 				    [rseq_cs]			"m" (rseq_get_abi()->rseq_cs.arch.ptr),
@@ -271,8 +268,7 @@ error1:
 #endif
 }
 
-#endif /* #if defined(RSEQ_TEMPLATE_MO_RELAXED) &&
-	(defined(RSEQ_TEMPLATE_CPU_ID) || defined(RSEQ_TEMPLATE_MM_CID)) */
+#endif 
 
 #if (defined(RSEQ_TEMPLATE_MO_RELAXED) || defined(RSEQ_TEMPLATE_MO_RELEASE)) && \
 	(defined(RSEQ_TEMPLATE_CPU_ID) || defined(RSEQ_TEMPLATE_MM_CID))
@@ -308,7 +304,7 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_trystorev_storev)(intptr_t *v, intptr_t
 #endif
 				  RSEQ_INJECT_ASM(6)
 				  RSEQ_ASM_DEFINE_ABORT(4, abort)
-				  : /* gcc asm goto does not allow outputs */
+				  : 
 				  : [cpu_id]			"r" (cpu),
 				    [current_cpu_id]		"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 				    [rseq_cs]			"m" (rseq_get_abi()->rseq_cs.arch.ptr),
@@ -370,7 +366,7 @@ int RSEQ_TEMPLATE_IDENTIFIER(rseq_cmpeqv_trymemcpy_storev)(intptr_t *v, intptr_t
 #endif
 				  RSEQ_INJECT_ASM(6)
 				  RSEQ_ASM_DEFINE_ABORT(4, abort)
-				  : /* gcc asm goto does not allow outputs */
+				  : 
 				  : [cpu_id]			"r" (cpu),
 				    [current_cpu_id]		"m" (rseq_get_abi()->RSEQ_TEMPLATE_CPU_ID_FIELD),
 				    [rseq_cs]			"m" (rseq_get_abi()->rseq_cs.arch.ptr),
@@ -404,7 +400,6 @@ error2:
 #endif
 }
 
-#endif /* #if (defined(RSEQ_TEMPLATE_MO_RELAXED) || defined(RSEQ_TEMPLATE_MO_RELEASE)) &&
-	(defined(RSEQ_TEMPLATE_CPU_ID) || defined(RSEQ_TEMPLATE_MM_CID)) */
+#endif 
 
 #include "rseq-bits-reset.h"

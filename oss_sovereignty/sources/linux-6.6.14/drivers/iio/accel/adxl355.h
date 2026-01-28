@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ADXL355 3-Axis Digital Accelerometer
- *
- * Copyright (c) 2021 Puranjay Mohan <puranjay12@gmail.com>
- */
+
+
 
 #ifndef _ADXL355_H_
 #define _ADXL355_H_
@@ -36,4 +32,4 @@ extern const struct adxl355_chip_info adxl35x_chip_info[];
 int adxl355_core_probe(struct device *dev, struct regmap *regmap,
 		       const struct adxl355_chip_info *chip_info);
 
-#endif /* _ADXL355_H_ */
+#endif 

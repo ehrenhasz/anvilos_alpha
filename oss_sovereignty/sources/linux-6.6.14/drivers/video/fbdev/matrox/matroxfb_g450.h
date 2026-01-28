@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __MATROXFB_G450_H__
 #define __MATROXFB_G450_H__
 
@@ -12,4 +12,4 @@ static inline void matroxfb_g450_connect(struct matrox_fb_info *minfo) { };
 static inline void matroxfb_g450_shutdown(struct matrox_fb_info *minfo) { };
 #endif
 
-#endif /* __MATROXFB_G450_H__ */
+#endif 

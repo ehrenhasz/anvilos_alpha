@@ -1,24 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This is used to for host and peripheral modes of the driver for
- * Inventra (Multidrop) Highspeed Dual-Role Controllers:  (M)HDRC.
- *
- * Board initialization should put one of these into dev->platform_data,
- * probably on some platform_device named "musb-hdrc".  It encapsulates
- * key configuration differences between boards.
- */
+
+
 
 #ifndef __LINUX_USB_MUSB_H
 #define __LINUX_USB_MUSB_H
 
-/* The USB role is defined by the connector used on the board, so long as
- * standards are being followed.  (Developer boards sometimes won't.)
- */
+
 enum musb_mode {
 	MUSB_UNDEFINED = 0,
-	MUSB_HOST,		/* A or Mini-A connector */
-	MUSB_PERIPHERAL,	/* B or Mini-B connector */
-	MUSB_OTG		/* Mini-AB connector */
+	MUSB_HOST,		
+	MUSB_PERIPHERAL,	
+	MUSB_OTG		
 };
 
 struct clk;
@@ -61,51 +52,51 @@ struct musb_hdrc_eps_bits {
 };
 
 struct musb_hdrc_config {
-	struct musb_fifo_cfg	*fifo_cfg;	/* board fifo configuration */
-	unsigned		fifo_cfg_size;	/* size of the fifo configuration */
+	struct musb_fifo_cfg	*fifo_cfg;	
+	unsigned		fifo_cfg_size;	
 
-	/* MUSB configuration-specific details */
-	unsigned	multipoint:1;	/* multipoint device */
-	unsigned	dyn_fifo:1 __deprecated; /* supports dynamic fifo sizing */
+	
+	unsigned	multipoint:1;	
+	unsigned	dyn_fifo:1 __deprecated; 
 
-	/* need to explicitly de-assert the port reset after resume? */
+	
 	unsigned	host_port_deassert_reset_at_resume:1;
 
-	u8		num_eps;	/* number of endpoints _with_ ep0 */
-	u8		ram_bits;	/* ram address size */
+	u8		num_eps;	
+	u8		ram_bits;	
 
 	u32		maximum_speed;
 };
 
 struct musb_hdrc_platform_data {
-	/* MUSB_HOST, MUSB_PERIPHERAL, or MUSB_OTG */
+	
 	u8		mode;
 
-	/* for clk_get() */
+	
 	const char	*clock;
 
-	/* (HOST or OTG) switch VBUS on/off */
+	
 	int		(*set_vbus)(struct device *dev, int is_on);
 
-	/* (HOST or OTG) mA/2 power supplied on (default = 8mA) */
+	
 	u8		power;
 
-	/* (PERIPHERAL) mA/2 max power consumed (default = 100mA) */
+	
 	u8		min_power;
 
-	/* (HOST or OTG) msec/2 after VBUS on till power good */
+	
 	u8		potpgt;
 
-	/* (HOST or OTG) program PHY for external Vbus */
+	
 	unsigned	extvbus:1;
 
-	/* MUSB configuration-specific details */
+	
 	const struct musb_hdrc_config *config;
 
-	/* Architecture specific board data	*/
+	
 	void		*board_data;
 
-	/* Platform specific struct musb_ops pointer */
+	
 	const void	*platform_ops;
 };
 
@@ -126,10 +117,10 @@ static inline int musb_mailbox(enum musb_vbus_id_status status)
 }
 #endif
 
-/* TUSB 6010 support */
 
-#define	TUSB6010_OSCCLK_60	16667	/* psec/clk @ 60.0 MHz */
-#define	TUSB6010_REFCLK_24	41667	/* psec/clk @ 24.0 MHz XI */
-#define	TUSB6010_REFCLK_19	52083	/* psec/clk @ 19.2 MHz CLKIN */
 
-#endif /* __LINUX_USB_MUSB_H */
+#define	TUSB6010_OSCCLK_60	16667	
+#define	TUSB6010_REFCLK_24	41667	
+#define	TUSB6010_REFCLK_19	52083	
+
+#endif 

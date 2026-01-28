@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_CACHEFLUSH_H
 #define _LINUX_CACHEFLUSH_H
 
@@ -15,7 +15,7 @@ static inline void flush_dcache_folio(struct folio *folio)
 {
 }
 #define flush_dcache_folio flush_dcache_folio
-#endif /* ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE */
+#endif 
 
 #ifndef flush_icache_pages
 static inline void flush_icache_pages(struct vm_area_struct *vma,
@@ -26,4 +26,4 @@ static inline void flush_icache_pages(struct vm_area_struct *vma,
 
 #define flush_icache_page(vma, page)	flush_icache_pages(vma, page, 1)
 
-#endif /* _LINUX_CACHEFLUSH_H */
+#endif 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2018 Marvell.
- *
- */
+
+
 
 #ifndef NPC_PROFILE_H
 #define NPC_PROFILE_H
@@ -153,7 +149,7 @@
 			(((bytesm1) << 16) | ((hdr_ofs) << 8) | ((ena) << 7) | \
 			 ((flags_ena) << 6) | ((key_ofs) & 0x3F))
 
-/* Rx parse key extract nibble enable */
+
 #define NPC_PARSE_NIBBLE_INTF_RX	(NPC_PARSE_NIBBLE_CHAN | \
 					 NPC_PARSE_NIBBLE_L2L3_BCAST | \
 					 NPC_PARSE_NIBBLE_LA_LTYPE | \
@@ -161,7 +157,7 @@
 					 NPC_PARSE_NIBBLE_LC_LTYPE | \
 					 NPC_PARSE_NIBBLE_LD_LTYPE | \
 					 NPC_PARSE_NIBBLE_LE_LTYPE)
-/* Tx parse key extract nibble enable */
+
 #define NPC_PARSE_NIBBLE_INTF_TX	(NPC_PARSE_NIBBLE_LA_LTYPE | \
 					 NPC_PARSE_NIBBLE_LB_LTYPE | \
 					 NPC_PARSE_NIBBLE_LC_LTYPE | \
@@ -271,7 +267,7 @@ enum npc_kpu_parser_state {
 	NPC_S_KPU16_TCP_DATA,
 	NPC_S_KPU16_UDP_DATA,
 	NPC_S_KPU16_UDP_PTP,
-	NPC_S_LAST /* has to be the last item */
+	NPC_S_LAST 
 };
 
 enum npc_kpu_la_uflag {
@@ -406,7 +402,7 @@ enum npc_kpu_lh_lflag {
 };
 
 enum npc_kpu_err_code {
-	NPC_EC_NOERR = 0, /* has to be zero */
+	NPC_EC_NOERR = 0, 
 	NPC_EC_UNK,
 	NPC_EC_IH_LENGTH,
 	NPC_EC_EDSA_UNK,
@@ -436,7 +432,7 @@ enum npc_kpu_err_code {
 	NPC_EC_L4,
 	NPC_EC_OIP4_CSUM,
 	NPC_EC_IIP4_CSUM,
-	NPC_EC_LAST /* has to be the last item */
+	NPC_EC_LAST 
 };
 
 enum NPC_ERRLEV_E {
@@ -15122,140 +15118,138 @@ static struct npc_mcam_kex npc_mkex_default = {
 	.name = "default",
 	.kpu_version = NPC_KPU_PROFILE_VER,
 	.keyx_cfg = {
-		/* nibble: LA..LE (ltype only) + Error code + Channel */
+		
 		[NIX_INTF_RX] = ((u64)NPC_MCAM_KEY_X2 << 32) | NPC_PARSE_NIBBLE_INTF_RX |
 						(u64)NPC_EXACT_NIBBLE_HIT,
-		/* nibble: LA..LE (ltype only) */
+		
 		[NIX_INTF_TX] = ((u64)NPC_MCAM_KEY_X2 << 32) | NPC_PARSE_NIBBLE_INTF_TX,
 	},
 	.intf_lid_lt_ld = {
-	/* Default RX MCAM KEX profile */
+	
 	[NIX_INTF_RX] = {
 		[NPC_LID_LA] = {
-			/* Layer A: Ethernet: */
+			
 			[NPC_LT_LA_ETHER] = {
-				/* DMAC: 6 bytes, KW1[55:8] */
+				
 				KEX_LD_CFG(0x05, 0x0, 0x1, 0x0, NPC_KEXOF_DMAC),
-				/* Ethertype: 2 bytes, KW0[55:40] */
+				
 				KEX_LD_CFG(0x01, 0xc, 0x1, 0x0, 0x5),
 			},
-			/* Layer A: HiGig2: */
+			
 			[NPC_LT_LA_HIGIG2_ETHER] = {
-				/* Classification: 2 bytes, KW1[23:8] */
+				
 				KEX_LD_CFG(0x01, 0x8, 0x1, 0x0, NPC_KEXOF_DMAC),
-				/* VID: 2 bytes, KW1[39:24] */
+				
 				KEX_LD_CFG(0x01, 0xc, 0x1, 0x0,
 					   NPC_KEXOF_DMAC + 2),
 			},
 		},
 		[NPC_LID_LB] = {
-			/* Layer B: Single VLAN (CTAG) */
+			
 			[NPC_LT_LB_CTAG] = {
-				/* CTAG VLAN: 2 bytes, KW1[7:0], KW0[63:56] */
+				
 				KEX_LD_CFG(0x01, 0x2, 0x1, 0x0, 0x7),
-				/* Ethertype: 2 bytes, KW0[55:40] */
+				
 				KEX_LD_CFG(0x01, 0x4, 0x1, 0x0, 0x5),
 			},
-			/* Layer B: Stacked VLAN (STAG|QinQ) */
+			
 			[NPC_LT_LB_STAG_QINQ] = {
-				/* Outer VLAN: 2 bytes, KW1[7:0], KW0[63:56] */
+				
 				KEX_LD_CFG(0x01, 0x2, 0x1, 0x0, 0x7),
-				/* Ethertype: 2 bytes, KW0[55:40] */
+				
 				KEX_LD_CFG(0x01, 0x8, 0x1, 0x0, 0x5),
 			},
 			[NPC_LT_LB_FDSA] = {
-				/* SWITCH PORT: 1 byte, KW0[63:56] */
+				
 				KEX_LD_CFG(0x0, 0x1, 0x1, 0x0, 0x7),
-				/* Ethertype: 2 bytes, KW0[55:40] */
+				
 				KEX_LD_CFG(0x01, 0x4, 0x1, 0x0, 0x5),
 			},
 		},
 		[NPC_LID_LC] = {
-			/* Layer C: IPv4 */
+			
 			[NPC_LT_LC_IP] = {
-				/* SIP+DIP: 8 bytes, KW2[63:0] */
+				
 				KEX_LD_CFG(0x07, 0xc, 0x1, 0x0, 0x10),
-				/* TOS: 1 byte, KW1[63:56] */
+				
 				KEX_LD_CFG(0x0, 0x1, 0x1, 0x0, 0xf),
 			},
-			/* Layer C: IPv6 */
+			
 			[NPC_LT_LC_IP6] = {
-				/* Everything up to SADDR: 8 bytes, KW2[63:0] */
+				
 				KEX_LD_CFG(0x07, 0x0, 0x1, 0x0, 0x10),
 			},
 		},
 		[NPC_LID_LD] = {
-			/* Layer D:UDP */
+			
 			[NPC_LT_LD_UDP] = {
-				/* SPORT+DPORT: 4 bytes, KW3[31:0] */
+				
 				KEX_LD_CFG(0x3, 0x0, 0x1, 0x0, 0x18),
 			},
-			/* Layer D:TCP */
+			
 			[NPC_LT_LD_TCP] = {
-				/* SPORT+DPORT: 4 bytes, KW3[31:0] */
+				
 				KEX_LD_CFG(0x3, 0x0, 0x1, 0x0, 0x18),
 			},
 		},
 	},
 
-	/* Default TX MCAM KEX profile */
+	
 	[NIX_INTF_TX] = {
 		[NPC_LID_LA] = {
-			/* Layer A: NIX_INST_HDR_S + Ethernet */
-			/* NIX appends 8 bytes of NIX_INST_HDR_S at the
-			 * start of each TX packet supplied to NPC.
-			 */
+			
+			
 			[NPC_LT_LA_IH_NIX_ETHER] = {
-				/* PF_FUNC: 2B , KW0 [47:32] */
+				
 				KEX_LD_CFG(0x01, 0x0, 0x1, 0x0, 0x4),
-				/* DMAC: 6 bytes, KW1[63:16] */
+				
 				KEX_LD_CFG(0x05, 0x8, 0x1, 0x0, 0xa),
 			},
-			/* Layer A: HiGig2: */
+			
 			[NPC_LT_LA_IH_NIX_HIGIG2_ETHER] = {
-				/* PF_FUNC: 2B , KW0 [47:32] */
+				
 				KEX_LD_CFG(0x01, 0x0, 0x1, 0x0, 0x4),
-				/* VID: 2 bytes, KW1[31:16] */
+				
 				KEX_LD_CFG(0x01, 0x10, 0x1, 0x0, 0xa),
 			},
 		},
 		[NPC_LID_LB] = {
-			/* Layer B: Single VLAN (CTAG) */
+			
 			[NPC_LT_LB_CTAG] = {
-				/* CTAG VLAN[2..3] KW0[63:48] */
+				
 				KEX_LD_CFG(0x01, 0x2, 0x1, 0x0, 0x6),
-				/* CTAG VLAN[2..3] KW1[15:0] */
+				
 				KEX_LD_CFG(0x01, 0x4, 0x1, 0x0, 0x8),
 			},
-			/* Layer B: Stacked VLAN (STAG|QinQ) */
+			
 			[NPC_LT_LB_STAG_QINQ] = {
-				/* Outer VLAN: 2 bytes, KW0[63:48] */
+				
 				KEX_LD_CFG(0x01, 0x2, 0x1, 0x0, 0x6),
-				/* Outer VLAN: 2 Bytes, KW1[15:0] */
+				
 				KEX_LD_CFG(0x01, 0x8, 0x1, 0x0, 0x8),
 			},
 		},
 		[NPC_LID_LC] = {
-			/* Layer C: IPv4 */
+			
 			[NPC_LT_LC_IP] = {
-				/* SIP+DIP: 8 bytes, KW2[63:0] */
+				
 				KEX_LD_CFG(0x07, 0xc, 0x1, 0x0, 0x10),
 			},
-			/* Layer C: IPv6 */
+			
 			[NPC_LT_LC_IP6] = {
-				/* Everything up to SADDR: 8 bytes, KW2[63:0] */
+				
 				KEX_LD_CFG(0x07, 0x0, 0x1, 0x0, 0x10),
 			},
 		},
 		[NPC_LID_LD] = {
-			/* Layer D:UDP */
+			
 			[NPC_LT_LD_UDP] = {
-				/* SPORT+DPORT: 4 bytes, KW3[31:0] */
+				
 				KEX_LD_CFG(0x3, 0x0, 0x1, 0x0, 0x18),
 			},
-			/* Layer D:TCP */
+			
 			[NPC_LT_LD_TCP] = {
-				/* SPORT+DPORT: 4 bytes, KW3[31:0] */
+				
 				KEX_LD_CFG(0x3, 0x0, 0x1, 0x0, 0x18),
 			},
 		},
@@ -15263,4 +15257,4 @@ static struct npc_mcam_kex npc_mkex_default = {
 	},
 };
 
-#endif /* NPC_PROFILE_H */
+#endif 

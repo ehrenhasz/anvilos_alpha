@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ or MIT) */
-/*
- * Copyright (c) 2023 Amlogic, Inc.
- * Author: hongyu chen1 <hongyu.chen1@amlogic.com>
- */
+
+
 #ifndef _DT_BINDINGS_AMLOGIC_C3_POWER_H
 #define _DT_BINDINGS_AMLOGIC_C3_POWER_H
 

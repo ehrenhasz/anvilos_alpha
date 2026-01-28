@@ -45,7 +45,7 @@ def get_optional(perf_dict, field):
 	return "[unknown]"
 def get_offset(perf_dict, field):
 	if field in perf_dict:
-		return "+%#x" % perf_dict[field]
+		return "+%
 	return ""
 def trace_begin():
 	ap = argparse.ArgumentParser(usage = "", add_help = False)
@@ -115,7 +115,7 @@ def print_ptwrite(raw_buf):
 			s = ""
 	except:
 		s = ""
-	print("IP: %u payload: %#x" % (exact_ip, payload), s, end=' ')
+	print("IP: %u payload: %
 def print_cbr(raw_buf):
 	data = struct.unpack_from("<BBBBII", raw_buf)
 	cbr = data[0]
@@ -127,7 +127,7 @@ def print_mwait(raw_buf):
 	payload = data[1]
 	hints = payload & 0xff
 	extensions = (payload >> 32) & 0x3
-	print("hints: %#x extensions: %#x" % (hints, extensions), end=' ')
+	print("hints: %
 def print_pwre(raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	payload = data[1]
@@ -147,12 +147,12 @@ def print_pwrx(raw_buf):
 	deepest_cstate = payload & 0xf
 	last_cstate = (payload >> 4) & 0xf
 	wake_reason = (payload >> 8) & 0xf
-	print("deepest cstate: %u last cstate: %u wake reason: %#x" %
+	print("deepest cstate: %u last cstate: %u wake reason: %
 		(deepest_cstate, last_cstate, wake_reason), end=' ')
 def print_psb(raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	offset = data[1]
-	print("offset: %#x" % (offset), end=' ')
+	print("offset: %
 glb_cfe = ["", "INTR", "IRET", "SMI", "RSM", "SIPI", "INIT", "VMENTRY", "VMEXIT",
 		"VMEXIT_INTR", "SHUTDOWN", "", "UINT", "UIRET"] + [""] * 18
 glb_evd = ["", "PFA", "VMXQ", "VMXR"] + [""] * 60
@@ -173,9 +173,9 @@ def print_evt(raw_buf):
 		et = data[0] & 0x3f
 		s = glb_evd[et]
 		if s:
-			print("%s: %#x" % (s, data[1]), end=' ')
+			print("%s: %
 		else:
-			print("EVD_%u: %#x" % (et, data[1]), end=' ')
+			print("EVD_%u: %
 def print_iflag(raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	iflag = data[0] & 1
@@ -208,7 +208,7 @@ def print_instructions_start(comm, sample):
 		print(common_start_str(comm, sample), end='  ')
 def disassem(insn, ip):
 	inst = glb_disassembler.Instruction()
-	glb_disassembler.SetMode(inst, 0) # Assume 64-bit
+	glb_disassembler.SetMode(inst, 0) 
 	buf = create_string_buffer(64)
 	buf.value = insn
 	return glb_disassembler.DisassembleOne(inst, addressof(buf), len(insn), ip)
@@ -218,7 +218,7 @@ def print_common_ip(param_dict, sample, symbol, dso):
 	if "cyc_cnt" in sample:
 		cyc_cnt = sample["cyc_cnt"]
 		insn_cnt = get_optional_zero(sample, "insn_cnt")
-		ipc_str = "  IPC: %#.2f (%u/%u)" % (insn_cnt / cyc_cnt, insn_cnt, cyc_cnt)
+		ipc_str = "  IPC: %
 	else:
 		ipc_str = ""
 	if glb_insn and glb_disassembler is not None:

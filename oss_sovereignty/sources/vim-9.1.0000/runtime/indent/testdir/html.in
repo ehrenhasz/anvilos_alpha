@@ -5,8 +5,8 @@
 <html>
     <body>
 <style>
-div#d1 { color: red; }
-div#d2 { color: green; }
+div
+div
 </style>
     <script>
 	var v1 = "v1";
@@ -60,8 +60,8 @@ text
 <html>
     <body>
 <style>
-div#d1 { color: red; }
-div#d2 { color: green; }
+div
+div
 </style>
     <script>
 	var v1 = "v1";

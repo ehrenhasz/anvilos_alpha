@@ -373,7 +373,7 @@ def cli_progress(addr, offset, size):
     try:
         sys.stdout.flush()
     except OSError:
-        pass  # Ignore Windows CLI "WinError 87" on Python 3.6
+        pass  
     if offset == size:
         print("")
 def main():

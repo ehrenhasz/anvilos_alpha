@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Trace events for the ChromeOS Embedded Controller
- *
- * Copyright 2019 Google LLC.
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cros_ec
@@ -70,9 +66,9 @@ TRACE_EVENT(cros_ec_request_done,
 		  __entry->retval)
 );
 
-#endif /* _CROS_EC_TRACE_H_ */
+#endif 
 
-/* this part must be outside header guard */
+
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

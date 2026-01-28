@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- *  Copyright (C) 2014 Atmel Corporation.
- *
- * Memory Controllers (MATRIX, EBI) - System peripherals registers.
- */
+
+
 
 #ifndef _LINUX_MFD_SYSCON_ATMEL_MATRIX_H
 #define _LINUX_MFD_SYSCON_ATMEL_MATRIX_H
@@ -109,4 +105,4 @@
 
 #define AT91_MATRIX_USBPUCR_PUON		BIT(30)
 
-#endif /* _LINUX_MFD_SYSCON_ATMEL_MATRIX_H */
+#endif 

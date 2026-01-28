@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+
 
 #include <ppc-asm.h>
 
@@ -86,10 +84,10 @@ FUNC_START(core_busy_loop)
 	cmpwi	r3, 100
 	blt	0b
 
-	/* Return 1 (fail) unless we get through all the checks */
+	
 	li	r3, 1
 
-	/* Check none of our registers have been corrupted */
+	
 	cmpwi	r4,  0x4040
 	bne	1f
 	cmpwi	r5,  0x5050
@@ -143,7 +141,7 @@ FUNC_START(core_busy_loop)
 	cmpwi	r31, 0x3131
 	bne	1f
 
-	/* Load junk into all our registers before we reload them from the stack. */
+	
 	li	r3,  0xde
 	li	r4,  0xad
 	li	r5,  0xbe
@@ -246,7 +244,7 @@ FUNC_START(core_busy_loop)
 	cmpwi	r29, 0x2929
 	bne	1f
 
-	/* Load 0 (success) to return */
+	
 	li	r3, 0
 
 1:	ld	r14, 160(%r1)

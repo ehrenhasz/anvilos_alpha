@@ -1,27 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2018 Solarflare Communications Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+
 
 #ifndef EFX_RX_COMMON_H
 #define EFX_RX_COMMON_H
 
-/* Preferred number of descriptors to fill at once */
+
 #define EFX_RX_PREFERRED_BATCH 8U
 
-/* Each packet can consume up to ceil(max_frame_len / buffer_size) buffers */
+
 #define EFX_RX_MAX_FRAGS DIV_ROUND_UP(EFX_MAX_FRAME_LEN(EFX_MAX_MTU), \
 				      EFX_RX_USR_BUF_SIZE)
 
-/* Number of RX buffers to recycle pages for.  When creating the RX page recycle
- * ring, this number is divided by the number of buffers per page to calculate
- * the number of pages to store in the RX page recycle ring.
- */
+
 #define EFX_RECYCLE_RING_SIZE_10G	256
 
 static inline u8 *efx_rx_buf_va(struct efx_rx_buffer *buf)

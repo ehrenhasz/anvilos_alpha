@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for the Geode family framebuffer drivers
+
+
 
 obj-$(CONFIG_FB_GEODE_GX1) += gx1fb.o
 obj-$(CONFIG_FB_GEODE_GX)  += gxfb.o

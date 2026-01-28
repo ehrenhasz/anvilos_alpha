@@ -1,18 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * (C) 2001 Clemson University and The University of Chicago
- *
- * See COPYING in top-level directory.
- */
+
+
 
 #ifndef __UPCALL_H
 #define __UPCALL_H
 
-/*
- * Sanitized this header file to fix
- * 32-64 bit interaction issues between
- * client-core and device
- */
+
 struct orangefs_io_request_s {
 	__s32 __pad1;
 	__s32 buf_index;
@@ -212,7 +204,7 @@ struct orangefs_fs_key_request_s {
 	__s32 __pad1;
 };
 
-/* 2.9.6 */
+
 struct orangefs_features_request_s {
 	__u64 features;
 };
@@ -223,7 +215,7 @@ struct orangefs_upcall_s {
 	__u32 gid;
 	int pid;
 	int tgid;
-	/* Trailers unused but must be retained for protocol compatibility. */
+	
 	__s64 trailer_size;
 	char *trailer_buf;
 
@@ -257,4 +249,4 @@ struct orangefs_upcall_s {
 	} req;
 };
 
-#endif /* __UPCALL_H */
+#endif 

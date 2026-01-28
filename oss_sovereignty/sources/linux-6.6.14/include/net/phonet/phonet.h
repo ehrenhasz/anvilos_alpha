@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * File: af_phonet.h
- *
- * Phonet sockets kernel definitions
- *
- * Copyright (C) 2008 Nokia Corporation.
- */
+
+
 
 #ifndef AF_PHONET_H
 #define AF_PHONET_H
@@ -14,16 +8,10 @@
 #include <linux/skbuff.h>
 #include <net/sock.h>
 
-/*
- * The lower layers may not require more space, ever. Make sure it's
- * enough.
- */
+
 #define MAX_PHONET_HEADER	(8 + MAX_HEADER)
 
-/*
- * Every Phonet* socket has this structure first in its
- * protocol-specific structure under name c.
- */
+
 struct pn_sock {
 	struct sock	sk;
 	u16		sobject;
@@ -64,10 +52,7 @@ static inline struct phonetmsg *pn_msg(struct sk_buff *skb)
 	return (struct phonetmsg *)skb_transport_header(skb);
 }
 
-/*
- * Get the other party's sockaddr from received skb. The skb begins
- * with a Phonet header.
- */
+
 static inline
 void pn_skb_get_src_sockaddr(struct sk_buff *skb, struct sockaddr_pn *sa)
 {
@@ -92,7 +77,7 @@ void pn_skb_get_dst_sockaddr(struct sk_buff *skb, struct sockaddr_pn *sa)
 	memset(sa->spn_zero, 0, sizeof(sa->spn_zero));
 }
 
-/* Protocols in Phonet protocol family. */
+
 struct phonet_protocol {
 	const struct proto_ops	*ops;
 	struct proto		*prot;
@@ -127,7 +112,7 @@ static inline int phonet_sk_ioctl(struct sock *sk, unsigned int cmd,
 
 		return sk->sk_prot->ioctl(sk, cmd, &karg);
 	}
-	/* A positive return value means that the ioctl was not processed */
+	
 	return 1;
 }
 #endif

@@ -1,27 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+
+
 
 #ifndef __HNAE_H
 #define __HNAE_H
 
-/* Names used in this framework:
- *      ae handle (handle):
- *        a set of queues provided by AE
- *      ring buffer queue (rbq):
- *        the channel between upper layer and the AE, can do tx and rx
- *      ring:
- *        a tx or rx channel within a rbq
- *      ring description (desc):
- *        an element in the ring with packet information
- *      buffer:
- *        a memory region referred by desc with the full packet payload
- *
- * "num" means a static number set as a parameter, "count" mean a dynamic
- *   number set while running
- * "cb" means control block
- */
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -65,10 +48,8 @@ do { \
 
 #define BD_SIZE_2048_MAX_MTU   6000
 
-/* some said the RX and TX RCB format should not be the same in the future. But
- * it is the same now...
- */
-#define RCB_REG_BASEADDR_L         0x00 /* P660 support only 32bit accessing */
+
+#define RCB_REG_BASEADDR_L         0x00 
 #define RCB_REG_BASEADDR_H         0x04
 #define RCB_REG_BD_NUM             0x08
 #define RCB_REG_BD_LEN             0x0C
@@ -76,8 +57,8 @@ do { \
 #define RCB_REG_TAIL               0x18
 #define RCB_REG_HEAD               0x1C
 #define RCB_REG_FBDNUM             0x20
-#define RCB_REG_OFFSET             0x24 /* pkt num to be handled */
-#define RCB_REG_PKTNUM_RECORD      0x2C /* total pkt received */
+#define RCB_REG_OFFSET             0x24 
+#define RCB_REG_PKTNUM_RECORD      0x2C 
 
 #define HNS_RX_HEAD_SIZE 256
 
@@ -165,7 +146,7 @@ enum hnae_led_state {
 #define HNSV2_TXD_IPV6_B   3
 #define HNSV2_TXD_SCTP_B   4
 
-/* hardware spec ring buffer format */
+
 struct __packed hnae_desc {
 	__le64 addr;
 	union {
@@ -211,25 +192,25 @@ struct __packed hnae_desc {
 };
 
 struct hnae_desc_cb {
-	dma_addr_t dma; /* dma address of this desc */
-	void *buf;      /* cpu addr for a desc */
+	dma_addr_t dma; 
+	void *buf;      
 
-	/* priv data for the desc, e.g. skb when use with ip stack*/
+	
 	void *priv;
 	u32 page_offset;
-	u32 length;     /* length of the buffer */
+	u32 length;     
 
 	u16 reuse_flag;
 
-       /* desc type, used by the ring user to mark the type of the priv data */
+       
 	u16 type;
 };
 
 #define setflags(flags, bits) ((flags) |= (bits))
 #define unsetflags(flags, bits) ((flags) &= ~(bits))
 
-/* hnae_ring->flags fields */
-#define RINGF_DIR 0x1	    /* TX or RX ring, set if TX */
+
+#define RINGF_DIR 0x1	    
 #define is_tx_ring(ring) ((ring)->flags & RINGF_DIR)
 #define is_rx_ring(ring) (!is_tx_ring(ring))
 #define ring_to_dma_dir(ring) (is_tx_ring(ring) ? \
@@ -264,37 +245,35 @@ struct ring_stats {
 struct hnae_queue;
 
 struct hnae_ring {
-	u8 __iomem *io_base; /* base io address for the ring */
-	struct hnae_desc *desc; /* dma map address space */
+	u8 __iomem *io_base; 
+	struct hnae_desc *desc; 
 	struct hnae_desc_cb *desc_cb;
 	struct hnae_queue *q;
 	int irq;
 	char ring_name[RCB_RING_NAME_LEN];
 
-	/* statistic */
+	
 	struct ring_stats stats;
 
 	dma_addr_t desc_dma_addr;
-	u32 buf_size;       /* size for hnae_desc->addr, preset by AE */
-	u16 desc_num;       /* total number of desc */
+	u32 buf_size;       
+	u16 desc_num;       
 	u16 max_desc_num_per_pkt;
 	u16 max_raw_data_sz_per_desc;
 	u16 max_pkt_size;
-	int next_to_use;    /* idx of next spare desc */
+	int next_to_use;    
 
-	/* idx of lastest sent desc, the ring is empty when equal to
-	 * next_to_use
-	 */
+	
 	int next_to_clean;
 
-	int flags;          /* ring attribute */
+	int flags;          
 	int irq_init_flag;
 
-	/* total rx bytes after last rx rate calucated */
+	
 	u64 coal_last_rx_bytes;
 	unsigned long coal_last_jiffies;
 	u32 coal_param;
-	u32 coal_rx_rate;	/* rx rate in MB */
+	u32 coal_rx_rate;	
 };
 
 #define ring_ptr_move_fw(ring, p) \
@@ -310,9 +289,7 @@ enum hns_desc_type {
 #define assert_is_ring_idx(ring, idx) \
 	assert((idx) >= 0 && (idx) < (ring)->desc_num)
 
-/* the distance between [begin, end) in a ring buffer
- * note: there is a unuse slot between the begin and the end
- */
+
 static inline int ring_dist(struct hnae_ring *ring, int begin, int end)
 {
 	assert_is_ring_idx(ring, begin);
@@ -341,7 +318,7 @@ static inline int is_ring_empty(struct hnae_ring *ring)
 
 struct hnae_handle;
 
-/* allocate and dma map space for hnae desc */
+
 struct hnae_buf_ops {
 	int (*alloc_buffer)(struct hnae_ring *ring, struct hnae_desc_cb *cb);
 	void (*free_buffer)(struct hnae_ring *ring, struct hnae_desc_cb *cb);
@@ -352,13 +329,13 @@ struct hnae_buf_ops {
 struct hnae_queue {
 	u8 __iomem *io_base;
 	phys_addr_t phy_base;
-	struct hnae_ae_dev *dev;	/* the device who use this queue */
+	struct hnae_ae_dev *dev;	
 	struct hnae_ring rx_ring ____cacheline_internodealigned_in_smp;
 	struct hnae_ring tx_ring ____cacheline_internodealigned_in_smp;
 	struct hnae_handle *handle;
 };
 
-/*hnae loop mode*/
+
 enum hnae_loop {
 	MAC_INTERNALLOOP_MAC = 0,
 	MAC_INTERNALLOOP_SERDES,
@@ -367,13 +344,13 @@ enum hnae_loop {
 	MAC_LOOP_NONE,
 };
 
-/*hnae port type*/
+
 enum hnae_port_type {
 	HNAE_PORT_SERVICE = 0,
 	HNAE_PORT_DEBUG
 };
 
-/* mac media type */
+
 enum hnae_media_type {
 	HNAE_MEDIA_TYPE_UNKNOWN = 0,
 	HNAE_MEDIA_TYPE_FIBER,
@@ -381,84 +358,7 @@ enum hnae_media_type {
 	HNAE_MEDIA_TYPE_BACKPLANE,
 };
 
-/* This struct defines the operation on the handle.
- *
- * get_handle(): (mandatory)
- *   Get a handle from AE according to its name and options.
- *   the AE driver should manage the space used by handle and its queues while
- *   the HNAE framework will allocate desc and desc_cb for all rings in the
- *   queues.
- * put_handle():
- *   Release the handle.
- * start():
- *   Enable the hardware, include all queues
- * stop():
- *   Disable the hardware
- * set_opts(): (mandatory)
- *   Set options to the AE
- * get_opts(): (mandatory)
- *   Get options from the AE
- * get_status():
- *   Get the carrier state of the back channel of the handle, 1 for ok, 0 for
- *   non-ok
- * toggle_ring_irq(): (mandatory)
- *   Set the ring irq to be enabled(0) or disable(1)
- * toggle_queue_status(): (mandatory)
- *   Set the queue to be enabled(1) or disable(0), this will not change the
- *   ring irq state
- * adjust_link()
- *   adjust link status
- * set_loopback()
- *   set loopback
- * get_ring_bdnum_limit()
- *   get ring bd number limit
- * get_pauseparam()
- *   get tx and rx of pause frame use
- * set_pauseparam()
- *   set tx and rx of pause frame use
- * get_coalesce_usecs()
- *   get usecs to delay a TX interrupt after a packet is sent
- * get_rx_max_coalesced_frames()
- *   get Maximum number of packets to be sent before a TX interrupt.
- * set_coalesce_usecs()
- *   set usecs to delay a TX interrupt after a packet is sent
- * set_coalesce_frames()
- *   set Maximum number of packets to be sent before a TX interrupt.
- * get_ringnum()
- *   get RX/TX ring number
- * get_max_ringnum()
- *   get RX/TX ring maximum number
- * get_mac_addr()
- *   get mac address
- * set_mac_addr()
- *   set mac address
- * clr_mc_addr()
- *   clear mcast tcam table
- * set_mc_addr()
- *   set multicast mode
- * add_uc_addr()
- *   add ucast address
- * rm_uc_addr()
- *   remove ucast address
- * set_mtu()
- *   set mtu
- * update_stats()
- *   update Old network device statistics
- * get_ethtool_stats()
- *   get ethtool network device statistics
- * get_strings()
- *   get a set of strings that describe the requested objects
- * get_sset_count()
- *   get number of strings that @get_strings will write
- * update_led_status()
- *   update the led status
- * set_led_id()
- *   set led id
- * get_regs()
- *   get regs dump
- * get_regs_len()
- *   get the len of the regs dump
- */
+
 struct hnae_ae_ops {
 	struct hnae_handle *(*get_handle)(struct hnae_ae_dev *dev,
 					  u32 port_id);
@@ -528,37 +428,37 @@ struct hnae_ae_ops {
 };
 
 struct hnae_ae_dev {
-	struct device cls_dev; /* the class dev */
-	struct device *dev; /* the presented dev */
+	struct device cls_dev; 
+	struct device *dev; 
 	struct hnae_ae_ops *ops;
 	struct list_head node;
-	struct module *owner; /* the module who provides this dev */
+	struct module *owner; 
 	int id;
 	char name[AE_NAME_SIZE];
 	struct list_head handle_list;
-	spinlock_t lock; /* lock to protect the handle_list */
+	spinlock_t lock; 
 };
 
 struct hnae_handle {
-	struct device *owner_dev; /* the device which make use of this handle */
-	struct hnae_ae_dev *dev;  /* the device who provides this handle */
+	struct device *owner_dev; 
+	struct hnae_ae_dev *dev;  
 	struct phy_device *phy_dev;
 	phy_interface_t phy_if;
 	u32 if_support;
 	int q_num;
 	int vf_id;
 	unsigned long coal_last_jiffies;
-	u32 coal_param;		/* self adapt coalesce param */
-	/* the ring index of last ring that set coal param */
+	u32 coal_param;		
+	
 	u32 coal_ring_idx;
 	u32 eport_id;
-	u32 dport_id;	/* v2 tx bd should fill the dport_id */
+	u32 dport_id;	
 	bool coal_adapt_en;
 	enum hnae_port_type port_type;
 	enum hnae_media_type media_type;
-	struct list_head node;    /* list to hnae_ae_dev->handle_list */
-	struct hnae_buf_ops *bops; /* operation for the buffer */
-	struct hnae_queue *qs[];  /* flexible array of all queues */
+	struct list_head node;    
+	struct hnae_buf_ops *bops; 
+	struct hnae_queue *qs[];  
 };
 
 #define ring_to_dev(ring) ((ring)->q->dev->dev)
@@ -635,7 +535,7 @@ static inline void hnae_free_buffer_detach(struct hnae_ring *ring, int i)
 	bops->free_buffer(ring, cb);
 }
 
-/* detach a in-used buffer and replace with a reserved one  */
+
 static inline void hnae_replace_buffer(struct hnae_ring *ring, int i,
 				       struct hnae_desc_cb *res_cb)
 {
@@ -655,7 +555,7 @@ static inline void hnae_reuse_buffer(struct hnae_ring *ring, int i)
 	ring->desc[i].rx.ipoff_bnum_pid_flag = 0;
 }
 
-/* when reinit buffer size, we should reinit buffer description */
+
 static inline void hnae_reinit_all_ring_desc(struct hnae_handle *h)
 {
 	int i, j;
@@ -667,10 +567,10 @@ static inline void hnae_reinit_all_ring_desc(struct hnae_handle *h)
 			ring->desc[j].addr = cpu_to_le64(ring->desc_cb[j].dma);
 	}
 
-	wmb();	/* commit all data before submit */
+	wmb();	
 }
 
-/* when reinit buffer size, we should reinit page offset */
+
 static inline void hnae_reinit_all_ring_page_off(struct hnae_handle *h)
 {
 	int i, j;
@@ -687,7 +587,7 @@ static inline void hnae_reinit_all_ring_page_off(struct hnae_handle *h)
 		}
 	}
 
-	wmb();	/* commit all data before submit */
+	wmb();	
 }
 
 #define hnae_set_field(origin, mask, shift, val) \

@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the USB input drivers
-#
+
+
+
+
 
 usbhid-y	:= hid-core.o
 usbhid-$(CONFIG_USB_HIDDEV)	+= hiddev.o

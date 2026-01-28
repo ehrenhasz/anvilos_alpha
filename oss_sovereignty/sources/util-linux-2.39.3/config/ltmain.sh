@@ -4,8 +4,8 @@ VERSION=2.4.7
 package_revision=2.4.7
 : ${AUTOCONF="autoconf"}
 : ${AUTOMAKE="automake"}
-scriptversion=2019-02-19.15; # UTC
-DUALCASE=1; export DUALCASE # for MKS sh
+scriptversion=2019-02-19.15; 
+DUALCASE=1; export DUALCASE 
 if test -n "${ZSH_VERSION+set}" && (emulate sh) >/dev/null 2>&1; then :
   emulate sh
   NULLCMD=:
@@ -193,8 +193,8 @@ func_require_check_ifs_backslash ()
 }
 EXIT_SUCCESS=0
 EXIT_FAILURE=1
-EXIT_MISMATCH=63  # $? = 63 is used to indicate version mismatch to missing.
-EXIT_SKIP=77	  # $? = 77 is used to indicate a skipped test to automake.
+EXIT_MISMATCH=63  
+EXIT_SKIP=77	  
 debug_cmd=${debug_cmd-":"}
 exit_cmd=:
 exit_status=$EXIT_SUCCESS
@@ -320,7 +320,7 @@ else
   }
 fi
 if test yes = "$_G_HAVE_XSI_OPS"; then
-  _b='func_basename_result=${1##*/}'
+  _b='func_basename_result=${1
   _d='case $1 in
         */*) func_dirname_result=${1%/*}$2 ;;
         *  ) func_dirname_result=$3        ;;
@@ -381,7 +381,7 @@ func_echo_infix_1 ()
         _G_indent=`$ECHO "$_G_indent" | $SED "s|$_G_esc_tc||g"`
       }
     done
-    _G_indent="$progname: "`echo "$_G_indent" | $SED 's|.| |g'`"  " ## exclude from sc_prohibit_nested_quotes
+    _G_indent="$progname: "`echo "$_G_indent" | $SED 's|.| |g'`"  " 
     func_echo_infix_1_IFS=$IFS
     IFS=$nl
     for _G_line in $_G_message; do
@@ -410,13 +410,13 @@ func_grep ()
 }
   test -z "$_G_HAVE_XSI_OPS" \
     && (eval 'x=a/b/c;
-      test 5aa/bb/cc = "${#x}${x%%/*}${x%/*}${x#*/}${x##*/}"') 2>/dev/null \
+      test 5aa/bb/cc = "${
     && _G_HAVE_XSI_OPS=yes
 if test yes = "$_G_HAVE_XSI_OPS"; then
   eval 'func_len ()
   {
     $debug_cmd
-    func_len_result=${#1}
+    func_len_result=${
   }'
 else
   func_len ()
@@ -633,7 +633,7 @@ func_quote_portable ()
     done
     func_quote_portable_unquoted_result=$func_quote_portable_result
     case $func_quote_portable_result in
-      *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
+      *[\[\~\
         func_quote_portable_result=\"$func_quote_portable_result\"
         ;;
     esac
@@ -691,7 +691,7 @@ func_quote ()
     $debug_cmd
     _G_func_quote_mode=$1 ; shift
     func_quote_result=
-    while test 0 -lt $#; do
+    while test 0 -lt $
       func_quote_arg "$_G_func_quote_mode" "$1"
       if test -n "$func_quote_result"; then
         func_append func_quote_result " $func_quote_arg_result"
@@ -706,7 +706,7 @@ if test yes = "$_G_HAVE_XSI_OPS"; then
   {
     $debug_cmd
     func_stripname_result=$3
-    func_stripname_result=${func_stripname_result#"$1"}
+    func_stripname_result=${func_stripname_result
     func_stripname_result=${func_stripname_result%"$2"}
   }'
 else
@@ -801,7 +801,7 @@ func_lt_ver ()
     $debug_cmd
     test "x$1" = x`func_sort_ver "$1" "$2" | $SED 1q`
 }
-scriptversion=2019-02-19.15; # UTC
+scriptversion=2019-02-19.15; 
 usage='$progpath [OPTION]...'
 usage_message="\
        --debug        enable verbose shell tracing
@@ -905,14 +905,14 @@ func_parse_options ()
 {
     $debug_cmd
     _G_parse_options_requote=false
-    while test $# -gt 0; do
+    while test $
       func_run_hooks func_parse_options ${1+"$@"}
       func_propagate_result func_run_hooks func_parse_options
       if $func_propagate_result_result; then
         eval set dummy "$func_parse_options_result"; shift
         _G_parse_options_requote=false
       fi
-      test $# -gt 0 || break
+      test $
       _G_match_parse_options=:
       _G_opt=$1
       shift
@@ -926,7 +926,7 @@ func_parse_options ()
                       shift
 		      ;;
         --warnings|--warning|-W)
-                      if test $# = 0 && func_missing_arg $_G_opt; then
+                      if test $
                         _G_parse_options_requote=:
                         break
                       fi
@@ -1021,7 +1021,7 @@ func_missing_arg ()
 }
 test -z "$_G_HAVE_XSI_OPS" \
     && (eval 'x=a/b/c;
-      test 5aa/bb/cc = "${#x}${x%%/*}${x%/*}${x#*/}${x##*/}"') 2>/dev/null \
+      test 5aa/bb/cc = "${
     && _G_HAVE_XSI_OPS=yes
 if test yes = "$_G_HAVE_XSI_OPS"
 then
@@ -1029,7 +1029,7 @@ then
   {
       $debug_cmd
       func_split_equals_lhs=${1%%=*}
-      func_split_equals_rhs=${1#*=}
+      func_split_equals_rhs=${1
       if test "x$func_split_equals_lhs" = "x$1"; then
         func_split_equals_rhs=
       fi
@@ -1043,13 +1043,13 @@ else
       test "x$func_split_equals_lhs=" = "x$1" \
         || func_split_equals_rhs=`expr "x$1" : 'x[^=]*=\(.*\)$'`
   }
-fi #func_split_equals
+fi 
 if test yes = "$_G_HAVE_XSI_OPS"
 then
   eval 'func_split_short_opt ()
   {
       $debug_cmd
-      func_split_short_opt_arg=${1#??}
+      func_split_short_opt_arg=${1
       func_split_short_opt_name=${1%"$func_split_short_opt_arg"}
   }'
 else
@@ -1059,7 +1059,7 @@ else
       func_split_short_opt_name=`expr "x$1" : 'x\(-.\)'`
       func_split_short_opt_arg=`expr "x$1" : 'x-.\(.*\)$'`
   }
-fi #func_split_short_opt
+fi 
 func_usage ()
 {
     $debug_cmd
@@ -1072,7 +1072,7 @@ func_usage_message ()
     $debug_cmd
     eval \$ECHO \""Usage: $usage"\"
     echo
-    $SED -n 's|^# ||
+    $SED -n 's|^
         /^Written by/{
           x;p;x
         }
@@ -1086,8 +1086,8 @@ func_version ()
     $debug_cmd
     printf '%s\n' "$progname $scriptversion"
     $SED -n '
-        /^# Written by /!b
-        s|^# ||; p; n
+        /^
+        s|^
         :fwd2blnk
         /./ {
           n
@@ -1095,8 +1095,8 @@ func_version ()
         }
         p; n
         :holdwrnt
-        s|^# ||
-        s|^# *$||
+        s|^
+        s|^
         /^Copyright /!{
           /./H
           n
@@ -1205,8 +1205,8 @@ func_fatal_configuration ()
 }
 func_config ()
 {
-    re_begincf='^# ### BEGIN LIBTOOL'
-    re_endcf='^# ### END LIBTOOL'
+    re_begincf='^
+    re_endcf='^
     $SED "1,/$re_begincf CONFIG/d;/$re_endcf CONFIG/,\$d" < "$progpath"
     for tagname in $taglist; do
       $SED -n "/$re_begincf TAG CONFIG: $tagname\$/,/$re_endcf TAG CONFIG: $tagname\$/p" < "$progpath"
@@ -1231,8 +1231,8 @@ func_features ()
 func_enable_tag ()
 {
     tagname=$1
-    re_begincf="^# ### BEGIN LIBTOOL TAG CONFIG: $tagname\$"
-    re_endcf="^# ### END LIBTOOL TAG CONFIG: $tagname\$"
+    re_begincf="^
+    re_endcf="^
     sed_extractcf=/$re_begincf/,/$re_endcf/p
     case $tagname in
       *[!-_A-Za-z0-9,/]*)
@@ -1331,7 +1331,7 @@ libtool_parse_options ()
 {
     $debug_cmd
     _G_rc_lt_parse_options=false
-    while test $# -gt 0; do
+    while test $
       _G_match_lt_parse_options=:
       _G_opt=$1
       shift
@@ -1351,7 +1351,7 @@ libtool_parse_options ()
         --finish)       set dummy --mode finish ${1+"$@"}; shift ;;
         --help)         opt_help=: ;;
         --help-all)     opt_help=': help-all' ;;
-        --mode)         test $# = 0 && func_missing_arg $_G_opt && break
+        --mode)         test $
                         opt_mode=$1
                         case $1 in
                           clean|compile|execute|finish|install|link|relink|uninstall) ;;
@@ -1379,7 +1379,7 @@ libtool_parse_options ()
                         opt_verbose=false
                         func_append preserve_args " $_G_opt"
                         ;;
-        --tag)          test $# = 0 && func_missing_arg $_G_opt && break
+        --tag)          test $
                         opt_tag=$1
                         func_append preserve_args " $_G_opt $1"
                         func_enable_tag "$1"
@@ -1404,7 +1404,7 @@ libtool_parse_options ()
 func_add_hook func_parse_options libtool_parse_options
 libtool_validate_options ()
 {
-    if test 0 -lt $#; then
+    if test 0 -lt $
       nonopt=$1
       shift
     fi
@@ -1443,7 +1443,7 @@ _LTECHO_EOF'
 }
 func_generated_by_libtool_p ()
 {
-  $GREP "^# Generated by .*$PACKAGE" > /dev/null 2>&1
+  $GREP "^
 }
 func_lalib_p ()
 {
@@ -1458,7 +1458,7 @@ func_lalib_unsafe_p ()
 	do
 	    read lalib_p_line
 	    case $lalib_p_line in
-		\#\ Generated\ by\ *$PACKAGE* ) lalib_p=yes; break;;
+		\
 	    esac
 	done
 	exec 0<&5 5<&-
@@ -1546,8 +1546,8 @@ func_infer_tag ()
       " $CC_quoted"* | "$CC_quoted "* | " $CC_quoted_expanded "* | "$CC_quoted_expanded "*) ;;
       *)
 	for z in $available_tags; do
-	  if $GREP "^# ### BEGIN LIBTOOL TAG CONFIG: $z$" < "$progpath" > /dev/null; then
-	    eval "`$SED -n -e '/^# ### BEGIN LIBTOOL TAG CONFIG: '$z'$/,/^# ### END LIBTOOL TAG CONFIG: '$z'$/p' < $progpath`"
+	  if $GREP "^
+	    eval "`$SED -n -e '/^
 	    CC_quoted=
 	    for arg in $CC; do
 	      func_append_quoted CC_quoted "$arg"
@@ -1862,7 +1862,7 @@ func_mode_compile ()
 {
     $debug_cmd
     base_compile=
-    srcfile=$nonopt  #  always keep a non-empty value in "srcfile"
+    srcfile=$nonopt  
     suppress_opt=yes
     suppress_output=
     arg_mode=normal
@@ -1902,9 +1902,9 @@ func_mode_compile ()
 	  continue
 	  ;;
 	-Xcompiler)
-	  arg_mode=arg  #  the next one goes into the "base_compile" arg list
-	  continue      #  The current "srcfile" will either be retained or
-	  ;;            #  replaced later.  I would guess that would be a bug.
+	  arg_mode=arg  
+	  continue      
+	  ;;            
 	-Wc,*)
 	  func_stripname '-Wc,' '' "$arg"
 	  args=$func_stripname_result
@@ -1924,11 +1924,11 @@ func_mode_compile ()
 	  lastarg=$srcfile
 	  srcfile=$arg
 	  ;;
-	esac  #  case $arg
+	esac  
 	;;
-      esac    #  case $arg_mode
+      esac    
       func_append_quoted base_compile "$lastarg"
-    done # for arg
+    done 
     case $arg_mode in
     arg)
       func_fatal_error "you must specify an argument for -Xcompile"
@@ -1984,7 +1984,7 @@ func_mode_compile ()
     done
     func_quote_arg pretty "$libobj"
     test "X$libobj" != "X$func_quote_arg_result" \
-      && $ECHO "X$libobj" | $GREP '[]~#^*{};<>?"'"'"'	 &()|`$[]' \
+      && $ECHO "X$libobj" | $GREP '[]~
       && func_warning "libobj name '$libobj' may not contain shell special characters."
     func_dirname_and_basename "$obj" "/" ""
     objname=$func_basename_result
@@ -2592,7 +2592,7 @@ func_mode_install ()
       destdir=$func_dirname_result
       destname=$func_basename_result
       set dummy $files; shift
-      test "$#" -gt 1 && \
+      test "$
 	func_fatal_help "'$dest' is not a directory"
     fi
     case $destdir in
@@ -2681,7 +2681,7 @@ func_mode_install ()
 	  if test -n "$tstripme" && test -n "$striplib"; then
 	    func_show_eval "$striplib $destdir/$realname" 'exit $?'
 	  fi
-	  if test "$#" -gt 0; then
+	  if test "$
 	    for linkname
 	    do
 	      test "$linkname" != "$realname" \
@@ -2961,7 +2961,7 @@ extern \"C\" {
 	          eval "$NM \"$func_to_tool_file_result\" 2>/dev/null | $global_symbol_pipe |
 	            $SED -e '/I __imp/d' -e 's/I __nm_/D /;s/_nm__//' >> '$nlist'"
 	        }
-	      else # not an import lib
+	      else 
 	        $opt_dry_run || {
 	          eval '$ECHO ": $name " >> "$nlist"'
 	          func_to_tool_file "$dlprefile" func_convert_file_msys_to_w32
@@ -3050,7 +3050,7 @@ static const void *lt_preloaded_setup() {
 }
 }
 "
-	} # !$opt_dry_run
+	} 
 	pic_flag_for_symtable=
 	case "$compile_command " in
 	*" -static "*) ;;
@@ -3121,10 +3121,10 @@ func_win32_libid ()
   win32_libid_type=unknown
   win32_fileres=`file -L $1 2>/dev/null`
   case $win32_fileres in
-  *ar\ archive\ import\ library*) # definitely import
+  *ar\ archive\ import\ library*) 
     win32_libid_type="x86 archive import"
     ;;
-  *ar\ archive*) # could be an import, or static
+  *ar\ archive*) 
     if eval $OBJDUMP -f $1 | $SED -e '10q' 2>/dev/null |
        $EGREP 'file format (pei*-i386(.*architecture: i386)?|pe-arm-wince|pe-x86-64)' >/dev/null; then
       case $nm_interface in
@@ -3159,7 +3159,7 @@ func_win32_libid ()
   *DLL*)
     win32_libid_type="x86 DLL"
     ;;
-  *executable*) # but shell scripts are "executable" too...
+  *executable*) 
     case $win32_fileres in
     *MS\ Windows\ PE\ Intel*)
       win32_libid_type="x86 DLL"
@@ -3287,21 +3287,21 @@ func_extract_archives ()
 	      func_extract_an_archive "`pwd`" "$darwin_base_archive"
 	      cd "$darwin_curdir"
 	      $RM "unfat-$$/$darwin_base_archive-$darwin_arch/$darwin_base_archive"
-	    done # $darwin_arches
+	    done 
 	    darwin_filelist=`find unfat-$$ -type f -name \*.o -print -o -name \*.lo -print | $SED -e "$sed_basename" | sort -u`
 	    darwin_file=
 	    darwin_files=
 	    for darwin_file in $darwin_filelist; do
 	      darwin_files=`find unfat-$$ -name $darwin_file -print | sort | $NL2SP`
 	      $LIPO -create -output "$darwin_file" $darwin_files
-	    done # $darwin_filelist
+	    done 
 	    $RM -rf unfat-$$
 	    cd "$darwin_orig_dir"
 	  else
 	    cd $darwin_orig_dir
 	    func_extract_an_archive "$my_xdir" "$my_xabs"
-	  fi # $darwin_arches
-	} # !$opt_dry_run
+	  fi 
+	} 
 	;;
       *)
         func_extract_an_archive "$my_xdir" "$my_xabs"
@@ -3324,8 +3324,8 @@ if test -n \"\${ZSH_VERSION+set}\" && (emulate sh) >/dev/null 2>&1; then
 else
   case \`(set -o) 2>/dev/null\` in *posix*) set -o posix;; esac
 fi
-BIN_SH=xpg4; export BIN_SH # for Tru64
-DUALCASE=1; export DUALCASE # for MKS sh
+BIN_SH=xpg4; export BIN_SH 
+DUALCASE=1; export DUALCASE 
 (unset CDPATH) >/dev/null 2>&1 && unset CDPATH
 relink_command=\"$relink_command\"
 if test \"\$libtool_install_magic\" = \"$magic\"; then
@@ -3527,9 +3527,9 @@ int _putenv (const char *);
 char *realpath (const char *, char *);
 int putenv (char *);
 int setenv (const char *, const char *, int);
-/* #elif defined other_platform || defined ... */
+/* 
 /* portability defines, excluding path handling macros */
-/* #elif defined other platforms ... */
+/* 
 /* path handling portability macros */
   defined __OS2__
 	(((ch) == DIR_SEPARATOR) || ((ch) == DIR_SEPARATOR_2))
@@ -4089,7 +4089,7 @@ lt_update_exe_path (const char *name, const char *value)
   if (name && *name && value && *value)
     {
       char *new_value = lt_extend_str (getenv (name), value, 0);
-      /* some systems can't cope with a ':'-terminated path #' */
+      /* some systems can't cope with a ':'-terminated path 
       size_t len = strlen (new_value);
       while ((len > 0) && IS_PATH_SEPARATOR (new_value[len-1]))
         {
@@ -4359,7 +4359,7 @@ func_mode_link ()
       esac
     done
     test -n "$old_archive_from_new_cmds" && build_old_libs=yes
-    while test "$#" -gt 0; do
+    while test "$
       arg=$1
       shift
       func_quote_arg pretty,unquoted "$arg"
@@ -4385,7 +4385,7 @@ func_mode_link ()
 	    preload=:
 	  }
 	  case $arg in
-	  *.la | *.lo) ;;  # We handle these cases below.
+	  *.la | *.lo) ;;  
 	  force)
 	    if test no = "$dlself"; then
 	      dlself=needless
@@ -4434,7 +4434,7 @@ func_mode_link ()
 	    *-*-darwin*)
 	      case "$deplibs " in
 		*" $qarg.ltframework "*) ;;
-		*) func_append deplibs " $qarg.ltframework" # this is fixed later
+		*) func_append deplibs " $qarg.ltframework" 
 		   ;;
 	      esac
 	      ;;
@@ -4601,7 +4601,7 @@ func_mode_link ()
 	  continue
 	  ;;
 	esac
-      fi # test -n "$prev"
+      fi 
       prevarg=$arg
       case $arg in
       -all-static)
@@ -4665,7 +4665,7 @@ func_mode_link ()
       -L*)
 	func_stripname "-L" '' "$arg"
 	if test -z "$func_stripname_result"; then
-	  if test "$#" -gt 0; then
+	  if test "$
 	    func_fatal_error "require no space between '-L' and '$1'"
 	  else
 	    func_fatal_error "need path for '-L' option"
@@ -5037,12 +5037,12 @@ func_mode_link ()
 	func_quote_arg pretty "$arg"
 	arg=$func_quote_arg_result
 	;;
-      esac # arg
+      esac 
       if test -n "$arg"; then
 	func_append compile_command " $arg"
 	func_append finalize_command " $arg"
       fi
-    done # argument parsing loop
+    done 
     test -n "$prev" && \
       func_fatal_help "the '$prevarg' option requires an argument"
     if test yes = "$export_dynamic" && test -n "$export_dynamic_flag_spec"; then
@@ -5074,7 +5074,7 @@ func_mode_link ()
     *.$libext) linkmode=oldlib ;;
     *.lo | *.$objext) linkmode=obj ;;
     *.la) linkmode=lib ;;
-    *) linkmode=prog ;; # Anything else should be a program.
+    *) linkmode=prog ;; 
     esac
     specialdeplibs=
     libs=
@@ -5102,9 +5102,9 @@ func_mode_link ()
     deplibs=
     newdependency_libs=
     newlib_search_path=
-    need_relink=no # whether we're linking any uninstalled libtool libraries
-    notinst_deplibs= # not-installed libtool libraries
-    notinst_path= # paths that contain not-installed libtool libraries
+    need_relink=no 
+    notinst_deplibs= 
+    notinst_path= 
     case $linkmode in
     lib)
 	passes="conv dlpreopen link"
@@ -5226,7 +5226,7 @@ func_mode_link ()
 		  for l in $old_library $library_names; do
 		    ll=$l
 		  done
-		  if test "X$ll" = "X$old_library"; then # only static version available
+		  if test "X$ll" = "X$old_library"; then 
 		    found=false
 		    func_dirname "$lib" "" "."
 		    ladir=$func_dirname_result
@@ -5255,7 +5255,7 @@ func_mode_link ()
 	    fi
 	    continue
 	  fi
-	  ;; # -l
+	  ;; 
 	*.ltframework)
 	  if test prog,link = "$linkmode,$pass"; then
 	    compile_deplibs="$deplib $compile_deplibs"
@@ -5299,9 +5299,9 @@ func_mode_link ()
 	  *)
 	    func_warning "'-L' is ignored for archives/objects"
 	    ;;
-	  esac # linkmode
+	  esac 
 	  continue
-	  ;; # -L
+	  ;; 
 	-R*)
 	  if test link = "$pass"; then
 	    func_stripname '-R' '' "$deplib"
@@ -5370,8 +5370,8 @@ func_mode_link ()
 	    fi
 	    continue
 	    ;;
-	  esac # linkmode
-	  ;; # *.$libext
+	  esac 
+	  ;; 
 	*.lo | *.$objext)
 	  if test conv = "$pass"; then
 	    deplibs="$deplib $deplibs"
@@ -5390,7 +5390,7 @@ func_mode_link ()
 	  alldeplibs=:
 	  continue
 	  ;;
-	esac # case $deplib
+	esac 
 	$found || test -f "$lib" \
 	  || func_fatal_error "cannot find the library '$lib' or unhandled argument '$deplib'"
 	func_lalib_unsafe_p "$lib" \
@@ -5446,7 +5446,7 @@ func_mode_link ()
 	    func_append tmp_libs " $deplib"
 	  done
 	  continue
-	fi # $pass = conv
+	fi 
 	linklib=
 	if test -n "$old_library" &&
 	   { test yes = "$prefer_static_libs" ||
@@ -5472,7 +5472,7 @@ func_mode_link ()
 	    func_append newdlfiles " $lib"
 	  fi
 	  continue
-	fi # $pass = dlopen
+	fi 
 	case $ladir in
 	[\\/]* | [A-Za-z]:[\\/]*) abs_ladir=$ladir ;;
 	*)
@@ -5507,7 +5507,7 @@ func_mode_link ()
 	    absdir=$abs_ladir/$objdir
 	    func_append notinst_path " $abs_ladir"
 	  fi
-	fi # $installed = yes
+	fi 
 	func_stripname 'lib' '.la' "$laname"
 	name=$func_stripname_result
 	if test dlpreopen = "$pass"; then
@@ -5538,7 +5538,7 @@ func_mode_link ()
 	      fi
 	    ;;
 	  esac
-	fi # $pass = dlpreopen
+	fi 
 	if test -z "$libdir"; then
 	  if test lib = "$linkmode"; then
 	    deplibs="$dir/$old_library $deplibs"
@@ -5546,7 +5546,7 @@ func_mode_link ()
 	    compile_deplibs="$dir/$old_library $compile_deplibs"
 	    finalize_deplibs="$dir/$old_library $finalize_deplibs"
 	  else
-	    deplibs="$lib $deplibs" # used for prog,scan pass
+	    deplibs="$lib $deplibs" 
 	  fi
 	  continue
 	fi
@@ -5577,9 +5577,9 @@ func_mode_link ()
 	      esac
 	    fi
 	    func_append tmp_libs " $deplib"
-	  done # for deplib
+	  done 
 	  continue
-	fi # $linkmode = prog...
+	fi 
 	if test prog,link = "$linkmode,$pass"; then
 	  if test -n "$library_names" &&
 	     { { test no = "$prefer_static_libs" ||
@@ -5609,7 +5609,7 @@ func_mode_link ()
 	      esac
 	      ;;
 	    esac
-	  fi # $linkmode,$pass = prog,link...
+	  fi 
 	  if $alldeplibs &&
 	     { test pass_all = "$deplibs_check_method" ||
 	       { test yes = "$build_libtool_libs" &&
@@ -5617,7 +5617,7 @@ func_mode_link ()
 	    continue
 	  fi
 	fi
-	link_static=no # Whether the deplib will be linked statically
+	link_static=no 
 	use_static_libs=$prefer_static_libs
 	if test built = "$use_static_libs" && test yes = "$installed"; then
 	  use_static_libs=no
@@ -5709,7 +5709,7 @@ func_mode_link ()
 	    fi
 	    dir=$output_objdir
 	    linklib=$newlib
-	  fi # test -n "$old_archive_from_expsyms_cmds"
+	  fi 
 	  if test prog = "$linkmode" || test relink != "$opt_mode"; then
 	    add_shlibpath=
 	    add_dir=
@@ -5882,7 +5882,7 @@ func_mode_link ()
 	    deplibs="$dir/$old_library $deplibs"
 	    link_static=yes
 	  fi
-	fi # link shared/static library?
+	fi 
 	if test lib = "$linkmode"; then
 	  if test -n "$dependency_libs" &&
 	     { test yes != "$hardcode_into_libs" ||
@@ -5980,9 +5980,9 @@ func_mode_link ()
 	      *) deplibs="$path $deplibs" ;;
 	      esac
 	    done
-	  fi # link_all_deplibs != no
-	fi # linkmode = lib
-      done # for deplib in $libs
+	  fi 
+	fi 
+      done 
       if test link = "$pass"; then
 	if test prog = "$linkmode"; then
 	  compile_deplibs="$new_inherited_linker_flags $compile_deplibs"
@@ -6046,13 +6046,13 @@ func_mode_link ()
 	    esac
 	  done
 	  eval $var=\"$tmp_libs\"
-	done # for var
+	done 
       fi
       test CXX = "$tagname" && {
         case $host_os in
         linux*)
           case `$CC -V 2>&1 | $SED 5q` in
-          *Sun\ C*) # Sun C++ 5.9
+          *Sun\ C*) 
             func_suncc_cstd_abi
             if test no != "$suncc_use_cstd_abi"; then
               func_append postdeps ' -library=Cstd -library=Crun'
@@ -6085,7 +6085,7 @@ func_mode_link ()
 	fi
       done
       dependency_libs=$tmp_libs
-    done # for pass
+    done 
     if test prog = "$linkmode"; then
       dlfiles=$newdlfiles
     fi
@@ -6151,7 +6151,7 @@ func_mode_link ()
 	|| func_warning "'-dlopen self' is ignored for libtool libraries"
       set dummy $rpath
       shift
-      test 1 -lt "$#" \
+      test 1 -lt "$
 	&& func_warning "ignoring multiple '-rpath's for a libtool library"
       install_libdir=$1
       oldlibs=
@@ -6283,7 +6283,7 @@ func_mode_link ()
 	  major=.$major
 	  versuffix=$major.$revision
 	  ;;
-	linux) # correct to gnu/linux during the next big refactor
+	linux) 
 	  func_arith $current - $age
 	  major=.$func_arith_result
 	  versuffix=$major.$age.$revision
@@ -6625,7 +6625,7 @@ EOF
 	      func_append newdeplibs " $a_deplib"
 	      ;;
 	    esac
-	  done # Gone through all deplibs.
+	  done 
 	  ;;
 	match_pattern*)
 	  set dummy $deplibs_check_method; shift
@@ -6648,7 +6648,7 @@ EOF
 		for i in $lib_search_path $sys_lib_search_path $shlib_search_path; do
 		  potential_libs=`ls $i/$libname[.-]* 2>/dev/null`
 		  for potent_lib in $potential_libs; do
-		    potlib=$potent_lib # see symlink-check above in file_magic test
+		    potlib=$potent_lib 
 		    if eval "\$ECHO \"$potent_lib\"" 2>/dev/null | $SED 10q | \
 		       $EGREP "$match_pattern_regex" > /dev/null; then
 		      func_append newdeplibs " $a_deplib"
@@ -6678,7 +6678,7 @@ EOF
 	      func_append newdeplibs " $a_deplib"
 	      ;;
 	    esac
-	  done # Gone through all deplibs.
+	  done 
 	  ;;
 	none | unknown | *)
 	  newdeplibs=

@@ -1,15 +1,15 @@
-#!/bin/sh
-# shellcheck disable=SC2154
 
-# only run this on systemd systems, we handle the decrypt in mount-zfs.sh in the mount hook otherwise
+
+
+
 [ -e /bin/systemctl ] || [ -e /usr/bin/systemctl ] || return 0
 
-# shellcheck source=zfs-lib.sh.in
+
 . /lib/dracut-zfs-lib.sh
 
 decode_root_args || return 0
 
-# There is a race between the zpool import and the pre-mount hooks, so we wait for a pool to be imported
+
 while ! systemctl is-active --quiet zfs-import.target; do
     systemctl is-failed --quiet zfs-import-cache.service zfs-import-scan.service && return 1
     sleep 0.1s
@@ -42,7 +42,7 @@ _load_key_cb() {
             zfs load-key "${ENCRYPTIONROOT}"
             ;;
         file)
-            KEYFILE="${KEYLOCATION#file://}"
+            KEYFILE="${KEYLOCATION
             [ -r "${KEYFILE}" ] || udevadm settle
             [ -r "${KEYFILE}" ] || {
                 info "ZFS: Waiting for key ${KEYFILE} for ${ENCRYPTIONROOT}..."

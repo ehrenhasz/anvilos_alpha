@@ -1,16 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2000-2002,2005 Silicon Graphics, Inc.
- * Copyright (C) 2017 Oracle.
- * All Rights Reserved.
- */
+
+
 #ifndef __XFS_ERRORTAG_H_
 #define __XFS_ERRORTAG_H_
 
-/*
- * error injection tags - the labels can be anything you want
- * but each tag should have its own unique number
- */
+
 
 #define XFS_ERRTAG_NOERROR				0
 #define XFS_ERRTAG_IFLUSH_1				1
@@ -41,12 +34,7 @@
 #define XFS_ERRTAG_BMAP_FINISH_ONE			26
 #define XFS_ERRTAG_AG_RESV_CRITICAL			27
 
-/*
- * Drop-writes support removed because write error handling cannot trash
- * pre-existing delalloc extents in any useful way anymore. We retain the
- * definition so that we can reject it as an invalid value in
- * xfs_errortag_valid().
- */
+
 #define XFS_ERRTAG_DROP_WRITES				28
 #define XFS_ERRTAG_LOG_BAD_CRC				29
 #define XFS_ERRTAG_LOG_ITEM_PIN				30
@@ -65,9 +53,7 @@
 #define XFS_ERRTAG_WRITE_DELAY_MS			43
 #define XFS_ERRTAG_MAX					44
 
-/*
- * Random factors for above tags, 1 means always, 2 means 1/2 time, etc.
- */
+
 #define XFS_RANDOM_DEFAULT				100
 #define XFS_RANDOM_IFLUSH_1				XFS_RANDOM_DEFAULT
 #define XFS_RANDOM_IFLUSH_2				XFS_RANDOM_DEFAULT
@@ -112,4 +98,4 @@
 #define XFS_RANDOM_WB_DELAY_MS				3000
 #define XFS_RANDOM_WRITE_DELAY_MS			3000
 
-#endif /* __XFS_ERRORTAG_H_ */
+#endif 

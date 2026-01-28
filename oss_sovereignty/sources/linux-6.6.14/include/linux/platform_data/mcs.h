@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2009 - 2010 Samsung Electronics Co.Ltd
- * Author: Joonyoung Shim <jy0922.shim@samsung.com>
- * Author: HeungJun Kim <riverful.kim@samsung.com>
- */
+
+
 
 #ifndef __LINUX_MCS_H
 #define __LINUX_MCS_H
@@ -16,15 +12,15 @@ struct mcs_platform_data {
 	void (*poweron)(bool);
 	void (*cfg_pin)(void);
 
-	/* touchscreen */
+	
 	unsigned int x_size;
 	unsigned int y_size;
 
-	/* touchkey */
+	
 	const u32 *keymap;
 	unsigned int keymap_size;
 	unsigned int key_maxval;
 	bool no_autorepeat;
 };
 
-#endif	/* __LINUX_MCS_H */
+#endif	

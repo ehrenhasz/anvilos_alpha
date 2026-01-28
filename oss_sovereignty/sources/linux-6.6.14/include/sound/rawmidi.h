@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef __SOUND_RAWMIDI_H
 #define __SOUND_RAWMIDI_H
 
-/*
- *  Abstract layer for MIDI v1.0 stream
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
 
 #include <sound/asound.h>
 #include <linux/interrupt.h>
@@ -20,9 +17,7 @@
 #endif
 #include <sound/info.h>
 
-/*
- *  Raw MIDI interface
- */
+
 
 #define SNDRV_RAWMIDI_DEVICES		8
 
@@ -56,39 +51,39 @@ struct snd_rawmidi_global_ops {
 
 struct snd_rawmidi_runtime {
 	struct snd_rawmidi_substream *substream;
-	unsigned int drain: 1,	/* drain stage */
-		     oss: 1;	/* OSS compatible mode */
-	/* midi stream buffer */
-	unsigned char *buffer;	/* buffer for MIDI data */
-	size_t buffer_size;	/* size of buffer */
-	size_t appl_ptr;	/* application pointer */
-	size_t hw_ptr;		/* hardware pointer */
-	size_t avail_min;	/* min avail for wakeup */
-	size_t avail;		/* max used buffer for wakeup */
-	size_t xruns;		/* over/underruns counter */
-	size_t align;		/* alignment (0 = byte stream, 3 = UMP) */
-	int buffer_ref;		/* buffer reference count */
-	/* misc */
+	unsigned int drain: 1,	
+		     oss: 1;	
+	
+	unsigned char *buffer;	
+	size_t buffer_size;	
+	size_t appl_ptr;	
+	size_t hw_ptr;		
+	size_t avail_min;	
+	size_t avail;		
+	size_t xruns;		
+	size_t align;		
+	int buffer_ref;		
+	
 	wait_queue_head_t sleep;
-	/* event handler (new bytes, input only) */
+	
 	void (*event)(struct snd_rawmidi_substream *substream);
-	/* defers calls to event [input] or ops->trigger [output] */
+	
 	struct work_struct event_work;
-	/* private data */
+	
 	void *private_data;
 	void (*private_free)(struct snd_rawmidi_substream *substream);
 };
 
 struct snd_rawmidi_substream {
-	struct list_head list;		/* list of all substream for given stream */
-	int stream;			/* direction */
-	int number;			/* substream number */
-	bool opened;			/* open flag */
-	bool append;			/* append flag (merge more streams) */
-	bool active_sensing;		/* send active sensing when close */
-	unsigned int framing;		/* whether to frame input data */
-	unsigned int clock_type;	/* clock source to use for input framing */
-	int use_count;			/* use counter (for output) */
+	struct list_head list;		
+	int stream;			
+	int number;			
+	bool opened;			
+	bool append;			
+	bool active_sensing;		
+	unsigned int framing;		
+	unsigned int clock_type;	
+	int use_count;			
 	size_t bytes;
 	spinlock_t lock;
 	struct snd_rawmidi *rmidi;
@@ -96,7 +91,7 @@ struct snd_rawmidi_substream {
 	char name[32];
 	struct snd_rawmidi_runtime *runtime;
 	struct pid *pid;
-	/* hardware layer */
+	
 	const struct snd_rawmidi_ops *ops;
 };
 
@@ -104,7 +99,7 @@ struct snd_rawmidi_file {
 	struct snd_rawmidi *rmidi;
 	struct snd_rawmidi_substream *input;
 	struct snd_rawmidi_substream *output;
-	unsigned int user_pversion;	/* supported protocol version */
+	unsigned int user_pversion;	
 };
 
 struct snd_rawmidi_str {
@@ -116,8 +111,8 @@ struct snd_rawmidi_str {
 struct snd_rawmidi {
 	struct snd_card *card;
 	struct list_head list;
-	unsigned int device;		/* device number */
-	unsigned int info_flags;	/* SNDRV_RAWMIDI_INFO_XXXX */
+	unsigned int device;		
+	unsigned int info_flags;	
 	char id[64];
 	char name[80];
 
@@ -144,7 +139,7 @@ struct snd_rawmidi {
 #endif
 };
 
-/* main rawmidi functions */
+
 
 int snd_rawmidi_new(struct snd_card *card, char *id, int device,
 		    int output_count, int input_count,
@@ -152,14 +147,14 @@ int snd_rawmidi_new(struct snd_card *card, char *id, int device,
 void snd_rawmidi_set_ops(struct snd_rawmidi *rmidi, int stream,
 			 const struct snd_rawmidi_ops *ops);
 
-/* internal */
+
 int snd_rawmidi_init(struct snd_rawmidi *rmidi,
 		     struct snd_card *card, char *id, int device,
 		     int output_count, int input_count,
 		     unsigned int info_flags);
 int snd_rawmidi_free(struct snd_rawmidi *rmidi);
 
-/* callbacks */
+
 
 int snd_rawmidi_receive(struct snd_rawmidi_substream *substream,
 			const unsigned char *buffer, int count);
@@ -171,7 +166,7 @@ int snd_rawmidi_transmit(struct snd_rawmidi_substream *substream,
 			 unsigned char *buffer, int count);
 int snd_rawmidi_proceed(struct snd_rawmidi_substream *substream);
 
-/* main midi functions */
+
 
 int snd_rawmidi_info_select(struct snd_card *card, struct snd_rawmidi_info *info);
 int snd_rawmidi_kernel_open(struct snd_rawmidi *rmidi, int subdevice,
@@ -189,4 +184,4 @@ long snd_rawmidi_kernel_read(struct snd_rawmidi_substream *substream,
 long snd_rawmidi_kernel_write(struct snd_rawmidi_substream *substream,
 			      const unsigned char *buf, long count);
 
-#endif /* __SOUND_RAWMIDI_H */
+#endif 

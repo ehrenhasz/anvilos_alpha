@@ -19,7 +19,7 @@ import threading
 from . import exceptions
 from . import _error_translation as errors
 from .bindings import libzfs_core
-from ._constants import (  # noqa: F401
+from ._constants import (  
     MAXNAMELEN,
     ZCP_DEFAULT_INSTRLIMIT,
     ZCP_DEFAULT_MEMLIMIT,
@@ -251,7 +251,7 @@ def lzc_bookmark(bookmarks):
     :raises BookmarkFailure: if any of the bookmarks can not be created for any
         reason.
     The bookmarks `dict` maps from name of the bookmark
-    (e.g. :file:`{pool}/{fs}#{bmark}`) to the name of the snapshot
+    (e.g. :file:`{pool}/{fs}
     (e.g. :file:`{pool}/{fs}@{snap}`) or existint bookmark
     :file:`{pool}/{fs}@{snap}`. All the bookmarks and snapshots must
     be in the same pool.
@@ -296,7 +296,7 @@ def lzc_destroy_bookmarks(bookmarks):
     '''
     Destroy bookmarks.
     :param bookmarks: a list of the bookmarks to be destroyed. The bookmarks
-        are specified as :file:`{fs}#{bmark}`.
+        are specified as :file:`{fs}
     :type bookmarks: list of bytes
     :raises BookmarkDestructionFailure: if any of the bookmarks may not be
         destroyed.
@@ -401,7 +401,7 @@ def lzc_release(holds):
     :return: a list of any snapshots that do not exist and of any tags that do
         not exist for existing snapshots.
         Such tags are qualified with a corresponding snapshot name using the
-        following format :file:`{pool}/{fs}@{snap}#{tag}`
+        following format :file:`{pool}/{fs}@{snap}
     :rtype: list of bytes
     :raises HoldReleaseFailure: if one or more existing holds could not be
         released.
@@ -462,7 +462,7 @@ def lzc_send(snapname, fromsnap, fd, flags=None):
     If ``fromsnap`` is None, a full (non-incremental) stream will be sent.
     If ``fromsnap`` is not None, it must be the full name of a snapshot or
     bookmark to send an incremental from, e.g.
-    :file:`{pool}/{fs}@{earlier_snap}` or :file:`{pool}/{fs}#{earlier_bmark}`.
+    :file:`{pool}/{fs}@{earlier_snap}` or :file:`{pool}/{fs}
     The specified snapshot or bookmark must represent an earlier point in the
     history of ``snapname``.
     It can be an earlier snapshot in the same filesystem or zvol as

@@ -1,30 +1,15 @@
-/* bnx2x_dump.h: QLogic Everest network driver.
- *
- * Copyright (c) 2012-2013 Broadcom Corporation
- * Copyright (c) 2014 QLogic Corporation
- * All rights reserved
- *
- * Unless you and QLogic execute a separate written software license
- * agreement governing use of this software, this software is licensed to you
- * under the terms of the GNU General Public License version 2, available
- * at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html (the "GPL").
- *
- * Notwithstanding the above, under no circumstances may you combine this
- * software in any way with any other QLogic software provided under a
- * license other than the GPL, without QLogic's express prior written
- * consent.
- */
+
 
 #ifndef BNX2X_DUMP_H
 #define BNX2X_DUMP_H
 
-/* WaitP Definitions */
+
 #define DRV_DUMP_XSTORM_WAITP_ADDRESS    0x2b8a80
 #define DRV_DUMP_TSTORM_WAITP_ADDRESS    0x1b8a80
 #define DRV_DUMP_USTORM_WAITP_ADDRESS    0x338a80
 #define DRV_DUMP_CSTORM_WAITP_ADDRESS    0x238a80
 
-/* Possible Chips */
+
 #define DUMP_CHIP_E1 1
 #define DUMP_CHIP_E1H 2
 #define DUMP_CHIP_E2 4
@@ -36,10 +21,10 @@
 #define NUM_CHIPS 5
 
 struct	dump_header {
-	u32 header_size; /* Size in DWORDs excluding this field */
+	u32 header_size; 
 	u32 version;
 	u32 preset;
-	u32 dump_meta_data; /* OR of CHIP and PATH. */
+	u32 dump_meta_data; 
 };
 
 #define  BNX2X_DUMP_VERSION 0x61111111

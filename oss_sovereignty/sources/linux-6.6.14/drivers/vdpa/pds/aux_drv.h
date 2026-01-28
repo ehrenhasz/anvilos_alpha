@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+
+
 
 #ifndef _AUX_DRV_H_
 #define _AUX_DRV_H_
@@ -23,4 +23,4 @@ struct pds_vdpa_aux {
 
 	int nintrs;
 };
-#endif /* _AUX_DRV_H_ */
+#endif 

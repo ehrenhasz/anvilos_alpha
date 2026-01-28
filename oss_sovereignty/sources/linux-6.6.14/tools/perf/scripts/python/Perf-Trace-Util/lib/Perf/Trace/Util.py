@@ -56,8 +56,8 @@ except:
 	if not audit_package_warned:
 		audit_package_warned = True
 		print("Install the python-audit package to get syscall names.\n"
-                    "For example:\n  # apt-get install python3-audit (Ubuntu)"
-                    "\n  # yum install python3-audit (Fedora)"
+                    "For example:\n  
+                    "\n  
                     "\n  etc.\n")
 def syscall_name(id):
 	try:

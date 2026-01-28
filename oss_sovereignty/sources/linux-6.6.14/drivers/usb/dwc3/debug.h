@@ -1,22 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * debug.h - DesignWare USB3 DRD Controller Debug Header
- *
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - https://www.ti.com
- *
- * Authors: Felipe Balbi <balbi@ti.com>,
- *	    Sebastian Andrzej Siewior <bigeasy@linutronix.de>
- */
+
+
 
 #ifndef __DWC3_DEBUG_H
 #define __DWC3_DEBUG_H
 
 #include "core.h"
 
-/**
- * dwc3_gadget_ep_cmd_string - returns endpoint command string
- * @cmd: command code
- */
+
 static inline const char *
 dwc3_gadget_ep_cmd_string(u8 cmd)
 {
@@ -44,10 +34,7 @@ dwc3_gadget_ep_cmd_string(u8 cmd)
 	}
 }
 
-/**
- * dwc3_gadget_generic_cmd_string - returns generic command string
- * @cmd: command code
- */
+
 static inline const char *
 dwc3_gadget_generic_cmd_string(u8 cmd)
 {
@@ -79,10 +66,7 @@ dwc3_gadget_generic_cmd_string(u8 cmd)
 	}
 }
 
-/**
- * dwc3_gadget_link_string - returns link name
- * @link_state: link state code
- */
+
 static inline const char *
 dwc3_gadget_link_string(enum dwc3_link_state link_state)
 {
@@ -120,10 +104,7 @@ dwc3_gadget_link_string(enum dwc3_link_state link_state)
 	}
 }
 
-/**
- * dwc3_gadget_hs_link_string - returns highspeed and below link name
- * @link_state: link state code
- */
+
 static inline const char *
 dwc3_gadget_hs_link_string(enum dwc3_link_state link_state)
 {
@@ -149,10 +130,7 @@ dwc3_gadget_hs_link_string(enum dwc3_link_state link_state)
 	}
 }
 
-/**
- * dwc3_trb_type_string - returns TRB type as a string
- * @type: the type of the TRB
- */
+
 static inline const char *dwc3_trb_type_string(unsigned int type)
 {
 	switch (type) {
@@ -193,10 +171,7 @@ static inline const char *dwc3_ep0_state_string(enum dwc3_ep0_state state)
 	}
 }
 
-/**
- * dwc3_gadget_event_string - returns event name
- * @event: the event code
- */
+
 static inline const char *dwc3_gadget_event_string(char *str, size_t size,
 		const struct dwc3_event_devt *event)
 {
@@ -250,10 +225,7 @@ static inline const char *dwc3_gadget_event_string(char *str, size_t size,
 	return str;
 }
 
-/**
- * dwc3_ep_event_string - returns event name
- * @event: then event code
- */
+
 static inline const char *dwc3_ep_event_string(char *str, size_t size,
 		const struct dwc3_event_depevt *event, u32 ep0state)
 {
@@ -293,7 +265,7 @@ static inline const char *dwc3_ep_event_string(char *str, size_t size,
 				status & DEPEVT_STATUS_TRANSFER_ACTIVE ?
 				" (Active)" : " (Not Active)");
 
-		/* Control Endpoints */
+		
 		if (epnum <= 1) {
 			int phase = DEPEVT_STATUS_CONTROL_PHASE(event->status);
 
@@ -336,10 +308,7 @@ static inline const char *dwc3_ep_event_string(char *str, size_t size,
 	return str;
 }
 
-/**
- * dwc3_gadget_event_type_string - return event name
- * @event: the event code
- */
+
 static inline const char *dwc3_gadget_event_type_string(u8 event)
 {
 	switch (event) {
@@ -429,4 +398,4 @@ static inline void dwc3_debugfs_init(struct dwc3 *d)
 static inline void dwc3_debugfs_exit(struct dwc3 *d)
 {  }
 #endif
-#endif /* __DWC3_DEBUG_H */
+#endif 

@@ -1,6 +1,0 @@
-/dts-v1/;
-#include "rk3288-tinker.dtsi"
-/ {
-	model = "Rockchip RK3288 Asus Tinker Board";
-	compatible = "asus,rk3288-tinker", "rockchip,rk3288";
-};

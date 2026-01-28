@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _XT_TCPOPTSTRIP_H
 #define _XT_TCPOPTSTRIP_H
 
@@ -13,4 +13,4 @@ struct xt_tcpoptstrip_target_info {
 	__u32 strip_bmap[8];
 };
 
-#endif /* _XT_TCPOPTSTRIP_H */
+#endif 

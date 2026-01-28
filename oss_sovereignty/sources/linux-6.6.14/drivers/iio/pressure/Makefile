@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for industrial I/O pressure drivers
-#
 
-# When adding new entries keep the list in alphabetical order
+
+
+
+
+
 obj-$(CONFIG_ABP060MG) += abp060mg.o
 obj-$(CONFIG_BMP280) += bmp280.o
 bmp280-objs := bmp280-core.o bmp280-regmap.o

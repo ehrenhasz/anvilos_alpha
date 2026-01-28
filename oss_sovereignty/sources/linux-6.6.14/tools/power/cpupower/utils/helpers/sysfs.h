@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __CPUPOWER_HELPERS_SYSFS_H__
 #define __CPUPOWER_HELPERS_SYSFS_H__
 
@@ -36,4 +36,4 @@ extern char *sysfs_get_cpuidle_driver(void);
 extern int sysfs_get_sched(const char *smt_mc);
 extern int sysfs_set_sched(const char *smt_mc, int val);
 
-#endif /* __CPUPOWER_HELPERS_SYSFS_H__ */
+#endif 

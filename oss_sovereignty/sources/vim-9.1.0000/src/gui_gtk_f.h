@@ -1,10 +1,4 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved		by Bram Moolenaar
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- */
+
 
 #ifndef __GTK_FORM_H__
 #define __GTK_FORM_H__
@@ -66,9 +60,9 @@ void gui_gtk_form_move(GtkForm *form, GtkWidget * widget, gint x, gint y);
 
 void gui_gtk_form_move_resize(GtkForm * form, GtkWidget * widget, gint x, gint y, gint w, gint h);
 
-// These disable and enable moving and repainting respectively.  If you
-// want to update the layout's offsets but do not want it to repaint
-// itself, you should use these functions.
+
+
+
 
 void gui_gtk_form_freeze(GtkForm *form);
 void gui_gtk_form_thaw(GtkForm *form);
@@ -77,4 +71,4 @@ void gui_gtk_form_thaw(GtkForm *form);
 #ifdef __cplusplus
 }
 #endif
-#endif	// __GTK_FORM_H__
+#endif	

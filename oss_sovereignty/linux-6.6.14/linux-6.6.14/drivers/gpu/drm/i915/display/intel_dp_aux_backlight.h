@@ -1,5 +1,0 @@
-#ifndef __INTEL_DP_AUX_BACKLIGHT_H__
-#define __INTEL_DP_AUX_BACKLIGHT_H__
-struct intel_connector;
-int intel_dp_aux_init_backlight_funcs(struct intel_connector *intel_connector);
-#endif  

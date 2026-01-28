@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021 Mellanox Technologies. */
+
+
 
 #ifndef __MLX5_ESW_BRIDGE_H__
 #define __MLX5_ESW_BRIDGE_H__
@@ -94,4 +94,4 @@ void mlx5_esw_bridge_port_mdb_del(struct net_device *dev, u16 vport_num, u16 esw
 				  const unsigned char *addr, u16 vid,
 				  struct mlx5_esw_bridge_offloads *br_offloads);
 
-#endif /* __MLX5_ESW_BRIDGE_H__ */
+#endif 

@@ -1,9 +1,5 @@
-/* vi: set sw=4 ts=4: */
-/*
- * Copyright (C) 2011 Denys Vlasenko.
- *
- * Licensed under GPLv2, see file LICENSE in this source tree.
- */
+
+
 #ifndef UDHCP_D6_COMMON_H
 #define UDHCP_D6_COMMON_H 1
 
@@ -12,9 +8,9 @@
 PUSH_AND_SET_FUNCTION_VISIBILITY_TO_HIDDEN
 
 
-/*** DHCPv6 packet ***/
 
-/* DHCPv6 protocol. See RFC 3315 */
+
+
 #define D6_MSG_SOLICIT              1
 #define D6_MSG_ADVERTISE            2
 #define D6_MSG_REQUEST              3
@@ -51,7 +47,7 @@ struct udp_d6_packet {
 	struct d6_packet data;
 } PACKED;
 
-/*** Options ***/
+
 
 struct d6_option {
 	uint8_t code_hi;
@@ -63,83 +59,40 @@ struct d6_option {
 
 #define D6_OPT_CLIENTID       1
 #define D6_OPT_SERVERID       2
-/* "Identity Association for Non-temporary Addresses",
- * also known as a "network interface" in plain English */
+
 #define D6_OPT_IA_NA          3
-/* "Identity Association for the Temporary Addresses".
- * Presumably this is a "network interface with only link-local addresses".
- * Why would DHCPv6 server assign such addresses, I have no idea. */
-//#define D6_OPT_IA_TA          4
-/* "IA Address", an IPv6 address */
+
+
+
 #define D6_OPT_IAADDR         5
-/* Option "Option Request Option". From the owners of a doggy dog named Dog? */
+
 #define D6_OPT_ORO            6
-//#define D6_OPT_PREFERENCE     7
+
 #define D6_OPT_ELAPSED_TIME   8
-//#define D6_OPT_RELAY_MSG      9
-//#define D6_OPT_AUTH          11
-/* "The server sends this option to a client to indicate to the client
- * that it is allowed to unicast messages to the server."
- * Contains IPv6 address to send packets to. */
-//#define D6_OPT_UNICAST       12
-/* "A Status Code option may appear in the options field of a DHCP
- * message and/or in the options field of another option." */
+
+
+
+
+
 #define D6_OPT_STATUS_CODE   13
-/* "A client MAY include this option in a Solicit message if the client
- * is prepared to perform the Solicit-Reply message exchange..." */
-//#define D6_OPT_RAPID_COMMIT  14	/* zero-length option */
-//#define D6_OPT_USER_CLASS    15
-//#define D6_OPT_VENDOR_CLASS  16
-//#define D6_OPT_VENDOR_OPTS   17
-//#define D6_OPT_INTERFACE_ID  18
-//#define D6_OPT_RECONF_MSG    19
-//#define D6_OPT_RECONF_ACCEPT 20
+
+
+
+
+
+
+
+
 
 #define D6_OPT_DNS_SERVERS   23
 #define D6_OPT_DOMAIN_LIST   24
 
-/* RFC 3633 "Identity Association for Prefix Delegation".
- * This option says that client wants to get an IPv6 prefix */
+
 #define D6_OPT_IA_PD         25
-/* Response from the server comes in this one */
+
 #define D6_OPT_IAPREFIX      26
 
-/* RFC 4704 "The DHCPv6 Client FQDN Option"
- * uint16	option-code	OPTION_CLIENT_FQDN (39)
- * uint16	option-len	1 + length of domain name
- * uint8	flags
- * char[]	domain-name	partial or fully qualified domain name
- *
- * Flags format is |MBZ|N|O|S|
- * The "S" bit indicates whether the server SHOULD or SHOULD NOT perform
- * the AAAA RR (FQDN-to-address) DNS updates.  A client sets the bit to
- * 0 to indicate that the server SHOULD NOT perform the updates and 1 to
- * indicate that the server SHOULD perform the updates.  The state of
- * the bit in the reply from the server indicates the action to be taken
- * by the server; if it is 1, the server has taken responsibility for
- * AAAA RR updates for the FQDN.
- * The "O" bit indicates whether the server has overridden the client's
- * preference for the "S" bit.  A client MUST set this bit to 0.  A
- * server MUST set this bit to 1 if the "S" bit in its reply to the
- * client does not match the "S" bit received from the client.
- * The "N" bit indicates whether the server SHOULD NOT perform any DNS
- * updates.  A client sets this bit to 0 to request that the server
- * SHOULD perform updates (the PTR RR and possibly the AAAA RR based on
- * the "S" bit) or to 1 to request that the server SHOULD NOT perform
- * any DNS updates.  A server sets the "N" bit to indicate whether the
- * server SHALL (0) or SHALL NOT (1) perform DNS updates.  If the "N"
- * bit is 1, the "S" bit MUST be 0.
- *
- * If a client knows only part of its name, it MAY send a name that is not
- * fully qualified, indicating that it knows part of the name but does not
- * necessarily know the zone in which the name is to be embedded.
- * To send a fully qualified domain name, the Domain Name field is set
- * to the DNS-encoded domain name including the terminating zero-length
- * label.  To send a partial name, the Domain Name field is set to the
- * DNS-encoded domain name without the terminating zero-length label.
- * A client MAY also leave the Domain Name field empty if it desires the
- * server to provide a name.
- */
+
 #define D6_OPT_CLIENT_FQDN   39
 
 #define D6_OPT_TZ_POSIX      41
@@ -148,7 +101,7 @@ struct d6_option {
 #define D6_OPT_BOOT_URL      59
 #define D6_OPT_BOOT_PARAM    60
 
-/*** Other shared functions ***/
+
 
 struct client6_data_t {
 	struct d6_option *server_id;
@@ -156,7 +109,7 @@ struct client6_data_t {
 	struct d6_option *ia_pd;
 	char **env_ptr;
 	unsigned env_idx;
-	/* link-local IPv6 address */
+	
 	struct in6_addr ll_ip6;
 } FIX_ALIASING;
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  linux/arch/arm/include/asm/pmu.h
- *
- *  Copyright (C) 2009 picoChip Designs Ltd, Jamie Iles
- */
+
+
 
 #ifndef __ARM_PMU_H__
 #define __ARM_PMU_H__
@@ -16,17 +12,13 @@
 
 #ifdef CONFIG_ARM_PMU
 
-/*
- * The ARMv7 CPU PMU supports up to 32 event counters.
- */
+
 #define ARMPMU_MAX_HWEVENTS		32
 
-/*
- * ARM PMU hw_event flags
- */
-#define ARMPMU_EVT_64BIT		0x00001 /* Event uses a 64bit counter */
-#define ARMPMU_EVT_47BIT		0x00002 /* Event uses a 47bit counter */
-#define ARMPMU_EVT_63BIT		0x00004 /* Event uses a 63bit counter */
+
+#define ARMPMU_EVT_64BIT		0x00001 
+#define ARMPMU_EVT_47BIT		0x00002 
+#define ARMPMU_EVT_63BIT		0x00004 
 
 static_assert((PERF_EVENT_FLAG_ARCH & ARMPMU_EVT_64BIT) == ARMPMU_EVT_64BIT);
 static_assert((PERF_EVENT_FLAG_ARCH & ARMPMU_EVT_47BIT) == ARMPMU_EVT_47BIT);
@@ -46,29 +38,18 @@ static_assert((PERF_EVENT_FLAG_ARCH & ARMPMU_EVT_63BIT) == ARMPMU_EVT_63BIT);
 	},								\
 }
 
-/* The events for a given PMU register set. */
+
 struct pmu_hw_events {
-	/*
-	 * The events that are active on the PMU for the given index.
-	 */
+	
 	struct perf_event	*events[ARMPMU_MAX_HWEVENTS];
 
-	/*
-	 * A 1 bit for an index indicates that the counter is being used for
-	 * an event. A 0 means that the counter can be used.
-	 */
+	
 	DECLARE_BITMAP(used_mask, ARMPMU_MAX_HWEVENTS);
 
-	/*
-	 * Hardware lock to serialize accesses to PMU registers. Needed for the
-	 * read/modify/write sequences.
-	 */
+	
 	raw_spinlock_t		pmu_lock;
 
-	/*
-	 * When using percpu IRQs, we need a percpu dev_id. Place it here as we
-	 * already have to allocate this struct per cpu.
-	 */
+	
 	struct arm_pmu		*percpu_pmu;
 
 	int irq;
@@ -103,7 +84,7 @@ struct arm_pmu {
 	void		(*reset)(void *);
 	int		(*map_event)(struct perf_event *event);
 	int		num_events;
-	bool		secure_access; /* 32-bit ARM only */
+	bool		secure_access; 
 #define ARMV8_PMUV3_MAX_COMMON_EVENTS		0x40
 	DECLARE_BITMAP(pmceid_bitmap, ARMV8_PMUV3_MAX_COMMON_EVENTS);
 #define ARMV8_PMUV3_EXT_COMMON_EVENT_BASE	0x4000
@@ -112,12 +93,12 @@ struct arm_pmu {
 	struct pmu_hw_events	__percpu *hw_events;
 	struct hlist_node	node;
 	struct notifier_block	cpu_pm_nb;
-	/* the attr_groups array must be NULL-terminated */
+	
 	const struct attribute_group *attr_groups[ARMPMU_NR_ATTR_GROUPS + 1];
-	/* store the PMMIR_EL1 to expose slots */
+	
 	u64		reg_pmmir;
 
-	/* Only to be used by ACPI probing code */
+	
 	unsigned long acpi_cpuid;
 };
 
@@ -175,7 +156,7 @@ void kvm_host_pmu_init(struct arm_pmu *pmu);
 
 bool arm_pmu_irq_is_nmi(void);
 
-/* Internal functions only for core arm_pmu code */
+
 struct arm_pmu *armpmu_alloc(void);
 void armpmu_free(struct arm_pmu *pmu);
 int armpmu_register(struct arm_pmu *pmu);
@@ -184,9 +165,9 @@ void armpmu_free_irq(int irq, int cpu);
 
 #define ARMV8_PMU_PDEV_NAME "armv8-pmu"
 
-#endif /* CONFIG_ARM_PMU */
+#endif 
 
 #define ARMV8_SPE_PDEV_NAME "arm,spe-v1"
 #define ARMV8_TRBE_PDEV_NAME "arm,trbe"
 
-#endif /* __ARM_PMU_H__ */
+#endif 

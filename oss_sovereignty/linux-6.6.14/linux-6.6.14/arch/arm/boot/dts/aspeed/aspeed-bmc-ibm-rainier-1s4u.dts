@@ -1,9 +1,0 @@
-/dts-v1/;
-#include "aspeed-bmc-ibm-rainier-4u.dts"
-/ {
-	model = "Rainier 1S4U";
-};
-&max {
-	/delete-node/ fan3;
-	/delete-node/ fan5;
-};

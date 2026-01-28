@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef GCC_COMMON_H_INCLUDED
 #define GCC_COMMON_H_INCLUDED
 
@@ -94,7 +94,7 @@
 
 #include "builtins.h"
 
-/* missing from basic_block.h... */
+
 void debug_dominance_info(enum cdi_direction dir);
 void debug_dominance_tree(enum cdi_direction dir, basic_block root);
 
@@ -110,7 +110,7 @@ void debug_dominance_tree(enum cdi_direction dir, basic_block root);
 #define TYPE_NAME_POINTER(node) IDENTIFIER_POINTER(TYPE_NAME(node))
 #define TYPE_NAME_LENGTH(node) IDENTIFIER_LENGTH(TYPE_NAME(node))
 
-/* should come from c-tree.h if only it were installed for gcc 4.5... */
+
 #define C_TYPE_FIELDS_READONLY(TYPE) TREE_LANG_FLAG_1(TYPE)
 
 static inline tree build_const_char_string(int len, const char *str)
@@ -155,7 +155,7 @@ static inline opt_pass *get_pass_for_id(int id)
 }
 
 #if BUILDING_GCC_VERSION < 6000
-/* gimple related */
+
 template <>
 template <>
 inline bool is_a_helper<const gassign *>::test(const_gimple gs)
@@ -176,7 +176,7 @@ static inline const char *get_decl_section_name(const_tree decl)
 	return DECL_SECTION_NAME(decl);
 }
 
-/* symtab/cgraph related */
+
 #define debug_cgraph_node(node) (node)->debug()
 #define cgraph_get_node(decl) cgraph_node::get(decl)
 #define cgraph_get_create_node(decl) cgraph_node::get_create(decl)
@@ -307,7 +307,7 @@ typedef const gimple *const_gimple_ptr;
 #define CONST_CAST_GIMPLE(X) CONST_CAST(gimple, (X))
 #endif
 
-/* gimple related */
+
 static inline gimple gimple_build_assign_with_ops(enum tree_code subcode, tree lhs, tree op1, tree op2 MEM_STAT_DECL)
 {
 	return gimple_build_assign(lhs, subcode, op1, op2 PASS_MEM_STAT);
@@ -389,7 +389,7 @@ static inline const greturn *as_a_const_greturn(const_gimple stmt)
 	return as_a<const greturn *>(stmt);
 }
 
-/* IPA/LTO related */
+
 #define ipa_ref_list_referring_iterate(L, I, P)	\
 	(L)->referring.iterate((I), &(P))
 #define ipa_ref_list_reference_iterate(L, I, P)	\

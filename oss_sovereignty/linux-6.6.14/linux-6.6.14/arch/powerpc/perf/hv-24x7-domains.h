@@ -1,6 +1,0 @@
-DOMAIN(PHYS_CHIP, 0x01, chip, true)
-DOMAIN(PHYS_CORE, 0x02, core, true)
-DOMAIN(VCPU_HOME_CORE, 0x03, vcpu, false)
-DOMAIN(VCPU_HOME_CHIP, 0x04, vcpu, false)
-DOMAIN(VCPU_HOME_NODE, 0x05, vcpu, false)
-DOMAIN(VCPU_REMOTE_NODE, 0x06, vcpu, false)

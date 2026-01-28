@@ -1,12 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- * Marvell OcteonTX CPT driver
- *
- * Copyright (C) 2019 Marvell International Ltd.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+
 
 #ifndef __OTX_CPT_ALGS_H
 #define __OTX_CPT_ALGS_H
@@ -116,8 +108,8 @@ union otx_cpt_fchmac_ctx {
 		u8 opad[64];
 	} e;
 	struct {
-		u8 hmac_calc[64]; /* HMAC calculated */
-		u8 hmac_recv[64]; /* HMAC received */
+		u8 hmac_calc[64]; 
+		u8 hmac_recv[64]; 
 	} s;
 };
 
@@ -187,4 +179,4 @@ void otx_cpt_crypto_exit(struct pci_dev *pdev, struct module *mod,
 			 enum otx_cptvf_type engine_type);
 void otx_cpt_callback(int status, void *arg, void *req);
 
-#endif /* __OTX_CPT_ALGS_H */
+#endif 

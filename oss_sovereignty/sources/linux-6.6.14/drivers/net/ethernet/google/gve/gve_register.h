@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT)
- * Google virtual Ethernet (gve) driver
- *
- * Copyright (C) 2015-2019 Google, Inc.
- */
+
 
 #ifndef _GVE_REGISTER_H_
 #define _GVE_REGISTER_H_
 
-/* Fixed Configuration Registers */
+
 struct gve_registers {
 	__be32	device_status;
 	__be32	driver_status;
@@ -25,4 +21,4 @@ enum gve_device_status_flags {
 	GVE_DEVICE_STATUS_LINK_STATUS_MASK	= BIT(2),
 	GVE_DEVICE_STATUS_REPORT_STATS_MASK	= BIT(3),
 };
-#endif /* _GVE_REGISTER_H_ */
+#endif 

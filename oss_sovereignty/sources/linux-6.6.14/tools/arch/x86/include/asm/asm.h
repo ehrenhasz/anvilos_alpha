@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_ASM_H
 #define _ASM_X86_ASM_H
 
@@ -16,11 +16,11 @@
 #define _ASM_BYTES(x, ...)	__ASM_FORM(.byte x,##__VA_ARGS__ ;)
 
 #ifndef __x86_64__
-/* 32 bit */
+
 # define __ASM_SEL(a,b)		__ASM_FORM(a)
 # define __ASM_SEL_RAW(a,b)	__ASM_FORM_RAW(a)
 #else
-/* 64 bit */
+
 # define __ASM_SEL(a,b)		__ASM_FORM(b)
 # define __ASM_SEL_RAW(a,b)	__ASM_FORM_RAW(b)
 #endif
@@ -50,7 +50,7 @@
 #define _ASM_DI		__ASM_REG(di)
 
 #ifndef __x86_64__
-/* 32 bit */
+
 
 #define _ASM_ARG1	_ASM_AX
 #define _ASM_ARG2	_ASM_DX
@@ -69,7 +69,7 @@
 #define _ASM_ARG3B	cl
 
 #else
-/* 64 bit */
+
 
 #define _ASM_ARG1	_ASM_DI
 #define _ASM_ARG2	_ASM_SI
@@ -108,12 +108,9 @@
 
 #endif
 
-/*
- * Macros to generate condition code outputs from inline assembly,
- * The output operand must be type "bool".
- */
+
 #ifdef __GCC_ASM_FLAG_OUTPUTS__
-# define CC_SET(c) "\n\t/* output condition code " #c "*/\n"
+# define CC_SET(c) "\n\t\n"
 # define CC_OUT(c) "=@cc" #c
 #else
 # define CC_SET(c) "\n\tset" #c " %[_cc_" #c "]\n"
@@ -122,7 +119,7 @@
 
 #ifdef __KERNEL__
 
-/* Exception table entry */
+
 #ifdef __ASSEMBLY__
 # define _ASM_EXTABLE_HANDLE(from, to, handler)			\
 	.pushsection "__ex_table","a" ;				\
@@ -154,7 +151,7 @@
 #  define _ASM_NOKPROBE(entry)
 # endif
 
-#else /* ! __ASSEMBLY__ */
+#else 
 # define _EXPAND_EXTABLE_HANDLE(x) #x
 # define _ASM_EXTABLE_HANDLE(from, to, handler)			\
 	" .pushsection \"__ex_table\",\"a\"\n"			\
@@ -176,18 +173,13 @@
 # define _ASM_EXTABLE_FAULT(from, to)				\
 	_ASM_EXTABLE_HANDLE(from, to, ex_handler_fault)
 
-/* For C file, we already have NOKPROBE_SYMBOL macro */
 
-/*
- * This output constraint should be used for any inline asm which has a "call"
- * instruction.  Otherwise the asm may be inserted before the frame pointer
- * gets set up by the containing function.  If you forget to do this, objtool
- * may print a "call without frame pointer save/setup" warning.
- */
+
+
 register unsigned long current_stack_pointer asm(_ASM_SP);
 #define ASM_CALL_CONSTRAINT "+r" (current_stack_pointer)
-#endif /* __ASSEMBLY__ */
+#endif 
 
-#endif /* __KERNEL__ */
+#endif 
 
-#endif /* _ASM_X86_ASM_H */
+#endif 

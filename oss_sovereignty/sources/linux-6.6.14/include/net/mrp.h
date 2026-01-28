@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NET_MRP_H
 #define _NET_MRP_H
 
@@ -145,4 +145,4 @@ void mrp_request_leave(const struct net_device *dev,
 		       const struct mrp_application *app,
 		       const void *value, u8 len, u8 type);
 
-#endif /* _NET_MRP_H */
+#endif 

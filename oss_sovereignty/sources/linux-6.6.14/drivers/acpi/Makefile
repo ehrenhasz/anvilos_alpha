@@ -1,13 +1,13 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Linux ACPI interpreter
-#
+
+
+
+
 
 ccflags-$(CONFIG_ACPI_DEBUG)	+= -DACPI_DEBUG_OUTPUT
 
-#
-# ACPI Boot-Time Table Parsing
-#
+
+
+
 ifeq ($(CONFIG_ACPI_CUSTOM_DSDT),y)
 tables.o: $(src)/../../include/$(CONFIG_ACPI_CUSTOM_DSDT_FILE) ;
 
@@ -16,26 +16,26 @@ endif
 obj-$(CONFIG_ACPI)		+= tables.o
 obj-$(CONFIG_X86)		+= blacklist.o
 
-#
-# ACPI Core Subsystem (Interpreter)
-#
+
+
+
 obj-$(CONFIG_ACPI)		+= acpi.o \
 					acpica/
 
-# All the builtin files are in the "acpi." module_param namespace.
+
 acpi-y				+= osi.o osl.o utils.o reboot.o
 acpi-y				+= nvs.o
 
-# Power management related files
+
 acpi-y				+= wakeup.o
 acpi-$(CONFIG_ACPI_SYSTEM_POWER_STATES_SUPPORT) += sleep.o
 acpi-y				+= device_sysfs.o device_pm.o
 acpi-$(CONFIG_ACPI_SLEEP)	+= proc.o
 
 
-#
-# ACPI Bus and Device Drivers
-#
+
+
+
 acpi-y				+= bus.o glue.o
 acpi-y				+= scan.o
 acpi-y				+= resource.o
@@ -69,12 +69,12 @@ acpi-$(CONFIG_ACPI_PRMT)	+= prmt.o
 acpi-$(CONFIG_ACPI_PCC)		+= acpi_pcc.o
 acpi-$(CONFIG_ACPI_FFH)		+= acpi_ffh.o
 
-# Address translation
+
 acpi-$(CONFIG_ACPI_ADXL)	+= acpi_adxl.o
 
-# These are (potentially) separate modules
 
-# IPMI may be used by other drivers, so it has to initialise before them
+
+
 obj-$(CONFIG_ACPI_IPMI)		+= acpi_ipmi.o
 
 obj-$(CONFIG_ACPI_AC) 		+= ac.o
@@ -108,7 +108,7 @@ obj-$(CONFIG_ACPI_DEBUGGER_USER) += acpi_dbg.o
 obj-$(CONFIG_ACPI_PPTT) 	+= pptt.o
 obj-$(CONFIG_ACPI_PFRUT)	+= pfr_update.o pfr_telemetry.o
 
-# processor has its own "processor." module_param namespace
+
 processor-y			:= processor_driver.o processor_thermal.o
 processor-$(CONFIG_ACPI_PROCESSOR_IDLE) += processor_idle.o
 processor-$(CONFIG_ACPI_CPU_FREQ_PSS)	+= processor_throttling.o

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 CFLAGS += -D_FILE_OFFSET_BITS=64
 CFLAGS += $(KHDR_INCLUDES)
 

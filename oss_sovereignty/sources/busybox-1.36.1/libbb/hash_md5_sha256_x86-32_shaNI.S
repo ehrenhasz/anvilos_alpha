@@ -1,23 +1,23 @@
 #if ENABLE_SHA256_HWACCEL && defined(__GNUC__) && defined(__i386__)
-/* The code is adapted from Linux kernel's source */
 
-// We use shorter insns, even though they are for "wrong"
-// data type (fp, not int).
-// For Intel, there is no penalty for doing it at all
-// (CPUs which do have such penalty do not support SHA insns).
-// For AMD, the penalty is one extra cycle
-// (allegedly: I failed to find measurable difference).
 
-//#define mova128 movdqa
+
+
+
+
+
+
+
+
 #define mova128 movaps
-//#define movu128 movdqu
+
 #define movu128 movups
-//#define shuf128_32 pshufd
+
 #define shuf128_32 shufps
 
-// pshufb and palignr are SSSE3 insns.
-// We do not check SSSE3 in cpuid,
-// all SHA-capable CPUs support it as well.
+
+
+
 
 #ifdef __linux__
 	.section	.note.GNU-stack, "", @progbits
@@ -46,19 +46,19 @@
 	.balign	8	# allow decoders to fetch at least 2 first insns
 sha256_process_block64_shaNI:
 
-	movu128		76+0*16(%eax), XMMTMP /* ABCD (little-endian dword order) */
-	movu128		76+1*16(%eax), STATE1 /* EFGH */
-/* shufps takes dwords 0,1 from *2nd* operand, and dwords 2,3 from 1st one */
-	mova128		STATE1, STATE0
-	/* ---		-------------- ABCD -- EFGH */
-	shufps		SHUF(1,0,1,0), XMMTMP, STATE0 /* FEBA */
-	shufps		SHUF(3,2,3,2), XMMTMP, STATE1 /* HGDC */
+	movu128		76+0*16(%eax), XMMTMP 
+	movu128		76+1*16(%eax), STATE1 
 
-/* XMMTMP holds flip mask from here... */
+	mova128		STATE1, STATE0
+	
+	shufps		SHUF(1,0,1,0), XMMTMP, STATE0 
+	shufps		SHUF(3,2,3,2), XMMTMP, STATE1 
+
+
 	mova128		PSHUFFLE_BSWAP32_FLIP_MASK, XMMTMP
 	movl		$K256+8*16, SHA256CONSTANTS
 
-	/* Rounds 0-3 */
+	
 	movu128		0*16(DATA_PTR), MSG
 	pshufb		XMMTMP, MSG
 	mova128		MSG, MSGTMP0
@@ -67,7 +67,7 @@ sha256_process_block64_shaNI:
 		shuf128_32	$0x0E, MSG, MSG
 		sha256rnds2	MSG, STATE1, STATE0
 
-	/* Rounds 4-7 */
+	
 	movu128		1*16(DATA_PTR), MSG
 	pshufb		XMMTMP, MSG
 	mova128		MSG, MSGTMP1
@@ -77,7 +77,7 @@ sha256_process_block64_shaNI:
 		sha256rnds2	MSG, STATE1, STATE0
 	sha256msg1	MSGTMP1, MSGTMP0
 
-	/* Rounds 8-11 */
+	
 	movu128		2*16(DATA_PTR), MSG
 	pshufb		XMMTMP, MSG
 	mova128		MSG, MSGTMP2
@@ -87,10 +87,10 @@ sha256_process_block64_shaNI:
 		sha256rnds2	MSG, STATE1, STATE0
 	sha256msg1	MSGTMP2, MSGTMP1
 
-	/* Rounds 12-15 */
+	
 	movu128		3*16(DATA_PTR), MSG
 	pshufb		XMMTMP, MSG
-/* ...to here */
+
 	mova128		MSG, MSGTMP3
 		paddd		3*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
@@ -102,7 +102,7 @@ sha256_process_block64_shaNI:
 		sha256rnds2	MSG, STATE1, STATE0
 	sha256msg1	MSGTMP3, MSGTMP2
 
-	/* Rounds 16-19 */
+	
 	mova128		MSGTMP0, MSG
 		paddd		4*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
@@ -114,7 +114,7 @@ sha256_process_block64_shaNI:
 		sha256rnds2	MSG, STATE1, STATE0
 	sha256msg1	MSGTMP0, MSGTMP3
 
-	/* Rounds 20-23 */
+	
 	mova128		MSGTMP1, MSG
 		paddd		5*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
@@ -126,7 +126,7 @@ sha256_process_block64_shaNI:
 		sha256rnds2	MSG, STATE1, STATE0
 	sha256msg1	MSGTMP1, MSGTMP0
 
-	/* Rounds 24-27 */
+	
 	mova128		MSGTMP2, MSG
 		paddd		6*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
@@ -138,7 +138,7 @@ sha256_process_block64_shaNI:
 		sha256rnds2	MSG, STATE1, STATE0
 	sha256msg1	MSGTMP2, MSGTMP1
 
-	/* Rounds 28-31 */
+	
 	mova128		MSGTMP3, MSG
 		paddd		7*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
@@ -150,7 +150,7 @@ sha256_process_block64_shaNI:
 		sha256rnds2	MSG, STATE1, STATE0
 	sha256msg1	MSGTMP3, MSGTMP2
 
-	/* Rounds 32-35 */
+	
 	mova128		MSGTMP0, MSG
 		paddd		8*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
@@ -162,7 +162,7 @@ sha256_process_block64_shaNI:
 		sha256rnds2	MSG, STATE1, STATE0
 	sha256msg1	MSGTMP0, MSGTMP3
 
-	/* Rounds 36-39 */
+	
 	mova128		MSGTMP1, MSG
 		paddd		9*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
@@ -174,7 +174,7 @@ sha256_process_block64_shaNI:
 		sha256rnds2	MSG, STATE1, STATE0
 	sha256msg1	MSGTMP1, MSGTMP0
 
-	/* Rounds 40-43 */
+	
 	mova128		MSGTMP2, MSG
 		paddd		10*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
@@ -186,7 +186,7 @@ sha256_process_block64_shaNI:
 		sha256rnds2	MSG, STATE1, STATE0
 	sha256msg1	MSGTMP2, MSGTMP1
 
-	/* Rounds 44-47 */
+	
 	mova128		MSGTMP3, MSG
 		paddd		11*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
@@ -198,7 +198,7 @@ sha256_process_block64_shaNI:
 		sha256rnds2	MSG, STATE1, STATE0
 	sha256msg1	MSGTMP3, MSGTMP2
 
-	/* Rounds 48-51 */
+	
 	mova128		MSGTMP0, MSG
 		paddd		12*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
@@ -210,7 +210,7 @@ sha256_process_block64_shaNI:
 		sha256rnds2	MSG, STATE1, STATE0
 	sha256msg1	MSGTMP0, MSGTMP3
 
-	/* Rounds 52-55 */
+	
 	mova128		MSGTMP1, MSG
 		paddd		13*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
@@ -221,7 +221,7 @@ sha256_process_block64_shaNI:
 		shuf128_32	$0x0E, MSG, MSG
 		sha256rnds2	MSG, STATE1, STATE0
 
-	/* Rounds 56-59 */
+	
 	mova128		MSGTMP2, MSG
 		paddd		14*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
@@ -232,20 +232,20 @@ sha256_process_block64_shaNI:
 		shuf128_32	$0x0E, MSG, MSG
 		sha256rnds2	MSG, STATE1, STATE0
 
-	/* Rounds 60-63 */
+	
 	mova128		MSGTMP3, MSG
 		paddd		15*16-8*16(SHA256CONSTANTS), MSG
 		sha256rnds2	MSG, STATE0, STATE1
 		shuf128_32	$0x0E, MSG, MSG
 		sha256rnds2	MSG, STATE1, STATE0
 
-	/* Write hash values back in the correct order */
+	
 	mova128		STATE0, XMMTMP
-/* shufps takes dwords 0,1 from *2nd* operand, and dwords 2,3 from 1st one */
-	/* ---		-------------- HGDC -- FEBA */
-	shufps		SHUF(3,2,3,2), STATE1, STATE0 /* ABCD */
-	shufps		SHUF(1,0,1,0), STATE1, XMMTMP /* EFGH */
-	/* add current hash values to previous ones */
+
+	
+	shufps		SHUF(3,2,3,2), STATE1, STATE0 
+	shufps		SHUF(1,0,1,0), STATE1, XMMTMP 
+	
 	movu128		76+1*16(%eax), STATE1
 	paddd		XMMTMP, STATE1
 	movu128		STATE1, 76+1*16(%eax)

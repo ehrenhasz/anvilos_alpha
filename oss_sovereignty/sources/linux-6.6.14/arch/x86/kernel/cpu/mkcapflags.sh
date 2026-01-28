@@ -10,7 +10,7 @@ dump_array()
 	PFX_SZ=$(echo $PFX | wc -c)
 	TABS="$(printf '\t\t\t\t\t')"
 	echo "const char * const $ARRAY[$SIZE] = {"
-	sed -n -e 's/\t/ /g' -e "s/^ *# *define *$PFX//p" $IN |
+	sed -n -e 's/\t/ /g' -e "s/^ *
 	while read i
 	do
 		NAME="$(echo "$i" | sed 's/ .*//')"
@@ -32,19 +32,19 @@ dump_array()
 }
 trap 'rm "$OUT"' EXIT
 (
-	echo "#ifndef _ASM_X86_CPUFEATURES_H"
-	echo "#include <asm/cpufeatures.h>"
-	echo "#endif"
+	echo "
+	echo "
+	echo "
 	echo ""
 	dump_array "x86_cap_flags" "NCAPINTS*32" "X86_FEATURE_" "" $2
 	echo ""
 	dump_array "x86_bug_flags" "NBUGINTS*32" "X86_BUG_" "NCAPINTS*32" $2
 	echo ""
-	echo "#ifdef CONFIG_X86_VMX_FEATURE_NAMES"
-	echo "#ifndef _ASM_X86_VMXFEATURES_H"
-	echo "#include <asm/vmxfeatures.h>"
-	echo "#endif"
+	echo "
+	echo "
+	echo "
+	echo "
 	dump_array "x86_vmx_flags" "NVMXINTS*32" "VMX_FEATURE_" "" $3
-	echo "#endif /* CONFIG_X86_VMX_FEATURE_NAMES */"
+	echo "
 ) > $OUT
 trap - EXIT

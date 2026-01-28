@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_DMA_MAPPING_H
 #define _LINUX_DMA_MAPPING_H
 
@@ -12,66 +12,27 @@
 #include <linux/bug.h>
 #include <linux/mem_encrypt.h>
 
-/**
- * List of possible attributes associated with a DMA mapping. The semantics
- * of each attribute should be defined in Documentation/core-api/dma-attributes.rst.
- */
 
-/*
- * DMA_ATTR_WEAK_ORDERING: Specifies that reads and writes to the mapping
- * may be weakly ordered, that is that reads and writes may pass each other.
- */
+
+
 #define DMA_ATTR_WEAK_ORDERING		(1UL << 1)
-/*
- * DMA_ATTR_WRITE_COMBINE: Specifies that writes to the mapping may be
- * buffered to improve performance.
- */
+
 #define DMA_ATTR_WRITE_COMBINE		(1UL << 2)
-/*
- * DMA_ATTR_NO_KERNEL_MAPPING: Lets the platform to avoid creating a kernel
- * virtual mapping for the allocated buffer.
- */
+
 #define DMA_ATTR_NO_KERNEL_MAPPING	(1UL << 4)
-/*
- * DMA_ATTR_SKIP_CPU_SYNC: Allows platform code to skip synchronization of
- * the CPU cache for the given buffer assuming that it has been already
- * transferred to 'device' domain.
- */
+
 #define DMA_ATTR_SKIP_CPU_SYNC		(1UL << 5)
-/*
- * DMA_ATTR_FORCE_CONTIGUOUS: Forces contiguous allocation of the buffer
- * in physical memory.
- */
+
 #define DMA_ATTR_FORCE_CONTIGUOUS	(1UL << 6)
-/*
- * DMA_ATTR_ALLOC_SINGLE_PAGES: This is a hint to the DMA-mapping subsystem
- * that it's probably not worth the time to try to allocate memory to in a way
- * that gives better TLB efficiency.
- */
+
 #define DMA_ATTR_ALLOC_SINGLE_PAGES	(1UL << 7)
-/*
- * DMA_ATTR_NO_WARN: This tells the DMA-mapping subsystem to suppress
- * allocation failure reports (similarly to __GFP_NOWARN).
- */
+
 #define DMA_ATTR_NO_WARN	(1UL << 8)
 
-/*
- * DMA_ATTR_PRIVILEGED: used to indicate that the buffer is fully
- * accessible at an elevated privilege level (and ideally inaccessible or
- * at least read-only at lesser-privileged levels).
- */
+
 #define DMA_ATTR_PRIVILEGED		(1UL << 9)
 
-/*
- * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
- * be given to a device to use as a DMA source or target.  It is specific to a
- * given device and there may be a translation between the CPU physical address
- * space and the bus address space.
- *
- * DMA_MAPPING_ERROR is the magic error code if a mapping failed.  It should not
- * be used directly in drivers, but checked for using dma_mapping_error()
- * instead.
- */
+
 #define DMA_MAPPING_ERROR		(~(dma_addr_t)0)
 
 #define DMA_BIT_MASK(n)	(((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
@@ -89,7 +50,7 @@ static inline void debug_dma_map_single(struct device *dev, const void *addr,
 		unsigned long len)
 {
 }
-#endif /* CONFIG_DMA_API_DEBUG */
+#endif 
 
 #ifdef CONFIG_HAS_DMA
 static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
@@ -157,7 +118,7 @@ void *dma_vmap_noncontiguous(struct device *dev, size_t size,
 void dma_vunmap_noncontiguous(struct device *dev, void *vaddr);
 int dma_mmap_noncontiguous(struct device *dev, struct vm_area_struct *vma,
 		size_t size, struct sg_table *sgt);
-#else /* CONFIG_HAS_DMA */
+#else 
 static inline dma_addr_t dma_map_page_attrs(struct device *dev,
 		struct page *page, size_t offset, size_t size,
 		enum dma_data_direction dir, unsigned long attrs)
@@ -303,7 +264,7 @@ static inline int dma_mmap_noncontiguous(struct device *dev,
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_HAS_DMA */
+#endif 
 
 struct page *dma_alloc_pages(struct device *dev, size_t size,
 		dma_addr_t *dma_handle, enum dma_data_direction dir, gfp_t gfp);
@@ -328,7 +289,7 @@ static inline void dma_free_noncoherent(struct device *dev, size_t size,
 static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
 		size_t size, enum dma_data_direction dir, unsigned long attrs)
 {
-	/* DMA must never operate on areas that might be remapped. */
+	
 	if (dev_WARN_ONCE(dev, is_vmalloc_addr(ptr),
 			  "rejecting DMA map of vmalloc memory\n"))
 		return DMA_MAPPING_ERROR;
@@ -357,52 +318,21 @@ static inline void dma_sync_single_range_for_device(struct device *dev,
 	return dma_sync_single_for_device(dev, addr + offset, size, dir);
 }
 
-/**
- * dma_unmap_sgtable - Unmap the given buffer for DMA
- * @dev:	The device for which to perform the DMA operation
- * @sgt:	The sg_table object describing the buffer
- * @dir:	DMA direction
- * @attrs:	Optional DMA attributes for the unmap operation
- *
- * Unmaps a buffer described by a scatterlist stored in the given sg_table
- * object for the @dir DMA operation by the @dev device. After this function
- * the ownership of the buffer is transferred back to the CPU domain.
- */
+
 static inline void dma_unmap_sgtable(struct device *dev, struct sg_table *sgt,
 		enum dma_data_direction dir, unsigned long attrs)
 {
 	dma_unmap_sg_attrs(dev, sgt->sgl, sgt->orig_nents, dir, attrs);
 }
 
-/**
- * dma_sync_sgtable_for_cpu - Synchronize the given buffer for CPU access
- * @dev:	The device for which to perform the DMA operation
- * @sgt:	The sg_table object describing the buffer
- * @dir:	DMA direction
- *
- * Performs the needed cache synchronization and moves the ownership of the
- * buffer back to the CPU domain, so it is safe to perform any access to it
- * by the CPU. Before doing any further DMA operations, one has to transfer
- * the ownership of the buffer back to the DMA domain by calling the
- * dma_sync_sgtable_for_device().
- */
+
 static inline void dma_sync_sgtable_for_cpu(struct device *dev,
 		struct sg_table *sgt, enum dma_data_direction dir)
 {
 	dma_sync_sg_for_cpu(dev, sgt->sgl, sgt->orig_nents, dir);
 }
 
-/**
- * dma_sync_sgtable_for_device - Synchronize the given buffer for DMA
- * @dev:	The device for which to perform the DMA operation
- * @sgt:	The sg_table object describing the buffer
- * @dir:	DMA direction
- *
- * Performs the needed cache synchronization and moves the ownership of the
- * buffer back to the DMA domain, so it is safe to perform the DMA operation.
- * Once finished, one has to call dma_sync_sgtable_for_cpu() or
- * dma_unmap_sgtable().
- */
+
 static inline void dma_sync_sgtable_for_device(struct device *dev,
 		struct sg_table *sgt, enum dma_data_direction dir)
 {
@@ -441,12 +371,7 @@ static inline u64 dma_get_mask(struct device *dev)
 	return DMA_BIT_MASK(32);
 }
 
-/*
- * Set both the DMA mask and the coherent DMA mask to the same thing.
- * Note that we don't check the return value from dma_set_coherent_mask()
- * as the DMA API guarantees that the coherent DMA mask can be set to
- * the same or smaller than the streaming DMA mask.
- */
+
 static inline int dma_set_mask_and_coherent(struct device *dev, u64 mask)
 {
 	int rc = dma_set_mask(dev, mask);
@@ -455,24 +380,14 @@ static inline int dma_set_mask_and_coherent(struct device *dev, u64 mask)
 	return rc;
 }
 
-/*
- * Similar to the above, except it deals with the case where the device
- * does not have dev->dma_mask appropriately setup.
- */
+
 static inline int dma_coerce_mask_and_coherent(struct device *dev, u64 mask)
 {
 	dev->dma_mask = &dev->coherent_dma_mask;
 	return dma_set_mask_and_coherent(dev, mask);
 }
 
-/**
- * dma_addressing_limited - return if the device is addressing limited
- * @dev:	device to check
- *
- * Return %true if the devices DMA mask is too small to address all memory in
- * the system, else %false.  Lack of addressing bits is the prime reason for
- * bounce buffering, but might not be the only one.
- */
+
 static inline bool dma_addressing_limited(struct device *dev)
 {
 	return min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
@@ -502,17 +417,7 @@ static inline unsigned long dma_get_seg_boundary(struct device *dev)
 	return ULONG_MAX;
 }
 
-/**
- * dma_get_seg_boundary_nr_pages - return the segment boundary in "page" units
- * @dev: device to guery the boundary for
- * @page_shift: ilog() of the IOMMU page size
- *
- * Return the segment boundary in IOMMU page units (which may be different from
- * the CPU page size) for the passed in device.
- *
- * If @dev is NULL a boundary of U32_MAX is assumed, this case is just for
- * non-DMA API callers.
- */
+
 static inline unsigned long dma_get_seg_boundary_nr_pages(struct device *dev,
 		unsigned int page_shift)
 {
@@ -606,4 +511,4 @@ static inline int dma_mmap_wc(struct device *dev,
 #define dma_unmap_len_set(PTR, LEN_NAME, VAL)    do { } while (0)
 #endif
 
-#endif /* _LINUX_DMA_MAPPING_H */
+#endif 

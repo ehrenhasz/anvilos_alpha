@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2011 - 2012  Intel Corporation. All rights reserved.
- */
+
+
 
 #ifndef __LOCAL_PN544_H_
 #define __LOCAL_PN544_H_
@@ -22,4 +20,4 @@ int pn544_hci_probe(void *phy_id, const struct nfc_phy_ops *phy_ops,
 		    struct nfc_hci_dev **hdev);
 void pn544_hci_remove(struct nfc_hci_dev *hdev);
 
-#endif /* __LOCAL_PN544_H_ */
+#endif 

@@ -1,35 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  fs/ext4/extents_status.h
- *
- * Written by Yongqiang Yang <xiaoqiangnk@gmail.com>
- * Modified by
- *	Allison Henderson <achender@linux.vnet.ibm.com>
- *	Zheng Liu <wenqing.lz@taobao.com>
- *
- */
+
+
 
 #ifndef _EXT4_EXTENTS_STATUS_H
 #define _EXT4_EXTENTS_STATUS_H
 
-/*
- * Turn on ES_DEBUG__ to get lots of info about extent status operations.
- */
+
 #ifdef ES_DEBUG__
 #define es_debug(fmt, ...)	printk(fmt, ##__VA_ARGS__)
 #else
 #define es_debug(fmt, ...)	no_printk(fmt, ##__VA_ARGS__)
 #endif
 
-/*
- * With ES_AGGRESSIVE_TEST defined, the result of es caching will be
- * checked with old map_block's result.
- */
+
 #define ES_AGGRESSIVE_TEST__
 
-/*
- * These flags live in the high bits of extent_status.es_pblk
- */
+
 enum {
 	ES_WRITTEN_B,
 	ES_UNWRITTEN_B,
@@ -58,14 +43,14 @@ struct ext4_extent;
 
 struct extent_status {
 	struct rb_node rb_node;
-	ext4_lblk_t es_lblk;	/* first logical block extent covers */
-	ext4_lblk_t es_len;	/* length of extent in block */
-	ext4_fsblk_t es_pblk;	/* first physical block */
+	ext4_lblk_t es_lblk;	
+	ext4_lblk_t es_len;	
+	ext4_fsblk_t es_pblk;	
 };
 
 struct ext4_es_tree {
 	struct rb_root root;
-	struct extent_status *cache_es;	/* recently accessed extent */
+	struct extent_status *cache_es;	
 };
 
 struct ext4_es_stats {
@@ -78,41 +63,7 @@ struct ext4_es_stats {
 	struct percpu_counter es_stats_shk_cnt;
 };
 
-/*
- * Pending cluster reservations for bigalloc file systems
- *
- * A cluster with a pending reservation is a logical cluster shared by at
- * least one extent in the extents status tree with delayed and unwritten
- * status and at least one other written or unwritten extent.  The
- * reservation is said to be pending because a cluster reservation would
- * have to be taken in the event all blocks in the cluster shared with
- * written or unwritten extents were deleted while the delayed and
- * unwritten blocks remained.
- *
- * The set of pending cluster reservations is an auxiliary data structure
- * used with the extents status tree to implement reserved cluster/block
- * accounting for bigalloc file systems.  The set is kept in memory and
- * records all pending cluster reservations.
- *
- * Its primary function is to avoid the need to read extents from the
- * disk when invalidating pages as a result of a truncate, punch hole, or
- * collapse range operation.  Page invalidation requires a decrease in the
- * reserved cluster count if it results in the removal of all delayed
- * and unwritten extents (blocks) from a cluster that is not shared with a
- * written or unwritten extent, and no decrease otherwise.  Determining
- * whether the cluster is shared can be done by searching for a pending
- * reservation on it.
- *
- * Secondarily, it provides a potentially faster method for determining
- * whether the reserved cluster count should be increased when a physical
- * cluster is deallocated as a result of a truncate, punch hole, or
- * collapse range operation.  The necessary information is also present
- * in the extents status tree, but might be more rapidly accessed in
- * the pending reservation set in many cases due to smaller size.
- *
- * The pending cluster reservation set is implemented as a red-black tree
- * with the goal of minimizing per page search time overhead.
- */
+
 
 struct pending_reservation {
 	struct rb_node rb_node;
@@ -255,4 +206,4 @@ extern unsigned int ext4_es_delayed_clu(struct inode *inode, ext4_lblk_t lblk,
 					ext4_lblk_t len);
 extern void ext4_clear_inode_es(struct inode *inode);
 
-#endif /* _EXT4_EXTENTS_STATUS_H */
+#endif 

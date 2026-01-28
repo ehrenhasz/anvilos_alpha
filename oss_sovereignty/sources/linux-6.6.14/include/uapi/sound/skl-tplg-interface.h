@@ -1,33 +1,24 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * skl-tplg-interface.h - Intel DSP FW private data interface
- *
- * Copyright (C) 2015 Intel Corp
- * Author: Jeeja KP <jeeja.kp@intel.com>
- *	    Nilofer, Samreen <samreen.nilofer@intel.com>
- */
+
+
 
 #ifndef __HDA_TPLG_INTERFACE_H__
 #define __HDA_TPLG_INTERFACE_H__
 
 #include <linux/types.h>
 
-/*
- * Default types range from 0~12. type can range from 0 to 0xff
- * SST types start at higher to avoid any overlapping in future
- */
+
 #define SKL_CONTROL_TYPE_BYTE_TLV	0x100
 #define SKL_CONTROL_TYPE_MIC_SELECT	0x102
 #define SKL_CONTROL_TYPE_MULTI_IO_SELECT	0x103
 #define SKL_CONTROL_TYPE_MULTI_IO_SELECT_DMIC	0x104
 
-#define HDA_SST_CFG_MAX	900 /* size of copier cfg*/
+#define HDA_SST_CFG_MAX	900 
 #define MAX_IN_QUEUE 8
 #define MAX_OUT_QUEUE 8
 
 #define SKL_UUID_STR_SZ 40
-/* Event types goes here */
-/* Reserve event type 0 for no event handlers */
+
+
 enum skl_event_types {
 	SKL_EVENT_NONE = 0,
 	SKL_MIXER_EVENT,
@@ -36,23 +27,7 @@ enum skl_event_types {
 	SKL_PGA_EVENT
 };
 
-/**
- * enum skl_ch_cfg - channel configuration
- *
- * @SKL_CH_CFG_MONO:	One channel only
- * @SKL_CH_CFG_STEREO:	L & R
- * @SKL_CH_CFG_2_1:	L, R & LFE
- * @SKL_CH_CFG_3_0:	L, C & R
- * @SKL_CH_CFG_3_1:	L, C, R & LFE
- * @SKL_CH_CFG_QUATRO:	L, R, Ls & Rs
- * @SKL_CH_CFG_4_0:	L, C, R & Cs
- * @SKL_CH_CFG_5_0:	L, C, R, Ls & Rs
- * @SKL_CH_CFG_5_1:	L, C, R, Ls, Rs & LFE
- * @SKL_CH_CFG_DUAL_MONO: One channel replicated in two
- * @SKL_CH_CFG_I2S_DUAL_STEREO_0: Stereo(L,R) in 4 slots, 1st stream:[ L, R, -, - ]
- * @SKL_CH_CFG_I2S_DUAL_STEREO_1: Stereo(L,R) in 4 slots, 2nd stream:[ -, -, L, R ]
- * @SKL_CH_CFG_INVALID:	Invalid
- */
+
 enum skl_ch_cfg {
 	SKL_CH_CFG_MONO = 0,
 	SKL_CH_CFG_STEREO = 1,
@@ -110,12 +85,7 @@ enum skl_dev_type {
 	SKL_DEVICE_NONE
 };
 
-/**
- * enum skl_interleaving - interleaving style
- *
- * @SKL_INTERLEAVING_PER_CHANNEL: [s1_ch1...s1_chN,...,sM_ch1...sM_chN]
- * @SKL_INTERLEAVING_PER_SAMPLE: [s1_ch1...sM_ch1,...,s1_chN...sM_chN]
- */
+
 enum skl_interleaving {
 	SKL_INTERLEAVING_PER_CHANNEL = 0,
 	SKL_INTERLEAVING_PER_SAMPLE = 1,
@@ -130,13 +100,9 @@ enum skl_sample_type {
 };
 
 enum module_pin_type {
-	/* All pins of the module takes same PCM inputs or outputs
-	* e.g. mixout
-	*/
+	
 	SKL_PIN_TYPE_HOMOGENEOUS,
-	/* All pins of the module takes different PCM inputs or outputs
-	* e.g mux
-	*/
+	
 	SKL_PIN_TYPE_HETEROGENEOUS,
 };
 
@@ -165,7 +131,7 @@ enum skl_tuple_type {
 	SKL_TYPE_DATA
 };
 
-/* v4 configuration data */
+
 
 struct skl_dfw_v4_module_pin {
 	__u16 module_id;

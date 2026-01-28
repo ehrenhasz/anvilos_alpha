@@ -1,19 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Texas Instruments Incorporated
- * Authors:	Sandeep Nair <sandeep_n@ti.com
- *		Cyril Chemparathy <cyril@ti.com
-		Santosh Shilimkar <santosh.shilimkar@ti.com>
- */
+
+
 
 #ifndef __SOC_TI_KEYSTONE_NAVIGATOR_DMA_H__
 #define __SOC_TI_KEYSTONE_NAVIGATOR_DMA_H__
 
 #include <linux/dmaengine.h>
 
-/*
- * PKTDMA descriptor manipulation macros for host packet descriptor
- */
+
 #define MASK(x)					(BIT(x) - 1)
 #define KNAV_DMA_DESC_PKT_LEN_MASK		MASK(22)
 #define KNAV_DMA_DESC_PKT_LEN_SHIFT		0
@@ -43,7 +36,7 @@
 #define KNAV_DMA_NUM_SW_DATA_WORDS		4
 #define KNAV_DMA_FDQ_PER_CHAN			4
 
-/* Tx channel scheduling priority */
+
 enum knav_dma_tx_priority {
 	DMA_PRIO_HIGH	= 0,
 	DMA_PRIO_MED_H,
@@ -51,13 +44,13 @@ enum knav_dma_tx_priority {
 	DMA_PRIO_LOW
 };
 
-/* Rx channel error handling mode during buffer starvation */
+
 enum knav_dma_rx_err_mode {
 	DMA_DROP = 0,
 	DMA_RETRY
 };
 
-/* Rx flow size threshold configuration */
+
 enum knav_dma_rx_thresholds {
 	DMA_THRESH_NONE		= 0,
 	DMA_THRESH_0		= 1,
@@ -65,39 +58,20 @@ enum knav_dma_rx_thresholds {
 	DMA_THRESH_0_1_2	= 7
 };
 
-/* Descriptor type */
+
 enum knav_dma_desc_type {
 	DMA_DESC_HOST = 0,
 	DMA_DESC_MONOLITHIC = 2
 };
 
-/**
- * struct knav_dma_tx_cfg:	Tx channel configuration
- * @filt_einfo:			Filter extended packet info
- * @filt_pswords:		Filter PS words present
- * @knav_dma_tx_priority:	Tx channel scheduling priority
- */
+
 struct knav_dma_tx_cfg {
 	bool				filt_einfo;
 	bool				filt_pswords;
 	enum knav_dma_tx_priority	priority;
 };
 
-/**
- * struct knav_dma_rx_cfg:	Rx flow configuration
- * @einfo_present:		Extended packet info present
- * @psinfo_present:		PS words present
- * @knav_dma_rx_err_mode:	Error during buffer starvation
- * @knav_dma_desc_type:	Host or Monolithic desc
- * @psinfo_at_sop:		PS word located at start of packet
- * @sop_offset:			Start of packet offset
- * @dst_q:			Destination queue for a given flow
- * @thresh:			Rx flow size threshold
- * @fdq[]:			Free desc Queue array
- * @sz_thresh0:			RX packet size threshold 0
- * @sz_thresh1:			RX packet size threshold 1
- * @sz_thresh2:			RX packet size threshold 2
- */
+
 struct knav_dma_rx_cfg {
 	bool				einfo_present;
 	bool				psinfo_present;
@@ -113,12 +87,7 @@ struct knav_dma_rx_cfg {
 	unsigned int			sz_thresh2;
 };
 
-/**
- * struct knav_dma_cfg:	Pktdma channel configuration
- * @sl_cfg:			Slave configuration
- * @tx:				Tx channel configuration
- * @rx:				Rx flow configuration
- */
+
 struct knav_dma_cfg {
 	enum dma_transfer_direction direction;
 	union {
@@ -127,20 +96,7 @@ struct knav_dma_cfg {
 	} u;
 };
 
-/**
- * struct knav_dma_desc:	Host packet descriptor layout
- * @desc_info:			Descriptor information like id, type, length
- * @tag_info:			Flow tag info written in during RX
- * @packet_info:		Queue Manager, policy, flags etc
- * @buff_len:			Buffer length in bytes
- * @buff:			Buffer pointer
- * @next_desc:			For chaining the descriptors
- * @orig_len:			length since 'buff_len' can be overwritten
- * @orig_buff:			buff pointer since 'buff' can be overwritten
- * @epib:			Extended packet info block
- * @psdata:			Protocol specific
- * @sw_data:			Software private data not touched by h/w
- */
+
 struct knav_dma_desc {
 	__le32	desc_info;
 	__le32	tag_info;
@@ -182,4 +138,4 @@ static inline bool knav_dma_device_ready(void)
 
 #endif
 
-#endif /* __SOC_TI_KEYSTONE_NAVIGATOR_DMA_H__ */
+#endif 

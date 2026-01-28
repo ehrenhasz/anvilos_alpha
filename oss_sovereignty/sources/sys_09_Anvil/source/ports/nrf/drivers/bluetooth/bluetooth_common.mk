@@ -28,16 +28,16 @@ SOFTDEV_HEX_PATH = drivers/bluetooth/$(SD)_$(MCU_VARIANT)_$(SOFTDEV_VERSION)
 define STACK_MISSING_ERROR
 
 
-###### ERROR: Bluetooth LE Stack not found ############
-#                                                     #
-# The build target requires a Bluetooth LE stack.     #
-# $(SD)_$(MCU_VARIANT)_$(SOFTDEV_VERSION) Bluetooth LE stack not found.      #
-#                                                     #
-# Please run the download script:                     #
-#                                                     #
-#      drivers/bluetooth/download_ble_stack.sh        #
-#                                                     #
-#######################################################
+
+
+
+
+
+
+
+
+
+
 
 endef
 

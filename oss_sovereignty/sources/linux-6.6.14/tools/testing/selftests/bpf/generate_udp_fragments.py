@@ -21,10 +21,10 @@ def print_header(f):
     f.write("// SPDX-License-Identifier: GPL-2.0\n")
     f.write("/* DO NOT EDIT -- this file is generated */\n")
     f.write("\n")
-    f.write("#ifndef _IP_CHECK_DEFRAG_FRAGS_H\n")
-    f.write("#define _IP_CHECK_DEFRAG_FRAGS_H\n")
+    f.write("
+    f.write("
     f.write("\n")
-    f.write("#include <stdint.h>\n")
+    f.write("
     f.write("\n")
 def print_frags(f, frags, v6):
     for idx, frag in enumerate(frags):
@@ -37,7 +37,7 @@ def print_frags(f, frags, v6):
         f.write(f"}};\n")
 def print_trailer(f):
     f.write("\n")
-    f.write("#endif /* _IP_CHECK_DEFRAG_FRAGS_H */\n")
+    f.write("
 def main(f):
     sip = "0.0.0.0"
     sip6 = VETH0_ADDR6

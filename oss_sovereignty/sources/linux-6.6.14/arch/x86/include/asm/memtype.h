@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_MEMTYPE_H
 #define _ASM_X86_MEMTYPE_H
 
@@ -26,4 +26,4 @@ extern bool pat_pfn_immune_to_uc_mtrr(unsigned long pfn);
 bool x86_has_pat_wp(void);
 enum page_cache_mode pgprot2cachemode(pgprot_t pgprot);
 
-#endif /* _ASM_X86_MEMTYPE_H */
+#endif 

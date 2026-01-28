@@ -1,5 +1,5 @@
 PERF_DATA=perf.data
-if [ $# -ne 0 ] ; then
+if [ $
 	PERF_DATA=$1
 fi
 if [ -z $PERF_BUILDID_DIR ]; then
@@ -20,8 +20,8 @@ cut -d ' ' -f 1 $BUILDIDS | \
 while read build_id ; do
 	linkname=$PERF_BUILDID_DIR.build-id/${build_id:0:2}/${build_id:2}
 	filename=$(readlink -f $linkname)
-	echo ${linkname#$PERF_BUILDID_DIR} >> $MANIFEST
-	echo ${filename#$PERF_BUILDID_LINKDIR} >> $MANIFEST
+	echo ${linkname
+	echo ${filename
 done
 tar cjf $PERF_DATA.tar.bz2 -C $PERF_BUILDID_DIR -T $MANIFEST
 rm $MANIFEST $BUILDIDS || true

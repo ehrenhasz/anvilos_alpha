@@ -64,7 +64,7 @@ def trace_end():
         show_pebs_ll()
         con.close()
 def num2sym(num):
-        snum = '#' * (int)(math.log(num, 2) + 1)
+        snum = '
         return snum
 def show_general_events():
         count = con.execute("select count(*) from gen_events")

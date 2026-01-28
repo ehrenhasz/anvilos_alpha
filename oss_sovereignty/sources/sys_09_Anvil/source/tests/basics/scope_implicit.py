@@ -1,21 +1,21 @@
 def f():
     def g():
-        return x # implicit nonlocal
-    x = 3 # variable defined after function that closes over it
+        return x 
+    x = 3 
     return g
 print(f()())
 def f():
     def g():
         def h():
-            return x # implicit nonlocal
+            return x 
         return h
-    x = 4 # variable defined after function that closes over it
+    x = 4 
     return g
 print(f()()())
 def f():
     x = 0
     def g():
-        x # local because next statement assigns to it
+        x 
         x = 1
     g()
 try:

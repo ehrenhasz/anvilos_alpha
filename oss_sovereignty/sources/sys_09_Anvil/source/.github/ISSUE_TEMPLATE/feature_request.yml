@@ -7,11 +7,11 @@ body:
       value: |
         This form is for requesting features or improvements in MicroPython.
 
-        #### Get feedback first
+        
 
         Before submitting a new feature idea here, suggest starting a discussion on [Discord](https://discord.gg/RB8HZSAExQ) or [GitHub Discussions](https://github.com/orgs/micropython/discussions/) to get early feedback from the community and maintainers.
 
-        #### Not a MicroPython core feature?
+        
 
         * If you have a question \"How Do I ...?\", please post it on GitHub Discussions or Discord instead of here.
         * Could this feature be implemented as a pure Python library? If so, please open the request on the [micropython-lib repository](https://github.com/micropython/micropython-lib/issues) instead.
@@ -58,7 +58,7 @@ body:
       options:
       - label: I intend to implement this feature and would submit a Pull Request if desirable.
       - label: I hope the MicroPython maintainers or community will implement this feature.
-      - label: I would like to [Sponsor](https://github.com/sponsors/micropython#sponsors) development of this feature.
+      - label: I would like to [Sponsor](https://github.com/sponsors/micropython
   - type: markdown
     attributes:
       value: |

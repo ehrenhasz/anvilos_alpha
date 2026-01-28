@@ -8,5 +8,5 @@ print(file=sys.stdout)
 print("test", file=sys.stdout)
 try:
     print(file=1)
-except (AttributeError, OSError):  # CPython and uPy differ in error message
+except (AttributeError, OSError):  
     print("Error")

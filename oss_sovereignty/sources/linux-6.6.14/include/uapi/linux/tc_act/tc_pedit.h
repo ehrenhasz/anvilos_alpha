@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef __LINUX_TC_PED_H
 #define __LINUX_TC_PED_H
 
@@ -26,9 +26,7 @@ enum {
 
 #define TCA_PEDIT_KEY_EX_MAX (__TCA_PEDIT_KEY_EX_MAX - 1)
 
- /* TCA_PEDIT_KEY_EX_HDR_TYPE_NETWROK is a special case for legacy users. It
-  * means no specific header type - offset is relative to the network layer
-  */
+ 
 enum pedit_header_type {
 	TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK = 0,
 	TCA_PEDIT_KEY_EX_HDR_TYPE_ETH = 1,
@@ -50,9 +48,9 @@ enum pedit_cmd {
 #define TCA_PEDIT_CMD_MAX (__PEDIT_CMD_MAX - 1)
 
 struct tc_pedit_key {
-	__u32           mask;  /* AND */
-	__u32           val;   /*XOR */
-	__u32           off;  /*offset */
+	__u32           mask;  
+	__u32           val;   
+	__u32           off;  
 	__u32           at;
 	__u32           offmask;
 	__u32           shift;

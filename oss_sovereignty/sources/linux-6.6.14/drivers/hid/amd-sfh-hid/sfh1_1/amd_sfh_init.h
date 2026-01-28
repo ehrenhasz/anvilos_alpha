@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * AMD MP2 1.1 initialization structures
- *
- * Copyright (c) 2022, Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Author: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
- */
+
+
 
 #ifndef AMD_SFH_INIT_H
 #define AMD_SFH_INIT_H

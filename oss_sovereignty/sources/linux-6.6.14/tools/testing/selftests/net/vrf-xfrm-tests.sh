@@ -280,7 +280,7 @@ run_tests()
 usage()
 {
         cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
         -p          Pause on fail
         -v          verbose mode (show commands and output)
 done

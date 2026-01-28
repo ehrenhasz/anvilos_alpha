@@ -1,13 +1,8 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_MANGLE_H
 #define UTIL_LINUX_MANGLE_H
 
-/*
- * Functions for \oct encoding used in mtab/fstab/swaps/etc.
- */
+
 
 extern char *mangle(const char *s);
 
@@ -28,5 +23,5 @@ static inline void unhexmangle_string(char *s)
 		unhexmangle_to_buffer(s, s, strlen(s) + 1);
 }
 
-#endif /* UTIL_LINUX_MANGLE_H */
+#endif 
 

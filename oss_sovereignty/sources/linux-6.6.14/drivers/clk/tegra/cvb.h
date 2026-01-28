@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Utility functions for parsing Tegra CVB voltage tables
- */
+
+
 
 #ifndef __DRIVERS_CLK_TEGRA_CVB_H
 #define __DRIVERS_CLK_TEGRA_CVB_H

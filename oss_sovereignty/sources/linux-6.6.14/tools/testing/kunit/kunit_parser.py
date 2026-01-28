@@ -25,9 +25,9 @@ class Test:
 		"""Creates Test object with default attributes."""
 		self.status = TestStatus.TEST_CRASHED
 		self.name = ''
-		self.expected_count = 0  # type: Optional[int]
-		self.subtests = []  # type: List[Test]
-		self.log = []  # type: List[str]
+		self.expected_count = 0  
+		self.subtests = []  
+		self.log = []  
 		self.counts = TestCounts()
 	def __str__(self) -> str:
 		"""Returns string representation of a Test class object."""
@@ -116,7 +116,7 @@ class LineStream:
 	"""
 	A class to represent the lines of kernel output.
 	Provides a lazy peek()/pop() interface over an iterator of
-	(line#, text).
+	(line
 	"""
 	_lines: Iterator[Tuple[int, str]]
 	_next: Tuple[int, str]
@@ -179,7 +179,7 @@ def extract_tap_lines(kernel_output: Iterable[str]) -> LineStream:
 		started = False
 		for line in kernel_output:
 			line_num += 1
-			line = line.rstrip()  # remove trailing \n
+			line = line.rstrip()  
 			if not started and KTAP_START.search(line):
 				prefix_len = len(
 					line.split('KTAP version')[0])
@@ -241,13 +241,13 @@ def parse_ktap_header(lines: LineStream, test: Test) -> bool:
 		return False
 	lines.pop()
 	return True
-TEST_HEADER = re.compile(r'^\s*# Subtest: (.*)$')
+TEST_HEADER = re.compile(r'^\s*
 def parse_test_header(lines: LineStream, test: Test) -> bool:
 	"""
 	Parses test header and stores test name in test object.
 	Returns False if fails to parse test header line.
 	Accepted format:
-	- '# Subtest: [test name]'
+	- '
 	Parameters:
 	lines - LineStream of KTAP output to parse
 	test - Test object for current test being parsed
@@ -283,8 +283,8 @@ def parse_test_plan(lines: LineStream, test: Test) -> bool:
 	test.expected_count = expected_count
 	lines.pop()
 	return True
-TEST_RESULT = re.compile(r'^\s*(ok|not ok) ([0-9]+) (- )?([^#]*)( # .*)?$')
-TEST_RESULT_SKIP = re.compile(r'^\s*(ok|not ok) ([0-9]+) (- )?(.*) # SKIP(.*)$')
+TEST_RESULT = re.compile(r'^\s*(ok|not ok) ([0-9]+) (- )?([^
+TEST_RESULT_SKIP = re.compile(r'^\s*(ok|not ok) ([0-9]+) (- )?(.*) 
 def peek_test_name_match(lines: LineStream, test: Test) -> bool:
 	"""
 	Matches current line with the format of a test result line and checks
@@ -351,7 +351,7 @@ def parse_diagnostic(lines: LineStream) -> List[str]:
 	Parse lines that do not match the format of a test result line or
 	test header line and returns them in list.
 	Line formats that are not parsed:
-	- '# Subtest: [test name]'
+	- '
 	- '[ok|not ok] [test number] [-] [test name] [optional skip
 		directive]'
 	- 'KTAP version [version number]'
@@ -360,7 +360,7 @@ def parse_diagnostic(lines: LineStream) -> List[str]:
 	Return:
 	Log of diagnostic lines
 	"""
-	log = []  # type: List[str]
+	log = []  
 	non_diagnostic_lines = [TEST_RESULT, TEST_HEADER, KTAP_START, TAP_START]
 	while lines and not any(re.match(lines.peek())
 			for re in non_diagnostic_lines):
@@ -379,10 +379,10 @@ def format_test_divider(message: str, len_message: int) -> str:
 	Return:
 	String containing message centered in fixed width divider
 	"""
-	default_count = 3  # default number of dashes
+	default_count = 3  
 	len_1 = default_count
 	len_2 = default_count
-	difference = len(DIVIDER) - len_message - 2  # 2 spaces added
+	difference = len(DIVIDER) - len_message - 2  
 	if difference > 0:
 		len_1 = int(difference / 2)
 		len_2 = difference - len_1
@@ -459,17 +459,17 @@ def _summarize_failed_tests(test: Test) -> str:
 			full_name = test.name
 		else:
 			full_name = parent_name + '.' + test.name
-		if not test.subtests:  # this is a leaf node
+		if not test.subtests:  
 			return [full_name]
 		failed_subtests = [sub for sub in test.subtests if not sub.ok_status()]
 		if parent_name and len(failed_subtests) ==  len(test.subtests):
 			return [full_name]
-		all_failures = []  # type: List[str]
+		all_failures = []  
 		for t in failed_subtests:
 			all_failures.extend(failed_names(t, full_name))
 		return all_failures
 	failures = failed_names(test, '')
-	if len(failures) > 10:  # this is an arbitrary limit
+	if len(failures) > 10:  
 		return ''
 	return 'Failures: ' + ', '.join(failures)
 def print_summary_line(test: Test) -> None:
@@ -529,14 +529,14 @@ def parse_test(lines: LineStream, expected_num: int, log: List[str], is_subtest:
 	1..4
 	[subtests]
 	- Subtest header (must include either the KTAP version line or
-	  "# Subtest" header line)
+	  "
 	Example (preferred format with both KTAP version line and
-	"# Subtest" line):
+	"
 	KTAP version 1
 	1..3
 	[subtests]
 	ok 1 name
-	Example (only "# Subtest" line):
+	Example (only "
 	1..3
 	[subtests]
 	ok 1 name

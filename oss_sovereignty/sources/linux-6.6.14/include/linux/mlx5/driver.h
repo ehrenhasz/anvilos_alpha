@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
 
 #ifndef MLX5_DRIVER_H
 #define MLX5_DRIVER_H
@@ -217,7 +187,7 @@ struct mlx5_rsc_debug {
 };
 
 enum mlx5_dev_event {
-	MLX5_DEV_EVENT_SYS_ERROR = 128, /* 0 - 127 are FW events */
+	MLX5_DEV_EVENT_SYS_ERROR = 128, 
 	MLX5_DEV_EVENT_PORT_AFFINITY = 129,
 	MLX5_DEV_EVENT_MULTIPORT_ESW = 130,
 };
@@ -255,8 +225,7 @@ struct mlx5_cmd_debug {
 };
 
 struct cmd_msg_cache {
-	/* protect block chain allocations
-	 */
+	
 	spinlock_t		lock;
 	struct list_head	head;
 	unsigned int		max_inbox_size;
@@ -270,25 +239,25 @@ enum {
 struct mlx5_cmd_stats {
 	u64		sum;
 	u64		n;
-	/* number of times command failed */
+	
 	u64		failed;
-	/* number of times command failed on bad status returned by FW */
+	
 	u64		failed_mbox_status;
-	/* last command failed returned errno */
+	
 	u32		last_failed_errno;
-	/* last bad status returned by FW */
+	
 	u8		last_failed_mbox_status;
-	/* last command failed syndrome returned by FW */
+	
 	u32		last_failed_syndrome;
 	struct dentry  *root;
-	/* protect command average calculations */
+	
 	spinlock_t	lock;
 };
 
 struct mlx5_cmd {
 	struct mlx5_nb    nb;
 
-	/* members which needs to be queried or reinitialized each reload */
+	
 	struct {
 		u16		cmdif_rev;
 		u8		log_sz;
@@ -306,12 +275,10 @@ struct mlx5_cmd {
 	void	       *cmd_buf;
 	dma_addr_t	dma;
 
-	/* protect command queue allocations
-	 */
+	
 	spinlock_t	alloc_lock;
 
-	/* protect token allocations
-	 */
+	
 	spinlock_t	token_lock;
 	u8		token;
 	char		wq_name[MLX5_CMD_WQ_MAX_NAME];
@@ -398,7 +365,7 @@ struct mlx5_uars_page {
 	u32			index;
 	struct list_head	list;
 	unsigned int		bfregs;
-	unsigned long	       *reg_bitmap; /* for non fast path bf regs */
+	unsigned long	       *reg_bitmap; 
 	unsigned long	       *fp_bitmap;
 	unsigned int		reg_avail;
 	unsigned int		fp_avail;
@@ -407,7 +374,7 @@ struct mlx5_uars_page {
 };
 
 struct mlx5_bfreg_head {
-	/* protect blue flame registers allocations */
+	
 	struct mutex		lock;
 	struct list_head	list;
 };
@@ -453,9 +420,7 @@ struct mlx5_vf_context {
 	int	enabled;
 	u64	port_guid;
 	u64	node_guid;
-	/* Valid bits are used to validate administrative guid only.
-	 * Enabled after ndo_set_vf_guid
-	 */
+	
 	u8	port_guid_valid:1;
 	u8	node_guid_valid:1;
 	enum port_state_policy	policy;
@@ -471,7 +436,7 @@ struct mlx5_core_sriov {
 
 struct mlx5_fc_pool {
 	struct mlx5_core_dev *dev;
-	struct mutex pool_lock; /* protects pool lists */
+	struct mutex pool_lock; 
 	struct list_head fully_used;
 	struct list_head partially_used;
 	struct list_head unused;
@@ -481,7 +446,7 @@ struct mlx5_fc_pool {
 };
 
 struct mlx5_fc_stats {
-	spinlock_t counters_idr_lock; /* protects counters_idr */
+	spinlock_t counters_idr_lock; 
 	struct idr counters_idr;
 	struct list_head counters;
 	struct llist_head addlist;
@@ -490,7 +455,7 @@ struct mlx5_fc_stats {
 	struct workqueue_struct *wq;
 	struct delayed_work work;
 	unsigned long next_query;
-	unsigned long sampling_interval; /* jiffies */
+	unsigned long sampling_interval; 
 	u32 *bulk_query_out;
 	int bulk_query_len;
 	size_t num_counters;
@@ -528,7 +493,7 @@ struct mlx5_rl_entry {
 };
 
 struct mlx5_rl_table {
-	/* protect rate limit table */
+	
 	struct mutex            rl_lock;
 	u16                     max_size;
 	u32                     max_rate;
@@ -546,9 +511,7 @@ struct mlx5_core_roce {
 enum {
 	MLX5_PRIV_FLAGS_DISABLE_IB_ADEV = 1 << 0,
 	MLX5_PRIV_FLAGS_DISABLE_ALL_ADEV = 1 << 1,
-	/* Set during device detach to block any further devices
-	 * creation/deletion on drivers rescan. Unset during device attach.
-	 */
+	
 	MLX5_PRIV_FLAGS_DETACH = 1 << 2,
 };
 
@@ -579,11 +542,11 @@ enum mlx5_func_type {
 
 struct mlx5_ft_pool;
 struct mlx5_priv {
-	/* IRQ table valid only for real pci devices PF or VF */
+	
 	struct mlx5_irq_table   *irq_table;
 	struct mlx5_eq_table	*eq_table;
 
-	/* pages stuff */
+	
 	struct mlx5_nb          pg_nb;
 	struct workqueue_struct *pg_wq;
 	struct xarray           page_root_xa;
@@ -600,14 +563,14 @@ struct mlx5_priv {
 
 	struct mlx5_debugfs_entries dbg;
 
-	/* start: alloc staff */
-	/* protect buffer allocation according to numa node */
+	
+	
 	struct mutex            alloc_mutex;
 	int                     numa_node;
 
 	struct mutex            pgdir_mutex;
 	struct list_head        pgdir_list;
-	/* end: alloc staff */
+	
 
 	struct mlx5_adev       **adev;
 	int			adev_idx;
@@ -662,7 +625,7 @@ enum mlx5_pagefault_type_flags {
 };
 
 struct mlx5_td {
-	/* protects tirs list changes while tirs refresh */
+	
 	struct mutex     list_lock;
 	struct list_head tirs_list;
 	u32              tdn;
@@ -761,7 +724,7 @@ struct mlx5_core_dev {
 	struct device *device;
 	enum mlx5_coredev_type coredev_type;
 	struct pci_dev	       *pdev;
-	/* sync pci state */
+	
 	struct mutex		pci_status_mutex;
 	enum mlx5_pci_status	pci_status;
 	u8			rev_id;
@@ -781,7 +744,7 @@ struct mlx5_core_dev {
 	struct mlx5_init_seg __iomem *iseg;
 	phys_addr_t             bar_addr;
 	enum mlx5_device_state	state;
-	/* sync interface state */
+	
 	struct mutex		intf_state_mutex;
 	struct lock_class_key	lock_key;
 	unsigned long		intf_state;
@@ -810,7 +773,7 @@ struct mlx5_core_dev {
 	u64			num_block_ipsec;
 #ifdef CONFIG_MLX5_MACSEC
 	struct mlx5_macsec_fs *macsec_fs;
-	/* MACsec notifier chain to sync MACsec core and IB database */
+	
 	struct blocking_notifier_head macsec_nh;
 #endif
 	u64 num_ipsec_offloads;
@@ -864,7 +827,7 @@ struct mlx5_cmd_work_ent {
 	u64			ts2;
 	u16			op;
 	bool			polling;
-	/* Track the max comp handlers */
+	
 	refcount_t              refcnt;
 };
 
@@ -889,7 +852,7 @@ struct mlx5_hca_vport_context {
 	u16			cap_mask2;
 	u16			cap_mask2_perm;
 	u16			lid;
-	u8			init_type_reply; /* bitmask: see ib spec 14.2.5.6 InitTypeReply */
+	u8			init_type_reply; 
 	u8			lmc;
 	u8			subnet_timeout;
 	u16			sm_lid;
@@ -991,9 +954,9 @@ typedef void (*mlx5_async_cbk_t)(int status, struct mlx5_async_work *context);
 struct mlx5_async_work {
 	struct mlx5_async_ctx *ctx;
 	mlx5_async_cbk_t user_callback;
-	u16 opcode; /* cmd opcode */
-	u16 op_mod; /* cmd op_mod */
-	void *out; /* pointer to the cmd output buffer */
+	u16 opcode; 
+	u16 op_mod; 
+	void *out; 
 };
 
 void mlx5_cmd_init_async_ctx(struct mlx5_core_dev *dev,
@@ -1137,21 +1100,15 @@ static inline u8 mlx5_mkey_variant(u32 mkey)
 	return mkey & 0xff;
 }
 
-/* Async-atomic event notifier used by mlx5 core to forward FW
- * evetns received from event queue to mlx5 consumers.
- * Optimise event queue dipatching.
- */
+
 int mlx5_notifier_register(struct mlx5_core_dev *dev, struct notifier_block *nb);
 int mlx5_notifier_unregister(struct mlx5_core_dev *dev, struct notifier_block *nb);
 
-/* Async-atomic event notifier used for forwarding
- * evetns from the event queue into the to mlx5 events dispatcher,
- * eswitch, clock and others.
- */
+
 int mlx5_eq_notifier_register(struct mlx5_core_dev *dev, struct mlx5_nb *nb);
 int mlx5_eq_notifier_unregister(struct mlx5_core_dev *dev, struct mlx5_nb *nb);
 
-/* Blocking event notifier used to forward SW events, used for slow path */
+
 int mlx5_blocking_notifier_register(struct mlx5_core_dev *dev, struct notifier_block *nb);
 int mlx5_blocking_notifier_unregister(struct mlx5_core_dev *dev, struct notifier_block *nb);
 int mlx5_blocking_notifier_call_chain(struct mlx5_core_dev *dev, unsigned int event,
@@ -1205,7 +1162,7 @@ struct net_device *mlx5_rdma_netdev_alloc(struct mlx5_core_dev *mdev,
 					  struct ib_device *ibdev,
 					  const char *name,
 					  void (*setup)(struct net_device *));
-#endif /* CONFIG_MLX5_CORE_IPOIB */
+#endif 
 int mlx5_rdma_rn_get_params(struct mlx5_core_dev *mdev,
 			    struct ib_device *device,
 			    struct rdma_netdev_alloc_params *params);
@@ -1247,11 +1204,7 @@ static inline u16 mlx5_core_max_vfs(const struct mlx5_core_dev *dev)
 
 static inline int mlx5_lag_is_lacp_owner(struct mlx5_core_dev *dev)
 {
-	/* LACP owner conditions:
-	 * 1) Function is physical.
-	 * 2) LAG is supported by FW.
-	 * 3) LAG is managed by driver (currently the only option).
-	 */
+	
 	return  MLX5_CAP_GEN(dev, vport_group_manager) &&
 		   (MLX5_CAP_GEN(dev, num_lag_ports) > 1) &&
 		    MLX5_CAP_GEN(dev, lag_master);
@@ -1323,9 +1276,7 @@ static inline bool mlx5_get_roce_state(struct mlx5_core_dev *dev)
 	if (MLX5_CAP_GEN(dev, roce_rw_supported))
 		return MLX5_CAP_GEN(dev, roce);
 
-	/* If RoCE cap is read-only in FW, get RoCE state from devlink
-	 * in order to support RoCE enable/disable feature
-	 */
+	
 	return mlx5_is_roce_on(dev);
 }
 
@@ -1385,4 +1336,4 @@ struct msi_map mlx5_msix_alloc(struct mlx5_core_dev *dev,
 			       const char *name);
 void mlx5_msix_free(struct mlx5_core_dev *dev, struct msi_map map);
 
-#endif /* MLX5_DRIVER_H */
+#endif 

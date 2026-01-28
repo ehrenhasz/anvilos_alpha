@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/devlink.yaml */
-/* YNL-GEN user header */
+
+
+
+
 
 #ifndef _LINUX_DEVLINK_GEN_H
 #define _LINUX_DEVLINK_GEN_H
@@ -15,11 +15,11 @@ struct ynl_sock;
 
 extern const struct ynl_family ynl_devlink_family;
 
-/* Enums */
+
 const char *devlink_op_str(int op);
 const char *devlink_sb_pool_type_str(enum devlink_sb_pool_type value);
 
-/* Common nested types */
+
 struct devlink_dl_info_version {
 	struct {
 		__u32 info_version_name_len;
@@ -70,8 +70,8 @@ struct devlink_dl_dev_stats {
 	struct devlink_dl_reload_stats remote_reload_stats;
 };
 
-/* ============== DEVLINK_CMD_GET ============== */
-/* DEVLINK_CMD_GET - do */
+
+
 struct devlink_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -125,13 +125,11 @@ struct devlink_get_rsp {
 
 void devlink_get_rsp_free(struct devlink_get_rsp *rsp);
 
-/*
- * Get devlink instances.
- */
+
 struct devlink_get_rsp *
 devlink_get(struct ynl_sock *ys, struct devlink_get_req *req);
 
-/* DEVLINK_CMD_GET - dump */
+
 struct devlink_get_list {
 	struct devlink_get_list *next;
 	struct devlink_get_rsp obj __attribute__ ((aligned (8)));
@@ -141,8 +139,8 @@ void devlink_get_list_free(struct devlink_get_list *rsp);
 
 struct devlink_get_list *devlink_get_dump(struct ynl_sock *ys);
 
-/* ============== DEVLINK_CMD_PORT_GET ============== */
-/* DEVLINK_CMD_PORT_GET - do */
+
+
 struct devlink_port_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -203,13 +201,11 @@ struct devlink_port_get_rsp {
 
 void devlink_port_get_rsp_free(struct devlink_port_get_rsp *rsp);
 
-/*
- * Get devlink port instances.
- */
+
 struct devlink_port_get_rsp *
 devlink_port_get(struct ynl_sock *ys, struct devlink_port_get_req *req);
 
-/* DEVLINK_CMD_PORT_GET - dump */
+
 struct devlink_port_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -271,8 +267,8 @@ struct devlink_port_get_rsp_list *
 devlink_port_get_dump(struct ynl_sock *ys,
 		      struct devlink_port_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_SB_GET ============== */
-/* DEVLINK_CMD_SB_GET - do */
+
+
 struct devlink_sb_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -332,13 +328,11 @@ struct devlink_sb_get_rsp {
 
 void devlink_sb_get_rsp_free(struct devlink_sb_get_rsp *rsp);
 
-/*
- * Get shared buffer instances.
- */
+
 struct devlink_sb_get_rsp *
 devlink_sb_get(struct ynl_sock *ys, struct devlink_sb_get_req *req);
 
-/* DEVLINK_CMD_SB_GET - dump */
+
 struct devlink_sb_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -387,8 +381,8 @@ void devlink_sb_get_list_free(struct devlink_sb_get_list *rsp);
 struct devlink_sb_get_list *
 devlink_sb_get_dump(struct ynl_sock *ys, struct devlink_sb_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_SB_POOL_GET ============== */
-/* DEVLINK_CMD_SB_POOL_GET - do */
+
+
 struct devlink_sb_pool_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -461,13 +455,11 @@ struct devlink_sb_pool_get_rsp {
 
 void devlink_sb_pool_get_rsp_free(struct devlink_sb_pool_get_rsp *rsp);
 
-/*
- * Get shared buffer pool instances.
- */
+
 struct devlink_sb_pool_get_rsp *
 devlink_sb_pool_get(struct ynl_sock *ys, struct devlink_sb_pool_get_req *req);
 
-/* DEVLINK_CMD_SB_POOL_GET - dump */
+
 struct devlink_sb_pool_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -518,8 +510,8 @@ struct devlink_sb_pool_get_list *
 devlink_sb_pool_get_dump(struct ynl_sock *ys,
 			 struct devlink_sb_pool_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_SB_PORT_POOL_GET ============== */
-/* DEVLINK_CMD_SB_PORT_POOL_GET - do */
+
+
 struct devlink_sb_port_pool_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -605,14 +597,12 @@ struct devlink_sb_port_pool_get_rsp {
 void
 devlink_sb_port_pool_get_rsp_free(struct devlink_sb_port_pool_get_rsp *rsp);
 
-/*
- * Get shared buffer port-pool combinations and threshold.
- */
+
 struct devlink_sb_port_pool_get_rsp *
 devlink_sb_port_pool_get(struct ynl_sock *ys,
 			 struct devlink_sb_port_pool_get_req *req);
 
-/* DEVLINK_CMD_SB_PORT_POOL_GET - dump */
+
 struct devlink_sb_port_pool_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -664,8 +654,8 @@ struct devlink_sb_port_pool_get_list *
 devlink_sb_port_pool_get_dump(struct ynl_sock *ys,
 			      struct devlink_sb_port_pool_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_SB_TC_POOL_BIND_GET ============== */
-/* DEVLINK_CMD_SB_TC_POOL_BIND_GET - do */
+
+
 struct devlink_sb_tc_pool_bind_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -762,14 +752,12 @@ struct devlink_sb_tc_pool_bind_get_rsp {
 void
 devlink_sb_tc_pool_bind_get_rsp_free(struct devlink_sb_tc_pool_bind_get_rsp *rsp);
 
-/*
- * Get shared buffer port-TC to pool bindings and threshold.
- */
+
 struct devlink_sb_tc_pool_bind_get_rsp *
 devlink_sb_tc_pool_bind_get(struct ynl_sock *ys,
 			    struct devlink_sb_tc_pool_bind_get_req *req);
 
-/* DEVLINK_CMD_SB_TC_POOL_BIND_GET - dump */
+
 struct devlink_sb_tc_pool_bind_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -821,8 +809,8 @@ struct devlink_sb_tc_pool_bind_get_list *
 devlink_sb_tc_pool_bind_get_dump(struct ynl_sock *ys,
 				 struct devlink_sb_tc_pool_bind_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_PARAM_GET ============== */
-/* DEVLINK_CMD_PARAM_GET - do */
+
+
 struct devlink_param_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -886,13 +874,11 @@ struct devlink_param_get_rsp {
 
 void devlink_param_get_rsp_free(struct devlink_param_get_rsp *rsp);
 
-/*
- * Get param instances.
- */
+
 struct devlink_param_get_rsp *
 devlink_param_get(struct ynl_sock *ys, struct devlink_param_get_req *req);
 
-/* DEVLINK_CMD_PARAM_GET - dump */
+
 struct devlink_param_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -942,8 +928,8 @@ struct devlink_param_get_list *
 devlink_param_get_dump(struct ynl_sock *ys,
 		       struct devlink_param_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_REGION_GET ============== */
-/* DEVLINK_CMD_REGION_GET - do */
+
+
 struct devlink_region_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -1018,13 +1004,11 @@ struct devlink_region_get_rsp {
 
 void devlink_region_get_rsp_free(struct devlink_region_get_rsp *rsp);
 
-/*
- * Get region instances.
- */
+
 struct devlink_region_get_rsp *
 devlink_region_get(struct ynl_sock *ys, struct devlink_region_get_req *req);
 
-/* DEVLINK_CMD_REGION_GET - dump */
+
 struct devlink_region_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -1074,8 +1058,8 @@ struct devlink_region_get_list *
 devlink_region_get_dump(struct ynl_sock *ys,
 			struct devlink_region_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_INFO_GET ============== */
-/* DEVLINK_CMD_INFO_GET - do */
+
+
 struct devlink_info_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -1135,13 +1119,11 @@ struct devlink_info_get_rsp {
 
 void devlink_info_get_rsp_free(struct devlink_info_get_rsp *rsp);
 
-/*
- * Get device information, like driver name, hardware and firmware versions etc.
- */
+
 struct devlink_info_get_rsp *
 devlink_info_get(struct ynl_sock *ys, struct devlink_info_get_req *req);
 
-/* DEVLINK_CMD_INFO_GET - dump */
+
 struct devlink_info_get_list {
 	struct devlink_info_get_list *next;
 	struct devlink_info_get_rsp obj __attribute__ ((aligned (8)));
@@ -1151,8 +1133,8 @@ void devlink_info_get_list_free(struct devlink_info_get_list *rsp);
 
 struct devlink_info_get_list *devlink_info_get_dump(struct ynl_sock *ys);
 
-/* ============== DEVLINK_CMD_HEALTH_REPORTER_GET ============== */
-/* DEVLINK_CMD_HEALTH_REPORTER_GET - do */
+
+
 struct devlink_health_reporter_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -1230,14 +1212,12 @@ struct devlink_health_reporter_get_rsp {
 void
 devlink_health_reporter_get_rsp_free(struct devlink_health_reporter_get_rsp *rsp);
 
-/*
- * Get health reporter instances.
- */
+
 struct devlink_health_reporter_get_rsp *
 devlink_health_reporter_get(struct ynl_sock *ys,
 			    struct devlink_health_reporter_get_req *req);
 
-/* DEVLINK_CMD_HEALTH_REPORTER_GET - dump */
+
 struct devlink_health_reporter_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -1298,8 +1278,8 @@ struct devlink_health_reporter_get_list *
 devlink_health_reporter_get_dump(struct ynl_sock *ys,
 				 struct devlink_health_reporter_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_TRAP_GET ============== */
-/* DEVLINK_CMD_TRAP_GET - do */
+
+
 struct devlink_trap_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -1363,13 +1343,11 @@ struct devlink_trap_get_rsp {
 
 void devlink_trap_get_rsp_free(struct devlink_trap_get_rsp *rsp);
 
-/*
- * Get trap instances.
- */
+
 struct devlink_trap_get_rsp *
 devlink_trap_get(struct ynl_sock *ys, struct devlink_trap_get_req *req);
 
-/* DEVLINK_CMD_TRAP_GET - dump */
+
 struct devlink_trap_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -1419,8 +1397,8 @@ struct devlink_trap_get_list *
 devlink_trap_get_dump(struct ynl_sock *ys,
 		      struct devlink_trap_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_TRAP_GROUP_GET ============== */
-/* DEVLINK_CMD_TRAP_GROUP_GET - do */
+
+
 struct devlink_trap_group_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -1485,14 +1463,12 @@ struct devlink_trap_group_get_rsp {
 
 void devlink_trap_group_get_rsp_free(struct devlink_trap_group_get_rsp *rsp);
 
-/*
- * Get trap group instances.
- */
+
 struct devlink_trap_group_get_rsp *
 devlink_trap_group_get(struct ynl_sock *ys,
 		       struct devlink_trap_group_get_req *req);
 
-/* DEVLINK_CMD_TRAP_GROUP_GET - dump */
+
 struct devlink_trap_group_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -1543,8 +1519,8 @@ struct devlink_trap_group_get_list *
 devlink_trap_group_get_dump(struct ynl_sock *ys,
 			    struct devlink_trap_group_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_TRAP_POLICER_GET ============== */
-/* DEVLINK_CMD_TRAP_POLICER_GET - do */
+
+
 struct devlink_trap_policer_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -1608,14 +1584,12 @@ struct devlink_trap_policer_get_rsp {
 void
 devlink_trap_policer_get_rsp_free(struct devlink_trap_policer_get_rsp *rsp);
 
-/*
- * Get trap policer instances.
- */
+
 struct devlink_trap_policer_get_rsp *
 devlink_trap_policer_get(struct ynl_sock *ys,
 			 struct devlink_trap_policer_get_req *req);
 
-/* DEVLINK_CMD_TRAP_POLICER_GET - dump */
+
 struct devlink_trap_policer_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -1667,8 +1641,8 @@ struct devlink_trap_policer_get_list *
 devlink_trap_policer_get_dump(struct ynl_sock *ys,
 			      struct devlink_trap_policer_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_RATE_GET ============== */
-/* DEVLINK_CMD_RATE_GET - do */
+
+
 struct devlink_rate_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -1743,13 +1717,11 @@ struct devlink_rate_get_rsp {
 
 void devlink_rate_get_rsp_free(struct devlink_rate_get_rsp *rsp);
 
-/*
- * Get rate instances.
- */
+
 struct devlink_rate_get_rsp *
 devlink_rate_get(struct ynl_sock *ys, struct devlink_rate_get_req *req);
 
-/* DEVLINK_CMD_RATE_GET - dump */
+
 struct devlink_rate_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -1799,8 +1771,8 @@ struct devlink_rate_get_list *
 devlink_rate_get_dump(struct ynl_sock *ys,
 		      struct devlink_rate_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_LINECARD_GET ============== */
-/* DEVLINK_CMD_LINECARD_GET - do */
+
+
 struct devlink_linecard_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -1862,13 +1834,11 @@ struct devlink_linecard_get_rsp {
 
 void devlink_linecard_get_rsp_free(struct devlink_linecard_get_rsp *rsp);
 
-/*
- * Get line card instances.
- */
+
 struct devlink_linecard_get_rsp *
 devlink_linecard_get(struct ynl_sock *ys, struct devlink_linecard_get_req *req);
 
-/* DEVLINK_CMD_LINECARD_GET - dump */
+
 struct devlink_linecard_get_req_dump {
 	struct {
 		__u32 bus_name_len;
@@ -1919,8 +1889,8 @@ struct devlink_linecard_get_list *
 devlink_linecard_get_dump(struct ynl_sock *ys,
 			  struct devlink_linecard_get_req_dump *req);
 
-/* ============== DEVLINK_CMD_SELFTESTS_GET ============== */
-/* DEVLINK_CMD_SELFTESTS_GET - do */
+
+
 struct devlink_selftests_get_req {
 	struct {
 		__u32 bus_name_len;
@@ -1971,14 +1941,12 @@ struct devlink_selftests_get_rsp {
 
 void devlink_selftests_get_rsp_free(struct devlink_selftests_get_rsp *rsp);
 
-/*
- * Get device selftest instances.
- */
+
 struct devlink_selftests_get_rsp *
 devlink_selftests_get(struct ynl_sock *ys,
 		      struct devlink_selftests_get_req *req);
 
-/* DEVLINK_CMD_SELFTESTS_GET - dump */
+
 struct devlink_selftests_get_list {
 	struct devlink_selftests_get_list *next;
 	struct devlink_selftests_get_rsp obj __attribute__ ((aligned (8)));
@@ -1989,4 +1957,4 @@ void devlink_selftests_get_list_free(struct devlink_selftests_get_list *rsp);
 struct devlink_selftests_get_list *
 devlink_selftests_get_dump(struct ynl_sock *ys);
 
-#endif /* _LINUX_DEVLINK_GEN_H */
+#endif 

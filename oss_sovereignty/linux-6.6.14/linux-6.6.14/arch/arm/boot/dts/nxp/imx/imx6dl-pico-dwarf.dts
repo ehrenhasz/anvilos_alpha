@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "imx6dl.dtsi"
-#include "imx6qdl-pico-pi.dtsi"
-/ {
-	model = "TechNexion PICO-IMX6 DualLite/Solo Board and Dwarf baseboard";
-	compatible = "technexion,imx6dl-pico-dwarf", "fsl,imx6dl";
-};

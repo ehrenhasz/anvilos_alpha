@@ -1,9 +1,0 @@
-/dts-v1/;
-#include "imx6dl.dtsi"
-#include "imx6qdl-sr-som.dtsi"
-#include "imx6qdl-sr-som-brcm.dtsi"
-#include "imx6qdl-hummingboard.dtsi"
-/ {
-	model = "SolidRun HummingBoard Solo/DualLite";
-	compatible = "solidrun,hummingboard/dl", "fsl,imx6dl";
-};

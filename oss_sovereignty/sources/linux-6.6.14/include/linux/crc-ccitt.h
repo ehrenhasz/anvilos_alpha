@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_CRC_CCITT_H
 #define _LINUX_CRC_CCITT_H
 
@@ -20,4 +20,4 @@ static inline u16 crc_ccitt_false_byte(u16 crc, const u8 c)
     return (crc << 8) ^ crc_ccitt_false_table[(crc >> 8) ^ c];
 }
 
-#endif /* _LINUX_CRC_CCITT_H */
+#endif 

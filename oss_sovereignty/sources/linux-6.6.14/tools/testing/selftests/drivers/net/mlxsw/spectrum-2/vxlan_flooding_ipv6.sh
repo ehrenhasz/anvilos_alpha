@@ -129,7 +129,7 @@ flooding_filters_del()
 flooding_check_packets()
 {
 	local packets=("$@")
-	local num_remotes=${#packets[@]}
+	local num_remotes=${
 	local i
 	for i in $(eval echo {1..$num_remotes}); do
 		tc_check_packets "dev $rp2 ingress" $i ${packets[i - 1]}

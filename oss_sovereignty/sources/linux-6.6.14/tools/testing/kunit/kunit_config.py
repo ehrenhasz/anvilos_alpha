@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import re
 from typing import Any, Dict, Iterable, List, Tuple
-CONFIG_IS_NOT_SET_PATTERN = r'^# CONFIG_(\w+) is not set$'
+CONFIG_IS_NOT_SET_PATTERN = r'^
 CONFIG_PATTERN = r'^CONFIG_(\w+)=(\S+|".*")$'
 @dataclass(frozen=True)
 class KconfigEntry:
@@ -9,14 +9,14 @@ class KconfigEntry:
 	value: str
 	def __str__(self) -> str:
 		if self.value == 'n':
-			return f'# CONFIG_{self.name} is not set'
+			return f'
 		return f'CONFIG_{self.name}={self.value}'
 class KconfigParseError(Exception):
 	"""Error parsing Kconfig defconfig or .config."""
 class Kconfig:
 	"""Represents defconfig or .config specified using the Kconfig language."""
 	def __init__(self) -> None:
-		self._entries = {}  # type: Dict[str, str]
+		self._entries = {}  
 	def __eq__(self, other: Any) -> bool:
 		if not isinstance(other, self.__class__):
 			return False
@@ -39,7 +39,7 @@ class Kconfig:
 				return False
 		return True
 	def conflicting_options(self, other: 'Kconfig') -> List[Tuple[KconfigEntry, KconfigEntry]]:
-		diff = []  # type: List[Tuple[KconfigEntry, KconfigEntry]]
+		diff = []  
 		for name, value in self._entries.items():
 			b = other._entries.get(name)
 			if b and value != b:
@@ -73,7 +73,7 @@ def parse_from_string(blob: str) -> Kconfig:
 		if empty_match:
 			kconfig.add_entry(empty_match.group(1), 'n')
 			continue
-		if line[0] == '#':
+		if line[0] == '
 			continue
 		raise KconfigParseError('Failed to parse: ' + line)
 	return kconfig

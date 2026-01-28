@@ -1,28 +1,4 @@
-/*
- * AGPGART module version 0.99
- * Copyright (C) 1999 Jeff Hartmann
- * Copyright (C) 1999 Precision Insight, Inc.
- * Copyright (C) 1999 Xi Graphics, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * JEFF HARTMANN, OR ANY OTHER CONTRIBUTORS BE LIABLE FOR ANY CLAIM, 
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
- * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+
 
 #ifndef _UAPI_AGP_H
 #define _UAPI_AGP_H
@@ -59,55 +35,50 @@ struct agp_version {
 };
 
 typedef struct _agp_info {
-	struct agp_version version;	/* version of the driver        */
-	__u32 bridge_id;	/* bridge vendor/device         */
-	__u32 agp_mode;		/* mode info of bridge          */
-	unsigned long aper_base;/* base of aperture             */
-	__kernel_size_t aper_size;	/* size of aperture             */
-	__kernel_size_t pg_total;	/* max pages (swap + system)    */
-	__kernel_size_t pg_system;	/* max pages (system)           */
-	__kernel_size_t pg_used;	/* current pages used           */
+	struct agp_version version;	
+	__u32 bridge_id;	
+	__u32 agp_mode;		
+	unsigned long aper_base;
+	__kernel_size_t aper_size;	
+	__kernel_size_t pg_total;	
+	__kernel_size_t pg_system;	
+	__kernel_size_t pg_used;	
 } agp_info;
 
 typedef struct _agp_setup {
-	__u32 agp_mode;		/* mode info of bridge          */
+	__u32 agp_mode;		
 } agp_setup;
 
-/*
- * The "prot" down below needs still a "sleep" flag somehow ...
- */
+
 typedef struct _agp_segment {
-	__kernel_off_t pg_start;	/* starting page to populate    */
-	__kernel_size_t pg_count;	/* number of pages              */
-	int prot;			/* prot flags for mmap          */
+	__kernel_off_t pg_start;	
+	__kernel_size_t pg_count;	
+	int prot;			
 } agp_segment;
 
 typedef struct _agp_region {
-	__kernel_pid_t pid;		/* pid of process       */
-	__kernel_size_t seg_count;	/* number of segments   */
+	__kernel_pid_t pid;		
+	__kernel_size_t seg_count;	
 	struct _agp_segment *seg_list;
 } agp_region;
 
 typedef struct _agp_allocate {
-	int key;		/* tag of allocation            */
-	__kernel_size_t pg_count;/* number of pages             */
-	__u32 type;		/* 0 == normal, other devspec   */
-   	__u32 physical;         /* device specific (some devices  
-				 * need a phys address of the     
-				 * actual page behind the gatt    
-				 * table)                        */
+	int key;		
+	__kernel_size_t pg_count;
+	__u32 type;		
+   	__u32 physical;         
 } agp_allocate;
 
 typedef struct _agp_bind {
-	int key;		/* tag of allocation            */
-	__kernel_off_t pg_start;/* starting page to populate    */
+	int key;		
+	__kernel_off_t pg_start;
 } agp_bind;
 
 typedef struct _agp_unbind {
-	int key;		/* tag of allocation            */
-	__u32 priority;		/* priority for paging out      */
+	int key;		
+	__u32 priority;		
 } agp_unbind;
 
-#endif				/* __KERNEL__ */
+#endif				
 
-#endif /* _UAPI_AGP_H */
+#endif 

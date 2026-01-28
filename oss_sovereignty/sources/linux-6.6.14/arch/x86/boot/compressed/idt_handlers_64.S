@@ -1,21 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Early IDT handler entry points
- *
- * Copyright (C) 2019 SUSE
- *
- * Author: Joerg Roedel <jroedel@suse.de>
- */
+
+
 
 #include <asm/segment.h>
 
-/* For ORIG_RAX */
+
 #include "../../entry/calling.h"
 
 .macro EXCEPTION_HANDLER name function error_code=0
 SYM_FUNC_START(\name)
 
-	/* Build pt_regs */
+	
 	.if \error_code == 0
 	pushq   $0
 	.endif
@@ -36,13 +30,13 @@ SYM_FUNC_START(\name)
 	pushq   %r14
 	pushq   %r15
 
-	/* Call handler with pt_regs */
+	
 	movq    %rsp, %rdi
-	/* Error code is second parameter */
+	
 	movq	ORIG_RAX(%rsp), %rsi
 	call    \function
 
-	/* Restore regs */
+	
 	popq    %r15
 	popq    %r14
 	popq    %r13
@@ -59,7 +53,7 @@ SYM_FUNC_START(\name)
 	popq    %rsi
 	popq    %rdi
 
-	/* Remove error code and return */
+	
 	addq    $8, %rsp
 
 	iretq

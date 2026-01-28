@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+
 
 #ifndef __DT_BINDINGS_CLOCK_BCM6328_H
 #define __DT_BINDINGS_CLOCK_BCM6328_H
@@ -16,4 +16,4 @@
 #define BCM6328_CLK_PCIE	10
 #define BCM6328_CLK_ROBOSW	11
 
-#endif /* __DT_BINDINGS_CLOCK_BCM6328_H */
+#endif 

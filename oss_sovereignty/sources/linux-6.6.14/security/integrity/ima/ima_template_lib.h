@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 Politecnico di Torino, Italy
- *                    TORSEC group -- https://security.polito.it
- *
- * Author: Roberto Sassu <roberto.sassu@polito.it>
- *
- * File: ima_template_lib.h
- *      Header for the library of supported template fields.
- */
+
+
 #ifndef __LINUX_IMA_TEMPLATE_LIB_H
 #define __LINUX_IMA_TEMPLATE_LIB_H
 
@@ -66,4 +58,4 @@ int ima_eventinodexattrlengths_init(struct ima_event_data *event_data,
 				    struct ima_field_data *field_data);
 int ima_eventinodexattrvalues_init(struct ima_event_data *event_data,
 				   struct ima_field_data *field_data);
-#endif /* __LINUX_IMA_TEMPLATE_LIB_H */
+#endif 

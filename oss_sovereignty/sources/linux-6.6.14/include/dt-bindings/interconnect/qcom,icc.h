@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_ICC_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_ICC_H
 
-/*
- * The AMC bucket denotes constraints that are applied to hardware when
- * icc_set_bw() completes, whereas the WAKE and SLEEP constraints are applied
- * when the execution environment transitions between active and low power mode.
- */
+
 #define QCOM_ICC_BUCKET_AMC		0
 #define QCOM_ICC_BUCKET_WAKE		1
 #define QCOM_ICC_BUCKET_SLEEP		2

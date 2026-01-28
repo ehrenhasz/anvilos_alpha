@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kernel-based Virtual Machine driver for Linux
- *
- * AMD SVM support
- *
- * Copyright (C) 2006 Qumranet, Inc.
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
- *
- * Authors:
- *   Yaniv Kamay  <yaniv@qumranet.com>
- *   Avi Kivity   <avi@qumranet.com>
- */
+
+
 
 #ifndef __SVM_SVM_H
 #define __SVM_SVM_H
@@ -40,29 +29,21 @@ extern bool intercept_smi;
 extern bool x2avic_enabled;
 extern bool vnmi;
 
-/*
- * Clean bits in VMCB.
- * VMCB_ALL_CLEAN_MASK might also need to
- * be updated if this enum is modified.
- */
+
 enum {
-	VMCB_INTERCEPTS, /* Intercept vectors, TSC offset,
-			    pause filter count */
-	VMCB_PERM_MAP,   /* IOPM Base and MSRPM Base */
-	VMCB_ASID,	 /* ASID */
-	VMCB_INTR,	 /* int_ctl, int_vector */
-	VMCB_NPT,        /* npt_en, nCR3, gPAT */
-	VMCB_CR,	 /* CR0, CR3, CR4, EFER */
-	VMCB_DR,         /* DR6, DR7 */
-	VMCB_DT,         /* GDT, IDT */
-	VMCB_SEG,        /* CS, DS, SS, ES, CPL */
-	VMCB_CR2,        /* CR2 only */
-	VMCB_LBR,        /* DBGCTL, BR_FROM, BR_TO, LAST_EX_FROM, LAST_EX_TO */
-	VMCB_AVIC,       /* AVIC APIC_BAR, AVIC APIC_BACKING_PAGE,
-			  * AVIC PHYSICAL_TABLE pointer,
-			  * AVIC LOGICAL_TABLE pointer
-			  */
-	VMCB_SW = 31,    /* Reserved for hypervisor/software use */
+	VMCB_INTERCEPTS, 
+	VMCB_PERM_MAP,   
+	VMCB_ASID,	 
+	VMCB_INTR,	 
+	VMCB_NPT,        
+	VMCB_CR,	 
+	VMCB_DR,         
+	VMCB_DT,         
+	VMCB_SEG,        
+	VMCB_CR2,        
+	VMCB_LBR,        
+	VMCB_AVIC,       
+	VMCB_SW = 31,    
 };
 
 #define VMCB_ALL_CLEAN_MASK (					\
@@ -73,29 +54,29 @@ enum {
 	(1U << VMCB_LBR) | (1U << VMCB_AVIC) |			\
 	(1U << VMCB_SW))
 
-/* TPR and CR2 are always written before VMRUN */
+
 #define VMCB_ALWAYS_DIRTY_MASK	((1U << VMCB_INTR) | (1U << VMCB_CR2))
 
 struct kvm_sev_info {
-	bool active;		/* SEV enabled guest */
-	bool es_active;		/* SEV-ES enabled guest */
-	unsigned int asid;	/* ASID used for this guest */
-	unsigned int handle;	/* SEV firmware handle */
-	int fd;			/* SEV device fd */
-	unsigned long pages_locked; /* Number of pages locked */
-	struct list_head regions_list;  /* List of registered regions */
-	u64 ap_jump_table;	/* SEV-ES AP Jump Table address */
-	struct kvm *enc_context_owner; /* Owner of copied encryption context */
-	struct list_head mirror_vms; /* List of VMs mirroring */
-	struct list_head mirror_entry; /* Use as a list entry of mirrors */
-	struct misc_cg *misc_cg; /* For misc cgroup accounting */
+	bool active;		
+	bool es_active;		
+	unsigned int asid;	
+	unsigned int handle;	
+	int fd;			
+	unsigned long pages_locked; 
+	struct list_head regions_list;  
+	u64 ap_jump_table;	
+	struct kvm *enc_context_owner; 
+	struct list_head mirror_vms; 
+	struct list_head mirror_entry; 
+	struct misc_cg *misc_cg; 
 	atomic_t migration_in_progress;
 };
 
 struct kvm_svm {
 	struct kvm kvm;
 
-	/* Struct members for AVIC */
+	
 	u32 avic_vm_id;
 	struct page *avic_logical_id_table_page;
 	struct page *avic_physical_id_table_page;
@@ -160,43 +141,33 @@ struct svm_nested_state {
 	u64 vmcb12_gpa;
 	u64 last_vmcb12_gpa;
 
-	/* These are the merged vectors */
+	
 	u32 *msrpm;
 
-	/* A VMRUN has started but has not yet been performed, so
-	 * we cannot inject a nested vmexit yet.  */
+	
 	bool nested_run_pending;
 
-	/* cache for control fields of the guest */
+	
 	struct vmcb_ctrl_area_cached ctl;
 
-	/*
-	 * Note: this struct is not kept up-to-date while L2 runs; it is only
-	 * valid within nested_svm_vmrun.
-	 */
+	
 	struct vmcb_save_area_cached save;
 
 	bool initialized;
 
-	/*
-	 * Indicates whether MSR bitmap for L2 needs to be rebuilt due to
-	 * changes in MSR bitmap for L1 or switching to a different L2. Note,
-	 * this flag can only be used reliably in conjunction with a paravirt L1
-	 * which informs L0 whether any changes to MSR bitmap for L2 were done
-	 * on its side.
-	 */
+	
 	bool force_msr_bitmap_recalc;
 };
 
 struct vcpu_sev_es_state {
-	/* SEV-ES support */
+	
 	struct sev_es_save_area *vmsa;
 	struct ghcb *ghcb;
 	u8 valid_bitmap[16];
 	struct kvm_host_map ghcb_map;
 	bool received_first_sipi;
 
-	/* SEV-ES scratch area support */
+	
 	u64 sw_scratch;
 	void *ghcb_sa;
 	u32 ghcb_sa_len;
@@ -206,7 +177,7 @@ struct vcpu_sev_es_state {
 
 struct vcpu_svm {
 	struct kvm_vcpu vcpu;
-	/* vmcb always points at current_vmcb->ptr, it's purely a shorthand. */
+	
 	struct vmcb *vmcb;
 	struct kvm_vmcb_info vmcb01;
 	struct kvm_vmcb_info *current_vmcb;
@@ -222,11 +193,7 @@ struct vcpu_svm {
 	u64 spec_ctrl;
 
 	u64 tsc_ratio_msr;
-	/*
-	 * Contains guest-controlled bits of VIRT_SPEC_CTRL, which will be
-	 * translated into the appropriate L2_CFG bits on the host to
-	 * perform speculative control.
-	 */
+	
 	u64 virt_spec_ctrl;
 
 	u32 *msrpm;
@@ -235,23 +202,13 @@ struct vcpu_svm {
 
 	struct svm_nested_state nested;
 
-	/* NMI mask value, used when vNMI is not enabled */
+	
 	bool nmi_masked;
 
-	/*
-	 * True when NMIs are still masked but guest IRET was just intercepted
-	 * and KVM is waiting for RIP to change, which will signal that the
-	 * intercepted IRET was retired and thus NMI can be unmasked.
-	 */
+	
 	bool awaiting_iret_completion;
 
-	/*
-	 * Set when KVM is awaiting IRET completion and needs to inject NMIs as
-	 * soon as the IRET completes (e.g. NMI is pending injection).  KVM
-	 * temporarily steals RFLAGS.TF to single-step the guest in this case
-	 * in order to regain control as soon as the NMI-blocking condition
-	 * goes away.
-	 */
+	
 	bool nmi_singlestep;
 	u64 nmi_singlestep_guest_rflags;
 
@@ -267,16 +224,11 @@ struct vcpu_svm {
 	struct page *avic_backing_page;
 	u64 *avic_physical_id_cache;
 
-	/*
-	 * Per-vcpu list of struct amd_svm_iommu_ir:
-	 * This is used mainly to store interrupt remapping information used
-	 * when update the vcpu affinity. This avoids the need to scan for
-	 * IRTE and try to match ga_tag in the IOMMU driver.
-	 */
+	
 	struct list_head ir_list;
 	spinlock_t ir_list_lock;
 
-	/* Save desired MSR intercept (read: pass-through) state */
+	
 	struct {
 		DECLARE_BITMAP(read, MAX_DIRECT_ACCESS_MSRS);
 		DECLARE_BITMAP(write, MAX_DIRECT_ACCESS_MSRS);
@@ -288,7 +240,7 @@ struct vcpu_svm {
 
 	bool x2avic_msrs_intercepted;
 
-	/* Guest GIF value, used when vGIF is not enabled */
+	
 	bool guest_gif;
 };
 
@@ -303,7 +255,7 @@ struct svm_cpu_data {
 
 	struct vmcb *current_vmcb;
 
-	/* index = sev_asid, value = vmcb pointer */
+	
 	struct vmcb **sev_vmcbs;
 };
 
@@ -364,14 +316,7 @@ static __always_inline struct vcpu_svm *to_svm(struct kvm_vcpu *vcpu)
 	return container_of(vcpu, struct vcpu_svm, vcpu);
 }
 
-/*
- * Only the PDPTRs are loaded on demand into the shadow MMU.  All other
- * fields are synchronized on VM-Exit, because accessing the VMCB is cheap.
- *
- * CR3 might be out of date in the VMCB but it is not marked dirty; instead,
- * KVM_REQ_LOAD_MMU_PGD is always requested when the cached vcpu->arch.cr3
- * is changed.  svm_load_mmu_pgd() then syncs the new CR3 value into the VMCB.
- */
+
 #define SVM_REGS_LAZY_LOAD_SET	(1 << VCPU_EXREG_PDPTR)
 
 static inline void vmcb_set_intercept(struct vmcb_control_area *control, u32 bit)
@@ -501,7 +446,7 @@ static inline bool nested_vnmi_enabled(struct vcpu_svm *svm)
 
 static inline bool is_x2apic_msrpm_offset(u32 offset)
 {
-	/* 4 msrs per u8, and 4 u8 in u32 */
+	
 	u32 msr = offset * 16;
 
 	return (msr >= APIC_BASE_MSR) &&
@@ -529,7 +474,7 @@ static inline bool is_vnmi_enabled(struct vcpu_svm *svm)
 		return false;
 }
 
-/* svm.c */
+
 #define MSR_INVALID				0xffffffffU
 
 #define DEBUGCTL_RESERVED_BITS (~(0x3fULL))
@@ -558,11 +503,11 @@ void svm_set_x2apic_msr_interception(struct vcpu_svm *svm, bool disable);
 void svm_complete_interrupt_delivery(struct kvm_vcpu *vcpu, int delivery_mode,
 				     int trig_mode, int vec);
 
-/* nested.c */
 
-#define NESTED_EXIT_HOST	0	/* Exit handled on host level */
-#define NESTED_EXIT_DONE	1	/* Exit caused nested vmexit  */
-#define NESTED_EXIT_CONTINUE	2	/* Further checks needed      */
+
+#define NESTED_EXIT_HOST	0	
+#define NESTED_EXIT_DONE	1	
+#define NESTED_EXIT_CONTINUE	2	
 
 static inline bool nested_svm_virtualize_tpr(struct kvm_vcpu *vcpu)
 {
@@ -622,7 +567,7 @@ void svm_switch_vmcb(struct vcpu_svm *svm, struct kvm_vmcb_info *target_vmcb);
 
 extern struct kvm_x86_nested_ops svm_nested_ops;
 
-/* avic.c */
+
 #define AVIC_REQUIRED_APICV_INHIBITS			\
 (							\
 	BIT(APICV_INHIBIT_REASON_DISABLE) |		\
@@ -660,7 +605,7 @@ unsigned long avic_vcpu_get_apicv_inhibit_reasons(struct kvm_vcpu *vcpu);
 void avic_refresh_virtual_apic_mode(struct kvm_vcpu *vcpu);
 
 
-/* sev.c */
+
 
 #define GHCB_VERSION_MAX	1ULL
 #define GHCB_VERSION_MIN	1ULL
@@ -693,7 +638,7 @@ void sev_vcpu_deliver_sipi_vector(struct kvm_vcpu *vcpu, u8 vector);
 void sev_es_prepare_switch_to_guest(struct sev_es_save_area *hostsa);
 void sev_es_unmap_ghcb(struct vcpu_svm *svm);
 
-/* vmenter.S */
+
 
 void __svm_sev_es_vcpu_run(struct vcpu_svm *svm, bool spec_ctrl_intercepted);
 void __svm_vcpu_run(struct vcpu_svm *svm, bool spec_ctrl_intercepted);

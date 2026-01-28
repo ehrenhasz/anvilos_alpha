@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-only
+
 
 peci-cputemp-y := cputemp.o
 peci-dimmtemp-y := dimmtemp.o

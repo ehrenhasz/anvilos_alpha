@@ -12,10 +12,10 @@ print("%G" % 1.23456)
 print("%06e" % float("inf"))
 print("%06e" % float("-inf"))
 print("%06e" % float("nan"))
-print("%02.3d" % 123)  # prec > width
-print("%+f %+f" % (1.23, -1.23))  # float sign
-print("% f % f" % (1.23, -1.23))  # float space sign
-print("%0f" % -1.23)  # negative number with 0 padding
+print("%02.3d" % 123)  
+print("%+f %+f" % (1.23, -1.23))  
+print("% f % f" % (1.23, -1.23))  
+print("%0f" % -1.23)  
 print("%f" % 1e-10)
 print("%f" % 1e-20)
 print("%f" % 1e-50)
@@ -26,6 +26,6 @@ print(("%.40g" % 1e-1)[:2])
 print(("%.40g" % 1e-2)[:2])
 print(("%.40g" % 1e-3)[:2])
 print(("%.40g" % 1.1e-4)[:2])
-print("%.0g" % 1)  # 0 precision 'g'
-print("%.1e" % 9.99)  # round up with positive exponent
-print("%.1e" % 0.999)  # round up with negative exponent
+print("%.0g" % 1)  
+print("%.1e" % 9.99)  
+print("%.1e" % 0.999)  

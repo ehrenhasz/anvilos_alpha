@@ -1,25 +1,4 @@
-/*
- *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
- *  Copyright (C) 2007 The Regents of the University of California.
- *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
- *  Written by Brian Behlendorf <behlendorf1@llnl.gov>.
- *  UCRL-CODE-235197
- *
- *  This file is part of the SPL, Solaris Porting Layer.
- *
- *  The SPL is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation; either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  The SPL is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with the SPL.  If not, see <http://www.gnu.org/licenses/>.
- */
+
 
 #ifndef _SPL_SYSMACROS_H
 #define	_SPL_SYSMACROS_H
@@ -69,7 +48,7 @@
 #define	MAXOFFSET_T			LLONG_MAX
 #define	MAXBSIZE			8192
 #define	DEV_BSIZE			512
-#define	DEV_BSHIFT			9 /* log2(DEV_BSIZE) */
+#define	DEV_BSHIFT			9 
 
 #define	proc_pageout			NULL
 #define	curproc				current
@@ -83,13 +62,7 @@
 #define	RLIM64_INFINITY			(~0ULL)
 #endif
 
-/*
- * 0..MAX_PRIO-1:		Process priority
- * 0..MAX_RT_PRIO-1:		RT priority tasks
- * MAX_RT_PRIO..MAX_PRIO-1:	SCHED_NORMAL tasks
- *
- * Treat shim tasks as SCHED_NORMAL tasks
- */
+
 #define	minclsyspri			(MAX_PRIO-1)
 #define	maxclsyspri			(MAX_RT_PRIO)
 #define	defclsyspri			(DEFAULT_PRIO)
@@ -101,9 +74,7 @@
 #define	PRIO_TO_NICE(prio)		((prio) - MAX_RT_PRIO - 20)
 #endif
 
-/*
- * Missing macros
- */
+
 #ifndef PAGESIZE
 #define	PAGESIZE			PAGE_SIZE
 #endif
@@ -112,18 +83,15 @@
 #define	PAGESHIFT			PAGE_SHIFT
 #endif
 
-/* Missing globals */
+
 extern unsigned long spl_hostid;
 
-/* Missing misc functions */
+
 extern uint32_t zone_get_hostid(void *zone);
 extern void spl_setup(void);
 extern void spl_cleanup(void);
 
-/*
- * Only handles the first 4096 majors and first 256 minors. We don't have a
- * libc for the kernel module so we define this inline.
- */
+
 static inline dev_t
 makedev(unsigned int major, unsigned int minor)
 {
@@ -136,7 +104,7 @@ makedev(unsigned int major, unsigned int minor)
 #define	highbit64(x)		fls64(x)
 #define	makedevice(maj, min)	makedev(maj, min)
 
-/* common macros */
+
 #ifndef MIN
 #define	MIN(a, b)		((a) < (b) ? (a) : (b))
 #endif
@@ -156,9 +124,7 @@ makedev(unsigned int major, unsigned int minor)
 #define	howmany(x, y)		(((x) + ((y) - 1)) / (y))
 #endif
 
-/*
- * Compatibility macros/typedefs needed for Solaris -> Linux port
- */
+
 #define	P2ALIGN(x, align)	((x) & -(align))
 #define	P2CROSS(x, y, align)	(((x) ^ (y)) > (align) - 1)
 #define	P2ROUNDUP(x, align)	((((x) - 1) | ((align) - 1)) + 1)
@@ -169,18 +135,7 @@ makedev(unsigned int major, unsigned int minor)
 #define	P2BOUNDARY(off, len, align) \
 				(((off) ^ ((off) + (len) - 1)) > (align) - 1)
 
-/*
- * Typed version of the P2* macros.  These macros should be used to ensure
- * that the result is correctly calculated based on the data type of (x),
- * which is passed in as the last argument, regardless of the data
- * type of the alignment.  For example, if (x) is of type uint64_t,
- * and we want to round it up to a page boundary using "PAGESIZE" as
- * the alignment, we can do either
- *
- * P2ROUNDUP(x, (uint64_t)PAGESIZE)
- * or
- * P2ROUNDUP_TYPED(x, PAGESIZE, uint64_t)
- */
+
 #define	P2ALIGN_TYPED(x, align, type)   \
 	((type)(x) & -(type)(align))
 #define	P2PHASE_TYPED(x, align, type)   \
@@ -207,9 +162,9 @@ makedev(unsigned int major, unsigned int minor)
 
 #if !defined(_KMEMUSER) && !defined(offsetof)
 
-/* avoid any possibility of clashing with <stddef.h> version */
+
 
 #define	offsetof(s, m)  ((size_t)(&(((s *)0)->m)))
 #endif
 
-#endif  /* _SPL_SYSMACROS_H */
+#endif  

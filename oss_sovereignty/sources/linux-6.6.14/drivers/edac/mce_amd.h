@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _EDAC_MCE_AMD_H
 #define _EDAC_MCE_AMD_H
 
@@ -67,9 +67,7 @@ enum rrrr_ids {
 	R4_SNOOP,
 };
 
-/*
- * per-family decoder ops
- */
+
 struct amd_decoder_ops {
 	bool (*mc0_mce)(u16, u8);
 	bool (*mc1_mce)(u16, u8);
@@ -79,4 +77,4 @@ struct amd_decoder_ops {
 void amd_register_ecc_decoder(void (*f)(int, struct mce *));
 void amd_unregister_ecc_decoder(void (*f)(int, struct mce *));
 
-#endif /* _EDAC_MCE_AMD_H */
+#endif 

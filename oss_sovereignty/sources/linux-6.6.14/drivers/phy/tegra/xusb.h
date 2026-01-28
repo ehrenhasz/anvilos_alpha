@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014-2022, NVIDIA CORPORATION.  All rights reserved.
- * Copyright (c) 2015, Google Inc.
- */
+
+
 
 #ifndef __PHY_TEGRA_XUSB_H
 #define __PHY_TEGRA_XUSB_H
@@ -16,7 +13,7 @@
 #include <linux/usb/otg.h>
 #include <linux/usb/role.h>
 
-/* legacy entry points for backwards-compatibility */
+
 int tegra_xusb_padctl_legacy_probe(struct platform_device *pdev);
 int tegra_xusb_padctl_legacy_remove(struct platform_device *pdev);
 
@@ -25,9 +22,7 @@ struct phy_provider;
 struct platform_device;
 struct regulator;
 
-/*
- * lanes
- */
+
 struct tegra_xusb_lane_soc {
 	const char *name;
 
@@ -143,9 +138,7 @@ struct tegra_xusb_lane_ops {
 
 bool tegra_xusb_lane_check(struct tegra_xusb_lane *lane, const char *function);
 
-/*
- * pads
- */
+
 struct tegra_xusb_pad_soc;
 struct tegra_xusb_padctl;
 
@@ -269,9 +262,7 @@ to_sata_pad(struct tegra_xusb_pad *pad)
 	return container_of(pad, struct tegra_xusb_sata_pad, base);
 }
 
-/*
- * ports
- */
+
 struct tegra_xusb_port_ops;
 
 struct tegra_xusb_port {
@@ -390,9 +381,7 @@ struct tegra_xusb_port_ops {
 	struct tegra_xusb_lane *(*map)(struct tegra_xusb_port *port);
 };
 
-/*
- * pad controller
- */
+
 struct tegra_xusb_padctl_soc;
 
 struct tegra_xusb_padctl_ops {
@@ -514,4 +503,4 @@ extern const struct tegra_xusb_padctl_soc tegra194_xusb_padctl_soc;
 extern const struct tegra_xusb_padctl_soc tegra234_xusb_padctl_soc;
 #endif
 
-#endif /* __PHY_TEGRA_XUSB_H */
+#endif 

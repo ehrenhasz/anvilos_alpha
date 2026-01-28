@@ -1,33 +1,33 @@
-# Copyright (c) 2010-2016, Aneurin Price <aneurin.price@gmail.com>
 
-# Permission is hereby granted, free of charge, to any person
-# obtaining a copy of this software and associated documentation
-# files (the "Software"), to deal in the Software without
-# restriction, including without limitation the rights to use,
-# copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the
-# Software is furnished to do so, subject to the following
-# conditions:
 
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-# OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 __ZFS_CMD="@sbindir@/zfs"
 __ZPOOL_CMD="@sbindir@/zpool"
 
-# Disable bash's built-in hostname completion, as this makes it impossible to
-# provide completions containing an @-sign, which is necessary for completing
-# snapshot names. If bash_completion is in use, this will already be disabled
-# and replaced with better completions anyway.
+
+
+
+
 shopt -u hostcomplete
 
 __zfs_get_commands()
@@ -70,26 +70,26 @@ __zfs_match_snapshot()
         if [[ "$cur" != "" ]] && __zfs_list_datasets "$cur" &> /dev/null
         then
             $__ZFS_CMD list -H -o name -s name -t filesystem,volume -r "$cur" | tail -n +2
-            # We output the base dataset name even though we might be
-            # completing a command that can only take a snapshot, because it
-            # prevents bash from considering the completion finished when it
-            # ends in the bare @.
+            
+            
+            
+            
             echo "$cur"
             echo "$cur@"
         else
             local datasets
             datasets="$(__zfs_list_datasets)"
-            # As above
+            
             echo "$datasets"
             if [[ "$cur" == */ ]]
             then
-                # If the current command ends with a slash, then the only way
-                # it can be completed with a single tab press (ie. in this pass)
-                # is if it has exactly one child, so that's the only time we
-                # need to offer a suggestion with an @ appended.
+                
+                
+                
+                
                 local num_children
-                # This is actually off by one as zfs list includes the named
-                # dataset in addition to its children
+                
+                
                 num_children=$(__zfs_list_datasets -d 1 "${cur%/}" 2> /dev/null | wc -l)
                 if [[ $num_children != 2 ]]
                 then
@@ -103,7 +103,7 @@ __zfs_match_snapshot()
 
 __zfs_match_snapshot_or_bookmark()
 {
-    local base_dataset="${cur%[#@]*}"
+    local base_dataset="${cur%[
     if [[ "$base_dataset" != "$cur" ]]
     then
         if [[ $cur == *@* ]]
@@ -117,7 +117,7 @@ __zfs_match_snapshot_or_bookmark()
         if [[ -e "$cur" ]] && $__ZFS_CMD list -H -o name -s name -t filesystem,volume "$cur" &> /dev/null
         then
             echo "$cur@"
-            echo "$cur#"
+            echo "$cur
         fi
     fi
 }
@@ -131,15 +131,15 @@ __zfs_match_multiple_snapshots()
         local base_dataset="${cur%@*}"
         if [[ "$base_dataset" != "$cur" ]]
         then
-            local cur="${cur##*,}"
+            local cur="${cur
             if [[ $cur =~ ^%|%.*% ]]
             then
-                # correct range syntax is start%end
+                
                 return 1
             fi
             local range_start
             range_start="$(expr "$cur" : '\(.*%\)')"
-            # shellcheck disable=SC2016
+            
             $__ZFS_CMD list -H -o name -s name -t snapshot -d 1 "$base_dataset" | sed 's$.*@$'"$range_start"'$g'
         fi
     else
@@ -160,7 +160,7 @@ __zfs_argument_chosen()
         local prev="${COMP_WORDS[$word]}"
         if [[ ${COMP_WORDS[$word-1]} != -[tos] ]]
         then
-            if [[ "$prev" == [^,]*,* ]] || [[ "$prev" == *[@:\#]* ]]
+            if [[ "$prev" == [^,]*,* ]] || [[ "$prev" == *[@:\
             then
                 return 0
             fi
@@ -182,7 +182,7 @@ __zfs_complete_ordered_arguments()
     local list2=$2
     local cur=$3
     local extra=$4
-    # shellcheck disable=SC2086
+    
     if __zfs_argument_chosen $list1
     then
         mapfile -t COMPREPLY < <(compgen -W "$list2 $extra" -- "$cur")
@@ -197,11 +197,11 @@ __zfs_complete_multiple_options()
     local cur=$2
     local existing_opts
 
-    mapfile -t COMPREPLY < <(compgen -W "$options" -- "${cur##*,}")
+    mapfile -t COMPREPLY < <(compgen -W "$options" -- "${cur
     existing_opts=$(expr "$cur" : '\(.*,\)')
     if [[ -n "$existing_opts" ]]
     then
-        COMPREPLY=( "${COMPREPLY[@]/#/${existing_opts}}" )
+        COMPREPLY=( "${COMPREPLY[@]/
     fi
 }
 
@@ -219,8 +219,8 @@ __zfs_complete_switch()
 
 __zfs_complete_nospace()
 {
-    # Google indicates that there may still be bash versions out there that
-    # don't have compopt.
+    
+    
     if type compopt &> /dev/null
     then
         compopt -o nospace
@@ -233,7 +233,7 @@ __zfs_complete()
     COMPREPLY=()
     if type _get_comp_words_by_ref &> /dev/null
     then
-        # Don't split on colon
+        
         _get_comp_words_by_ref -n : -c cur -p prev -w COMP_WORDS -i COMP_CWORD
     else
         cur="${COMP_WORDS[COMP_CWORD]}"
@@ -241,7 +241,7 @@ __zfs_complete()
     fi
     cmd="${COMP_WORDS[1]}"
 
-    if [[ ${prev##*/} == zfs ]]
+    if [[ ${prev
     then
         cmds=$(__zfs_get_commands)
         mapfile -t COMPREPLY < <(compgen -W "$cmds -?" -- "$cur")
@@ -252,7 +252,7 @@ __zfs_complete()
         bookmark)
             if __zfs_argument_chosen
             then
-                mapfile -t COMPREPLY < <(compgen -W "${prev%@*}# ${prev/@/#}" -- "$cur")
+                mapfile -t COMPREPLY < <(compgen -W "${prev%@*}
             else
                 mapfile -t COMPREPLY < <(compgen -W "$(__zfs_match_snapshot)" -- "$cur")
             fi
@@ -293,7 +293,7 @@ __zfs_complete()
                 *)
                     if ! __zfs_complete_switch "H,r,p,d,o,t,s"
                     then
-                        # shellcheck disable=SC2046
+                        
                         if __zfs_argument_chosen $(__zfs_get_properties)
                         then
                             mapfile -t COMPREPLY < <(compgen -W "$(__zfs_match_snapshot)" -- "$cur")
@@ -435,7 +435,7 @@ __zpool_complete()
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     cmd="${COMP_WORDS[1]}"
 
-    if [[ ${prev##*/} == zpool ]]
+    if [[ ${prev
     then
         cmds=$(__zpool_get_commands)
         mapfile -t COMPREPLY < <(compgen -W "$cmds" -- "$cur")
@@ -463,7 +463,7 @@ __zpool_complete()
             ;;
         add|attach|clear|create|detach|offline|online|remove|replace)
             pools="$(__zpool_list_pools)"
-            # shellcheck disable=SC2086
+            
             if __zfs_argument_chosen $pools
             then
                 _filedir

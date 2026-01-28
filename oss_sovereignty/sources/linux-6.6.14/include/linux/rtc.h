@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Generic RTC interface.
- * This version contains the part of the user interface to the Real Time Clock
- * service. It is used with both the legacy mc146818 and also  EFI
- * Struct rtc_time and first 12 ioctl by Paul Gortmaker, 1996 - separated out
- * from <linux/mc146818rtc.h> to this file for 2.4 kernels.
- *
- * Copyright (C) 1999 Hewlett-Packard Co.
- * Copyright (C) 1999 Stephane Eranian <eranian@hpl.hp.com>
- */
+
+
 #ifndef _LINUX_RTC_H_
 #define _LINUX_RTC_H_
 
@@ -26,9 +17,7 @@ extern void rtc_time64_to_tm(time64_t time, struct rtc_time *tm);
 ktime_t rtc_tm_to_ktime(struct rtc_time tm);
 struct rtc_time rtc_ktime_to_tm(ktime_t kt);
 
-/*
- * rtc_tm_sub - Return the difference in seconds.
- */
+
 static inline time64_t rtc_tm_sub(struct rtc_time *lhs, struct rtc_time *rhs)
 {
 	return rtc_tm_to_time64(lhs) - rtc_tm_to_time64(rhs);
@@ -44,18 +33,7 @@ static inline time64_t rtc_tm_sub(struct rtc_time *lhs, struct rtc_time *rhs)
 
 extern struct class *rtc_class;
 
-/*
- * For these RTC methods the device parameter is the physical device
- * on whatever bus holds the hardware (I2C, Platform, SPI, etc), which
- * was passed to rtc_device_register().  Its driver_data normally holds
- * device state, including the rtc_device pointer for the RTC.
- *
- * Most of these methods are called with rtc_device.ops_lock held,
- * through the rtc_*(struct rtc_device *, ...) calls.
- *
- * The (current) exceptions are mostly filesystem hooks:
- *   - the proc() hook for procfs
- */
+
 struct rtc_class_ops {
 	int (*ioctl)(struct device *, unsigned int, unsigned long);
 	int (*read_time)(struct device *, struct rtc_time *);
@@ -80,7 +58,7 @@ struct rtc_timer {
 	int enabled;
 };
 
-/* flags */
+
 #define RTC_DEV_BUSY 0
 #define RTC_NO_CDEV  1
 
@@ -107,39 +85,11 @@ struct rtc_device {
 	struct timerqueue_head timerqueue;
 	struct rtc_timer aie_timer;
 	struct rtc_timer uie_rtctimer;
-	struct hrtimer pie_timer; /* sub second exp, so needs hrtimer */
+	struct hrtimer pie_timer; 
 	int pie_enabled;
 	struct work_struct irqwork;
 
-	/*
-	 * This offset specifies the update timing of the RTC.
-	 *
-	 * tsched     t1 write(t2.tv_sec - 1sec))  t2 RTC increments seconds
-	 *
-	 * The offset defines how tsched is computed so that the write to
-	 * the RTC (t2.tv_sec - 1sec) is correct versus the time required
-	 * for the transport of the write and the time which the RTC needs
-	 * to increment seconds the first time after the write (t2).
-	 *
-	 * For direct accessible RTCs tsched ~= t1 because the write time
-	 * is negligible. For RTCs behind slow busses the transport time is
-	 * significant and has to be taken into account.
-	 *
-	 * The time between the write (t1) and the first increment after
-	 * the write (t2) is RTC specific. For a MC146818 RTC it's 500ms,
-	 * for many others it's exactly 1 second. Consult the datasheet.
-	 *
-	 * The value of this offset is also used to calculate the to be
-	 * written value (t2.tv_sec - 1sec) at tsched.
-	 *
-	 * The default value for this is NSEC_PER_SEC + 10 msec default
-	 * transport time. The offset can be adjusted by drivers so the
-	 * calculation for the to be written value at tsched becomes
-	 * correct:
-	 *
-	 *	newval = tsched + set_offset_nsec - NSEC_PER_SEC
-	 * and  (tsched + set_offset_nsec) % NSEC_PER_SEC == 0
-	 */
+	
 	unsigned long set_offset_nsec;
 
 	unsigned long features[BITS_TO_LONGS(RTC_FEATURE_CNT)];
@@ -154,7 +104,7 @@ struct rtc_device {
 #ifdef CONFIG_RTC_INTF_DEV_UIE_EMUL
 	struct work_struct uie_task;
 	struct timer_list uie_timer;
-	/* Those fields are protected by rtc->irq_lock */
+	
 	unsigned int oldsecs;
 	unsigned int uie_irq_active:1;
 	unsigned int stop_uie_polling:1;
@@ -167,15 +117,15 @@ struct rtc_device {
 #define rtc_lock(d) mutex_lock(&d->ops_lock)
 #define rtc_unlock(d) mutex_unlock(&d->ops_lock)
 
-/* useful timestamps */
-#define RTC_TIMESTAMP_BEGIN_0000	-62167219200ULL /* 0000-01-01 00:00:00 */
-#define RTC_TIMESTAMP_BEGIN_1900	-2208988800LL /* 1900-01-01 00:00:00 */
-#define RTC_TIMESTAMP_BEGIN_2000	946684800LL /* 2000-01-01 00:00:00 */
-#define RTC_TIMESTAMP_END_2063		2966371199LL /* 2063-12-31 23:59:59 */
-#define RTC_TIMESTAMP_END_2079		3471292799LL /* 2079-12-31 23:59:59 */
-#define RTC_TIMESTAMP_END_2099		4102444799LL /* 2099-12-31 23:59:59 */
-#define RTC_TIMESTAMP_END_2199		7258118399LL /* 2199-12-31 23:59:59 */
-#define RTC_TIMESTAMP_END_9999		253402300799LL /* 9999-12-31 23:59:59 */
+
+#define RTC_TIMESTAMP_BEGIN_0000	-62167219200ULL 
+#define RTC_TIMESTAMP_BEGIN_1900	-2208988800LL 
+#define RTC_TIMESTAMP_BEGIN_2000	946684800LL 
+#define RTC_TIMESTAMP_END_2063		2966371199LL 
+#define RTC_TIMESTAMP_END_2079		3471292799LL 
+#define RTC_TIMESTAMP_END_2099		4102444799LL 
+#define RTC_TIMESTAMP_END_2199		7258118399LL 
+#define RTC_TIMESTAMP_END_9999		253402300799LL 
 
 extern struct rtc_device *devm_rtc_device_register(struct device *dev,
 					const char *name,
@@ -261,4 +211,4 @@ int rtc_add_groups(struct rtc_device *rtc, const struct attribute_group **grps)
 	return 0;
 }
 #endif
-#endif /* _LINUX_RTC_H_ */
+#endif 

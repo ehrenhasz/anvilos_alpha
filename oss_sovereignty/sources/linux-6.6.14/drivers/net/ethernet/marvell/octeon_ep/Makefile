@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Network driver for Marvell's Octeon PCI Endpoint NIC
-#
+
+
+
+
 
 obj-$(CONFIG_OCTEON_EP) += octeon_ep.o
 

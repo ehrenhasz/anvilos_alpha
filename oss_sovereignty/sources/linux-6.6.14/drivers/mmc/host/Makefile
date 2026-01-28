@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for MMC/SD host controller drivers
-#
+
+
+
+
 
 obj-$(CONFIG_MMC_ARMMMCI) += armmmci.o
 armmmci-y := mmci.o

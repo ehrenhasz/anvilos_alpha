@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+
 
 #ifndef _FUN_KTLS_H
 #define _FUN_KTLS_H
@@ -27,4 +27,4 @@ static inline void fun_ktls_cleanup(struct funeth_priv *fp)
 }
 #endif
 
-#endif /* _FUN_KTLS_H */
+#endif 

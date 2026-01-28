@@ -31,22 +31,22 @@ class Lexer:
     re_addr_offset = r"Address offset: (?P<offset>0x[0-9A-Z]{2,3})"
     regexs = (
         (
-            "#define hex",
+            "
             re.compile(
-                r"#define +(?P<id>[A-Z0-9_]+) +\(?(\(uint32_t\))?(?P<hex>0x[0-9A-F]+)U?L?\)?($| */\*)"
+                r"
             ),
         ),
-        ("#define X", re.compile(r"#define +(?P<id>[A-Z0-9_]+) +(?P<id2>[A-Z0-9_]+)($| +/\*)")),
+        ("
         (
-            "#define X+hex",
+            "
             re.compile(
-                r"#define +(?P<id>[A-Za-z0-9_]+) +\(?(?P<id2>[A-Z0-9_]+) \+ (?P<hex>0x[0-9A-F]+)U?L?\)?($| +/\*)"
+                r"
             ),
         ),
         (
-            "#define typedef",
+            "
             re.compile(
-                r"#define +(?P<id>[A-Z0-9_]+(ext)?) +\(\([A-Za-z0-9_]+_(Global)?TypeDef \*\) (?P<id2>[A-Za-z0-9_]+)\)($| +/\*)"
+                r"
             ),
         ),
         ("typedef struct", re.compile(r"typedef struct$")),
@@ -105,18 +105,18 @@ def parse_file(filename):
         m = lexer.next_match()
         if m[0] == "EOF":
             break
-        elif m[0] == "#define hex":
+        elif m[0] == "
             d = m[1].groupdict()
             consts[d["id"]] = int(d["hex"], base=16)
-        elif m[0] == "#define X":
+        elif m[0] == "
             d = m[1].groupdict()
             if d["id2"] in consts:
                 consts[d["id"]] = consts[d["id2"]]
-        elif m[0] == "#define X+hex":
+        elif m[0] == "
             d = m[1].groupdict()
             if d["id2"] in consts:
                 consts[d["id"]] = consts[d["id2"]] + int(d["hex"], base=16)
-        elif m[0] == "#define typedef":
+        elif m[0] == "
             d = m[1].groupdict()
             if d["id2"] in consts:
                 periphs.append((d["id"], consts[d["id2"]]))
@@ -149,7 +149,7 @@ def parse_file(filename):
     return periphs, reg_defs
 def print_int_obj(val, needed_mpzs):
     if -0x40000000 <= val < 0x40000000:
-        print("MP_ROM_INT(%#x)" % val, end="")
+        print("MP_ROM_INT(%
     else:
         print("MP_ROM_PTR(&mpz_%08x)" % val, end="")
         needed_mpzs.add(val)
@@ -178,7 +178,7 @@ static const mp_rom_map_elem_t stm_%s_globals_table[] = {
     )
     for r in reg_defs:
         print(
-            "    { MP_ROM_QSTR(MP_QSTR_%s), MP_ROM_INT(%#x) }, // %s-bits, %s"
+            "    { MP_ROM_QSTR(MP_QSTR_%s), MP_ROM_INT(%
             % (r[0], r[1], r[2], r[3])
         )
     print(
@@ -244,7 +244,7 @@ def main():
             print(
                 "static const mp_obj_int_t mpz_%08x = {{&mp_type_int}, "
                 "{.neg=0, .fixed_dig=1, .alloc=2, .len=2, "
-                ".dig=(uint16_t*)(const uint16_t[]){%#x, %#x}}};"
+                ".dig=(uint16_t*)(const uint16_t[]){%
                 % (mpz, mpz & 0xFFFF, (mpz >> 16) & 0xFFFF),
                 file=mpz_file,
             )

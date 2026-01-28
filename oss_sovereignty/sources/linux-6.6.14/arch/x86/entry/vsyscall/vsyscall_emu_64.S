@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * vsyscall_emu_64.S: Vsyscall emulation page
- *
- * Copyright (c) 2011 Andy Lutomirski
- */
+
+
 
 #include <linux/linkage.h>
 

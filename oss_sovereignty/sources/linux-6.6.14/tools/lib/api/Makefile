@@ -1,12 +1,12 @@
-# SPDX-License-Identifier: GPL-2.0
+
 include ../../scripts/Makefile.include
-include ../../scripts/utilities.mak		# QUIET_CLEAN
+include ../../scripts/utilities.mak		
 
 ifeq ($(srctree),)
 srctree := $(patsubst %/,%,$(dir $(CURDIR)))
 srctree := $(patsubst %/,%,$(dir $(srctree)))
 srctree := $(patsubst %/,%,$(dir $(srctree)))
-#$(info Determined 'srctree' to be $(srctree))
+
 endif
 
 CC ?= $(CROSS_COMPILE)gcc
@@ -18,10 +18,10 @@ MAKEFLAGS += --no-print-directory
 INSTALL = install
 
 
-# Use DESTDIR for installing into a different root directory.
-# This is useful for building a package. The program will be
-# installed in this directory as if it was the root directory.
-# Then the build tool can move it later.
+
+
+
+
 DESTDIR ?=
 DESTDIR_SQ = '$(subst ','\'',$(DESTDIR))'
 
@@ -42,7 +42,7 @@ ifeq ($(DEBUG),0)
   CFLAGS += -D_FORTIFY_SOURCE
 endif
 
-# Treat warnings as errors unless directed not to
+
 ifneq ($(WERROR),0)
   CFLAGS += -Werror
 endif
@@ -64,7 +64,7 @@ endif
 prefix ?=
 libdir = $(prefix)/$(libdir_relative)
 
-# Shell quotes
+
 libdir_SQ = $(subst ','\'',$(libdir))
 
 all:

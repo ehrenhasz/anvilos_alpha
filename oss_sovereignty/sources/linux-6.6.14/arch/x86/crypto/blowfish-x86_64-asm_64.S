@@ -1,23 +1,19 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Blowfish Cipher Algorithm (x86_64)
- *
- * Copyright (C) 2011 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
- */
+
+
 
 #include <linux/linkage.h>
 
 .file "blowfish-x86_64-asm.S"
 .text
 
-/* structure of crypto context */
+
 #define p	0
 #define s0	((16 + 2) * 4)
 #define s1	((16 + 2 + (1 * 256)) * 4)
 #define s2	((16 + 2 + (2 * 256)) * 4)
 #define s3	((16 + 2 + (3 * 256)) * 4)
 
-/* register macros */
+
 #define CTX %r12
 #define RIO %rsi
 
@@ -53,9 +49,7 @@
 
 #define RKEY %r10
 
-/***********************************************************************
- * 1-way blowfish
- ***********************************************************************/
+
 #define F() \
 	rorq $16,		RX0; \
 	movzbl RX0bh,		RT0d; \
@@ -100,11 +94,7 @@
 	movq RX0, 		(RIO);
 
 SYM_FUNC_START(blowfish_enc_blk)
-	/* input:
-	 *	%rdi: ctx
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	movq %r12, %r11;
 
 	movq %rdi, CTX;
@@ -131,11 +121,7 @@ SYM_FUNC_START(blowfish_enc_blk)
 SYM_FUNC_END(blowfish_enc_blk)
 
 SYM_FUNC_START(blowfish_dec_blk)
-	/* input:
-	 *	%rdi: ctx
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	movq %r12, %r11;
 
 	movq %rdi, CTX;
@@ -162,13 +148,9 @@ SYM_FUNC_START(blowfish_dec_blk)
 	RET;
 SYM_FUNC_END(blowfish_dec_blk)
 
-/**********************************************************************
-  4-way blowfish, four blocks parallel
- **********************************************************************/
 
-/* F() for 4-way. Slower when used alone/1-way, but faster when used
- * parallel/4-way (tested on AMD Phenom II & Intel Xeon E7330).
- */
+
+
 #define F4(x) \
 	movzbl x ## bh,		RT1d; \
 	movzbl x ## bl,		RT3d; \
@@ -273,11 +255,7 @@ SYM_FUNC_END(blowfish_dec_blk)
 	xorq RT3,		RX3;
 
 SYM_FUNC_START(blowfish_enc_blk_4way)
-	/* input:
-	 *	%rdi: ctx
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	pushq %r12;
 	pushq %rbx;
 
@@ -308,12 +286,7 @@ SYM_FUNC_START(blowfish_enc_blk_4way)
 SYM_FUNC_END(blowfish_enc_blk_4way)
 
 SYM_FUNC_START(__blowfish_dec_blk_4way)
-	/* input:
-	 *	%rdi: ctx
-	 *	%rsi: dst
-	 *	%rdx: src
-	 *	%rcx: cbc (bool)
-	 */
+	
 	pushq %r12;
 	pushq %rbx;
 	pushq %rcx;

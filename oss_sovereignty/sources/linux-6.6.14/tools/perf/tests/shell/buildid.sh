@@ -42,7 +42,7 @@ check()
 		;;
 	esac
 	echo "build id: ${id}"
-	id_file=${id#??}
+	id_file=${id
 	id_dir=${id%$id_file}
 	link=$build_id_dir/.build-id/$id_dir/$id_file
 	echo "link: ${link}"
@@ -105,7 +105,7 @@ test_record()
 		exit 1
 	fi
 	args="$*"
-	check ${args##* }
+	check ${args
 	rm -f ${log_out} ${log_err}
 	rm -rf ${build_id_dir}
 	rm -rf ${data}

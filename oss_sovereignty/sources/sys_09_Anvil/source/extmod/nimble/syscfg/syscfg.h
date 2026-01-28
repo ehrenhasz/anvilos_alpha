@@ -9,7 +9,7 @@ void *nimble_malloc(size_t size);
 void nimble_free(void *ptr);
 void *nimble_realloc(void *ptr, size_t size);
 
-// Redirect NimBLE malloc to the GC heap.
+
 #define malloc(size) nimble_malloc(size)
 #define free(ptr) nimble_free(ptr)
 #define realloc(ptr, size) nimble_realloc(ptr, size)
@@ -21,10 +21,10 @@ int nimble_sprintf(char *str, const char *fmt, ...);
 
 #define MYNEWT_VAL_LOG_LEVEL (255)
 
-/*** compiler/arm-none-eabi-m4 */
+
 #define MYNEWT_VAL_HARDFLOAT (1)
 
-/*** kernel/os */
+
 #define MYNEWT_VAL_FLOAT_USER (0)
 #define MYNEWT_VAL_MSYS_1_BLOCK_COUNT (12)
 #define MYNEWT_VAL_MSYS_1_BLOCK_SIZE (292)
@@ -39,7 +39,7 @@ int nimble_sprintf(char *str, const char *fmt, ...);
 #define MYNEWT_VAL_OS_MEMPOOL_CHECK (0)
 #define MYNEWT_VAL_OS_MEMPOOL_POISON (0)
 
-/*** nimble */
+
 #define MYNEWT_VAL_BLE_EXT_ADV (0)
 #define MYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE (31)
 #define MYNEWT_VAL_BLE_MAX_CONNECTIONS (4)
@@ -50,7 +50,7 @@ int nimble_sprintf(char *str, const char *fmt, ...);
 #define MYNEWT_VAL_BLE_ROLE_PERIPHERAL (1)
 #define MYNEWT_VAL_BLE_WHITELIST (1)
 
-/*** nimble/host */
+
 #define MYNEWT_VAL_BLE_ATT_PREFERRED_MTU (256)
 #define MYNEWT_VAL_BLE_ATT_SVR_FIND_INFO (1)
 #define MYNEWT_VAL_BLE_ATT_SVR_FIND_TYPE (1)
@@ -124,13 +124,13 @@ int nimble_sprintf(char *str, const char *fmt, ...);
 #define MYNEWT_VAL_BLE_SM_THEIR_KEY_DIST (7)
 #define MYNEWT_VAL_BLE_STORE_MAX_BONDS (3)
 #define MYNEWT_VAL_BLE_STORE_MAX_CCCDS (8)
-// These can be overridden at runtime with ble.config(le_secure, mitm, bond, io).
+
 #define MYNEWT_VAL_BLE_SM_SC (1)
 #define MYNEWT_VAL_BLE_SM_MITM (0)
 #define MYNEWT_VAL_BLE_SM_BONDING (0)
 #define MYNEWT_VAL_BLE_SM_IO_CAP (BLE_HS_IO_NO_INPUT_OUTPUT)
 
-/*** nimble/host/services/gap */
+
 #define MYNEWT_VAL_BLE_SVC_GAP_APPEARANCE (0)
 #define MYNEWT_VAL_BLE_SVC_GAP_APPEARANCE_WRITE_PERM (-1)
 #define MYNEWT_VAL_BLE_SVC_GAP_CENTRAL_ADDRESS_RESOLUTION (-1)
@@ -146,13 +146,13 @@ int nimble_sprintf(char *str, const char *fmt, ...);
 #define MYNEWT_VAL_BLE_SVC_GAP_PPCP_SLAVE_LATENCY (0)
 #define MYNEWT_VAL_BLE_SVC_GAP_PPCP_SUPERVISION_TMO (0)
 
-/* Overridden by targets/porting-nimble (defined by nimble/transport) */
+
 #define MYNEWT_VAL_BLE_HCI_TRANSPORT_NIMBLE_BUILTIN (0)
 #define MYNEWT_VAL_BLE_HCI_TRANSPORT_RAM (0)
 #define MYNEWT_VAL_BLE_HCI_TRANSPORT_SOCKET (0)
 #define MYNEWT_VAL_BLE_HCI_TRANSPORT_UART (1)
 
-/*** nimble/transport/uart */
+
 #define MYNEWT_VAL_BLE_ACL_BUF_COUNT (12)
 #define MYNEWT_VAL_BLE_ACL_BUF_SIZE (255)
 #define MYNEWT_VAL_BLE_HCI_ACL_OUT_COUNT (12)
@@ -160,7 +160,7 @@ int nimble_sprintf(char *str, const char *fmt, ...);
 #define MYNEWT_VAL_BLE_HCI_EVT_HI_BUF_COUNT (8)
 #define MYNEWT_VAL_BLE_HCI_EVT_LO_BUF_COUNT (8)
 
-/* Overridden by targets/porting-nimble (defined by nimble/transport/uart) */
+
 #define MYNEWT_VAL_BLE_HCI_UART_BAUD (MICROPY_HW_BLE_UART_BAUDRATE)
 #define MYNEWT_VAL_BLE_HCI_UART_DATA_BITS (8)
 #define MYNEWT_VAL_BLE_HCI_UART_FLOW_CTRL (1)
@@ -168,7 +168,7 @@ int nimble_sprintf(char *str, const char *fmt, ...);
 #define MYNEWT_VAL_BLE_HCI_UART_PORT (MICROPY_HW_BLE_UART_ID)
 #define MYNEWT_VAL_BLE_HCI_UART_STOP_BITS (1)
 
-/* Required for code that uses BLE_HS_LOG */
+
 #define MYNEWT_VAL_NEWT_FEATURE_LOGCFG (1)
 
-#endif // MICROPY_INCLUDED_EXTMOD_NIMBLE_SYSCFG_H
+#endif 

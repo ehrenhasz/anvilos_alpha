@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Header of ADC MFD core driver for sunxi platforms
- *
- * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons.com>
- */
+
+
 
 #ifndef __SUN4I_GPADC__H__
 #define __SUN4I_GPADC__H__
@@ -27,7 +24,7 @@
 #define SUN4I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(2, 0) & (x))
 #define SUN4I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(2, 0)
 
-/* TP_CTRL1 bits for sun6i SOCs */
+
 #define SUN6I_GPADC_CTRL1_TOUCH_PAN_CALI_EN		BIT(7)
 #define SUN6I_GPADC_CTRL1_TP_DUAL_EN			BIT(6)
 #define SUN6I_GPADC_CTRL1_TP_MODE_EN			BIT(5)
@@ -35,7 +32,7 @@
 #define SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(3, 0) & BIT(x))
 #define SUN6I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(3, 0)
 
-/* TP_CTRL1 bits for sun8i SoCs */
+
 #define SUN8I_GPADC_CTRL1_CHOP_TEMP_EN			BIT(8)
 #define SUN8I_GPADC_CTRL1_GPADC_CALI_EN			BIT(7)
 
@@ -84,7 +81,7 @@
 #define SUN4I_GPADC_IRQ_FIFO_DATA			0
 #define SUN4I_GPADC_IRQ_TEMP_DATA			1
 
-/* 10s delay before suspending the IP */
+
 #define SUN4I_GPADC_AUTOSUSPEND_DELAY			10000
 
 struct sun4i_gpadc_dev {

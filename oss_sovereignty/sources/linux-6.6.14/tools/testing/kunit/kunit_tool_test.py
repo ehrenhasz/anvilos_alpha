@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-import tempfile, shutil # Handling test_tmpdir
+import tempfile, shutil 
 import itertools
 import json
 import os
@@ -70,7 +70,7 @@ class KUnitParserTest(unittest.TestCase):
 		with open(log_path) as file:
 			result = kunit_parser.extract_tap_lines(file.readlines())
 		self.assertContains('TAP version 14', result)
-		self.assertContains('# Subtest: example', result)
+		self.assertContains('
 		self.assertContains('1..2', result)
 		self.assertContains('ok 1 - example_simple_test', result)
 		self.assertContains('ok 2 - example_mock_test', result)
@@ -80,24 +80,24 @@ class KUnitParserTest(unittest.TestCase):
 		with open(log_path) as file:
 			result = kunit_parser.extract_tap_lines(file.readlines())
 		self.assertContains('TAP version 14', result)
-		self.assertContains('# Subtest: kunit-resource-test', result)
+		self.assertContains('
 		self.assertContains('1..5', result)
 		self.assertContains('ok 1 - kunit_resource_test_init_resources', result)
 		self.assertContains('ok 2 - kunit_resource_test_alloc_resource', result)
 		self.assertContains('ok 3 - kunit_resource_test_destroy_resource', result)
-		self.assertContains('foo bar 	#', result)
+		self.assertContains('foo bar 	
 		self.assertContains('ok 4 - kunit_resource_test_cleanup_resources', result)
 		self.assertContains('ok 5 - kunit_resource_test_proper_free_ordering', result)
 		self.assertContains('ok 1 - kunit-resource-test', result)
-		self.assertContains('foo bar 	# non-kunit output', result)
-		self.assertContains('# Subtest: kunit-try-catch-test', result)
+		self.assertContains('foo bar 	
+		self.assertContains('
 		self.assertContains('1..2', result)
 		self.assertContains('ok 1 - kunit_test_try_catch_successful_try_no_catch',
 				    result)
 		self.assertContains('ok 2 - kunit_test_try_catch_unsuccessful_try_does_catch',
 				    result)
 		self.assertContains('ok 2 - kunit-try-catch-test', result)
-		self.assertContains('# Subtest: string-stream-test', result)
+		self.assertContains('
 		self.assertContains('1..3', result)
 		self.assertContains('ok 1 - string_stream_test_empty_on_creation', result)
 		self.assertContains('ok 2 - string_stream_test_not_empty_after_add', result)

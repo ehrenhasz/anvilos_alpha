@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Delta TN48M CPLD GPIO driver
- *
- * Copyright (C) 2021 Sartura Ltd.
- *
- * Author: Robert Marko <robert.marko@sartura.hr>
- */
+
+
 
 #ifndef _DT_BINDINGS_RESET_TN48M_H
 #define _DT_BINDINGS_RESET_TN48M_H
@@ -17,4 +11,4 @@
 #define PHY_88E1512_RESET	4
 #define POE_RESET		5
 
-#endif /* _DT_BINDINGS_RESET_TN48M_H */
+#endif 

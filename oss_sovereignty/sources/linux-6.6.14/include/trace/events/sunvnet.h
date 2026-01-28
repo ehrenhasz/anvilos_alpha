@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sunvnet
 
@@ -134,7 +134,7 @@ TRACE_EVENT(vnet_skip_tx_trigger,
 	TP_printk("(%x:%x) Skip Tx trigger. Last trigger sent was %d",
 		__entry->lsid, __entry->rsid, __entry->last)
 );
-#endif /* _TRACE_SOCK_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

@@ -1,16 +1,9 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * Select the instruction "csrw mhartid, x0" as the RSEQ_SIG. Unlike
- * other architectures, the ebreak instruction has no immediate field for
- * distinguishing purposes. Hence, ebreak is not suitable as RSEQ_SIG.
- * "csrw mhartid, x0" can also satisfy the RSEQ requirement because it
- * is an uncommon instruction and will raise an illegal instruction
- * exception when executed in all modes.
- */
+
+
 #include <endian.h>
 
 #if defined(__BYTE_ORDER) ? (__BYTE_ORDER == __LITTLE_ENDIAN) : defined(__LITTLE_ENDIAN)
-#define RSEQ_SIG   0xf1401073  /* csrr mhartid, x0 */
+#define RSEQ_SIG   0xf1401073  
 #else
 #error "Currently, RSEQ only supports Little-Endian version"
 #endif
@@ -67,14 +60,7 @@ do {									\
 	__RSEQ_ASM_DEFINE_TABLE(label, 0x0, 0x0, start_ip,		 \
 				((post_commit_ip) - (start_ip)), abort_ip)
 
-/*
- * Exit points of a rseq critical section consist of all instructions outside
- * of the critical section where a critical section can either branch to or
- * reach through the normal course of its execution. The abort IP and the
- * post-commit IP are already part of the __rseq_cs section and should not be
- * explicitly defined as additional exit points. Knowing all exit points is
- * useful to assist debuggers stepping over the critical section.
- */
+
 #define RSEQ_ASM_DEFINE_EXIT_POINT(start_ip, exit_ip)			\
 	".pushsection __rseq_exit_point_array, \"aw\"\n"		\
 	".quad " __rseq_str(start_ip) ", " __rseq_str(exit_ip) "\n"	\
@@ -165,7 +151,7 @@ do {									\
 	RSEQ_ASM_OP_R_ADD(inc)						\
 	__rseq_str(post_commit_label) ":\n"
 
-/* Per-cpu-id indexing. */
+
 
 #define RSEQ_TEMPLATE_CPU_ID
 #define RSEQ_TEMPLATE_MO_RELAXED
@@ -177,7 +163,7 @@ do {									\
 #undef RSEQ_TEMPLATE_MO_RELEASE
 #undef RSEQ_TEMPLATE_CPU_ID
 
-/* Per-mm-cid indexing. */
+
 
 #define RSEQ_TEMPLATE_MM_CID
 #define RSEQ_TEMPLATE_MO_RELAXED
@@ -189,7 +175,7 @@ do {									\
 #undef RSEQ_TEMPLATE_MO_RELEASE
 #undef RSEQ_TEMPLATE_MM_CID
 
-/* APIs which are not based on cpu ids. */
+
 
 #define RSEQ_TEMPLATE_CPU_ID_NONE
 #define RSEQ_TEMPLATE_MO_RELAXED

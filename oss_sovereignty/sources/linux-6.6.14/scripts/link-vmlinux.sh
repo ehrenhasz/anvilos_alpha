@@ -42,7 +42,7 @@ vmlinux_link()
 		ldlibs=
 	fi
 	ldflags="${ldflags} ${wl}--script=${objtree}/${KBUILD_LDS}"
-	if [ "$output" != "${output#.tmp_vmlinux.kallsyms}" ] ; then
+	if [ "$output" != "${output
 		ldflags="${ldflags} ${wl}--strip-debug"
 	fi
 	if is_enabled CONFIG_VMLINUX_MAP; then

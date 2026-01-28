@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2014 Intel Corporation.  All rights reserved.
- */
+
+
 
 #ifndef OPA_SMI_H
 #define OPA_SMI_H
@@ -48,8 +46,8 @@ struct opa_smp {
 } __packed;
 
 
-/* Subnet management attributes */
-/* ... */
+
+
 #define OPA_ATTRIB_ID_NODE_DESCRIPTION		cpu_to_be16(0x0010)
 #define OPA_ATTRIB_ID_NODE_INFO			cpu_to_be16(0x0011)
 #define OPA_ATTRIB_ID_PORT_INFO			cpu_to_be16(0x0015)
@@ -63,11 +61,11 @@ struct opa_smp {
 #define OPA_ATTRIB_ID_SC_TO_VLR_MAP		cpu_to_be16(0x0083)
 #define OPA_ATTRIB_ID_SC_TO_VLT_MAP		cpu_to_be16(0x0084)
 #define OPA_ATTRIB_ID_SC_TO_VLNT_MAP		cpu_to_be16(0x0085)
-/* ... */
+
 #define OPA_ATTRIB_ID_PORT_STATE_INFO		cpu_to_be16(0x0087)
-/* ... */
+
 #define OPA_ATTRIB_ID_BUFFER_CONTROL_TABLE	cpu_to_be16(0x008A)
-/* ... */
+
 
 struct opa_node_description {
 	u8 data[64];
@@ -86,7 +84,7 @@ struct opa_node_info {
 	__be16  device_id;
 	__be32  revision;
 	u8      local_port_num;
-	u8      vendor_id[3];   /* network byte order */
+	u8      vendor_id[3];   
 } __packed;
 
 #define OPA_PARTITION_TABLE_BLK_SIZE 32
@@ -121,4 +119,4 @@ static inline size_t opa_get_smp_header_size(struct opa_smp *smp)
 	return sizeof(*smp) - sizeof(smp->route.lid.data);
 }
 
-#endif /* OPA_SMI_H */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __BPF_RAND__
 #define __BPF_RAND__
 
@@ -77,4 +77,4 @@ static inline uint64_t bpf_semi_rand_get(void)
 	}
 }
 
-#endif /* __BPF_RAND__ */
+#endif 

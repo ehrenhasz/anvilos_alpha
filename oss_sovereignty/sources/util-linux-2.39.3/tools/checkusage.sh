@@ -1,5 +1,5 @@
 export LC_ALL=C
-if [ "$#" -lt 1 ]; then
+if [ "$
 	echo "usage: $0 program..." >&2
 	echo "       or try 'make checkusage' to check all built programs" >&2
 	exit 1
@@ -7,11 +7,11 @@ fi
 builddir="."
 cmds=$(echo $@ | tr ' ' '\n' | sort)
 test -z "$CU_DUMP" || rm -f /tmp/checkusage--{help,version,unknownopt}
-alt_fsck__unknownopt="x" # fsck passes unknown opts to fsck.ext4, etc.
-alt_mkfs__unknownopt="x" # dito
-alt_kill__unknownopt="inval pids" # trick, kill does not use errtryhelp()
+alt_fsck__unknownopt="x" 
+alt_mkfs__unknownopt="x" 
+alt_kill__unknownopt="inval pids" 
 if [ $(id -ru) -eq 0 ]; then
-	alt_sulogin__unknownopt="x" # would hang at pwd prompt
+	alt_sulogin__unknownopt="x" 
 fi
 function exec_option {
 	local cmdb=$1
@@ -29,8 +29,8 @@ function exec_option {
 		opt=$alt
 	fi
 	test -z "$CU_DUMP" || {
-		echo "##########################################################"
-		echo "#### $cmdb"
+		echo "
+		echo "
 		$cmd $opt
 	} >> "$tofile" 2>&1
 	out=$("$cmd" $opt 2>/dev/null)

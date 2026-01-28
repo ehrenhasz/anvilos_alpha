@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM nilfs2
 
@@ -217,9 +217,9 @@ TRACE_EVENT(nilfs2_mdt_submit_block,
 		      __entry->mode)
 );
 
-#endif /* _TRACE_NILFS2_H */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE nilfs2
 #include <trace/define_trace.h>

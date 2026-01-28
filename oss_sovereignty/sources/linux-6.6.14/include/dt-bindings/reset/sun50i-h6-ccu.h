@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
- */
+
+
 
 #ifndef _DT_BINDINGS_RESET_SUN50I_H6_H_
 #define _DT_BINDINGS_RESET_SUN50I_H6_H_
@@ -70,4 +68,4 @@
 #define RST_BUS_CSI		61
 #define RST_BUS_HDCP		62
 
-#endif /* _DT_BINDINGS_RESET_SUN50I_H6_H_ */
+#endif 

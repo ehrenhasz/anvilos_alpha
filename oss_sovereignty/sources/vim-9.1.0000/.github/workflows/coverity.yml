@@ -1,11 +1,11 @@
 name: Coverity
 on:
   schedule:
-    - cron: '42 0 * * *'  # Run once per day, to avoid Coverity's submission limits
+    - cron: '42 0 * * *'  
   workflow_dispatch:
 
 permissions:
-  contents: read # to fetch code (actions/checkout)
+  contents: read 
 
 jobs:
   scan:
@@ -60,7 +60,7 @@ jobs:
         if: env.TOKEN
         run: |
           ./configure --with-features=huge ${CONFOPT} --enable-fail-if-missing
-          # Append various warning flags to CFLAGS.
+          
           sed -i -f ci/config.mk.sed src/auto/config.mk
           sed -i -f ci/config.mk.${CC}.sed src/auto/config.mk
 

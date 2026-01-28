@@ -11,7 +11,7 @@ readonly DADDR4='192.168.1.2'
 readonly SADDR6='fd::1'
 readonly DADDR6='fd::2'
 readonly path_sysctl_mem="net.core.optmem_max"
-if [[ "$#" -eq "0" ]]; then
+if [[ "$
 	$0 4 tcp -t 1
 	$0 6 tcp -t 1
 	$0 4 udp -t 1
@@ -19,7 +19,7 @@ if [[ "$#" -eq "0" ]]; then
 	echo "OK. All tests passed"
 	exit 0
 fi
-if [[ "$#" -lt "2" ]]; then
+if [[ "$
 	echo "Usage: $0 [4|6] [tcp|udp|raw|raw_hdrincl|packet|packet_dgram] <args>"
 	exit 1
 fi

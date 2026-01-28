@@ -15,11 +15,11 @@ print("%u" % True)
 print("%x" % 18)
 print("%o" % 18)
 print("%X" % 18)
-print("%#x" % 18)
-print("%#X" % 18)
-print("%#6o" % 18)
-print("%#6x" % 18)
-print("%#06x" % 18)
+print("%
+print("%
+print("%
+print("%
+print("%
 print("%*d" % (5, 10))
 print("%*.*d" % (2, 2, 20))
 print("%*.*d" % (5, 8, 20))

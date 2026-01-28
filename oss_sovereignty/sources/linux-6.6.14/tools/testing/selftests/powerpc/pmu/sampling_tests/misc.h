@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2022, Athira Rajeev, IBM Corp.
- * Copyright 2022, Madhavan Srinivasan, IBM Corp.
- * Copyright 2022, Kajol Jain, IBM Corp.
- */
+
+
 
 #include <sys/stat.h>
 #include "../event.h"
@@ -13,10 +9,10 @@
 #define PERF_POWER9_MASK        0x7f8ffffffffffff
 #define PERF_POWER10_MASK       0x7ffffffffffffff
 
-#define MMCR0_FC56      0x00000010UL /* freeze counters 5 and 6 */
-#define MMCR0_PMCCEXT   0x00000200UL /* PMCCEXT control */
-#define MMCR1_RSQ       0x200000000000ULL /* radix scope qual field */
-#define BHRB_DISABLE    0x2000000000ULL /* MMCRA BHRB DISABLE bit */
+#define MMCR0_FC56      0x00000010UL 
+#define MMCR0_PMCCEXT   0x00000200UL 
+#define MMCR1_RSQ       0x200000000000ULL 
+#define BHRB_DISABLE    0x2000000000ULL 
 
 extern int ev_mask_pmcxsel, ev_shift_pmcxsel;
 extern int ev_mask_marked, ev_shift_marked;
@@ -38,14 +34,7 @@ extern u64 platform_extended_mask;
 extern int check_pvr_for_sampling_tests(void);
 extern int platform_check_for_tests(void);
 
-/*
- * Event code field extraction macro.
- * Raw event code is combination of multiple
- * fields. Macro to extract individual fields
- *
- * x - Raw event code value
- * y - Field to extract
- */
+
 #define EV_CODE_EXTRACT(x, y)   \
 	((x >> ev_shift_##y) & ev_mask_##y)
 

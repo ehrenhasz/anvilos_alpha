@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for Qlogic 1G/10G Ethernet Driver for CNA devices
-#
+
+
+
+
 
 obj-$(CONFIG_QLCNIC) := qlcnic.o
 

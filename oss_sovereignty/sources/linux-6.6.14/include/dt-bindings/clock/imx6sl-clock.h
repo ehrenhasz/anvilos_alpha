@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2013 Freescale Semiconductor, Inc.
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_IMX6SL_H
 #define __DT_BINDINGS_CLOCK_IMX6SL_H
@@ -175,4 +173,4 @@
 #define IMX6SL_CLK_MMDC_P1_IPG		166
 #define IMX6SL_CLK_END			167
 
-#endif /* __DT_BINDINGS_CLOCK_IMX6SL_H */
+#endif 

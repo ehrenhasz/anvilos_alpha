@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Hongzhou.Yang <hongzhou.yang@mediatek.com>
- */
+
+
 
 #ifndef __DTS_MT8135_PINFUNC_H
 #define __DTS_MT8135_PINFUNC_H
@@ -1291,4 +1288,4 @@
 #define MT8135_PIN_202_MSDC3_DAT0__FUNC_PWM3 (MTK_PIN_NO(202) | 4)
 #define MT8135_PIN_202_MSDC3_DAT0__FUNC_CLKM2 (MTK_PIN_NO(202) | 5)
 
-#endif /* __DTS_MT8135_PINFUNC_H */
+#endif 

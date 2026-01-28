@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
-# Copyright(c) 2013 - 2018 Intel Corporation.
 
-#
-# Makefile for the Intel(R) Ethernet Switch Host Interface Driver
-#
+
+
+
+
+
 
 obj-$(CONFIG_FM10K) += fm10k.o
 

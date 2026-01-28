@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __OF_ADDRESS_H
 #define __OF_ADDRESS_H
 #include <linux/ioport.h>
@@ -35,15 +35,7 @@ struct of_pci_range {
 	for (; of_pci_range_parser_one(parser, range);)
 #define for_each_of_range for_each_of_pci_range
 
-/*
- * of_range_count - Get the number of "ranges" or "dma-ranges" entries
- * @parser:	Parser state initialized by of_range_parser_init()
- *
- * Returns the number of entries or 0 if none.
- *
- * Note that calling this within or after the for_each_of_range() iterator will
- * be inaccurate giving the number of entries remaining.
- */
+
 static inline int of_range_count(const struct of_range_parser *parser)
 {
 	if (!parser || !parser->node || !parser->range || parser->range == parser->end)
@@ -51,7 +43,7 @@ static inline int of_range_count(const struct of_range_parser *parser)
 	return (parser->end - parser->range) / (parser->na + parser->pna + parser->ns);
 }
 
-/* Translate a DMA address from device space to CPU space */
+
 extern u64 of_translate_dma_address(struct device_node *dev,
 				    const __be32 *in_addr);
 extern const __be32 *of_translate_dma_region(struct device_node *dev, const __be32 *addr,
@@ -65,10 +57,7 @@ extern void __iomem *of_iomap(struct device_node *device, int index);
 void __iomem *of_io_request_and_map(struct device_node *device,
 				    int index, const char *name);
 
-/* Extract an address from a device, returns the region size and
- * the address space flags too. The PCI version uses a BAR number
- * instead of an absolute index
- */
+
 extern const __be32 *__of_get_address(struct device_node *dev, int index, int bar_no,
 				      u64 *size, unsigned int *flags);
 
@@ -89,7 +78,7 @@ extern int of_pci_range_to_resource(struct of_pci_range *range,
 extern int of_range_to_resource(struct device_node *np, int index,
 				struct resource *res);
 extern bool of_dma_is_coherent(struct device_node *np);
-#else /* CONFIG_OF_ADDRESS */
+#else 
 static inline void __iomem *of_io_request_and_map(struct device_node *device,
 						  int index, const char *name)
 {
@@ -155,7 +144,7 @@ static inline bool of_dma_is_coherent(struct device_node *np)
 {
 	return false;
 }
-#endif /* CONFIG_OF_ADDRESS */
+#endif 
 
 #ifdef CONFIG_OF
 extern int of_address_to_resource(struct device_node *dev, int index,
@@ -198,4 +187,4 @@ static inline int of_address_count(struct device_node *np)
 	return count;
 }
 
-#endif /* __OF_ADDRESS_H */
+#endif 

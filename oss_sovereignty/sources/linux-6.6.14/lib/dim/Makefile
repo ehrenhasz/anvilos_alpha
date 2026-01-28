@@ -1,6 +1,6 @@
-#
-# DIM Dynamic Interrupt Moderation library
-#
+
+
+
 
 obj-$(CONFIG_DIMLIB) += dim.o
 

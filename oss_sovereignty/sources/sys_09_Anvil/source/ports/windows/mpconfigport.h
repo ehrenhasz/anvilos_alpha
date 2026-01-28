@@ -1,35 +1,11 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
 
-// options to control how MicroPython is built
 
-// Variant-specific definitions.
+
+
+
 #include "mpconfigvariant.h"
 
-// By default use MicroPython version of readline
+
 #ifndef MICROPY_USE_READLINE
 #define MICROPY_USE_READLINE        (1)
 #endif
@@ -40,7 +16,7 @@
 #define MICROPY_READLINE_HISTORY_SIZE (50)
 #endif
 
-#define MICROPY_ALLOC_PATH_MAX      (260) // see minwindef.h for msvc or limits.h for mingw
+#define MICROPY_ALLOC_PATH_MAX      (260) 
 #define MICROPY_PERSISTENT_CODE_LOAD (1)
 #define MICROPY_EMIT_X64            (0)
 #define MICROPY_EMIT_THUMB          (0)
@@ -167,7 +143,7 @@
 #define MICROPY_WARNINGS            (1)
 #define MICROPY_PY_STR_BYTES_CMP_WARN (1)
 
-// VFS stat functions should return time values relative to 1970/1/1
+
 #define MICROPY_EPOCH_IS_1970       (1)
 
 extern const struct _mp_print_t mp_stderr_print;
@@ -184,11 +160,11 @@ extern const struct _mp_print_t mp_stderr_print;
 #define MICROPY_PORT_INIT_FUNC      init()
 #define MICROPY_PORT_DEINIT_FUNC    deinit()
 
-// type definitions for the specific machine
+
 
 #if defined(__MINGW32__) && defined(__LP64__)
-typedef long mp_int_t; // must be pointer size
-typedef unsigned long mp_uint_t; // must be pointer size
+typedef long mp_int_t; 
+typedef unsigned long mp_uint_t; 
 #elif defined(__MINGW32__) && defined(_WIN64)
 #include <stdint.h>
 typedef __int64 mp_int_t;
@@ -198,19 +174,19 @@ typedef unsigned __int64 mp_uint_t;
 typedef __int64 mp_int_t;
 typedef unsigned __int64 mp_uint_t;
 #else
-// These are definitions for machines where sizeof(int) == sizeof(void*),
-// regardless for actual size.
-typedef int mp_int_t; // must be pointer size
-typedef unsigned int mp_uint_t; // must be pointer size
+
+
+typedef int mp_int_t; 
+typedef unsigned int mp_uint_t; 
 #endif
 
 typedef long suseconds_t;
 
-// Just assume Windows is little-endian - mingw32 gcc doesn't
-// define standard endianness macros.
+
+
 #define MP_ENDIANNESS_LITTLE (1)
 
-// Cannot include <sys/types.h>, as it may lead to symbol name clashes
+
 #if _FILE_OFFSET_BITS == 64 && !defined(__LP64__)
 typedef long long mp_off_t;
 #else
@@ -221,7 +197,7 @@ typedef long mp_off_t;
 
 #define MICROPY_MPHALPORT_H         "windows_mphal.h"
 
-// We need to provide a declaration/definition of alloca()
+
 #include <malloc.h>
 
 #include "realpath.h"
@@ -231,17 +207,17 @@ typedef long mp_off_t;
 #define MP_NOINLINE __attribute__((noinline))
 #endif
 
-// MSVC specifics
+
 #ifdef _MSC_VER
 
-// Sanity check
+
 
 #if (_MSC_VER < 1800)
     #error Can only build with Visual Studio 2013 toolset
 #endif
 
 
-// CL specific overrides from mpconfig
+
 
 #define NORETURN                    __declspec(noreturn)
 #define MP_WEAK
@@ -249,14 +225,14 @@ typedef long mp_off_t;
 #define MP_ALWAYSINLINE             __forceinline
 #define MP_LIKELY(x)                (x)
 #define MP_UNLIKELY(x)              (x)
-#define MICROPY_PORT_CONSTANTS      { MP_ROM_QSTR(MP_QSTR_dummy), MP_ROM_PTR(NULL) } // can't have zero-sized array
+#define MICROPY_PORT_CONSTANTS      { MP_ROM_QSTR(MP_QSTR_dummy), MP_ROM_PTR(NULL) } 
 #ifdef _WIN64
 #define MP_SSIZE_MAX                _I64_MAX
 #else
 #define MP_SSIZE_MAX                _I32_MAX
 #endif
 
-// VC++ 12.0 fixes
+
 #if (_MSC_VER <= 1800)
 #define MICROPY_PY_MATH_ATAN2_FIX_INFNAN (1)
 #define MICROPY_PY_MATH_FMOD_FIX_INFNAN (1)
@@ -267,7 +243,7 @@ typedef long mp_off_t;
 #endif
 #endif
 
-// CL specific definitions
+
 
 #ifndef __cplusplus
 #define restrict
@@ -287,18 +263,18 @@ typedef int ssize_t;
 typedef mp_off_t off_t;
 
 
-// Put static/global variables in sections with a known name
-// This used to be required for GC, not the case anymore but keep it as it makes the map file easier to inspect
-// For this to work this header must be included by all sources, which is the case normally
+
+
+
 #define MICROPY_PORT_DATASECTION "upydata"
 #define MICROPY_PORT_BSSSECTION "upybss"
 #pragma data_seg(MICROPY_PORT_DATASECTION)
 #pragma bss_seg(MICROPY_PORT_BSSSECTION)
 
 
-// System headers (needed e.g. for nlr.h)
 
-#include <stddef.h> // for NULL
-#include <assert.h> // for assert
+
+#include <stddef.h> 
+#include <assert.h> 
 
 #endif

@@ -1,6 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- * Copyright (c) 2019 Mellanox Technologies
- */
+
 
 #ifndef _MLX5_FS_DR_
 #define _MLX5_FS_DR_
@@ -16,7 +14,7 @@ struct mlx5_fs_dr_action {
 
 struct mlx5_fs_dr_rule {
 	struct mlx5dr_rule    *dr_rule;
-	/* Only actions created by fs_dr */
+	
 	struct mlx5dr_action  **dr_actions;
 	int                      num_actions;
 };
@@ -59,5 +57,5 @@ static inline bool mlx5_fs_dr_is_supported(struct mlx5_core_dev *dev)
 	return false;
 }
 
-#endif /* CONFIG_MLX5_SW_STEERING */
+#endif 
 #endif

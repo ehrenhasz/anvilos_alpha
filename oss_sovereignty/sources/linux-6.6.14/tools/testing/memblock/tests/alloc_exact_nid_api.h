@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef _MEMBLOCK_ALLOC_EXACT_NID_H
 #define _MEMBLOCK_ALLOC_EXACT_NID_H
 
@@ -20,6 +20,6 @@ static inline int memblock_alloc_exact_nid_numa_checks(void)
 	return 0;
 }
 
-#endif /* CONFIG_NUMA */
+#endif 
 
 #endif

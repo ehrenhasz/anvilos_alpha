@@ -12,7 +12,7 @@ collect_z_record() {
 check_compressed_stats() {
 	echo "Checking compressed events stats:"
 	$perf_tool report -i "$trace_file" --header --stats | \
-		grep -E "(# compressed : Zstd,)|(COMPRESSED events:)"
+		grep -E "(
 }
 check_compressed_output() {
 	$perf_tool inject -i "$trace_file" -o "$trace_file.decomp" &&

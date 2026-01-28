@@ -1,10 +1,10 @@
-# Select the board to build for:
+
 ifdef BOARD_DIR
-# Custom board path - remove trailing slash and get the final component of
-# the path as the board name.
+
+
 BOARD ?= $(notdir $(BOARD_DIR:/=))
 else
-# If not given on the command line, then default to PYBV10.
+
 BOARD ?= PYBV10
 BOARD_DIR ?= boards/$(BOARD)
 endif
@@ -13,8 +13,8 @@ ifeq ($(wildcard $(BOARD_DIR)/.),)
 $(error Invalid BOARD specified: $(BOARD_DIR))
 endif
 
-# If the build directory is not given, make it reflect the board name (and
-# optionally the board variant).
+
+
 ifneq ($(BOARD_VARIANT),)
 BUILD ?= build-$(BOARD)-$(BOARD_VARIANT)
 else
@@ -25,23 +25,23 @@ include ../../py/mkenv.mk
 -include mpconfigport.mk
 include $(BOARD_DIR)/mpconfigboard.mk
 
-# qstr definitions (must come before including py.mk)
+
 QSTR_DEFS += qstrdefsport.h
 
-# Files that are generated and needed before the QSTR build.
+
 QSTR_GLOBAL_DEPENDENCIES += mpconfigboard_common.h $(BOARD_DIR)/mpconfigboard.h $(GEN_STMCONST_HDR)
 
-# MicroPython feature configurations
+
 MICROPY_ROM_TEXT_COMPRESSION ?= 1
 
-# File containing description of content to be frozen into firmware.
+
 FROZEN_MANIFEST ?= boards/manifest.py
 
-# Location of mboot (or other bootloader) if the device has one.
-# Used by machine.bootloader().
+
+
 MBOOT_TEXT0_ADDR ?= 0x08000000
 
-# include py core make definitions
+
 include $(TOP)/py/py.mk
 include $(TOP)/extmod/extmod.mk
 
@@ -49,10 +49,10 @@ GIT_SUBMODULES += lib/libhydrogen lib/stm32lib
 
 LD_DIR=boards
 USBDEV_DIR=usbdev
-#USBHOST_DIR=usbhost
+
 DFU=$(TOP)/tools/dfu.py
 MBOOT_PACK_DFU = mboot/mboot_pack_dfu.py
-# may need to prefix dfu-util with sudo
+
 USE_PYDFU ?= 1
 PYDFU ?= $(TOP)/tools/pydfu.py
 DFU_UTIL ?= dfu-util
@@ -88,7 +88,7 @@ GEN_STMCONST_HDR = $(HEADER_BUILD)/modstm_const.h
 GEN_STMCONST_MPZ = $(HEADER_BUILD)/modstm_mpz.h
 CMSIS_MCU_HDR = $(STM32LIB_CMSIS_ABS)/Include/$(CMSIS_MCU_LOWER).h
 
-# Select the cross compile prefix
+
 CROSS_COMPILE ?= arm-none-eabi-
 
 INC += -I.
@@ -98,7 +98,7 @@ INC += -I$(TOP)/lib/cmsis/inc
 INC += -I$(STM32LIB_CMSIS_ABS)/Include
 INC += -I$(STM32LIB_HAL_ABS)/Inc
 INC += -I$(USBDEV_DIR)/core/inc -I$(USBDEV_DIR)/class/inc
-#INC += -I$(USBHOST_DIR)
+
 INC += -Ilwip_inc
 
 CFLAGS += $(INC) -Wall -Wpointer-arith -Werror -Wdouble-promotion -Wfloat-conversion -std=gnu99 -nostdlib $(CFLAGS_EXTRA)
@@ -112,7 +112,7 @@ CFLAGS += -DMICROPY_HW_VTOR=$(TEXT0_ADDR)
 
 AFLAGS += $(filter -mcpu=%,$(CFLAGS_MCU_$(MCU_SERIES)))
 
-# Configure for nan-boxing object model if requested
+
 ifeq ($(NANBOX),1)
 CFLAGS += -DMP_CONFIGFILE='"mpconfigport_nanbox.h"'
 ifneq ($(MICROPY_FLOAT_IMPL),none)
@@ -120,7 +120,7 @@ MICROPY_FLOAT_IMPL = double
 endif
 endif
 
-# Configure floating point support
+
 ifeq ($(MICROPY_FLOAT_IMPL),double)
 CFLAGS += -DMICROPY_FLOAT_IMPL=MICROPY_FLOAT_IMPL_DOUBLE
 else ifeq ($(MICROPY_FLOAT_IMPL),none)
@@ -134,42 +134,42 @@ LDFLAGS += -nostdlib -L $(LD_DIR) $(addprefix -T,$(LD_FILES)) -Wl,-Map=$(@:.elf=
 LDFLAGS += -Wl,--defsym=_estack_reserve=8
 LIBS += "$(shell $(CC) $(CFLAGS) -print-libgcc-file-name)"
 
-# Remove uncalled code from the final image.
+
 CFLAGS += -fdata-sections -ffunction-sections
 LDFLAGS += -Wl,--gc-sections
 
 ifeq ($(LTO),1)
 CFLAGS += -flto=auto
-# LTO requires passing compiler flags to the linker as it will run the assembler.
-# To avoid risk of missing something relevant, pass all flags except for preprocessor args
+
+
 LDFLAGS += $(filter-out -I%,$(filter-out -D%,$(CFLAGS)))
 
 $(BUILD)/stm32_it.o $(BUILD)/pendsv.o: CFLAGS += -fno-lto
 endif
 
-# Debugging/Optimization
+
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -DPENDSV_DEBUG
 COPT ?= -Og
-# Disable text compression in debug builds
+
 MICROPY_ROM_TEXT_COMPRESSION = 0
 else
 ifneq ($(LTO), 1)
-CFLAGS += -g  # always include debug info in the ELF, unless LTO is on
+CFLAGS += -g  
 endif
 COPT ?= -Os -DNDEBUG
 endif
 
-# Flags for optional C++ source code
+
 CXXFLAGS += $(filter-out -Wmissing-prototypes -Wold-style-definition -std=gnu99,$(CFLAGS))
 
-# TODO make this common -- shouldn't be using these "private" vars from py.mk
+
 ifneq ($(SRC_CXX)$(SRC_USERMOD_CXX)$(SRC_USERMOD_LIB_CXX),)
 LIBSTDCPP_FILE_NAME = "$(shell $(CXX) $(CXXFLAGS) -print-file-name=libstdc++.a)"
 LDFLAGS += -L"$(shell dirname $(LIBSTDCPP_FILE_NAME))"
 endif
 
-# Options for mpy-cross
+
 MPY_CROSS_FLAGS += -march=$(MPY_CROSS_MCU_ARCH_$(MCU_SERIES))
 
 SHARED_SRC_C += $(addprefix shared/,\
@@ -285,7 +285,7 @@ SRC_O += \
 	$(SYSTEM_FILE)
 
 ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),f0 g0 l0))
-CSUPEROPT = -Os # save some code space
+CSUPEROPT = -Os 
 SRC_O += \
 	resethandler_m0.o \
 	shared/runtime/gchelper_thumb1.o
@@ -340,7 +340,7 @@ HAL_SRC_C += $(addprefix $(STM32LIB_HAL_BASE)/Src/stm32$(MCU_SERIES)xx_,\
 	ll_fmc.c \
 	)
 ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),h5))
-# HAL H5-1.0.0 has a bug with uninitialised variable in HAL_SD_ConfigWideBusOperation.
+
 $(BUILD)/$(STM32LIB_HAL_BASE)/Src/stm32$(MCU_SERIES)xx_hal_sd.o: CFLAGS += -Wno-error=maybe-uninitialized
 endif
 endif
@@ -352,8 +352,8 @@ HAL_SRC_C += $(addprefix $(STM32LIB_HAL_BASE)/Src/stm32$(MCU_SERIES)xx_,\
 	hal_dcmi.c \
 	)
 ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),f4))
-# HAL F4-1.16.0 has a bug with missing parentheses in HAL_MMC_Erase.
-# This function is unused so let the error go by as a warning.
+
+
 $(BUILD)/$(STM32LIB_HAL_BASE)/Src/stm32$(MCU_SERIES)xx_hal_mmc.o: CFLAGS += -Wno-error=parentheses
 endif
 endif
@@ -420,10 +420,10 @@ SRC_C += mpbtstackport.c
 MICROPY_BLUETOOTH_BTSTACK_H4 ?= 1
 endif
 
-endif # MICROPY_PY_BLUETOOTH
+endif 
 
-# Add stm32-specific implementation of libmetal (and optionally OpenAMP's rproc).
-# Note: libmetal code is generated via a pre-processor so ensure that runs first.
+
+
 ifeq ($(MICROPY_PY_OPENAMP),1)
 SRC_C += mpmetalport.c
 $(BUILD)/mpmetalport.o: $(BUILD)/openamp/metal/config.h
@@ -433,8 +433,8 @@ $(BUILD)/mpremoteprocport.o: $(BUILD)/openamp/metal/config.h
 endif
 endif
 
-# SRC_O should be placed first to work around this LTO bug with binutils <2.35:
-# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83967
+
+
 OBJ += $(addprefix $(BUILD)/, $(SRC_O))
 OBJ += $(PY_O)
 OBJ += $(addprefix $(BUILD)/, $(LIB_SRC_C:.c=.o))
@@ -447,15 +447,15 @@ OBJ += $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_CXX:.cpp=.o))
 OBJ += $(GEN_PINS_SRC:.c=.o)
 
-# This file contains performance critical functions so turn up the optimisation
-# level.  It doesn't add much to the code size and improves performance a bit.
-# Don't use -O3 with this file because gcc tries to optimise memset in terms of itself.
+
+
+
 $(BUILD)/shared/libc/string0.o: COPT += -O2
 
-# We put several files into the first 16K section with the ISRs.
-# If we compile these using -O0 then it won't fit. So if you really want these
-# to be compiled with -O0, then edit boards/common.ld (in the .isr_vector section)
-# and comment out the following lines.
+
+
+
+
 $(BUILD)/$(OOFATFS_DIR)/ff.o: COPT += -Os
 $(filter $(PY_BUILD)/../extmod/vfs_fat_%.o, $(PY_O)): COPT += -Os
 $(PY_BUILD)/formatfloat.o: COPT += -Os
@@ -470,7 +470,7 @@ else
 all_main: $(BUILD)/firmware.dfu
 endif
 
-# For convenience, automatically fetch required submodules if they don't exist
+
 $(TOP)/lib/stm32lib/README.md:
 	$(ECHO) "stm32lib submodule not found, fetching it now..."
 	(cd $(TOP) && git submodule update --init lib/stm32lib)
@@ -536,13 +536,13 @@ deploy: $(BUILD)/firmware.dfu
 	$(call RUN_DFU,$^)
 endif
 
-# A board should specify TEXT0_ADDR if to use a different location than the
-# default for the firmware memory location.  A board can also optionally define
-# TEXT1_ADDR to split the firmware into two sections; see below for details.
+
+
+
 TEXT0_ADDR ?= 0x08000000
 
 ifeq ($(TEXT1_ADDR),)
-# No TEXT1_ADDR given so put all firmware at TEXT0_ADDR location
+
 
 TEXT0_SECTIONS ?= .isr_vector .text .data .ARM
 
@@ -559,7 +559,7 @@ $(BUILD)/firmware.dfu: $(BUILD)/firmware.bin
 	$(call GENERATE_DFU,$@,$^,$(TEXT0_ADDR))
 
 else
-# TEXT0_ADDR and TEXT1_ADDR are specified so split firmware between these locations
+
 
 TEXT0_SECTIONS ?= .isr_vector
 TEXT1_SECTIONS ?= .text .data .ARM
@@ -590,27 +590,27 @@ $(BUILD)/firmware.hex: $(BUILD)/firmware.elf
 $(BUILD)/firmware.elf: $(OBJ)
 	$(call GENERATE_ELF,$@,$^)
 
-# List of sources for qstr extraction
+
 SRC_QSTR += $(SRC_C) $(SRC_CXX) $(SHARED_SRC_C) $(GEN_PINS_SRC)
 
-# Making OBJ use an order-only dependency on the generated pins.h file
-# has the side effect of making the pins.h file before we actually compile
-# any of the objects. The normal dependency generation will deal with the
-# case when pins.h is modified. But when it doesn't exist, we don't know
-# which source files might need it.
+
+
+
+
+
 $(OBJ): | $(GEN_PINS_HDR)
 
-# With conditional pins, we may need to regenerate qstrdefs.h when config
-# options change.
+
+
 $(HEADER_BUILD)/qstrdefs.generated.h: $(BOARD_DIR)/mpconfigboard.h
 
-# main.c can't be even preprocessed without $(GEN_CDCINF_HEADER)
-# As main.c is in SRC_QSTR this will also ensure that GEN_CDCINF_HEADER
-# will be run before QSTR extraction.
+
+
+
 main.c: $(GEN_CDCINF_HEADER)
 
-# Use a pattern rule here so that make will only call make-pins.py once to make
-# both pins_$(BOARD).c and pins.h
+
+
 $(BUILD)/%_$(BOARD).c $(HEADER_BUILD)/%.h $(HEADER_BUILD)/%_af_const.h $(HEADER_BUILD)/%_af_defs.h: $(BOARD_DIR)/%.csv $(MAKE_PINS) $(AF_FILE) $(PREFIX_FILE) | $(HEADER_BUILD)
 	$(ECHO) "GEN $@"
 	$(Q)$(PYTHON) $(MAKE_PINS) --board-csv $(BOARD_PINS) --af-csv $(AF_FILE) --prefix $(PREFIX_FILE) \

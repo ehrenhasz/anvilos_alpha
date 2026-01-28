@@ -1,5 +1,5 @@
 START_HEADER_SIZE = 4
-LED_START = 0b11100000  # Three "1" bits, followed by 5 brightness bits
+LED_START = 0b11100000  
 RGB = (0, 1, 2)
 RBG = (0, 2, 1)
 GRB = (1, 0, 2)
@@ -21,9 +21,9 @@ class DotStar:
     .. code-block:: python
         from dotstar import DotStar
         from machine import Pin, SPI
-        spi = SPI(sck=Pin(12), mosi=Pin(13), miso=Pin(18)) # Configure SPI - note: miso is unused
+        spi = SPI(sck=Pin(12), mosi=Pin(13), miso=Pin(18)) 
         dotstar = DotStar(spi, 1)
-        dotstar[0] = (128, 0, 0) # Red
+        dotstar[0] = (128, 0, 0) 
     """
     def __init__(self, spi, n, *, brightness=1.0, auto_write=True, pixel_order=BGR):
         self._spi = spi

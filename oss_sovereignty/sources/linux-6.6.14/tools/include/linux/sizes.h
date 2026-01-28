@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * include/linux/sizes.h
- */
+
+
 #ifndef __LINUX_SIZES_H__
 #define __LINUX_SIZES_H__
 
@@ -45,4 +43,4 @@
 
 #define SZ_4G				_AC(0x100000000, ULL)
 
-#endif /* __LINUX_SIZES_H__ */
+#endif 

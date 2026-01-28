@@ -18,15 +18,15 @@ test("{:4o}", 123)
 test("{:4x}", 123)
 test("{:4X}", 123)
 test("{:4,d}", 12345678)
-test("{:#4b}", 10)
-test("{:#4o}", 123)
-test("{:#4x}", 123)
-test("{:#4X}", 123)
-test("{:#4d}", 0)
-test("{:#4b}", 0)
-test("{:#4o}", 0)
-test("{:#4x}", 0)
-test("{:#4X}", 0)
+test("{:
+test("{:
+test("{:
+test("{:
+test("{:
+test("{:
+test("{:
+test("{:
+test("{:
 test("{:<6s}", "ab")
 test("{:>6s}", "ab")
 test("{:^6s}", "ab")
@@ -54,9 +54,9 @@ test('{:d}', False)
 test('{:20}', False)
 test('{:d}', True)
 test('{:20}', True)
-print("{:{}}".format(123, '#>10'))
-print("{:{}{}{}}".format(123, '#', '>', '10'))
-print("{0:{1}{2}}".format(123, '#>', '10'))
+print("{:{}}".format(123, '
+print("{:{}{}{}}".format(123, '
+print("{0:{1}{2}}".format(123, '
 print("{text:{align}{width}}".format(text="foo", align="<", width=20))
 print("{text:{align}{width}}".format(text="foo", align="^", width=10))
 print("{text:{align}{width}}".format(text="foo", align=">", width=30))

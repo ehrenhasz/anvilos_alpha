@@ -1,13 +1,13 @@
-# SPDX-License-Identifier: GPL-2.0
 
-# LED Core
+
+
 obj-$(CONFIG_NEW_LEDS)			+= led-core.o
 obj-$(CONFIG_LEDS_CLASS)		+= led-class.o
 obj-$(CONFIG_LEDS_CLASS_FLASH)		+= led-class-flash.o
 obj-$(CONFIG_LEDS_CLASS_MULTICOLOR)	+= led-class-multicolor.o
 obj-$(CONFIG_LEDS_TRIGGERS)		+= led-triggers.o
 
-# LED Platform Drivers (keep this sorted, M-| sort)
+
 obj-$(CONFIG_LEDS_88PM860X)		+= leds-88pm860x.o
 obj-$(CONFIG_LEDS_ACER_A500)		+= leds-acer-a500.o
 obj-$(CONFIG_LEDS_ADP5520)		+= leds-adp5520.o
@@ -89,26 +89,26 @@ obj-$(CONFIG_LEDS_WM831X_STATUS)	+= leds-wm831x-status.o
 obj-$(CONFIG_LEDS_WM8350)		+= leds-wm8350.o
 obj-$(CONFIG_LEDS_WRAP)			+= leds-wrap.o
 
-# LED SPI Drivers
+
 obj-$(CONFIG_LEDS_CR0014114)		+= leds-cr0014114.o
 obj-$(CONFIG_LEDS_DAC124S085)		+= leds-dac124s085.o
 obj-$(CONFIG_LEDS_EL15203000)		+= leds-el15203000.o
 obj-$(CONFIG_LEDS_SPI_BYTE)		+= leds-spi-byte.o
 
-# LED Userspace Drivers
+
 obj-$(CONFIG_LEDS_USER)			+= uleds.o
 
-# Flash and Torch LED Drivers
+
 obj-$(CONFIG_LEDS_CLASS_FLASH)		+= flash/
 
-# RGB LED Drivers
+
 obj-$(CONFIG_LEDS_CLASS_MULTICOLOR)	+= rgb/
 
-# LED Triggers
+
 obj-$(CONFIG_LEDS_TRIGGERS)		+= trigger/
 
-# LED Blink
+
 obj-y					+= blink/
 
-# Simple LED drivers
+
 obj-y					+= simple/

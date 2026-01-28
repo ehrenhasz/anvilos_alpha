@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * intel_pt_log.h: Intel Processor Trace support
- * Copyright (c) 2013-2014, Intel Corporation.
- */
+
+
 
 #ifndef INCLUDE__INTEL_PT_LOG_H__
 #define INCLUDE__INTEL_PT_LOG_H__

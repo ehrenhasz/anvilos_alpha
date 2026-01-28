@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: 'micropython repo'  # test build with space in path
+        working-directory: 'micropython repo'  
     steps:
     - uses: actions/checkout@v4
       with:

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+
 
 #ifndef __KSMBD_VFS_H__
 #define __KSMBD_VFS_H__
@@ -17,20 +14,18 @@
 #include "smbacl.h"
 #include "xattr.h"
 
-/*
- * Enumeration for stream type.
- */
+
 enum {
-	DATA_STREAM	= 1,	/* type $DATA */
-	DIR_STREAM		/* type $INDEX_ALLOCATION */
+	DATA_STREAM	= 1,	
+	DIR_STREAM		
 };
 
-/* CreateOptions */
+
 #define CREATE_TREE_CONNECTION			cpu_to_le32(0x00000080)
 #define FILE_RESERVE_OPFILTER_LE		cpu_to_le32(0x00100000)
 
 #define CREATE_OPTION_READONLY			0x10000000
-/* system. NB not sent over wire */
+
 #define CREATE_OPTION_SPECIAL			0x20000000
 
 struct ksmbd_work;
@@ -64,7 +59,7 @@ struct ksmbd_readdir_data {
 	struct unicode_map	*um;
 };
 
-/* ksmbd kstat wrapper to get valid create time when reading dir entry */
+
 struct ksmbd_kstat {
 	struct kstat		*kstat;
 	unsigned long long	create_time;
@@ -164,4 +159,4 @@ int ksmbd_vfs_set_init_posix_acl(struct mnt_idmap *idmap,
 int ksmbd_vfs_inherit_posix_acl(struct mnt_idmap *idmap,
 				struct path *path,
 				struct inode *parent_inode);
-#endif /* __KSMBD_VFS_H__ */
+#endif 

@@ -1,5 +1,5 @@
 CHECK_TC="yes"
-TC_HIT_TIMEOUT=${TC_HIT_TIMEOUT:=1000} # ms
+TC_HIT_TIMEOUT=${TC_HIT_TIMEOUT:=1000} 
 tc_check_packets()
 {
 	local id=$1

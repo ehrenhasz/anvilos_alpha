@@ -1,14 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include "common.h"
 
-/*
- * Checks that registers contain what we expect, ie. they were not clobbered by
- * the syscall.
- *
- * r15: pattern to check registers against.
- *
- * At the end r3 == 0 if everything's OK.
- */
+
 	nop			# guaranteed to be illegal in reverse-endian
 	mr	r9,r15
 	cmpd    r9,r3		# check r3

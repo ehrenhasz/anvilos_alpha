@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/* Copyright 2014-2015 Freescale Semiconductor Inc.
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM	dpaa2_eth
@@ -13,27 +12,21 @@
 #include <linux/tracepoint.h>
 
 #define TR_FMT "[%s] fd: addr=0x%llx, len=%u, off=%u"
-/* trace_printk format for raw buffer event class */
+
 #define TR_BUF_FMT "[%s] vaddr=%p size=%zu dma_addr=%pad map_size=%zu bpid=%d"
 
-/* This is used to declare a class of events.
- * individual events of this type will be defined below.
- */
 
-/* Store details about a frame descriptor */
+
+
 DECLARE_EVENT_CLASS(dpaa2_eth_fd,
-		    /* Trace function prototype */
+		    
 		    TP_PROTO(struct net_device *netdev,
 			     const struct dpaa2_fd *fd),
 
-		    /* Repeat argument list here */
+		    
 		    TP_ARGS(netdev, fd),
 
-		    /* A structure containing the relevant information we want
-		     * to record. Declare name and type for each normal element,
-		     * name, type and size for arrays. Use __string for variable
-		     * length strings.
-		     */
+		    
 		    TP_STRUCT__entry(
 				     __field(u64, fd_addr)
 				     __field(u32, fd_len)
@@ -41,9 +34,7 @@ DECLARE_EVENT_CLASS(dpaa2_eth_fd,
 				     __string(name, netdev->name)
 		    ),
 
-		    /* The function that assigns values to the above declared
-		     * fields
-		     */
+		    
 		    TP_fast_assign(
 				   __entry->fd_addr = dpaa2_fd_get_addr(fd);
 				   __entry->fd_len = dpaa2_fd_get_len(fd);
@@ -51,9 +42,7 @@ DECLARE_EVENT_CLASS(dpaa2_eth_fd,
 				   __assign_str(name, netdev->name);
 		    ),
 
-		    /* This is what gets printed when the trace event is
-		     * triggered.
-		     */
+		    
 		    TP_printk(TR_FMT,
 			      __get_str(name),
 			      __entry->fd_addr,
@@ -61,11 +50,9 @@ DECLARE_EVENT_CLASS(dpaa2_eth_fd,
 			      __entry->fd_offset)
 );
 
-/* Now declare events of the above type. Format is:
- * DEFINE_EVENT(class, name, proto, args), with proto and args same as for class
- */
 
-/* Tx (egress) fd */
+
+
 DEFINE_EVENT(dpaa2_eth_fd, dpaa2_tx_fd,
 	     TP_PROTO(struct net_device *netdev,
 		      const struct dpaa2_fd *fd),
@@ -73,7 +60,7 @@ DEFINE_EVENT(dpaa2_eth_fd, dpaa2_tx_fd,
 	     TP_ARGS(netdev, fd)
 );
 
-/* Tx (egress) XSK fd */
+
 DEFINE_EVENT(dpaa2_eth_fd, dpaa2_tx_xsk_fd,
 	     TP_PROTO(struct net_device *netdev,
 		      const struct dpaa2_fd *fd),
@@ -81,7 +68,7 @@ DEFINE_EVENT(dpaa2_eth_fd, dpaa2_tx_xsk_fd,
 	     TP_ARGS(netdev, fd)
 );
 
-/* Rx fd */
+
 DEFINE_EVENT(dpaa2_eth_fd, dpaa2_rx_fd,
 	     TP_PROTO(struct net_device *netdev,
 		      const struct dpaa2_fd *fd),
@@ -89,7 +76,7 @@ DEFINE_EVENT(dpaa2_eth_fd, dpaa2_rx_fd,
 	     TP_ARGS(netdev, fd)
 );
 
-/* Rx XSK fd */
+
 DEFINE_EVENT(dpaa2_eth_fd, dpaa2_rx_xsk_fd,
 	     TP_PROTO(struct net_device *netdev,
 		      const struct dpaa2_fd *fd),
@@ -97,7 +84,7 @@ DEFINE_EVENT(dpaa2_eth_fd, dpaa2_rx_xsk_fd,
 	     TP_ARGS(netdev, fd)
 );
 
-/* Tx confirmation fd */
+
 DEFINE_EVENT(dpaa2_eth_fd, dpaa2_tx_conf_fd,
 	     TP_PROTO(struct net_device *netdev,
 		      const struct dpaa2_fd *fd),
@@ -105,27 +92,23 @@ DEFINE_EVENT(dpaa2_eth_fd, dpaa2_tx_conf_fd,
 	     TP_ARGS(netdev, fd)
 );
 
-/* Log data about raw buffers. Useful for tracing DPBP content. */
+
 DECLARE_EVENT_CLASS(dpaa2_eth_buf,
-		    /* Trace function prototype */
+		    
 		    TP_PROTO(struct net_device *netdev,
-			     /* virtual address and size */
+			     
 			    void *vaddr,
 			    size_t size,
-			    /* dma map address and size */
+			    
 			    dma_addr_t dma_addr,
 			    size_t map_size,
-			    /* buffer pool id, if relevant */
+			    
 			    u16 bpid),
 
-		    /* Repeat argument list here */
+		    
 		    TP_ARGS(netdev, vaddr, size, dma_addr, map_size, bpid),
 
-		    /* A structure containing the relevant information we want
-		     * to record. Declare name and type for each normal element,
-		     * name, type and size for arrays. Use __string for variable
-		     * length strings.
-		     */
+		    
 		    TP_STRUCT__entry(
 				      __field(void *, vaddr)
 				      __field(size_t, size)
@@ -135,9 +118,7 @@ DECLARE_EVENT_CLASS(dpaa2_eth_buf,
 				      __string(name, netdev->name)
 		    ),
 
-		    /* The function that assigns values to the above declared
-		     * fields
-		     */
+		    
 		    TP_fast_assign(
 				   __entry->vaddr = vaddr;
 				   __entry->size = size;
@@ -147,9 +128,7 @@ DECLARE_EVENT_CLASS(dpaa2_eth_buf,
 				   __assign_str(name, netdev->name);
 		    ),
 
-		    /* This is what gets printed when the trace event is
-		     * triggered.
-		     */
+		    
 		    TP_printk(TR_BUF_FMT,
 			      __get_str(name),
 			      __entry->vaddr,
@@ -159,7 +138,7 @@ DECLARE_EVENT_CLASS(dpaa2_eth_buf,
 			      __entry->bpid)
 );
 
-/* Main memory buff seeding */
+
 DEFINE_EVENT(dpaa2_eth_buf, dpaa2_eth_buf_seed,
 	     TP_PROTO(struct net_device *netdev,
 		      void *vaddr,
@@ -171,7 +150,7 @@ DEFINE_EVENT(dpaa2_eth_buf, dpaa2_eth_buf_seed,
 	     TP_ARGS(netdev, vaddr, size, dma_addr, map_size, bpid)
 );
 
-/* UMEM buff seeding on AF_XDP fast path */
+
 DEFINE_EVENT(dpaa2_eth_buf, dpaa2_xsk_buf_seed,
 	     TP_PROTO(struct net_device *netdev,
 		      void *vaddr,
@@ -183,13 +162,11 @@ DEFINE_EVENT(dpaa2_eth_buf, dpaa2_xsk_buf_seed,
 	     TP_ARGS(netdev, vaddr, size, dma_addr, map_size, bpid)
 );
 
-/* If only one event of a certain type needs to be declared, use TRACE_EVENT().
- * The syntax is the same as for DECLARE_EVENT_CLASS().
- */
 
-#endif /* _DPAA2_ETH_TRACE_H */
 
-/* This must be outside ifdef _DPAA2_ETH_TRACE_H */
+#endif 
+
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE

@@ -1,27 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _SUNVNETCOMMON_H
 #define _SUNVNETCOMMON_H
 
 #include <linux/interrupt.h>
 
-/* length of time (or less) we expect pending descriptors to be marked
- * as VIO_DESC_DONE and skbs ready to be freed
- */
+
 #define	VNET_CLEAN_TIMEOUT		((HZ / 100) + 1)
 
 #define VNET_MAXPACKET			(65535ULL + ETH_HLEN + VLAN_HLEN)
 #define VNET_TX_RING_SIZE		512
 #define VNET_TX_WAKEUP_THRESH(dr)	((dr)->pending / 4)
 
-#define	VNET_MINTSO	 2048	/* VIO protocol's minimum TSO len */
-#define	VNET_MAXTSO	65535	/* VIO protocol's maximum TSO len */
+#define	VNET_MINTSO	 2048	
+#define	VNET_MAXTSO	65535	
 
 #define VNET_MAX_MTU	65535
 
-/* VNET packets are sent in buffers with the first 6 bytes skipped
- * so that after the ethernet header the IPv4/IPv6 headers are aligned
- * properly.
- */
+
 #define VNET_PACKET_SKIP		6
 
 #define	VNET_MAXCOOKIES			(VNET_MAXPACKET / PAGE_SIZE + 1)
@@ -37,7 +32,7 @@ struct vnet_tx_entry {
 struct vnet;
 
 struct vnet_port_stats {
-	/* keep them all the same size */
+	
 	u32 rx_bytes;
 	u32 tx_bytes;
 	u32 rx_packets;
@@ -49,12 +44,7 @@ struct vnet_port_stats {
 
 #define NUM_VNET_PORT_STATS  (sizeof(struct vnet_port_stats) / sizeof(u32))
 
-/* Structure to describe a vnet-port or vsw-port in the MD.
- * If the vsw bit is set, this structure represents a vswitch
- * port, and the net_device can be found from ->dev. If the
- * vsw bit is not set, the net_device is available from ->vp->dev.
- * See the VNET_PORT_TO_NET_DEVICE macro below.
- */
+
 struct vnet_port {
 	struct vio_driver_state	vio;
 
@@ -113,7 +103,7 @@ struct vnet_mcast_entry {
 };
 
 struct vnet {
-	spinlock_t		lock; /* Protects port_list and port_hash.  */
+	spinlock_t		lock; 
 	struct net_device	*dev;
 	u32			msg_enable;
 	u8			q_used[VNET_MAX_TXQS];
@@ -125,11 +115,11 @@ struct vnet {
 	int			nports;
 };
 
-/* Def used by common code to get the net_device from the proper location */
+
 #define VNET_PORT_TO_NET_DEVICE(__port) \
 	((__port)->vsw ? (__port)->dev : (__port)->vp->dev)
 
-/* Common funcs */
+
 void sunvnet_clean_timer_expire_common(struct timer_list *t);
 int sunvnet_open_common(struct net_device *dev);
 int sunvnet_close_common(struct net_device *dev);
@@ -154,4 +144,4 @@ bool sunvnet_port_is_up_common(struct vnet_port *vnet);
 void sunvnet_port_add_txq_common(struct vnet_port *port);
 void sunvnet_port_rm_txq_common(struct vnet_port *port);
 
-#endif /* _SUNVNETCOMMON_H */
+#endif 

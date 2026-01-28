@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+
 
 #ifndef _QED_IWARP_H
 #define _QED_IWARP_H
@@ -43,10 +40,7 @@ struct qed_iwarp_ll2_mpa_buf {
 	u8 placement_offset;
 };
 
-/* In some cases a fpdu will arrive with only one byte of the header, in this
- * case the fpdu_length will be partial (contain only higher byte and
- * incomplete bytes will contain the invalid value
- */
+
 #define QED_IWARP_INVALID_INCOMPLETE_BYTES 0xffff
 
 struct qed_iwarp_fpdu {
@@ -61,13 +55,13 @@ struct qed_iwarp_fpdu {
 };
 
 struct qed_iwarp_info {
-	struct list_head listen_list;	/* qed_iwarp_listener */
-	struct list_head ep_list;	/* qed_iwarp_ep */
-	struct list_head ep_free_list;	/* pre-allocated ep's */
-	struct list_head mpa_buf_list;	/* list of mpa_bufs */
+	struct list_head listen_list;	
+	struct list_head ep_list;	
+	struct list_head ep_free_list;	
+	struct list_head mpa_buf_list;	
 	struct list_head mpa_buf_pending_list;
-	spinlock_t iw_lock;	/* for iwarp resources */
-	spinlock_t qp_lock;	/* for teardown races */
+	spinlock_t iw_lock;	
+	spinlock_t qp_lock;	
 	u32 rcv_wnd_scale;
 	u16 rcv_wnd_size;
 	u16 max_mtu;
@@ -106,9 +100,7 @@ struct qed_iwarp_ep_memory {
 	union async_output async_output;
 };
 
-/* Endpoint structure represents a TCP connection. This connection can be
- * associated with a QP or not (in which case QP==NULL)
- */
+
 struct qed_iwarp_ep {
 	struct list_head list_entry;
 	struct qed_rdma_qp *qp;
@@ -127,16 +119,12 @@ struct qed_iwarp_ep {
 	u8 local_mac_addr[6];
 	bool mpa_reply_processed;
 
-	/* For Passive side - syn packet related data */
+	
 	u16 syn_ip_payload_length;
 	struct qed_iwarp_ll2_buff *syn;
 	dma_addr_t syn_phy_addr;
 
-	/* The event_cb function is called for asynchrounous events associated
-	 * with the ep. It is initialized at different entry points depending
-	 * on whether the ep is the tcp connection active side or passive side
-	 * The cb_context is passed to the event_cb function.
-	 */
+	
 	iwarp_event_handler event_cb;
 	void *cb_context;
 };
@@ -144,9 +132,7 @@ struct qed_iwarp_ep {
 struct qed_iwarp_listener {
 	struct list_head list_entry;
 
-	/* The event_cb function is called for connection requests.
-	 * The cb_context is passed to the event_cb function.
-	 */
+	
 	iwarp_event_handler event_cb;
 	void *cb_context;
 	u32 max_backlog;

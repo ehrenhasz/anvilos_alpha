@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Unusual Devices File for SCM Microsystems (a.k.a. Shuttle) USB-ATAPI cable
- */
+
+
 
 #if defined(CONFIG_USB_STORAGE_USBAT) || \
 		defined(CONFIG_USB_STORAGE_USBAT_MODULE)
@@ -28,4 +26,4 @@ UNUSUAL_DEV(  0x0781, 0x0005, 0x0005, 0x0005,
 		USB_SC_SCSI, USB_PR_USBAT, init_usbat_flash,
 		US_FL_SINGLE_LUN),
 
-#endif /* defined(CONFIG_USB_STORAGE_USBAT) || ... */
+#endif 

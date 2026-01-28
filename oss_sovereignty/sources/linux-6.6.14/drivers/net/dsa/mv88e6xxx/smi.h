@@ -1,18 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Marvell 88E6xxx System Management Interface (SMI) support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2019 Vivien Didelot <vivien.didelot@gmail.com>
- */
+
+
 
 #ifndef _MV88E6XXX_SMI_H
 #define _MV88E6XXX_SMI_H
 
 #include "chip.h"
 
-/* Offset 0x00: SMI Command Register */
+
 #define MV88E6XXX_SMI_CMD			0x00
 #define MV88E6XXX_SMI_CMD_BUSY			0x8000
 #define MV88E6XXX_SMI_CMD_MODE_MASK		0x1000
@@ -28,7 +22,7 @@
 #define MV88E6XXX_SMI_CMD_DEV_ADDR_MASK		0x003e
 #define MV88E6XXX_SMI_CMD_REG_ADDR_MASK		0x001f
 
-/* Offset 0x01: SMI Data Register */
+
 #define MV88E6XXX_SMI_DATA			0x01
 
 int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
@@ -52,4 +46,4 @@ static inline int mv88e6xxx_smi_write(struct mv88e6xxx_chip *chip,
 	return -EOPNOTSUPP;
 }
 
-#endif /* _MV88E6XXX_SMI_H */
+#endif 

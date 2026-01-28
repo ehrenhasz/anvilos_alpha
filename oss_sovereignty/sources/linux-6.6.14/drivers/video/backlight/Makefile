@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# Backlight & LCD drivers
+
+
 
 obj-$(CONFIG_LCD_AMS369FG06)		+= ams369fg06.o
 obj-$(CONFIG_LCD_CLASS_DEVICE)		+= lcd.o

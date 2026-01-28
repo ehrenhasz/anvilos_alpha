@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2023 ARM Limited
- *
- * Verify that the TPIDR2 register context in signal frames is restored.
- */
+
+
 
 #include <signal.h>
 #include <ucontext.h>

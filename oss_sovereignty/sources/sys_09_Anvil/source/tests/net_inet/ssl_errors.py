@@ -23,7 +23,7 @@ def test(addr, hostname, block=True):
         try:
             while s.write(b"0") is None:
                 pass
-        except (ValueError, OSError):  # CPython raises ValueError, MicroPython raises OSError
+        except (ValueError, OSError):  
             print("write: error")
     s.close()
 if __name__ == "__main__":

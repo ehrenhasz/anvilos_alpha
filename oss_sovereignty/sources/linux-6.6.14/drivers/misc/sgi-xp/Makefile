@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for SGI's XP devices.
-#
+
+
+
+
 
 obj-$(CONFIG_SGI_XP)		+= xp.o
 xp-y				:= xp_main.o xp_uv.o

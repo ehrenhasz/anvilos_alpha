@@ -65,9 +65,9 @@ def reset_board(args):
                     b'Type "help()" for more information.', timeout=5
                 ):
                     print("Telnet login succeeded")
-                    tn.write(b"\r\x03\x03")  # ctrl-C twice: interrupt any running program
+                    tn.write(b"\r\x03\x03")  
                     time.sleep(1)
-                    tn.write(b"\r\x02")  # ctrl-B: enter friendly REPL
+                    tn.write(b"\r\x02")  
                     if b'Type "help()" for more information.' in tn.read_until(
                         b'Type "help()" for more information.', timeout=5
                     ):
@@ -122,7 +122,7 @@ def verify_update(args):
                     bline = bytes(line, "ascii")
                     if b"MICROPY_GIT_TAG" in bline:
                         bline = (
-                            bline.lstrip(b"#define MICROPY_GIT_TAG ")
+                            bline.lstrip(b"
                             .replace(b'"', b"")
                             .replace(b"\r", b"")
                             .replace(b"\n", b"")

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2013 QLogic Corporation
- */
+
+
 
 #ifndef __QL4_DEF_H
 #define __QL4_DEF_H
@@ -74,9 +71,7 @@
 #define QLA_ERROR			1
 #define STATUS(status)		status == QLA_ERROR ? "FAILED" : "SUCCEEDED"
 
-/*
- * Data bit definitions
- */
+
 #define BIT_0	0x1
 #define BIT_1	0x2
 #define BIT_2	0x4
@@ -110,16 +105,12 @@
 #define BIT_30	0x40000000
 #define BIT_31	0x80000000
 
-/**
- * Macros to help code, maintain, etc.
- **/
+
 #define ql4_printk(level, ha, format, arg...) \
 	dev_printk(level , &((ha)->pdev->dev) , format , ## arg)
 
 
-/*
- * Host adapter default definitions
- ***********************************/
+
 #define MAX_HBAS		16
 #define MAX_BUSES		1
 #define MAX_TARGETS		MAX_DEV_DB_ENTRIES
@@ -133,32 +124,28 @@
 #define MBOX_AEN_REG_COUNT	8
 #define MAX_INIT_RETRIES	5
 
-/*
- * Buffer sizes
- */
+
 #define REQUEST_QUEUE_DEPTH		MAX_CMDS_TO_RISC
 #define RESPONSE_QUEUE_DEPTH		64
 #define QUEUE_SIZE			64
 #define DMA_BUFFER_SIZE			512
 #define IOCB_HIWAT_CUSHION		4
 
-/*
- * Misc
- */
-#define MAC_ADDR_LEN			6	/* in bytes */
-#define IP_ADDR_LEN			4	/* in bytes */
-#define IPv6_ADDR_LEN			16	/* IPv6 address size */
+
+#define MAC_ADDR_LEN			6	
+#define IP_ADDR_LEN			4	
+#define IPv6_ADDR_LEN			16	
 #define DRIVER_NAME			"qla4xxx"
 
 #define MAX_LINKED_CMDS_PER_LUN		3
 #define MAX_REQS_SERVICED_PER_INTR	1
 
-#define ISCSI_IPADDR_SIZE		4	/* IP address size */
-#define ISCSI_ALIAS_SIZE		32	/* ISCSI Alias name size */
-#define ISCSI_NAME_SIZE			0xE0	/* ISCSI Name size */
+#define ISCSI_IPADDR_SIZE		4	
+#define ISCSI_ALIAS_SIZE		32	
+#define ISCSI_NAME_SIZE			0xE0	
 
-#define QL4_SESS_RECOVERY_TMO		120	/* iSCSI session */
-						/* recovery timeout */
+#define QL4_SESS_RECOVERY_TMO		120	
+						
 
 #define LSDW(x) ((u32)((u64)(x)))
 #define MSDW(x) ((u32)((((u64)(x)) >> 16) >> 16))
@@ -185,9 +172,7 @@
 	p = (o & f) ? "enable" : "disable";	\
 }
 
-/*
- * Retry & Timeout Values
- */
+
 #define MBOX_TOV			60
 #define SOFT_RESET_TOV			30
 #define RESET_INTR_TOV			3
@@ -215,10 +200,7 @@
 #define IDC_COMP_TOV			5
 #define LINK_UP_COMP_TOV		30
 
-/*
- * Note: the data structure below does not have a struct iscsi_cmd member since
- * the qla4xxx driver does not use libiscsi for SCSI I/O.
- */
+
 struct qla4xxx_cmd_priv {
 	struct srb *srb;
 };
@@ -228,57 +210,53 @@ static inline struct qla4xxx_cmd_priv *qla4xxx_cmd_priv(struct scsi_cmnd *cmd)
 	return scsi_cmd_priv(cmd);
 }
 
-/*
- * SCSI Request Block structure (srb) that is associated with each scsi_cmnd.
- */
+
 struct srb {
-	struct list_head list;	/* (8)	 */
-	struct scsi_qla_host *ha;	/* HA the SP is queued on */
+	struct list_head list;	
+	struct scsi_qla_host *ha;	
 	struct ddb_entry *ddb;
-	uint16_t flags;		/* (1) Status flags. */
+	uint16_t flags;		
 
-#define SRB_DMA_VALID		BIT_3	/* DMA Buffer mapped. */
-#define SRB_GOT_SENSE		BIT_4	/* sense data received. */
-	uint8_t state;		/* (1) Status flags. */
+#define SRB_DMA_VALID		BIT_3	
+#define SRB_GOT_SENSE		BIT_4	
+	uint8_t state;		
 
-#define SRB_NO_QUEUE_STATE	 0	/* Request is in between states */
+#define SRB_NO_QUEUE_STATE	 0	
 #define SRB_FREE_STATE		 1
 #define SRB_ACTIVE_STATE	 3
 #define SRB_ACTIVE_TIMEOUT_STATE 4
-#define SRB_SUSPENDED_STATE	 7	/* Request in suspended state */
+#define SRB_SUSPENDED_STATE	 7	
 
-	struct scsi_cmnd *cmd;	/* (4) SCSI command block */
-	dma_addr_t dma_handle;	/* (4) for unmap of single transfers */
-	struct kref srb_ref;	/* reference count for this srb */
-	uint8_t err_id;		/* error id */
-#define SRB_ERR_PORT	   1	/* Request failed because "port down" */
-#define SRB_ERR_LOOP	   2	/* Request failed because "loop down" */
-#define SRB_ERR_DEVICE	   3	/* Request failed because "device error" */
+	struct scsi_cmnd *cmd;	
+	dma_addr_t dma_handle;	
+	struct kref srb_ref;	
+	uint8_t err_id;		
+#define SRB_ERR_PORT	   1	
+#define SRB_ERR_LOOP	   2	
+#define SRB_ERR_DEVICE	   3	
 #define SRB_ERR_OTHER	   4
 
 	uint16_t reserved;
 	uint16_t iocb_tov;
-	uint16_t iocb_cnt;	/* Number of used iocbs */
+	uint16_t iocb_cnt;	
 	uint16_t cc_stat;
 
-	/* Used for extended sense / status continuation */
+	
 	uint8_t *req_sense_ptr;
 	uint16_t req_sense_len;
 	uint16_t reserved2;
 };
 
-/* Mailbox request block structure */
+
 struct mrb {
 	struct scsi_qla_host *ha;
 	struct mbox_cmd_iocb *mbox;
 	uint32_t mbox_cmd;
-	uint16_t iocb_cnt;		/* Number of used iocbs */
+	uint16_t iocb_cnt;		
 	uint32_t pid;
 };
 
-/*
- * Asynchronous Event Queue structure
- */
+
 struct aen {
         uint32_t mbox_sts[MBOX_AEN_REG_COUNT];
 };
@@ -288,16 +266,14 @@ struct ql4_aen_log {
         struct aen entry[MAX_AEN_ENTRIES];
 };
 
-/*
- * Device Database (DDB) structure
- */
+
 struct ddb_entry {
 	struct scsi_qla_host *ha;
 	struct iscsi_cls_session *sess;
 	struct iscsi_cls_conn *conn;
 
-	uint16_t fw_ddb_index;	/* DDB firmware index */
-	uint32_t fw_ddb_device_state; /* F/W Device State  -- see ql4_fw.h */
+	uint16_t fw_ddb_index;	
+	uint32_t fw_ddb_device_state; 
 	uint16_t ddb_type;
 #define FLASH_DDB 0x01
 
@@ -306,20 +282,15 @@ struct ddb_entry {
 	int (*ddb_change)(struct scsi_qla_host *ha, uint32_t fw_ddb_index,
 			  struct ddb_entry *ddb_entry, uint32_t state);
 
-	/* Driver Re-login  */
-	unsigned long flags;		  /* DDB Flags */
-#define DDB_CONN_CLOSE_FAILURE		0 /* 0x00000001 */
+	
+	unsigned long flags;		  
+#define DDB_CONN_CLOSE_FAILURE		0 
 
-	uint16_t default_relogin_timeout; /*  Max time to wait for
-					   *  relogin to complete */
-	atomic_t retry_relogin_timer;	  /* Min Time between relogins
-					   * (4000 only) */
-	atomic_t relogin_timer;		  /* Max Time to wait for
-					   * relogin to complete */
-	atomic_t relogin_retry_count;	  /* Num of times relogin has been
-					   * retried */
-	uint32_t default_time2wait;	  /* Default Min time between
-					   * relogins (+aens) */
+	uint16_t default_relogin_timeout; 
+	atomic_t retry_relogin_timer;	  
+	atomic_t relogin_timer;		  
+	atomic_t relogin_retry_count;	  
+	uint32_t default_time2wait;	  
 	uint16_t chap_tbl_idx;
 };
 
@@ -344,24 +315,17 @@ struct ql4_tuple_ddb {
 	uint8_t isid[6];
 };
 
-/*
- * DDB states.
- */
-#define DDB_STATE_DEAD		0	/* We can no longer talk to
-					 * this device */
-#define DDB_STATE_ONLINE	1	/* Device ready to accept
-					 * commands */
-#define DDB_STATE_MISSING	2	/* Device logged off, trying
-					 * to re-login */
 
-/*
- * DDB flags.
- */
-#define DF_RELOGIN		0	/* Relogin to device */
-#define DF_BOOT_TGT		1	/* Boot target entry */
-#define DF_ISNS_DISCOVERED	2	/* Device was discovered via iSNS */
+#define DDB_STATE_DEAD		0	
+#define DDB_STATE_ONLINE	1	
+#define DDB_STATE_MISSING	2	
+
+
+#define DF_RELOGIN		0	
+#define DF_BOOT_TGT		1	
+#define DF_ISNS_DISCOVERED	2	
 #define DF_FO_MASKED		3
-#define DF_DISABLE_RELOGIN		4	/* Disable relogin to device */
+#define DF_DISABLE_RELOGIN		4	
 
 enum qla4_work_type {
 	QLA4_EVENT_AEN,
@@ -387,7 +351,7 @@ struct qla4_work_evt {
 };
 
 struct ql82xx_hw_data {
-	/* Offsets for flash/nvram access (set to ~0 if not used). */
+	
 	uint32_t flash_conf_off;
 	uint32_t flash_data_off;
 
@@ -417,12 +381,10 @@ struct qla4_8xxx_legacy_intr_set {
 	uint32_t pci_int_reg;
 };
 
-/* MSI-X Support */
+
 #define QLA_MSIX_ENTRIES	2
 
-/*
- * ISP Operations
- */
+
 struct isp_operations {
 	int (*iospace_config) (struct scsi_qla_host *ha);
 	void (*pci_config) (struct scsi_qla_host *);
@@ -444,9 +406,9 @@ struct isp_operations {
 	void (*wr_reg_direct) (struct scsi_qla_host *, ulong, uint32_t);
 	int (*rd_reg_indirect) (struct scsi_qla_host *, uint32_t, uint32_t *);
 	int (*wr_reg_indirect) (struct scsi_qla_host *, uint32_t, uint32_t);
-	int (*idc_lock) (struct scsi_qla_host *); /* Context: task, can sleep */
+	int (*idc_lock) (struct scsi_qla_host *); 
 	void (*idc_unlock) (struct scsi_qla_host *);
-	void (*rom_lock_recovery) (struct scsi_qla_host *); /* Context: task, can sleep */
+	void (*rom_lock_recovery) (struct scsi_qla_host *); 
 	void (*queue_mailbox_command) (struct scsi_qla_host *, uint32_t *, int);
 	void (*process_mailbox_interrupt) (struct scsi_qla_host *, int);
 };
@@ -461,7 +423,7 @@ struct ql4_mdump_size_table {
 	uint32_t version;
 };
 
-/*qla4xxx ipaddress configuration details */
+
 struct ipaddress_config {
 	uint16_t ipv4_options;
 	uint16_t tcp_options;
@@ -551,68 +513,66 @@ struct ql4_boot_tgt_info {
 	struct ql4_boot_session_info boot_sec_sess;
 };
 
-/*
- * Linux Host Adapter structure
- */
+
 struct scsi_qla_host {
-	/* Linux adapter configuration data */
+	
 	unsigned long flags;
 
-#define AF_ONLINE			0 /* 0x00000001 */
-#define AF_INIT_DONE			1 /* 0x00000002 */
-#define AF_MBOX_COMMAND			2 /* 0x00000004 */
-#define AF_MBOX_COMMAND_DONE		3 /* 0x00000008 */
-#define AF_ST_DISCOVERY_IN_PROGRESS	4 /* 0x00000010 */
-#define AF_INTERRUPTS_ON		6 /* 0x00000040 */
-#define AF_GET_CRASH_RECORD		7 /* 0x00000080 */
-#define AF_LINK_UP			8 /* 0x00000100 */
-#define AF_LOOPBACK			9 /* 0x00000200 */
-#define AF_IRQ_ATTACHED			10 /* 0x00000400 */
-#define AF_DISABLE_ACB_COMPLETE		11 /* 0x00000800 */
-#define AF_HA_REMOVAL			12 /* 0x00001000 */
-#define AF_MBOX_COMMAND_NOPOLL		18 /* 0x00040000 */
-#define AF_FW_RECOVERY			19 /* 0x00080000 */
-#define AF_EEH_BUSY			20 /* 0x00100000 */
-#define AF_PCI_CHANNEL_IO_PERM_FAILURE	21 /* 0x00200000 */
-#define AF_BUILD_DDB_LIST		22 /* 0x00400000 */
-#define AF_82XX_FW_DUMPED		24 /* 0x01000000 */
-#define AF_8XXX_RST_OWNER		25 /* 0x02000000 */
-#define AF_82XX_DUMP_READING		26 /* 0x04000000 */
-#define AF_83XX_IOCB_INTR_ON		28 /* 0x10000000 */
-#define AF_83XX_MBOX_INTR_ON		29 /* 0x20000000 */
+#define AF_ONLINE			0 
+#define AF_INIT_DONE			1 
+#define AF_MBOX_COMMAND			2 
+#define AF_MBOX_COMMAND_DONE		3 
+#define AF_ST_DISCOVERY_IN_PROGRESS	4 
+#define AF_INTERRUPTS_ON		6 
+#define AF_GET_CRASH_RECORD		7 
+#define AF_LINK_UP			8 
+#define AF_LOOPBACK			9 
+#define AF_IRQ_ATTACHED			10 
+#define AF_DISABLE_ACB_COMPLETE		11 
+#define AF_HA_REMOVAL			12 
+#define AF_MBOX_COMMAND_NOPOLL		18 
+#define AF_FW_RECOVERY			19 
+#define AF_EEH_BUSY			20 
+#define AF_PCI_CHANNEL_IO_PERM_FAILURE	21 
+#define AF_BUILD_DDB_LIST		22 
+#define AF_82XX_FW_DUMPED		24 
+#define AF_8XXX_RST_OWNER		25 
+#define AF_82XX_DUMP_READING		26 
+#define AF_83XX_IOCB_INTR_ON		28 
+#define AF_83XX_MBOX_INTR_ON		29 
 
 	unsigned long dpc_flags;
 
-#define DPC_RESET_HA			1 /* 0x00000002 */
-#define DPC_RETRY_RESET_HA		2 /* 0x00000004 */
-#define DPC_RELOGIN_DEVICE		3 /* 0x00000008 */
-#define DPC_RESET_HA_FW_CONTEXT		4 /* 0x00000010 */
-#define DPC_RESET_HA_INTR		5 /* 0x00000020 */
-#define DPC_ISNS_RESTART		7 /* 0x00000080 */
-#define DPC_AEN				9 /* 0x00000200 */
-#define DPC_GET_DHCP_IP_ADDR		15 /* 0x00008000 */
-#define DPC_LINK_CHANGED		18 /* 0x00040000 */
-#define DPC_RESET_ACTIVE		20 /* 0x00100000 */
-#define DPC_HA_UNRECOVERABLE		21 /* 0x00200000 ISP-82xx only*/
-#define DPC_HA_NEED_QUIESCENT		22 /* 0x00400000 ISP-82xx only*/
-#define DPC_POST_IDC_ACK		23 /* 0x00800000 */
-#define DPC_RESTORE_ACB			24 /* 0x01000000 */
-#define DPC_SYSFS_DDB_EXPORT		25 /* 0x02000000 */
+#define DPC_RESET_HA			1 
+#define DPC_RETRY_RESET_HA		2 
+#define DPC_RELOGIN_DEVICE		3 
+#define DPC_RESET_HA_FW_CONTEXT		4 
+#define DPC_RESET_HA_INTR		5 
+#define DPC_ISNS_RESTART		7 
+#define DPC_AEN				9 
+#define DPC_GET_DHCP_IP_ADDR		15 
+#define DPC_LINK_CHANGED		18 
+#define DPC_RESET_ACTIVE		20 
+#define DPC_HA_UNRECOVERABLE		21 
+#define DPC_HA_NEED_QUIESCENT		22 
+#define DPC_POST_IDC_ACK		23 
+#define DPC_RESTORE_ACB			24 
+#define DPC_SYSFS_DDB_EXPORT		25 
 
-	struct Scsi_Host *host; /* pointer to host data */
+	struct Scsi_Host *host; 
 	uint32_t tot_ddbs;
 
 	uint16_t iocb_cnt;
 	uint16_t iocb_hiwat;
 
-	/* SRB cache. */
+	
 #define SRB_MIN_REQ	128
 	mempool_t *srb_mempool;
 
-	/* pci information */
+	
 	struct pci_dev *pdev;
 
-	struct isp_reg __iomem *reg; /* Base I/O address */
+	struct isp_reg __iomem *reg; 
 	unsigned long pio_address;
 	unsigned long pio_length;
 #define MIN_IOBASE_LEN		0x100
@@ -621,12 +581,12 @@ struct scsi_qla_host {
 
 	unsigned long host_no;
 
-	/* NVRAM registers */
+	
 	struct eeprom_data *nvram;
 	spinlock_t hardware_lock ____cacheline_aligned;
 	uint32_t eeprom_cmd_data;
 
-	/* Counters for general statistics */
+	
 	uint64_t isr_count;
 	uint64_t adapter_error_count;
 	uint64_t device_error_count;
@@ -643,47 +603,47 @@ struct scsi_qla_host {
 	uint32_t seconds_since_last_heartbeat;
 	uint32_t mac_index;
 
-	/* Info Needed for Management App */
-	/* --- From GetFwVersion --- */
+	
+	
 	uint32_t firmware_version[2];
 	uint32_t patch_number;
 	uint32_t build_number;
 	uint32_t board_id;
 
-	/* --- From Init_FW --- */
-	/* init_cb_t *init_cb; */
+	
+	
 	uint16_t firmware_options;
 	uint8_t alias[32];
 	uint8_t name_string[256];
 	uint8_t heartbeat_interval;
 
-	/* --- From FlashSysInfo --- */
+	
 	uint8_t my_mac[MAC_ADDR_LEN];
 	uint8_t serial_number[16];
 	uint16_t port_num;
-	/* --- From GetFwState --- */
+	
 	uint32_t firmware_state;
 	uint32_t addl_fw_state;
 
-	/* Linux kernel thread */
+	
 	struct workqueue_struct *dpc_thread;
 	struct work_struct dpc_work;
 
-	/* Linux timer thread */
+	
 	struct timer_list timer;
 	uint32_t timer_active;
 
-	/* Recovery Timers */
+	
 	atomic_t check_relogin_timeouts;
 	uint32_t retry_reset_ha_cnt;
-	uint32_t isp_reset_timer;	/* reset test timer */
-	uint32_t nic_reset_timer;	/* simulated nic reset test timer */
+	uint32_t isp_reset_timer;	
+	uint32_t nic_reset_timer;	
 	int eh_start;
 	struct list_head free_srb_q;
 	uint16_t free_srb_q_count;
 	uint16_t num_srbs_allocated;
 
-	/* DMA Memory Block */
+	
 	void *queues;
 	dma_addr_t queues_dma;
 	unsigned long queues_len;
@@ -691,7 +651,7 @@ struct scsi_qla_host {
 #define MEM_ALIGN_VALUE \
 	    ((max(REQUEST_QUEUE_DEPTH, RESPONSE_QUEUE_DEPTH)) * \
 	     sizeof(struct queue_entry))
-	/* request and response queue variables */
+	
 	dma_addr_t request_dma;
 	struct queue_entry *request_ring;
 	struct queue_entry *request_ptr;
@@ -700,41 +660,39 @@ struct scsi_qla_host {
 	struct queue_entry *response_ptr;
 	dma_addr_t shadow_regs_dma;
 	struct shadow_regs *shadow_regs;
-	uint16_t request_in;	/* Current indexes. */
+	uint16_t request_in;	
 	uint16_t request_out;
 	uint16_t response_in;
 	uint16_t response_out;
 
-	/* aen queue variables */
-	uint16_t aen_q_count;	/* Number of available aen_q entries */
-	uint16_t aen_in;	/* Current indexes */
+	
+	uint16_t aen_q_count;	
+	uint16_t aen_in;	
 	uint16_t aen_out;
 	struct aen aen_q[MAX_AEN_ENTRIES];
 
-	struct ql4_aen_log aen_log;/* tracks all aens */
+	struct ql4_aen_log aen_log;
 
-	/* This mutex protects several threads to do mailbox commands
-	 * concurrently.
-	 */
+	
 	struct mutex  mbox_sem;
 
-	/* temporary mailbox status registers */
+	
 	volatile uint8_t mbox_status_count;
 	volatile uint32_t mbox_status[MBOX_REG_COUNT];
 
-	/* FW ddb index map */
+	
 	struct ddb_entry *fw_ddb_index_map[MAX_DDB_ENTRIES];
 
-	/* Saved srb for status continuation entry processing */
+	
 	struct srb *status_srb;
 
 	uint8_t acb_version;
 
-	/* qla82xx specific fields */
-	struct device_reg_82xx  __iomem *qla4_82xx_reg; /* Base I/O address */
-	unsigned long nx_pcibase;	/* Base I/O address */
-	uint8_t *nx_db_rd_ptr;		/* Doorbell read pointer */
-	unsigned long nx_db_wr_ptr;	/* Door bell write pointer */
+	
+	struct device_reg_82xx  __iomem *qla4_82xx_reg; 
+	unsigned long nx_pcibase;	
+	uint8_t *nx_db_rd_ptr;		
+	unsigned long nx_db_wr_ptr;	
 	unsigned long first_page_group_start;
 	unsigned long first_page_group_end;
 
@@ -773,18 +731,18 @@ struct scsi_qla_host {
 	struct iscsi_iface *iface_ipv6_0;
 	struct iscsi_iface *iface_ipv6_1;
 
-	/* --- From About Firmware --- */
+	
 	struct about_fw_info fw_info;
-	uint32_t fw_uptime_secs;  /* seconds elapsed since fw bootup */
-	uint32_t fw_uptime_msecs; /* milliseconds beyond elapsed seconds */
-	uint16_t def_timeout; /* Default login timeout */
+	uint32_t fw_uptime_secs;  
+	uint32_t fw_uptime_msecs; 
+	uint16_t def_timeout; 
 
 	uint32_t flash_state;
 #define	QLFLASH_WAITING		0
 #define	QLFLASH_READING		1
 #define	QLFLASH_WRITING		2
 	struct dma_pool *chap_dma_pool;
-	uint8_t *chap_list; /* CHAP table cache */
+	uint8_t *chap_list; 
 	struct mutex  chap_sem;
 
 #define CHAP_DMA_BLOCK_SIZE    512
@@ -805,20 +763,18 @@ struct scsi_qla_host {
 	int is_reset;
 	uint16_t temperature;
 
-	/* event work list */
+	
 	struct list_head work_list;
 	spinlock_t work_lock;
 
-	/* mbox iocb */
+	
 #define MAX_MRB		128
 	struct mrb *active_mrb_array[MAX_MRB];
 	uint32_t mrb_index;
 
 	uint32_t *reg_tbl;
 	struct qla4_83xx_reset_template reset_tmplt;
-	struct device_reg_83xx  __iomem *qla4_83xx_reg; /* Base I/O address
-							   for ISP8324 and
-							   and ISP8042 */
+	struct device_reg_83xx  __iomem *qla4_83xx_reg; 
 	uint32_t pf_bit;
 	struct qla4_83xx_idc_information idc_info;
 	struct addr_ctrl_blk *saved_acb;
@@ -1064,9 +1020,9 @@ static inline void qla4_8xxx_wr_direct(struct scsi_qla_host *ha,
 	ha->isp_ops->wr_reg_direct(ha, ha->reg_tbl[crb_reg], value);
 }
 
-/*---------------------------------------------------------------------------*/
 
-/* Defines for qla4xxx_initialize_adapter() and qla4xxx_recover_adapter() */
+
+
 
 #define INIT_ADAPTER    0
 #define RESET_ADAPTER   1
@@ -1074,11 +1030,11 @@ static inline void qla4_8xxx_wr_direct(struct scsi_qla_host *ha,
 #define PRESERVE_DDB_LIST	0
 #define REBUILD_DDB_LIST	1
 
-/* Defines for process_aen() */
+
 #define PROCESS_ALL_AENS	 0
 #define FLUSH_DDB_CHANGED_AENS	 1
 
-/* Defines for udev events */
+
 #define QL4_UEVENT_CODE_FW_DUMP		0
 
-#endif	/*_QLA4XXX_H */
+#endif	

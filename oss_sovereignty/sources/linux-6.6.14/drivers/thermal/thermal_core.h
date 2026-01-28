@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  thermal_core.h
- *
- *  Copyright (C) 2012  Intel Corp
- *  Author: Durgadoss R <durgadoss.r@intel.com>
- */
+
+
 
 #ifndef __THERMAL_CORE_H__
 #define __THERMAL_CORE_H__
@@ -14,7 +9,7 @@
 
 #include "thermal_netlink.h"
 
-/* Default Thermal Governor */
+
 #if defined(CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE)
 #define DEFAULT_THERMAL_GOVERNOR       "step_wise"
 #elif defined(CONFIG_THERMAL_DEFAULT_GOV_FAIR_SHARE)
@@ -27,10 +22,10 @@
 #define DEFAULT_THERMAL_GOVERNOR       "bang_bang"
 #endif
 
-/* Initial state of a cooling device during binding */
+
 #define THERMAL_NO_TARGET -1UL
 
-/* Init section thermal table */
+
 extern struct thermal_governor *__governor_thermal_table[];
 extern struct thermal_governor *__governor_thermal_table_end[];
 
@@ -77,11 +72,7 @@ get_thermal_instance(struct thermal_zone_device *tz,
 		     struct thermal_cooling_device *cdev,
 		     int trip);
 
-/*
- * This structure is used to describe the behavior of
- * a certain cooling device on a certain trip point
- * in a certain thermal zone
- */
+
 struct thermal_instance {
 	int id;
 	char name[THERMAL_NAME_LENGTH];
@@ -89,16 +80,16 @@ struct thermal_instance {
 	struct thermal_cooling_device *cdev;
 	int trip;
 	bool initialized;
-	unsigned long upper;	/* Highest cooling state for this trip point */
-	unsigned long lower;	/* Lowest cooling state for this trip point */
-	unsigned long target;	/* expected cooling state */
+	unsigned long upper;	
+	unsigned long lower;	
+	unsigned long target;	
 	char attr_name[THERMAL_NAME_LENGTH];
 	struct device_attribute attr;
 	char weight_attr_name[THERMAL_NAME_LENGTH];
 	struct device_attribute weight_attr;
-	struct list_head tz_node; /* node in tz->thermal_instances */
-	struct list_head cdev_node; /* node in cdev->thermal_instances */
-	unsigned int weight; /* The weight of the cooling device */
+	struct list_head tz_node; 
+	struct list_head cdev_node; 
+	unsigned int weight; 
 	bool upper_no_limit;
 };
 
@@ -115,19 +106,19 @@ int thermal_build_list_of_policies(char *buf);
 void __thermal_zone_device_update(struct thermal_zone_device *tz,
 				  enum thermal_notify_event event);
 
-/* Helpers */
+
 void __thermal_zone_set_trips(struct thermal_zone_device *tz);
 int __thermal_zone_get_trip(struct thermal_zone_device *tz, int trip_id,
 			    struct thermal_trip *trip);
 int __thermal_zone_get_temp(struct thermal_zone_device *tz, int *temp);
 
-/* sysfs I/F */
+
 int thermal_zone_create_device_groups(struct thermal_zone_device *, int);
 void thermal_zone_destroy_device_groups(struct thermal_zone_device *);
 void thermal_cooling_device_setup_sysfs(struct thermal_cooling_device *);
 void thermal_cooling_device_destroy_sysfs(struct thermal_cooling_device *cdev);
 void thermal_cooling_device_stats_reinit(struct thermal_cooling_device *cdev);
-/* used only at binding time */
+
 ssize_t trip_point_show(struct device *, struct device_attribute *, char *);
 ssize_t weight_show(struct device *, struct device_attribute *, char *);
 ssize_t weight_store(struct device *, struct device_attribute *, const char *,
@@ -140,9 +131,9 @@ void thermal_cooling_device_stats_update(struct thermal_cooling_device *cdev,
 static inline void
 thermal_cooling_device_stats_update(struct thermal_cooling_device *cdev,
 				    unsigned long new_state) {}
-#endif /* CONFIG_THERMAL_STATISTICS */
+#endif 
 
-/* device tree support */
+
 int thermal_zone_device_is_enabled(struct thermal_zone_device *tz);
 
-#endif /* __THERMAL_CORE_H__ */
+#endif 

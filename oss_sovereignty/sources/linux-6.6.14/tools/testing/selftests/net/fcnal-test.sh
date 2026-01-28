@@ -79,15 +79,15 @@ log_test_addr()
 log_section()
 {
 	echo
-	echo "###########################################################################"
+	echo "
 	echo "$*"
-	echo "###########################################################################"
+	echo "
 	echo
 }
 log_subsection()
 {
 	echo
-	echo "#################################################################"
+	echo "
 	echo "$*"
 	echo
 }
@@ -96,7 +96,7 @@ log_start()
 	kill_procs
 	if [ "${VERBOSE}" = "1" ]; then
 		echo
-		echo "#######################################################"
+		echo "
 	fi
 }
 log_debug()
@@ -2933,7 +2933,7 @@ use_case_br()
 	setup_cmd ip li set br0 up
 	setup_cmd ip li set br0 vrf ${VRF}
 	rmmod br_netfilter 2>/dev/null
-	sleep 5 # DAD
+	sleep 5 
 	run_cmd ip neigh flush all
 	run_cmd ping -c1 -w1 -I br0 ${NSB_IP}
 	log_test $? 0 "Bridge into VRF - IPv4 ping out"
@@ -3059,7 +3059,7 @@ use_cases()
 usage()
 {
 	cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
 	-4          IPv4 tests only
 	-6          IPv6 tests only
 	-t <test>   Test name/set to run
@@ -3129,8 +3129,8 @@ cleanup 2>/dev/null
 printf "\nTests passed: %3d\n" ${nsuccess}
 printf "Tests failed: %3d\n"   ${nfail}
 if [ $nfail -ne 0 ]; then
-	exit 1 # KSFT_FAIL
+	exit 1 
 elif [ $nsuccess -eq 0 ]; then
 	exit $ksft_skip
 fi
-exit 0 # KSFT_PASS
+exit 0 

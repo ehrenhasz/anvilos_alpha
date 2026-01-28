@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * da7219-aad.h - DA7322 ASoC Codec AAD Driver Platform Data
- *
- * Copyright (c) 2015 Dialog Semiconductor Ltd.
- *
- * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
- */
+
+
 
 #ifndef __DA7219_AAD_PDATA_H
 #define __DA7219_AAD_PDATA_H
@@ -98,4 +92,4 @@ struct da7219_aad_pdata {
 	enum da7219_aad_adc_1bit_rpt adc_1bit_rpt;
 };
 
-#endif /* __DA7219_AAD_PDATA_H */
+#endif 

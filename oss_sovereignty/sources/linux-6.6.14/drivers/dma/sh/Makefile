@@ -1,13 +1,13 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# DMA Engine Helpers
-#
+
+
+
+
 
 obj-$(CONFIG_SH_DMAE_BASE) += shdma-base.o
 
-#
-# DMA Controllers
-#
+
+
+
 
 shdma-y := shdmac.o
 shdma-objs := $(shdma-y)

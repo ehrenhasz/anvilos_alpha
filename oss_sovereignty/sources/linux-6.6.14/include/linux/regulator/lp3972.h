@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * National Semiconductors LP3972 PMIC chip client interface
- *
- * Based on lp3971.h
- */
+
+
 
 #ifndef __LINUX_REGULATOR_LP3972_H
 #define __LINUX_REGULATOR_LP3972_H

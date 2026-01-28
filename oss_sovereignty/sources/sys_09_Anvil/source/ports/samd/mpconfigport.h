@@ -1,45 +1,21 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
 
-// Options controlling how MicroPython is built, overriding defaults in py/mpconfig.h
 
-// Board specific definitions
+
+
+
 #include "mpconfigboard.h"
-// MCU-Specific definitions
+
 #include "mpconfigmcu.h"
 
-// Memory allocation policies
+
 #define MICROPY_GC_STACK_ENTRY_TYPE         uint16_t
 #define MICROPY_GC_ALLOC_THRESHOLD          (0)
 #define MICROPY_ALLOC_PATH_MAX              (256)
 
-// MicroPython emitters
+
 #define MICROPY_PERSISTENT_CODE_LOAD        (1)
 
-// Python internal features
+
 #define MICROPY_ENABLE_GC                   (1)
 #define MICROPY_LONGINT_IMPL                (MICROPY_LONGINT_IMPL_MPZ)
 #define MICROPY_FLOAT_IMPL                  (MICROPY_FLOAT_IMPL_FLOAT)
@@ -55,24 +31,24 @@
 #define MICROPY_HW_USB_CDC_1200BPS_TOUCH    (1)
 
 #if MICROPY_HW_ENABLE_USBDEV
-// Enable USB-CDC serial port
+
 #ifndef MICROPY_HW_USB_CDC
 #define MICROPY_HW_USB_CDC (1)
 #endif
-// SAMD unique ID is 16 bytes (hex string == 32)
+
 #ifndef MICROPY_HW_USB_DESC_STR_MAX
 #define MICROPY_HW_USB_DESC_STR_MAX (32)
 #endif
-// Support machine.USBDevice
+
 #ifndef MICROPY_HW_ENABLE_USB_RUNTIME_DEVICE
 #define MICROPY_HW_ENABLE_USB_RUNTIME_DEVICE    (1)
 #endif
 
-#endif // MICROPY_HW_ENABLE_USBDEV
+#endif 
 
 #define MICROPY_PY_SYS_PLATFORM             "samd"
 
-// Extended modules
+
 #define MICROPY_PY_TIME_GMTIME_LOCALTIME_MKTIME (1)
 #define MICROPY_PY_TIME_TIME_TIME_NS        (1)
 #define MICROPY_PY_TIME_INCLUDEFILE         "ports/samd/modtime.c"
@@ -130,7 +106,7 @@
 
 #define MP_STATE_PORT MP_STATE_VM
 
-// Miscellaneous settings
+
 
 #ifndef MICROPY_HW_USB_VID
 #define MICROPY_HW_USB_VID (0xf055)
@@ -139,17 +115,17 @@
 #define MICROPY_HW_USB_PID (0x9802)
 #endif
 
-// Additional entries for use with pendsv_schedule_dispatch.
+
 #ifndef MICROPY_BOARD_PENDSV_ENTRIES
 #define MICROPY_BOARD_PENDSV_ENTRIES
 #endif
 
-// Use internal flash for the file system if no flash file system is selected.
+
 #if !defined(MICROPY_HW_MCUFLASH) && !defined(MICROPY_HW_QSPIFLASH) && !(defined(MICROPY_HW_SPIFLASH) && defined(MICROPY_HW_SPIFLASH_ID))
 #define MICROPY_HW_MCUFLASH                 (1)
-#endif  // !defined(MICROPY_HW_MCUFLASH) ....
+#endif  
 
-// Miscellaneous settings
+
 
 #define MICROPY_EVENT_POLL_HOOK \
     do { \
@@ -161,12 +137,12 @@
 #define MICROPY_MAKE_POINTER_CALLABLE(p) ((void *)((mp_uint_t)(p) | 1))
 
 #define MP_SSIZE_MAX (0x7fffffff)
-typedef int mp_int_t; // must be pointer size
-typedef unsigned mp_uint_t; // must be pointer size
+typedef int mp_int_t; 
+typedef unsigned mp_uint_t; 
 typedef long mp_off_t;
 
-// Need an implementation of the log2 function which is not a macro.
+
 #define MP_NEED_LOG2 (1)
 
-// Need to provide a declaration/definition of alloca()
+
 #include <alloca.h>

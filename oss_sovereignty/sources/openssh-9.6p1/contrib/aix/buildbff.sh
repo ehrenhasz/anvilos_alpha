@@ -6,9 +6,9 @@ startdir=`pwd`
 perl -v >/dev/null || (echo perl required; exit 1)
 if  echo $0 | egrep '^/'
 then
-	inventory=`dirname $0`/inventory.sh		# absolute path
+	inventory=`dirname $0`/inventory.sh		
 else
-	inventory=`pwd`/`dirname $0`/inventory.sh	# relative path
+	inventory=`pwd`/`dirname $0`/inventory.sh	
 fi
 if pwd | egrep 'contrib/aix$'
 then
@@ -36,7 +36,7 @@ do
 done
 for confvar in SSH_PRIVSEP_USER PRIVSEP_PATH
 do
-	eval $confvar=`awk '/#define[ \t]'$confvar'/{print $3}' $objdir/config.h`
+	eval $confvar=`awk '/
 done
 if [ -z "$SSH_PRIVSEP_USER" ]
 then
@@ -70,12 +70,12 @@ BFFVERSION=`printf "%d.%d.%d.%d" $MAJOR $MINOR $PATCH $PORTABLE`
 echo "Building BFF for $PKGNAME $VERSION (package version $BFFVERSION)"
 if [ "${PERMIT_ROOT_LOGIN}" = no ]
 then
-	perl -p -i -e "s/#PermitRootLogin yes/PermitRootLogin no/" \
+	perl -p -i -e "s/
 		$FAKE_ROOT/${sysconfdir}/sshd_config
 fi
 if [ "${X11_FORWARDING}" = yes ]
 then
-	perl -p -i -e "s/#X11Forwarding no/X11Forwarding yes/" \
+	perl -p -i -e "s/
 		$FAKE_ROOT/${sysconfdir}/sshd_config
 fi
 for cfgfile in ssh_config sshd_config
@@ -171,7 +171,7 @@ else
 	else
 		echo "Adding sshd to rc.tcpip"
 		echo >>/etc/rc.tcpip
-		echo "# Start sshd" >>/etc/rc.tcpip
+		echo "
 		echo "\$startupcmd" >>/etc/rc.tcpip
 	fi
 fi

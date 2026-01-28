@@ -1,33 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Altera TSE SGDMA and MSGDMA Linux driver
- * Copyright (C) 2014 Altera Corporation. All rights reserved
- */
+
+
 
 #ifndef __ALTERA_MSGDMAHW_H__
 #define __ALTERA_MSGDMAHW_H__
 
-/* mSGDMA extended descriptor format
- */
+
 struct msgdma_extended_desc {
-	u32 read_addr_lo;	/* data buffer source address low bits */
-	u32 write_addr_lo;	/* data buffer destination address low bits */
-	u32 len;		/* the number of bytes to transfer
-				 * per descriptor
-				 */
-	u32 burst_seq_num;	/* bit 31:24 write burst
-				 * bit 23:16 read burst
-				 * bit 15:0  sequence number
-				 */
-	u32 stride;		/* bit 31:16 write stride
-				 * bit 15:0  read stride
-				 */
-	u32 read_addr_hi;	/* data buffer source address high bits */
-	u32 write_addr_hi;	/* data buffer destination address high bits */
-	u32 control;		/* characteristics of the transfer */
+	u32 read_addr_lo;	
+	u32 write_addr_lo;	
+	u32 len;		
+	u32 burst_seq_num;	
+	u32 stride;		
+	u32 read_addr_hi;	
+	u32 write_addr_hi;	
+	u32 control;		
 };
 
-/* mSGDMA descriptor control field bit definitions
- */
+
 #define MSGDMA_DESC_CTL_SET_CH(x)	((x) & 0xff)
 #define MSGDMA_DESC_CTL_GEN_SOP		BIT(8)
 #define MSGDMA_DESC_CTL_GEN_EOP		BIT(9)
@@ -39,13 +28,10 @@ struct msgdma_extended_desc {
 #define MSGDMA_DESC_CTL_EARLY_IRQ	BIT(15)
 #define MSGDMA_DESC_CTL_TR_ERR_IRQ	(0xff << 16)
 #define MSGDMA_DESC_CTL_EARLY_DONE	BIT(24)
-/* Writing ‘1’ to the ‘go’ bit commits the entire descriptor into the
- * descriptor FIFO(s)
- */
+
 #define MSGDMA_DESC_CTL_GO		BIT(31)
 
-/* Tx buffer control flags
- */
+
 #define MSGDMA_DESC_CTL_TX_FIRST	(MSGDMA_DESC_CTL_GEN_SOP |	\
 					 MSGDMA_DESC_CTL_GO)
 
@@ -67,28 +53,21 @@ struct msgdma_extended_desc {
 					 MSGDMA_DESC_CTL_TR_ERR_IRQ |	\
 					 MSGDMA_DESC_CTL_GO)
 
-/* mSGDMA extended descriptor stride definitions
- */
+
 #define MSGDMA_DESC_TX_STRIDE		(0x00010001)
 #define MSGDMA_DESC_RX_STRIDE		(0x00010001)
 
-/* mSGDMA dispatcher control and status register map
- */
+
 struct msgdma_csr {
-	u32 status;		/* Read/Clear */
-	u32 control;		/* Read/Write */
-	u32 rw_fill_level;	/* bit 31:16 - write fill level
-				 * bit 15:0  - read fill level
-				 */
-	u32 resp_fill_level;	/* bit 15:0 */
-	u32 rw_seq_num;		/* bit 31:16 - write sequence number
-				 * bit 15:0  - read sequence number
-				 */
-	u32 pad[3];		/* reserved */
+	u32 status;		
+	u32 control;		
+	u32 rw_fill_level;	
+	u32 resp_fill_level;	
+	u32 rw_seq_num;		
+	u32 pad[3];		
 };
 
-/* mSGDMA CSR status register bit definitions
- */
+
 #define MSGDMA_CSR_STAT_BUSY			BIT(0)
 #define MSGDMA_CSR_STAT_DESC_BUF_EMPTY		BIT(1)
 #define MSGDMA_CSR_STAT_DESC_BUF_FULL		BIT(2)
@@ -113,8 +92,7 @@ struct msgdma_csr {
 #define MSGDMA_CSR_STAT_STOPPED_ON_EARLY_GET(v)		GET_BIT_VALUE(v, 8)
 #define MSGDMA_CSR_STAT_IRQ_GET(v)			GET_BIT_VALUE(v, 9)
 
-/* mSGDMA CSR control register bit definitions
- */
+
 #define MSGDMA_CSR_CTL_STOP			BIT(0)
 #define MSGDMA_CSR_CTL_RESET			BIT(1)
 #define MSGDMA_CSR_CTL_STOP_ON_ERR		BIT(2)
@@ -122,14 +100,12 @@ struct msgdma_csr {
 #define MSGDMA_CSR_CTL_GLOBAL_INTR		BIT(4)
 #define MSGDMA_CSR_CTL_STOP_DESCS		BIT(5)
 
-/* mSGDMA CSR fill level bits
- */
+
 #define MSGDMA_CSR_WR_FILL_LEVEL_GET(v)		(((v) & 0xffff0000) >> 16)
 #define MSGDMA_CSR_RD_FILL_LEVEL_GET(v)		((v) & 0x0000ffff)
 #define MSGDMA_CSR_RESP_FILL_LEVEL_GET(v)	((v) & 0x0000ffff)
 
-/* mSGDMA response register map
- */
+
 struct msgdma_response {
 	u32 bytes_transferred;
 	u32 status;
@@ -139,9 +115,8 @@ struct msgdma_response {
 #define msgdma_csroffs(a) (offsetof(struct msgdma_csr, a))
 #define msgdma_descroffs(a) (offsetof(struct msgdma_extended_desc, a))
 
-/* mSGDMA response register bit definitions
- */
+
 #define MSGDMA_RESP_EARLY_TERM	BIT(8)
 #define MSGDMA_RESP_ERR_MASK	0xFF
 
-#endif /* __ALTERA_MSGDMA_H__*/
+#endif 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+
+
 
 #ifndef _IONIC_LIF_H_
 #define _IONIC_LIF_H_
@@ -11,8 +11,8 @@
 #include <linux/pci.h>
 #include "ionic_rx_filter.h"
 
-#define IONIC_ADMINQ_LENGTH	16	/* must be a power of two */
-#define IONIC_NOTIFYQ_LENGTH	64	/* must be a power of two */
+#define IONIC_ADMINQ_LENGTH	16	
+#define IONIC_NOTIFYQ_LENGTH	64	
 
 #define ADD_ADDR	true
 #define DEL_ADDR	false
@@ -109,7 +109,7 @@ struct ionic_deferred_work {
 };
 
 struct ionic_deferred {
-	spinlock_t lock;		/* lock for deferred work list */
+	spinlock_t lock;		
 	struct list_head list;
 	struct work_struct work;
 };
@@ -151,7 +151,7 @@ enum ionic_lif_state_flags {
 	IONIC_LIF_F_CMB_TX_RINGS,
 	IONIC_LIF_F_CMB_RX_RINGS,
 
-	/* leave this as last */
+	
 	IONIC_LIF_F_STATE_SIZE
 };
 
@@ -175,9 +175,9 @@ struct ionic_lif {
 	struct ionic *ionic;
 	unsigned int index;
 	unsigned int hw_index;
-	struct mutex queue_lock;	/* lock for queue structures */
-	struct mutex config_lock;	/* lock for config actions */
-	spinlock_t adminq_lock;		/* lock for AdminQ operations */
+	struct mutex queue_lock;	
+	struct mutex config_lock;	
+	spinlock_t adminq_lock;		
 	struct ionic_qcq *adminqcq;
 	struct ionic_qcq *notifyqcq;
 	struct ionic_qcq **txqcqs;
@@ -221,10 +221,10 @@ struct ionic_lif {
 	u32 rss_ind_tbl_sz;
 
 	struct ionic_rx_filters rx_filters;
-	u32 rx_coalesce_usecs;		/* what the user asked for */
-	u32 rx_coalesce_hw;		/* what the hw is using */
-	u32 tx_coalesce_usecs;		/* what the user asked for */
-	u32 tx_coalesce_hw;		/* what the hw is using */
+	u32 rx_coalesce_usecs;		
+	u32 rx_coalesce_hw;		
+	u32 tx_coalesce_usecs;		
+	u32 tx_coalesce_hw;		
 	unsigned int dbid_count;
 
 	struct ionic_phc *phc;
@@ -233,11 +233,11 @@ struct ionic_lif {
 };
 
 struct ionic_phc {
-	spinlock_t lock; /* lock for cc and tc */
+	spinlock_t lock; 
 	struct cyclecounter cc;
 	struct timecounter tc;
 
-	struct mutex config_lock; /* lock for ts_config */
+	struct mutex config_lock; 
 	struct hwtstamp_config ts_config;
 	u64 ts_config_rx_filt;
 	u32 ts_config_tx_mode;
@@ -301,14 +301,14 @@ static inline u32 ionic_coal_usec_to_hw(struct ionic *ionic, u32 usecs)
 	u32 mult = le32_to_cpu(ionic->ident.dev.intr_coal_mult);
 	u32 div = le32_to_cpu(ionic->ident.dev.intr_coal_div);
 
-	/* Div-by-zero should never be an issue, but check anyway */
+	
 	if (!div || !mult)
 		return 0;
 
-	/* Round up in case usecs is close to the next hw unit */
+	
 	usecs += (div / mult) >> 1;
 
-	/* Convert from usecs to device units */
+	
 	return (usecs * mult) / div;
 }
 
@@ -382,4 +382,4 @@ int ionic_lif_rss_config(struct ionic_lif *lif, u16 types,
 void ionic_lif_rx_mode(struct ionic_lif *lif);
 int ionic_reconfigure_queues(struct ionic_lif *lif,
 			     struct ionic_queue_params *qparam);
-#endif /* _IONIC_LIF_H_ */
+#endif 

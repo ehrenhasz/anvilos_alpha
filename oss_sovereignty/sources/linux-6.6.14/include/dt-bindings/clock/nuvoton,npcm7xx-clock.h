@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Nuvoton NPCM7xx Clock Generator binding
- * clock binding number for all clocks supported by nuvoton,npcm7xx-clk
- *
- * Copyright (C) 2018 Nuvoton Technologies tali.perry@nuvoton.com
- *
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_NPCM7XX_H
 #define __DT_BINDINGS_CLOCK_NPCM7XX_H

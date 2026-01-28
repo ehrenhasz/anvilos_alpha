@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2019-2021, Intel Corporation. */
+
+
 
 #ifndef _ICE_REPR_H_
 #define _ICE_REPR_H_
@@ -14,7 +14,7 @@ struct ice_repr {
 	struct metadata_dst *dst;
 	struct ice_esw_br_port *br_port;
 #ifdef CONFIG_ICE_SWITCHDEV
-	/* info about slow path rule */
+	
 	struct ice_rule_query_data sp_rule;
 #endif
 };

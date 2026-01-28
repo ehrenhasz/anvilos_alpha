@@ -151,17 +151,17 @@ print summary accounting information at the end.
 .
 .Sh EXAMPLES
 To begin, enable tracking for the pool:
-.Dl # Nm touch Pa @sysconfdir@/zfs/zfs-list.cache/ Ns Ar poolname
+.Dl 
 Then enable the tracking ZEDLET:
-.Dl # Nm ln Fl s Pa @zfsexecdir@/zed.d/history_event-zfs-list-cacher.sh @sysconfdir@/zfs/zed.d
-.Dl # Nm systemctl Cm enable Pa zfs-zed.service
-.Dl # Nm systemctl Cm restart Pa zfs-zed.service
+.Dl 
+.Dl 
+.Dl 
 .Pp
 If no history event is in the queue,
 inject one to ensure the ZEDLET runs to refresh the cache file
 by setting a monitored property somewhere on the pool:
-.Dl # Nm zfs Cm set Sy relatime Ns = Ns Sy off Ar poolname/dset
-.Dl # Nm zfs Cm inherit Sy relatime Ar poolname/dset
+.Dl 
+.Dl 
 .Pp
 To test the generator output:
 .Dl $ Nm mkdir Pa /tmp/zfs-mount-generator
@@ -170,7 +170,7 @@ To test the generator output:
 If the generated units are satisfactory, instruct
 .Nm systemd
 to re-run all generators:
-.Dl # Nm systemctl daemon-reload
+.Dl 
 .
 .Sh SEE ALSO
 .Xr systemd.mount 5 ,

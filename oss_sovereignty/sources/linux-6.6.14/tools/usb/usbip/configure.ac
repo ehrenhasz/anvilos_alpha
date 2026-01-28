@@ -15,23 +15,23 @@ AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign])
 LT_INIT
 
-# Silent build for automake >= 1.11
+
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_SUBST([EXTRA_CFLAGS], ["-Wall -Werror -Wextra -std=gnu99"])
 
-# Checks for programs.
+
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
-# Checks for header files.
+
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h stdint.h stdlib.h dnl
 		  string.h sys/socket.h syslog.h unistd.h])
 
-# Checks for typedefs, structures, and compiler characteristics.
+
 AC_TYPE_INT32_T
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
@@ -39,7 +39,7 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT8_T
 
-# Checks for library functions.
+
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memset mkdir regcomp socket strchr strerror strstr dnl
 		strtoul])
@@ -50,7 +50,7 @@ AC_CHECK_HEADER([libudev.h],
 			      [AC_MSG_ERROR([Missing udev library!])])],
 		[AC_MSG_ERROR([Missing /usr/include/libudev.h])])
 
-# Checks for libwrap library.
+
 AC_MSG_CHECKING([whether to use the libwrap (TCP wrappers) library])
 AC_ARG_WITH([tcp-wrappers],
 	    [AS_HELP_STRING([--with-tcp-wrappers],
@@ -83,14 +83,14 @@ AC_ARG_WITH([tcp-wrappers],
 		AC_DEFINE([HAVE_LIBWRAP], [1], [use tcp wrapper])],
 	       [AC_MSG_RESULT([no]); LIBS="$saved_LIBS"])])
 
-# Sets directory containing usb.ids.
+
 AC_ARG_WITH([usbids-dir],
 	    [AS_HELP_STRING([--with-usbids-dir=DIR],
 	       [where usb.ids is found (default /usr/share/hwdata/)])],
 	    [USBIDS_DIR=$withval], [USBIDS_DIR="/usr/share/hwdata/"])
 AC_SUBST([USBIDS_DIR])
 
-# use _FORTIFY_SOURCE
+
 AC_MSG_CHECKING([whether to use fortify])
 AC_ARG_WITH([fortify],
 	    [AS_HELP_STRING([--with-fortify],

@@ -1,4 +1,0 @@
-#ifndef _UAPI_PARISC_AUXVEC_H
-#define _UAPI_PARISC_AUXVEC_H
-#define AT_SYSINFO_EHDR		33
-#endif  

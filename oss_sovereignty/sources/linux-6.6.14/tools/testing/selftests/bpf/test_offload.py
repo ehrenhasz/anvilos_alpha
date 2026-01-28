@@ -17,9 +17,9 @@ log_level = 1
 skip_extack = False
 bpf_test_dir = os.path.dirname(os.path.realpath(__file__))
 pp = pprint.PrettyPrinter()
-devs = [] # devices we created for clean up
-files = [] # files to be removed
-netns = [] # net namespaces to be removed
+devs = [] 
+files = [] 
+netns = [] 
 def log_get_sec(level=0):
     return "*" * (log_level + level)
 def log_level_inc(add=1):
@@ -605,7 +605,7 @@ parser.add_argument("--log", help="output verbose log to given file")
 args = parser.parse_args()
 if args.log:
     logfile = open(args.log, 'w+')
-    logfile.write("# -*-Org-*-")
+    logfile.write("
 log("Prepare...", "", level=1)
 log_level_inc()
 skip(os.getuid() != 0, "test must be run as root")
@@ -614,8 +614,8 @@ skip(ret != 0, "bpftool not installed")
 base_progs = progs
 _, base_maps = bpftool("map")
 base_map_names = [
-    'pid_iter.rodata', # created on each bpftool invocation
-    'libbpf_det_bind', # created on each bpftool invocation
+    'pid_iter.rodata', 
+    'libbpf_det_bind', 
 ]
 if not os.path.isdir("/sys/bus/netdevsim/"):
     ret, out = cmd("modprobe netdevsim", fail=False)
@@ -943,7 +943,7 @@ try:
     sim, = simdev.nsims
     map_obj = bpf_obj("sample_map_ret0.bpf.o")
     start_test("Test loading program with maps...")
-    sim.set_xdp(map_obj, "offload", JSON=False) # map fixup msg breaks JSON
+    sim.set_xdp(map_obj, "offload", JSON=False) 
     start_test("Test bpftool bound info reporting (own ns)...")
     check_dev_info(False, "")
     start_test("Test bpftool bound info reporting (other ns)...")
@@ -965,7 +965,7 @@ try:
     simdev = NetdevSimDev()
     sim, = simdev.nsims
     start_test("Test map update (no flags)...")
-    sim.set_xdp(map_obj, "offload", JSON=False) # map fixup msg breaks JSON
+    sim.set_xdp(map_obj, "offload", JSON=False) 
     maps = bpftool_map_list(expected=2)
     array = maps[0] if maps[0]["type"] == "array" else maps[1]
     htab = maps[0] if maps[0]["type"] == "hash" else maps[1]
@@ -1037,7 +1037,7 @@ try:
     simdev.remove()
     simdev = NetdevSimDev()
     sim, = simdev.nsims
-    sim.set_xdp(map_obj, "offload", JSON=False) # map fixup msg breaks JSON
+    sim.set_xdp(map_obj, "offload", JSON=False) 
     simdev.remove()
     bpftool_map_list_wait(expected=0)
     start_test("Test map creation fail path...")

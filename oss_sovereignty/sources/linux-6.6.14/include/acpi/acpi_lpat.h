@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * acpi_lpat.h - LPAT table processing functions
- *
- * Copyright (C) 2015 Intel Corporation. All rights reserved.
- */
+
+
 
 #ifndef ACPI_LPAT_H
 #define ACPI_LPAT_H

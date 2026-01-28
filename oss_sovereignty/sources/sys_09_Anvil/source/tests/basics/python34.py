@@ -12,9 +12,9 @@ def test_syntax(code):
         exec(code)
     except SyntaxError:
         print("SyntaxError")
-test_syntax("f(**a, b)") # can't have positional after **
-test_syntax("() = []") # can't assign to empty tuple (in 3.6 we can)
-test_syntax("del ()") # can't delete empty tuple (in 3.6 we can)
+test_syntax("f(**a, b)") 
+test_syntax("() = []") 
+test_syntax("del ()") 
 import sys
 print(sys.version[:3])
 print(sys.version_info[0], sys.version_info[1])

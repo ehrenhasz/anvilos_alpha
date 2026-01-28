@@ -159,8 +159,8 @@ class NamedPin(object):
         return self._name
 class Pins(object):
     def __init__(self):
-        self.cpu_pins = []  # list of NamedPin objects
-        self.board_pins = []  # list of NamedPin objects
+        self.cpu_pins = []  
+        self.board_pins = []  
     def find_pin(self, pin_num):
         for named_pin in self.cpu_pins:
             pin = named_pin.pin()

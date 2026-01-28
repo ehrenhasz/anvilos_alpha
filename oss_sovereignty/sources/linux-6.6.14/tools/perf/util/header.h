@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_HEADER_H
 #define __PERF_HEADER_H
 
 #include <linux/stddef.h>
 #include <linux/perf_event.h>
 #include <sys/types.h>
-#include <stdio.h> // FILE
+#include <stdio.h> 
 #include <stdbool.h>
 #include <linux/bitmap.h>
 #include <linux/types.h>
@@ -13,7 +13,7 @@
 #include "pmu.h"
 
 enum {
-	HEADER_RESERVED		= 0,	/* always cleared */
+	HEADER_RESERVED		= 0,	
 	HEADER_FIRST_FEATURE	= 1,
 	HEADER_TRACING_DATA	= 1,
 	HEADER_BUILD_ID,
@@ -67,7 +67,7 @@ struct perf_file_header {
 	u64				attr_size;
 	struct perf_file_section	attrs;
 	struct perf_file_section	data;
-	/* event_types is ignored */
+	
 	struct perf_file_section	event_types;
 	DECLARE_BITMAP(adds_features, HEADER_FEAT_BITS);
 };
@@ -95,7 +95,7 @@ struct perf_header {
 struct feat_fd {
 	struct perf_header *ph;
 	int		   fd;
-	void		   *buf;	/* Either buf != NULL or fd >= 0 */
+	void		   *buf;	
 	ssize_t		   offset;
 	size_t		   size;
 	struct evsel	   *events;
@@ -123,12 +123,12 @@ int perf_session__write_header(struct perf_session *session,
 			       int fd, bool at_exit);
 int perf_header__write_pipe(int fd);
 
-/* feat_writer writes a feature section to output */
+
 struct feat_writer {
 	int (*write)(struct feat_writer *fw, void *buf, size_t sz);
 };
 
-/* feat_copier copies a feature section using feat_writer to output */
+
 struct feat_copier {
 	int (*copy)(struct feat_copier *fc, int feat, struct feat_writer *fw);
 };
@@ -184,11 +184,9 @@ int write_padded(struct feat_fd *fd, const void *bf,
 int is_cpu_online(unsigned int cpu);
 int build_caches_for_cpu(u32 cpu, struct cpu_cache_level caches[], u32 *cntp);
 
-/*
- * arch specific callback
- */
+
 int get_cpuid(char *buffer, size_t sz);
 
 char *get_cpuid_str(struct perf_pmu *pmu __maybe_unused);
 int strcmp_cpuid_str(const char *s1, const char *s2);
-#endif /* __PERF_HEADER_H */
+#endif 

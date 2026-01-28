@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * Syscall definitions for NOLIBC (those in man(2))
- * Copyright (C) 2017-2021 Willy Tarreau <w@1wt.eu>
- */
+
+
 
 #ifndef _NOLIBC_SYS_H
 #define _NOLIBC_SYS_H
@@ -10,17 +7,17 @@
 #include <stdarg.h>
 #include "std.h"
 
-/* system includes */
+
 #include <asm/unistd.h>
-#include <asm/signal.h>  /* for SIGCHLD */
+#include <asm/signal.h>  
 #include <asm/ioctls.h>
 #include <asm/mman.h>
 #include <linux/fs.h>
 #include <linux/loop.h>
 #include <linux/time.h>
 #include <linux/auxvec.h>
-#include <linux/fcntl.h> /* for O_* and AT_* */
-#include <linux/stat.h>  /* for statx() */
+#include <linux/fcntl.h> 
+#include <linux/stat.h>  
 #include <linux/prctl.h>
 
 #include "arch.h"
@@ -28,49 +25,21 @@
 #include "types.h"
 
 
-/* Syscall return helper: takes the syscall value in argument and checks for an
- * error in it. This may only be used with signed returns (int or long), but
- * not with pointers. An error is any value < 0. When an error is encountered,
- * -ret is set into errno and -1 is returned. Otherwise the returned value is
- * passed as-is with its type preserved.
- */
+
 
 #define __sysret(arg)							\
 ({									\
 	__typeof__(arg) __sysret_arg = (arg);				\
-	(__sysret_arg < 0)                              /* error ? */	\
-		? (({ SET_ERRNO(-__sysret_arg); }), -1) /* ret -1 with errno = -arg */ \
-		: __sysret_arg;                         /* return original value */ \
+	(__sysret_arg < 0)                              	\
+		? (({ SET_ERRNO(-__sysret_arg); }), -1)  \
+		: __sysret_arg;                          \
 })
 
 
-/* Functions in this file only describe syscalls. They're declared static so
- * that the compiler usually decides to inline them while still being allowed
- * to pass a pointer to one of their instances. Each syscall exists in two
- * versions:
- *   - the "internal" ones, which matches the raw syscall interface at the
- *     kernel level, which may sometimes slightly differ from the documented
- *     libc-level ones. For example most of them return either a valid value
- *     or -errno. All of these are prefixed with "sys_". They may be called
- *     by non-portable applications if desired.
- *
- *   - the "exported" ones, whose interface must closely match the one
- *     documented in man(2), that applications are supposed to expect. These
- *     ones rely on the internal ones, and set errno.
- *
- * Each syscall will be defined with the two functions, sorted in alphabetical
- * order applied to the exported names.
- *
- * In case of doubt about the relevance of a function here, only those which
- * set errno should be defined here. Wrappers like those appearing in man(3)
- * should not be placed here.
- */
 
 
-/*
- * int brk(void *addr);
- * void *sbrk(intptr_t inc)
- */
+
+
 
 static __attribute__((unused))
 void *sys_brk(void *addr)
@@ -93,7 +62,7 @@ int brk(void *addr)
 static __attribute__((unused))
 void *sbrk(intptr_t inc)
 {
-	/* first call to find current end */
+	
 	void *ret = sys_brk(0);
 
 	if (ret && sys_brk(ret + inc) == ret + inc)
@@ -104,9 +73,7 @@ void *sbrk(intptr_t inc)
 }
 
 
-/*
- * int chdir(const char *path);
- */
+
 
 static __attribute__((unused))
 int sys_chdir(const char *path)
@@ -121,9 +88,7 @@ int chdir(const char *path)
 }
 
 
-/*
- * int chmod(const char *path, mode_t mode);
- */
+
 
 static __attribute__((unused))
 int sys_chmod(const char *path, mode_t mode)
@@ -144,9 +109,7 @@ int chmod(const char *path, mode_t mode)
 }
 
 
-/*
- * int chown(const char *path, uid_t owner, gid_t group);
- */
+
 
 static __attribute__((unused))
 int sys_chown(const char *path, uid_t owner, gid_t group)
@@ -167,9 +130,7 @@ int chown(const char *path, uid_t owner, gid_t group)
 }
 
 
-/*
- * int chroot(const char *path);
- */
+
 
 static __attribute__((unused))
 int sys_chroot(const char *path)
@@ -184,9 +145,7 @@ int chroot(const char *path)
 }
 
 
-/*
- * int close(int fd);
- */
+
 
 static __attribute__((unused))
 int sys_close(int fd)
@@ -201,9 +160,7 @@ int close(int fd)
 }
 
 
-/*
- * int dup(int fd);
- */
+
 
 static __attribute__((unused))
 int sys_dup(int fd)
@@ -218,9 +175,7 @@ int dup(int fd)
 }
 
 
-/*
- * int dup2(int old, int new);
- */
+
 
 static __attribute__((unused))
 int sys_dup2(int old, int new)
@@ -241,9 +196,7 @@ int dup2(int old, int new)
 }
 
 
-/*
- * int dup3(int old, int new, int flags);
- */
+
 
 #ifdef __NR_dup3
 static __attribute__((unused))
@@ -260,9 +213,7 @@ int dup3(int old, int new, int flags)
 #endif
 
 
-/*
- * int execve(const char *filename, char *const argv[], char *const envp[]);
- */
+
 
 static __attribute__((unused))
 int sys_execve(const char *filename, char *const argv[], char *const envp[])
@@ -277,15 +228,13 @@ int execve(const char *filename, char *const argv[], char *const envp[])
 }
 
 
-/*
- * void exit(int status);
- */
+
 
 static __attribute__((noreturn,unused))
 void sys_exit(int status)
 {
 	my_syscall1(__NR_exit, status & 255);
-	while(1); /* shut the "noreturn" warnings. */
+	while(1); 
 }
 
 static __attribute__((noreturn,unused))
@@ -295,19 +244,14 @@ void exit(int status)
 }
 
 
-/*
- * pid_t fork(void);
- */
+
 
 #ifndef sys_fork
 static __attribute__((unused))
 pid_t sys_fork(void)
 {
 #ifdef __NR_clone
-	/* note: some archs only have clone() and not fork(). Different archs
-	 * have a different API, but most archs have the flags on first arg and
-	 * will not use the rest with no other flag.
-	 */
+	
 	return my_syscall5(__NR_clone, SIGCHLD, 0, 0, 0, 0);
 #elif defined(__NR_fork)
 	return my_syscall0(__NR_fork);
@@ -324,9 +268,7 @@ pid_t fork(void)
 }
 
 
-/*
- * int fsync(int fd);
- */
+
 
 static __attribute__((unused))
 int sys_fsync(int fd)
@@ -341,9 +283,7 @@ int fsync(int fd)
 }
 
 
-/*
- * int getdents64(int fd, struct linux_dirent64 *dirp, int count);
- */
+
 
 static __attribute__((unused))
 int sys_getdents64(int fd, struct linux_dirent64 *dirp, int count)
@@ -358,9 +298,7 @@ int getdents64(int fd, struct linux_dirent64 *dirp, int count)
 }
 
 
-/*
- * uid_t geteuid(void);
- */
+
 
 static __attribute__((unused))
 uid_t sys_geteuid(void)
@@ -379,9 +317,7 @@ uid_t geteuid(void)
 }
 
 
-/*
- * pid_t getpgid(pid_t pid);
- */
+
 
 static __attribute__((unused))
 pid_t sys_getpgid(pid_t pid)
@@ -396,9 +332,7 @@ pid_t getpgid(pid_t pid)
 }
 
 
-/*
- * pid_t getpgrp(void);
- */
+
 
 static __attribute__((unused))
 pid_t sys_getpgrp(void)
@@ -413,9 +347,7 @@ pid_t getpgrp(void)
 }
 
 
-/*
- * pid_t getpid(void);
- */
+
 
 static __attribute__((unused))
 pid_t sys_getpid(void)
@@ -430,9 +362,7 @@ pid_t getpid(void)
 }
 
 
-/*
- * pid_t getppid(void);
- */
+
 
 static __attribute__((unused))
 pid_t sys_getppid(void)
@@ -447,9 +377,7 @@ pid_t getppid(void)
 }
 
 
-/*
- * pid_t gettid(void);
- */
+
 
 static __attribute__((unused))
 pid_t sys_gettid(void)
@@ -465,9 +393,7 @@ pid_t gettid(void)
 
 static unsigned long getauxval(unsigned long key);
 
-/*
- * int getpagesize(void);
- */
+
 
 static __attribute__((unused))
 int getpagesize(void)
@@ -476,9 +402,7 @@ int getpagesize(void)
 }
 
 
-/*
- * int gettimeofday(struct timeval *tv, struct timezone *tz);
- */
+
 
 static __attribute__((unused))
 int sys_gettimeofday(struct timeval *tv, struct timezone *tz)
@@ -497,9 +421,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 }
 
 
-/*
- * uid_t getuid(void);
- */
+
 
 static __attribute__((unused))
 uid_t sys_getuid(void)
@@ -518,9 +440,7 @@ uid_t getuid(void)
 }
 
 
-/*
- * int ioctl(int fd, unsigned long req, void *value);
- */
+
 
 static __attribute__((unused))
 int sys_ioctl(int fd, unsigned long req, void *value)
@@ -534,9 +454,7 @@ int ioctl(int fd, unsigned long req, void *value)
 	return __sysret(sys_ioctl(fd, req, value));
 }
 
-/*
- * int kill(pid_t pid, int signal);
- */
+
 
 static __attribute__((unused))
 int sys_kill(pid_t pid, int signal)
@@ -551,9 +469,7 @@ int kill(pid_t pid, int signal)
 }
 
 
-/*
- * int link(const char *old, const char *new);
- */
+
 
 static __attribute__((unused))
 int sys_link(const char *old, const char *new)
@@ -574,9 +490,7 @@ int link(const char *old, const char *new)
 }
 
 
-/*
- * off_t lseek(int fd, off_t offset, int whence);
- */
+
 
 static __attribute__((unused))
 off_t sys_lseek(int fd, off_t offset, int whence)
@@ -595,9 +509,7 @@ off_t lseek(int fd, off_t offset, int whence)
 }
 
 
-/*
- * int mkdir(const char *path, mode_t mode);
- */
+
 
 static __attribute__((unused))
 int sys_mkdir(const char *path, mode_t mode)
@@ -617,9 +529,7 @@ int mkdir(const char *path, mode_t mode)
 	return __sysret(sys_mkdir(path, mode));
 }
 
-/*
- * int rmdir(const char *path);
- */
+
 
 static __attribute__((unused))
 int sys_rmdir(const char *path)
@@ -640,9 +550,7 @@ int rmdir(const char *path)
 }
 
 
-/*
- * int mknod(const char *path, mode_t mode, dev_t dev);
- */
+
 
 static __attribute__((unused))
 long sys_mknod(const char *path, mode_t mode, dev_t dev)
@@ -680,10 +588,7 @@ void *sys_mmap(void *addr, size_t length, int prot, int flags, int fd,
 }
 #endif
 
-/* Note that on Linux, MAP_FAILED is -1 so we can use the generic __sysret()
- * which returns -1 upon error and still satisfy user land that checks for
- * MAP_FAILED.
- */
+
 
 static __attribute__((unused))
 void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset)
@@ -709,11 +614,7 @@ int munmap(void *addr, size_t length)
 	return __sysret(sys_munmap(addr, length));
 }
 
-/*
- * int mount(const char *source, const char *target,
- *           const char *fstype, unsigned long flags,
- *           const void *data);
- */
+
 static __attribute__((unused))
 int sys_mount(const char *src, const char *tgt, const char *fst,
                      unsigned long flags, const void *data)
@@ -730,9 +631,7 @@ int mount(const char *src, const char *tgt,
 }
 
 
-/*
- * int open(const char *path, int flags[, mode_t mode]);
- */
+
 
 static __attribute__((unused))
 int sys_open(const char *path, int flags, mode_t mode)
@@ -763,10 +662,7 @@ int open(const char *path, int flags, ...)
 }
 
 
-/*
- * int pipe2(int pipefd[2], int flags);
- * int pipe(int pipefd[2]);
- */
+
 
 static __attribute__((unused))
 int sys_pipe2(int pipefd[2], int flags)
@@ -787,10 +683,7 @@ int pipe(int pipefd[2])
 }
 
 
-/*
- * int prctl(int option, unsigned long arg2, unsigned long arg3,
- *                       unsigned long arg4, unsigned long arg5);
- */
+
 
 static __attribute__((unused))
 int sys_prctl(int option, unsigned long arg2, unsigned long arg3,
@@ -807,9 +700,7 @@ int prctl(int option, unsigned long arg2, unsigned long arg3,
 }
 
 
-/*
- * int pivot_root(const char *new, const char *old);
- */
+
 
 static __attribute__((unused))
 int sys_pivot_root(const char *new, const char *old)
@@ -824,9 +715,7 @@ int pivot_root(const char *new, const char *old)
 }
 
 
-/*
- * int poll(struct pollfd *fds, int nfds, int timeout);
- */
+
 
 static __attribute__((unused))
 int sys_poll(struct pollfd *fds, int nfds, int timeout)
@@ -853,9 +742,7 @@ int poll(struct pollfd *fds, int nfds, int timeout)
 }
 
 
-/*
- * ssize_t read(int fd, void *buf, size_t count);
- */
+
 
 static __attribute__((unused))
 ssize_t sys_read(int fd, void *buf, size_t count)
@@ -870,10 +757,7 @@ ssize_t read(int fd, void *buf, size_t count)
 }
 
 
-/*
- * int reboot(int cmd);
- * <cmd> is among LINUX_REBOOT_CMD_*
- */
+
 
 static __attribute__((unused))
 ssize_t sys_reboot(int magic1, int magic2, int cmd, void *arg)
@@ -888,9 +772,7 @@ int reboot(int cmd)
 }
 
 
-/*
- * int sched_yield(void);
- */
+
 
 static __attribute__((unused))
 int sys_sched_yield(void)
@@ -905,10 +787,7 @@ int sched_yield(void)
 }
 
 
-/*
- * int select(int nfds, fd_set *read_fds, fd_set *write_fds,
- *            fd_set *except_fds, struct timeval *timeout);
- */
+
 
 static __attribute__((unused))
 int sys_select(int nfds, fd_set *rfds, fd_set *wfds, fd_set *efds, struct timeval *timeout)
@@ -945,9 +824,7 @@ int select(int nfds, fd_set *rfds, fd_set *wfds, fd_set *efds, struct timeval *t
 }
 
 
-/*
- * int setpgid(pid_t pid, pid_t pgid);
- */
+
 
 static __attribute__((unused))
 int sys_setpgid(pid_t pid, pid_t pgid)
@@ -962,9 +839,7 @@ int setpgid(pid_t pid, pid_t pgid)
 }
 
 
-/*
- * pid_t setsid(void);
- */
+
 
 static __attribute__((unused))
 pid_t sys_setsid(void)
@@ -978,10 +853,7 @@ pid_t setsid(void)
 	return __sysret(sys_setsid());
 }
 
-/*
- * int statx(int fd, const char *path, int flags, unsigned int mask, struct statx *buf);
- * int stat(const char *path, struct stat *buf);
- */
+
 
 static __attribute__((unused))
 int sys_statx(int fd, const char *path, int flags, unsigned int mask, struct statx *buf)
@@ -1035,9 +907,7 @@ int stat(const char *path, struct stat *buf)
 }
 
 
-/*
- * int symlink(const char *old, const char *new);
- */
+
 
 static __attribute__((unused))
 int sys_symlink(const char *old, const char *new)
@@ -1058,9 +928,7 @@ int symlink(const char *old, const char *new)
 }
 
 
-/*
- * mode_t umask(mode_t mode);
- */
+
 
 static __attribute__((unused))
 mode_t sys_umask(mode_t mode)
@@ -1075,9 +943,7 @@ mode_t umask(mode_t mode)
 }
 
 
-/*
- * int umount2(const char *path, int flags);
- */
+
 
 static __attribute__((unused))
 int sys_umount2(const char *path, int flags)
@@ -1092,9 +958,7 @@ int umount2(const char *path, int flags)
 }
 
 
-/*
- * int unlink(const char *path);
- */
+
 
 static __attribute__((unused))
 int sys_unlink(const char *path)
@@ -1115,11 +979,7 @@ int unlink(const char *path)
 }
 
 
-/*
- * pid_t wait(int *status);
- * pid_t wait4(pid_t pid, int *status, int options, struct rusage *rusage);
- * pid_t waitpid(pid_t pid, int *status, int options);
- */
+
 
 static __attribute__((unused))
 pid_t sys_wait4(pid_t pid, int *status, int options, struct rusage *rusage)
@@ -1151,9 +1011,7 @@ pid_t waitpid(pid_t pid, int *status, int options)
 }
 
 
-/*
- * ssize_t write(int fd, const void *buf, size_t count);
- */
+
 
 static __attribute__((unused))
 ssize_t sys_write(int fd, const void *buf, size_t count)
@@ -1168,9 +1026,7 @@ ssize_t write(int fd, const void *buf, size_t count)
 }
 
 
-/*
- * int memfd_create(const char *name, unsigned int flags);
- */
+
 
 static __attribute__((unused))
 int sys_memfd_create(const char *name, unsigned int flags)
@@ -1184,7 +1040,7 @@ int memfd_create(const char *name, unsigned int flags)
 	return __sysret(sys_memfd_create(name, flags));
 }
 
-/* make sure to include all global symbols */
+
 #include "nolibc.h"
 
-#endif /* _NOLIBC_SYS_H */
+#endif 

@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-//
-// OWL divider clock driver
-//
-// Copyright (c) 2014 Actions Semi Inc.
-// Author: David Liu <liuwei@actions-semi.com>
-//
-// Copyright (c) 2018 Linaro Ltd.
-// Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+
+
+
+
+
+
+
+
 
 #ifndef _OWL_DIVIDER_H_
 #define _OWL_DIVIDER_H_
@@ -72,4 +72,4 @@ int owl_divider_helper_set_rate(const struct owl_clk_common *common,
 
 extern const struct clk_ops owl_divider_ops;
 
-#endif /* _OWL_DIVIDER_H_ */
+#endif 

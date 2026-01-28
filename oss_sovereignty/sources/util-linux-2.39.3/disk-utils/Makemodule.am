@@ -76,7 +76,7 @@ mkswap_SOURCES += \
 	lib/selinux-utils.c \
 	include/selinux-utils.h
 endif
-endif # BUILD_MKSWAP
+endif 
 
 
 if BUILD_SWAPLABEL
@@ -95,7 +95,7 @@ if BUILD_LIBUUID
 swaplabel_LDADD += libuuid.la
 swaplabel_CFLAGS += -I$(ul_libuuid_incdir)
 endif
-endif #BUILD_SWAPLABEL
+endif 
 
 
 if BUILD_FSCK
@@ -172,7 +172,7 @@ fdisk_static_LDFLAGS = -all-static
 fdisk_static_CFLAGS = $(fdisk_CFLAGS)
 fdisk_static_LDADD = $(fdisk_LDADD) $(READLINE_LIBS_STATIC)
 endif
-endif # BUILD_FDISK
+endif 
 
 
 if BUILD_SFDISK
@@ -195,7 +195,7 @@ sfdisk_static_LDFLAGS = -all-static
 sfdisk_static_CFLAGS = $(sfdisk_CFLAGS)
 sfdisk_static_LDADD = $(sfdisk_LDADD) $(READLINE_LIBS_STATIC)
 endif
-endif # BUILD_SFDISK
+endif 
 
 
 if BUILD_CFDISK
@@ -225,7 +225,7 @@ else
 cfdisk_CFLAGS += $(NCURSES_CFLAGS)
 cfdisk_LDADD += $(NCURSES_LIBS)
 endif
-endif # BUILD_CFDISK
+endif 
 
 
 if BUILD_PARTX
@@ -253,4 +253,4 @@ partx_SOURCES = disk-utils/partx.c
 partx_CFLAGS = $(AM_CFLAGS) -I$(ul_libblkid_incdir) -I$(ul_libsmartcols_incdir)
 partx_LDADD = $(LDADD) libblkid.la libcommon.la libsmartcols.la
 
-endif # BUILD_PARTX
+endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __QCOM_SMD_RPM_H__
 #define __QCOM_SMD_RPM_H__
 
@@ -10,9 +10,7 @@ struct qcom_smd_rpm;
 #define QCOM_SMD_RPM_SLEEP_STATE	1
 #define QCOM_SMD_RPM_STATE_NUM		2
 
-/*
- * Constants used for addressing resources in the RPM.
- */
+
 #define QCOM_SMD_RPM_BBYB	0x62796262
 #define QCOM_SMD_RPM_BOBB	0x62626f62
 #define QCOM_SMD_RPM_BOOST	0x61747362

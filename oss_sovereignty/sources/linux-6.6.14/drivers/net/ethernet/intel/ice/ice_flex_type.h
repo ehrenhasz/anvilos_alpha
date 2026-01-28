@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019, Intel Corporation. */
+
+
 
 #ifndef _ICE_FLEX_TYPE_H_
 #define _ICE_FLEX_TYPE_H_
 #include "ice_ddp.h"
 
-/* Packet Type (PTYPE) values */
+
 #define ICE_PTYPE_MAC_PAY		1
 #define ICE_PTYPE_IPV4_PAY		23
 #define ICE_PTYPE_IPV4_UDP_PAY		24
@@ -48,14 +48,9 @@
 #define ICE_MAC_IPV4_L2TPV3		360
 #define ICE_MAC_IPV6_L2TPV3		361
 
-/* Attributes that can modify PTYPE definitions.
- *
- * These values will represent special attributes for PTYPEs, which will
- * resolve into metadata packet flags definitions that can be used in the TCAM
- * for identifying a PTYPE with specific characteristics.
- */
+
 enum ice_ptype_attrib_type {
-	/* GTP PTYPEs */
+	
 	ICE_PTYPE_ATTR_GTP_PDU_EH,
 	ICE_PTYPE_ATTR_GTP_SESSION,
 	ICE_PTYPE_ATTR_GTP_DOWNLINK,
@@ -67,11 +62,11 @@ struct ice_ptype_attrib_info {
 	u16 mask;
 };
 
-/* TCAM flag definitions */
+
 #define ICE_GTP_PDU			BIT(14)
 #define ICE_GTP_PDU_LINK		BIT(13)
 
-/* GTP attributes */
+
 #define ICE_GTP_PDU_FLAG_MASK		(ICE_GTP_PDU)
 #define ICE_GTP_PDU_EH			ICE_GTP_PDU
 
@@ -85,7 +80,7 @@ struct ice_ptype_attributes {
 	enum ice_ptype_attrib_type attrib;
 };
 
-/* Tunnel enabling */
+
 
 enum ice_tunnel_type {
 	TNL_VXLAN = 0,
@@ -146,19 +141,14 @@ struct ice_es {
 	u32 *mask_ena;
 	struct list_head prof_map;
 	struct ice_fv_word *t;
-	struct mutex prof_map_lock;	/* protect access to profiles list */
+	struct mutex prof_map_lock;	
 	u8 *written;
-	u8 reverse; /* set to true to reverse FV order */
+	u8 reverse; 
 };
 
-/* PTYPE Group management */
 
-/* Note: XLT1 table takes 13-bit as input, and results in an 8-bit packet type
- * group (PTG) ID as output.
- *
- * Note: PTG 0 is the default packet type group and it is assumed that all PTYPE
- * are a part of this group until moved to a new PTG.
- */
+
+
 #define ICE_DEFAULT_PTG	0
 
 struct ice_ptg_entry {
@@ -218,7 +208,7 @@ struct ice_vsig_vsi {
 #define ICE_XLT1_CNT	1024
 #define ICE_MAX_PTGS	256
 
-/* XLT1 Table */
+
 struct ice_xlt1 {
 	struct ice_ptg_entry *ptg_tbl;
 	struct ice_ptg_ptype *ptypes;
@@ -230,10 +220,7 @@ struct ice_xlt1 {
 #define ICE_XLT2_CNT	768
 #define ICE_MAX_VSIGS	768
 
-/* VSIG bit layout:
- * [0:12]: incremental VSIG index 1 to ICE_MAX_VSIGS
- * [13:15]: PF number of device
- */
+
 #define ICE_VSIG_IDX_M	(0x1FFF)
 #define ICE_PF_NUM_S	13
 #define ICE_PF_NUM_M	(0x07 << ICE_PF_NUM_S)
@@ -242,7 +229,7 @@ struct ice_xlt1 {
 	       (((u16)(pf_id) << ICE_PF_NUM_S) & ICE_PF_NUM_M)))
 #define ICE_DEFAULT_VSIG	0
 
-/* XLT2 Table */
+
 struct ice_xlt2 {
 	struct ice_vsig_entry *vsig_tbl;
 	struct ice_vsig_vsi *vsis;
@@ -251,16 +238,14 @@ struct ice_xlt2 {
 	u16 count;
 };
 
-/* Profile ID Management */
+
 struct ice_prof_id_key {
 	__le16 flags;
 	u8 xlt1;
 	__le16 xlt2_cdid;
 } __packed;
 
-/* Keys are made up of two values, each one-half the size of the key.
- * For TCAM, the entire key is 80 bits wide (or 2, 40-bit wide values)
- */
+
 #define ICE_TCAM_KEY_VAL_SZ	5
 #define ICE_TCAM_KEY_SZ		(2 * ICE_TCAM_KEY_VAL_SZ)
 
@@ -280,7 +265,7 @@ struct ice_prof_tcam {
 	u16 count;
 	u16 max_prof_id;
 	struct ice_prof_tcam_entry *t;
-	u8 cdid_bits; /* # CDID bits to use in key, 0, 2, 4, or 8 */
+	u8 cdid_bits; 
 };
 
 struct ice_prof_redir {
@@ -290,21 +275,21 @@ struct ice_prof_redir {
 };
 
 struct ice_mask {
-	u16 mask;	/* 16-bit mask */
-	u16 idx;	/* index */
-	u16 ref;	/* reference count */
-	u8 in_use;	/* non-zero if used */
+	u16 mask;	
+	u16 idx;	
+	u16 ref;	
+	u8 in_use;	
 };
 
 struct ice_masks {
-	struct mutex lock; /* lock to protect this structure */
-	u16 first;	/* first mask owned by the PF */
-	u16 count;	/* number of masks owned by the PF */
+	struct mutex lock; 
+	u16 first;	
+	u16 count;	
 #define ICE_PROF_MASK_COUNT 32
 	struct ice_mask masks[ICE_PROF_MASK_COUNT];
 };
 
-/* Tables per block */
+
 struct ice_blk_info {
 	struct ice_xlt1 xlt1;
 	struct ice_xlt2 xlt2;
@@ -312,7 +297,7 @@ struct ice_blk_info {
 	struct ice_prof_redir prof_redir;
 	struct ice_es es;
 	struct ice_masks masks;
-	u8 overwrite; /* set to true to allow overwrite of table entries */
+	u8 overwrite; 
 	u8 is_list_init;
 };
 
@@ -355,17 +340,15 @@ enum ice_prof_type {
 	ICE_PROF_ALL = 0xFF,
 };
 
-/* Number of bits/bytes contained in meta init entry. Note, this should be a
- * multiple of 32 bits.
- */
+
 #define ICE_META_INIT_BITS	192
 #define ICE_META_INIT_DW_CNT	(ICE_META_INIT_BITS / (sizeof(__le32) * \
 				 BITS_PER_BYTE))
 
-/* The meta init Flag field starts at this bit */
+
 #define ICE_META_FLAGS_ST		123
 
-/* The entry and bit to check for Double VLAN Mode (DVM) support */
+
 #define ICE_META_VLAN_MODE_ENTRY	0
 #define ICE_META_FLAG_VLAN_MODE		60
 #define ICE_META_VLAN_MODE_BIT		(ICE_META_FLAGS_ST + \
@@ -380,4 +363,4 @@ struct ice_meta_init_section {
 	__le16 offset;
 	struct ice_meta_init_entry entry;
 };
-#endif /* _ICE_FLEX_TYPE_H_ */
+#endif 

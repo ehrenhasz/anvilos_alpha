@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-# Copyright (C) B.A.T.M.A.N. contributors:
-#
-# Marek Lindner, Simon Wunderlich
+
+
+
+
 
 obj-$(CONFIG_BATMAN_ADV) += batman-adv.o
 batman-adv-y += bat_algo.o

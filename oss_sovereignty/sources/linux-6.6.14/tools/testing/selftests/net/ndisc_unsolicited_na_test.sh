@@ -142,7 +142,7 @@ test_unsolicited_na_combinations() {
 usage()
 {
 	cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
         -p          Pause on fail
         -P          Pause after each test before cleanup
 EOF

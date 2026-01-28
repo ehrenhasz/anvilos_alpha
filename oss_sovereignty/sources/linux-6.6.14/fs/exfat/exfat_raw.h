@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2012-2013 Samsung Electronics Co., Ltd.
- */
+
+
 
 #ifndef _EXFAT_RAW_H
 #define _EXFAT_RAW_H
@@ -10,7 +8,7 @@
 
 #define BOOT_SIGNATURE		0xAA55
 #define EXBOOT_SIGNATURE	0xAA550000
-#define STR_EXFAT		"EXFAT   "	/* size should be 8 */
+#define STR_EXFAT		"EXFAT   "	
 
 #define EXFAT_MAX_FILE_LEN	255
 
@@ -20,50 +18,50 @@
 #define EXFAT_EOF_CLUSTER	0xFFFFFFFFu
 #define EXFAT_BAD_CLUSTER	0xFFFFFFF7u
 #define EXFAT_FREE_CLUSTER	0
-/* Cluster 0, 1 are reserved, the first cluster is 2 in the cluster heap. */
+
 #define EXFAT_RESERVED_CLUSTERS	2
 #define EXFAT_FIRST_CLUSTER	2
 #define EXFAT_DATA_CLUSTER_COUNT(sbi)	\
 	((sbi)->num_clusters - EXFAT_RESERVED_CLUSTERS)
 
-/* AllocationPossible and NoFatChain field in GeneralSecondaryFlags Field */
+
 #define ALLOC_POSSIBLE		0x01
 #define ALLOC_FAT_CHAIN		0x01
 #define ALLOC_NO_FAT_CHAIN	0x03
 
-#define DENTRY_SIZE		32 /* directory entry size */
+#define DENTRY_SIZE		32 
 #define DENTRY_SIZE_BITS	5
-/* exFAT allows 8388608(256MB) directory entries */
+
 #define MAX_EXFAT_DENTRIES	8388608
 
-/* dentry types */
-#define EXFAT_UNUSED		0x00	/* end of directory */
+
+#define EXFAT_UNUSED		0x00	
 #define EXFAT_DELETE		(~0x80)
-#define IS_EXFAT_DELETED(x)	((x) < 0x80) /* deleted file (0x01~0x7F) */
-#define EXFAT_INVAL		0x80	/* invalid value */
-#define EXFAT_BITMAP		0x81	/* allocation bitmap */
-#define EXFAT_UPCASE		0x82	/* upcase table */
-#define EXFAT_VOLUME		0x83	/* volume label */
-#define EXFAT_FILE		0x85	/* file or dir */
+#define IS_EXFAT_DELETED(x)	((x) < 0x80) 
+#define EXFAT_INVAL		0x80	
+#define EXFAT_BITMAP		0x81	
+#define EXFAT_UPCASE		0x82	
+#define EXFAT_VOLUME		0x83	
+#define EXFAT_FILE		0x85	
 #define EXFAT_GUID		0xA0
 #define EXFAT_PADDING		0xA1
 #define EXFAT_ACLTAB		0xA2
-#define EXFAT_STREAM		0xC0	/* stream entry */
-#define EXFAT_NAME		0xC1	/* file name entry */
-#define EXFAT_ACL		0xC2	/* stream entry */
-#define EXFAT_VENDOR_EXT	0xE0	/* vendor extension entry */
-#define EXFAT_VENDOR_ALLOC	0xE1	/* vendor allocation entry */
+#define EXFAT_STREAM		0xC0	
+#define EXFAT_NAME		0xC1	
+#define EXFAT_ACL		0xC2	
+#define EXFAT_VENDOR_EXT	0xE0	
+#define EXFAT_VENDOR_ALLOC	0xE1	
 
 #define IS_EXFAT_CRITICAL_PRI(x)	(x < 0xA0)
 #define IS_EXFAT_BENIGN_PRI(x)		(x < 0xC0)
 #define IS_EXFAT_CRITICAL_SEC(x)	(x < 0xE0)
 
-/* checksum types */
+
 #define CS_DIR_ENTRY		0
 #define CS_BOOT_SECTOR		1
 #define CS_DEFAULT		2
 
-/* file attributes */
+
 #define ATTR_READONLY		0x0001
 #define ATTR_HIDDEN		0x0002
 #define ATTR_SYSTEM		0x0004
@@ -84,7 +82,7 @@
 #define EXFAT_MAX_SECT_SIZE_BITS		12
 #define EXFAT_MAX_SECT_PER_CLUS_BITS(x)		(25 - (x)->sect_size_bits)
 
-/* EXFAT: Main and Backup Boot Sector (512 bytes) */
+
 struct boot_sector {
 	__u8	jmp_boot[BOOTSEC_JUMP_BOOT_LEN];
 	__u8	fs_name[BOOTSEC_FS_NAME_LEN];
@@ -129,7 +127,7 @@ struct exfat_dentry {
 			__u8 modify_tz;
 			__u8 access_tz;
 			__u8 reserved2[7];
-		} __packed file; /* file directory entry */
+		} __packed file; 
 		struct {
 			__u8 flags;
 			__u8 reserved1;
@@ -140,50 +138,50 @@ struct exfat_dentry {
 			__le32 reserved3;
 			__le32 start_clu;
 			__le64 size;
-		} __packed stream; /* stream extension directory entry */
+		} __packed stream; 
 		struct {
 			__u8 flags;
 			__le16 unicode_0_14[EXFAT_FILE_NAME_LEN];
-		} __packed name; /* file name directory entry */
+		} __packed name; 
 		struct {
 			__u8 flags;
 			__u8 reserved[18];
 			__le32 start_clu;
 			__le64 size;
-		} __packed bitmap; /* allocation bitmap directory entry */
+		} __packed bitmap; 
 		struct {
 			__u8 reserved1[3];
 			__le32 checksum;
 			__u8 reserved2[12];
 			__le32 start_clu;
 			__le64 size;
-		} __packed upcase; /* up-case table directory entry */
+		} __packed upcase; 
 		struct {
 			__u8 flags;
 			__u8 vendor_guid[16];
 			__u8 vendor_defined[14];
-		} __packed vendor_ext; /* vendor extension directory entry */
+		} __packed vendor_ext; 
 		struct {
 			__u8 flags;
 			__u8 vendor_guid[16];
 			__u8 vendor_defined[2];
 			__le32 start_clu;
 			__le64 size;
-		} __packed vendor_alloc; /* vendor allocation directory entry */
+		} __packed vendor_alloc; 
 		struct {
 			__u8 flags;
 			__u8 custom_defined[18];
 			__le32 start_clu;
 			__le64 size;
-		} __packed generic_secondary; /* generic secondary directory entry */
+		} __packed generic_secondary; 
 	} __packed dentry;
 } __packed;
 
 #define EXFAT_TZ_VALID		(1 << 7)
 
-/* Jan 1 GMT 00:00:00 1980 */
+
 #define EXFAT_MIN_TIMESTAMP_SECS    315532800LL
-/* Dec 31 GMT 23:59:59 2107 */
+
 #define EXFAT_MAX_TIMESTAMP_SECS    4354819199LL
 
-#endif /* !_EXFAT_RAW_H */
+#endif 

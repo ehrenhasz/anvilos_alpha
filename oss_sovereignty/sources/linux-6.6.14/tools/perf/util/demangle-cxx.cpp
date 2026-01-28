@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "demangle-cxx.h"
 #include <stdlib.h>
 #include <string.h>
@@ -15,16 +15,12 @@
 
 #if defined(HAVE_LIBBFD_SUPPORT) || defined(HAVE_CPLUS_DEMANGLE_SUPPORT)
 #ifndef DMGL_PARAMS
-#define DMGL_PARAMS     (1 << 0)  /* Include function args */
-#define DMGL_ANSI       (1 << 1)  /* Include const, volatile, etc */
+#define DMGL_PARAMS     (1 << 0)  
+#define DMGL_ANSI       (1 << 1)  
 #endif
 #endif
 
-/*
- * Demangle C++ function signature
- *
- * Note: caller is responsible for freeing demangled string
- */
+
 extern "C"
 char *cxx_demangle_sym(const char *str, bool params __maybe_unused,
                        bool modifiers __maybe_unused)
@@ -41,7 +37,7 @@ char *cxx_demangle_sym(const char *str, bool params __maybe_unused,
         char *output;
         int status;
 
-        output = abi::__cxa_demangle(str, /*output_buffer=*/NULL, /*length=*/NULL, &status);
+        output = abi::__cxa_demangle(str, NULL, NULL, &status);
         return output;
 #else
         return NULL;

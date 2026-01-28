@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright 2016-2023 Broadcom Inc. All rights reserved.
- */
+
+
 #ifndef MPI30_TRANSPORT_H
 #define MPI30_TRANSPORT_H     1
 struct mpi3_version_struct {

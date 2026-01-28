@@ -1,6 +1,0 @@
-#include "imx6ul.dtsi"
-#include "imx6ul-kontron-sl-common.dtsi"
-/ {
-	model = "Kontron SL i.MX6UL (N631X SOM)";
-	compatible = "kontron,sl-imx6ul", "fsl,imx6ul";
-};

@@ -67,7 +67,7 @@ class PinGenerator:
             rows = csv.reader(csvfile)
             for linenum, row in enumerate(rows):
                 try:
-                    if len(row) == 0 or row[0].startswith("#"):
+                    if len(row) == 0 or row[0].startswith("
                         continue
                     if len(row) != 2:
                         raise PinGeneratorError("Expecting two entries in each row")
@@ -78,8 +78,8 @@ class PinGenerator:
                         cpu_pin_name = cpu_pin_name[1:]
                     self._pin_type.validate_cpu_pin_name(cpu_pin_name)
                     pin = self.find_pin_by_cpu_pin_name(cpu_pin_name, create=True)
-                    pin._available = True  # It's in pins.csv so must be available.
-                    pin._hidden = cpu_hidden  # Optionally don't make available to Python.
+                    pin._available = True  
+                    pin._hidden = cpu_hidden  
                     if board_pin_name:
                         board_hidden = False
                         if board_pin_name.startswith("-"):
@@ -95,7 +95,7 @@ class PinGenerator:
             rows = csv.reader(csvfile)
             for linenum, row in enumerate(rows):
                 try:
-                    if len(row) == 0 or row[0].startswith("#"):
+                    if len(row) == 0 or row[0].startswith("
                         continue
                     if header_rows:
                         if not headings:
@@ -158,7 +158,7 @@ class PinGenerator:
         for pin in self.available_pins(exclude_hidden=True):
             m = pin.enable_macro()
             if m:
-                print("    #if {}".format(m), file=out_source)
+                print("    
             print(
                 "    {{ MP_ROM_QSTR(MP_QSTR_{:s}), MP_ROM_PTR(pin_{:s}) }},".format(
                     pin.name(),
@@ -167,7 +167,7 @@ class PinGenerator:
                 file=out_source,
             )
             if m:
-                print("    #endif", file=out_source)
+                print("    
         print("};", file=out_source)
         print(
             "MP_DEFINE_CONST_DICT(machine_pin_cpu_pins_locals_dict, machine_pin_cpu_pins_locals_dict_table);",
@@ -182,16 +182,16 @@ class PinGenerator:
             print(file=out_header)
             m = pin.enable_macro()
             if m:
-                print("#if {}".format(m), file=out_header)
+                print("
             if cpu:
                 print(
-                    "#define pin_{:s} ({:s})".format(pin.name(), self._cpu_pin_pointer(pin)),
+                    "
                     file=out_header,
                 )
             if board:
                 for board_pin_name, _board_hidden in pin._board_pin_names:
                     print(
-                        "#define {:s}pin_{:s} pin_{:s}".format(
+                        "
                             self.board_name_define_prefix(),
                             board_pin_name,
                             pin.name(),
@@ -199,13 +199,13 @@ class PinGenerator:
                         file=out_header,
                     )
             if m:
-                print("#endif", file=out_header)
+                print("
     def print_pin_objects(self, out_source):
         print(file=out_source)
         for pin in self.available_pins():
             m = pin.enable_macro()
             if m:
-                print("#if {}".format(m), file=out_source)
+                print("
             print(
                 "{:s}machine_pin_obj_t pin_{:s}_obj = {:s};".format(
                     "const " if pin.is_const() else "",
@@ -215,13 +215,13 @@ class PinGenerator:
                 file=out_source,
             )
             if m:
-                print("#endif", file=out_source)
+                print("
     def print_pin_object_externs(self, out_header):
         print(file=out_header)
         for pin in self.available_pins():
             m = pin.enable_macro()
             if m:
-                print("#if {}".format(m), file=out_header)
+                print("
             print(
                 "extern {:s}machine_pin_obj_t pin_{:s}_obj;".format(
                     "const " if pin.is_const() else "",
@@ -230,7 +230,7 @@ class PinGenerator:
                 file=out_header,
             )
             if m:
-                print("#endif", file=out_header)
+                print("
     def print_source(self, out_source):
         self.print_pin_objects(out_source)
         self.print_cpu_locals_dict(out_source)
@@ -291,7 +291,7 @@ class NumericPinGenerator(PinGenerator):
                 continue
             m = pin.enable_macro()
             if m:
-                print("    #if {}".format(m), file=out_source)
+                print("    
             print(
                 "    [{:s}] = {:s},".format(
                     pin.index_name(),
@@ -300,7 +300,7 @@ class NumericPinGenerator(PinGenerator):
                 file=out_source,
             )
             if m:
-                print("    #endif", file=out_source)
+                print("    
         print("};", file=out_source)
         print(file=out_source)
         for pin in self.available_pins():
@@ -309,7 +309,7 @@ class NumericPinGenerator(PinGenerator):
                 continue
             m = pin.enable_macro()
             if m:
-                print("#if {}".format(m), file=out_source)
+                print("
             print(
                 "{:s}machine_pin_obj_t pin_{:s}_obj = {:s};".format(
                     "const " if pin.is_const() else "",
@@ -319,7 +319,7 @@ class NumericPinGenerator(PinGenerator):
                 file=out_source,
             )
             if m:
-                print("#endif", file=out_source)
+                print("
     def print_source(self, out_source):
         self.print_cpu_table(out_source)
         self.print_board_locals_dict(out_source)

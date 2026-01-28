@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef	__LATTICE_SYSCONFIG_H
 #define	__LATTICE_SYSCONFIG_H
@@ -36,4 +36,4 @@ struct sysconfig_priv {
 
 int sysconfig_probe(struct sysconfig_priv *priv);
 
-#endif /* __LATTICE_SYSCONFIG_H */
+#endif 

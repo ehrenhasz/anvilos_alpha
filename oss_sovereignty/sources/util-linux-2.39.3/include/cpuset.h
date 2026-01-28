@@ -1,24 +1,10 @@
-/*
- * SPDX-License-Identifier: LGPL-2.1-or-later
- *
- * This file may be redistributed under the terms of the
- * GNU Lesser General Public License.
- */
+
 #ifndef UTIL_LINUX_CPUSET_H
 #define UTIL_LINUX_CPUSET_H
 
 #include <sched.h>
 
-/*
- * Fallback for old or obscure libcs without dynamically allocated cpusets
- *
- * The following macros are based on code from glibc.
- *
- * The GNU C Library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- */
+
 #if !HAVE_DECL_CPU_ALLOC
 
 # define CPU_ZERO_S(setsize, cpusetp) \
@@ -62,17 +48,12 @@ extern int __cpuset_count_s(size_t setsize, const cpu_set_t *set);
 # define CPU_ALLOC(count)	(malloc(CPU_ALLOC_SIZE(count)))
 # define CPU_FREE(cpuset)	(free(cpuset))
 
-#endif /* !HAVE_DECL_CPU_ALLOC */
+#endif 
 
 
 #define cpuset_nbits(setsize)	(8 * (setsize))
 
-/*
- * The @idx parameter returns an index of the first mask from @ary array where
- * the @cpu is set.
- *
- * Returns: 0 if found, otherwise 1.
- */
+
 static inline int cpuset_ary_isset(size_t cpu, cpu_set_t **ary, size_t nmemb,
 				   size_t setsize, size_t *idx)
 {
@@ -98,4 +79,4 @@ extern int cpulist_parse(const char *str, cpu_set_t *set, size_t setsize, int fa
 extern char *cpumask_create(char *str, size_t len, cpu_set_t *set, size_t setsize);
 extern int cpumask_parse(const char *str, cpu_set_t *set, size_t setsize);
 
-#endif /* UTIL_LINUX_CPUSET_H */
+#endif 

@@ -1,20 +1,20 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for nolibc installation and tests
+
+
 include ../../scripts/Makefile.include
 
-# we're in ".../tools/include/nolibc"
+
 ifeq ($(srctree),)
 srctree := $(patsubst %/tools/include/,%,$(dir $(CURDIR)))
 endif
 
-# when run as make -C tools/ nolibc_<foo> the arch is not set
+
 ifeq ($(ARCH),)
 include $(srctree)/scripts/subarch.include
 ARCH = $(SUBARCH)
 endif
 
-# OUTPUT is only set when run from the main makefile, otherwise
-# it defaults to this nolibc directory.
+
+
 OUTPUT ?= $(CURDIR)/
 
 ifeq ($(V),1)
@@ -44,7 +44,7 @@ all_files := \
 		stdio.h \
 
 
-# install all headers needed to support a bare-metal compiler
+
 all: headers
 
 install: help
@@ -64,17 +64,17 @@ help:
 	@echo "  OUTPUT  = $(OUTPUT)"
 	@echo ""
 
-# Note: when ARCH is "x86" we concatenate both x86_64 and i386
+
 headers:
 	$(Q)mkdir -p $(OUTPUT)sysroot
 	$(Q)mkdir -p $(OUTPUT)sysroot/include
 	$(Q)cp $(all_files) $(OUTPUT)sysroot/include/
 	$(Q)if [ "$(ARCH)" = "x86" ]; then      \
 		sed -e                          \
-		  's,^#ifndef _NOLIBC_ARCH_X86_64_H,#if !defined(_NOLIBC_ARCH_X86_64_H) \&\& defined(__x86_64__),' \
+		  's,^
 		  arch-x86_64.h;                \
 		sed -e                          \
-		  's,^#ifndef _NOLIBC_ARCH_I386_H,#if !defined(_NOLIBC_ARCH_I386_H) \&\& !defined(__x86_64__),' \
+		  's,^
 		  arch-i386.h;                  \
 	elif [ -e "$(arch_file)" ]; then        \
 		cat $(arch_file);               \

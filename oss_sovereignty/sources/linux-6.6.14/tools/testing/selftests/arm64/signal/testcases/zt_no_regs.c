@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 ARM Limited
- *
- * Verify that using an instruction not supported in streaming mode
- * traps when in streaming mode.
- */
+
+
 
 #include <signal.h>
 #include <ucontext.h>
@@ -23,10 +18,7 @@ int zt_no_regs_run(struct tdescr *td, siginfo_t *si, ucontext_t *uc)
 	size_t offset;
 	struct _aarch64_ctx *head = GET_BUF_RESV_HEAD(context);
 
-	/*
-	 * Get a signal context which should not have a ZT frame and
-	 * registers in it.
-	 */
+	
 	if (!get_current_context(td, &context.uc, sizeof(context)))
 		return 1;
 

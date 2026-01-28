@@ -1,19 +1,19 @@
-// Options to control how MicroPython is built for this port,
-// overriding defaults in py/mpconfig.h.
 
-// This needs to be defined before any ESP SDK headers are included.
+
+
+
 #define USE_US_TIMER 1
 
-// Board-specific definitions
+
 #include "mpconfigboard.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 
-// Set the rom feature level.
+
 #define MICROPY_CONFIG_ROM_LEVEL (MICROPY_CONFIG_ROM_LEVEL_EXTRA_FEATURES)
 
-// Disable items from the extra level that are not wanted.
+
 #define MICROPY_COMP_MODULE_CONST               (0)
 #define MICROPY_COMP_TRIPLE_TUPLE_ASSIGN        (0)
 #define MICROPY_COMP_RETURN_IF_EXPR             (0)
@@ -42,7 +42,7 @@
 #define MICROPY_PY_BINASCII_CRC32               (0)
 #define MICROPY_PY_RANDOM_EXTRA_FUNCS           (0)
 
-// Configure other options.
+
 #define MICROPY_OBJ_REPR            (MICROPY_OBJ_REPR_C)
 #define MICROPY_GC_STACK_ENTRY_TYPE uint16_t
 #define MICROPY_ALLOC_PATH_MAX      (128)
@@ -115,17 +115,17 @@
 #define MICROPY_FATFS_ENABLE_LFN       (1)
 #define MICROPY_FATFS_RPATH            (2)
 #define MICROPY_FATFS_MAX_SS           (4096)
-#define MICROPY_FATFS_LFN_CODE_PAGE    437 /* 1=SFN/ANSI 437=LFN/U.S.(OEM) */
+#define MICROPY_FATFS_LFN_CODE_PAGE    437 
 #define MICROPY_ESP8266_APA102         (1)
 
-// No blocking wait-for-event on ESP8266, only non-blocking pump of the "OS" event
-// loop
-//
-// TODO: When TIMEOUT_MS==-1, it may be possible to have MICROPY_INTERNAL_WFE() call the "waiti" instruction.
-// See mp_machine_idle() and mp_machine_lightsleep() in esp8266/modmachine.c
-//
-// Note: We have to scope the declaration of ets_loop_iter() here as there are multiple incompatible
-// definitions at compile time between the SDK and axTLS!
+
+
+
+
+
+
+
+
 #define MICROPY_INTERNAL_WFE(TIMEOUT_MS)
 #define MICROPY_INTERNAL_EVENT_HOOK \
     do { \
@@ -142,7 +142,7 @@
 #define MICROPY_VM_HOOK_LOOP MICROPY_VM_HOOK_POLL
 #define MICROPY_VM_HOOK_RETURN MICROPY_VM_HOOK_POLL
 
-// type definitions for the specific machine
+
 
 #define MICROPY_MAKE_POINTER_CALLABLE(p) ((void *)((mp_uint_t)(p)))
 
@@ -151,28 +151,28 @@
 #define UINT_FMT "%u"
 #define INT_FMT "%d"
 
-typedef int32_t mp_int_t; // must be pointer size
-typedef uint32_t mp_uint_t; // must be pointer size
+typedef int32_t mp_int_t; 
+typedef uint32_t mp_uint_t; 
 typedef long mp_off_t;
-typedef uint32_t sys_prot_t; // for modlwip
-// ssize_t, off_t as required by POSIX-signatured functions in stream.h
+typedef uint32_t sys_prot_t; 
+
 #include <sys/types.h>
 
 void *esp_native_code_commit(void *, size_t, void *);
 #define MP_PLAT_COMMIT_EXEC(buf, len, reloc) esp_native_code_commit(buf, len, reloc)
 
-// printer for debugging output, goes to UART only
+
 extern const struct _mp_print_t mp_debug_print;
 
 #define MP_STATE_PORT MP_STATE_VM
 
-// We need an implementation of the log2 function which is not a macro
+
 #define MP_NEED_LOG2 (1)
 
-// We need to provide a declaration/definition of alloca()
+
 #include <alloca.h>
 
-// board specifics
+
 
 #define MICROPY_MPHALPORT_H "esp_mphal.h"
 #define MICROPY_PY_SYS_PLATFORM "esp8266"

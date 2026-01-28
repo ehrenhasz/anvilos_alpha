@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef DRBD_STATE_CHANGE_H
 #define DRBD_STATE_CHANGE_H
 
@@ -17,14 +17,14 @@ struct drbd_device_state_change {
 
 struct drbd_connection_state_change {
 	struct drbd_connection *connection;
-	enum drbd_conns cstate[2];  /* drbd9: enum drbd_conn_state */
+	enum drbd_conns cstate[2];  
 	enum drbd_role peer_role[2];
 };
 
 struct drbd_peer_device_state_change {
 	struct drbd_peer_device *peer_device;
 	enum drbd_disk_state disk_state[2];
-	enum drbd_conns repl_state[2];  /* drbd9: enum drbd_repl_state */
+	enum drbd_conns repl_state[2];  
 	bool resync_susp_user[2];
 	bool resync_susp_peer[2];
 	bool resync_susp_dependency[2];
@@ -61,4 +61,4 @@ extern int notify_peer_device_state_change(struct sk_buff *,
 					    struct drbd_peer_device_state_change *,
 					    enum drbd_notification_type type);
 
-#endif  /* DRBD_STATE_CHANGE_H */
+#endif  

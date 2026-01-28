@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Core driver interface for TI TPS65090 PMIC family
- *
- * Copyright (C) 2012 NVIDIA Corporation
- */
+
+
 
 #ifndef __LINUX_MFD_TPS65090_H
 #define __LINUX_MFD_TPS65090_H
@@ -11,7 +7,7 @@
 #include <linux/irq.h>
 #include <linux/regmap.h>
 
-/* TPS65090 IRQs */
+
 enum {
 	TPS65090_IRQ_INTERRUPT,
 	TPS65090_IRQ_VAC_STATUS_CHANGE,
@@ -31,7 +27,7 @@ enum {
 	TPS65090_IRQ_OVERLOAD_FET7,
 };
 
-/* TPS65090 Regulator ID */
+
 enum {
 	TPS65090_REGULATOR_DCDC1,
 	TPS65090_REGULATOR_DCDC2,
@@ -46,11 +42,11 @@ enum {
 	TPS65090_REGULATOR_LDO1,
 	TPS65090_REGULATOR_LDO2,
 
-	/* Last entry for maximum ID */
+	
 	TPS65090_REGULATOR_MAX,
 };
 
-/* Register addresses */
+
 #define TPS65090_REG_INTR_STS	0x00
 #define TPS65090_REG_INTR_STS2	0x01
 #define TPS65090_REG_INTR_MASK	0x02
@@ -77,18 +73,7 @@ struct tps65090 {
 	struct regmap_irq_chip_data *irq_data;
 };
 
-/*
- * struct tps65090_regulator_plat_data
- *
- * @reg_init_data: The regulator init data.
- * @enable_ext_control: Enable extrenal control or not. Only available for
- *     DCDC1, DCDC2 and DCDC3.
- * @gpiod: Gpio descriptor if external control is enabled and controlled through
- *     gpio
- * @overcurrent_wait_valid: True if the overcurrent_wait should be applied.
- * @overcurrent_wait: Value to set as the overcurrent wait time.  This is the
- *     actual bitfield value, not a time in ms (valid value are 0 - 3).
- */
+
 struct tps65090_regulator_plat_data {
 	struct regulator_init_data *reg_init_data;
 	bool enable_ext_control;
@@ -107,10 +92,7 @@ struct tps65090_platform_data {
 	struct tps65090_regulator_plat_data *reg_pdata[TPS65090_REGULATOR_MAX];
 };
 
-/*
- * NOTE: the functions below are not intended for use outside
- * of the TPS65090 sub-device drivers
- */
+
 static inline int tps65090_write(struct device *dev, int reg, uint8_t val)
 {
 	struct tps65090 *tps = dev_get_drvdata(dev);
@@ -146,4 +128,4 @@ static inline int tps65090_clr_bits(struct device *dev, int reg,
 	return regmap_update_bits(tps->rmap, reg, BIT(bit_num), 0u);
 }
 
-#endif /*__LINUX_MFD_TPS65090_H */
+#endif 

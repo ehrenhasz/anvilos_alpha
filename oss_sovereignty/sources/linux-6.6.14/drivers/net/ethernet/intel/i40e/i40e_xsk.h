@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2018 Intel Corporation. */
+
+
 
 #ifndef _I40E_XSK_H_
 #define _I40E_XSK_H_
 
-/* This value should match the pragma in the loop_unrolled_for
- * macro. Why 4? It is strictly empirical. It seems to be a good
- * compromise between the advantage of having simultaneous outstanding
- * reads to the DMA array that can hide each others latency and the
- * disadvantage of having a larger code path.
- */
+
 #define PKTS_PER_BATCH 4
 
 #ifdef __clang__
@@ -35,4 +30,4 @@ int i40e_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags);
 int i40e_realloc_rx_bi_zc(struct i40e_vsi *vsi, bool zc);
 void i40e_clear_rx_bi_zc(struct i40e_ring *rx_ring);
 
-#endif /* _I40E_XSK_H_ */
+#endif 

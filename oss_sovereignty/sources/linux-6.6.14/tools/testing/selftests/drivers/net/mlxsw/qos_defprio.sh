@@ -4,7 +4,7 @@ ALL_TESTS="
 "
 lib_dir=$(dirname $0)/../../../net/forwarding
 NUM_NETIFS=2
-: ${HIT_TIMEOUT:=1000} # ms
+: ${HIT_TIMEOUT:=1000} 
 source $lib_dir/lib.sh
 h1_create()
 {

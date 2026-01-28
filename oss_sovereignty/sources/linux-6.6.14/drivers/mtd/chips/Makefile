@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# linux/drivers/chips/Makefile
-#
+
+
+
+
 
 obj-$(CONFIG_MTD)		+= chipreg.o
 obj-$(CONFIG_MTD_CFI)		+= cfi_probe.o

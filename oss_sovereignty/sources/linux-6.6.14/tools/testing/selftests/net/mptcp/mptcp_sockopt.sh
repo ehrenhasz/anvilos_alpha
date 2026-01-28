@@ -127,7 +127,7 @@ check_transfer()
 }
 is_v6()
 {
-	[ -z "${1##*:*}" ]
+	[ -z "${1
 }
 do_transfer()
 {

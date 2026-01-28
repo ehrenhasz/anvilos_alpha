@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+
+
 #ifndef __XFS_RMAP_H__
 #define __XFS_RMAP_H__
 
@@ -42,7 +39,7 @@ xfs_rmap_should_skip_owner_update(
 	return oi->oi_owner == XFS_RMAP_OWN_NULL;
 }
 
-/* Reverse mapping functions. */
+
 
 struct xfs_buf;
 
@@ -169,7 +166,7 @@ struct xfs_rmap_intent {
 void xfs_rmap_update_get_group(struct xfs_mount *mp,
 		struct xfs_rmap_intent *ri);
 
-/* functions for updating the rmapbt based on bmbt map/unmap operations */
+
 void xfs_rmap_map_extent(struct xfs_trans *tp, struct xfs_inode *ip,
 		int whichfork, struct xfs_bmbt_irec *imap);
 void xfs_rmap_unmap_extent(struct xfs_trans *tp, struct xfs_inode *ip,
@@ -202,13 +199,13 @@ int xfs_rmap_has_records(struct xfs_btree_cur *cur, xfs_agblock_t bno,
 		xfs_extlen_t len, enum xbtree_recpacking *outcome);
 
 struct xfs_rmap_matches {
-	/* Number of owner matches. */
+	
 	unsigned long long	matches;
 
-	/* Number of non-owner matches. */
+	
 	unsigned long long	non_owner_matches;
 
-	/* Number of non-owner matches that conflict with the owner matches. */
+	
 	unsigned long long	bad_non_owner_matches;
 };
 
@@ -235,4 +232,4 @@ extern struct kmem_cache	*xfs_rmap_intent_cache;
 int __init xfs_rmap_intent_init_cache(void);
 void xfs_rmap_intent_destroy_cache(void);
 
-#endif	/* __XFS_RMAP_H__ */
+#endif	

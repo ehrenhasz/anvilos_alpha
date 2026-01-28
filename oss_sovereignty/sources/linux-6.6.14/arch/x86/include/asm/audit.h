@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_AUDIT_H
 #define _ASM_X86_AUDIT_H
 
@@ -11,4 +11,4 @@ extern unsigned ia32_chattr_class[];
 extern unsigned ia32_signal_class[];
 
 
-#endif /* _ASM_X86_AUDIT_H */
+#endif 

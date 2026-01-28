@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1+ WITH Linux-syscall-note */
-/*
- * Netlink routines for CIFS
- *
- * Copyright (c) 2020 Samuel Cabrero <scabrero@suse.de>
- */
+
+
 
 
 #ifndef _UAPILINUX_CIFS_NETLINK_H
@@ -60,4 +56,4 @@ enum cifs_swn_resource_state {
 	CIFS_SWN_RESOURCE_STATE_UNAVAILABLE = 0xFF
 };
 
-#endif /* _UAPILINUX_CIFS_NETLINK_H */
+#endif 

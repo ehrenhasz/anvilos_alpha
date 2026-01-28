@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Cavium Liquidio ethernet device driver
-#
+
+
+
+
 
 obj-$(CONFIG_LIQUIDIO_CORE) += liquidio-core.o
 liquidio-core-y := \

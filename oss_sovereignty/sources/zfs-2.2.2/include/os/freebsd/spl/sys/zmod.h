@@ -1,28 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
 
-/*
- * Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+
+
 
 #ifndef	_ZMOD_H
 #define	_ZMOD_H
@@ -31,13 +9,7 @@
 extern "C" {
 #endif
 
-/*
- * zmod - RFC-1950-compatible decompression routines
- *
- * This file provides the public interfaces to zmod, an in-kernel RFC 1950
- * decompression library.  More information about the implementation of these
- * interfaces can be found in the usr/src/uts/common/zmod/ directory.
- */
+
 
 #define	Z_OK		0
 #define	Z_STREAM_END	1
@@ -63,4 +35,4 @@ extern const char *z_strerror(int);
 }
 #endif
 
-#endif	/* _ZMOD_H */
+#endif	

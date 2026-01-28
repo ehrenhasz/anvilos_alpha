@@ -1,6 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- * Copyright (C) 2020 Marvell.
- */
+
 
 #ifndef __OTX2_CPT_ALGS_H
 #define __OTX2_CPT_ALGS_H
@@ -106,8 +104,8 @@ union otx2_cpt_fc_hmac_ctx {
 		u8 opad[64];
 	} e;
 	struct {
-		u8 hmac_calc[64]; /* HMAC calculated */
-		u8 hmac_recv[64]; /* HMAC received */
+		u8 hmac_calc[64]; 
+		u8 hmac_recv[64]; 
 	} s;
 };
 
@@ -175,4 +173,4 @@ int otx2_cpt_crypto_init(struct pci_dev *pdev, struct module *mod,
 			 int num_queues, int num_devices);
 void otx2_cpt_crypto_exit(struct pci_dev *pdev, struct module *mod);
 
-#endif /* __OTX2_CPT_ALGS_H */
+#endif 

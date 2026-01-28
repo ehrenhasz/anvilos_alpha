@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2019, Mellanox Technologies */
+
+
 
 #ifndef _MLX5DR_H_
 #define _MLX5DR_H_
@@ -32,7 +32,7 @@ enum mlx5dr_action_reformat_type {
 
 struct mlx5dr_match_parameters {
 	size_t match_sz;
-	u64 *match_buf; /* Device spec format */
+	u64 *match_buf; 
 };
 
 struct mlx5dr_action_dest {
@@ -168,7 +168,7 @@ mlx5dr_is_supported(struct mlx5_core_dev *dev)
 		  MLX5_STEERING_FORMAT_CONNECTX_7)));
 }
 
-/* buddy functions & structure */
+
 
 struct mlx5dr_icm_mr;
 
@@ -180,10 +180,10 @@ struct mlx5dr_icm_buddy_mem {
 	struct mlx5dr_icm_mr	*icm_mr;
 	struct mlx5dr_icm_pool	*pool;
 
-	/* Amount of memory in used chunks - HW may be accessing this memory */
+	
 	u64			used_memory;
 
-	/* Memory optimisation */
+	
 	struct mlx5dr_ste	*ste_arr;
 	struct list_head	*miss_list;
 	u8			*hw_ste_arr;
@@ -198,4 +198,4 @@ int mlx5dr_buddy_alloc_mem(struct mlx5dr_icm_buddy_mem *buddy,
 void mlx5dr_buddy_free_mem(struct mlx5dr_icm_buddy_mem *buddy,
 			   unsigned int seg, unsigned int order);
 
-#endif /* _MLX5DR_H_ */
+#endif 

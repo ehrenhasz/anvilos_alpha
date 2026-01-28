@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants for the STM32F4 RCC IP
- */
+
+
 
 #ifndef _DT_BINDINGS_MFD_STM32F4_RCC_H
 #define _DT_BINDINGS_MFD_STM32F4_RCC_H
 
-/* AHB1 */
+
 #define STM32F4_RCC_AHB1_GPIOA	0
 #define STM32F4_RCC_AHB1_GPIOB	1
 #define STM32F4_RCC_AHB1_GPIOC	2
@@ -34,7 +32,7 @@
 #define STM32F4_AHB1_RESET(bit) (STM32F4_RCC_AHB1_##bit + (0x10 * 8))
 #define STM32F4_AHB1_CLOCK(bit) (STM32F4_RCC_AHB1_##bit)
 
-/* AHB2 */
+
 #define STM32F4_RCC_AHB2_DCMI	0
 #define STM32F4_RCC_AHB2_CRYP	4
 #define STM32F4_RCC_AHB2_HASH	5
@@ -44,14 +42,14 @@
 #define STM32F4_AHB2_RESET(bit)	(STM32F4_RCC_AHB2_##bit + (0x14 * 8))
 #define STM32F4_AHB2_CLOCK(bit)	(STM32F4_RCC_AHB2_##bit + 0x20)
 
-/* AHB3 */
+
 #define STM32F4_RCC_AHB3_FMC	0
 #define STM32F4_RCC_AHB3_QSPI	1
 
 #define STM32F4_AHB3_RESET(bit)	(STM32F4_RCC_AHB3_##bit + (0x18 * 8))
 #define STM32F4_AHB3_CLOCK(bit)	(STM32F4_RCC_AHB3_##bit + 0x40)
 
-/* APB1 */
+
 #define STM32F4_RCC_APB1_TIM2	0
 #define STM32F4_RCC_APB1_TIM3	1
 #define STM32F4_RCC_APB1_TIM4	2
@@ -81,7 +79,7 @@
 #define STM32F4_APB1_RESET(bit)	(STM32F4_RCC_APB1_##bit + (0x20 * 8))
 #define STM32F4_APB1_CLOCK(bit)	(STM32F4_RCC_APB1_##bit + 0x80)
 
-/* APB2 */
+
 #define STM32F4_RCC_APB2_TIM1	0
 #define STM32F4_RCC_APB2_TIM8	1
 #define STM32F4_RCC_APB2_USART1	4
@@ -105,4 +103,4 @@
 #define STM32F4_APB2_RESET(bit)	(STM32F4_RCC_APB2_##bit + (0x24 * 8))
 #define STM32F4_APB2_CLOCK(bit)	(STM32F4_RCC_APB2_##bit + 0xA0)
 
-#endif /* _DT_BINDINGS_MFD_STM32F4_RCC_H */
+#endif 

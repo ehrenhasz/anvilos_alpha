@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Lochnagar2 register definitions
- *
- * Copyright (c) 2017-2018 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- *
- * Author: Charles Keepax <ckeepax@opensource.cirrus.com>
- */
+
+
 
 #ifndef LOCHNAGAR2_REGISTERS_H
 #define LOCHNAGAR2_REGISTERS_H
 
-/* Register Addresses */
+
 #define LOCHNAGAR2_CDC_AIF1_CTRL                      0x000D
 #define LOCHNAGAR2_CDC_AIF2_CTRL                      0x000E
 #define LOCHNAGAR2_CDC_AIF3_CTRL                      0x000F
@@ -176,7 +169,7 @@
 #define LOCHNAGAR2_VDDCORE_CDC_CTRL2                  0x0120
 #define LOCHNAGAR2_SOUNDCARD_AIF_CTRL                 0x0180
 
-/* (0x000D-0x001B, 0x0180)  CDC_AIF1_CTRL - SOUNCARD_AIF_CTRL */
+
 #define LOCHNAGAR2_AIF_ENA_MASK                       0x8000
 #define LOCHNAGAR2_AIF_ENA_SHIFT                          15
 #define LOCHNAGAR2_AIF_LRCLK_DIR_MASK                 0x4000
@@ -186,35 +179,35 @@
 #define LOCHNAGAR2_AIF_SRC_MASK                       0x00FF
 #define LOCHNAGAR2_AIF_SRC_SHIFT                           0
 
-/* (0x001E - 0x0027)  CDC_MCLK1_CTRL - SOUNDCARD_MCLK_CTRL */
+
 #define LOCHNAGAR2_CLK_ENA_MASK                       0x8000
 #define LOCHNAGAR2_CLK_ENA_SHIFT                          15
 #define LOCHNAGAR2_CLK_SRC_MASK                       0x00FF
 #define LOCHNAGAR2_CLK_SRC_SHIFT                           0
 
-/* (0x0031 - 0x009A)  GPIO_FPGA_GPIO1 - GPIO_DSP_GPIO20 */
+
 #define LOCHNAGAR2_GPIO_SRC_MASK                      0x00FF
 #define LOCHNAGAR2_GPIO_SRC_SHIFT                          0
 
-/* (0x00B9 - 0x00C8)  GPIO_CHANNEL1 - GPIO_CHANNEL16 */
+
 #define LOCHNAGAR2_GPIO_CHANNEL_STS_MASK              0x8000
 #define LOCHNAGAR2_GPIO_CHANNEL_STS_SHIFT                 15
 #define LOCHNAGAR2_GPIO_CHANNEL_SRC_MASK              0x00FF
 #define LOCHNAGAR2_GPIO_CHANNEL_SRC_SHIFT                  0
 
-/* (0x00DF)  MINICARD_RESETS */
+
 #define LOCHNAGAR2_DSP_RESET_MASK                     0x0002
 #define LOCHNAGAR2_DSP_RESET_SHIFT                         1
 #define LOCHNAGAR2_CDC_RESET_MASK                     0x0001
 #define LOCHNAGAR2_CDC_RESET_SHIFT                         0
 
-/* (0x00E3)  ANALOGUE_PATH_CTRL1 */
+
 #define LOCHNAGAR2_ANALOGUE_PATH_UPDATE_MASK          0x8000
 #define LOCHNAGAR2_ANALOGUE_PATH_UPDATE_SHIFT             15
 #define LOCHNAGAR2_ANALOGUE_PATH_UPDATE_STS_MASK      0x4000
 #define LOCHNAGAR2_ANALOGUE_PATH_UPDATE_STS_SHIFT         14
 
-/* (0x00E4)  ANALOGUE_PATH_CTRL2 */
+
 #define LOCHNAGAR2_P2_INPUT_BIAS_ENA_MASK             0x0080
 #define LOCHNAGAR2_P2_INPUT_BIAS_ENA_SHIFT                 7
 #define LOCHNAGAR2_P1_INPUT_BIAS_ENA_MASK             0x0040
@@ -224,17 +217,17 @@
 #define LOCHNAGAR2_P1_MICBIAS_SRC_MASK                0x0007
 #define LOCHNAGAR2_P1_MICBIAS_SRC_SHIFT                    0
 
-/* (0x00F0)  COMMS_CTRL4 */
+
 #define LOCHNAGAR2_CDC_CIF1MODE_MASK                  0x0001
 #define LOCHNAGAR2_CDC_CIF1MODE_SHIFT                      0
 
-/* (0x00FE)  SPDIF_CTRL */
+
 #define LOCHNAGAR2_SPDIF_HWMODE_MASK                  0x0008
 #define LOCHNAGAR2_SPDIF_HWMODE_SHIFT                      3
 #define LOCHNAGAR2_SPDIF_RESET_MASK                   0x0001
 #define LOCHNAGAR2_SPDIF_RESET_SHIFT                       0
 
-/* (0x0108)  IMON_CTRL1 */
+
 #define LOCHNAGAR2_IMON_ENA_MASK                      0x8000
 #define LOCHNAGAR2_IMON_ENA_SHIFT                         15
 #define LOCHNAGAR2_IMON_MEASURED_CHANNELS_MASK        0x03FC
@@ -242,11 +235,11 @@
 #define LOCHNAGAR2_IMON_MODE_SEL_MASK                 0x0003
 #define LOCHNAGAR2_IMON_MODE_SEL_SHIFT                     0
 
-/* (0x0109)  IMON_CTRL2 */
+
 #define LOCHNAGAR2_IMON_FSR_MASK                      0x03FF
 #define LOCHNAGAR2_IMON_FSR_SHIFT                          0
 
-/* (0x010A)  IMON_CTRL3 */
+
 #define LOCHNAGAR2_IMON_DONE_MASK                     0x0004
 #define LOCHNAGAR2_IMON_DONE_SHIFT                         2
 #define LOCHNAGAR2_IMON_CONFIGURE_MASK                0x0002
@@ -254,7 +247,7 @@
 #define LOCHNAGAR2_IMON_MEASURE_MASK                  0x0001
 #define LOCHNAGAR2_IMON_MEASURE_SHIFT                      0
 
-/* (0x010B)  IMON_CTRL4 */
+
 #define LOCHNAGAR2_IMON_DATA_REQ_MASK                 0x0080
 #define LOCHNAGAR2_IMON_DATA_REQ_SHIFT                     7
 #define LOCHNAGAR2_IMON_CH_SEL_MASK                   0x0070
@@ -264,27 +257,27 @@
 #define LOCHNAGAR2_IMON_CH_SRC_MASK                   0x0007
 #define LOCHNAGAR2_IMON_CH_SRC_SHIFT                       0
 
-/* (0x010C, 0x010D)  IMON_DATA1, IMON_DATA2 */
+
 #define LOCHNAGAR2_IMON_DATA_MASK                     0xFFFF
 #define LOCHNAGAR2_IMON_DATA_SHIFT                         0
 
-/* (0x0116)  POWER_CTRL */
+
 #define LOCHNAGAR2_PWR_ENA_MASK                       0x0001
 #define LOCHNAGAR2_PWR_ENA_SHIFT                           0
 
-/* (0x0119)  MICVDD_CTRL1 */
+
 #define LOCHNAGAR2_MICVDD_REG_ENA_MASK                0x8000
 #define LOCHNAGAR2_MICVDD_REG_ENA_SHIFT                   15
 
-/* (0x011B)  MICVDD_CTRL2 */
+
 #define LOCHNAGAR2_MICVDD_VSEL_MASK                   0x001F
 #define LOCHNAGAR2_MICVDD_VSEL_SHIFT                       0
 
-/* (0x011E)  VDDCORE_CDC_CTRL1 */
+
 #define LOCHNAGAR2_VDDCORE_CDC_REG_ENA_MASK           0x8000
 #define LOCHNAGAR2_VDDCORE_CDC_REG_ENA_SHIFT              15
 
-/* (0x0120)  VDDCORE_CDC_CTRL2 */
+
 #define LOCHNAGAR2_VDDCORE_CDC_VSEL_MASK              0x007F
 #define LOCHNAGAR2_VDDCORE_CDC_VSEL_SHIFT                  0
 

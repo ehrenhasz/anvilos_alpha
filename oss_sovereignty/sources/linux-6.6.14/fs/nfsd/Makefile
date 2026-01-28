@@ -1,13 +1,13 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Linux nfs server
-#
 
-ccflags-y += -I$(src)			# needed for trace events
+
+
+
+
+ccflags-y += -I$(src)			
 
 obj-$(CONFIG_NFSD)	+= nfsd.o
 
-# this one should be compiled first, as the tracing macros can easily blow up
+
 nfsd-y			+= trace.o
 
 nfsd-y 			+= nfssvc.o nfsctl.o nfsfh.o vfs.o \

@@ -46,7 +46,7 @@
 #
 #       Reference paper titled "Fast CRC Computation for Generic
 #	Polynomials Using PCLMULQDQ Instruction"
-#       URL: http://www.intel.com/content/dam/www/public/us/en/documents
+#       URL: http:
 #  /white-papers/fast-crc-computation-generic-polynomials-pclmulqdq-paper.pdf
 #
 

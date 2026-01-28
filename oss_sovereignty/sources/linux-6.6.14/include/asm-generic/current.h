@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __ASM_GENERIC_CURRENT_H
 #define __ASM_GENERIC_CURRENT_H
 
@@ -9,4 +9,4 @@
 #define current get_current()
 #endif
 
-#endif /* __ASM_GENERIC_CURRENT_H */
+#endif 

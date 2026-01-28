@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- * Copyright (c) BayLibre, SAS.
- * Author : Neil Armstrong <narmstrong@baylibre.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_RESET_GCC_MDM9615_H
 #define _DT_BINDINGS_RESET_GCC_MDM9615_H

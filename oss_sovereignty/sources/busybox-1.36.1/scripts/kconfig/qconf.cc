@@ -1,7 +1,4 @@
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- * Released under the terms of the GNU GPL v2.0.
- */
+
 
 #include <qapplication.h>
 #include <qmainwindow.h>
@@ -49,9 +46,7 @@ ConfigSettings::ConfigSettings()
 }
 
 #if QT_VERSION >= 300
-/**
- * Reads the list column settings from the application settings.
- */
+
 void ConfigSettings::readListSettings()
 {
 	showAll = readBoolEntry("/kconfig/qconf/showAll", false);
@@ -60,9 +55,7 @@ void ConfigSettings::readListSettings()
 	showData = readBoolEntry("/kconfig/qconf/showData", false);
 }
 
-/**
- * Reads a list of integer values from the application settings.
- */
+
 QValueList<int> ConfigSettings::readSizes(const QString& key, bool *ok)
 {
 	QValueList<int> result;
@@ -76,9 +69,7 @@ QValueList<int> ConfigSettings::readSizes(const QString& key, bool *ok)
 	return result;
 }
 
-/**
- * Writes a list of integer values to the application settings.
- */
+
 bool ConfigSettings::writeSizes(const QString& key, const QValueList<int>& value)
 {
 	QStringList stringList;
@@ -91,13 +82,7 @@ bool ConfigSettings::writeSizes(const QString& key, const QValueList<int>& value
 #endif
 
 
-/*
- * update all the children of a menu entry
- *   removes/adds the entries from the parent widget as necessary
- *
- * parent: either the menu list widget or a menu entry widget
- * menu: entry to be updated
- */
+
 template <class P>
 void ConfigList::updateMenuList(P* parent, struct menu* menu)
 {
@@ -160,10 +145,7 @@ void ConfigList::updateMenuList(P* parent, struct menu* menu)
 }
 
 #if QT_VERSION >= 300
-/*
- * set the new data
- * TODO check the value
- */
+
 void ConfigItem::okRename(int col)
 {
 	Parent::okRename(col);
@@ -171,9 +153,7 @@ void ConfigItem::okRename(int col)
 }
 #endif
 
-/*
- * update the displayed of a menu entry
- */
+
 void ConfigItem::updateMenu(void)
 {
 	ConfigList* list;
@@ -197,9 +177,7 @@ void ConfigItem::updateMenu(void)
 	if (prop) switch (prop->type) {
 	case P_MENU:
 		if (list->mode == singleMode || list->mode == symbolMode) {
-			/* a menuconfig entry is displayed differently
-			 * depending whether it's at the view root or a child.
-			 */
+			
 			if (sym && list->rootEntry == menu)
 				break;
 			setPixmap(promptColIdx, list->menuPix);
@@ -301,7 +279,7 @@ void ConfigItem::testUpdateMenu(bool v)
 
 	sym_calc_value(menu->sym);
 	if (menu->flags & MENU_CHANGED) {
-		/* the menu entry changed, so update all list items */
+		
 		menu->flags &= ~MENU_CHANGED;
 		for (i = (ConfigItem*)menu->data; i; i = i->nextItem)
 			i->updateMenu();
@@ -322,9 +300,7 @@ void ConfigItem::paintCell(QPainter* p, const QColorGroup& cg, int column, int w
 		Parent::paintCell(p, list->disabledColorGroup, column, width, align);
 }
 
-/*
- * construct a menu entry
- */
+
 void ConfigItem::init(void)
 {
 	if (menu) {
@@ -339,9 +315,7 @@ void ConfigItem::init(void)
 	updateMenu();
 }
 
-/*
- * destruct a menu entry
- */
+
 ConfigItem::~ConfigItem(void)
 {
 	if (menu) {
@@ -659,8 +633,8 @@ void ConfigList::keyPressEvent(QKeyEvent* ev)
 
 void ConfigList::contentsMousePressEvent(QMouseEvent* e)
 {
-	//QPoint p(contentsToViewport(e->pos()));
-	//printf("contentsMousePressEvent: %d,%d\n", p.x(), p.y());
+	
+	
 	Parent::contentsMousePressEvent(e);
 }
 
@@ -715,14 +689,14 @@ void ConfigList::contentsMouseReleaseEvent(QMouseEvent* e)
 	}
 
 skip:
-	//printf("contentsMouseReleaseEvent: %d,%d\n", p.x(), p.y());
+	
 	Parent::contentsMouseReleaseEvent(e);
 }
 
 void ConfigList::contentsMouseMoveEvent(QMouseEvent* e)
 {
-	//QPoint p(contentsToViewport(e->pos()));
-	//printf("contentsMouseMoveEvent: %d,%d\n", p.x(), p.y());
+	
+	
 	Parent::contentsMouseMoveEvent(e);
 }
 
@@ -749,7 +723,7 @@ void ConfigList::contentsMouseDoubleClickEvent(QMouseEvent* e)
 		changeValue(item);
 
 skip:
-	//printf("contentsMouseDoubleClickEvent: %d,%d\n", p.x(), p.y());
+	
 	Parent::contentsMouseDoubleClickEvent(e);
 }
 
@@ -807,9 +781,7 @@ void ConfigView::updateListAll(void)
 		v->list->updateListAll();
 }
 
-/*
- * Construct the complete config widget
- */
+
 ConfigMainWindow::ConfigMainWindow(void)
 {
 	QMenuBar* menu;
@@ -830,7 +802,7 @@ ConfigMainWindow::ConfigMainWindow(void)
 		move(x, y);
 	showDebug = configSettings->readBoolEntry("/kconfig/qconf/showDebug", false);
 
-	// read list settings into configSettings, will be used later for ConfigList setup
+	
 	configSettings->readListSettings();
 #else
 	width = d->width() - 64;
@@ -849,7 +821,7 @@ ConfigMainWindow::ConfigMainWindow(void)
 	split2 = new QSplitter(split1);
 	split2->setOrientation(QSplitter::Vertical);
 
-	// create config tree
+	
 	configView = new ConfigView(split2, this, configSettings);
 	configList = configView->list;
 
@@ -906,7 +878,7 @@ ConfigMainWindow::ConfigMainWindow(void)
 	QAction *showAboutAction = new QAction(NULL, "About", 0, this);
 	  connect(showAboutAction, SIGNAL(activated()), SLOT(showAbout()));
 
-	// init tool bar
+	
 	backAction->addTo(toolBar);
 	toolBar->addSeparator();
 	loadAction->addTo(toolBar);
@@ -916,7 +888,7 @@ ConfigMainWindow::ConfigMainWindow(void)
 	splitViewAction->addTo(toolBar);
 	fullViewAction->addTo(toolBar);
 
-	// create config menu
+	
 	QPopupMenu* config = new QPopupMenu(this);
 	menu->insertItem("&File", config);
 	loadAction->addTo(config);
@@ -925,7 +897,7 @@ ConfigMainWindow::ConfigMainWindow(void)
 	config->insertSeparator();
 	quitAction->addTo(config);
 
-	// create options menu
+	
 	QPopupMenu* optionMenu = new QPopupMenu(this);
 	menu->insertItem("&Option", optionMenu);
 	showNameAction->addTo(optionMenu);
@@ -935,7 +907,7 @@ ConfigMainWindow::ConfigMainWindow(void)
 	showAllAction->addTo(optionMenu);
 	showDebugAction->addTo(optionMenu);
 
-	// create help menu
+	
 	QPopupMenu* helpMenu = new QPopupMenu(this);
 	menu->insertSeparator();
 	menu->insertItem("&Help", helpMenu);
@@ -960,10 +932,10 @@ ConfigMainWindow::ConfigMainWindow(void)
 		showSingleView();
 	else if (listMode == "full")
 		showFullView();
-	else /*if (listMode == "split")*/
+	else 
 		showSplitView();
 
-	// UI setup done, restore splitter positions
+	
 	QValueList<int> sizes = configSettings->readSizes("/kconfig/qconf/split1", &ok);
 	if (ok)
 		split1->setSizes(sizes);
@@ -1013,9 +985,7 @@ static void expr_print_help(void *data, const char *str)
 	reinterpret_cast<QString*>(data)->append(print_filter(str));
 }
 
-/*
- * display a new help entry as soon as a new menu entry is selected
- */
+
 void ConfigMainWindow::setHelp(QListViewItem* item)
 {
 	struct symbol* sym;
@@ -1270,10 +1240,7 @@ void ConfigMainWindow::setShowData(bool b)
 	menuList->reinit();
 }
 
-/*
- * ask for saving configuration before quitting
- * TODO ask only when something changed
- */
+
 void ConfigMainWindow::closeEvent(QCloseEvent* e)
 {
 	if (!sym_change_count) {
@@ -1411,11 +1378,11 @@ int main(int ac, char** av)
 	conf_parse(name);
 	fixup_rootmenu(&rootmenu);
 	conf_read(NULL);
-	//zconfdump(stdout);
+	
 
 	v = new ConfigMainWindow();
 
-	//zconfdump(stdout);
+	
 	v->show();
 	configApp->connect(configApp, SIGNAL(lastWindowClosed()), SLOT(quit()));
 	configApp->connect(configApp, SIGNAL(aboutToQuit()), v, SLOT(saveSettings()));

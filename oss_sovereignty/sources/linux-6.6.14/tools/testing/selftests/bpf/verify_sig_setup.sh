@@ -55,7 +55,7 @@ catch()
 }
 main()
 {
-	[[ $# -ne 2 ]] && usage
+	[[ $
 	local action="$1"
 	local tmp_dir="$2"
 	[[ ! -d "${tmp_dir}" ]] && echo "Directory ${tmp_dir} doesn't exist" && exit 1

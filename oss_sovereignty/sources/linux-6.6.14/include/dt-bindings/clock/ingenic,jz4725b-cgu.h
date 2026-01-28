@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides clock numbers for the ingenic,jz4725b-cgu DT binding.
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_JZ4725B_CGU_H__
 #define __DT_BINDINGS_CLOCK_JZ4725B_CGU_H__
@@ -33,4 +31,4 @@
 #define JZ4725B_CLK_RTC		24
 #define JZ4725B_CLK_UDC_PHY	25
 
-#endif /* __DT_BINDINGS_CLOCK_JZ4725B_CGU_H__ */
+#endif 

@@ -1,21 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef __XFS_DQUOT_H__
 #define __XFS_DQUOT_H__
 
-/*
- * Dquots are structures that hold quota information about a user or a group,
- * much like inodes are for files. In fact, dquots share many characteristics
- * with inodes. However, dquots can also be a centralized resource, relative
- * to a collection of inodes. In this respect, dquots share some characteristics
- * of the superblock.
- * XFS dquots exploit both those in its algorithms. They make every attempt
- * to not be a bottleneck when quotas are on and have minimal impact, if any,
- * when quotas are off.
- */
+
 
 struct xfs_mount;
 struct xfs_trans;
@@ -28,21 +16,17 @@ enum {
 };
 
 struct xfs_dquot_res {
-	/* Total resources allocated and reserved. */
+	
 	xfs_qcnt_t		reserved;
 
-	/* Total resources allocated. */
+	
 	xfs_qcnt_t		count;
 
-	/* Absolute and preferred limits. */
+	
 	xfs_qcnt_t		hardlimit;
 	xfs_qcnt_t		softlimit;
 
-	/*
-	 * For root dquots, this is the default grace period, in seconds.
-	 * Otherwise, this is when the quota grace period expires,
-	 * in seconds since the Unix epoch.
-	 */
+	
 	time64_t		timer;
 };
 
@@ -56,9 +40,7 @@ xfs_dquot_res_over_limits(
 	return false;
 }
 
-/*
- * The incore dquot structure
- */
+
 struct xfs_dquot {
 	struct list_head	q_lru;
 	struct xfs_mount	*q_mount;
@@ -70,9 +52,9 @@ struct xfs_dquot {
 	xfs_daddr_t		q_blkno;
 	xfs_fileoff_t		q_fileoffset;
 
-	struct xfs_dquot_res	q_blk;	/* regular blocks */
-	struct xfs_dquot_res	q_ino;	/* inodes */
-	struct xfs_dquot_res	q_rtb;	/* realtime blocks */
+	struct xfs_dquot_res	q_blk;	
+	struct xfs_dquot_res	q_ino;	
+	struct xfs_dquot_res	q_rtb;	
 
 	struct xfs_dq_logitem	q_logitem;
 
@@ -85,21 +67,13 @@ struct xfs_dquot {
 	struct wait_queue_head	q_pinwait;
 };
 
-/*
- * Lock hierarchy for q_qlock:
- *	XFS_QLOCK_NORMAL is the implicit default,
- *	XFS_QLOCK_NESTED is the dquot with the higher id in xfs_dqlock2
- */
+
 enum {
 	XFS_QLOCK_NORMAL = 0,
 	XFS_QLOCK_NESTED,
 };
 
-/*
- * Manage the q_flush completion queue embedded in the dquot. This completion
- * queue synchronizes processes attempting to flush the in-core dquot back to
- * disk.
- */
+
 static inline void xfs_dqflock(struct xfs_dquot *dqp)
 {
 	wait_for_completion(&dqp->q_flush);
@@ -166,7 +140,7 @@ static inline struct xfs_dquot *xfs_inode_dquot(
 	}
 }
 
-/* Decide if the dquot's limits are actually being enforced. */
+
 static inline bool
 xfs_dquot_is_enforced(
 	const struct xfs_dquot	*dqp)
@@ -183,10 +157,7 @@ xfs_dquot_is_enforced(
 	return false;
 }
 
-/*
- * Check whether a dquot is under low free space conditions. We assume the quota
- * is enabled and enforced.
- */
+
 static inline bool xfs_dquot_lowsp(struct xfs_dquot *dqp)
 {
 	int64_t freesp;
@@ -242,4 +213,4 @@ int xfs_qm_dqiterate(struct xfs_mount *mp, xfs_dqtype_t type,
 time64_t xfs_dquot_set_timeout(struct xfs_mount *mp, time64_t timeout);
 time64_t xfs_dquot_set_grace_period(time64_t grace);
 
-#endif /* __XFS_DQUOT_H__ */
+#endif 

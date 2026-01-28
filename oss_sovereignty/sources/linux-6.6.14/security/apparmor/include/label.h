@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AppArmor security module
- *
- * This file contains AppArmor label definitions
- *
- * Copyright 2017 Canonical Ltd.
- */
+
+
 
 #ifndef __AA_LABEL_H
 #define __AA_LABEL_H
@@ -62,12 +56,7 @@ struct aa_label *aa_vec_find_or_create_label(struct aa_profile **vec, int len,
 	aa_sort_and_merge_profiles((N), (struct aa_profile **)(V))
 
 
-/* struct aa_labelset - set of labels for a namespace
- *
- * Labels are reference counted; aa_labelset does not contribute to label
- * reference counts. Once a label's last refcount is put it is removed from
- * the set.
- */
+
 struct aa_labelset {
 	rwlock_t lock;
 
@@ -78,25 +67,25 @@ struct aa_labelset {
 	for ((N) = rb_first(&(LS)->root); (N); (N) = rb_next(N))
 
 enum label_flags {
-	FLAG_HAT = 1,			/* profile is a hat */
-	FLAG_UNCONFINED = 2,		/* label unconfined only if all */
-	FLAG_NULL = 4,			/* profile is null learning profile */
-	FLAG_IX_ON_NAME_ERROR = 8,	/* fallback to ix on name lookup fail */
-	FLAG_IMMUTIBLE = 0x10,		/* don't allow changes/replacement */
-	FLAG_USER_DEFINED = 0x20,	/* user based profile - lower privs */
-	FLAG_NO_LIST_REF = 0x40,	/* list doesn't keep profile ref */
-	FLAG_NS_COUNT = 0x80,		/* carries NS ref count */
-	FLAG_IN_TREE = 0x100,		/* label is in tree */
-	FLAG_PROFILE = 0x200,		/* label is a profile */
-	FLAG_EXPLICIT = 0x400,		/* explicit static label */
-	FLAG_STALE = 0x800,		/* replaced/removed */
-	FLAG_RENAMED = 0x1000,		/* label has renaming in it */
-	FLAG_REVOKED = 0x2000,		/* label has revocation in it */
+	FLAG_HAT = 1,			
+	FLAG_UNCONFINED = 2,		
+	FLAG_NULL = 4,			
+	FLAG_IX_ON_NAME_ERROR = 8,	
+	FLAG_IMMUTIBLE = 0x10,		
+	FLAG_USER_DEFINED = 0x20,	
+	FLAG_NO_LIST_REF = 0x40,	
+	FLAG_NS_COUNT = 0x80,		
+	FLAG_IN_TREE = 0x100,		
+	FLAG_PROFILE = 0x200,		
+	FLAG_EXPLICIT = 0x400,		
+	FLAG_STALE = 0x800,		
+	FLAG_RENAMED = 0x1000,		
+	FLAG_REVOKED = 0x2000,		
 	FLAG_DEBUG1 = 0x4000,
 	FLAG_DEBUG2 = 0x8000,
 
-	/* These flags must correspond with PATH_flags */
-	/* TODO: add new path flags */
+	
+	
 };
 
 struct aa_label;
@@ -109,17 +98,7 @@ struct label_it {
 	int i, j;
 };
 
-/* struct aa_label - lazy labeling struct
- * @count: ref count of active users
- * @node: rbtree position
- * @rcu: rcu callback struct
- * @proxy: is set to the label that replaced this label
- * @hname: text representation of the label (MAYBE_NULL)
- * @flags: stale and other flags - values may change under label set lock
- * @secid: secid that references this label
- * @size: number of entries in @ent[]
- * @ent: set of profiles for label, actual size determined by @size
- */
+
 struct aa_label {
 	struct kref count;
 	struct rb_node node;
@@ -152,11 +131,11 @@ do {							\
 
 int aa_label_next_confined(struct aa_label *l, int i);
 
-/* for each profile in a label */
+
 #define label_for_each(I, L, P)						\
 	for ((I).i = 0; ((P) = (L)->vec[(I).i]); ++((I).i))
 
-/* assumes break/goto ended label_for_each */
+
 #define label_for_each_cont(I, L, P)					\
 	for (++((I).i); ((P) = (L)->vec[(I).i]); ++((I).i))
 
@@ -170,7 +149,7 @@ do {									\
 } while (0)
 
 
-/* for each combination of P1 in L1, and P2 in L2 */
+
 #define label_for_each_comb(I, L1, L2, P1, P2)				\
 for ((I).i = (I).j = 0;							\
 	((P1) = (L1)->vec[(I).i]) && ((P2) = (L2)->vec[(I).j]);		\
@@ -186,7 +165,7 @@ for ((I).i = (I).j = 0;							\
 	__E;								\
 })
 
-/* for each profile that is enforcing confinement in a label */
+
 #define label_for_each_confined(I, L, P)				\
 	for ((I).i = aa_label_next_confined((L), 0);			\
 	     ((P) = (L)->vec[(I).i]);					\
@@ -363,14 +342,7 @@ int aa_label_match(struct aa_profile *profile, struct aa_ruleset *rules,
 		   u32 request, struct aa_perms *perms);
 
 
-/**
- * __aa_get_label - get a reference count to uncounted label reference
- * @l: reference to get a count on
- *
- * Returns: pointer to reference OR NULL if race is lost and reference is
- *          being repeated.
- * Requires: lock held, and the return code MUST be checked
- */
+
 static inline struct aa_label *__aa_get_label(struct aa_label *l)
 {
 	if (l && kref_get_unless_zero(&l->count))
@@ -388,13 +360,7 @@ static inline struct aa_label *aa_get_label(struct aa_label *l)
 }
 
 
-/**
- * aa_get_label_rcu - increment refcount on a label that can be replaced
- * @l: pointer to label that can be replaced (NOT NULL)
- *
- * Returns: pointer to a refcounted label.
- *     else NULL if no label
- */
+
 static inline struct aa_label *aa_get_label_rcu(struct aa_label __rcu **l)
 {
 	struct aa_label *c;
@@ -408,14 +374,7 @@ static inline struct aa_label *aa_get_label_rcu(struct aa_label __rcu **l)
 	return c;
 }
 
-/**
- * aa_get_newest_label - find the newest version of @l
- * @l: the label to check for newer versions of
- *
- * Returns: refcounted newest version of @l taking into account
- *          replacement, renames and removals
- *          return @l.
- */
+
 static inline struct aa_label *aa_get_newest_label(struct aa_label *l)
 {
 	if (!l)
@@ -426,10 +385,7 @@ static inline struct aa_label *aa_get_newest_label(struct aa_label *l)
 
 		AA_BUG(!l->proxy);
 		AA_BUG(!l->proxy->label);
-		/* BUG: only way this can happen is @l ref count and its
-		 * replacement count have gone to 0 and are on their way
-		 * to destruction. ie. we have a refcounting error
-		 */
+		
 		tmp = aa_get_label_rcu(&l->proxy->label);
 		AA_BUG(!tmp);
 
@@ -465,4 +421,4 @@ static inline void aa_put_proxy(struct aa_proxy *proxy)
 
 void __aa_proxy_redirect(struct aa_label *orig, struct aa_label *new);
 
-#endif /* __AA_LABEL_H */
+#endif 

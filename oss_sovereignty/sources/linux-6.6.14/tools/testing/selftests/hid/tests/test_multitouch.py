@@ -201,7 +201,7 @@ class PTP(Digitizer):
         self.type = type.lower().replace(" ", "")
         if self.type == "clickpad":
             self.buttontype = 0
-        else:  # pressurepad
+        else:  
             self.buttontype = 1
         self.clickpad_state = False
         self.left_state = False

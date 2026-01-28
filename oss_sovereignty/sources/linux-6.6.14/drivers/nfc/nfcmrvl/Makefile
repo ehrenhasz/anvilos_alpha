@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for NFCMRVL NCI based NFC driver
-#
+
+
+
+
 
 nfcmrvl-y += main.o fw_dnld.o
 obj-$(CONFIG_NFC_MRVL) += nfcmrvl.o

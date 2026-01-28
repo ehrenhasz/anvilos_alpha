@@ -1,4 +1,4 @@
-/* vi: set sw=4 ts=4: */
+
 #ifndef RT_NAMES_H
 #define RT_NAMES_H 1
 

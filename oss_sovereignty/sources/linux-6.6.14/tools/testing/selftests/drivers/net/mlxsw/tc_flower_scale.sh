@@ -98,6 +98,6 @@ tc_flower_traffic_test()
 	done
 	for ((i = count - 1; i > 0; i /= 2)); do
 		tc_check_packets "dev $h2 ingress" 42$i 1
-		check_err $? "Traffic not seen at rule #$i"
+		check_err $? "Traffic not seen at rule 
 	done
 }

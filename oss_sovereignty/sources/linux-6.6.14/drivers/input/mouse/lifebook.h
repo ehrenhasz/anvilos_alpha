@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Fujitsu B-series Lifebook PS/2 TouchScreen driver
- *
- * Copyright (c) 2005 Vojtech Pavlik
- */
+
+
 
 #ifndef _LIFEBOOK_H
 #define _LIFEBOOK_H

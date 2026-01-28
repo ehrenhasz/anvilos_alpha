@@ -8,7 +8,7 @@ ul_get_configuration() {
 		old_opts="$opts"
 		for citem in $opts; do
 			case $citem in
-			include:*) new_opts="$new_opts $(cat $dir/${citem##*:})" ;;
+			include:*) new_opts="$new_opts $(cat $dir/${citem
 			*) new_opts="$new_opts $citem" ;;
 			esac
 		done

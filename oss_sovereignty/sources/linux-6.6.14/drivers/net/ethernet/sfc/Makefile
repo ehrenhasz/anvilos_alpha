@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 sfc-y			+= efx.o efx_common.o efx_channels.o nic.o \
 			   ef10.o \
 			   tx.o tx_common.o tx_tso.o rx.o rx_common.o \

@@ -678,7 +678,7 @@ add_route6()
 	local out
 	if [ "$VERBOSE" = "1" ]; then
 		echo
-		echo "    ##################################################"
+		echo "    
 		echo
 	fi
 	run_cmd "$IP -6 ro flush ${pfx}"
@@ -1009,7 +1009,7 @@ add_route()
 	local out
 	if [ "$VERBOSE" = "1" ]; then
 		echo
-		echo "    ##################################################"
+		echo "    
 		echo
 	fi
 	run_cmd "$IP ro flush ${pfx}"
@@ -1830,7 +1830,7 @@ ipv6_mpath_list_test()
 usage()
 {
 	cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
         -t <test>   Test(s) to run (default: all)
                     (options: $TESTS)
         -p          Pause on fail

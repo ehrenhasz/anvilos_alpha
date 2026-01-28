@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_NIC0_QM_ARC_AUX0_REGS_H_
 #define ASIC_REG_NIC0_QM_ARC_AUX0_REGS_H_
 
-/*
- *****************************************
- *   NIC0_QM_ARC_AUX0
- *   (Prototype: QMAN_ARC_AUX)
- *****************************************
- */
+
 
 #define mmNIC0_QM_ARC_AUX0_RUN_HALT_REQ 0x5418100
 
@@ -588,4 +575,4 @@
 
 #define mmNIC0_QM_ARC_AUX0_MME_ARC_UPPER_DCCM_EN 0x5418920
 
-#endif /* ASIC_REG_NIC0_QM_ARC_AUX0_REGS_H_ */
+#endif 

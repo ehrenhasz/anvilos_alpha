@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- */
+
+
 
 #ifndef MTK_ADSP_IPC_H
 #define MTK_ADSP_IPC_H
@@ -56,4 +54,4 @@ static inline void *mtk_adsp_ipc_get_data(struct mtk_adsp_ipc *ipc)
 
 int mtk_adsp_ipc_send(struct mtk_adsp_ipc *ipc, unsigned int idx, uint32_t op);
 
-#endif /* MTK_ADSP_IPC_H */
+#endif 

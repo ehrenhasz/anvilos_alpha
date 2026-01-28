@@ -1,6 +1,0 @@
-/dts-v1/;
-#include "rk3399-sapphire.dtsi"
-/ {
-	model = "Sapphire-RK3399 Board";
-	compatible = "rockchip,rk3399-sapphire", "rockchip,rk3399";
-};

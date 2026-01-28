@@ -137,7 +137,7 @@ write_hugetlbfs() {
   echo
 }
 set -e
-size=$((${MB} * 1024 * 1024 * 25)) # 50MB = 25 * 2MB hugepages.
+size=$((${MB} * 1024 * 1024 * 25)) 
 cleanup
 echo
 echo

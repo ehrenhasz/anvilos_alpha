@@ -122,7 +122,7 @@ cfg_test_host_common()
 cfg_test_host()
 {
 	echo
-	log_info "# Host entries configuration tests"
+	log_info "
 	cfg_test_host_common "IPv4" "239.1.1.1" "192.0.2.1" "temp" "permanent"
 	cfg_test_host_common "IPv6" "ff0e::1" "2001:db8:1::1" "temp" "permanent"
 	cfg_test_host_common "L2" "01:02:03:04:05:06" "00:00:00:00:00:01" \
@@ -413,7 +413,7 @@ __cfg_test_port_ip_star_g()
 cfg_test_port_ip_star_g()
 {
 	echo
-	log_info "# Port group entries configuration tests - (*, G)"
+	log_info "
 	cfg_test_port_common "IPv4 (*, G)" "grp 239.1.1.1"
 	cfg_test_port_common "IPv6 (*, G)" "grp ff0e::1"
 	__cfg_test_port_ip_star_g "IPv4" "239.1.1.1" "224.0.0.1" "192.0.2."
@@ -490,7 +490,7 @@ __cfg_test_port_ip_sg()
 cfg_test_port_ip_sg()
 {
 	echo
-	log_info "# Port group entries configuration tests - (S, G)"
+	log_info "
 	cfg_test_port_common "IPv4 (S, G)" "grp 239.1.1.1 src 192.0.2.1"
 	cfg_test_port_common "IPv6 (S, G)" "grp ff0e::1 src 2001:db8:1::1"
 	__cfg_test_port_ip_sg "IPv4" "239.1.1.1" "192.0.2.1"
@@ -522,7 +522,7 @@ __cfg_test_port_l2()
 cfg_test_port_l2()
 {
 	echo
-	log_info "# Port group entries configuration tests - L2"
+	log_info "
 	cfg_test_port_common "L2 (*, G)" "grp 01:02:03:04:05:06"
 	__cfg_test_port_l2
 }
@@ -604,7 +604,7 @@ cfg_test_dump_common()
 cfg_test_dump()
 {
 	echo
-	log_info "# Large scale dump tests"
+	log_info "
 	cfg_test_dump_common "IPv4" ipv4_grps_get
 	cfg_test_dump_common "IPv6" ipv6_grps_get
 	cfg_test_dump_common "L2" l2_grps_get
@@ -792,7 +792,7 @@ fwd_test_port()
 fwd_test()
 {
 	echo
-	log_info "# Forwarding tests"
+	log_info "
 	ip -6 address add fe80::1/64 nodad dev br0
 	ip link set dev br0 type bridge mcast_querier 1
 	sleep 10
@@ -850,7 +850,7 @@ ctrl_mldv2_is_in_test()
 ctrl_test()
 {
 	echo
-	log_info "# Control packets tests"
+	log_info "
 	ctrl_igmpv3_is_in_test
 	ctrl_mldv2_is_in_test
 }

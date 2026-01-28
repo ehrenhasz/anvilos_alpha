@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2015-2019 ARM Limited.
-// Original author: Dave Martin <Dave.Martin@arm.com>
-//
-// Simple Scalable Vector Extension context switch test
-// Repeatedly writes unique test patterns into each SVE register
-// and reads them back to verify integrity.
-//
-// for x in `seq 1 NR_CPUS`; do sve-test & pids=$pids\ $! ; done
-// (leave it running for as long as you want...)
-// kill $pids
+
+
+
+
+
+
+
+
+
+
+
 
 #include <asm/unistd.h>
 #include "assembler.h"
@@ -37,17 +37,17 @@
 	str	p\pt, [x\xn]
 .endm
 
-// Generate accessor functions to read/write programmatically selected
-// SVE registers.
-// x0 is the register index to access
-// x1 is the memory address to read from (getz,setp) or store to (setz,setp)
-// All clobber x0-x2
+
+
+
+
+
 define_accessor setz, NZR, _sve_ldr_v
 define_accessor getz, NZR, _sve_str_v
 define_accessor setp, NPR, _sve_ldr_p
 define_accessor getp, NPR, _sve_str_p
 
-// Declare some storate space to shadow the SVE register contents:
+
 .pushsection .text
 .data
 .align 4
@@ -61,17 +61,17 @@ scratch:
 	.space	MAXVL_B
 .popsection
 
-// Generate a test pattern for storage in SVE registers
-// x0: pid	(16 bits)
-// x1: register number (6 bits)
-// x2: generation (4 bits)
 
-// These values are used to constuct a 32-bit pattern that is repeated in the
-// scratch buffer as many times as will fit:
-// bits 31:28	generation number (increments once per test_loop)
-// bits 27:22	32-bit lane index
-// bits 21:16	register number
-// bits 15: 0	pid
+
+
+
+
+
+
+
+
+
+
 
 function pattern
 	orr	w1, w0, w1, lsl #16
@@ -88,14 +88,14 @@ function pattern
 	ret
 endfunction
 
-// Get the address of shadow data for SVE Z-register Z<xn>
+
 .macro _adrz xd, xn, nrtmp
 	ldr	\xd, =zref
 	rdvl	x\nrtmp, #1
 	madd	\xd, x\nrtmp, \xn, \xd
 .endm
 
-// Get the address of shadow data for SVE P-register P<xn - NZR>
+
 .macro _adrp xd, xn, nrtmp
 	ldr	\xd, =pref
 	rdvl	x\nrtmp, #1
@@ -104,10 +104,10 @@ endfunction
 	madd	\xd, x\nrtmp, \xn, \xd
 .endm
 
-// Set up test pattern in a SVE Z-register
-// x0: pid
-// x1: register number
-// x2: generation
+
+
+
+
 function setup_zreg
 	mov	x4, x30
 
@@ -125,10 +125,10 @@ function setup_zreg
 	ret	x4
 endfunction
 
-// Set up test pattern in a SVE P-register
-// x0: pid
-// x1: register number
-// x2: generation
+
+
+
+
 function setup_preg
 	mov	x4, x30
 
@@ -146,16 +146,16 @@ function setup_preg
 	ret	x4
 endfunction
 
-// Set up test pattern in the FFR
-// x0: pid
-// x2: generation
-//
-// We need to generate a canonical FFR value, which consists of a number of
-// low "1" bits, followed by a number of zeros. This gives us 17 unique values
-// per 16 bits of FFR, so we create a 4 bit signature out of the PID and
-// generation, and use that as the initial number of ones in the pattern.
-// We fill the upper lanes of FFR with zeros.
-// Beware: corrupts P0.
+
+
+
+
+
+
+
+
+
+
 function setup_ffr
 #ifndef SSVE
 	mov	x4, x30
@@ -185,10 +185,10 @@ function setup_ffr
 #endif
 endfunction
 
-// Trivial memory compare: compare x2 bytes starting at address x0 with
-// bytes starting at address x1.
-// Returns only if all bytes match; otherwise, the program is aborted.
-// Clobbers x0-x5.
+
+
+
+
 function memcmp
 	cbz	x2, 2f
 
@@ -211,9 +211,9 @@ function memcmp
 2:	ret
 endfunction
 
-// Verify that a SVE Z-register matches its shadow in memory, else abort
-// x0: reg number
-// Clobbers x0-x7.
+
+
+
 function check_zreg
 	mov	x3, x30
 
@@ -236,9 +236,9 @@ function check_zreg
 	b	memcmp
 endfunction
 
-// Verify that a SVE P-register matches its shadow in memory, else abort
-// x0: reg number
-// Clobbers x0-x7.
+
+
+
 function check_preg
 	mov	x3, x30
 
@@ -261,9 +261,9 @@ function check_preg
 	b	memcmp
 endfunction
 
-// Verify that the FFR matches its shadow in memory, else abort
-// Beware -- corrupts P0.
-// Clobbers x0-x5.
+
+
+
 function check_ffr
 #ifndef SSVE
 	mov	x3, x30
@@ -291,23 +291,23 @@ function check_ffr
 #endif
 endfunction
 
-// Any SVE register modified here can cause corruption in the main
-// thread -- but *only* the registers modified here.
+
+
 function irritator_handler
-	// Increment the irritation signal count (x23):
+	
 	ldr	x0, [x2, #ucontext_regs + 8 * 23]
 	add	x0, x0, #1
 	str	x0, [x2, #ucontext_regs + 8 * 23]
 
-	// Corrupt some random Z-regs
+	
 	adr	x0, .text + (irritator_handler - .text) / 16 * 16
 	movi	v0.8b, #1
 	movi	v9.16b, #2
 	movi	v31.8b, #3
 #ifndef SSVE
-	// And P0
+	
 	rdffr	p0.b
-	// And FFR
+	
 	wrffr	p15.b
 #endif
 
@@ -315,7 +315,7 @@ function irritator_handler
 endfunction
 
 function tickle_handler
-	// Increment the signal count (x23):
+	
 	ldr	x0, [x2, #ucontext_regs + 8 * 23]
 	add	x0, x0, #1
 	str	x0, [x2, #ucontext_regs + 8 * 23]
@@ -342,10 +342,10 @@ function terminate_handler
 	svc	#0
 endfunction
 
-// w0: signal number
-// x1: sa_action
-// w2: sa_flags
-// Clobbers x0-x6,x8
+
+
+
+
 function setsignal
 	str	x30, [sp, #-((sa_sz + 15) / 16 * 16 + 16)]!
 
@@ -375,10 +375,10 @@ function setsignal
 	ret
 endfunction
 
-// Main program entry point
+
 .globl _start
 function _start
-	mov	x23, #0		// Irritation signal count
+	mov	x23, #0		
 
 	mov	w0, #SIGINT
 	adr	x1, terminate_handler
@@ -407,7 +407,7 @@ function _start
 	smstart_sm
 #endif
 
-	// Sanity-check and report the vector length
+	
 
 	rdvl	x19, #8
 	cmp	x19, #128
@@ -427,7 +427,7 @@ function _start
 	bl	putdec
 	puts	" bits\n"
 
-	// Obtain our PID, to ensure test pattern uniqueness between processes
+	
 
 	mov	x8, #__NR_getpid
 	svc	#0
@@ -438,16 +438,16 @@ function _start
 	bl	putdecn
 
 #ifdef SSVE
-	smstart_sm		// syscalls will have exited streaming mode
+	smstart_sm		
 #endif
 
-	mov	x22, #0		// generation number, increments per iteration
+	mov	x22, #0		
 .Ltest_loop:
 	rdvl	x0, #8
 	cmp	x0, x19
 	b.ne	vl_barf
 
-	mov	x21, #0		// Set up Z-regs & shadow with test pattern
+	mov	x21, #0		
 0:	mov	x0, x20
 	mov	x1, x21
 	and	x2, x22, #0xf
@@ -456,12 +456,12 @@ function _start
 	cmp	x21, #NZR
 	b.lo	0b
 
-	mov	x0, x20		// Set up FFR & shadow with test pattern
+	mov	x0, x20		
 	mov	x1, #NZR + NPR
 	and	x2, x22, #0xf
 	bl	setup_ffr
 
-0:	mov	x0, x20		// Set up P-regs & shadow with test pattern
+0:	mov	x0, x20		
 	mov	x1, x21
 	and	x2, x22, #0xf
 	bl	setup_preg
@@ -469,9 +469,9 @@ function _start
 	cmp	x21, #NZR + NPR
 	b.lo	0b
 
-// Can't do this when SVE state is volatile across SVC:
-//	mov	x8, #__NR_sched_yield	// Encourage preemption
-//	svc	#0
+
+
+
 
 	mov	x21, #0
 0:	mov	x0, x21
@@ -499,14 +499,14 @@ function _start
 endfunction
 
 function barf
-// fpsimd.c acitivty log dump hack
-//	ldr	w0, =0xdeadc0de
-//	mov	w8, #__NR_exit
-//	svc	#0
-// end hack
-	mov	x10, x0	// expected data
-	mov	x11, x1	// actual data
-	mov	x12, x2	// data size
+
+
+
+
+
+	mov	x10, x0	
+	mov	x11, x1	
+	mov	x12, x2	
 
 	puts	"Mismatch: PID="
 	mov	x0, x20
@@ -529,17 +529,17 @@ function barf
 
 	mov	x8, #__NR_getpid
 	svc	#0
-// fpsimd.c acitivty log dump hack
-//	ldr	w0, =0xdeadc0de
-//	mov	w8, #__NR_exit
-//	svc	#0
-// ^ end of hack
+
+
+
+
+
 	mov	x1, #SIGABRT
 	mov	x8, #__NR_kill
 	svc	#0
-//	mov	x8, #__NR_exit
-//	mov	x1, #1
-//	svc	#0
+
+
+
 endfunction
 
 function vl_barf

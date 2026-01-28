@@ -18,11 +18,11 @@ def get_battery_voltage():
     Returns the current battery voltage. If no battery is connected, returns 4.2V which is the charge voltage
     This is an approximation only, but useful to detect if the charge state of the battery is getting low.
     """
-    adc = ADC(Pin(VBAT_SENSE))  # Assign the ADC pin to read
-    adc.atten(ADC.ATTN_2_5DB)  # Needs 2.5DB attenuation for max voltage of 1.116V w/batt of 4.2V
+    adc = ADC(Pin(VBAT_SENSE))  
+    adc.atten(ADC.ATTN_2_5DB)  
     measuredvbat = adc.read()
-    measuredvbat /= 3657  # Divide by 3657 as we are using 2.5dB attenuation, which is max input of 1.25V = 4095 counts
-    measuredvbat *= 4.2  # Multiply by 4.2V, our max charge voltage for a 1S LiPo
+    measuredvbat /= 3657  
+    measuredvbat *= 4.2  
     return round(measuredvbat, 2)
 def get_vbus_present():
     """Detect if VBUS (5V) power source is present"""

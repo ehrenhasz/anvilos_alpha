@@ -1,18 +1,10 @@
-/*
- * Copyright (c) Yann Collet, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under both the BSD-style license (found in the
- * LICENSE file in the root directory of this source tree) and the GPLv2 (found
- * in the COPYING file in the root directory of this source tree).
- * You may select, at your option, one of the above-listed licenses.
- */
+
 
 #ifndef ZSTD_FAST_H
 #define ZSTD_FAST_H
 
 
-#include "../common/mem.h"      /* U32 */
+#include "../common/mem.h"      
 #include "zstd_compress_internal.h"
 
 void ZSTD_fillHashTable(ZSTD_matchState_t* ms,
@@ -28,4 +20,4 @@ size_t ZSTD_compressBlock_fast_extDict(
         void const* src, size_t srcSize);
 
 
-#endif /* ZSTD_FAST_H */
+#endif 

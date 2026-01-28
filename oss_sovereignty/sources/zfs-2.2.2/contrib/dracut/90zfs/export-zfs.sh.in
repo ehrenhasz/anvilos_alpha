@@ -1,4 +1,4 @@
-#!/bin/sh
+
 
 _do_zpool_export() {
 	info "ZFS: Exporting ZFS storage pools..."

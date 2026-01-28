@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef PMU_EVENTS_H
 #define PMU_EVENTS_H
 
@@ -12,32 +12,18 @@ enum aggr_mode_class {
 	PerCore
 };
 
-/**
- * enum metric_event_groups - How events within a pmu_metric should be grouped.
- */
+
 enum metric_event_groups {
-	/**
-	 * @MetricGroupEvents: Default, group events within the metric.
-	 */
+	
 	MetricGroupEvents = 0,
-	/**
-	 * @MetricNoGroupEvents: Don't group events for the metric.
-	 */
+	
 	MetricNoGroupEvents = 1,
-	/**
-	 * @MetricNoGroupEventsNmi: Don't group events for the metric if the NMI
-	 *                          watchdog is enabled.
-	 */
+	
 	MetricNoGroupEventsNmi = 2,
-	/**
-	 * @MetricNoGroupEventsSmt: Don't group events for the metric if SMT is
-	 *                          enabled.
-	 */
+	
 	MetricNoGroupEventsSmt = 3,
 };
-/*
- * Describe each PMU event. Each CPU has a table of PMU events.
- */
+
 struct pmu_event {
 	const char *name;
 	const char *compat;

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/* Copyright (c) 2018 Microsemi Corporation */
+
+
 #ifndef __PHY_OCELOT_SERDES_H__
 #define __PHY_OCELOT_SERDES_H__
 

@@ -1,30 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NetChip 2280 high/full speed USB device controller.
- * Unlike many such controllers, this one talks PCI.
- */
 
-/*
- * Copyright (C) 2002 NetChip Technology, Inc. (http://www.netchip.com)
- * Copyright (C) 2003 David Brownell
- * Copyright (C) 2014 Ricardo Ribalda - Qtechnology/AS
- */
+
+
+
 
 #include <linux/usb/net2280.h>
 #include <linux/usb/usb338x.h>
 
-/*-------------------------------------------------------------------------*/
+
 
 #ifdef	__KERNEL__
 
-/* indexed registers [11.10] are accessed indirectly
- * caller must own the device lock.
- */
+
 
 static inline u32 get_idx_reg(struct net2280_regs __iomem *regs, u32 index)
 {
 	writel(index, &regs->idxaddr);
-	/* NOTE:  synchs device/cpu memory views */
+	
 	return readl(&regs->idxdata);
 }
 
@@ -33,10 +24,10 @@ set_idx_reg(struct net2280_regs __iomem *regs, u32 index, u32 value)
 {
 	writel(index, &regs->idxaddr);
 	writel(value, &regs->idxdata);
-	/* posted, may not be visible yet */
+	
 }
 
-#endif	/* __KERNEL__ */
+#endif	
 
 #define PCI_VENDOR_ID_PLX_LEGACY 0x17cc
 
@@ -55,37 +46,35 @@ set_idx_reg(struct net2280_regs __iomem *regs, u32 index, u32 value)
 #define     FAST_TIMES                                          4
 #define     FORCE_RECEIVE_ERROR                                 2
 #define     FORCE_TRANSMIT_CRC_ERROR                            0
-#define REG_FRAME		0x02	/* from last sof */
-#define REG_CHIPREV		0x03	/* in bcd */
-#define	REG_HS_NAK_RATE		0x0a	/* NAK per N uframes */
+#define REG_FRAME		0x02	
+#define REG_CHIPREV		0x03	
+#define	REG_HS_NAK_RATE		0x0a	
 
 #define	CHIPREV_1	0x0100
 #define	CHIPREV_1A	0x0110
 
-/* DEFECT 7374 */
+
 #define DEFECT_7374_NUMBEROF_MAX_WAIT_LOOPS         200
 #define DEFECT_7374_PROCESSOR_WAIT_TIME             10
 
-/* ep0 max packet size */
+
 #define EP0_SS_MAX_PACKET_SIZE  0x200
 #define EP0_HS_MAX_PACKET_SIZE  0x40
 #ifdef	__KERNEL__
 
-/*-------------------------------------------------------------------------*/
 
-/* [8.3] for scatter/gather i/o
- * use struct net2280_dma_regs bitfields
- */
+
+
 struct net2280_dma {
 	__le32		dmacount;
-	__le32		dmaaddr;		/* the buffer */
-	__le32		dmadesc;		/* next dma descriptor */
+	__le32		dmaaddr;		
+	__le32		dmadesc;		
 	__le32		_reserved;
 } __aligned(16);
 
-/*-------------------------------------------------------------------------*/
 
-/* DRIVER DATA STRUCTURES and UTILITIES */
+
+
 
 struct net2280_ep {
 	struct usb_ep				ep;
@@ -93,11 +82,11 @@ struct net2280_ep {
 	struct net2280_ep_regs			__iomem *regs;
 	struct net2280_dma_regs			__iomem *dma;
 	struct net2280_dma			*dummy;
-	dma_addr_t				td_dma;	/* of dummy */
+	dma_addr_t				td_dma;	
 	struct net2280				*dev;
 	unsigned long				irqs;
 
-	/* analogous to a host-side qh */
+	
 	struct list_head			queue;
 	const struct usb_endpoint_descriptor	*desc;
 	unsigned				num : 8,
@@ -113,7 +102,7 @@ struct net2280_ep {
 
 static inline void allow_status(struct net2280_ep *ep)
 {
-	/* ep0 only */
+	
 	writel(BIT(CLEAR_CONTROL_STATUS_PHASE_HANDSHAKE) |
 		BIT(CLEAR_NAK_OUT_PACKETS) |
 		BIT(CLEAR_NAK_OUT_PACKETS_MODE),
@@ -123,16 +112,12 @@ static inline void allow_status(struct net2280_ep *ep)
 
 static inline void allow_status_338x(struct net2280_ep *ep)
 {
-	/*
-	 * Control Status Phase Handshake was set by the chip when the setup
-	 * packet arrived. While set, the chip automatically NAKs the host's
-	 * Status Phase tokens.
-	 */
+	
 	writel(BIT(CLEAR_CONTROL_STATUS_PHASE_HANDSHAKE), &ep->regs->ep_rsp);
 
 	ep->stopped = 1;
 
-	/* TD 9.9 Halt Endpoint test.  TD 9.22 set feature test. */
+	
 	ep->responded = 0;
 }
 
@@ -146,7 +131,7 @@ struct net2280_request {
 };
 
 struct net2280 {
-	/* each pci device provides one gadget, several endpoints */
+	
 	struct usb_gadget		gadget;
 	spinlock_t			lock;
 	struct net2280_ep		ep[9];
@@ -170,7 +155,7 @@ struct net2280 {
 	kernel_ulong_t			quirks;
 
 
-	/* pci state used to access those endpoints */
+	
 	struct pci_dev			*pdev;
 	struct net2280_regs		__iomem *regs;
 	struct net2280_usb_regs		__iomem *usb;
@@ -183,14 +168,14 @@ struct net2280 {
 	struct usb338x_pl_regs		__iomem *plregs;
 
 	struct dma_pool			*requests;
-	/* statistics...*/
+	
 };
 
 static inline void set_halt(struct net2280_ep *ep)
 {
-	/* ep0 and bulk/intr endpoints */
+	
 	writel(BIT(CLEAR_CONTROL_STATUS_PHASE_HANDSHAKE) |
-		/* set NAK_OUT for erratum 0114 */
+		
 		((ep->dev->chiprev == CHIPREV_1) << SET_NAK_OUT_PACKETS) |
 		BIT(SET_ENDPOINT_HALT),
 		&ep->regs->ep_rsp);
@@ -198,59 +183,31 @@ static inline void set_halt(struct net2280_ep *ep)
 
 static inline void clear_halt(struct net2280_ep *ep)
 {
-	/* ep0 and bulk/intr endpoints */
+	
 	writel(BIT(CLEAR_ENDPOINT_HALT) |
 		BIT(CLEAR_ENDPOINT_TOGGLE) |
-		    /*
-		     * unless the gadget driver left a short packet in the
-		     * fifo, this reverses the erratum 0114 workaround.
-		     */
+		    
 		((ep->dev->chiprev == CHIPREV_1) << CLEAR_NAK_OUT_PACKETS),
 		&ep->regs->ep_rsp);
 }
 
-/*
- * FSM value for Defect 7374 (U1U2 Test) is managed in
- * chip's SCRATCH register:
- */
+
 #define DEFECT7374_FSM_FIELD    28
 
-/* Waiting for Control Read:
- *  - A transition to this state indicates a fresh USB connection,
- *    before the first Setup Packet. The connection speed is not
- *    known. Firmware is waiting for the first Control Read.
- *  - Starting state: This state can be thought of as the FSM's typical
- *    starting state.
- *  - Tip: Upon the first SS Control Read the FSM never
- *    returns to this state.
- */
+
 #define DEFECT7374_FSM_WAITING_FOR_CONTROL_READ BIT(DEFECT7374_FSM_FIELD)
 
-/* Non-SS Control Read:
- *  - A transition to this state indicates detection of the first HS
- *    or FS Control Read.
- *  - Tip: Upon the first SS Control Read the FSM never
- *    returns to this state.
- */
+
 #define	DEFECT7374_FSM_NON_SS_CONTROL_READ (2 << DEFECT7374_FSM_FIELD)
 
-/* SS Control Read:
- *  - A transition to this state indicates detection of the
- *    first SS Control Read.
- *  - This state indicates workaround completion. Workarounds no longer
- *    need to be applied (as long as the chip remains powered up).
- *  - Tip: Once in this state the FSM state does not change (until
- *    the chip's power is lost and restored).
- *  - This can be thought of as the final state of the FSM;
- *    the FSM 'locks-up' in this state until the chip loses power.
- */
+
 #define DEFECT7374_FSM_SS_CONTROL_READ (3 << DEFECT7374_FSM_FIELD)
 
 #ifdef USE_RDK_LEDS
 
 static inline void net2280_led_init(struct net2280 *dev)
 {
-	/* LED3 (green) is on during USB activity. note erratum 0113. */
+	
 	writel(BIT(GPIO3_LED_SELECT) |
 		BIT(GPIO3_OUTPUT_ENABLE) |
 		BIT(GPIO2_OUTPUT_ENABLE) |
@@ -259,36 +216,36 @@ static inline void net2280_led_init(struct net2280 *dev)
 		&dev->regs->gpioctl);
 }
 
-/* indicate speed with bi-color LED 0/1 */
+
 static inline
 void net2280_led_speed(struct net2280 *dev, enum usb_device_speed speed)
 {
 	u32	val = readl(&dev->regs->gpioctl);
 	switch (speed) {
-	case USB_SPEED_SUPER:		/* green + red */
+	case USB_SPEED_SUPER:		
 		val |= BIT(GPIO0_DATA) | BIT(GPIO1_DATA);
 		break;
-	case USB_SPEED_HIGH:		/* green */
+	case USB_SPEED_HIGH:		
 		val &= ~BIT(GPIO0_DATA);
 		val |= BIT(GPIO1_DATA);
 		break;
-	case USB_SPEED_FULL:		/* red */
+	case USB_SPEED_FULL:		
 		val &= ~BIT(GPIO1_DATA);
 		val |= BIT(GPIO0_DATA);
 		break;
-	default:			/* (off/black) */
+	default:			
 		val &= ~(BIT(GPIO1_DATA) | BIT(GPIO0_DATA));
 		break;
 	}
 	writel(val, &dev->regs->gpioctl);
 }
 
-/* indicate power with LED 2 */
+
 static inline void net2280_led_active(struct net2280 *dev, int is_active)
 {
 	u32	val = readl(&dev->regs->gpioctl);
 
-	/* FIXME this LED never seems to turn on.*/
+	
 	if (is_active)
 		val |= GPIO2_DATA;
 	else
@@ -298,7 +255,7 @@ static inline void net2280_led_active(struct net2280 *dev, int is_active)
 
 static inline void net2280_led_shutdown(struct net2280 *dev)
 {
-	/* turn off all four GPIO*_DATA bits */
+	
 	writel(readl(&dev->regs->gpioctl) & ~0x0f,
 			&dev->regs->gpioctl);
 }
@@ -311,7 +268,7 @@ static inline void net2280_led_shutdown(struct net2280 *dev)
 
 #endif
 
-/*-------------------------------------------------------------------------*/
+
 
 #define ep_dbg(ndev, fmt, args...) \
 	dev_dbg((&((ndev)->pdev->dev)), fmt, ##args)
@@ -328,7 +285,7 @@ static inline void net2280_led_shutdown(struct net2280 *dev)
 #define ep_err(ndev, fmt, args...) \
 	dev_err((&((ndev)->pdev->dev)), fmt, ##args)
 
-/*-------------------------------------------------------------------------*/
+
 
 static inline void set_fifo_bytecount(struct net2280_ep *ep, unsigned count)
 {
@@ -343,9 +300,9 @@ static inline void set_fifo_bytecount(struct net2280_ep *ep, unsigned count)
 
 static inline void start_out_naking(struct net2280_ep *ep)
 {
-	/* NOTE:  hardware races lurk here, and PING protocol issues */
+	
 	writel(BIT(SET_NAK_OUT_PACKETS), &ep->regs->ep_rsp);
-	/* synch with device */
+	
 	readl(&ep->regs->ep_rsp);
 }
 
@@ -387,4 +344,4 @@ static inline void set_max_speed(struct net2280_ep *ep, u32 max)
 	set_idx_reg(ep->dev->regs, reg, max);
 }
 
-#endif	/* __KERNEL__ */
+#endif	

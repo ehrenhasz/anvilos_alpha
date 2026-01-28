@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * EFI Test driver Header
- *
- * Copyright(C) 2012-2016 Canonical Ltd.
- *
- */
+
+
 
 #ifndef _DRIVERS_FIRMWARE_EFI_TEST_H_
 #define _DRIVERS_FIRMWARE_EFI_TEST_H_
@@ -121,4 +116,4 @@ struct efi_resetsystem {
 #define EFI_RUNTIME_GET_SUPPORTED_MASK \
 	_IOR('p', 0x0C, unsigned int)
 
-#endif /* _DRIVERS_FIRMWARE_EFI_TEST_H_ */
+#endif 

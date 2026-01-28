@@ -1,9 +1,0 @@
-/dts-v1/;
-#include "rk3288.dtsi"
-#include <arm/rockchip/rockchip-radxa-dalang-carrier.dtsi>
-#include "rk3288-vmarc-som.dtsi"
-/ {
-	model = "Radxa ROCK Pi N8";
-	compatible = "radxa,rockpi-n8", "vamrs,rk3288-vmarc-som",
-		     "rockchip,rk3288";
-};

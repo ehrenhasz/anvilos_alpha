@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * simple_card_utils.h
- *
- * Copyright (c) 2016 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- */
+
 
 #ifndef __SIMPLE_CARD_UTILS_H
 #define __SIMPLE_CARD_UTILS_H
@@ -125,8 +120,8 @@ struct asoc_simple_priv {
 #define SNDRV_MAX_LINKS 512
 
 struct link_info {
-	int link; /* number of link */
-	int cpu;  /* turn for CPU / Codec */
+	int link; 
+	int cpu;  
 	struct prop_nums num[SNDRV_MAX_LINKS];
 };
 
@@ -202,7 +197,7 @@ static inline void asoc_simple_debug_dai(struct asoc_simple_priv *priv,
 {
 	struct device *dev = simple_priv_to_dev(priv);
 
-	/* dai might be NULL */
+	
 	if (!dai)
 		return;
 
@@ -271,6 +266,6 @@ static inline void asoc_simple_debug_info(struct asoc_simple_priv *priv)
 }
 #else
 #define  asoc_simple_debug_info(priv)
-#endif /* DEBUG */
+#endif 
 
-#endif /* __SIMPLE_CARD_UTILS_H */
+#endif 

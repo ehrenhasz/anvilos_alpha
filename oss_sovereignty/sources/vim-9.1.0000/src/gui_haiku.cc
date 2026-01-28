@@ -1,72 +1,6 @@
-/* vi:set ts=8 sts=4 sw=4:
- *
- * VIM - Vi IMproved	by Bram Moolenaar
- *    BeBox GUI support Copyright 1998 by Olaf Seibert.
- *		    All Rights Reserved.
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- *
- * Based on "GUI support for the Buzzword Enhanced Operating System."
- *
- * Ported to R4 by Richard Offer <richard@whitequeen.com> Jul 99
- *
- * Haiku support by Siarzhuk Zharski <imker@gmx.li> Apr-Mai 2009
- *
- */
 
-/*
- * Structure of the Haiku GUI code:
- *
- * There are 3 threads.
- * 1. The initial thread. In gui_mch_prepare() this gets to run the
- *    BApplication message loop. But before it starts doing that,
- *    it creates thread 2
- * 2. The main() thread. This thread is created in gui_mch_prepare()
- *    and its purpose in life is to call main(argc, argv) again.
- *    This thread is doing the bulk of the work.
- * 3. Sooner or later, a window is opened by the main() thread. This
- *    causes a second message loop to be created: the window thread.
- *
- * == alternatively ===
- *
- * #if RUN_BAPPLICATION_IN_NEW_THREAD...
- *
- * 1. The initial thread. In gui_mch_prepare() this gets to spawn
- *    thread 2. After doing that, it returns to main() to do the
- *    bulk of the work, being the main() thread.
- * 2. Runs the BApplication.
- * 3. The window thread, just like in the first case.
- *
- * This second alternative is cleaner from Vim's viewpoint. However,
- * the BeBook seems to assume everywhere that the BApplication *must*
- * run in the initial thread. So perhaps doing otherwise is very wrong.
- *
- * However, from a B_SINGLE_LAUNCH viewpoint, the first is better.
- * If Vim is marked "Single Launch" in its application resources,
- * and a file is dropped on the Vim icon, and another Vim is already
- * running, the file is passed on to the earlier Vim. This happens
- * in BApplication::Run(). So we want Vim to terminate if
- * BApplication::Run() terminates. (See the BeBook, on BApplication.
- * However, it seems that the second copy of Vim isn't even started
- * in this case... which is for the better since I wouldn't know how
- * to detect this case.)
- *
- * Communication between these threads occurs mostly by translating
- * BMessages that come in and posting an appropriate translation on
- * the VDCMP (Vim Direct Communication Message Port). Therefore the
- * actions required for keypresses and window resizes, etc, are mostly
- * performed in the main() thread.
- *
- * A notable exception to this is the Draw() event. The redrawing of
- * the window contents is performed asynchronously from the window
- * thread. To make this work correctly, a locking protocol is used when
- * any thread is accessing the essential variables that are used by
- * the window thread.
- *
- * This locking protocol consists of locking Vim's window. This is both
- * convenient and necessary.
- */
+
+
 
 extern "C" {
 
@@ -77,11 +11,11 @@ extern "C" {
 #include "vim.h"
 #include "version.h"
 
-}   // extern "C"
+}   
 
-// ---------------- start of header part ----------------
 
-//#include <Alert.h>
+
+
 #include <Application.h>
 #include <Beep.h>
 #include <Bitmap.h>
@@ -89,31 +23,31 @@ extern "C" {
 #include <Button.h>
 #include <Clipboard.h>
 #include <Debug.h>
-//#include <Directory.h>
-//#include <Entry.h>
+
+
 #include <File.h>
 #include <FilePanel.h>
 #include <FindDirectory.h>
-//#include <Font.h>
+
 #include <IconUtils.h>
 #include <Input.h>
 #include <ListView.h>
 #include <MenuBar.h>
 #include <MenuItem.h>
-//#include <MessageQueue.h>
-//#include <OS.h>
+
+
 #include <Path.h>
 #include <PictureButton.h>
 #include <PopUpMenu.h>
-//#include <Region.h>
+
 #include <Resources.h>
-//#include <Roster.h>
+
 #include <Screen.h>
 #include <ScrollBar.h>
 #include <ScrollView.h>
 #include <String.h>
 #include <StringView.h>
-//#include <SupportDefs.h>
+
 #include <TabView.h>
 #include <TextControl.h>
 #include <TextView.h>
@@ -138,7 +72,7 @@ extern int main(int argc, char **argv);
 #define B_MAX_PORT_COUNT    255
 #endif
 
-// VimApp seems comparable to the X "vimShell"
+
 class VimApp: public BApplication
 {
     typedef BApplication Inherited;
@@ -146,7 +80,7 @@ class VimApp: public BApplication
     VimApp(const char *appsig);
     ~VimApp();
 
-    // callbacks:
+    
 #if 0
     virtual void DispatchMessage(BMessage *m, BHandler *h)
     {
@@ -175,7 +109,7 @@ class VimWindow: public BWindow
     VimWindow();
     ~VimWindow();
 
-    //	  virtual void DispatchMessage(BMessage *m, BHandler *h);
+    
     virtual void WindowActivated(bool active);
     virtual bool QuitRequested();
 
@@ -193,7 +127,7 @@ class VimFormView: public BView
     VimFormView(BRect frame);
     ~VimFormView();
 
-    // callbacks:
+    
     virtual void AllAttached();
     virtual void FrameResized(float new_width, float new_height);
 
@@ -237,7 +171,7 @@ class VimTextAreaView: public BView
     VimTextAreaView(BRect frame);
     ~VimTextAreaView();
 
-    // callbacks:
+    
     virtual void Draw(BRect updateRect);
     virtual void KeyDown(const char *bytes, int32 numBytes);
     virtual void MouseDown(BPoint point);
@@ -245,7 +179,7 @@ class VimTextAreaView: public BView
     virtual void MouseMoved(BPoint point, uint32 transit, const BMessage *message);
     virtual void MessageReceived(BMessage *m);
 
-    // own functions:
+    
     int mchInitFont(char_u *name);
     void mchDrawString(int row, int col, char_u *s, int len, int flags);
     void mchClearBlock(int row1, int col1, int row2, int col2);
@@ -337,7 +271,7 @@ BBitmap *VimToolbar::grayedButtonsBitmap  = NULL;
 const float ToolbarMargin = 3.;
 const float ButtonMargin  = 3.;
 
-#endif //FEAT_TOOLBAR
+#endif 
 
 #ifdef FEAT_GUI_TABLINE
 
@@ -358,11 +292,11 @@ class VimTabLine : public BTabView
     virtual void MouseDown(BPoint point);
 };
 
-#endif //FEAT_GUI_TABLINE
+#endif 
 
 
-// For caching the fonts that are used;
-// Vim seems rather sloppy in this regard.
+
+
 class VimFont: public BFont
 {
     typedef BFont Inherited;
@@ -458,19 +392,19 @@ class VimSelectFontDialog : public BWindow
     BTextControl*   fSizesInput;
 };
 
-#endif // FEAT_GUI_DIALOG
+#endif 
 
-// ---------------- end of GUI classes ----------------
+
 
 struct MainArgs {
     int	     argc;
     char    **argv;
 };
 
-// These messages are copied through the VDCMP.
-// Therefore they ought not to have anything fancy.
-// They must be of POD type (Plain Old Data)
-// as the C++ standard calls them.
+
+
+
+
 
 #define	KEY_MSG_BUFSIZ	7
 #if KEY_MSG_BUFSIZ < MAX_KEY_CODE_LEN
@@ -479,7 +413,7 @@ struct MainArgs {
 
 struct VimKeyMsg {
     char_u  length;
-    char_u  chars[KEY_MSG_BUFSIZ];  // contains Vim encoding
+    char_u  chars[KEY_MSG_BUFSIZ];  
     bool    csi_escape;
 };
 
@@ -551,14 +485,14 @@ struct VimMsg {
 #define RGB(r, g, b)	((char_u)(r) << 16 | (char_u)(g) << 8 | (char_u)(b) << 0)
 #define GUI_TO_RGB(g)	{ (char_u)((g) >> 16), (char_u)((g) >> 8), (char_u)((g) >> 0), 255 }
 
-// ---------------- end of header part ----------------
+
 
 static struct specialkey
 {
     uint16  BeKeys;
 #define KEY(a,b)    ((a)<<8|(b))
-#define K(a)	    KEY(0,a)		// for ASCII codes
-#define F(b)	    KEY(1,b)		// for scancodes
+#define K(a)	    KEY(0,a)		
+#define F(b)	    KEY(1,b)		
     char_u  vim_code0;
     char_u  vim_code1;
 } special_keys[] =
@@ -572,8 +506,8 @@ static struct specialkey
     {K(B_DELETE),	'k', 'D'},
     {K(B_HOME),		'k', 'h'},
     {K(B_END),		'@', '7'},
-    {K(B_PAGE_UP),	'k', 'P'},	// XK_Prior
-    {K(B_PAGE_DOWN),	    'k', 'N'},	    // XK_Next,
+    {K(B_PAGE_UP),	'k', 'P'},	
+    {K(B_PAGE_DOWN),	    'k', 'N'},	    
 
 #define FIRST_FUNCTION_KEY  11
     {F(B_F1_KEY),	'k', '1'},
@@ -589,75 +523,75 @@ static struct specialkey
 
     {F(B_F11_KEY),	'F', '1'},
     {F(B_F12_KEY),	'F', '2'},
-    //	{XK_F13,	    'F', '3'},	// would be print screen
-    // sysreq
-    {F(0x0F),		'F', '4'},	// scroll lock
-    {F(0x10),		'F', '5'},	// pause/break
-    //	{XK_F16,	'F', '6'},
-    //	{XK_F17,	'F', '7'},
-    //	{XK_F18,	'F', '8'},
-    //	{XK_F19,	'F', '9'},
-    //	 {XK_F20,	'F', 'A'},
-    //	{XK_F21,	'F', 'B'},
-    //	{XK_F22,	'F', 'C'},
-    //	{XK_F23,	'F', 'D'},
-    //	{XK_F24,	'F', 'E'},
-    //	{XK_F25,	'F', 'F'},
-    //	{XK_F26,	'F', 'G'},
-    //	{XK_F27,	'F', 'H'},
-    //	{XK_F28,	'F', 'I'},
-    //	{XK_F29,	'F', 'J'},
-    //	{XK_F30,	'F', 'K'},
-    //	{XK_F31,	'F', 'L'},
-    //	{XK_F32,	'F', 'M'},
-    //	{XK_F33,	'F', 'N'},
-    //	{XK_F34,	'F', 'O'},
-    //	{XK_F35,	'F', 'P'},	// keysymdef.h defines up to F35
+    
+    
+    {F(0x0F),		'F', '4'},	
+    {F(0x10),		'F', '5'},	
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
-    //	{XK_Help,	'%', '1'},	// XK_Help
+    
     {F(B_PRINT_KEY),	    '%', '9'},
 
 #if 0
-    // Keypad keys:
-    {F(0x48),	    'k', 'l'},	    // XK_KP_Left
-    {F(0x4A),	    'k', 'r'},	    // XK_KP_Right
-    {F(0x38),	    'k', 'u'},	    // XK_KP_Up
-    {F(0x59),	    'k', 'd'},	    // XK_KP_Down
-    {F(0x64),	    'k', 'I'},	    // XK_KP_Insert
-    {F(0x65),	    'k', 'D'},	    // XK_KP_Delete
-    {F(0x37),	    'k', 'h'},	    // XK_KP_Home
-    {F(0x58),	    '@', '7'},	    // XK_KP_End
-    {F(0x39),	    'k', 'P'},	    // XK_KP_Prior
-    {F(0x60),	    'k', 'N'},	    // XK_KP_Next
-    {F(0x49),	    '&', '8'},	    // XK_Undo, keypad 5
+    
+    {F(0x48),	    'k', 'l'},	    
+    {F(0x4A),	    'k', 'r'},	    
+    {F(0x38),	    'k', 'u'},	    
+    {F(0x59),	    'k', 'd'},	    
+    {F(0x64),	    'k', 'I'},	    
+    {F(0x65),	    'k', 'D'},	    
+    {F(0x37),	    'k', 'h'},	    
+    {F(0x58),	    '@', '7'},	    
+    {F(0x39),	    'k', 'P'},	    
+    {F(0x60),	    'k', 'N'},	    
+    {F(0x49),	    '&', '8'},	    
 #endif
 
-    // End of list marker:
+    
     {0,		    0, 0}
 };
 
 #define NUM_SPECIAL_KEYS    ARRAY_LENGTH(special_keys)
 
-// ---------------- VimApp ----------------
+
 
     static void
 docd(BPath &path)
 {
     mch_chdir((char *)path.Path());
-    // Do this to get the side effects of a :cd command
+    
     do_cmdline_cmd((char_u *)"cd .");
 }
 
 	static void
 drop_callback(void *cookie)
 {
-    // TODO here we could handle going to a specific position in the dropped
-    // file (see src/gui_mac.c, deleted in 8.2.1422)
-    // Update the screen display
+    
+    
+    
     update_screen(UPD_NOT_VALID);
 }
 
-    // Really handle dropped files and folders.
+    
 	static void
 RefsReceived(BMessage *m, bool changedir)
 {
@@ -686,7 +620,7 @@ RefsReceived(BMessage *m, bool changedir)
 	    break;
 	default:
 bad:
-	    /*fprintf(stderr, "bad!\n"); */
+	    
 	    delete m;
 	    return;
     }
@@ -702,7 +636,7 @@ bad:
     switch (m->what) {
 	case B_REFS_RECEIVED:
 	case B_SIMPLE_DATA:
-	    // fprintf(stderr, "case B_REFS_RECEIVED\n");
+	    
 	    for (int i = 0; i < count; ++i)
 	    {
 		entry_ref ref;
@@ -711,17 +645,17 @@ bad:
 		    BPath path;
 		    entry.GetPath(&path);
 
-		    // Change to parent directory?
+		    
 		    if (changedir) {
 			BPath parentpath;
 			path.GetParent(&parentpath);
 			docd(parentpath);
 		    }
 
-		    // Is it a directory? If so, cd into it.
+		    
 		    BDirectory bdir(&ref);
 		    if (bdir.InitCheck() == B_OK) {
-			// don't cd if we already did it
+			
 			if (!changedir)
 			    docd(path);
 		    } else {
@@ -730,16 +664,16 @@ bad:
 			if (fname == NULL)
 			    fname = (char_u *)path.Path();
 			fnames[fname_index++] = vim_strsave(fname);
-			// fprintf(stderr, "%s\n", fname);
+			
 		    }
 
-		    // Only do it for the first file/dir
+		    
 		    changedir = false;
 		}
 	    }
 	    break;
 	case B_ARGV_RECEIVED:
-	    // fprintf(stderr, "case B_ARGV_RECEIVED\n");
+	    
 	    for (int i = 1; i < count; ++i)
 	    {
 		char *fname;
@@ -750,13 +684,13 @@ bad:
 	    }
 	    break;
 	default:
-	    // fprintf(stderr, "case default\n");
+	    
 	    break;
     }
 
     delete m;
 
-    // Handle the drop, :edit to get to the file
+    
     if (fname_index > 0) {
 	handle_drop(fname_index, fnames, FALSE, drop_callback, NULL);
 
@@ -781,10 +715,7 @@ VimApp::~VimApp()
     void
 VimApp::ReadyToRun()
 {
-    /*
-     * Apparently signals are inherited by the created thread -
-     * disable the most annoying ones.
-     */
+    
     mch_signal(SIGINT, SIG_IGN);
     mch_signal(SIGQUIT, SIG_IGN);
 }
@@ -793,10 +724,7 @@ VimApp::ReadyToRun()
 VimApp::ArgvReceived(int32 arg_argc, char **arg_argv)
 {
     if (!IsLaunching()) {
-	/*
-	 * This can happen if we are set to Single or Exclusive
-	 * Launch. Be nice and open the file(s).
-	 */
+	
 	if (gui.vimWindow)
 	    gui.vimWindow->Minimize(false);
 	BMessage *m = CurrentMessage();
@@ -808,23 +736,20 @@ VimApp::ArgvReceived(int32 arg_argc, char **arg_argv)
     void
 VimApp::RefsReceived(BMessage *m)
 {
-    // Horrible hack!!! XXX XXX XXX
-    // The real problem is that b_start_ffc is set too late for
-    // the initial empty buffer. As a result the window will be
-    // split instead of abandoned.
+    
+    
+    
+    
     int limit = 15;
     while (--limit >= 0 && (curbuf == NULL || curbuf->b_start_ffc == 0))
-	snooze(100000);    //  0.1 s
+	snooze(100000);    
     if (gui.vimWindow)
 	gui.vimWindow->Minimize(false);
     DetachCurrentMessage();
     SendRefs(m, true);
 }
 
-/*
- * Pass a BMessage on to the main() thread.
- * Caller must have detached the message.
- */
+
     void
 VimApp::SendRefs(BMessage *m, bool changedir)
 {
@@ -833,7 +758,7 @@ VimApp::SendRefs(BMessage *m, bool changedir)
     rm.changedir = changedir;
 
     write_port(gui.vdcmp, VimMsg::Refs, &rm, sizeof(rm));
-    //	calls ::RefsReceived
+    
 }
 
     void
@@ -882,7 +807,7 @@ VimApp::QuitRequested()
     return false;
 }
 
-// ---------------- VimWindow ----------------
+
 
 VimWindow::VimWindow():
     BWindow(BRect(40, 40, 150, 150),
@@ -907,32 +832,28 @@ VimWindow::~VimWindow()
     void
 VimWindow::init()
 {
-    // Attach the VimFormView
+    
     formView = new VimFormView(Bounds());
     if (formView != NULL) {
 	AddChild(formView);
     }
 }
 
-#if 0  //  disabled in zeta patch
+#if 0  
     void
 VimWindow::DispatchMessage(BMessage *m, BHandler *h)
 {
-    /*
-     * Route B_MOUSE_UP messages to MouseUp(), in
-     * a manner that should be compatible with the
-     * intended future system behaviour.
-     */
+    
     switch (m->what) {
 	case B_MOUSE_UP:
-	    //	if (!h) h = PreferredHandler();
-	    //	gcc isn't happy without this extra set of braces, complains about
-	    //	jump to case label crosses init of 'class BView * v'
-	    //	richard@whitequeen.com jul 99
+	    
+	    
+	    
+	    
 	    {
 		BView *v = dynamic_cast<BView *>(h);
 		if (v) {
-		    // m->PrintToStream();
+		    
 		    BPoint where;
 		    m->FindPoint("where", &where);
 		    v->MouseUp(where);
@@ -951,7 +872,7 @@ VimWindow::DispatchMessage(BMessage *m, BHandler *h)
 VimWindow::WindowActivated(bool active)
 {
     Inherited::WindowActivated(active);
-    // the textArea gets the keyboard action
+    
     if (active && gui.vimTextArea)
 	gui.vimTextArea->MakeFocus(true);
 
@@ -972,7 +893,7 @@ VimWindow::QuitRequested()
     return false;
 }
 
-// ---------------- VimFormView ----------------
+
 
 VimFormView::VimFormView(BRect frame):
     BView(frame, "VimFormView", B_FOLLOW_ALL_SIDES,
@@ -982,7 +903,7 @@ VimFormView::VimFormView(BRect frame):
     toolBar(NULL),
 #endif
 #ifdef FEAT_GUI_TABLINE
-//  showingTabLine(false),
+
     tabLine(NULL),
 #endif
     textArea(NULL)
@@ -995,8 +916,8 @@ VimFormView::~VimFormView()
     if (menuBar) {
 	RemoveChild(menuBar);
 #ifdef never
-	//  deleting the menuBar leads to SEGV on exit
-	//  richard@whitequeen.com Jul 99
+	
+	
 	delete menuBar;
 #endif
     }
@@ -1032,14 +953,14 @@ VimFormView::init(BRect frame)
 
 #ifdef FEAT_GUI_TABLINE
     tabLine = new VimTabLine(BRect(0,0,0,0));
-//  tabLine->PrepareButtonBitmaps();
+
     AddChild(tabLine);
 #endif
 
     BRect remaining = frame;
     textArea = new VimTextAreaView(remaining);
     AddChild(textArea);
-    // The textArea will be resized later when menus are added
+    
 
     gui.vimForm = this;
 }
@@ -1063,19 +984,12 @@ VimFormView::TablineHeight() const
     void
 VimFormView::AllAttached()
 {
-    /*
-     * Apparently signals are inherited by the created thread -
-     * disable the most annoying ones.
-     */
+    
     mch_signal(SIGINT, SIG_IGN);
     mch_signal(SIGQUIT, SIG_IGN);
 
     if (menuBar && textArea) {
-	/*
-	 * Resize the textArea to fill the space left over by the menu.
-	 * This is somewhat futile since it will be done again once
-	 * menus are added to the menu bar.
-	 */
+	
 	BRect remaining = Bounds();
 
 #ifdef FEAT_MENU
@@ -1112,7 +1026,7 @@ VimFormView::FrameResized(float new_width, float new_height)
     struct VimResizeMsg sm;
     int adjust_h, adjust_w;
 
-    new_width += 1;	//  adjust from width to number of pixels occupied
+    new_width += 1;	
     new_height += 1;
 
     sm.width = (int) new_width;
@@ -1126,19 +1040,14 @@ VimFormView::FrameResized(float new_width, float new_height)
     }
 
     write_port(gui.vdcmp, VimMsg::Resize, &sm, sizeof(sm));
-    //	calls gui_resize_shell(new_width, new_height);
+    
 
     return;
 
-    /*
-     * The area below the vertical scrollbar is erased to the colour
-     * set with SetViewColor() automatically, because we had set
-     * B_WILL_DRAW. Resizing the window tight around the vertical
-     * scroll bar also helps to avoid debris.
-     */
+    
 }
 
-// ---------------- VimTextAreaView ----------------
+
 
 VimTextAreaView::VimTextAreaView(BRect frame):
     BView(frame, "VimTextAreaView", B_FOLLOW_ALL_SIDES,
@@ -1165,14 +1074,10 @@ VimTextAreaView::~VimTextAreaView()
     void
 VimTextAreaView::init(BRect frame)
 {
-    // set up global var for fast access
+    
     gui.vimTextArea = this;
 
-    /*
-     * Tell the app server not to erase the view: we will
-     * fill it in completely by ourselves.
-     * (Does this really work? Even if not, it won't harm either.)
-     */
+    
     SetViewColor(B_TRANSPARENT_32_BIT);
 #define PEN_WIDTH   1
     SetPenSize(PEN_WIDTH);
@@ -1182,36 +1087,28 @@ VimTextAreaView::init(BRect frame)
     void
 VimTextAreaView::Draw(BRect updateRect)
 {
-    /*
-     * XXX Other ports call here:
-     * out_flush();	 * make sure all output has been processed *
-     * but we can't do that, since it involves too much information
-     * that is owned by other threads...
-     */
+    
 
-    /*
-     *	No need to use gui.vimWindow->Lock(): we are locked already.
-     *	However, it would not hurt.
-     */
+    
     rgb_color rgb = GUI_TO_RGB(gui.back_pixel);
     SetLowColor(rgb);
     FillRect(updateRect, B_SOLID_LOW);
     gui_redraw((int) updateRect.left, (int) updateRect.top,
 	    (int) (updateRect.Width() + PEN_WIDTH), (int) (updateRect.Height() + PEN_WIDTH));
 
-    // Clear the border areas if needed
+    
     SetLowColor(rgb);
 
-    if (updateRect.left < FILL_X(0))	//  left border
+    if (updateRect.left < FILL_X(0))	
 	FillRect(BRect(updateRect.left, updateRect.top,
 		    FILL_X(0)-PEN_WIDTH, updateRect.bottom), B_SOLID_LOW);
-    if (updateRect.top < FILL_Y(0)) //	top border
+    if (updateRect.top < FILL_Y(0)) 
 	FillRect(BRect(updateRect.left, updateRect.top,
 		    updateRect.right, FILL_Y(0)-PEN_WIDTH), B_SOLID_LOW);
-    if (updateRect.right >= FILL_X(Columns)) //  right border
+    if (updateRect.right >= FILL_X(Columns)) 
 	FillRect(BRect(FILL_X((int)Columns), updateRect.top,
 		    updateRect.right, updateRect.bottom), B_SOLID_LOW);
-    if (updateRect.bottom >= FILL_Y(Rows))   //  bottom border
+    if (updateRect.bottom >= FILL_Y(Rows))   
 	FillRect(BRect(updateRect.left, FILL_Y((int)Rows),
 		    updateRect.right, updateRect.bottom), B_SOLID_LOW);
 
@@ -1230,22 +1127,13 @@ VimTextAreaView::KeyDown(const char *bytes, int32 numBytes)
 
     BMessage *msg = Window()->CurrentMessage();
     assert(msg);
-    // msg->PrintToStream();
+    
 
-    /*
-     * Convert special keys to Vim codes.
-     * I think it is better to do it in the window thread
-     * so we use at least a little bit of the potential
-     * of our 2 CPUs. Besides, due to the fantastic mapping
-     * of special keys to UTF-8, we have quite some work to
-     * do...
-     * TODO: I'm not quite happy with detection of special
-     * keys. Perhaps I should use scan codes after all...
-     */
+    
     if (numBytes > 1) {
-	// This cannot be a special key
+	
 	if (numBytes > KEY_MSG_BUFSIZ)
-	    numBytes = KEY_MSG_BUFSIZ;	    //	should never happen... ???
+	    numBytes = KEY_MSG_BUFSIZ;	    
 	km.length = numBytes;
 	memcpy((char *)dest, bytes, numBytes);
 	km.csi_escape = true;
@@ -1260,32 +1148,18 @@ VimTextAreaView::KeyDown(const char *bytes, int32 numBytes)
 	int len = 0;
 	km.length = 0;
 
-	/*
-	 * For normal, printable ASCII characters, don't look them up
-	 * to check if they might be a special key. They aren't.
-	 */
+	
 	assert(B_BACKSPACE <= 0x20);
 	assert(B_DELETE == 0x7F);
 	if (((char_u)bytes[0] <= 0x20 || (char_u)bytes[0] == 0x7F) &&
 		numBytes == 1) {
-	    /*
-	     * Due to the great nature of Be's mapping of special keys,
-	     * viz. into the range of the control characters,
-	     * we can only be sure it is *really* a special key if
-	     * if it is special without using ctrl. So, only if ctrl is
-	     * used, we need to check it unmodified.
-	     */
+	    
 	    if (beModifiers & B_CONTROL_KEY) {
 		int index = keyMap->normal_map[scancode];
 		int newNumBytes = keyMapChars[index];
 		char_u *newBytes = (char_u *)&keyMapChars[index + 1];
 
-		/*
-		 * Check if still special without the control key.
-		 * This is needed for BACKSPACE: that key does produce
-		 * different values with modifiers (DEL).
-		 * Otherwise we could simply have checked for equality.
-		 */
+		
 		if (newNumBytes != 1 || (*newBytes > 0x20 &&
 			    *newBytes != 0x7F )) {
 		    goto notspecial;
@@ -1297,16 +1171,13 @@ VimTextAreaView::KeyDown(const char *bytes, int32 numBytes)
 	    uint16 beoskey;
 	    int first, last;
 
-	    /*
-	     * If numBytes == 0 that probably always indicates a special key.
-	     * (does not happen yet)
-	     */
+	    
 	    if (numBytes == 0 || bytes[0] == B_FUNCTION_KEY) {
 		beoskey = F(scancode);
 		first = FIRST_FUNCTION_KEY;
 		last = NUM_SPECIAL_KEYS;
 	    } else if (*bytes == '\n' && scancode == 0x47) {
-		// remap the (non-keypad) ENTER key from \n to \r.
+		
 		string[0] = '\r';
 		len = 1;
 		first = last = 0;
@@ -1331,7 +1202,7 @@ notspecial:
 	    len = 1;
 	}
 
-	// Special keys (and a few others) may have modifiers
+	
 #if 0
 	if (len == 3 ||
 		bytes[0] == B_SPACE || bytes[0] == B_TAB ||
@@ -1350,12 +1221,7 @@ notspecial:
 		if (beModifiers & B_OPTION_KEY)
 		    modifiers |= MOD_MASK_ALT;
 
-		/*
-		 * For some keys a shift modifier is translated into another key
-		 * code.  Do we need to handle the case where len != 1 and
-		 * string[0] != CSI? (Not for BeOS, since len == 3 implies
-		 * string[0] == CSI...)
-		 */
+		
 		int key;
 		if (string[0] == CSI && len == 3)
 		    key = TO_SPECIAL(string[1], string[2]);
@@ -1390,9 +1256,7 @@ notspecial:
 
     write_port(gui.vdcmp, VimMsg::Key, &km, sizeof(km));
 
-    /*
-     * blank out the pointer if necessary
-     */
+    
     if (p_mh && !gui.pointer_hidden)
     {
 	guiBlankMouse(true);
@@ -1416,11 +1280,9 @@ VimTextAreaView::guiSendMouseEvent(
     mm.modifiers = modifiers;
 
     write_port(gui.vdcmp, VimMsg::Mouse, &mm, sizeof(mm));
-    //	calls gui_send_mouse_event()
+    
 
-    /*
-     * if our pointer is currently hidden, then we should show it.
-     */
+    
     if (gui.pointer_hidden)
     {
 	guiBlankMouse(false);
@@ -1451,15 +1313,11 @@ VimTextAreaView::guiMouseMoved(
 VimTextAreaView::guiBlankMouse(bool should_hide)
 {
     if (should_hide) {
-	// gui.vimApp->HideCursor();
+	
 	gui.vimApp->ObscureCursor();
-	/*
-	 * ObscureCursor() would even be easier, but then
-	 * Vim's idea of mouse visibility does not necessarily
-	 * correspond to reality.
-	 */
+	
     } else {
-	// gui.vimApp->ShowCursor();
+	
     }
 }
 
@@ -1472,7 +1330,7 @@ VimTextAreaView::mouseModifiersToVim(int32 beModifiers)
 	vim_modifiers |= MOUSE_SHIFT;
     if (beModifiers & B_CONTROL_KEY)
 	vim_modifiers |= MOUSE_CTRL;
-    if (beModifiers & B_OPTION_KEY)	// Alt or Meta key
+    if (beModifiers & B_OPTION_KEY)	
 	vim_modifiers |= MOUSE_ALT;
 
     return vim_modifiers;
@@ -1496,11 +1354,11 @@ VimTextAreaView::MouseDown(BPoint point)
     else if (buttons & B_TERTIARY_MOUSE_BUTTON)
 	vimButton = MOUSE_MIDDLE;
     else
-	return;		// Unknown button
+	return;		
 
-    vimMouseButton = 1;	    // don't care which one
+    vimMouseButton = 1;	    
 
-    // Handle multiple clicks
+    
     int32 clicks = 0;
     m->FindInt32("clicks", &clicks);
 
@@ -1510,7 +1368,7 @@ VimTextAreaView::MouseDown(BPoint point)
     vimMouseModifiers = mouseModifiersToVim(modifiers);
 
     guiSendMouseEvent(vimButton, point.x, point.y,
-	    clicks > 1 /* = repeated_click*/, vimMouseModifiers);
+	    clicks > 1 , vimMouseModifiers);
 }
 
     void
@@ -1520,7 +1378,7 @@ VimTextAreaView::MouseUp(BPoint point)
 
     BMessage *m = Window()->CurrentMessage();
     assert(m);
-    // m->PrintToStream();
+    
 
     int32 modifiers = 0;
     m->FindInt32("modifiers", &modifiers);
@@ -1528,7 +1386,7 @@ VimTextAreaView::MouseUp(BPoint point)
     vimMouseModifiers = mouseModifiersToVim(modifiers);
 
     guiSendMouseEvent(MOUSE_RELEASE, point.x, point.y,
-	    0 /* = repeated_click*/, vimMouseModifiers);
+	    0 , vimMouseModifiers);
 
     Inherited::MouseUp(point);
 }
@@ -1536,23 +1394,21 @@ VimTextAreaView::MouseUp(BPoint point)
     void
 VimTextAreaView::MouseMoved(BPoint point, uint32 transit, const BMessage *message)
 {
-    /*
-     * if our pointer is currently hidden, then we should show it.
-     */
+    
     if (gui.pointer_hidden)
     {
 	guiBlankMouse(false);
 	gui.pointer_hidden = FALSE;
     }
 
-    if (!vimMouseButton) {    // could also check m->"buttons"
+    if (!vimMouseButton) {    
 	guiMouseMoved(point.x, point.y);
 	return;
     }
 
     atomic_add(&mouseDragEventCount, 1);
 
-    // Don't care much about "transit"
+    
     guiSendMouseEvent(MOUSE_DRAG, point.x, point.y, 0, vimMouseModifiers);
 }
 
@@ -1563,7 +1419,7 @@ VimTextAreaView::MessageReceived(BMessage *m)
 	case 'menu':
 	    {
 		VimMenuMsg mm;
-		mm.guiMenu = NULL;  // in case no pointer in msg
+		mm.guiMenu = NULL;  
 		m->FindPointer("VimMenu", (void **)&mm.guiMenu);
 		write_port(gui.vdcmp, VimMsg::Menu, &mm, sizeof(mm));
 	    }
@@ -1640,7 +1496,7 @@ VimTextAreaView::MessageReceived(BMessage *m)
 			break;
 		}
 	    }
-	    // TODO: sz: break here???
+	    
 #endif
 	default:
 	    if (m->WasDropped()) {
@@ -1667,11 +1523,7 @@ VimTextAreaView::mchInitFont(char_u *name)
 
 	SetDrawingMode(B_OP_COPY);
 
-	/*
-	 * Try to load other fonts for bold, italic, and bold-italic.
-	 * We should also try to work out what font to use for these when they are
-	 * not specified by X resources, but we don't yet.
-	 */
+	
 	return OK;
     }
     return FAIL;
@@ -1680,13 +1532,7 @@ VimTextAreaView::mchInitFont(char_u *name)
     void
 VimTextAreaView::mchDrawString(int row, int col, char_u *s, int len, int flags)
 {
-    /*
-     * First we must erase the area, because DrawString won't do
-     * that for us. XXX Most of the time this is a waste of effort
-     * since the bachground has been erased already... DRAW_TRANSP
-     * should be set when appropriate!!!
-     * (Rectangles include the bottom and right edge)
-     */
+    
     if (!(flags & DRAW_TRANSP)) {
 	int cells;
 	cells = 0;
@@ -1771,9 +1617,7 @@ VimTextAreaView::mchClearAll()
     FillRect(Bounds(), B_SOLID_LOW);
 }
 
-/*
- * mchDeleteLines() Lock()s the window by itself.
- */
+
     void
 VimTextAreaView::mchDeleteLines(int row, int num_lines)
 {
@@ -1789,7 +1633,7 @@ VimTextAreaView::mchDeleteLines(int row, int num_lines)
     dest.bottom = FILL_Y(gui.scroll_region_bot - num_lines + 1) - PEN_WIDTH;
 
     if (gui.vimWindow->Lock()) {
-	// Clear one column more for when bold has spilled over
+	
 	CopyBits(source, dest);
 	gui_clear_block(gui.scroll_region_bot - num_lines + 1,
 		gui.scroll_region_left,
@@ -1797,24 +1641,19 @@ VimTextAreaView::mchDeleteLines(int row, int num_lines)
 
 
 	gui.vimWindow->Unlock();
-	/*
-	 * The Draw() callback will be called now if some of the source
-	 * bits were not in the visible region.
-	 */
+	
     }
-    // gui_x11_check_copy_area();
-    //	}
+    
+    
 }
 
-/*
- * mchInsertLines() Lock()s the window by itself.
- */
+
     void
 VimTextAreaView::mchInsertLines(int row, int num_lines)
 {
     BRect source, dest;
 
-    // XXX Attempt at a hack:
+    
     gui.vimWindow->UpdateIfNeeded();
     source.left = FILL_X(gui.scroll_region_left);
     source.top = FILL_Y(row);
@@ -1827,31 +1666,21 @@ VimTextAreaView::mchInsertLines(int row, int num_lines)
     dest.bottom = FILL_Y(gui.scroll_region_bot + 1) - PEN_WIDTH;
 
     if (gui.vimWindow->Lock()) {
-	// Clear one column more for when bold has spilled over
+	
 	CopyBits(source, dest);
 	gui_clear_block(row, gui.scroll_region_left,
 		row + num_lines - 1, gui.scroll_region_right);
 
 	gui.vimWindow->Unlock();
-	/*
-	 * The Draw() callback will be called now if some of the source
-	 * bits were not in the visible region.
-	 * However, if we scroll too fast it can't keep up and the
-	 * update region gets messed up. This seems to be because copying
-	 * un-Draw()n bits does not generate Draw() calls for the copy...
-	 * I moved the hack to before the CopyBits() to reduce the
-	 * amount of additional waiting needed.
-	 */
+	
 
-	// gui_x11_check_copy_area();
+	
 
     }
 }
 
 #ifdef FEAT_MBYTE_IME
-/*
- * DrawIMString draws string with IMData.message.
- */
+
 void VimTextAreaView::DrawIMString(void)
 {
     static const rgb_color r_highlight = {255, 152, 152, 255},
@@ -1917,16 +1746,9 @@ void VimTextAreaView::DrawIMString(void)
     SetLowColor(lcolor);
 }
 #endif
-// ---------------- VimScrollBar ----------------
 
-/*
- * BUG: XXX
- * It seems that BScrollBar determine their direction not from
- * "posture" but from if they are "tall" or "wide" in shape...
- *
- * Also, place them out of sight, because Vim enables them before
- * they are positioned.
- */
+
+
 VimScrollBar::VimScrollBar(scrollbar_T *g, orientation posture):
     BScrollBar(posture == B_HORIZONTAL ?  BRect(-100,-100,-10,-90) :
 	    BRect(-100,-100,-90,-10),
@@ -1951,14 +1773,7 @@ VimScrollBar::ValueChanged(float newValue)
 	return;
     }
     ignoreValue = -1;
-    /*
-     * We want to throttle the amount of scroll messages generated.
-     * Normally I presume you won't get a new message before we've
-     * handled the previous one, but because we're passing them on this
-     * happens very quickly. So instead we keep a counter of how many
-     * scroll events there are (or will be) in the VDCMP, and the
-     * throttling happens at the receiving end.
-     */
+    
     atomic_add(&scrollEventCount, 1);
 
     struct VimScrollBarMsg sm;
@@ -1969,21 +1784,15 @@ VimScrollBar::ValueChanged(float newValue)
 
     write_port(gui.vdcmp, VimMsg::ScrollBar, &sm, sizeof(sm));
 
-    //	calls gui_drag_scrollbar(sb, newValue, TRUE);
+    
 }
 
-/*
- * When the mouse goes up, report that scrolling has stopped.
- * MouseUp() is NOT called when the mouse-up occurs outside
- * the window, even though the thumb does move while the mouse
- * is outside... This has some funny effects... XXX
- * So we do special processing when the window de/activates.
- */
+
     void
 VimScrollBar::MouseUp(BPoint where)
 {
-    // BMessage *m = Window()->CurrentMessage();
-    // m->PrintToStream();
+    
+    
 
     atomic_add(&scrollEventCount, 1);
 
@@ -1995,7 +1804,7 @@ VimScrollBar::MouseUp(BPoint where)
 
     write_port(gui.vdcmp, VimMsg::ScrollBar, &sm, sizeof(sm));
 
-    //	calls gui_drag_scrollbar(sb, newValue, FALSE);
+    
 
     Inherited::MouseUp(where);
 }
@@ -2010,7 +1819,7 @@ VimScrollBar::SetValue(float newValue)
     Inherited::SetValue(newValue);
 }
 
-// ---------------- VimFont ----------------
+
 
 VimFont::VimFont(): BFont()
 {
@@ -2044,7 +1853,7 @@ VimFont::init()
     name = NULL;
 }
 
-// ---------------- VimDialog ----------------
+
 
 #if defined(FEAT_GUI_DIALOG)
 
@@ -2070,7 +1879,7 @@ VimDialog::VimDialog(int type, const char *title, const char *message,
     , fInputControl(NULL)
     , fInputValue(textfield)
 {
-    //	master view
+    
     VimDialog::View* view = new VimDialog::View(Bounds());
     if (view == NULL)
 	return;
@@ -2080,10 +1889,10 @@ VimDialog::VimDialog(int type, const char *title, const char *message,
 
     AddChild(view);
 
-    //	icon
+    
     view->InitIcon(type);
 
-    //	buttons
+    
     int32 which = 1;
     float maxButtonWidth  = 0;
     float maxButtonHeight = 0;
@@ -2118,7 +1927,7 @@ VimDialog::VimDialog(int type, const char *title, const char *message,
 	kVimDialogSpacingX * 2;
     float dialogHeight = maxButtonHeight + kVimDialogSpacingY * 3;
 
-    // Check 'v' flag in 'guioptions': vertical button placement.
+    
     bool vertical = (vim_strchr(p_go, GO_VERTICAL) != NULL) ||
 	dialogWidth >= gui.vimWindow->Bounds().Width();
     if (vertical) {
@@ -2130,7 +1939,7 @@ VimDialog::VimDialog(int type, const char *title, const char *message,
 
     dialogWidth  = max_c(dialogWidth,  kVimDialogMinimalWidth);
 
-    //	message view
+    
     BRect rect(0, 0, dialogWidth, 0);
     rect.left  += kVimDialogIconStripeWidth + 16 + kVimDialogSpacingX;
     rect.top   += kVimDialogSpacingY;
@@ -2154,7 +1963,7 @@ VimDialog::VimDialog(int type, const char *title, const char *message,
 
     dialogHeight += messageHeight;
 
-    //	input view
+    
     if (fInputValue != NULL) {
 	rect.top     =
 	    rect.bottom += messageHeight + kVimDialogSpacingY;
@@ -2177,7 +1986,7 @@ VimDialog::VimDialog(int type, const char *title, const char *message,
     MoveTo((gui.vimWindow->Bounds().Width() - dialogWidth) / 2,
 	    (gui.vimWindow->Bounds().Height() - dialogHeight) / 2);
 
-    //	adjust layout of buttons
+    
     float buttonWidth = max_c(maxButtonWidth, rect.Width() * 0.66);
     BPoint origin(dialogWidth, dialogHeight);
     origin.x -= kVimDialogSpacingX + (vertical ? buttonWidth : buttonsWidth);
@@ -2333,12 +2142,12 @@ void VimDialog::View::InitIcon(int32 type)
 
     size_t size = 0;
     const uint8* iconData = NULL;
-    //	try vector icon first?
+    
     iconData = (const uint8*)resources.LoadResource(B_VECTOR_ICON_TYPE, name, &size);
     if (iconData != NULL && BIconUtils::GetVectorIcon(iconData, size, fIconBitmap) == B_OK)
 	return;
 
-    //	try bitmap icon now
+    
     iconData = (const uint8*)resources.LoadResource(B_LARGE_ICON_TYPE, name, &size);
     if (iconData == NULL) {
 	fprintf(stderr, "Bitmap icon resource not found\n");
@@ -2378,18 +2187,18 @@ VimSelectFontDialog::VimSelectFontDialog(font_family* family, font_style* style,
     strncpy(fFontFamily, *family, B_FONT_FAMILY_LENGTH);
     strncpy(fFontStyle, *style, B_FONT_STYLE_LENGTH);
 
-    //	"client" area view
+    
     BBox *clientBox = new BBox(Bounds(), B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
 		    B_WILL_DRAW | B_FRAME_EVENTS | B_NAVIGABLE_JUMP | B_PULSE_NEEDED,
 		    B_PLAIN_BORDER);
     AddChild(clientBox);
 
-    //	client view
+    
     BRect RC = clientBox->Bounds();
     RC.InsetBy(kVimDialogSpacingX, kVimDialogSpacingY);
     BRect rc(RC.LeftTop(), RC.LeftTop());
 
-    //	at first create all controls
+    
     fPreview = new BStringView(rc, "preview", "DejaVu Sans Mono");
     clientBox->AddChild(fPreview);
 
@@ -2442,7 +2251,7 @@ VimSelectFontDialog::VimSelectFontDialog(font_family* family, font_style* style,
     clientBox->AddChild(buttonCancel);
     buttonCancel->ResizeToPreferred();
 
-    //	layout controls
+    
     float lineHeight = labelFamily->Bounds().Height();
     float previewHeight = lineHeight * 3;
     float offsetYLabels = previewHeight + kVimDialogSpacingY;
@@ -2475,7 +2284,7 @@ VimSelectFontDialog::VimSelectFontDialog(font_family* family, font_style* style,
     labelStyle->MoveBy(offsetXStyles, offsetYLabels);
     labelSize->MoveBy(offsetXSizes, offsetYLabels);
 
-    //	text control alignment issues
+    
     float insetX = fSizesInput->TextView()->Bounds().Width() - fSizesInput->Bounds().Width();
     float insetY = fSizesInput->TextView()->Bounds().Width() - fSizesInput->Bounds().Width();
 
@@ -2496,7 +2305,7 @@ VimSelectFontDialog::VimSelectFontDialog(font_family* family, font_style* style,
     buttonCancel->MoveBy(maxControlsWidth - buttonOK->Bounds().Width()
 	    - buttonCancel->Bounds().Width() - kVimDialogSpacingX, offsetYButtons);
 
-    //	fill lists
+    
     int selIndex = -1;
     int count = count_font_families();
     for (int i = 0; i < count; i++) {
@@ -2708,11 +2517,11 @@ void VimSelectFontDialog::MessageReceived(BMessage *msg)
     return BWindow::MessageReceived(msg);
 }
 
-#endif // FEAT_GUI_DIALOG
+#endif 
 
 #ifdef FEAT_TOOLBAR
 
-//  some forward declaration required by toolbar functions...
+
 static BMessage * MenuMessage(vimmenu_T *menu);
 
 VimToolbar::VimToolbar(BRect frame, const char *name) :
@@ -2768,10 +2577,10 @@ VimToolbar::ModifyBitmapToGrayed(BBitmap *bitmap)
     bool
 VimToolbar::PrepareButtonBitmaps()
 {
-    //	first try to load potentially customized $VIRUNTIME/bitmaps/builtin-tools.png
+    
     normalButtonsBitmap = LoadVimBitmap("builtin-tools.png");
     if (normalButtonsBitmap == NULL)
-	//  customized not found? dig application resources for "builtin-tools" one
+	
 	normalButtonsBitmap = BTranslationUtils::GetBitmap(B_PNG_FORMAT, "builtin-tools");
 
     if (normalButtonsBitmap == NULL)
@@ -2784,7 +2593,7 @@ VimToolbar::PrepareButtonBitmaps()
     if (grayedButtonsBitmap == NULL)
 	return false;
 
-    //	modify grayed bitmap
+    
     ModifyBitmapToGrayed(grayedButtonsBitmap);
 
     return true;
@@ -2944,16 +2753,16 @@ VimToolbar::InvalidateLayout()
     }
 }
 
-#endif /*FEAT_TOOLBAR*/
+#endif 
 
 #if defined(FEAT_GUI_TABLINE)
 
     float
 VimTabLine::TablineHeight() const
 {
-//  float size = NULL == normalButtonsBitmap ? 18. : normalButtonsBitmap->Bounds().Height();
-//  return size + ToolbarMargin * 2 + ButtonMargin * 2 + 1;
-    return TabHeight(); //  + ToolbarMargin;
+
+
+    return TabHeight(); 
 }
 
 void
@@ -2971,10 +2780,10 @@ VimTabLine::MouseDown(BPoint point)
     int32 clicks = 0;
     m->FindInt32("clicks", &clicks);
 
-    int index = 0; //  0 means here - no tab found
+    int index = 0; 
     for (int i = 0; i < CountTabs(); i++) {
 	if (TabFrame(i).Contains(point)) {
-	    index = i + 1; //  indexes are 1-based
+	    index = i + 1; 
 	    break;
 	}
     }
@@ -2982,16 +2791,16 @@ VimTabLine::MouseDown(BPoint point)
     int event = -1;
 
     if ((buttons & B_PRIMARY_MOUSE_BUTTON) && clicks > 1)
-	//  left button double click on - create new tab
+	
 	event = TABLINE_MENU_NEW;
 
     else if (buttons & B_TERTIARY_MOUSE_BUTTON)
-	//  middle button click - close the pointed tab
-	//  or create new one in case empty space
+	
+	
 	event = index > 0 ? TABLINE_MENU_CLOSE : TABLINE_MENU_NEW;
 
     else if (buttons & B_SECONDARY_MOUSE_BUTTON) {
-	//  right button click - show context menu
+	
 	BPopUpMenu* popUpMenu = new BPopUpMenu("tabLineContextMenu", false, false);
 	popUpMenu->AddItem(new BMenuItem(_("Close tabi R"), new BMessage(TABLINE_MENU_CLOSE)));
 	popUpMenu->AddItem(new BMenuItem(_("New tab    T"), new BMessage(TABLINE_MENU_NEW)));
@@ -3006,7 +2815,7 @@ VimTabLine::MouseDown(BPoint point)
 	delete popUpMenu;
 
     } else {
-	//  default processing
+	
 	BTabView::MouseDown(point);
 	return;
     }
@@ -3033,7 +2842,7 @@ VimTabLine::VimTab::Select(BView* owner)
 	    if (this == tabLine->TabAt(i))
 		break;
 
-//	printf("%d:%d:%s\n", i, tabLine->CountTabs(), tabLine->TabAt(i)->Label());
+
 	if (i < tabLine->CountTabs()) {
 	    VimTablineMsg tm;
 	    tm.index = i + 1;
@@ -3042,11 +2851,11 @@ VimTabLine::VimTab::Select(BView* owner)
     }
 }
 
-#endif //  defined(FEAT_GUI_TABLINE)
+#endif 
 
-// ---------------- ----------------
 
-//  some global variables
+
+
 static char appsig[] = "application/x-vnd.Haiku-Vim-8";
 key_map *keyMap;
 char *keyMapChars;
@@ -3084,7 +2893,7 @@ gui_haiku_process_event(bigtime_t timeout)
 			    add_to_input_buf(string + i, 1);
 			    if (string[i] == CSI)
 			    {
-				// Turn CSI into K_CSI.
+				
 				buf[0] = KS_EXTRA;
 				buf[1] = (int)KE_CSI;
 				add_to_input_buf(buf, 2);
@@ -3103,12 +2912,7 @@ gui_haiku_process_event(bigtime_t timeout)
 		break;
 	    case VimMsg::ScrollBar:
 		{
-		    /*
-		     * If loads of scroll messages queue up, use only the last
-		     * one. Always report when the scrollbar stops dragging.
-		     * This is not perfect yet anyway: these events are queued
-		     * yet again, this time in the keyboard input buffer.
-		     */
+		    
 		    int32 oldCount =
 			atomic_add(&vm.u.Scroll.sb->scrollEventCount, -1);
 		    if (oldCount <= 1 || !vm.u.Scroll.stillDragging)
@@ -3142,13 +2946,13 @@ gui_haiku_process_event(bigtime_t timeout)
 		break;
 	    case VimMsg::Focus:
 		gui.in_focus = vm.u.Focus.active;
-		// XXX Signal that scrollbar dragging has stopped?
-		// This is needed because we don't get a MouseUp if
-		// that happens while outside the window... :-(
+		
+		
+		
 		if (gui.dragged_sb) {
 		    gui.dragged_sb = SBAR_NONE;
 		}
-		//  gui_update_cursor(TRUE, FALSE);
+		
 		break;
 	    case VimMsg::Refs:
 		::RefsReceived(vm.u.Refs.message, vm.u.Refs.changedir);
@@ -3160,29 +2964,16 @@ gui_haiku_process_event(bigtime_t timeout)
 		send_tabline_menu_event(vm.u.TablineMenu.index, vm.u.TablineMenu.event);
 		break;
 	    default:
-		//  unrecognised message, ignore it
+		
 		break;
 	}
     }
 
-    /*
-     * If size < B_OK, it is an error code.
-     */
+    
     return size;
 }
 
-/*
- * Here are some functions to protect access to ScreenLines[] and
- * LineOffset[]. These are used from the window thread to respond
- * to a Draw() callback. When that occurs, the window is already
- * locked by the system.
- *
- * Other code that needs to lock is any code that changes these
- * variables. Other read-only access, or access merely to the
- * contents of the screen buffer, need not be locked.
- *
- * If there is no window, don't call Lock() but do succeed.
- */
+
 
     int
 vim_lock_screen()
@@ -3207,7 +2998,7 @@ run_vimapp(void *args)
     VimApp app(appsig);
 
     gui.vimApp = &app;
-    app.Run();		    // Run until Quit() called
+    app.Run();		    
 
     return 0;
 }
@@ -3223,25 +3014,18 @@ call_main(void *args)
 }
 #endif
 
-/*
- * Parse the GUI related command-line arguments.  Any arguments used are
- * deleted from argv, and *argc is decremented accordingly.  This is called
- * when vim is started, whether or not the GUI has been started.
- */
+
     void
 gui_mch_prepare(
 	int	*argc,
 	char	**argv)
 {
-    /*
-     * We don't have any command line arguments for the BeOS GUI yet,
-     * but this is an excellent place to create our Application object.
-     */
+    
     if (!gui.vimApp) {
 	thread_info tinfo;
 	get_thread_info(find_thread(NULL), &tinfo);
 
-	// May need the port very early on to process RefsReceived()
+	
 	gui.vdcmp = create_port(B_MAX_PORT_COUNT, "vim VDCMP");
 
 #if RUN_BAPPLICATION_IN_NEW_THREAD
@@ -3261,42 +3045,21 @@ gui_mch_prepare(
 
 	    gui.vimApp = &app;
 	    resume_thread(tid);
-	    /*
-	     * This is rather horrible.
-	     * call_main will call main() again...
-	     * There will be no infinite recursion since
-	     * gui.vimApp is set now.
-	     */
-	    app.Run();		    // Run until Quit() called
-	    // fprintf(stderr, "app.Run() returned...\n");
+	    
+	    app.Run();		    
+	    
 	    status_t dummy_exitcode;
 	    (void)wait_for_thread(tid, &dummy_exitcode);
 
-	    /*
-	     * This path should be the normal one taken to exit Vim.
-	     * The main() thread calls mch_exit() which calls
-	     * gui_mch_exit() which terminates its thread.
-	     */
+	    
 	    exit(main_exitcode);
 	}
 #endif
     }
-    // Don't fork() when starting the GUI. Spawned threads are not
-    // duplicated with a fork(). The result is a mess.
+    
+    
     gui.dofork = FALSE;
-    /*
-     * XXX Try to determine whether we were started from
-     * the Tracker or the terminal.
-     * It would be nice to have this work, because the Tracker
-     * follows symlinks, so even if you double-click on gvim,
-     * when it is a link to vim it will still pass a command name
-     * of vim...
-     * We try here to see if stdin comes from /dev/null. If so,
-     * (or if there is an error, which should never happen) start the GUI.
-     * This does the wrong thing for vim - </dev/null, and we're
-     * too early to see the command line parsing. Tough.
-     * On the other hand, it starts the gui for vim file & which is nice.
-     */
+    
     if (!isatty(0)) {
 	struct stat stat_stdin, stat_dev_null;
 
@@ -3308,68 +3071,58 @@ gui_mch_prepare(
     }
 }
 
-/*
- * Check if the GUI can be started.  Called before gvimrc is sourced.
- * Return OK or FAIL.
- */
+
     int
 gui_mch_init_check(void)
 {
-    return OK;	    // TODO: GUI can always be started?
+    return OK;	    
 }
 
-/*
- * Initialise the GUI.	Create all the windows, set up all the call-backs
- * etc.
- */
+
     int
 gui_mch_init()
 {
     display_errors();
-    gui.def_norm_pixel = RGB(0x00, 0x00, 0x00);	//  black
-    gui.def_back_pixel = RGB(0xFF, 0xFF, 0xFF);	//  white
+    gui.def_norm_pixel = RGB(0x00, 0x00, 0x00);	
+    gui.def_back_pixel = RGB(0xFF, 0xFF, 0xFF);	
     gui.norm_pixel = gui.def_norm_pixel;
     gui.back_pixel = gui.def_back_pixel;
 
     gui.scrollbar_width = (int) B_V_SCROLL_BAR_WIDTH;
     gui.scrollbar_height = (int) B_H_SCROLL_BAR_HEIGHT;
 #ifdef FEAT_MENU
-    gui.menu_height = 19;   //	initial guess -
-    //	correct for my default settings
+    gui.menu_height = 19;   
+    
 #endif
-    gui.border_offset = 3;  //	coordinates are inside window borders
+    gui.border_offset = 3;  
 
     if (gui.vdcmp < B_OK)
 	return FAIL;
     get_key_map(&keyMap, &keyMapChars);
 
-    gui.vimWindow = new VimWindow();	// hidden and locked
+    gui.vimWindow = new VimWindow();	
     if (!gui.vimWindow)
 	return FAIL;
 
-    gui.vimWindow->Run();	// Run() unlocks but does not show
+    gui.vimWindow->Run();	
 
-    // Get the colors from the "Normal" group (set in syntax.c or in a vimrc
-    // file)
+    
+    
     set_normal_colors();
 
-    /*
-     * Check that none of the colors are the same as the background color
-     */
+    
     gui_check_colors();
 
-    // Get the colors for the highlight groups (gui_check_colors() might have
-    // changed them)
-    highlight_gui_started();	    // re-init colors and fonts
+    
+    
+    highlight_gui_started();	    
 
-    gui_mch_new_colors();	// window must exist for this
+    gui_mch_new_colors();	
 
     return OK;
 }
 
-/*
- * Called when the foreground or background color has been changed.
- */
+
     void
 gui_mch_new_colors()
 {
@@ -3377,22 +3130,20 @@ gui_mch_new_colors()
 
     if (gui.vimWindow->Lock()) {
 	gui.vimForm->SetViewColor(rgb);
-	//  Does this not have too much effect for those small rectangles?
+	
 	gui.vimForm->Invalidate();
 	gui.vimWindow->Unlock();
     }
 }
 
-/*
- * Open the GUI window which was created by a call to gui_mch_init().
- */
+
     int
 gui_mch_open()
 {
     if (gui_win_x != -1 && gui_win_y != -1)
 	gui_mch_set_winpos(gui_win_x, gui_win_y);
 
-    // Actually open the window
+    
     if (gui.vimWindow->Lock()) {
 	gui.vimWindow->Show();
 	gui.vimWindow->Unlock();
@@ -3409,18 +3160,13 @@ gui_mch_exit(int vim_exitcode)
 	thread_id tid = gui.vimWindow->Thread();
 	gui.vimWindow->Lock();
 	gui.vimWindow->Quit();
-	// Wait until it is truly gone
+	
 	int32 exitcode;
 	wait_for_thread(tid, &exitcode);
     }
     delete_port(gui.vdcmp);
 #if !RUN_BAPPLICATION_IN_NEW_THREAD
-    /*
-     * We are in the main() thread - quit the App thread and
-     * quit ourselves (passing on the exitcode). Use a global since the
-     * value from exit_thread() is only used if wait_for_thread() is
-     * called in time (race condition).
-     */
+    
 #endif
     if (gui.vimApp) {
 	VimTextAreaView::guiBlankMouse(false);
@@ -3437,16 +3183,14 @@ gui_mch_exit(int vim_exitcode)
 	gui.vimApp->Lock();
 	gui.vimApp->Quit();
 	gui.vimApp->Unlock();
-	// suicide
+	
 	exit_thread(vim_exitcode);
 #endif
     }
-    // If we are somehow still here, let mch_exit() handle things.
+    
 }
 
-/*
- * Get the position of the top left corner of the window.
- */
+
     int
 gui_mch_get_winpos(int *x, int *y)
 {
@@ -3462,10 +3206,7 @@ gui_mch_get_winpos(int *x, int *y)
 	return FAIL;
 }
 
-/*
- * Set the position of the top left corner of the window to the given
- * coordinates.
- */
+
     void
 gui_mch_set_winpos(int x, int y)
 {
@@ -3475,9 +3216,7 @@ gui_mch_set_winpos(int x, int y)
     }
 }
 
-/*
- * Set the size of the window to the given width and height in pixels.
- */
+
 void
 gui_mch_set_shellsize(
 	int	width,
@@ -3486,17 +3225,13 @@ gui_mch_set_shellsize(
 	int	min_height,
 	int	base_width,
 	int	base_height,
-	int	direction) // TODO: utilize?
+	int	direction) 
 {
-    /*
-     * We are basically given the size of the VimForm, if I understand
-     * correctly. Since it fills the window completely, this will also
-     * be the size of the window.
-     */
+    
     if (gui.vimWindow->Lock()) {
 	gui.vimWindow->ResizeTo(width - PEN_WIDTH, height - PEN_WIDTH);
 
-	// set size limits
+	
 	float minWidth, maxWidth, minHeight, maxHeight;
 
 	gui.vimWindow->GetSizeLimits(&minWidth, &maxWidth,
@@ -3504,19 +3239,17 @@ gui_mch_set_shellsize(
 	gui.vimWindow->SetSizeLimits(min_width, maxWidth,
 		min_height, maxHeight);
 
-	/*
-	 * Set the resizing alignment depending on font size.
-	 */
+	
 	gui.vimWindow->SetWindowAlignment(
-		B_PIXEL_ALIGNMENT,	//  window_alignment mode,
-		1,		//  int32 h,
-		0,		//  int32 hOffset = 0,
-		gui.char_width,	    //	int32 width = 0,
-		base_width,	    //	int32 widthOffset = 0,
-		1,		//  int32 v = 0,
-		0,		//  int32 vOffset = 0,
-		gui.char_height,	//  int32 height = 0,
-		base_height	    //	int32 heightOffset = 0
+		B_PIXEL_ALIGNMENT,	
+		1,		
+		0,		
+		gui.char_width,	    
+		base_width,	    
+		1,		
+		0,		
+		gui.char_height,	
+		base_height	    
 		);
 
 	gui.vimWindow->Unlock();
@@ -3541,7 +3274,7 @@ gui_mch_get_screen_dimensions(
 	}
     }
 
-    // XXX approximations...
+    
     *screen_w = (int) frame.right - 2 * gui.scrollbar_width - 20;
     *screen_h = (int) frame.bottom - gui.scrollbar_height
 #ifdef FEAT_MENU
@@ -3568,16 +3301,14 @@ gui_mch_set_text_area_pos(
 	if (gui.vimForm->TabLine() != NULL) {
 	    gui.vimForm->TabLine()->ResizeTo(w, gui.vimForm->TablineHeight());
 	}
-#endif // FEAT_GUI_TABLINE
+#endif 
 
 	gui.vimWindow->Unlock();
     }
 }
 
 
-/*
- * Scrollbar stuff:
- */
+
 
 void
 gui_mch_enable_scrollbar(
@@ -3586,10 +3317,7 @@ gui_mch_enable_scrollbar(
 {
     VimScrollBar *vsb = sb->id;
     if (gui.vimWindow->Lock()) {
-	/*
-	 * This function is supposed to be idempotent, but Show()/Hide()
-	 * is not. Therefore we test if they are needed.
-	 */
+	
 	if (flag) {
 	    if (vsb->IsHidden()) {
 		vsb->Show();
@@ -3618,24 +3346,15 @@ gui_mch_set_scrollbar_thumb(
 	} else {
 	    s->SetProportion((float)size / (max + 1.0));
 	    s->SetSteps(1.0, size > 5 ? size - 2 : size);
-#ifndef SCROLL_PAST_END	    //	really only defined in gui.c...
+#ifndef SCROLL_PAST_END	    
 	    max = max + 1 - size;
 #endif
 	    if (max < s->Value()) {
-		/*
-		 * If the new maximum is lower than the current value,
-		 * setting it would cause the value to be clipped and
-		 * therefore a ValueChanged() call.
-		 * We avoid this by setting the value first, because
-		 * it presumably is <= max.
-		 */
+		
 		s->SetValue(val);
 		s->SetRange(0.0, max);
 	    } else {
-		/*
-		 * In the other case, set the range first, since the
-		 * new value might be higher than the current max.
-		 */
+		
 		s->SetRange(0.0, max);
 		s->SetValue(val);
 	    }
@@ -3666,23 +3385,23 @@ gui_mch_set_scrollbar_pos(
     int
 gui_mch_get_scrollbar_xpadding(void)
 {
-    // TODO: Calculate the padding for adjust scrollbar position when the
-    // Window is maximized.
+    
+    
     return 0;
 }
 
     int
 gui_mch_get_scrollbar_ypadding(void)
 {
-    // TODO: Calculate the padding for adjust scrollbar position when the
-    // Window is maximized.
+    
+    
     return 0;
 }
 
 void
 gui_mch_create_scrollbar(
 	scrollbar_T *sb,
-	int	orient)	    // SBAR_VERT or SBAR_HORIZ
+	int	orient)	    
 {
     orientation posture =
 	(orient == SBAR_HORIZ) ? B_HORIZONTAL : B_VERTICAL;
@@ -3709,23 +3428,14 @@ gui_mch_destroy_scrollbar(
 }
 #endif
 
-/*
- * Cursor does not flash
- */
+
     int
 gui_mch_is_blink_off(void)
 {
     return FALSE;
 }
 
-/*
- * Cursor blink functions.
- *
- * This is a simple state machine:
- * BLINK_NONE	not blinking at all
- * BLINK_OFF	blinking, cursor is not shown
- * BLINK_ON blinking, cursor is shown
- */
+
 
 #define BLINK_NONE  0
 #define BLINK_OFF   1
@@ -3743,22 +3453,20 @@ gui_mch_set_blinking(
 	long	on,
 	long	off)
 {
-    // TODO
+    
     blink_waittime = waittime;
     blink_ontime = on;
     blink_offtime = off;
 }
 
-/*
- * Stop the cursor blinking.  Show the cursor if it wasn't shown.
- */
+
     void
 gui_mch_stop_blink(int may_call_gui_update_cursor)
 {
-    // TODO
+    
     if (blink_timer != 0)
     {
-	// XtRemoveTimeOut(blink_timer);
+	
 	blink_timer = 0;
     }
     if (blink_state == BLINK_OFF)
@@ -3766,29 +3474,23 @@ gui_mch_stop_blink(int may_call_gui_update_cursor)
     blink_state = BLINK_NONE;
 }
 
-/*
- * Start the cursor blinking.  If it was already blinking, this restarts the
- * waiting time and shows the cursor.
- */
+
     void
 gui_mch_start_blink()
 {
-    // TODO
+    
     if (blink_timer != 0)
-	;// XtRemoveTimeOut(blink_timer);
-    // Only switch blinking on if none of the times is zero
+	;
+    
     if (blink_waittime && blink_ontime && blink_offtime && gui.in_focus)
     {
-	blink_timer = 1; // XtAppAddTimeOut(app_context, blink_waittime,
+	blink_timer = 1; 
 	blink_state = BLINK_ON;
 	gui_update_cursor(TRUE, FALSE);
     }
 }
 
-/*
- * Initialise vim to use the font with the given name.	Return FAIL if the font
- * could not be loaded, OK otherwise.
- */
+
 int
 gui_mch_init_font(
 	char_u	    *font_name,
@@ -3817,12 +3519,12 @@ gui_mch_adjust_charsize()
 gui_mch_font_dialog(font_family* family, font_style* style, float* size)
 {
 #if defined(FEAT_GUI_DIALOG)
-	// gui.vimWindow->Unlock();
+	
     VimSelectFontDialog *dialog = new VimSelectFontDialog(family, style, size);
     return dialog->Go();
 #else
     return NOFONT;
-#endif // FEAT_GUI_DIALOG
+#endif 
 }
 
 
@@ -3833,10 +3535,10 @@ gui_mch_get_font(
 {
     static VimFont *fontList = NULL;
 
-    if (!gui.in_use)	//  can't do this when GUI not running
+    if (!gui.in_use)	
 	return NOFONT;
 
-    //	storage for locally modified name;
+    
     const int buff_size = B_FONT_FAMILY_LENGTH + B_FONT_STYLE_LENGTH + 20;
     static char font_name[buff_size] = {0};
     font_family family = {0};
@@ -3864,12 +3566,12 @@ gui_mch_get_font(
 	    (char*)"%s/%s/%.0f", family, style, size);
     }
 
-    //	replace underscores with spaces
+    
     char* end = 0;
     while (end = strchr((char *)font_name, '_'))
 	*end = ' ';
 
-    //	store the name before strtok corrupt the buffer ;-)
+    
     static char buff[buff_size] = {0};
     STRNCPY(buff, font_name, buff_size);
     STRNCPY(family, strtok(buff, "/\0"), B_FONT_FAMILY_LENGTH);
@@ -3881,18 +3583,18 @@ gui_mch_get_font(
     if (useSelectGUI) {
 	if (gui_mch_font_dialog(&family, &style, &size) == NOFONT)
 	    return FAIL;
-	//  compose for further processing
+	
 	vim_snprintf(font_name, buff_size,
 		(char*)"%s/%s/%.0f", family, style, size);
 	hl_set_font_name((char_u*)font_name);
 
-	//  Set guifont to the name of the selected font.
+	
 	char_u* new_p_guifont = (char_u*)alloc(STRLEN(font_name) + 1);
 	if (new_p_guifont != NULL) {
 	    STRCPY(new_p_guifont, font_name);
 	    vim_free(p_guifont);
 	    p_guifont = new_p_guifont;
-	    //	Replace spaces in the font name with underscores.
+	    
 	    for ( ; *new_p_guifont; ++new_p_guifont)
 		if (*new_p_guifont == ' ')
 		    *new_p_guifont = '_';
@@ -3917,7 +3619,7 @@ gui_mch_get_font(
 	return NOFONT;
     }
 
-    //	Remember font in the static list for later use
+    
     font->next = fontList;
     fontList = font;
 
@@ -3931,9 +3633,7 @@ gui_mch_get_font(
     return (GuiFont)font;
 }
 
-/*
- * Set the current text font.
- */
+
 void
 gui_mch_set_font(
 	GuiFont	font)
@@ -3954,7 +3654,7 @@ gui_mch_set_font(
     }
 }
 
-// XXX TODO This is apparently never called...
+
 void
 gui_mch_free_font(
 	GuiFont	font)
@@ -3977,24 +3677,22 @@ gui_mch_get_fontname(GuiFont font, char_u *name)
     return vim_strsave(name);
 }
 
-/*
- * Adjust gui.char_height (after 'linespace' was changed).
- */
+
     int
 gui_mch_adjust_charheight()
 {
 
-    // TODO: linespace support?
+    
 
-// #ifdef FEAT_XFONTSET
-//  if (gui.fontset != NOFONTSET)
-//  {
-//  gui.char_height = fontset_height((XFontSet)gui.fontset) + p_linespace;
-//  gui.char_ascent = fontset_ascent((XFontSet)gui.fontset)
-//  + p_linespace / 2;
-//  }
-//  else
-// #endif
+
+
+
+
+
+
+
+
+
     {
 	VimFont *font = (VimFont *)gui.norm_font;
 	font_height fh = {0};
@@ -4010,15 +3708,7 @@ gui_mch_getmouse(int *x, int *y)
 {
     fprintf(stderr, "gui_mch_getmouse");
 
-    /*int	rootx, rooty, winx, winy;
-      Window	root, child;
-      unsigned int mask;
-
-      if (gui.wid && XQueryPointer(gui.dpy, gui.wid, &root, &child,
-      &rootx, &rooty, &winx, &winy, &mask)) {
-     *x = winx;
-     *y = winy;
-     } else*/ {
+     {
 	 *x = -1;
 	 *y = -1;
      }
@@ -4028,7 +3718,7 @@ gui_mch_getmouse(int *x, int *y)
 gui_mch_mousehide(int hide)
 {
     fprintf(stderr, "gui_mch_getmouse");
-    //	TODO
+    
 }
 
     static int
@@ -4042,12 +3732,7 @@ hex_digit(int c)
     return -1000;
 }
 
-/*
- * This function has been lifted from gui_w32.c and extended a bit.
- *
- * Return the Pixel value (color) for the given color name.
- * Return INVALCOLOR for error.
- */
+
 guicolor_T
 gui_mch_get_color(
 	char_u	*name)
@@ -4055,9 +3740,7 @@ gui_mch_get_color(
     return gui_get_color_cmn(name);
 }
 
-/*
- * Set the current text foreground color.
- */
+
 void
 gui_mch_set_fg_color(
 	guicolor_T  color)
@@ -4069,9 +3752,7 @@ gui_mch_set_fg_color(
     }
 }
 
-/*
- * Set the current text background color.
- */
+
 void
 gui_mch_set_bg_color(
 	guicolor_T  color)
@@ -4083,13 +3764,11 @@ gui_mch_set_bg_color(
     }
 }
 
-/*
- * Set the current text special color.
- */
+
     void
 gui_mch_set_sp_color(guicolor_T	color)
 {
-    // prev_sp_color = color;
+    
 }
 
 void
@@ -4113,7 +3792,7 @@ gui_mch_get_rgb_color(int r, int g, int b)
 }
 
 
-// Return OK if the key with the termcap name "name" is supported.
+
 int
 gui_mch_haskey(
 	char_u	*name)
@@ -4136,7 +3815,7 @@ gui_mch_beep()
     void
 gui_mch_flash(int msec)
 {
-    // Do a visual beep by reversing the foreground and background colors
+    
 
     if (gui.vimWindow->Lock()) {
 	BRect rect = gui.vimTextArea->Bounds();
@@ -4144,7 +3823,7 @@ gui_mch_flash(int msec)
 	gui.vimTextArea->SetDrawingMode(B_OP_INVERT);
 	gui.vimTextArea->FillRect(rect);
 	gui.vimTextArea->Sync();
-	snooze(msec * 1000);	 // wait for a few msec
+	snooze(msec * 1000);	 
 	gui.vimTextArea->FillRect(rect);
 	gui.vimTextArea->SetDrawingMode(B_OP_COPY);
 	gui.vimTextArea->Flush();
@@ -4152,9 +3831,7 @@ gui_mch_flash(int msec)
     }
 }
 
-/*
- * Invert a rectangle from row r, column c, for nr rows and nc columns.
- */
+
 void
 gui_mch_invert_rectangle(
 	int	r,
@@ -4176,9 +3853,7 @@ gui_mch_invert_rectangle(
     }
 }
 
-/*
- * Iconify the GUI window.
- */
+
     void
 gui_mch_iconify()
 {
@@ -4189,19 +3864,15 @@ gui_mch_iconify()
 }
 
 #if defined(FEAT_EVAL) || defined(PROTO)
-/*
- * Bring the Vim window to the foreground.
- */
+
     void
 gui_mch_set_foreground(void)
 {
-    // TODO
+    
 }
 #endif
 
-/*
- * Set the window title
- */
+
 void
 gui_mch_settitle(
 	char_u	*title,
@@ -4213,9 +3884,7 @@ gui_mch_settitle(
     }
 }
 
-/*
- * Draw a cursor without focus.
- */
+
     void
 gui_mch_draw_hollow_cursor(guicolor_T color)
 {
@@ -4224,7 +3893,7 @@ gui_mch_draw_hollow_cursor(guicolor_T color)
     BRect r;
     r.left = FILL_X(gui.col);
     r.top = FILL_Y(gui.row);
-    int cells = utf_off2cells(LineOffset[gui.row] + gui.col, 100); // TODO-TODO
+    int cells = utf_off2cells(LineOffset[gui.row] + gui.col, 100); 
     if (cells>=4) cells = 1;
     r.right = r.left + cells*gui.char_width - PEN_WIDTH;
     r.bottom = r.top + gui.char_height - PEN_WIDTH;
@@ -4232,13 +3901,11 @@ gui_mch_draw_hollow_cursor(guicolor_T color)
     if (gui.vimWindow->Lock()) {
 	gui.vimTextArea->StrokeRect(r);
 	gui.vimWindow->Unlock();
-	// gui_mch_flush();
+	
     }
 }
 
-/*
- * Draw part of a cursor, only w pixels wide, and h pixels high.
- */
+
 void
 gui_mch_draw_part_cursor(
 	int	w,
@@ -4250,7 +3917,7 @@ gui_mch_draw_part_cursor(
     BRect r;
     r.left =
 #ifdef FEAT_RIGHTLEFT
-	// vertical line should be on the right of current point
+	
 	CURSOR_BAR_RIGHT ? FILL_X(gui.col + 1) - w :
 #endif
 	FILL_X(gui.col);
@@ -4261,16 +3928,11 @@ gui_mch_draw_part_cursor(
     if (gui.vimWindow->Lock()) {
 	gui.vimTextArea->FillRect(r);
 	gui.vimWindow->Unlock();
-	// gui_mch_flush();
+	
     }
 }
 
-/*
- * Catch up with any queued events.  This may put keyboard input into the
- * input buffer, call resize call-backs, trigger timers etc.  If there is
- * nothing in the event queue (& no timers pending), then we return
- * immediately.
- */
+
     void
 gui_mch_update()
 {
@@ -4278,18 +3940,10 @@ gui_mch_update()
     while (port_count(gui.vdcmp) > 0 &&
 	    !vim_is_input_buf_full() &&
 	    gui_haiku_process_event(0) >= B_OK)
-	/* nothing */ ;
+	 ;
 }
 
-/*
- * GUI input routine called by gui_wait_for_chars().  Waits for a character
- * from the keyboard.
- *  wtime == -1	    Wait forever.
- *  wtime == 0	    This should never happen.
- *  wtime > 0	    Wait wtime milliseconds for a character.
- * Returns OK if a character was found to be available within the given time,
- * or FAIL otherwise.
- */
+
 int
 gui_mch_wait_for_chars(
 	int	wtime)
@@ -4309,7 +3963,7 @@ gui_mch_wait_for_chars(
     focus = gui.in_focus;
     for (;;)
     {
-	// Stop or start blinking when focus changes
+	
 	if (gui.in_focus != focus)
 	{
 	    if (gui.in_focus)
@@ -4328,7 +3982,7 @@ gui_mch_wait_for_chars(
 	parse_queued_messages();
 # ifdef FEAT_TIMERS
 	if (did_add_timer)
-	    // Need to recompute the waiting time.
+	    
 	    break;
 # endif
 # ifdef FEAT_JOB_CHANNEL
@@ -4342,23 +3996,15 @@ gui_mch_wait_for_chars(
 # endif
 #endif
 
-	/*
-	 * Don't use gui_mch_update() because then we will spin-lock until a
-	 * char arrives, instead we use gui_haiku_process_event() to hang until
-	 * an event arrives.  No need to check for input_buf_full because we
-	 * are returning as soon as it contains a single char.
-	 */
+	
 	st = gui_haiku_process_event(timeout);
 
 	if (input_available())
 	    return OK;
-	if (st < B_OK)		// includes B_TIMED_OUT
+	if (st < B_OK)		
 	    return FAIL;
 
-	/*
-	 * Calculate how much longer we're willing to wait for the
-	 * next event.
-	 */
+	
 	if (wtime >= 0)
 	{
 	    timeout = until - system_time();
@@ -4370,18 +4016,13 @@ gui_mch_wait_for_chars(
 
 }
 
-/*
- * Output routines.
- */
 
-/*
- * Flush any output to the screen. This is typically called before
- * the app goes to sleep.
- */
+
+
     void
 gui_mch_flush()
 {
-    //	does this need to lock the window? Apparently not but be safe.
+    
     if (gui.vimWindow->Lock()) {
 	gui.vimWindow->Flush();
 	gui.vimWindow->Unlock();
@@ -4389,10 +4030,7 @@ gui_mch_flush()
     return;
 }
 
-/*
- * Clear a rectangular region of the screen from text pos (row1, col1) to
- * (row2, col2) inclusive.
- */
+
 void
 gui_mch_clear_block(
 	int	row1,
@@ -4415,10 +4053,7 @@ gui_mch_clear_all()
     }
 }
 
-/*
- * Delete the given number of lines from the given row, scrolling up any
- * text further down within the scroll region.
- */
+
 void
 gui_mch_delete_lines(
 	int	row,
@@ -4427,10 +4062,7 @@ gui_mch_delete_lines(
     gui.vimTextArea->mchDeleteLines(row, num_lines);
 }
 
-/*
- * Insert the given number of lines before the given row, scrolling down any
- * following text within the scroll region.
- */
+
 void
 gui_mch_insert_lines(
 	int	row,
@@ -4440,9 +4072,7 @@ gui_mch_insert_lines(
 }
 
 #if defined(FEAT_MENU) || defined(PROTO)
-/*
- * Menu stuff.
- */
+
 
 void
 gui_mch_enable_menu(
@@ -4463,12 +4093,10 @@ gui_mch_set_menu_pos(
 	int	w,
 	int	h)
 {
-    // It will be in the right place anyway
+    
 }
 
-/*
- * Add a sub menu to the menu bar.
- */
+
 void
 gui_mch_add_menu(
 	vimmenu_T   *menu,
@@ -4476,7 +4104,7 @@ gui_mch_add_menu(
 {
     vimmenu_T	*parent = menu->parent;
 
-    //	popup menu - just create it unattached
+    
     if (menu_is_popup(menu->name) && parent == NULL) {
 	BPopUpMenu* popUpMenu = new BPopUpMenu((const char*)menu->name, false, false);
 	menu->submenu_id = popUpMenu;
@@ -4490,13 +4118,13 @@ gui_mch_add_menu(
 
     if (gui.vimWindow->Lock())
     {
-	// Major re-write of the menu code, it was failing with memory corruption when
-	// we started loading multiple files (the Buffer menu)
-	//
-	// Note we don't use the preference values yet, all are inserted into the
-	// menubar on a first come-first served basis...
-	//
-	// richard@whitequeen.com jul 99
+	
+	
+	
+	
+	
+	
+	
 
 	BMenu *tmp;
 
@@ -4504,8 +4132,8 @@ gui_mch_add_menu(
 	    tmp = parent->submenu_id;
 	else
 	    tmp = gui.vimForm->MenuBar();
-	//  make sure we don't try and add the same menu twice. The Buffers menu tries to
-	//  do this and Be starts to crash...
+	
+	
 
 	if ( ! tmp->FindItem((const char *) menu->dname)) {
 
@@ -4513,10 +4141,10 @@ gui_mch_add_menu(
 
 	    menu->submenu_id = bmenu;
 
-	    //	when we add a BMenu to another Menu, it creates the interconnecting BMenuItem
+	    
 	    tmp->AddItem(bmenu);
 
-	    //	Now it's safe to query the menu for the associated MenuItem...
+	    
 	    menu->id = tmp->FindItem((const char *) menu->dname);
 
 	}
@@ -4527,7 +4155,7 @@ gui_mch_add_menu(
     void
 gui_mch_toggle_tearoffs(int enable)
 {
-    // no tearoff menus
+    
 }
 
     static BMessage *
@@ -4539,9 +4167,7 @@ MenuMessage(vimmenu_T *menu)
     return m;
 }
 
-/*
- * Add a menu item to a menu
- */
+
 void
 gui_mch_add_menu_item(
 	vimmenu_T   *menu,
@@ -4550,12 +4176,12 @@ gui_mch_add_menu_item(
     int	    mnemonic = 0;
     vimmenu_T	*parent = menu->parent;
 
-    // TODO: use menu->actext
-    // This is difficult, since on Be, an accelerator must be a single char
-    // and a lot of Vim ones are the standard VI commands.
-    //
-    // Punt for Now...
-    // richard@whiequeen.com jul 99
+    
+    
+    
+    
+    
+    
     if (gui.vimWindow->Lock())
     {
 #ifdef FEAT_TOOLBAR
@@ -4588,9 +4214,7 @@ gui_mch_add_menu_item(
     }
 }
 
-/*
- * Destroy the machine specific menu widget.
- */
+
 void
 gui_mch_destroy_menu(
 	vimmenu_T   *menu)
@@ -4607,21 +4231,12 @@ gui_mch_destroy_menu(
 #endif
 	{
 	    assert(menu->submenu_id == NULL || menu->submenu_id->CountItems() == 0);
-	    /*
-	     * Detach this menu from its parent, so that it is not deleted
-	     * twice once we get to delete that parent.
-	     * Deleting a BMenuItem also deletes the associated BMenu, if any
-	     * (which does not have any items anymore since they were
-	     * removed and deleted before).
-	     */
+	    
 	    BMenu *bmenu = menu->id->Menu();
 	    if (bmenu)
 	    {
 		bmenu->RemoveItem(menu->id);
-		/*
-		 * If we removed the last item from the menu bar,
-		 * resize it out of sight.
-		 */
+		
 		if (bmenu == gui.vimForm->MenuBar() && bmenu->CountItems() == 0)
 		{
 		    bmenu->ResizeTo(-MENUBAR_MARGIN, -MENUBAR_MARGIN);
@@ -4637,9 +4252,7 @@ gui_mch_destroy_menu(
     }
 }
 
-/*
- * Make a menu either grey or not grey.
- */
+
 void
 gui_mch_menu_grey(
 	vimmenu_T   *menu,
@@ -4660,9 +4273,7 @@ gui_mch_menu_grey(
 	menu->id->SetEnabled(!grey);
 }
 
-/*
- * Make menu item hidden or not hidden
- */
+
 void
 gui_mch_menu_hidden(
 	vimmenu_T   *menu,
@@ -4672,13 +4283,11 @@ gui_mch_menu_hidden(
 	menu->id->SetEnabled(!hidden);
 }
 
-/*
- * This is called after setting all the menus to grey/hidden or not.
- */
+
     void
 gui_mch_draw_menubar()
 {
-    // Nothing to do in BeOS
+    
 }
 
     void
@@ -4701,27 +4310,23 @@ gui_mch_show_popupmenu(vimmenu_T *menu)
     popupMenu->Go(point, true);
 }
 
-#endif // FEAT_MENU
+#endif 
 
-// Mouse stuff
+
 
 #ifdef FEAT_CLIPBOARD
-/*
- * Clipboard stuff, for cutting and pasting text to other windows.
- */
+
 char textplain[] = "text/plain";
 char vimselectiontype[] = "application/x-vnd.Rhialto-Vim-selectiontype";
 
-/*
- * Get the current selection and put it in the clipboard register.
- */
+
     void
 clip_mch_request_selection(Clipboard_T *cbd)
 {
     if (be_clipboard->Lock())
     {
 	BMessage *m = be_clipboard->Data();
-	// m->PrintToStream();
+	
 
 	char_u *string = NULL;
 	ssize_t stringlen = -1;
@@ -4737,9 +4342,7 @@ clip_mch_request_selection(Clipboard_T *cbd)
 	    char *seltype;
 	    ssize_t seltypelen;
 
-	    /*
-	     * Try to get the special vim selection type first
-	     */
+	    
 	    if (m->FindData(vimselectiontype, B_MIME_TYPE,
 			(const void **)&seltype, &seltypelen) == B_OK)
 	    {
@@ -4755,7 +4358,7 @@ clip_mch_request_selection(Clipboard_T *cbd)
 	    }
 	    else
 	    {
-		// Otherwise use heuristic as documented
+		
 		type = memchr(string, stringlen, '\n') ? MLINE : MCHAR;
 	    }
 	    clip_yank_selection(type, string, (long)stringlen, cbd);
@@ -4763,31 +4366,22 @@ clip_mch_request_selection(Clipboard_T *cbd)
 	be_clipboard->Unlock();
     }
 }
-/*
- * Make vim the owner of the current selection.
- */
+
     void
 clip_mch_lose_selection(Clipboard_T *cbd)
 {
-    // Nothing needs to be done here
+    
 }
 
-/*
- * Make vim the owner of the current selection.  Return OK upon success.
- */
+
     int
 clip_mch_own_selection(Clipboard_T *cbd)
 {
-    /*
-     * Never actually own the clipboard.  If another application sets the
-     * clipboard, we don't want to think that we still own it.
-     */
+    
     return FAIL;
 }
 
-/*
- * Send the current selection to the clipboard.
- */
+
     void
 clip_mch_set_selection(Clipboard_T *cbd)
 {
@@ -4797,7 +4391,7 @@ clip_mch_set_selection(Clipboard_T *cbd)
 	BMessage *m = be_clipboard->Data();
 	assert(m);
 
-	// If the '*' register isn't already filled in, fill it in now
+	
 	cbd->owned = TRUE;
 	clip_get_selection(cbd);
 	cbd->owned = FALSE;
@@ -4813,7 +4407,7 @@ clip_mch_set_selection(Clipboard_T *cbd)
 
 	m->AddData(textplain, B_MIME_TYPE, (void *)str, count);
 
-	// Add type of selection
+	
 	char	vtype;
 	switch (type)
 	{
@@ -4833,27 +4427,10 @@ clip_mch_set_selection(Clipboard_T *cbd)
     }
 }
 
-#endif	// FEAT_CLIPBOARD
+#endif	
 
 #ifdef FEAT_BROWSE
-/*
- * Pop open a file browser and return the file selected, in allocated memory,
- * or NULL if Cancel is hit.
- *  saving  - TRUE if the file will be saved to, FALSE if it will be opened.
- *  title   - Title message for the file browser dialog.
- *  dflt    - Default name of file.
- *  ext     - Default extension to be added to files without extensions.
- *  initdir - directory in which to open the browser (NULL = current dir)
- *  filter  - Filter for matched files to choose from.
- *  Has a format like this:
- *  "C Files (*.c)\0*.c\0"
- *  "All Files\0*.*\0\0"
- *  If these two strings were concatenated, then a choice of two file
- *  filters will be selectable to the user.  Then only matching files will
- *  be shown in the browser.  If NULL, the default allows all files.
- *
- *  *NOTE* - the filter string must be terminated with TWO nulls.
- */
+
 char_u *
 gui_mch_browse(
 	int saving,
@@ -4893,27 +4470,12 @@ gui_mch_browse(
 
     return fileName;
 }
-#endif // FEAT_BROWSE
+#endif 
 
 
 #if defined(FEAT_GUI_DIALOG)
 
-/*
- * Create a dialog dynamically from the parameter strings.
- * type	    = type of dialog (question, alert, etc.)
- * title    = dialog title. may be NULL for default title.
- * message  = text to display. Dialog sizes to accommodate it.
- * buttons  = '\n' separated list of button captions, default first.
- * dfltbutton	= number of default button.
- *
- * This routine returns 1 if the first button is pressed,
- *	    2 for the second, etc.
- *
- *	    0 indicates Esc was pressed.
- *	    -1 for unexpected error
- *
- * If stubbing out this fn, return 1.
- */
+
 
 int
 gui_mch_dialog(
@@ -4930,12 +4492,10 @@ gui_mch_dialog(
     return dialog->Go();
 }
 
-#endif // FEAT_GUI_DIALOG
+#endif 
 
 
-/*
- * Return the RGB value of a pixel as long.
- */
+
     guicolor_T
 gui_mch_get_rgb(guicolor_T pixel)
 {
@@ -4949,7 +4509,7 @@ gui_mch_get_rgb(guicolor_T pixel)
 gui_mch_setmouse(int x, int y)
 {
     TRACE();
-    // TODO
+    
 }
 
 #ifdef FEAT_MBYTE_IME
@@ -4987,9 +4547,7 @@ gui_mch_set_toolbar_pos(int x, int y, int w, int h)
 
 #if defined(FEAT_GUI_TABLINE) || defined(PROTO)
 
-/*
- * Show or hide the tabline.
- */
+
     void
 gui_mch_show_tabline(int showit)
 {
@@ -5017,9 +4575,7 @@ gui_mch_set_tabline_pos(int x, int y, int w, int h)
     }
 }
 
-/*
- * Return TRUE when tabline is displayed.
- */
+
     int
 gui_mch_showing_tabline()
 {
@@ -5027,9 +4583,7 @@ gui_mch_showing_tabline()
     return tabLine != NULL && gui.vimForm->IsShowingTabLine();
 }
 
-/*
- * Update the labels of the tabline.
- */
+
     void
 gui_mch_update_tabline()
 {
@@ -5044,7 +4598,7 @@ gui_mch_update_tabline()
 
     gui.vimWindow->Lock();
 
-    // Add a label for each tab page.  They all contain the same text area.
+    
     for (tp = first_tabpage; tp != NULL; tp = tp->tp_next, ++nr) {
 	if (tp == curtab)
 	    curtabidx = nr;
@@ -5061,7 +4615,7 @@ gui_mch_update_tabline()
 	tabLine->Invalidate();
     }
 
-    // Remove any old labels.
+    
     while (nr < tabLine->CountTabs())
 	tabLine->RemoveTab(nr);
 
@@ -5071,9 +4625,7 @@ gui_mch_update_tabline()
     gui.vimWindow->Unlock();
 }
 
-/*
- * Set the current tab to "nr".  First tab is 1.
- */
+
     void
 gui_mch_set_curtab(int nr)
 {
@@ -5089,4 +4641,4 @@ gui_mch_set_curtab(int nr)
     gui.vimWindow->Unlock();
 }
 
-#endif // FEAT_GUI_TABLINE
+#endif 

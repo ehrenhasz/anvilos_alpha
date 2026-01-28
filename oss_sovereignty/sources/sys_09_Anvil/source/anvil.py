@@ -65,9 +65,9 @@ def find_blocks(text):
             break
     return blocks
 def generate_header(sources):
-    header = "#ifndef ANVIL_KERNEL_H\n#define ANVIL_KERNEL_H\n"
-    header += "#include <stdint.h>\n#include <stddef.h>\n"
-    header += "#define copy_nonoverlapping(src, dst, count) __builtin_memcpy(dst, src, (count) * sizeof(*(src)))\n\n"
+    header = "
+    header += "
+    header += "
     for src in sources:
         blocks = find_blocks(src)
         for btype, bname, body, sig in blocks:
@@ -134,7 +134,7 @@ def generate_header(sources):
                                 aname, atype = a.split(':')
                                 c_args.append(f"{map_type(atype)} {aname.strip()}")
                      header += "%s %s(%s);\n" % (c_ret, name, ', '.join(c_args))
-    header += "#endif\n"
+    header += "
     return header
 def replace_asm(text):
     out = ""
@@ -245,9 +245,9 @@ def do_transpile_fn(name, args, ret_type, body, context=""):
     c_body = re.sub(r'while\s+(.+?)\{', r'while (\1) {', c_body)
     c_body = re.sub(r'\b([A-Z]\w*)\{', r'(\1){', c_body)
     c_body = re.sub(r'\[.+?;.+?\]', '{{0}}', c_body)
-    c_body = re.sub(r'(\w+):(?!:)', r'.\1 =', c_body) # Keys
+    c_body = re.sub(r'(\w+):(?!:)', r'.\1 =', c_body) 
     c_body = c_body.replace("self.", "self->")
-    c_body = c_body.replace("&mut ", "&") # Ref mut -> Addr
+    c_body = c_body.replace("&mut ", "&") 
     c_body = re.sub(r'\*\s*([\w\.\->]+)\.add\((.+?)\)', r'\1[\2]', c_body)
     c_body = re.sub(r'\.add\((.+?)\)', r' + \1', c_body)
     c_body = re.sub(r'match\s+(.+?)\{', r'switch(\1){', c_body)
@@ -275,7 +275,7 @@ def do_transpile_fn(name, args, ret_type, body, context=""):
                      c_body = f"return {c_body};"
     return f"{c_ret} {c_name}({c_args_str}) {{\n{c_body}\n}}\n"
 def transpile(source):
-    c_code = '#include "kernel.h"\n\n'
+    c_code = '
     blocks = find_blocks(source)
     for btype, bname, body, sig in blocks:
         if btype == "impl":

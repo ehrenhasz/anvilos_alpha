@@ -278,7 +278,7 @@ class SpecFamily(SpecElement):
     """
     def __init__(self, spec_path, schema_path=None, exclude_ops=None):
         with open(spec_path, "r") as stream:
-            prefix = '# SPDX-License-Identifier: '
+            prefix = '
             first = stream.readline().strip()
             if not first.startswith(prefix):
                 raise Exception('SPDX license tag required in the spec')

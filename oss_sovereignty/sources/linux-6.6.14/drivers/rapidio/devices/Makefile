@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile for RapidIO devices
-#
+
+
+
+
 
 obj-$(CONFIG_RAPIDIO_TSI721)	+= tsi721_mport.o
 tsi721_mport-y			:= tsi721.o

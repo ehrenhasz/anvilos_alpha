@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+
 
 #include <sys/list.h>
 
@@ -35,9 +16,9 @@
 
 #include <linux/tracepoint.h>
 #include <sys/types.h>
-#include <sys/trace_common.h> /* For ZIO macros */
+#include <sys/trace_common.h> 
 
-/* BEGIN CSTYLED */
+
 TRACE_EVENT(zfs_zio__delay__miss,
 	TP_PROTO(zio_t *zio, hrtime_t now),
 	TP_ARGS(zio, now),
@@ -77,9 +58,9 @@ TRACE_EVENT(zfs_zio__delay__skip,
 	TP_fast_assign(ZIO_TP_FAST_ASSIGN),
 	TP_printk(ZIO_TP_PRINTK_FMT, ZIO_TP_PRINTK_ARGS)
 );
-/* END CSTYLED */
 
-#endif /* _TRACE_ZIO_H */
+
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
@@ -93,5 +74,5 @@ DEFINE_DTRACE_PROBE2(zio__delay__miss);
 DEFINE_DTRACE_PROBE3(zio__delay__hit);
 DEFINE_DTRACE_PROBE1(zio__delay__skip);
 
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif 
+#endif 

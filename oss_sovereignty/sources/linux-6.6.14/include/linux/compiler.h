@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LINUX_COMPILER_H
 #define __LINUX_COMPILER_H
 
@@ -8,10 +8,7 @@
 
 #ifdef __KERNEL__
 
-/*
- * Note: DISABLE_BRANCH_PROFILING can be used by special lowlevel code
- * to disable branch tracing on a per file basis.
- */
+
 void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 			  int expect, int is_constant);
 #if defined(CONFIG_TRACE_BRANCH_PROFILING) \
@@ -35,11 +32,7 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 			______r;					\
 		})
 
-/*
- * Using __builtin_constant_p(x) to ignore cases where the return
- * value is always the same.  This idea is taken from a similar patch
- * written by Daniel Walker.
- */
+
 # ifndef likely
 #  define likely(x)	(__branch_check__(x, 1, __builtin_constant_p(x)))
 # endif
@@ -48,10 +41,7 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 # endif
 
 #ifdef CONFIG_PROFILE_ALL_BRANCHES
-/*
- * "Define 'is'", Bill Clinton
- * "Define 'if'", Steven Rostedt
- */
+
 #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
 
 #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
@@ -70,7 +60,7 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 		(__if_trace.miss_hit[0]++,0);		\
 })
 
-#endif /* CONFIG_PROFILE_ALL_BRANCHES */
+#endif 
 
 #else
 # define likely(x)	__builtin_expect(!!(x), 1)
@@ -79,41 +69,25 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 # define unlikely_notrace(x)	unlikely(x)
 #endif
 
-/* Optimization barrier */
+
 #ifndef barrier
-/* The "volatile" is due to gcc bugs */
+
 # define barrier() __asm__ __volatile__("": : :"memory")
 #endif
 
 #ifndef barrier_data
-/*
- * This version is i.e. to prevent dead stores elimination on @ptr
- * where gcc and llvm may behave differently when otherwise using
- * normal barrier(): while gcc behavior gets along with a normal
- * barrier(), llvm needs an explicit input variable to be assumed
- * clobbered. The issue is as follows: while the inline asm might
- * access any memory it wants, the compiler could have fit all of
- * @ptr into memory registers instead, and since @ptr never escaped
- * from that, it proved that the inline asm wasn't touching any of
- * it. This version works well with both compilers, i.e. we're telling
- * the compiler that the inline asm absolutely may see the contents
- * of @ptr. See also: https://llvm.org/bugs/show_bug.cgi?id=15495
- */
+
 # define barrier_data(ptr) __asm__ __volatile__("": :"r"(ptr) :"memory")
 #endif
 
-/* workaround for GCC PR82365 if needed */
+
 #ifndef barrier_before_unreachable
 # define barrier_before_unreachable() do { } while (0)
 #endif
 
-/* Unreachable code */
+
 #ifdef CONFIG_OBJTOOL
-/*
- * These macros help objtool understand GCC code flow for unreachable code.
- * The __COUNTER__ based labels are a hack to make each instance of the macros
- * unique, to convince GCC not to merge duplicate inline asm statements.
- */
+
 #define __stringify_label(n) #n
 
 #define __annotate_unreachable(c) ({					\
@@ -124,13 +98,13 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 })
 #define annotate_unreachable() __annotate_unreachable(__COUNTER__)
 
-/* Annotate a C jump table to allow objtool to follow the code flow */
+
 #define __annotate_jump_table __section(".rodata..c_jump_table")
 
-#else /* !CONFIG_OBJTOOL */
+#else 
 #define annotate_unreachable()
 #define __annotate_jump_table
-#endif /* CONFIG_OBJTOOL */
+#endif 
 
 #ifndef unreachable
 # define unreachable() do {		\
@@ -139,20 +113,7 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 } while (0)
 #endif
 
-/*
- * KENTRY - kernel entry point
- * This can be used to annotate symbols (functions or data) that are used
- * without their linker symbol being referenced explicitly. For example,
- * interrupt vector handlers, or functions in the kernel image that are found
- * programatically.
- *
- * Not required for symbols exported with EXPORT_SYMBOL, or initcalls. Those
- * are handled in their own way (with KEEP() in linker scripts).
- *
- * KENTRY can be avoided if the symbols in question are marked as KEEP() in the
- * linker script. For example an architecture could KEEP() its entire
- * boot/exception vector code rather than annotate each function and data.
- */
+
 #ifndef KENTRY
 # define KENTRY(sym)						\
 	extern typeof(sym) sym;					\
@@ -172,26 +133,17 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 #define absolute_pointer(val)	RELOC_HIDE((void *)(val), 0)
 
 #ifndef OPTIMIZER_HIDE_VAR
-/* Make the optimizer believe the variable can be manipulated arbitrarily. */
+
 #define OPTIMIZER_HIDE_VAR(var)						\
 	__asm__ ("" : "=r" (var) : "0" (var))
 #endif
 
-/* Not-quite-unique ID. */
+
 #ifndef __UNIQUE_ID
 # define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), __LINE__)
 #endif
 
-/**
- * data_race - mark an expression as containing intentional data races
- *
- * This data_race() macro is useful for situations in which data races
- * should be forgiven.  One example is diagnostic code that accesses
- * shared variables but is not a part of the core synchronization design.
- *
- * This macro *does not* affect normal code generation, but is a hint
- * to tooling that data races here are to be ignored.
- */
+
 #define data_race(expr)							\
 ({									\
 	__unqual_scalar_typeof(({ expr; })) __v = ({			\
@@ -202,47 +154,33 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 	__v;								\
 })
 
-#endif /* __KERNEL__ */
+#endif 
 
-/*
- * Force the compiler to emit 'sym' as a symbol, so that we can reference
- * it from inline assembler. Necessary in case 'sym' could be inlined
- * otherwise, or eliminated entirely due to lack of references that are
- * visible to the compiler.
- */
+
 #define ___ADDRESSABLE(sym, __attrs) \
 	static void * __used __attrs \
 		__UNIQUE_ID(__PASTE(__addressable_,sym)) = (void *)&sym;
 #define __ADDRESSABLE(sym) \
 	___ADDRESSABLE(sym, __section(".discard.addressable"))
 
-/**
- * offset_to_ptr - convert a relative memory offset to an absolute pointer
- * @off:	the address of the 32-bit offset value
- */
+
 static inline void *offset_to_ptr(const int *off)
 {
 	return (void *)((unsigned long)off + *off);
 }
 
-#endif /* __ASSEMBLY__ */
+#endif 
 
-/* &a[0] degrades to a pointer: a different type from an array */
+
 #define __must_be_array(a)	BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
 
-/*
- * Whether 'type' is a signed type or an unsigned type. Supports scalar types,
- * bool and also pointer types.
- */
+
 #define is_signed_type(type) (((type)(-1)) < (__force type)1)
 #define is_unsigned_type(type) (!is_signed_type(type))
 
-/*
- * This is needed in functions which generate the stack canary, see
- * arch/x86/kernel/smpboot.c::start_secondary() for an example.
- */
+
 #define prevent_tail_call_optimization()	mb()
 
 #include <asm/rwonce.h>
 
-#endif /* __LINUX_COMPILER_H */
+#endif 

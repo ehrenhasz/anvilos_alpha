@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic iSCSI Offload Driver
- * Copyright (c) 2016 Cavium Inc.
- */
+
+
 
 #ifndef _QEDI_ISCSI_H_
 #define _QEDI_ISCSI_H_
@@ -31,7 +28,7 @@
 #define DEF_LL2_MTU		1560
 #define JUMBO_MTU		9000
 
-#define MIN_MTU         576 /* rfc 793 */
+#define MIN_MTU         576 
 #define IPV4_HDR_LEN    20
 #define IPV6_HDR_LEN    40
 #define TCP_HDR_LEN     20
@@ -76,13 +73,13 @@ struct qedi_endpoint {
 	wait_queue_head_t ofld_wait;
 	wait_queue_head_t tcp_ofld_wait;
 	u32 iscsi_cid;
-	/* identifier of the connection from qed */
+	
 	u32 handle;
 	u32 fw_cid;
 	void __iomem *p_doorbell;
 	struct iscsi_db_data db_data;
 
-	/* Send queue management */
+	
 	struct iscsi_wqe *sq;
 	dma_addr_t sq_dma;
 
@@ -106,30 +103,7 @@ struct qedi_io_bdt {
 	u16 sge_valid;
 };
 
-/**
- * struct generic_pdu_resc - login pdu resource structure
- *
- * @req_buf:            driver buffer used to stage payload associated with
- *                      the login request
- * @req_dma_addr:       dma address for iscsi login request payload buffer
- * @req_buf_size:       actual login request payload length
- * @req_wr_ptr:         pointer into login request buffer when next data is
- *                      to be written
- * @resp_hdr:           iscsi header where iscsi login response header is to
- *                      be recreated
- * @resp_buf:           buffer to stage login response payload
- * @resp_dma_addr:      login response payload buffer dma address
- * @resp_buf_size:      login response paylod length
- * @resp_wr_ptr:        pointer into login response buffer when next data is
- *                      to be written
- * @req_bd_tbl:         iscsi login request payload BD table
- * @req_bd_dma:         login request BD table dma address
- * @resp_bd_tbl:        iscsi login response payload BD table
- * @resp_bd_dma:        login request BD table dma address
- *
- * following structure defines buffer info for generic pdus such as iSCSI Login,
- *      Logout and NOP
- */
+
 struct generic_pdu_resc {
 	char *req_buf;
 	dma_addr_t req_dma_addr;
@@ -152,7 +126,7 @@ struct qedi_conn {
 	struct qedi_endpoint *ep;
 	struct iscsi_endpoint *iscsi_ep;
 	struct list_head active_cmd_list;
-	spinlock_t list_lock;		/* internal conn lock */
+	spinlock_t list_lock;		
 	u32 active_cmd_count;
 	u32 cmd_cleanup_req;
 	atomic_t cmd_cleanup_cmpl;
@@ -162,14 +136,12 @@ struct qedi_conn {
 	int abrt_conn;
 #define QEDI_CID_RESERVED	0x5AFF
 	u32 fw_cid;
-	/*
-	 * Buffer for login negotiation process
-	 */
+	
 	struct generic_pdu_resc gen_pdu;
 
 	struct list_head tmf_work_list;
 	wait_queue_head_t wait_queue;
-	spinlock_t tmf_work_lock;	/* tmf work lock */
+	spinlock_t tmf_work_lock;	
 	bool ep_disconnect_starting;
 	int fw_cleanup_works;
 };
@@ -187,7 +159,7 @@ struct qedi_cmd {
 	dma_addr_t sense_buffer_dma;
 	u16 task_id;
 
-	/* field populated for tmf work queue */
+	
 	struct iscsi_task *task;
 	struct work_struct tmf_work;
 	int state;
@@ -203,7 +175,7 @@ struct qedi_cmd {
 #define TYPERESET	2
 
 	struct qedi_work_map *list_tmf_work;
-	/* slowpath management */
+	
 	bool use_slowpath;
 
 	struct iscsi_tm_rsp *tmf_resp_buf;
@@ -236,4 +208,4 @@ struct qedi_boot_target {
 #define QEDI_OFLD_WAIT_STATE(q) ((q)->state == EP_STATE_OFLDCONN_FAILED || \
 				(q)->state == EP_STATE_OFLDCONN_COMPL)
 
-#endif /* _QEDI_ISCSI_H_ */
+#endif 

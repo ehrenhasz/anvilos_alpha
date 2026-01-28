@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the PCI bus specific drivers.
+
+
+
 
 obj-$(CONFIG_PCI)		+= access.o bus.o probe.o host-bridge.o \
 				   remove.o pci.o pci-driver.o search.o \
@@ -34,7 +34,7 @@ obj-$(CONFIG_VGA_ARB)		+= vgaarb.o
 obj-$(CONFIG_PCI_DOE)		+= doe.o
 obj-$(CONFIG_PCI_DYNAMIC_OF_NODES) += of_property.o
 
-# Endpoint library must be initialized before its users
+
 obj-$(CONFIG_PCI_ENDPOINT)	+= endpoint/
 
 obj-y				+= controller/

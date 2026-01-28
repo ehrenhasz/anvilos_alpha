@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2016 - 2018 Intel Corporation. All rights reserved. */
+
+
 #ifndef __DAX_BUS_H__
 #define __DAX_BUS_H__
 #include <linux/device.h>
@@ -10,7 +10,7 @@ struct resource;
 struct dax_device;
 struct dax_region;
 
-/* dax bus specific ioresource flags */
+
 #define IORESOURCE_DAX_STATIC BIT(0)
 #define IORESOURCE_DAX_KMEM BIT(1)
 
@@ -52,4 +52,4 @@ bool static_dev_dax(struct dev_dax *dev_dax);
 	MODULE_ALIAS("dax:t" __stringify(type) "*")
 #define DAX_DEVICE_MODALIAS_FMT "dax:t%d"
 
-#endif /* __DAX_BUS_H__ */
+#endif 

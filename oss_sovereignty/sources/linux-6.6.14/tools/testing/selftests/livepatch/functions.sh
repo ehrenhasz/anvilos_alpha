@@ -1,5 +1,5 @@
 MAX_RETRIES=600
-RETRY_INTERVAL=".1"	# seconds
+RETRY_INTERVAL=".1"	
 KLP_SYSFS_DIR="/sys/kernel/livepatch"
 ksft_skip=4
 function log() {
@@ -58,7 +58,7 @@ function set_ftrace_enabled() {
 	local result=$(sysctl --values kernel.ftrace_enabled)
 	if [[ "$result" != "$1" ]] ; then
 		if [[ $can_fail -eq 1 ]] ; then
-			echo "livepatch: $err" | sed 's#/proc/sys/kernel/#kernel.#' > /dev/kmsg
+			echo "livepatch: $err" | sed 's
 			return
 		fi
 		skip "failed to set kernel.ftrace_enabled = $1"

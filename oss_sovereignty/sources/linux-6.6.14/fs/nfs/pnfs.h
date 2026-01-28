@@ -1,31 +1,4 @@
-/*
- *  pNFS client data structures.
- *
- *  Copyright (c) 2002
- *  The Regents of the University of Michigan
- *  All Rights Reserved
- *
- *  Dean Hildebrand <dhildebz@umich.edu>
- *
- *  Permission is granted to use, copy, create derivative works, and
- *  redistribute this software and such derivative works for any purpose,
- *  so long as the name of the University of Michigan is not used in
- *  any advertising or publicity pertaining to the use or distribution
- *  of this software without specific, written prior authorization. If
- *  the above copyright notice or any other identification of the
- *  University of Michigan is included in any copy of any portion of
- *  this software, then the disclaimer below must also be included.
- *
- *  This software is provided as is, without representation or warranty
- *  of any kind either express or implied, including without limitation
- *  the implied warranties of merchantability, fitness for a particular
- *  purpose, or noninfringement.  The Regents of the University of
- *  Michigan shall not be liable for any damages, including special,
- *  indirect, incidental, or consequential damages, with respect to any
- *  claim arising out of or in connection with the use of the software,
- *  even if it has been or is hereafter advised of the possibility of
- *  such damages.
- */
+
 
 #ifndef FS_NFS_PNFS_H
 #define FS_NFS_PNFS_H
@@ -38,31 +11,31 @@
 struct nfs4_opendata;
 
 enum {
-	NFS_LSEG_VALID = 0,	/* cleared when lseg is recalled/returned */
-	NFS_LSEG_ROC,		/* roc bit received from server */
-	NFS_LSEG_LAYOUTCOMMIT,	/* layoutcommit bit set for layoutcommit */
-	NFS_LSEG_LAYOUTRETURN,	/* layoutreturn bit set for layoutreturn */
-	NFS_LSEG_UNAVAILABLE,	/* unavailable bit set for temporary problem */
+	NFS_LSEG_VALID = 0,	
+	NFS_LSEG_ROC,		
+	NFS_LSEG_LAYOUTCOMMIT,	
+	NFS_LSEG_LAYOUTRETURN,	
+	NFS_LSEG_UNAVAILABLE,	
 };
 
-/* Individual ip address */
+
 struct nfs4_pnfs_ds_addr {
 	struct sockaddr_storage	da_addr;
 	size_t			da_addrlen;
-	struct list_head	da_node;  /* nfs4_pnfs_dev_hlist dev_dslist */
-	char			*da_remotestr;	/* human readable addr+port */
+	struct list_head	da_node;  
+	char			*da_remotestr;	
 	const char		*da_netid;
 	int			da_transport;
 };
 
 struct nfs4_pnfs_ds {
-	struct list_head	ds_node;  /* nfs4_pnfs_dev_hlist dev_dslist */
-	char			*ds_remotestr;	/* comma sep list of addrs */
+	struct list_head	ds_node;  
+	char			*ds_remotestr;	
 	struct list_head	ds_addrs;
 	struct nfs_client	*ds_clp;
 	refcount_t		ds_count;
 	unsigned long		ds_state;
-#define NFS4DS_CONNECTING	0	/* ds is establishing connection */
+#define NFS4DS_CONNECTING	0	
 };
 
 struct pnfs_layout_segment {
@@ -86,31 +59,27 @@ enum pnfs_try_status {
 
 #define LAYOUT_NFSV4_1_MODULE_PREFIX "nfs-layouttype4"
 
-/*
- * Default data server connection timeout and retrans vaules.
- * Set by module parameters dataserver_timeo and dataserver_retrans.
- */
-#define NFS4_DEF_DS_TIMEO   600 /* in tenths of a second */
+
+#define NFS4_DEF_DS_TIMEO   600 
 #define NFS4_DEF_DS_RETRANS 5
 #define PNFS_DEVICE_RETRY_TIMEOUT (120*HZ)
 
 enum {
-	NFS_LAYOUT_RO_FAILED = 0,	/* get ro layout failed stop trying */
-	NFS_LAYOUT_RW_FAILED,		/* get rw layout failed stop trying */
-	NFS_LAYOUT_BULK_RECALL,		/* bulk recall affecting layout */
-	NFS_LAYOUT_RETURN,		/* layoutreturn in progress */
-	NFS_LAYOUT_RETURN_LOCK,		/* Serialise layoutreturn */
-	NFS_LAYOUT_RETURN_REQUESTED,	/* Return this layout ASAP */
-	NFS_LAYOUT_INVALID_STID,	/* layout stateid id is invalid */
-	NFS_LAYOUT_FIRST_LAYOUTGET,	/* Serialize first layoutget */
-	NFS_LAYOUT_INODE_FREEING,	/* The inode is being freed */
-	NFS_LAYOUT_HASHED,		/* The layout visible */
+	NFS_LAYOUT_RO_FAILED = 0,	
+	NFS_LAYOUT_RW_FAILED,		
+	NFS_LAYOUT_BULK_RECALL,		
+	NFS_LAYOUT_RETURN,		
+	NFS_LAYOUT_RETURN_LOCK,		
+	NFS_LAYOUT_RETURN_REQUESTED,	
+	NFS_LAYOUT_INVALID_STID,	
+	NFS_LAYOUT_FIRST_LAYOUTGET,	
+	NFS_LAYOUT_INODE_FREEING,	
+	NFS_LAYOUT_HASHED,		
 	NFS_LAYOUT_DRAIN,
 };
 
 enum layoutdriver_policy_flags {
-	/* Should the pNFS client commit and return the layout upon truncate to
-	 * a smaller size */
+	
 	PNFS_LAYOUTRET_ON_SETATTR	= 1 << 0,
 	PNFS_LAYOUTRET_ON_ERROR		= 1 << 1,
 	PNFS_READ_WHOLE_PAGE		= 1 << 2,
@@ -119,7 +88,7 @@ enum layoutdriver_policy_flags {
 
 struct nfs4_deviceid_node;
 
-/* Per-layout driver specific registration structure */
+
 struct pnfs_layoutdriver_type {
 	struct list_head pnfs_tblid;
 	const u32 id;
@@ -144,7 +113,7 @@ struct pnfs_layoutdriver_type {
 	void (*return_range) (struct pnfs_layout_hdr *lo,
 			      struct pnfs_layout_range *range);
 
-	/* test for nfs page cache coalescing */
+	
 	const struct nfs_pageio_ops *pg_read_ops;
 	const struct nfs_pageio_ops *pg_write_ops;
 
@@ -152,10 +121,7 @@ struct pnfs_layoutdriver_type {
 
 	int (*sync)(struct inode *inode, bool datasync);
 
-	/*
-	 * Return PNFS_ATTEMPTED to indicate the layout code has attempted
-	 * I/O, else return PNFS_NOT_ATTEMPTED to fall back to normal NFS
-	 */
+	
 	enum pnfs_try_status (*read_pagelist)(struct nfs_pgio_header *);
 	enum pnfs_try_status (*write_pagelist)(struct nfs_pgio_header *, int);
 
@@ -198,20 +164,20 @@ struct pnfs_commit_ops {
 
 struct pnfs_layout_hdr {
 	refcount_t		plh_refcount;
-	atomic_t		plh_outstanding; /* number of RPCs out */
-	struct list_head	plh_layouts;   /* other client layouts */
+	atomic_t		plh_outstanding; 
+	struct list_head	plh_layouts;   
 	struct list_head	plh_bulk_destroy;
-	struct list_head	plh_segs;      /* layout segments list */
-	struct list_head	plh_return_segs; /* invalid layout segments */
-	unsigned long		plh_block_lgets; /* block LAYOUTGET if >0 */
+	struct list_head	plh_segs;      
+	struct list_head	plh_return_segs; 
+	unsigned long		plh_block_lgets; 
 	unsigned long		plh_retry_timestamp;
 	unsigned long		plh_flags;
 	nfs4_stateid		plh_stateid;
-	u32			plh_barrier; /* ignore lower seqids */
+	u32			plh_barrier; 
 	u32			plh_return_seq;
 	enum pnfs_iomode	plh_return_iomode;
-	loff_t			plh_lwb; /* last write byte for layoutcommit */
-	const struct cred	*plh_lc_cred; /* layoutcommit cred */
+	loff_t			plh_lwb; 
+	const struct cred	*plh_lc_cred; 
 	struct inode		*plh_inode;
 	struct rcu_head		plh_rcu;
 };
@@ -220,11 +186,11 @@ struct pnfs_device {
 	struct nfs4_deviceid dev_id;
 	unsigned int  layout_type;
 	unsigned int  mincount;
-	unsigned int  maxcount;	/* gdia_maxcount */
+	unsigned int  maxcount;	
 	struct page **pages;
 	unsigned int  pgbase;
-	unsigned int  pglen;	/* reply buffer length */
-	unsigned char nocache : 1;/* May not be cached */
+	unsigned int  pglen;	
+	unsigned char nocache : 1;
 };
 
 #define NFS4_PNFS_GETDEVLIST_MAXNUM 16
@@ -240,7 +206,7 @@ extern void pnfs_unregister_layoutdriver(struct pnfs_layoutdriver_type *);
 extern const struct pnfs_layoutdriver_type *pnfs_find_layoutdriver(u32 id);
 extern void pnfs_put_layoutdriver(const struct pnfs_layoutdriver_type *ld);
 
-/* nfs4proc.c */
+
 extern size_t max_response_pages(struct nfs_server *server);
 extern int nfs4_proc_getdeviceinfo(struct nfs_server *server,
 				   struct pnfs_device *dev,
@@ -248,7 +214,7 @@ extern int nfs4_proc_getdeviceinfo(struct nfs_server *server,
 extern struct pnfs_layout_segment* nfs4_proc_layoutget(struct nfs4_layoutget *lgp, long *timeout);
 extern int nfs4_proc_layoutreturn(struct nfs4_layoutreturn *lrp, bool sync);
 
-/* pnfs.c */
+
 void pnfs_get_layout_hdr(struct pnfs_layout_hdr *lo);
 void pnfs_put_lseg(struct pnfs_layout_segment *lseg);
 
@@ -343,14 +309,14 @@ void pnfs_error_mark_layout_for_return(struct inode *inode,
 void pnfs_layout_return_unused_byclid(struct nfs_client *clp,
 				      enum pnfs_iomode iomode);
 
-/* nfs4_deviceid_flags */
+
 enum {
-	NFS_DEVICEID_INVALID = 0,       /* set when MDS clientid recalled */
-	NFS_DEVICEID_UNAVAILABLE,	/* device temporarily unavailable */
-	NFS_DEVICEID_NOCACHE,		/* device may not be cached */
+	NFS_DEVICEID_INVALID = 0,       
+	NFS_DEVICEID_UNAVAILABLE,	
+	NFS_DEVICEID_NOCACHE,		
 };
 
-/* pnfs_dev.c */
+
 struct nfs4_deviceid_node {
 	struct hlist_node		node;
 	struct hlist_node		tmpnode;
@@ -376,7 +342,7 @@ void nfs4_mark_deviceid_unavailable(struct nfs4_deviceid_node *node);
 bool nfs4_test_deviceid_unavailable(struct nfs4_deviceid_node *node);
 void nfs4_deviceid_purge_client(const struct nfs_client *);
 
-/* pnfs_nfs.c */
+
 struct pnfs_commit_array *pnfs_alloc_commit_array(size_t n, gfp_t gfp_flags);
 void pnfs_free_commit_array(struct pnfs_commit_array *p);
 struct pnfs_commit_array *pnfs_add_commit_array(struct pnfs_ds_commit_info *,
@@ -457,7 +423,7 @@ pnfs_is_valid_lseg(struct pnfs_layout_segment *lseg)
 	return test_bit(NFS_LSEG_VALID, &lseg->pls_flags) != 0;
 }
 
-/* Return true if a layout driver is being used for this mountpoint */
+
 static inline int pnfs_enabled_sb(struct nfs_server *nfss)
 {
 	return nfss->pnfs_curr_ld != NULL;
@@ -566,7 +532,7 @@ pnfs_search_commit_reqs(struct inode *inode, struct nfs_commit_info *cinfo,
 	return fl_cinfo->ops->search_commit_reqs(cinfo, folio);
 }
 
-/* Should the pNFS client commit and return the layout upon a setattr */
+
 static inline bool
 pnfs_ld_layoutret_on_setattr(struct inode *inode)
 {
@@ -653,13 +619,7 @@ pnfs_end_offset(u64 start, u64 len)
 	return start + len;
 }
 
-/*
- * Are 2 ranges intersecting?
- *   start1                             end1
- *   [----------------------------------)
- *                                start2           end2
- *                                [----------------)
- */
+
 static inline bool
 pnfs_is_range_intersecting(u64 start1, u64 end1, u64 start2, u64 end2)
 {
@@ -703,8 +663,8 @@ static inline void nfs4_print_deviceid(const struct nfs4_deviceid *dev_id)
 {
 }
 
-#endif /* NFS_DEBUG */
-#else  /* CONFIG_NFS_V4_1 */
+#endif 
+#else  
 
 static inline bool nfs_have_layout(struct inode *inode)
 {
@@ -917,7 +877,7 @@ static inline bool pnfs_layout_is_valid(const struct pnfs_layout_hdr *lo)
 	return false;
 }
 
-#endif /* CONFIG_NFS_V4_1 */
+#endif 
 
 #if IS_ENABLED(CONFIG_NFS_V4_2)
 int pnfs_report_layoutstat(struct inode *inode, gfp_t gfp_flags);
@@ -929,4 +889,4 @@ pnfs_report_layoutstat(struct inode *inode, gfp_t gfp_flags)
 }
 #endif
 
-#endif /* FS_NFS_PNFS_H */
+#endif 

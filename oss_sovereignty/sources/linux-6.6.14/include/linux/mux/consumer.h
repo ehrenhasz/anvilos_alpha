@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mux/consumer.h - definitions for the multiplexer consumer interface
- *
- * Copyright (C) 2017 Axentia Technologies AB
- *
- * Author: Peter Rosin <peda@axentia.se>
- */
+
+
 
 #ifndef _LINUX_MUX_CONSUMER_H
 #define _LINUX_MUX_CONSUMER_H
@@ -61,4 +55,4 @@ struct mux_control *devm_mux_control_get(struct device *dev,
 struct mux_state *devm_mux_state_get(struct device *dev,
 				     const char *mux_name);
 
-#endif /* _LINUX_MUX_CONSUMER_H */
+#endif 

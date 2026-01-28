@@ -42,8 +42,8 @@ for pio_prog in ("uart_rx_mini", "uart_rx"):
         0,
         globals()[pio_prog],
         freq=8 * UART_BAUD,
-        in_base=PIO_RX_PIN,  # For WAIT, IN
-        jmp_pin=PIO_RX_PIN,  # For JMP
+        in_base=PIO_RX_PIN,  
+        jmp_pin=PIO_RX_PIN,  
     )
     sm.irq(handler)
     sm.active(1)

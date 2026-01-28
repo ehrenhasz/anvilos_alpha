@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2020, Mellanox Technologies */
+
+
 
 #ifndef __MLX5E_TRAP_H__
 #define __MLX5E_TRAP_H__
@@ -8,7 +8,7 @@
 #include "../devlink.h"
 
 struct mlx5e_trap {
-	/* data path */
+	
 	struct mlx5e_rq            rq;
 	struct mlx5e_tir           tir;
 	struct napi_struct         napi;
@@ -16,10 +16,10 @@ struct mlx5e_trap {
 	struct net_device         *netdev;
 	__be32                     mkey_be;
 
-	/* data path - accessed per napi poll */
+	
 	struct mlx5e_ch_stats     *stats;
 
-	/* control */
+	
 	struct mlx5e_priv         *priv;
 	struct mlx5_core_dev      *mdev;
 	struct hwtstamp_config    *tstamp;

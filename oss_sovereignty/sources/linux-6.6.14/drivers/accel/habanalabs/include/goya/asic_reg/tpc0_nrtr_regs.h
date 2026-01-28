@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_TPC0_NRTR_REGS_H_
 #define ASIC_REG_TPC0_NRTR_REGS_H_
 
-/*
- *****************************************
- *   TPC0_NRTR (Prototype: IF_NRTR)
- *****************************************
- */
+
 
 #define mmTPC0_NRTR_HBW_MAX_CRED                                     0xE00100
 
@@ -223,4 +211,4 @@
 
 #define mmTPC0_NRTR_NON_LIN_SCRAMB                                   0xE00604
 
-#endif /* ASIC_REG_TPC0_NRTR_REGS_H_ */
+#endif 

@@ -1,11 +1,4 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright 2003 Vivien Chappelier <vivien.chappelier@linux-mips.org>
- * Copyright 2008 Thomas Bogendoerfer <tsbogend@franken.de>
- */
+
 
 #ifndef __SOUND_AD1843_H
 #define __SOUND_AD1843_H
@@ -43,4 +36,4 @@ void ad1843_setup_adc(struct snd_ad1843 *ad1843,
 void ad1843_shutdown_adc(struct snd_ad1843 *ad1843);
 int ad1843_init(struct snd_ad1843 *ad1843);
 
-#endif /* __SOUND_AD1843_H */
+#endif 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014-2017 Broadcom
- */
+
+
 
 #ifndef _USB_BRCM_COMMON_INIT_H
 #define _USB_BRCM_COMMON_INIT_H
@@ -79,14 +77,7 @@ void brcm_usb_dvr_init_7211b0(struct brcm_usb_init_params *params);
 
 static inline u32 brcm_usb_readl(void __iomem *addr)
 {
-	/*
-	 * MIPS endianness is configured by boot strap, which also reverses all
-	 * bus endianness (i.e., big-endian CPU + big endian bus ==> native
-	 * endian I/O).
-	 *
-	 * Other architectures (e.g., ARM) either do not support big endian, or
-	 * else leave I/O in little endian mode.
-	 */
+	
 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		return __raw_readl(addr);
 	else
@@ -95,7 +86,7 @@ static inline u32 brcm_usb_readl(void __iomem *addr)
 
 static inline void brcm_usb_writel(u32 val, void __iomem *addr)
 {
-	/* See brcmnand_readl() comments */
+	
 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		__raw_writel(val, addr);
 	else
@@ -167,4 +158,4 @@ static inline void brcm_usb_set_dual_select(struct brcm_usb_init_params *ini)
 		ini->ops->set_dual_select(ini);
 }
 
-#endif /* _USB_BRCM_COMMON_INIT_H */
+#endif 

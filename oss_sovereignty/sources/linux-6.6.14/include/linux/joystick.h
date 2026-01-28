@@ -1,11 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (C) 1996-2000 Vojtech Pavlik
- *
- *  Sponsored by SuSE
- */
-/*
- */
+
+
+
 #ifndef _LINUX_JOYSTICK_H
 #define _LINUX_JOYSTICK_H
 
@@ -18,4 +13,4 @@
 #else
 #error Unexpected BITS_PER_LONG
 #endif
-#endif /* _LINUX_JOYSTICK_H */
+#endif 

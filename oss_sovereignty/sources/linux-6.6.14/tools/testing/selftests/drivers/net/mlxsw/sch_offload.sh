@@ -122,7 +122,7 @@ get_name()
 	if ((parent != 0)); then
 		kind=$(qdisc_stats_get $h1 $parent: .kind)
 		kind=${kind%\"}
-		kind=${kind#\"}
+		kind=${kind
 		name="-${kind^^}$name"
 	fi
 	echo root$name

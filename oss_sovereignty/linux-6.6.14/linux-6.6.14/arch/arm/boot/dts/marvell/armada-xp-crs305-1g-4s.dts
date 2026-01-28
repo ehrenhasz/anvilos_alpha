@@ -1,7 +1,0 @@
-#include "armada-xp-crs305-1g-4s.dtsi"
-/ {
-	model = "MikroTik CRS305-1G-4S+";
-};
-&spi0 {
-	status = "okay";
-};

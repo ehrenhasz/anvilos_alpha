@@ -1,21 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
-  File: fs/ext4/xattr.h
 
-  On-disk format of extended attributes for the ext4 filesystem.
 
-  (C) 2001 Andreas Gruenbacher, <a.gruenbacher@computer.org>
-*/
 
 #include <linux/xattr.h>
 
-/* Magic value in attribute blocks */
+
 #define EXT4_XATTR_MAGIC		0xEA020000
 
-/* Maximum number of references to one attribute block */
+
 #define EXT4_XATTR_REFCOUNT_MAX		1024
 
-/* Name indexes */
+
 #define EXT4_XATTR_INDEX_USER			1
 #define EXT4_XATTR_INDEX_POSIX_ACL_ACCESS	2
 #define EXT4_XATTR_INDEX_POSIX_ACL_DEFAULT	3
@@ -25,30 +19,30 @@
 #define EXT4_XATTR_INDEX_SYSTEM			7
 #define EXT4_XATTR_INDEX_RICHACL		8
 #define EXT4_XATTR_INDEX_ENCRYPTION		9
-#define EXT4_XATTR_INDEX_HURD			10 /* Reserved for Hurd */
+#define EXT4_XATTR_INDEX_HURD			10 
 
 struct ext4_xattr_header {
-	__le32	h_magic;	/* magic number for identification */
-	__le32	h_refcount;	/* reference count */
-	__le32	h_blocks;	/* number of disk blocks used */
-	__le32	h_hash;		/* hash value of all attributes */
-	__le32	h_checksum;	/* crc32c(uuid+id+xattrblock) */
-				/* id = inum if refcount=1, blknum otherwise */
-	__u32	h_reserved[3];	/* zero right now */
+	__le32	h_magic;	
+	__le32	h_refcount;	
+	__le32	h_blocks;	
+	__le32	h_hash;		
+	__le32	h_checksum;	
+				
+	__u32	h_reserved[3];	
 };
 
 struct ext4_xattr_ibody_header {
-	__le32	h_magic;	/* magic number for identification */
+	__le32	h_magic;	
 };
 
 struct ext4_xattr_entry {
-	__u8	e_name_len;	/* length of name */
-	__u8	e_name_index;	/* attribute name index */
-	__le16	e_value_offs;	/* offset in disk block of value */
-	__le32	e_value_inum;	/* inode in which the value is stored */
-	__le32	e_value_size;	/* size of attribute value */
-	__le32	e_hash;		/* hash value of name and value */
-	char	e_name[];	/* attribute name */
+	__u8	e_name_len;	
+	__u8	e_name_index;	
+	__le16	e_value_offs;	
+	__le32	e_value_inum;	
+	__le32	e_value_size;	
+	__le32	e_hash;		
+	char	e_name[];	
 };
 
 #define EXT4_XATTR_PAD_BITS		2
@@ -70,21 +64,10 @@ struct ext4_xattr_entry {
 		EXT4_I(inode)->i_extra_isize))
 #define IFIRST(hdr) ((struct ext4_xattr_entry *)((hdr)+1))
 
-/*
- * XATTR_SIZE_MAX is currently 64k, but for the purposes of checking
- * for file system consistency errors, we use a somewhat bigger value.
- * This allows XATTR_SIZE_MAX to grow in the future, but by using this
- * instead of INT_MAX for certain consistency checks, we don't need to
- * worry about arithmetic overflows.  (Actually XATTR_SIZE_MAX is
- * defined in include/uapi/linux/limits.h, so changing it is going
- * not going to be trivial....)
- */
+
 #define EXT4_XATTR_SIZE_MAX (1 << 24)
 
-/*
- * The minimum size of EA value when you start storing it in an external inode
- * size of block - size of header - size of 1 entry - 4 null bytes
- */
+
 #define EXT4_XATTR_MIN_LARGE_EA_SIZE(b)					\
 	((b) - EXT4_XATTR_LEN(3) - sizeof(struct ext4_xattr_header) - 4)
 
@@ -95,13 +78,7 @@ struct ext4_xattr_entry {
 
 #define EXT4_ZERO_XATTR_VALUE ((void *)-1)
 
-/*
- * If we want to add an xattr to the inode, we should make sure that
- * i_extra_isize is not 0 and that the inode size is not less than
- * EXT4_GOOD_OLD_INODE_SIZE + extra_isize + pad.
- *   EXT4_GOOD_OLD_INODE_SIZE   extra_isize header   entry   pad  data
- * |--------------------------|------------|------|---------|---|-------|
- */
+
 #define EXT4_INODE_HAS_XATTR_SPACE(inode)				\
 	((EXT4_I(inode)->i_extra_isize != 0) &&				\
 	 (EXT4_GOOD_OLD_INODE_SIZE + EXT4_I(inode)->i_extra_isize +	\
@@ -130,7 +107,7 @@ struct ext4_xattr_ibody_find {
 };
 
 struct ext4_xattr_inode_array {
-	unsigned int count;		/* # of used items in the array */
+	unsigned int count;		
 	struct inode *inodes[];
 };
 
@@ -141,15 +118,7 @@ extern const struct xattr_handler ext4_xattr_hurd_handler;
 
 #define EXT4_XATTR_NAME_ENCRYPTION_CONTEXT "c"
 
-/*
- * The EXT4_STATE_NO_EXPAND is overloaded and used for two purposes.
- * The first is to signal that there the inline xattrs and data are
- * taking up so much space that we might as well not keep trying to
- * expand it.  The second is that xattr_sem is taken for writing, so
- * we shouldn't try to recurse into the inode expansion.  For this
- * second case, we need to make sure that we take save and restore the
- * NO_EXPAND state flag appropriately.
- */
+
 static inline void ext4_write_lock_xattr(struct inode *inode, int *save)
 {
 	down_write(&EXT4_I(inode)->xattr_sem);

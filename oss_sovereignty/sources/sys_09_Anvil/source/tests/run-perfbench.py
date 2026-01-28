@@ -172,8 +172,8 @@ def compute_diff(file1, file2, diff_score):
             name = entry1[0].rsplit("/")[-1]
             av1, sd1 = entry1[1 + 2 * diff_score], entry1[2 + 2 * diff_score]
             av2, sd2 = entry2[1 + 2 * diff_score], entry2[2 + 2 * diff_score]
-            sd1 *= av1 / 100  # convert from percent sd to absolute sd
-            sd2 *= av2 / 100  # convert from percent sd to absolute sd
+            sd1 *= av1 / 100  
+            sd2 *= av2 / 100  
             av_diff = av2 - av1
             sd_diff = (sd1**2 + sd2**2) ** 0.5
             percent = 100 * av_diff / av1

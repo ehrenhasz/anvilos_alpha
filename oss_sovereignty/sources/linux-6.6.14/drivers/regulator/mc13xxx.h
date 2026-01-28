@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * mc13xxx.h - regulators for the Freescale mc13xxx PMIC
- *
- *  Copyright (C) 2010 Yong Shen <yong.shen@linaro.org>
- */
+
+
 
 #ifndef __LINUX_REGULATOR_MC13XXX_H
 #define __LINUX_REGULATOR_MC13XXX_H

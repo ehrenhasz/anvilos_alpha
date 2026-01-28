@@ -1,12 +1,12 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for ACPICA Core interpreter
-#
+
+
+
+
 
 ccflags-y			:= -D_LINUX -DBUILDING_ACPICA
 ccflags-$(CONFIG_ACPI_DEBUG)	+= -DACPI_DEBUG_OUTPUT
 
-# use acpi.o to put all files here into acpi.o modparam namespace
+
 obj-y	+= acpi.o
 
 acpi-y :=		\

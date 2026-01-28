@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015-2016 MediaTek Inc.
- * Author: Yong Wu <yong.wu@mediatek.com>
- */
+
+
 #ifndef MTK_IOMMU_SMI_H
 #define MTK_IOMMU_SMI_H
 
@@ -12,8 +9,8 @@
 #if IS_ENABLED(CONFIG_MTK_SMI)
 
 enum iommu_atf_cmd {
-	IOMMU_ATF_CMD_CONFIG_SMI_LARB,		/* For mm master to en/disable iommu */
-	IOMMU_ATF_CMD_CONFIG_INFRA_IOMMU,	/* For infra master to enable iommu */
+	IOMMU_ATF_CMD_CONFIG_SMI_LARB,		
+	IOMMU_ATF_CMD_CONFIG_INFRA_IOMMU,	
 	IOMMU_ATF_CMD_MAX,
 };
 

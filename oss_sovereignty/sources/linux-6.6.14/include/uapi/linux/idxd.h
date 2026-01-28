@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 WITH Linux-syscall-note */
-/* Copyright(c) 2019 Intel Corporation. All rights rsvd. */
+
+
 #ifndef _USR_IDXD_H_
 #define _USR_IDXD_H_
 
@@ -9,7 +9,7 @@
 #include <stdint.h>
 #endif
 
-/* Driver command error status */
+
 enum idxd_scmd_stat {
 	IDXD_SCMD_DEV_ENABLED = 0x80000010,
 	IDXD_SCMD_DEV_NOT_ENABLED = 0x80000020,
@@ -36,7 +36,7 @@ enum idxd_scmd_stat {
 #define IDXD_SCMD_SOFTERR_MASK	0x80000000
 #define IDXD_SCMD_SOFTERR_SHIFT	16
 
-/* Descriptor flags */
+
 #define IDXD_OP_FLAG_FENCE	0x0001
 #define IDXD_OP_FLAG_BOF	0x0002
 #define IDXD_OP_FLAG_CRAV	0x0004
@@ -53,7 +53,7 @@ enum idxd_scmd_stat {
 #define IDXD_OP_FLAG_DRDBK	0x4000
 #define IDXD_OP_FLAG_DSTS	0x8000
 
-/* IAX */
+
 #define IDXD_OP_FLAG_RD_SRC2_AECS	0x010000
 #define IDXD_OP_FLAG_RD_SRC2_2ND	0x020000
 #define IDXD_OP_FLAG_WR_SRC2_AECS_COMP	0x040000
@@ -61,7 +61,7 @@ enum idxd_scmd_stat {
 #define IDXD_OP_FLAG_SRC2_STS		0x100000
 #define IDXD_OP_FLAG_CRC_RFC3720	0x200000
 
-/* Opcode */
+
 enum dsa_opcode {
 	DSA_OPCODE_NOOP = 0,
 	DSA_OPCODE_BATCH,
@@ -104,7 +104,7 @@ enum iax_opcode {
 	IAX_OPCODE_EXPAND,
 };
 
-/* Completion record status */
+
 enum dsa_completion_status {
 	DSA_COMP_NONE = 0,
 	DSA_COMP_SUCCESS,
@@ -204,7 +204,7 @@ struct dsa_hw_desc {
 	uint16_t	rsvd1;
 	union {
 		uint8_t		expected_res;
-		/* create delta record */
+		
 		struct {
 			uint64_t	delta_addr;
 			uint32_t	max_delta_size;
@@ -213,13 +213,13 @@ struct dsa_hw_desc {
 		};
 		uint32_t	delta_rec_size;
 		uint64_t	dest2;
-		/* CRC */
+		
 		struct {
 			uint32_t	crc_seed;
 			uint32_t	crc_rsvd;
 			uint64_t	seed_addr;
 		};
-		/* DIF check or strip */
+		
 		struct {
 			uint8_t		src_dif_flags;
 			uint8_t		dif_chk_res;
@@ -229,7 +229,7 @@ struct dsa_hw_desc {
 			uint16_t	chk_app_tag_mask;
 			uint16_t	chk_app_tag_seed;
 		};
-		/* DIF insert */
+		
 		struct {
 			uint8_t		dif_ins_res;
 			uint8_t		dest_dif_flag;
@@ -239,7 +239,7 @@ struct dsa_hw_desc {
 			uint16_t	ins_app_tag_mask;
 			uint16_t	ins_app_tag_seed;
 		};
-		/* DIF update */
+		
 		struct {
 			uint8_t		src_upd_flags;
 			uint8_t		upd_dest_flags;
@@ -253,16 +253,16 @@ struct dsa_hw_desc {
 			uint16_t	dest_app_tag_seed;
 		};
 
-		/* Fill */
+		
 		uint64_t	pattern_upper;
 
-		/* Translation fetch */
+		
 		struct {
 			uint64_t	transl_fetch_res;
 			uint32_t	region_stride;
 		};
 
-		/* DIX generate */
+		
 		struct {
 			uint8_t		dix_gen_res;
 			uint8_t		dest_dif_flags;
@@ -303,10 +303,7 @@ struct dsa_raw_desc {
 	uint64_t	field[8];
 } __attribute__((packed));
 
-/*
- * The status field will be modified by hardware, therefore it should be
- * volatile and prevent the compiler from optimize the read.
- */
+
 struct dsa_completion_record {
 	volatile uint8_t	status;
 	union {
@@ -321,7 +318,7 @@ struct dsa_completion_record {
 	};
 	uint64_t		fault_addr;
 	union {
-		/* common record */
+		
 		struct {
 			uint32_t	invalid_flags:24;
 			uint32_t	rsvd2:8;
@@ -330,14 +327,14 @@ struct dsa_completion_record {
 		uint32_t	delta_rec_size;
 		uint64_t	crc_val;
 
-		/* DIF check & strip */
+		
 		struct {
 			uint32_t	dif_chk_ref_tag;
 			uint16_t	dif_chk_app_tag_mask;
 			uint16_t	dif_chk_app_tag;
 		};
 
-		/* DIF insert */
+		
 		struct {
 			uint64_t	dif_ins_res;
 			uint32_t	dif_ins_ref_tag;
@@ -345,7 +342,7 @@ struct dsa_completion_record {
 			uint16_t	dif_ins_app_tag;
 		};
 
-		/* DIF update */
+		
 		struct {
 			uint32_t	dif_upd_src_ref_tag;
 			uint16_t	dif_upd_src_app_tag_mask;
@@ -355,7 +352,7 @@ struct dsa_completion_record {
 			uint16_t	dif_upd_dest_app_tag;
 		};
 
-		/* DIX generate */
+		
 		struct {
 			uint64_t	dix_gen_res;
 			uint32_t	dix_ref_tag;

@@ -1,10 +1,10 @@
-# Select the variant to build for:
+
 ifdef VARIANT_DIR
-# Custom variant path - remove trailing slash and get the final component of
-# the path as the variant name.
+
+
 VARIANT ?= $(notdir $(VARIANT_DIR:/=))
 else
-# If not given on the command line, then default to standard.
+
 VARIANT ?= standard
 VARIANT_DIR ?= variants/$(VARIANT)
 endif
@@ -13,7 +13,7 @@ ifeq ($(wildcard $(VARIANT_DIR)/.),)
 $(error Invalid VARIANT specified: $(VARIANT_DIR))
 endif
 
-# If the build directory is not given, make it reflect the variant name.
+
 BUILD ?= build-$(VARIANT)
 
 include ../../py/mkenv.mk
@@ -22,14 +22,14 @@ include $(VARIANT_DIR)/mpconfigvariant.mk
 
 FROZEN_MANIFEST ?= variants/manifest.py
 
-# Define main target
+
 PROG ?= micropython
 
-# qstr definitions (must come before including py.mk)
+
 QSTR_DEFS += ../unix/qstrdefsport.h
 QSTR_GLOBAL_DEPENDENCIES += $(VARIANT_DIR)/mpconfigvariant.h
 
-# include py core make definitions
+
 include $(TOP)/py/py.mk
 include $(TOP)/extmod/extmod.mk
 
@@ -38,19 +38,19 @@ INC += -I$(TOP)
 INC += -I$(BUILD)
 INC += -I$(VARIANT_DIR)
 
-# compiler settings
+
 CFLAGS += $(INC) -Wall -Wpointer-arith -Wdouble-promotion -Werror -std=gnu99 -DUNIX -D__USE_MINGW_ANSI_STDIO=1 $(COPT) $(CFLAGS_EXTRA)
 LDFLAGS += -lm -lbcrypt $(LDFLAGS_EXTRA)
 
-# Debugging/Optimization
+
 ifdef DEBUG
 CFLAGS += -g
 COPT = -O0
 else
-COPT = -Os #-DNDEBUG
+COPT = -Os 
 endif
 
-# source files
+
 SRC_C = \
 	shared/libc/printf.c \
 	shared/runtime/gchelper_generic.c \
@@ -79,7 +79,7 @@ endif
 
 LIB += -lws2_32
 
-# List of sources for qstr extraction
+
 SRC_QSTR += $(SRC_C) $(SRC_CXX) $(SHARED_SRC_C)
 
 ifneq ($(FROZEN_MANIFEST),)
@@ -87,11 +87,11 @@ CFLAGS += -DMPZ_DIG_SIZE=16
 endif
 
 ifeq ($(shell $(CC) -dumpmachine),i686-w64-mingw32)
-# GCC disables the SSE instruction set by default on i366 targets and we have
-# to specify all three of these options to enable it.
-# https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html (see -mfpmath=unit section)
-# Enabling the SSE instruction set is necessary to get correct rounding of floating points.
-# https://lemire.me/blog/2020/06/26/gcc-not-nearest
+
+
+
+
+
 CFLAGS += -msse -mfpmath=sse -march=pentium4
 endif
 

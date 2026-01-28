@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef TESTS_H
 #define TESTS_H
 
@@ -72,7 +72,7 @@ struct test_suite {
 		.test_cases = tests__##_name,		\
 	}
 
-/* Tests */
+
 DECLARE_SUITE(vmlinux_matches_kallsyms);
 DECLARE_SUITE(openat_syscall_event);
 DECLARE_SUITE(openat_syscall_event_on_all_cpus);
@@ -146,21 +146,7 @@ DECLARE_SUITE(sigtrap);
 DECLARE_SUITE(event_groups);
 DECLARE_SUITE(symbols);
 
-/*
- * PowerPC and S390 do not support creation of instruction breakpoints using the
- * perf_event interface.
- *
- * ARM requires explicit rounding down of the instruction pointer in Thumb mode,
- * and then requires the single-step to be handled explicitly in the overflow
- * handler to avoid stepping into the SIGIO handler and getting stuck on the
- * breakpointed instruction.
- *
- * Since arm64 has the same issue with arm for the single-step handling, this
- * case also gets stuck on the breakpointed instruction.
- *
- * Just disable the test for these architectures until these issues are
- * resolved.
- */
+
 #if defined(__powerpc__) || defined(__s390x__) || defined(__arm__) || defined(__aarch64__)
 #define BP_SIGNAL_IS_SUPPORTED 0
 #else
@@ -178,9 +164,7 @@ int test__arch_unwind_sample(struct perf_sample *sample,
 DECLARE_SUITE(vectors_page);
 #endif
 
-/*
- * Define test workloads to be used in test suites.
- */
+
 typedef int (*workload_fnptr)(int argc, const char **argv);
 
 struct test_workload {
@@ -197,7 +181,7 @@ struct test_workload workload__##work = {	\
 	.func = work,				\
 }
 
-/* The list of test workloads */
+
 DECLARE_WORKLOAD(noploop);
 DECLARE_WORKLOAD(thloop);
 DECLARE_WORKLOAD(leafloop);
@@ -207,4 +191,4 @@ DECLARE_WORKLOAD(datasym);
 
 extern const char *dso_to_test;
 
-#endif /* TESTS_H */
+#endif 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2017 Josh Poimboeuf <jpoimboe@redhat.com>
- */
+
+
 
 #ifndef _CHECK_H
 #define _CHECK_H
@@ -20,19 +18,13 @@ struct insn_state {
 };
 
 struct alt_group {
-	/*
-	 * Pointer from a replacement group to the original group.  NULL if it
-	 * *is* the original group.
-	 */
+	
 	struct alt_group *orig_group;
 
-	/* First and last instructions in the group */
+	
 	struct instruction *first_insn, *last_insn, *nop;
 
-	/*
-	 * Byte-offset-addressed len-sized array of pointers to CFI structs.
-	 * This is shared with the other alt_groups in the same alternative.
-	 */
+	
 	struct cfi_state **cfi;
 };
 
@@ -64,7 +56,7 @@ struct instruction {
 	    unret		: 1,
 	    visited		: 4,
 	    no_reloc		: 1;
-		/* 10 bit hole */
+		
 
 	struct alt_group *alt_group;
 	struct instruction *jump_dest;
@@ -121,4 +113,4 @@ struct instruction *next_insn_same_sec(struct objtool_file *file, struct instruc
 	     insn && insn->sec == _sec;					\
 	     insn = next_insn_same_sec(file, insn))
 
-#endif /* _CHECK_H */
+#endif 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2018 Intel Corporation. */
+
+
 
 #ifndef _IXGBE_TXRX_COMMON_H_
 #define _IXGBE_TXRX_COMMON_H_
@@ -46,4 +46,4 @@ bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
 int ixgbe_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags);
 void ixgbe_xsk_clean_tx_ring(struct ixgbe_ring *tx_ring);
 
-#endif /* #define _IXGBE_TXRX_COMMON_H_ */
+#endif 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Common values for ARC4 Cipher Algorithm
- */
+
+
 
 #ifndef _CIFS_MD4_H
 #define _CIFS_MD4_H
@@ -24,4 +22,4 @@ int cifs_md4_init(struct md4_ctx *mctx);
 int cifs_md4_update(struct md4_ctx *mctx, const u8 *data, unsigned int len);
 int cifs_md4_final(struct md4_ctx *mctx, u8 *out);
 
-#endif /* _CIFS_MD4_H */
+#endif 

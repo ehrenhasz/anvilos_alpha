@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+
 
 #ifndef __DT_BINDINGS_CLOCK_BCM6368_H
 #define __DT_BINDINGS_CLOCK_BCM6368_H
@@ -21,4 +21,4 @@
 #define BCM6368_CLK_NAND		17
 #define BCM6368_CLK_IPSEC		18
 
-#endif /* __DT_BINDINGS_CLOCK_BCM6368_H */
+#endif 

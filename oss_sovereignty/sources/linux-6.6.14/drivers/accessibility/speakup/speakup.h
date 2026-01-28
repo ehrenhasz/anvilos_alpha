@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _SPEAKUP_H
 #define _SPEAKUP_H
 
@@ -35,7 +35,7 @@
 #define B_SYM 0x0800
 #define B_CAPSYM (B_CAP | B_SYM)
 
-/* FIXME: u16 */
+
 #define IS_WDLM(x) (spk_chartab[((u_char)x)] & B_WDLM)
 #define IS_CHAR(x, type) (spk_chartab[((u_char)x)] & type)
 #define IS_TYPE(x, type) ((spk_chartab[((u_char)x)] & type) == type)
@@ -80,14 +80,14 @@ void synth_write(const char *buf, size_t count);
 int synth_supports_indexing(void);
 
 extern struct vc_data *spk_sel_cons;
-extern unsigned short spk_xs, spk_ys, spk_xe, spk_ye; /* our region points */
+extern unsigned short spk_xs, spk_ys, spk_xe, spk_ye; 
 
 extern wait_queue_head_t speakup_event;
 extern struct kobject *speakup_kobj;
 extern struct task_struct *speakup_task;
 extern const u_char spk_key_defaults[];
 
-/* Protect speakup synthesizer list */
+
 extern struct mutex spk_mutex;
 extern struct st_spk_t *speakup_console[];
 extern struct spk_synth *synth;
@@ -112,7 +112,7 @@ extern bool spk_quiet_boot;
 extern char *synth_name;
 extern struct bleep spk_unprocessed_sound;
 
-/* Prototypes from fakekey.c. */
+
 int speakup_add_virtual_keyboard(void);
 void speakup_remove_virtual_keyboard(void);
 void speakup_fake_down_arrow(void);

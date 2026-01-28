@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2014-2015, Qualcomm Atheros, Inc.
- */
+
+
 
 #ifndef AES_GCM_H
 #define AES_GCM_H
@@ -40,4 +38,4 @@ static inline void ieee80211_aes_gcm_key_free(struct crypto_aead *tfm)
 	return aead_key_free(tfm);
 }
 
-#endif /* AES_GCM_H */
+#endif 

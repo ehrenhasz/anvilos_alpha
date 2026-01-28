@@ -1,23 +1,23 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef TARGET_CORE_PSCSI_H
 #define TARGET_CORE_PSCSI_H
 
 #define PSCSI_VERSION		"v4.0"
 
-/* used in pscsi_find_alloc_len() */
+
 #ifndef INQUIRY_DATA_SIZE
 #define INQUIRY_DATA_SIZE	0x24
 #endif
 
-/* used in pscsi_add_device_to_list() */
+
 #define PSCSI_DEFAULT_QUEUEDEPTH	1
 
 #define PS_RETRY		5
 #define PS_TIMEOUT_DISK		(15*HZ)
 #define PS_TIMEOUT_OTHER	(500*HZ)
 
-#include <linux/cache.h>             /* ___cacheline_aligned */
-#include <target/target_core_base.h> /* struct se_device */
+#include <linux/cache.h>             
+#include <target/target_core_base.h> 
 
 struct block_device;
 struct scsi_device;
@@ -53,4 +53,4 @@ struct pscsi_hba_virt {
 	struct Scsi_Host	*phv_lld_host;
 } ____cacheline_aligned;
 
-#endif   /*** TARGET_CORE_PSCSI_H ***/
+#endif   

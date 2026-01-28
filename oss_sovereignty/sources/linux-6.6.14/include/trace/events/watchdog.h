@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM watchdog
 
@@ -60,7 +60,7 @@ TRACE_EVENT(watchdog_set_timeout,
 	TP_printk("watchdog%d timeout=%u err=%d", __entry->id, __entry->timeout, __entry->err)
 );
 
-#endif /* !defined(_TRACE_WATCHDOG_H) || defined(TRACE_HEADER_MULTI_READ) */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

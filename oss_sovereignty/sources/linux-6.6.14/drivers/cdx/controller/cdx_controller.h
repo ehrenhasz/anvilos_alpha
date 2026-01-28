@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Header file for the CDX Controller
- *
- * Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
- */
+
 
 #ifndef _CDX_CONTROLLER_H_
 #define _CDX_CONTROLLER_H_
@@ -27,4 +22,4 @@ int cdx_setup_rpmsg(struct platform_device *pdev);
 
 void cdx_destroy_rpmsg(struct platform_device *pdev);
 
-#endif /* _CDX_CONT_PRIV_H_ */
+#endif 

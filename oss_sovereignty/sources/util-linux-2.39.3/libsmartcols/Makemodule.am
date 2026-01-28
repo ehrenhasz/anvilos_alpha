@@ -4,7 +4,7 @@ include libsmartcols/src/Makemodule.am
 include libsmartcols/samples/Makemodule.am
 
 if ENABLE_GTK_DOC
-# Docs uses separate Makefiles
+
 SUBDIRS += libsmartcols/docs
 endif
 
@@ -12,4 +12,4 @@ pkgconfig_DATA += libsmartcols/smartcols.pc
 PATHFILES      += libsmartcols/smartcols.pc
 EXTRA_DIST     += libsmartcols/COPYING
 
-endif # BUILD_LIBSMARTCOLS
+endif 

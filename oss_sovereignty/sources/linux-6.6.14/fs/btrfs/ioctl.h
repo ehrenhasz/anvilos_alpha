@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef BTRFS_IOCTL_H
 #define BTRFS_IOCTL_H

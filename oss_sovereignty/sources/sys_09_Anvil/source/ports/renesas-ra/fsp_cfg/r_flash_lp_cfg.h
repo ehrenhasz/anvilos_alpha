@@ -1,4 +1,4 @@
-/* generated configuration header file - do not edit */
+
 #ifndef R_FLASH_LP_CFG_H_
 #define R_FLASH_LP_CFG_H_
 #ifdef __cplusplus
@@ -12,4 +12,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* R_FLASH_LP_CFG_H_ */
+#endif 

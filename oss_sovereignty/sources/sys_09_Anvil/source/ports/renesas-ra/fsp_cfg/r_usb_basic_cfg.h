@@ -1,4 +1,4 @@
-/* generated configuration header file - do not edit */
+
 #ifndef R_USB_BASIC_CFG_H_
 #define R_USB_BASIC_CFG_H_
 #ifdef __cplusplus
@@ -110,4 +110,4 @@ extern const uint16_t NULL[];
 #ifdef __cplusplus
 }
 #endif
-#endif /* R_USB_BASIC_CFG_H_ */
+#endif 

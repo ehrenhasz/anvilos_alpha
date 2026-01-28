@@ -1,16 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR X11 */
-/*
- * Copyright 2019 Pengutronix, Marco Felsch <kernel@pengutronix.de>
- */
+
+
 
 #ifndef _DT_BINDINGS_DISPLAY_SDTV_STDS_H
 #define _DT_BINDINGS_DISPLAY_SDTV_STDS_H
 
-/*
- * Attention: Keep the SDTV_STD_* bit definitions in sync with
- * include/uapi/linux/videodev2.h V4L2_STD_* bit definitions.
- */
-/* One bit for each standard */
+
+
 #define SDTV_STD_PAL_B		0x00000001
 #define SDTV_STD_PAL_B1		0x00000002
 #define SDTV_STD_PAL_G		0x00000004
@@ -34,10 +29,10 @@
 #define SDTV_STD_PAL_Nc		0x00000400
 #define SDTV_STD_PAL_60		0x00000800
 
-#define SDTV_STD_NTSC_M		0x00001000	/* BTSC */
-#define SDTV_STD_NTSC_M_JP	0x00002000	/* EIA-J */
+#define SDTV_STD_NTSC_M		0x00001000	
+#define SDTV_STD_NTSC_M_JP	0x00002000	
 #define SDTV_STD_NTSC_443	0x00004000
-#define SDTV_STD_NTSC_M_KR	0x00008000	/* FM A2 */
+#define SDTV_STD_NTSC_M_KR	0x00008000	
 
 #define SDTV_STD_NTSC		(SDTV_STD_NTSC_M	| \
 				 SDTV_STD_NTSC_M_JP	| \
@@ -61,16 +56,16 @@
 				 SDTV_STD_SECAM_L	| \
 				 SDTV_STD_SECAM_LC)
 
-/* Standards for Countries with 60Hz Line frequency */
+
 #define SDTV_STD_525_60		(SDTV_STD_PAL_M		| \
 				 SDTV_STD_PAL_60	| \
 				 SDTV_STD_NTSC		| \
 				 SDTV_STD_NTSC_443)
 
-/* Standards for Countries with 50Hz Line frequency */
+
 #define SDTV_STD_625_50		(SDTV_STD_PAL		| \
 				 SDTV_STD_PAL_N		| \
 				 SDTV_STD_PAL_Nc	| \
 				 SDTV_STD_SECAM)
 
-#endif /* _DT_BINDINGS_DISPLAY_SDTV_STDS_H */
+#endif 

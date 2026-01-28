@@ -1,8 +1,8 @@
-# DO NOT EDIT. This file is generated from Config.src
-#
-# For a description of the syntax of this configuration file,
-# see docs/Kconfig-language.txt.
-#
+
+
+
+
+
 
 menu "Archival Utilities"
 
@@ -24,11 +24,11 @@ config FEATURE_SEAMLESS_GZ
 
 config FEATURE_SEAMLESS_Z
 	bool "Make tar, rpm, modprobe etc understand .Z data"
-	default n  # it is ancient
+	default n  
 
 config AR
 	bool "ar (9.5 kb)"
-	default n  # needs to be improved to be able to replace binutils ar
+	default n  
 	help
 	ar is an archival utility program used to create, modify, and
 	extract contents from archives. In practice, it is used exclusively
@@ -55,7 +55,7 @@ config FEATURE_AR_CREATE
 	This enables archive creation (-c and -r) with busybox ar.
 config UNCOMPRESS
 	bool "uncompress (7.1 kb)"
-	default n  # ancient
+	default n  
 	help
 	uncompress is used to decompress archives created by compress.
 	Not much used anymore, replaced by gzip/gunzip.
@@ -153,7 +153,7 @@ config BZIP2
 
 config BZIP2_SMALL
 	int "Trade bytes for speed (0:fast, 9:small)"
-	default 8  # all "fast or small" options default to small
+	default 8  
 	range 0 9
 	depends on BZIP2
 	help
@@ -289,13 +289,13 @@ config LZOP
 
 config UNLZOP
 	bool "unlzop (13 kb)"
-	default n  # INCOMPAT: upstream lzop does not provide such tool
+	default n  
 	help
 	Lzop decompresion.
 
 config LZOPCAT
 	bool "lzopcat (13 kb)"
-	default n  # INCOMPAT: upstream lzop does not provide such tool
+	default n  
 	help
 	Alias to "lzop -dc".
 

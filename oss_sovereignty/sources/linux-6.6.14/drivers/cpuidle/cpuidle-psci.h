@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef __CPUIDLE_PSCI_H
 #define __CPUIDLE_PSCI_H
@@ -28,4 +28,4 @@ static inline struct device *psci_dt_attach_cpu(int cpu) { return NULL; }
 static inline void psci_dt_detach_cpu(struct device *dev) { }
 #endif
 
-#endif /* __CPUIDLE_PSCI_H */
+#endif 

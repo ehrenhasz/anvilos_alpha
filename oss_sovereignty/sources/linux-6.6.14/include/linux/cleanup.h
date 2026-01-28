@@ -1,38 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LINUX_GUARDS_H
 #define __LINUX_GUARDS_H
 
 #include <linux/compiler.h>
 
-/*
- * DEFINE_FREE(name, type, free):
- *	simple helper macro that defines the required wrapper for a __free()
- *	based cleanup function. @free is an expression using '_T' to access
- *	the variable.
- *
- * __free(name):
- *	variable attribute to add a scoped based cleanup to the variable.
- *
- * no_free_ptr(var):
- *	like a non-atomic xchg(var, NULL), such that the cleanup function will
- *	be inhibited -- provided it sanely deals with a NULL value.
- *
- * return_ptr(p):
- *	returns p while inhibiting the __free().
- *
- * Ex.
- *
- * DEFINE_FREE(kfree, void *, if (_T) kfree(_T))
- *
- *	struct obj *p __free(kfree) = kmalloc(...);
- *	if (!p)
- *		return NULL;
- *
- *	if (!init_obj(p))
- *		return NULL;
- *
- *	return_ptr(p);
- */
+
 
 #define DEFINE_FREE(_name, _type, _free) \
 	static inline void __free_##_name(void *p) { _type _T = *(_type *)p; _free; }
@@ -45,28 +17,7 @@
 #define return_ptr(p)	return no_free_ptr(p)
 
 
-/*
- * DEFINE_CLASS(name, type, exit, init, init_args...):
- *	helper to define the destructor and constructor for a type.
- *	@exit is an expression using '_T' -- similar to FREE above.
- *	@init is an expression in @init_args resulting in @type
- *
- * EXTEND_CLASS(name, ext, init, init_args...):
- *	extends class @name to @name@ext with the new constructor
- *
- * CLASS(name, var)(args...):
- *	declare the variable @var as an instance of the named class
- *
- * Ex.
- *
- * DEFINE_CLASS(fdget, struct fd, fdput(_T), fdget(fd), int fd)
- *
- *	CLASS(fdget, f)(fd);
- *	if (!f.file)
- *		return -EBADF;
- *
- *	// use 'f' without concern
- */
+
 
 #define DEFINE_CLASS(_name, _type, _exit, _init, _init_args...)		\
 typedef _type class_##_name##_t;					\
@@ -87,20 +38,7 @@ static inline class_##_name##_t class_##_name##ext##_constructor(_init_args) \
 		class_##_name##_constructor
 
 
-/*
- * DEFINE_GUARD(name, type, lock, unlock):
- *	trivial wrapper around DEFINE_CLASS() above specifically
- *	for locks.
- *
- * guard(name):
- *	an anonymous instance of the (guard) class
- *
- * scoped_guard (name, args...) { }:
- *	similar to CLASS(name, scope)(args), except the variable (with the
- *	explicit name 'scope') is declard in a for-loop such that its scope is
- *	bound to the next (compound) statement.
- *
- */
+
 
 #define DEFINE_GUARD(_name, _type, _lock, _unlock) \
 	DEFINE_CLASS(_name, _type, _unlock, ({ _lock; _T; }), _type _T)
@@ -112,24 +50,7 @@ static inline class_##_name##_t class_##_name##ext##_constructor(_init_args) \
 	for (CLASS(_name, scope)(args),					\
 	     *done = NULL; !done; done = (void *)1)
 
-/*
- * Additional helper macros for generating lock guards with types, either for
- * locks that don't have a native type (eg. RCU, preempt) or those that need a
- * 'fat' pointer (eg. spin_lock_irqsave).
- *
- * DEFINE_LOCK_GUARD_0(name, lock, unlock, ...)
- * DEFINE_LOCK_GUARD_1(name, type, lock, unlock, ...)
- *
- * will result in the following type:
- *
- *   typedef struct {
- *	type *lock;		// 'type := void' for the _0 variant
- *	__VA_ARGS__;
- *   } class_##name##_t;
- *
- * As above, both _lock and _unlock are statements, except this time '_T' will
- * be a pointer to the above struct.
- */
+
 
 #define __DEFINE_UNLOCK_GUARD(_name, _type, _unlock, ...)		\
 typedef struct {							\
@@ -168,4 +89,4 @@ __DEFINE_LOCK_GUARD_1(_name, _type, _lock)
 __DEFINE_UNLOCK_GUARD(_name, void, _unlock, __VA_ARGS__)		\
 __DEFINE_LOCK_GUARD_0(_name, _lock)
 
-#endif /* __LINUX_GUARDS_H */
+#endif 

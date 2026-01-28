@@ -1,26 +1,13 @@
-/*
- * SPDX-License-Identifier: GPL-2.0-or-later
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * Copyright (C) 2014-2023 Karel Zak <kzak@redhat.com>
- */
+
 #ifndef UTIL_LINUX_FDISK_H
 #define UTIL_LINUX_FDISK_H
-/*
- *   fdisk.h
- */
+
 
 #include "c.h"
 #include <assert.h>
 #include <libfdisk.h>
 
-/* Let's temporary include private libfdisk header file. The final libfdisk.h
- * maybe included when fdisk.c and libfdisk code will be completely spit.
- */
+
 #include "blkdev.h"
 #include "colors.h"
 #include "debug.h"
@@ -52,7 +39,7 @@ extern int ask_callback(struct fdisk_context *cxt, struct fdisk_ask *ask,
 
 extern int print_partition_info(struct fdisk_context *cxt);
 
-/* prototypes for fdisk.c */
+
 extern void dump_firstsector(struct fdisk_context *cxt);
 extern void dump_disklabel(struct fdisk_context *cxt);
 
@@ -63,4 +50,4 @@ extern void toggle_dos_compatibility_flag(struct fdisk_context *cxt);
 
 extern void follow_wipe_mode(struct fdisk_context *cxt);
 
-#endif /* UTIL_LINUX_FDISK_H */
+#endif 

@@ -30,13 +30,13 @@ if [ -z "$TRACEFS" ]; then
 	fi
 fi
 set -e
-emit_kv() { # key =|+= value
+emit_kv() { 
 	echo "$@"
 }
 global_options() {
 	val=`cat $TRACEFS/max_graph_depth`
 	[ $val != 0 ] && emit_kv kernel.fgraph_max_depth = $val
-	if grep -qv "^#" $TRACEFS/set_graph_function $TRACEFS/set_graph_notrace ; then
+	if grep -qv "^
 		cat 1>&2 << EOF
 EOF
 	fi
@@ -49,8 +49,8 @@ kprobe_event_options() {
 EOF
 		continue;;
 		esac
-		p=${p#*:}
-		event=${p#*/}
+		p=${p
+		event=${p
 		group=${p%/*}
 		if [ $group != "kprobes" ]; then
 			cat 1>&2 << EOF
@@ -66,29 +66,29 @@ synth_event_options() {
 }
 DEFINED_VARS=
 UNRESOLVED_EVENTS=
-defined_vars() { # event-dir
+defined_vars() { 
 	grep "^hist" $1/trigger | grep -o ':[a-zA-Z0-9]*='
 }
 referred_vars() {
 	grep "^hist" $1/trigger | grep -o '$[a-zA-Z0-9]*'
 }
-event_is_enabled() { # enable-file
+event_is_enabled() { 
 	test -f $1 && grep -q "1" $1
 }
-per_event_options() { # event-dir
+per_event_options() { 
 	evdir=$1
 	[ ! -f $evdir/filter ] && return
 	if grep -q "^hist:" $evdir/trigger; then
 		__vars=`defined_vars $evdir`
 		for v in `referred_vars $evdir`; do
-			if echo $DEFINED_VARS $__vars | grep -vqw ${v#$}; then
+			if echo $DEFINED_VARS $__vars | grep -vqw ${v
 				UNRESOLVED_EVENTS="$UNRESOLVED_EVENTS $evdir"
 				return;
 			fi
 		done
 		DEFINED_VARS="$DEFINED_VARS "`defined_vars $evdir`
 	fi
-	grep -v "^#" $evdir/trigger | while read action active; do
+	grep -v "^
 		emit_kv $PREFIX.event.$group.$event.actions += \'$action\'
 	done
 	if [ $GROUP_ENABLED -eq 0 ] && event_is_enabled $evdir/enable; then
@@ -103,8 +103,8 @@ retry_unresolved() {
 	unresolved=$UNRESOLVED_EVENTS
 	UNRESOLVED_EVENTS=
 	for evdir in $unresolved; do
-		event=${evdir##*/}
-		group=${evdir%/*}; group=${group##*/}
+		event=${evdir
+		group=${evdir%/*}; group=${group
 		per_event_options $evdir
 	done
 }
@@ -142,7 +142,7 @@ event_options() {
 EOF
 	fi
 }
-is_default_trace_option() { # option
+is_default_trace_option() { 
 grep -qw $1 << EOF
 print-parent
 nosym-offset
@@ -175,8 +175,8 @@ notest_nop_accept
 notest_nop_refuse
 EOF
 }
-instance_options() { # [instance-name]
-	if [ $# -eq 0 ]; then
+instance_options() { 
+	if [ $
 		PREFIX="ftrace"
 		INSTANCE=$TRACEFS
 	else
@@ -188,11 +188,11 @@ instance_options() { # [instance-name]
 		is_default_trace_option $i && continue
 		val="$val, $i"
 	done
-	[ "$val" ] && emit_kv $PREFIX.options = "${val#,}"
+	[ "$val" ] && emit_kv $PREFIX.options = "${val
 	val="local"
 	for i in `cat $INSTANCE/trace_clock` ; do
-		[ "${i#*]}" ] && continue
-		i=${i%]}; val=${i#[}
+		[ "${i
+		i=${i%]}; val=${i
 	done
 	[ $val != "local" ] && emit_kv $PREFIX.trace_clock = $val
 	val=`cat $INSTANCE/buffer_size_kb`
@@ -212,7 +212,7 @@ instance_options() { # [instance-name]
 	fi
 	val=`cat $INSTANCE/current_tracer`
 	[ $val != nop ] && emit_kv $PREFIX.tracer = $val
-	if grep -qv "^#" $INSTANCE/set_ftrace_filter $INSTANCE/set_ftrace_notrace; then
+	if grep -qv "^
 		cat 1>&2 << EOF
 EOF
 	fi

@@ -1,13 +1,13 @@
 include ../../py/mkenv.mk
 -include mpconfigport.mk
 
-# qstr definitions (must come before including py.mk)
+
 QSTR_DEFS = qstrdefsport.h
 
-# MicroPython feature configurations
+
 MICROPY_ROM_TEXT_COMPRESSION ?= 1
 
-# include py core make definitions
+
 include $(TOP)/py/py.mk
 include $(TOP)/extmod/extmod.mk
 
@@ -44,7 +44,7 @@ CFLAGS += -DQEMU_SOC_IMX6
 LDSCRIPT = imx6.ld
 QEMU_EXTRA = -m 128M
 SRC_BOARD_O = shared/runtime/gchelper_generic.o
-# It's really armv7a but closest supported value is armv6.
+
 MPY_CROSS_FLAGS += -march=armv6
 endif
 
@@ -58,7 +58,7 @@ CFLAGS += $(INC) -Wall -Wpointer-arith -Wdouble-promotion -Wfloat-conversion -We
 	 -ffunction-sections -fdata-sections
 CFLAGS += $(CFLAGS_EXTRA)
 
-# Debugging/Optimization
+
 ifeq ($(DEBUG), 1)
 CFLAGS += -g
 COPT = -O0
@@ -66,12 +66,12 @@ else
 COPT += -Os -DNDEBUG
 endif
 
-## With CoudeSourcery it's actually a little different, you just need `-T generic-m-hosted.ld`.
-## Although for some reason `$(LD)` will not find that linker script, it works with `$(CC)`.
-## It turns out that this is specific to CoudeSourcery, and ARM version of GCC ships something
-## else instead and according to the following files, this is what we need to pass to `$(CC).
-## - gcc-arm-none-eabi-4_8-2014q1/share/gcc-arm-none-eabi/samples/src/makefile.conf
-## - gcc-arm-none-eabi-4_8-2014q1/share/gcc-arm-none-eabi/samples/src/qemu/Makefile
+
+
+
+
+
+
 LDFLAGS= -T $(LDSCRIPT) --gc-sections -Map=$(@:.elf=.map)
 LIBS = $(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
 
@@ -107,10 +107,10 @@ OBJ_TEST += $(addprefix $(BUILD)/, $(SRC_TEST_C:.c=.o))
 
 ALL_OBJ_TEST = $(OBJ_COMMON) $(OBJ_TEST)
 
-# All object files, needed to get dependencies correct
+
 OBJ = $(OBJ_COMMON) $(OBJ_RUN) $(OBJ_TEST)
 
-# List of sources for qstr extraction
+
 SRC_QSTR += $(SRC_COMMON_C) $(SRC_RUN_C) $(LIB_SRC_C)
 
 all: run
@@ -118,7 +118,7 @@ all: run
 run: $(BUILD)/firmware.elf
 	qemu-system-arm -machine $(BOARD) $(QEMU_EXTRA) -nographic -monitor null -semihosting -kernel $<
 
-## `$(LD)` doesn't seem to like `--specs` for some reason, but we can just use `$(CC)` here.
+
 $(BUILD)/firmware.elf: $(LDSCRIPT) $(ALL_OBJ_RUN)
 	$(Q)$(LD) $(LDFLAGS) -o $@ $(ALL_OBJ_RUN) $(LIBS)
 	$(Q)$(SIZE) $@

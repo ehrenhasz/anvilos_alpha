@@ -1,13 +1,6 @@
 #ifndef _BBCONFIGOPTS_BZ2_H
 #define _BBCONFIGOPTS_BZ2_H
-/*
- * busybox configuration settings.
- *
- * Licensed under GPLv2 or later, see file LICENSE in this source tree.
- *
- * This file is generated automatically by scripts/mkconfigs.
- * Do not edit.
- */
+
 static const char bbconfig_config_bz2[] ALIGN1 = {
 0150,0061,0061,0101,0131,0046,0123,0131,0067,0035,0101,0225,0000,0012,0126,0137,
 0200,0110,0020,0130,0003,0377,0342,0077,0377,0377,0360,0277,0147,0337,0140,0140,

@@ -1,9 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- *
- * Copyright (C) 2011 Karel Zak <kzak@redhat.com>
- */
+
 #ifndef UTIL_LINUX_SYSFS_H
 #define UTIL_LINUX_SYSFS_H
 
@@ -21,15 +16,7 @@
 
 #include "path.h"
 
-/**
- * sysfs_devname_sys_to_dev:
- * @name: devname to be converted in place
- *
- * Linux kernel linux/drivers/base/core.c: device_get_devnode()
- * defines a replacement of '!' in the /sys device name by '/' in the
- * /dev device name. This helper replaces all occurrences of '!' in
- * @name by '/' to convert from /sys to /dev.
- */
+
 static inline void sysfs_devname_sys_to_dev(char *name)
 {
 	char *c;
@@ -39,12 +26,7 @@ static inline void sysfs_devname_sys_to_dev(char *name)
 			c[0] = '/';
 }
 
-/**
- * sysfs_devname_dev_to_sys:
- * @name: devname to be converted in place
- *
- * See sysfs_devname_sys_to_dev().
- */
+
 static inline void sysfs_devname_dev_to_sys(char *name)
 {
 	char *c;
@@ -123,4 +105,4 @@ enum sysfs_byteorder {
 extern enum sysfs_byteorder sysfs_get_byteorder(struct path_cxt *pc);
 extern int sysfs_get_address_bits(struct path_cxt *pc);
 
-#endif /* UTIL_LINUX_SYSFS_H */
+#endif 

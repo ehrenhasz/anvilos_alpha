@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- *  Copyright (C) 2020 Pengutronix, Lucas Stach <kernel@pengutronix.de>
- */
+
+
 
 #ifndef __DT_BINDINGS_IMX8MM_POWER_H__
 #define __DT_BINDINGS_IMX8MM_POWER_H__

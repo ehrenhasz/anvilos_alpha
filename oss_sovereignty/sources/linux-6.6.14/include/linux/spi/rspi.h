@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Renesas SPI driver
- *
- * Copyright (C) 2012  Renesas Solutions Corp.
- */
+
+
 
 #ifndef __LINUX_SPI_RENESAS_SPI_H__
 #define __LINUX_SPI_RENESAS_SPI_H__

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants for binding nvidia,tegra124-soctherm.
- */
+
+
 
 #ifndef _DT_BINDINGS_THERMAL_TEGRA124_SOCTHERM_H
 #define _DT_BINDINGS_THERMAL_TEGRA124_SOCTHERM_H

@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LIB_UBSAN_H
 #define _LIB_UBSAN_H
 
-/*
- * ABI defined by Clang's UBSAN enum SanitizerHandler:
- * https://github.com/llvm/llvm-project/blob/release/16.x/clang/lib/CodeGen/CodeGenFunction.h#L113
- */
+
 enum ubsan_checks {
 	ubsan_add_overflow,
 	ubsan_builtin_unreachable,

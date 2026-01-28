@@ -259,7 +259,7 @@ class MainHeaderFileExtractor(SourceFileExtractor):
         """
         start_marker = re.compile(f'"OPTIONS :=')
         pattern = re.compile('([\w-]+) ?(?:\||}[ }\]"])')
-        end_marker = re.compile('#define')
+        end_marker = re.compile('
         parser = InlineListParser(self.reader)
         parser.search_block(start_marker)
         return parser.parse(pattern, end_marker)

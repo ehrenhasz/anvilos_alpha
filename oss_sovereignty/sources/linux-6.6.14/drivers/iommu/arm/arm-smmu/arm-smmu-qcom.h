@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+
 
 #ifndef _ARM_SMMU_QCOM_H
 #define _ARM_SMMU_QCOM_H
@@ -36,4 +34,4 @@ void qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu);
 static inline void qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu) { }
 #endif
 
-#endif /* _ARM_SMMU_QCOM_H */
+#endif 

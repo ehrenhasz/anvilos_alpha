@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2009 Texas Instruments, Inc
- *
- * Author: Miguel Aguilar <miguel.aguilar@ridgerun.com>
- */
+
+
 
 #ifndef DAVINCI_KEYSCAN_H
 #define DAVINCI_KEYSCAN_H

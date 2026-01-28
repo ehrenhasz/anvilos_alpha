@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _BOOTCONFIG_LINUX_BOOTCONFIG_H
 #define _BOOTCONFIG_LINUX_BOOTCONFIG_H
 
@@ -21,7 +21,7 @@
 
 #define unlikely(cond)	(cond)
 
-/* Copied from lib/string.c */
+
 static inline char *skip_spaces(const char *str)
 {
 	while (isspace(*str))

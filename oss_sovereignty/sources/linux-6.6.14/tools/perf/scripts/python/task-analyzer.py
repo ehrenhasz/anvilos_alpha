@@ -18,17 +18,17 @@ _COLORS = {
     "violet": "\033[95m",
     "reset": "\033[0m",
 }
-LEN_SWITCHED_IN = len("9999999.999999999")  # 17
-LEN_SWITCHED_OUT = len("9999999.999999999")  # 17
+LEN_SWITCHED_IN = len("9999999.999999999")  
+LEN_SWITCHED_OUT = len("9999999.999999999")  
 LEN_CPU = len("000")
-LEN_PID = len("maxvalue")  # 8
-LEN_TID = len("maxvalue")  # 8
-LEN_COMM = len("max-comms-length")  # 16
-LEN_RUNTIME = len("999999.999")  # 10
-LEN_OUT_IN = len("99999999999.999")  # 15
-LEN_OUT_OUT = len("99999999999.999")  # 15
-LEN_IN_IN = len("99999999999.999")  # 15
-LEN_IN_OUT = len("99999999999.999")  # 15
+LEN_PID = len("maxvalue")  
+LEN_TID = len("maxvalue")  
+LEN_COMM = len("max-comms-length")  
+LEN_RUNTIME = len("999999.999")  
+LEN_OUT_IN = len("99999999999.999")  
+LEN_OUT_OUT = len("99999999999.999")  
+LEN_IN_IN = len("99999999999.999")  
+LEN_IN_OUT = len("99999999999.999")  
 try:
     dict.iteritems
 except AttributeError:

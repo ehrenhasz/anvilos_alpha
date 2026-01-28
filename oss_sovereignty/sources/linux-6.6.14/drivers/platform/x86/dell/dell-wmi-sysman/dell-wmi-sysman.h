@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- * Definitions for kernel modules using Dell WMI System Management Driver
- *
- *  Copyright (c) 2020 Dell Inc.
- */
+
 
 #ifndef _DELL_WMI_BIOS_ATTR_H_
 #define _DELL_WMI_BIOS_ATTR_H_
@@ -84,7 +80,7 @@ struct wmi_sysman_priv {
 	struct mutex mutex;
 };
 
-/* global structure used by multiple WMI interfaces */
+
 extern struct wmi_sysman_priv wmi_priv;
 
 enum { ENUM, INT, STR, PO };

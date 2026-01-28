@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014-2015 Freescale Semiconductor, Inc.
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_IMX7D_H
 #define __DT_BINDINGS_CLOCK_IMX7D_H
@@ -76,10 +74,10 @@
 #define IMX7D_ARM_M4_ROOT_SRC		67
 #define IMX7D_ARM_M4_ROOT_CG		68
 #define IMX7D_ARM_M4_ROOT_DIV		69
-#define IMX7D_ARM_M0_ROOT_CLK		70	/* unused */
-#define IMX7D_ARM_M0_ROOT_SRC		71	/* unused */
-#define IMX7D_ARM_M0_ROOT_CG		72	/* unused */
-#define IMX7D_ARM_M0_ROOT_DIV		73	/* unused */
+#define IMX7D_ARM_M0_ROOT_CLK		70	
+#define IMX7D_ARM_M0_ROOT_SRC		71	
+#define IMX7D_ARM_M0_ROOT_CG		72	
+#define IMX7D_ARM_M0_ROOT_DIV		73	
 #define IMX7D_MAIN_AXI_ROOT_CLK		74
 #define IMX7D_MAIN_AXI_ROOT_SRC		75
 #define IMX7D_MAIN_AXI_ROOT_CG		76
@@ -453,4 +451,4 @@
 #define IMX7D_KPP_ROOT_CLK		444
 #define IMX7D_PXP_CLK			445
 #define IMX7D_CLK_END			446
-#endif /* __DT_BINDINGS_CLOCK_IMX7D_H */
+#endif 

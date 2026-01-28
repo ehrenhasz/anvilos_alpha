@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+
+
 
 #ifndef _IONIC_DEV_H_
 #define _IONIC_DEV_H_
@@ -25,11 +25,11 @@
 #define IONIC_DEV_INFO_REG_COUNT	32
 #define IONIC_DEV_CMD_REG_COUNT		32
 
-#define IONIC_NAPI_DEADLINE		(HZ / 200)	/* 5ms */
-#define IONIC_ADMIN_DOORBELL_DEADLINE	(HZ / 2)	/* 500ms */
-#define IONIC_TX_DOORBELL_DEADLINE	(HZ / 100)	/* 10ms */
-#define IONIC_RX_MIN_DOORBELL_DEADLINE	(HZ / 100)	/* 10ms */
-#define IONIC_RX_MAX_DOORBELL_DEADLINE	(HZ * 5)	/* 5s */
+#define IONIC_NAPI_DEADLINE		(HZ / 200)	
+#define IONIC_ADMIN_DOORBELL_DEADLINE	(HZ / 2)	
+#define IONIC_TX_DOORBELL_DEADLINE	(HZ / 100)	
+#define IONIC_RX_MIN_DOORBELL_DEADLINE	(HZ / 100)	
+#define IONIC_RX_MAX_DOORBELL_DEADLINE	(HZ * 5)	
 
 struct ionic_dev_bar {
 	void __iomem *vaddr;
@@ -39,7 +39,7 @@ struct ionic_dev_bar {
 };
 
 #ifndef __CHECKER__
-/* Registers */
+
 static_assert(sizeof(struct ionic_intr) == 32);
 
 static_assert(sizeof(struct ionic_doorbell) == 8);
@@ -54,7 +54,7 @@ static_assert(sizeof(struct ionic_admin_comp) == 16);
 static_assert(sizeof(struct ionic_nop_cmd) == 64);
 static_assert(sizeof(struct ionic_nop_comp) == 16);
 
-/* Device commands */
+
 static_assert(sizeof(struct ionic_dev_identify_cmd) == 64);
 static_assert(sizeof(struct ionic_dev_identify_comp) == 16);
 static_assert(sizeof(struct ionic_dev_init_cmd) == 64);
@@ -67,7 +67,7 @@ static_assert(sizeof(struct ionic_dev_setattr_cmd) == 64);
 static_assert(sizeof(struct ionic_dev_setattr_comp) == 16);
 static_assert(sizeof(struct ionic_lif_setphc_cmd) == 64);
 
-/* Port commands */
+
 static_assert(sizeof(struct ionic_port_identify_cmd) == 64);
 static_assert(sizeof(struct ionic_port_identify_comp) == 16);
 static_assert(sizeof(struct ionic_port_init_cmd) == 64);
@@ -79,7 +79,7 @@ static_assert(sizeof(struct ionic_port_getattr_comp) == 16);
 static_assert(sizeof(struct ionic_port_setattr_cmd) == 64);
 static_assert(sizeof(struct ionic_port_setattr_comp) == 16);
 
-/* LIF commands */
+
 static_assert(sizeof(struct ionic_lif_init_cmd) == 64);
 static_assert(sizeof(struct ionic_lif_init_comp) == 16);
 static_assert(sizeof(struct ionic_lif_reset_cmd) == 64);
@@ -103,11 +103,11 @@ static_assert(sizeof(struct ionic_rx_filter_add_comp) == 16);
 static_assert(sizeof(struct ionic_rx_filter_del_cmd) == 64);
 static_assert(sizeof(ionic_rx_filter_del_comp) == 16);
 
-/* RDMA commands */
+
 static_assert(sizeof(struct ionic_rdma_reset_cmd) == 64);
 static_assert(sizeof(struct ionic_rdma_queue_cmd) == 64);
 
-/* Events */
+
 static_assert(sizeof(struct ionic_notifyq_cmd) == 4);
 static_assert(sizeof(union ionic_notifyq_comp) == 64);
 static_assert(sizeof(struct ionic_notifyq_event) == 64);
@@ -116,7 +116,7 @@ static_assert(sizeof(struct ionic_reset_event) == 64);
 static_assert(sizeof(struct ionic_heartbeat_event) == 64);
 static_assert(sizeof(struct ionic_log_event) == 64);
 
-/* I/O */
+
 static_assert(sizeof(struct ionic_txq_desc) == 16);
 static_assert(sizeof(struct ionic_txq_sg_desc) == 128);
 static_assert(sizeof(struct ionic_txq_comp) == 16);
@@ -125,14 +125,14 @@ static_assert(sizeof(struct ionic_rxq_desc) == 16);
 static_assert(sizeof(struct ionic_rxq_sg_desc) == 128);
 static_assert(sizeof(struct ionic_rxq_comp) == 16);
 
-/* SR/IOV */
+
 static_assert(sizeof(struct ionic_vf_setattr_cmd) == 64);
 static_assert(sizeof(struct ionic_vf_setattr_comp) == 16);
 static_assert(sizeof(struct ionic_vf_getattr_cmd) == 64);
 static_assert(sizeof(struct ionic_vf_getattr_comp) == 16);
 static_assert(sizeof(struct ionic_vf_ctrl_cmd) == 64);
 static_assert(sizeof(struct ionic_vf_ctrl_comp) == 16);
-#endif /* __CHECKER__ */
+#endif 
 
 struct ionic_devinfo {
 	u8 asic_type;
@@ -159,7 +159,7 @@ struct ionic_dev {
 	struct ionic_intr __iomem *intr_ctrl;
 	u64 __iomem *intr_status;
 
-	struct mutex cmb_inuse_lock; /* for cmb_inuse */
+	struct mutex cmb_inuse_lock; 
 	unsigned long *cmb_inuse;
 	dma_addr_t phy_cmb_pages;
 	u32 cmb_npages;
@@ -386,4 +386,4 @@ bool ionic_adminq_poke_doorbell(struct ionic_queue *q);
 bool ionic_txq_poke_doorbell(struct ionic_queue *q);
 bool ionic_rxq_poke_doorbell(struct ionic_queue *q);
 
-#endif /* _IONIC_DEV_H_ */
+#endif 

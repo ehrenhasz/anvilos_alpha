@@ -1,26 +1,26 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the linux memory manager.
-#
+
+
+
+
 
 KASAN_SANITIZE_slab_common.o := n
 KASAN_SANITIZE_slab.o := n
 KASAN_SANITIZE_slub.o := n
 KCSAN_SANITIZE_kmemleak.o := n
 
-# These produce frequent data race reports: most of them are due to races on
-# the same word but accesses to different bits of that word. Re-enable KCSAN
-# for these when we have more consensus on what to do about them.
+
+
+
 KCSAN_SANITIZE_slab_common.o := n
 KCSAN_SANITIZE_slab.o := n
 KCSAN_SANITIZE_slub.o := n
 KCSAN_SANITIZE_page_alloc.o := n
-# But enable explicit instrumentation for memory barriers.
+
 KCSAN_INSTRUMENT_BARRIERS := y
 
-# These files are disabled because they produce non-interesting and/or
-# flaky coverage that is not a function of syscall inputs. E.g. slab is out of
-# free pages, or a task is migrated between nodes.
+
+
+
 KCOV_INSTRUMENT_slab_common.o := n
 KCOV_INSTRUMENT_slab.o := n
 KCOV_INSTRUMENT_slub.o := n
@@ -55,11 +55,11 @@ obj-y			:= filemap.o mempool.o oom_kill.o fadvise.o \
 			   interval_tree.o list_lru.o workingset.o \
 			   debug.o gup.o mmap_lock.o $(mmu-y)
 
-# Give 'page_alloc' its own module-parameter namespace
+
 page-alloc-y := page_alloc.o
 page-alloc-$(CONFIG_SHUFFLE_PAGE_ALLOCATOR) += shuffle.o
 
-# Give 'memory_hotplug' its own module-parameter namespace
+
 memory-hotplug-$(CONFIG_MEMORY_HOTPLUG) += memory_hotplug.o
 
 obj-y += page-alloc.o

@@ -1,4 +1,0 @@
-#include "axp22x.dtsi"
-&usb_power_supply {
-	compatible = "x-powers,axp223-usb-power-supply";
-};

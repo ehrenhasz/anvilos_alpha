@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm #define SC8180X interconnect IDs
- *
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef __DRIVERS_INTERCONNECT_QCOM_SC8180X_H
 #define __DRIVERS_INTERCONNECT_QCOM_SC8180X_H
@@ -51,7 +47,7 @@
 #define SC8180X_MASTER_SNOC_GC_MEM_NOC		41
 #define SC8180X_MASTER_SNOC_SF_MEM_NOC		42
 #define SC8180X_MASTER_ECC			43
-/* 44 was used by MASTER_IPA_CORE, now represented as RPMh clock */
+
 #define SC8180X_MASTER_LLCC			45
 #define SC8180X_MASTER_CNOC_MNOC_CFG		46
 #define SC8180X_MASTER_CAMNOC_HF0		47
@@ -146,7 +142,7 @@
 #define SC8180X_SLAVE_LLCC			136
 #define SC8180X_SLAVE_SERVICE_GEM_NOC		137
 #define SC8180X_SLAVE_SERVICE_GEM_NOC_1		138
-/* 139 was used by SLAVE_IPA_CORE, now represented as RPMh clock */
+
 #define SC8180X_SLAVE_EBI_CH0			140
 #define SC8180X_SLAVE_MNOC_SF_MEM_NOC		141
 #define SC8180X_SLAVE_MNOC_HF_MEM_NOC		142

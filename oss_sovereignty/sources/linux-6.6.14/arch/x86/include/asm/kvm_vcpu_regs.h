@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_KVM_VCPU_REGS_H
 #define _ASM_X86_KVM_VCPU_REGS_H
 
@@ -22,4 +22,4 @@
 #define __VCPU_REGS_R15 15
 #endif
 
-#endif /* _ASM_X86_KVM_VCPU_REGS_H */
+#endif 

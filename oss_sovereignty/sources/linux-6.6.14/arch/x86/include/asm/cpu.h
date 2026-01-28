@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_CPU_H
 #define _ASM_X86_CPU_H
 
@@ -13,7 +13,7 @@
 
 extern void prefill_possible_map(void);
 
-#else /* CONFIG_SMP */
+#else 
 
 static inline void prefill_possible_map(void) {}
 
@@ -21,7 +21,7 @@ static inline void prefill_possible_map(void) {}
 #define cpu_acpi_id(cpu)			0
 #define safe_smp_processor_id()			0
 
-#endif /* CONFIG_SMP */
+#endif 
 
 struct x86_cpu {
 	struct cpu cpu;
@@ -81,11 +81,11 @@ static inline bool intel_cpu_signatures_match(unsigned int s1, unsigned int p1,
 	if (s1 != s2)
 		return false;
 
-	/* Processor flags are either both 0 ... */
+	
 	if (!p1 && !p2)
 		return true;
 
-	/* ... or they intersect. */
+	
 	return p1 & p2;
 }
 
@@ -95,4 +95,4 @@ int intel_microcode_sanity_check(void *mc, bool print_err, int hdr_type);
 
 extern struct cpumask cpus_stop_mask;
 
-#endif /* _ASM_X86_CPU_H */
+#endif 

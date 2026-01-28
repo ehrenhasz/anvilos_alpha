@@ -1,19 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * TI DaVinci DA8xx CHIPCFGx registers for syscon consumers.
- *
- * Copyright (C) 2016 David Lechner <david@lechnology.com>
- */
+
+
 
 #ifndef __LINUX_MFD_DA8XX_CFGCHIP_H
 #define __LINUX_MFD_DA8XX_CFGCHIP_H
 
 #include <linux/bitops.h>
 
-/* register offset (32-bit registers) */
+
 #define CFGCHIP(n)				((n) * 4)
 
-/* CFGCHIP0 (PLL0/EDMA3_0) register bits */
+
 #define CFGCHIP0_PLL_MASTER_LOCK		BIT(4)
 #define CFGCHIP0_EDMA30TC1DBS(n)		((n) << 2)
 #define CFGCHIP0_EDMA30TC1DBS_MASK		CFGCHIP0_EDMA30TC1DBS(0x3)
@@ -26,7 +22,7 @@
 #define CFGCHIP0_EDMA30TC0DBS_32		CFGCHIP0_EDMA30TC0DBS(0x1)
 #define CFGCHIP0_EDMA30TC0DBS_64		CFGCHIP0_EDMA30TC0DBS(0x2)
 
-/* CFGCHIP1 (eCAP/HPI/EDMA3_1/eHRPWM TBCLK/McASP0 AMUTEIN) register bits */
+
 #define CFGCHIP1_CAP2SRC(n)			((n) << 27)
 #define CFGCHIP1_CAP2SRC_MASK			CFGCHIP1_CAP2SRC(0x1f)
 #define CFGCHIP1_CAP2SRC_ECAP_PIN		CFGCHIP1_CAP2SRC(0x0)
@@ -98,7 +94,7 @@
 #define CFGCHIP1_AMUTESEL0_BANK_6		CFGCHIP1_AMUTESEL0(0x7)
 #define CFGCHIP1_AMUTESEL0_BANK_7		CFGCHIP1_AMUTESEL0(0x8)
 
-/* CFGCHIP2 (USB PHY) register bits */
+
 #define CFGCHIP2_PHYCLKGD			BIT(17)
 #define CFGCHIP2_VBUSSENSE			BIT(16)
 #define CFGCHIP2_RESET				BIT(15)
@@ -129,7 +125,7 @@
 #define CFGCHIP2_REFFREQ_20MHZ			CFGCHIP2_REFFREQ(0x8)
 #define CFGCHIP2_REFFREQ_40MHZ			CFGCHIP2_REFFREQ(0x9)
 
-/* CFGCHIP3 (EMAC/uPP/PLL1/ASYNC3/PRU/DIV4.5/EMIFA) register bits */
+
 #define CFGCHIP3_RMII_SEL			BIT(8)
 #define CFGCHIP3_UPP_TX_CLKSRC			BIT(6)
 #define CFGCHIP3_PLL1_MASTER_LOCK		BIT(5)
@@ -138,7 +134,7 @@
 #define CFGCHIP3_DIV45PENA			BIT(2)
 #define CFGCHIP3_EMA_CLKSRC			BIT(1)
 
-/* CFGCHIP4 (McASP0 AMUNTEIN) register bits */
+
 #define CFGCHIP4_AMUTECLR0			BIT(0)
 
-#endif /* __LINUX_MFD_DA8XX_CFGCHIP_H */
+#endif 

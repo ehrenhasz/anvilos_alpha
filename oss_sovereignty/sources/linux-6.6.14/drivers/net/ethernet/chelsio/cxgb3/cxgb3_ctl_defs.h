@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2003-2008 Chelsio, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
 #ifndef _CXGB3_OFFLOAD_CTL_DEFS_H
 #define _CXGB3_OFFLOAD_CTL_DEFS_H
 
@@ -62,59 +32,49 @@ enum {
 	GET_EMBEDDED_INFO	= 70,
 };
 
-/*
- * Structure used to describe a TID range.  Valid TIDs are [base, base+num).
- */
+
 struct tid_range {
-	unsigned int base;	/* first TID */
-	unsigned int num;	/* number of TIDs in range */
+	unsigned int base;	
+	unsigned int num;	
 };
 
-/*
- * Structure used to request the size and contents of the MTU table.
- */
+
 struct mtutab {
-	unsigned int size;	/* # of entries in the MTU table */
-	const unsigned short *mtus;	/* the MTU table values */
+	unsigned int size;	
+	const unsigned short *mtus;	
 };
 
 struct net_device;
 
-/*
- * Structure used to request the adapter net_device owning a given MAC address.
- */
+
 struct iff_mac {
-	struct net_device *dev;	/* the net_device */
-	const unsigned char *mac_addr;	/* MAC address to lookup */
+	struct net_device *dev;	
+	const unsigned char *mac_addr;	
 	u16 vlan_tag;
 };
 
-/* Structure used to request a port's iSCSI IPv4 address */
+
 struct iscsi_ipv4addr {
-	struct net_device *dev;	/* the net_device */
-	__be32 ipv4addr;	/* the return iSCSI IPv4 address */
+	struct net_device *dev;	
+	__be32 ipv4addr;	
 };
 
 struct pci_dev;
 
-/*
- * Structure used to request the TCP DDP parameters.
- */
+
 struct ddp_params {
-	unsigned int llimit;	/* TDDP region start address */
-	unsigned int ulimit;	/* TDDP region end address */
-	unsigned int tag_mask;	/* TDDP tag mask */
+	unsigned int llimit;	
+	unsigned int ulimit;	
+	unsigned int tag_mask;	
 	struct pci_dev *pdev;
 };
 
 struct adap_ports {
-	unsigned int nports;	/* number of ports on this adapter */
+	unsigned int nports;	
 	struct net_device *lldevs[2];
 };
 
-/*
- * Structure used to return information to the iscsi layer.
- */
+
 struct ulp_iscsi_info {
 	unsigned int offset;
 	unsigned int llimit;
@@ -126,34 +86,28 @@ struct ulp_iscsi_info {
 	struct pci_dev *pdev;
 };
 
-/*
- * Structure used to return information to the RDMA layer.
- */
+
 struct rdma_info {
-	unsigned int tpt_base;	/* TPT base address */
-	unsigned int tpt_top;	/* TPT last entry address */
-	unsigned int pbl_base;	/* PBL base address */
-	unsigned int pbl_top;	/* PBL last entry address */
-	unsigned int rqt_base;	/* RQT base address */
-	unsigned int rqt_top;	/* RQT last entry address */
-	unsigned int udbell_len;	/* user doorbell region length */
-	unsigned long udbell_physbase;	/* user doorbell physical start addr */
-	void __iomem *kdb_addr;	/* kernel doorbell register address */
-	struct pci_dev *pdev;	/* associated PCI device */
+	unsigned int tpt_base;	
+	unsigned int tpt_top;	
+	unsigned int pbl_base;	
+	unsigned int pbl_top;	
+	unsigned int rqt_base;	
+	unsigned int rqt_top;	
+	unsigned int udbell_len;	
+	unsigned long udbell_physbase;	
+	void __iomem *kdb_addr;	
+	struct pci_dev *pdev;	
 };
 
-/*
- * Structure used to request an operation on an RDMA completion queue.
- */
+
 struct rdma_cq_op {
 	unsigned int id;
 	unsigned int op;
 	unsigned int credits;
 };
 
-/*
- * Structure used to setup RDMA completion queues.
- */
+
 struct rdma_cq_setup {
 	unsigned int id;
 	unsigned long long base_addr;
@@ -163,27 +117,21 @@ struct rdma_cq_setup {
 	unsigned int ovfl_mode;
 };
 
-/*
- * Structure used to setup the RDMA control egress context.
- */
+
 struct rdma_ctrlqp_setup {
 	unsigned long long base_addr;
 	unsigned int size;
 };
 
-/*
- * Offload TX/RX page information.
- */
+
 struct ofld_page_info {
-	unsigned int page_size;  /* Page size, should be a power of 2 */
-	unsigned int num;        /* Number of pages */
+	unsigned int page_size;  
+	unsigned int num;        
 };
 
-/*
- * Structure used to get firmware and protocol engine versions.
- */
+
 struct ch_embedded_info {
 	u32 fw_vers;
 	u32 tp_vers;
 };
-#endif				/* _CXGB3_OFFLOAD_CTL_DEFS_H */
+#endif				

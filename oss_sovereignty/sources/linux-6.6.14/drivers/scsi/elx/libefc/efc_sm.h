@@ -1,22 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- *
- */
 
-/**
- * Generic state machine framework declarations.
- */
+
+
+
 
 #ifndef _EFC_SM_H
 #define _EFC_SM_H
 
 struct efc_sm_ctx;
 
-/* State Machine events */
+
 enum efc_sm_event {
-	/* Common Events */
+	
 	EFC_EVT_ENTER,
 	EFC_EVT_REENTER,
 	EFC_EVT_EXIT,
@@ -25,7 +19,7 @@ enum efc_sm_event {
 	EFC_EVT_RESUME,
 	EFC_EVT_TIMER_EXPIRED,
 
-	/* Domain Events */
+	
 	EFC_EVT_RESPONSE,
 	EFC_EVT_ERROR,
 
@@ -41,7 +35,7 @@ enum efc_sm_event {
 	EFC_EVT_HW_DOMAIN_REQ_ATTACH,
 	EFC_EVT_HW_DOMAIN_REQ_FREE,
 
-	/* Sport Events */
+	
 	EFC_EVT_NPORT_ALLOC_OK,
 	EFC_EVT_NPORT_ALLOC_FAIL,
 	EFC_EVT_NPORT_ATTACH_OK,
@@ -56,7 +50,7 @@ enum efc_sm_event {
 	EFC_EVT_HW_PORT_REQ_FREE,
 	EFC_EVT_HW_PORT_FREE_OK,
 
-	/* Login Events */
+	
 	EFC_EVT_SRRS_ELS_REQ_OK,
 	EFC_EVT_SRRS_ELS_CMPL_OK,
 	EFC_EVT_SRRS_ELS_REQ_FAIL,
@@ -69,20 +63,20 @@ enum efc_sm_event {
 	EFC_EVT_ELS_FRAME,
 	EFC_EVT_ELS_REQ_TIMEOUT,
 	EFC_EVT_ELS_REQ_ABORTED,
-	/* request an ELS IO be aborted */
+	
 	EFC_EVT_ABORT_ELS,
-	/* ELS abort process complete */
+	
 	EFC_EVT_ELS_ABORT_CMPL,
 
 	EFC_EVT_ABTS_RCVD,
 
-	/* node is not in the GID_PT payload */
+	
 	EFC_EVT_NODE_MISSING,
-	/* node is allocated and in the GID_PT payload */
+	
 	EFC_EVT_NODE_REFOUND,
-	/* node shutting down due to PLOGI recvd (implicit logo) */
+	
 	EFC_EVT_SHUTDOWN_IMPLICIT_LOGO,
-	/* node shutting down due to LOGO recvd/sent (explicit logo) */
+	
 	EFC_EVT_SHUTDOWN_EXPLICIT_LOGO,
 
 	EFC_EVT_PLOGI_RCVD,
@@ -101,18 +95,18 @@ enum efc_sm_event {
 
 	EFC_EVT_GIDPT_DELAY_EXPIRED,
 
-	/* SCSI Target Server events */
+	
 	EFC_EVT_NODE_ACTIVE_IO_LIST_EMPTY,
 	EFC_EVT_NODE_DEL_INI_COMPLETE,
 	EFC_EVT_NODE_DEL_TGT_COMPLETE,
 	EFC_EVT_NODE_SESS_REG_OK,
 	EFC_EVT_NODE_SESS_REG_FAIL,
 
-	/* Must be last */
+	
 	EFC_EVT_LAST
 };
 
-/* State Machine event name lookup array */
+
 #define EFC_SM_EVENT_NAME {						\
 	[EFC_EVT_ENTER]			= "EFC_EVT_ENTER",		\
 	[EFC_EVT_REENTER]		= "EFC_EVT_REENTER",		\
@@ -194,4 +188,4 @@ efc_sm_transition(struct efc_sm_ctx *ctx,
 void efc_sm_disable(struct efc_sm_ctx *ctx);
 const char *efc_sm_event_name(enum efc_sm_event evt);
 
-#endif /* ! _EFC_SM_H */
+#endif 

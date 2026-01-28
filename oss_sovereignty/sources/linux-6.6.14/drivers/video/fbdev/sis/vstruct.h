@@ -1,54 +1,6 @@
-/* $XFree86$ */
-/* $XdotOrg$ */
-/*
- * General structure definitions for universal mode switching modules
- *
- * Copyright (C) 2001-2005 by Thomas Winischhofer, Vienna, Austria
- *
- * If distributed as part of the Linux kernel, the following license terms
- * apply:
- *
- * * This program is free software; you can redistribute it and/or modify
- * * it under the terms of the GNU General Public License as published by
- * * the Free Software Foundation; either version 2 of the named License,
- * * or any later version.
- * *
- * * This program is distributed in the hope that it will be useful,
- * * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * * GNU General Public License for more details.
- * *
- * * You should have received a copy of the GNU General Public License
- * * along with this program; if not, write to the Free Software
- * * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA
- *
- * Otherwise, the following license terms apply:
- *
- * * Redistribution and use in source and binary forms, with or without
- * * modification, are permitted provided that the following conditions
- * * are met:
- * * 1) Redistributions of source code must retain the above copyright
- * *    notice, this list of conditions and the following disclaimer.
- * * 2) Redistributions in binary form must reproduce the above copyright
- * *    notice, this list of conditions and the following disclaimer in the
- * *    documentation and/or other materials provided with the distribution.
- * * 3) The name of the author may not be used to endorse or promote products
- * *    derived from this software without specific prior written permission.
- * *
- * * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Author: 	Thomas Winischhofer <thomas@winischhofer.net>
- *
- */
+
+
+
 
 #ifndef _VSTRUCT_H_
 #define _VSTRUCT_H_
@@ -204,8 +156,8 @@ struct SiS_ModeResInfo_S {
 	unsigned char  YChar;
 };
 
-/* Defines for SiS_CustomT */
-/* Never change these for sisfb compatibility */
+
+
 #define CUT_NONE		 0
 #define CUT_FORCENONE		 1
 #define CUT_BARCO1366		 2
@@ -239,7 +191,7 @@ struct SiS_Private
 	unsigned char SISIOMEMTYPE	*VideoMemoryAddress;
 	unsigned int			VideoMemorySize;
 	SISIOADDRESS			IOAddress;
-	SISIOADDRESS			IOAddress2;  /* For dual chip XGI volari */
+	SISIOADDRESS			IOAddress2;  
 
 	SISIOADDRESS			RelIO;
 	SISIOADDRESS			SiS_P3c4;
@@ -367,7 +319,7 @@ struct SiS_Private
 	const struct SiS_PanelDelayTbl	*SiS_PanelDelayTbl;
 	const struct SiS_PanelDelayTbl	*SiS_PanelDelayTblLVDS;
 
-	/* SiS bridge */
+	
 
 	const struct SiS_LCDData	*SiS_ExtLCD1024x768Data;
 	const struct SiS_LCDData	*SiS_St2LCD1024x768Data;
@@ -415,7 +367,7 @@ struct SiS_Private
 	const struct SiS_Part2PortTbl	*SiS_CRT2Part2_1024x768_2;
 	const struct SiS_Part2PortTbl	*SiS_CRT2Part2_1024x768_3;
 
-	/* LVDS, Chrontel */
+	
 
 	const struct SiS_LVDSData	*SiS_LVDS320x240Data_1;
 	const struct SiS_LVDSData	*SiS_LVDS320x240Data_2;
@@ -536,7 +488,7 @@ struct SiS_Private
 	unsigned char			CP_PrefSR2B, CP_PrefSR2C;
 	unsigned short			CP_PrefClock;
 	bool				CP_Supports64048075;
-	int				CP_HDisplay[7], CP_VDisplay[7];	/* For Custom LCD panel dimensions */
+	int				CP_HDisplay[7], CP_VDisplay[7];	
 	int				CP_HTotal[7], CP_VTotal[7];
 	int				CP_HSyncStart[7], CP_VSyncStart[7];
 	int				CP_HSyncEnd[7], CP_VSyncEnd[7];

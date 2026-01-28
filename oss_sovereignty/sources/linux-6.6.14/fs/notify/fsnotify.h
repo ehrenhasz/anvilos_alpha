@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __FS_NOTIFY_FSNOTIFY_H_
 #define __FS_NOTIFY_FSNOTIFY_H_
 
@@ -42,40 +42,37 @@ static inline struct super_block *fsnotify_connector_sb(
 	}
 }
 
-/* destroy all events sitting in this groups notification queue */
+
 extern void fsnotify_flush_notify(struct fsnotify_group *group);
 
-/* protects reads of inode and vfsmount marks list */
+
 extern struct srcu_struct fsnotify_mark_srcu;
 
-/* compare two groups for sorting of marks lists */
+
 extern int fsnotify_compare_groups(struct fsnotify_group *a,
 				   struct fsnotify_group *b);
 
-/* Destroy all marks attached to an object via connector */
+
 extern void fsnotify_destroy_marks(fsnotify_connp_t *connp);
-/* run the list of all marks associated with inode and destroy them */
+
 static inline void fsnotify_clear_marks_by_inode(struct inode *inode)
 {
 	fsnotify_destroy_marks(&inode->i_fsnotify_marks);
 }
-/* run the list of all marks associated with vfsmount and destroy them */
+
 static inline void fsnotify_clear_marks_by_mount(struct vfsmount *mnt)
 {
 	fsnotify_destroy_marks(&real_mount(mnt)->mnt_fsnotify_marks);
 }
-/* run the list of all marks associated with sb and destroy them */
+
 static inline void fsnotify_clear_marks_by_sb(struct super_block *sb)
 {
 	fsnotify_destroy_marks(&sb->s_fsnotify_marks);
 }
 
-/*
- * update the dentry->d_flags of all of inode's children to indicate if inode cares
- * about events that happen to its children.
- */
+
 extern void __fsnotify_update_child_dentry_flags(struct inode *inode);
 
 extern struct kmem_cache *fsnotify_mark_connector_cachep;
 
-#endif	/* __FS_NOTIFY_FSNOTIFY_H_ */
+#endif	

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) */
-/*
- * Qualcomm msm8974 interconnect IDs
- *
- * Copyright (c) 2019 Brian Masney <masneyb@onstation.org>
- */
+
+
 
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_MSM8974_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_MSM8974_H

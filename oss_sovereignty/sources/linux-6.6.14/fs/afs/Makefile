@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for Red Hat Linux AFS client.
-#
+
+
+
+
 
 kafs-y := \
 	addr_list.o \

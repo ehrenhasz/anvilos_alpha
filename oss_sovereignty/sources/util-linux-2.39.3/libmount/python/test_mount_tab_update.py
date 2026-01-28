@@ -24,7 +24,7 @@ def mnt_run_test(tss, argv):
 			break
 	if ((rc < 0) and (i == ())):
 		return usage(tss)
-	return not not rc #because !!rc is too mainstream for python
+	return not not rc 
 def test_replace(ts, argv):
 	fs = mnt.Fs()
 	tb = mnt.Table()
@@ -34,7 +34,7 @@ def test_replace(ts, argv):
 	tb.parse_fstab()
 	fs.source = argv[1]
 	fs.target = argv[2]
-	fs.comment = "# this is new filesystem\n"
+	fs.comment = "
 	tb.add_fs(fs)
 	tb.replace_file(os.environ["LIBMOUNT_FSTAB"])
 	return 0

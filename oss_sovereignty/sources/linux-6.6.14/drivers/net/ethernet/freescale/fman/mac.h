@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
-/*
- * Copyright 2008 - 2015 Freescale Semiconductor Inc.
- */
+
+
 
 #ifndef __MAC_H
 #define __MAC_H
@@ -70,4 +68,4 @@ extern const char	*mac_driver_description;
 
 int fman_set_multi(struct net_device *net_dev, struct mac_device *mac_dev);
 
-#endif	/* __MAC_H */
+#endif	

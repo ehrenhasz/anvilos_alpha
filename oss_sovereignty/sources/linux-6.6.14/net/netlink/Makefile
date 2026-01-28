@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile for the netlink driver.
-#
+
+
+
+
 
 obj-y  				:= af_netlink.o genetlink.o policy.o
 

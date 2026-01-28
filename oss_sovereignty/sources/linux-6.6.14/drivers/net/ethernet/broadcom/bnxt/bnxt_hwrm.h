@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2020 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+
 
 #ifndef BNXT_HWRM_H
 #define BNXT_HWRM_H
@@ -13,11 +6,11 @@
 #include "bnxt_hsi.h"
 
 enum bnxt_hwrm_ctx_flags {
-	/* Update the HWRM_API_FLAGS right below for any new non-internal bit added here */
-	BNXT_HWRM_INTERNAL_CTX_OWNED	= BIT(0), /* caller owns the context */
-	BNXT_HWRM_INTERNAL_RESP_DIRTY	= BIT(1), /* response contains data */
-	BNXT_HWRM_CTX_SILENT		= BIT(2), /* squelch firmware errors */
-	BNXT_HWRM_FULL_WAIT		= BIT(3), /* wait for full timeout of HWRM command */
+	
+	BNXT_HWRM_INTERNAL_CTX_OWNED	= BIT(0), 
+	BNXT_HWRM_INTERNAL_RESP_DIRTY	= BIT(1), 
+	BNXT_HWRM_CTX_SILENT		= BIT(2), 
+	BNXT_HWRM_FULL_WAIT		= BIT(3), 
 };
 
 #define HWRM_API_FLAGS (BNXT_HWRM_CTX_SILENT | BNXT_HWRM_FULL_WAIT)
@@ -65,14 +58,14 @@ void hwrm_update_token(struct bnxt *bp, u16 seq, enum bnxt_hwrm_wait_state s);
 #define BNXT_HWRM_TARGET		0xffff
 #define BNXT_HWRM_NO_CMPL_RING		-1
 #define BNXT_HWRM_REQ_MAX_SIZE		128
-#define BNXT_HWRM_DMA_SIZE		(2 * PAGE_SIZE) /* space for req+resp */
+#define BNXT_HWRM_DMA_SIZE		(2 * PAGE_SIZE) 
 #define BNXT_HWRM_RESP_RESERVED		PAGE_SIZE
 #define BNXT_HWRM_RESP_OFFSET		(BNXT_HWRM_DMA_SIZE -		\
 					 BNXT_HWRM_RESP_RESERVED)
 #define BNXT_HWRM_CTX_OFFSET		(BNXT_HWRM_RESP_OFFSET -	\
 					 sizeof(struct bnxt_hwrm_ctx))
 #define BNXT_HWRM_DMA_ALIGN		16
-#define BNXT_HWRM_SENTINEL		0xb6e1f68a12e9a7eb /* arbitrary value */
+#define BNXT_HWRM_SENTINEL		0xb6e1f68a12e9a7eb 
 #define BNXT_HWRM_REQS_PER_PAGE		(BNXT_PAGE_SIZE /	\
 					 BNXT_HWRM_REQ_MAX_SIZE)
 #define HWRM_SHORT_MIN_TIMEOUT		3

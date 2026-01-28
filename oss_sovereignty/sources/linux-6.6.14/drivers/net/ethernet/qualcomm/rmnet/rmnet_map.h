@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2013-2018, 2021, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef _RMNET_MAP_H_
 #define _RMNET_MAP_H_
@@ -27,7 +26,7 @@ enum rmnet_map_commands {
 	RMNET_MAP_COMMAND_NONE,
 	RMNET_MAP_COMMAND_FLOW_DISABLE,
 	RMNET_MAP_COMMAND_FLOW_ENABLE,
-	/* These should always be the last 2 elements */
+	
 	RMNET_MAP_COMMAND_UNKNOWN,
 	RMNET_MAP_COMMAND_ENUM_LENGTH
 };
@@ -60,4 +59,4 @@ void rmnet_map_tx_aggregate_exit(struct rmnet_port *port);
 void rmnet_map_update_ul_agg_config(struct rmnet_port *port, u32 size,
 				    u32 count, u32 time);
 
-#endif /* _RMNET_MAP_H_ */
+#endif 

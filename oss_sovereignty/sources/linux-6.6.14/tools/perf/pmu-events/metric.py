@@ -394,7 +394,7 @@ def ParsePerfJson(orig: str) -> Expression:
   py = orig.strip()
   py = re.sub(r'([a-zA-Z][^-+/\* \\\(\),]*(?:\\.[^-+/\* \\\(\),]*)*)',
               r'Event(r"\1")', py)
-  py = re.sub(r'#Event\(r"([^"]*)"\)', r'Literal("#\1")', py)
+  py = re.sub(r'
   py = re.sub(r'0Event\(r"[xX]([0-9a-fA-F]*)"\)', r'Event("0x\1")', py)
   py = re.sub(r'([0-9]+)Event\(r"(e[0-9]+)"\)', r'\1\2', py)
   keywords = ['if', 'else', 'min', 'max', 'd_ratio', 'source_count', 'has_event', 'strcmp_cpuid_str',

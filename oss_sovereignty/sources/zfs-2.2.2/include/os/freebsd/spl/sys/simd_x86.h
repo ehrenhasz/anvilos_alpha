@@ -1,30 +1,4 @@
-/*
- * Copyright (c) 2020 iXsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * $FreeBSD$
- */
+
 
 #include <sys/types.h>
 #include <sys/cdefs.h>
@@ -54,16 +28,12 @@
 		fpu_kern_leave(curthread, NULL);	\
 }
 
-/*
- * Check if OS supports AVX and AVX2 by checking XCR0
- * Only call this function if CPUID indicates that AVX feature is
- * supported by the CPU, otherwise it might be an illegal instruction.
- */
+
 static inline uint64_t
 xgetbv(uint32_t index)
 {
 	uint32_t eax, edx;
-	/* xgetbv - instruction byte code */
+	
 	__asm__ __volatile__(".byte 0x0f; .byte 0x01; .byte 0xd0"
 	    : "=a" (eax), "=d" (edx)
 	    : "c" (index));
@@ -72,9 +42,7 @@ xgetbv(uint32_t index)
 }
 
 
-/*
- * Detect register set support
- */
+
 static inline boolean_t
 __simd_state_enabled(const uint64_t state)
 {
@@ -97,63 +65,49 @@ __simd_state_enabled(const uint64_t state)
 #define	__zmm_enabled() __simd_state_enabled(_XSTATE_AVX512)
 
 
-/*
- * Check if SSE instruction set is available
- */
+
 static inline boolean_t
 zfs_sse_available(void)
 {
 	return ((cpu_feature & CPUID_SSE) != 0);
 }
 
-/*
- * Check if SSE2 instruction set is available
- */
+
 static inline boolean_t
 zfs_sse2_available(void)
 {
 	return ((cpu_feature & CPUID_SSE2) != 0);
 }
 
-/*
- * Check if SSE3 instruction set is available
- */
+
 static inline boolean_t
 zfs_sse3_available(void)
 {
 	return ((cpu_feature2 & CPUID2_SSE3) != 0);
 }
 
-/*
- * Check if SSSE3 instruction set is available
- */
+
 static inline boolean_t
 zfs_ssse3_available(void)
 {
 	return ((cpu_feature2 & CPUID2_SSSE3) != 0);
 }
 
-/*
- * Check if SSE4.1 instruction set is available
- */
+
 static inline boolean_t
 zfs_sse4_1_available(void)
 {
 	return ((cpu_feature2 & CPUID2_SSE41) != 0);
 }
 
-/*
- * Check if SSE4.2 instruction set is available
- */
+
 static inline boolean_t
 zfs_sse4_2_available(void)
 {
 	return ((cpu_feature2 & CPUID2_SSE42) != 0);
 }
 
-/*
- * Check if AVX instruction set is available
- */
+
 static inline boolean_t
 zfs_avx_available(void)
 {
@@ -164,9 +118,7 @@ zfs_avx_available(void)
 	return (has_avx && __ymm_enabled());
 }
 
-/*
- * Check if AVX2 instruction set is available
- */
+
 static inline boolean_t
 zfs_avx2_available(void)
 {
@@ -177,9 +129,7 @@ zfs_avx2_available(void)
 	return (has_avx2 && __ymm_enabled());
 }
 
-/*
- * Check if SHA_NI instruction set is available
- */
+
 static inline boolean_t
 zfs_shani_available(void)
 {
@@ -190,24 +140,10 @@ zfs_shani_available(void)
 	return (has_shani && __ymm_enabled());
 }
 
-/*
- * AVX-512 family of instruction sets:
- *
- * AVX512F	Foundation
- * AVX512CD	Conflict Detection Instructions
- * AVX512ER	Exponential and Reciprocal Instructions
- * AVX512PF	Prefetch Instructions
- *
- * AVX512BW	Byte and Word Instructions
- * AVX512DQ	Double-word and Quadword Instructions
- * AVX512VL	Vector Length Extensions
- *
- * AVX512IFMA	Integer Fused Multiply Add (Not supported by kernel 4.4)
- * AVX512VBMI	Vector Byte Manipulation Instructions
- */
 
 
-/* Check if AVX512F instruction set is available */
+
+
 static inline boolean_t
 zfs_avx512f_available(void)
 {
@@ -218,7 +154,7 @@ zfs_avx512f_available(void)
 	return (has_avx512 && __zmm_enabled());
 }
 
-/* Check if AVX512CD instruction set is available */
+
 static inline boolean_t
 zfs_avx512cd_available(void)
 {
@@ -230,7 +166,7 @@ zfs_avx512cd_available(void)
 	return (has_avx512 && __zmm_enabled());
 }
 
-/* Check if AVX512ER instruction set is available */
+
 static inline boolean_t
 zfs_avx512er_available(void)
 {
@@ -242,7 +178,7 @@ zfs_avx512er_available(void)
 	return (has_avx512 && __zmm_enabled());
 }
 
-/* Check if AVX512PF instruction set is available */
+
 static inline boolean_t
 zfs_avx512pf_available(void)
 {
@@ -254,7 +190,7 @@ zfs_avx512pf_available(void)
 	return (has_avx512 && __zmm_enabled());
 }
 
-/* Check if AVX512BW instruction set is available */
+
 static inline boolean_t
 zfs_avx512bw_available(void)
 {
@@ -265,7 +201,7 @@ zfs_avx512bw_available(void)
 	return (has_avx512 && __zmm_enabled());
 }
 
-/* Check if AVX512DQ instruction set is available */
+
 static inline boolean_t
 zfs_avx512dq_available(void)
 {
@@ -277,7 +213,7 @@ zfs_avx512dq_available(void)
 	return (has_avx512 && __zmm_enabled());
 }
 
-/* Check if AVX512VL instruction set is available */
+
 static inline boolean_t
 zfs_avx512vl_available(void)
 {
@@ -289,7 +225,7 @@ zfs_avx512vl_available(void)
 	return (has_avx512 && __zmm_enabled());
 }
 
-/* Check if AVX512IFMA instruction set is available */
+
 static inline boolean_t
 zfs_avx512ifma_available(void)
 {
@@ -301,7 +237,7 @@ zfs_avx512ifma_available(void)
 	return (has_avx512 && __zmm_enabled());
 }
 
-/* Check if AVX512VBMI instruction set is available */
+
 static inline boolean_t
 zfs_avx512vbmi_available(void)
 {

@@ -71,14 +71,14 @@ log_test()
 log_section()
 {
 	echo
-	echo "######################################################################"
+	echo "
 	echo "TEST SECTION: $*"
-	echo "######################################################################"
+	echo "
 }
 log_subsection()
 {
 	echo
-	echo "#########################################"
+	echo "
 	echo "TEST SUBSECTION: $*"
 }
 run_cmd()
@@ -118,7 +118,7 @@ get_linklocal()
 setup()
 {
 	echo
-	echo "########################################"
+	echo "
 	echo "Configuring interfaces"
 	set -e
 	ip netns add ${PEER_NS}
@@ -327,7 +327,7 @@ run_onlink_tests()
 usage()
 {
 	cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
         -p          Pause on fail
         -v          verbose mode (show commands and output)
 EOF

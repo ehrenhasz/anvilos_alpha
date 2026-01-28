@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_IDCACHE_H
 #define UTIL_LINUX_IDCACHE_H
 
@@ -17,8 +14,8 @@ struct identry {
 };
 
 struct idcache {
-	struct identry	*ent;	/* first entry */
-	int		width;	/* name width */
+	struct identry	*ent;	
+	int		width;	
 };
 
 
@@ -29,4 +26,4 @@ extern void add_uid(struct idcache *cache, unsigned long int id);
 extern void free_idcache(struct idcache *ic);
 extern struct identry *get_id(struct idcache *ic, unsigned long int id);
 
-#endif /* UTIL_LINUX_IDCACHE_H */
+#endif 

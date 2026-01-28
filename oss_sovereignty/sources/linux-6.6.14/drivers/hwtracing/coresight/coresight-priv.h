@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef _CORESIGHT_PRIV_H
 #define _CORESIGHT_PRIV_H
@@ -12,11 +10,7 @@
 #include <linux/coresight.h>
 #include <linux/pm_runtime.h>
 
-/*
- * Coresight management registers (0xf00-0xfcc)
- * 0xfa0 - 0xfa4: Management	registers in PFTv1.0
- *		  Trace		registers in PFTv1.1
- */
+
 #define CORESIGHT_ITCTRL	0xf00
 #define CORESIGHT_CLAIMSET	0xfa0
 #define CORESIGHT_CLAIMCLR	0xfa4
@@ -28,10 +22,7 @@
 #define CORESIGHT_DEVTYPE	0xfcc
 
 
-/*
- * Coresight device CLAIM protocol.
- * See PSCI - ARM DEN 0022D, Section: 6.8.1 Debug and Trace save and restore.
- */
+
 #define CORESIGHT_CLAIM_SELF_HOSTED	BIT(1)
 
 #define TIMEOUT_US		100
@@ -82,16 +73,7 @@ enum etm_addr_type {
 	ETM_ADDR_TYPE_STOP,
 };
 
-/**
- * struct cs_buffer - keep track of a recording session' specifics
- * @cur:	index of the current buffer
- * @nr_pages:	max number of pages granted to us
- * @pid:	PID this cs_buffer belongs to
- * @offset:	offset within the current buffer
- * @data_size:	how much we collected in this run
- * @snapshot:	is this run in snapshot mode
- * @data_pages:	a handle the ring buffer
- */
+
 struct cs_buffers {
 	unsigned int		cur;
 	unsigned int		nr_pages;
@@ -111,7 +93,7 @@ static inline void coresight_insert_barrier_packet(void *buf)
 static inline void CS_LOCK(void __iomem *addr)
 {
 	do {
-		/* Wait for things to settle */
+		
 		mb();
 		writel_relaxed(0x0, addr + CORESIGHT_LAR);
 	} while (0);
@@ -121,7 +103,7 @@ static inline void CS_UNLOCK(void __iomem *addr)
 {
 	do {
 		writel_relaxed(CORESIGHT_UNLOCK, addr + CORESIGHT_LAR);
-		/* Make sure everyone has seen this */
+		
 		mb();
 	} while (0);
 }
@@ -164,19 +146,16 @@ struct cti_assoc_op {
 extern void coresight_set_cti_ops(const struct cti_assoc_op *cti_op);
 extern void coresight_remove_cti_ops(void);
 
-/*
- * Macros and inline functions to handle CoreSight UCI data and driver
- * private data in AMBA ID table entries, and extract data values.
- */
 
-/* coresight AMBA ID, no UCI, no driver data: id table entry */
+
+
 #define CS_AMBA_ID(pid)			\
 	{				\
 		.id	= pid,		\
 		.mask	= 0x000fffff,	\
 	}
 
-/* coresight AMBA ID, UCI with driver data only: id table entry. */
+
 #define CS_AMBA_ID_DATA(pid, dval)				\
 	{							\
 		.id	= pid,					\
@@ -187,7 +166,7 @@ extern void coresight_remove_cti_ops(void);
 			}				\
 	}
 
-/* coresight AMBA ID, full UCI structure: id table entry. */
+
 #define __CS_AMBA_UCI_ID(pid, m, uci_ptr)	\
 	{					\
 		.id	= pid,			\
@@ -195,22 +174,14 @@ extern void coresight_remove_cti_ops(void);
 		.data	= (void *)uci_ptr	\
 	}
 #define CS_AMBA_UCI_ID(pid, uci)	__CS_AMBA_UCI_ID(pid, 0x000fffff, uci)
-/*
- * PIDR2[JEDEC], BIT(3) must be 1 (Read As One) to indicate that rest of the
- * PIDR1, PIDR2 DES_* fields follow JEDEC encoding for the designer. Use that
- * as a match value for blanket matching all devices in the given CoreSight
- * device type and architecture.
- */
+
 #define PIDR2_JEDEC			BIT(3)
 #define PID_PIDR2_JEDEC			(PIDR2_JEDEC << 16)
-/*
- * Match all PIDs in a given CoreSight device type and architecture, defined
- * by the uci.
- */
+
 #define CS_AMBA_MATCH_ALL_UCI(uci)					\
 	__CS_AMBA_UCI_ID(PID_PIDR2_JEDEC, PID_PIDR2_JEDEC, uci)
 
-/* extract the data value from a UCI structure given amba_id pointer. */
+
 static inline void *coresight_get_uci_data(const struct amba_id *id)
 {
 	struct amba_cs_uci_id *uci_id = id->data;

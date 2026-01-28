@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File hw_atl_b0.h: Declaration of abstract interface for Atlantic hardware
- * specific functions.
- */
+
+
+
 
 #ifndef HW_ATL_B0_H
 #define HW_ATL_B0_H
@@ -72,4 +66,4 @@ int hw_atl_b0_hw_irq_read(struct aq_hw_s *self, u64 *mask);
 int hw_atl_b0_hw_packet_filter_set(struct aq_hw_s *self,
 				   unsigned int packet_filter);
 
-#endif /* HW_ATL_B0_H */
+#endif 

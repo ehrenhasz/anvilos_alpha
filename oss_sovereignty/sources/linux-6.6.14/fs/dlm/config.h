@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
-**  Copyright (C) 2004-2011 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
+
+
 
 #ifndef __CONFIG_DOT_H__
 #define __CONFIG_DOT_H__
@@ -52,5 +44,5 @@ int dlm_comm_seq(int nodeid, uint32_t *seq);
 int dlm_our_nodeid(void);
 int dlm_our_addr(struct sockaddr_storage *addr, int num);
 
-#endif				/* __CONFIG_DOT_H__ */
+#endif				
 

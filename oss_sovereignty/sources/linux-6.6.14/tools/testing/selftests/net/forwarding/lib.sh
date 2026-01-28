@@ -170,7 +170,7 @@ if [[ ! -v NUM_NETIFS ]]; then
 	exit $ksft_skip
 fi
 count=0
-while [[ $# -gt 0 ]]; do
+while [[ $
 	if [[ "$count" -eq "0" ]]; then
 		unset NETIFS
 		declare -A NETIFS
@@ -279,7 +279,7 @@ log_test()
 {
 	local test_name=$1
 	local opt_str=$2
-	if [[ $# -eq 2 ]]; then
+	if [[ $
 		opt_str="($opt_str)"
 	fi
 	if [[ $RET -ne 0 ]]; then
@@ -940,7 +940,7 @@ multipath_eval()
 				| bc -l)
 	fi
 	diff=$(echo $weights_ratio - $packets_ratio | bc -l)
-	diff=${diff#-}
+	diff=${diff
 	test "$(echo "$diff / $weights_ratio > 0.15" | bc -l)" -eq 0
 	check_err $? "Too large discrepancy between expected and measured ratios"
 	log_test "$desc"
@@ -1008,7 +1008,7 @@ ping6_test_fails()
 learning_test()
 {
 	local bridge=$1
-	local br_port1=$2	# Connected to `host1_if`.
+	local br_port1=$2	
 	local host1_if=$3
 	local host2_if=$4
 	local mac=de:ad:be:ef:13:37
@@ -1127,7 +1127,7 @@ __start_traffic()
 {
 	local pktsize=$1; shift
 	local proto=$1; shift
-	local h_in=$1; shift    # Where the traffic egresses the host
+	local h_in=$1; shift    
 	local sip=$1; shift
 	local dip=$1; shift
 	local dmac=$1; shift
@@ -1364,7 +1364,7 @@ expand_ipv6()
 	local cvt_ip=${IP/::/_}
 	local colons=${cvt_ip//[^:]/}
 	local allcol=:::::::
-	local allcol_ip=${cvt_ip/_/${allcol:${#colons}}}
+	local allcol_ip=${cvt_ip/_/${allcol:${
 	echo $allcol_ip | tr : '\n' |
 	    sed s/^/0000/ |
 	    sed 's/.*\(..\)\(..\)/\1'"$bytesep"'\2/' |
@@ -1392,8 +1392,8 @@ payload_template_calc_checksum()
 		tr '[:lower:]' '[:upper:]' |
 		sed 's/\(..\):\(..\):/\1\2+\n/g' |
 		sed 's/\(..\):$//'
-	    echo "10000 ~ +"	# Calculate and add carry.
-	    echo "FFFF r - p"	# Bit-flip and print.
+	    echo "10000 ~ +"	
+	    echo "FFFF r - p"	
 	) |
 	    dc |
 	    tr '[:upper:]' '[:lower:]'
@@ -1416,7 +1416,7 @@ igmpv3_is_in_get()
 	local GRP=$1; shift
 	local sources=("$@")
 	local igmpv3
-	local nsources=$(u16_to_bytes ${#sources[@]})
+	local nsources=$(u16_to_bytes ${
 	igmpv3=$(:
 		)"22:"$(			: Type - Membership Report
 		)"00:"$(			: Reserved
@@ -1454,7 +1454,7 @@ mldv2_is_in_get()
 	local sources=("$@")
 	local hbh
 	local icmpv6
-	local nsources=$(u16_to_bytes ${#sources[@]})
+	local nsources=$(u16_to_bytes ${
 	hbh=$(:
 		)"3a:"$(			: Next Header - ICMPv6
 		)"00:"$(			: Hdr Ext Len

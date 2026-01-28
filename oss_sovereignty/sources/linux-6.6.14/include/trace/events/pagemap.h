@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM pagemap
 
@@ -45,7 +45,7 @@ TRACE_EVENT(mm_lru_insertion,
 		__entry->flags	= trace_pagemap_flags(folio);
 	),
 
-	/* Flag format is based on page-types.c formatting for pagemap */
+	
 	TP_printk("folio=%p pfn=0x%lx lru=%d flags=%s%s%s%s%s%s",
 			__entry->folio,
 			__entry->pfn,
@@ -77,7 +77,7 @@ TRACE_EVENT(mm_lru_activate,
 	TP_printk("folio=%p pfn=0x%lx", __entry->folio, __entry->pfn)
 );
 
-#endif /* _TRACE_PAGEMAP_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

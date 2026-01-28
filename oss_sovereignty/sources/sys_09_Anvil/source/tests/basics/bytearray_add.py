@@ -10,6 +10,6 @@ b = bytearray()
 b += b""
 b = bytearray(b"abcdefgh")
 for _ in range(4):
-    c = bytearray(b)  # extra allocation, as above
+    c = bytearray(b)  
     b.extend(b)
 print(b)

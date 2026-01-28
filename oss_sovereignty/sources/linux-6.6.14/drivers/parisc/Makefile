@@ -1,13 +1,13 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile PCI and non-PCI devices in PA-RISC machines
-#
-# Keep the order below, e.g.
-# - ccio before any potential subdevices
-# - gsc is required before lasi and wax
-# - asp and wax before the EISA adapters for the IRQ regions
-# - EISA must come before PCI to be sure it gets IRQ region
-#
+
+
+
+
+
+
+
+
+
+
 
 obj-$(CONFIG_IOSAPIC)		+= iosapic.o
 obj-$(CONFIG_IOMMU_SBA)		+= sba_iommu.o

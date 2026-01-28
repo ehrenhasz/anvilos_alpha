@@ -7,7 +7,7 @@ sys_control=-1
 ksft_skip=4
 kernel_version=`uname -r | cut -d'.' -f1,2`
 kernel_major=${kernel_version%.*}
-kernel_minor=${kernel_version#*.}
+kernel_minor=${kernel_version
 trap INT
 check_prereqs()
 {
@@ -21,7 +21,7 @@ check_prereqs()
 kernel_gte()
 {
 	major=${1%.*}
-	minor=${1#*.}
+	minor=${1
 	if [ $kernel_major -gt $major ]; then
 		return 0
 	elif [[ $kernel_major -eq $major && $kernel_minor -ge $minor ]]; then

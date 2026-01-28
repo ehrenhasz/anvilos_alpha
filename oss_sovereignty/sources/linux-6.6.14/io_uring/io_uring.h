@@ -16,13 +16,7 @@
 #endif
 
 enum {
-	/*
-	 * A hint to not wake right away but delay until there are enough of
-	 * tw's queued to match the number of CQEs the task is waiting for.
-	 *
-	 * Must not be used wirh requests generating more than one CQE.
-	 * It's also ignored unless IORING_SETUP_DEFER_TASKRUN is set.
-	 */
+	
 	IOU_F_TWQ_LAZY_WAKE			= 1,
 };
 
@@ -30,11 +24,7 @@ enum {
 	IOU_OK			= 0,
 	IOU_ISSUE_SKIP_COMPLETE	= -EIOCBQUEUED,
 
-	/*
-	 * Intended only when both IO_URING_F_MULTISHOT is passed
-	 * to indicate to the poll runner that multishot should be
-	 * removed and the result is set on req->cqe.res.
-	 */
+	
 	IOU_STOP_MULTISHOT	= -ECANCELED,
 };
 
@@ -99,12 +89,7 @@ static inline void io_lockdep_assert_cq_locked(struct io_ring_ctx *ctx)
 	} else if (!ctx->task_complete) {
 		lockdep_assert_held(&ctx->completion_lock);
 	} else if (ctx->submitter_task) {
-		/*
-		 * ->submitter_task may be NULL and we can still post a CQE,
-		 * if the ring has been setup with IORING_SETUP_R_DISABLED.
-		 * Not from an SQE, as those cannot be submitted, but via
-		 * updating tagged resources.
-		 */
+		
 		if (ctx->submitter_task->flags & PF_EXITING)
 			lockdep_assert(current_work());
 		else
@@ -153,11 +138,7 @@ static __always_inline bool io_fill_cqe_req(struct io_ring_ctx *ctx,
 {
 	struct io_uring_cqe *cqe;
 
-	/*
-	 * If we can't get a cq entry, userspace overflowed the
-	 * submission (by quite a lot). Increment the overflow count in
-	 * the ring.
-	 */
+	
 	if (unlikely(!io_get_cqe(ctx, &cqe)))
 		return false;
 
@@ -211,12 +192,7 @@ static inline void io_ring_submit_unlock(struct io_ring_ctx *ctx,
 static inline void io_ring_submit_lock(struct io_ring_ctx *ctx,
 				       unsigned issue_flags)
 {
-	/*
-	 * "Normal" inline submissions always hold the uring_lock, since we
-	 * grab it from the system call. Same is true for the SQPOLL offload.
-	 * The only exception is when we've detached the request and issue it
-	 * from an async worker thread, grab the lock for that case.
-	 */
+	
 	if (issue_flags & IO_URING_F_UNLOCKED)
 		mutex_lock(&ctx->uring_lock);
 	lockdep_assert_held(&ctx->uring_lock);
@@ -224,7 +200,7 @@ static inline void io_ring_submit_lock(struct io_ring_ctx *ctx,
 
 static inline void io_commit_cqring(struct io_ring_ctx *ctx)
 {
-	/* order cqe stores with ring update */
+	
 	smp_store_release(&ctx->rings->cq.tail, ctx->cached_cq_tail);
 }
 
@@ -237,16 +213,7 @@ static inline void io_poll_wq_wake(struct io_ring_ctx *ctx)
 
 static inline void io_cqring_wake(struct io_ring_ctx *ctx)
 {
-	/*
-	 * Trigger waitqueue handler on all waiters on our waitqueue. This
-	 * won't necessarily wake up all the tasks, io_should_wake() will make
-	 * that decision.
-	 *
-	 * Pass in EPOLLIN|EPOLL_URING_WAKE as the poll wakeup key. The latter
-	 * set in the mask so that if we recurse back into our own poll
-	 * waitqueue handlers, we know we have a dependency between eventfd or
-	 * epoll and should terminate multishot poll at that point.
-	 */
+	
 	if (wq_has_sleeper(&ctx->cq_wait))
 		__wake_up(&ctx->cq_wait, TASK_NORMAL, 0,
 				poll_to_key(EPOLL_URING_WAKE | EPOLLIN));
@@ -264,24 +231,17 @@ static inline unsigned int io_sqring_entries(struct io_ring_ctx *ctx)
 	struct io_rings *rings = ctx->rings;
 	unsigned int entries;
 
-	/* make sure SQ entry isn't read before tail */
+	
 	entries = smp_load_acquire(&rings->sq.tail) - ctx->cached_sq_head;
 	return min(entries, ctx->sq_entries);
 }
 
 static inline int io_run_task_work(void)
 {
-	/*
-	 * Always check-and-clear the task_work notification signal. With how
-	 * signaling works for task_work, we can find it set with nothing to
-	 * run. We need to clear it for that case, like get_signal() does.
-	 */
+	
 	if (test_thread_flag(TIF_NOTIFY_SIGNAL))
 		clear_notify_signal();
-	/*
-	 * PF_IO_WORKER never returns to userspace, so check here if we have
-	 * notify work that needs processing.
-	 */
+	
 	if (current->flags & PF_IO_WORKER &&
 	    test_thread_flag(TIF_NOTIFY_RESUME)) {
 		__set_current_state(TASK_RUNNING);
@@ -309,11 +269,7 @@ static inline void io_tw_lock(struct io_ring_ctx *ctx, struct io_tw_state *ts)
 	}
 }
 
-/*
- * Don't complete immediately but use deferred completion infrastructure.
- * Protected by ->uring_lock and can only be used either with
- * IO_URING_F_COMPLETE_DEFER or inside a tw handler holding the mutex.
- */
+
 static inline void io_req_complete_defer(struct io_kiocb *req)
 	__must_hold(&req->ctx->uring_lock)
 {
@@ -384,10 +340,7 @@ static inline void io_req_queue_tw_complete(struct io_kiocb *req, s32 res)
 	io_req_task_work_add(req);
 }
 
-/*
- * IORING_SETUP_SQE128 contexts allocate twice the normal SQE size for each
- * slot.
- */
+
 static inline size_t uring_sqe_size(struct io_ring_ctx *ctx)
 {
 	if (ctx->flags & IORING_SETUP_SQE128)

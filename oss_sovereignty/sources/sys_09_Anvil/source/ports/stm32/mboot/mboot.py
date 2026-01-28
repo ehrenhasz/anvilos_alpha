@@ -97,7 +97,7 @@ class Bootloader:
     def deployfile(self, filename, addr):
         pages = self.getlayout()
         page_erased = [False] * len(pages)
-        buf = bytearray(128)  # maximum payload supported by I2C protocol
+        buf = bytearray(128)  
         start_addr = addr
         self.setwraddr(addr)
         fsize = os.stat(filename)[6]

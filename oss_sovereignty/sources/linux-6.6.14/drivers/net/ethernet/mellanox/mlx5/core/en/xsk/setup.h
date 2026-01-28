@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+
 
 #ifndef __MLX5_EN_XSK_SETUP_H__
 #define __MLX5_EN_XSK_SETUP_H__
@@ -18,4 +18,4 @@ void mlx5e_close_xsk(struct mlx5e_channel *c);
 void mlx5e_activate_xsk(struct mlx5e_channel *c);
 void mlx5e_deactivate_xsk(struct mlx5e_channel *c);
 
-#endif /* __MLX5_EN_XSK_SETUP_H__ */
+#endif 

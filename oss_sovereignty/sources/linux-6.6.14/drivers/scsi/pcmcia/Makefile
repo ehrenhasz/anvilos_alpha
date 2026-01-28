@@ -1,8 +1,8 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 ccflags-y		:= -I $(srctree)/drivers/scsi
 
-# 16-bit client drivers
+
 obj-$(CONFIG_PCMCIA_QLOGIC)	+= qlogic_cs.o
 obj-$(CONFIG_PCMCIA_FDOMAIN)	+= fdomain_cs.o
 obj-$(CONFIG_PCMCIA_AHA152X)	+= aha152x_cs.o

@@ -9,5 +9,5 @@ else
 LD_FILES = boards/stm32g0b1xe.ld boards/common_basic.ld
 endif
 
-# LTO reduces final binary size, may be slower to build depending on gcc version and hardware
+
 LTO ?= 1

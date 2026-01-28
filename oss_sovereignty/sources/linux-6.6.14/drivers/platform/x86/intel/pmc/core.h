@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Intel Core SoC Power Management Controller Header File
- *
- * Copyright (c) 2016, Intel Corporation.
- * All Rights Reserved.
- *
- * Authors: Rajneesh Bhardwaj <rajneesh.bhardwaj@intel.com>
- *          Vishwanath Somayaji <vishwanath.somayaji@intel.com>
- */
+
+
 
 #ifndef PMC_CORE_H
 #define PMC_CORE_H
@@ -21,7 +13,7 @@
 #define PMC_BASE_ADDR_DEFAULT			0xFE000000
 #define MAX_NUM_PMC			3
 
-/* Sunrise Point Power Management Controller PCI Device ID */
+
 #define SPT_PMC_PCI_DEVICE_ID			0x9d21
 #define SPT_PMC_BASE_ADDR_OFFSET		0x48
 #define SPT_PMC_SLP_S0_RES_COUNTER_OFFSET	0x13c
@@ -65,7 +57,7 @@
 #define SPT_PMC_LTR_SCC				0x3A0
 #define SPT_PMC_LTR_ISH				0x3A4
 
-/* Sunrise Point: PGD PFET Enable Ack Status Registers */
+
 enum ppfear_regs {
 	SPT_PMC_XRAM_PPFEAR0A = 0x590,
 	SPT_PMC_XRAM_PPFEAR0B,
@@ -145,12 +137,12 @@ enum ppfear_regs {
 #define SPT_PMC_VRIC1_SLPS0LVEN			BIT(13)
 #define SPT_PMC_VRIC1_XTALSDQDIS		BIT(22)
 
-/* Cannonlake Power Management Controller register offsets */
+
 #define CNP_PMC_SLPS0_DBG_OFFSET		0x10B4
 #define CNP_PMC_PM_CFG_OFFSET			0x1818
 #define CNP_PMC_SLP_S0_RES_COUNTER_OFFSET	0x193C
 #define CNP_PMC_LTR_IGNORE_OFFSET		0x1B0C
-/* Cannonlake: PGD PFET Enable Ack Status Register(s) start */
+
 #define CNP_PMC_HOST_PPFEAR0A			0x1D90
 
 #define CNP_PMC_LATCH_SLPS0_EVENTS		BIT(31)
@@ -202,50 +194,48 @@ enum ppfear_regs {
 #define TGL_PMC_LTR_THC0			0x1C04
 #define TGL_PMC_LTR_THC1			0x1C08
 #define TGL_NUM_IP_IGN_ALLOWED			23
-#define TGL_PMC_LPM_RES_COUNTER_STEP_X2		61	/* 30.5us * 2 */
+#define TGL_PMC_LPM_RES_COUNTER_STEP_X2		61	
 
 #define ADL_PMC_LTR_SPF				0x1C00
 #define ADL_NUM_IP_IGN_ALLOWED			23
 #define ADL_PMC_SLP_S0_RES_COUNTER_OFFSET	0x1098
 
-/*
- * Tigerlake Power Management Controller register offsets
- */
+
 #define TGL_LPM_STS_LATCH_EN_OFFSET		0x1C34
 #define TGL_LPM_EN_OFFSET			0x1C78
 #define TGL_LPM_RESIDENCY_OFFSET		0x1C80
 
-/* Tigerlake Low Power Mode debug registers */
+
 #define TGL_LPM_STATUS_OFFSET			0x1C3C
 #define TGL_LPM_LIVE_STATUS_OFFSET		0x1C5C
 #define TGL_LPM_PRI_OFFSET			0x1C7C
 #define TGL_LPM_NUM_MAPS			6
 
-/* Extended Test Mode Register 3 (CNL and later) */
+
 #define ETR3_OFFSET				0x1048
 #define ETR3_CF9GR				BIT(20)
 #define ETR3_CF9LOCK				BIT(31)
 
-/* Extended Test Mode Register LPM bits (TGL and later */
+
 #define ETR3_CLEAR_LPM_EVENTS			BIT(28)
 
-/* Alder Lake Power Management Controller register offsets */
+
 #define ADL_LPM_EN_OFFSET			0x179C
 #define ADL_LPM_RESIDENCY_OFFSET		0x17A4
 #define ADL_LPM_NUM_MODES			2
 #define ADL_LPM_NUM_MAPS			14
 
-/* Alder Lake Low Power Mode debug registers */
+
 #define ADL_LPM_STATUS_OFFSET			0x170C
 #define ADL_LPM_PRI_OFFSET			0x17A0
 #define ADL_LPM_STATUS_LATCH_EN_OFFSET		0x1704
 #define ADL_LPM_LIVE_STATUS_OFFSET		0x1764
 
-/* Meteor Lake Power Management Controller register offsets */
+
 #define MTL_LPM_EN_OFFSET			0x1798
 #define MTL_LPM_RESIDENCY_OFFSET		0x17A0
 
-/* Meteor Lake Low Power Mode debug registers */
+
 #define MTL_LPM_PRI_OFFSET			0x179C
 #define MTL_LPM_STATUS_LATCH_EN_OFFSET		0x16F8
 #define MTL_LPM_STATUS_OFFSET			0x1700
@@ -258,7 +248,7 @@ enum ppfear_regs {
 #define MTL_SOC_PMC_MMIO_REG_LEN		0x2708
 #define MTL_PMC_LTR_SPG				0x1B74
 
-/* Meteor Lake PGD PFET Enable Ack Status */
+
 #define MTL_SOCM_PPFEAR_NUM_ENTRIES		8
 #define MTL_IOE_PPFEAR_NUM_ENTRIES		10
 
@@ -269,27 +259,7 @@ struct pmc_bit_map {
 	u32 bit_mask;
 };
 
-/**
- * struct pmc_reg_map - Structure used to define parameter unique to a
-			PCH family
- * @pfear_sts:		Maps name of IP block to PPFEAR* bit
- * @mphy_sts:		Maps name of MPHY lane to MPHY status lane status bit
- * @pll_sts:		Maps name of PLL to corresponding bit status
- * @slps0_dbg_maps:	Array of SLP_S0_DBG* registers containing debug info
- * @ltr_show_sts:	Maps PCH IP Names to their MMIO register offsets
- * @slp_s0_offset:	PWRMBASE offset to read SLP_S0 residency
- * @ltr_ignore_offset:	PWRMBASE offset to read/write LTR ignore bit
- * @regmap_length:	Length of memory to map from PWRMBASE address to access
- * @ppfear0_offset:	PWRMBASE offset to read PPFEAR*
- * @ppfear_buckets:	Number of 8 bits blocks to read all IP blocks from
- *			PPFEAR
- * @pm_cfg_offset:	PWRMBASE offset to PM_CFG register
- * @pm_read_disable_bit: Bit index to read PMC_READ_DISABLE
- * @slps0_dbg_offset:	PWRMBASE offset to SLP_S0_DEBUG_REG*
- *
- * Each PCH has unique set of register offsets and bit indexes. This structure
- * captures them to have a common implementation.
- */
+
 struct pmc_reg_map {
 	const struct pmc_bit_map **pfear_sts;
 	const struct pmc_bit_map *mphy_sts;
@@ -309,7 +279,7 @@ struct pmc_reg_map {
 	const u32 slps0_dbg_offset;
 	const u32 ltr_ignore_max;
 	const u32 pm_vric1_offset;
-	/* Low Power Mode registers */
+	
 	const int lpm_num_maps;
 	const int lpm_num_modes;
 	const int lpm_res_counter_step_x2;
@@ -322,27 +292,13 @@ struct pmc_reg_map {
 	const u32 etr3_offset;
 };
 
-/**
- * struct pmc_info - Structure to keep pmc info
- * @devid:		device id of the pmc device
- * @map:		pointer to a pmc_reg_map struct that contains platform
- *			specific attributes
- */
+
 struct pmc_info {
 	u16 devid;
 	const struct pmc_reg_map *map;
 };
 
-/**
- * struct pmc - pmc private info structure
- * @base_addr:		contains pmc base address
- * @regbase:		pointer to io-remapped memory location
- * @map:		pointer to pmc_reg_map struct that contains platform
- *			specific attributes
- * @lpm_req_regs:	List of substate requirements
- *
- * pmc contains info about one power management controller device.
- */
+
 struct pmc {
 	u64 base_addr;
 	void __iomem *regbase;
@@ -350,31 +306,14 @@ struct pmc {
 	u32 *lpm_req_regs;
 };
 
-/**
- * struct pmc_dev - pmc device structure
- * @devs:		pointer to an array of pmc pointers
- * @pdev:		pointer to platform_device struct
- * @ssram_pcidev:	pointer to pci device struct for the PMC SSRAM
- * @dbgfs_dir:		path to debugfs interface
- * @pmc_xram_read_bit:	flag to indicate whether PMC XRAM shadow registers
- *			used to read MPHY PG and PLL status are available
- * @mutex_lock:		mutex to complete one transcation
- * @pc10_counter:	PC10 residency counter
- * @s0ix_counter:	S0ix residency (step adjusted)
- * @num_lpm_modes:	Count of enabled modes
- * @lpm_en_modes:	Array of enabled modes from lowest to highest priority
- * @suspend:		Function to perform platform specific suspend
- * @resume:		Function to perform platform specific resume
- *
- * pmc_dev contains info about power management controller device.
- */
+
 struct pmc_dev {
 	struct pmc *pmcs[MAX_NUM_PMC];
 	struct dentry *dbgfs_dir;
 	struct platform_device *pdev;
 	struct pci_dev *ssram_pcidev;
 	int pmc_xram_read_bit;
-	struct mutex lock; /* generic mutex lock for PMC Core */
+	struct mutex lock; 
 
 	u64 pc10_counter;
 	u64 s0ix_counter;
@@ -524,4 +463,4 @@ static const struct file_operations __name ## _fops = {			\
 	.release	= single_release,				\
 }
 
-#endif /* PMC_CORE_H */
+#endif 

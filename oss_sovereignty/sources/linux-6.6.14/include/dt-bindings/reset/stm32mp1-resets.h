@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) STMicroelectronics 2018 - All Rights Reserved
- * Author: Gabriel Fernandez <gabriel.fernandez@st.com> for STMicroelectronics.
- */
+
+
 
 #ifndef _DT_BINDINGS_STM32MP1_RESET_H_
 #define _DT_BINDINGS_STM32MP1_RESET_H_
@@ -106,7 +103,7 @@
 #define GPIOJ_R		19785
 #define GPIOK_R		19786
 
-/* SCMI reset domain identifiers */
+
 #define RST_SCMI_SPI6		0
 #define RST_SCMI_I2C4		1
 #define RST_SCMI_I2C6		2
@@ -120,4 +117,4 @@
 #define RST_SCMI_MCU		10
 #define RST_SCMI_MCU_HOLD_BOOT	11
 
-#endif /* _DT_BINDINGS_STM32MP1_RESET_H_ */
+#endif 

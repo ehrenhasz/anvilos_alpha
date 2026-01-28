@@ -10,7 +10,7 @@ NRF_DEFINES += -DNRF52840_XXAA
 MICROPY_VFS_LFS2 = 1
 FS_SIZE = 256k
 
-# DEBUG ?= 1
+
 
 uf2: hex
 	python3 $(TOP)/tools/uf2conv.py -c -o $(BUILD)/firmware.uf2 -f 0xADA52840 $(BUILD)/firmware.hex

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Josh Poimboeuf <jpoimboe@redhat.com>
- */
+
+
 
 #ifndef _WARN_H
 #define _WARN_H
@@ -76,4 +74,4 @@ static inline char *offstr(struct section *sec, unsigned long offset)
 #define WARN_ELF(format, ...)				\
 	WARN(format ": %s", ##__VA_ARGS__, elf_errmsg(-1))
 
-#endif /* _WARN_H */
+#endif 

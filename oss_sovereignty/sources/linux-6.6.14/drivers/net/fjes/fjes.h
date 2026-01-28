@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  FUJITSU Extended Socket Network Device driver
- *  Copyright (c) 2015 FUJITSU LIMITED
- */
+
+
 
 #ifndef FJES_H_
 #define FJES_H_
@@ -16,10 +13,10 @@
 #define FJES_TX_RETRY_INTERVAL	(20 * HZ)
 #define FJES_TX_RETRY_TIMEOUT	(100)
 #define FJES_TX_TX_STALL_TIMEOUT	(FJES_TX_RETRY_INTERVAL / 2)
-#define FJES_OPEN_ZONE_UPDATE_WAIT	(300) /* msec */
+#define FJES_OPEN_ZONE_UPDATE_WAIT	(300) 
 #define FJES_IRQ_WATCH_DELAY	(HZ)
 
-/* board specific private data structure */
+
 struct fjes_adapter {
 	struct net_device *netdev;
 	struct platform_device *plat_dev;
@@ -73,6 +70,6 @@ static inline void fjes_dbg_adapter_init(struct fjes_adapter *adapter) {}
 static inline void fjes_dbg_adapter_exit(struct fjes_adapter *adapter) {}
 static inline void fjes_dbg_init(void) {}
 static inline void fjes_dbg_exit(void) {}
-#endif /* CONFIG_DEBUG_FS */
+#endif 
 
-#endif /* FJES_H_ */
+#endif 

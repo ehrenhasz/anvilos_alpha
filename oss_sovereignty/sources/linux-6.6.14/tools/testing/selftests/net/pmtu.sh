@@ -723,12 +723,12 @@ test_pmtu_ipv4_dscp_icmp_exception() {
 	mtu "${ns_r2}" veth_R2-A 2000
 	mtu "${ns_r2}" veth_R2-B 1500
 	mtu "${ns_b}"  veth_B-R2 1500
-	len=$((2000 - 20 - 8)) # Fills MTU of veth_A-R1
+	len=$((2000 - 20 - 8)) 
 	dst1="${prefix4}.${b_r1}.1"
 	dst2="${prefix4}.${b_r2}.1"
-	dsfield=${policy_mark} # No ECN bit set (Not-ECT)
+	dsfield=${policy_mark} 
 	run_cmd "${ns_a}" ping -q -M want -Q "${dsfield}" -c 1 -w 1 -s "${len}" "${dst1}"
-	dsfield=$(printf "%#x" $((policy_mark + 0x02))) # ECN=2 (ECT(0))
+	dsfield=$(printf "%
 	run_cmd "${ns_a}" ping -q -M want -Q "${dsfield}" -c 1 -w 1 -s "${len}" "${dst2}"
 	pmtu_1="$(route_get_dst_pmtu_from_exception "${ns_a}" "${dst1}" "${policy_mark}")"
 	check_pmtu_value "1400" "${pmtu_1}" "exceeding MTU" || return 1
@@ -754,15 +754,15 @@ test_pmtu_ipv4_dscp_udp_exception() {
 	mtu "${ns_r2}" veth_R2-A 2000
 	mtu "${ns_r2}" veth_R2-B 1500
 	mtu "${ns_b}"  veth_B-R2 1500
-	len=$((2000 - 20 - 8)) # Fills MTU of veth_A-R1
+	len=$((2000 - 20 - 8)) 
 	dst1="${prefix4}.${b_r1}.1"
 	dst2="${prefix4}.${b_r2}.1"
 	run_cmd_bg "${ns_b}" socat UDP-LISTEN:50000 OPEN:/dev/null,wronly=1
 	socat_pids="${socat_pids} $!"
-	dsfield=${policy_mark} # No ECN bit set (Not-ECT)
+	dsfield=${policy_mark} 
 	run_cmd "${ns_a}" socat OPEN:/dev/zero,rdonly=1,readbytes="${len}" \
 		UDP:"${dst1}":50000,tos="${dsfield}"
-	dsfield=$(printf "%#x" $((policy_mark + 0x02))) # ECN=2 (ECT(0))
+	dsfield=$(printf "%
 	run_cmd "${ns_a}" socat OPEN:/dev/zero,rdonly=1,readbytes="${len}" \
 		UDP:"${dst2}":50000,tos="${dsfield}"
 	pmtu_1="$(route_get_dst_pmtu_from_exception "${ns_a}" "${dst1}" "${policy_mark}")"
@@ -1253,7 +1253,7 @@ test_pmtu_vti6_link_add_mtu() {
 	[ $? -ne 0 ] && err "  vti6 not supported" && return $ksft_skip
 	run_cmd ${ns_a} ip link del vti6_a
 	fail=0
-	min=68			# vti6 can carry IPv4 packets too
+	min=68			
 	max=$((65535 - 40))
 	for v in $((min - 1)) $((max + 1)); do
 		run_cmd ${ns_a} ip link add vti6_a mtu ${v} type vti6 local ${veth6_a_addr} remote ${veth6_b_addr} key 10
@@ -1354,7 +1354,7 @@ run_test() {
 	unset IFS
 	trap cleanup EXIT
 	if [ "$VERBOSE" = "1" ]; then
-		printf "\n##########################################################################\n\n"
+		printf "\n
 	fi
 	eval test_${tname}
 	ret=$?
@@ -1565,7 +1565,7 @@ for t in ${tests}; do
 	fi
 	run_this=1
 	for arg do
-		[ "${arg}" != "${arg#--*}" ] && continue
+		[ "${arg}" != "${arg
 		[ "${arg}" = "${name}" ] && run_this=1 && break
 		run_this=0
 	done

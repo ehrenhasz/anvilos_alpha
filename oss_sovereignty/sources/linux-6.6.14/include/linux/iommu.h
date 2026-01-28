@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
- * Author: Joerg Roedel <joerg.roedel@amd.com>
- */
+
+
 
 #ifndef __LINUX_IOMMU_H
 #define __LINUX_IOMMU_H
@@ -17,18 +14,10 @@
 
 #define IOMMU_READ	(1 << 0)
 #define IOMMU_WRITE	(1 << 1)
-#define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
+#define IOMMU_CACHE	(1 << 2) 
 #define IOMMU_NOEXEC	(1 << 3)
-#define IOMMU_MMIO	(1 << 4) /* e.g. things like MSI doorbells */
-/*
- * Where the bus hardware includes a privilege level as part of its access type
- * markings, and certain devices are capable of issuing transactions marked as
- * either 'supervisor' or 'user', the IOMMU_PRIV flag requests that the other
- * given permission flags only apply to accesses at the higher privilege level,
- * and that unprivileged transactions should have as little access as possible.
- * This would usually imply the same permissions as kernel mappings on the CPU,
- * if the IOMMU page table format is equivalent.
- */
+#define IOMMU_MMIO	(1 << 4) 
+
 #define IOMMU_PRIV	(1 << 5)
 
 struct iommu_ops;
@@ -42,7 +31,7 @@ struct iommu_sva;
 struct iommu_fault_event;
 struct iommu_dma_cookie;
 
-/* iommu fault flags */
+
 #define IOMMU_FAULT_READ	0x0
 #define IOMMU_FAULT_WRITE	0x1
 
@@ -51,37 +40,21 @@ typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
 typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault *, void *);
 
 struct iommu_domain_geometry {
-	dma_addr_t aperture_start; /* First address that can be mapped    */
-	dma_addr_t aperture_end;   /* Last address that can be mapped     */
-	bool force_aperture;       /* DMA only allowed in mappable range? */
+	dma_addr_t aperture_start; 
+	dma_addr_t aperture_end;   
+	bool force_aperture;       
 };
 
-/* Domain feature flags */
-#define __IOMMU_DOMAIN_PAGING	(1U << 0)  /* Support for iommu_map/unmap */
-#define __IOMMU_DOMAIN_DMA_API	(1U << 1)  /* Domain for use in DMA-API
-					      implementation              */
-#define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
-#define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
 
-#define __IOMMU_DOMAIN_SVA	(1U << 4)  /* Shared process address space */
+#define __IOMMU_DOMAIN_PAGING	(1U << 0)  
+#define __IOMMU_DOMAIN_DMA_API	(1U << 1)  
+#define __IOMMU_DOMAIN_PT	(1U << 2)  
+#define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  
+
+#define __IOMMU_DOMAIN_SVA	(1U << 4)  
 
 #define IOMMU_DOMAIN_ALLOC_FLAGS ~__IOMMU_DOMAIN_DMA_FQ
-/*
- * This are the possible domain-types
- *
- *	IOMMU_DOMAIN_BLOCKED	- All DMA is blocked, can be used to isolate
- *				  devices
- *	IOMMU_DOMAIN_IDENTITY	- DMA addresses are system physical addresses
- *	IOMMU_DOMAIN_UNMANAGED	- DMA mappings managed by IOMMU-API user, used
- *				  for VMs
- *	IOMMU_DOMAIN_DMA	- Internally used for DMA-API implementations.
- *				  This flag allows IOMMU drivers to implement
- *				  certain optimizations for these domains
- *	IOMMU_DOMAIN_DMA_FQ	- As above, but definitely using batched TLB
- *				  invalidation.
- *	IOMMU_DOMAIN_SVA	- DMA addresses are shared process addresses
- *				  represented by mm_struct's.
- */
+
 #define IOMMU_DOMAIN_BLOCKED	(0U)
 #define IOMMU_DOMAIN_IDENTITY	(__IOMMU_DOMAIN_PT)
 #define IOMMU_DOMAIN_UNMANAGED	(__IOMMU_DOMAIN_PAGING)
@@ -95,7 +68,7 @@ struct iommu_domain_geometry {
 struct iommu_domain {
 	unsigned type;
 	const struct iommu_domain_ops *ops;
-	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+	unsigned long pgsize_bitmap;	
 	struct iommu_domain_geometry geometry;
 	struct iommu_dma_cookie *iova_cookie;
 	enum iommu_page_response_code (*iopf_handler)(struct iommu_fault *fault,
@@ -106,7 +79,7 @@ struct iommu_domain {
 			iommu_fault_handler_t handler;
 			void *handler_token;
 		};
-		struct {	/* IOMMU_DOMAIN_SVA */
+		struct {	
 			struct mm_struct *mm;
 			int users;
 		};
@@ -119,49 +92,30 @@ static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
 }
 
 enum iommu_cap {
-	IOMMU_CAP_CACHE_COHERENCY,	/* IOMMU_CACHE is supported */
-	IOMMU_CAP_NOEXEC,		/* IOMMU_NOEXEC flag */
-	IOMMU_CAP_PRE_BOOT_PROTECTION,	/* Firmware says it used the IOMMU for
-					   DMA protection and we should too */
-	/*
-	 * Per-device flag indicating if enforce_cache_coherency() will work on
-	 * this device.
-	 */
+	IOMMU_CAP_CACHE_COHERENCY,	
+	IOMMU_CAP_NOEXEC,		
+	IOMMU_CAP_PRE_BOOT_PROTECTION,	
+	
 	IOMMU_CAP_ENFORCE_CACHE_COHERENCY,
-	/*
-	 * IOMMU driver does not issue TLB maintenance during .unmap, so can
-	 * usefully support the non-strict DMA flush queue.
-	 */
+	
 	IOMMU_CAP_DEFERRED_FLUSH,
 };
 
-/* These are the possible reserved region types */
+
 enum iommu_resv_type {
-	/* Memory regions which must be mapped 1:1 at all times */
+	
 	IOMMU_RESV_DIRECT,
-	/*
-	 * Memory regions which are advertised to be 1:1 but are
-	 * commonly considered relaxable in some conditions,
-	 * for instance in device assignment use case (USB, Graphics)
-	 */
+	
 	IOMMU_RESV_DIRECT_RELAXABLE,
-	/* Arbitrary "never map this or give it to a device" address ranges */
+	
 	IOMMU_RESV_RESERVED,
-	/* Hardware MSI region (untranslated) */
+	
 	IOMMU_RESV_MSI,
-	/* Software-managed MSI translation window */
+	
 	IOMMU_RESV_SW_MSI,
 };
 
-/**
- * struct iommu_resv_region - descriptor for a reserved memory region
- * @list: Linked list pointers
- * @start: System physical start address of the region
- * @length: Length of the region in bytes
- * @prot: IOMMU Protection flags (READ/WRITE/...)
- * @type: Type of the reserved region
- * @free: Callback to free associated memory allocations
- */
+
 struct iommu_resv_region {
 	struct list_head	list;
 	phys_addr_t		start;
@@ -174,51 +128,25 @@ struct iommu_resv_region {
 struct iommu_iort_rmr_data {
 	struct iommu_resv_region rr;
 
-	/* Stream IDs associated with IORT RMR entry */
+	
 	const u32 *sids;
 	u32 num_sids;
 };
 
-/**
- * enum iommu_dev_features - Per device IOMMU features
- * @IOMMU_DEV_FEAT_SVA: Shared Virtual Addresses
- * @IOMMU_DEV_FEAT_IOPF: I/O Page Faults such as PRI or Stall. Generally
- *			 enabling %IOMMU_DEV_FEAT_SVA requires
- *			 %IOMMU_DEV_FEAT_IOPF, but some devices manage I/O Page
- *			 Faults themselves instead of relying on the IOMMU. When
- *			 supported, this feature must be enabled before and
- *			 disabled after %IOMMU_DEV_FEAT_SVA.
- *
- * Device drivers enable a feature using iommu_dev_enable_feature().
- */
+
 enum iommu_dev_features {
 	IOMMU_DEV_FEAT_SVA,
 	IOMMU_DEV_FEAT_IOPF,
 };
 
-#define IOMMU_NO_PASID	(0U) /* Reserved for DMA w/o PASID */
-#define IOMMU_FIRST_GLOBAL_PASID	(1U) /*starting range for allocation */
+#define IOMMU_NO_PASID	(0U) 
+#define IOMMU_FIRST_GLOBAL_PASID	(1U) 
 #define IOMMU_PASID_INVALID	(-1U)
 typedef unsigned int ioasid_t;
 
 #ifdef CONFIG_IOMMU_API
 
-/**
- * struct iommu_iotlb_gather - Range information for a pending IOTLB flush
- *
- * @start: IOVA representing the start of the range to be flushed
- * @end: IOVA representing the end of the range to be flushed (inclusive)
- * @pgsize: The interval at which to perform the flush
- * @freelist: Removed pages to free after sync
- * @queued: Indicates that the flush will be queued
- *
- * This structure is intended to be updated by multiple calls to the
- * ->unmap() function in struct iommu_ops before eventually being passed
- * into ->iotlb_sync(). Drivers can add pages to @freelist to be freed after
- * ->iotlb_sync() or ->iotlb_flush_all() have cleared all cached references to
- * them. @queued is set to indicate when ->iotlb_flush_all() will be called
- * later instead of ->iotlb_sync(), so drivers may optimise accordingly.
- */
+
 struct iommu_iotlb_gather {
 	unsigned long		start;
 	unsigned long		end;
@@ -227,45 +155,12 @@ struct iommu_iotlb_gather {
 	bool			queued;
 };
 
-/**
- * struct iommu_ops - iommu ops and capabilities
- * @capable: check capability
- * @hw_info: report iommu hardware information. The data buffer returned by this
- *           op is allocated in the iommu driver and freed by the caller after
- *           use. The information type is one of enum iommu_hw_info_type defined
- *           in include/uapi/linux/iommufd.h.
- * @domain_alloc: allocate iommu domain
- * @probe_device: Add device to iommu driver handling
- * @release_device: Remove device from iommu driver handling
- * @probe_finalize: Do final setup work after the device is added to an IOMMU
- *                  group and attached to the groups domain
- * @set_platform_dma_ops: Returning control back to the platform DMA ops. This op
- *                        is to support old IOMMU drivers, new drivers should use
- *                        default domains, and the common IOMMU DMA ops.
- * @device_group: find iommu group for a particular device
- * @get_resv_regions: Request list of reserved regions for a device
- * @of_xlate: add OF master IDs to iommu grouping
- * @is_attach_deferred: Check if domain attach should be deferred from iommu
- *                      driver init to device driver init (default no)
- * @dev_enable/disable_feat: per device entries to enable/disable
- *                               iommu specific features.
- * @page_response: handle page request response
- * @def_domain_type: device default domain type, return value:
- *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
- *		- IOMMU_DOMAIN_DMA: must use a dma domain
- *		- 0: use the default setting
- * @default_domain_ops: the default ops for domains
- * @remove_dev_pasid: Remove any translation configurations of a specific
- *                    pasid, so that any DMA transactions with this pasid
- *                    will be blocked by the hardware.
- * @pgsize_bitmap: bitmap of all possible supported page sizes
- * @owner: Driver module providing these ops
- */
+
 struct iommu_ops {
 	bool (*capable)(struct device *dev, enum iommu_cap);
 	void *(*hw_info)(struct device *dev, u32 *length, u32 *type);
 
-	/* Domain allocation and freeing by the iommu driver */
+	
 	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
 
 	struct iommu_device *(*probe_device)(struct device *dev);
@@ -274,13 +169,13 @@ struct iommu_ops {
 	void (*set_platform_dma_ops)(struct device *dev);
 	struct iommu_group *(*device_group)(struct device *dev);
 
-	/* Request/Free a list of reserved regions for a device */
+	
 	void (*get_resv_regions)(struct device *dev, struct list_head *list);
 
 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
 	bool (*is_attach_deferred)(struct device *dev);
 
-	/* Per device IOMMU features */
+	
 	int (*dev_enable_feat)(struct device *dev, enum iommu_dev_features f);
 	int (*dev_disable_feat)(struct device *dev, enum iommu_dev_features f);
 
@@ -296,39 +191,7 @@ struct iommu_ops {
 	struct module *owner;
 };
 
-/**
- * struct iommu_domain_ops - domain specific operations
- * @attach_dev: attach an iommu domain to a device
- *  Return:
- * * 0		- success
- * * EINVAL	- can indicate that device and domain are incompatible due to
- *		  some previous configuration of the domain, in which case the
- *		  driver shouldn't log an error, since it is legitimate for a
- *		  caller to test reuse of existing domains. Otherwise, it may
- *		  still represent some other fundamental problem
- * * ENOMEM	- out of memory
- * * ENOSPC	- non-ENOMEM type of resource allocation failures
- * * EBUSY	- device is attached to a domain and cannot be changed
- * * ENODEV	- device specific errors, not able to be attached
- * * <others>	- treated as ENODEV by the caller. Use is discouraged
- * @set_dev_pasid: set an iommu domain to a pasid of device
- * @map: map a physically contiguous memory region to an iommu domain
- * @map_pages: map a physically contiguous set of pages of the same size to
- *             an iommu domain.
- * @unmap: unmap a physically contiguous memory region from an iommu domain
- * @unmap_pages: unmap a number of pages of the same size from an iommu domain
- * @flush_iotlb_all: Synchronously flush all hardware TLBs for this domain
- * @iotlb_sync_map: Sync mappings created recently using @map to the hardware
- * @iotlb_sync: Flush all queued ranges from the hardware TLBs and empty flush
- *            queue
- * @iova_to_phys: translate iova to physical address
- * @enforce_cache_coherency: Prevent any kind of DMA from bypassing IOMMU_CACHE,
- *                           including no-snoop TLPs on PCIe or other platform
- *                           specific mechanisms.
- * @enable_nesting: Enable nesting
- * @set_pgtable_quirks: Set io page table quirks (IO_PGTABLE_QUIRK_*)
- * @free: Release the domain after use.
- */
+
 struct iommu_domain_ops {
 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
 	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
@@ -362,14 +225,7 @@ struct iommu_domain_ops {
 	void (*free)(struct iommu_domain *domain);
 };
 
-/**
- * struct iommu_device - IOMMU core representation of one IOMMU hardware
- *			 instance
- * @list: Used by the iommu-core to keep a list of registered iommus
- * @ops: iommu-ops for talking to this iommu
- * @dev: struct device for sysfs handling
- * @max_pasids: number of supported PASIDs
- */
+
 struct iommu_device {
 	struct list_head list;
 	const struct iommu_ops *ops;
@@ -378,27 +234,13 @@ struct iommu_device {
 	u32 max_pasids;
 };
 
-/**
- * struct iommu_fault_event - Generic fault event
- *
- * Can represent recoverable faults such as a page requests or
- * unrecoverable faults such as DMA or IRQ remapping faults.
- *
- * @fault: fault descriptor
- * @list: pending fault event list, used for tracking responses
- */
+
 struct iommu_fault_event {
 	struct iommu_fault fault;
 	struct list_head list;
 };
 
-/**
- * struct iommu_fault_param - per-device IOMMU fault data
- * @handler: Callback function to handle IOMMU faults at device level
- * @data: handler private data
- * @faults: holds the pending faults which needs response
- * @lock: protect pending faults list
- */
+
 struct iommu_fault_param {
 	iommu_dev_fault_handler_t handler;
 	void *data;
@@ -406,22 +248,7 @@ struct iommu_fault_param {
 	struct mutex lock;
 };
 
-/**
- * struct dev_iommu - Collection of per-device IOMMU data
- *
- * @fault_param: IOMMU detected device fault reporting data
- * @iopf_param:	 I/O Page Fault queue and data
- * @fwspec:	 IOMMU fwspec data
- * @iommu_dev:	 IOMMU device this device is linked to
- * @priv:	 IOMMU Driver private data
- * @max_pasids:  number of PASIDs this device can consume
- * @attach_deferred: the dma domain attachment is deferred
- * @pci_32bit_workaround: Limit DMA allocations to 32-bit IOVAs
- * @require_direct: device requires IOMMU_RESV_DIRECT regions
- *
- * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
- *	struct iommu_group	*iommu_group;
- */
+
 struct dev_iommu {
 	struct mutex lock;
 	struct iommu_fault_param	*fault_param;
@@ -556,17 +383,7 @@ static inline void iommu_iotlb_sync(struct iommu_domain *domain,
 	iommu_iotlb_gather_init(iotlb_gather);
 }
 
-/**
- * iommu_iotlb_gather_is_disjoint - Checks whether a new range is disjoint
- *
- * @gather: TLB gather data
- * @iova: start of page to invalidate
- * @size: size of page to invalidate
- *
- * Helper for IOMMU drivers to check whether a new range and the gathered range
- * are disjoint. For many IOMMUs, flushing the IOMMU in this case is better
- * than merging the two, which might lead to unnecessary invalidations.
- */
+
 static inline
 bool iommu_iotlb_gather_is_disjoint(struct iommu_iotlb_gather *gather,
 				    unsigned long iova, size_t size)
@@ -578,16 +395,7 @@ bool iommu_iotlb_gather_is_disjoint(struct iommu_iotlb_gather *gather,
 }
 
 
-/**
- * iommu_iotlb_gather_add_range - Gather for address-based TLB invalidation
- * @gather: TLB gather data
- * @iova: start of page to invalidate
- * @size: size of page to invalidate
- *
- * Helper for IOMMU drivers to build arbitrarily-sized invalidation commands
- * where only the address range matters, and simply minimising intermediate
- * syncs is preferred.
- */
+
 static inline void iommu_iotlb_gather_add_range(struct iommu_iotlb_gather *gather,
 						unsigned long iova, size_t size)
 {
@@ -599,26 +407,12 @@ static inline void iommu_iotlb_gather_add_range(struct iommu_iotlb_gather *gathe
 		gather->end = end;
 }
 
-/**
- * iommu_iotlb_gather_add_page - Gather for page-based TLB invalidation
- * @domain: IOMMU domain to be invalidated
- * @gather: TLB gather data
- * @iova: start of page to invalidate
- * @size: size of page to invalidate
- *
- * Helper for IOMMU drivers to build invalidation commands based on individual
- * pages, or with page size/table level hints which cannot be gathered if they
- * differ.
- */
+
 static inline void iommu_iotlb_gather_add_page(struct iommu_domain *domain,
 					       struct iommu_iotlb_gather *gather,
 					       unsigned long iova, size_t size)
 {
-	/*
-	 * If the new page is disjoint from the current range or is mapped at
-	 * a different granularity, then sync the TLB so that the gather
-	 * structure can be rewritten.
-	 */
+	
 	if ((gather->pgsize && gather->pgsize != size) ||
 	    iommu_iotlb_gather_is_disjoint(gather, iova, size))
 		iommu_iotlb_sync(domain, gather);
@@ -632,25 +426,14 @@ static inline bool iommu_iotlb_gather_queued(struct iommu_iotlb_gather *gather)
 	return gather && gather->queued;
 }
 
-/* PCI device grouping function */
+
 extern struct iommu_group *pci_device_group(struct device *dev);
-/* Generic device grouping function */
+
 extern struct iommu_group *generic_device_group(struct device *dev);
-/* FSL-MC device grouping function */
+
 struct iommu_group *fsl_mc_device_group(struct device *dev);
 
-/**
- * struct iommu_fwspec - per-device IOMMU instance data
- * @ops: ops for this device's IOMMU
- * @iommu_fwnode: firmware handle for this device's IOMMU
- * @flags: IOMMU_FWSPEC_* flags
- * @num_ids: number of associated device IDs
- * @ids: IDs which this device may present to the IOMMU
- *
- * Note that the IDs (and any other information, really) stored in this structure should be
- * considered private to the IOMMU device driver and are not to be used directly by IOMMU
- * consumers.
- */
+
 struct iommu_fwspec {
 	const struct iommu_ops	*ops;
 	struct fwnode_handle	*iommu_fwnode;
@@ -659,12 +442,10 @@ struct iommu_fwspec {
 	u32			ids[];
 };
 
-/* ATS is supported */
+
 #define IOMMU_FWSPEC_PCI_RC_ATS			(1 << 0)
 
-/**
- * struct iommu_sva - handle to a device-mm bond
- */
+
 struct iommu_sva {
 	struct device			*dev;
 	struct iommu_domain		*domain;
@@ -730,7 +511,7 @@ iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid,
 			       unsigned int type);
 ioasid_t iommu_alloc_global_pasid(struct device *dev);
 void iommu_free_global_pasid(ioasid_t pasid);
-#else /* CONFIG_IOMMU_API */
+#else 
 
 struct iommu_ops {};
 struct iommu_group {};
@@ -1098,18 +879,9 @@ static inline ioasid_t iommu_alloc_global_pasid(struct device *dev)
 }
 
 static inline void iommu_free_global_pasid(ioasid_t pasid) {}
-#endif /* CONFIG_IOMMU_API */
+#endif 
 
-/**
- * iommu_map_sgtable - Map the given buffer to the IOMMU domain
- * @domain:	The IOMMU domain to perform the mapping
- * @iova:	The start address to map the buffer
- * @sgt:	The sg_table object describing the buffer
- * @prot:	IOMMU protection bits
- *
- * Creates a mapping at @iova for the buffer described by a scatterlist
- * stored in the given sg_table object in the provided IOMMU domain.
- */
+
 static inline size_t iommu_map_sgtable(struct iommu_domain *domain,
 			unsigned long iova, struct sg_table *sgt, int prot)
 {
@@ -1127,7 +899,7 @@ static inline void iommu_debugfs_setup(void) {}
 #ifdef CONFIG_IOMMU_DMA
 #include <linux/msi.h>
 
-/* Setup call for arch DMA mapping code */
+
 void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 dma_limit);
 
 int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base);
@@ -1135,7 +907,7 @@ int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base);
 int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr);
 void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg *msg);
 
-#else /* CONFIG_IOMMU_DMA */
+#else 
 
 struct msi_desc;
 struct msi_msg;
@@ -1158,13 +930,9 @@ static inline void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_m
 {
 }
 
-#endif	/* CONFIG_IOMMU_DMA */
+#endif	
 
-/*
- * Newer generations of Tegra SoCs require devices' stream IDs to be directly programmed into
- * some registers. These are always paired with a Tegra SMMU or ARM SMMU, for which the contents
- * of the struct iommu_fwspec are known. Use this helper to formalize access to these internals.
- */
+
 #define TEGRA_STREAM_ID_BYPASS 0x7f
 
 static inline bool tegra_dev_iommu_get_stream_id(struct device *dev, u32 *stream_id)
@@ -1213,6 +981,6 @@ static inline u32 iommu_sva_get_pasid(struct iommu_sva *handle)
 static inline void mm_pasid_init(struct mm_struct *mm) {}
 static inline bool mm_valid_pasid(struct mm_struct *mm) { return false; }
 static inline void mm_pasid_drop(struct mm_struct *mm) {}
-#endif /* CONFIG_IOMMU_SVA */
+#endif 
 
-#endif /* __LINUX_IOMMU_H */
+#endif 

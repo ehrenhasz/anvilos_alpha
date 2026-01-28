@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008 Vitaly Mayatskikh <vmayatsk@redhat.com>
- * Copyright 2002 Andi Kleen, SuSE Labs.
- *
- * Functions to copy from and to user space.
- */
+
+
 
 #include <linux/linkage.h>
 #include <asm/cpufeatures.h>
@@ -12,23 +7,7 @@
 #include <asm/asm.h>
 #include <asm/export.h>
 
-/*
- * rep_movs_alternative - memory copy with exception handling.
- * This version is for CPUs that don't have FSRM (Fast Short Rep Movs)
- *
- * Input:
- * rdi destination
- * rsi source
- * rcx count
- *
- * Output:
- * rcx uncopied bytes or 0 if successful.
- *
- * NOTE! The calling convention is very intentionally the same as
- * for 'rep movs', so that we can rewrite the function call with
- * just a plain 'rep movs' on machines that have FSRM.  But to make
- * it simpler for us, we can clobber rsi/rdi and rax freely.
- */
+
 SYM_FUNC_START(rep_movs_alternative)
 	cmpq $64,%rcx
 	jae .Llarge

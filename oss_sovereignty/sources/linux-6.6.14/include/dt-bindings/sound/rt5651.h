@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __DT_RT5651_H
 #define __DT_RT5651_H
 
@@ -12,4 +12,4 @@
 #define RT5651_OVCD_SF_1P0		2
 #define RT5651_OVCD_SF_1P5		3
 
-#endif /* __DT_RT5651_H */
+#endif 

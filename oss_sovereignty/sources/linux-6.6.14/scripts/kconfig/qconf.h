@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- */
+
+
 
 #include <QCheckBox>
 #include <QDialog>
@@ -157,7 +155,7 @@ public:
 
 		return ret;
 	}
-	// TODO: Implement paintCell
+	
 
 	ConfigItem* nextItem;
 	struct menu *menu;

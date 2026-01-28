@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 1997-1998 Transmeta Corporation -- All Rights Reserved
- */
+
+
 
 #include <linux/module.h>
 #include <linux/init.h>

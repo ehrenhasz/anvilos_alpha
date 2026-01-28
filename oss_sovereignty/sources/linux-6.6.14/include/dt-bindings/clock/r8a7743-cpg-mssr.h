@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+
- *
- * Copyright (C) 2016 Cogent Embedded Inc.
- */
+
 #ifndef __DT_BINDINGS_CLOCK_R8A7743_CPG_MSSR_H__
 #define __DT_BINDINGS_CLOCK_R8A7743_CPG_MSSR_H__
 
 #include <dt-bindings/clock/renesas-cpg-mssr.h>
 
-/* r8a7743 CPG Core Clocks */
+
 #define R8A7743_CLK_Z		0
 #define R8A7743_CLK_ZG		1
 #define R8A7743_CLK_ZTR		2
@@ -36,4 +33,4 @@
 #define R8A7743_CLK_R		29
 #define R8A7743_CLK_OSC		30
 
-#endif /* __DT_BINDINGS_CLOCK_R8A7743_CPG_MSSR_H__ */
+#endif 

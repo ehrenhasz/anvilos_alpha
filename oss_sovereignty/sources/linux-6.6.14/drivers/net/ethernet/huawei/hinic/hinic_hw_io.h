@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+
 
 #ifndef HINIC_HW_IO_H
 #define HINIC_HW_IO_H
@@ -43,12 +40,12 @@ struct hinic_free_db_area {
 
 	int             num_free;
 
-	/* Lock for getting db area */
+	
 	struct semaphore        idx_lock;
 };
 
 struct hinic_nic_cfg {
-	/* lock for getting nic cfg */
+	
 	struct mutex		cfg_mutex;
 	bool			pause_set;
 	u32			auto_neg;

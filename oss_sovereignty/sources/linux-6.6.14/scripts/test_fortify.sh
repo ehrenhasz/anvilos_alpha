@@ -1,8 +1,8 @@
 set -e
 IN="$1"
 shift
-FILE="${IN##*/}"
-FUNC="${FILE#*-}"
+FILE="${IN
+FUNC="${FILE
 FUNC="${FUNC%%-*}"
 FUNC="${FUNC%%.*}"
 WANT="__${FILE%%-*}"

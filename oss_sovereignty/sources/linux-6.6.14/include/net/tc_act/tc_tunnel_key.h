@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2016, Amir Vadai <amir@vadai.me>
- * Copyright (c) 2016, Mellanox Technologies. All rights reserved.
- */
+
+
 
 #ifndef __NET_TC_TUNNEL_KEY_H
 #define __NET_TC_TUNNEL_KEY_H
@@ -83,4 +80,4 @@ tcf_tunnel_info_copy(const struct tc_action *a)
 #endif
 	return NULL;
 }
-#endif /* __NET_TC_TUNNEL_KEY_H */
+#endif 

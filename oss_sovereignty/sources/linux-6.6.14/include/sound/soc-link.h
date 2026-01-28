@@ -1,10 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * soc-link.h
- *
- * Copyright (C) 2019 Renesas Electronics Corp.
- * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- */
+
 #ifndef __SOC_LINK_H
 #define __SOC_LINK_H
 
@@ -29,4 +23,4 @@ void snd_soc_link_compr_shutdown(struct snd_compr_stream *cstream,
 				 int rollback);
 int snd_soc_link_compr_set_params(struct snd_compr_stream *cstream);
 
-#endif /* __SOC_LINK_H */
+#endif 

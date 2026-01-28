@@ -1,31 +1,19 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Read-Copy Update mechanism for mutual exclusion, the Bloatwatch edition.
- *
- * Copyright IBM Corporation, 2008
- *
- * Author: Paul E. McKenney <paulmck@linux.ibm.com>
- *
- * For detailed explanation of Read-Copy Update mechanism see -
- *		Documentation/RCU
- */
+
+
 #ifndef __LINUX_TINY_H
 #define __LINUX_TINY_H
 
-#include <asm/param.h> /* for HZ */
+#include <asm/param.h> 
 
 struct rcu_gp_oldstate {
 	unsigned long rgos_norm;
 };
 
-// Maximum number of rcu_gp_oldstate values corresponding to
-// not-yet-completed RCU grace periods.
+
+
 #define NUM_ACTIVE_RCU_POLL_FULL_OLDSTATE 2
 
-/*
- * Are the two oldstate values the same?  See the Tree RCU version for
- * docbook header.
- */
+
 static inline bool same_state_synchronize_rcu_full(struct rcu_gp_oldstate *rgosp1,
 						   struct rcu_gp_oldstate *rgosp2)
 {
@@ -90,12 +78,7 @@ static inline void synchronize_rcu_expedited(void)
 	synchronize_rcu();
 }
 
-/*
- * Add one more declaration of kvfree() here. It is
- * not so straight forward to just include <linux/mm.h>
- * where it is defined due to getting many compile
- * errors caused by that include.
- */
+
 extern void kvfree(const void *addr);
 
 static inline void __kvfree_call_rcu(struct rcu_head *head, void *ptr)
@@ -105,7 +88,7 @@ static inline void __kvfree_call_rcu(struct rcu_head *head, void *ptr)
 		return;
 	}
 
-	// kvfree_rcu(one_arg) call.
+	
 	might_sleep();
 	synchronize_rcu();
 	kvfree(ptr);
@@ -140,10 +123,7 @@ static inline int rcu_needs_cpu(void)
 
 static inline void rcu_request_urgent_qs_task(struct task_struct *t) { }
 
-/*
- * Take advantage of the fact that there is only one CPU, which
- * allows us to ignore virtualization-based context switches.
- */
+
 static inline void rcu_virt_note_context_switch(void) { }
 static inline void rcu_cpu_stall_reset(void) { }
 static inline int rcu_jiffies_till_stall_check(void) { return 21 * HZ; }
@@ -162,10 +142,10 @@ static inline void rcu_momentary_dyntick_idle(void) { }
 static inline void kfree_rcu_scheduler_running(void) { }
 static inline bool rcu_gp_might_be_stalled(void) { return false; }
 
-/* Avoid RCU read-side critical sections leaking across. */
+
 static inline void rcu_all_qs(void) { barrier(); }
 
-/* RCUtree hotplug events */
+
 #define rcutree_prepare_cpu      NULL
 #define rcutree_online_cpu       NULL
 #define rcutree_offline_cpu      NULL
@@ -173,4 +153,4 @@ static inline void rcu_all_qs(void) { barrier(); }
 #define rcutree_dying_cpu        NULL
 static inline void rcu_cpu_starting(unsigned int cpu) { }
 
-#endif /* __LINUX_RCUTINY_H */
+#endif 

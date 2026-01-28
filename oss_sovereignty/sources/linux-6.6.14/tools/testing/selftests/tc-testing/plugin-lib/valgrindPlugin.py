@@ -68,7 +68,7 @@ class SubPlugin(TdcPlugin):
             cmdlist.insert(0, '--show-leak-kinds=definite,indirect')
             cmdlist.insert(0, '--leak-check=full')
             cmdlist.insert(0, '--log-file=vgnd-{}.log'.format(self.args.testid))
-            cmdlist.insert(0, '-v')  # ask for summary of non-leak errors
+            cmdlist.insert(0, '-v')  
             cmdlist.insert(0, ENVIR['VALGRIND_BIN'])
         else:
             pass

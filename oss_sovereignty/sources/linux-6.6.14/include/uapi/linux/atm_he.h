@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/* atm_he.h */
+
+
 
 #ifndef LINUX_ATM_HE_H
 #define LINUX_ATM_HE_H
@@ -18,4 +18,4 @@ struct he_ioctl_reg {
 	char type;
 };
 
-#endif /* LINUX_ATM_HE_H */
+#endif 

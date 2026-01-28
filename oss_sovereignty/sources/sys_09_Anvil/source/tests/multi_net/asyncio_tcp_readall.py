@@ -28,8 +28,8 @@ async def tcp_server():
 async def tcp_client():
     reader, writer = await asyncio.open_connection(IP, PORT)
     print(await reader.read())
-    print(await reader.read())  # should be empty
-    print(await reader.read(1))  # should be empty
+    print(await reader.read())  
+    print(await reader.read(1))  
 def instance0():
     multitest.globals(IP=multitest.get_network_ip())
     asyncio.run(tcp_server())

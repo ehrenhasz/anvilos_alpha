@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef GAUDI_BLOCKS_H_
 #define GAUDI_BLOCKS_H_
@@ -4971,4 +4963,4 @@
 #define mmTPC7_EML_CS_BASE                         0x7FFFFFF000ull
 #define TPC7_EML_CS_MAX_OFFSET                     0x1000
 
-#endif /* GAUDI_BLOCKS_H_ */
+#endif 

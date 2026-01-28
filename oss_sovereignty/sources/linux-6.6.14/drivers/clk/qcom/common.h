@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2014, The Linux Foundation. All rights reserved. */
+
+
 
 #ifndef __QCOM_CLK_COMMON_H__
 #define __QCOM_CLK_COMMON_H__
@@ -31,11 +31,7 @@ struct qcom_cc_desc {
 	size_t num_clk_hws;
 };
 
-/**
- * struct parent_map - map table for source select configuration values
- * @src: source
- * @cfg: configuration value
- */
+
 struct parent_map {
 	u8 src;
 	u8 cfg;

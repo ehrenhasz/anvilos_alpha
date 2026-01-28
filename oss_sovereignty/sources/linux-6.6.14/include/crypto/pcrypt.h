@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * pcrypt - Parallel crypto engine.
- *
- * Copyright (C) 2009 secunet Security Networks AG
- * Copyright (C) 2009 Steffen Klassert <steffen.klassert@secunet.com>
- */
+
+
 
 #ifndef _CRYPTO_PCRYPT_H
 #define _CRYPTO_PCRYPT_H

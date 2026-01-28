@@ -1,22 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Internals of the DMA direct mapping implementation.  Only for use by the
- * DMA mapping code and IOMMU drivers.
- */
+
+
 #ifndef _LINUX_DMA_DIRECT_H
 #define _LINUX_DMA_DIRECT_H 1
 
 #include <linux/dma-mapping.h>
 #include <linux/dma-map-ops.h>
-#include <linux/memblock.h> /* for min_low_pfn */
+#include <linux/memblock.h> 
 #include <linux/mem_encrypt.h>
 #include <linux/swiotlb.h>
 
 extern unsigned int zone_dma_bits;
 
-/*
- * Record the mapping of CPU physical to DMA addresses for a given region.
- */
+
 struct bus_dma_region {
 	phys_addr_t	cpu_start;
 	dma_addr_t	dma_start;
@@ -33,7 +28,7 @@ static inline dma_addr_t translate_phys_to_dma(struct device *dev,
 		if (paddr >= m->cpu_start && paddr - m->cpu_start < m->size)
 			return (dma_addr_t)paddr - m->offset;
 
-	/* make sure dma_capable fails when no translation is available */
+	
 	return DMA_MAPPING_ERROR;
 }
 
@@ -63,12 +58,7 @@ static inline dma_addr_t phys_to_dma_unencrypted(struct device *dev,
 	return paddr;
 }
 
-/*
- * If memory encryption is supported, phys_to_dma will set the memory encryption
- * bit in the DMA address, and dma_to_phys will clear it.
- * phys_to_dma_unencrypted is for use on special unencrypted memory like swiotlb
- * buffers.
- */
+
 static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
 {
 	return __sme_set(phys_to_dma_unencrypted(dev, paddr));
@@ -85,7 +75,7 @@ static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
 
 	return __sme_clr(paddr);
 }
-#endif /* !CONFIG_ARCH_HAS_PHYS_TO_DMA */
+#endif 
 
 #ifdef CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED
 bool force_dma_unencrypted(struct device *dev);
@@ -94,7 +84,7 @@ static inline bool force_dma_unencrypted(struct device *dev)
 {
 	return false;
 }
-#endif /* CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED */
+#endif 
 
 static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
 		bool is_ram)
@@ -124,4 +114,4 @@ int dma_direct_supported(struct device *dev, u64 mask);
 dma_addr_t dma_direct_map_resource(struct device *dev, phys_addr_t paddr,
 		size_t size, enum dma_data_direction dir, unsigned long attrs);
 
-#endif /* _LINUX_DMA_DIRECT_H */
+#endif 

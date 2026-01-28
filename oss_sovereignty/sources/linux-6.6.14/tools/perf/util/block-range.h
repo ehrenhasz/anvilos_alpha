@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_BLOCK_RANGE_H
 #define __PERF_BLOCK_RANGE_H
 
@@ -8,17 +8,7 @@
 
 struct symbol;
 
-/*
- * struct block_range - non-overlapping parts of basic blocks
- * @node:	treenode
- * @start:	inclusive start of range
- * @end:	inclusive end of range
- * @is_target:	@start is a jump target
- * @is_branch:	@end is a branch instruction
- * @coverage:	number of blocks that cover this range
- * @taken:	number of times the branch is taken (requires @is_branch)
- * @pred:	number of times the taken branch was predicted
- */
+
 struct block_range {
 	struct rb_node node;
 
@@ -73,4 +63,4 @@ extern struct block_range *block_range__find(u64 addr);
 extern struct block_range_iter block_range__create(u64 start, u64 end);
 extern double block_range__coverage(struct block_range *br);
 
-#endif /* __PERF_BLOCK_RANGE_H */
+#endif 

@@ -90,11 +90,11 @@ wait_msk_nr()
 	printf "%-50s" "$msg"
 	if [ $i -ge $timeout ]; then
 		echo "[ fail ] timeout while expecting $expected max $max last $nr"
-		mptcp_lib_result_fail "${msg} # timeout"
+		mptcp_lib_result_fail "${msg} 
 		ret=$test_cnt
 	elif [ $nr != $expected ]; then
 		echo "[ fail ] expected $expected found $nr"
-		mptcp_lib_result_fail "${msg} # unexpected result"
+		mptcp_lib_result_fail "${msg} 
 		ret=$test_cnt
 	else
 		echo "[  ok  ]"

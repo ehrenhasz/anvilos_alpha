@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
-/* Copyright (C) 2022, Linaro Ltd - Daniel Lezcano <daniel.lezcano@linaro.org> */
+
+
 #ifndef __LIBTHERMAL_H
 #define __LIBTHERMAL_H
 
@@ -91,9 +91,7 @@ LIBTHERMAL_API struct thermal_handler *thermal_init(struct thermal_ops *ops);
 
 LIBTHERMAL_API void thermal_exit(struct thermal_handler *th);
 
-/*
- * Netlink thermal events
- */
+
 LIBTHERMAL_API thermal_error_t thermal_events_exit(struct thermal_handler *th);
 
 LIBTHERMAL_API thermal_error_t thermal_events_init(struct thermal_handler *th);
@@ -102,9 +100,7 @@ LIBTHERMAL_API thermal_error_t thermal_events_handle(struct thermal_handler *th,
 
 LIBTHERMAL_API int thermal_events_fd(struct thermal_handler *th);
 
-/*
- * Netlink thermal commands
- */
+
 LIBTHERMAL_API thermal_error_t thermal_cmd_exit(struct thermal_handler *th);
 
 LIBTHERMAL_API thermal_error_t thermal_cmd_init(struct thermal_handler *th);
@@ -124,9 +120,7 @@ LIBTHERMAL_API thermal_error_t thermal_cmd_get_governor(struct thermal_handler *
 LIBTHERMAL_API thermal_error_t thermal_cmd_get_temp(struct thermal_handler *th,
 						    struct thermal_zone *tz);
 
-/*
- * Netlink thermal samples
- */
+
 LIBTHERMAL_API thermal_error_t thermal_sampling_exit(struct thermal_handler *th);
 
 LIBTHERMAL_API thermal_error_t thermal_sampling_init(struct thermal_handler *th);
@@ -135,7 +129,7 @@ LIBTHERMAL_API thermal_error_t thermal_sampling_handle(struct thermal_handler *t
 
 LIBTHERMAL_API int thermal_sampling_fd(struct thermal_handler *th);
 
-#endif /* __LIBTHERMAL_H */
+#endif 
 
 #ifdef __cplusplus
 }

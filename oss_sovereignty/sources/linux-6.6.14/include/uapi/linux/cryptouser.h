@@ -1,30 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Crypto user configuration API.
- *
- * Copyright (C) 2011 secunet Security Networks AG
- * Copyright (C) 2011 Steffen Klassert <steffen.klassert@secunet.com>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- */
+
+
 
 #ifndef _UAPI_LINUX_CRYPTOUSER_H
 #define _UAPI_LINUX_CRYPTOUSER_H
 
 #include <linux/types.h>
 
-/* Netlink configuration messages.  */
+
 enum {
 	CRYPTO_MSG_BASE = 0x10,
 	CRYPTO_MSG_NEWALG = 0x10,
@@ -40,30 +22,30 @@ enum {
 
 #define CRYPTO_MAX_NAME 64
 
-/* Netlink message attributes.  */
+
 enum crypto_attr_type_t {
 	CRYPTOCFGA_UNSPEC,
-	CRYPTOCFGA_PRIORITY_VAL,	/* __u32 */
-	CRYPTOCFGA_REPORT_LARVAL,	/* struct crypto_report_larval */
-	CRYPTOCFGA_REPORT_HASH,		/* struct crypto_report_hash */
-	CRYPTOCFGA_REPORT_BLKCIPHER,	/* struct crypto_report_blkcipher */
-	CRYPTOCFGA_REPORT_AEAD,		/* struct crypto_report_aead */
-	CRYPTOCFGA_REPORT_COMPRESS,	/* struct crypto_report_comp */
-	CRYPTOCFGA_REPORT_RNG,		/* struct crypto_report_rng */
-	CRYPTOCFGA_REPORT_CIPHER,	/* struct crypto_report_cipher */
-	CRYPTOCFGA_REPORT_AKCIPHER,	/* struct crypto_report_akcipher */
-	CRYPTOCFGA_REPORT_KPP,		/* struct crypto_report_kpp */
-	CRYPTOCFGA_REPORT_ACOMP,	/* struct crypto_report_acomp */
-	CRYPTOCFGA_STAT_LARVAL,		/* struct crypto_stat */
-	CRYPTOCFGA_STAT_HASH,		/* struct crypto_stat */
-	CRYPTOCFGA_STAT_BLKCIPHER,	/* struct crypto_stat */
-	CRYPTOCFGA_STAT_AEAD,		/* struct crypto_stat */
-	CRYPTOCFGA_STAT_COMPRESS,	/* struct crypto_stat */
-	CRYPTOCFGA_STAT_RNG,		/* struct crypto_stat */
-	CRYPTOCFGA_STAT_CIPHER,		/* struct crypto_stat */
-	CRYPTOCFGA_STAT_AKCIPHER,	/* struct crypto_stat */
-	CRYPTOCFGA_STAT_KPP,		/* struct crypto_stat */
-	CRYPTOCFGA_STAT_ACOMP,		/* struct crypto_stat */
+	CRYPTOCFGA_PRIORITY_VAL,	
+	CRYPTOCFGA_REPORT_LARVAL,	
+	CRYPTOCFGA_REPORT_HASH,		
+	CRYPTOCFGA_REPORT_BLKCIPHER,	
+	CRYPTOCFGA_REPORT_AEAD,		
+	CRYPTOCFGA_REPORT_COMPRESS,	
+	CRYPTOCFGA_REPORT_RNG,		
+	CRYPTOCFGA_REPORT_CIPHER,	
+	CRYPTOCFGA_REPORT_AKCIPHER,	
+	CRYPTOCFGA_REPORT_KPP,		
+	CRYPTOCFGA_REPORT_ACOMP,	
+	CRYPTOCFGA_STAT_LARVAL,		
+	CRYPTOCFGA_STAT_HASH,		
+	CRYPTOCFGA_STAT_BLKCIPHER,	
+	CRYPTOCFGA_STAT_AEAD,		
+	CRYPTOCFGA_STAT_COMPRESS,	
+	CRYPTOCFGA_STAT_RNG,		
+	CRYPTOCFGA_STAT_CIPHER,		
+	CRYPTOCFGA_STAT_AKCIPHER,	
+	CRYPTOCFGA_STAT_KPP,		
+	CRYPTOCFGA_STAT_ACOMP,		
 	__CRYPTOCFGA_MAX
 
 #define CRYPTOCFGA_MAX (__CRYPTOCFGA_MAX - 1)
@@ -202,4 +184,4 @@ struct crypto_report_acomp {
 #define CRYPTO_REPORT_MAXSIZE (sizeof(struct crypto_user_alg) + \
 			       sizeof(struct crypto_report_blkcipher))
 
-#endif /* _UAPI_LINUX_CRYPTOUSER_H */
+#endif 

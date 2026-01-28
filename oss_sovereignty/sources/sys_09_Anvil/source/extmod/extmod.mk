@@ -1,5 +1,5 @@
-# This makefile fragment adds the source code files for the core extmod modules
-# and provides rules to build 3rd-party components for extmod modules.
+
+
 
 SRC_EXTMOD_C += \
 	extmod/machine_adc.c \
@@ -75,10 +75,10 @@ SRC_QSTR += $(SRC_EXTMOD_C)
 CFLAGS += $(CFLAGS_EXTMOD) $(CFLAGS_THIRDPARTY)
 LDFLAGS += $(LDFLAGS_EXTMOD) $(LDFLAGS_THIRDPARTY)
 
-################################################################################
-# libm/libm_dbl math library
 
-# Single-precision math library.
+
+
+
 SRC_LIB_LIBM_C += $(addprefix lib/libm/,\
 	acoshf.c \
 	asinfacosf.c \
@@ -108,14 +108,14 @@ SRC_LIB_LIBM_C += $(addprefix lib/libm/,\
 	wf_tgamma.c \
 	)
 
-# Choose only one of these sqrt implementations, software or hardware.
+
 SRC_LIB_LIBM_SQRT_SW_C += lib/libm/ef_sqrt.c
 SRC_LIB_LIBM_SQRT_HW_C += lib/libm/thumb_vfp_sqrtf.c
 
-# Disable warnings in libm.
+
 $(BUILD)/lib/libm/kf_rem_pio2.o: CFLAGS += -Wno-maybe-uninitialized
 
-# Double-precision math library.
+
 SRC_LIB_LIBM_DBL_C += $(addprefix lib/libm_dbl/,\
 	__cos.c \
 	__expo2.c \
@@ -161,19 +161,19 @@ SRC_LIB_LIBM_DBL_C += $(addprefix lib/libm_dbl/,\
 	trunc.c \
 	)
 
-# Choose only one of these sqrt implementations, software or hardware.
+
 SRC_LIB_LIBM_DBL_SQRT_SW_C += lib/libm_dbl/sqrt.c
 SRC_LIB_LIBM_DBL_SQRT_HW_C += lib/libm_dbl/thumb_vfp_sqrt.c
 
-# Too many warnings in libm_dbl, disable for now.
+
 $(BUILD)/lib/libm_dbl/%.o: CFLAGS += -Wno-double-promotion -Wno-float-conversion
 
-################################################################################
-# VFS FAT FS
+
+
 
 OOFATFS_DIR = lib/oofatfs
 
-# this sets the config file for FatFs
+
 CFLAGS_THIRDPARTY += -DFFCONF_H=\"$(OOFATFS_DIR)/ffconf.h\"
 
 ifeq ($(MICROPY_VFS_FAT),1)
@@ -184,8 +184,8 @@ SRC_THIRDPARTY_C += $(addprefix $(OOFATFS_DIR)/,\
 	)
 endif
 
-################################################################################
-# VFS littlefs
+
+
 
 LITTLEFS_DIR = lib/littlefs
 
@@ -209,8 +209,8 @@ SRC_THIRDPARTY_C += $(addprefix $(LITTLEFS_DIR)/,\
 $(BUILD)/$(LITTLEFS_DIR)/lfs2.o: CFLAGS += -Wno-shadow
 endif
 
-################################################################################
-# ussl
+
+
 
 ifeq ($(MICROPY_PY_SSL),1)
 CFLAGS_EXTMOD += -DMICROPY_PY_SSL=1
@@ -318,12 +318,12 @@ SRC_THIRDPARTY_C += $(addprefix $(MBEDTLS_DIR)/library/,\
 endif
 endif
 
-################################################################################
-# lwip
+
+
 
 ifeq ($(MICROPY_PY_LWIP),1)
 GIT_SUBMODULES += lib/lwip
-# A port should add an include path where lwipopts.h can be found (eg extmod/lwip-include)
+
 LWIP_DIR = lib/lwip/src
 INC += -I$(TOP)/$(LWIP_DIR)/include
 CFLAGS_EXTMOD += -DMICROPY_PY_LWIP=1
@@ -376,8 +376,8 @@ SRC_THIRDPARTY_C += $(LWIP_DIR)/netif/slipif.c
 endif
 endif
 
-################################################################################
-# btree
+
+
 
 ifeq ($(MICROPY_PY_BTREE),1)
 BTREE_DIR = lib/berkeley-db-1.xx
@@ -402,12 +402,12 @@ SRC_THIRDPARTY_C += $(addprefix $(BTREE_DIR)/,\
 	mpool/mpool.c \
 	)
 CFLAGS_EXTMOD += -DMICROPY_PY_BTREE=1
-# we need to suppress certain warnings to get berkeley-db to compile cleanly
+
 $(BUILD)/$(BTREE_DIR)/%.o: CFLAGS += -Wno-old-style-definition -Wno-sign-compare -Wno-unused-parameter -Wno-deprecated-non-prototype -Wno-unknown-warning-option
 endif
 
-################################################################################
-# networking
+
+
 
 ifeq ($(MICROPY_PY_NETWORK_CYW43),1)
 CYW43_DIR = lib/cyw43-driver
@@ -425,7 +425,7 @@ DRIVERS_SRC_C += drivers/cyw43/cywbt.c
 endif
 
 $(BUILD)/$(CYW43_DIR)/src/cyw43_%.o: CFLAGS += -std=c11
-endif # MICROPY_PY_NETWORK_CYW43
+endif 
 
 ifneq ($(MICROPY_PY_NETWORK_WIZNET5K),)
 ifneq ($(MICROPY_PY_NETWORK_WIZNET5K),0)
@@ -435,7 +435,7 @@ INC += -I$(TOP)/$(WIZNET5K_DIR) -I$(TOP)/$(WIZNET5K_DIR)/Ethernet
 CFLAGS += -DMICROPY_PY_NETWORK_WIZNET5K=$(MICROPY_PY_NETWORK_WIZNET5K) -D_WIZCHIP_=$(MICROPY_PY_NETWORK_WIZNET5K)
 CFLAGS_THIRDPARTY += -DWIZCHIP_PREFIXED_EXPORTS=1
 ifeq ($(MICROPY_PY_LWIP),1)
-# When using MACRAW mode (with lwIP), maximum buffer space must be used for the raw socket
+
 CFLAGS_THIRDPARTY += -DWIZCHIP_USE_MAX_BUFFER
 endif
 SRC_THIRDPARTY_C += $(addprefix $(WIZNET5K_DIR)/,\
@@ -446,7 +446,7 @@ SRC_THIRDPARTY_C += $(addprefix $(WIZNET5K_DIR)/,\
 	Internet/DHCP/dhcp.c \
 	)
 endif
-endif # MICROPY_PY_NETWORK_WIZNET5K
+endif 
 
 ifeq ($(MICROPY_PY_NETWORK_ESP_HOSTED),1)
 ESP_HOSTED_DIR = drivers/esp-hosted
@@ -468,31 +468,31 @@ ifeq ($(MICROPY_PY_BLUETOOTH),1)
 ESP_HOSTED_SRC_C += $(ESP_HOSTED_DIR)/esp_hosted_bthci.c
 endif
 
-# Include the protobuf-c support functions
+
 ESP_HOSTED_SRC_C += $(addprefix $(PROTOBUF_C_DIR)/,\
 	protobuf-c/protobuf-c.c \
 	)
 
 $(BUILD)/$(PROTOBUF_C_DIR)/%.o: CFLAGS += -Wno-unused-but-set-variable
 
-# Generate esp_hosted-pb-c.c|h from esp_hosted.proto
+
 PROTO_GEN_SRC = $(BUILD)/extmod/esp_hosted.pb-c.c
 ESP_HOSTED_SRC_C += $(PROTO_GEN_SRC)
 
 $(PROTO_GEN_SRC): $(TOP)/$(ESP_HOSTED_DIR)/esp_hosted.proto
 	$(PROTOC) --proto_path=$(dir $<) --c_out=$(dir $@) $<
 
-# Scope the protobuf include paths to the esp_hosted source files, only
+
 ESP_HOSTED_OBJS = $(addprefix $(BUILD)/, $(ESP_HOSTED_SRC_C:.c=.o))
 $(ESP_HOSTED_OBJS): $(PROTO_GEN_SRC)
 $(ESP_HOSTED_OBJS): CFLAGS += -I$(dir $(PROTO_GEN_SRC)) -I$(TOP)/$(PROTOBUF_C_DIR)
 
 DRIVERS_SRC_C += $(ESP_HOSTED_SRC_C)
 
-endif # MICROPY_PY_NETWORK_ESP_HOSTED
+endif 
 
-################################################################################
-# bluetooth
+
+
 
 ifeq ($(MICROPY_PY_BLUETOOTH),1)
 CFLAGS_EXTMOD += -DMICROPY_PY_BLUETOOTH=1
@@ -519,8 +519,8 @@ endif
 
 endif
 
-################################################################################
-# openamp
+
+
 
 ifeq ($(MICROPY_PY_OPENAMP),1)
 OPENAMP_DIR = lib/open-amp
@@ -544,7 +544,7 @@ CFLAGS_THIRDPARTY += \
     -DNO_ATOMIC_64_SUPPORT \
     -DRPMSG_BUFFER_SIZE=512 \
 
-# OpenAMP's source files.
+
 SRC_OPENAMP_C += $(addprefix $(OPENAMP_DIR)/lib/,\
 	rpmsg/rpmsg.c \
 	rpmsg/rpmsg_virtio.c \
@@ -553,7 +553,7 @@ SRC_OPENAMP_C += $(addprefix $(OPENAMP_DIR)/lib/,\
 	virtio_mmio/virtio_mmio_drv.c \
 	)
 
-# OpenAMP's remoteproc source files.
+
 ifeq ($(MICROPY_PY_OPENAMP_REMOTEPROC),1)
 SRC_OPENAMP_C += $(addprefix $(OPENAMP_DIR)/lib/remoteproc/,\
 	elf_loader.c \
@@ -561,15 +561,15 @@ SRC_OPENAMP_C += $(addprefix $(OPENAMP_DIR)/lib/remoteproc/,\
 	remoteproc_virtio.c \
 	rsc_table_parser.c \
 	)
-endif # MICROPY_PY_OPENAMP_REMOTEPROC
+endif 
 
-# Disable compiler warnings in OpenAMP (variables used only for assert).
+
 $(BUILD)/$(OPENAMP_DIR)/lib/rpmsg/rpmsg_virtio.o: CFLAGS += -Wno-unused-but-set-variable
 $(BUILD)/$(OPENAMP_DIR)/lib/virtio_mmio/virtio_mmio_drv.o: CFLAGS += -Wno-unused-but-set-variable
 
-# We need to have generated libmetal before compiling OpenAMP.
+
 $(addprefix $(BUILD)/, $(SRC_OPENAMP_C:.c=.o)): $(BUILD)/openamp/metal/config.h
 
 SRC_THIRDPARTY_C += $(SRC_LIBMETAL_C) $(SRC_OPENAMP_C)
 
-endif # MICROPY_PY_OPENAMP
+endif 

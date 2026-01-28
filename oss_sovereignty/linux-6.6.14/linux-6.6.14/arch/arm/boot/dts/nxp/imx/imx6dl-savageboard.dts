@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "imx6dl.dtsi"
-#include "imx6qdl-savageboard.dtsi"
-/ {
-	model = "Poslab SavageBoard Dual";
-	compatible = "poslab,imx6dl-savageboard", "fsl,imx6dl";
-};

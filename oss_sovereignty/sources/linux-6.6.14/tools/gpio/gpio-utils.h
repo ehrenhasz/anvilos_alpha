@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * GPIO tools - utility helpers library for the GPIO tools
- *
- * Copyright (C) 2015 Linus Walleij
- *
- * Portions copied from iio_utils and lssio:
- * Copyright (c) 2010 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
- * Copyright (c) 2008 Jonathan Cameron
- * *
- */
+
+
 #ifndef _GPIO_UTILS_H_
 #define _GPIO_UTILS_H_
 
@@ -41,7 +32,7 @@ int gpiotools_set(const char *device_name, unsigned int line,
 int gpiotools_sets(const char *device_name, unsigned int *lines,
 		   unsigned int num_lines, unsigned int *values);
 
-/* helper functions for gpio_v2_line_values bits */
+
 static inline void gpiotools_set_bit(__u64 *b, int n)
 {
 	*b |= _BITULL(n);
@@ -70,4 +61,4 @@ static inline void gpiotools_assign_bit(__u64 *b, int n, bool value)
 		gpiotools_clear_bit(b, n);
 }
 
-#endif /* _GPIO_UTILS_H_ */
+#endif 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Common values for SHA-1 algorithms
- */
+
+
 
 #ifndef _CRYPTO_SHA1_H
 #define _CRYPTO_SHA1_H
@@ -33,14 +31,10 @@ extern int crypto_sha1_update(struct shash_desc *desc, const u8 *data,
 extern int crypto_sha1_finup(struct shash_desc *desc, const u8 *data,
 			     unsigned int len, u8 *hash);
 
-/*
- * An implementation of SHA-1's compression function.  Don't use in new code!
- * You shouldn't be using SHA-1, and even if you *have* to use SHA-1, this isn't
- * the correct way to hash something with SHA-1 (use crypto_shash instead).
- */
+
 #define SHA1_DIGEST_WORDS	(SHA1_DIGEST_SIZE / 4)
 #define SHA1_WORKSPACE_WORDS	16
 void sha1_init(__u32 *buf);
 void sha1_transform(__u32 *digest, const char *data, __u32 *W);
 
-#endif /* _CRYPTO_SHA1_H */
+#endif 

@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_PATH_H
 #define UTIL_LINUX_PATH_H
 
@@ -144,5 +141,5 @@ int ul_path_readf_cpuset(struct path_cxt *pc, cpu_set_t **set, int maxcpus, cons
 
 int ul_path_readf_cpulist(struct path_cxt *pc, cpu_set_t **set, int maxcpus, const char *path, ...)
 				__attribute__ ((__format__ (__printf__, 4, 5)));
-#endif /* HAVE_CPU_SET_T */
-#endif /* UTIL_LINUX_PATH_H */
+#endif 
+#endif 

@@ -10,4 +10,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* R_DTC_CFG_H_ */
+#endif 

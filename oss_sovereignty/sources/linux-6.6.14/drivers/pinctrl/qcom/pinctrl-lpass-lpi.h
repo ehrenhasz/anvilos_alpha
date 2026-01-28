@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016-2019, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020 Linaro Ltd.
- */
+
+
 #ifndef __PINCTRL_LPASS_LPI_H__
 #define __PINCTRL_LPASS_LPI_H__
 
@@ -63,7 +60,7 @@ struct pinctrl_pin_desc;
 struct lpi_pingroup {
 	struct group_desc group;
 	unsigned int pin;
-	/* Bit offset in slew register for SoundWire pins only */
+	
 	int slew_offset;
 	unsigned int *funcs;
 	unsigned int nfuncs;
@@ -87,4 +84,4 @@ struct lpi_pinctrl_variant_data {
 int lpi_pinctrl_probe(struct platform_device *pdev);
 int lpi_pinctrl_remove(struct platform_device *pdev);
 
-#endif /*__PINCTRL_LPASS_LPI_H__*/
+#endif 

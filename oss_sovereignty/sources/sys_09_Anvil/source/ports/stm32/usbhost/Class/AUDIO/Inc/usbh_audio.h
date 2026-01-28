@@ -1,60 +1,24 @@
-/**
-  ******************************************************************************
-  * @file    usbh_audio.h
-  * @author  MCD Application Team
-  * @version V3.0.0
-  * @date    18-February-2014
-  * @brief   This file contains all the prototypes for the usbh_audio.c
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
-  */ 
+ 
 
-/* Define to prevent recursive  ----------------------------------------------*/
+
 #ifndef __USBH_AUDIO_H
 #define __USBH_AUDIO_H
 
-/* Includes ------------------------------------------------------------------*/
+
 #include "usbh_core.h"
  
-/** @addtogroup USBH_LIB
-  * @{
-  */
 
-/** @addtogroup USBH_CLASS
-  * @{
-  */
 
-/** @addtogroup USBH_AUDIO_CLASS
-  * @{
-  */
+
+
+
   
-/** @defgroup USBH_AUDIO_CORE
-  * @brief This file is the Header file for usbh_audio.c
-  * @{
-  */ 
+ 
 
 
-/** @defgroup USBH_AUDIO_CORE_Exported_Types
-  * @{
-  */ 
+ 
 
-/* States for AUDIO State Machine */
+
 typedef enum
 {
   AUDIO_INIT = 0, 
@@ -141,7 +105,7 @@ typedef enum
 }
 AUDIO_ProcessingTypeDef;
 
-/* Structure for AUDIO process */
+
 typedef struct
 {
   uint8_t   Channels;
@@ -245,7 +209,7 @@ AUDIO_InterfaceControlPropTypeDef;
 #define HEADSET_SUPPORTED                  0x03
 
 
-/*Class-Specific AS(Audio Streaming) Interface Descriptor*/
+
 typedef struct
 {
   uint8_t bLength; 
@@ -257,10 +221,10 @@ typedef struct
 }
 AUDIO_ASGeneralDescTypeDef;
 
-/*Class-Specific AS(Audio Streaming) Format Type Descriptor*/
+
 typedef struct
 {
-  uint8_t bLength;    /*At to be deside*/
+  uint8_t bLength;    
   uint8_t bDescriptorType;
   uint8_t bDescriptorSubtype;
   uint8_t bFormatType;
@@ -272,7 +236,7 @@ typedef struct
 }
 AUDIO_ASFormatTypeDescTypeDef;
 
-/*Class-Specific AS(Audio Streaming) Interface Descriptor*/
+
 typedef struct
 {
   AUDIO_ASGeneralDescTypeDef      *GeneralDesc;
@@ -280,7 +244,7 @@ typedef struct
 }
 AUDIO_ASDescTypeDef;
 
-/* 4.3.2  Class-Specific AC Interface Descriptor */
+
 
 typedef struct
 {
@@ -294,7 +258,7 @@ typedef struct
 } 
 AUDIO_HeaderDescTypeDef;
 
-/* 4.3.2.1 Input Terminal Descriptor */
+
 typedef struct 
 {
   uint8_t  bLength;                 
@@ -310,7 +274,7 @@ typedef struct
 }
 AUDIO_ITDescTypeDef;
 
-/* 4.3.2.2 Output Terminal Descriptor */
+
 typedef struct 
 {
   uint8_t  bLength;                 
@@ -324,7 +288,7 @@ typedef struct
 }
 AUDIO_OTDescTypeDef;
 
-/* 4.3.2.3 Feature Descriptor */
+
 typedef struct
 {                                                             
   uint8_t  bLength;                                        
@@ -338,7 +302,7 @@ typedef struct
 AUDIO_FeatureDescTypeDef;
 
 
-/* 4.3.2.3 Feature Descriptor */
+
 typedef struct
 {                                                             
   uint8_t  bLength;                                        
@@ -358,7 +322,7 @@ AUDIO_MixerDescTypeDef;
 
 
 
-/* 4.3.2.3 Feature Descriptor */
+
 typedef struct
 {                                                             
   uint8_t  bLength;                                        
@@ -371,7 +335,7 @@ typedef struct
 }
 AUDIO_SelectorDescTypeDef;
 
-/*Class-Specific AC(Audio Control) Interface Descriptor*/
+
 typedef struct
 {
   AUDIO_HeaderDescTypeDef   *HeaderDesc;
@@ -383,11 +347,11 @@ typedef struct
 }
 AUDIO_ACDescTypeDef;
 
-/*Class-Specific AC : Global descriptor*/
+
 
 typedef struct
 {
-  AUDIO_ACDescTypeDef   cs_desc; /* Only one control descriptor*/
+  AUDIO_ACDescTypeDef   cs_desc; 
   AUDIO_ASDescTypeDef   as_desc[AUDIO_MAX_STREAMING_INTERFACE];
 
   uint16_t ASNum; 
@@ -421,19 +385,15 @@ typedef struct _AUDIO_Process
 }
 AUDIO_HandleTypeDef;
 
-/**
-  * @}
-  */ 
+ 
 
-/** @defgroup USBH_AUDIO_CORE_Exported_Defines
-  * @{
-  */ 
+ 
 
 
-/*Audio Interface Subclass Codes*/
+
 #define AC_CLASS                        0x01
 
-/* A.2 Audio Interface Subclass Codes */
+
 #define USB_SUBCLASS_AUDIOCONTROL	0x01
 #define USB_SUBCLASS_AUDIOSTREAMING	0x02
 #define USB_SUBCLASS_MIDISTREAMING	0x03 
@@ -441,7 +401,7 @@ AUDIO_HandleTypeDef;
 #define USB_DESC_TYPE_CS_INTERFACE      0x24
 #define USB_DESC_TYPE_CS_ENDPOINT       0x25
 
-/* A.5 Audio Class-Specific AC Interface Descriptor Subtypes */
+
 #define UAC_HEADER			0x01
 #define UAC_INPUT_TERMINAL		0x02
 #define UAC_OUTPUT_TERMINAL		0x03
@@ -451,12 +411,12 @@ AUDIO_HandleTypeDef;
 #define UAC_PROCESSING_UNIT		0x07
 #define UAC_EXTENSION_UNIT		0x08
 
-/*Audio Class-Specific Endpoint Descriptor Subtypes*/
+
 #define  EP_CONTROL_UNDEFINED             0x00
 #define  SAMPLING_FREQ_CONTROL            0x01
 #define  PITCH_CONTROL                    0x02
 
-/*Feature unit control selector*/
+
 #define FU_CONTROL_UNDEFINED                        0x00
 #define MUTE_CONTROL                                0x01
 #define VOLUME_CONTROL                              0x02
@@ -469,20 +429,20 @@ AUDIO_HandleTypeDef;
 #define BASS_BOOST_CONTROL                          0x09
 #define LOUDNESS_CONTROL                            0x0A
 
-/*Terminal control selector*/
+
 #define TE_CONTROL_UNDEFINED                        0x00
 #define COPY_PROTECT_CONTROL                        0x01
 
 
-/* A.6 Audio Class-Specific AS Interface Descriptor Subtypes */
+
 #define UAC_AS_GENERAL			0x01
 #define UAC_FORMAT_TYPE			0x02
 #define UAC_FORMAT_SPECIFIC		0x03
 
-/* A.8 Audio Class-Specific Endpoint Descriptor Subtypes */
+
 #define UAC_EP_GENERAL			0x01
 
-/* A.9 Audio Class-Specific Request Codes */
+
 #define UAC_SET_			0x00
 #define UAC_GET_			0x80
 
@@ -505,42 +465,30 @@ AUDIO_HandleTypeDef;
 
 #define UAC_GET_STAT			0xff
 
-/* MIDI - A.1 MS Class-Specific Interface Descriptor Subtypes */
+
 #define UAC_MS_HEADER			0x01
 #define UAC_MIDI_IN_JACK		0x02
 #define UAC_MIDI_OUT_JACK		0x03
 
-/* MIDI - A.1 MS Class-Specific Endpoint Descriptor Subtypes */
+
 #define UAC_MS_GENERAL			0x01
 
-/* Terminals - 2.1 USB Terminal Types */
+
 #define UAC_TERMINAL_UNDEFINED		0x100
 #define UAC_TERMINAL_STREAMING		0x101
 #define UAC_TERMINAL_VENDOR_SPEC	0x1FF
     
-/**
-  * @}
-  */ 
+ 
 
-/** @defgroup USBH_AUDIO_CORE_Exported_Macros
-  * @{
-  */ 
-/**
-  * @}
-  */ 
+ 
+ 
 
-/** @defgroup USBH_AUDIO_CORE_Exported_Variables
-  * @{
-  */ 
+ 
 extern USBH_ClassTypeDef  AUDIO_Class;
 #define USBH_AUDIO_CLASS    &AUDIO_Class
-/**
-  * @}
-  */ 
+ 
 
-/** @defgroup USBH_AUDIO_CORE_Exported_FunctionsPrototype
-  * @{
-  */ 
+ 
 USBH_StatusTypeDef USBH_AUDIO_SetFrequency (USBH_HandleTypeDef *phost, 
                                             uint16_t sample_rate,
                                             uint8_t  channel_num,
@@ -555,27 +503,17 @@ USBH_StatusTypeDef USBH_AUDIO_ChangeOutBuffer (USBH_HandleTypeDef *phost, uint8_
 int32_t            USBH_AUDIO_GetOutOffset (USBH_HandleTypeDef *phost);
 
 void        USBH_AUDIO_FrequencySet(USBH_HandleTypeDef *phost);
-/**
-  * @}
-  */ 
+ 
 
 
-#endif /* __USBH_AUDIO_H */
+#endif 
 
-/**
-  * @}
-  */ 
+ 
 
-/**
-  * @}
-  */ 
+ 
 
-/**
-  * @}
-  */ 
+ 
 
-/**
-  * @}
-  */ 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+ 
+
 

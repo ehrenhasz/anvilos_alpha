@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "sun5i-a13.dtsi"
-#include "sun5i-reference-design-tablet.dtsi"
-/ {
-	model = "Difrnce DIT4350";
-	compatible = "difrnce,dit4350", "allwinner,sun5i-a13";
-};

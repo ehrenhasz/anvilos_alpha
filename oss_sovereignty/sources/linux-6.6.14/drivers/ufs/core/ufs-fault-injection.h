@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef _UFS_FAULT_INJECTION_H
 #define _UFS_FAULT_INJECTION_H
@@ -21,4 +21,4 @@ static inline bool ufs_fail_completion(void)
 }
 #endif
 
-#endif /* _UFS_FAULT_INJECTION_H */
+#endif 

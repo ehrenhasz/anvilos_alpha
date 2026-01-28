@@ -16,11 +16,18 @@ def clear_deck():
     cursor.execute("SELECT COUNT(*) FROM card_stack")
     count = cursor.fetchone()[0]
     print(f"Cards before clear: {count}")
+    
     cursor.execute("DELETE FROM card_stack")
+    cursor.execute("DELETE FROM sys_goals") # Also clear goals
     conn.commit()
+    
     cursor.execute("SELECT COUNT(*) FROM card_stack")
     count_after = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM sys_goals")
+    goals_after = cursor.fetchone()[0]
+    
     print(f"Cards after clear: {count_after}")
+    print(f"Goals after clear: {goals_after}")
     conn.close()
 if __name__ == "__main__":
     clear_deck()

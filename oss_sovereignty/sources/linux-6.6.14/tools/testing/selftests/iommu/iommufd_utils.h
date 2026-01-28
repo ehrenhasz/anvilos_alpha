@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES */
+
+
 #ifndef __SELFTEST_IOMMUFD_UTILS
 #define __SELFTEST_IOMMUFD_UTILS
 
@@ -13,7 +13,7 @@
 #include "../kselftest_harness.h"
 #include "../../../../drivers/iommu/iommufd/iommufd_test.h"
 
-/* Hack to make assertions more readable */
+
 #define _IOMMU_TEST_CMD(x) IOMMU_TEST_CMD
 
 static void *buffer;
@@ -25,10 +25,7 @@ static unsigned long PAGE_SIZE;
 #define offsetofend(TYPE, MEMBER) \
 	(offsetof(TYPE, MEMBER) + sizeof_field(TYPE, MEMBER))
 
-/*
- * Have the kernel check the refcount on pages. I don't know why a freshly
- * mmap'd anon non-compound page starts out with a ref of 3
- */
+
 #define check_refs(_ptr, _length, _refs)                                      \
 	({                                                                    \
 		struct iommu_test_cmd test_cmd = {                            \
@@ -353,7 +350,7 @@ static void teardown_iommufd(int fd, struct __test_metadata *_metadata)
 
 #endif
 
-/* @data can be NULL */
+
 static int _test_cmd_get_hw_info(int fd, __u32 device_id,
 				 void *data, size_t data_len)
 {
@@ -372,16 +369,10 @@ static int _test_cmd_get_hw_info(int fd, __u32 device_id,
 
 	assert(cmd.out_data_type == IOMMU_HW_INFO_TYPE_SELFTEST);
 
-	/*
-	 * The struct iommu_test_hw_info should be the one defined
-	 * by the current kernel.
-	 */
+	
 	assert(cmd.data_len == sizeof(struct iommu_test_hw_info));
 
-	/*
-	 * Trailing bytes should be 0 if user buffer is larger than
-	 * the data that kernel reports.
-	 */
+	
 	if (data_len > cmd.data_len) {
 		char *ptr = (char *)(data + cmd.data_len);
 		int idx = 0;

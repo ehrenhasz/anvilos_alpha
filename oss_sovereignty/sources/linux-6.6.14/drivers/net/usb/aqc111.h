@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Aquantia Corp. Aquantia AQtion USB to 5GbE Controller
- * Copyright (C) 2003-2005 David Hollis <dhollis@davehollis.com>
- * Copyright (C) 2005 Phil Chang <pchang23@sbcglobal.net>
- * Copyright (C) 2002-2003 TiVo Inc.
- * Copyright (C) 2017-2018 ASIX
- * Copyright (C) 2018 Aquantia Corp.
- */
+
+
 
 #ifndef __LINUX_USBNET_AQC111_H
 #define __LINUX_USBNET_AQC111_H
@@ -24,7 +18,7 @@
 #define AQ_USB_PHY_SET_TIMEOUT		10000
 #define AQ_USB_SET_TIMEOUT		4000
 
-/* Feature. ********************************************/
+
 #define AQ_SUPPORT_FEATURE	(NETIF_F_SG | NETIF_F_IP_CSUM |\
 				 NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM |\
 				 NETIF_F_TSO | NETIF_F_HW_VLAN_CTAG_TX |\
@@ -38,7 +32,7 @@
 				 NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM |\
 				 NETIF_F_TSO)
 
-/* SFR Reg. ********************************************/
+
 
 #define SFR_GENERAL_STATUS		0x03
 #define SFR_CHIP_STATUS			0x05
@@ -128,7 +122,7 @@
 #define AQ_FW_VER_MINOR			0xDB
 #define AQ_FW_VER_REV			0xDC
 
-/*PHY_OPS**********************************************************************/
+
 
 #define AQ_ADV_100M	BIT(0)
 #define AQ_ADV_1G	BIT(1)
@@ -148,7 +142,7 @@
 
 #define AQ_WOL_FLAG_MP			0x2
 
-/******************************************************************************/
+
 
 struct aqc111_wol_cfg {
 	u8 hw_addr[6];
@@ -182,7 +176,7 @@ struct aqc111_data {
 #define AQ_INT_SPEED_1G		0x0011
 #define AQ_INT_SPEED_100M	0x0013
 
-/* TX Descriptor */
+
 #define AQ_TX_DESC_LEN_MASK	0x1FFFFF
 #define AQ_TX_DESC_DROP_PADD	BIT(28)
 #define AQ_TX_DESC_VLAN		BIT(29)
@@ -193,7 +187,7 @@ struct aqc111_data {
 
 #define AQ_RX_HW_PAD			0x02
 
-/* RX Packet Descriptor */
+
 #define AQ_RX_PD_L4_ERR		BIT(0)
 #define AQ_RX_PD_L3_ERR		BIT(1)
 #define AQ_RX_PD_L4_TYPE_MASK	0x1C
@@ -210,7 +204,7 @@ struct aqc111_data {
 #define AQ_RX_PD_LEN_SHIFT	0x10
 #define AQ_RX_PD_VLAN_SHIFT	0x20
 
-/* RX Descriptor header */
+
 #define AQ_RX_DH_PKT_CNT_MASK		0x1FFF
 #define AQ_RX_DH_DESC_OFFSET_MASK	0xFFFFE000
 #define AQ_RX_DH_DESC_OFFSET_SHIFT	0x0D
@@ -222,11 +216,11 @@ static struct {
 	unsigned char size;
 	unsigned char ifg;
 } AQC111_BULKIN_SIZE[] = {
-	/* xHCI & EHCI & OHCI */
-	{7, 0x00, 0x01, 0x1E, 0xFF},/* 10G, 5G, 2.5G, 1G */
-	{7, 0xA0, 0x00, 0x14, 0x00},/* 100M */
-	/* Jumbo packet */
+	
+	{7, 0x00, 0x01, 0x1E, 0xFF},
+	{7, 0xA0, 0x00, 0x14, 0x00},
+	
 	{7, 0x00, 0x01, 0x18, 0xFF},
 };
 
-#endif /* __LINUX_USBNET_AQC111_H */
+#endif 

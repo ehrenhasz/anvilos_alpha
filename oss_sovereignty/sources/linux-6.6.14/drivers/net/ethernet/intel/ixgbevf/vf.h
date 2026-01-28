@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 1999 - 2018 Intel Corporation. */
+
+
 
 #ifndef __IXGBE_VF_H__
 #define __IXGBE_VF_H__
@@ -27,13 +27,13 @@ struct ixgbe_mac_operations {
 	s32 (*get_bus_info)(struct ixgbe_hw *);
 	s32 (*negotiate_api_version)(struct ixgbe_hw *hw, int api);
 
-	/* Link */
+	
 	s32 (*setup_link)(struct ixgbe_hw *, ixgbe_link_speed, bool, bool);
 	s32 (*check_link)(struct ixgbe_hw *, ixgbe_link_speed *, bool *, bool);
 	s32 (*get_link_capabilities)(struct ixgbe_hw *, ixgbe_link_speed *,
 				     bool *);
 
-	/* RAR, Multicast, VLAN */
+	
 	s32 (*set_rar)(struct ixgbe_hw *, u32, u8 *, u32);
 	s32 (*set_uc_addr)(struct ixgbe_hw *, u32, u8 *);
 	s32 (*init_rx_addrs)(struct ixgbe_hw *);
@@ -188,4 +188,4 @@ int ixgbevf_get_queues(struct ixgbe_hw *hw, unsigned int *num_tcs,
 		       unsigned int *default_tc);
 int ixgbevf_get_reta_locked(struct ixgbe_hw *hw, u32 *reta, int num_rx_queues);
 int ixgbevf_get_rss_key_locked(struct ixgbe_hw *hw, u8 *rss_key);
-#endif /* __IXGBE_VF_H__ */
+#endif 

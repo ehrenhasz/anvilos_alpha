@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# USB gadget drivers
-#
+
+
+
+
 
 ccflags-y			:= -I$(srctree)/drivers/usb/gadget/
 ccflags-y			+= -I$(srctree)/drivers/usb/gadget/udc/

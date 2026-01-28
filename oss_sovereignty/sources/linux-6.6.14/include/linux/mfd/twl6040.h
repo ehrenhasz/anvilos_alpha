@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * MFD driver for twl6040
- *
- * Authors:     Jorge Eduardo Candelaria <jorge.candelaria@ti.com>
- *              Misael Lopez Cruz <misael.lopez@ti.com>
- *
- * Copyright:   (C) 2011 Texas Instruments, Inc.
- */
+
+
 
 #ifndef __TWL6040_CODEC_H__
 #define __TWL6040_CODEC_H__
@@ -56,7 +49,7 @@
 #define TWL6040_REG_ACCCTL		0x2D
 #define TWL6040_REG_STATUS		0x2E
 
-/* INTID (0x03) fields */
+
 
 #define TWL6040_THINT			0x01
 #define TWL6040_PLUGINT			0x02
@@ -66,7 +59,7 @@
 #define TWL6040_VIBINT			0x20
 #define TWL6040_READYINT		0x40
 
-/* INTMR (0x04) fields */
+
 
 #define TWL6040_THMSK			0x01
 #define TWL6040_PLUGMSK			0x02
@@ -76,19 +69,19 @@
 #define TWL6040_READYMSK		0x40
 #define TWL6040_ALLINT_MSK		0x7B
 
-/* NCPCTL (0x05) fields */
+
 
 #define TWL6040_NCPENA			0x01
 #define TWL6040_NCPOPEN			0x40
 
-/* LDOCTL (0x06) fields */
+
 
 #define TWL6040_LSLDOENA		0x01
 #define TWL6040_HSLDOENA		0x04
 #define TWL6040_REFENA			0x40
 #define TWL6040_OSCENA			0x80
 
-/* HPPLLCTL (0x07) fields */
+
 
 #define TWL6040_HPLLENA			0x01
 #define TWL6040_HPLLRST			0x02
@@ -100,7 +93,7 @@
 #define TWL6040_MCLK_38400KHZ		(3 << 5)
 #define TWL6040_MCLK_MSK		0x60
 
-/* LPPLLCTL (0x08) fields */
+
 
 #define TWL6040_LPLLENA			0x01
 #define TWL6040_LPLLRST			0x02
@@ -108,21 +101,21 @@
 #define TWL6040_LPLLFIN			0x08
 #define TWL6040_HPLLSEL			0x10
 
-/* HSLCTL/R (0x10/0x11) fields */
+
 
 #define TWL6040_HSDACENA		(1 << 0)
 #define TWL6040_HSDACMODE		(1 << 1)
 #define TWL6040_HSDRVENA		(1 << 2)
 #define TWL6040_HSDRVMODE		(1 << 3)
 
-/* HFLCTL/R (0x14/0x16) fields */
+
 
 #define TWL6040_HFDACENA		(1 << 0)
 #define TWL6040_HFPGAENA		(1 << 1)
 #define TWL6040_HFDRVENA		(1 << 4)
 #define TWL6040_HFSWENA			(1 << 6)
 
-/* VIBCTLL/R (0x18/0x1A) fields */
+
 
 #define TWL6040_VIBENA			(1 << 0)
 #define TWL6040_VIBSEL			(1 << 1)
@@ -130,24 +123,24 @@
 #define TWL6040_VIBCTRL_P		(1 << 3)
 #define TWL6040_VIBCTRL_N		(1 << 4)
 
-/* VIBDATL/R (0x19/0x1B) fields */
+
 
 #define TWL6040_VIBDAT_MAX		0x64
 
-/* GPOCTL (0x1E) fields */
+
 
 #define TWL6040_GPO1			0x01
 #define TWL6040_GPO2			0x02
 #define TWL6040_GPO3			0x04
 
-/* ACCCTL (0x2D) fields */
+
 
 #define TWL6040_I2CSEL			0x01
 #define TWL6040_RESETSPLIT		0x04
 #define TWL6040_INTCLRMODE		0x08
 #define TWL6040_I2CMODE(x)		((x & 0x3) << 4)
 
-/* STATUS (0x2E) fields */
+
 
 #define TWL6040_PLUGCOMP		0x02
 #define TWL6040_VIBLOCDET		0x10
@@ -157,7 +150,7 @@
 #define TWL6040_CELLS			4
 
 #define TWL6040_REV_ES1_0		0x00
-#define TWL6040_REV_ES1_1		0x01 /* Rev ES1.1 and ES1.2 */
+#define TWL6040_REV_ES1_1		0x01 
 #define TWL6040_REV_ES1_3		0x02
 #define TWL6041_REV_ES2_0		0x10
 
@@ -168,7 +161,7 @@
 #define TWL6040_IRQ_VIB			4
 #define TWL6040_IRQ_READY		5
 
-/* PLL selection */
+
 #define TWL6040_SYSCLK_SEL_LPPLL	0
 #define TWL6040_SYSCLK_SEL_HPPLL	1
 
@@ -182,7 +175,7 @@ struct twl6040 {
 	struct device *dev;
 	struct regmap *regmap;
 	struct regmap_irq_chip_data *irq_data;
-	struct regulator_bulk_data supplies[2]; /* supplies for vio, v2v1 */
+	struct regulator_bulk_data supplies[2]; 
 	struct clk *clk32k;
 	struct clk *mclk;
 	struct mutex mutex;
@@ -194,7 +187,7 @@ struct twl6040 {
 	int power_count;
 	int rev;
 
-	/* PLL configuration */
+	
 	int pll;
 	unsigned int sysclk_rate;
 	unsigned int mclk_rate;
@@ -217,7 +210,7 @@ int twl6040_set_pll(struct twl6040 *twl6040, int pll_id,
 int twl6040_get_pll(struct twl6040 *twl6040);
 unsigned int twl6040_get_sysclk(struct twl6040 *twl6040);
 
-/* Get the combined status of the vibra control register */
+
 int twl6040_get_vibralr_status(struct twl6040 *twl6040);
 
 static inline int twl6040_get_revid(struct twl6040 *twl6040)
@@ -226,4 +219,4 @@ static inline int twl6040_get_revid(struct twl6040 *twl6040)
 }
 
 
-#endif  /* End of __TWL6040_CODEC_H__ */
+#endif  

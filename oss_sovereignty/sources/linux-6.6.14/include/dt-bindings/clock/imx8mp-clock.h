@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2019 NXP
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_IMX8MP_H
 #define __DT_BINDINGS_CLOCK_IMX8MP_H
@@ -130,7 +128,7 @@
 #define IMX8MP_CLK_SAI1				123
 #define IMX8MP_CLK_SAI2				124
 #define IMX8MP_CLK_SAI3				125
-/* #define IMX8MP_CLK_SAI4				126 */
+
 #define IMX8MP_CLK_SAI5				127
 #define IMX8MP_CLK_SAI6				128
 #define IMX8MP_CLK_ENET_QOS			129

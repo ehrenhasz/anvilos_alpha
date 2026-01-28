@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * MacBook (Pro) SPI keyboard and touchpad driver
- *
- * Copyright (c) 2015-2019 Federico Lorenzi
- * Copyright (c) 2017-2019 Ronald Tschalär
- */
+
+
 
 #ifndef _APPLESPI_H_
 #define _APPLESPI_H_
@@ -26,4 +21,4 @@ enum applespi_pkt_type {
 	PT_STATUS,
 };
 
-#endif /* _APPLESPI_H_ */
+#endif 

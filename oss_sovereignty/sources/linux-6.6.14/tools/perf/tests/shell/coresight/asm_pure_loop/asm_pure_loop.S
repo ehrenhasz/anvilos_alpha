@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Tamas Zsoldos <tamas.zsoldos@arm.com>, 2021 */
+
+
 
 .globl _start
 _start:
@@ -24,5 +24,5 @@ skip:
 	cbnz	x0, loop
 
 	mov	x0, #0
-	mov	x8, #93 // __NR_exit syscall
+	mov	x8, #93 
 	svc	#0

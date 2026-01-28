@@ -1,7 +1,4 @@
-/*
- * Copyright (C) 2004 Jeff Dike (jdike@addtoit.com)
- * Licensed under the GPL
- */
+
 
 #ifndef __SYSDEP_STUB_H
 #define __SYSDEP_STUB_H

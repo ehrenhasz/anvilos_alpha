@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM pwm
 
@@ -52,7 +52,7 @@ DEFINE_EVENT(pwm, pwm_get,
 	TP_ARGS(pwm, state, err)
 );
 
-#endif /* _TRACE_PWM_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

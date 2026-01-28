@@ -1,5 +1,5 @@
 import array
-@micropython.asm_thumb  # test vldr, vstr
+@micropython.asm_thumb  
 def arrayadd(r0):
     vldr(s0, [r0, 0])
     vldr(s1, [r0, 4])

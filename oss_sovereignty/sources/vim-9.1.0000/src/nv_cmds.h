@@ -1,30 +1,11 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved	by Bram Moolenaar et al.
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- * See README.txt for an overview of the Vim source code.
- */
-/*
- * This file defines the Normal mode commands.
- */
 
-/*
- * When adding a Normal/Visual mode command:
- * 1. Add an entry in the table `nv_cmds[]` below.
- * 2. Run "make nvcmdidxs" to re-generate nv_cmdidxs.h.
- * 3. Add an entry in the index for Normal/Visual commands at
- *    ":help normal-index" and ":help visual-index" .
- * 4. Add documentation in ../doc/xxx.txt.  Add a tag for both the short and
- *    long name of the command.
- */
+
+
+
 
 #ifdef DO_DECLARE_NVCMD
 
-/*
- * Used when building Vim.
- */
+
 # define NVCMD(a, b, c, d) \
 	{a, b, c, d}
 
@@ -56,58 +37,40 @@
 #define NV_DROP		nv_error
 #endif
 
-/*
- * Function to be called for a Normal or Visual mode command.
- * The argument is a cmdarg_T.
- */
+
 typedef void (*nv_func_T)(cmdarg_T *cap);
 
-// Values for cmd_flags.
-#define NV_NCH	    0x01	  // may need to get a second char
-#define NV_NCH_NOP  (0x02|NV_NCH) // get second char when no operator pending
-#define NV_NCH_ALW  (0x04|NV_NCH) // always get a second char
-#define NV_LANG	    0x08	// second char needs language adjustment
 
-#define NV_SS	    0x10	// may start selection
-#define NV_SSS	    0x20	// may start selection with shift modifier
-#define NV_STS	    0x40	// may stop selection without shift modif.
-#define NV_RL	    0x80	// 'rightleft' modifies command
-#define NV_KEEPREG  0x100	// don't clear regname
-#define NV_NCW	    0x200	// not allowed in command-line window
+#define NV_NCH	    0x01	  
+#define NV_NCH_NOP  (0x02|NV_NCH) 
+#define NV_NCH_ALW  (0x04|NV_NCH) 
+#define NV_LANG	    0x08	
 
-/*
- * Generally speaking, every Normal mode command should either clear any
- * pending operator (with *clearop*()), or set the motion type variable
- * oap->motion_type.
- *
- * When a cursor motion command is made, it is marked as being a character or
- * line oriented motion.  Then, if an operator is in effect, the operation
- * becomes character or line oriented accordingly.
- */
+#define NV_SS	    0x10	
+#define NV_SSS	    0x20	
+#define NV_STS	    0x40	
+#define NV_RL	    0x80	
+#define NV_KEEPREG  0x100	
+#define NV_NCW	    0x200	
 
-/*
- * This table contains one entry for every Normal or Visual mode command.
- * The order doesn't matter, this will be sorted by the create_nvcmdidx.vim
- * script to generate the nv_cmd_idx[] lookup table.
- * It is faster when all keys from zero to '~' are present.
- */
+
+
+
 static const struct nv_cmd
 {
-    int		cmd_char;	// (first) command character
-    nv_func_T   cmd_func;	// function for this command
-    short_u	cmd_flags;	// NV_ flags
-    short	cmd_arg;	// value for ca.arg
+    int		cmd_char;	
+    nv_func_T   cmd_func;	
+    short_u	cmd_flags;	
+    short	cmd_arg;	
 } nv_cmds[] =
 
-#else  // DO_DECLARE_NVCMD
+#else  
 
-/*
- * Used when creating nv_cmdidxs.h.
- */
+
 # define NVCMD(a, b, c, d)  a
 static const int nv_cmds[] =
 
-#endif // DO_DECLARE_NVCMD
+#endif 
 {
     NVCMD(NUL,		nv_error,	0,			0),
     NVCMD(Ctrl_A,	nv_addsub,	0,			0),
@@ -237,7 +200,7 @@ static const int nv_cmds[] =
     NVCMD('}',		nv_findpar,	0,			FORWARD),
     NVCMD('~',		nv_tilde,	0,			0),
 
-    // pound sign
+    
     NVCMD(POUND,	nv_ident,	0,			0),
     NVCMD(K_MOUSEUP,	nv_mousescroll,	0,			MSCR_UP),
     NVCMD(K_MOUSEDOWN,	nv_mousescroll, 0,			MSCR_DOWN),
@@ -307,5 +270,5 @@ static const int nv_cmds[] =
     NVCMD(K_SCRIPT_COMMAND, nv_colon,	0,			0),
 };
 
-// Number of commands in nv_cmds[].
+
 #define NV_CMDS_SIZE ARRAY_LENGTH(nv_cmds)

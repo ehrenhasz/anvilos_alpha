@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef BTRFS_TREE_MOD_LOG_H
 #define BTRFS_TREE_MOD_LOG_H
 
 #include "ctree.h"
 
-/* Represents a tree mod log user. */
+
 struct btrfs_seq_list {
 	struct list_head list;
 	u64 seq;

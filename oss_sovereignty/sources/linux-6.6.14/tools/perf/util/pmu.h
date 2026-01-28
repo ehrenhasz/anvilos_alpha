@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PMU_H
 #define __PMU_H
 
@@ -34,136 +34,70 @@ struct perf_pmu_caps {
 	struct list_head list;
 };
 
-/**
- * struct perf_pmu
- */
+
 struct perf_pmu {
-	/** @name: The name of the PMU such as "cpu". */
+	
 	const char *name;
-	/**
-	 * @alias_name: Optional alternate name for the PMU determined in
-	 * architecture specific code.
-	 */
+	
 	char *alias_name;
-	/**
-	 * @id: Optional PMU identifier read from
-	 * <sysfs>/bus/event_source/devices/<name>/identifier.
-	 */
+	
 	const char *id;
-	/**
-	 * @type: Perf event attributed type value, read from
-	 * <sysfs>/bus/event_source/devices/<name>/type.
-	 */
+	
 	__u32 type;
-	/**
-	 * @selectable: Can the PMU name be selected as if it were an event?
-	 */
+	
 	bool selectable;
-	/**
-	 * @is_core: Is the PMU the core CPU PMU? Determined by the name being
-	 * "cpu" or by the presence of
-	 * <sysfs>/bus/event_source/devices/<name>/cpus. There may be >1 core
-	 * PMU on systems like Intel hybrid.
-	 */
+	
 	bool is_core;
-	/**
-	 * @is_uncore: Is the PMU not within the CPU core? Determined by the
-	 * presence of <sysfs>/bus/event_source/devices/<name>/cpumask.
-	 */
+	
 	bool is_uncore;
-	/**
-	 * @auxtrace: Are events auxiliary events? Determined in architecture
-	 * specific code.
-	 */
+	
 	bool auxtrace;
-	/**
-	 * @formats_checked: Only check PMU's formats are valid for
-	 * perf_event_attr once.
-	 */
+	
 	bool formats_checked;
-	/** @config_masks_present: Are there config format values? */
+	
 	bool config_masks_present;
-	/** @config_masks_computed: Set when masks are lazily computed. */
+	
 	bool config_masks_computed;
-	/**
-	 * @max_precise: Number of levels of :ppp precision supported by the
-	 * PMU, read from
-	 * <sysfs>/bus/event_source/devices/<name>/caps/max_precise.
-	 */
+	
 	int max_precise;
-	/**
-	 * @default_config: Optional default perf_event_attr determined in
-	 * architecture specific code.
-	 */
+	
 	struct perf_event_attr *default_config;
-	/**
-	 * @cpus: Empty or the contents of either of:
-	 * <sysfs>/bus/event_source/devices/<name>/cpumask.
-	 * <sysfs>/bus/event_source/devices/<cpu>/cpus.
-	 */
+	
 	struct perf_cpu_map *cpus;
-	/**
-	 * @format: Holds the contents of files read from
-	 * <sysfs>/bus/event_source/devices/<name>/format/. The contents specify
-	 * which event parameter changes what config, config1 or config2 bits.
-	 */
+	
 	struct list_head format;
-	/**
-	 * @aliases: List of struct perf_pmu_alias. Each alias corresponds to an
-	 * event read from <sysfs>/bus/event_source/devices/<name>/events/ or
-	 * from json events in pmu-events.c.
-	 */
+	
 	struct list_head aliases;
-	/**
-	 * @events_table: The events table for json events in pmu-events.c.
-	 */
+	
 	const struct pmu_events_table *events_table;
-	/** @sysfs_aliases: Number of sysfs aliases loaded. */
+	
 	uint32_t sysfs_aliases;
-	/** @sysfs_aliases: Number of json event aliases loaded. */
+	
 	uint32_t loaded_json_aliases;
-	/** @sysfs_aliases_loaded: Are sysfs aliases loaded from disk? */
+	
 	bool sysfs_aliases_loaded;
-	/**
-	 * @cpu_aliases_added: Have all json events table entries for the PMU
-	 * been added?
-	 */
+	
 	bool cpu_aliases_added;
-	/** @caps_initialized: Has the list caps been initialized? */
+	
 	bool caps_initialized;
-	/** @nr_caps: The length of the list caps. */
+	
 	u32 nr_caps;
-	/**
-	 * @caps: Holds the contents of files read from
-	 * <sysfs>/bus/event_source/devices/<name>/caps/.
-	 *
-	 * The contents are pairs of the filename with the value of its
-	 * contents, for example, max_precise (see above) may have a value of 3.
-	 */
+	
 	struct list_head caps;
-	/** @list: Element on pmus list in pmu.c. */
+	
 	struct list_head list;
 
-	/**
-	 * @config_masks: Derived from the PMU's format data, bits that are
-	 * valid within the config value.
-	 */
+	
 	__u64 config_masks[PERF_PMU_FORMAT_VALUE_CONFIG_END];
 
-	/**
-	 * @missing_features: Features to inhibit when events on this PMU are
-	 * opened.
-	 */
+	
 	struct {
-		/**
-		 * @exclude_guest: Disables perf_event_attr exclude_guest and
-		 * exclude_host.
-		 */
+		
 		bool exclude_guest;
 	} missing_features;
 };
 
-/** @perf_pmu__fake: A special global PMU used for testing. */
+
 extern struct perf_pmu perf_pmu__fake;
 
 struct perf_pmu_info {
@@ -216,10 +150,7 @@ int perf_pmu__for_each_event(struct perf_pmu *pmu, bool skip_duplicate_pmus,
 			     void *state, pmu_event_callback cb);
 bool pmu__name_match(const struct perf_pmu *pmu, const char *pmu_name);
 
-/**
- * perf_pmu_is_software - is the PMU a software PMU as in it uses the
- *                        perf_sw_context in the kernel?
- */
+
 bool perf_pmu__is_software(const struct perf_pmu *pmu);
 
 FILE *perf_pmu__open_file(struct perf_pmu *pmu, const char *name);
@@ -266,4 +197,4 @@ struct perf_pmu *perf_pmu__create_placeholder_core_pmu(struct list_head *core_pm
 void perf_pmu__delete(struct perf_pmu *pmu);
 struct perf_pmu *pmu__find_core_pmu(void);
 
-#endif /* __PMU_H */
+#endif 

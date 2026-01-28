@@ -1,11 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * linux/sound/cs35l41.h -- Platform data for CS35L41
- *
- * Copyright (c) 2017-2021 Cirrus Logic Inc.
- *
- * Author: David Rhodes	<david.rhodes@cirrus.com>
- */
+
 
 #ifndef __CS35L41_H
 #define __CS35L41_H
@@ -492,12 +485,12 @@
 #define CS35L41_DSP1_PMEM_0		0x03800000
 #define CS35L41_DSP1_PMEM_5114		0x03804FE8
 
-/*test regs for emulation bringup*/
+
 #define CS35L41_PLL_OVR			0x00003018
 #define CS35L41_BST_TEST_DUTY		0x00003900
 #define CS35L41_DIGPWM_IOCTRL		0x0000706C
 
-/*registers populated by OTP*/
+
 #define CS35L41_OTP_TRIM_1		0x0000208c
 #define CS35L41_OTP_TRIM_2		0x00002090
 #define CS35L41_OTP_TRIM_3		0x00003010
@@ -749,8 +742,8 @@ enum cs35l41_boost_type {
 	CS35L41_SHD_BOOST_ACTV,
 	CS35L41_SHD_BOOST_PASS,
 
-	// Not present in Binding Documentation, so no system should use this value.
-	// This value is only used in CLSA0100 Laptop
+	
+	
 	CS35L41_EXT_BOOST_NO_VSPK_SWITCH,
 };
 
@@ -833,9 +826,7 @@ enum cs35l41_cspl_mbox_cmd {
 	CSPL_MBOX_CMD_INVALID_SEQUENCE = -2,
 };
 
-/*
- * IRQs
- */
+
 #define CS35L41_IRQ(_irq, _name, _hand)		\
 	{					\
 		.irq = CS35L41_ ## _irq ## _IRQ,\
@@ -855,7 +846,7 @@ struct cs35l41_irq {
 		.mask = CS35L41_ ## _irq ## _MASK			\
 	}
 
-/* (0x0000E010) CS35L41_IRQ1_STATUS1 */
+
 #define CS35L41_BST_OVP_ERR_SHIFT		6
 #define CS35L41_BST_OVP_ERR_MASK		BIT(CS35L41_BST_OVP_ERR_SHIFT)
 #define CS35L41_BST_DCM_UVP_ERR_SHIFT		7
@@ -905,4 +896,4 @@ int cs35l41_mdsync_up(struct regmap *regmap);
 int cs35l41_global_enable(struct device *dev, struct regmap *regmap, enum cs35l41_boost_type b_type,
 			  int enable, bool firmware_running);
 
-#endif /* __CS35L41_H */
+#endif 

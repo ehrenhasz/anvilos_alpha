@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __FOTG210_H
 #define __FOTG210_H
 
@@ -58,4 +58,4 @@ static inline int fotg210_udc_remove(struct platform_device *pdev)
 }
 #endif
 
-#endif /* __FOTG210_H */
+#endif 

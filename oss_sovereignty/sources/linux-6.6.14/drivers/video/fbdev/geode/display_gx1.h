@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * drivers/video/geode/display_gx1.h
- *   -- Geode GX1 display controller
- *
- * Copyright (C) 2005 Arcom Control Systems Ltd.
- *
- * Based on AMD's original 2.4 driver:
- *   Copyright (C) 2004 Advanced Micro Devices, Inc.
- */
+
+
 #ifndef __DISPLAY_GX1_H__
 #define __DISPLAY_GX1_H__
 
@@ -16,13 +8,13 @@ int gx1_frame_buffer_size(void);
 
 extern const struct geode_dc_ops gx1_dc_ops;
 
-/* GX1 configuration I/O registers */
+
 
 #define CONFIG_CCR3 0xc3
 #  define CONFIG_CCR3_MAPEN 0x10
 #define CONFIG_GCR  0xb8
 
-/* Memory controller registers */
+
 
 #define MC_BANK_CFG		0x08
 #  define MC_BCFG_DIMM0_SZ_MASK		0x00000700
@@ -32,7 +24,7 @@ extern const struct geode_dc_ops gx1_dc_ops;
 #define MC_GBASE_ADD		0x14
 #  define MC_GADD_GBADD_MASK		0x000003ff
 
-/* Display controller registers */
+
 
 #define DC_PAL_ADDRESS		0x70
 #define DC_PAL_DATA		0x74
@@ -147,4 +139,4 @@ extern const struct geode_dc_ops gx1_dc_ops;
 #define DC_DFIFO_DIAG		0x78
 #define DC_CFIFO_DIAG		0x7C
 
-#endif /* !__DISPLAY_GX1_H__ */
+#endif 

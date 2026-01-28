@@ -1,15 +1,15 @@
-#
-# config.mk.in -- autoconf template for Vim on Unix		vim:ts=8:sw=8:
-#
-# DO NOT EDIT config.mk!!  It will be overwritten by configure.
-# Edit Makefile and run "make" or run ./configure with other arguments.
-#
-# Configure does not edit the makefile directly. This method is not the
-# standard use of GNU autoconf, but it has two advantages:
-#   a) The user can override every choice made by configure.
-#   b) Modifications to the makefile are not lost when configure is run.
-#
-# I hope this is worth being nonstandard. jw.
+
+
+
+
+
+
+
+
+
+
+
+
 
 @SET_MAKE@
 
@@ -115,31 +115,31 @@ INSTALLGVIMDIFF	= @dogvimdiff@
 INSTALL_LANGS	= @INSTALL_LANGS@
 INSTALL_TOOL_LANGS	= @INSTALL_TOOL_LANGS@
 
-### sed command to fix quotes while creating pathdef.c
+
 QUOTESED        = @QUOTESED@
 
-### Line break character as octal number for "tr"
+
 NL		= @line_break@
 
-### Top directory for everything
+
 prefix		= @prefix@
 
-### Top directory for the binary
+
 exec_prefix	= @exec_prefix@
 
-### Prefix for location of data files
+
 BINDIR		= @bindir@
 
-### For autoconf 2.60 and later (avoid a warning)
+
 datarootdir	= @datarootdir@
 
-### Prefix for location of data files
+
 DATADIR		= @datadir@
 
-### Prefix for location of man pages
+
 MANDIR		= @mandir@
 
-### Do we have a GUI
+
 GUI_INC_LOC	= @GUI_INC_LOC@
 GUI_LIB_LOC	= @GUI_LIB_LOC@
 GUI_SRC		= $(@GUITYPE@_SRC)
@@ -167,20 +167,20 @@ GRESOURCE_OBJ = @GRESOURCE_OBJ@
 GTK_UPDATE_ICON_CACHE = @GTK_UPDATE_ICON_CACHE@
 UPDATE_DESKTOP_DATABASE = @UPDATE_DESKTOP_DATABASE@
 
-### Any OS dependent extra source and object file
+
 OS_EXTRA_SRC	= @OS_EXTRA_SRC@
 OS_EXTRA_OBJ	= @OS_EXTRA_OBJ@
 
-### If the *.po files are to be translated to *.mo files.
+
 MAKEMO		= @MAKEMO@
 
 MSGFMT		= @MSGFMT@
 MSGFMT_DESKTOP	= @MSGFMT_DESKTOP@
 
-### set if $SOURCE_DATE_EPOCH was set when running configure
+
 BUILD_DATE_MSG	= @BUILD_DATE_MSG@
 
 
-# Make sure that "make first" will run "make all" once configure has done its
-# work.  This is needed when using the Makefile in the top directory.
+
+
 first: all

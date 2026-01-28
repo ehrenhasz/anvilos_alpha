@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "sun50i-h5.dtsi"
-#include <arm/allwinner/sunxi-bananapi-m2-plus.dtsi>
-/ {
-	model = "Banana Pi BPI-M2-Plus H5";
-	compatible = "sinovoip,bpi-m2-plus", "allwinner,sun50i-h5";
-};

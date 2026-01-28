@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019 Facebook */
+
+
 
 #ifndef _TEST_BTF_H
 #define _TEST_BTF_H
@@ -78,4 +78,4 @@
 #define BTF_TYPE_TAG_ENC(value, type)	\
 	BTF_TYPE_ENC(value, BTF_INFO_ENC(BTF_KIND_TYPE_TAG, 0, 0), type)
 
-#endif /* _TEST_BTF_H */
+#endif 

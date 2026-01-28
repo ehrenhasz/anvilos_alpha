@@ -15,4 +15,4 @@ class ESPNow(ESPNowBase):
     def __iter__(self):
         return self
     def __next__(self):
-        return self.irecv()  # Use alloc free irecv() method
+        return self.irecv()  

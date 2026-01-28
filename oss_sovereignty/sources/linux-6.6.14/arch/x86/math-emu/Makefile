@@ -1,15 +1,15 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-#               Makefile for wm-FPU-emu
-#
 
-#DEBUG	= -DDEBUGGING
+
+
+
+
+
 DEBUG	=
 PARANOID = -DPARANOID
 ccflags-y += $(PARANOID) $(DEBUG) -fno-builtin $(MATH_EMULATION)
 asflags-y += $(PARANOID)
 
-# From 'C' language sources:
+
 C_OBJS =fpu_entry.o errors.o \
 	fpu_arith.o fpu_aux.o fpu_etc.o fpu_tags.o fpu_trig.o \
 	load_store.o get_address.o \
@@ -17,7 +17,7 @@ C_OBJS =fpu_entry.o errors.o \
 	reg_add_sub.o reg_compare.o reg_constant.o reg_convert.o \
 	reg_ld_str.o reg_divide.o reg_mul.o
 
-# From 80x86 assembler sources:
+
 A_OBJS =reg_u_add.o reg_u_div.o reg_u_mul.o reg_u_sub.o \
 	div_small.o reg_norm.o reg_round.o \
 	wm_shrx.o wm_sqrt.o \

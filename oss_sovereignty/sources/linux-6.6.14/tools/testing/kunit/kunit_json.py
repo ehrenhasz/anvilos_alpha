@@ -15,8 +15,8 @@ _status_map: Dict[TestStatus, str] = {
 	TestStatus.TEST_CRASHED: "ERROR",
 }
 def _get_group_json(test: Test, common_fields: JsonObj) -> JsonObj:
-	sub_groups = []  # List[JsonObj]
-	test_cases = []  # List[JsonObj]
+	sub_groups = []  
+	test_cases = []  
 	for subtest in test.subtests:
 		if subtest.subtests:
 			sub_group = _get_group_json(subtest, common_fields)

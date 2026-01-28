@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+
 
 #ifndef _DT_BINDINGS_REGULATOR_TI_TPS62864_H
 #define _DT_BINDINGS_REGULATOR_TI_TPS62864_H

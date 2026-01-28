@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * TI DaVinci CPUFreq platform support.
- *
- * Copyright (C) 2009 Texas Instruments, Inc. https://www.ti.com/
- */
+
+
 
 #ifndef _MACH_DAVINCI_CPUFREQ_H
 #define _MACH_DAVINCI_CPUFREQ_H
@@ -22,4 +18,4 @@ int davinci_cpufreq_init(void);
 static inline int davinci_cpufreq_init(void) { return 0; }
 #endif
 
-#endif /* _MACH_DAVINCI_CPUFREQ_H */
+#endif 

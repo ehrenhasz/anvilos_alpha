@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * zonefs filesystem driver tracepoints.
- *
- * Copyright (C) 2021 Western Digital Corporation or its affiliates.
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM zonefs
@@ -95,12 +91,12 @@ TRACE_EVENT(zonefs_iomap_begin,
 	    )
 );
 
-#endif /* _TRACE_ZONEFS_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

@@ -30,7 +30,7 @@ cert = binascii.unhexlify(
 )
 CONTENT = b"""\
 HTTP/1.0 200 OK
-Hello #%d from MicroPython!
+Hello 
 """
 def main(use_stream=True):
     s = socket.socket()

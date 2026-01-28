@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * LED Core
- *
- * Copyright 2005 Openedhand Ltd.
- *
- * Author: Richard Purdie <rpurdie@openedhand.com>
- */
+
+
 #ifndef __LEDS_H_INCLUDED
 #define __LEDS_H_INCLUDED
 
@@ -33,4 +27,4 @@ extern struct list_head leds_list;
 extern struct list_head trigger_list;
 extern const char * const led_colors[LED_COLOR_ID_MAX];
 
-#endif	/* __LEDS_H_INCLUDED */
+#endif	

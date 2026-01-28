@@ -107,7 +107,7 @@ def main():
     except Exception as er:
         e = er
     while lst:
-        lst[0], lst = None, lst[0]  # unlink lists to free up heap
+        lst[0], lst = None, lst[0]  
     print(repr(e)[:10])
     def g():
         g()

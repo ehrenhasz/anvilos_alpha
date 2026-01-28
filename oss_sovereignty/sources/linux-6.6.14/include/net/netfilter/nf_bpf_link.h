@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 struct bpf_nf_ctx {
 	const struct nf_hook_state *state;

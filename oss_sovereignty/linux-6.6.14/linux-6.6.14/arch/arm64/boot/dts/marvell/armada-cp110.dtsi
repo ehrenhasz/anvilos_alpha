@@ -1,3 +1,0 @@
-#define CP11X_TYPE cp110
-#include "armada-cp11x.dtsi"
-#undef CP11X_TYPE

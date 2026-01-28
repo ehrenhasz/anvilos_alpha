@@ -62,7 +62,7 @@ typedef struct {
     uint8 *pRcvMsgBuff;
     uint8 *pWritePos;
     uint8 *pReadPos;
-    uint8 TrigLvl;      // JLU: may need to pad
+    uint8 TrigLvl;      
     RcvMsgBuffState BuffState;
 } RcvMsgBuff;
 
@@ -83,14 +83,14 @@ typedef struct {
     UartBautRate baut_rate;
     UartBitsNum4Char data_bits;
     UartExistParity exist_parity;
-    UartParityMode parity;       // chip size in byte
+    UartParityMode parity;       
     UartStopBitsNum stop_bits;
     UartFlowCtrl flow_ctrl;
     RcvMsgBuff rcv_buff;
     TrxMsgBuff trx_buff;
     RcvMsgState rcv_state;
     int received;
-    int buff_uart_no;                // indicate which uart use tx/rx buffer
+    int buff_uart_no;                
 } UartDevice;
 
 extern uint8 uart_ringbuf_array[UART0_STATIC_RXBUF_LEN];
@@ -106,8 +106,8 @@ void uart_os_config(int uart);
 void uart_setup(uint8 uart);
 int uart0_get_rxbuf_len(void);
 void uart0_set_rxbuf(uint8 *buf, int len);
-// check status of rx/tx
+
 int uart_rx_any(uint8 uart);
 int uart_tx_any_room(uint8 uart);
 
-#endif // MICROPY_INCLUDED_ESP8266_UART_H
+#endif 

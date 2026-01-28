@@ -1,11 +1,11 @@
 import pyb
-accel = pyb.Accel()  # create object of accelerometer
-blue = pyb.LED(4)  # create object of blue LED
+accel = pyb.Accel()  
+blue = pyb.LED(4)  
 log = open("/sd/log.csv", "w")
-blue.on()  # turn on blue LED
+blue.on()  
 for i in range(100):
-    t = pyb.millis()  # get time since reset
-    x, y, z = accel.filtered_xyz()  # get acceleration data
-    log.write("{},{},{},{}\n".format(t, x, y, z))  # write data to file
-log.close()  # close file
-blue.off()  # turn off LED
+    t = pyb.millis()  
+    x, y, z = accel.filtered_xyz()  
+    log.write("{},{},{},{}\n".format(t, x, y, z))  
+log.close()  
+blue.off()  

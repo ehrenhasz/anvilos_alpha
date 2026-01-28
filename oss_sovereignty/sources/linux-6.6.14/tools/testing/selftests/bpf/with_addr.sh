@@ -23,7 +23,7 @@ setup() {
     ip -4 addr add "${V4_SIT}" dev "${SIT_DEV_NAME}" \
 	    || fail 'failed to setup v4 SIT address'
   fi
-  sleep 2	# avoid race causing bind to fail
+  sleep 2	
 }
 cleanup() {
   if [[ -n "${V6_SIT}" ]]; then

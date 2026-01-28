@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/**
- * mtu3_trace.h - trace support
- *
- * Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mtu3
@@ -264,9 +258,9 @@ DEFINE_EVENT(mtu3_log_ep, mtu3_gadget_ep_set_halt,
 	TP_ARGS(mep)
 );
 
-#endif /* __MTU3_TRACE_H__ */
+#endif 
 
-/* this part has to be here */
+
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

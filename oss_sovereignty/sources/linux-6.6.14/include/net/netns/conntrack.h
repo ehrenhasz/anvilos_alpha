@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NETNS_CONNTRACK_H
 #define __NETNS_CONNTRACK_H
 
@@ -97,7 +97,7 @@ struct netns_ct {
 #ifdef CONFIG_NF_CONNTRACK_EVENTS
 	bool ecache_dwork_pending;
 #endif
-	u8			sysctl_log_invalid; /* Log invalid packets */
+	u8			sysctl_log_invalid; 
 	u8			sysctl_events;
 	u8			sysctl_acct;
 	u8			sysctl_tstamp;

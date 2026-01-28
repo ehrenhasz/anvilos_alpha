@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef _CLONE3_SELFTESTS_H
 #define _CLONE3_SELFTESTS_H
@@ -16,7 +16,7 @@
 #define ptr_to_u64(ptr) ((__u64)((uintptr_t)(ptr)))
 
 #ifndef CLONE_INTO_CGROUP
-#define CLONE_INTO_CGROUP 0x200000000ULL /* Clone into a specific cgroup given the right permissions. */
+#define CLONE_INTO_CGROUP 0x200000000ULL 
 #endif
 
 #ifndef __NR_clone3
@@ -33,16 +33,16 @@ struct __clone_args {
 	__aligned_u64 stack_size;
 	__aligned_u64 tls;
 #ifndef CLONE_ARGS_SIZE_VER0
-#define CLONE_ARGS_SIZE_VER0 64	/* sizeof first published struct */
+#define CLONE_ARGS_SIZE_VER0 64	
 #endif
 	__aligned_u64 set_tid;
 	__aligned_u64 set_tid_size;
 #ifndef CLONE_ARGS_SIZE_VER1
-#define CLONE_ARGS_SIZE_VER1 80	/* sizeof second published struct */
+#define CLONE_ARGS_SIZE_VER1 80	
 #endif
 	__aligned_u64 cgroup;
 #ifndef CLONE_ARGS_SIZE_VER2
-#define CLONE_ARGS_SIZE_VER2 88	/* sizeof third published struct */
+#define CLONE_ARGS_SIZE_VER2 88	
 #endif
 };
 
@@ -61,7 +61,7 @@ static inline void test_clone3_supported(void)
 	if (__NR_clone3 < 0)
 		ksft_exit_skip("clone3() syscall is not supported\n");
 
-	/* Set to something that will always cause EINVAL. */
+	
 	args.exit_signal = -1;
 	pid = sys_clone3(&args, sizeof(args));
 	if (!pid)
@@ -79,4 +79,4 @@ static inline void test_clone3_supported(void)
 	ksft_print_msg("clone3() syscall supported\n");
 }
 
-#endif /* _CLONE3_SELFTESTS_H */
+#endif 

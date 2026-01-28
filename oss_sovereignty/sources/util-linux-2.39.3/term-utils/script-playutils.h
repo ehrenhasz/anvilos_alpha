@@ -15,7 +15,7 @@ UL_DEBUG_DECLARE_MASK(scriptreplay);
 #define DBG(m, x)       __UL_DBG(scriptreplay, SCRIPTREPLAY_DEBUG_, m, x)
 #define ON_DBG(m, x)    __UL_DBG_CALL(scriptreplay, SCRIPTREPLAY_DEBUG_, m, x)
 
-/* CR to '\n' mode */
+
 enum {
 	REPLAY_CRMODE_AUTO	= 0,
 	REPLAY_CRMODE_NEVER,
@@ -47,4 +47,4 @@ int replay_get_next_step(struct replay_setup *stp, char *streams, struct replay_
 
 int replay_emit_step_data(struct replay_setup *stp, struct replay_step *step, int fd);
 
-#endif /* UTIL_LINUX_SCRIPT_PLAYUTILS_H */
+#endif 

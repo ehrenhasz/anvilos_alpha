@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (C) 2017 Oracle Corporation */
+
+
 
 #ifndef __UAPI_VBOX_ERR_H__
 #define __UAPI_VBOX_ERR_H__
@@ -130,7 +130,7 @@
 #define VERR_NET_PROTOCOL_ERROR                 (-466)
 #define VERR_NET_INCOMPLETE_TX_PACKET           (-467)
 
-/* misc. unsorted codes */
+
 #define VERR_RESOURCE_BUSY                      (-138)
 #define VERR_DISK_FULL                          (-152)
 #define VERR_TOO_MANY_SYMLINKS                  (-156)

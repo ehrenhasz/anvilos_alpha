@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_ARC_FARM_KDMA_CTX_REGS_H_
 #define ASIC_REG_ARC_FARM_KDMA_CTX_REGS_H_
 
-/*
- *****************************************
- *   ARC_FARM_KDMA_CTX
- *   (Prototype: DMA_CORE_CTX)
- *****************************************
- */
+
 
 #define mmARC_FARM_KDMA_CTX_RATE_LIM_TKN 0x4E8B860
 
@@ -92,4 +79,4 @@
 
 #define mmARC_FARM_KDMA_CTX_COMMIT 0x4E8B8EC
 
-#endif /* ASIC_REG_ARC_FARM_KDMA_CTX_REGS_H_ */
+#endif 

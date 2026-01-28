@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic iSCSI Offload Driver
- * Copyright (c) 2016 Cavium Inc.
- */
+
+
 
 #ifndef _QEDI_DBG_H_
 #define _QEDI_DBG_H_
@@ -23,43 +20,33 @@
 
 extern uint qedi_dbg_log;
 
-/* Debug print level definitions */
-#define QEDI_LOG_DEFAULT	0x1		/* Set default logging mask */
-#define QEDI_LOG_INFO		0x2		/* Informational logs,
-						 * MAC address, WWPN, WWNN
-						 */
-#define QEDI_LOG_DISC		0x4		/* Init, discovery, rport */
-#define QEDI_LOG_LL2		0x8		/* LL2, VLAN logs */
-#define QEDI_LOG_CONN		0x10		/* Connection setup, cleanup */
-#define QEDI_LOG_EVT		0x20		/* Events, link, mtu */
-#define QEDI_LOG_TIMER		0x40		/* Timer events */
-#define QEDI_LOG_MP_REQ		0x80		/* Middle Path (MP) logs */
-#define QEDI_LOG_SCSI_TM	0x100		/* SCSI Aborts, Task Mgmt */
-#define QEDI_LOG_UNSOL		0x200		/* unsolicited event logs */
-#define QEDI_LOG_IO		0x400		/* scsi cmd, completion */
-#define QEDI_LOG_MQ		0x800		/* Multi Queue logs */
-#define QEDI_LOG_BSG		0x1000		/* BSG logs */
-#define QEDI_LOG_DEBUGFS	0x2000		/* debugFS logs */
-#define QEDI_LOG_LPORT		0x4000		/* lport logs */
-#define QEDI_LOG_ELS		0x8000		/* ELS logs */
-#define QEDI_LOG_NPIV		0x10000		/* NPIV logs */
-#define QEDI_LOG_SESS		0x20000		/* Connection setup, cleanup */
-#define QEDI_LOG_UIO		0x40000		/* iSCSI UIO logs */
-#define QEDI_LOG_TID		0x80000         /* FW TID context acquire,
-						 * free
-						 */
-#define QEDI_TRACK_TID		0x100000        /* Track TID state. To be
-						 * enabled only at module load
-						 * and not run-time.
-						 */
-#define QEDI_TRACK_CMD_LIST    0x300000        /* Track active cmd list nodes,
-						* done with reference to TID,
-						* hence TRACK_TID also enabled.
-						*/
-#define QEDI_LOG_NOTICE		0x40000000	/* Notice logs */
-#define QEDI_LOG_WARN		0x80000000	/* Warning logs */
 
-/* Debug context structure */
+#define QEDI_LOG_DEFAULT	0x1		
+#define QEDI_LOG_INFO		0x2		
+#define QEDI_LOG_DISC		0x4		
+#define QEDI_LOG_LL2		0x8		
+#define QEDI_LOG_CONN		0x10		
+#define QEDI_LOG_EVT		0x20		
+#define QEDI_LOG_TIMER		0x40		
+#define QEDI_LOG_MP_REQ		0x80		
+#define QEDI_LOG_SCSI_TM	0x100		
+#define QEDI_LOG_UNSOL		0x200		
+#define QEDI_LOG_IO		0x400		
+#define QEDI_LOG_MQ		0x800		
+#define QEDI_LOG_BSG		0x1000		
+#define QEDI_LOG_DEBUGFS	0x2000		
+#define QEDI_LOG_LPORT		0x4000		
+#define QEDI_LOG_ELS		0x8000		
+#define QEDI_LOG_NPIV		0x10000		
+#define QEDI_LOG_SESS		0x20000		
+#define QEDI_LOG_UIO		0x40000		
+#define QEDI_LOG_TID		0x80000         
+#define QEDI_TRACK_TID		0x100000        
+#define QEDI_TRACK_CMD_LIST    0x300000        
+#define QEDI_LOG_NOTICE		0x40000000	
+#define QEDI_LOG_WARN		0x80000000	
+
+
 struct qedi_dbg_ctx {
 	unsigned int host_no;
 	struct pci_dev *pdev;
@@ -99,7 +86,7 @@ int qedi_create_sysfs_attr(struct Scsi_Host *shost,
 void qedi_remove_sysfs_attr(struct Scsi_Host *shost,
 			    struct sysfs_bin_attrs *iter);
 
-/* DebugFS related code */
+
 struct qedi_list_of_funcs {
 	char *oper_str;
 	ssize_t (*oper_func)(struct qedi_dbg_ctx *qedi);
@@ -118,7 +105,7 @@ struct qedi_debugfs_ops {
 	.write  = drv##_dbg_##ops##_cmd_write \
 }
 
-/* Used for debugfs sequential files */
+
 #define qedi_dbg_fileops_seq(drv, ops) \
 { \
 	.owner = THIS_MODULE, \
@@ -135,4 +122,4 @@ void qedi_dbg_host_exit(struct qedi_dbg_ctx *qedi);
 void qedi_dbg_init(char *drv_name);
 void qedi_dbg_exit(void);
 
-#endif /* _QEDI_DBG_H_ */
+#endif 

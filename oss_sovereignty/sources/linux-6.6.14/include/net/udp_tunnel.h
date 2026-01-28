@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_UDP_TUNNEL_H
 #define __NET_UDP_TUNNEL_H
 
@@ -13,7 +13,7 @@
 struct udp_port_cfg {
 	u8			family;
 
-	/* Used only for kernel-created sockets */
+	
 	union {
 		struct in_addr		local_ip;
 #if IS_ENABLED(CONFIG_IPV6)
@@ -78,8 +78,8 @@ typedef int (*udp_tunnel_gro_complete_t)(struct sock *sk, struct sk_buff *skb,
 					 int nhoff);
 
 struct udp_tunnel_sock_cfg {
-	void *sk_user_data;     /* user data used by encap_rcv call back */
-	/* Used for setting up udp_sock fields, see udp.h for details */
+	void *sk_user_data;     
+	
 	__u8  encap_type;
 	udp_tunnel_encap_rcv_t encap_rcv;
 	udp_tunnel_encap_err_lookup_t encap_err_lookup;
@@ -89,30 +89,15 @@ struct udp_tunnel_sock_cfg {
 	udp_tunnel_gro_complete_t gro_complete;
 };
 
-/* Setup the given (UDP) sock to receive UDP encapsulated packets */
+
 void setup_udp_tunnel_sock(struct net *net, struct socket *sock,
 			   struct udp_tunnel_sock_cfg *sock_cfg);
 
-/* -- List of parsable UDP tunnel types --
- *
- * Adding to this list will result in serious debate.  The main issue is
- * that this list is essentially a list of workarounds for either poorly
- * designed tunnels, or poorly designed device offloads.
- *
- * The parsing supported via these types should really be used for Rx
- * traffic only as the network stack will have already inserted offsets for
- * the location of the headers in the skb.  In addition any ports that are
- * pushed should be kept within the namespace without leaking to other
- * devices such as VFs or other ports on the same device.
- *
- * It is strongly encouraged to use CHECKSUM_COMPLETE for Rx to avoid the
- * need to use this for Rx checksum offload.  It should not be necessary to
- * call this function to perform Tx offloads on outgoing traffic.
- */
+
 enum udp_parsable_tunnel_type {
-	UDP_TUNNEL_TYPE_VXLAN	  = BIT(0), /* RFC 7348 */
-	UDP_TUNNEL_TYPE_GENEVE	  = BIT(1), /* draft-ietf-nvo3-geneve */
-	UDP_TUNNEL_TYPE_VXLAN_GPE = BIT(2), /* draft-ietf-nvo3-vxlan-gpe */
+	UDP_TUNNEL_TYPE_VXLAN	  = BIT(0), 
+	UDP_TUNNEL_TYPE_GENEVE	  = BIT(1), 
+	UDP_TUNNEL_TYPE_VXLAN_GPE = BIT(2), 
 };
 
 struct udp_tunnel_info {
@@ -122,7 +107,7 @@ struct udp_tunnel_info {
 	u8 hw_priv;
 };
 
-/* Notify network devices of offloadable types */
+
 void udp_tunnel_push_rx_port(struct net_device *dev, struct socket *sock,
 			     unsigned short type);
 void udp_tunnel_drop_rx_port(struct net_device *dev, struct socket *sock,
@@ -146,7 +131,7 @@ static inline void udp_tunnel_drop_rx_info(struct net_device *dev)
 	call_netdevice_notifiers(NETDEV_UDP_TUNNEL_DROP_INFO, dev);
 }
 
-/* Transmit the skb using UDP encapsulation. */
+
 void udp_tunnel_xmit_skb(struct rtable *rt, struct sock *sk, struct sk_buff *skb,
 			 __be32 src, __be32 dst, __u8 tos, __u8 ttl,
 			 __be16 df, __be16 src_port, __be16 dst_port,
@@ -189,18 +174,13 @@ static inline void udp_tunnel_encap_enable(struct sock *sk)
 #define UDP_TUNNEL_NIC_MAX_TABLES	4
 
 enum udp_tunnel_nic_info_flags {
-	/* Device callbacks may sleep */
+	
 	UDP_TUNNEL_NIC_INFO_MAY_SLEEP	= BIT(0),
-	/* Device only supports offloads when it's open, all ports
-	 * will be removed before close and re-added after open.
-	 */
+	
 	UDP_TUNNEL_NIC_INFO_OPEN_ONLY	= BIT(1),
-	/* Device supports only IPv4 tunnels */
+	
 	UDP_TUNNEL_NIC_INFO_IPV4_ONLY	= BIT(2),
-	/* Device has hard-coded the IANA VXLAN port (4789) as VXLAN.
-	 * This port must not be counted towards n_entries of any table.
-	 * Driver will not receive any callback associated with port 4789.
-	 */
+	
 	UDP_TUNNEL_NIC_INFO_STATIC_IANA_VXLAN	= BIT(3),
 };
 
@@ -219,37 +199,9 @@ struct udp_tunnel_nic_shared_node {
 	struct list_head list;
 };
 
-/**
- * struct udp_tunnel_nic_info - driver UDP tunnel offload information
- * @set_port:	callback for adding a new port
- * @unset_port:	callback for removing a port
- * @sync_table:	callback for syncing the entire port table at once
- * @shared:	reference to device global state (optional)
- * @flags:	device flags from enum udp_tunnel_nic_info_flags
- * @tables:	UDP port tables this device has
- * @tables.n_entries:		number of entries in this table
- * @tables.tunnel_types:	types of tunnels this table accepts
- *
- * Drivers are expected to provide either @set_port and @unset_port callbacks
- * or the @sync_table callback. Callbacks are invoked with rtnl lock held.
- *
- * Devices which (misguidedly) share the UDP tunnel port table across multiple
- * netdevs should allocate an instance of struct udp_tunnel_nic_shared and
- * point @shared at it.
- * There must never be more than %UDP_TUNNEL_NIC_MAX_SHARING_DEVICES devices
- * sharing a table.
- *
- * Known limitations:
- *  - UDP tunnel port notifications are fundamentally best-effort -
- *    it is likely the driver will both see skbs which use a UDP tunnel port,
- *    while not being a tunneled skb, and tunnel skbs from other ports -
- *    drivers should only use these ports for non-critical RX-side offloads,
- *    e.g. the checksum offload;
- *  - none of the devices care about the socket family at present, so we don't
- *    track it. Please extend this code if you care.
- */
+
 struct udp_tunnel_nic_info {
-	/* one-by-one */
+	
 	int (*set_port)(struct net_device *dev,
 			unsigned int table, unsigned int entry,
 			struct udp_tunnel_info *ti);
@@ -257,7 +209,7 @@ struct udp_tunnel_nic_info {
 			  unsigned int table, unsigned int entry,
 			  struct udp_tunnel_info *ti);
 
-	/* all at once */
+	
 	int (*sync_table)(struct net_device *dev, unsigned int table);
 
 	struct udp_tunnel_nic_shared *shared;
@@ -270,16 +222,7 @@ struct udp_tunnel_nic_info {
 	} tables[UDP_TUNNEL_NIC_MAX_TABLES];
 };
 
-/* UDP tunnel module dependencies
- *
- * Tunnel drivers are expected to have a hard dependency on the udp_tunnel
- * module. NIC drivers are not, they just attach their
- * struct udp_tunnel_nic_info to the netdev and wait for callbacks to come.
- * Loading a tunnel driver will cause the udp_tunnel module to be loaded
- * and only then will all the required state structures be allocated.
- * Since we want a weak dependency from the drivers and the core to udp_tunnel
- * we call things through the following stubs.
- */
+
 struct udp_tunnel_nic_ops {
 	void (*get_port)(struct net_device *dev, unsigned int table,
 			 unsigned int idx, struct udp_tunnel_info *ti);
@@ -304,12 +247,7 @@ static inline void
 udp_tunnel_nic_get_port(struct net_device *dev, unsigned int table,
 			unsigned int idx, struct udp_tunnel_info *ti)
 {
-	/* This helper is used from .sync_table, we indicate empty entries
-	 * by zero'ed @ti. Drivers which need to know the details of a port
-	 * when it gets deleted should use the .set_port / .unset_port
-	 * callbacks.
-	 * Zero out here, otherwise !CONFIG_INET causes uninitilized warnings.
-	 */
+	
 	memset(ti, 0, sizeof(*ti));
 
 	if (udp_tunnel_nic_ops)
@@ -342,18 +280,7 @@ udp_tunnel_nic_del_port(struct net_device *dev, struct udp_tunnel_info *ti)
 		udp_tunnel_nic_ops->del_port(dev, ti);
 }
 
-/**
- * udp_tunnel_nic_reset_ntf() - device-originating reset notification
- * @dev: network interface device structure
- *
- * Called by the driver to inform the core that the entire UDP tunnel port
- * state has been lost, usually due to device reset. Core will assume device
- * forgot all the ports and issue .set_port and .sync_table callbacks as
- * necessary.
- *
- * This function must be called with rtnl lock held, and will issue all
- * the callbacks before returning.
- */
+
 static inline void udp_tunnel_nic_reset_ntf(struct net_device *dev)
 {
 	if (udp_tunnel_nic_ops)

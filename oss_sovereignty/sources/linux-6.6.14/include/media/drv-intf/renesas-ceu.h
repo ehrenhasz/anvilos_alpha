@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * renesas-ceu.h - Renesas CEU driver interface
- *
- * Copyright 2017-2018 Jacopo Mondi <jacopo+renesas@jmondi.org>
- */
+
+
 
 #ifndef __MEDIA_DRV_INTF_RENESAS_CEU_H__
 #define __MEDIA_DRV_INTF_RENESAS_CEU_H__
@@ -23,4 +19,4 @@ struct ceu_platform_data {
 	struct ceu_async_subdev subdevs[CEU_MAX_SUBDEVS];
 };
 
-#endif /* ___MEDIA_DRV_INTF_RENESAS_CEU_H__ */
+#endif 

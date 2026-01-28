@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * string function definitions for NOLIBC
- * Copyright (C) 2017-2021 Willy Tarreau <w@1wt.eu>
- */
+
+
 
 #ifndef _NOLIBC_STRING_H
 #define _NOLIBC_STRING_H
@@ -11,9 +8,7 @@
 
 static void *malloc(size_t len);
 
-/*
- * As much as possible, please keep functions alphabetically sorted.
- */
+
 
 static __attribute__((unused))
 int memcmp(const void *s1, const void *s2, size_t n)
@@ -49,9 +44,7 @@ void *_nolibc_memcpy_down(void *dst, const void *src, size_t len)
 	return dst;
 }
 
-/* might be ignored by the compiler without -ffreestanding, then found as
- * missing.
- */
+
 __attribute__((weak,unused,section(".text.nolibc_memmove")))
 void *memmove(void *dst, const void *src, size_t len)
 {
@@ -73,23 +66,21 @@ void *memmove(void *dst, const void *src, size_t len)
 	return dst;
 }
 
-/* must be exported, as it's used by libgcc on ARM */
+
 __attribute__((weak,unused,section(".text.nolibc_memcpy")))
 void *memcpy(void *dst, const void *src, size_t len)
 {
 	return _nolibc_memcpy_up(dst, src, len);
 }
 
-/* might be ignored by the compiler without -ffreestanding, then found as
- * missing.
- */
+
 __attribute__((weak,unused,section(".text.nolibc_memset")))
 void *memset(void *dst, int b, size_t len)
 {
 	char *p = dst;
 
 	while (len--) {
-		/* prevent gcc from recognizing memset() here */
+		
 		__asm__ volatile("");
 		*(p++) = b;
 	}
@@ -127,12 +118,7 @@ char *strcpy(char *dst, const char *src)
 	return ret;
 }
 
-/* this function is only used with arguments that are not constants or when
- * it's not known because optimizations are disabled. Note that gcc 12
- * recognizes an strlen() pattern and replaces it with a jump to strlen(),
- * thus itself, hence the asm() statement below that's meant to disable this
- * confusing practice.
- */
+
 static __attribute__((unused))
 size_t strlen(const char *str)
 {
@@ -143,9 +129,7 @@ size_t strlen(const char *str)
 	return len;
 }
 
-/* do not trust __builtin_constant_p() at -O0, as clang will emit a test and
- * the two branches, then will rely on an external definition of strlen().
- */
+
 #if defined(__OPTIMIZE__)
 #define nolibc_strlen(x) strlen(x)
 #define strlen(str) ({                          \
@@ -288,7 +272,7 @@ char *strrchr(const char *s, int c)
 	return (char *)ret;
 }
 
-/* make sure to include all global symbols */
+
 #include "nolibc.h"
 
-#endif /* _NOLIBC_STRING_H */
+#endif 

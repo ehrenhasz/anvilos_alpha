@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * HD-Audio helpers to sync with i915 driver
- */
+
+
 #ifndef __SOUND_HDA_I915_H
 #define __SOUND_HDA_I915_H
 
@@ -24,4 +22,4 @@ static inline int snd_hdac_i915_exit(struct hdac_bus *bus)
 	return snd_hdac_acomp_exit(bus);
 }
 
-#endif /* __SOUND_HDA_I915_H */
+#endif 

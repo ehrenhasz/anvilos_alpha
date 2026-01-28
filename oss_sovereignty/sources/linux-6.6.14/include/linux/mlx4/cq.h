@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2007 Cisco Systems, Inc.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *	- Redistributions of source code must retain the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer.
- *
- *	- Redistributions in binary form must reproduce the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer in the documentation and/or other materials
- *	  provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
 
 #ifndef MLX4_CQ_H
 #define MLX4_CQ_H
@@ -130,7 +100,7 @@ enum {
 	MLX4_CQE_STATUS_IPOK		= 1 << 12,
 };
 
-/* L4_CSUM is logically part of status, but has to checked against badfcs_enc */
+
 enum {
 	MLX4_CQE_STATUS_L4_CSUM		= 1 << 2,
 };
@@ -157,10 +127,7 @@ static inline void mlx4_cq_arm(struct mlx4_cq *cq, u32 cmd,
 
 	*cq->arm_db = cpu_to_be32(sn << 28 | cmd | ci);
 
-	/*
-	 * Make sure that the doorbell record in host memory is
-	 * written before ringing the doorbell via PCI MMIO.
-	 */
+	
 	wmb();
 
 	doorbell[0] = cpu_to_be32(sn << 28 | cmd | cq->cqn);
@@ -184,4 +151,4 @@ int mlx4_cq_modify(struct mlx4_dev *dev, struct mlx4_cq *cq,
 int mlx4_cq_resize(struct mlx4_dev *dev, struct mlx4_cq *cq,
 		   int entries, struct mlx4_mtt *mtt);
 
-#endif /* MLX4_CQ_H */
+#endif 

@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for net selftests
+
+
 
 TEST_PROGS := \
 	bond-arp-interval-causes-panic.sh \

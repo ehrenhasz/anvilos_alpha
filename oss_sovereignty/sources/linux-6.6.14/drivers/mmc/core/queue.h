@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef MMC_QUEUE_H
 #define MMC_QUEUE_H
 
@@ -45,14 +45,7 @@ struct mmc_blk_request {
 	struct mmc_data		data;
 };
 
-/**
- * enum mmc_drv_op - enumerates the operations in the mmc_queue_req
- * @MMC_DRV_OP_IOCTL: ioctl operation
- * @MMC_DRV_OP_IOCTL_RPMB: RPMB-oriented ioctl operation
- * @MMC_DRV_OP_BOOT_WP: write protect boot partitions
- * @MMC_DRV_OP_GET_CARD_STATUS: get card status
- * @MMC_DRV_OP_GET_EXT_CSD: get the EXT CSD from an eMMC card
- */
+
 enum mmc_drv_op {
 	MMC_DRV_OP_IOCTL,
 	MMC_DRV_OP_IOCTL_RPMB,

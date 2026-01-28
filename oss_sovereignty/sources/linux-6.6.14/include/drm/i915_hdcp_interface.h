@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+) */
-/*
- * Copyright © 2017-2019 Intel Corporation
- *
- * Authors:
- * Ramalingam C <ramalingam.c@intel.com>
- */
+
+
 
 #ifndef _I915_HDCP_INTERFACE_H_
 #define _I915_HDCP_INTERFACE_H_
@@ -13,15 +8,7 @@
 #include <linux/device.h>
 #include <drm/display/drm_hdcp.h>
 
-/**
- * enum hdcp_port_type - HDCP port implementation type defined by ME/GSC FW
- * @HDCP_PORT_TYPE_INVALID: Invalid hdcp port type
- * @HDCP_PORT_TYPE_INTEGRATED: In-Host HDCP2.x port
- * @HDCP_PORT_TYPE_LSPCON: HDCP2.2 discrete wired Tx port with LSPCON
- *			   (HDMI 2.0) solution
- * @HDCP_PORT_TYPE_CPDP: HDCP2.2 discrete wired Tx port using the CPDP (DP 1.3)
- *			 solution
- */
+
 enum hdcp_port_type {
 	HDCP_PORT_TYPE_INVALID,
 	HDCP_PORT_TYPE_INTEGRATED,
@@ -29,12 +16,7 @@ enum hdcp_port_type {
 	HDCP_PORT_TYPE_CPDP
 };
 
-/**
- * enum hdcp_wired_protocol - HDCP adaptation used on the port
- * @HDCP_PROTOCOL_INVALID: Invalid HDCP adaptation protocol
- * @HDCP_PROTOCOL_HDMI: HDMI adaptation of HDCP used on the port
- * @HDCP_PROTOCOL_DP: DP adaptation of HDCP used on the port
- */
+
 enum hdcp_wired_protocol {
 	HDCP_PROTOCOL_INVALID,
 	HDCP_PROTOCOL_HDMI,
@@ -53,17 +35,7 @@ enum hdcp_ddi {
 	HDCP_DDI_RANGE_END = HDCP_DDI_A,
 };
 
-/**
- * enum hdcp_tc - ME/GSC Firmware defined index for transcoders
- * @HDCP_INVALID_TRANSCODER: Index for Invalid transcoder
- * @HDCP_TRANSCODER_EDP: Index for EDP Transcoder
- * @HDCP_TRANSCODER_DSI0: Index for DSI0 Transcoder
- * @HDCP_TRANSCODER_DSI1: Index for DSI1 Transcoder
- * @HDCP_TRANSCODER_A: Index for Transcoder A
- * @HDCP_TRANSCODER_B: Index for Transcoder B
- * @HDCP_TRANSCODER_C: Index for Transcoder C
- * @HDCP_TRANSCODER_D: Index for Transcoder D
- */
+
 enum hdcp_transcoder {
 	HDCP_INVALID_TRANSCODER = 0x00,
 	HDCP_TRANSCODER_EDP,
@@ -75,20 +47,7 @@ enum hdcp_transcoder {
 	HDCP_TRANSCODER_D
 };
 
-/**
- * struct hdcp_port_data - intel specific HDCP port data
- * @hdcp_ddi: ddi index as per ME/GSC FW
- * @hdcp_transcoder: transcoder index as per ME/GSC FW
- * @port_type: HDCP port type as per ME/GSC FW classification
- * @protocol: HDCP adaptation as per ME/GSC FW
- * @k: No of streams transmitted on a port. Only on DP MST this is != 1
- * @seq_num_m: Count of RepeaterAuth_Stream_Manage msg propagated.
- *	       Initialized to 0 on AKE_INIT. Incremented after every successful
- *	       transmission of RepeaterAuth_Stream_Manage message. When it rolls
- *	       over re-Auth has to be triggered.
- * @streams: struct hdcp2_streamid_type[k]. Defines the type and id for the
- *	     streams
- */
+
 struct hdcp_port_data {
 	enum hdcp_ddi hdcp_ddi;
 	enum hdcp_transcoder hdcp_transcoder;
@@ -99,30 +58,9 @@ struct hdcp_port_data {
 	struct hdcp2_streamid_type *streams;
 };
 
-/**
- * struct i915_hdcp_ops- ops for HDCP2.2 services.
- * @owner: Module providing the ops
- * @initiate_hdcp2_session: Initiate a Wired HDCP2.2 Tx Session.
- *			    And Prepare AKE_Init.
- * @verify_receiver_cert_prepare_km: Verify the Receiver Certificate
- *				     AKE_Send_Cert and prepare
-				     AKE_Stored_Km/AKE_No_Stored_Km
- * @verify_hprime: Verify AKE_Send_H_prime
- * @store_pairing_info: Store pairing info received
- * @initiate_locality_check: Prepare LC_Init
- * @verify_lprime: Verify lprime
- * @get_session_key: Prepare SKE_Send_Eks
- * @repeater_check_flow_prepare_ack: Validate the Downstream topology
- *				     and prepare rep_ack
- * @verify_mprime: Verify mprime
- * @enable_hdcp_authentication:  Mark a port as authenticated.
- * @close_hdcp_session: Close the Wired HDCP Tx session per port.
- *			This also disables the authenticated state of the port.
- */
+
 struct i915_hdcp_ops {
-	/**
-	 * @owner: hdcp module
-	 */
+	
 	struct module *owner;
 
 	int (*initiate_hdcp2_session)(struct device *dev,
@@ -167,25 +105,20 @@ struct i915_hdcp_ops {
 				  struct hdcp_port_data *data);
 };
 
-/**
- * struct i915_hdcp_arbiter - Used for communication between i915
- * and hdcp drivers for the HDCP2.2 services
- * @hdcp_dev: device that provide the HDCP2.2 service from MEI Bus.
- * @hdcp_ops: Ops implemented by hdcp driver or intel_hdcp_gsc , used by i915 driver.
- */
+
 struct i915_hdcp_arbiter {
 	struct device *hdcp_dev;
 	const struct i915_hdcp_ops *ops;
 
-	/* To protect the above members. */
+	
 	struct mutex mutex;
 };
 
-/* fw_hdcp_status: Enumeration of all HDCP Status Codes */
+
 enum fw_hdcp_status {
 	FW_HDCP_STATUS_SUCCESS			= 0x0000,
 
-	/* WiDi Generic Status Codes */
+	
 	FW_HDCP_STATUS_INTERNAL_ERROR		= 0x1000,
 	FW_HDCP_STATUS_UNKNOWN_ERROR		= 0x1001,
 	FW_HDCP_STATUS_INCORRECT_API_VERSION	= 0x1002,
@@ -194,7 +127,7 @@ enum fw_hdcp_status {
 	FW_HDCP_STATUS_INVALID_PARAMS		= 0x1005,
 	FW_HDCP_STATUS_AUTHENTICATION_FAILED	= 0x1006,
 
-	/* WiDi Status Codes */
+	
 	FW_HDCP_INVALID_SESSION_STATE		= 0x6000,
 	FW_HDCP_SRM_FRAGMENT_UNEXPECTED		= 0x6001,
 	FW_HDCP_SRM_INVALID_LENGTH		= 0x6002,
@@ -218,10 +151,10 @@ enum fw_hdcp_status {
 	FW_HDCP_STATUS_INVALID_PAVP_MODE	= 0x6014,
 	FW_HDCP_STATUS_LC_MAX_ATTEMPTS		= 0x6015,
 
-	/* New status for HDCP 2.1 */
+	
 	FW_HDCP_STATUS_MISMATCH_IN_M		= 0x6016,
 
-	/* New status code for HDCP 2.2 Rx */
+	
 	FW_HDCP_STATUS_RX_PROV_NOT_ALLOWED	= 0x6017,
 	FW_HDCP_STATUS_RX_PROV_WRONG_SUBJECT	= 0x6018,
 	FW_HDCP_RX_NEEDS_PROVISIONING		= 0x6019,
@@ -251,7 +184,7 @@ enum fw_hdcp_status {
 	FW_HDCP_STATUS_NOT_INTEGRATED_PORT	= 0x603c,
 	FW_HDCP_STATUS_SESSION_MAX_REACHED	= 0x603d,
 
-	/* hdcp capable bit is not set in rx_caps(error is unique to DP) */
+	
 	FW_HDCP_STATUS_NOT_HDCP_CAPABLE		= 0x6041,
 
 	FW_HDCP_STATUS_INVALID_STREAM_COUNT	= 0x6042,
@@ -262,8 +195,8 @@ enum fw_hdcp_status {
 #define HDCP_M_LEN					16
 #define HDCP_KH_LEN					16
 
-/* Payload Buffer size(Excluding Header) for CMDs and corresponding response */
-/* Wired_Tx_AKE  */
+
+
 #define	WIRED_CMD_BUF_LEN_INITIATE_HDCP2_SESSION_IN	(4 + 1)
 #define	WIRED_CMD_BUF_LEN_INITIATE_HDCP2_SESSION_OUT	(4 + 8 + 3)
 
@@ -280,22 +213,22 @@ enum fw_hdcp_status {
 #define	WIRED_CMD_BUF_LEN_CLOSE_SESSION_IN		(4)
 #define	WIRED_CMD_BUF_LEN_CLOSE_SESSION_OUT		(4)
 
-/* Wired_Tx_LC */
+
 #define	WIRED_CMD_BUF_LEN_INIT_LOCALITY_CHECK_IN	(4)
 #define	WIRED_CMD_BUF_LEN_INIT_LOCALITY_CHECK_OUT	(4 + 8)
 
 #define	WIRED_CMD_BUF_LEN_VALIDATE_LOCALITY_IN		(4 + 32)
 #define	WIRED_CMD_BUF_LEN_VALIDATE_LOCALITY_OUT		(4)
 
-/* Wired_Tx_SKE */
+
 #define	WIRED_CMD_BUF_LEN_GET_SESSION_KEY_IN		(4)
 #define	WIRED_CMD_BUF_LEN_GET_SESSION_KEY_OUT		(4 + 16 + 8)
 
-/* Wired_Tx_SKE */
+
 #define	WIRED_CMD_BUF_LEN_ENABLE_AUTH_IN		(4 + 1)
 #define	WIRED_CMD_BUF_LEN_ENABLE_AUTH_OUT		(4)
 
-/* Wired_Tx_Repeater */
+
 #define	WIRED_CMD_BUF_LEN_VERIFY_REPEATER_IN		(4 + 2 + 3 + 16 + 155)
 #define	WIRED_CMD_BUF_LEN_VERIFY_REPEATER_OUT		(4 + 1 + 16)
 
@@ -304,14 +237,14 @@ enum fw_hdcp_status {
 
 #define	WIRED_CMD_BUF_LEN_REPEATER_AUTH_STREAM_REQ_OUT		(4)
 
-/* hdcp_command_id: Enumeration of all WIRED HDCP Command IDs */
+
 enum hdcp_command_id {
 	_WIDI_COMMAND_BASE		= 0x00030000,
 	WIDI_INITIATE_HDCP2_SESSION	= _WIDI_COMMAND_BASE,
 	HDCP_GET_SRM_STATUS,
 	HDCP_SEND_SRM_FRAGMENT,
 
-	/* The wired HDCP Tx commands */
+	
 	_WIRED_COMMAND_BASE		= 0x00031000,
 	WIRED_INITIATE_HDCP2_SESSION	= _WIRED_COMMAND_BASE,
 	WIRED_VERIFY_RECEIVER_CERT,
@@ -337,39 +270,36 @@ union encrypted_buff {
 	} __packed;
 };
 
-/* HDCP HECI message header. All header values are little endian. */
+
 struct hdcp_cmd_header {
 	u32			api_version;
 	u32			command_id;
 	enum fw_hdcp_status	status;
-	/* Length of the HECI message (excluding the header) */
+	
 	u32			buffer_len;
 } __packed;
 
-/* Empty command request or response. No data follows the header. */
+
 struct hdcp_cmd_no_data {
 	struct hdcp_cmd_header header;
 } __packed;
 
-/* Uniquely identifies the hdcp port being addressed for a given command. */
+
 struct hdcp_port_id {
 	u8	integrated_port_type;
-	/* physical_port is used until Gen11.5. Must be zero for Gen11.5+ */
+	
 	u8	physical_port;
-	/* attached_transcoder is for Gen11.5+. Set to zero for <Gen11.5 */
+	
 	u8	attached_transcoder;
 	u8	reserved;
 } __packed;
 
-/*
- * Data structures for integrated wired HDCP2 Tx in
- * support of the AKE protocol
- */
-/* HECI struct for integrated wired HDCP Tx session initiation. */
+
+
 struct wired_cmd_initiate_hdcp2_session_in {
 	struct hdcp_cmd_header	header;
 	struct hdcp_port_id	port;
-	u8			protocol; /* for HDMI vs DP */
+	u8			protocol; 
 } __packed;
 
 struct wired_cmd_initiate_hdcp2_session_out {
@@ -379,7 +309,7 @@ struct wired_cmd_initiate_hdcp2_session_out {
 	struct hdcp2_tx_caps	tx_caps;
 } __packed;
 
-/* HECI struct for ending an integrated wired HDCP Tx session. */
+
 struct wired_cmd_close_session_in {
 	struct hdcp_cmd_header	header;
 	struct hdcp_port_id	port;
@@ -390,7 +320,7 @@ struct wired_cmd_close_session_out {
 	struct hdcp_port_id	port;
 } __packed;
 
-/* HECI struct for integrated wired HDCP Tx Rx Cert verification. */
+
 struct wired_cmd_verify_receiver_cert_in {
 	struct hdcp_cmd_header	header;
 	struct hdcp_port_id	port;
@@ -407,7 +337,7 @@ struct wired_cmd_verify_receiver_cert_out {
 	union encrypted_buff	ekm_buff;
 } __packed;
 
-/* HECI struct for verification of Rx's Hprime in a HDCP Tx session */
+
 struct wired_cmd_ake_send_hprime_in {
 	struct hdcp_cmd_header	header;
 	struct hdcp_port_id	port;
@@ -419,10 +349,7 @@ struct wired_cmd_ake_send_hprime_out {
 	struct hdcp_port_id	port;
 } __packed;
 
-/*
- * HECI struct for sending in AKE pairing data generated by the Rx in an
- * integrated wired HDCP Tx session.
- */
+
 struct wired_cmd_ake_send_pairing_info_in {
 	struct hdcp_cmd_header	header;
 	struct hdcp_port_id	port;
@@ -434,11 +361,8 @@ struct wired_cmd_ake_send_pairing_info_out {
 	struct hdcp_port_id	port;
 } __packed;
 
-/* Data structures for integrated wired HDCP2 Tx in support of the LC protocol*/
-/*
- * HECI struct for initiating locality check with an
- * integrated wired HDCP Tx session.
- */
+
+
 struct wired_cmd_init_locality_check_in {
 	struct hdcp_cmd_header	header;
 	struct hdcp_port_id	port;
@@ -450,10 +374,7 @@ struct wired_cmd_init_locality_check_out {
 	u8			r_n[HDCP_2_2_RN_LEN];
 } __packed;
 
-/*
- * HECI struct for validating an Rx's LPrime value in an
- * integrated wired HDCP Tx session.
- */
+
 struct wired_cmd_validate_locality_in {
 	struct hdcp_cmd_header	header;
 	struct hdcp_port_id	port;
@@ -465,11 +386,8 @@ struct wired_cmd_validate_locality_out {
 	struct hdcp_port_id	port;
 } __packed;
 
-/*
- * Data structures for integrated wired HDCP2 Tx in support of the
- * SKE protocol
- */
-/* HECI struct for creating session key */
+
+
 struct wired_cmd_get_session_key_in {
 	struct hdcp_cmd_header	header;
 	struct hdcp_port_id	port;
@@ -482,7 +400,7 @@ struct wired_cmd_get_session_key_out {
 	u8			r_iv[HDCP_2_2_RIV_LEN];
 } __packed;
 
-/* HECI struct for the Tx enable authentication command */
+
 struct wired_cmd_enable_auth_in {
 	struct hdcp_cmd_header	header;
 	struct hdcp_port_id	port;
@@ -494,14 +412,8 @@ struct wired_cmd_enable_auth_out {
 	struct hdcp_port_id	port;
 } __packed;
 
-/*
- * Data structures for integrated wired HDCP2 Tx in support of
- * the repeater protocols
- */
-/*
- * HECI struct for verifying the downstream repeater's HDCP topology in an
- * integrated wired HDCP Tx session.
- */
+
+
 struct wired_cmd_verify_repeater_in {
 	struct hdcp_cmd_header	header;
 	struct hdcp_port_id	port;
@@ -518,10 +430,7 @@ struct wired_cmd_verify_repeater_out {
 	u8			v[HDCP_2_2_V_PRIME_HALF_LEN];
 } __packed;
 
-/*
- * HECI struct in support of stream management in an
- * integrated wired HDCP Tx session.
- */
+
 struct wired_cmd_repeater_auth_stream_req_in {
 	struct hdcp_cmd_header		header;
 	struct hdcp_port_id		port;
@@ -536,4 +445,4 @@ struct wired_cmd_repeater_auth_stream_req_out {
 	struct hdcp_port_id	port;
 } __packed;
 
-#endif /* _I915_HDCP_INTERFACE_H_ */
+#endif 

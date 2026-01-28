@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2020 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+
 
 #ifndef DRIVERS_NET_ETHERNET_TI_AM65_CPSW_SWITCHDEV_H_
 #define DRIVERS_NET_ETHERNET_TI_AM65_CPSW_SWITCHDEV_H_
@@ -31,4 +30,4 @@ static inline void am65_cpsw_nuss_set_offload_fwd_mark(struct sk_buff *skb, bool
 
 #endif
 
-#endif /* DRIVERS_NET_ETHERNET_TI_AM65_CPSW_SWITCHDEV_H_ */
+#endif 

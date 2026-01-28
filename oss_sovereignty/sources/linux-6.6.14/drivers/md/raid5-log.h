@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _RAID5_LOG_H
 #define _RAID5_LOG_H
 
@@ -60,12 +60,12 @@ static inline int log_stripe(struct stripe_head *sh, struct stripe_head_state *s
 
 	if (conf->log) {
 		if (!test_bit(STRIPE_R5C_CACHING, &sh->state)) {
-			/* writing out phase */
+			
 			if (s->waiting_extra_page)
 				return 0;
 			return r5l_write_stripe(conf->log, sh);
 		} else if (test_bit(STRIPE_LOG_TRAPPED, &sh->state)) {
-			/* caching phase */
+			
 			return r5c_cache_data(conf->log, sh);
 		}
 	} else if (raid5_has_ppl(conf)) {

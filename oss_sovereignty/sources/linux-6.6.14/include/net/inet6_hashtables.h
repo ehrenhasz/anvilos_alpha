@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the BSD Socket
- *		interface as the means of communication with the user level.
- *
- * Authors:	Lotsa people, from code originally in tcp
- */
+
+
 
 #ifndef _INET6_HASHTABLES_H
 #define _INET6_HASHTABLES_H
@@ -34,12 +28,7 @@ static inline unsigned int __inet6_ehashfn(const u32 lhash,
 	return jhash_3words(lhash, fhash, ports, initval);
 }
 
-/*
- * Sockets in TCP_CLOSE state are _always_ taken out of the hash, so
- * we need not check it for TCP lookups anymore, thanks Alexey. -DaveM
- *
- * The sockhash lock must be held as a reader here.
- */
+
 struct sock *__inet6_lookup_established(struct net *net,
 					struct inet_hashinfo *hashinfo,
 					const struct in6_addr *saddr,
@@ -135,9 +124,7 @@ struct sock *inet6_steal_sock(struct net *net, struct sk_buff *skb, int doff,
 	if (!reuse_sk)
 		return sk;
 
-	/* We've chosen a new reuseport sock which is never refcounted. This
-	 * implies that sk also isn't refcounted.
-	 */
+	
 	WARN_ON_ONCE(*refcounted);
 
 	return reuse_sk;
@@ -188,10 +175,10 @@ static inline bool inet6_match(struct net *net, const struct sock *sk,
 	    !ipv6_addr_equal(&sk->sk_v6_rcv_saddr, daddr))
 		return false;
 
-	/* READ_ONCE() paired with WRITE_ONCE() in sock_bindtoindex_locked() */
+	
 	return inet_sk_bound_dev_eq(net, READ_ONCE(sk->sk_bound_dev_if), dif,
 				    sdif);
 }
-#endif /* IS_ENABLED(CONFIG_IPV6) */
+#endif 
 
-#endif /* _INET6_HASHTABLES_H */
+#endif 

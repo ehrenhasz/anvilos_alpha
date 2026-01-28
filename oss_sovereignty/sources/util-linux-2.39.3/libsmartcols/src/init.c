@@ -1,17 +1,6 @@
-/*
- * Copyright (C) 2014 Karel Zak <kzak@redhat.com>
- *
- * This file may be redistributed under the terms of the
- * GNU Lesser General Public License.
- */
 
-/**
- * SECTION: init
- * @title: Library initialization
- * @short_description: initialize debugging
- *
- * The library debug stuff.
- */
+
+
 
 #include <stdarg.h>
 
@@ -31,16 +20,7 @@ UL_DEBUG_DEFINE_MASKNAMES(libsmartcols) =
 	{ NULL, 0, NULL }
 };
 
-/**
- * scols_init_debug:
- * @mask: debug mask (0xffff to enable full debugging)
- *
- * If the @mask is not specified, then this function reads
- * the LIBSMARTCOLS_DEBUG environment variable to get the mask.
- *
- * Already initialized debugging stuff cannot be changed. Calling
- * this function twice has no effect.
- */
+
 void scols_init_debug(int mask)
 {
 	if (libsmartcols_debug_mask)

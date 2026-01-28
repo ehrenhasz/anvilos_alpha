@@ -117,7 +117,7 @@ if [ "${INSTALL}" = "yes" ]; then
 		install "$CMD_DIR/$cmd" "$INSTALL_MOUNT_HELPER_DIR/$cmd"
 	done
 	for udev in "$UDEV_CMD_DIR/zvol_id" "$UDEV_SCRIPT_DIR/vdev_id"; do
-		install "$udev" "$INSTALL_UDEV_DIR/${udev##*/}"
+		install "$udev" "$INSTALL_UDEV_DIR/${udev
 	done
 	for rule in "60-zvol.rules" "69-vdev.rules" "90-zfs.rules"; do
 		install "$UDEV_RULE_DIR/$rule" "$INSTALL_UDEV_RULE_DIR/$rule"

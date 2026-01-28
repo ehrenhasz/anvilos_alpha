@@ -1,15 +1,15 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Linux kernel pci hotplug controller drivers.
-#
+
+
+
+
 
 obj-$(CONFIG_HOTPLUG_PCI)		+= pci_hotplug.o
 obj-$(CONFIG_HOTPLUG_PCI_COMPAQ)	+= cpqphp.o
 obj-$(CONFIG_HOTPLUG_PCI_IBM)		+= ibmphp.o
 
-# native drivers should be linked before acpiphp in order to allow the
-# native driver to attempt to bind first. We can then fall back to
-# generic support.
+
+
+
 
 obj-$(CONFIG_HOTPLUG_PCI_PCIE)		+= pciehp.o
 obj-$(CONFIG_HOTPLUG_PCI_CPCI_ZT5550)	+= cpcihp_zt5550.o
@@ -21,7 +21,7 @@ obj-$(CONFIG_HOTPLUG_PCI_RPA_DLPAR)	+= rpadlpar_io.o
 obj-$(CONFIG_HOTPLUG_PCI_ACPI)		+= acpiphp.o
 obj-$(CONFIG_HOTPLUG_PCI_S390)		+= s390_pci_hpc.o
 
-# acpiphp_ibm extends acpiphp, so should be linked afterwards.
+
 
 obj-$(CONFIG_HOTPLUG_PCI_ACPI_IBM)	+= acpiphp_ibm.o
 

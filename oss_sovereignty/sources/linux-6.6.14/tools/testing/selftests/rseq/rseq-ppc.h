@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * rseq-ppc.h
- *
- * (C) Copyright 2016-2022 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
- * (C) Copyright 2016-2018 - Boqun Feng <boqun.feng@gmail.com>
- */
 
-/*
- * RSEQ_SIG is used with the following trap instruction:
- *
- * powerpc-be:    0f e5 00 0b           twui   r5,11
- * powerpc64-le:  0b 00 e5 0f           twui   r5,11
- * powerpc64-be:  0f e5 00 0b           twui   r5,11
- */
+
+
+
 
 #define RSEQ_SIG	0x0fe5000b
 
@@ -36,18 +25,15 @@ do {									\
 	RSEQ_WRITE_ONCE(*(p), v);					\
 } while (0)
 
-/*
- * The __rseq_cs_ptr_array and __rseq_cs sections can be used by debuggers to
- * better handle single-stepping through the restartable critical sections.
- */
+
 
 #ifdef __PPC64__
 
-#define RSEQ_STORE_LONG(arg)	"std%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* To memory ("m" constraint) */
-#define RSEQ_STORE_INT(arg)	"stw%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* To memory ("m" constraint) */
-#define RSEQ_LOAD_LONG(arg)	"ld%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* From memory ("m" constraint) */
-#define RSEQ_LOAD_INT(arg)	"lwz%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* From memory ("m" constraint) */
-#define RSEQ_LOADX_LONG		"ldx "							/* From base register ("b" constraint) */
+#define RSEQ_STORE_LONG(arg)	"std%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	
+#define RSEQ_STORE_INT(arg)	"stw%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	
+#define RSEQ_LOAD_LONG(arg)	"ld%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	
+#define RSEQ_LOAD_INT(arg)	"lwz%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	
+#define RSEQ_LOADX_LONG		"ldx "							
 #define RSEQ_CMP_LONG		"cmpd "
 #define RSEQ_CMP_LONG_INT	"cmpdi "
 
@@ -73,26 +59,19 @@ do {									\
 		"std %%r17, %[" __rseq_str(rseq_cs) "]\n\t"			\
 		__rseq_str(label) ":\n\t"
 
-/*
- * Exit points of a rseq critical section consist of all instructions outside
- * of the critical section where a critical section can either branch to or
- * reach through the normal course of its execution. The abort IP and the
- * post-commit IP are already part of the __rseq_cs section and should not be
- * explicitly defined as additional exit points. Knowing all exit points is
- * useful to assist debuggers stepping over the critical section.
- */
+
 #define RSEQ_ASM_DEFINE_EXIT_POINT(start_ip, exit_ip)			\
 		".pushsection __rseq_exit_point_array, \"aw\"\n\t"	\
 		".quad " __rseq_str(start_ip) ", " __rseq_str(exit_ip) "\n\t" \
 		".popsection\n\t"
 
-#else /* #ifdef __PPC64__ */
+#else 
 
-#define RSEQ_STORE_LONG(arg)	"stw%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* To memory ("m" constraint) */
-#define RSEQ_STORE_INT(arg)	RSEQ_STORE_LONG(arg)					/* To memory ("m" constraint) */
-#define RSEQ_LOAD_LONG(arg)	"lwz%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* From memory ("m" constraint) */
-#define RSEQ_LOAD_INT(arg)	RSEQ_LOAD_LONG(arg)					/* From memory ("m" constraint) */
-#define RSEQ_LOADX_LONG		"lwzx "							/* From base register ("b" constraint) */
+#define RSEQ_STORE_LONG(arg)	"stw%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	
+#define RSEQ_STORE_INT(arg)	RSEQ_STORE_LONG(arg)					
+#define RSEQ_LOAD_LONG(arg)	"lwz%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	
+#define RSEQ_LOAD_INT(arg)	RSEQ_LOAD_LONG(arg)					
+#define RSEQ_LOADX_LONG		"lwzx "							
 #define RSEQ_CMP_LONG		"cmpw "
 #define RSEQ_CMP_LONG_INT	"cmpwi "
 
@@ -102,24 +81,17 @@ do {									\
 		".balign 32\n\t"						\
 		__rseq_str(label) ":\n\t"					\
 		".long " __rseq_str(version) ", " __rseq_str(flags) "\n\t"	\
-		/* 32-bit only supported on BE */				\
+						\
 		".long 0x0, " __rseq_str(start_ip) ", 0x0, " __rseq_str(post_commit_offset) ", 0x0, " __rseq_str(abort_ip) "\n\t" \
 		".popsection\n\t"					\
 		".pushsection __rseq_cs_ptr_array, \"aw\"\n\t"		\
 		".long 0x0, " __rseq_str(label) "b\n\t"			\
 		".popsection\n\t"
 
-/*
- * Exit points of a rseq critical section consist of all instructions outside
- * of the critical section where a critical section can either branch to or
- * reach through the normal course of its execution. The abort IP and the
- * post-commit IP are already part of the __rseq_cs section and should not be
- * explicitly defined as additional exit points. Knowing all exit points is
- * useful to assist debuggers stepping over the critical section.
- */
+
 #define RSEQ_ASM_DEFINE_EXIT_POINT(start_ip, exit_ip)				\
 		".pushsection __rseq_exit_point_array, \"aw\"\n\t"		\
-		/* 32-bit only supported on BE */				\
+						\
 		".long 0x0, " __rseq_str(start_ip) ", 0x0, " __rseq_str(exit_ip) "\n\t"	\
 		".popsection\n\t"
 
@@ -130,7 +102,7 @@ do {									\
 		RSEQ_STORE_INT(rseq_cs) "%%r17, %[" __rseq_str(rseq_cs) "]\n\t"	\
 		__rseq_str(label) ":\n\t"
 
-#endif /* #ifdef __PPC64__ */
+#endif 
 
 #define RSEQ_ASM_DEFINE_TABLE(label, start_ip, post_commit_ip, abort_ip)	\
 		__RSEQ_ASM_DEFINE_TABLE(label, 0x0, 0x0, start_ip,		\
@@ -149,11 +121,7 @@ do {									\
 		"b %l[" __rseq_str(abort_label) "]\n\t"				\
 		".popsection\n\t"
 
-/*
- * RSEQ_ASM_OPs: asm operations for rseq
- * 	RSEQ_ASM_OP_R_*: has hard-code registers in it
- * 	RSEQ_ASM_OP_* (else): doesn't have hard-code registers(unless cr7)
- */
+
 #define RSEQ_ASM_OP_CMPEQ(var, expect, label)					\
 		RSEQ_LOAD_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"		\
 		RSEQ_CMP_LONG "cr7, %%r17, %[" __rseq_str(expect) "]\n\t"		\
@@ -167,23 +135,23 @@ do {									\
 #define RSEQ_ASM_OP_STORE(value, var)						\
 		RSEQ_STORE_LONG(var) "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t"
 
-/* Load @var to r17 */
+
 #define RSEQ_ASM_OP_R_LOAD(var)							\
 		RSEQ_LOAD_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"
 
-/* Store r17 to @var */
+
 #define RSEQ_ASM_OP_R_STORE(var)						\
 		RSEQ_STORE_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"
 
-/* Add @count to r17 */
+
 #define RSEQ_ASM_OP_R_ADD(count)						\
 		"add %%r17, %[" __rseq_str(count) "], %%r17\n\t"
 
-/* Load (r17 + voffp) to r17 */
+
 #define RSEQ_ASM_OP_R_LOADX(voffp)						\
 		RSEQ_LOADX_LONG "%%r17, %[" __rseq_str(voffp) "], %%r17\n\t"
 
-/* TODO: implement a faster memcpy. */
+
 #define RSEQ_ASM_OP_R_MEMCPY() \
 		RSEQ_CMP_LONG_INT "%%r19, 0\n\t" \
 		"beq 333f\n\t" \
@@ -205,7 +173,7 @@ do {									\
 		RSEQ_STORE_LONG(var) "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t" \
 		__rseq_str(post_commit_label) ":\n\t"
 
-/* Per-cpu-id indexing. */
+
 
 #define RSEQ_TEMPLATE_CPU_ID
 #define RSEQ_TEMPLATE_MO_RELAXED
@@ -217,7 +185,7 @@ do {									\
 #undef RSEQ_TEMPLATE_MO_RELEASE
 #undef RSEQ_TEMPLATE_CPU_ID
 
-/* Per-mm-cid indexing. */
+
 
 #define RSEQ_TEMPLATE_MM_CID
 #define RSEQ_TEMPLATE_MO_RELAXED
@@ -229,7 +197,7 @@ do {									\
 #undef RSEQ_TEMPLATE_MO_RELEASE
 #undef RSEQ_TEMPLATE_MM_CID
 
-/* APIs which are not based on cpu ids. */
+
 
 #define RSEQ_TEMPLATE_CPU_ID_NONE
 #define RSEQ_TEMPLATE_MO_RELAXED

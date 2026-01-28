@@ -1,122 +1,37 @@
-/*
-    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
-    All rights reserved
 
-    VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
-
-    This file is part of the FreeRTOS distribution.
-
-    FreeRTOS is free software; you can redistribute it and/or modify it under
-    the terms of the GNU General Public License (version 2) as published by the
-    Free Software Foundation >>>> AND MODIFIED BY <<<< the FreeRTOS exception.
-
-    ***************************************************************************
-    >>!   NOTE: The modification to the GPL is included to allow you to     !<<
-    >>!   distribute a combined work that includes FreeRTOS without being   !<<
-    >>!   obliged to provide the source code for proprietary components     !<<
-    >>!   outside of the FreeRTOS kernel.                                   !<<
-    ***************************************************************************
-
-    FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
-    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-    FOR A PARTICULAR PURPOSE.  Full license text is available on the following
-    link: http://www.freertos.org/a00114.html
-
-    ***************************************************************************
-     *                                                                       *
-     *    FreeRTOS provides completely free yet professionally developed,    *
-     *    robust, strictly quality controlled, supported, and cross          *
-     *    platform software that is more than just the market leader, it     *
-     *    is the industry's de facto standard.                               *
-     *                                                                       *
-     *    Help yourself get started quickly while simultaneously helping     *
-     *    to support the FreeRTOS project by purchasing a FreeRTOS           *
-     *    tutorial book, reference manual, or both:                          *
-     *    http://www.FreeRTOS.org/Documentation                              *
-     *                                                                       *
-    ***************************************************************************
-
-    http://www.FreeRTOS.org/FAQHelp.html - Having a problem?  Start by reading
-    the FAQ page "My application does not run, what could be wrong?".  Have you
-    defined configASSERT()?
-
-    http://www.FreeRTOS.org/support - In return for receiving this top quality
-    embedded software for free we request you assist our global community by
-    participating in the support forum.
-
-    http://www.FreeRTOS.org/training - Investing in training allows your team to
-    be as productive as possible as early as possible.  Now you can receive
-    FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
-    Ltd, and the world's leading authority on the world's leading RTOS.
-
-    http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
-    including FreeRTOS+Trace - an indispensable productivity tool, a DOS
-    compatible FAT file system, and our tiny thread aware UDP/IP stack.
-
-    http://www.FreeRTOS.org/labs - Where new FreeRTOS products go to incubate.
-    Come and try FreeRTOS+TCP, our new open source TCP/IP stack for FreeRTOS.
-
-    http://www.OpenRTOS.com - Real Time Engineers ltd. license FreeRTOS to High
-    Integrity Systems ltd. to sell under the OpenRTOS brand.  Low cost OpenRTOS
-    licenses offer ticketed support, indemnification and commercial middleware.
-
-    http://www.SafeRTOS.com - High Integrity Systems also provide a safety
-    engineered and independently SIL3 certified version for use in safety and
-    mission critical applications that require provable dependability.
-
-    1 tab == 4 spaces!
-*/
 
 #ifndef INC_FREERTOS_H
 #define INC_FREERTOS_H
 
-/*
- * Include the generic headers required for the FreeRTOS port being used.
- */
+
 #include <stddef.h>
 
-/*
- * If stdint.h cannot be located then:
- *   + If using GCC ensure the -nostdint options is *not* being used.
- *   + Ensure the project's include path includes the directory in which your
- *     compiler stores stdint.h.
- *   + Set any compiler options necessary for it to support C99, as technically
- *     stdint.h is only mandatory with C99 (FreeRTOS does not require C99 in any
- *     other way).
- *   + The FreeRTOS download includes a simple stdint.h definition that can be
- *     used in cases where none is provided by the compiler.  The files only
- *     contains the typedefs required to build FreeRTOS.  Read the instructions
- *     in FreeRTOS/source/stdint.readme for more information.
- */
-#include <stdint.h> /* READ COMMENT ABOVE. */
+
+#include <stdint.h> 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* Application specific configuration options. */
+
 #include "FreeRTOSConfig.h"
 
-/* Basic FreeRTOS definitions. */
+
 #include "projdefs.h"
 
-/* Definitions specific to the port being used. */
+
 #include "portable.h"
 
-/* Must be defaulted before configUSE_NEWLIB_REENTRANT is used below. */
+
 #ifndef configUSE_NEWLIB_REENTRANT
 	#define configUSE_NEWLIB_REENTRANT 0
 #endif
 
-/* Required if struct _reent is used. */
+
 #if ( configUSE_NEWLIB_REENTRANT == 1 )
 	#include <reent.h>
 #endif
-/*
- * Check all the required application specific macros have been defined.
- * These macros are application specific and (as downloaded) are defined
- * within FreeRTOSConfig.h.
- */
+
 
 #ifndef configMINIMAL_STACK_SIZE
 	#error Missing definition:  configMINIMAL_STACK_SIZE must be defined in FreeRTOSConfig.h.  configMINIMAL_STACK_SIZE defines the size (in words) of the stack allocated to the idle task.  Refer to the demo project provided for your port for a suitable value.
@@ -279,22 +194,22 @@ extern "C" {
 	#define configASSERT_DEFINED 1
 #endif
 
-/* The timers module relies on xTaskGetSchedulerState(). */
+
 #if configUSE_TIMERS == 1
 
 	#ifndef configTIMER_TASK_PRIORITY
 		#error If configUSE_TIMERS is set to 1 then configTIMER_TASK_PRIORITY must also be defined.
-	#endif /* configTIMER_TASK_PRIORITY */
+	#endif 
 
 	#ifndef configTIMER_QUEUE_LENGTH
 		#error If configUSE_TIMERS is set to 1 then configTIMER_QUEUE_LENGTH must also be defined.
-	#endif /* configTIMER_QUEUE_LENGTH */
+	#endif 
 
 	#ifndef configTIMER_TASK_STACK_DEPTH
 		#error If configUSE_TIMERS is set to 1 then configTIMER_TASK_STACK_DEPTH must also be defined.
-	#endif /* configTIMER_TASK_STACK_DEPTH */
+	#endif 
 
-#endif /* configUSE_TIMERS */
+#endif 
 
 #ifndef portSET_INTERRUPT_MASK_FROM_ISR
 	#define portSET_INTERRUPT_MASK_FROM_ISR() 0
@@ -330,77 +245,59 @@ extern "C" {
 	#define portPOINTER_SIZE_TYPE uint32_t
 #endif
 
-/* Remove any unused trace macros. */
+
 #ifndef traceSTART
-	/* Used to perform any necessary initialisation - for example, open a file
-	into which trace is to be written. */
+	
 	#define traceSTART()
 #endif
 
 #ifndef traceEND
-	/* Use to close a trace, for example close a file into which trace has been
-	written. */
+	
 	#define traceEND()
 #endif
 
 #ifndef traceTASK_SWITCHED_IN
-	/* Called after a task has been selected to run.  pxCurrentTCB holds a pointer
-	to the task control block of the selected task. */
+	
 	#define traceTASK_SWITCHED_IN()
 #endif
 
 #ifndef traceINCREASE_TICK_COUNT
-	/* Called before stepping the tick count after waking from tickless idle
-	sleep. */
+	
 	#define traceINCREASE_TICK_COUNT( x )
 #endif
 
 #ifndef traceLOW_POWER_IDLE_BEGIN
-	/* Called immediately before entering tickless idle. */
+	
 	#define traceLOW_POWER_IDLE_BEGIN()
 #endif
 
 #ifndef	traceLOW_POWER_IDLE_END
-	/* Called when returning to the Idle task after a tickless idle. */
+	
 	#define traceLOW_POWER_IDLE_END()
 #endif
 
 #ifndef traceTASK_SWITCHED_OUT
-	/* Called before a task has been selected to run.  pxCurrentTCB holds a pointer
-	to the task control block of the task being switched out. */
+	
 	#define traceTASK_SWITCHED_OUT()
 #endif
 
 #ifndef traceTASK_PRIORITY_INHERIT
-	/* Called when a task attempts to take a mutex that is already held by a
-	lower priority task.  pxTCBOfMutexHolder is a pointer to the TCB of the task
-	that holds the mutex.  uxInheritedPriority is the priority the mutex holder
-	will inherit (the priority of the task that is attempting to obtain the
-	muted. */
+	
 	#define traceTASK_PRIORITY_INHERIT( pxTCBOfMutexHolder, uxInheritedPriority )
 #endif
 
 #ifndef traceTASK_PRIORITY_DISINHERIT
-	/* Called when a task releases a mutex, the holding of which had resulted in
-	the task inheriting the priority of a higher priority task.
-	pxTCBOfMutexHolder is a pointer to the TCB of the task that is releasing the
-	mutex.  uxOriginalPriority is the task's configured (base) priority. */
+	
 	#define traceTASK_PRIORITY_DISINHERIT( pxTCBOfMutexHolder, uxOriginalPriority )
 #endif
 
 #ifndef traceBLOCKING_ON_QUEUE_RECEIVE
-	/* Task is about to block because it cannot read from a
-	queue/mutex/semaphore.  pxQueue is a pointer to the queue/mutex/semaphore
-	upon which the read was attempted.  pxCurrentTCB points to the TCB of the
-	task that attempted the read. */
+	
 	#define traceBLOCKING_ON_QUEUE_RECEIVE( pxQueue )
 #endif
 
 #ifndef traceBLOCKING_ON_QUEUE_SEND
-	/* Task is about to block because it cannot write to a
-	queue/mutex/semaphore.  pxQueue is a pointer to the queue/mutex/semaphore
-	upon which the write was attempted.  pxCurrentTCB points to the TCB of the
-	task that attempted the write. */
+	
 	#define traceBLOCKING_ON_QUEUE_SEND( pxQueue )
 #endif
 
@@ -408,7 +305,7 @@ extern "C" {
 	#define configCHECK_FOR_STACK_OVERFLOW 0
 #endif
 
-/* The following event macros are embedded in the kernel API calls. */
+
 
 #ifndef traceMOVED_TASK_TO_READY_STATE
 	#define traceMOVED_TASK_TO_READY_STATE( pxTCB )
@@ -666,15 +563,15 @@ extern "C" {
 
 	#ifndef portCONFIGURE_TIMER_FOR_RUN_TIME_STATS
 		#error If configGENERATE_RUN_TIME_STATS is defined then portCONFIGURE_TIMER_FOR_RUN_TIME_STATS must also be defined.  portCONFIGURE_TIMER_FOR_RUN_TIME_STATS should call a port layer function to setup a peripheral timer/counter that can then be used as the run time counter time base.
-	#endif /* portCONFIGURE_TIMER_FOR_RUN_TIME_STATS */
+	#endif 
 
 	#ifndef portGET_RUN_TIME_COUNTER_VALUE
 		#ifndef portALT_GET_RUN_TIME_COUNTER_VALUE
 			#error If configGENERATE_RUN_TIME_STATS is defined then either portGET_RUN_TIME_COUNTER_VALUE or portALT_GET_RUN_TIME_COUNTER_VALUE must also be defined.  See the examples provided and the FreeRTOS web site for more information.
-		#endif /* portALT_GET_RUN_TIME_COUNTER_VALUE */
-	#endif /* portGET_RUN_TIME_COUNTER_VALUE */
+		#endif 
+	#endif 
 
-#endif /* configGENERATE_RUN_TIME_STATS */
+#endif 
 
 #ifndef portCONFIGURE_TIMER_FOR_RUN_TIME_STATS
 	#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS()
@@ -773,21 +670,21 @@ extern "C" {
 #endif
 
 #ifndef configSUPPORT_STATIC_ALLOCATION
-	/* Defaults to 0 for backward compatibility. */
+	
 	#define configSUPPORT_STATIC_ALLOCATION 0
 #endif
 
 #ifndef configSUPPORT_DYNAMIC_ALLOCATION
-	/* Defaults to 1 for backward compatibility. */
+	
 	#define configSUPPORT_DYNAMIC_ALLOCATION 1
 #endif
 
-/* Sanity check the configuration. */
+
 #if( configUSE_TICKLESS_IDLE != 0 )
 	#if( INCLUDE_vTaskSuspend != 1 )
 		#error INCLUDE_vTaskSuspend must be set to 1 if configUSE_TICKLESS_IDLE is not set to 0
-	#endif /* INCLUDE_vTaskSuspend */
-#endif /* configUSE_TICKLESS_IDLE */
+	#endif 
+#endif 
 
 #if( ( configSUPPORT_STATIC_ALLOCATION == 0 ) && ( configSUPPORT_DYNAMIC_ALLOCATION == 0 ) )
 	#error configSUPPORT_STATIC_ALLOCATION and configSUPPORT_DYNAMIC_ALLOCATION cannot both be 0, but can both be 1.
@@ -798,24 +695,20 @@ extern "C" {
 #endif
 
 #if( portTICK_TYPE_IS_ATOMIC == 0 )
-	/* Either variables of tick type cannot be read atomically, or
-	portTICK_TYPE_IS_ATOMIC was not set - map the critical sections used when
-	the tick count is returned to the standard critical section macros. */
+	
 	#define portTICK_TYPE_ENTER_CRITICAL() portENTER_CRITICAL()
 	#define portTICK_TYPE_EXIT_CRITICAL() portEXIT_CRITICAL()
 	#define portTICK_TYPE_SET_INTERRUPT_MASK_FROM_ISR() portSET_INTERRUPT_MASK_FROM_ISR()
 	#define portTICK_TYPE_CLEAR_INTERRUPT_MASK_FROM_ISR( x ) portCLEAR_INTERRUPT_MASK_FROM_ISR( ( x ) )
 #else
-	/* The tick type can be read atomically, so critical sections used when the
-	tick count is returned can be defined away. */
+	
 	#define portTICK_TYPE_ENTER_CRITICAL()
 	#define portTICK_TYPE_EXIT_CRITICAL()
 	#define portTICK_TYPE_SET_INTERRUPT_MASK_FROM_ISR() 0
 	#define portTICK_TYPE_CLEAR_INTERRUPT_MASK_FROM_ISR( x ) ( void ) x
 #endif
 
-/* Definitions to allow backward compatibility with FreeRTOS versions prior to
-V8 if desired. */
+
 #ifndef configENABLE_BACKWARD_COMPATIBILITY
 	#define configENABLE_BACKWARD_COMPATIBILITY 1
 #endif
@@ -841,36 +734,23 @@ V8 if desired. */
 	#define pcQueueGetQueueName pcQueueGetName
 	#define vTaskGetTaskInfo vTaskGetInfo
 
-	/* Backward compatibility within the scheduler code only - these definitions
-	are not really required but are included for completeness. */
+	
 	#define tmrTIMER_CALLBACK TimerCallbackFunction_t
 	#define pdTASK_CODE TaskFunction_t
 	#define xListItem ListItem_t
 	#define xList List_t
-#endif /* configENABLE_BACKWARD_COMPATIBILITY */
+#endif 
 
 #if( configUSE_ALTERNATIVE_API != 0 )
 	#error The alternative API was deprecated some time ago, and was removed in FreeRTOS V9.0 0
 #endif
 
-/* Set configUSE_TASK_FPU_SUPPORT to 0 to omit floating point support even
-if floating point hardware is otherwise supported by the FreeRTOS port in use.
-This constant is not supported by all FreeRTOS ports that include floating
-point support. */
+
 #ifndef configUSE_TASK_FPU_SUPPORT
 	#define configUSE_TASK_FPU_SUPPORT 1
 #endif
 
-/*
- * In line with software engineering best practice, FreeRTOS implements a strict
- * data hiding policy, so the real structures used by FreeRTOS to maintain the
- * state of tasks, queues, semaphores, etc. are not accessible to the application
- * code.  However, if the application writer wants to statically allocate such
- * an object then the size of the object needs to be know.  Dummy structures
- * that are guaranteed to have the same size and alignment requirements of the
- * real objects are used for this purpose.  The dummy list and list item
- * structures below are used for inclusion in such a dummy structure.
- */
+
 struct xSTATIC_LIST_ITEM
 {
 	TickType_t xDummy1;
@@ -878,7 +758,7 @@ struct xSTATIC_LIST_ITEM
 };
 typedef struct xSTATIC_LIST_ITEM StaticListItem_t;
 
-/* See the comments above the struct xSTATIC_LIST_ITEM definition. */
+
 struct xSTATIC_MINI_LIST_ITEM
 {
 	TickType_t xDummy1;
@@ -886,7 +766,7 @@ struct xSTATIC_MINI_LIST_ITEM
 };
 typedef struct xSTATIC_MINI_LIST_ITEM StaticMiniListItem_t;
 
-/* See the comments above the struct xSTATIC_LIST_ITEM definition. */
+
 typedef struct xSTATIC_LIST
 {
 	UBaseType_t uxDummy1;
@@ -894,19 +774,7 @@ typedef struct xSTATIC_LIST
 	StaticMiniListItem_t xDummy3;
 } StaticList_t;
 
-/*
- * In line with software engineering best practice, especially when supplying a
- * library that is likely to change in future versions, FreeRTOS implements a
- * strict data hiding policy.  This means the Task structure used internally by
- * FreeRTOS is not accessible to application code.  However, if the application
- * writer wants to statically allocate the memory required to create a task then
- * the size of the task object needs to be know.  The StaticTask_t structure
- * below is provided for this purpose.  Its sizes and alignment requirements are
- * guaranteed to match those of the genuine structure, no matter which
- * architecture is being used, and no matter how the values in FreeRTOSConfig.h
- * are set.  Its contents are somewhat obfuscated in the hope users will
- * recognise that it would be unwise to make direct use of the structure members.
- */
+
 typedef struct xSTATIC_TCB
 {
 	void				*pxDummy1;
@@ -951,20 +819,7 @@ typedef struct xSTATIC_TCB
 
 } StaticTask_t;
 
-/*
- * In line with software engineering best practice, especially when supplying a
- * library that is likely to change in future versions, FreeRTOS implements a
- * strict data hiding policy.  This means the Queue structure used internally by
- * FreeRTOS is not accessible to application code.  However, if the application
- * writer wants to statically allocate the memory required to create a queue
- * then the size of the queue object needs to be know.  The StaticQueue_t
- * structure below is provided for this purpose.  Its sizes and alignment
- * requirements are guaranteed to match those of the genuine structure, no
- * matter which architecture is being used, and no matter how the values in
- * FreeRTOSConfig.h are set.  Its contents are somewhat obfuscated in the hope
- * users will recognise that it would be unwise to make direct use of the
- * structure members.
- */
+
 typedef struct xSTATIC_QUEUE
 {
 	void *pvDummy1[ 3 ];
@@ -995,20 +850,7 @@ typedef struct xSTATIC_QUEUE
 } StaticQueue_t;
 typedef StaticQueue_t StaticSemaphore_t;
 
-/*
- * In line with software engineering best practice, especially when supplying a
- * library that is likely to change in future versions, FreeRTOS implements a
- * strict data hiding policy.  This means the event group structure used
- * internally by FreeRTOS is not accessible to application code.  However, if
- * the application writer wants to statically allocate the memory required to
- * create an event group then the size of the event group object needs to be
- * know.  The StaticEventGroup_t structure below is provided for this purpose.
- * Its sizes and alignment requirements are guaranteed to match those of the
- * genuine structure, no matter which architecture is being used, and no matter
- * how the values in FreeRTOSConfig.h are set.  Its contents are somewhat
- * obfuscated in the hope users will recognise that it would be unwise to make
- * direct use of the structure members.
- */
+
 typedef struct xSTATIC_EVENT_GROUP
 {
 	TickType_t xDummy1;
@@ -1024,20 +866,7 @@ typedef struct xSTATIC_EVENT_GROUP
 
 } StaticEventGroup_t;
 
-/*
- * In line with software engineering best practice, especially when supplying a
- * library that is likely to change in future versions, FreeRTOS implements a
- * strict data hiding policy.  This means the software timer structure used
- * internally by FreeRTOS is not accessible to application code.  However, if
- * the application writer wants to statically allocate the memory required to
- * create a software timer then the size of the queue object needs to be know.
- * The StaticTimer_t structure below is provided for this purpose.  Its sizes
- * and alignment requirements are guaranteed to match those of the genuine
- * structure, no matter which architecture is being used, and no matter how the
- * values in FreeRTOSConfig.h are set.  Its contents are somewhat obfuscated in
- * the hope users will recognise that it would be unwise to make direct use of
- * the structure members.
- */
+
 typedef struct xSTATIC_TIMER
 {
 	void				*pvDummy1;
@@ -1059,5 +888,5 @@ typedef struct xSTATIC_TIMER
 }
 #endif
 
-#endif /* INC_FREERTOS_H */
+#endif 
 

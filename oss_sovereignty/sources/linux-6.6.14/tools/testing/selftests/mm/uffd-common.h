@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Userfaultfd tests common header
- *
- * Copyright (C) 2015-2023  Red Hat, Inc.
- */
+
+
 #ifndef __UFFD_COMMON_H__
 #define __UFFD_COMMON_H__
 
@@ -54,13 +50,10 @@
 
 #define err(fmt, ...) errexit(1, fmt, ##__VA_ARGS__)
 
-/* pthread_mutex_t starts at page offset 0 */
+
 #define area_mutex(___area, ___nr)					\
 	((pthread_mutex_t *) ((___area) + (___nr)*page_size))
-/*
- * count is placed in the page after pthread_mutex_t naturally aligned
- * to avoid non alignment faults on non-x86 archs.
- */
+
 #define area_count(___area, ___nr)					\
 	((volatile unsigned long long *) ((unsigned long)		\
 				 ((___area) + (___nr)*page_size +	\
@@ -69,16 +62,16 @@
 				 ~(unsigned long)(sizeof(unsigned long long) \
 						  -  1)))
 
-/* Userfaultfd test statistics */
+
 struct uffd_args {
 	int cpu;
-	/* Whether apply wr-protects when installing pages */
+	
 	bool apply_wp;
 	unsigned long missing_faults;
 	unsigned long wp_faults;
 	unsigned long minor_faults;
 
-	/* A custom fault handler; defaults to uffd_handle_page_fault. */
+	
 	void (*handle_fault)(struct uffd_msg *msg, struct uffd_args *args);
 };
 

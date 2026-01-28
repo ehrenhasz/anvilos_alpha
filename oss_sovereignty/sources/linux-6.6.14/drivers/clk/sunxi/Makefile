@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for sunxi specific clk
-#
+
+
+
+
 
 obj-$(CONFIG_CLK_SUNXI) += clk-factors.o
 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 BayLibre SAS
- * Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
- *
- * Common definitions for MAXIM 77650/77651 charger/power-supply.
- */
+
+
 
 #ifndef MAX77650_H
 #define MAX77650_H
@@ -56,4 +51,4 @@
 #define MAX77650_CID_77651A		0x06
 #define MAX77650_CID_77651B		0x08
 
-#endif /* MAX77650_H */
+#endif 

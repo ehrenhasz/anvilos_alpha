@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants for the LM90 thermal bindings.
- */
+
+
 
 #ifndef _DT_BINDINGS_THERMAL_LM90_H_
 #define _DT_BINDINGS_THERMAL_LM90_H_

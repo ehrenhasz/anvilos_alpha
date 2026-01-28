@@ -1,22 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef _FIXP_ARITH_H
 #define _FIXP_ARITH_H
 
 #include <linux/bug.h>
 #include <linux/math64.h>
 
-/*
- * Simplistic fixed-point arithmetics.
- * Hmm, I'm probably duplicating some code :(
- *
- * Copyright (c) 2002 Johann Deneux
- */
 
-/*
- *
- * Should you need to contact me, the author, you can do so by
- * e-mail - mail your message to <johann.deneux@gmail.com>
- */
+
+
 
 #include <linux/types.h>
 
@@ -39,13 +30,7 @@ static const s32 sin_table[] = {
 	0x7fffffff
 };
 
-/**
- * __fixp_sin32() returns the sin of an angle in degrees
- *
- * @degrees: angle, in degrees, from 0 to 360.
- *
- * The returned value ranges from -0x7fffffff to +0x7fffffff.
- */
+
 static inline s32 __fixp_sin32(int degrees)
 {
 	s32 ret;
@@ -63,13 +48,7 @@ static inline s32 __fixp_sin32(int degrees)
 	return negative ? -ret : ret;
 }
 
-/**
- * fixp_sin32() returns the sin of an angle in degrees
- *
- * @degrees: angle, in degrees. The angle can be positive or negative
- *
- * The returned value ranges from -0x7fffffff to +0x7fffffff.
- */
+
 static inline s32 fixp_sin32(int degrees)
 {
 	degrees = (degrees % 360 + 360) % 360;
@@ -77,48 +56,22 @@ static inline s32 fixp_sin32(int degrees)
 	return __fixp_sin32(degrees);
 }
 
-/* cos(x) = sin(x + 90 degrees) */
+
 #define fixp_cos32(v) fixp_sin32((v) + 90)
 
-/*
- * 16 bits variants
- *
- * The returned value ranges from -0x7fff to 0x7fff
- */
+
 
 #define fixp_sin16(v) (fixp_sin32(v) >> 16)
 #define fixp_cos16(v) (fixp_cos32(v) >> 16)
 
-/**
- * fixp_sin32_rad() - calculates the sin of an angle in radians
- *
- * @radians: angle, in radians
- * @twopi: value to be used for 2*pi
- *
- * Provides a variant for the cases where just 360
- * values is not enough. This function uses linear
- * interpolation to a wider range of values given by
- * twopi var.
- *
- * Experimental tests gave a maximum difference of
- * 0.000038 between the value calculated by sin() and
- * the one produced by this function, when twopi is
- * equal to 360000. That seems to be enough precision
- * for practical purposes.
- *
- * Please notice that two high numbers for twopi could cause
- * overflows, so the routine will not allow values of twopi
- * bigger than 1^18.
- */
+
 static inline s32 fixp_sin32_rad(u32 radians, u32 twopi)
 {
 	int degrees;
 	s32 v1, v2, dx, dy;
 	s64 tmp;
 
-	/*
-	 * Avoid too large values for twopi, as we don't want overflows.
-	 */
+	
 	BUG_ON(twopi > 1 << 18);
 
 	degrees = (radians * 360) / twopi;
@@ -137,20 +90,12 @@ static inline s32 fixp_sin32_rad(u32 radians, u32 twopi)
 	return v1 +  div_s64(tmp, dx);
 }
 
-/* cos(x) = sin(x + pi/2 radians) */
+
 
 #define fixp_cos32_rad(rad, twopi)	\
 	fixp_sin32_rad(rad + twopi / 4, twopi)
 
-/**
- * fixp_linear_interpolate() - interpolates a value from two known points
- *
- * @x0: x value of point 0
- * @y0: y value of point 0
- * @x1: x value of point 1
- * @y1: y value of point 1
- * @x: the linear interpolant
- */
+
 static inline int fixp_linear_interpolate(int x0, int y0, int x1, int y1, int x)
 {
 	if (y0 == y1 || x == x0)

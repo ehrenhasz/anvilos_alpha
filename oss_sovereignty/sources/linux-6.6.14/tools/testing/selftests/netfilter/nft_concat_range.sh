@@ -1133,7 +1133,7 @@ test_performance() {
 	pps="$(printf %10s $(($(count_perf_packets) / perf_duration)))"
 	info "    baseline (drop from netdev hook):            ${pps}pps"
 	handle="$(nft -a list chain netdev perf test | grep counter)"
-	handle="${handle##* }"
+	handle="${handle
 	nft delete rule netdev perf test handle "${handle}"
 	nft add rule "netdev perf test ${chain_spec} @norange \
 		counter name \"test\" drop"
@@ -1142,7 +1142,7 @@ test_performance() {
 	pps="$(printf %10s $(($(count_perf_packets) / perf_duration)))"
 	info "    baseline hash (non-ranged entries):          ${pps}pps"
 	handle="$(nft -a list chain netdev perf test | grep counter)"
-	handle="${handle##* }"
+	handle="${handle
 	nft delete rule netdev perf test handle "${handle}"
 	nft add rule "netdev perf test ${chain_spec%%. *} @noconcat \
 		counter name \"test\" drop"
@@ -1151,7 +1151,7 @@ test_performance() {
 	pps="$(printf %10s $(($(count_perf_packets) / perf_duration)))"
 	info "    baseline rbtree (match on first field only): ${pps}pps"
 	handle="$(nft -a list chain netdev perf test | grep counter)"
-	handle="${handle##* }"
+	handle="${handle
 	nft delete rule netdev perf test handle "${handle}"
 	nft add rule "netdev perf test ${chain_spec} @test \
 		counter name \"test\" drop"
@@ -1229,7 +1229,7 @@ for name in ${TESTS}; do
 		IFS='
 '
 		for __line in ${desc}; do
-			eval ${__line%%	*}=\"${__line##*	}\";
+			eval ${__line%%	*}=\"${__line
 		done
 		IFS=' 	
 '

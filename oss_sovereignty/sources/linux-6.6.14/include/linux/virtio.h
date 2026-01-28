@@ -1,8 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_VIRTIO_H
 #define _LINUX_VIRTIO_H
-/* Everything a virtio driver needs to work with any particular virtio
- * implementation. */
+
 #include <linux/types.h>
 #include <linux/scatterlist.h>
 #include <linux/spinlock.h>
@@ -11,22 +10,7 @@
 #include <linux/gfp.h>
 #include <linux/dma-mapping.h>
 
-/**
- * struct virtqueue - a queue to register buffers for sending or receiving.
- * @list: the chain of virtqueues for this device
- * @callback: the function to call when buffers are consumed (can be NULL).
- * @name: the name of this virtqueue (mainly for debugging)
- * @vdev: the virtio device this queue was created for.
- * @priv: a pointer for the virtqueue implementation to use.
- * @index: the zero-based ordinal number for this queue.
- * @num_free: number of elements we expect to be able to fit.
- * @num_max: the maximum number of elements supported by the device.
- * @reset: vq is in reset state or not.
- *
- * A note on @num_free: with indirect buffers, each buffer needs one
- * element in the queue, otherwise a buffer will need one element per
- * sg element.
- */
+
 struct virtqueue {
 	struct list_head list;
 	void (*callback)(struct virtqueue *vq);
@@ -103,22 +87,7 @@ int virtqueue_resize(struct virtqueue *vq, u32 num,
 int virtqueue_reset(struct virtqueue *vq,
 		    void (*recycle)(struct virtqueue *vq, void *buf));
 
-/**
- * struct virtio_device - representation of a device using virtio
- * @index: unique position on the virtio bus
- * @failed: saved value for VIRTIO_CONFIG_S_FAILED bit (for restore)
- * @config_enabled: configuration change reporting enabled
- * @config_change_pending: configuration change reported while disabled
- * @config_lock: protects configuration change reporting
- * @vqs_list_lock: protects @vqs.
- * @dev: underlying device.
- * @id: the device type identification (used to match it with a driver).
- * @config: the configuration ops for this device.
- * @vringh_config: configuration ops for host vrings.
- * @vqs: the list of virtqueues for this device.
- * @features: the features supported by both driver and device.
- * @priv: private pointer for the driver's use.
- */
+
 struct virtio_device {
 	int index;
 	bool failed;
@@ -160,25 +129,7 @@ size_t virtio_max_dma_size(const struct virtio_device *vdev);
 #define virtio_device_for_each_vq(vdev, vq) \
 	list_for_each_entry(vq, &vdev->vqs, list)
 
-/**
- * struct virtio_driver - operations for a virtio I/O driver
- * @driver: underlying device driver (populate name and owner).
- * @id_table: the ids serviced by this driver.
- * @feature_table: an array of feature numbers supported by this driver.
- * @feature_table_size: number of entries in the feature table array.
- * @feature_table_legacy: same as feature_table but when working in legacy mode.
- * @feature_table_size_legacy: number of entries in feature table legacy array.
- * @validate: the function to call to validate features and config space.
- *            Returns 0 or -errno.
- * @probe: the function to call when a device is found.  Returns 0 or -errno.
- * @scan: optional function to call after successful probe; intended
- *    for virtio-scsi to invoke a scan.
- * @remove: the function to call when a device is removed.
- * @config_changed: optional function to call when the device configuration
- *    changes; may be called in interrupt context.
- * @freeze: optional function to call during suspend/hibernation.
- * @restore: optional function to call on resume.
- */
+
 struct virtio_driver {
 	struct device_driver driver;
 	const struct virtio_device_id *id_table;
@@ -203,11 +154,7 @@ static inline struct virtio_driver *drv_to_virtio(struct device_driver *drv)
 int register_virtio_driver(struct virtio_driver *drv);
 void unregister_virtio_driver(struct virtio_driver *drv);
 
-/* module_virtio_driver() - Helper macro for drivers that don't do
- * anything special in module init/exit.  This eliminates a lot of
- * boilerplate.  Each module may only use this macro once, and
- * calling it replaces module_init() and module_exit()
- */
+
 #define module_virtio_driver(__virtio_driver) \
 	module_driver(__virtio_driver, register_virtio_driver, \
 			unregister_virtio_driver)
@@ -226,4 +173,4 @@ void virtqueue_dma_sync_single_range_for_cpu(struct virtqueue *_vq, dma_addr_t a
 void virtqueue_dma_sync_single_range_for_device(struct virtqueue *_vq, dma_addr_t addr,
 						unsigned long offset, size_t size,
 						enum dma_data_direction dir);
-#endif /* _LINUX_VIRTIO_H */
+#endif 

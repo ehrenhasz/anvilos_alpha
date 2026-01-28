@@ -1,21 +1,21 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2022 Intel Corporation */
+
+
 #ifndef ADF_GEN4_PM_H
 #define ADF_GEN4_PM_H
 
 #include "adf_accel_devices.h"
 
-/* Power management registers */
+
 #define ADF_GEN4_PM_HOST_MSG (0x50A01C)
 
-/* Power management */
+
 #define ADF_GEN4_PM_POLL_DELAY_US	20
 #define ADF_GEN4_PM_POLL_TIMEOUT_US	USEC_PER_SEC
 #define ADF_GEN4_PM_MSG_POLL_DELAY_US	(10 * USEC_PER_MSEC)
 #define ADF_GEN4_PM_STATUS		(0x50A00C)
 #define ADF_GEN4_PM_INTERRUPT		(0x50A028)
 
-/* Power management source in ERRSOU2 and ERRMSK2 */
+
 #define ADF_GEN4_PM_SOU			BIT(18)
 
 #define ADF_GEN4_PM_IDLE_INT_EN		BIT(18)

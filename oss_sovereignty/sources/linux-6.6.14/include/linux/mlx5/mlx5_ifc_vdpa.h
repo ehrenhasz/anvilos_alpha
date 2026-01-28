@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2020 Mellanox Technologies Ltd. */
+
+
 
 #ifndef __MLX5_IFC_VDPA_H_
 #define __MLX5_IFC_VDPA_H_
@@ -150,10 +150,7 @@ enum {
 	MLX5_VIRTIO_NET_Q_OBJECT_STATE_ERR      = 0x3,
 };
 
-/* This indicates that the object was not created or has already
- * been desroyed. It is very safe to assume that this object will never
- * have so many states
- */
+
 enum {
 	MLX5_VIRTIO_NET_Q_OBJECT_NONE = 0xffffffff
 };
@@ -212,4 +209,4 @@ struct mlx5_ifc_query_virtio_q_counters_out_bits {
 	struct mlx5_ifc_virtio_q_counters_bits counters;
 };
 
-#endif /* __MLX5_IFC_VDPA_H_ */
+#endif 

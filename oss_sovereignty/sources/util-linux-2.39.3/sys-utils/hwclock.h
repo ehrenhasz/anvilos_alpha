@@ -23,7 +23,7 @@ UL_DEBUG_DECLARE_MASK(hwclock);
 struct hwclock_control {
 	char *date_opt;
 	char *adj_file_name;
-	double rtc_delay;	/* --delay <seconds> */
+	double rtc_delay;	
 #if defined(__linux__) && defined(__alpha__)
 	char *epoch_option;
 #endif
@@ -52,7 +52,7 @@ struct hwclock_control {
 		get:1,
 		set:1,
 		update:1,
-		universal:1,	/* will store hw_clock_is_utc() return value */
+		universal:1,	
 		verbose:1;
 };
 
@@ -68,10 +68,10 @@ struct clock_ops {
 extern const struct clock_ops *probe_for_cmos_clock(void);
 extern const struct clock_ops *probe_for_rtc_clock(const struct hwclock_control *ctl);
 
-/* hwclock.c */
+
 extern double time_diff(struct timeval subtrahend, struct timeval subtractor);
 
-/* rtc.c */
+
 #if defined(__linux__) && defined(__alpha__)
 extern int get_epoch_rtc(const struct hwclock_control *ctl, unsigned long *epoch);
 extern int set_epoch_rtc(const struct hwclock_control *ctl);
@@ -93,4 +93,4 @@ hwclock_exit(const struct hwclock_control *ctl, int status);
 
 extern int parse_date(struct timespec *, char const *, struct timespec const *);
 
-#endif				/* HWCLOCK_CLOCK_H */
+#endif				

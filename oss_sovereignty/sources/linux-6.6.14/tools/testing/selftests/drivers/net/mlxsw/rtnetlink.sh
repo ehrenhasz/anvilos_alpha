@@ -27,7 +27,7 @@ ALL_TESTS="
 	devlink_reload_test
 "
 NUM_NETIFS=2
-: ${TIMEOUT:=20000} # ms
+: ${TIMEOUT:=20000} 
 source $lib_dir/lib.sh
 source $lib_dir/devlink_lib.sh
 setup_prepare()

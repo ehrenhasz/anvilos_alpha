@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 
-/* Stage 1 definitions for creating trace events */
+
+
 
 #undef __field
 #define __field(type, item)		type	item;

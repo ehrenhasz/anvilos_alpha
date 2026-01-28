@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2007 Cisco Systems.  All rights reserved.
- * Copyright (c) 2020 Intel Corporation.  All rights reserved.
- */
+
+
 
 #ifndef IB_UMEM_H
 #define IB_UMEM_H
@@ -45,7 +42,7 @@ static inline struct ib_umem_dmabuf *to_ib_umem_dmabuf(struct ib_umem *umem)
 	return container_of(umem, struct ib_umem_dmabuf, umem);
 }
 
-/* Returns the offset of the umem start relative to the first page. */
+
 static inline int ib_umem_offset(struct ib_umem *umem)
 {
 	return umem->address & ~PAGE_MASK;
@@ -86,17 +83,7 @@ static inline bool __rdma_umem_block_iter_next(struct ib_block_iter *biter)
 	return __rdma_block_iter_next(biter) && biter->__sg_numblocks--;
 }
 
-/**
- * rdma_umem_for_each_dma_block - iterate over contiguous DMA blocks of the umem
- * @umem: umem to iterate over
- * @pgsz: Page size to split the list into
- *
- * pgsz must be <= PAGE_SIZE or computed by ib_umem_find_best_pgsz(). The
- * returned DMA blocks will be aligned to pgsz and span the range:
- * ALIGN_DOWN(umem->address, pgsz) to ALIGN(umem->address + umem->length, pgsz)
- *
- * Performs exactly ib_umem_num_dma_blocks() iterations.
- */
+
 #define rdma_umem_for_each_dma_block(umem, biter, pgsz)                        \
 	for (__rdma_umem_block_iter_start(biter, umem, pgsz);                  \
 	     __rdma_umem_block_iter_next(biter);)
@@ -112,24 +99,7 @@ unsigned long ib_umem_find_best_pgsz(struct ib_umem *umem,
 				     unsigned long pgsz_bitmap,
 				     unsigned long virt);
 
-/**
- * ib_umem_find_best_pgoff - Find best HW page size
- *
- * @umem: umem struct
- * @pgsz_bitmap bitmap of HW supported page sizes
- * @pgoff_bitmask: Mask of bits that can be represented with an offset
- *
- * This is very similar to ib_umem_find_best_pgsz() except instead of accepting
- * an IOVA it accepts a bitmask specifying what address bits can be represented
- * with a page offset.
- *
- * For instance if the HW has multiple page sizes, requires 64 byte alignemnt,
- * and can support aligned offsets up to 4032 then pgoff_bitmask would be
- * "111111000000".
- *
- * If the pgoff_bitmask requires either alignment in the low bit or an
- * unavailable page size for the high bits, this function returns 0.
- */
+
 static inline unsigned long ib_umem_find_best_pgoff(struct ib_umem *umem,
 						    unsigned long pgsz_bitmap,
 						    u64 pgoff_bitmask)
@@ -154,7 +124,7 @@ int ib_umem_dmabuf_map_pages(struct ib_umem_dmabuf *umem_dmabuf);
 void ib_umem_dmabuf_unmap_pages(struct ib_umem_dmabuf *umem_dmabuf);
 void ib_umem_dmabuf_release(struct ib_umem_dmabuf *umem_dmabuf);
 
-#else /* CONFIG_INFINIBAND_USER_MEM */
+#else 
 
 #include <linux/err.h>
 
@@ -203,5 +173,5 @@ static inline int ib_umem_dmabuf_map_pages(struct ib_umem_dmabuf *umem_dmabuf)
 static inline void ib_umem_dmabuf_unmap_pages(struct ib_umem_dmabuf *umem_dmabuf) { }
 static inline void ib_umem_dmabuf_release(struct ib_umem_dmabuf *umem_dmabuf) { }
 
-#endif /* CONFIG_INFINIBAND_USER_MEM */
-#endif /* IB_UMEM_H */
+#endif 
+#endif 

@@ -163,7 +163,7 @@ class Dot2c(Automata):
         return buff
     def format_invalid_state(self):
         buff = []
-        buff.append("#define %s state_max%s\n" % (self.invalid_state_str, self.enum_suffix))
+        buff.append("
         return buff
     def format_model(self):
         buff = []

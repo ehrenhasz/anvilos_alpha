@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 
 #ifndef _AEAD_API_H
 #define _AEAD_API_H
@@ -20,4 +20,4 @@ int aead_decrypt(struct crypto_aead *tfm, u8 *b_0, u8 *aad,
 
 void aead_key_free(struct crypto_aead *tfm);
 
-#endif /* _AEAD_API_H */
+#endif 

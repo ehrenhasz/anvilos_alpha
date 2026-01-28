@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015 MediaTek Inc.
- */
+
+
 
 #ifndef __MTK_MMSYS_H
 #define __MTK_MMSYS_H
@@ -104,4 +102,4 @@ void mtk_mmsys_vpp_rsz_merge_config(struct device *dev, u32 id, bool enable,
 void mtk_mmsys_vpp_rsz_dcm_config(struct device *dev, bool enable,
 				  struct cmdq_pkt *cmdq_pkt);
 
-#endif /* __MTK_MMSYS_H */
+#endif 

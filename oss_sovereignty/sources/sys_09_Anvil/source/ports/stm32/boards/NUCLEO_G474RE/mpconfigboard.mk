@@ -1,4 +1,4 @@
-# MCU settings
+
 MCU_SERIES = g4
 CMSIS_MCU = STM32G474xx
 MICROPY_FLOAT_IMPL = single

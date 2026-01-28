@@ -1,6 +1,4 @@
-/*
- * SPDX-License-Identifier: LGPL-2.1-or-later
- */
+
 #ifndef UTIL_LINUX_STRV
 #define UTIL_LINUX_STRV
 
@@ -56,6 +54,6 @@ char *strv_join(char **l, const char *separator);
 
 char **strv_reverse(char **l);
 
-#endif /* UTIL_LINUX_STRV */
+#endif 
 
 

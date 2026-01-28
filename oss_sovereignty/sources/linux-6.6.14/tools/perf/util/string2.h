@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef PERF_STRING_H
 #define PERF_STRING_H
 
 #include <linux/string.h>
 #include <linux/types.h>
-#include <sys/types.h> // pid_t
+#include <sys/types.h> 
 #include <stddef.h>
 #include <string.h>
 
@@ -40,4 +40,4 @@ char *strdup_esc(const char *str);
 
 unsigned int hex(char c);
 
-#endif /* PERF_STRING_H */
+#endif 

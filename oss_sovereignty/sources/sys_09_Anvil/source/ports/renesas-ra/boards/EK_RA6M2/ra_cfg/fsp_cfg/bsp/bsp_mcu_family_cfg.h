@@ -1,4 +1,4 @@
-/* generated configuration header file - do not edit */
+
 #ifndef BSP_MCU_FAMILY_CFG_H_
 #define BSP_MCU_FAMILY_CFG_H_
 #ifdef __cplusplus
@@ -56,21 +56,17 @@ extern "C" {
 #ifndef BSP_CLOCK_CFG_MAIN_OSC_WAIT
 #define BSP_CLOCK_CFG_MAIN_OSC_WAIT (9)
 #endif
-/* Used to create IELS values for the interrupt initialization table g_interrupt_event_link_select. */
+
 #define BSP_PRV_IELS_ENUM(vector)    (ELC_##vector)
 
-/*
- ID Code
- Note: To permanently lock and disable the debug interface define the BSP_ID_CODE_PERMANENTLY_LOCKED in the compiler settings.
- WARNING: This will disable debug access to the part and cannot be reversed by a debug probe.
- */
+
 #if defined(BSP_ID_CODE_PERMANENTLY_LOCKED)
 #define BSP_CFG_ID_CODE_LONG_1 (0x00000000)
 #define BSP_CFG_ID_CODE_LONG_2 (0x00000000)
 #define BSP_CFG_ID_CODE_LONG_3 (0x00000000)
 #define BSP_CFG_ID_CODE_LONG_4 (0x00000000)
 #else
-/* ID CODE: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF */
+
 #define BSP_CFG_ID_CODE_LONG_1 (0xFFFFFFFF)
 #define BSP_CFG_ID_CODE_LONG_2 (0xFFFFFFFF)
 #define BSP_CFG_ID_CODE_LONG_3 (0xFFFFFFFF)
@@ -80,4 +76,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* BSP_MCU_FAMILY_CFG_H_ */
+#endif 

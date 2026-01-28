@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
-# Copyright (C) 2023 Intel Corporation
+
+
 
 intel_vpu-y := \
 	ivpu_debugfs.o \

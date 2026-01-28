@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Functions to access MAX8907 power management chip.
- *
- * Copyright (C) 2010 Gyungoh Yoo <jack.yoo@maxim-ic.com>
- * Copyright (C) 2012, NVIDIA CORPORATION. All rights reserved.
- */
+
+
 
 #ifndef __LINUX_MFD_MAX8907_H
 #define __LINUX_MFD_MAX8907_H
@@ -16,7 +11,7 @@
 #define MAX8907_ADC_I2C_ADDR		(0x8e >> 1)
 #define MAX8907_RTC_I2C_ADDR		(0xd0 >> 1)
 
-/* MAX8907 register map */
+
 #define MAX8907_REG_SYSENSEL		0x00
 #define MAX8907_REG_ON_OFF_IRQ1		0x01
 #define MAX8907_REG_ON_OFF_IRQ1_MASK	0x02
@@ -119,7 +114,7 @@
 #define MAX8907_REG_LDOSEQCNT20		0x9D
 #define MAX8907_REG_LDO20VOUT		0x9E
 
-/* RTC register map */
+
 #define MAX8907_REG_RTC_SEC		0x00
 #define MAX8907_REG_RTC_MIN		0x01
 #define MAX8907_REG_RTC_HOURS		0x02
@@ -152,12 +147,12 @@
 #define MAX8907_REG_RTC_IRQ_MASK	0x1D
 #define MAX8907_REG_MPL_CNTL		0x1E
 
-/* ADC and Touch Screen Controller register map */
+
 #define MAX8907_CTL			0
 #define MAX8907_SEQCNT			1
 #define MAX8907_VOUT			2
 
-/* mask bit fields */
+
 #define MAX8907_MASK_LDO_SEQ		0x1C
 #define MAX8907_MASK_LDO_EN		0x01
 #define MAX8907_MASK_VBBATTCV		0x03
@@ -166,7 +161,7 @@
 #define MAX8907_MASK_OUT5V_EN		0x01
 #define MAX8907_MASK_POWER_OFF		0x40
 
-/* Regulator IDs */
+
 #define MAX8907_MBATT	0
 #define MAX8907_SD1	1
 #define MAX8907_SD2	2
@@ -198,7 +193,7 @@
 #define MAX8907_VRTC	28
 #define MAX8907_NUM_REGULATORS (MAX8907_VRTC + 1)
 
-/* IRQ definitions */
+
 enum {
 	MAX8907_IRQ_VCHG_DC_OVP = 0,
 	MAX8907_IRQ_VCHG_DC_F,

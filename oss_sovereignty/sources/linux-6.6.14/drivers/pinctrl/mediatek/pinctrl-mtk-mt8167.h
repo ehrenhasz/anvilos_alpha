@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020 MediaTek Inc.
- */
+
+
 #ifndef __PINCTRL_MTK_MT8167_H
 #define __PINCTRL_MTK_MT8167_H
 
@@ -1245,4 +1243,4 @@ static const struct mtk_desc_pin mtk_pins_mt8167[] = {
 	),
 };
 
-#endif /* __PINCTRL_MTK_MT8167_H */
+#endif 

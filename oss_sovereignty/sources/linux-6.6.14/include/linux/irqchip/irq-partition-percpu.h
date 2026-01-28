@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 ARM Limited, All Rights Reserved.
- * Author: Marc Zyngier <marc.zyngier@arm.com>
- */
+
+
 
 #ifndef __LINUX_IRQCHIP_IRQ_PARTITION_PERCPU_H
 #define __LINUX_IRQCHIP_IRQ_PARTITION_PERCPU_H
@@ -50,4 +47,4 @@ struct irq_domain *partition_get_domain(struct partition_desc *dsc)
 }
 #endif
 
-#endif /* __LINUX_IRQCHIP_IRQ_PARTITION_PERCPU_H */
+#endif 

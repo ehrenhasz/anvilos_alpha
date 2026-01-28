@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __HWMON_ADT7X10_H__
 #define __HWMON_ADT7X10_H__
 
 #include <linux/types.h>
 #include <linux/pm.h>
 
-/* ADT7410 registers definition */
+
 #define ADT7X10_TEMPERATURE		0
 #define ADT7X10_STATUS			2
 #define ADT7X10_CONFIG			3

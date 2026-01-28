@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_RBLIST_H
 #define __PERF_RBLIST_H
 
 #include <linux/rbtree.h>
 #include <stdbool.h>
 
-/*
- * create node structs of the form:
- * struct my_node {
- *     struct rb_node rb_node;
- *     ... my data ...
- * };
- *
- * create list structs of the form:
- * struct mylist {
- *     struct rblist rblist;
- *     ... my data ...
- * };
- */
+
 
 struct rblist {
 	struct rb_root_cached entries;
@@ -47,4 +35,4 @@ static inline unsigned int rblist__nr_entries(const struct rblist *rblist)
 	return rblist->nr_entries;
 }
 
-#endif /* __PERF_RBLIST_H */
+#endif 

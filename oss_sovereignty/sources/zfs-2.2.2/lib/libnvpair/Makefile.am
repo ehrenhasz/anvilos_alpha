@@ -2,7 +2,7 @@ libnvpair_la_CFLAGS  = $(AM_CFLAGS) $(KERNEL_CFLAGS) $(LIBRARY_CFLAGS)
 libnvpair_la_CFLAGS += $(LIBTIRPC_CFLAGS)
 libnvpair_la_CFLAGS += -fvisibility=hidden
 
-# wchar_t is undefined-signedness, but we compare to >=0; this warns with unsigned wchar_t
+
 %D%/libnvpair_la-libnvpair_json.$(OBJEXT) : CFLAGS += -Wno-type-limits
 %D%/libnvpair_la-libnvpair_json.l$(OBJEXT): CFLAGS += -Wno-type-limits
 

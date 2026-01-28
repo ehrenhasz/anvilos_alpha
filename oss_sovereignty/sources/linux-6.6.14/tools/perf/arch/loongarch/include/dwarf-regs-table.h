@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * dwarf-regs-table.h : Mapping of DWARF debug register numbers into
- * register names.
- *
- * Copyright (C) 2020-2023 Loongson Technology Corporation Limited
- */
+
+
 
 #ifdef DEFINE_DWARF_REGSTR_TABLE
 static const char * const loongarch_regstr_tbl[] = {

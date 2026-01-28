@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_DATA_H
 #define __PERF_DATA_H
 
@@ -83,13 +83,7 @@ ssize_t perf_data__write(struct perf_data *data,
 			      void *buf, size_t size);
 ssize_t perf_data_file__write(struct perf_data_file *file,
 			      void *buf, size_t size);
-/*
- * If at_exit is set, only rename current perf.data to
- * perf.data.<postfix>, continue write on original data.
- * Set at_exit when flushing the last output.
- *
- * Return value is fd of new output.
- */
+
 int perf_data__switch(struct perf_data *data,
 			   const char *postfix,
 			   size_t pos, bool at_exit, char **new_filepath);
@@ -104,4 +98,4 @@ bool has_kcore_dir(const char *path);
 char *perf_data__kallsyms_name(struct perf_data *data);
 char *perf_data__guest_kallsyms_name(struct perf_data *data, pid_t machine_pid);
 bool is_perf_data(const char *path);
-#endif /* __PERF_DATA_H */
+#endif 

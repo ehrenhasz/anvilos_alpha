@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2014-2016, NVIDIA CORPORATION.  All rights reserved.
- *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- */
+
+
 
 #ifndef __DRIVERS_THERMAL_TEGRA_SOCTHERM_H
 #define __DRIVERS_THERMAL_TEGRA_SOCTHERM_H
@@ -28,7 +16,7 @@
 #define SENSOR_CONFIG2_THERMB_SHIFT		0
 
 #define THERMCTL_THERMTRIP_CTL			0x80
-/* BITs are defined in device file */
+
 
 #define THERMCTL_INTR_ENABLE			0x88
 #define THERMCTL_INTR_DISABLE			0x8c
@@ -56,19 +44,7 @@
 #define SENSOR_TEMP2_MEM_TEMP_MASK		(0xffff << 16)
 #define SENSOR_TEMP2_PLLX_TEMP_MASK		0xffff
 
-/**
- * struct tegra_tsensor_group - SOC_THERM sensor group data
- * @name: short name of the temperature sensor group
- * @id: numeric ID of the temperature sensor group
- * @sensor_temp_offset: offset of the SENSOR_TEMP* register
- * @sensor_temp_mask: bit mask for this sensor group in SENSOR_TEMP* register
- * @pdiv: the sensor count post-divider to use during runtime
- * @pdiv_ate: the sensor count post-divider used during automated test
- * @pdiv_mask: register bitfield mask for the PDIV field for this sensor
- * @pllx_hotspot_diff: hotspot offset from the PLLX sensor, must be 0 for
-    PLLX sensor group
- * @pllx_hotspot_mask: register bitfield mask for the HOTSPOT field
- */
+
 struct tegra_tsensor_group {
 	const char *name;
 	u8 id;
@@ -94,10 +70,7 @@ struct tegra_tsensor {
 	const u32 base;
 	const struct tegra_tsensor_configuration *config;
 	const u32 calib_fuse_offset;
-	/*
-	 * Correction values used to modify values read from
-	 * calibration fuses
-	 */
+	
 	const s32 fuse_corr_alpha, fuse_corr_beta;
 	const struct tegra_tsensor_group *group;
 };

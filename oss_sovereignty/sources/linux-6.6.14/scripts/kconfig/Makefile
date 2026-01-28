@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-# ===========================================================================
-# Kernel configuration targets
-# These targets are used from top-level makefile
+
+
+
+
 
 ifdef KBUILD_KCONFIG
 Kconfig := $(KBUILD_KCONFIG)
@@ -27,7 +27,7 @@ KCONFIG_DEFCONFIG_LIST += \
 endif
 KCONFIG_DEFCONFIG_LIST += arch/$(SRCARCH)/configs/$(KBUILD_DEFCONFIG)
 
-# We need this, in case the user has it in its environment
+
 unexport CONFIG_
 
 config-prog	:= conf
@@ -62,11 +62,11 @@ localyesconfig localmodconfig: $(obj)/conf
 	fi
 	$(Q)rm -f .tmp.config
 
-# These targets map 1:1 to the commandline options of 'conf'
-#
-# Note:
-#  syncconfig has become an internal implementation detail and is now
-#  deprecated for external use
+
+
+
+
+
 simple-targets := oldconfig allnoconfig allyesconfig allmodconfig \
 	alldefconfig randconfig listnewconfig olddefconfig syncconfig \
 	helpnewconfig yes2modconfig mod2yesconfig mod2noconfig
@@ -107,7 +107,7 @@ tinyconfig:
 	$(Q)KCONFIG_ALLCONFIG=kernel/configs/tiny-base.config $(MAKE) -f $(srctree)/Makefile allnoconfig
 	$(Q)$(MAKE) -f $(srctree)/Makefile tiny.config
 
-# CHECK: -o cache_dir=<path> working?
+
 PHONY += testconfig
 testconfig: $(obj)/conf
 	$(Q)$(PYTHON3) -B -m pytest $(srctree)/$(src)/tests \
@@ -115,7 +115,7 @@ testconfig: $(obj)/conf
 	$(if $(findstring 1,$(KBUILD_VERBOSE)),--capture=no)
 clean-files += tests/.cache
 
-# Help text used by make help
+
 help:
 	@echo  'Configuration targets:'
 	@echo  '  config	  - Update current config utilising a line-oriented program'
@@ -147,12 +147,12 @@ help:
 	@echo  ''
 	@echo  'Configuration topic targets:'
 	@$(foreach f, $(all-config-fragments), \
-		if help=$$(grep -m1 '^# Help: ' $(f)); then \
-			printf '  %-25s - %s\n' '$(notdir $(f))' "$${help#*: }"; \
+		if help=$$(grep -m1 '^
+			printf '  %-25s - %s\n' '$(notdir $(f))' "$${help
 		fi;)
 
-# ===========================================================================
-# object files used by all kconfig flavours
+
+
 common-objs	:= confdata.o expr.o lexer.lex.o menu.o parser.tab.o \
 		   preprocess.o symbol.o util.o
 
@@ -160,11 +160,11 @@ $(obj)/lexer.lex.o: $(obj)/parser.tab.h
 HOSTCFLAGS_lexer.lex.o	:= -I $(srctree)/$(src)
 HOSTCFLAGS_parser.tab.o	:= -I $(srctree)/$(src)
 
-# conf: Used for defconfig, oldconfig and related targets
+
 hostprogs	+= conf
 conf-objs	:= conf.o $(common-objs)
 
-# nconf: Used for the nconfig target based on ncurses
+
 hostprogs	+= nconf
 nconf-objs	:= nconf.o nconf.gui.o $(common-objs)
 
@@ -175,7 +175,7 @@ HOSTCFLAGS_nconf.gui.o = $(call read-file, $(obj)/nconf-cflags)
 $(obj)/nconf: | $(obj)/nconf-libs
 $(obj)/nconf.o $(obj)/nconf.gui.o: | $(obj)/nconf-cflags
 
-# mconf: Used for the menuconfig target based on lxdialog
+
 hostprogs	+= mconf
 lxdialog	:= $(addprefix lxdialog/, \
 		     checklist.o inputbox.o menubox.o textbox.o util.o yesno.o)
@@ -188,7 +188,7 @@ $(foreach f, mconf.o $(lxdialog), \
 $(obj)/mconf: | $(obj)/mconf-libs
 $(addprefix $(obj)/, mconf.o $(lxdialog)): | $(obj)/mconf-cflags
 
-# qconf: Used for the xconfig target based on Qt
+
 hostprogs	+= qconf
 qconf-cxxobjs	:= qconf.o qconf-moc.o
 qconf-objs	:= images.o $(common-objs)
@@ -207,7 +207,7 @@ $(obj)/qconf-moc.cc: $(src)/qconf.h FORCE | $(obj)/qconf-bin
 
 targets += qconf-moc.cc
 
-# gconf: Used for the gconfig target based on GTK+
+
 hostprogs	+= gconf
 gconf-objs	:= gconf.o images.o $(common-objs)
 
@@ -217,7 +217,7 @@ HOSTCFLAGS_gconf.o = $(call read-file, $(obj)/gconf-cflags)
 $(obj)/gconf: | $(obj)/gconf-libs
 $(obj)/gconf.o: | $(obj)/gconf-cflags
 
-# check if necessary packages are available, and configure build flags
+
 cmd_conf_cfg = $< $(addprefix $(obj)/$*conf-, cflags libs bin); touch $(obj)/$*conf-bin
 
 $(obj)/%conf-cflags $(obj)/%conf-libs $(obj)/%conf-bin: $(src)/%conf-cfg.sh

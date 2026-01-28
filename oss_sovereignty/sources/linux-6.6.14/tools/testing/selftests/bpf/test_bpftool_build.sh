@@ -15,7 +15,7 @@ KDIR_ROOT_DIR=$(realpath $PWD/$SCRIPT_REL_DIR/../../../../)
 cd $KDIR_ROOT_DIR
 if [ ! -e tools/bpf/bpftool/Makefile ]; then
 	echo -e "skip:    bpftool files not found!\n"
-	exit 4 # KSFT_SKIP=4
+	exit 4 
 fi
 ERROR=0
 TMPDIR=
@@ -39,13 +39,13 @@ make_and_clean() {
 	if [ $? -ne 0 ] ; then
 		ERROR=1
 	fi
-	if [ $# -ge 1 ] ; then
+	if [ $
 		check ${@: -1}
 	else
 		check .
 	fi
 	(
-		if [ $# -ge 1 ] ; then
+		if [ $
 			cd ${@: -1}
 		fi
 		make -s clean
@@ -55,8 +55,8 @@ make_and_clean() {
 make_with_tmpdir() {
 	local ARGS
 	TMPDIR=$(mktemp -d)
-	if [ $# -ge 2 ] ; then
-		ARGS=${@:1:(($# - 1))}
+	if [ $
+		ARGS=${@:1:(($
 	fi
 	echo -e "\$PWD:    $PWD"
 	echo -e "command: make -s $ARGS ${@: -1}=$TMPDIR/ >/dev/null"

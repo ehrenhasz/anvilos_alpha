@@ -1,6 +1,0 @@
-&jpegdec {
-	compatible = "nxp,imx8qxp-jpgdec";
-};
-&jpegenc {
-	compatible = "nxp,imx8qxp-jpgenc";
-};

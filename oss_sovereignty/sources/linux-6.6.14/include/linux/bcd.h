@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _BCD_H
 #define _BCD_H
 
@@ -24,4 +24,4 @@
 unsigned _bcd2bin(unsigned char val) __attribute_const__;
 unsigned char _bin2bcd(unsigned val) __attribute_const__;
 
-#endif /* _BCD_H */
+#endif 

@@ -1,17 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef __CRB_H
 #define __CRB_H
 #include <linux/types.h>
 #include "nx.h"
 
-/* CCW 842 CI/FC masks
- * NX P8 workbook, section 4.3.1, figure 4-6
- * "CI/FC Boundary by NX CT type"
- */
+
 #define CCW_CI_842              (0x00003ff8)
 #define CCW_FC_842              (0x00000007)
 
-/* Chapter 6.5.8 Coprocessor-Completion Block (CCB) */
+
 
 #define CCB_VALUE		(0x3fffffffffffffff)
 #define CCB_ADDRESS		(0xfffffffffffffff8)
@@ -33,7 +30,7 @@ struct coprocessor_completion_block {
 } __aligned(CCB_ALIGN);
 
 
-/* Chapter 6.5.7 Coprocessor-Status Block (CSB) */
+
 
 #define CSB_V			(0x80)
 #define CSB_F			(0x04)
@@ -82,9 +79,7 @@ struct coprocessor_status_block {
 } __aligned(CSB_ALIGN);
 
 
-/* Chapter 6.5.10 Data-Descriptor List (DDL)
- * each list contains one or more Data-Descriptor Entries (DDE)
- */
+
 
 #define DDE_P			(0x8000)
 
@@ -100,18 +95,13 @@ struct data_descriptor_entry {
 } __aligned(DDE_ALIGN);
 
 
-/* Chapter 6.5.2 Coprocessor-Request Block (CRB) */
+
 
 #define CRB_SIZE		(0x80)
-#define CRB_ALIGN		(0x100) /* Errata: requires 256 alignment */
+#define CRB_ALIGN		(0x100) 
 
 
-/* Coprocessor Status Block field
- *   ADDRESS	address of CSB
- *   C		CCB is valid
- *   AT		0 = addrs are virtual, 1 = addrs are phys
- *   M		enable perf monitor
- */
+
 #define CRB_CSB_ADDRESS		(0xfffffffffffffff0)
 #define CRB_CSB_C		(0x0000000000000008)
 #define CRB_CSB_AT		(0x0000000000000002)
@@ -139,13 +129,7 @@ struct coprocessor_request_block {
 #define crb_nx_pswid(c)		c->stamp.nx.pswid
 
 
-/* RFC02167 Initiate Coprocessor Instructions document
- * Chapter 8.2.1.1.1 RS
- * Chapter 8.2.3 Coprocessor Directive
- * Chapter 8.2.4 Execution
- *
- * The CCW must be converted to BE before passing to icswx()
- */
+
 
 #define CCW_PS                  (0xff000000)
 #define CCW_CT                  (0x00ff0000)

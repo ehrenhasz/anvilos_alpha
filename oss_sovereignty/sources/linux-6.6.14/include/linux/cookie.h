@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LINUX_COOKIE_H
 #define __LINUX_COOKIE_H
 
@@ -48,4 +48,4 @@ static __always_inline u64 gen_cookie_next(struct gen_cookie *gc)
 	return val;
 }
 
-#endif /* __LINUX_COOKIE_H */
+#endif 

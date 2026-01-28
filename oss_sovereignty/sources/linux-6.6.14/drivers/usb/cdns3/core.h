@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Cadence USBSS and USBSSP DRD Header File.
- *
- * Copyright (C) 2017-2018 NXP
- * Copyright (C) 2018-2019 Cadence.
- *
- * Authors: Peter Chen <peter.chen@nxp.com>
- *          Pawel Laszczak <pawell@cadence.com>
- */
+
+
 #ifndef __LINUX_CDNS3_CORE_H
 #define __LINUX_CDNS3_CORE_H
 
@@ -16,16 +8,7 @@
 
 struct cdns;
 
-/**
- * struct cdns_role_driver - host/gadget role driver
- * @start: start this role
- * @stop: stop this role
- * @suspend: suspend callback for this role
- * @resume: resume callback for this role
- * @irq: irq handler for this role
- * @name: role name string (host/gadget)
- * @state: current state
- */
+
 struct cdns_role_driver {
 	int (*start)(struct cdns *cdns);
 	void (*stop)(struct cdns *cdns);
@@ -46,40 +29,7 @@ struct cdns3_platform_data {
 #define CDNS3_DEFAULT_PM_RUNTIME_ALLOW	BIT(0)
 };
 
-/**
- * struct cdns - Representation of Cadence USB3 DRD controller.
- * @dev: pointer to Cadence device struct
- * @xhci_regs: pointer to base of xhci registers
- * @xhci_res: the resource for xhci
- * @dev_regs: pointer to base of dev registers
- * @otg_res: the resource for otg
- * @otg_v0_regs: pointer to base of v0 otg registers
- * @otg_v1_regs: pointer to base of v1 otg registers
- * @otg_cdnsp_regs: pointer to base of CDNSP otg registers
- * @otg_regs: pointer to base of otg registers
- * @otg_irq_regs: pointer to interrupt registers
- * @otg_irq: irq number for otg controller
- * @dev_irq: irq number for device controller
- * @wakeup_irq: irq number for wakeup event, it is optional
- * @roles: array of supported roles for this controller
- * @role: current role
- * @host_dev: the child host device pointer for cdns core
- * @gadget_dev: the child gadget device pointer
- * @usb2_phy: pointer to USB2 PHY
- * @usb3_phy: pointer to USB3 PHY
- * @mutex: the mutex for concurrent code at driver
- * @dr_mode: supported mode of operation it can be only Host, only Device
- *           or OTG mode that allow to switch between Device and Host mode.
- *           This field based on firmware setting, kernel configuration
- *           and hardware configuration.
- * @role_sw: pointer to role switch object.
- * @in_lpm: indicate the controller is in low power mode
- * @wakeup_pending: wakeup interrupt pending
- * @pdata: platform data from glue layer
- * @lock: spinlock structure
- * @xhci_plat_data: xhci private data structure pointer
- * @gadget_init: pointer to gadget initialization function
- */
+
 struct cdns {
 	struct device			*dev;
 	void __iomem			*xhci_regs;
@@ -107,7 +57,7 @@ struct cdns {
 	void				*gadget_dev;
 	struct phy			*usb2_phy;
 	struct phy			*usb3_phy;
-	/* mutext used in workqueue*/
+	
 	struct mutex			mutex;
 	enum usb_dr_mode		dr_mode;
 	struct usb_role_switch		*role_sw;
@@ -128,11 +78,11 @@ int cdns_remove(struct cdns *cdns);
 int cdns_resume(struct cdns *cdns);
 int cdns_suspend(struct cdns *cdns);
 void cdns_set_active(struct cdns *cdns, u8 set_active);
-#else /* CONFIG_PM_SLEEP */
+#else 
 static inline int cdns_resume(struct cdns *cdns)
 { return 0; }
 static inline void cdns_set_active(struct cdns *cdns, u8 set_active) { }
 static inline int cdns_suspend(struct cdns *cdns)
 { return 0; }
-#endif /* CONFIG_PM_SLEEP */
-#endif /* __LINUX_CDNS3_CORE_H */
+#endif 
+#endif 

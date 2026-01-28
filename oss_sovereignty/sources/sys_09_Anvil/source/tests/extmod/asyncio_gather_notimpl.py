@@ -19,15 +19,15 @@ async def main():
     loop.set_exception_handler(custom_handler)
     tasks = [asyncio.create_task(task(1)), asyncio.create_task(task(2))]
     gt = asyncio.create_task(gather_task(tasks[0], tasks[1]))
-    await asyncio.sleep(0)  # let the gather start
+    await asyncio.sleep(0)  
     try:
-        await tasks[0]  # can't await because this task is part of the gather
+        await tasks[0]  
     except RuntimeError as er:
         print(repr(er))
     await gt
     print("====")
     tasks = [asyncio.create_task(task(1)), asyncio.create_task(task(2))]
     asyncio.create_task(gather_task(tasks[0], tasks[1]))
-    await tasks[0]  # wait on this task before the gather starts
+    await tasks[0]  
     await tasks[1]
 asyncio.run(main())

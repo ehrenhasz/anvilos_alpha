@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef __NX_CSBCPB_H__
 #define __NX_CSBCPB_H__
@@ -134,7 +134,7 @@ struct cop_parameter_block {
 
 #define NX_CSB_VALID_BIT	0x80
 
-/* co-processor status block */
+
 struct cop_status_block {
 	u8 valid;
 	u8 crb_seq_number;
@@ -144,14 +144,14 @@ struct cop_status_block {
 	__be64 address;
 } __packed;
 
-/* Nest accelerator workbook section 4.4 */
+
 struct nx_csbcpb {
 	unsigned char __rsvd[112];
 	struct cop_status_block csb;
 	struct cop_parameter_block cpb;
 } __packed;
 
-/* nx_csbcpb related definitions */
+
 #define NX_MODE_AES_ECB			0
 #define NX_MODE_AES_CBC			1
 #define NX_MODE_AES_GMAC		2
@@ -196,7 +196,7 @@ struct nx_csbcpb {
 #define HCOP_FC_SHA          NX_FC_SHA
 #define HCOP_FC_AES_HMAC     NX_FC_AES_HMAC
 
-/* indices into the array of algorithm properties */
+
 #define NX_PROPS_AES_128		0
 #define NX_PROPS_AES_192		1
 #define NX_PROPS_AES_256		2

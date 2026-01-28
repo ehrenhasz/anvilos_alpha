@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_PSOC_ETR_REGS_H_
 #define ASIC_REG_PSOC_ETR_REGS_H_
 
-/*
- *****************************************
- *   PSOC_ETR
- *   (Prototype: ETR)
- *****************************************
- */
+
 
 #define mmPSOC_ETR_RSZ 0x6C44004
 
@@ -112,4 +99,4 @@
 
 #define mmPSOC_ETR_COMPID3 0x6C44FFC
 
-#endif /* ASIC_REG_PSOC_ETR_REGS_H_ */
+#endif 

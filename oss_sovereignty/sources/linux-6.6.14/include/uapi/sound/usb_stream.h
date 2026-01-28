@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- * Copyright (C) 2007, 2008 Karsten Wiese <fzu@wemgehoertderstaat.de>
- */
+
+
 
 #ifndef _UAPI__SOUND_USB_STREAM_H
 #define _UAPI__SOUND_USB_STREAM_H
@@ -60,4 +58,4 @@ enum usb_stream_state {
 	usb_stream_xrun,
 };
 
-#endif /* _UAPI__SOUND_USB_STREAM_H */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef _LINUX_I8042_H
 #define _LINUX_I8042_H
 
@@ -6,9 +6,7 @@
 #include <linux/errno.h>
 #include <linux/types.h>
 
-/*
- * Standard commands.
- */
+
 
 #define I8042_CMD_CTL_RCTR	0x0120
 #define I8042_CMD_CTL_WCTR	0x1060
@@ -28,9 +26,7 @@
 #define I8042_CMD_MUX_PFX	0x0090
 #define I8042_CMD_MUX_SEND	0x1090
 
-/*
- * Status register bits.
- */
+
 
 #define I8042_STR_PARITY	0x80
 #define I8042_STR_TIMEOUT	0x40
@@ -41,9 +37,7 @@
 #define I8042_STR_IBF		0x02
 #define I8042_STR_OBF		0x01
 
-/*
- * Control register bits.
- */
+
 
 #define I8042_CTR_KBDINT	0x01
 #define I8042_CTR_AUXINT	0x02

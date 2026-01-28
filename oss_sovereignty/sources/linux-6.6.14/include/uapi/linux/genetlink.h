@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _UAPI__LINUX_GENERIC_NETLINK_H
 #define _UAPI__LINUX_GENERIC_NETLINK_H
 
 #include <linux/types.h>
 #include <linux/netlink.h>
 
-#define GENL_NAMSIZ	16	/* length of family name */
+#define GENL_NAMSIZ	16	
 
 #define GENL_MIN_ID	NLMSG_MIN_TYPE
 #define GENL_MAX_ID	1023
@@ -24,18 +24,14 @@ struct genlmsghdr {
 #define GENL_CMD_CAP_HASPOL	0x08
 #define GENL_UNS_ADMIN_PERM	0x10
 
-/*
- * List of reserved static generic netlink identifiers:
- */
+
 #define GENL_ID_CTRL		NLMSG_MIN_TYPE
 #define GENL_ID_VFS_DQUOT	(NLMSG_MIN_TYPE + 1)
 #define GENL_ID_PMCRAID		(NLMSG_MIN_TYPE + 2)
-/* must be last reserved + 1 */
+
 #define GENL_START_ALLOC	(NLMSG_MIN_TYPE + 3)
 
-/**************************************************************************
- * Controller
- **************************************************************************/
+
 
 enum {
 	CTRL_CMD_UNSPEC,
@@ -47,7 +43,7 @@ enum {
 	CTRL_CMD_GETOPS,
 	CTRL_CMD_NEWMCAST_GRP,
 	CTRL_CMD_DELMCAST_GRP,
-	CTRL_CMD_GETMCAST_GRP, /* unused */
+	CTRL_CMD_GETMCAST_GRP, 
 	CTRL_CMD_GETPOLICY,
 	__CTRL_CMD_MAX,
 };
@@ -100,4 +96,4 @@ enum {
 
 #define CTRL_ATTR_POLICY_MAX (__CTRL_ATTR_POLICY_DUMP_MAX - 1)
 
-#endif /* _UAPI__LINUX_GENERIC_NETLINK_H */
+#endif 

@@ -1,15 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef BLK_INTERNAL_H
 #define BLK_INTERNAL_H
 
 #include <linux/blk-crypto.h>
-#include <linux/memblock.h>	/* for max_pfn/max_low_pfn */
+#include <linux/memblock.h>	
 #include <xen/xen.h>
 #include "blk-crypto-internal.h"
 
 struct elevator_type;
 
-/* Max future timer expiry for timeouts */
+
 #define BLK_MAX_TIMEOUT		(5 * HZ)
 
 extern struct dentry *blk_debugfs_root;
@@ -43,10 +43,7 @@ static inline bool blk_try_enter_queue(struct request_queue *q, bool pm)
 	if (!percpu_ref_tryget_live_rcu(&q->q_usage_counter))
 		goto fail;
 
-	/*
-	 * The code that increments the pm_only counter must ensure that the
-	 * counter is globally visible before the queue is unfrozen.
-	 */
+	
 	if (blk_queue_pm_only(q) &&
 	    (!pm || queue_rpm_status(q) == RPM_SUSPENDED))
 		goto fail_put;
@@ -86,10 +83,7 @@ static inline bool biovec_phys_mergeable(struct request_queue *q,
 	phys_addr_t addr1 = page_to_phys(vec1->bv_page) + vec1->bv_offset;
 	phys_addr_t addr2 = page_to_phys(vec2->bv_page) + vec2->bv_offset;
 
-	/*
-	 * Merging adjacent physical pages may not work correctly under KMSAN
-	 * if their metadata pages aren't adjacent. Just disable merging.
-	 */
+	
 	if (IS_ENABLED(CONFIG_KMSAN))
 		return false;
 
@@ -109,10 +103,7 @@ static inline bool __bvec_gap_to_prev(const struct queue_limits *lim,
 		((bprv->bv_offset + bprv->bv_len) & lim->virt_boundary_mask);
 }
 
-/*
- * Check if adding a bio_vec after bprv with offset would create a gap in
- * the SG list. Most drivers don't care about this, but some do.
- */
+
 static inline bool bvec_gap_to_prev(const struct queue_limits *lim,
 		struct bio_vec *bprv, unsigned int offset)
 {
@@ -143,14 +134,7 @@ static inline bool rq_mergeable(struct request *rq)
 	return true;
 }
 
-/*
- * There are two different ways to handle DISCARD merges:
- *  1) If max_discard_segments > 1, the driver treats every bio as a range and
- *     send the bios to controller together. The ranges don't need to be
- *     contiguous.
- *  2) Otherwise, the request will be normal read/write requests.  The ranges
- *     need to be contiguous.
- */
+
 static inline bool blk_discard_mergable(struct request *req)
 {
 	if (req_op(req) == REQ_OP_DISCARD &&
@@ -218,7 +202,7 @@ static inline bool integrity_req_gap_front_merge(struct request *req,
 }
 
 extern const struct attribute_group blk_integrity_attr_group;
-#else /* CONFIG_BLK_DEV_INTEGRITY */
+#else 
 static inline bool blk_integrity_merge_rq(struct request_queue *rq,
 		struct request *r1, struct request *r2)
 {
@@ -250,7 +234,7 @@ static inline bool bio_integrity_endio(struct bio *bio)
 static inline void bio_integrity_free(struct bio *bio)
 {
 }
-#endif /* CONFIG_BLK_DEV_INTEGRITY */
+#endif 
 
 unsigned long blk_rq_timeout(unsigned long timeout);
 void blk_add_timer(struct request *req);
@@ -260,15 +244,11 @@ bool blk_attempt_plug_merge(struct request_queue *q, struct bio *bio,
 bool blk_bio_list_merge(struct request_queue *q, struct list_head *list,
 			struct bio *bio, unsigned int nr_segs);
 
-/*
- * Plug flush limits
- */
+
 #define BLK_MAX_REQUEST_COUNT	32
 #define BLK_PLUG_FLUSH_SIZE	(128 * 1024)
 
-/*
- * Internal elevator interface
- */
+
 #define ELV_ON_HASH(rq) ((rq)->rq_flags & RQF_HASHED)
 
 bool blk_insert_flush(struct request *rq);
@@ -300,19 +280,12 @@ static inline bool bio_may_exceed_limits(struct bio *bio,
 	case REQ_OP_DISCARD:
 	case REQ_OP_SECURE_ERASE:
 	case REQ_OP_WRITE_ZEROES:
-		return true; /* non-trivial splitting decisions */
+		return true; 
 	default:
 		break;
 	}
 
-	/*
-	 * All drivers must accept single-segments bios that are <= PAGE_SIZE.
-	 * This is a quick and dirty check that relies on the fact that
-	 * bi_io_vec[0] is always valid if a bio has data.  The check might
-	 * lead to occasional false negatives when bios are cloned, but compared
-	 * to the performance impact of cloned bios themselves the loop below
-	 * doesn't matter anyway.
-	 */
+	
 	return lim->chunk_sectors || bio->bi_vcnt != 1 ||
 		bio->bi_io_vec->bv_len + bio->bi_io_vec->bv_offset > PAGE_SIZE;
 }
@@ -332,12 +305,7 @@ enum elv_merge blk_try_merge(struct request *rq, struct bio *bio);
 void blk_set_default_limits(struct queue_limits *lim);
 int blk_dev_init(void);
 
-/*
- * Contribute to IO statistics IFF:
- *
- *	a) it's attached to a gendisk, and
- *	b) the queue had IO stats enabled when this request was started
- */
+
 static inline bool blk_do_io_stat(struct request *rq)
 {
 	return (rq->rq_flags & RQF_IO_STAT) && !blk_rq_is_passthrough(rq);
@@ -352,9 +320,7 @@ static inline void req_set_nomerge(struct request_queue *q, struct request *req)
 		q->last_merge = NULL;
 }
 
-/*
- * Internal io_context interface
- */
+
 struct io_cq *ioc_find_get_icq(struct request_queue *q);
 struct io_cq *ioc_lookup_icq(struct request_queue *q);
 #ifdef CONFIG_BLK_ICQ
@@ -363,7 +329,7 @@ void ioc_clear_queue(struct request_queue *q);
 static inline void ioc_clear_queue(struct request_queue *q)
 {
 }
-#endif /* CONFIG_BLK_ICQ */
+#endif 
 
 #ifdef CONFIG_BLK_DEV_THROTTLING_LOW
 extern ssize_t blk_throtl_sample_time_show(struct request_queue *q, char *page);
@@ -400,7 +366,7 @@ int blkdev_report_zones_ioctl(struct block_device *bdev, unsigned int cmd,
 		unsigned long arg);
 int blkdev_zone_mgmt_ioctl(struct block_device *bdev, blk_mode_t mode,
 		unsigned int cmd, unsigned long arg);
-#else /* CONFIG_BLK_DEV_ZONED */
+#else 
 static inline void disk_free_zone_bitmaps(struct gendisk *disk) {}
 static inline void disk_clear_zone_settings(struct gendisk *disk) {}
 static inline int blkdev_report_zones_ioctl(struct block_device *bdev,
@@ -413,7 +379,7 @@ static inline int blkdev_zone_mgmt_ioctl(struct block_device *bdev,
 {
 	return -ENOTTY;
 }
-#endif /* CONFIG_BLK_DEV_ZONED */
+#endif 
 
 struct block_device *bdev_alloc(struct gendisk *disk, u8 partno);
 void bdev_add(struct block_device *bdev, dev_t dev);
@@ -439,10 +405,7 @@ int bio_add_hw_page(struct request_queue *q, struct bio *bio,
 		struct page *page, unsigned int len, unsigned int offset,
 		unsigned int max_sectors, bool *same_page);
 
-/*
- * Clean up a page appropriately, where the page may be pinned, may have a
- * ref taken on it or neither.
- */
+
 static inline void bio_release_page(struct bio *bio, struct page *page)
 {
 	if (bio_flagged(bio, BIO_PAGE_PINNED))
@@ -479,21 +442,15 @@ void disk_unregister_independent_access_ranges(struct gendisk *disk);
 
 #ifdef CONFIG_FAIL_MAKE_REQUEST
 bool should_fail_request(struct block_device *part, unsigned int bytes);
-#else /* CONFIG_FAIL_MAKE_REQUEST */
+#else 
 static inline bool should_fail_request(struct block_device *part,
 					unsigned int bytes)
 {
 	return false;
 }
-#endif /* CONFIG_FAIL_MAKE_REQUEST */
+#endif 
 
-/*
- * Optimized request reference counting. Ideally we'd make timeouts be more
- * clever, as that's the only reason we need references at all... But until
- * this happens, this is faster than using refcount_t. Also see:
- *
- * abc54d634334 ("io_uring: switch to atomic_t for io_kiocb reference count")
- */
+
 #define req_ref_zero_or_close_to_overflow(req)	\
 	((unsigned int) atomic_read(&(req->ref)) + 127u <= 127u)
 
@@ -518,4 +475,4 @@ static inline int req_ref_read(struct request *req)
 	return atomic_read(&req->ref);
 }
 
-#endif /* BLK_INTERNAL_H */
+#endif 

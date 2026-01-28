@@ -3,7 +3,7 @@ source cpufreq.sh
 source governor.sh
 source module.sh
 source special-tests.sh
-FUNC=basic	# do basic tests by default
+FUNC=basic	
 OUTFILE=cpufreq_selftest
 SYSFS=
 CPUROOT=
@@ -56,19 +56,19 @@ parse_arguments()
 	while getopts ht:o:d:g: arg
 	do
 		case $arg in
-			h) # --help
+			h) 
 				helpme
 				;;
-			t) # --func_type (Function to perform: basic, suspend, hibernate, modtest, sptest1/2/3/4 (default: basic))
+			t) 
 				FUNC=$OPTARG
 				;;
-			o) # --output-file (Output file to store dumps)
+			o) 
 				OUTFILE=$OPTARG
 				;;
-			d) # --driver-mod-name (Name of the driver module)
+			d) 
 				DRIVER_MOD=$OPTARG
 				;;
-			g) # --governor-mod-name (Name of the governor module)
+			g) 
 				GOVERNOR_MOD=$OPTARG
 				;;
 			\?)

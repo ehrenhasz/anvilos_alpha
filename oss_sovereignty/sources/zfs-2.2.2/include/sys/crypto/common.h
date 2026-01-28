@@ -1,36 +1,11 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
- */
-/*
- * Copyright 2013 Saso Kiselkov.  All rights reserved.
- */
+
+
+
 
 #ifndef _SYS_CRYPTO_COMMON_H
 #define	_SYS_CRYPTO_COMMON_H
 
-/*
- * Header file for the common data structures of the cryptographic framework
- */
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,7 +13,7 @@ extern "C" {
 
 #include <sys/zfs_context.h>
 
-/* Cryptographic Mechanisms */
+
 
 #define	CRYPTO_MAX_MECH_NAME 32
 typedef char crypto_mech_name_t[CRYPTO_MAX_MECH_NAME];
@@ -46,28 +21,28 @@ typedef char crypto_mech_name_t[CRYPTO_MAX_MECH_NAME];
 typedef uint64_t crypto_mech_type_t;
 
 typedef struct crypto_mechanism {
-	crypto_mech_type_t	cm_type;	/* mechanism type */
-	caddr_t			cm_param;	/* mech. parameter */
-	size_t			cm_param_len;	/* mech. parameter len */
+	crypto_mech_type_t	cm_type;	
+	caddr_t			cm_param;	
+	size_t			cm_param_len;	
 } crypto_mechanism_t;
 
-/* CK_AES_CTR_PARAMS provides parameters to the CKM_AES_CTR mechanism */
+
 typedef struct CK_AES_CTR_PARAMS {
 	ulong_t	ulCounterBits;
 	uint8_t cb[16];
 } CK_AES_CTR_PARAMS;
 
-/* CK_AES_CCM_PARAMS provides parameters to the CKM_AES_CCM mechanism */
+
 typedef struct CK_AES_CCM_PARAMS {
 	ulong_t ulMACSize;
 	ulong_t ulNonceSize;
 	ulong_t ulAuthDataSize;
-	ulong_t ulDataSize; /* used for plaintext or ciphertext */
+	ulong_t ulDataSize; 
 	uchar_t *nonce;
 	uchar_t *authData;
 } CK_AES_CCM_PARAMS;
 
-/* CK_AES_GCM_PARAMS provides parameters to the CKM_AES_GCM mechanism */
+
 typedef struct CK_AES_GCM_PARAMS {
 	uchar_t *pIv;
 	ulong_t ulIvLen;
@@ -77,21 +52,18 @@ typedef struct CK_AES_GCM_PARAMS {
 	ulong_t ulTagBits;
 } CK_AES_GCM_PARAMS;
 
-/* CK_AES_GMAC_PARAMS provides parameters to the CKM_AES_GMAC mechanism */
+
 typedef struct CK_AES_GMAC_PARAMS {
 	uchar_t *pIv;
 	uchar_t *pAAD;
 	ulong_t ulAADLen;
 } CK_AES_GMAC_PARAMS;
 
-/*
- * The measurement unit bit flag for a mechanism's minimum or maximum key size.
- * The unit are mechanism dependent.  It can be in bits or in bytes.
- */
+
 typedef uint32_t crypto_keysize_unit_t;
 
 
-/* Mechanisms supported out-of-the-box */
+
 #define	SUN_CKM_SHA256			"CKM_SHA256"
 #define	SUN_CKM_SHA256_HMAC		"CKM_SHA256_HMAC"
 #define	SUN_CKM_SHA256_HMAC_GENERAL	"CKM_SHA256_HMAC_GENERAL"
@@ -110,7 +82,7 @@ typedef uint32_t crypto_keysize_unit_t;
 #define	SUN_CKM_AES_GCM			"CKM_AES_GCM"
 #define	SUN_CKM_AES_GMAC		"CKM_AES_GMAC"
 
-/* Data arguments of cryptographic operations */
+
 
 typedef enum crypto_data_format {
 	CRYPTO_DATA_RAW = 1,
@@ -118,47 +90,40 @@ typedef enum crypto_data_format {
 } crypto_data_format_t;
 
 typedef struct crypto_data {
-	crypto_data_format_t	cd_format;	/* Format identifier	*/
-	off_t			cd_offset;	/* Offset from the beginning */
-	size_t			cd_length;	/* # of bytes in use */
+	crypto_data_format_t	cd_format;	
+	off_t			cd_offset;	
+	size_t			cd_length;	
 	union {
-		/* Raw format */
-		iovec_t cd_raw;		/* Pointer and length	    */
+		
+		iovec_t cd_raw;		
 
-		/* uio scatter-gather format */
+		
 		zfs_uio_t	*cd_uio;
-	};	/* Crypto Data Union */
+	};	
 } crypto_data_t;
 
-/* The keys, and their contents */
+
 
 typedef struct {
-	uint_t	ck_length;	/* # of bits in ck_data   */
-	void	*ck_data;	/* ptr to key value */
+	uint_t	ck_length;	
+	void	*ck_data;	
 } crypto_key_t;
 
-/*
- * Raw key lengths are expressed in number of bits.
- * The following macro returns the minimum number of
- * bytes that can contain the specified number of bits.
- * Round up without overflowing the integer type.
- */
+
 #define	CRYPTO_BITS2BYTES(n) ((n) == 0 ? 0 : (((n) - 1) >> 3) + 1)
 #define	CRYPTO_BYTES2BITS(n) ((n) << 3)
 
-/* Providers */
+
 
 typedef uint32_t 	crypto_provider_id_t;
 #define	KCF_PROVID_INVALID	((uint32_t)-1)
 
-/* session data structure opaque to the consumer */
+
 typedef void *crypto_session_t;
 
 #define	PROVIDER_OWNS_KEY_SCHEDULE	0x00000001
 
-/*
- * Common cryptographic status and error codes.
- */
+
 #define	CRYPTO_SUCCESS				0x00000000
 #define	CRYPTO_HOST_MEMORY			0x00000002
 #define	CRYPTO_FAILED				0x00000004
@@ -184,4 +149,4 @@ typedef void *crypto_session_t;
 }
 #endif
 
-#endif /* _SYS_CRYPTO_COMMON_H */
+#endif 

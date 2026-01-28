@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 all:
 
 include ../lib.mk
@@ -19,7 +19,7 @@ TARGETS_C_32BIT_ONLY := entry_from_vm86 test_syscall_vdso unwind_vdso \
 			vdso_restorer
 TARGETS_C_64BIT_ONLY := fsgsbase sysret_rip syscall_numbering \
 			corrupt_xstate_header amx lam test_shadow_stack
-# Some selftests require 32bit support enabled also on 64bit systems
+
 TARGETS_C_32BIT_NEEDED := ldt_gdt ptrace_syscall
 
 TARGETS_C_32BIT_ALL := $(TARGETS_C_BOTHBITS) $(TARGETS_C_32BIT_ONLY) $(TARGETS_C_32BIT_NEEDED)
@@ -36,7 +36,7 @@ BINARIES_64 := $(patsubst %,$(OUTPUT)/%,$(BINARIES_64))
 
 CFLAGS := -O2 -g -std=gnu99 -pthread -Wall $(KHDR_INCLUDES)
 
-# call32_from_64 in thunks.S uses absolute addresses.
+
 ifeq ($(CAN_BUILD_WITH_NOPIE),1)
 CFLAGS += -no-pie
 endif
@@ -77,7 +77,7 @@ $(BINARIES_32): $(OUTPUT)/%_32: %.c helpers.h
 $(BINARIES_64): $(OUTPUT)/%_64: %.c helpers.h
 	$(CC) -m64 -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $^ -lrt -ldl
 
-# x86_64 users should be encouraged to install 32-bit libraries
+
 ifeq ($(CAN_BUILD_I386)$(CAN_BUILD_X86_64),01)
 all: warn_32bit_failure
 
@@ -99,13 +99,13 @@ warn_32bit_failure:
 	exit 0;
 endif
 
-# Some tests have additional dependencies.
+
 $(OUTPUT)/sysret_ss_attrs_64: thunks.S
 $(OUTPUT)/ptrace_syscall_32: raw_syscall_helper_32.S
 $(OUTPUT)/test_syscall_vdso_32: thunks_32.S
 
-# check_initial_reg_state is special: it needs a custom entry, and it
-# needs to be static so that its interpreter doesn't destroy its initial
-# state.
+
+
+
 $(OUTPUT)/check_initial_reg_state_32: CFLAGS += -Wl,-ereal_start -static
 $(OUTPUT)/check_initial_reg_state_64: CFLAGS += -Wl,-ereal_start -static

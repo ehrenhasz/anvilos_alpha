@@ -1,15 +1,15 @@
 ksft_skip=4
 ALPHA=(
-	1					# ID
-	11111111				# Wide ID
-	0xffff					# Ingress ID
-	0xffffffff				# Ingress Wide ID
-	101					# Egress ID
-	101101					# Egress Wide ID
-	0xdeadbee0				# Namespace Data
-	0xcafec0caf00dc0de			# Namespace Wide Data
-	777					# Schema ID (0xffffff = None)
-	"something that will be 4n-aligned"	# Schema Data
+	1					
+	11111111				
+	0xffff					
+	0xffffffff				
+	101					
+	101101					
+	0xdeadbee0				
+	0xcafec0caf00dc0de			
+	777					
+	"something that will be 4n-aligned"	
 )
 BETA=(
 	2
@@ -304,7 +304,7 @@ out_bits()
 {
   local desc="Trace type with bit <n> only"
   local tmp=${bit2size[22]}
-  bit2size[22]=$(( $tmp + ${#ALPHA[9]} + ((4 - (${#ALPHA[9]} % 4)) % 4) ))
+  bit2size[22]=$(( $tmp + ${
   [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
   [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
   for i in {0..22}
@@ -369,7 +369,7 @@ in_bits()
 {
   local desc="Trace type with bit <n> only"
   local tmp=${bit2size[22]}
-  bit2size[22]=$(( $tmp + ${#BETA[9]} + ((4 - (${#BETA[9]} % 4)) % 4) ))
+  bit2size[22]=$(( $tmp + ${
   [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
   [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
   for i in {0..11} {22..22}

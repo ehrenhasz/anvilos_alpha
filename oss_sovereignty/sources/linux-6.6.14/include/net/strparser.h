@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Stream Parser
- *
- * Copyright (c) 2016 Tom Herbert <tom@herbertland.com>
- */
+
+
 
 #ifndef __NET_STRPARSER_H_
 #define __NET_STRPARSER_H_
@@ -39,7 +35,7 @@ struct strp_aggr_stats {
 
 struct strparser;
 
-/* Callbacks are called with lock held for the attached socket */
+
 struct strp_callbacks {
 	int (*parse_msg)(struct strparser *strp, struct sk_buff *skb);
 	void (*rcv_msg)(struct strparser *strp, struct sk_buff *skb);
@@ -55,9 +51,7 @@ struct strp_msg {
 };
 
 struct _strp_msg {
-	/* Internal cb structure. struct strp_msg must be first for passing
-	 * to upper layer.
-	 */
+	
 	struct strp_msg strp;
 	int accum_len;
 };
@@ -65,17 +59,15 @@ struct _strp_msg {
 struct sk_skb_cb {
 #define SK_SKB_CB_PRIV_LEN 20
 	unsigned char data[SK_SKB_CB_PRIV_LEN];
-	/* align strp on cache line boundary within skb->cb[] */
+	
 	unsigned char pad[4];
 	struct _strp_msg strp;
 
-	/* strp users' data follows */
+	
 	struct tls_msg {
 		u8 control;
 	} tls;
-	/* temp_reg is a temporary register used for bpf_convert_data_end_access
-	 * when dst_reg == src_reg.
-	 */
+	
 	u64 temp_reg;
 };
 
@@ -85,7 +77,7 @@ static inline struct strp_msg *strp_msg(struct sk_buff *skb)
 		offsetof(struct sk_skb_cb, strp));
 }
 
-/* Structure for an attached lower socket */
+
 struct strparser {
 	struct sock *sk;
 
@@ -104,21 +96,21 @@ struct strparser {
 	struct strp_callbacks cb;
 };
 
-/* Must be called with lock held for attached socket */
+
 static inline void strp_pause(struct strparser *strp)
 {
 	strp->paused = 1;
 }
 
-/* May be called without holding lock for attached socket */
+
 void strp_unpause(struct strparser *strp);
-/* Must be called with process lock held (lock_sock) */
+
 void __strp_unpause(struct strparser *strp);
 
 static inline void save_strp_stats(struct strparser *strp,
 				   struct strp_aggr_stats *agg_stats)
 {
-	/* Save psock statistics in the mux when psock is being unattached. */
+	
 
 #define SAVE_PSOCK_STATS(_stat) (agg_stats->_stat +=		\
 				 strp->stats._stat)
@@ -167,4 +159,4 @@ int strp_process(struct strparser *strp, struct sk_buff *orig_skb,
 		 unsigned int orig_offset, size_t orig_len,
 		 size_t max_msg_size, long timeo);
 
-#endif /* __NET_STRPARSER_H_ */
+#endif 

@@ -1,30 +1,4 @@
-/*
- * Copyright (c) 2007 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * $FreeBSD$
- */
+
 
 #ifndef _OPENSOLARIS_SYS_VFS_H_
 #define	_OPENSOLARIS_SYS_VFS_H_
@@ -59,41 +33,34 @@ typedef	int	umode_t;
 
 #define	XU_NGROUPS	16
 
-/*
- * Structure defining a mount option for a filesystem.
- * option names are found in mntent.h
- */
+
 typedef struct mntopt {
-	char	*mo_name;	/* option name */
-	char	**mo_cancel;	/* list of options cancelled by this one */
-	char	*mo_arg;	/* argument string for this option */
-	int	mo_flags;	/* flags for this mount option */
-	void	*mo_data;	/* filesystem specific data */
+	char	*mo_name;	
+	char	**mo_cancel;	
+	char	*mo_arg;	
+	int	mo_flags;	
+	void	*mo_data;	
 } mntopt_t;
 
-/*
- * Flags that apply to mount options
- */
 
-#define	MO_SET		0x01		/* option is set */
-#define	MO_NODISPLAY	0x02		/* option not listed in mnttab */
-#define	MO_HASVALUE	0x04		/* option takes a value */
-#define	MO_IGNORE	0x08		/* option ignored by parser */
-#define	MO_DEFAULT	MO_SET		/* option is on by default */
-#define	MO_TAG		0x10		/* flags a tag set by user program */
-#define	MO_EMPTY	0x20		/* empty space in option table */
 
-#define	VFS_NOFORCEOPT	0x01		/* honor MO_IGNORE (don't set option) */
-#define	VFS_DISPLAY	0x02		/* Turn off MO_NODISPLAY bit for opt */
-#define	VFS_NODISPLAY	0x04		/* Turn on MO_NODISPLAY bit for opt */
-#define	VFS_CREATEOPT	0x08		/* Create the opt if it's not there */
+#define	MO_SET		0x01		
+#define	MO_NODISPLAY	0x02		
+#define	MO_HASVALUE	0x04		
+#define	MO_IGNORE	0x08		
+#define	MO_DEFAULT	MO_SET		
+#define	MO_TAG		0x10		
+#define	MO_EMPTY	0x20		
 
-/*
- * Structure holding mount option strings for the mounted file system.
- */
+#define	VFS_NOFORCEOPT	0x01		
+#define	VFS_DISPLAY	0x02		
+#define	VFS_NODISPLAY	0x04		
+#define	VFS_CREATEOPT	0x08		
+
+
 typedef struct mntopts {
-	uint_t		mo_count;		/* number of entries in table */
-	mntopt_t	*mo_list;		/* list of mount options */
+	uint_t		mo_count;		
+	mntopt_t	*mo_list;		
 } mntopts_t;
 
 void vfs_setmntopt(vfs_t *vfsp, const char *name, const char *arg,
@@ -105,17 +72,17 @@ int mount_snapshot(kthread_t *td, vnode_t **vpp, const char *fstype,
 
 typedef	uint64_t	vfs_feature_t;
 
-#define	VFSFT_XVATTR		0x100000001	/* Supports xvattr for attrs */
-#define	VFSFT_CASEINSENSITIVE	0x100000002	/* Supports case-insensitive */
-#define	VFSFT_NOCASESENSITIVE	0x100000004	/* NOT case-sensitive */
-#define	VFSFT_DIRENTFLAGS	0x100000008	/* Supports dirent flags */
-#define	VFSFT_ACLONCREATE	0x100000010	/* Supports ACL on create */
-#define	VFSFT_ACEMASKONACCESS	0x100000020	/* Can use ACEMASK for access */
-#define	VFSFT_SYSATTR_VIEWS	0x100000040	/* Supports sysattr view i/f */
-#define	VFSFT_ACCESS_FILTER	0x100000080	/* dirents filtered by access */
-#define	VFSFT_REPARSE		0x100000100	/* Supports reparse point */
+#define	VFSFT_XVATTR		0x100000001	
+#define	VFSFT_CASEINSENSITIVE	0x100000002	
+#define	VFSFT_NOCASESENSITIVE	0x100000004	
+#define	VFSFT_DIRENTFLAGS	0x100000008	
+#define	VFSFT_ACLONCREATE	0x100000010	
+#define	VFSFT_ACEMASKONACCESS	0x100000020	
+#define	VFSFT_SYSATTR_VIEWS	0x100000040	
+#define	VFSFT_ACCESS_FILTER	0x100000080	
+#define	VFSFT_REPARSE		0x100000100	
 #define	VFSFT_ZEROCOPY_SUPPORTED	0x100000200
-				/* Support loaning /returning cache buffer */
+				
 
 #include <sys/mount.h>
-#endif	/* _OPENSOLARIS_SYS_VFS_H_ */
+#endif	

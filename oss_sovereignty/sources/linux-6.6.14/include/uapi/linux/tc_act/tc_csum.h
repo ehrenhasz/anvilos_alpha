@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef __LINUX_TC_CSUM_H
 #define __LINUX_TC_CSUM_H
 
@@ -30,4 +30,4 @@ struct tc_csum {
 	__u32 update_flags;
 };
 
-#endif /* __LINUX_TC_CSUM_H */
+#endif 

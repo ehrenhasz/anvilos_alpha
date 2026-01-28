@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-// TI LMU Common Core
-// Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
+
+
+
 
 #ifndef _TI_LMU_COMMON_H_
 #define _TI_LMU_COMMON_H_
@@ -44,4 +44,4 @@ int ti_lmu_common_get_ramp_params(struct device *dev,
 int ti_lmu_common_get_brt_res(struct device *dev, struct fwnode_handle *child,
 			      struct ti_lmu_bank *lmu_data);
 
-#endif /* _TI_LMU_COMMON_H_ */
+#endif 

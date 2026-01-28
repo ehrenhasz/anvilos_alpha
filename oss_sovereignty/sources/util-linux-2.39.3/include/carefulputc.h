@@ -12,13 +12,7 @@
 
 #include "cctype.h"
 
-/*
- * A puts() for use in write and wall (that sometimes are sgid tty).
- * It avoids control and invalid characters.
- * The locale of the recipient is nominally unknown,
- * but it's a solid bet that it's compatible with the author's.
- * Use soft_width=0 to disable wrapping.
- */
+
 static inline int fputs_careful(const char * s, FILE *fp, const char ctrl, bool cr_lf, int soft_width)
 {
 	int ret = 0, col = 0;
@@ -49,8 +43,8 @@ static inline int fputs_careful(const char * s, FILE *fp, const char ctrl, bool 
 			wchar_t w;
 			size_t clen = mbtowc(&w, s, slen);
 			switch(clen) {
-				case (size_t)-2:  // incomplete
-				case (size_t)-1:  // EILSEQ
+				case (size_t)-2:  
+				case (size_t)-1:  
 					mbtowc(NULL, NULL, 0);
 				nonprint:
 					col += ret = fprintf(fp, "\\%3hho", *s);
@@ -86,10 +80,10 @@ static inline void fputs_quoted_case(const char *data, FILE *out, int dir)
 
 	fputc('"', out);
 	for (p = data; p && *p; p++) {
-		if ((unsigned char) *p == 0x22 ||		/* " */
-		    (unsigned char) *p == 0x5c ||		/* \ */
-		    (unsigned char) *p == 0x60 ||		/* ` */
-		    (unsigned char) *p == 0x24 ||		/* $ */
+		if ((unsigned char) *p == 0x22 ||		
+		    (unsigned char) *p == 0x5c ||		
+		    (unsigned char) *p == 0x60 ||		
+		    (unsigned char) *p == 0x24 ||		
 		    !isprint((unsigned char) *p) ||
 		    iscntrl((unsigned char) *p)) {
 
@@ -112,7 +106,7 @@ static inline void fputs_nonblank(const char *data, FILE *out)
 
 	for (p = data; p && *p; p++) {
 		if (isblank((unsigned char) *p) ||
-		    (unsigned char) *p == 0x5c ||		/* \ */
+		    (unsigned char) *p == 0x5c ||		
 		    !isprint((unsigned char) *p) ||
 		    iscntrl((unsigned char) *p)) {
 
@@ -123,4 +117,4 @@ static inline void fputs_nonblank(const char *data, FILE *out)
 	}
 }
 
-#endif  /*  _CAREFULPUTC_H  */
+#endif  

@@ -74,25 +74,25 @@ OBJ  = $(addprefix $(BUILD)/, $(BOOT_HAL_SRC_C:.c=.o) $(BOOT_SL_SRC_C:.c=.o) $(B
 OBJ += $(addprefix $(BUILD)/, $(BOOT_MAIN_SRC_C:.c=.o) $(BOOT_MAIN_SRC_S:.s=.o) $(BOOT_PY_SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(BOOT_SHARED_SRC_C:.c=.o))
 
-# Add the linker script
+
 LINKER_SCRIPT = bootmgr/bootmgr.lds
 LDFLAGS += -T $(LINKER_SCRIPT)
 
-# Add the bootloader specific CFLAGS
+
 CFLAGS += $(BOOT_CPPDEFINES) $(BOOT_INC)
 
-# Disable strict aliasing for the simplelink driver
+
 $(BUILD)/drivers/cc3100/src/driver.o: CFLAGS += -fno-strict-aliasing
 
-# Check if we would like to debug the port code
+
 ifeq ($(BTYPE), release)
-# Optimize everything and define the NDEBUG flag
+
 CFLAGS += -Os -DNDEBUG
 else
 ifeq ($(BTYPE), debug)
-# Define the DEBUG flag
+
 CFLAGS += -DDEBUG=DEBUG
-# Optimize the stable sources only
+
 $(BUILD)/hal/%.o: CFLAGS += -Os
 $(BUILD)/misc/%.o: CFLAGS += -Os
 $(BUILD)/simplelink/%.o: CFLAGS += -Os
@@ -123,18 +123,18 @@ $(BUILD)/bootloader.bin: $(BUILD)/bootmgr.bin
 	$(ECHO) "Create $@"
 	$(Q)$(SHELL) $(BOOT_GEN) $(BUILD)
 
-# Create an empty "qstrdefs.generated.h" needed by py/mkrules.mk
+
 $(HEADER_BUILD)/qstrdefs.generated.h: | $(HEADER_BUILD)
 	touch $@
 
-# Create an empty "mpversion.h" needed by py/mkrules.mk
+
 $(HEADER_BUILD)/mpversion.h: | $(HEADER_BUILD)
 	touch $@
 
-# Create an empty "moduledefs.h" needed by py/mkrules.mk
+
 $(HEADER_BUILD)/moduledefs.h: | $(HEADER_BUILD)
 	touch $@
 
-# Create an empty "root_pointers.h" needed by py/mkrules.mk
+
 $(HEADER_BUILD)/root_pointers.h: | $(HEADER_BUILD)
 	touch $@

@@ -53,7 +53,7 @@ class __FS:
     if path == '__injected_test.mpy':
       return tuple(0 for _ in range(10))
     else:
-      raise OSError(-2) # ENOENT
+      raise OSError(-2) 
   def open(self, path, mode):
     return __File()
 vfs.mount(__FS(), '/__vfstest')
@@ -152,7 +152,7 @@ def run_micropython(pyb, args, test_file, test_file_abspath, is_special=False):
             args = [MICROPYTHON]
             with open(test_file, "rb") as f:
                 line = f.readline()
-                if line.startswith(b"# cmdline:"):
+                if line.startswith(b"
                     args += [str(c, "utf-8") for c in line[10:].strip().split()]
             try:
                 if os.path.basename(test_file).startswith("repl_"):
@@ -182,7 +182,7 @@ def run_micropython(pyb, args, test_file, test_file_abspath, is_special=False):
                         )
                         banner = get(True)
                         output_mupy = banner + b"".join(send_get(line) for line in f)
-                        send_get(b"\x04")  # exit the REPL, so coverage info is saved
+                        send_get(b"\x04")  
                         try:
                             p.kill()
                         except ProcessLookupError:
@@ -238,17 +238,17 @@ def run_micropython(pyb, args, test_file, test_file_abspath, is_special=False):
         with open(test_file + ".exp", "rb") as f:
             lines_exp = []
             for line in f.readlines():
-                if line == b"########\n":
+                if line == b"
                     line = (line,)
                 else:
                     line = (line, re.compile(convert_regex_escapes(line)))
                 lines_exp.append(line)
         lines_mupy = [line + b"\n" for line in output_mupy.split(b"\n")]
         if output_mupy.endswith(b"\n"):
-            lines_mupy = lines_mupy[:-1]  # remove erroneous last empty line
+            lines_mupy = lines_mupy[:-1]  
         i_mupy = 0
         for i in range(len(lines_exp)):
-            if lines_exp[i][0] == b"########\n":
+            if lines_exp[i][0] == b"
                 line_exp = lines_exp[i + 1]
                 skip = 0
                 while i_mupy + skip < len(lines_mupy) and not line_exp[1].match(
@@ -256,10 +256,10 @@ def run_micropython(pyb, args, test_file, test_file_abspath, is_special=False):
                 ):
                     skip += 1
                 if i_mupy + skip >= len(lines_mupy):
-                    lines_mupy[i_mupy] = b"######## FAIL\n"
+                    lines_mupy[i_mupy] = b"
                     break
                 del lines_mupy[i_mupy : i_mupy + skip]
-                lines_mupy.insert(i_mupy, b"########\n")
+                lines_mupy.insert(i_mupy, b"
                 i_mupy += 1
             else:
                 if lines_exp[i][1].match(lines_mupy[i_mupy]):
@@ -421,7 +421,7 @@ def run_tests(pyb, tests, args, result_dir, num_threads=1):
         "struct_endian",
     )
     if os.getenv("GITHUB_ACTIONS") == "true":
-        skip_tests.add("thread/stress_schedule.py")  # has reliability issues
+        skip_tests.add("thread/stress_schedule.py")  
         if os.getenv("RUNNER_OS") == "Windows":
             skip_tests.add("misc/sys_settrace_features.py")
             if os.getenv("MSYSTEM") is not None:
@@ -437,15 +437,15 @@ def run_tests(pyb, tests, args, result_dir, num_threads=1):
     if upy_float_precision < 32:
         skip_tests.add(
             "float/float2int_intbig.py"
-        )  # requires fp32, there's float2int_fp30_intbig.py instead
+        )  
         skip_tests.add(
             "float/string_format.py"
-        )  # requires fp32, there's string_format_fp30.py instead
-        skip_tests.add("float/bytes_construct.py")  # requires fp32
-        skip_tests.add("float/bytearray_construct.py")  # requires fp32
-        skip_tests.add("float/float_format_ints_power10.py")  # requires fp32
+        )  
+        skip_tests.add("float/bytes_construct.py")  
+        skip_tests.add("float/bytearray_construct.py")  
+        skip_tests.add("float/float_format_ints_power10.py")  
     if upy_float_precision < 64:
-        skip_tests.add("float/float_divmod.py")  # tested by float/float_divmod_relaxed.py instead
+        skip_tests.add("float/float_divmod.py")  
         skip_tests.add("float/float2int_doubleprec_intbig.py")
         skip_tests.add("float/float_format_ints_doubleprec.py")
         skip_tests.add("float/float_parse_doubleprec.py")
@@ -472,45 +472,45 @@ def run_tests(pyb, tests, args, result_dir, num_threads=1):
         skip_tests.add("thread/thread_lock3.py")
         skip_tests.add("thread/thread_shared2.py")
     if args.target != "unix":
-        skip_tests.add("basics/exception_chain.py")  # warning is not printed
-        skip_tests.add("micropython/meminfo.py")  # output is very different to PC output
+        skip_tests.add("basics/exception_chain.py")  
+        skip_tests.add("micropython/meminfo.py")  
         if args.target == "wipy":
-            skip_tests.add("misc/print_exception.py")  # requires error reporting full
+            skip_tests.add("misc/print_exception.py")  
             skip_tests.update(
                 {
                     "extmod/uctypes_%s.py" % t
                     for t in "bytearray le native_le ptr_le ptr_native_le sizeof sizeof_native array_assign_le array_assign_native_le".split()
                 }
-            )  # requires uctypes
-            skip_tests.add("extmod/heapq1.py")  # heapq not supported by WiPy
-            skip_tests.add("extmod/random_basic.py")  # requires random
-            skip_tests.add("extmod/random_extra.py")  # requires random
+            )  
+            skip_tests.add("extmod/heapq1.py")  
+            skip_tests.add("extmod/random_basic.py")  
+            skip_tests.add("extmod/random_extra.py")  
         elif args.target == "esp8266":
-            skip_tests.add("misc/rge_sm.py")  # too large
+            skip_tests.add("misc/rge_sm.py")  
         elif args.target == "minimal":
-            skip_tests.add("basics/class_inplace_op.py")  # all special methods not supported
+            skip_tests.add("basics/class_inplace_op.py")  
             skip_tests.add(
                 "basics/subclass_native_init.py"
-            )  # native subclassing corner cases not support
-            skip_tests.add("misc/rge_sm.py")  # too large
-            skip_tests.add("micropython/opt_level.py")  # don't assume line numbers are stored
+            )  
+            skip_tests.add("misc/rge_sm.py")  
+            skip_tests.add("micropython/opt_level.py")  
         elif args.target == "nrf":
-            skip_tests.add("basics/memoryview1.py")  # no item assignment for memoryview
-            skip_tests.add("extmod/random_basic.py")  # unimplemented: random.seed
-            skip_tests.add("micropython/opt_level.py")  # no support for line numbers
-            skip_tests.add("misc/non_compliant.py")  # no item assignment for bytearray
+            skip_tests.add("basics/memoryview1.py")  
+            skip_tests.add("extmod/random_basic.py")  
+            skip_tests.add("micropython/opt_level.py")  
+            skip_tests.add("misc/non_compliant.py")  
             for t in tests:
                 if t.startswith("basics/io_"):
                     skip_tests.add(t)
         elif args.target == "renesas-ra":
             skip_tests.add(
                 "extmod/time_time_ns.py"
-            )  # RA fsp rtc function doesn't support nano sec info
+            )  
         elif args.target == "qemu-arm":
-            skip_tests.add("misc/print_exception.py")  # requires sys stdfiles
+            skip_tests.add("misc/print_exception.py")  
         elif args.target == "webassembly":
-            skip_tests.add("basics/string_format_modulo.py")  # can't print nulls to stdout
-            skip_tests.add("basics/string_strip.py")  # can't print nulls to stdout
+            skip_tests.add("basics/string_format_modulo.py")  
+            skip_tests.add("basics/string_strip.py")  
             skip_tests.add("extmod/asyncio_basic2.py")
             skip_tests.add("extmod/asyncio_cancel_self.py")
             skip_tests.add("extmod/asyncio_current_task.py")
@@ -535,46 +535,46 @@ def run_tests(pyb, tests, args, result_dir, num_threads=1):
     if pyb is None and platform.architecture()[0] == "64bit":
         pass
     if os.name == "nt":
-        skip_tests.add("import/import_file.py")  # works but CPython prints forward slashes
+        skip_tests.add("import/import_file.py")  
     if args.emit == "native":
-        skip_tests.add("basics/gen_yield_from_close.py")  # require raise_varargs
+        skip_tests.add("basics/gen_yield_from_close.py")  
         skip_tests.update(
             {"basics/async_%s.py" % t for t in "with with2 with_break with_return".split()}
-        )  # require async_with
+        )  
         skip_tests.update(
             {"basics/%s.py" % t for t in "try_reraise try_reraise2".split()}
-        )  # require raise_varargs
-        skip_tests.add("basics/annotate_var.py")  # requires checking for unbound local
-        skip_tests.add("basics/del_deref.py")  # requires checking for unbound local
-        skip_tests.add("basics/del_local.py")  # requires checking for unbound local
-        skip_tests.add("basics/exception_chain.py")  # raise from is not supported
-        skip_tests.add("basics/scope_implicit.py")  # requires checking for unbound local
-        skip_tests.add("basics/sys_tracebacklimit.py")  # requires traceback info
-        skip_tests.add("basics/try_finally_return2.py")  # requires raise_varargs
-        skip_tests.add("basics/unboundlocal.py")  # requires checking for unbound local
-        skip_tests.add("extmod/asyncio_event.py")  # unknown issue
-        skip_tests.add("extmod/asyncio_lock.py")  # requires async with
-        skip_tests.add("extmod/asyncio_micropython.py")  # unknown issue
-        skip_tests.add("extmod/asyncio_wait_for.py")  # unknown issue
-        skip_tests.add("misc/features.py")  # requires raise_varargs
+        )  
+        skip_tests.add("basics/annotate_var.py")  
+        skip_tests.add("basics/del_deref.py")  
+        skip_tests.add("basics/del_local.py")  
+        skip_tests.add("basics/exception_chain.py")  
+        skip_tests.add("basics/scope_implicit.py")  
+        skip_tests.add("basics/sys_tracebacklimit.py")  
+        skip_tests.add("basics/try_finally_return2.py")  
+        skip_tests.add("basics/unboundlocal.py")  
+        skip_tests.add("extmod/asyncio_event.py")  
+        skip_tests.add("extmod/asyncio_lock.py")  
+        skip_tests.add("extmod/asyncio_micropython.py")  
+        skip_tests.add("extmod/asyncio_wait_for.py")  
+        skip_tests.add("misc/features.py")  
         skip_tests.add(
             "misc/print_exception.py"
-        )  # because native doesn't have proper traceback info
-        skip_tests.add("misc/sys_exc_info.py")  # sys.exc_info() is not supported for native
-        skip_tests.add("misc/sys_settrace_features.py")  # sys.settrace() not supported
-        skip_tests.add("misc/sys_settrace_generator.py")  # sys.settrace() not supported
-        skip_tests.add("misc/sys_settrace_loop.py")  # sys.settrace() not supported
+        )  
+        skip_tests.add("misc/sys_exc_info.py")  
+        skip_tests.add("misc/sys_settrace_features.py")  
+        skip_tests.add("misc/sys_settrace_generator.py")  
+        skip_tests.add("misc/sys_settrace_loop.py")  
         skip_tests.add(
             "micropython/emg_exc.py"
-        )  # because native doesn't have proper traceback info
+        )  
         skip_tests.add(
             "micropython/heapalloc_traceback.py"
-        )  # because native doesn't have proper traceback info
+        )  
         skip_tests.add(
             "micropython/opt_level_lineno.py"
-        )  # native doesn't have proper traceback info
-        skip_tests.add("micropython/schedule.py")  # native code doesn't check pending events
-        skip_tests.add("stress/bytecode_limit.py")  # bytecode specific test
+        )  
+        skip_tests.add("micropython/schedule.py")  
+        skip_tests.add("stress/bytecode_limit.py")  
     def run_one_test(test_file):
         test_file = test_file.replace("\\", "/")
         test_file_abspath = os.path.abspath(test_file).replace("\\", "/")

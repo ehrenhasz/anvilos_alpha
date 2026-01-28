@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/***************************************************************************
-*   Copyright (C) 2006 by Joachim Fritschi, <jfritschi@freenet.de>        *
-*                                                                         *
-***************************************************************************/
+
+
 
 .file "twofish-i586-asm.S"
 .text
@@ -10,27 +7,27 @@
 #include <linux/linkage.h>
 #include <asm/asm-offsets.h>
 
-/* return address at 0 */
 
-#define in_blk    12  /* input byte array address parameter*/
-#define out_blk   8  /* output byte array address parameter*/
-#define ctx       4  /* Twofish context structure */
+
+#define in_blk    12  
+#define out_blk   8  
+#define ctx       4  
 
 #define a_offset	0
 #define b_offset	4
 #define c_offset	8
 #define d_offset	12
 
-/* Structure of the crypto context struct*/
 
-#define s0	0	/* S0 Array 256 Words each */
-#define s1	1024	/* S1 Array */
-#define s2	2048	/* S2 Array */
-#define s3	3072	/* S3 Array */
-#define w	4096	/* 8 whitening keys (word) */
-#define k	4128	/* key 1-32 ( word ) */
 
-/* define a few register aliases to allow macro substitution */
+#define s0	0	
+#define s1	1024	
+#define s2	2048	
+#define s3	3072	
+#define w	4096	
+#define k	4128	
+
+
 
 #define R0D    %eax
 #define R0B    %al
@@ -49,21 +46,15 @@
 #define R3H    %dh
 
 
-/* performs input whitening */
+
 #define input_whitening(src,context,offset)\
 	xor	w+offset(context),	src;
 
-/* performs input whitening */
+
 #define output_whitening(src,context,offset)\
 	xor	w+16+offset(context),	src;
 
-/*
- * a input register containing a (rotated 16)
- * b input register containing b
- * c input register containing c
- * d input register containing d (already rol $1)
- * operations on a and b are interleaved to increase performance
- */
+
 #define encrypt_round(a,b,c,d,round)\
 	push	d ## D;\
 	movzx	b ## B,		%edi;\
@@ -94,14 +85,7 @@
 	add	k+4+round(%ebp),d ## D;\
 	xor	%edi,		d ## D;
 
-/*
- * a input register containing a (rotated 16)
- * b input register containing b
- * c input register containing c
- * d input register containing d (already rol $1)
- * operations on a and b are interleaved to increase performance
- * last round has different rotations for the output preparation
- */
+
 #define encrypt_last_round(a,b,c,d,round)\
 	push	d ## D;\
 	movzx	b ## B,		%edi;\
@@ -132,13 +116,7 @@
 	add	k+4+round(%ebp),d ## D;\
 	xor	%edi,		d ## D;
 
-/*
- * a input register containing a
- * b input register containing b (rotated 16)
- * c input register containing c
- * d input register containing d (already rol $1)
- * operations on a and b are interleaved to increase performance
- */
+
 #define decrypt_round(a,b,c,d,round)\
 	push	c ## D;\
 	movzx	a ## B,		%edi;\
@@ -169,14 +147,7 @@
 	xor	%esi,		d ## D;\
 	rol	$15,		d ## D;
 
-/*
- * a input register containing a
- * b input register containing b (rotated 16)
- * c input register containing c
- * d input register containing d (already rol $1)
- * operations on a and b are interleaved to increase performance
- * last round has different rotations for the output preparation
- */
+
 #define decrypt_last_round(a,b,c,d,round)\
 	push	c ## D;\
 	movzx	a ## B,		%edi;\
@@ -208,14 +179,13 @@
 	ror	$1,		d ## D;
 
 SYM_FUNC_START(twofish_enc_blk)
-	push	%ebp			/* save registers according to calling convention*/
+	push	%ebp			
 	push    %ebx
 	push    %esi
 	push    %edi
 
-	mov	ctx + 16(%esp),	%ebp	/* abuse the base pointer: set new base
-					 * pointer to the ctx address */
-	mov     in_blk+16(%esp),%edi	/* input address in edi */
+	mov	ctx + 16(%esp),	%ebp	
+	mov     in_blk+16(%esp),%edi	
 
 	mov	(%edi),		%eax
 	mov	b_offset(%edi),	%ebx
@@ -264,15 +234,14 @@ SYM_FUNC_START(twofish_enc_blk)
 SYM_FUNC_END(twofish_enc_blk)
 
 SYM_FUNC_START(twofish_dec_blk)
-	push	%ebp			/* save registers according to calling convention*/
+	push	%ebp			
 	push    %ebx
 	push    %esi
 	push    %edi
 
 
-	mov	ctx + 16(%esp),	%ebp	/* abuse the base pointer: set new base
-					 * pointer to the ctx address */
-	mov     in_blk+16(%esp),%edi	/* input address in edi */
+	mov	ctx + 16(%esp),	%ebp	
+	mov     in_blk+16(%esp),%edi	
 
 	mov	(%edi),		%eax
 	mov	b_offset(%edi),	%ebx

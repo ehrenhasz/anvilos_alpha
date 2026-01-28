@@ -1,21 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/******************************************************************************
- *
- *	(C)Copyright 1998,1999 SysKonnect,
- *	a business unit of Schneider & Koch & Co. Datensysteme GmbH.
- *
- *	The information in this file is provided "AS IS" without warranty.
- *
- ******************************************************************************/
 
-/*
- * defines for all SMT attributes
- */
 
-/*
- * this boring file was produced by perl
- * thanks Larry !
- */
+
+
+
+
 #define	SMT_P0012	0x0012
 
 #define	SMT_P0015	0x0015

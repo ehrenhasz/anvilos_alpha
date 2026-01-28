@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 

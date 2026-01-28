@@ -1,27 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- * Copyright (C) 2020 Marvell.
- */
+
 
 #ifndef __OTX2_CPT_REQMGR_H
 #define __OTX2_CPT_REQMGR_H
 
 #include "otx2_cpt_common.h"
 
-/* Completion code size and initial value */
+
 #define OTX2_CPT_COMPLETION_CODE_SIZE 8
 #define OTX2_CPT_COMPLETION_CODE_INIT OTX2_CPT_COMP_E_NOTDONE
-/*
- * Maximum total number of SG buffers is 100, we divide it equally
- * between input and output
- */
+
 #define OTX2_CPT_MAX_SG_IN_CNT  50
 #define OTX2_CPT_MAX_SG_OUT_CNT 50
 
-/* DMA mode direct or SG */
+
 #define OTX2_CPT_DMA_MODE_DIRECT 0
 #define OTX2_CPT_DMA_MODE_SG     1
 
-/* Context source CPTR or DPTR */
+
 #define OTX2_CPT_FROM_CPTR 0
 #define OTX2_CPT_FROM_DPTR 1
 
@@ -42,10 +37,7 @@ struct otx2_cptvf_request {
 	union otx2_cpt_opcode opcode;
 };
 
-/*
- * CPT_INST_S software command definitions
- * Words EI (0-3)
- */
+
 union otx2_cpt_iq_cmd_word0 {
 	u64 u;
 	struct {
@@ -72,22 +64,22 @@ struct otx2_cpt_iq_command {
 };
 
 struct otx2_cpt_pending_entry {
-	void *completion_addr;	/* Completion address */
+	void *completion_addr;	
 	void *info;
-	/* Kernel async request callback */
+	
 	void (*callback)(int status, void *arg1, void *arg2);
-	struct crypto_async_request *areq; /* Async request callback arg */
-	u8 resume_sender;	/* Notify sender to resume sending requests */
-	u8 busy;		/* Entry status (free/busy) */
+	struct crypto_async_request *areq; 
+	u8 resume_sender;	
+	u8 busy;		
 };
 
 struct otx2_cpt_pending_queue {
-	struct otx2_cpt_pending_entry *head; /* Head of the queue */
-	u32 front;		/* Process work from here */
-	u32 rear;		/* Append new work here */
-	u32 pending_count;	/* Pending requests count */
-	u32 qlen;		/* Queue length */
-	spinlock_t lock;	/* Queue lock */
+	struct otx2_cpt_pending_entry *head; 
+	u32 front;		
+	u32 rear;		
+	u32 pending_count;	
+	u32 qlen;		
+	spinlock_t lock;	
 };
 
 struct otx2_cpt_buf_ptr {
@@ -101,33 +93,33 @@ union otx2_cpt_ctrl_info {
 	struct {
 #if defined(__BIG_ENDIAN_BITFIELD)
 		u32 reserved_6_31:26;
-		u32 grp:3;	/* Group bits */
-		u32 dma_mode:2;	/* DMA mode */
-		u32 se_req:1;	/* To SE core */
+		u32 grp:3;	
+		u32 dma_mode:2;	
+		u32 se_req:1;	
 #else
-		u32 se_req:1;	/* To SE core */
-		u32 dma_mode:2;	/* DMA mode */
-		u32 grp:3;	/* Group bits */
+		u32 se_req:1;	
+		u32 dma_mode:2;	
+		u32 grp:3;	
 		u32 reserved_6_31:26;
 #endif
 	} s;
 };
 
 struct otx2_cpt_req_info {
-	/* Kernel async request callback */
+	
 	void (*callback)(int status, void *arg1, void *arg2);
-	struct crypto_async_request *areq; /* Async request callback arg */
-	struct otx2_cptvf_request req;/* Request information (core specific) */
-	union otx2_cpt_ctrl_info ctrl;/* User control information */
+	struct crypto_async_request *areq; 
+	struct otx2_cptvf_request req;
+	union otx2_cpt_ctrl_info ctrl;
 	struct otx2_cpt_buf_ptr in[OTX2_CPT_MAX_SG_IN_CNT];
 	struct otx2_cpt_buf_ptr out[OTX2_CPT_MAX_SG_OUT_CNT];
-	u8 *iv_out;     /* IV to send back */
-	u16 rlen;	/* Output length */
-	u8 in_cnt;	/* Number of input buffers */
-	u8 out_cnt;	/* Number of output buffers */
-	u8 req_type;	/* Type of request */
-	u8 is_enc;	/* Is a request an encryption request */
-	u8 is_trunc_hmac;/* Is truncated hmac used */
+	u8 *iv_out;     
+	u16 rlen;	
+	u8 in_cnt;	
+	u8 out_cnt;	
+	u8 req_type;	
+	u8 is_enc;	
+	u8 is_trunc_hmac;
 };
 
 struct otx2_cpt_inst_info {
@@ -194,4 +186,4 @@ int otx2_cpt_do_request(struct pci_dev *pdev, struct otx2_cpt_req_info *req,
 void otx2_cpt_post_process(struct otx2_cptlf_wqe *wqe);
 int otx2_cpt_get_kcrypto_eng_grp_num(struct pci_dev *pdev);
 
-#endif /* __OTX2_CPT_REQMGR_H */
+#endif 

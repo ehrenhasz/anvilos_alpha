@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Copyright (c) 2022 BayLibre, SAS
- */
+
+
 
 #ifndef _MTK_HDMI_PHY_8195_H
 #define _MTK_HDMI_PHY_8195_H
@@ -110,4 +107,4 @@
 #define REG_PIXEL_CLOCK_SEL BIT(10)
 #define REG_HDMITX_PIXEL_CLOCK BIT(23)
 
-#endif /* MTK_HDMI_PHY_8195_H */
+#endif 

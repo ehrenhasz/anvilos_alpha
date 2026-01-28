@@ -167,8 +167,8 @@ if [[ ! -w $coredir ]]; then
 	exit 1
 fi
 or_die rm -f ztest.history ztest.zdb ztest.cores
-ztrc=0		# ztest return value
-foundcrashes=0	# number of crashes found so far
+ztrc=0		
+foundcrashes=0	
 starttime=$(date +%s)
 curtime=$starttime
 iteration=0

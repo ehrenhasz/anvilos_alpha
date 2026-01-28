@@ -1,25 +1,4 @@
-/*
- *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
- *  Copyright (C) 2007 The Regents of the University of California.
- *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
- *  Written by Brian Behlendorf <behlendorf1@llnl.gov>.
- *  UCRL-CODE-235197
- *
- *  This file is part of the SPL, Solaris Porting Layer.
- *
- *  The SPL is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation; either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  The SPL is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with the SPL.  If not, see <http://www.gnu.org/licenses/>.
- */
+
 
 #ifndef _SPL_ACL_H
 #define	_SPL_ACL_H
@@ -34,12 +13,12 @@ typedef struct ace {
 } ace_t;
 
 typedef struct ace_object {
-	uid_t		a_who;		/* uid or gid */
-	uint32_t	a_access_mask;	/* read,write,... */
-	uint16_t	a_flags;	/* see below */
-	uint16_t	a_type;		/* allow or deny */
-	uint8_t		a_obj_type[16];	/* obj type */
-	uint8_t		a_inherit_obj_type[16];	/* inherit obj */
+	uid_t		a_who;		
+	uint32_t	a_access_mask;	
+	uint16_t	a_flags;	
+	uint16_t	a_type;		
+	uint8_t		a_obj_type[16];	
+	uint8_t		a_inherit_obj_type[16];	
 } ace_object_t;
 
 #define	MAX_ACL_ENTRIES					1024
@@ -113,4 +92,4 @@ typedef struct ace_object {
 #define	VSA_ACE_ALLTYPES				0x0040
 #define	VSA_ACE_ACLFLAGS				0x0080
 
-#endif /* _SPL_ACL_H */
+#endif 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2021 ARM Limited.
- */
+
+
 
 #ifndef SYSCALL_ABI_H
 #define SYSCALL_ABI_H

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __FS_CEPH_PAGELIST_H
 #define __FS_CEPH_PAGELIST_H
 
@@ -18,9 +18,9 @@ struct ceph_pagelist {
 };
 
 struct ceph_pagelist_cursor {
-	struct ceph_pagelist *pl;   /* pagelist, for error checking */
-	struct list_head *page_lru; /* page in list */
-	size_t room;		    /* room remaining to reset to */
+	struct ceph_pagelist *pl;   
+	struct list_head *page_lru; 
+	size_t room;		    
 };
 
 struct ceph_pagelist *ceph_pagelist_alloc(gfp_t gfp_flags);

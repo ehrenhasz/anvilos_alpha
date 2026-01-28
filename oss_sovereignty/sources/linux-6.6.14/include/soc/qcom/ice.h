@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2023, Linaro Limited
- */
+
+
 
 #ifndef __QCOM_ICE_H__
 #define __QCOM_ICE_H__
@@ -34,4 +32,4 @@ int qcom_ice_program_key(struct qcom_ice *ice,
 			 int slot);
 int qcom_ice_evict_key(struct qcom_ice *ice, int slot);
 struct qcom_ice *of_qcom_ice_get(struct device *dev);
-#endif /* __QCOM_ICE_H__ */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __SPI_SH_MSIOF_H__
 #define __SPI_SH_MSIOF_H__
 
@@ -18,4 +18,4 @@ struct sh_msiof_spi_info {
 	u32 syncdl;
 };
 
-#endif /* __SPI_SH_MSIOF_H__ */
+#endif 

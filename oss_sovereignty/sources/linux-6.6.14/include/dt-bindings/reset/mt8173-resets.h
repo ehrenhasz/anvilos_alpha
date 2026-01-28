@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Flora Fu, MediaTek
- */
+
+
 
 #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT8173
 #define _DT_BINDINGS_RESET_CONTROLLER_MT8173
 
-/* INFRACFG resets */
+
 #define MT8173_INFRA_EMI_REG_RST        0
 #define MT8173_INFRA_DRAMC0_A0_RST      1
 #define MT8173_INFRA_APCIRQ_EINT_RST    3
@@ -27,10 +24,10 @@
 #define MT8173_INFRA_GCE_FAXI_RST       40
 #define MT8173_INFRA_MMIOMMURST         47
 
-/* MMSYS resets */
+
 #define MT8173_MMSYS_SW0_RST_B_DISP_DSI0	25
 
-/*  PERICFG resets */
+
 #define MT8173_PERI_UART0_SW_RST        0
 #define MT8173_PERI_UART1_SW_RST        1
 #define MT8173_PERI_UART2_SW_RST        2
@@ -54,4 +51,4 @@
 #define MT8173_PERI_HDMI_SW_RST         29
 #define MT8173_PERI_SPI0_SW_RST         33
 
-#endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT8173 */
+#endif  

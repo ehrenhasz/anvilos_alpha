@@ -1,6 +1,4 @@
-/* SPDX-License-Identifier: BSD-3-Clause
- * Copyright (c) 2022 Marvell.
- */
+
 #ifndef __OCTEP_CP_VERSION_H__
 #define __OCTEP_CP_VERSION_H__
 
@@ -8,4 +6,4 @@
 					 (((b) & 0xff) << 8) + \
 					  ((c) & 0xff))
 
-#endif /* __OCTEP_CP_VERSION_H__ */
+#endif 

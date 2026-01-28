@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * da9055 declarations for DA9055 PMICs.
- *
- * Copyright(c) 2012 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- */
+
+
 
 #ifndef __DA9055_CORE_H
 #define __DA9055_CORE_H
@@ -13,9 +7,7 @@
 #include <linux/interrupt.h>
 #include <linux/regmap.h>
 
-/*
- * PMIC IRQ
- */
+
 #define DA9055_IRQ_ALARM	0x01
 #define DA9055_IRQ_TICK		0x02
 #define DA9055_IRQ_NONKEY	0x00
@@ -34,7 +26,7 @@ struct da9055 {
 	int chip_irq;
 };
 
-/* Device I/O */
+
 static inline int da9055_reg_read(struct da9055 *da9055, unsigned char reg)
 {
 	int val, ret;
@@ -71,10 +63,10 @@ static inline int da9055_reg_update(struct da9055 *da9055, unsigned char reg,
 	return regmap_update_bits(da9055->regmap, reg, bit_mask, reg_val);
 }
 
-/* Generic Device API */
+
 int da9055_device_init(struct da9055 *da9055);
 void da9055_device_exit(struct da9055 *da9055);
 
 extern const struct regmap_config da9055_regmap_config;
 
-#endif /* __DA9055_CORE_H */
+#endif 

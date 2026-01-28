@@ -1,14 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_STRING_64_H
 #define _ASM_X86_STRING_64_H
 
 #ifdef __KERNEL__
 #include <linux/jump_label.h>
 
-/* Written 2002 by Andi Kleen */
 
-/* Even with __builtin_ the compiler may decide to use the out of line
-   function. */
+
+
 
 #if defined(__SANITIZE_MEMORY__) && defined(__NO_FORTIFY)
 #include <linux/kmsan_string.h>
@@ -22,10 +21,7 @@ extern void *__memcpy(void *to, const void *from, size_t len);
 void *memset(void *s, int c, size_t n);
 void *__memset(void *s, int c, size_t n);
 
-/*
- * KMSAN needs to instrument as much code as possible. Use C versions of
- * memsetXX() from lib/string.c under KMSAN.
- */
+
 #if !defined(CONFIG_KMSAN)
 #define __HAVE_ARCH_MEMSET16
 static inline void *memset16(uint16_t *s, uint16_t v, size_t n)
@@ -97,6 +93,6 @@ static __always_inline void memcpy_flushcache(void *dst, const void *src, size_t
 }
 #endif
 
-#endif /* __KERNEL__ */
+#endif 
 
-#endif /* _ASM_X86_STRING_64_H */
+#endif 

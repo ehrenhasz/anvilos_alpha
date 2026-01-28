@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2019 Mellanox Technologies. All rights reserved */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mlxsw
@@ -113,7 +113,7 @@ TRACE_EVENT(mlxsw_sp_acl_tcam_vregion_rehash_rollback_failed,
 		  __entry->mlxsw_sp, __entry->vregion)
 );
 
-#endif /* _MLXSW_TRACEPOINT_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

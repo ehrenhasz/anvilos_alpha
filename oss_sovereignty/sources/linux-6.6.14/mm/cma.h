@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __MM_CMA_H__
 #define __MM_CMA_H__
 
@@ -14,7 +14,7 @@ struct cma {
 	unsigned long   base_pfn;
 	unsigned long   count;
 	unsigned long   *bitmap;
-	unsigned int order_per_bit; /* Order of pages represented by one bit */
+	unsigned int order_per_bit; 
 	spinlock_t	lock;
 #ifdef CONFIG_CMA_DEBUGFS
 	struct hlist_head mem_head;
@@ -23,11 +23,11 @@ struct cma {
 #endif
 	char name[CMA_MAX_NAME];
 #ifdef CONFIG_CMA_SYSFS
-	/* the number of CMA page successful allocations */
+	
 	atomic64_t nr_pages_succeeded;
-	/* the number of CMA page allocation failures */
+	
 	atomic64_t nr_pages_failed;
-	/* kobject requires dynamic object */
+	
 	struct cma_kobject *cma_kobj;
 #endif
 	bool reserve_pages_on_error;

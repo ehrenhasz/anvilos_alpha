@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0  */
-/*
- * Copyright (C) STMicroelectronics 2022 - All Rights Reserved
- * Author: Gabriel Fernandez <gabriel.fernandez@foss.st.com> for STMicroelectronics.
- */
+
+
 
 #include <linux/clk-provider.h>
 
@@ -82,20 +79,20 @@ int stm32_rcc_reset_init(struct device *dev, const struct of_device_id *match,
 int stm32_rcc_init(struct device *dev, const struct of_device_id *match_data,
 		   void __iomem *base);
 
-/* MUX define */
+
 #define MUX_NO_RDY		0xFF
 #define MUX_SAFE		BIT(7)
 
-/* DIV define */
+
 #define DIV_NO_RDY		0xFF
 
-/* Definition of clock structure */
+
 struct clk_stm32_mux {
 	u16 mux_id;
 	struct clk_hw hw;
 	void __iomem *base;
 	struct clk_stm32_clock_data *clock_data;
-	spinlock_t *lock; /* spin lock */
+	spinlock_t *lock; 
 };
 
 #define to_clk_stm32_mux(_hw) container_of(_hw, struct clk_stm32_mux, hw)
@@ -105,7 +102,7 @@ struct clk_stm32_gate {
 	struct clk_hw hw;
 	void __iomem *base;
 	struct clk_stm32_clock_data *clock_data;
-	spinlock_t *lock; /* spin lock */
+	spinlock_t *lock; 
 };
 
 #define to_clk_stm32_gate(_hw) container_of(_hw, struct clk_stm32_gate, hw)
@@ -115,7 +112,7 @@ struct clk_stm32_div {
 	struct clk_hw hw;
 	void __iomem *base;
 	struct clk_stm32_clock_data *clock_data;
-	spinlock_t *lock; /* spin lock */
+	spinlock_t *lock; 
 };
 
 #define to_clk_stm32_divider(_hw) container_of(_hw, struct clk_stm32_div, hw)
@@ -127,18 +124,18 @@ struct clk_stm32_composite {
 	struct clk_hw hw;
 	void __iomem *base;
 	struct clk_stm32_clock_data *clock_data;
-	spinlock_t *lock; /* spin lock */
+	spinlock_t *lock; 
 };
 
 #define to_clk_stm32_composite(_hw) container_of(_hw, struct clk_stm32_composite, hw)
 
-/* Clock operators */
+
 extern const struct clk_ops clk_stm32_mux_ops;
 extern const struct clk_ops clk_stm32_gate_ops;
 extern const struct clk_ops clk_stm32_divider_ops;
 extern const struct clk_ops clk_stm32_composite_ops;
 
-/* Clock registering */
+
 struct clk_hw *clk_stm32_mux_register(struct device *dev,
 				      const struct stm32_rcc_match_data *data,
 				      void __iomem *base,

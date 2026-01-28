@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _AF_NETLINK_H
 #define _AF_NETLINK_H
 
@@ -7,7 +7,7 @@
 #include <linux/workqueue.h>
 #include <net/sock.h>
 
-/* flags */
+
 enum {
 	NETLINK_F_KERNEL_SOCKET,
 	NETLINK_F_RECV_PKTINFO,
@@ -23,7 +23,7 @@ enum {
 #define NLGRPLONGS(x)	(NLGRPSZ(x)/sizeof(unsigned long))
 
 struct netlink_sock {
-	/* struct sock has to be the first member of netlink_sock */
+	
 	struct sock		sk;
 	unsigned long		flags;
 	u32			portid;

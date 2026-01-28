@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_BPF_EVENT_H
 #define __PERF_BPF_EVENT_H
 
@@ -56,5 +56,5 @@ static inline void __bpf_event__print_bpf_prog_info(struct bpf_prog_info *info _
 {
 
 }
-#endif // HAVE_LIBBPF_SUPPORT
+#endif 
 #endif

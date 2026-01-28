@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for PCI Express features and port driver
+
+
+
 
 pcieportdrv-y			:= portdrv.o rcec.o
 

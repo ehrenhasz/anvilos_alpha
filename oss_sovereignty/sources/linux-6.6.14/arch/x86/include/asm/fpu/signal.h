@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * x86 FPU signal frame handling methods:
- */
+
+
 #ifndef _ASM_X86_FPU_SIGNAL_H
 #define _ASM_X86_FPU_SIGNAL_H
 
@@ -34,4 +32,4 @@ extern void fpu__clear_user_states(struct fpu *fpu);
 extern bool fpu__restore_sig(void __user *buf, int ia32_frame);
 
 extern void restore_fpregs_from_fpstate(struct fpstate *fpstate, u64 mask);
-#endif /* _ASM_X86_FPU_SIGNAL_H */
+#endif 

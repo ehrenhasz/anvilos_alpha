@@ -73,7 +73,7 @@ class TestSuiteReport():
                 ftap += 'not '
             ftap += 'ok {} {} - {}'.format(str(index), t.test_id, t.test_name)
             if t.result == ResultState.skip or t.result == ResultState.noresult:
-                ftap += ' # skipped - {}\n'.format(t.errormsg)
+                ftap += ' 
             elif t.result == ResultState.fail:
                 if len(t.steps) > 0:
                     ftap += '\tCommands executed in this test case:'

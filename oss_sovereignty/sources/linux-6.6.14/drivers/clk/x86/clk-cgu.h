@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020-2022 MaxLinear, Inc.
- * Copyright (C) 2020 Intel Corporation.
- * Zhu Yixin <yzhu@maxlinear.com>
- * Rahul Tanwar <rtanwar@maxlinear.com>
- */
+
+
 
 #ifndef __CLK_CGU_H
 #define __CLK_CGU_H
@@ -66,13 +61,7 @@ enum lgm_clk_type {
 	CLK_TYPE_NONE,
 };
 
-/**
- * struct lgm_clk_provider
- * @membase: IO mem base address for CGU.
- * @np: device node
- * @dev: device
- * @clk_data: array of hw clocks and clk number.
- */
+
 struct lgm_clk_provider {
 	struct regmap *membase;
 	struct device_node *np;
@@ -94,16 +83,7 @@ struct lgm_clk_pll {
 	enum pll_type type;
 };
 
-/**
- * struct lgm_pll_clk_data
- * @id: platform specific id of the clock.
- * @name: name of this pll clock.
- * @parent_data: parent clock data.
- * @num_parents: number of parents.
- * @flags: optional flags for basic clock.
- * @type: platform type of pll.
- * @reg: offset of the register.
- */
+
 struct lgm_pll_clk_data {
 	unsigned int id;
 	const char *name;
@@ -194,7 +174,7 @@ struct lgm_clk_branch {
 	unsigned int div;
 };
 
-/* clock flags definition */
+
 #define CLOCK_FLAG_VAL_INIT	BIT(16)
 #define MUX_CLK_SW		BIT(17)
 #define GATE_CLK_HW		BIT(18)
@@ -332,4 +312,4 @@ int lgm_clk_register_plls(struct lgm_clk_provider *ctx,
 int lgm_clk_register_ddiv(struct lgm_clk_provider *ctx,
 			  const struct lgm_clk_ddiv_data *list,
 			  unsigned int nr_clk);
-#endif	/* __CLK_CGU_H */
+#endif	

@@ -1,9 +1,0 @@
-/dts-v1/;
-#include "imx8qxp-colibri.dtsi"
-#include "imx8x-colibri-aster.dtsi"
-/ {
-	model = "Toradex Colibri iMX8QXP on Aster Board";
-	compatible = "toradex,colibri-imx8x-aster",
-		     "toradex,colibri-imx8x",
-		     "fsl,imx8qxp";
-};

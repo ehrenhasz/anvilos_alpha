@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *    Copyright IBM Corp. 2007, 2012
- *    Author(s): Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
- */
+
+
 
 #ifndef S390_IDSET_H
 #define S390_IDSET_H
@@ -22,4 +19,4 @@ int idset_sch_contains(struct idset *set, struct subchannel_id id);
 int idset_is_empty(struct idset *set);
 void idset_add_set(struct idset *to, struct idset *from);
 
-#endif /* S390_IDSET_H */
+#endif 

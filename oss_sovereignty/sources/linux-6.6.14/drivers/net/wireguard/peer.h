@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+
 
 #ifndef _WG_PEER_H
 #define _WG_PEER_H
@@ -27,7 +25,7 @@ struct endpoint {
 	union {
 		struct {
 			struct in_addr src4;
-			/* Essentially the same as addr6->scope_id */
+			
 			int src_if4;
 		};
 		struct in6_addr src6;
@@ -83,4 +81,4 @@ void wg_peer_remove_all(struct wg_device *wg);
 int wg_peer_init(void);
 void wg_peer_uninit(void);
 
-#endif /* _WG_PEER_H */
+#endif 

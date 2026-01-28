@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 
 #ifndef __KVM_IODEV_H__
 #define __KVM_IODEV_H__
@@ -9,11 +9,7 @@
 struct kvm_io_device;
 struct kvm_vcpu;
 
-/**
- * kvm_io_device_ops are called under kvm slots_lock.
- * read and write handlers return 0 if the transaction has been handled,
- * or non-zero to have it passed to the next device.
- **/
+
 struct kvm_io_device_ops {
 	int (*read)(struct kvm_vcpu *vcpu,
 		    struct kvm_io_device *this,
@@ -55,4 +51,4 @@ static inline int kvm_iodevice_write(struct kvm_vcpu *vcpu,
 				 : -EOPNOTSUPP;
 }
 
-#endif /* __KVM_IODEV_H__ */
+#endif 

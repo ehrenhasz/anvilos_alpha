@@ -1,21 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
 
-/*
- * Copyright (c) 2016, 2018 by Delphix. All rights reserved.
- */
+
+
 
 #ifndef _SYS_ZCP_H
 #define	_SYS_ZCP_H
@@ -61,88 +46,47 @@ typedef struct zcp_alloc_arg {
 typedef struct zcp_run_info {
 	dsl_pool_t	*zri_pool;
 
-	/*
-	 * An estimate of the total amount of space consumed by all
-	 * synctasks we have successfully performed so far in this
-	 * channel program. Used to generate ENOSPC errors for syncfuncs.
-	 */
+	
 	int		zri_space_used;
 
-	/*
-	 * The credentials of the thread which originally invoked the channel
-	 * program. Since channel programs are always invoked from the synctask
-	 * thread they should always do permissions checks against this cred
-	 * rather than the 'current' thread's.
-	 */
+	
 	cred_t		*zri_cred;
 	proc_t		*zri_proc;
 
-	/*
-	 * The tx in which this channel program is running.
-	 */
+	
 	dmu_tx_t	*zri_tx;
 
-	/*
-	 * The maximum number of Lua instructions the channel program is allowed
-	 * to execute. If it takes longer than this it will time out. A value
-	 * of 0 indicates no instruction limit.
-	 */
+	
 	uint64_t	zri_maxinstrs;
 
-	/*
-	 * The number of Lua instructions the channel program has executed.
-	 */
+	
 	uint64_t	zri_curinstrs;
 
-	/*
-	 * Boolean indicating whether or not the channel program exited
-	 * because it timed out.
-	 */
+	
 	boolean_t	zri_timed_out;
 
-	/*
-	 * Channel program was canceled by user
-	 */
+	
 	boolean_t	zri_canceled;
 
-	/*
-	 * Boolean indicating whether or not we are running in syncing
-	 * context.
-	 */
+	
 	boolean_t	zri_sync;
 
-	/*
-	 * List of currently registered cleanup handlers, which will be
-	 * triggered in the event of a fatal error.
-	 */
+	
 	list_t		zri_cleanup_handlers;
 
-	/*
-	 * The Lua state context of our channel program.
-	 */
+	
 	lua_State	*zri_state;
 
-	/*
-	 * Lua memory allocator arguments.
-	 */
+	
 	zcp_alloc_arg_t	*zri_allocargs;
 
-	/*
-	 * Contains output values from zcp script or error string.
-	 */
+	
 	nvlist_t	*zri_outnvl;
 
-	/*
-	 * The keys of this nvlist are datasets which may be zvols and may need
-	 * to have device minor nodes created.  This information is passed from
-	 * syncing context (where the zvol is created) to open context (where we
-	 * create the minor nodes).
-	 */
+	
 	nvlist_t	*zri_new_zvols;
 
-	/*
-	 * The errno number returned to caller of zcp_eval().
-	 */
+	
 	int		zri_result;
 } zcp_run_info_t;
 
@@ -151,24 +95,12 @@ zcp_cleanup_handler_t *zcp_register_cleanup(lua_State *, zcp_cleanup_t, void *);
 void zcp_deregister_cleanup(lua_State *, zcp_cleanup_handler_t *);
 void zcp_cleanup(lua_State *);
 
-/*
- * Argument parsing routines for channel program callback functions.
- */
+
 typedef struct zcp_arg {
-	/*
-	 * The name of this argument. For keyword arguments this is the name
-	 * functions will use to set the argument. For positional arguments
-	 * the name has no programmatic meaning, but will appear in error
-	 * messages and help output.
-	 */
+	
 	const char *za_name;
 
-	/*
-	 * The Lua type this argument should have (e.g. LUA_TSTRING,
-	 * LUA_TBOOLEAN) see the lua_type() function documentation for a
-	 * complete list. Calling a function with an argument that does
-	 * not match the expected type will result in the program terminating.
-	 */
+	
 	const int za_lua_type;
 } zcp_arg_t;
 
@@ -191,4 +123,4 @@ typedef struct zcp_lib_info {
 }
 #endif
 
-#endif	/* _SYS_ZCP_H */
+#endif	

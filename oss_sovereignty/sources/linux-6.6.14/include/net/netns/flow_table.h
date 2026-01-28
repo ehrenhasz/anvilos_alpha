@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NETNS_FLOW_TABLE_H
 #define __NETNS_FLOW_TABLE_H
 

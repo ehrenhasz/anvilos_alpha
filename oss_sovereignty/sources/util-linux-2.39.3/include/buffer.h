@@ -1,24 +1,21 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_BUFFER
 #define UTIL_LINUX_BUFFER
 
 #include "c.h"
 
 struct ul_buffer {
-	char *begin;		/* begin of the data */
-	char *end;		/* current end of data */
+	char *begin;		
+	char *end;		
 
-	size_t sz;		/* allocated space for data */
+	size_t sz;		
 	size_t chunksize;
 
-	char *encoded;		/* encoded data (from mbs_safe_encode_to_buffer)) */
-	size_t encoded_sz;	/* space allocated for encoded data */
+	char *encoded;		
+	size_t encoded_sz;	
 
-	char **ptrs;		/* saved pointers */
-	size_t nptrs;		/* number of saved pointers */
+	char **ptrs;		
+	size_t nptrs;		
 };
 
 #define UL_INIT_BUFFER { .begin = NULL }
@@ -45,4 +42,4 @@ size_t ul_buffer_get_pointer_length(struct ul_buffer *buf, unsigned short ptr_id
 size_t ul_buffer_get_safe_pointer_width(struct ul_buffer *buf, unsigned short ptr_idx);
 
 
-#endif /* UTIL_LINUX_BUFFER */
+#endif 

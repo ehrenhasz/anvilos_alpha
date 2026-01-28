@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * i2c-smbus.h - SMBus extensions to the I2C protocol
- *
- * Copyright (C) 2010-2019 Jean Delvare <jdelvare@suse.de>
- */
+
+
 
 #ifndef _LINUX_I2C_SMBUS_H
 #define _LINUX_I2C_SMBUS_H
@@ -13,15 +9,7 @@
 #include <linux/workqueue.h>
 
 
-/**
- * i2c_smbus_alert_setup - platform data for the smbus_alert i2c client
- * @irq: IRQ number, if the smbus_alert driver should take care of interrupt
- *		handling
- *
- * If irq is not specified, the smbus_alert driver doesn't take care of
- * interrupt handling. In that case it is up to the I2C bus driver to either
- * handle the interrupts or to poll for alerts.
- */
+
 struct i2c_smbus_alert_setup {
 	int			irq;
 };
@@ -49,4 +37,4 @@ void i2c_register_spd(struct i2c_adapter *adap);
 static inline void i2c_register_spd(struct i2c_adapter *adap) { }
 #endif
 
-#endif /* _LINUX_I2C_SMBUS_H */
+#endif 

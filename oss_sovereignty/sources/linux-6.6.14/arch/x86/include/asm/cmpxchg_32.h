@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_CMPXCHG_32_H
 #define _ASM_X86_CMPXCHG_32_H
 
-/*
- * Note: if you use set64_bit(), __cmpxchg64(), or their variants,
- *       you need to test for the feature in boot_cpu_data.
- */
+
 
 #ifdef CONFIG_X86_CMPXCHG64
 #define arch_cmpxchg64(ptr, o, n)					\
@@ -64,10 +61,7 @@ static inline bool __try_cmpxchg64(volatile u64 *ptr, u64 *pold, u64 new)
 }
 
 #ifndef CONFIG_X86_CMPXCHG64
-/*
- * Building a kernel capable running on 80386 and 80486. It may be necessary
- * to simulate the cmpxchg8b on the 80386 and 80486 CPU.
- */
+
 
 #define arch_cmpxchg64(ptr, o, n)				\
 ({								\
@@ -105,4 +99,4 @@ static inline bool __try_cmpxchg64(volatile u64 *ptr, u64 *pold, u64 new)
 
 #define system_has_cmpxchg64()		boot_cpu_has(X86_FEATURE_CX8)
 
-#endif /* _ASM_X86_CMPXCHG_32_H */
+#endif 

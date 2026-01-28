@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Broadcom Starfighter 2 switch register defines
- *
- * Copyright (C) 2014, Broadcom Corporation
- */
+
+
 #ifndef __BCM_SF2_REGS_H
 #define __BCM_SF2_REGS_H
 
-/* Register set relative to 'REG' */
+
 
 enum bcm_sf2_reg_offs {
 	REG_SWITCH_CNTRL = 0,
@@ -32,18 +28,18 @@ enum bcm_sf2_reg_offs {
 	REG_SWITCH_REG_MAX,
 };
 
-/* Relative to REG_SWITCH_CNTRL */
+
 #define  MDIO_MASTER_SEL		(1 << 0)
 
-/* Relative to REG_SWITCH_REVISION */
+
 #define  SF2_REV_MASK			0xffff
 #define  SWITCH_TOP_REV_SHIFT		16
 #define  SWITCH_TOP_REV_MASK		0xffff
 
-/* Relative to REG_PHY_REVISION */
+
 #define  PHY_REVISION_MASK		0xffff
 
-/* Relative to REG_SPHY_CNTRL */
+
 #define  IDDQ_BIAS			(1 << 0)
 #define  EXT_PWR_DOWN			(1 << 1)
 #define  FORCE_DLL_EN			(1 << 2)
@@ -53,14 +49,14 @@ enum bcm_sf2_reg_offs {
 #define  PHY_PHYAD_SHIFT		8
 #define  PHY_PHYAD_MASK			0x1F
 
-/* Relative to REG_CROSSBAR */
+
 #define CROSSBAR_BCM4908_INT_P7		0
 #define CROSSBAR_BCM4908_INT_RUNNER	1
 #define CROSSBAR_BCM4908_EXT_SERDES	0
 #define CROSSBAR_BCM4908_EXT_GPHY4	1
 #define CROSSBAR_BCM4908_EXT_RGMII	2
 
-/* Relative to REG_LED_*_CNTRL (BCM7278, BCM7445) */
+
 #define  LED_CNTRL_NO_LINK_ENCODE_SHIFT		0
 #define  LED_CNTRL_M10_ENCODE_SHIFT		2
 #define  LED_CNTRL_M100_ENCODE_SHIFT		4
@@ -80,7 +76,7 @@ enum bcm_sf2_reg_offs {
 #define  LED_CNTRL_ACT_LED_POL_SEL		(1 << 27)
 #define  LED_CNTRL_MASK				0x3
 
-/* Register relative to REG_LED_*_CNTRL (BCM4908) */
+
 #define REG_LED_CTRL				0x0
 #define  LED_CTRL_RX_ACT_EN			0x00000001
 #define  LED_CTRL_TX_ACT_EN			0x00000002
@@ -97,7 +93,7 @@ enum bcm_sf2_reg_offs {
 #define  LED_CTRL_SPD_OVRD_EN			0x00004000
 #define  LED_CTRL_LNK_OVRD_EN			0x00008000
 
-/* Register relative to REG_LED_*_CNTRL (BCM4908) */
+
 #define REG_LED_LINK_SPEED_ENC_SEL		0x4
 #define  LED_LINK_SPEED_ENC_SEL_NO_LINK_SHIFT	0
 #define  LED_LINK_SPEED_ENC_SEL_10M_SHIFT	3
@@ -107,7 +103,7 @@ enum bcm_sf2_reg_offs {
 #define  LED_LINK_SPEED_ENC_SEL_10G_SHIFT	15
 #define  LED_LINK_SPEED_ENC_SEL_MASK		0x7
 
-/* Register relative to REG_LED_*_CNTRL (BCM4908) */
+
 #define REG_LED_LINK_SPEED_ENC			0x8
 #define  LED_LINK_SPEED_ENC_NO_LINK_SHIFT	0
 #define  LED_LINK_SPEED_ENC_M10_SHIFT		3
@@ -117,7 +113,7 @@ enum bcm_sf2_reg_offs {
 #define  LED_LINK_SPEED_ENC_M10G_SHIFT		15
 #define  LED_LINK_SPEED_ENC_MASK		0x7
 
-/* Relative to REG_RGMII_CNTRL */
+
 #define  RGMII_MODE_EN			(1 << 0)
 #define  ID_MODE_DIS			(1 << 1)
 #define  PORT_MODE_SHIFT		2
@@ -134,7 +130,7 @@ enum bcm_sf2_reg_offs {
 #define  LPI_COUNT_SHIFT		9
 #define  LPI_COUNT_MASK			0x3F
 
-/* Register set relative to 'INTRL2_0' and 'INTRL2_1' */
+
 #define INTRL2_CPU_STATUS		0x00
 #define INTRL2_CPU_SET			0x04
 #define INTRL2_CPU_CLEAR		0x08
@@ -142,7 +138,7 @@ enum bcm_sf2_reg_offs {
 #define INTRL2_CPU_MASK_SET		0x10
 #define INTRL2_CPU_MASK_CLEAR		0x14
 
-/* Shared INTRL2_0 and INTRL2_ interrupt sources macros */
+
 #define P_LINK_UP_IRQ(x)		(1 << (0 + (x)))
 #define P_LINK_DOWN_IRQ(x)		(1 << (1 + (x)))
 #define P_ENERGY_ON_IRQ(x)		(1 << (2 + (x)))
@@ -155,7 +151,7 @@ enum bcm_sf2_reg_offs {
 					 P_ENERGY_OFF_IRQ((x)) | \
 					 P_GPHY_IRQ((x)))
 
-/* INTRL2_0 interrupt sources */
+
 #define P0_IRQ_OFF			0
 #define MEM_DOUBLE_IRQ			(1 << 5)
 #define EEE_LPI_IRQ			(1 << 6)
@@ -171,11 +167,11 @@ enum bcm_sf2_reg_offs {
 #define FAILOVER_OFF_IRQ		(1 << 16)
 #define TCAM_SOFT_ERR_IRQ		(1 << 17)
 
-/* INTRL2_1 interrupt sources */
+
 #define P7_IRQ_OFF			0
 #define P_IRQ_OFF(x)			((6 - (x)) * P_NUM_IRQ)
 
-/* Register set relative to 'ACB' */
+
 #define ACB_CONTROL			0x00
 #define  ACB_EN				(1 << 0)
 #define  ACB_ALGORITHM			(1 << 1)
@@ -193,7 +189,7 @@ enum bcm_sf2_reg_offs {
 #define  PKTLEN_MASK			0x3f
 #define ACB_QUEUE_CFG(x)		(ACB_QUEUE_0_CFG + ((x) * 0x4))
 
-/* Register set relative to 'CORE' */
+
 #define CORE_G_PCTL_PORT0		0x00000
 #define CORE_G_PCTL_PORT(x)		(CORE_G_PCTL_PORT0 + (x * 0x4))
 #define CORE_IMP_CTL			0x00020
@@ -212,7 +208,7 @@ enum bcm_sf2_reg_offs {
 #define  GMII_SPEED_UP_2G		(1 << 6)
 #define  MII_SW_OR			(1 << 7)
 
-/* Alternate layout for e.g: 7278 */
+
 #define CORE_STS_OVERRIDE_IMP2		0x39040
 
 #define CORE_NEW_CTRL			0x00084
@@ -361,7 +357,7 @@ enum bcm_sf2_reg_offs {
 #define CORE_CFP_DATA_PORT(x)		(CORE_CFP_DATA_PORT_0 + \
 					(x) * 0x10)
 
-/* UDF_DATA7 */
+
 #define L3_FRAMING_SHIFT		24
 #define L3_FRAMING_MASK			(0x3 << L3_FRAMING_SHIFT)
 #define IPTOS_SHIFT			16
@@ -371,7 +367,7 @@ enum bcm_sf2_reg_offs {
 #define IP_FRAG_SHIFT			7
 #define IP_FRAG				(1 << IP_FRAG_SHIFT)
 
-/* UDF_DATA0 */
+
 #define  SLICE_VALID			3
 #define  SLICE_NUM_SHIFT		2
 #define  SLICE_NUM(x)			((x) << SLICE_NUM_SHIFT)
@@ -467,7 +463,7 @@ enum bcm_sf2_reg_offs {
 #define CORE_CFP_CTL_REG		0x28400
 #define  CFP_EN_MAP_MASK		0x1ff
 
-/* IPv4 slices, 3 of them */
+
 #define CORE_UDF_0_A_0_8_PORT_0		0x28440
 #define  CFG_UDF_OFFSET_MASK		0x1f
 #define  CFG_UDF_OFFSET_BASE_SHIFT	5
@@ -475,22 +471,22 @@ enum bcm_sf2_reg_offs {
 #define  CFG_UDF_EOL2			(2 << CFG_UDF_OFFSET_BASE_SHIFT)
 #define  CFG_UDF_EOL3			(3 << CFG_UDF_OFFSET_BASE_SHIFT)
 
-/* IPv6 slices */
+
 #define CORE_UDF_0_B_0_8_PORT_0		0x28500
 
-/* IPv6 chained slices */
+
 #define CORE_UDF_0_D_0_11_PORT_0	0x28680
 
-/* Number of slices for IPv4, IPv6 and non-IP */
+
 #define UDF_NUM_SLICES			4
 #define UDFS_PER_SLICE			9
 
-/* Spacing between different slices */
+
 #define UDF_SLICE_OFFSET		0x40
 
 #define CFP_NUM_RULES			256
 
-/* Number of egress queues per port */
+
 #define SF2_NUM_EGRESS_QUEUES		8
 
-#endif /* __BCM_SF2_REGS_H */
+#endif 

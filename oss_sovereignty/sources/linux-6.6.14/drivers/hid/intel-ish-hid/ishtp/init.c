@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Initialization protocol for ISHTP driver
- *
- * Copyright (c) 2003-2016, Intel Corporation.
- */
+
+
 
 #include <linux/export.h>
 #include <linux/slab.h>
@@ -12,14 +8,7 @@
 #include "hbm.h"
 #include "client.h"
 
-/**
- * ishtp_dev_state_str() -Convert to string format
- * @state: state to convert
- *
- * Convert state to string for prints
- *
- * Return: character pointer to converted string
- */
+
 const char *ishtp_dev_state_str(int state)
 {
 	switch (state) {
@@ -42,13 +31,7 @@ const char *ishtp_dev_state_str(int state)
 	}
 }
 
-/**
- * ishtp_device_init() - ishtp device init
- * @dev: ISHTP device instance
- *
- * After ISHTP device is alloacted, this function is used to initialize
- * each field which includes spin lock, work struct and lists
- */
+
 void ishtp_device_init(struct ishtp_device *dev)
 {
 	dev->dev_state = ISHTP_DEV_INITIALIZING;
@@ -69,9 +52,7 @@ void ishtp_device_init(struct ishtp_device *dev)
 	bitmap_zero(dev->host_clients_map, ISHTP_CLIENTS_MAX);
 	dev->open_handle_count = 0;
 
-	/*
-	 * Reserving client ID 0 for ISHTP Bus Message communications
-	 */
+	
 	bitmap_set(dev->host_clients_map, 0, 1);
 
 	INIT_LIST_HEAD(&dev->read_list.list);
@@ -79,14 +60,7 @@ void ishtp_device_init(struct ishtp_device *dev)
 }
 EXPORT_SYMBOL(ishtp_device_init);
 
-/**
- * ishtp_start() - Start ISH processing
- * @dev: ISHTP device instance
- *
- * Start ISHTP processing by sending query subscriber message
- *
- * Return: 0 on success else -ENODEV
- */
+
 int ishtp_start(struct ishtp_device *dev)
 {
 	if (ishtp_hbm_start_wait(dev)) {
@@ -94,7 +68,7 @@ int ishtp_start(struct ishtp_device *dev)
 		goto err;
 	}
 
-	/* suspend & resume notification - send QUERY_SUBSCRIBERS msg */
+	
 	ishtp_query_subscribers(dev);
 
 	return 0;

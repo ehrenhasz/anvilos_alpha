@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2017 Broadcom. All Rights Reserved.
- * The term "Broadcom" refers to Broadcom Limited and/or its subsidiaries.
- *
- * Contact Information:
- * linux-drivers@broadcom.com
- */
+
+
 
 #ifndef _BEISCSI_MGMT_
 #define _BEISCSI_MGMT_
@@ -20,7 +14,7 @@
 #define IP_V6_LEN	16
 #define IP_V4_LEN	4
 
-/* UE Status and Mask register */
+
 #define PCICFG_UE_STATUS_LOW            0xA0
 #define PCICFG_UE_STATUS_HIGH           0xA4
 #define PCICFG_UE_STATUS_MASK_LOW       0xA8
@@ -136,7 +130,7 @@ struct be_bsg_vendor_cmd {
 	unsigned short sector;
 } __packed;
 
-/* configuration management */
+
 
 #define GET_MGMT_CONTROLLER_WS(phba)    (phba->pmgmt_ws)
 

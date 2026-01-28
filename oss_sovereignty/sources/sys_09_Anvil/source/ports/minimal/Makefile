@@ -2,13 +2,13 @@ include ../../py/mkenv.mk
 
 CROSS = 0
 
-# qstr definitions (must come before including py.mk)
+
 QSTR_DEFS = qstrdefsport.h
 
-# MicroPython feature configurations
+
 MICROPY_ROM_TEXT_COMPRESSION ?= 1
 
-# include py core make definitions
+
 include $(TOP)/py/py.mk
 
 ifeq ($(CROSS), 1)
@@ -36,10 +36,10 @@ LDFLAGS += -Wl,-map,$@.map -Wl,-dead_strip
 endif
 endif
 
-CSUPEROPT = -Os # save some code space
+CSUPEROPT = -Os 
 
-# Tune for Debugging or Optimization
-CFLAGS += -g  # always include debug info in the ELF
+
+CFLAGS += -g  
 ifeq ($(DEBUG), 1)
 CFLAGS += -O0
 else
@@ -47,7 +47,7 @@ CFLAGS += -Os -DNDEBUG
 CFLAGS += -fdata-sections -ffunction-sections
 endif
 
-# Flags for optional C++ source code
+
 CXXFLAGS += $(filter-out -std=c99,$(CFLAGS))
 
 LIBS =
@@ -97,7 +97,7 @@ deploy: $(BUILD)/firmware.dfu
 	$(ECHO) "Writing $< to the board"
 	$(Q)$(PYTHON) $(PYDFU) -u $<
 
-# Run emulation build on a POSIX system with suitable terminal settings
+
 run:
 	@saved_=`stty -g`; \
 	  stty raw opost -echo; \

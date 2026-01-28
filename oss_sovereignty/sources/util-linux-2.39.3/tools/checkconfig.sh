@@ -8,7 +8,7 @@ usage() {
 	echo "Example:"
 	echo " find . -name '*.c' | xargs $0 \$(git rev-parse --show-toplevel)"
 }
-if [ $# -eq 0 ]; then
+if [ $
 	usage
 	exit 1
 fi
@@ -17,7 +17,7 @@ config="$srcdir/config.h.in"
 [ -d "$srcdir" ] || die "$srcdir: not such directory."
 [ -f "$config" ] || die "$config: not such file."
 shift
-while [ "$#" -ne 0 ]; do
+while [ "$
 	srcfile=$1
 	shift
 	[ ! -f "$srcfile" ] && continue;

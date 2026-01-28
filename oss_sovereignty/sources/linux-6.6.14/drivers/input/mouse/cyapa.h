@@ -1,31 +1,19 @@
-/*
- * Cypress APA trackpad with I2C interface
- *
- * Author: Dudley Du <dudl@cypress.com>
- *
- * Copyright (C) 2014-2015 Cypress Semiconductor, Inc.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive for
- * more details.
- */
+
 
 #ifndef _CYAPA_H
 #define _CYAPA_H
 
 #include <linux/firmware.h>
 
-/* APA trackpad firmware generation number. */
-#define CYAPA_GEN_UNKNOWN   0x00   /* unknown protocol. */
-#define CYAPA_GEN3   0x03   /* support MT-protocol B with tracking ID. */
-#define CYAPA_GEN5   0x05   /* support TrueTouch GEN5 trackpad device. */
-#define CYAPA_GEN6   0x06   /* support TrueTouch GEN6 trackpad device. */
+
+#define CYAPA_GEN_UNKNOWN   0x00   
+#define CYAPA_GEN3   0x03   
+#define CYAPA_GEN5   0x05   
+#define CYAPA_GEN6   0x06   
 
 #define CYAPA_NAME   "Cypress APA Trackpad (cyapa)"
 
-/*
- * Macros for SMBus communication
- */
+
 #define SMBUS_READ  0x01
 #define SMBUS_WRITE 0x00
 #define SMBUS_ENCODE_IDX(cmd, idx) ((cmd) | (((idx) & 0x03) << 1))
@@ -33,7 +21,7 @@
 #define SMBUS_BYTE_BLOCK_CMD_MASK 0x80
 #define SMBUS_GROUP_BLOCK_CMD_MASK 0x40
 
-/* Commands for read/write registers of Cypress trackpad */
+
 #define CYAPA_CMD_SOFT_RESET       0x00
 #define CYAPA_CMD_POWER_MODE       0x01
 #define CYAPA_CMD_DEV_STATUS       0x02
@@ -53,32 +41,17 @@
 #define BL_HEAD_OFFSET 0x00
 #define BL_DATA_OFFSET 0x10
 
-#define BL_STATUS_SIZE  3  /* Length of gen3 bootloader status registers */
+#define BL_STATUS_SIZE  3  
 #define CYAPA_REG_MAP_SIZE  256
 
-/*
- * Gen3 Operational Device Status Register
- *
- * bit 7: Valid interrupt source
- * bit 6 - 4: Reserved
- * bit 3 - 2: Power status
- * bit 1 - 0: Device status
- */
+
 #define REG_OP_STATUS     0x00
 #define OP_STATUS_SRC     0x80
 #define OP_STATUS_POWER   0x0c
 #define OP_STATUS_DEV     0x03
 #define OP_STATUS_MASK (OP_STATUS_SRC | OP_STATUS_POWER | OP_STATUS_DEV)
 
-/*
- * Operational Finger Count/Button Flags Register
- *
- * bit 7 - 4: Number of touched finger
- * bit 3: Valid data
- * bit 2: Middle Physical Button
- * bit 1: Right Physical Button
- * bit 0: Left physical Button
- */
+
 #define REG_OP_DATA1       0x01
 #define OP_DATA_VALID      0x08
 #define OP_DATA_MIDDLE_BTN 0x04
@@ -87,24 +60,11 @@
 #define OP_DATA_BTN_MASK (OP_DATA_MIDDLE_BTN | OP_DATA_RIGHT_BTN | \
 			  OP_DATA_LEFT_BTN)
 
-/*
- * Write-only command file register used to issue commands and
- * parameters to the bootloader.
- * The default value read from it is always 0x00.
- */
+
 #define REG_BL_FILE	0x00
 #define BL_FILE		0x00
 
-/*
- * Bootloader Status Register
- *
- * bit 7: Busy
- * bit 6 - 5: Reserved
- * bit 4: Bootloader running
- * bit 3 - 2: Reserved
- * bit 1: Watchdog Reset
- * bit 0: Checksum valid
- */
+
 #define REG_BL_STATUS        0x01
 #define BL_STATUS_REV_6_5    0x60
 #define BL_STATUS_BUSY       0x80
@@ -115,17 +75,7 @@
 #define BL_STATUS_REV_MASK (BL_STATUS_WATCHDOG | BL_STATUS_REV_3_2 | \
 			    BL_STATUS_REV_6_5)
 
-/*
- * Bootloader Error Register
- *
- * bit 7: Invalid
- * bit 6: Invalid security key
- * bit 5: Bootloading
- * bit 4: Command checksum
- * bit 3: Flash protection error
- * bit 2: Flash checksum error
- * bit 1 - 0: Reserved
- */
+
 #define REG_BL_ERROR         0x02
 #define BL_ERROR_INVALID     0x80
 #define BL_ERROR_INVALID_KEY 0x40
@@ -147,8 +97,8 @@
 
 #define PWR_MODE_MASK   0xfc
 #define PWR_MODE_FULL_ACTIVE (0x3f << 2)
-#define PWR_MODE_IDLE        (0x03 << 2) /* Default rt suspend scanrate: 30ms */
-#define PWR_MODE_SLEEP       (0x05 << 2) /* Default suspend scanrate: 50ms */
+#define PWR_MODE_IDLE        (0x03 << 2) 
+#define PWR_MODE_SLEEP       (0x05 << 2) 
 #define PWR_MODE_BTN_ONLY    (0x01 << 2)
 #define PWR_MODE_OFF         (0x00 << 2)
 
@@ -158,12 +108,12 @@
 #define PWR_STATUS_BTN_ONLY  (0x01 << 2)
 #define PWR_STATUS_OFF       (0x00 << 2)
 
-#define AUTOSUSPEND_DELAY   2000 /* unit : ms */
+#define AUTOSUSPEND_DELAY   2000 
 
 #define BTN_ONLY_MODE_NAME   "buttononly"
 #define OFF_MODE_NAME        "off"
 
-/* Common macros for PIP interface. */
+
 #define PIP_HID_DESCRIPTOR_ADDR		0x0001
 #define PIP_REPORT_DESCRIPTOR_ADDR	0x0002
 #define PIP_INPUT_REPORT_ADDR		0x0003
@@ -219,8 +169,8 @@
 #define PIP_RESP_RSVD_OFFSET		3
 #define     PIP_RESP_RSVD_KEY		0x00
 #define PIP_RESP_BL_SOP_OFFSET		4
-#define     PIP_SOP_KEY			0x01  /* Start of Packet */
-#define     PIP_EOP_KEY			0x17  /* End of Packet */
+#define     PIP_SOP_KEY			0x01  
+#define     PIP_EOP_KEY			0x17  
 #define PIP_RESP_APP_CMD_OFFSET		4
 #define     GET_PIP_CMD_CODE(reg)	((reg) & 0x7f)
 #define PIP_RESP_STATUS_OFFSET		5
@@ -233,7 +183,7 @@
 #define PIP_CMD_COMPLETE_SUCCESS(resp_data) \
 	((resp_data)[PIP_RESP_STATUS_OFFSET] == 0x00)
 
-/* Variables to record latest gen5 trackpad power states. */
+
 #define UNINIT_SLEEP_TIME	0xffff
 #define UNINIT_PWR_MODE		0xff
 #define PIP_DEV_SET_PWR_STATE(cyapa, s)		((cyapa)->dev_pwr_mode = (s))
@@ -243,7 +193,7 @@
 #define PIP_DEV_UNINIT_SLEEP_TIME(cyapa)	\
 		(((cyapa)->dev_sleep_time) == UNINIT_SLEEP_TIME)
 
-/* The touch.id is used as the MT slot id, thus max MT slot is 15 */
+
 #define CYAPA_MAX_MT_SLOTS  15
 
 struct cyapa;
@@ -327,20 +277,20 @@ struct gen6_interval_setting {
 	u16 lp2_interval;
 };
 
-/* The main device structure */
+
 struct cyapa {
 	enum cyapa_state state;
 	u8 status[BL_STATUS_SIZE];
-	bool operational; /* true: ready for data reporting; false: not. */
+	bool operational; 
 
 	struct regulator *vcc;
 	struct i2c_client *client;
 	struct input_dev *input;
-	char phys[32];	/* Device physical location */
-	bool irq_wake;  /* Irq wake is enabled */
+	char phys[32];	
+	bool irq_wake;  
 	bool smbus;
 
-	/* power mode settings */
+	
 	u8 suspend_power_mode;
 	u16 suspend_sleep_time;
 	u8 runtime_suspend_power_mode;
@@ -349,11 +299,11 @@ struct cyapa {
 	u16 dev_sleep_time;
 	struct gen6_interval_setting gen6_interval_setting;
 
-	/* Read from query data region. */
+	
 	char product_id[16];
-	u8 platform_ver;  /* Platform version. */
-	u8 fw_maj_ver;  /* Firmware major version. */
-	u8 fw_min_ver;  /* Firmware minor version. */
+	u8 platform_ver;  
+	u8 fw_maj_ver;  
+	u8 fw_min_ver;  
 	u8 btn_capability;
 	u8 gen;
 	int max_abs_x;
@@ -361,21 +311,16 @@ struct cyapa {
 	int physical_size_x;
 	int physical_size_y;
 
-	/* Used in ttsp and truetouch based trackpad devices. */
-	u8 x_origin;  /* X Axis Origin: 0 = left side; 1 = right side. */
-	u8 y_origin;  /* Y Axis Origin: 0 = top; 1 = bottom. */
-	int electrodes_x;  /* Number of electrodes on the X Axis*/
-	int electrodes_y;  /* Number of electrodes on the Y Axis*/
-	int electrodes_rx;  /* Number of Rx electrodes */
-	int aligned_electrodes_rx;  /* 4 aligned */
+	
+	u8 x_origin;  
+	u8 y_origin;  
+	int electrodes_x;  
+	int electrodes_y;  
+	int electrodes_rx;  
+	int aligned_electrodes_rx;  
 	int max_z;
 
-	/*
-	 * Used to synchronize the access or update the device state.
-	 * And since update firmware and read firmware image process will take
-	 * quite long time, maybe more than 10 seconds, so use mutex_lock
-	 * to sync and wait other interface and detecting are done or ready.
-	 */
+	
 	struct mutex state_sync_lock;
 
 	const struct cyapa_dev_ops *ops;

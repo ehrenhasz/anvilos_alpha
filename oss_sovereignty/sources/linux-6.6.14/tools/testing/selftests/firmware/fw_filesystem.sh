@@ -160,7 +160,7 @@ read_firmwares()
 	for i in $(seq 0 3); do
 		config_set_read_fw_idx $i
 		if ! diff -q -Z "$fwfile" $DIR/read_firmware 2>/dev/null ; then
-			echo "request #$i: firmware was not loaded" >&2
+			echo "request 
 			exit 1
 		fi
 	done
@@ -181,7 +181,7 @@ read_partial_firmwares()
 		config_set_read_fw_idx $i
 		read_firmware="$(cat $DIR/read_firmware)"
 		if [ $read_firmware != $partial_data ]; then
-			echo "request #$i: partial firmware was not loaded" >&2
+			echo "request 
 			exit 1
 		fi
 	done
@@ -198,7 +198,7 @@ read_firmwares_expect_nofile()
 }
 test_batched_request_firmware_nofile()
 {
-	echo -n "Batched request_firmware() nofile try #$1: "
+	echo -n "Batched request_firmware() nofile try 
 	config_reset
 	config_set_name nope-test-firmware.bin
 	config_trigger_sync
@@ -208,7 +208,7 @@ test_batched_request_firmware_nofile()
 }
 test_batched_request_firmware_into_buf_nofile()
 {
-	echo -n "Batched request_firmware_into_buf() nofile try #$1: "
+	echo -n "Batched request_firmware_into_buf() nofile try 
 	config_reset
 	config_set_name nope-test-firmware.bin
 	config_set_into_buf
@@ -233,7 +233,7 @@ test_request_partial_firmware_into_buf_nofile()
 }
 test_batched_request_firmware_direct_nofile()
 {
-	echo -n "Batched request_firmware_direct() nofile try #$1: "
+	echo -n "Batched request_firmware_direct() nofile try 
 	config_reset
 	config_set_name nope-test-firmware.bin
 	config_set_sync_direct
@@ -243,7 +243,7 @@ test_batched_request_firmware_direct_nofile()
 }
 test_request_firmware_nowait_uevent_nofile()
 {
-	echo -n "Batched request_firmware_nowait(uevent=true) nofile try #$1: "
+	echo -n "Batched request_firmware_nowait(uevent=true) nofile try 
 	config_reset
 	config_set_name nope-test-firmware.bin
 	config_trigger_async
@@ -270,7 +270,7 @@ test_wait_and_cancel_custom_load()
 }
 test_request_firmware_nowait_custom_nofile()
 {
-	echo -n "Batched request_firmware_nowait(uevent=false) nofile try #$1: "
+	echo -n "Batched request_firmware_nowait(uevent=false) nofile try 
 	config_reset
 	config_unset_uevent
 	RANDOM_FILE_PATH=$(setup_random_file_fake)
@@ -284,7 +284,7 @@ test_request_firmware_nowait_custom_nofile()
 }
 test_batched_request_firmware()
 {
-	echo -n "Batched request_firmware() $2 try #$1: "
+	echo -n "Batched request_firmware() $2 try 
 	config_reset
 	config_trigger_sync
 	read_firmwares $2
@@ -293,7 +293,7 @@ test_batched_request_firmware()
 }
 test_batched_request_firmware_into_buf()
 {
-	echo -n "Batched request_firmware_into_buf() $2 try #$1: "
+	echo -n "Batched request_firmware_into_buf() $2 try 
 	config_reset
 	config_set_name $TEST_FIRMWARE_INTO_BUF_FILENAME
 	config_set_into_buf
@@ -304,7 +304,7 @@ test_batched_request_firmware_into_buf()
 }
 test_batched_request_firmware_direct()
 {
-	echo -n "Batched request_firmware_direct() $2 try #$1: "
+	echo -n "Batched request_firmware_direct() $2 try 
 	config_reset
 	config_set_sync_direct
 	config_trigger_sync
@@ -313,7 +313,7 @@ test_batched_request_firmware_direct()
 }
 test_request_firmware_nowait_uevent()
 {
-	echo -n "Batched request_firmware_nowait(uevent=true) $2 try #$1: "
+	echo -n "Batched request_firmware_nowait(uevent=true) $2 try 
 	config_reset
 	config_trigger_async
 	release_all_firmware
@@ -321,7 +321,7 @@ test_request_firmware_nowait_uevent()
 }
 test_request_firmware_nowait_custom()
 {
-	echo -n "Batched request_firmware_nowait(uevent=false) $2 try #$1: "
+	echo -n "Batched request_firmware_nowait(uevent=false) $2 try 
 	config_reset
 	config_unset_uevent
 	RANDOM_FILE_PATH=$(setup_random_file)

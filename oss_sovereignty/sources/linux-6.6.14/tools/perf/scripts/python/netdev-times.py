@@ -7,21 +7,21 @@ from perf_trace_context import *
 from Core import *
 from Util import *
 from functools import cmp_to_key
-all_event_list = []; # insert all tracepoint event related with this script
-irq_dic = {}; # key is cpu and value is a list which stacks irqs
-net_rx_dic = {}; # key is cpu and value include time of NET_RX softirq-entry
-receive_hunk_list = []; # a list which include a sequence of receive events
-rx_skb_list = []; # received packet list for matching
-buffer_budget = 65536; # the budget of rx_skb_list, tx_queue_list and
-of_count_rx_skb_list = 0; # overflow count
-tx_queue_list = []; # list of packets which pass through dev_queue_xmit
-of_count_tx_queue_list = 0; # overflow count
-tx_xmit_list = [];  # list of packets which pass through dev_hard_start_xmit
-of_count_tx_xmit_list = 0; # overflow count
-tx_free_list = [];  # list of packets which is freed
+all_event_list = []; 
+irq_dic = {}; 
+net_rx_dic = {}; 
+receive_hunk_list = []; 
+rx_skb_list = []; 
+buffer_budget = 65536; 
+of_count_rx_skb_list = 0; 
+tx_queue_list = []; 
+of_count_tx_queue_list = 0; 
+tx_xmit_list = [];  
+of_count_tx_xmit_list = 0; 
+tx_free_list = [];  
 show_tx = 0;
 show_rx = 0;
-dev = 0; # store a name of device specified by option "dev="
+dev = 0; 
 debug = 0;
 EINFO_IDX_NAME=   0
 EINFO_IDX_CONTEXT=1
@@ -343,7 +343,7 @@ def handle_net_dev_xmit(event_info):
 	global of_count_tx_xmit_list
 	(name, context, cpu, time, pid, comm,
 		skbaddr, skblen, rc, dev_name) = event_info
-	if rc == 0: # NETDEV_TX_OK
+	if rc == 0: 
 		for i in range(len(tx_queue_list)):
 			skb = tx_queue_list[i]
 			if skb['skbaddr'] == skbaddr:

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Copyright 2020 NXP. */
+
+
 
 #ifndef __LINUX_REG_PCA9450_H__
 #define __LINUX_REG_PCA9450_H__
@@ -93,13 +93,13 @@ enum {
 	PCA9450_MAX_REGISTER	    = 0x2F,
 };
 
-/* PCA9450 BUCK ENMODE bits */
+
 #define BUCK_ENMODE_OFF			0x00
 #define BUCK_ENMODE_ONREQ		0x01
 #define BUCK_ENMODE_ONREQ_STBYREQ	0x02
 #define BUCK_ENMODE_ON			0x03
 
-/* PCA9450_REG_BUCK1_CTRL bits */
+
 #define BUCK1_RAMP_MASK			0xC0
 #define BUCK1_RAMP_25MV			0x0
 #define BUCK1_RAMP_12P5MV		0x1
@@ -110,7 +110,7 @@ enum {
 #define BUCK1_FPWM			0x04
 #define BUCK1_ENMODE_MASK		0x03
 
-/* PCA9450_REG_BUCK2_CTRL bits */
+
 #define BUCK2_RAMP_MASK			0xC0
 #define BUCK2_RAMP_25MV			0x0
 #define BUCK2_RAMP_12P5MV		0x1
@@ -121,7 +121,7 @@ enum {
 #define BUCK2_FPWM			0x04
 #define BUCK2_ENMODE_MASK		0x03
 
-/* PCA9450_REG_BUCK3_CTRL bits */
+
 #define BUCK3_RAMP_MASK			0xC0
 #define BUCK3_RAMP_25MV			0x0
 #define BUCK3_RAMP_12P5MV		0x1
@@ -132,84 +132,84 @@ enum {
 #define BUCK3_FPWM			0x04
 #define BUCK3_ENMODE_MASK		0x03
 
-/* PCA9450_REG_BUCK4_CTRL bits */
+
 #define BUCK4_AD			0x08
 #define BUCK4_FPWM			0x04
 #define BUCK4_ENMODE_MASK		0x03
 
-/* PCA9450_REG_BUCK5_CTRL bits */
+
 #define BUCK5_AD			0x08
 #define BUCK5_FPWM			0x04
 #define BUCK5_ENMODE_MASK		0x03
 
-/* PCA9450_REG_BUCK6_CTRL bits */
+
 #define BUCK6_AD			0x08
 #define BUCK6_FPWM			0x04
 #define BUCK6_ENMODE_MASK		0x03
 
-/* PCA9450_REG_BUCK123_PRESET_EN bit */
+
 #define BUCK123_PRESET_EN		0x80
 
-/* PCA9450_BUCK1OUT_DVS0 bits */
+
 #define BUCK1OUT_DVS0_MASK		0x7F
 #define BUCK1OUT_DVS0_DEFAULT		0x14
 
-/* PCA9450_BUCK1OUT_DVS1 bits */
+
 #define BUCK1OUT_DVS1_MASK		0x7F
 #define BUCK1OUT_DVS1_DEFAULT		0x14
 
-/* PCA9450_BUCK2OUT_DVS0 bits */
+
 #define BUCK2OUT_DVS0_MASK		0x7F
 #define BUCK2OUT_DVS0_DEFAULT		0x14
 
-/* PCA9450_BUCK2OUT_DVS1 bits */
+
 #define BUCK2OUT_DVS1_MASK		0x7F
 #define BUCK2OUT_DVS1_DEFAULT		0x14
 
-/* PCA9450_BUCK3OUT_DVS0 bits */
+
 #define BUCK3OUT_DVS0_MASK		0x7F
 #define BUCK3OUT_DVS0_DEFAULT		0x14
 
-/* PCA9450_BUCK3OUT_DVS1 bits */
+
 #define BUCK3OUT_DVS1_MASK		0x7F
 #define BUCK3OUT_DVS1_DEFAULT		0x14
 
-/* PCA9450_REG_BUCK4OUT bits */
+
 #define BUCK4OUT_MASK			0x7F
 #define BUCK4OUT_DEFAULT		0x6C
 
-/* PCA9450_REG_BUCK5OUT bits */
+
 #define BUCK5OUT_MASK			0x7F
 #define BUCK5OUT_DEFAULT		0x30
 
-/* PCA9450_REG_BUCK6OUT bits */
+
 #define BUCK6OUT_MASK			0x7F
 #define BUCK6OUT_DEFAULT		0x14
 
-/* PCA9450_REG_LDO1_VOLT bits */
+
 #define LDO1_EN_MASK			0xC0
 #define LDO1OUT_MASK			0x07
 
-/* PCA9450_REG_LDO2_VOLT bits */
+
 #define LDO2_EN_MASK			0xC0
 #define LDO2OUT_MASK			0x07
 
-/* PCA9450_REG_LDO3_VOLT bits */
+
 #define LDO3_EN_MASK			0xC0
 #define LDO3OUT_MASK			0x1F
 
-/* PCA9450_REG_LDO4_VOLT bits */
+
 #define LDO4_EN_MASK			0xC0
 #define LDO4OUT_MASK			0x1F
 
-/* PCA9450_REG_LDO5_VOLT bits */
+
 #define LDO5L_EN_MASK			0xC0
 #define LDO5LOUT_MASK			0x0F
 
 #define LDO5H_EN_MASK			0xC0
 #define LDO5HOUT_MASK			0x0F
 
-/* PCA9450_REG_IRQ bits */
+
 #define IRQ_PWRON			0x80
 #define IRQ_WDOGB			0x40
 #define IRQ_RSVD			0x20
@@ -219,18 +219,18 @@ enum {
 #define IRQ_THERM_105			0x02
 #define IRQ_THERM_125			0x01
 
-/* PCA9450_REG_RESET_CTRL bits */
+
 #define WDOG_B_CFG_MASK			0xC0
 #define WDOG_B_CFG_NONE			0x00
 #define WDOG_B_CFG_WARM			0x40
 #define WDOG_B_CFG_COLD_LDO12		0x80
 #define WDOG_B_CFG_COLD			0xC0
 
-/* PCA9450_REG_CONFIG2 bits */
+
 #define I2C_LT_MASK			0x03
 #define I2C_LT_FORCE_DISABLE		0x00
 #define I2C_LT_ON_STANDBY_RUN		0x01
 #define I2C_LT_ON_RUN			0x02
 #define I2C_LT_FORCE_ENABLE		0x03
 
-#endif /* __LINUX_REG_PCA9450_H__ */
+#endif 

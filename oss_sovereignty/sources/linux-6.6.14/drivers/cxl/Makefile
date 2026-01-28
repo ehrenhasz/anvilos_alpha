@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 obj-y += core/
 obj-$(CONFIG_CXL_PCI) += cxl_pci.o
 obj-$(CONFIG_CXL_MEM) += cxl_mem.o

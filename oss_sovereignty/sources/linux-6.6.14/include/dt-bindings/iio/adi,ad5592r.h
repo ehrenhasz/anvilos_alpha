@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef _DT_BINDINGS_ADI_AD5592R_H
 #define _DT_BINDINGS_ADI_AD5592R_H
@@ -14,4 +14,4 @@
 #define CH_OFFSTATE_OUT_HIGH		2
 #define CH_OFFSTATE_OUT_TRISTATE	3
 
-#endif /* _DT_BINDINGS_ADI_AD5592R_H */
+#endif 

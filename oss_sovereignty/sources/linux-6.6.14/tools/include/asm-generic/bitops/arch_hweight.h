@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_GENERIC_BITOPS_ARCH_HWEIGHT_H_
 #define _ASM_GENERIC_BITOPS_ARCH_HWEIGHT_H_
 
@@ -23,4 +23,4 @@ static inline unsigned long __arch_hweight64(__u64 w)
 {
 	return __sw_hweight64(w);
 }
-#endif /* _ASM_GENERIC_BITOPS_HWEIGHT_H_ */
+#endif 

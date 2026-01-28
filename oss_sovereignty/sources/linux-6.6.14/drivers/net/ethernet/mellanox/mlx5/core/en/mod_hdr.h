@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2020 Mellanox Technologies */
+
+
 
 #ifndef __MLX5E_EN_MOD_HDR_H__
 #define __MLX5E_EN_MOD_HDR_H__
@@ -48,10 +48,10 @@ void mlx5e_mod_hdr_tbl_destroy(struct mod_hdr_tbl *tbl);
 
 static inline int mlx5e_mod_hdr_max_actions(struct mlx5_core_dev *mdev, int namespace)
 {
-	if (namespace == MLX5_FLOW_NAMESPACE_FDB) /* FDB offloading */
+	if (namespace == MLX5_FLOW_NAMESPACE_FDB) 
 		return MLX5_CAP_ESW_FLOWTABLE_FDB(mdev, max_modify_header_actions);
-	else /* namespace is MLX5_FLOW_NAMESPACE_KERNEL - NIC offloading */
+	else 
 		return MLX5_CAP_FLOWTABLE_NIC_RX(mdev, max_modify_header_actions);
 }
 
-#endif /* __MLX5E_EN_MOD_HDR_H__ */
+#endif 

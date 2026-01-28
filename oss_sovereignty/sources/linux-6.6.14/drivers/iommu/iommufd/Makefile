@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-only
+
 iommufd-y := \
 	device.o \
 	hw_pagetable.o \

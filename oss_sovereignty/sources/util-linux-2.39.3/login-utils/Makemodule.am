@@ -15,7 +15,7 @@ INSTALL_EXEC_HOOKS += install-exec-hook-last
 if FUZZING_ENGINE
 check_PROGRAMS += test_last_fuzz
 
-# https://google.github.io/oss-fuzz/getting-started/new-project-guide/#Requirements
+
 nodist_EXTRA_test_last_fuzz_SOURCES = dummy.cxx
 
 test_last_fuzz_SOURCES = login-utils/last.c
@@ -50,7 +50,7 @@ check_PROGRAMS += test_consoles
 test_consoles_SOURCES = login-utils/sulogin-consoles.c
 test_consoles_CFLAGS = $(AM_CFLAGS) -DTEST_PROGRAM
 test_consoles_LDADD = $(LDADD) libcommon.la
-endif # BUILD_SULOGIN
+endif 
 
 
 if BUILD_LOGIN
@@ -73,7 +73,7 @@ endif
 if HAVE_ECONF
 login_LDADD += -leconf
 endif
-endif # BUILD_LOGIN
+endif 
 
 
 if BUILD_NOLOGIN
@@ -118,7 +118,7 @@ endif
 chfn_chsh_sources += \
 	login-utils/auth.c \
 	login-utils/auth.h
-endif # CHFN_CHSH_PASSWORD
+endif 
 
 if HAVE_USER
 chfn_chsh_ldflags += $(LIBUSER_LIBS)
@@ -159,7 +159,7 @@ chsh_LDADD = $(LDADD) $(chfn_chsh_ldadd)
 if HAVE_ECONF
 chsh_LDADD += -leconf
 endif
-endif # BUILD_CHFN_CHSH
+endif 
 
 
 if BUILD_SU
@@ -187,7 +187,7 @@ endif
 if HAVE_ECONF
 su_LDADD += -leconf
 endif
-endif # BUILD_SU
+endif 
 
 
 if BUILD_RUNUSER
@@ -213,7 +213,7 @@ endif
 if HAVE_ECONF
 runuser_LDADD += -leconf
 endif
-endif # BUILD_RUNUSER
+endif 
 
 
 if BUILD_NEWGRP
@@ -227,7 +227,7 @@ newgrp_LDADD = $(LDADD)
 if HAVE_LIBCRYPT
 newgrp_LDADD += -lcrypt
 endif
-endif # BUILD_NEWGRP
+endif 
 
 
 if BUILD_LSLOGINS
@@ -249,7 +249,7 @@ endif
 if HAVE_ECONF
 lslogins_LDADD += -leconf
 endif
-endif # BUILD_LSLOGINS
+endif 
 
 
 if BUILD_VIPW
@@ -268,7 +268,7 @@ install-exec-hook-vipw::
 	cd $(DESTDIR)$(usrsbin_execdir) && ln -sf vipw vigr
 
 INSTALL_EXEC_HOOKS += install-exec-hook-vipw
-endif # BUILD_VIPW
+endif 
 
 
 check_PROGRAMS += test_islocal

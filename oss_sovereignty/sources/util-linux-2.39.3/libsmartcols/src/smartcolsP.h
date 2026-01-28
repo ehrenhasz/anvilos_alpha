@@ -1,12 +1,4 @@
-/*
- * smartcolsP.h - private library header file
- *
- * Copyright (C) 2014 Ondrej Oprala <ooprala@redhat.com>
- * Copyright (C) 2014 Karel Zak <kzak@redhat.com>
- *
- * This file may be redistributed under the terms of the
- * GNU Lesser General Public License.
- */
+
 
 #ifndef _LIBSMARTCOLS_PRIVATE_H
 #define _LIBSMARTCOLS_PRIVATE_H
@@ -21,9 +13,7 @@
 
 #include "libsmartcols.h"
 
-/*
- * Debug
- */
+
 #define SCOLS_DEBUG_HELP	(1 << 0)
 #define SCOLS_DEBUG_INIT	(1 << 1)
 #define SCOLS_DEBUG_CELL	(1 << 2)
@@ -44,18 +34,14 @@ UL_DEBUG_DECLARE_MASK(libsmartcols);
 
 #define SCOLS_BUFPTR_TREEEND	0
 
-/*
- * Generic iterator
- */
+
 struct libscols_iter {
-	struct list_head        *p;		/* current position */
-	struct list_head        *head;		/* start position */
-	int			direction;	/* SCOLS_ITER_{FOR,BACK}WARD */
+	struct list_head        *p;		
+	struct list_head        *head;		
+	int			direction;	
 };
 
-/*
- * Tree symbols
- */
+
 struct libscols_symbols {
 	int	refcount;
 
@@ -75,9 +61,7 @@ struct libscols_symbols {
 	char	*cell_padding;
 };
 
-/*
- * Table cells
- */
+
 struct libscols_cell {
 	char	*data;
 	char	*color;
@@ -98,24 +82,22 @@ struct libscols_wstat {
 	size_t  width_treeart;
 };
 
-/*
- * Table column
- */
+
 struct libscols_column {
-	int	refcount;	/* reference counter */
-	size_t	seqnum;		/* column index */
+	int	refcount;	
+	size_t	seqnum;		
 
-	size_t	width;		/* expected column width */
+	size_t	width;		
 	size_t  width_treeart;
-	double	width_hint;	/* hint (N < 1 is in percent of termwidth) */
+	double	width_hint;	
 
-	struct libscols_wstat wstat;	/* private __scols_calculate() data */
+	struct libscols_wstat wstat;	
 
-	int	json_type;	/* SCOLS_JSON_* */
+	int	json_type;	
 
 	int	flags;
-	char	*color;		/* default column color */
-	char	*safechars;	/* do not encode this bytes */
+	char	*color;		
+	char	*safechars;	
 
 	char	*pending_data;
 	size_t	pending_data_sz;
@@ -123,7 +105,7 @@ struct libscols_column {
 
 	int (*cmpfunc)(struct libscols_cell *,
 		       struct libscols_cell *,
-		       void *);			/* cells comparison function */
+		       void *);			
 	void *cmpfunc_data;
 
 	size_t (*wrap_chunksize)(const struct libscols_column *,
@@ -133,14 +115,14 @@ struct libscols_column {
 	void *wrapfunc_data;
 
 
-	struct libscols_cell	header;		/* column name with color etc. */
-	char	*shellvar;			/* raw colum name in shell compatible format */
+	struct libscols_cell	header;		
+	char	*shellvar;			
 
-	struct list_head	cl_columns;	/* member of table->tb_columns */
+	struct list_head	cl_columns;	
 
 	struct libscols_table	*table;
 
-	unsigned int	is_groups  : 1;		/* print group chart */
+	unsigned int	is_groups  : 1;		
 
 };
 
@@ -148,7 +130,7 @@ struct libscols_column {
 #define linesep(tb)	((tb)->linesep ? (tb)->linesep : "\n")
 
 enum {
-	SCOLS_GSTATE_NONE = 0,		/* not activate yet */
+	SCOLS_GSTATE_NONE = 0,		
 	SCOLS_GSTATE_FIRST_MEMBER,
 	SCOLS_GSTATE_MIDDLE_MEMBER,
 	SCOLS_GSTATE_LAST_MEMBER,
@@ -158,9 +140,7 @@ enum {
 	SCOLS_GSTATE_CONT_CHILDREN
 };
 
-/*
- * Every group needs at least 3 columns
- */
+
 #define SCOLS_GRPSET_CHUNKSIZ	3
 
 struct libscols_group {
@@ -168,102 +148,98 @@ struct libscols_group {
 
 	size_t  nmembers;
 
-	struct list_head gr_members;	/* head of line->ln_group */
-	struct list_head gr_children;	/* head of line->ln_children */
-	struct list_head gr_groups;	/* member of table->tb_groups */
+	struct list_head gr_members;	
+	struct list_head gr_children;	
+	struct list_head gr_groups;	
 
-	int	state;			/* SCOLS_GSTATE_* */
+	int	state;			
 };
 
-/*
- * Table line
- */
+
 struct libscols_line {
 	int	refcount;
 	size_t	seqnum;
 
 	void	*userdata;
-	char	*color;		/* default line color */
+	char	*color;		
 
-	struct libscols_cell	*cells;		/* array with data */
-	size_t			ncells;		/* number of cells */
+	struct libscols_cell	*cells;		
+	size_t			ncells;		
 
-	struct list_head	ln_lines;	/* member of table->tb_lines */
-	struct list_head	ln_branch;	/* head of line->ln_children */
-	struct list_head	ln_children;	/* member of line->ln_children or group->gr_children */
-	struct list_head	ln_groups;	/* member of group->gr_groups */
+	struct list_head	ln_lines;	
+	struct list_head	ln_branch;	
+	struct list_head	ln_children;	
+	struct list_head	ln_groups;	
 
 	struct libscols_line	*parent;
-	struct libscols_group	*parent_group;	/* for group childs */
-	struct libscols_group	*group;		/* for group members */
+	struct libscols_group	*parent_group;	
+	struct libscols_group	*group;		
 };
 
 enum {
-	SCOLS_FMT_HUMAN = 0,		/* default, human readable */
-	SCOLS_FMT_RAW,			/* space separated */
-	SCOLS_FMT_EXPORT,		/* COLNAME="data" ... */
-	SCOLS_FMT_JSON			/* http://en.wikipedia.org/wiki/JSON */
+	SCOLS_FMT_HUMAN = 0,		
+	SCOLS_FMT_RAW,			
+	SCOLS_FMT_EXPORT,		
+	SCOLS_FMT_JSON			
 };
 
-/*
- * The table
- */
+
 struct libscols_table {
 	int	refcount;
-	char	*name;		/* optional table name (for JSON) */
-	size_t	ncols;		/* number of columns */
-	size_t  ntreecols;	/* number of columns with SCOLS_FL_TREE */
-	size_t	nlines;		/* number of lines */
-	size_t	termwidth;	/* terminal width (number of columns) */
-	size_t  termheight;	/* terminal height  (number of lines) */
-	size_t  termreduce;	/* extra blank space */
-	int	termforce;	/* SCOLS_TERMFORCE_* */
-	FILE	*out;		/* output stream */
+	char	*name;		
+	size_t	ncols;		
+	size_t  ntreecols;	
+	size_t	nlines;		
+	size_t	termwidth;	
+	size_t  termheight;	
+	size_t  termreduce;	
+	int	termforce;	
+	FILE	*out;		
 
-	char	*colsep;	/* column separator */
-	char	*linesep;	/* line separator */
+	char	*colsep;	
+	char	*linesep;	
 
-	struct list_head	tb_columns;	/* list of columns, items: column->cl_columns */
-	struct list_head	tb_lines;	/* list of lines; items: line->ln_lines  */
+	struct list_head	tb_columns;	
+	struct list_head	tb_lines;	
 
-	struct list_head	tb_groups;	/* all defined groups */
+	struct list_head	tb_groups;	
 	struct libscols_group	**grpset;
 	size_t			grpset_size;
 
-	size_t			ngrpchlds_pending;	/* groups with not yet printed children */
-	struct libscols_line	*walk_last_tree_root;	/* last root, used by scols_walk_() */
+	size_t			ngrpchlds_pending;	
+	struct libscols_line	*walk_last_tree_root;	
 
-	struct libscols_column	*dflt_sort_column;	/* default sort column, set by scols_sort_table() */
+	struct libscols_column	*dflt_sort_column;	
 
 	struct libscols_symbols	*symbols;
-	struct libscols_cell	title;		/* optional table title (for humans) */
+	struct libscols_cell	title;		
 
-	struct ul_jsonwrt	json;		/* JSON formatting */
+	struct ul_jsonwrt	json;		
 
-	int	format;		/* SCOLS_FMT_* */
+	int	format;		
 
-	size_t	termlines_used;	/* printed line counter */
-	size_t	header_next;	/* where repeat header */
+	size_t	termlines_used;	
+	size_t	header_next;	
 
-	const char *cur_color;	/* current active color when printing */
+	const char *cur_color;	
 
-	/* flags */
-	unsigned int	ascii		:1,	/* don't use unicode */
-			colors_wanted	:1,	/* enable colors */
-			is_term		:1,	/* isatty() */
-			padding_debug	:1,	/* output visible padding chars */
-			is_dummy_print	:1,	/* printing used for width calculation only */
-			is_shellvar	:1,	/* shell compatible column names */
-			maxout		:1,	/* maximize output */
-			minout		:1,	/* minimize output (mutually exclusive to maxout) */
-			header_repeat   :1,     /* print header after libscols_table->termheight */
-			header_printed  :1,	/* header already printed */
-			priv_symbols	:1,	/* default private symbols */
-			walk_last_done	:1,	/* last tree root walked */
-			no_headings	:1,	/* don't print header */
-			no_encode	:1,	/* don't care about control and non-printable chars */
-			no_linesep	:1,	/* don't print line separator */
-			no_wrap		:1;	/* never wrap lines */
+	
+	unsigned int	ascii		:1,	
+			colors_wanted	:1,	
+			is_term		:1,	
+			padding_debug	:1,	
+			is_dummy_print	:1,	
+			is_shellvar	:1,	
+			maxout		:1,	
+			minout		:1,	
+			header_repeat   :1,     
+			header_printed  :1,	
+			priv_symbols	:1,	
+			walk_last_done	:1,	
+			no_headings	:1,	
+			no_encode	:1,	
+			no_linesep	:1,	
+			no_wrap		:1;	
 };
 
 #define IS_ITER_FORWARD(_i)	((_i)->direction == SCOLS_ITER_FORWARD)
@@ -292,24 +268,18 @@ static inline int scols_iter_is_last(const struct libscols_iter *itr)
 	return itr->p == itr->head;
 }
 
-/*
- * line.c
- */
+
 int scols_line_next_group_child(struct libscols_line *ln,
                           struct libscols_iter *itr,
                           struct libscols_line **chld);
 
 
-/*
- * table.c
- */
+
 int scols_table_next_group(struct libscols_table *tb,
                           struct libscols_iter *itr,
                           struct libscols_group **gr);
 
-/*
- * grouping.c
- */
+
 void scols_ref_group(struct libscols_group *gr);
 void scols_group_remove_children(struct libscols_group *gr);
 void scols_group_remove_members(struct libscols_group *gr);
@@ -319,9 +289,7 @@ int scols_groups_update_grpset(struct libscols_table *tb, struct libscols_line *
 void scols_groups_reset_state(struct libscols_table *tb);
 struct libscols_group *scols_grpset_get_printable_children(struct libscols_table *tb);
 
-/*
- * walk.c
- */
+
 extern int scols_walk_tree(struct libscols_table *tb,
                     struct libscols_column *cl,
                     int (*callback)(struct libscols_table *,
@@ -331,14 +299,10 @@ extern int scols_walk_tree(struct libscols_table *tb,
                     void *data);
 extern int scols_walk_is_last(struct libscols_table *tb, struct libscols_line *ln);
 
-/*
- * calculate.c
- */
+
 extern int __scols_calculate(struct libscols_table *tb, struct ul_buffer *buf);
 
-/*
- * print.c
- */
+
 extern int __cell_to_buffer(struct libscols_table *tb,
                           struct libscols_line *ln,
                           struct libscols_column *cl,
@@ -452,4 +416,4 @@ static inline int has_group_children(struct libscols_line *ln)
 	return ln && ln->group && !list_empty(&ln->group->gr_children);
 }
 
-#endif /* _LIBSMARTCOLS_PRIVATE_H */
+#endif 

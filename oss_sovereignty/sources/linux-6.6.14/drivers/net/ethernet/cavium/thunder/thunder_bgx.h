@@ -1,24 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2015 Cavium, Inc.
- */
+
+
 
 #ifndef THUNDER_BGX_H
 #define THUNDER_BGX_H
 
-/* PCI device ID */
+
 #define	PCI_DEVICE_ID_THUNDER_BGX		0xA026
 #define	PCI_DEVICE_ID_THUNDER_RGX		0xA054
 
-/* Subsystem device IDs */
+
 #define PCI_SUBSYS_DEVID_88XX_BGX		0xA126
 #define PCI_SUBSYS_DEVID_81XX_BGX		0xA226
 #define PCI_SUBSYS_DEVID_81XX_RGX		0xA254
 #define PCI_SUBSYS_DEVID_83XX_BGX		0xA326
 
-#define    MAX_BGX_THUNDER			8 /* Max 2 nodes, 4 per node */
+#define    MAX_BGX_THUNDER			8 
 #define    MAX_BGX_PER_CN88XX			2
-#define    MAX_BGX_PER_CN81XX			3 /* 2 BGXs + 1 RGX */
+#define    MAX_BGX_PER_CN81XX			3 
 #define    MAX_BGX_PER_CN83XX			4
 #define    MAX_LMAC_PER_BGX			4
 #define    MAX_BGX_CHANS_PER_LMAC		16
@@ -31,7 +29,7 @@
 
 #define    MAX_DMAC_PER_LMAC_TNS_BYPASS_MODE	2
 
-/* Registers */
+
 #define BGX_CMRX_CFG			0x00
 #define  CMR_PKT_TX_EN				BIT_ULL(13)
 #define  CMR_PKT_RX_EN				BIT_ULL(14)
@@ -111,7 +109,7 @@
 #define BGX_SPUX_MISC_CONTROL		0x10218
 #define  SPU_MISC_CTL_INTLV_RDISP		BIT_ULL(10)
 #define  SPU_MISC_CTL_RX_DIS			BIT_ULL(12)
-#define BGX_SPUX_INT			0x10220	/* +(0..3) << 20 */
+#define BGX_SPUX_INT			0x10220	
 #define BGX_SPUX_INT_W1S		0x10228
 #define BGX_SPUX_INT_ENA_W1C		0x10230
 #define BGX_SPUX_INT_ENA_W1S		0x10238
@@ -190,11 +188,11 @@
 #define  GMI_TXX_INT_XSCOL			BIT_ULL(1)
 #define  GMI_TXX_INT_UNDFLW			BIT_ULL(0)
 
-#define BGX_MSIX_VEC_0_29_ADDR		0x400000 /* +(0..29) << 4 */
+#define BGX_MSIX_VEC_0_29_ADDR		0x400000 
 #define BGX_MSIX_VEC_0_29_CTL		0x400008
 #define BGX_MSIX_PBA_0			0x4F0000
 
-/* MSI-X interrupts */
+
 #define BGX_MSIX_VECTORS	30
 #define BGX_LMAC_VEC_OFFSET	7
 #define BGX_MSIX_VEC_SHIFT	4
@@ -247,17 +245,17 @@ struct bgx_stats {
 };
 
 enum LMAC_TYPE {
-	BGX_MODE_SGMII = 0, /* 1 lane, 1.250 Gbaud */
-	BGX_MODE_XAUI = 1,  /* 4 lanes, 3.125 Gbaud */
-	BGX_MODE_DXAUI = 1, /* 4 lanes, 6.250 Gbaud */
-	BGX_MODE_RXAUI = 2, /* 2 lanes, 6.250 Gbaud */
-	BGX_MODE_XFI = 3,   /* 1 lane, 10.3125 Gbaud */
-	BGX_MODE_XLAUI = 4, /* 4 lanes, 10.3125 Gbaud */
-	BGX_MODE_10G_KR = 3,/* 1 lane, 10.3125 Gbaud */
-	BGX_MODE_40G_KR = 4,/* 4 lanes, 10.3125 Gbaud */
+	BGX_MODE_SGMII = 0, 
+	BGX_MODE_XAUI = 1,  
+	BGX_MODE_DXAUI = 1, 
+	BGX_MODE_RXAUI = 2, 
+	BGX_MODE_XFI = 3,   
+	BGX_MODE_XLAUI = 4, 
+	BGX_MODE_10G_KR = 3,
+	BGX_MODE_40G_KR = 4,
 	BGX_MODE_RGMII = 5,
 	BGX_MODE_QSGMII = 6,
 	BGX_MODE_INVALID = 7,
 };
 
-#endif /* THUNDER_BGX_H */
+#endif 

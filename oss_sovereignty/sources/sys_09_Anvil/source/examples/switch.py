@@ -30,7 +30,7 @@ def run_loop(leds=all_leds):
                 [led.on() for led in leds]
             else:
                 [led.off() for led in leds]
-        except OSError:  # VCPInterrupt # Ctrl+C in interpreter mode.
+        except OSError:  
             break
 if __name__ == "__main__":
     run_loop()

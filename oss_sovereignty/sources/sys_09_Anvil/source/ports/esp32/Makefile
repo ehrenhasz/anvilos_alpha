@@ -1,14 +1,14 @@
-# Makefile for MicroPython on ESP32.
-#
-# This is a simple, convenience wrapper around idf.py (which uses cmake).
 
-# Select the board to build for:
+
+
+
+
 ifdef BOARD_DIR
-# Custom board path - remove trailing slash and get the final component of
-# the path as the board name.
+
+
 BOARD ?= $(notdir $(BOARD_DIR:/=))
 else
-# If not given on the command line, then default to ESP32_GENERIC.
+
 BOARD ?= ESP32_GENERIC
 BOARD_DIR ?= boards/$(BOARD)
 endif
@@ -20,15 +20,15 @@ endif
 $(error Invalid BOARD specified: $(BOARD_DIR))
 endif
 
-# If the build directory is not given, make it reflect the board name (and
-# optionally the board variant).
+
+
 ifneq ($(BOARD_VARIANT),)
 BUILD ?= build-$(BOARD)-$(BOARD_VARIANT)
 else
 BUILD ?= build-$(BOARD)
 endif
 
-# Device serial settings.
+
 PORT ?= /dev/ttyUSB0
 BAUD ?= 460800
 
@@ -95,11 +95,11 @@ size-components:
 size-files:
 	$(call RUN_IDF_PY,size-files)
 
-# Running the build with ECHO_SUBMODULES set will trigger py/mkrules.cmake to
-# print out the value of the GIT_SUBMODULES variable, prefixed with
-# "GIT_SUBMODULES", and then abort. This extracts out that line from the idf.py
-# output and passes the list of submodules to py/mkrules.mk which does the
-# `git submodule init` on each.
+
+
+
+
+
 submodules:
 	@GIT_SUBMODULES=$$(idf.py $(IDFPY_FLAGS) -B $(BUILD)/submodules -D ECHO_SUBMODULES=1 build 2>&1 | \
 	                  grep '^GIT_SUBMODULES=' | cut -d= -f2); \

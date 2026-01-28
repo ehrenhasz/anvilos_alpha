@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Google, Inc.
- */
+
+
 
 #ifndef __PISTACHIO_CLK_H
 #define __PISTACHIO_CLK_H

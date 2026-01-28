@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * include/net/dsa_stubs.h - Stubs for the Distributed Switch Architecture framework
- */
+
+
 
 #include <linux/mutex.h>
 #include <linux/netdevice.h>
@@ -25,12 +23,7 @@ static inline int dsa_master_hwtstamp_validate(struct net_device *dev,
 	if (!netdev_uses_dsa(dev))
 		return 0;
 
-	/* rtnl_lock() is a sufficient guarantee, because as long as
-	 * netdev_uses_dsa() returns true, the dsa_core module is still
-	 * registered, and so, dsa_unregister_stubs() couldn't have run.
-	 * For netdev_uses_dsa() to start returning false, it would imply that
-	 * dsa_master_teardown() has executed, which requires rtnl_lock().
-	 */
+	
 	ASSERT_RTNL();
 
 	return dsa_stubs->master_hwtstamp_validate(dev, config, extack);

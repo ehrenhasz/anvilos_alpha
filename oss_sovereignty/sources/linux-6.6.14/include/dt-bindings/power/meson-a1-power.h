@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (c) 2019 Amlogic, Inc.
- * Author: Jianxin Pan <jianxin.pan@amlogic.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_MESON_A1_POWER_H
 #define _DT_BINDINGS_MESON_A1_POWER_H

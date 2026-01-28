@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  include/linux/eventfd.h
- *
- *  Copyright (C) 2007  Davide Libenzi <davidel@xmailserver.org>
- *
- */
+
+
 
 #ifndef _LINUX_EVENTFD_H
 #define _LINUX_EVENTFD_H
@@ -16,13 +11,7 @@
 #include <linux/sched.h>
 #include <uapi/linux/eventfd.h>
 
-/*
- * CAREFUL: Check include/uapi/asm-generic/fcntl.h when defining
- * new flags, since they might collide with O_* ones. We want
- * to re-use O_* flags that couldn't possibly have a meaning
- * from eventfd, in order to leave a free define-space for
- * shared O_* flags.
- */
+
 #define EFD_SHARED_FCNTL_FLAGS (O_CLOEXEC | O_NONBLOCK)
 #define EFD_FLAGS_SET (EFD_SHARED_FCNTL_FLAGS | EFD_SEMAPHORE)
 
@@ -46,12 +35,9 @@ static inline bool eventfd_signal_allowed(void)
 	return !current->in_eventfd;
 }
 
-#else /* CONFIG_EVENTFD */
+#else 
 
-/*
- * Ugly ugly ugly error layer to support modules that uses eventfd but
- * pretend to work in !CONFIG_EVENTFD configurations. Namely, AIO.
- */
+
 
 static inline struct eventfd_ctx *eventfd_ctx_fdget(int fd)
 {
@@ -92,5 +78,5 @@ static inline void eventfd_ctx_do_read(struct eventfd_ctx *ctx, __u64 *cnt)
 
 #endif
 
-#endif /* _LINUX_EVENTFD_H */
+#endif 
 

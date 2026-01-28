@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 
 #ifndef __DSA_PORT_H
 #define __DSA_PORT_H

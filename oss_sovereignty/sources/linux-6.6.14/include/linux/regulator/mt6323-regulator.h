@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Chen Zhong <chen.zhong@mediatek.com>
- */
+
+
 
 #ifndef __LINUX_REGULATOR_MT6323_H
 #define __LINUX_REGULATOR_MT6323_H
@@ -41,4 +38,4 @@ enum {
 
 #define MT6323_MAX_REGULATOR	MT6323_ID_RG_MAX
 
-#endif /* __LINUX_REGULATOR_MT6323_H */
+#endif 

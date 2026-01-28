@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 Cavium, Inc.
- */
+
+
 
 #ifndef __CPTPF_H
 #define __CPTPF_H
@@ -27,7 +25,7 @@ struct microcode {
 	u32 code_size;
 	u64 core_mask;
 	u8 version[CPT_UCODE_VERSION_SZ];
-	/* Base info */
+	
 	dma_addr_t phys_base;
 	void *code;
 };
@@ -39,23 +37,21 @@ struct cpt_vf_info {
 	u32 qlen;
 };
 
-/**
- * cpt device structure
- */
-struct cpt_device {
-	u16 flags;	/* Flags to hold device status bits */
-	u8 num_vf_en; /* Number of VFs enabled (0...CPT_MAX_VF_NUM) */
-	struct cpt_vf_info vfinfo[CPT_MAX_VF_NUM]; /* Per VF info */
 
-	void __iomem *reg_base; /* Register start address */
-	struct pci_dev *pdev; /* pci device handle */
+struct cpt_device {
+	u16 flags;	
+	u8 num_vf_en; 
+	struct cpt_vf_info vfinfo[CPT_MAX_VF_NUM]; 
+
+	void __iomem *reg_base; 
+	struct pci_dev *pdev; 
 
 	struct microcode mcode[CPT_MAX_CORE_GROUPS];
-	u8 next_mc_idx; /* next microcode index */
+	u8 next_mc_idx; 
 	u8 next_group;
 	u8 max_se_cores;
 	u8 max_ae_cores;
 };
 
 void cpt_mbox_intr_handler(struct cpt_device *cpt, int mbx);
-#endif /* __CPTPF_H */
+#endif 

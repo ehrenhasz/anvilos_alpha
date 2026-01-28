@@ -1,11 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2015, Cyril Bur, IBM Corp.
- */
+
+
 
 #include "basic_asm.h"
 
-/* POS MUST BE 16 ALIGNED! */
+
 #define PUSH_VMX(pos,reg) \
 	li	reg,pos; \
 	stvx	v20,reg,%r1; \
@@ -32,7 +30,7 @@
 	addi	reg,reg,16; \
 	stvx	v31,reg,%r1;
 
-/* POS MUST BE 16 ALIGNED! */
+
 #define POP_VMX(pos,reg) \
 	li	reg,pos; \
 	lvx	v20,reg,%r1; \
@@ -59,10 +57,7 @@
 	addi	reg,reg,16; \
 	lvx	v31,reg,%r1;
 
-/*
- * Careful this will 'clobber' vmx (by design)
- * Don't call this from C
- */
+
 FUNC_START(load_vmx)
 	li	r5,0
 	lvx	v20,r5,r3

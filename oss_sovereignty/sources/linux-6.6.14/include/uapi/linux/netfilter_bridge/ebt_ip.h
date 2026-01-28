@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- *  ebt_ip
- *
- *	Authors:
- *	Bart De Schuymer <bart.de.schuymer@pandora.be>
- *
- *  April, 2002
- *
- *  Changes:
- *    added ip-sport and ip-dport
- *    Innominate Security Technologies AG <mhopf@innominate.com>
- *    September, 2002
- */
+
+
 
 #ifndef __LINUX_BRIDGE_EBT_IP_H
 #define __LINUX_BRIDGE_EBT_IP_H
@@ -30,7 +18,7 @@
 		     EBT_IP_SPORT | EBT_IP_DPORT | EBT_IP_ICMP | EBT_IP_IGMP)
 #define EBT_IP_MATCH "ip"
 
-/* the same values are used for the invflags */
+
 struct ebt_ip_info {
 	__be32 saddr;
 	__be32 daddr;

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Helpers for Intel SoC model detection
- *
- * Copyright (c) 2019, Intel Corporation.
- */
+
+
 
 #ifndef __PLATFORM_DATA_X86_SOC_H
 #define __PLATFORM_DATA_X86_SOC_H
@@ -39,7 +35,7 @@ SOC_INTEL_IS_CPU(cml, KABYLAKE_L);
 
 #undef SOC_INTEL_IS_CPU
 
-#else /* IS_ENABLED(CONFIG_X86) */
+#else 
 
 static inline bool soc_intel_is_byt(void)
 {
@@ -65,6 +61,6 @@ static inline bool soc_intel_is_cml(void)
 {
 	return false;
 }
-#endif /* IS_ENABLED(CONFIG_X86) */
+#endif 
 
-#endif /* __PLATFORM_DATA_X86_SOC_H */
+#endif 

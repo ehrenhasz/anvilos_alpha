@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0+ OR MIT
+
 
 ifneq ($(shell $(CC) --version 2>&1 | head -n 1 | grep clang),)
 CLANG_FLAGS += -no-integrated-as
@@ -10,8 +10,8 @@ CFLAGS += -O2 -Wall -g -I./ $(KHDR_INCLUDES) -L$(OUTPUT) -Wl,-rpath=./ \
 	  $(CLANG_FLAGS) -I$(top_srcdir)/tools/include
 LDLIBS += -lpthread -ldl
 
-# Own dependencies because we only want to build against 1st prerequisite, but
-# still track changes to header files and depend on shared object.
+
+
 OVERRIDE_TARGETS = 1
 
 TEST_GEN_PROGS = basic_test basic_percpu_ops_test basic_percpu_ops_mm_cid_test param_test \

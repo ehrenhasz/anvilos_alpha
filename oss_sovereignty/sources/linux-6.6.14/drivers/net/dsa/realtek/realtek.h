@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Realtek SMI interface driver defines
- *
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- * Copyright (C) 2009-2010 Gabor Juhos <juhosg@openwrt.org>
- */
+
+
 
 #ifndef _REALTEK_H
 #define _REALTEK_H
@@ -13,8 +9,8 @@
 #include <linux/gpio/consumer.h>
 #include <net/dsa.h>
 
-#define REALTEK_HW_STOP_DELAY		25	/* msecs */
-#define REALTEK_HW_START_DELAY		100	/* msecs */
+#define REALTEK_HW_STOP_DELAY		25	
+#define REALTEK_HW_START_DELAY		100	
 
 struct realtek_ops;
 struct dentry;
@@ -28,9 +24,7 @@ struct rtl8366_mib_counter {
 	const char	*name;
 };
 
-/*
- * struct rtl8366_vlan_mc - Virtual LAN member configuration
- */
+
 struct rtl8366_vlan_mc {
 	u16	vid;
 	u16	untag;
@@ -61,7 +55,7 @@ struct realtek_priv {
 	unsigned int		clk_delay;
 	u8			cmd_read;
 	u8			cmd_write;
-	spinlock_t		lock; /* Locks around command writes */
+	spinlock_t		lock; 
 	struct dsa_switch	*ds;
 	struct irq_domain	*irqdomain;
 	bool			leds_disabled;
@@ -80,13 +74,10 @@ struct realtek_priv {
 	int			vlan4k_enabled;
 
 	char			buf[4096];
-	void			*chip_data; /* Per-chip extra variant data */
+	void			*chip_data; 
 };
 
-/*
- * struct realtek_ops - vtable for the per-SMI-chiptype operations
- * @detect: detects the chiptype
- */
+
 struct realtek_ops {
 	int	(*detect)(struct realtek_priv *priv);
 	int	(*reset_chip)(struct realtek_priv *priv);
@@ -125,7 +116,7 @@ struct realtek_variant {
 	size_t chip_data_sz;
 };
 
-/* RTL8366 library helpers */
+
 int rtl8366_mc_is_used(struct realtek_priv *priv, int mc_index, int *used);
 int rtl8366_set_vlan(struct realtek_priv *priv, int vid, u32 member,
 		     u32 untag, u32 fid);
@@ -147,4 +138,4 @@ void rtl8366_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *data);
 extern const struct realtek_variant rtl8366rb_variant;
 extern const struct realtek_variant rtl8365mb_variant;
 
-#endif /*  _REALTEK_H */
+#endif 

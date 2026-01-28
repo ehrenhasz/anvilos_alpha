@@ -28,7 +28,7 @@ dev_linkmodes_params_get()
 		mode="Supported link modes"
 	fi
 	local -a dev_linkmodes=($(dev_speeds_get $dev 1 $adver))
-	for ((i=0; i<${#dev_linkmodes[@]}; i++)); do
+	for ((i=0; i<${
 		linkmodes_params[$i]=$(echo -e "${dev_linkmodes[$i]}" | \
 			sed -e 's/[^0-9]/ /g' | \
 			tr -s ' ')
@@ -59,7 +59,7 @@ dev_speeds_get()
 		cut -d':' -f2)
 	local -a speeds_arr=($speeds_str)
 	if [[ $with_mode -eq 0 ]]; then
-		for ((i=0; i<${#speeds_arr[@]}; i++)); do
+		for ((i=0; i<${
 			speeds_arr[$i]=${speeds_arr[$i]%base*}
 		done
 	fi
@@ -85,7 +85,7 @@ different_speeds_get()
 	local adver=$1; shift
 	local -a speeds_arr
 	speeds_arr=($(common_speeds_get $dev1 $dev2 $with_mode $adver))
-	if [[ ${#speeds_arr[@]} < 2 ]]; then
+	if [[ ${
 		check_err 1 "cannot check different speeds. There are not enough speeds"
 	fi
 	echo ${speeds_arr[0]} ${speeds_arr[1]}

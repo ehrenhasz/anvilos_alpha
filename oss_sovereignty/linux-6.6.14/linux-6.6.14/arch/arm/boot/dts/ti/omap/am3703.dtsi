@@ -1,7 +1,0 @@
-#include "omap36xx.dtsi"
-&iva {
-	status = "disabled";
-};
-&sgx_module {
-	status = "disabled";
-};

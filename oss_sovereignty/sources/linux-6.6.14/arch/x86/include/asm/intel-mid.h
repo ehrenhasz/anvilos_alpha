@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Intel MID specific setup code
- *
- * (C) Copyright 2009, 2021 Intel Corporation
- */
+
+
 #ifndef _ASM_X86_INTEL_MID_H
 #define _ASM_X86_INTEL_MID_H
 
@@ -20,4 +16,4 @@ extern void intel_mid_pwr_power_off(void);
 
 extern int intel_mid_pwr_get_lss_id(struct pci_dev *pdev);
 
-#endif /* _ASM_X86_INTEL_MID_H */
+#endif 

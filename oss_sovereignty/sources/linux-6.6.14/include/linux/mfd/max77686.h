@@ -1,23 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * max77686.h - Driver for the Maxim 77686/802
- *
- *  Copyright (C) 2012 Samsung Electrnoics
- *  Chiwoong Byun <woong.byun@samsung.com>
- *
- * This driver is based on max8997.h
- *
- * MAX77686 has PMIC, RTC devices.
- * The devices share the same I2C bus and included in
- * this mfd driver.
- */
+
+
 
 #ifndef __LINUX_MFD_MAX77686_H
 #define __LINUX_MFD_MAX77686_H
 
 #include <linux/regulator/consumer.h>
 
-/* MAX77686 regulator IDs */
+
 enum max77686_regulators {
 	MAX77686_LDO1 = 0,
 	MAX77686_LDO2,
@@ -58,7 +47,7 @@ enum max77686_regulators {
 	MAX77686_REG_MAX,
 };
 
-/* MAX77802 regulator IDs */
+
 enum max77802_regulators {
 	MAX77802_BUCK1 = 0,
 	MAX77802_BUCK2,
@@ -112,4 +101,4 @@ enum max77686_opmode {
 	MAX77686_OPMODE_STANDBY,
 };
 
-#endif /* __LINUX_MFD_MAX77686_H */
+#endif 

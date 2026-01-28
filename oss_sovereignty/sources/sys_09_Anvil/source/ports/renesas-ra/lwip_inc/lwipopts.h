@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-// This protection is not needed, instead protect lwIP code with flags
+
 #define SYS_ARCH_DECL_PROTECT(lev) do { } while (0)
 #define SYS_ARCH_PROTECT(lev) do { } while (0)
 #define SYS_ARCH_UNPROTECT(lev) do { } while (0)
@@ -26,7 +26,7 @@
 #define LWIP_IPV6                       0
 #define LWIP_DHCP                       1
 #define LWIP_DHCP_CHECK_LINK_UP         1
-#define DHCP_DOES_ARP_CHECK             0 // to speed DHCP up
+#define DHCP_DOES_ARP_CHECK             0 
 #define LWIP_DNS                        1
 #define LWIP_DNS_SUPPORT_MDNS_QUERIES   1
 #define LWIP_MDNS_RESPONDER             1
@@ -53,4 +53,4 @@ extern uint32_t rng_read(void);
 
 typedef uint32_t sys_prot_t;
 
-#endif // MICROPY_INCLUDED_RA_LWIP_LWIPOPTS_H
+#endif 

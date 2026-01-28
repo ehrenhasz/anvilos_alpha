@@ -1,48 +1,42 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * MUSB OTG driver host defines
- *
- * Copyright 2005 Mentor Graphics Corporation
- * Copyright (C) 2005-2006 by Texas Instruments
- * Copyright (C) 2006-2007 Nokia Corporation
- */
+
+
 
 #ifndef _MUSB_HOST_H
 #define _MUSB_HOST_H
 
 #include <linux/scatterlist.h>
 
-/* stored in "usb_host_endpoint.hcpriv" for scheduled endpoints */
+
 struct musb_qh {
-	struct usb_host_endpoint *hep;		/* usbcore info */
+	struct usb_host_endpoint *hep;		
 	struct usb_device	*dev;
-	struct musb_hw_ep	*hw_ep;		/* current binding */
+	struct musb_hw_ep	*hw_ep;		
 
-	struct list_head	ring;		/* of musb_qh */
-	/* struct musb_qh		*next; */	/* for periodic tree */
-	u8			mux;		/* qh multiplexed to hw_ep */
+	struct list_head	ring;		
+		
+	u8			mux;		
 
-	unsigned		offset;		/* in urb->transfer_buffer */
-	unsigned		segsize;	/* current xfer fragment */
+	unsigned		offset;		
+	unsigned		segsize;	
 
-	u8			type_reg;	/* {rx,tx} type register */
-	u8			intv_reg;	/* {rx,tx} interval register */
-	u8			addr_reg;	/* device address register */
-	u8			h_addr_reg;	/* hub address register */
-	u8			h_port_reg;	/* hub port register */
+	u8			type_reg;	
+	u8			intv_reg;	
+	u8			addr_reg;	
+	u8			h_addr_reg;	
+	u8			h_port_reg;	
 
-	u8			is_ready;	/* safe to modify hw_ep */
-	u8			type;		/* XFERTYPE_* */
+	u8			is_ready;	
+	u8			type;		
 	u8			epnum;
-	u8			hb_mult;	/* high bandwidth pkts per uf */
+	u8			hb_mult;	
 	u16			maxpacket;
-	u16			frame;		/* for periodic schedule */
-	unsigned		iso_idx;	/* in urb->iso_frame_desc[] */
-	struct sg_mapping_iter sg_miter;	/* for highmem in PIO mode */
-	bool			use_sg;		/* to track urb using sglist */
+	u16			frame;		
+	unsigned		iso_idx;	
+	struct sg_mapping_iter sg_miter;	
+	bool			use_sg;		
 };
 
-/* map from control or bulk queue head to the first qh on that ring */
+
 static inline struct musb_qh *first_qh(struct list_head *q)
 {
 	if (list_empty(q))
@@ -121,4 +115,4 @@ static inline struct urb *next_urb(struct musb_qh *qh)
 	return list_entry(queue->next, struct urb, urb_list);
 }
 
-#endif				/* _MUSB_HOST_H */
+#endif				

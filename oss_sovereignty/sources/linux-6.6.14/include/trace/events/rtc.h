@@ -200,7 +200,7 @@ DEFINE_EVENT(rtc_timer_class, rtc_timer_fired,
 	TP_ARGS(timer)
 );
 
-#endif /* _TRACE_RTC_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

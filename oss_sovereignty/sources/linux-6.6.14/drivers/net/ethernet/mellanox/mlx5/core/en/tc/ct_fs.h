@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
+
+
 
 #ifndef __MLX5_EN_TC_CT_FS_H__
 #define __MLX5_EN_TC_CT_FS_H__
@@ -8,7 +8,7 @@ struct mlx5_ct_fs {
 	const struct net_device *netdev;
 	struct mlx5_core_dev *dev;
 
-	/* private data */
+	
 	void *priv_data[];
 };
 
@@ -44,6 +44,6 @@ mlx5_ct_fs_smfs_ops_get(void)
 {
 	return NULL;
 }
-#endif /* IS_ENABLED(CONFIG_MLX5_SW_STEERING) */
+#endif 
 
-#endif /* __MLX5_EN_TC_CT_FS_H__ */
+#endif 

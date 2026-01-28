@@ -24,7 +24,7 @@ if [ -f /usr/include/ncurses/ncurses.h ]; then
 	echo -lncurses > ${libs}
 	exit 0
 fi
-if echo '#include <ncurses.h>' | ${HOSTCC} -E - >/dev/null 2>&1; then
+if echo '
 	echo -D_GNU_SOURCE > ${cflags}
 	echo -lncurses > ${libs}
 	exit 0

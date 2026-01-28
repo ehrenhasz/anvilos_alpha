@@ -80,9 +80,9 @@ print_log_test_results()
 log_section()
 {
 	echo
-	echo "################################################################################"
+	echo "
 	echo "TEST SECTION: $*"
-	echo "################################################################################"
+	echo "
 }
 test_command_or_ksft_skip()
 {
@@ -200,7 +200,7 @@ build_ipv6_addr()
 {
 	local addr="$1"
 	local out=""
-	local strlen="${#addr}"
+	local strlen="${
 	local padn
 	local i
 	for (( i = 0; i < strlen; i++ )); do

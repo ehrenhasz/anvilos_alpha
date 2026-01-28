@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef TARGET_CORE_PR_H
 #define TARGET_CORE_PR_H
 
 #include <linux/types.h>
 #include <target/target_core_base.h>
 
-/*
- * PERSISTENT_RESERVE_OUT service action codes
- *
- * spc5r04b section 6.15.2 Table 174
- */
+
 #define PRO_REGISTER				0x00
 #define PRO_RESERVE				0x01
 #define PRO_RELEASE				0x02
@@ -19,26 +15,14 @@
 #define PRO_REGISTER_AND_IGNORE_EXISTING_KEY	0x06
 #define PRO_REGISTER_AND_MOVE			0x07
 #define PRO_REPLACE_LOST_RESERVATION	0x08
-/*
- * PERSISTENT_RESERVE_IN service action codes
- *
- * spc5r04b section 6.14.1 Table 162
- */
+
 #define PRI_READ_KEYS				0x00
 #define PRI_READ_RESERVATION			0x01
 #define PRI_REPORT_CAPABILITIES			0x02
 #define PRI_READ_FULL_STATUS			0x03
-/*
- * PERSISTENT_RESERVE_ SCOPE field
- *
- * spc5r04b section 6.14.3.2 Table 166
- */
+
 #define PR_SCOPE_LU_SCOPE			0x00
-/*
- * PERSISTENT_RESERVE_* TYPE field
- *
- * spc5r04b section 6.14.3.3 Table 167
- */
+
 #define PR_TYPE_WRITE_EXCLUSIVE			0x01
 #define PR_TYPE_EXCLUSIVE_ACCESS		0x03
 #define PR_TYPE_WRITE_EXCLUSIVE_REGONLY		0x05
@@ -49,9 +33,7 @@
 #define PR_APTPL_MAX_IPORT_LEN			256
 #define PR_APTPL_MAX_TPORT_LEN			256
 
-/*
- *  Function defined in target_core_spc.c
- */
+
 void spc_gen_naa_6h_vendor_specific(struct se_device *, unsigned char *);
 
 extern struct kmem_cache *t10_pr_reg_cache;
@@ -77,4 +59,4 @@ extern sense_reason_t target_scsi3_emulate_pr_in(struct se_cmd *);
 extern sense_reason_t target_scsi3_emulate_pr_out(struct se_cmd *);
 extern sense_reason_t target_check_reservation(struct se_cmd *);
 
-#endif /* TARGET_CORE_PR_H */
+#endif 

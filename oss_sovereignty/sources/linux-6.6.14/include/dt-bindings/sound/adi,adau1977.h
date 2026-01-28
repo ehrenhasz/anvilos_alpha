@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef __DT_BINDINGS_ADI_ADAU1977_H__
 #define __DT_BINDINGS_ADI_ADAU1977_H__
 
@@ -12,4 +12,4 @@
 #define ADAU1977_MICBIAS_8V5	0x7
 #define ADAU1977_MICBIAS_9V0	0x8
 
-#endif /* __DT_BINDINGS_ADI_ADAU1977_H__ */
+#endif 

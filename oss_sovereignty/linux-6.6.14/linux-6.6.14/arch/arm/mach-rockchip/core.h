@@ -1,3 +1,0 @@
-extern char rockchip_secondary_trampoline;
-extern char rockchip_secondary_trampoline_end;
-extern unsigned long rockchip_boot_fn;

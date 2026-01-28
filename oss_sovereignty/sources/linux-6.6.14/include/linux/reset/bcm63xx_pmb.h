@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Broadcom BCM63xx Processor Monitor Bus shared routines (SMP and reset)
- *
- * Copyright (C) 2015, Broadcom Corporation
- * Author: Florian Fainelli <f.fainelli@gmail.com>
- */
+
+
 #ifndef __BCM63XX_PMB_H
 #define __BCM63XX_PMB_H
 
@@ -13,7 +8,7 @@
 #include <linux/delay.h>
 #include <linux/err.h>
 
-/* PMB Master controller register */
+
 #define PMB_CTRL		0x00
 #define  PMC_PMBM_START		(1 << 31)
 #define  PMC_PMBM_TIMEOUT	(1 << 30)
@@ -27,9 +22,7 @@
 
 #define PMB_BUS_ID_SHIFT	8
 
-/* Perform the low-level PMB master operation, shared between reads and
- * writes.
- */
+
 static inline int __bpcm_do_op(void __iomem *master, unsigned int addr,
 			       u32 off, u32 op)
 {
@@ -77,4 +70,4 @@ static inline int bpcm_wr(void __iomem *master, unsigned int addr,
 	return ret;
 }
 
-#endif /* __BCM63XX_PMB_H */
+#endif 

@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
 
-/*
- * Copyright (c) 2018 Intel Corporation.  All rights reserved.
- *
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ib_umad
@@ -121,6 +118,6 @@ DEFINE_EVENT(ib_umad_template, ib_umad_read_send,
 		 struct ib_mad_hdr *mad_hdr),
 	TP_ARGS(file, umad_hdr, mad_hdr));
 
-#endif /* _TRACE_IB_UMAD_H */
+#endif 
 
 #include <trace/define_trace.h>

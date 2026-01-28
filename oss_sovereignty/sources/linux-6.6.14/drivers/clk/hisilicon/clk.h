@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Hisilicon Hi3620 clock gate driver
- *
- * Copyright (c) 2012-2013 Hisilicon Limited.
- * Copyright (c) 2012-2013 Linaro Limited.
- *
- * Author: Haojian Zhuang <haojian.zhuang@linaro.org>
- *	   Xin Li <li.xin@linaro.org>
- */
+
+
 
 #ifndef	__HISI_CLK_H
 #define	__HISI_CLK_H
@@ -154,4 +146,4 @@ hisi_clk_unregister(mux)
 hisi_clk_unregister(divider)
 hisi_clk_unregister(gate)
 
-#endif	/* __HISI_CLK_H */
+#endif	

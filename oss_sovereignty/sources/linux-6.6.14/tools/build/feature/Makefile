@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 include ../../scripts/Makefile.include
 
 FILES=                                          \
@@ -92,7 +92,7 @@ __BUILD = $(CC) $(CFLAGS) -MD -Wall -Werror -o $@ $(patsubst %.bin,%.c,$(@F)) $(
 __BUILDXX = $(CXX) $(CXXFLAGS) -MD -Wall -Werror -o $@ $(patsubst %.bin,%.cpp,$(@F)) $(LDFLAGS)
   BUILDXX = $(__BUILDXX) > $(@:.bin=.make.output) 2>&1
 
-###############################
+
 
 $(OUTPUT)test-all.bin:
 	$(BUILD_ALL) || $(BUILD_ALL) -lopcodes -liberty
@@ -140,8 +140,8 @@ $(OUTPUT)test-setns.bin:
 	$(BUILD)
 
 $(OUTPUT)test-libopencsd.bin:
-	$(BUILD) # -lopencsd_c_api -lopencsd provided by
-		 # $(FEATURE_CHECK_LDFLAGS-libopencsd)
+	$(BUILD) 
+		 
 
 DWARFLIBS := -ldw
 ifeq ($(findstring -static,${LDFLAGS}),-static)
@@ -277,10 +277,10 @@ $(OUTPUT)test-timerfd.bin:
 	$(BUILD)
 
 $(OUTPUT)test-libdw-dwarf-unwind.bin:
-	$(BUILD) # -ldw provided by $(FEATURE_CHECK_LDFLAGS-libdw-dwarf-unwind)
+	$(BUILD) 
 
 $(OUTPUT)test-libbabeltrace.bin:
-	$(BUILD) # -lbabeltrace provided by $(FEATURE_CHECK_LDFLAGS-libbabeltrace)
+	$(BUILD) 
 
 $(OUTPUT)test-compile-32.bin:
 	$(CC) -m32 -o $@ test-compile.c
@@ -379,7 +379,7 @@ $(OUTPUT)test-file-handle.bin:
 $(OUTPUT)test-libpfm4.bin:
 	$(BUILD) -lpfm
 
-###############################
+
 
 clean:
 	rm -f $(FILES) $(OUTPUT)*.d $(FILES:.bin=.make.output)

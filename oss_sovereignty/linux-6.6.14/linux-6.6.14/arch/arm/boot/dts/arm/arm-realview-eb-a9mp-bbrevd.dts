@@ -1,5 +1,0 @@
-#include "arm-realview-eb-a9mp.dts"
-#include "arm-realview-eb-bbrevd.dtsi"
-/ {
-	model = "ARM RealView EB Baseboard Rev D Cortex A9 MPCore";
-};

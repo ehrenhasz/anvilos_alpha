@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2014 Cisco Systems, Inc.  All rights reserved. */
+
+
 
 #ifndef _VNIC_DEV_H_
 #define _VNIC_DEV_H_
@@ -93,4 +93,4 @@ void svnic_dev_set_intr_mode(struct vnic_dev *vdev,
 enum vnic_dev_intr_mode svnic_dev_get_intr_mode(struct vnic_dev *vdev);
 void svnic_dev_unregister(struct vnic_dev *vdev);
 int svnic_dev_cmd_init(struct vnic_dev *vdev, int fallback);
-#endif /* _VNIC_DEV_H_ */
+#endif 

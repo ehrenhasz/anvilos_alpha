@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+
 
 #if !defined(__EFC_NODE_H__)
 #define __EFC_NODE_H__
@@ -38,12 +35,7 @@ efc_node_evt_set(struct efc_sm_ctx *ctx, enum efc_sm_event evt,
 	node->current_evt = evt;
 }
 
-/**
- * hold frames in pending frame list
- *
- * Unsolicited receive frames are held on the node pending frame list,
- * rather than being processed.
- */
+
 
 static inline void
 efc_node_hold_frames(struct efc_node *node)
@@ -51,12 +43,7 @@ efc_node_hold_frames(struct efc_node *node)
 	node->hold_frames = true;
 }
 
-/**
- * accept frames
- *
- * Unsolicited receive frames processed rather than being held on the node
- * pending frame list.
- */
+
 
 static inline void
 efc_node_accept_frames(struct efc_node *node)
@@ -64,13 +51,7 @@ efc_node_accept_frames(struct efc_node *node)
 	node->hold_frames = false;
 }
 
-/*
- * Node initiator/target enable defines
- * All combinations of the SLI port (nport) initiator/target enable,
- * and remote node initiator/target enable are enumerated.
- * ex: EFC_NODE_ENABLE_T_TO_IT decodes to target mode is enabled on SLI port
- * and I+T is enabled on remote node.
- */
+
 enum efc_node_enable {
 	EFC_NODE_ENABLE_x_TO_x,
 	EFC_NODE_ENABLE_x_TO_T,
@@ -188,4 +169,4 @@ efc_node_recv_ct_frame(struct efc_node *node, struct efc_hw_sequence *seq);
 void
 efc_node_recv_fcp_cmd(struct efc_node *node, struct efc_hw_sequence *seq);
 
-#endif /* __EFC_NODE_H__ */
+#endif 

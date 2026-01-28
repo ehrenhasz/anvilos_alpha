@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SA8775P_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SA8775P_H
 
-/* GCC clocks */
+
 #define GCC_GPLL0					0
 #define GCC_GPLL0_OUT_EVEN				1
 #define GCC_GPLL1					2
@@ -258,7 +255,7 @@
 #define GCC_UFS_PHY_PHY_AUX_HW_CTL_CLK			247
 #define GCC_UFS_PHY_UNIPRO_CORE_HW_CTL_CLK		248
 
-/* GCC resets */
+
 #define GCC_CAMERA_BCR					0
 #define GCC_DISPLAY1_BCR				1
 #define GCC_DISPLAY_BCR					2
@@ -306,7 +303,7 @@
 #define GCC_VIDEO_AXI0_CLK_ARES				44
 #define GCC_VIDEO_AXI1_CLK_ARES				45
 
-/* GCC GDSCs */
+
 #define PCIE_0_GDSC					0
 #define PCIE_1_GDSC					1
 #define UFS_CARD_GDSC					2
@@ -317,4 +314,4 @@
 #define EMAC0_GDSC					7
 #define EMAC1_GDSC					8
 
-#endif /* _DT_BINDINGS_CLK_QCOM_GCC_SA8775P_H */
+#endif 

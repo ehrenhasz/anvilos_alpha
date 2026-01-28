@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Serpent Cipher 4-way parallel algorithm (i586/SSE2)
- *
- * Copyright (C) 2011 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
- *
- * Based on crypto/serpent.c by
- *  Copyright (C) 2002 Dag Arne Osvik <osvik@ii.uib.no>
- *                2003 Herbert Valerio Riedel <hvr@gnu.org>
- */
+
+
 
 #include <linux/linkage.h>
 
@@ -19,9 +11,7 @@
 #define arg_src 12
 #define arg_xor 16
 
-/**********************************************************************
-  4-way SSE2 serpent
- **********************************************************************/
+
 #define CTX %edx
 
 #define RA %xmm0
@@ -498,12 +488,7 @@
 	movdqu x3,		(3*4*4)(out);
 
 SYM_FUNC_START(__serpent_enc_blk_4way)
-	/* input:
-	 *	arg_ctx(%esp): ctx, CTX
-	 *	arg_dst(%esp): dst
-	 *	arg_src(%esp): src
-	 *	arg_xor(%esp): bool, if true: xor output
-	 */
+	
 
 	pcmpeqd RNOT, RNOT;
 
@@ -562,11 +547,7 @@ SYM_FUNC_START(__serpent_enc_blk_4way)
 SYM_FUNC_END(__serpent_enc_blk_4way)
 
 SYM_FUNC_START(serpent_dec_blk_4way)
-	/* input:
-	 *	arg_ctx(%esp): ctx, CTX
-	 *	arg_dst(%esp): dst
-	 *	arg_src(%esp): src
-	 */
+	
 
 	pcmpeqd RNOT, RNOT;
 

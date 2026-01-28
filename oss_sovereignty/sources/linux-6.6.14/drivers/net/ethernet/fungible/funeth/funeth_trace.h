@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM funeth
@@ -106,9 +106,9 @@ TRACE_EVENT(funeth_rx,
 		  __entry->cls_vec)
 );
 
-#endif /* _TRACE_FUNETH_H */
+#endif 
 
-/* Below must be outside protection. */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE

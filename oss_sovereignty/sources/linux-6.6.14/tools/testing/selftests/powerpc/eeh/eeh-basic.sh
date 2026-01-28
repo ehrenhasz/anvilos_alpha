@@ -1,5 +1,5 @@
 . ./eeh-functions.sh
-eeh_test_prep # NB: may exit
+eeh_test_prep 
 pre_lspci=`mktemp`
 lspci > $pre_lspci
 devices=""

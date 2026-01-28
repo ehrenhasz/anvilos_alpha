@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * sm3_base.h - core logic for SM3 implementations
- *
- * Copyright (C) 2017 ARM Limited or its affiliates.
- * Written by Gilad Ben-Yossef <gilad@benyossef.com>
- */
+
+
 
 #ifndef _CRYPTO_SM3_BASE_H
 #define _CRYPTO_SM3_BASE_H
@@ -109,4 +104,4 @@ static inline int sm3_base_finish(struct shash_desc *desc, u8 *out)
 	return 0;
 }
 
-#endif /* _CRYPTO_SM3_BASE_H */
+#endif 

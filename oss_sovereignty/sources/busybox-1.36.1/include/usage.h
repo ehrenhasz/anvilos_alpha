@@ -1,15 +1,6 @@
-/* DO NOT EDIT. This file is generated from usage.src.h */
-/* vi: set sw=8 ts=8: */
-/*
- * This file suffers from chronically incorrect tabification
- * of messages. Before editing this file:
- * 1. Switch you editor to 8-space tab mode.
- * 2. Do not use \t in messages, use real tab character.
- * 3. Start each source line with message as follows:
- *    |<7 spaces>"text with tabs"....
- * or
- *    |<5 spaces>"\ntext with tabs"....
- */
+
+
+
 #ifndef BB_USAGE_H
 #define BB_USAGE_H 1
 
@@ -3822,7 +3813,7 @@
      "\n	-b	Apply blacklist to module names too" \
 	) \
 
-#endif /* !ENABLE_MODPROBE_SMALL */ \
+#endif  \
 
 #if !ENABLE_MODPROBE_SMALL \
 
@@ -4147,7 +4138,7 @@
        "ipaddr show|flush [dev IFACE] [scope SCOPE] [to PREFIX] [label PATTERN]" \
 
 #define iplink_trivial_usage \
-       /*Usage:iplink*/"set IFACE [up|down] [arp on|off] [multicast on|off]\n" \
+       "set IFACE [up|down] [arp on|off] [multicast on|off]\n" \
        "	[promisc on|off] [mtu NUM] [name NAME] [qlen NUM] [address MAC]\n" \
        "	[master IFACE | nomaster] [netns PID]" \
 
@@ -4398,7 +4389,7 @@
      "\n	-s ADDR	Local address" \
      "\n	-w SEC	Timeout for connects and final net reads" \
 	IF_NC_EXTRA( \
-     "\n	-i SEC	Delay interval for lines sent" /* ", ports scanned" */ \
+     "\n	-i SEC	Delay interval for lines sent"  \
 	) \
      "\n	-n	Don't do DNS resolution" \
      "\n	-u	UDP mode" \
@@ -5079,7 +5070,7 @@
 #define pidof_trivial_usage \
        "[NAME]..." \
 
-#define USAGE_PIDOF /* none */ \
+#define USAGE_PIDOF  \
 
 #endif \
 
@@ -5129,7 +5120,7 @@
      "\n	-T			Show threads" \
 	) \
 
-#else /* !ENABLE_DESKTOP */ \
+#else  \
 
 #if !ENABLE_SELINUX && !ENABLE_FEATURE_PS_WIDE \
 
@@ -5160,7 +5151,7 @@
      "\n	T	Show threads" \
 	) \
 
-#endif /* ENABLE_DESKTOP */ \
+#endif  \
 
 #define ps_example_usage \
        "$ ps\n" \
@@ -5891,7 +5882,7 @@
      "\n	-s SHELL	Set shell quoting conventions" \
      "\n	-T		Version test (exits with 4)" \
      "\n	-u		Don't quote output" \
-	IF_FEATURE_GETOPT_LONG( /* example uses -l, needs FEATURE_GETOPT_LONG */ \
+	IF_FEATURE_GETOPT_LONG(  \
      "\n" \
      "\nExample:" \
      "\n" \

@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017~2018 NXP
- *
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_IMX7ULP_H
 #define __DT_BINDINGS_CLOCK_IMX7ULP_H
 
-/* SCG1 */
+
 
 #define IMX7ULP_CLK_DUMMY		0
 #define IMX7ULP_CLK_ROSC		1
@@ -49,7 +45,7 @@
 #define IMX7ULP_CLK_NIC1_DIV		36
 #define IMX7ULP_CLK_NIC1_BUS_DIV	37
 #define IMX7ULP_CLK_NIC1_EXT_DIV	38
-/* IMX7ULP_CLK_MIPI_PLL is unsupported and shouldn't be used in DT */
+
 #define IMX7ULP_CLK_MIPI_PLL		39
 #define IMX7ULP_CLK_SIRC		40
 #define IMX7ULP_CLK_SOSC_BUS_CLK	41
@@ -63,7 +59,7 @@
 
 #define IMX7ULP_CLK_SCG1_END		48
 
-/* PCC2 */
+
 #define IMX7ULP_CLK_DMA1		0
 #define IMX7ULP_CLK_RGPIO2P1		1
 #define IMX7ULP_CLK_FLEXBUS		2
@@ -91,7 +87,7 @@
 
 #define IMX7ULP_CLK_PCC2_END		25
 
-/* PCC3 */
+
 #define IMX7ULP_CLK_LPTPM6		0
 #define IMX7ULP_CLK_LPTPM7		1
 #define IMX7ULP_CLK_LPI2C6		2
@@ -111,9 +107,9 @@
 
 #define IMX7ULP_CLK_PCC3_END		16
 
-/* SMC1 */
+
 #define IMX7ULP_CLK_ARM			0
 
 #define IMX7ULP_CLK_SMC1_END		1
 
-#endif /* __DT_BINDINGS_CLOCK_IMX7ULP_H */
+#endif 

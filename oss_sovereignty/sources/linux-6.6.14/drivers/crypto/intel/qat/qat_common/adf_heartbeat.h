@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright(c) 2023 Intel Corporation */
+
+
 
 #ifndef ADF_HEARTBEAT_H_
 #define ADF_HEARTBEAT_H_
@@ -76,4 +76,4 @@ static inline void adf_heartbeat_check_ctrs(struct adf_accel_dev *accel_dev)
 {
 }
 #endif
-#endif /* ADF_HEARTBEAT_H_ */
+#endif 

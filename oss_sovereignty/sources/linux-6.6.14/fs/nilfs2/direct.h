@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * NILFS direct block pointer.
- *
- * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Written by Koji Sato.
- */
+
+
 
 #ifndef _NILFS_DIRECT_H
 #define _NILFS_DIRECT_H
@@ -25,4 +19,4 @@ int nilfs_direct_delete_and_convert(struct nilfs_bmap *, __u64, __u64 *,
 				    __u64 *, int);
 
 
-#endif	/* _NILFS_DIRECT_H */
+#endif	

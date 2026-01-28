@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LIBPERF_CORE_H
 #define __LIBPERF_CORE_H
 
@@ -22,4 +22,4 @@ typedef int (*libperf_print_fn_t)(enum libperf_print_level level,
 
 LIBPERF_API void libperf_init(libperf_print_fn_t fn);
 
-#endif /* __LIBPERF_CORE_H */
+#endif 

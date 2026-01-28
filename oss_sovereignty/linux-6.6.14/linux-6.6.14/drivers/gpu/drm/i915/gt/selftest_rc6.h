@@ -1,5 +1,0 @@
-#ifndef SELFTEST_RC6_H
-#define SELFTEST_RC6_H
-int live_rc6_ctx_wa(void *arg);
-int live_rc6_manual(void *arg);
-#endif  

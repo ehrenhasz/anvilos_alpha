@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2005 Russell King.
- */
+
+
 #ifndef __MFD_MCP_SA11X0_H
 #define __MFD_MCP_SA11X0_H
 

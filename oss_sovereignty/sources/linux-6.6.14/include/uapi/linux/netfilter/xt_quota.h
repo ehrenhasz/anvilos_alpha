@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _XT_QUOTA_H
 #define _XT_QUOTA_H
 
@@ -16,8 +16,8 @@ struct xt_quota_info {
 	__u32 pad;
 	__aligned_u64 quota;
 
-	/* Used internally by the kernel */
+	
 	struct xt_quota_priv	*master;
 };
 
-#endif /* _XT_QUOTA_H */
+#endif 

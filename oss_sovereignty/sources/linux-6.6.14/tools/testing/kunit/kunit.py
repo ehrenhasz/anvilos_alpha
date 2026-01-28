@@ -104,7 +104,7 @@ def _list_tests_attr(linux: kunit_kernel.LinuxSourceTree, request: KunitExecRequ
 	return lines
 def _suites_from_test_list(tests: List[str]) -> List[str]:
 	"""Extracts all the suites from an ordered list of tests."""
-	suites = []  # type: List[str]
+	suites = []  
 	for t in tests:
 		parts = t.split('.', maxsplit=2)
 		if len(parts) != 2:
@@ -405,8 +405,8 @@ def exec_handler(cli_args: argparse.Namespace) -> None:
 		sys.exit(1)
 def parse_handler(cli_args: argparse.Namespace) -> None:
 	if cli_args.file is None:
-		sys.stdin.reconfigure(errors='backslashreplace')  # type: ignore
-		kunit_output = sys.stdin  # type: Iterable[str]
+		sys.stdin.reconfigure(errors='backslashreplace')  
+		kunit_output = sys.stdin  
 	else:
 		with open(cli_args.file, 'r', errors='backslashreplace') as f:
 			kunit_output = f.read().splitlines()

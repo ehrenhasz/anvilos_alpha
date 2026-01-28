@@ -6,12 +6,12 @@ find . ! -name . -print | perl -ne '{
 		($dev,$ino,$mod,$nl,$uid,$gid,$rdev,$sz,$at,$mt,$ct,$bsz,$blk)=stat;
 	}
 	$name = $_;
-	$name =~ s|^.||;	# Strip leading dot from path
+	$name =~ s|^.||;	
 	print "$name:\n";
 	print "\tclass=apply,inventory,openssh\n";
 	print "\towner=root\n";
 	print "\tgroup=system\n";
-	printf "\tmode=%lo\n", $mod & 07777;	# Mask perm bits
+	printf "\tmode=%lo\n", $mod & 07777;	
 	if ( -l $_ ) {
 		print "\ttype=SYMLINK\n";
 		printf "\ttarget=%s\n", readlink($_);

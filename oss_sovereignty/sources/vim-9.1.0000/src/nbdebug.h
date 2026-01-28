@@ -1,11 +1,4 @@
-/* vi:set ts=8 sw=8 noet:
- *
- * VIM - Vi IMproved	by Bram Moolenaar
- *			Visual Workshop integration by Gordon Prieur
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- */
+
 
 
 #ifndef NBDEBUG_H
@@ -37,9 +30,9 @@
 # define NBDEBUG_TRACE	1
 
 typedef enum {
-		WT_ENV = 1,		// look for env var if set
-		WT_WAIT,		// look for ~/.gvimwait if set
-		WT_STOP			// look for ~/.gvimstop if set
+		WT_ENV = 1,		
+		WT_WAIT,		
+		WT_STOP			
 } WtWait;
 
 
@@ -49,18 +42,15 @@ void nbdebug_wait(u_int wait_flags, char *wait_var, u_int wait_secs);
 void nbdebug_log_init(char *log_var, char *level_var);
 
 extern FILE	*nb_debug;
-extern u_int	 nb_dlevel;		// nb_debug verbosity level
+extern u_int	 nb_dlevel;		
 
-#else		// not NBDEBUG
+#else		
 
 # ifndef ASSERT
 #  define ASSERT(c)
 # endif
 
-/*
- * The following 3 stubs are needed because a macro cannot be used because of
- * the variable number of arguments.
- */
+
 
 void
 nbdbg(
@@ -69,5 +59,5 @@ nbdbg(
 {
 }
 
-#endif // NBDEBUG
-#endif // NBDEBUG_H
+#endif 
+#endif 

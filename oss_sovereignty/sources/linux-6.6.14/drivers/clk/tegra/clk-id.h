@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides IDs for clocks common between several Tegra SoCs
- */
+
+
 #ifndef _TEGRA_CLK_ID_H
 #define _TEGRA_CLK_ID_H
 
@@ -322,4 +320,4 @@ enum clk_id {
 	tegra_clk_max,
 };
 
-#endif	/* _TEGRA_CLK_ID_H */
+#endif	

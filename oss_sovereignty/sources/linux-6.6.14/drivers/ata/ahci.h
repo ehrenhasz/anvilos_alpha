@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  ahci.h - Common AHCI SATA definitions and declarations
- *
- *  Maintained by:  Tejun Heo <tj@kernel.org>
- *    		    Please ALWAYS copy linux-ide@vger.kernel.org
- *		    on emails.
- *
- *  Copyright 2004-2005 Red Hat, Inc.
- *
- * libata documentation is available via 'make {ps|pdf}docs',
- * as Documentation/driver-api/libata.rst
- *
- * AHCI hardware documentation:
- * http://www.intel.com/technology/serialata/pdf/rev1_0.pdf
- * http://www.intel.com/technology/serialata/pdf/rev1_1.pdf
- */
+
+
 
 #ifndef _AHCI_H
 #define _AHCI_H
@@ -26,10 +11,10 @@
 #include <linux/regulator/consumer.h>
 #include <linux/bits.h>
 
-/* Enclosure Management Control */
+
 #define EM_CTRL_MSG_TYPE              0x000f0000
 
-/* Enclosure Management LED Message Type */
+
 #define EM_MSG_LED_HBA_PORT           0x0000000f
 #define EM_MSG_LED_PMP_SLOT           0x0000ff00
 #define EM_MSG_LED_VALUE              0xffff0000
@@ -39,7 +24,7 @@
 
 enum {
 	AHCI_MAX_PORTS		= 32,
-	AHCI_MAX_SG		= 168, /* hardware max is 64K */
+	AHCI_MAX_SG		= 168, 
 	AHCI_DMA_BOUNDARY	= 0xffffffff,
 	AHCI_MAX_CMDS		= 32,
 	AHCI_CMD_SZ		= 32,
@@ -61,92 +46,92 @@ enum {
 	AHCI_CMD_RESET		= BIT(8),
 	AHCI_CMD_CLR_BUSY	= BIT(10),
 
-	RX_FIS_PIO_SETUP	= 0x20,	/* offset of PIO Setup FIS data */
-	RX_FIS_D2H_REG		= 0x40,	/* offset of D2H Register FIS data */
-	RX_FIS_SDB		= 0x58, /* offset of SDB FIS data */
-	RX_FIS_UNK		= 0x60, /* offset of Unknown FIS data */
+	RX_FIS_PIO_SETUP	= 0x20,	
+	RX_FIS_D2H_REG		= 0x40,	
+	RX_FIS_SDB		= 0x58, 
+	RX_FIS_UNK		= 0x60, 
 
-	/* global controller registers */
-	HOST_CAP		= 0x00, /* host capabilities */
-	HOST_CTL		= 0x04, /* global host control */
-	HOST_IRQ_STAT		= 0x08, /* interrupt status */
-	HOST_PORTS_IMPL		= 0x0c, /* bitmap of implemented ports */
-	HOST_VERSION		= 0x10, /* AHCI spec. version compliancy */
-	HOST_EM_LOC		= 0x1c, /* Enclosure Management location */
-	HOST_EM_CTL		= 0x20, /* Enclosure Management Control */
-	HOST_CAP2		= 0x24, /* host capabilities, extended */
+	
+	HOST_CAP		= 0x00, 
+	HOST_CTL		= 0x04, 
+	HOST_IRQ_STAT		= 0x08, 
+	HOST_PORTS_IMPL		= 0x0c, 
+	HOST_VERSION		= 0x10, 
+	HOST_EM_LOC		= 0x1c, 
+	HOST_EM_CTL		= 0x20, 
+	HOST_CAP2		= 0x24, 
 
-	/* HOST_CTL bits */
-	HOST_RESET		= BIT(0),  /* reset controller; self-clear */
-	HOST_IRQ_EN		= BIT(1),  /* global IRQ enable */
-	HOST_MRSM		= BIT(2),  /* MSI Revert to Single Message */
-	HOST_AHCI_EN		= BIT(31), /* AHCI enabled */
+	
+	HOST_RESET		= BIT(0),  
+	HOST_IRQ_EN		= BIT(1),  
+	HOST_MRSM		= BIT(2),  
+	HOST_AHCI_EN		= BIT(31), 
 
-	/* HOST_CAP bits */
-	HOST_CAP_SXS		= BIT(5),  /* Supports External SATA */
-	HOST_CAP_EMS		= BIT(6),  /* Enclosure Management support */
-	HOST_CAP_CCC		= BIT(7),  /* Command Completion Coalescing */
-	HOST_CAP_PART		= BIT(13), /* Partial state capable */
-	HOST_CAP_SSC		= BIT(14), /* Slumber state capable */
-	HOST_CAP_PIO_MULTI	= BIT(15), /* PIO multiple DRQ support */
-	HOST_CAP_FBS		= BIT(16), /* FIS-based switching support */
-	HOST_CAP_PMP		= BIT(17), /* Port Multiplier support */
-	HOST_CAP_ONLY		= BIT(18), /* Supports AHCI mode only */
-	HOST_CAP_CLO		= BIT(24), /* Command List Override support */
-	HOST_CAP_LED		= BIT(25), /* Supports activity LED */
-	HOST_CAP_ALPM		= BIT(26), /* Aggressive Link PM support */
-	HOST_CAP_SSS		= BIT(27), /* Staggered Spin-up */
-	HOST_CAP_MPS		= BIT(28), /* Mechanical presence switch */
-	HOST_CAP_SNTF		= BIT(29), /* SNotification register */
-	HOST_CAP_NCQ		= BIT(30), /* Native Command Queueing */
-	HOST_CAP_64		= BIT(31), /* PCI DAC (64-bit DMA) support */
+	
+	HOST_CAP_SXS		= BIT(5),  
+	HOST_CAP_EMS		= BIT(6),  
+	HOST_CAP_CCC		= BIT(7),  
+	HOST_CAP_PART		= BIT(13), 
+	HOST_CAP_SSC		= BIT(14), 
+	HOST_CAP_PIO_MULTI	= BIT(15), 
+	HOST_CAP_FBS		= BIT(16), 
+	HOST_CAP_PMP		= BIT(17), 
+	HOST_CAP_ONLY		= BIT(18), 
+	HOST_CAP_CLO		= BIT(24), 
+	HOST_CAP_LED		= BIT(25), 
+	HOST_CAP_ALPM		= BIT(26), 
+	HOST_CAP_SSS		= BIT(27), 
+	HOST_CAP_MPS		= BIT(28), 
+	HOST_CAP_SNTF		= BIT(29), 
+	HOST_CAP_NCQ		= BIT(30), 
+	HOST_CAP_64		= BIT(31), 
 
-	/* HOST_CAP2 bits */
-	HOST_CAP2_BOH		= BIT(0),  /* BIOS/OS handoff supported */
-	HOST_CAP2_NVMHCI	= BIT(1),  /* NVMHCI supported */
-	HOST_CAP2_APST		= BIT(2),  /* Automatic partial to slumber */
-	HOST_CAP2_SDS		= BIT(3),  /* Support device sleep */
-	HOST_CAP2_SADM		= BIT(4),  /* Support aggressive DevSlp */
-	HOST_CAP2_DESO		= BIT(5),  /* DevSlp from slumber only */
+	
+	HOST_CAP2_BOH		= BIT(0),  
+	HOST_CAP2_NVMHCI	= BIT(1),  
+	HOST_CAP2_APST		= BIT(2),  
+	HOST_CAP2_SDS		= BIT(3),  
+	HOST_CAP2_SADM		= BIT(4),  
+	HOST_CAP2_DESO		= BIT(5),  
 
-	/* registers for each SATA port */
-	PORT_LST_ADDR		= 0x00, /* command list DMA addr */
-	PORT_LST_ADDR_HI	= 0x04, /* command list DMA addr hi */
-	PORT_FIS_ADDR		= 0x08, /* FIS rx buf addr */
-	PORT_FIS_ADDR_HI	= 0x0c, /* FIS rx buf addr hi */
-	PORT_IRQ_STAT		= 0x10, /* interrupt status */
-	PORT_IRQ_MASK		= 0x14, /* interrupt enable/disable mask */
-	PORT_CMD		= 0x18, /* port command */
-	PORT_TFDATA		= 0x20,	/* taskfile data */
-	PORT_SIG		= 0x24,	/* device TF signature */
-	PORT_CMD_ISSUE		= 0x38, /* command issue */
-	PORT_SCR_STAT		= 0x28, /* SATA phy register: SStatus */
-	PORT_SCR_CTL		= 0x2c, /* SATA phy register: SControl */
-	PORT_SCR_ERR		= 0x30, /* SATA phy register: SError */
-	PORT_SCR_ACT		= 0x34, /* SATA phy register: SActive */
-	PORT_SCR_NTF		= 0x3c, /* SATA phy register: SNotification */
-	PORT_FBS		= 0x40, /* FIS-based Switching */
-	PORT_DEVSLP		= 0x44, /* device sleep */
+	
+	PORT_LST_ADDR		= 0x00, 
+	PORT_LST_ADDR_HI	= 0x04, 
+	PORT_FIS_ADDR		= 0x08, 
+	PORT_FIS_ADDR_HI	= 0x0c, 
+	PORT_IRQ_STAT		= 0x10, 
+	PORT_IRQ_MASK		= 0x14, 
+	PORT_CMD		= 0x18, 
+	PORT_TFDATA		= 0x20,	
+	PORT_SIG		= 0x24,	
+	PORT_CMD_ISSUE		= 0x38, 
+	PORT_SCR_STAT		= 0x28, 
+	PORT_SCR_CTL		= 0x2c, 
+	PORT_SCR_ERR		= 0x30, 
+	PORT_SCR_ACT		= 0x34, 
+	PORT_SCR_NTF		= 0x3c, 
+	PORT_FBS		= 0x40, 
+	PORT_DEVSLP		= 0x44, 
 
-	/* PORT_IRQ_{STAT,MASK} bits */
-	PORT_IRQ_COLD_PRES	= BIT(31), /* cold presence detect */
-	PORT_IRQ_TF_ERR		= BIT(30), /* task file error */
-	PORT_IRQ_HBUS_ERR	= BIT(29), /* host bus fatal error */
-	PORT_IRQ_HBUS_DATA_ERR	= BIT(28), /* host bus data error */
-	PORT_IRQ_IF_ERR		= BIT(27), /* interface fatal error */
-	PORT_IRQ_IF_NONFATAL	= BIT(26), /* interface non-fatal error */
-	PORT_IRQ_OVERFLOW	= BIT(24), /* xfer exhausted available S/G */
-	PORT_IRQ_BAD_PMP	= BIT(23), /* incorrect port multiplier */
+	
+	PORT_IRQ_COLD_PRES	= BIT(31), 
+	PORT_IRQ_TF_ERR		= BIT(30), 
+	PORT_IRQ_HBUS_ERR	= BIT(29), 
+	PORT_IRQ_HBUS_DATA_ERR	= BIT(28), 
+	PORT_IRQ_IF_ERR		= BIT(27), 
+	PORT_IRQ_IF_NONFATAL	= BIT(26), 
+	PORT_IRQ_OVERFLOW	= BIT(24), 
+	PORT_IRQ_BAD_PMP	= BIT(23), 
 
-	PORT_IRQ_PHYRDY		= BIT(22), /* PhyRdy changed */
-	PORT_IRQ_DMPS		= BIT(7),  /* mechanical presence status */
-	PORT_IRQ_CONNECT	= BIT(6),  /* port connect change status */
-	PORT_IRQ_SG_DONE	= BIT(5),  /* descriptor processed */
-	PORT_IRQ_UNK_FIS	= BIT(4),  /* unknown FIS rx'd */
-	PORT_IRQ_SDB_FIS	= BIT(3),  /* Set Device Bits FIS rx'd */
-	PORT_IRQ_DMAS_FIS	= BIT(2),  /* DMA Setup FIS rx'd */
-	PORT_IRQ_PIOS_FIS	= BIT(1),  /* PIO Setup FIS rx'd */
-	PORT_IRQ_D2H_REG_FIS	= BIT(0),  /* D2H Register FIS rx'd */
+	PORT_IRQ_PHYRDY		= BIT(22), 
+	PORT_IRQ_DMPS		= BIT(7),  
+	PORT_IRQ_CONNECT	= BIT(6),  
+	PORT_IRQ_SG_DONE	= BIT(5),  
+	PORT_IRQ_UNK_FIS	= BIT(4),  
+	PORT_IRQ_SDB_FIS	= BIT(3),  
+	PORT_IRQ_DMAS_FIS	= BIT(2),  
+	PORT_IRQ_PIOS_FIS	= BIT(1),  
+	PORT_IRQ_D2H_REG_FIS	= BIT(0),  
 
 	PORT_IRQ_FREEZE		= PORT_IRQ_HBUS_ERR |
 				  PORT_IRQ_IF_ERR |
@@ -161,123 +146,116 @@ enum {
 				  PORT_IRQ_SDB_FIS | PORT_IRQ_DMAS_FIS |
 				  PORT_IRQ_PIOS_FIS | PORT_IRQ_D2H_REG_FIS,
 
-	/* PORT_CMD bits */
-	PORT_CMD_ASP		= BIT(27), /* Aggressive Slumber/Partial */
-	PORT_CMD_ALPE		= BIT(26), /* Aggressive Link PM enable */
-	PORT_CMD_ATAPI		= BIT(24), /* Device is ATAPI */
-	PORT_CMD_FBSCP		= BIT(22), /* FBS Capable Port */
-	PORT_CMD_ESP		= BIT(21), /* External Sata Port */
-	PORT_CMD_CPD		= BIT(20), /* Cold Presence Detection */
-	PORT_CMD_MPSP		= BIT(19), /* Mechanical Presence Switch */
-	PORT_CMD_HPCP		= BIT(18), /* HotPlug Capable Port */
-	PORT_CMD_PMP		= BIT(17), /* PMP attached */
-	PORT_CMD_LIST_ON	= BIT(15), /* cmd list DMA engine running */
-	PORT_CMD_FIS_ON		= BIT(14), /* FIS DMA engine running */
-	PORT_CMD_FIS_RX		= BIT(4),  /* Enable FIS receive DMA engine */
-	PORT_CMD_CLO		= BIT(3),  /* Command list override */
-	PORT_CMD_POWER_ON	= BIT(2),  /* Power up device */
-	PORT_CMD_SPIN_UP	= BIT(1),  /* Spin up device */
-	PORT_CMD_START		= BIT(0),  /* Enable port DMA engine */
+	
+	PORT_CMD_ASP		= BIT(27), 
+	PORT_CMD_ALPE		= BIT(26), 
+	PORT_CMD_ATAPI		= BIT(24), 
+	PORT_CMD_FBSCP		= BIT(22), 
+	PORT_CMD_ESP		= BIT(21), 
+	PORT_CMD_CPD		= BIT(20), 
+	PORT_CMD_MPSP		= BIT(19), 
+	PORT_CMD_HPCP		= BIT(18), 
+	PORT_CMD_PMP		= BIT(17), 
+	PORT_CMD_LIST_ON	= BIT(15), 
+	PORT_CMD_FIS_ON		= BIT(14), 
+	PORT_CMD_FIS_RX		= BIT(4),  
+	PORT_CMD_CLO		= BIT(3),  
+	PORT_CMD_POWER_ON	= BIT(2),  
+	PORT_CMD_SPIN_UP	= BIT(1),  
+	PORT_CMD_START		= BIT(0),  
 
-	PORT_CMD_ICC_MASK	= (0xfu << 28), /* i/f ICC state mask */
-	PORT_CMD_ICC_ACTIVE	= (0x1u << 28), /* Put i/f in active state */
-	PORT_CMD_ICC_PARTIAL	= (0x2u << 28), /* Put i/f in partial state */
-	PORT_CMD_ICC_SLUMBER	= (0x6u << 28), /* Put i/f in slumber state */
+	PORT_CMD_ICC_MASK	= (0xfu << 28), 
+	PORT_CMD_ICC_ACTIVE	= (0x1u << 28), 
+	PORT_CMD_ICC_PARTIAL	= (0x2u << 28), 
+	PORT_CMD_ICC_SLUMBER	= (0x6u << 28), 
 
-	/* PORT_CMD capabilities mask */
+	
 	PORT_CMD_CAP		= PORT_CMD_HPCP | PORT_CMD_MPSP |
 				  PORT_CMD_CPD | PORT_CMD_ESP | PORT_CMD_FBSCP,
 
-	/* PORT_FBS bits */
-	PORT_FBS_DWE_OFFSET	= 16, /* FBS device with error offset */
-	PORT_FBS_ADO_OFFSET	= 12, /* FBS active dev optimization offset */
-	PORT_FBS_DEV_OFFSET	= 8,  /* FBS device to issue offset */
-	PORT_FBS_DEV_MASK	= (0xf << PORT_FBS_DEV_OFFSET),  /* FBS.DEV */
-	PORT_FBS_SDE		= BIT(2), /* FBS single device error */
-	PORT_FBS_DEC		= BIT(1), /* FBS device error clear */
-	PORT_FBS_EN		= BIT(0), /* Enable FBS */
+	
+	PORT_FBS_DWE_OFFSET	= 16, 
+	PORT_FBS_ADO_OFFSET	= 12, 
+	PORT_FBS_DEV_OFFSET	= 8,  
+	PORT_FBS_DEV_MASK	= (0xf << PORT_FBS_DEV_OFFSET),  
+	PORT_FBS_SDE		= BIT(2), 
+	PORT_FBS_DEC		= BIT(1), 
+	PORT_FBS_EN		= BIT(0), 
 
-	/* PORT_DEVSLP bits */
-	PORT_DEVSLP_DM_OFFSET	= 25,             /* DITO multiplier offset */
-	PORT_DEVSLP_DM_MASK	= (0xf << 25),    /* DITO multiplier mask */
-	PORT_DEVSLP_DITO_OFFSET	= 15,             /* DITO offset */
-	PORT_DEVSLP_MDAT_OFFSET	= 10,             /* Minimum assertion time */
-	PORT_DEVSLP_DETO_OFFSET	= 2,              /* DevSlp exit timeout */
-	PORT_DEVSLP_DSP		= BIT(1),         /* DevSlp present */
-	PORT_DEVSLP_ADSE	= BIT(0),         /* Aggressive DevSlp enable */
+	
+	PORT_DEVSLP_DM_OFFSET	= 25,             
+	PORT_DEVSLP_DM_MASK	= (0xf << 25),    
+	PORT_DEVSLP_DITO_OFFSET	= 15,             
+	PORT_DEVSLP_MDAT_OFFSET	= 10,             
+	PORT_DEVSLP_DETO_OFFSET	= 2,              
+	PORT_DEVSLP_DSP		= BIT(1),         
+	PORT_DEVSLP_ADSE	= BIT(0),         
 
-	/* hpriv->flags bits */
+	
 
 #define AHCI_HFLAGS(flags)		.private_data	= (void *)(flags)
 
 	AHCI_HFLAG_NO_NCQ		= BIT(0),
-	AHCI_HFLAG_IGN_IRQ_IF_ERR	= BIT(1), /* ignore IRQ_IF_ERR */
-	AHCI_HFLAG_IGN_SERR_INTERNAL	= BIT(2), /* ignore SERR_INTERNAL */
-	AHCI_HFLAG_32BIT_ONLY		= BIT(3), /* force 32bit */
-	AHCI_HFLAG_MV_PATA		= BIT(4), /* PATA port */
-	AHCI_HFLAG_NO_MSI		= BIT(5), /* no PCI MSI */
-	AHCI_HFLAG_NO_PMP		= BIT(6), /* no PMP */
-	AHCI_HFLAG_SECT255		= BIT(8), /* max 255 sectors */
-	AHCI_HFLAG_YES_NCQ		= BIT(9), /* force NCQ cap on */
-	AHCI_HFLAG_NO_SUSPEND		= BIT(10), /* don't suspend */
-	AHCI_HFLAG_SRST_TOUT_IS_OFFLINE	= BIT(11), /* treat SRST timeout as
-						      link offline */
-	AHCI_HFLAG_NO_SNTF		= BIT(12), /* no sntf */
-	AHCI_HFLAG_NO_FPDMA_AA		= BIT(13), /* no FPDMA AA */
-	AHCI_HFLAG_YES_FBS		= BIT(14), /* force FBS cap on */
-	AHCI_HFLAG_DELAY_ENGINE		= BIT(15), /* do not start engine on
-						      port start (wait until
-						      error-handling stage) */
-	AHCI_HFLAG_NO_DEVSLP		= BIT(17), /* no device sleep */
-	AHCI_HFLAG_NO_FBS		= BIT(18), /* no FBS */
+	AHCI_HFLAG_IGN_IRQ_IF_ERR	= BIT(1), 
+	AHCI_HFLAG_IGN_SERR_INTERNAL	= BIT(2), 
+	AHCI_HFLAG_32BIT_ONLY		= BIT(3), 
+	AHCI_HFLAG_MV_PATA		= BIT(4), 
+	AHCI_HFLAG_NO_MSI		= BIT(5), 
+	AHCI_HFLAG_NO_PMP		= BIT(6), 
+	AHCI_HFLAG_SECT255		= BIT(8), 
+	AHCI_HFLAG_YES_NCQ		= BIT(9), 
+	AHCI_HFLAG_NO_SUSPEND		= BIT(10), 
+	AHCI_HFLAG_SRST_TOUT_IS_OFFLINE	= BIT(11), 
+	AHCI_HFLAG_NO_SNTF		= BIT(12), 
+	AHCI_HFLAG_NO_FPDMA_AA		= BIT(13), 
+	AHCI_HFLAG_YES_FBS		= BIT(14), 
+	AHCI_HFLAG_DELAY_ENGINE		= BIT(15), 
+	AHCI_HFLAG_NO_DEVSLP		= BIT(17), 
+	AHCI_HFLAG_NO_FBS		= BIT(18), 
 
 #ifdef CONFIG_PCI_MSI
-	AHCI_HFLAG_MULTI_MSI		= BIT(20), /* per-port MSI(-X) */
+	AHCI_HFLAG_MULTI_MSI		= BIT(20), 
 #else
-	/* compile out MSI infrastructure */
+	
 	AHCI_HFLAG_MULTI_MSI		= 0,
 #endif
-	AHCI_HFLAG_WAKE_BEFORE_STOP	= BIT(22), /* wake before DMA stop */
-	AHCI_HFLAG_YES_ALPM		= BIT(23), /* force ALPM cap on */
-	AHCI_HFLAG_NO_WRITE_TO_RO	= BIT(24), /* don't write to read
-						      only registers */
-	AHCI_HFLAG_USE_LPM_POLICY	= BIT(25), /* chipset that should use
-						      SATA_MOBILE_LPM_POLICY
-						      as default lpm_policy */
-	AHCI_HFLAG_SUSPEND_PHYS		= BIT(26), /* handle PHYs during
-						      suspend/resume */
-	AHCI_HFLAG_NO_SXS		= BIT(28), /* SXS not supported */
+	AHCI_HFLAG_WAKE_BEFORE_STOP	= BIT(22), 
+	AHCI_HFLAG_YES_ALPM		= BIT(23), 
+	AHCI_HFLAG_NO_WRITE_TO_RO	= BIT(24), 
+	AHCI_HFLAG_USE_LPM_POLICY	= BIT(25), 
+	AHCI_HFLAG_SUSPEND_PHYS		= BIT(26), 
+	AHCI_HFLAG_NO_SXS		= BIT(28), 
 
-	/* ap->flags bits */
+	
 
 	AHCI_FLAG_COMMON		= ATA_FLAG_SATA | ATA_FLAG_PIO_DMA |
 					  ATA_FLAG_ACPI_SATA | ATA_FLAG_AN,
 
-	ICH_MAP				= 0x90, /* ICH MAP register */
-	PCS_6				= 0x92, /* 6 port PCS */
-	PCS_7				= 0x94, /* 7+ port PCS (Denverton) */
+	ICH_MAP				= 0x90, 
+	PCS_6				= 0x92, 
+	PCS_7				= 0x94, 
 
-	/* em constants */
+	
 	EM_MAX_SLOTS			= SATA_PMP_MAX_PORTS,
 	EM_MAX_RETRY			= 5,
 
-	/* em_ctl bits */
-	EM_CTL_RST		= BIT(9), /* Reset */
-	EM_CTL_TM		= BIT(8), /* Transmit Message */
-	EM_CTL_MR		= BIT(0), /* Message Received */
-	EM_CTL_ALHD		= BIT(26), /* Activity LED */
-	EM_CTL_XMT		= BIT(25), /* Transmit Only */
-	EM_CTL_SMB		= BIT(24), /* Single Message Buffer */
-	EM_CTL_SGPIO		= BIT(19), /* SGPIO messages supported */
-	EM_CTL_SES		= BIT(18), /* SES-2 messages supported */
-	EM_CTL_SAFTE		= BIT(17), /* SAF-TE messages supported */
-	EM_CTL_LED		= BIT(16), /* LED messages supported */
+	
+	EM_CTL_RST		= BIT(9), 
+	EM_CTL_TM		= BIT(8), 
+	EM_CTL_MR		= BIT(0), 
+	EM_CTL_ALHD		= BIT(26), 
+	EM_CTL_XMT		= BIT(25), 
+	EM_CTL_SMB		= BIT(24), 
+	EM_CTL_SGPIO		= BIT(19), 
+	EM_CTL_SES		= BIT(18), 
+	EM_CTL_SAFTE		= BIT(17), 
+	EM_CTL_LED		= BIT(16), 
 
-	/* em message type */
-	EM_MSG_TYPE_LED		= BIT(0), /* LED */
-	EM_MSG_TYPE_SAFTE	= BIT(1), /* SAF-TE */
-	EM_MSG_TYPE_SES2	= BIT(2), /* SES-2 */
-	EM_MSG_TYPE_SGPIO	= BIT(3), /* SGPIO */
+	
+	EM_MSG_TYPE_LED		= BIT(0), 
+	EM_MSG_TYPE_SAFTE	= BIT(1), 
+	EM_MSG_TYPE_SES2	= BIT(2), 
+	EM_MSG_TYPE_SGPIO	= BIT(3), 
 };
 
 struct ahci_cmd_hdr {
@@ -312,70 +290,59 @@ struct ahci_port_priv {
 	dma_addr_t		cmd_tbl_dma;
 	void			*rx_fis;
 	dma_addr_t		rx_fis_dma;
-	/* for NCQ spurious interrupt analysis */
+	
 	unsigned int		ncq_saw_d2h:1;
 	unsigned int		ncq_saw_dmas:1;
 	unsigned int		ncq_saw_sdb:1;
-	spinlock_t		lock;		/* protects parent ata_port */
-	u32 			intr_mask;	/* interrupts to enable */
-	bool			fbs_supported;	/* set iff FBS is supported */
-	bool			fbs_enabled;	/* set iff FBS is enabled */
-	int			fbs_last_dev;	/* save FBS.DEV of last FIS */
-	/* enclosure management info per PM slot */
+	spinlock_t		lock;		
+	u32 			intr_mask;	
+	bool			fbs_supported;	
+	bool			fbs_enabled;	
+	int			fbs_last_dev;	
+	
 	struct ahci_em_priv	em_priv[EM_MAX_SLOTS];
-	char			*irq_desc;	/* desc in /proc/interrupts */
+	char			*irq_desc;	
 };
 
 struct ahci_host_priv {
-	/* Input fields */
-	unsigned int		flags;		/* AHCI_HFLAG_* */
-	u32			mask_port_map;	/* mask out particular bits */
+	
+	unsigned int		flags;		
+	u32			mask_port_map;	
 
-	void __iomem *		mmio;		/* bus-independent mem map */
-	u32			cap;		/* cap to use */
-	u32			cap2;		/* cap2 to use */
-	u32			version;	/* cached version */
-	u32			port_map;	/* port map to use */
-	u32			saved_cap;	/* saved initial cap */
-	u32			saved_cap2;	/* saved initial cap2 */
-	u32			saved_port_map;	/* saved initial port_map */
-	u32			saved_port_cap[AHCI_MAX_PORTS]; /* saved port_cap */
-	u32 			em_loc; /* enclosure management location */
-	u32			em_buf_sz;	/* EM buffer size in byte */
-	u32			em_msg_type;	/* EM message type */
-	u32			remapped_nvme;	/* NVMe remapped device count */
-	bool			got_runtime_pm; /* Did we do pm_runtime_get? */
+	void __iomem *		mmio;		
+	u32			cap;		
+	u32			cap2;		
+	u32			version;	
+	u32			port_map;	
+	u32			saved_cap;	
+	u32			saved_cap2;	
+	u32			saved_port_map;	
+	u32			saved_port_cap[AHCI_MAX_PORTS]; 
+	u32 			em_loc; 
+	u32			em_buf_sz;	
+	u32			em_msg_type;	
+	u32			remapped_nvme;	
+	bool			got_runtime_pm; 
 	unsigned int		n_clks;
-	struct clk_bulk_data	*clks;		/* Optional */
+	struct clk_bulk_data	*clks;		
 	unsigned int		f_rsts;
-	struct reset_control	*rsts;		/* Optional */
-	struct regulator	**target_pwrs;	/* Optional */
-	struct regulator	*ahci_regulator;/* Optional */
-	struct regulator	*phy_regulator;/* Optional */
-	/*
-	 * If platform uses PHYs. There is a 1:1 relation between the port number and
-	 * the PHY position in this array.
-	 */
+	struct reset_control	*rsts;		
+	struct regulator	**target_pwrs;	
+	struct regulator	*ahci_regulator;
+	struct regulator	*phy_regulator;
+	
 	struct phy		**phys;
-	unsigned		nports;		/* Number of ports */
-	void			*plat_data;	/* Other platform data */
-	unsigned int		irq;		/* interrupt line */
-	/*
-	 * Optional ahci_start_engine override, if not set this gets set to the
-	 * default ahci_start_engine during ahci_save_initial_config, this can
-	 * be overridden anytime before the host is activated.
-	 */
+	unsigned		nports;		
+	void			*plat_data;	
+	unsigned int		irq;		
+	
 	void			(*start_engine)(struct ata_port *ap);
-	/*
-	 * Optional ahci_stop_engine override, if not set this gets set to the
-	 * default ahci_stop_engine during ahci_save_initial_config, this can
-	 * be overridden anytime before the host is activated.
-	 */
+	
 	int			(*stop_engine)(struct ata_port *ap);
 
 	irqreturn_t 		(*irq_handler)(int irq, void *dev_instance);
 
-	/* only required for per-port MSI(-X) support */
+	
 	int			(*get_irq_vector)(struct ata_host *host,
 						  int port);
 };
@@ -385,10 +352,7 @@ extern int ahci_ignore_sss;
 extern const struct attribute_group *ahci_shost_groups[];
 extern const struct attribute_group *ahci_sdev_groups[];
 
-/*
- * This must be instantiated by the edge drivers.  Read the comments
- * for ATA_BASE_SHT
- */
+
 #define AHCI_SHT(drv_name)						\
 	__ATA_BASE_SHT(drv_name),					\
 	.can_queue		= AHCI_MAX_CMDS,			\
@@ -454,4 +418,4 @@ static inline int ahci_nr_ports(u32 cap)
 	return (cap & 0x1f) + 1;
 }
 
-#endif /* _AHCI_H */
+#endif 

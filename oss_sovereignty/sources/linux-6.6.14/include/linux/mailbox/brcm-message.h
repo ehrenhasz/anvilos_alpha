@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2016 Broadcom
- *
- * Common header for Broadcom mailbox messages which is shared across
- * Broadcom SoCs and Broadcom mailbox client drivers.
- */
+
+
 
 #ifndef _LINUX_BRCM_MESSAGE_H_
 #define _LINUX_BRCM_MESSAGE_H_
@@ -56,4 +51,4 @@ struct brcm_message {
 	int error;
 };
 
-#endif /* _LINUX_BRCM_MESSAGE_H_ */
+#endif 

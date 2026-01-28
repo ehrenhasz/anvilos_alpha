@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2020 Intel Corporation */
+
+
 #ifndef ADF_GEN4_HW_CSR_DATA_H_
 #define ADF_GEN4_HW_CSR_DATA_H_
 
 #include "adf_accel_devices.h"
 #include "adf_cfg_common.h"
 
-/* Transport access */
+
 #define ADF_BANK_INT_SRC_SEL_MASK	0x44UL
 #define ADF_RING_CSR_RING_CONFIG	0x1000
 #define ADF_RING_CSR_RING_LBASE		0x1040
@@ -87,7 +87,7 @@ do { \
 		   ADF_RING_BUNDLE_SIZE * (bank) + \
 		   ADF_RING_CSR_INT_FLAG_AND_COL, (value))
 
-/* Arbiter configuration */
+
 #define ADF_RING_CSR_RING_SRV_ARB_EN 0x19C
 
 #define WRITE_CSR_RING_SRV_ARB_EN(csr_base_addr, bank, value) \
@@ -95,18 +95,14 @@ do { \
 		   ADF_RING_BUNDLE_SIZE * (bank) + \
 		   ADF_RING_CSR_RING_SRV_ARB_EN, (value))
 
-/* Default ring mapping */
+
 #define ADF_GEN4_DEFAULT_RING_TO_SRV_MAP \
 	(ASYM << ADF_CFG_SERV_RING_PAIR_0_SHIFT | \
 	  SYM << ADF_CFG_SERV_RING_PAIR_1_SHIFT | \
 	 ASYM << ADF_CFG_SERV_RING_PAIR_2_SHIFT | \
 	  SYM << ADF_CFG_SERV_RING_PAIR_3_SHIFT)
 
-/* WDT timers
- *
- * Timeout is in cycles. Clock speed may vary across products but this
- * value should be a few milli-seconds.
- */
+
 #define ADF_SSM_WDT_DEFAULT_VALUE	0x7000000ULL
 #define ADF_SSM_WDT_PKE_DEFAULT_VALUE	0x8000000
 #define ADF_SSMWDTL_OFFSET		0x54
@@ -114,7 +110,7 @@ do { \
 #define ADF_SSMWDTPKEL_OFFSET		0x58
 #define ADF_SSMWDTPKEH_OFFSET		0x60
 
-/* Ring reset */
+
 #define ADF_RPRESET_POLL_TIMEOUT_US	(5 * USEC_PER_SEC)
 #define ADF_RPRESET_POLL_DELAY_US	20
 #define ADF_WQM_CSR_RPRESETCTL_RESET	BIT(0)
@@ -122,13 +118,13 @@ do { \
 #define ADF_WQM_CSR_RPRESETSTS_STATUS	BIT(0)
 #define ADF_WQM_CSR_RPRESETSTS(bank)	(ADF_WQM_CSR_RPRESETCTL(bank) + 4)
 
-/* Error source registers */
+
 #define ADF_GEN4_ERRSOU0	(0x41A200)
 #define ADF_GEN4_ERRSOU1	(0x41A204)
 #define ADF_GEN4_ERRSOU2	(0x41A208)
 #define ADF_GEN4_ERRSOU3	(0x41A20C)
 
-/* Error source mask registers */
+
 #define ADF_GEN4_ERRMSK0	(0x41A210)
 #define ADF_GEN4_ERRMSK1	(0x41A214)
 #define ADF_GEN4_ERRMSK2	(0x41A218)
@@ -136,7 +132,7 @@ do { \
 
 #define ADF_GEN4_VFLNOTIFY	BIT(7)
 
-/* Number of heartbeat counter pairs */
+
 #define ADF_NUM_HB_CNT_PER_AE ADF_NUM_THREADS_PER_AE
 
 void adf_gen4_set_ssm_wdtimer(struct adf_accel_dev *accel_dev);

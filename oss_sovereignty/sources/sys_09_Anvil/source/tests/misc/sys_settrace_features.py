@@ -18,7 +18,7 @@ def print_stacktrace(frame, level=0):
             "sys_settrace_" + frame.f_code.co_filename.split("sys_settrace_")[-1],
             max(
                 1, frame.f_lineno
-            ),  # CPython 3.11 emits `0` where CPython 3.6 emits `1` for the "call" event corresponding to import.
+            ),  
         )
     )
     if frame.f_back:
@@ -31,12 +31,12 @@ class _Prof:
 __prof__ = _Prof()
 alice_handler_set = False
 def trace_tick_handler_alice(frame, event, arg):
-    print("### trace_handler::Alice event:", event)
+    print("
     __prof__.trace_tick(frame, event, arg)
     return trace_tick_handler_alice
 bob_handler_set = False
 def trace_tick_handler_bob(frame, event, arg):
-    print("### trace_handler::Bob event:", event)
+    print("
     __prof__.trace_tick(frame, event, arg)
     return trace_tick_handler_bob
 def trace_tick_handler(frame, event, arg):
@@ -46,7 +46,7 @@ def trace_tick_handler(frame, event, arg):
         return
     if "sys_settrace_importme" in frame.f_code.co_filename and frame.f_lineno in (4, 5, 7, 15):
         return trace_tick_handler
-    print("### trace_handler::main event:", event)
+    print("
     __prof__.trace_tick(frame, event, arg)
     if frame.f_code.co_name != "factorial":
         return trace_tick_handler

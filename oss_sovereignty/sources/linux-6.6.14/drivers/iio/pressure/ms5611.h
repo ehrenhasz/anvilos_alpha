@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * MS5611 pressure and temperature sensor driver
- *
- * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
- *
- */
+
+
 
 #ifndef _MS5611_H
 #define _MS5611_H
@@ -23,11 +18,7 @@ enum {
 	MS5607,
 };
 
-/*
- * OverSampling Rate descriptor.
- * Warning: cmd MUST be kept aligned on a word boundary (see
- * m5611_spi_read_adc_temp_and_pressure in ms5611_spi.c).
- */
+
 struct ms5611_osr {
 	unsigned long conv_usec;
 	u8 cmd;
@@ -55,4 +46,4 @@ struct ms5611_state {
 int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
 		 const char *name, int type);
 
-#endif /* _MS5611_H */
+#endif 

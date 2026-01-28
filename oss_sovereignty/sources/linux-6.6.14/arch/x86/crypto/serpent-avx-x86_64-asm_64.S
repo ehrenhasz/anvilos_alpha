@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Serpent Cipher 8-way parallel algorithm (x86_64/AVX)
- *
- * Copyright (C) 2012 Johannes Goetzfried
- *     <Johannes.Goetzfried@informatik.stud.uni-erlangen.de>
- *
- * Copyright © 2011-2013 Jussi Kivilinna <jussi.kivilinna@iki.fi>
- */
+
+
 
 #include <linux/linkage.h>
 #include <asm/frame.h>
@@ -23,9 +16,7 @@
 
 #define CTX %rdi
 
-/**********************************************************************
-  8-way AVX serpent
- **********************************************************************/
+
 #define RA1 %xmm0
 #define RB1 %xmm1
 #define RC1 %xmm2
@@ -551,12 +542,7 @@
 	transpose_4x4(x0, x1, x2, x3, t0, t1, t2)
 
 SYM_FUNC_START_LOCAL(__serpent_enc_blk8_avx)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2: blocks
-	 * output:
-	 *	RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2: encrypted blocks
-	 */
+	
 
 	vpcmpeqd RNOT, RNOT, RNOT;
 
@@ -604,12 +590,7 @@ SYM_FUNC_START_LOCAL(__serpent_enc_blk8_avx)
 SYM_FUNC_END(__serpent_enc_blk8_avx)
 
 SYM_FUNC_START_LOCAL(__serpent_dec_blk8_avx)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2: encrypted blocks
-	 * output:
-	 *	RC1, RD1, RB1, RE1, RC2, RD2, RB2, RE2: decrypted blocks
-	 */
+	
 
 	vpcmpeqd RNOT, RNOT, RNOT;
 
@@ -657,11 +638,7 @@ SYM_FUNC_START_LOCAL(__serpent_dec_blk8_avx)
 SYM_FUNC_END(__serpent_dec_blk8_avx)
 
 SYM_FUNC_START(serpent_ecb_enc_8way_avx)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	FRAME_BEGIN
 
 	load_8way(%rdx, RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2);
@@ -675,11 +652,7 @@ SYM_FUNC_START(serpent_ecb_enc_8way_avx)
 SYM_FUNC_END(serpent_ecb_enc_8way_avx)
 
 SYM_FUNC_START(serpent_ecb_dec_8way_avx)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	FRAME_BEGIN
 
 	load_8way(%rdx, RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2);
@@ -693,11 +666,7 @@ SYM_FUNC_START(serpent_ecb_dec_8way_avx)
 SYM_FUNC_END(serpent_ecb_dec_8way_avx)
 
 SYM_FUNC_START(serpent_cbc_dec_8way_avx)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	FRAME_BEGIN
 
 	load_8way(%rdx, RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2);

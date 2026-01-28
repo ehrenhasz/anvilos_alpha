@@ -13,4 +13,4 @@ DRESULT sflash_disk_read(BYTE *buff, DWORD sector, UINT count);
 DRESULT sflash_disk_write(const BYTE *buff, DWORD sector, UINT count);
 DRESULT sflash_disk_flush(void);
 
-#endif /* SFLASH_DISKIO_H_ */
+#endif 

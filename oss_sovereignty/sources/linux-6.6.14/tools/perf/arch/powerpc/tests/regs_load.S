@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/linkage.h>
 
-/* Offset is based on macros from arch/powerpc/include/uapi/asm/ptrace.h. */
+
 #define R0	 0
 #define R1	 1 * 8
 #define R2	 2 * 8
@@ -74,22 +74,22 @@ perf_regs_load:
 	std 30, R30(3)
 	std 31, R31(3)
 
-	/* store NIP */
+	
 	mflr 4
 	std 4, NIP(3)
 
-	/* Store LR */
+	
 	std 4, LINK(3)
 
-	/* Store XER */
+	
 	mfxer 4
 	std 4, XER(3)
 
-	/* Store CTR */
+	
 	mfctr 4
 	std 4, CTR(3)
 
-	/* Restore original value of r4 */
+	
 	ld 4, R4(3)
 
 	blr

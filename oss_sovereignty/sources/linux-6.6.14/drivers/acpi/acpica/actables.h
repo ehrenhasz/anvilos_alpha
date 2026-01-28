@@ -1,29 +1,19 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/******************************************************************************
- *
- * Name: actables.h - ACPI table management
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+
 
 #ifndef __ACTABLES_H__
 #define __ACTABLES_H__
 
 acpi_status acpi_allocate_root_table(u32 initial_table_count);
 
-/*
- * tbxfroot - Root pointer utilities
- */
+
 u32 acpi_tb_get_rsdp_length(struct acpi_table_rsdp *rsdp);
 
 acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp);
 
 u8 *acpi_tb_scan_memory_for_rsdp(u8 *start_address, u32 length);
 
-/*
- * tbdata - table data structure management
- */
+
 acpi_status
 acpi_tb_get_next_table_descriptor(u32 *table_index,
 				  struct acpi_table_desc **table_desc);
@@ -50,23 +40,17 @@ u8 acpi_tb_is_table_loaded(u32 table_index);
 
 void acpi_tb_set_table_loaded_flag(u32 table_index, u8 is_loaded);
 
-/*
- * tbfadt - FADT parse/convert/validate
- */
+
 void acpi_tb_parse_fadt(void);
 
 void acpi_tb_create_local_fadt(struct acpi_table_header *table, u32 length);
 
-/*
- * tbfind - find ACPI table
- */
+
 acpi_status
 acpi_tb_find_table(char *signature,
 		   char *oem_id, char *oem_table_id, u32 *table_index);
 
-/*
- * tbinstal - Table removal and deletion
- */
+
 acpi_status acpi_tb_resize_root_table_list(void);
 
 acpi_status acpi_tb_validate_table(struct acpi_table_desc *table_desc);
@@ -115,9 +99,7 @@ acpi_status acpi_tb_release_owner_id(u32 table_index);
 
 acpi_status acpi_tb_get_owner_id(u32 table_index, acpi_owner_id *owner_id);
 
-/*
- * tbutils - table manager utilities
- */
+
 acpi_status acpi_tb_initialize_facs(void);
 
 void
@@ -140,9 +122,7 @@ acpi_tb_get_table(struct acpi_table_desc *table_desc,
 
 void acpi_tb_put_table(struct acpi_table_desc *table_desc);
 
-/*
- * tbxfload
- */
+
 acpi_status acpi_tb_load_namespace(void);
 
-#endif				/* __ACTABLES_H__ */
+#endif				

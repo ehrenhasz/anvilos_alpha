@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+
 
 #ifndef __MLX5_LAG_H__
 #define __MLX5_LAG_H__
@@ -41,7 +41,7 @@ struct lag_func {
 	bool has_drop;
 };
 
-/* Used for collection of netdev event info. */
+
 struct lag_tracker {
 	enum   netdev_lag_tx_type           tx_type;
 	struct netdev_lag_lower_state_info  netdev_state[MLX5_MAX_PORTS];
@@ -50,9 +50,7 @@ struct lag_tracker {
 	enum netdev_lag_hash hash_type;
 };
 
-/* LAG data of a ConnectX card.
- * It serves both its phys functions.
- */
+
 struct mlx5_lag {
 	enum mlx5_lag_mode        mode;
 	unsigned long		  mode_flags;
@@ -69,7 +67,7 @@ struct mlx5_lag {
 	struct notifier_block     nb;
 	struct lag_mp             lag_mp;
 	struct mlx5_lag_port_sel  port_sel;
-	/* Protect lag fields/state changes */
+	
 	struct mutex		  lock;
 	struct lag_mpesw	  lag_mpesw;
 };
@@ -123,4 +121,4 @@ static inline bool mlx5_lag_is_supported(struct mlx5_core_dev *dev)
 	return true;
 }
 
-#endif /* __MLX5_LAG_H__ */
+#endif 

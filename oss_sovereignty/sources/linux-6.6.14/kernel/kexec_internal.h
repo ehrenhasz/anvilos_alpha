@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef LINUX_KEXEC_INTERNAL_H
 #define LINUX_KEXEC_INTERNAL_H
 
@@ -13,11 +13,7 @@ void kimage_terminate(struct kimage *image);
 int kimage_is_destination_range(struct kimage *image,
 				unsigned long start, unsigned long end);
 
-/*
- * Whatever is used to serialize accesses to the kexec_crash_image needs to be
- * NMI safe, as __crash_kexec() can happen during nmi_panic(), so here we use a
- * "simple" atomic variable that is acquired with a cmpxchg().
- */
+
 extern atomic_t __kexec_lock;
 static inline bool kexec_trylock(void)
 {
@@ -33,7 +29,7 @@ static inline void kexec_unlock(void)
 void kimage_file_post_load_cleanup(struct kimage *image);
 extern char kexec_purgatory[];
 extern size_t kexec_purgatory_size;
-#else /* CONFIG_KEXEC_FILE */
+#else 
 static inline void kimage_file_post_load_cleanup(struct kimage *image) { }
-#endif /* CONFIG_KEXEC_FILE */
-#endif /* LINUX_KEXEC_INTERNAL_H */
+#endif 
+#endif 

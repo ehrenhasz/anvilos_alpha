@@ -16,7 +16,7 @@ def test2():
             return "inner"
     print(hasattr(A, "method"))
     print(hasattr(A(), "method"))
-    return method()  # this is actually A.method
+    return method()  
 print(test2())
 def test3(x):
     class A:
@@ -26,9 +26,9 @@ def test3(x):
 print(test3(42))
 def test4(global_):
     class A:
-        local = global_  # fetches outer global_
-        global_ = "global2"  # creates class attribute
-    global_ += 1  # updates local variable
+        local = global_  
+        global_ = "global2"  
+    global_ += 1  
     return global_, A.local, A.global_
 global_ = "global"
 print(test4(42), global_)
@@ -38,6 +38,6 @@ def test5(x):
     class A:
         def method():
             return x, closure()
-    closure = lambda: x + 1  # change it after A has been created
+    closure = lambda: x + 1  
     return A
 print(test5(42).method())

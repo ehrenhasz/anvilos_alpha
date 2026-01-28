@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef LINUX_VIRTIO_H
 #define LINUX_VIRTIO_H
 #include <linux/scatterlist.h>
@@ -29,7 +29,7 @@ struct virtqueue {
 	bool reset;
 };
 
-/* Interfaces exported by virtio_ring. */
+
 int virtqueue_add_sgs(struct virtqueue *vq,
 		      struct scatterlist *sgs[],
 		      unsigned int out_sgs,

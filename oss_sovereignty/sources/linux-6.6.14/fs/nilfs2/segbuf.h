@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * NILFS Segment buffer prototypes and definitions
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Written by Ryusuke Konishi.
- *
- */
+
+
 #ifndef _NILFS_SEGBUF_H
 #define _NILFS_SEGBUF_H
 
@@ -15,19 +8,7 @@
 #include <linux/bio.h>
 #include <linux/completion.h>
 
-/**
- * struct nilfs_segsum_info - On-memory segment summary
- * @flags: Flags
- * @nfinfo: Number of file information structures
- * @nblocks: Number of blocks included in the partial segment
- * @nsumblk: Number of summary blocks
- * @sumbytes: Byte count of segment summary
- * @nfileblk: Total number of file blocks
- * @seg_seq: Segment sequence number
- * @cno: Checkpoint number
- * @ctime: Creation time
- * @next: Block number of the next full segment
- */
+
 struct nilfs_segsum_info {
 	unsigned int		flags;
 	unsigned long		nfinfo;
@@ -41,29 +22,12 @@ struct nilfs_segsum_info {
 	sector_t		next;
 };
 
-/**
- * struct nilfs_segment_buffer - Segment buffer
- * @sb_super: back pointer to a superblock struct
- * @sb_list: List head to chain this structure
- * @sb_sum: On-memory segment summary
- * @sb_segnum: Index number of the full segment
- * @sb_nextnum: Index number of the next full segment
- * @sb_fseg_start: Start block number of the full segment
- * @sb_fseg_end: End block number of the full segment
- * @sb_pseg_start: Disk block number of partial segment
- * @sb_rest_blocks: Number of residual blocks in the current segment
- * @sb_segsum_buffers: List of buffers for segment summaries
- * @sb_payload_buffers: List of buffers for segment payload
- * @sb_super_root: Pointer to buffer storing a super root block (if exists)
- * @sb_nbio: Number of flying bio requests
- * @sb_err: I/O error status
- * @sb_bio_event: Completion event of log writing
- */
+
 struct nilfs_segment_buffer {
 	struct super_block     *sb_super;
 	struct list_head	sb_list;
 
-	/* Segment information */
+	
 	struct nilfs_segsum_info sb_sum;
 	__u64			sb_segnum;
 	__u64			sb_nextnum;
@@ -71,12 +35,12 @@ struct nilfs_segment_buffer {
 	sector_t		sb_pseg_start;
 	unsigned int		sb_rest_blocks;
 
-	/* Buffers */
+	
 	struct list_head	sb_segsum_buffers;
-	struct list_head	sb_payload_buffers; /* including super root */
+	struct list_head	sb_payload_buffers; 
 	struct buffer_head     *sb_super_root;
 
-	/* io status */
+	
 	int			sb_nbio;
 	atomic_t		sb_err;
 	struct completion	sb_bio_event;
@@ -169,4 +133,4 @@ static inline void nilfs_destroy_logs(struct list_head *logs)
 	nilfs_truncate_logs(logs, NULL);
 }
 
-#endif /* _NILFS_SEGBUF_H */
+#endif 

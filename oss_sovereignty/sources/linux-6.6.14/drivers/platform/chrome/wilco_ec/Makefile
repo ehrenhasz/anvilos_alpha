@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 wilco_ec-objs				:= core.o keyboard_leds.o mailbox.o \
 					   properties.o sysfs.o

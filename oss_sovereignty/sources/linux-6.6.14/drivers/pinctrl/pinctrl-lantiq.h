@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  linux/drivers/pinctrl/pinctrl-lantiq.h
- *  based on linux/drivers/pinctrl/pinctrl-pxa3xx.h
- *
- *  Copyright (C) 2012 John Crispin <john@phrozen.org>
- */
+
+
 
 #ifndef __PINCTRL_LANTIQ_H
 #define __PINCTRL_LANTIQ_H
@@ -64,42 +59,42 @@ struct ltq_pinmux_info {
 	struct device *dev;
 	struct pinctrl_dev *pctrl;
 
-	/* we need to manage up to 5 pad controllers */
+	
 	void __iomem *membase[5];
 
-	/* the descriptor for the subsystem */
+	
 	struct pinctrl_desc *desc;
 
-	/* we expose our pads to the subsystem */
+	
 	struct pinctrl_pin_desc *pads;
 
-	/* the number of pads. this varies between socs */
+	
 	unsigned int num_pads;
 
-	/* these are our multifunction pins */
+	
 	const struct ltq_mfp_pin *mfp;
 	unsigned int num_mfp;
 
-	/* a number of multifunction pins can be grouped together */
+	
 	const struct ltq_pin_group *grps;
 	unsigned int num_grps;
 
-	/* a mapping between function string and id */
+	
 	const struct ltq_pmx_func *funcs;
 	unsigned int num_funcs;
 
-	/* the pinconf options that we are able to read from the DT */
+	
 	const struct ltq_cfg_param *params;
 	unsigned int num_params;
 
-	/* the pad controller can have a irq mapping  */
+	
 	const unsigned *exin;
 	unsigned int num_exin;
 
-	/* we need 5 clocks max */
+	
 	struct clk *clk[5];
 
-	/* soc specific callback used to apply muxing */
+	
 	int (*apply_mux)(struct pinctrl_dev *pctrldev, int pin, int mux);
 };
 
@@ -114,7 +109,7 @@ enum ltq_pin {
 	GPIO7,
 	GPIO8,
 	GPIO9,
-	GPIO10, /* 10 */
+	GPIO10, 
 	GPIO11,
 	GPIO12,
 	GPIO13,
@@ -124,7 +119,7 @@ enum ltq_pin {
 	GPIO17,
 	GPIO18,
 	GPIO19,
-	GPIO20, /* 20 */
+	GPIO20, 
 	GPIO21,
 	GPIO22,
 	GPIO23,
@@ -134,7 +129,7 @@ enum ltq_pin {
 	GPIO27,
 	GPIO28,
 	GPIO29,
-	GPIO30, /* 30 */
+	GPIO30, 
 	GPIO31,
 	GPIO32,
 	GPIO33,
@@ -144,7 +139,7 @@ enum ltq_pin {
 	GPIO37,
 	GPIO38,
 	GPIO39,
-	GPIO40, /* 40 */
+	GPIO40, 
 	GPIO41,
 	GPIO42,
 	GPIO43,
@@ -154,7 +149,7 @@ enum ltq_pin {
 	GPIO47,
 	GPIO48,
 	GPIO49,
-	GPIO50, /* 50 */
+	GPIO50, 
 	GPIO51,
 	GPIO52,
 	GPIO53,
@@ -164,7 +159,7 @@ enum ltq_pin {
 	GPIO57,
 	GPIO58,
 	GPIO59,
-	GPIO60, /* 60 */
+	GPIO60, 
 	GPIO61,
 	GPIO62,
 	GPIO63,
@@ -198,4 +193,4 @@ enum ltq_pin {
 
 extern int ltq_pinctrl_register(struct platform_device *pdev,
 				   struct ltq_pinmux_info *info);
-#endif	/* __PINCTRL_LANTIQ_H */
+#endif	

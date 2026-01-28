@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+
 
 #ifndef __LIB_HV_VHCA_H__
 #define __LIB_HV_VHCA_H__
@@ -94,4 +94,4 @@ static inline void mlx5_hv_vhca_agent_destroy(struct mlx5_hv_vhca_agent *agent)
 }
 #endif
 
-#endif /* __LIB_HV_VHCA_H__ */
+#endif 

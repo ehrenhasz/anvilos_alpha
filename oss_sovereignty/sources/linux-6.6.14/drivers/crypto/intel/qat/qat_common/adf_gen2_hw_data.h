@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2020 Intel Corporation */
+
+
 #ifndef ADF_GEN2_HW_DATA_H_
 #define ADF_GEN2_HW_DATA_H_
 
 #include "adf_accel_devices.h"
 #include "adf_cfg_common.h"
 
-/* Transport access */
+
 #define ADF_BANK_INT_SRC_SEL_MASK_0	0x4444444CUL
 #define ADF_BANK_INT_SRC_SEL_MASK_X	0x44444444UL
 #define ADF_RING_CSR_RING_CONFIG	0x000
@@ -78,7 +78,7 @@ do { \
 	ADF_CSR_WR(csr_base_addr, (ADF_RING_BUNDLE_SIZE * (bank)) + \
 		   ADF_RING_CSR_INT_FLAG_AND_COL, value)
 
-/* AE to function map */
+
 #define AE2FUNCTION_MAP_A_OFFSET	(0x3A400 + 0x190)
 #define AE2FUNCTION_MAP_B_OFFSET	(0x3A400 + 0x310)
 #define AE2FUNCTION_MAP_REG_SIZE	4
@@ -97,12 +97,12 @@ do { \
 	ADF_CSR_WR(pmisc_bar_addr, AE2FUNCTION_MAP_B_OFFSET + \
 		   AE2FUNCTION_MAP_REG_SIZE * (index), value)
 
-/* Admin Interface Offsets */
+
 #define ADF_ADMINMSGUR_OFFSET	(0x3A000 + 0x574)
 #define ADF_ADMINMSGLR_OFFSET	(0x3A000 + 0x578)
 #define ADF_MAILBOX_BASE_OFFSET	0x20970
 
-/* Arbiter configuration */
+
 #define ADF_ARB_OFFSET			0x30000
 #define ADF_ARB_WRK_2_SER_MAP_OFFSET	0x180
 #define ADF_ARB_CONFIG			(BIT(31) | BIT(6) | BIT(0))
@@ -113,22 +113,18 @@ do { \
 	ADF_CSR_WR(csr_addr, ADF_ARB_RINGSRVARBEN_OFFSET + \
 	(ADF_ARB_REG_SLOT * (index)), value)
 
-/* Power gating */
+
 #define ADF_POWERGATE_DC		BIT(23)
 #define ADF_POWERGATE_PKE		BIT(24)
 
-/* Default ring mapping */
+
 #define ADF_GEN2_DEFAULT_RING_TO_SRV_MAP \
 	(CRYPTO << ADF_CFG_SERV_RING_PAIR_0_SHIFT | \
 	 CRYPTO << ADF_CFG_SERV_RING_PAIR_1_SHIFT | \
 	 UNUSED << ADF_CFG_SERV_RING_PAIR_2_SHIFT | \
 	   COMP << ADF_CFG_SERV_RING_PAIR_3_SHIFT)
 
-/* WDT timers
- *
- * Timeout is in cycles. Clock speed may vary across products but this
- * value should be a few milli-seconds.
- */
+
 #define ADF_SSM_WDT_DEFAULT_VALUE	0x200000
 #define ADF_SSM_WDT_PKE_DEFAULT_VALUE	0x2000000
 #define ADF_SSMWDT_OFFSET		0x54
@@ -136,7 +132,7 @@ do { \
 #define ADF_SSMWDT(i)		(ADF_SSMWDT_OFFSET + ((i) * 0x4000))
 #define ADF_SSMWDTPKE(i)	(ADF_SSMWDTPKE_OFFSET + ((i) * 0x4000))
 
-/* Error detection and correction */
+
 #define ADF_GEN2_AE_CTX_ENABLES(i)	((i) * 0x1000 + 0x20818)
 #define ADF_GEN2_AE_MISC_CONTROL(i)	((i) * 0x1000 + 0x20960)
 #define ADF_GEN2_ENABLE_AE_ECC_ERR	BIT(28)
@@ -145,10 +141,10 @@ do { \
 #define ADF_GEN2_CERRSSMSH(i)		((i) * 0x4000 + 0x10)
 #define ADF_GEN2_ERRSSMSH_EN		BIT(3)
 
-/* Number of heartbeat counter pairs */
+
 #define ADF_NUM_HB_CNT_PER_AE ADF_NUM_THREADS_PER_AE
 
-/* Interrupts */
+
 #define ADF_GEN2_SMIAPF0_MASK_OFFSET    (0x3A000 + 0x28)
 #define ADF_GEN2_SMIAPF1_MASK_OFFSET    (0x3A000 + 0x30)
 #define ADF_GEN2_SMIA1_MASK             0x1

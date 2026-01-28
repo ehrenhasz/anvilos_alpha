@@ -56,7 +56,7 @@ static inline void wq_list_cut(struct io_wq_work_list *list,
 			       struct io_wq_work_node *last,
 			       struct io_wq_work_node *prev)
 {
-	/* first in the list, if prev==NULL */
+	
 	if (!prev)
 		WRITE_ONCE(list->first, last->next);
 	else
@@ -116,4 +116,4 @@ static inline struct io_wq_work *wq_next_work(struct io_wq_work *work)
 	return container_of(work->list.next, struct io_wq_work, list);
 }
 
-#endif // INTERNAL_IO_SLIST_H
+#endif 

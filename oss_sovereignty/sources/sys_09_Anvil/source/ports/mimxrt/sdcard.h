@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2021 Philipp Ebensberger
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 
 #ifndef MICROPY_INCLUDED_MIMXRT_SDCARD_H
 #define MICROPY_INCLUDED_MIMXRT_SDCARD_H
@@ -31,9 +7,9 @@
 #include "pin.h"
 #include "fsl_usdhc.h"
 
-// ---
-// SD Card public defines
-// ---
+
+
+
 #define SDCARD_DEFAULT_BLOCK_SIZE    (512U)
 #define SDCARD_CLOCK_400KHZ          (400000U)
 #define SDCARD_CLOCK_25MHZ           (25000000U)
@@ -74,9 +50,9 @@ typedef struct _mimxrt_sdcard_obj_t {
     const mimxrt_sdcard_obj_pins_t *pins;
 } mimxrt_sdcard_obj_t;
 
-// ---
-// SD Card object instances
-// ---
+
+
+
 #if MICROPY_PY_MACHINE_SDCARD && (defined MICROPY_USDHC1 || defined MICROPY_USDHC2)
 enum {
     #if defined MICROPY_USDHC1 && USDHC1_AVAIL
@@ -90,9 +66,9 @@ enum {
 #endif
 extern mimxrt_sdcard_obj_t mimxrt_sdcard_objs[SDCARD_OBJ_USDHC_N];
 
-// ---
-// SD Card functions
-// ---
+
+
+
 void sdcard_init(mimxrt_sdcard_obj_t *card, uint32_t base_clk);
 void sdcard_deinit(mimxrt_sdcard_obj_t *card);
 void sdcard_init_pins(mimxrt_sdcard_obj_t *card);
@@ -108,4 +84,4 @@ static inline bool sdcard_state_initialized(mimxrt_sdcard_obj_t *card) {
     return card->state->initialized;
 }
 
-#endif // MICROPY_INCLUDED_MIMXRT_SDCARD_H
+#endif 

@@ -1,8 +1,0 @@
-#include "ac5-98dx25xx.dtsi"
-/ {
-	model = "Marvell AC5X SoC";
-	compatible = "marvell,ac5x", "marvell,ac5";
-};
-&cnm_clock {
-	clock-frequency = <325000000>;
-};

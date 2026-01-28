@@ -1,14 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2000,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef __XFS_ALLOC_BTREE_H__
 #define	__XFS_ALLOC_BTREE_H__
 
-/*
- * Freespace on-disk structures
- */
+
 
 struct xfs_buf;
 struct xfs_btree_cur;
@@ -16,18 +11,12 @@ struct xfs_mount;
 struct xfs_perag;
 struct xbtree_afakeroot;
 
-/*
- * Btree block header size depends on a superblock flag.
- */
+
 #define XFS_ALLOC_BLOCK_LEN(mp) \
 	(xfs_has_crc(((mp))) ? \
 		XFS_BTREE_SBLOCK_CRC_LEN : XFS_BTREE_SBLOCK_LEN)
 
-/*
- * Record, key, and pointer address macros for btree blocks.
- *
- * (note that some of these may appear unused, but they are used in userspace)
- */
+
 #define XFS_ALLOC_REC_ADDR(mp, block, index) \
 	((xfs_alloc_rec_t *) \
 		((char *)(block) + \
@@ -65,4 +54,4 @@ unsigned int xfs_allocbt_maxlevels_ondisk(void);
 int __init xfs_allocbt_init_cur_cache(void);
 void xfs_allocbt_destroy_cur_cache(void);
 
-#endif	/* __XFS_ALLOC_BTREE_H__ */
+#endif	

@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
 
 #ifndef GOYAP_H_
 #define GOYAP_H_
@@ -24,34 +19,30 @@
 					NUMBER_OF_CPU_HW_QUEUES + \
 					NUMBER_OF_INT_HW_QUEUES)
 
-/*
- * Number of MSIX interrupts IDS:
- * Each completion queue has 1 ID
- * The event queue has 1 ID
- */
+
 #define NUMBER_OF_INTERRUPTS		(NUMBER_OF_CMPLT_QUEUES + 1)
 
 #if (NUMBER_OF_INTERRUPTS > GOYA_MSIX_ENTRIES)
 #error "Number of MSIX interrupts must be smaller or equal to GOYA_MSIX_ENTRIES"
 #endif
 
-#define QMAN_FENCE_TIMEOUT_USEC		10000		/* 10 ms */
+#define QMAN_FENCE_TIMEOUT_USEC		10000		
 
-#define QMAN_STOP_TIMEOUT_USEC		100000		/* 100 ms */
+#define QMAN_STOP_TIMEOUT_USEC		100000		
 
-#define CORESIGHT_TIMEOUT_USEC		100000		/* 100 ms */
+#define CORESIGHT_TIMEOUT_USEC		100000		
 
-#define GOYA_CPU_TIMEOUT_USEC		15000000	/* 15s */
+#define GOYA_CPU_TIMEOUT_USEC		15000000	
 
 #define TPC_ENABLED_MASK		0xFF
 
-#define PLL_HIGH_DEFAULT		1575000000	/* 1.575 GHz */
+#define PLL_HIGH_DEFAULT		1575000000	
 
-#define MAX_POWER_DEFAULT		200000		/* 200W */
+#define MAX_POWER_DEFAULT		200000		
 
-#define DC_POWER_DEFAULT		20000		/* 20W */
+#define DC_POWER_DEFAULT		20000		
 
-#define DRAM_PHYS_DEFAULT_SIZE		0x100000000ull	/* 4GB */
+#define DRAM_PHYS_DEFAULT_SIZE		0x100000000ull	
 
 #define GOYA_DEFAULT_CARD_NAME		"HL1000"
 
@@ -61,12 +52,12 @@
 #error "GOYA_MAX_PENDING_CS must be power of 2 and greater than 1"
 #endif
 
-/* DRAM Memory Map */
 
-#define CPU_FW_IMAGE_SIZE		0x10000000	/* 256MB */
-#define MMU_PAGE_TABLES_SIZE		0x0FC00000	/* 252MB */
-#define MMU_DRAM_DEFAULT_PAGE_SIZE	0x00200000	/* 2MB */
-#define MMU_CACHE_MNG_SIZE		0x00001000	/* 4KB */
+
+#define CPU_FW_IMAGE_SIZE		0x10000000	
+#define MMU_PAGE_TABLES_SIZE		0x0FC00000	
+#define MMU_DRAM_DEFAULT_PAGE_SIZE	0x00200000	
+#define MMU_CACHE_MNG_SIZE		0x00001000	
 
 #define CPU_FW_IMAGE_ADDR		DRAM_PHYS_BASE
 #define MMU_PAGE_TABLES_ADDR		(CPU_FW_IMAGE_ADDR + CPU_FW_IMAGE_SIZE)
@@ -83,15 +74,9 @@
 #error "Driver must reserve no more than 512MB"
 #endif
 
-/*
- * SRAM Memory Map for Driver
- *
- * Driver occupies DRIVER_SRAM_SIZE bytes from the start of SRAM. It is used for
- * MME/TPC QMANs
- *
- */
 
-#define MME_QMAN_BASE_OFFSET	0x000000	/* Must be 0 */
+
+#define MME_QMAN_BASE_OFFSET	0x000000	
 #define MME_QMAN_LENGTH		64
 #define TPC_QMAN_LENGTH		64
 
@@ -121,16 +106,16 @@
 
 #define SRAM_USER_BASE_OFFSET	GOYA_KMD_SRAM_RESERVED_SIZE_FROM_START
 
-/* Virtual address space */
-#define VA_HOST_SPACE_START	0x1000000000000ull	/* 256TB */
-#define VA_HOST_SPACE_END	0x3FF8000000000ull	/* 1PB - 1TB */
-#define VA_HOST_SPACE_SIZE	(VA_HOST_SPACE_END - \
-					VA_HOST_SPACE_START) /* 767TB */
 
-#define VA_DDR_SPACE_START	0x800000000ull		/* 32GB */
-#define VA_DDR_SPACE_END	0x2000000000ull		/* 128GB */
+#define VA_HOST_SPACE_START	0x1000000000000ull	
+#define VA_HOST_SPACE_END	0x3FF8000000000ull	
+#define VA_HOST_SPACE_SIZE	(VA_HOST_SPACE_END - \
+					VA_HOST_SPACE_START) 
+
+#define VA_DDR_SPACE_START	0x800000000ull		
+#define VA_DDR_SPACE_END	0x2000000000ull		
 #define VA_DDR_SPACE_SIZE	(VA_DDR_SPACE_END - \
-					VA_DDR_SPACE_START)	/* 128GB */
+					VA_DDR_SPACE_START)	
 
 #if (HL_CPU_ACCESSIBLE_MEM_SIZE != SZ_2M)
 #error "HL_CPU_ACCESSIBLE_MEM_SIZE must be exactly 2MB to enable MMU mapping"
@@ -159,7 +144,7 @@ struct goya_work_freq {
 };
 
 struct goya_device {
-	/* TODO: remove hw_queues_lock after moving to scheduler code */
+	
 	spinlock_t	hw_queues_lock;
 	struct goya_work_freq	*goya_work;
 
@@ -248,4 +233,4 @@ u32 goya_get_queue_id_for_cq(struct hl_device *hdev, u32 cq_idx);
 u64 goya_get_device_time(struct hl_device *hdev);
 int goya_set_frequency(struct hl_device *hdev, enum hl_pll_frequency freq);
 
-#endif /* GOYAP_H_ */
+#endif 

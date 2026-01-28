@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015 Nicira, Inc.
- */
+
+
 
 #ifndef OVS_CONNTRACK_H
 #define OVS_CONNTRACK_H 1
@@ -82,9 +80,7 @@ static inline void ovs_ct_fill_key(const struct sk_buff *skb,
 	key->ct_zone = 0;
 	key->ct.mark = 0;
 	memset(&key->ct.labels, 0, sizeof(key->ct.labels));
-	/* Clear 'ct_orig_proto' to mark the non-existence of original
-	 * direction key fields.
-	 */
+	
 	key->ct_orig_proto = 0;
 }
 
@@ -98,9 +94,9 @@ static inline int ovs_ct_put_key(const struct sw_flow_key *swkey,
 static inline void ovs_ct_free_action(const struct nlattr *a) { }
 
 #define CT_SUPPORTED_MASK 0
-#endif /* CONFIG_NF_CONNTRACK */
+#endif 
 
 #if IS_ENABLED(CONFIG_NETFILTER_CONNCOUNT)
 extern struct genl_family dp_ct_limit_genl_family;
 #endif
-#endif /* ovs_conntrack.h */
+#endif 

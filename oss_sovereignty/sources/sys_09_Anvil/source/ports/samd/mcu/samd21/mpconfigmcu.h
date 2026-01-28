@@ -1,4 +1,4 @@
-// Deinitions common to all SAMD21 boards
+
 #include "samd21.h"
 
 #define MICROPY_CONFIG_ROM_LEVEL        (MICROPY_CONFIG_ROM_LEVEL_BASIC_FEATURES)
@@ -8,13 +8,13 @@
 #define SAMD21_EXTRA_FEATURES           0
 #endif
 
-// MicroPython emitters
+
 #define MICROPY_EMIT_THUMB              (SAMD21_EXTRA_FEATURES)
 #define MICROPY_EMIT_INLINE_THUMB       (SAMD21_EXTRA_FEATURES)
 #define MICROPY_EMIT_THUMB_ARMV7M       (0)
 #define MICROPY_MODULE_BUILTIN_INIT     (1)
 
-// Selected extensions beyond the basic features set.
+
 #define MICROPY_ENABLE_FINALISER        (1)
 #define MICROPY_STACK_CHECK             (1)
 #define MICROPY_KBD_EXCEPTION           (1)
@@ -52,7 +52,7 @@ unsigned long trng_random_u32(int delay);
 #define MICROPY_HW_UART_RTSCTS          (SAMD21_EXTRA_FEATURES)
 #endif
 
-// selected extensions of the extra features set
+
 #define MICROPY_PY_OS_URANDOM           (1)
 #define MICROPY_COMP_TRIPLE_TUPLE_ASSIGN (SAMD21_EXTRA_FEATURES)
 #define MICROPY_COMP_RETURN_IF_EXPR     (SAMD21_EXTRA_FEATURES)
@@ -74,7 +74,7 @@ unsigned long trng_random_u32(int delay);
 #define MICROPY_PY_MACHINE_PIN_BOARD_CPU (1)
 #endif
 
-#define VFS_BLOCK_SIZE_BYTES            (1536) // 24x 64B flash pages;
+#define VFS_BLOCK_SIZE_BYTES            (1536) 
 
 #define CPU_FREQ                        (48000000)
 #define DFLL48M_FREQ                    (48000000)

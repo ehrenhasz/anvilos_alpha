@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Texas Instruments CPDMA Driver
- *
- * Copyright (C) 2010 Texas Instruments
- *
- */
+
+
 #ifndef __DAVINCI_CPDMA_H__
 #define __DAVINCI_CPDMA_H__
 
@@ -34,11 +29,7 @@ struct cpdma_params {
 	u32			bus_freq_mhz;
 	u32			descs_pool_size;
 
-	/*
-	 * Some instances of embedded cpdma controllers have extra control and
-	 * status registers.  The following flag enables access to these
-	 * "extended" registers.
-	 */
+	
 	bool			has_ext_regs;
 };
 
@@ -99,18 +90,18 @@ u32 cpdma_chan_get_rate(struct cpdma_chan *ch);
 u32 cpdma_chan_get_min_rate(struct cpdma_ctlr *ctlr);
 
 enum cpdma_control {
-	CPDMA_TX_RLIM,			/* read-write */
-	CPDMA_CMD_IDLE,			/* write-only */
-	CPDMA_COPY_ERROR_FRAMES,	/* read-write */
-	CPDMA_RX_OFF_LEN_UPDATE,	/* read-write */
-	CPDMA_RX_OWNERSHIP_FLIP,	/* read-write */
-	CPDMA_TX_PRIO_FIXED,		/* read-write */
-	CPDMA_STAT_IDLE,		/* read-only */
-	CPDMA_STAT_TX_ERR_CHAN,		/* read-only */
-	CPDMA_STAT_TX_ERR_CODE,		/* read-only */
-	CPDMA_STAT_RX_ERR_CHAN,		/* read-only */
-	CPDMA_STAT_RX_ERR_CODE,		/* read-only */
-	CPDMA_RX_BUFFER_OFFSET,		/* read-write */
+	CPDMA_TX_RLIM,			
+	CPDMA_CMD_IDLE,			
+	CPDMA_COPY_ERROR_FRAMES,	
+	CPDMA_RX_OFF_LEN_UPDATE,	
+	CPDMA_RX_OWNERSHIP_FLIP,	
+	CPDMA_TX_PRIO_FIXED,		
+	CPDMA_STAT_IDLE,		
+	CPDMA_STAT_TX_ERR_CHAN,		
+	CPDMA_STAT_TX_ERR_CODE,		
+	CPDMA_STAT_RX_ERR_CHAN,		
+	CPDMA_STAT_RX_ERR_CODE,		
+	CPDMA_RX_BUFFER_OFFSET,		
 };
 
 int cpdma_control_get(struct cpdma_ctlr *ctlr, int control);

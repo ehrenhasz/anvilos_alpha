@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright(c) 2022 Intel Corporation */
+
+
 #ifndef _QAT_COMPRESSION_H_
 #define _QAT_COMPRESSION_H_
 

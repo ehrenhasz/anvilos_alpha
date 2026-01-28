@@ -1,21 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019, Intel Corporation. */
+
+
 
 #ifndef _ICE_TXRX_LIB_H_
 #define _ICE_TXRX_LIB_H_
 #include "ice.h"
 
-/**
- * ice_set_rx_bufs_act - propagate Rx buffer action to frags
- * @xdp: XDP buffer representing frame (linear and frags part)
- * @rx_ring: Rx ring struct
- * act: action to store onto Rx buffers related to XDP buffer parts
- *
- * Set action that should be taken before putting Rx buffer from first frag
- * to one before last. Last one is handled by caller of this function as it
- * is the EOP frag that is currently being processed. This function is
- * supposed to be called only when XDP buffer contains frags.
- */
+
 static inline void
 ice_set_rx_bufs_act(struct xdp_buff *xdp, const struct ice_rx_ring *rx_ring,
 		    const unsigned int act)
@@ -35,35 +25,19 @@ ice_set_rx_bufs_act(struct xdp_buff *xdp, const struct ice_rx_ring *rx_ring,
 	}
 }
 
-/**
- * ice_test_staterr - tests bits in Rx descriptor status and error fields
- * @status_err_n: Rx descriptor status_error0 or status_error1 bits
- * @stat_err_bits: value to mask
- *
- * This function does some fast chicanery in order to return the
- * value of the mask which is really only used for boolean tests.
- * The status_error_len doesn't need to be shifted because it begins
- * at offset zero.
- */
+
 static inline bool
 ice_test_staterr(__le16 status_err_n, const u16 stat_err_bits)
 {
 	return !!(status_err_n & cpu_to_le16(stat_err_bits));
 }
 
-/**
- * ice_is_non_eop - process handling of non-EOP buffers
- * @rx_ring: Rx ring being processed
- * @rx_desc: Rx descriptor for current buffer
- *
- * If the buffer is an EOP buffer, this function exits returning false,
- * otherwise return true indicating that this is in fact a non-EOP buffer.
- */
+
 static inline bool
 ice_is_non_eop(const struct ice_rx_ring *rx_ring,
 	       const union ice_32b_rx_flex_desc *rx_desc)
 {
-	/* if we are the last buffer then there is nothing else to do */
+	
 #define ICE_RXD_EOF BIT(ICE_RX_FLEX_DESC_STATUS0_EOF_S)
 	if (likely(ice_test_staterr(rx_desc->wb.status_error0, ICE_RXD_EOF)))
 		return false;
@@ -83,14 +57,7 @@ ice_build_ctob(u64 td_cmd, u64 td_offset, unsigned int size, u64 td_tag)
 			   (td_tag    << ICE_TXD_QW1_L2TAG1_S));
 }
 
-/**
- * ice_get_vlan_tag_from_rx_desc - get VLAN from Rx flex descriptor
- * @rx_desc: Rx 32b flex descriptor with RXDID=2
- *
- * The OS and current PF implementation only support stripping a single VLAN tag
- * at a time, so there should only ever be 0 or 1 tags in the l2tag* fields. If
- * one is found return the tag, else return 0 to mean no VLAN tag was found.
- */
+
 static inline u16
 ice_get_vlan_tag_from_rx_desc(union ice_32b_rx_flex_desc *rx_desc)
 {
@@ -107,27 +74,15 @@ ice_get_vlan_tag_from_rx_desc(union ice_32b_rx_flex_desc *rx_desc)
 	return 0;
 }
 
-/**
- * ice_xdp_ring_update_tail - Updates the XDP Tx ring tail register
- * @xdp_ring: XDP Tx ring
- *
- * This function updates the XDP Tx ring tail register.
- */
+
 static inline void ice_xdp_ring_update_tail(struct ice_tx_ring *xdp_ring)
 {
-	/* Force memory writes to complete before letting h/w
-	 * know there are new descriptors to fetch.
-	 */
+	
 	wmb();
 	writel_relaxed(xdp_ring->next_to_use, xdp_ring->tail);
 }
 
-/**
- * ice_set_rs_bit - set RS bit on last produced descriptor (one behind current NTU)
- * @xdp_ring: XDP ring to produce the HW Tx descriptors on
- *
- * returns index of descriptor that had RS bit produced on
- */
+
 static inline u32 ice_set_rs_bit(const struct ice_tx_ring *xdp_ring)
 {
 	u32 rs_idx = xdp_ring->next_to_use ? xdp_ring->next_to_use - 1 : xdp_ring->count - 1;
@@ -151,4 +106,4 @@ ice_process_skb_fields(struct ice_rx_ring *rx_ring,
 		       struct sk_buff *skb, u16 ptype);
 void
 ice_receive_skb(struct ice_rx_ring *rx_ring, struct sk_buff *skb, u16 vlan_tag);
-#endif /* !_ICE_TXRX_LIB_H_ */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_PKEYS_H
 #define _LINUX_PKEYS_H
 
@@ -8,7 +8,7 @@
 
 #ifdef CONFIG_ARCH_HAS_PKEYS
 #include <asm/pkeys.h>
-#else /* ! CONFIG_ARCH_HAS_PKEYS */
+#else 
 #define arch_max_pkey() (1)
 #define execute_only_pkey(mm) (0)
 #define arch_override_mprotect_pkey(vma, prot, pkey) (0)
@@ -46,6 +46,6 @@ static inline bool arch_pkeys_enabled(void)
 	return false;
 }
 
-#endif /* ! CONFIG_ARCH_HAS_PKEYS */
+#endif 
 
-#endif /* _LINUX_PKEYS_H */
+#endif 

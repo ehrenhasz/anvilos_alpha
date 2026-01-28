@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-1.0+ */
-/*
- * Bond several ethernet interfaces into a Cisco, running 'Etherchannel'.
- *
- * Portions are (c) Copyright 1995 Simon "Guru Aleph-Null" Janes
- * NCM: Network and Communications Management, Inc.
- *
- * BUT, I'm the one who modified it for ethernet, so:
- * (c) Copyright 1999, Thomas Davis, tadavis@lbl.gov
- *
- */
+
+
 
 #ifndef _NET_BONDING_H
 #define _NET_BONDING_H
@@ -50,12 +41,12 @@
 
 #define BOND_MODE(bond) ((bond)->params.mode)
 
-/* slave list primitives */
+
 #define bond_slave_list(bond) (&(bond)->dev->adj_list.lower)
 
 #define bond_has_slaves(bond) !list_empty(bond_slave_list(bond))
 
-/* IMPORTANT: bond_first/last_slave can return NULL in case of an empty list */
+
 #define bond_first_slave(bond) \
 	(bond_has_slaves(bond) ? \
 		netdev_adjacent_get_private(bond_slave_list(bond)->next) : \
@@ -65,25 +56,18 @@
 		netdev_adjacent_get_private(bond_slave_list(bond)->prev) : \
 		NULL)
 
-/* Caller must have rcu_read_lock */
+
 #define bond_first_slave_rcu(bond) \
 	netdev_lower_get_first_private_rcu(bond->dev)
 
 #define bond_is_first_slave(bond, pos) (pos == bond_first_slave(bond))
 #define bond_is_last_slave(bond, pos) (pos == bond_last_slave(bond))
 
-/**
- * bond_for_each_slave - iterate over all slaves
- * @bond:	the bond holding this list
- * @pos:	current slave
- * @iter:	list_head * iterator
- *
- * Caller must hold RTNL
- */
+
 #define bond_for_each_slave(bond, pos, iter) \
 	netdev_for_each_lower_private((bond)->dev, pos, iter)
 
-/* Caller must have rcu_read_lock */
+
 #define bond_for_each_slave_rcu(bond, pos, iter) \
 	netdev_for_each_lower_private_rcu((bond)->dev, pos, iter)
 
@@ -149,26 +133,25 @@ struct bond_params {
 	struct in6_addr ns_targets[BOND_MAX_NS_TARGETS];
 #endif
 
-	/* 2 bytes of padding : see ether_addr_equal_64bits() */
+	
 	u8 ad_actor_system[ETH_ALEN + 2];
 };
 
 struct slave {
-	struct net_device *dev; /* first - useful for panic debug */
-	struct bonding *bond; /* our master */
+	struct net_device *dev; 
+	struct bonding *bond; 
 	int    delay;
-	/* all 4 in jiffies */
+	
 	unsigned long last_link_up;
 	unsigned long last_tx;
 	unsigned long last_rx;
 	unsigned long target_last_arp_rx[BOND_MAX_ARP_TARGETS];
-	s8     link;		/* one of BOND_LINK_XXXX */
-	s8     link_new_state;	/* one of BOND_LINK_XXXX */
-	u8     backup:1,   /* indicates backup slave. Value corresponds with
-			      BOND_STATE_ACTIVE and BOND_STATE_BACKUP */
-	       inactive:1, /* indicates inactive slave */
-	       should_notify:1, /* indicates whether the state changed */
-	       should_notify_link:1; /* indicates whether the link changed */
+	s8     link;		
+	s8     link_new_state;	
+	u8     backup:1,   
+	       inactive:1, 
+	       should_notify:1, 
+	       should_notify_link:1; 
 	u8     duplex;
 	u32    original_mtu;
 	u32    link_failure_count;
@@ -197,9 +180,7 @@ struct bond_up_slave {
 	struct slave	*arr[];
 };
 
-/*
- * Link pseudo-state only used internally by monitors
- */
+
 #define BOND_LINK_NOCHANGE -1
 
 struct bond_ipsec {
@@ -207,12 +188,9 @@ struct bond_ipsec {
 	struct xfrm_state *xs;
 };
 
-/*
- * Here are the locking policies for the two bonding locks:
- * Get rcu_read_lock when reading or RTNL when writing slave list.
- */
+
 struct bonding {
-	struct   net_device *dev; /* first - useful for panic debug */
+	struct   net_device *dev; 
 	struct   slave __rcu *curr_active_slave;
 	struct   slave __rcu *current_arp_slave;
 	struct   slave __rcu *primary_slave;
@@ -220,16 +198,10 @@ struct bonding {
 	struct   bond_up_slave __rcu *all_slaves;
 	bool     force_primary;
 	bool     notifier_ctx;
-	s32      slave_cnt; /* never change this value outside the attach/detach wrappers */
+	s32      slave_cnt; 
 	int     (*recv_probe)(const struct sk_buff *, struct bonding *,
 			      struct slave *);
-	/* mode_lock is used for mode-specific locking needs, currently used by:
-	 * 3ad mode (4) - protect against running bond_3ad_unbind_slave() and
-	 *                bond_3ad_state_machine_handler() concurrently and also
-	 *                the access to the state machine shared variables.
-	 * TLB mode (5) - to sync the use and modifications of its hash table
-	 * ALB mode (6) - to sync the use and modifications of its hash table
-	 */
+	
 	spinlock_t mode_lock;
 	spinlock_t stats_lock;
 	u32	 send_peer_notif;
@@ -237,7 +209,7 @@ struct bonding {
 #ifdef CONFIG_PROC_FS
 	struct   proc_dir_entry *proc_entry;
 	char     proc_file_name[IFNAMSIZ];
-#endif /* CONFIG_PROC_FS */
+#endif 
 	struct   list_head bond_list;
 	u32 __percpu *rr_tx_counter;
 	struct   ad_bond_info ad_info;
@@ -251,15 +223,15 @@ struct bonding {
 	struct   delayed_work mcast_work;
 	struct   delayed_work slave_arr_work;
 #ifdef CONFIG_DEBUG_FS
-	/* debugging support via debugfs */
+	
 	struct	 dentry *debug_dir;
-#endif /* CONFIG_DEBUG_FS */
+#endif 
 	struct rtnl_link_stats64 bond_stats;
 #ifdef CONFIG_XFRM_OFFLOAD
 	struct list_head ipsec_list;
-	/* protecting ipsec_list */
+	
 	spinlock_t ipsec_lock;
-#endif /* CONFIG_XFRM_OFFLOAD */
+#endif 
 	struct bpf_prog *xdp_prog;
 };
 
@@ -277,11 +249,7 @@ struct bond_vlan_tag {
 	unsigned short	vlan_id;
 };
 
-/*
- * Returns NULL if the net_device does not belong to any of the bond's slaves
- *
- * Caller must hold bond lock for read
- */
+
 static inline struct slave *bond_get_slave_by_dev(struct bonding *bond,
 						  struct net_device *slave_dev)
 {
@@ -511,9 +479,7 @@ static inline int bond_is_ip6_target_ok(struct in6_addr *addr)
 }
 #endif
 
-/* Get the oldest arp which we've received on this slave for bond's
- * arp_targets.
- */
+
 static inline unsigned long slave_oldest_target_arp_rx(struct bonding *bond,
 						       struct slave *slave)
 {
@@ -642,7 +608,7 @@ static inline __be32 bond_confirm_addr(struct net_device *dev, __be32 dst, __be3
 }
 
 struct bond_net {
-	struct net		*net;	/* Associated network namespace */
+	struct net		*net;	
 	struct list_head	dev_list;
 #ifdef CONFIG_PROC_FS
 	struct proc_dir_entry	*proc_dir;
@@ -721,7 +687,7 @@ static inline struct slave *bond_slave_has_mac(struct bonding *bond,
 	return NULL;
 }
 
-/* Caller must hold rcu_read_lock() for read */
+
 static inline bool bond_slave_has_mac_rcu(struct bonding *bond, const u8 *mac)
 {
 	struct list_head *iter;
@@ -733,9 +699,7 @@ static inline bool bond_slave_has_mac_rcu(struct bonding *bond, const u8 *mac)
 	return false;
 }
 
-/* Check if the ip is present in arp ip list, or first free slot if ip == 0
- * Returns -1 if not found, index if found
- */
+
 static inline int bond_get_targets_ip(__be32 *targets, __be32 ip)
 {
 	int i;
@@ -768,16 +732,16 @@ static inline int bond_get_targets_ip6(struct in6_addr *targets, struct in6_addr
 }
 #endif
 
-/* exported from bond_main.c */
+
 extern unsigned int bond_net_id;
 
-/* exported from bond_netlink.c */
+
 extern struct rtnl_link_ops bond_link_ops;
 
-/* exported from bond_sysfs_slave.c */
+
 extern const struct sysfs_ops slave_sysfs_ops;
 
-/* exported from bond_3ad.c */
+
 extern const u8 lacpdu_mcast_addr[];
 
 static inline netdev_tx_t bond_tx_drop(struct net_device *dev, struct sk_buff *skb)
@@ -787,4 +751,4 @@ static inline netdev_tx_t bond_tx_drop(struct net_device *dev, struct sk_buff *s
 	return NET_XMIT_DROP;
 }
 
-#endif /* _NET_BONDING_H */
+#endif 

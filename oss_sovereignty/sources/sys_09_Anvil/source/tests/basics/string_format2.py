@@ -1,4 +1,4 @@
-int_tests = False # these take a while
+int_tests = False 
 char_tests = True
 str_tests = True
 def test(fmt, *args):
@@ -39,7 +39,7 @@ if int_tests:
             for alignment in ('', '<', '>', '=', '^'):
                 for fill in ('', ' ', '0', '@'):
                     for sign in ('', '+', '-', ' '):
-                        for prefix in ('', '#'):
+                        for prefix in ('', '
                             for num in int_nums:
                                 test_fmt('', fill, alignment, sign, prefix, width, '', type, num)
 if char_tests:

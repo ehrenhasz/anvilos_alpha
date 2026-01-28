@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * CAAM hardware register-level view
- *
- * Copyright 2008-2011 Freescale Semiconductor, Inc.
- * Copyright 2018, 2023 NXP
- */
+
+
 
 #ifndef REGS_H
 #define REGS_H
@@ -14,60 +9,7 @@
 #include <linux/io.h>
 #include <linux/io-64-nonatomic-hi-lo.h>
 
-/*
- * Architecture-specific register access methods
- *
- * CAAM's bus-addressable registers are 64 bits internally.
- * They have been wired to be safely accessible on 32-bit
- * architectures, however. Registers were organized such
- * that (a) they can be contained in 32 bits, (b) if not, then they
- * can be treated as two 32-bit entities, or finally (c) if they
- * must be treated as a single 64-bit value, then this can safely
- * be done with two 32-bit cycles.
- *
- * For 32-bit operations on 64-bit values, CAAM follows the same
- * 64-bit register access conventions as it's predecessors, in that
- * writes are "triggered" by a write to the register at the numerically
- * higher address, thus, a full 64-bit write cycle requires a write
- * to the lower address, followed by a write to the higher address,
- * which will latch/execute the write cycle.
- *
- * For example, let's assume a SW reset of CAAM through the master
- * configuration register.
- * - SWRST is in bit 31 of MCFG.
- * - MCFG begins at base+0x0000.
- * - Bits 63-32 are a 32-bit word at base+0x0000 (numerically-lower)
- * - Bits 31-0 are a 32-bit word at base+0x0004 (numerically-higher)
- *
- * (and on Power, the convention is 0-31, 32-63, I know...)
- *
- * Assuming a 64-bit write to this MCFG to perform a software reset
- * would then require a write of 0 to base+0x0000, followed by a
- * write of 0x80000000 to base+0x0004, which would "execute" the
- * reset.
- *
- * Of course, since MCFG 63-32 is all zero, we could cheat and simply
- * write 0x8000000 to base+0x0004, and the reset would work fine.
- * However, since CAAM does contain some write-and-read-intended
- * 64-bit registers, this code defines 64-bit access methods for
- * the sake of internal consistency and simplicity, and so that a
- * clean transition to 64-bit is possible when it becomes necessary.
- *
- * There are limitations to this that the developer must recognize.
- * 32-bit architectures cannot enforce an atomic-64 operation,
- * Therefore:
- *
- * - On writes, since the HW is assumed to latch the cycle on the
- *   write of the higher-numeric-address word, then ordered
- *   writes work OK.
- *
- * - For reads, where a register contains a relevant value of more
- *   that 32 bits, the hardware employs logic to latch the other
- *   "half" of the data until read, ensuring an accurate value.
- *   This is of particular relevance when dealing with CAAM's
- *   performance counters.
- *
- */
+
 
 extern bool caam_little_end;
 extern bool caam_imx;
@@ -122,23 +64,7 @@ static inline void clrsetbits_32(void __iomem *reg, u32 clear, u32 set)
 		iowrite32be((ioread32be(reg) & ~clear) | set, reg);
 }
 
-/*
- * The only users of these wr/rd_reg64 functions is the Job Ring (JR).
- * The DMA address registers in the JR are handled differently depending on
- * platform:
- *
- * 1. All BE CAAM platforms and i.MX platforms (LE CAAM):
- *
- *    base + 0x0000 : most-significant 32 bits
- *    base + 0x0004 : least-significant 32 bits
- *
- * The 32-bit version of this core therefore has to write to base + 0x0004
- * to set the 32-bit wide DMA address.
- *
- * 2. All other LE CAAM platforms (LS1021A etc.)
- *    base + 0x0000 : least-significant 32 bits
- *    base + 0x0004 : most-significant 32 bits
- */
+
 static inline void wr_reg64(void __iomem *reg, u64 data)
 {
 	if (caam_little_end) {
@@ -212,10 +138,7 @@ static inline u64 caam_dma_to_cpu(u64 value)
 		return caam32_to_cpu(value);
 }
 
-/*
- * jr_outentry
- * Represents each entry in a JobR output ring
- */
+
 
 static inline void jr_outentry_get(void *outring, int hw_idx, dma_addr_t *desc,
 				   u32 *jrstatus)
@@ -231,8 +154,8 @@ static inline void jr_outentry_get(void *outring, int hw_idx, dma_addr_t *desc,
 		*jrstatus = outentry[hw_idx].jrstatus;
 	} else {
 		struct {
-			dma_addr_t desc;/* Pointer to completed descriptor */
-			u32 jrstatus;	/* Status for completed descriptor */
+			dma_addr_t desc;
+			u32 jrstatus;	
 		} __packed *outentry = outring;
 
 		*desc = outentry[hw_idx].desc;
@@ -278,71 +201,61 @@ static inline void jr_inpentry_set(void *inpring, int hw_idx, dma_addr_t val)
 #define SIZEOF_JR_INPENTRY	caam_ptr_sz
 
 
-/* Version registers (Era 10+)	e80-eff */
+
 struct version_regs {
-	u32 crca;	/* CRCA_VERSION */
-	u32 afha;	/* AFHA_VERSION */
-	u32 kfha;	/* KFHA_VERSION */
-	u32 pkha;	/* PKHA_VERSION */
-	u32 aesa;	/* AESA_VERSION */
-	u32 mdha;	/* MDHA_VERSION */
-	u32 desa;	/* DESA_VERSION */
-	u32 snw8a;	/* SNW8A_VERSION */
-	u32 snw9a;	/* SNW9A_VERSION */
-	u32 zuce;	/* ZUCE_VERSION */
-	u32 zuca;	/* ZUCA_VERSION */
-	u32 ccha;	/* CCHA_VERSION */
-	u32 ptha;	/* PTHA_VERSION */
-	u32 rng;	/* RNG_VERSION */
-	u32 trng;	/* TRNG_VERSION */
-	u32 aaha;	/* AAHA_VERSION */
+	u32 crca;	
+	u32 afha;	
+	u32 kfha;	
+	u32 pkha;	
+	u32 aesa;	
+	u32 mdha;	
+	u32 desa;	
+	u32 snw8a;	
+	u32 snw9a;	
+	u32 zuce;	
+	u32 zuca;	
+	u32 ccha;	
+	u32 ptha;	
+	u32 rng;	
+	u32 trng;	
+	u32 aaha;	
 	u32 rsvd[10];
-	u32 sr;		/* SR_VERSION */
-	u32 dma;	/* DMA_VERSION */
-	u32 ai;		/* AI_VERSION */
-	u32 qi;		/* QI_VERSION */
-	u32 jr;		/* JR_VERSION */
-	u32 deco;	/* DECO_VERSION */
+	u32 sr;		
+	u32 dma;	
+	u32 ai;		
+	u32 qi;		
+	u32 jr;		
+	u32 deco;	
 };
 
-/* Version registers bitfields */
 
-/* Number of CHAs instantiated */
+
+
 #define CHA_VER_NUM_MASK	0xffull
-/* CHA Miscellaneous Information */
+
 #define CHA_VER_MISC_SHIFT	8
 #define CHA_VER_MISC_MASK	(0xffull << CHA_VER_MISC_SHIFT)
-/* CHA Revision Number */
+
 #define CHA_VER_REV_SHIFT	16
 #define CHA_VER_REV_MASK	(0xffull << CHA_VER_REV_SHIFT)
-/* CHA Version ID */
+
 #define CHA_VER_VID_SHIFT	24
 #define CHA_VER_VID_MASK	(0xffull << CHA_VER_VID_SHIFT)
 
-/* CHA Miscellaneous Information - AESA_MISC specific */
+
 #define CHA_VER_MISC_AES_NUM_MASK	GENMASK(7, 0)
 #define CHA_VER_MISC_AES_GCM		BIT(1 + CHA_VER_MISC_SHIFT)
 
-/* CHA Miscellaneous Information - PKHA_MISC specific */
+
 #define CHA_VER_MISC_PKHA_NO_CRYPT	BIT(7 + CHA_VER_MISC_SHIFT)
 
-/*
- * caam_perfmon - Performance Monitor/Secure Memory Status/
- *                CAAM Global Status/Component Version IDs
- *
- * Spans f00-fff wherever instantiated
- */
 
-/* Number of DECOs */
+
+
 #define CHA_NUM_MS_DECONUM_SHIFT	24
 #define CHA_NUM_MS_DECONUM_MASK	(0xfull << CHA_NUM_MS_DECONUM_SHIFT)
 
-/*
- * CHA version IDs / instantiation bitfields (< Era 10)
- * Defined for use with the cha_id fields in perfmon, but the same shift/mask
- * selectors can be used to pull out the number of instantiated blocks within
- * cha_num fields in perfmon because the locations are the same.
- */
+
 #define CHA_ID_LS_AES_SHIFT	0
 #define CHA_ID_LS_AES_MASK	(0xfull << CHA_ID_LS_AES_SHIFT)
 
@@ -379,7 +292,7 @@ struct version_regs {
 #define CHA_ID_MS_JR_SHIFT	28
 #define CHA_ID_MS_JR_MASK	(0xfull << CHA_ID_MS_JR_SHIFT)
 
-/* Specific CHA version IDs */
+
 #define CHA_VER_VID_AES_LP	0x3ull
 #define CHA_VER_VID_AES_HP	0x4ull
 #define CHA_VER_VID_MD_LP256	0x0ull
@@ -393,19 +306,19 @@ struct sec_vid {
 };
 
 struct caam_perfmon {
-	/* Performance Monitor Registers			f00-f9f */
-	u64 req_dequeued;	/* PC_REQ_DEQ - Dequeued Requests	     */
-	u64 ob_enc_req;	/* PC_OB_ENC_REQ - Outbound Encrypt Requests */
-	u64 ib_dec_req;	/* PC_IB_DEC_REQ - Inbound Decrypt Requests  */
-	u64 ob_enc_bytes;	/* PC_OB_ENCRYPT - Outbound Bytes Encrypted  */
-	u64 ob_prot_bytes;	/* PC_OB_PROTECT - Outbound Bytes Protected  */
-	u64 ib_dec_bytes;	/* PC_IB_DECRYPT - Inbound Bytes Decrypted   */
-	u64 ib_valid_bytes;	/* PC_IB_VALIDATED Inbound Bytes Validated   */
+	
+	u64 req_dequeued;	
+	u64 ob_enc_req;	
+	u64 ib_dec_req;	
+	u64 ob_enc_bytes;	
+	u64 ob_prot_bytes;	
+	u64 ib_dec_bytes;	
+	u64 ib_valid_bytes;	
 	u64 rsvd[13];
 
-	/* CAAM Hardware Instantiation Parameters		fa0-fbf */
-	u32 cha_rev_ms;		/* CRNR - CHA Rev No. Most significant half*/
-	u32 cha_rev_ls;		/* CRNR - CHA Rev No. Least significant half*/
+	
+	u32 cha_rev_ms;		
+	u32 cha_rev_ls;		
 #define CTPR_MS_QI_SHIFT	25
 #define CTPR_MS_QI_MASK		(0x1ull << CTPR_MS_QI_SHIFT)
 #define CTPR_MS_PS		BIT(17)
@@ -414,104 +327,98 @@ struct caam_perfmon {
 #define CTPR_MS_VIRT_EN_POR	0x00000002
 #define CTPR_MS_PG_SZ_MASK	0x10
 #define CTPR_MS_PG_SZ_SHIFT	4
-	u32 comp_parms_ms;	/* CTPR - Compile Parameters Register	*/
+	u32 comp_parms_ms;	
 #define CTPR_LS_BLOB           BIT(1)
-	u32 comp_parms_ls;	/* CTPR - Compile Parameters Register	*/
+	u32 comp_parms_ls;	
 	u64 rsvd1[2];
 
-	/* CAAM Global Status					fc0-fdf */
-	u64 faultaddr;	/* FAR  - Fault Address		*/
-	u32 faultliodn;	/* FALR - Fault Address LIODN	*/
-	u32 faultdetail;	/* FADR - Fault Addr Detail	*/
+	
+	u64 faultaddr;	
+	u32 faultliodn;	
+	u32 faultdetail;	
 	u32 rsvd2;
 #define CSTA_PLEND		BIT(10)
 #define CSTA_ALT_PLEND		BIT(18)
 #define CSTA_MOO		GENMASK(9, 8)
 #define CSTA_MOO_SECURE	1
 #define CSTA_MOO_TRUSTED	2
-	u32 status;		/* CSTA - CAAM Status */
+	u32 status;		
 	u64 rsvd3;
 
-	/* Component Instantiation Parameters			fe0-fff */
-	u32 rtic_id;		/* RVID - RTIC Version ID	*/
+	
+	u32 rtic_id;		
 #define CCBVID_ERA_MASK		0xff000000
 #define CCBVID_ERA_SHIFT	24
-	u32 ccb_id;		/* CCBVID - CCB Version ID	*/
-	u32 cha_id_ms;		/* CHAVID - CHA Version ID Most Significant*/
-	u32 cha_id_ls;		/* CHAVID - CHA Version ID Least Significant*/
-	u32 cha_num_ms;		/* CHANUM - CHA Number Most Significant	*/
-	u32 cha_num_ls;		/* CHANUM - CHA Number Least Significant*/
+	u32 ccb_id;		
+	u32 cha_id_ms;		
+	u32 cha_id_ls;		
+	u32 cha_num_ms;		
+	u32 cha_num_ls;		
 #define SECVID_MS_IPID_MASK	0xffff0000
 #define SECVID_MS_IPID_SHIFT	16
 #define SECVID_MS_MAJ_REV_MASK	0x0000ff00
 #define SECVID_MS_MAJ_REV_SHIFT	8
-	u32 caam_id_ms;		/* CAAMVID - CAAM Version ID MS	*/
-	u32 caam_id_ls;		/* CAAMVID - CAAM Version ID LS	*/
+	u32 caam_id_ms;		
+	u32 caam_id_ls;		
 };
 
-/* LIODN programming for DMA configuration */
+
 #define MSTRID_LOCK_LIODN	0x80000000
-#define MSTRID_LOCK_MAKETRUSTED	0x00010000	/* only for JR masterid */
+#define MSTRID_LOCK_MAKETRUSTED	0x00010000	
 
 #define MSTRID_LIODN_MASK	0x0fff
 struct masterid {
-	u32 liodn_ms;	/* lock and make-trusted control bits */
-	u32 liodn_ls;	/* LIODN for non-sequence and seq access */
+	u32 liodn_ms;	
+	u32 liodn_ls;	
 };
 
-/* RNGB test mode (replicated twice in some configurations) */
-/* Padded out to 0x100 */
+
+
 struct rngtst {
-	u32 mode;		/* RTSTMODEx - Test mode */
+	u32 mode;		
 	u32 rsvd1[3];
-	u32 reset;		/* RTSTRESETx - Test reset control */
+	u32 reset;		
 	u32 rsvd2[3];
-	u32 status;		/* RTSTSSTATUSx - Test status */
+	u32 status;		
 	u32 rsvd3;
-	u32 errstat;		/* RTSTERRSTATx - Test error status */
+	u32 errstat;		
 	u32 rsvd4;
-	u32 errctl;		/* RTSTERRCTLx - Test error control */
+	u32 errctl;		
 	u32 rsvd5;
-	u32 entropy;		/* RTSTENTROPYx - Test entropy */
+	u32 entropy;		
 	u32 rsvd6[15];
-	u32 verifctl;	/* RTSTVERIFCTLx - Test verification control */
+	u32 verifctl;	
 	u32 rsvd7;
-	u32 verifstat;	/* RTSTVERIFSTATx - Test verification status */
+	u32 verifstat;	
 	u32 rsvd8;
-	u32 verifdata;	/* RTSTVERIFDx - Test verification data */
+	u32 verifdata;	
 	u32 rsvd9;
-	u32 xkey;		/* RTSTXKEYx - Test XKEY */
+	u32 xkey;		
 	u32 rsvd10;
-	u32 oscctctl;	/* RTSTOSCCTCTLx - Test osc. counter control */
+	u32 oscctctl;	
 	u32 rsvd11;
-	u32 oscct;		/* RTSTOSCCTx - Test oscillator counter */
+	u32 oscct;		
 	u32 rsvd12;
-	u32 oscctstat;	/* RTSTODCCTSTATx - Test osc counter status */
+	u32 oscctstat;	
 	u32 rsvd13[2];
-	u32 ofifo[4];	/* RTSTOFIFOx - Test output FIFO */
+	u32 ofifo[4];	
 	u32 rsvd14[15];
 };
 
-/* RNG4 TRNG test registers */
+
 struct rng4tst {
-#define RTMCTL_ACC  BIT(5)  /* TRNG access mode */
-#define RTMCTL_PRGM BIT(16) /* 1 -> program mode, 0 -> run mode */
-#define RTMCTL_SAMP_MODE_VON_NEUMANN_ES_SC	0 /* use von Neumann data in
-						     both entropy shifter and
-						     statistical checker */
-#define RTMCTL_SAMP_MODE_RAW_ES_SC		1 /* use raw data in both
-						     entropy shifter and
-						     statistical checker */
-#define RTMCTL_SAMP_MODE_VON_NEUMANN_ES_RAW_SC	2 /* use von Neumann data in
-						     entropy shifter, raw data
-						     in statistical checker */
-#define RTMCTL_SAMP_MODE_INVALID		3 /* invalid combination */
-	u32 rtmctl;		/* misc. control register */
-	u32 rtscmisc;		/* statistical check misc. register */
-	u32 rtpkrrng;		/* poker range register */
+#define RTMCTL_ACC  BIT(5)  
+#define RTMCTL_PRGM BIT(16) 
+#define RTMCTL_SAMP_MODE_VON_NEUMANN_ES_SC	0 
+#define RTMCTL_SAMP_MODE_RAW_ES_SC		1 
+#define RTMCTL_SAMP_MODE_VON_NEUMANN_ES_RAW_SC	2 
+#define RTMCTL_SAMP_MODE_INVALID		3 
+	u32 rtmctl;		
+	u32 rtscmisc;		
+	u32 rtpkrrng;		
 	union {
-		u32 rtpkrmax;	/* PRGM=1: poker max. limit register */
-		u32 rtpkrsq;	/* PRGM=0: poker square calc. result register */
+		u32 rtpkrmax;	
+		u32 rtpkrsq;	
 	};
 #define RTSDCTL_ENT_DLY_SHIFT 16
 #define RTSDCTL_ENT_DLY_MASK (0xffff << RTSDCTL_ENT_DLY_SHIFT)
@@ -519,24 +426,24 @@ struct rng4tst {
 #define RTSDCTL_ENT_DLY_MAX 12800
 #define RTSDCTL_SAMP_SIZE_MASK 0xffff
 #define RTSDCTL_SAMP_SIZE_VAL 512
-	u32 rtsdctl;		/* seed control register */
+	u32 rtsdctl;		
 	union {
-		u32 rtsblim;	/* PRGM=1: sparse bit limit register */
-		u32 rttotsam;	/* PRGM=0: total samples register */
+		u32 rtsblim;	
+		u32 rttotsam;	
 	};
-	u32 rtfrqmin;		/* frequency count min. limit register */
+	u32 rtfrqmin;		
 #define RTFRQMAX_DISABLE	(1 << 20)
 	union {
-		u32 rtfrqmax;	/* PRGM=1: freq. count max. limit register */
-		u32 rtfrqcnt;	/* PRGM=0: freq. count register */
+		u32 rtfrqmax;	
+		u32 rtfrqcnt;	
 	};
 	union {
-		u32 rtscmc;	/* statistical check run monobit count */
-		u32 rtscml;	/* statistical check run monobit limit */
+		u32 rtscmc;	
+		u32 rtscml;	
 	};
 	union {
-		u32 rtscrc[6];	/* statistical check run length count */
-		u32 rtscrl[6];	/* statistical check run length limit */
+		u32 rtscrc[6];	
+		u32 rtscrl[6];	
 	};
 	u32 rsvd1[33];
 #define RDSTA_SKVT 0x80000000
@@ -550,16 +457,13 @@ struct rng4tst {
 	u32 rsvd2[15];
 };
 
-/*
- * caam_ctrl - basic core configuration
- * starts base + 0x0000 padded out to 0x1000
- */
+
 
 #define KEK_KEY_SIZE		8
 #define TKEK_KEY_SIZE		8
 #define TDSK_KEY_SIZE		8
 
-#define DECO_RESET	1	/* Use with DECO reset/availability regs */
+#define DECO_RESET	1	
 #define DECO_RESET_0	(DECO_RESET << 0)
 #define DECO_RESET_1	(DECO_RESET << 1)
 #define DECO_RESET_2	(DECO_RESET << 2)
@@ -567,41 +471,41 @@ struct rng4tst {
 #define DECO_RESET_4	(DECO_RESET << 4)
 
 struct caam_ctrl {
-	/* Basic Configuration Section				000-01f */
-	/* Read/Writable					        */
+	
+	
 	u32 rsvd1;
-	u32 mcr;		/* MCFG      Master Config Register  */
+	u32 mcr;		
 	u32 rsvd2;
-	u32 scfgr;		/* SCFGR, Security Config Register */
+	u32 scfgr;		
 
-	/* Bus Access Configuration Section			010-11f */
-	/* Read/Writable                                                */
-	struct masterid jr_mid[4];	/* JRxLIODNR - JobR LIODN setup */
+	
+	
+	struct masterid jr_mid[4];	
 	u32 rsvd3[11];
-	u32 jrstart;			/* JRSTART - Job Ring Start Register */
-	struct masterid rtic_mid[4];	/* RTICxLIODNR - RTIC LIODN setup */
+	u32 jrstart;			
+	struct masterid rtic_mid[4];	
 	u32 rsvd4[5];
-	u32 deco_rsr;			/* DECORSR - Deco Request Source */
+	u32 deco_rsr;			
 	u32 rsvd11;
-	u32 deco_rq;			/* DECORR - DECO Request */
-	struct masterid deco_mid[16];	/* DECOxLIODNR - 1 per DECO */
+	u32 deco_rq;			
+	struct masterid deco_mid[16];	
 
-	/* DECO Availability/Reset Section			120-3ff */
-	u32 deco_avail;		/* DAR - DECO availability */
-	u32 deco_reset;		/* DRR - DECO reset */
+	
+	u32 deco_avail;		
+	u32 deco_reset;		
 	u32 rsvd6[182];
 
-	/* Key Encryption/Decryption Configuration              400-5ff */
-	/* Read/Writable only while in Non-secure mode                  */
-	u32 kek[KEK_KEY_SIZE];	/* JDKEKR - Key Encryption Key */
-	u32 tkek[TKEK_KEY_SIZE];	/* TDKEKR - Trusted Desc KEK */
-	u32 tdsk[TDSK_KEY_SIZE];	/* TDSKR - Trusted Desc Signing Key */
+	
+	
+	u32 kek[KEK_KEY_SIZE];	
+	u32 tkek[TKEK_KEY_SIZE];	
+	u32 tdsk[TDSK_KEY_SIZE];	
 	u32 rsvd7[32];
-	u64 sknonce;			/* SKNR - Secure Key Nonce */
+	u64 sknonce;			
 	u32 rsvd8[70];
 
-	/* RNG Test/Verification/Debug Access                   600-7ff */
-	/* (Useful in Test/Debug modes only...)                         */
+	
+	
 	union {
 		struct rngtst rtst[2];
 		struct rng4tst r4tst[2];
@@ -609,112 +513,101 @@ struct caam_ctrl {
 
 	u32 rsvd9[416];
 
-	/* Version registers - introduced with era 10		e80-eff */
+	
 	struct version_regs vreg;
-	/* Performance Monitor                                  f00-fff */
+	
 	struct caam_perfmon perfmon;
 };
 
-/*
- * Controller master config register defs
- */
-#define MCFGR_SWRESET		0x80000000 /* software reset */
-#define MCFGR_WDENABLE		0x40000000 /* DECO watchdog enable */
-#define MCFGR_WDFAIL		0x20000000 /* DECO watchdog force-fail */
+
+#define MCFGR_SWRESET		0x80000000 
+#define MCFGR_WDENABLE		0x40000000 
+#define MCFGR_WDFAIL		0x20000000 
 #define MCFGR_DMA_RESET		0x10000000
-#define MCFGR_LONG_PTR		0x00010000 /* Use >32-bit desc addressing */
+#define MCFGR_LONG_PTR		0x00010000 
 #define SCFGR_RDBENABLE		0x00000400
 #define SCFGR_VIRT_EN		0x00008000
-#define DECORR_RQD0ENABLE	0x00000001 /* Enable DECO0 for direct access */
-#define DECORSR_JR0		0x00000001 /* JR to supply TZ, SDID, ICID */
+#define DECORR_RQD0ENABLE	0x00000001 
+#define DECORSR_JR0		0x00000001 
 #define DECORSR_VALID		0x80000000
-#define DECORR_DEN0		0x00010000 /* DECO0 available for access*/
+#define DECORR_DEN0		0x00010000 
 
-/* AXI read cache control */
+
 #define MCFGR_ARCACHE_SHIFT	12
 #define MCFGR_ARCACHE_MASK	(0xf << MCFGR_ARCACHE_SHIFT)
 #define MCFGR_ARCACHE_BUFF	(0x1 << MCFGR_ARCACHE_SHIFT)
 #define MCFGR_ARCACHE_CACH	(0x2 << MCFGR_ARCACHE_SHIFT)
 #define MCFGR_ARCACHE_RALL	(0x4 << MCFGR_ARCACHE_SHIFT)
 
-/* AXI write cache control */
+
 #define MCFGR_AWCACHE_SHIFT	8
 #define MCFGR_AWCACHE_MASK	(0xf << MCFGR_AWCACHE_SHIFT)
 #define MCFGR_AWCACHE_BUFF	(0x1 << MCFGR_AWCACHE_SHIFT)
 #define MCFGR_AWCACHE_CACH	(0x2 << MCFGR_AWCACHE_SHIFT)
 #define MCFGR_AWCACHE_WALL	(0x8 << MCFGR_AWCACHE_SHIFT)
 
-/* AXI pipeline depth */
+
 #define MCFGR_AXIPIPE_SHIFT	4
 #define MCFGR_AXIPIPE_MASK	(0xf << MCFGR_AXIPIPE_SHIFT)
 
-#define MCFGR_AXIPRI		0x00000008 /* Assert AXI priority sideband */
-#define MCFGR_LARGE_BURST	0x00000004 /* 128/256-byte burst size */
-#define MCFGR_BURST_64		0x00000001 /* 64-byte burst size */
+#define MCFGR_AXIPRI		0x00000008 
+#define MCFGR_LARGE_BURST	0x00000004 
+#define MCFGR_BURST_64		0x00000001 
 
-/* JRSTART register offsets */
-#define JRSTART_JR0_START       0x00000001 /* Start Job ring 0 */
-#define JRSTART_JR1_START       0x00000002 /* Start Job ring 1 */
-#define JRSTART_JR2_START       0x00000004 /* Start Job ring 2 */
-#define JRSTART_JR3_START       0x00000008 /* Start Job ring 3 */
 
-/*
- * caam_job_ring - direct job ring setup
- * 1-4 possible per instantiation, base + 1000/2000/3000/4000
- * Padded out to 0x1000
- */
+#define JRSTART_JR0_START       0x00000001 
+#define JRSTART_JR1_START       0x00000002 
+#define JRSTART_JR2_START       0x00000004 
+#define JRSTART_JR3_START       0x00000008 
+
+
 struct caam_job_ring {
-	/* Input ring */
-	u64 inpring_base;	/* IRBAx -  Input desc ring baseaddr */
+	
+	u64 inpring_base;	
 	u32 rsvd1;
-	u32 inpring_size;	/* IRSx - Input ring size */
+	u32 inpring_size;	
 	u32 rsvd2;
-	u32 inpring_avail;	/* IRSAx - Input ring room remaining */
+	u32 inpring_avail;	
 	u32 rsvd3;
-	u32 inpring_jobadd;	/* IRJAx - Input ring jobs added */
+	u32 inpring_jobadd;	
 
-	/* Output Ring */
-	u64 outring_base;	/* ORBAx - Output status ring base addr */
+	
+	u64 outring_base;	
 	u32 rsvd4;
-	u32 outring_size;	/* ORSx - Output ring size */
+	u32 outring_size;	
 	u32 rsvd5;
-	u32 outring_rmvd;	/* ORJRx - Output ring jobs removed */
+	u32 outring_rmvd;	
 	u32 rsvd6;
-	u32 outring_used;	/* ORSFx - Output ring slots full */
+	u32 outring_used;	
 
-	/* Status/Configuration */
+	
 	u32 rsvd7;
-	u32 jroutstatus;	/* JRSTAx - JobR output status */
+	u32 jroutstatus;	
 	u32 rsvd8;
-	u32 jrintstatus;	/* JRINTx - JobR interrupt status */
-	u32 rconfig_hi;	/* JRxCFG - Ring configuration */
+	u32 jrintstatus;	
+	u32 rconfig_hi;	
 	u32 rconfig_lo;
 
-	/* Indices. CAAM maintains as "heads" of each queue */
+	
 	u32 rsvd9;
-	u32 inp_rdidx;	/* IRRIx - Input ring read index */
+	u32 inp_rdidx;	
 	u32 rsvd10;
-	u32 out_wtidx;	/* ORWIx - Output ring write index */
+	u32 out_wtidx;	
 
-	/* Command/control */
+	
 	u32 rsvd11;
-	u32 jrcommand;	/* JRCRx - JobR command */
+	u32 jrcommand;	
 
 	u32 rsvd12[900];
 
-	/* Version registers - introduced with era 10           e80-eff */
+	
 	struct version_regs vreg;
-	/* Performance Monitor                                  f00-fff */
+	
 	struct caam_perfmon perfmon;
 };
 
 #define JR_RINGSIZE_MASK	0x03ff
-/*
- * jrstatus - Job Ring Output Status
- * All values in lo word
- * Also note, same values written out as status through QI
- * in the command/status field of a frame descriptor
- */
+
 #define JRSTA_SSRC_SHIFT            28
 #define JRSTA_SSRC_MASK             0xf0000000
 
@@ -828,10 +721,7 @@ struct caam_job_ring {
 
 #define JRCR_RESET                  0x01
 
-/*
- * caam_assurance - Assurance Controller View
- * base + 0x6000 padded out to 0x1000
- */
+
 
 struct rtic_element {
 	u64 address;
@@ -849,176 +739,165 @@ struct rtic_memhash {
 };
 
 struct caam_assurance {
-    /* Status/Command/Watchdog */
+    
 	u32 rsvd1;
-	u32 status;		/* RSTA - Status */
+	u32 status;		
 	u32 rsvd2;
-	u32 cmd;		/* RCMD - Command */
+	u32 cmd;		
 	u32 rsvd3;
-	u32 ctrl;		/* RCTL - Control */
+	u32 ctrl;		
 	u32 rsvd4;
-	u32 throttle;	/* RTHR - Throttle */
+	u32 throttle;	
 	u32 rsvd5[2];
-	u64 watchdog;	/* RWDOG - Watchdog Timer */
+	u64 watchdog;	
 	u32 rsvd6;
-	u32 rend;		/* REND - Endian corrections */
+	u32 rend;		
 	u32 rsvd7[50];
 
-	/* Block access/configuration @ 100/110/120/130 */
-	struct rtic_block memblk[4];	/* Memory Blocks A-D */
+	
+	struct rtic_block memblk[4];	
 	u32 rsvd8[32];
 
-	/* Block hashes @ 200/300/400/500 */
-	struct rtic_memhash hash[4];	/* Block hash values A-D */
+	
+	struct rtic_memhash hash[4];	
 	u32 rsvd_3[640];
 };
 
-/*
- * caam_queue_if - QI configuration and control
- * starts base + 0x7000, padded out to 0x1000 long
- */
+
 
 struct caam_queue_if {
-	u32 qi_control_hi;	/* QICTL  - QI Control */
+	u32 qi_control_hi;	
 	u32 qi_control_lo;
 	u32 rsvd1;
-	u32 qi_status;	/* QISTA  - QI Status */
-	u32 qi_deq_cfg_hi;	/* QIDQC  - QI Dequeue Configuration */
+	u32 qi_status;	
+	u32 qi_deq_cfg_hi;	
 	u32 qi_deq_cfg_lo;
-	u32 qi_enq_cfg_hi;	/* QISEQC - QI Enqueue Command     */
+	u32 qi_enq_cfg_hi;	
 	u32 qi_enq_cfg_lo;
 	u32 rsvd2[1016];
 };
 
-/* QI control bits - low word */
-#define QICTL_DQEN      0x01              /* Enable frame pop          */
-#define QICTL_STOP      0x02              /* Stop dequeue/enqueue      */
-#define QICTL_SOE       0x04              /* Stop on error             */
 
-/* QI control bits - high word */
+#define QICTL_DQEN      0x01              
+#define QICTL_STOP      0x02              
+#define QICTL_SOE       0x04              
+
+
 #define QICTL_MBSI	0x01
 #define QICTL_MHWSI	0x02
 #define QICTL_MWSI	0x04
 #define QICTL_MDWSI	0x08
-#define QICTL_CBSI	0x10		/* CtrlDataByteSwapInput     */
-#define QICTL_CHWSI	0x20		/* CtrlDataHalfSwapInput     */
-#define QICTL_CWSI	0x40		/* CtrlDataWordSwapInput     */
-#define QICTL_CDWSI	0x80		/* CtrlDataDWordSwapInput    */
+#define QICTL_CBSI	0x10		
+#define QICTL_CHWSI	0x20		
+#define QICTL_CWSI	0x40		
+#define QICTL_CDWSI	0x80		
 #define QICTL_MBSO	0x0100
 #define QICTL_MHWSO	0x0200
 #define QICTL_MWSO	0x0400
 #define QICTL_MDWSO	0x0800
-#define QICTL_CBSO	0x1000		/* CtrlDataByteSwapOutput    */
-#define QICTL_CHWSO	0x2000		/* CtrlDataHalfSwapOutput    */
-#define QICTL_CWSO	0x4000		/* CtrlDataWordSwapOutput    */
-#define QICTL_CDWSO     0x8000		/* CtrlDataDWordSwapOutput   */
+#define QICTL_CBSO	0x1000		
+#define QICTL_CHWSO	0x2000		
+#define QICTL_CWSO	0x4000		
+#define QICTL_CDWSO     0x8000		
 #define QICTL_DMBS	0x010000
 #define QICTL_EPO	0x020000
 
-/* QI status bits */
-#define QISTA_PHRDERR   0x01              /* PreHeader Read Error      */
-#define QISTA_CFRDERR   0x02              /* Compound Frame Read Error */
-#define QISTA_OFWRERR   0x04              /* Output Frame Read Error   */
-#define QISTA_BPDERR    0x08              /* Buffer Pool Depleted      */
-#define QISTA_BTSERR    0x10              /* Buffer Undersize          */
-#define QISTA_CFWRERR   0x20              /* Compound Frame Write Err  */
-#define QISTA_STOPD     0x80000000        /* QI Stopped (see QICTL)    */
 
-/* deco_sg_table - DECO view of scatter/gather table */
+#define QISTA_PHRDERR   0x01              
+#define QISTA_CFRDERR   0x02              
+#define QISTA_OFWRERR   0x04              
+#define QISTA_BPDERR    0x08              
+#define QISTA_BTSERR    0x10              
+#define QISTA_CFWRERR   0x20              
+#define QISTA_STOPD     0x80000000        
+
+
 struct deco_sg_table {
-	u64 addr;		/* Segment Address */
-	u32 elen;		/* E, F bits + 30-bit length */
-	u32 bpid_offset;	/* Buffer Pool ID + 16-bit length */
+	u64 addr;		
+	u32 elen;		
+	u32 bpid_offset;	
 };
 
-/*
- * caam_deco - descriptor controller - CHA cluster block
- *
- * Only accessible when direct DECO access is turned on
- * (done in DECORR, via MID programmed in DECOxMID
- *
- * 5 typical, base + 0x8000/9000/a000/b000
- * Padded out to 0x1000 long
- */
+
 struct caam_deco {
 	u32 rsvd1;
-	u32 cls1_mode;	/* CxC1MR -  Class 1 Mode */
+	u32 cls1_mode;	
 	u32 rsvd2;
-	u32 cls1_keysize;	/* CxC1KSR - Class 1 Key Size */
-	u32 cls1_datasize_hi;	/* CxC1DSR - Class 1 Data Size */
+	u32 cls1_keysize;	
+	u32 cls1_datasize_hi;	
 	u32 cls1_datasize_lo;
 	u32 rsvd3;
-	u32 cls1_icvsize;	/* CxC1ICVSR - Class 1 ICV size */
+	u32 cls1_icvsize;	
 	u32 rsvd4[5];
-	u32 cha_ctrl;	/* CCTLR - CHA control */
+	u32 cha_ctrl;	
 	u32 rsvd5;
-	u32 irq_crtl;	/* CxCIRQ - CCB interrupt done/error/clear */
+	u32 irq_crtl;	
 	u32 rsvd6;
-	u32 clr_written;	/* CxCWR - Clear-Written */
-	u32 ccb_status_hi;	/* CxCSTA - CCB Status/Error */
+	u32 clr_written;	
+	u32 ccb_status_hi;	
 	u32 ccb_status_lo;
 	u32 rsvd7[3];
-	u32 aad_size;	/* CxAADSZR - Current AAD Size */
+	u32 aad_size;	
 	u32 rsvd8;
-	u32 cls1_iv_size;	/* CxC1IVSZR - Current Class 1 IV Size */
+	u32 cls1_iv_size;	
 	u32 rsvd9[7];
-	u32 pkha_a_size;	/* PKASZRx - Size of PKHA A */
+	u32 pkha_a_size;	
 	u32 rsvd10;
-	u32 pkha_b_size;	/* PKBSZRx - Size of PKHA B */
+	u32 pkha_b_size;	
 	u32 rsvd11;
-	u32 pkha_n_size;	/* PKNSZRx - Size of PKHA N */
+	u32 pkha_n_size;	
 	u32 rsvd12;
-	u32 pkha_e_size;	/* PKESZRx - Size of PKHA E */
+	u32 pkha_e_size;	
 	u32 rsvd13[24];
-	u32 cls1_ctx[16];	/* CxC1CTXR - Class 1 Context @100 */
+	u32 cls1_ctx[16];	
 	u32 rsvd14[48];
-	u32 cls1_key[8];	/* CxC1KEYR - Class 1 Key @200 */
+	u32 cls1_key[8];	
 	u32 rsvd15[121];
-	u32 cls2_mode;	/* CxC2MR - Class 2 Mode */
+	u32 cls2_mode;	
 	u32 rsvd16;
-	u32 cls2_keysize;	/* CxX2KSR - Class 2 Key Size */
-	u32 cls2_datasize_hi;	/* CxC2DSR - Class 2 Data Size */
+	u32 cls2_keysize;	
+	u32 cls2_datasize_hi;	
 	u32 cls2_datasize_lo;
 	u32 rsvd17;
-	u32 cls2_icvsize;	/* CxC2ICVSZR - Class 2 ICV Size */
+	u32 cls2_icvsize;	
 	u32 rsvd18[56];
-	u32 cls2_ctx[18];	/* CxC2CTXR - Class 2 Context @500 */
+	u32 cls2_ctx[18];	
 	u32 rsvd19[46];
-	u32 cls2_key[32];	/* CxC2KEYR - Class2 Key @600 */
+	u32 cls2_key[32];	
 	u32 rsvd20[84];
-	u32 inp_infofifo_hi;	/* CxIFIFO - Input Info FIFO @7d0 */
+	u32 inp_infofifo_hi;	
 	u32 inp_infofifo_lo;
 	u32 rsvd21[2];
-	u64 inp_datafifo;	/* CxDFIFO - Input Data FIFO */
+	u64 inp_datafifo;	
 	u32 rsvd22[2];
-	u64 out_datafifo;	/* CxOFIFO - Output Data FIFO */
+	u64 out_datafifo;	
 	u32 rsvd23[2];
-	u32 jr_ctl_hi;	/* CxJRR - JobR Control Register      @800 */
+	u32 jr_ctl_hi;	
 	u32 jr_ctl_lo;
-	u64 jr_descaddr;	/* CxDADR - JobR Descriptor Address */
+	u64 jr_descaddr;	
 #define DECO_OP_STATUS_HI_ERR_MASK 0xF00000FF
-	u32 op_status_hi;	/* DxOPSTA - DECO Operation Status */
+	u32 op_status_hi;	
 	u32 op_status_lo;
 	u32 rsvd24[2];
-	u32 liodn;		/* DxLSR - DECO LIODN Status - non-seq */
-	u32 td_liodn;	/* DxLSR - DECO LIODN Status - trustdesc */
+	u32 liodn;		
+	u32 td_liodn;	
 	u32 rsvd26[6];
-	u64 math[4];		/* DxMTH - Math register */
+	u64 math[4];		
 	u32 rsvd27[8];
-	struct deco_sg_table gthr_tbl[4];	/* DxGTR - Gather Tables */
+	struct deco_sg_table gthr_tbl[4];	
 	u32 rsvd28[16];
-	struct deco_sg_table sctr_tbl[4];	/* DxSTR - Scatter Tables */
+	struct deco_sg_table sctr_tbl[4];	
 	u32 rsvd29[48];
-	u32 descbuf[64];	/* DxDESB - Descriptor buffer */
+	u32 descbuf[64];	
 	u32 rscvd30[193];
 #define DESC_DBG_DECO_STAT_VALID	0x80000000
 #define DESC_DBG_DECO_STAT_MASK		0x00F00000
 #define DESC_DBG_DECO_STAT_SHIFT	20
-	u32 desc_dbg;		/* DxDDR - DECO Debug Register */
+	u32 desc_dbg;		
 	u32 rsvd31[13];
 #define DESC_DER_DECO_STAT_MASK		0x000F0000
 #define DESC_DER_DECO_STAT_SHIFT	16
-	u32 dbg_exec;		/* DxDER - DECO Debug Exec Register */
+	u32 dbg_exec;		
 	u32 rsvd32[112];
 };
 
@@ -1033,4 +912,4 @@ struct caam_deco {
 #define DECO_BLOCK_NUMBER	8
 #define PG_SIZE_4K		0x1000
 #define PG_SIZE_64K		0x10000
-#endif /* REGS_H */
+#endif 

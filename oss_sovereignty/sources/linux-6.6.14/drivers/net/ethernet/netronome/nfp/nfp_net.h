@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
 
-/*
- * nfp_net.h
- * Declarations for Netronome network device driver.
- * Authors: Jakub Kicinski <jakub.kicinski@netronome.com>
- *          Jason McMullan <jason.mcmullan@netronome.com>
- *          Rolf Neugebauer <rolf.neugebauer@netronome.com>
- */
+
+
+
 
 #ifndef _NFP_NET_H_
 #define _NFP_NET_H_
@@ -52,53 +46,53 @@
 		}							\
 	})
 
-/* Max time to wait for NFP to respond on updates (in seconds) */
+
 #define NFP_NET_POLL_TIMEOUT	5
 
-/* Interval for reading offloaded filter stats */
+
 #define NFP_NET_STAT_POLL_IVL	msecs_to_jiffies(100)
 
-/* Bar allocation */
+
 #define NFP_NET_CTRL_BAR	0
 #define NFP_NET_Q0_BAR		2
-#define NFP_NET_Q1_BAR		4	/* OBSOLETE */
+#define NFP_NET_Q1_BAR		4	
 
-/* Default size for MTU and freelist buffer sizes */
+
 #define NFP_NET_DEFAULT_MTU		1500U
 
-/* Maximum number of bytes prepended to a packet */
+
 #define NFP_NET_MAX_PREPEND		64
 
-/* Interrupt definitions */
+
 #define NFP_NET_NON_Q_VECTORS		2
 #define NFP_NET_IRQ_LSC_IDX		0
 #define NFP_NET_IRQ_EXN_IDX		1
 #define NFP_NET_MIN_VNIC_IRQS		(NFP_NET_NON_Q_VECTORS + 1)
 
-/* Queue/Ring definitions */
-#define NFP_NET_MAX_TX_RINGS	64	/* Max. # of Tx rings per device */
-#define NFP_NET_MAX_RX_RINGS	64	/* Max. # of Rx rings per device */
+
+#define NFP_NET_MAX_TX_RINGS	64	
+#define NFP_NET_MAX_RX_RINGS	64	
 #define NFP_NET_MAX_R_VECS	(NFP_NET_MAX_TX_RINGS > NFP_NET_MAX_RX_RINGS ? \
 				 NFP_NET_MAX_TX_RINGS : NFP_NET_MAX_RX_RINGS)
 #define NFP_NET_MAX_IRQS	(NFP_NET_NON_Q_VECTORS + NFP_NET_MAX_R_VECS)
 
-#define NFP_NET_TX_DESCS_DEFAULT 4096	/* Default # of Tx descs per ring */
-#define NFP_NET_RX_DESCS_DEFAULT 4096	/* Default # of Rx descs per ring */
+#define NFP_NET_TX_DESCS_DEFAULT 4096	
+#define NFP_NET_RX_DESCS_DEFAULT 4096	
 
-#define NFP_NET_FL_BATCH	16	/* Add freelist in this Batch size */
-#define NFP_NET_XDP_MAX_COMPLETE 2048	/* XDP bufs to reclaim in NAPI poll */
+#define NFP_NET_FL_BATCH	16	
+#define NFP_NET_XDP_MAX_COMPLETE 2048	
 
-/* MC definitions */
-#define NFP_NET_CFG_MAC_MC_MAX	1024	/* The maximum number of MC address per port*/
 
-/* Offload definitions */
+#define NFP_NET_CFG_MAC_MC_MAX	1024	
+
+
 #define NFP_NET_N_VXLAN_PORTS	(NFP_NET_CFG_VXLAN_SZ / sizeof(__be16))
 
 #define NFP_NET_RX_BUF_HEADROOM	(NET_SKB_PAD + NET_IP_ALIGN)
 #define NFP_NET_RX_BUF_NON_DATA	(NFP_NET_RX_BUF_HEADROOM +		\
 				 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
 
-/* Forward declarations */
+
 struct nfp_cpp;
 struct nfp_dev_info;
 struct nfp_dp_ops;
@@ -114,10 +108,10 @@ struct nfp_nfd3_tx_buf;
 struct nfp_nfdk_tx_desc;
 struct nfp_nfdk_tx_buf;
 
-/* Convenience macro for wrapping descriptor index on ring size */
+
 #define D_IDX(ring, idx)	((idx) & ((ring)->cnt - 1))
 
-/* Convenience macro for writing dma address into RX/TX descriptors */
+
 #define nfp_desc_set_dma_addr_40b(desc, dma_addr)			\
 	do {								\
 		__typeof__(desc) __d = (desc);				\
@@ -136,29 +130,7 @@ struct nfp_nfdk_tx_buf;
 		__d->dma_addr_lo = cpu_to_le32(lower_32_bits(__addr));	\
 	} while (0)
 
-/**
- * struct nfp_net_tx_ring - TX ring structure
- * @r_vec:      Back pointer to ring vector structure
- * @idx:        Ring index from Linux's perspective
- * @data_pending: number of bytes added to current block (NFDK only)
- * @qcp_q:      Pointer to base of the QCP TX queue
- * @txrwb:	TX pointer write back area
- * @cnt:        Size of the queue in number of descriptors
- * @wr_p:       TX ring write pointer (free running)
- * @rd_p:       TX ring read pointer (free running)
- * @qcp_rd_p:   Local copy of QCP TX queue read pointer
- * @wr_ptr_add:	Accumulated number of buffers to add to QCP write pointer
- *		(used for .xmit_more delayed kick)
- * @txbufs:	Array of transmitted TX buffers, to free on transmit (NFD3)
- * @ktxbufs:	Array of transmitted TX buffers, to free on transmit (NFDK)
- * @txds:	Virtual address of TX ring in host memory (NFD3)
- * @ktxds:	Virtual address of TX ring in host memory (NFDK)
- *
- * @qcidx:      Queue Controller Peripheral (QCP) queue index for the TX queue
- * @dma:        DMA address of the TX ring
- * @size:       Size, in bytes, of the TX ring (needed to free)
- * @is_xdp:	Is this a XDP TX ring?
- */
+
 struct nfp_net_tx_ring {
 	struct nfp_net_r_vector *r_vec;
 
@@ -183,7 +155,7 @@ struct nfp_net_tx_ring {
 		struct nfp_nfdk_tx_desc *ktxds;
 	};
 
-	/* Cold data follows */
+	
 	int qcidx;
 
 	dma_addr_t dma;
@@ -191,12 +163,12 @@ struct nfp_net_tx_ring {
 	bool is_xdp;
 } ____cacheline_aligned;
 
-/* RX and freelist descriptor format */
+
 
 #define PCIE_DESC_RX_DD			BIT(7)
 #define PCIE_DESC_RX_META_LEN_MASK	GENMASK(6, 0)
 
-/* Flags in the RX descriptor */
+
 #define PCIE_DESC_RX_RSS		cpu_to_le16(BIT(15))
 #define PCIE_DESC_RX_I_IP4_CSUM		cpu_to_le16(BIT(14))
 #define PCIE_DESC_RX_I_IP4_CSUM_OK	cpu_to_le16(BIT(13))
@@ -228,22 +200,20 @@ struct nfp_net_tx_ring {
 struct nfp_net_rx_desc {
 	union {
 		struct {
-			__le16 dma_addr_hi; /* High bits of the buf address */
-			u8 reserved; /* Must be zero */
-			u8 meta_len_dd; /* Must be zero */
+			__le16 dma_addr_hi; 
+			u8 reserved; 
+			u8 meta_len_dd; 
 
-			__le32 dma_addr_lo; /* Low bits of the buffer address */
+			__le32 dma_addr_lo; 
 		} __packed fld;
 
 		struct {
-			__le16 data_len; /* Length of the frame + meta data */
+			__le16 data_len; 
 			u8 reserved;
-			u8 meta_len_dd;	/* Length of meta data prepended +
-					 * descriptor done flag.
-					 */
+			u8 meta_len_dd;	
 
-			__le16 flags;	/* RX flags. See @PCIE_DESC_RX_* */
-			__le16 vlan;	/* VLAN if stripped */
+			__le16 flags;	
+			__le16 vlan;	
 		} __packed rxd;
 
 		__le32 vals[2];
@@ -277,42 +247,19 @@ struct nfp_net_rx_hash {
 	__be32 hash;
 };
 
-/**
- * struct nfp_net_rx_buf - software RX buffer descriptor
- * @frag:	page fragment buffer
- * @dma_addr:	DMA mapping address of the buffer
- */
+
 struct nfp_net_rx_buf {
 	void *frag;
 	dma_addr_t dma_addr;
 };
 
-/**
- * struct nfp_net_xsk_rx_buf - software RX XSK buffer descriptor
- * @dma_addr:	DMA mapping address of the buffer
- * @xdp:	XSK buffer pool handle (for AF_XDP)
- */
+
 struct nfp_net_xsk_rx_buf {
 	dma_addr_t dma_addr;
 	struct xdp_buff *xdp;
 };
 
-/**
- * struct nfp_net_rx_ring - RX ring structure
- * @r_vec:      Back pointer to ring vector structure
- * @cnt:        Size of the queue in number of descriptors
- * @wr_p:       FL/RX ring write pointer (free running)
- * @rd_p:       FL/RX ring read pointer (free running)
- * @idx:        Ring index from Linux's perspective
- * @fl_qcidx:   Queue Controller Peripheral (QCP) queue index for the freelist
- * @qcp_fl:     Pointer to base of the QCP freelist queue
- * @rxbufs:     Array of transmitted FL/RX buffers
- * @xsk_rxbufs: Array of transmitted FL/RX buffers (for AF_XDP)
- * @rxds:       Virtual address of FL/RX ring in host memory
- * @xdp_rxq:    RX-ring info avail for XDP
- * @dma:        DMA address of the FL/RX ring
- * @size:       Size, in bytes, of the FL/RX ring (needed to free)
- */
+
 struct nfp_net_rx_ring {
 	struct nfp_net_r_vector *r_vec;
 
@@ -335,55 +282,7 @@ struct nfp_net_rx_ring {
 	size_t size;
 } ____cacheline_aligned;
 
-/**
- * struct nfp_net_r_vector - Per ring interrupt vector configuration
- * @nfp_net:        Backpointer to nfp_net structure
- * @napi:           NAPI structure for this ring vec
- * @tasklet:        ctrl vNIC, tasklet for servicing the r_vec
- * @queue:          ctrl vNIC, send queue
- * @lock:           ctrl vNIC, r_vec lock protects @queue
- * @tx_ring:        Pointer to TX ring
- * @rx_ring:        Pointer to RX ring
- * @xdp_ring:	    Pointer to an extra TX ring for XDP
- * @xsk_pool:	    XSK buffer pool active on vector queue pair (for AF_XDP)
- * @irq_entry:      MSI-X table entry (use for talking to the device)
- * @event_ctr:	    Number of interrupt
- * @rx_dim:	    Dynamic interrupt moderation structure for RX
- * @tx_dim:	    Dynamic interrupt moderation structure for TX
- * @rx_sync:	    Seqlock for atomic updates of RX stats
- * @rx_pkts:        Number of received packets
- * @rx_bytes:	    Number of received bytes
- * @rx_drops:	    Number of packets dropped on RX due to lack of resources
- * @hw_csum_rx_ok:  Counter of packets where the HW checksum was OK
- * @hw_csum_rx_inner_ok: Counter of packets where the inner HW checksum was OK
- * @hw_csum_rx_complete: Counter of packets with CHECKSUM_COMPLETE reported
- * @hw_csum_rx_error:	 Counter of packets with bad checksums
- * @hw_tls_rx:	    Number of packets with TLS decrypted by hardware
- * @tx_sync:	    Seqlock for atomic updates of TX stats
- * @tx_pkts:	    Number of Transmitted packets
- * @tx_bytes:	    Number of Transmitted bytes
- * @hw_csum_tx:	    Counter of packets with TX checksum offload requested
- * @hw_csum_tx_inner:	 Counter of inner TX checksum offload requests
- * @tx_gather:	    Counter of packets with Gather DMA
- * @tx_lso:	    Counter of LSO packets sent
- * @hw_tls_tx:	    Counter of TLS packets sent with crypto offloaded to HW
- * @tls_tx_fallback:	Counter of TLS packets sent which had to be encrypted
- *			by the fallback path because packets came out of order
- * @tls_tx_no_fallback:	Counter of TLS packets not sent because the fallback
- *			path could not encrypt them
- * @tx_errors:	    How many TX errors were encountered
- * @tx_busy:        How often was TX busy (no space)?
- * @rx_replace_buf_alloc_fail:	Counter of RX buffer allocation failures
- * @irq_vector:     Interrupt vector number (use for talking to the OS)
- * @handler:        Interrupt handler for this ring vector
- * @name:           Name of the interrupt vector
- * @affinity_mask:  SMP affinity mask for this vector
- *
- * This structure ties RX and TX rings to interrupt vectors and a NAPI
- * context. This currently only supports one RX and TX ring per
- * interrupt vector but might be extended in the future to allow
- * association of multiple rings per vector.
- */
+
 struct nfp_net_r_vector {
 	struct nfp_net *nfp_net;
 	union {
@@ -434,7 +333,7 @@ struct nfp_net_r_vector {
 	u64 tx_errors;
 	u64 tx_busy;
 
-	/* Cold data follows */
+	
 
 	u32 irq_vector;
 	irq_handler_t handler;
@@ -442,15 +341,13 @@ struct nfp_net_r_vector {
 	cpumask_t affinity_mask;
 } ____cacheline_aligned;
 
-/* Firmware version as it is written in the 32bit value in the BAR */
+
 struct nfp_net_fw_version {
 	u8 minor;
 	u8 major;
 	u8 class;
 
-	/* This byte can be exploited for more use, currently,
-	 * BIT0: dp type, BIT[7:1]: reserved
-	 */
+	
 	u8 extend;
 } __packed;
 
@@ -468,36 +365,7 @@ struct nfp_stat_pair {
 	u64 bytes;
 };
 
-/**
- * struct nfp_net_dp - NFP network device datapath data structure
- * @dev:		Backpointer to struct device
- * @netdev:		Backpointer to net_device structure
- * @is_vf:		Is the driver attached to a VF?
- * @chained_metadata_format:  Firemware will use new metadata format
- * @ktls_tx:		Is kTLS TX enabled?
- * @rx_dma_dir:		Mapping direction for RX buffers
- * @rx_dma_off:		Offset at which DMA packets (for XDP headroom)
- * @rx_offset:		Offset in the RX buffers where packet data starts
- * @ctrl:		Local copy of the control register/word.
- * @ctrl_w1:		Local copy of the control register/word1.
- * @fl_bufsz:		Currently configured size of the freelist buffers
- * @xdp_prog:		Installed XDP program
- * @tx_rings:		Array of pre-allocated TX ring structures
- * @rx_rings:		Array of pre-allocated RX ring structures
- * @ctrl_bar:		Pointer to mapped control BAR
- *
- * @ops:		Callbacks and parameters for this vNIC's NFD version
- * @txrwb:		TX pointer write back area (indexed by queue id)
- * @txrwb_dma:		TX pointer write back area DMA address
- * @txd_cnt:		Size of the TX ring in number of min size packets
- * @rxd_cnt:		Size of the RX ring in number of min size packets
- * @num_r_vecs:		Number of used ring vectors
- * @num_tx_rings:	Currently configured number of TX rings
- * @num_stack_tx_rings:	Number of TX rings used by the stack (not XDP)
- * @num_rx_rings:	Currently configured number of RX rings
- * @mtu:		Device MTU
- * @xsk_pools:		XSK buffer pools, @max_r_vecs in size (for AF_XDP).
- */
+
 struct nfp_net_dp {
 	struct device *dev;
 	struct net_device *netdev;
@@ -522,7 +390,7 @@ struct nfp_net_dp {
 
 	u8 __iomem *ctrl_bar;
 
-	/* Cold data follows */
+	
 
 	const struct nfp_dp_ops *ops;
 
@@ -543,86 +411,7 @@ struct nfp_net_dp {
 	struct xsk_buff_pool **xsk_pools;
 };
 
-/**
- * struct nfp_net - NFP network device structure
- * @dp:			Datapath structure
- * @dev_info:		NFP ASIC params
- * @id:			vNIC id within the PF (0 for VFs)
- * @fw_ver:		Firmware version
- * @cap:                Capabilities advertised by the Firmware
- * @cap_w1:             Extended capabilities word advertised by the Firmware
- * @max_mtu:            Maximum support MTU advertised by the Firmware
- * @rss_hfunc:		RSS selected hash function
- * @rss_cfg:            RSS configuration
- * @rss_key:            RSS secret key
- * @rss_itbl:           RSS indirection table
- * @xdp:		Information about the driver XDP program
- * @xdp_hw:		Information about the HW XDP program
- * @max_r_vecs:		Number of allocated interrupt vectors for RX/TX
- * @max_tx_rings:       Maximum number of TX rings supported by the Firmware
- * @max_rx_rings:       Maximum number of RX rings supported by the Firmware
- * @stride_rx:		Queue controller RX queue spacing
- * @stride_tx:		Queue controller TX queue spacing
- * @r_vecs:             Pre-allocated array of ring vectors
- * @irq_entries:        Pre-allocated array of MSI-X entries
- * @lsc_handler:        Handler for Link State Change interrupt
- * @lsc_name:           Name for Link State Change interrupt
- * @exn_handler:        Handler for Exception interrupt
- * @exn_name:           Name for Exception interrupt
- * @shared_handler:     Handler for shared interrupts
- * @shared_name:        Name for shared interrupt
- * @reconfig_lock:	Protects @reconfig_posted, @reconfig_timer_active,
- *			@reconfig_sync_present and HW reconfiguration request
- *			regs/machinery from async requests (sync must take
- *			@bar_lock)
- * @reconfig_posted:	Pending reconfig bits coming from async sources
- * @reconfig_timer_active:  Timer for reading reconfiguration results is pending
- * @reconfig_sync_present:  Some thread is performing synchronous reconfig
- * @reconfig_timer:	Timer for async reading of reconfig results
- * @reconfig_in_progress_update:	Update FW is processing now (debug only)
- * @bar_lock:		vNIC config BAR access lock, protects: update,
- *			mailbox area, crypto TLV
- * @link_up:            Is the link up?
- * @link_status_lock:	Protects @link_* and ensures atomicity with BAR reading
- * @rx_coalesce_adapt_on:   Is RX interrupt moderation adaptive?
- * @tx_coalesce_adapt_on:   Is TX interrupt moderation adaptive?
- * @rx_coalesce_usecs:      RX interrupt moderation usecs delay parameter
- * @rx_coalesce_max_frames: RX interrupt moderation frame count parameter
- * @tx_coalesce_usecs:      TX interrupt moderation usecs delay parameter
- * @tx_coalesce_max_frames: TX interrupt moderation frame count parameter
- * @qcp_cfg:            Pointer to QCP queue used for configuration notification
- * @tx_bar:             Pointer to mapped TX queues
- * @rx_bar:             Pointer to mapped FL/RX queues
- * @xa_ipsec:           IPsec xarray SA data
- * @tlv_caps:		Parsed TLV capabilities
- * @ktls_tx_conn_cnt:	Number of offloaded kTLS TX connections
- * @ktls_rx_conn_cnt:	Number of offloaded kTLS RX connections
- * @ktls_conn_id_gen:	Trivial generator for kTLS connection ids (for TX)
- * @ktls_no_space:	Counter of firmware rejecting kTLS connection due to
- *			lack of space
- * @ktls_rx_resync_req:	Counter of TLS RX resync requested
- * @ktls_rx_resync_ign:	Counter of TLS RX resync requests ignored
- * @ktls_rx_resync_sent:    Counter of TLS RX resync completed
- * @mbox_cmsg:		Common Control Message via vNIC mailbox state
- * @mbox_cmsg.queue:	CCM mbox queue of pending messages
- * @mbox_cmsg.wq:	CCM mbox wait queue of waiting processes
- * @mbox_cmsg.workq:	CCM mbox work queue for @wait_work and @runq_work
- * @mbox_cmsg.wait_work:    CCM mbox posted msg reconfig wait work
- * @mbox_cmsg.runq_work:    CCM mbox posted msg queue runner work
- * @mbox_cmsg.tag:	CCM mbox message tag allocator
- * @debugfs_dir:	Device directory in debugfs
- * @vnic_list:		Entry on device vNIC list
- * @pdev:		Backpointer to PCI device
- * @app:		APP handle if available
- * @vnic_no_name:	For non-port PF vNIC make ndo_get_phys_port_name return
- *			-EOPNOTSUPP to keep backwards compatibility (set by app)
- * @port:		Pointer to nfp_port structure if vNIC is a port
- * @mbox_amsg:		Asynchronously processed message via mailbox
- * @mbox_amsg.lock:	Protect message list
- * @mbox_amsg.list:	List of message to process
- * @mbox_amsg.work:	Work to process message asynchronously
- * @app_priv:		APP private data for this vNIC
- */
+
 struct nfp_net {
 	struct nfp_net_dp dp;
 
@@ -741,9 +530,7 @@ struct nfp_mbox_amsg_entry {
 int nfp_net_sched_mbox_amsg_work(struct nfp_net *nn, u32 cmd, const void *data, size_t len,
 				 int (*cb)(struct nfp_net *, struct nfp_mbox_amsg_entry *));
 
-/* Functions to read/write from/to a BAR
- * Performs any endian conversion necessary.
- */
+
 static inline u16 nn_readb(struct nfp_net *nn, int off)
 {
 	return readb(nn->dp.ctrl_bar + off);
@@ -784,21 +571,13 @@ static inline void nn_writeq(struct nfp_net *nn, int off, u64 val)
 	writeq(val, nn->dp.ctrl_bar + off);
 }
 
-/* Flush posted PCI writes by reading something without side effects */
+
 static inline void nn_pci_flush(struct nfp_net *nn)
 {
 	nn_readl(nn, NFP_NET_CFG_VERSION);
 }
 
-/* Queue Controller Peripheral access functions and definitions.
- *
- * Some of the BARs of the NFP are mapped to portions of the Queue
- * Controller Peripheral (QCP) address space on the NFP.  A QCP queue
- * has a read and a write pointer (as well as a size and flags,
- * indicating overflow etc).  The QCP offers a number of different
- * operation on queue pointers, but here we only offer function to
- * either add to a pointer or to read the pointer value.
- */
+
 #define NFP_QCP_QUEUE_ADDR_SZ			0x800
 #define NFP_QCP_QUEUE_OFF(_x)			((_x) * NFP_QCP_QUEUE_ADDR_SZ)
 #define NFP_QCP_QUEUE_ADD_RPTR			0x0000
@@ -808,29 +587,19 @@ static inline void nn_pci_flush(struct nfp_net *nn)
 #define NFP_QCP_QUEUE_STS_HI			0x000c
 #define NFP_QCP_QUEUE_STS_HI_WRITEPTR_mask	0x3ffff
 
-/* nfp_qcp_ptr - Read or Write Pointer of a queue */
+
 enum nfp_qcp_ptr {
 	NFP_QCP_READ_PTR = 0,
 	NFP_QCP_WRITE_PTR
 };
 
-/**
- * nfp_qcp_rd_ptr_add() - Add the value to the read pointer of a queue
- *
- * @q:   Base address for queue structure
- * @val: Value to add to the queue pointer
- */
+
 static inline void nfp_qcp_rd_ptr_add(u8 __iomem *q, u32 val)
 {
 	writel(val, q + NFP_QCP_QUEUE_ADD_RPTR);
 }
 
-/**
- * nfp_qcp_wr_ptr_add() - Add the value to the write pointer of a queue
- *
- * @q:   Base address for queue structure
- * @val: Value to add to the queue pointer
- */
+
 static inline void nfp_qcp_wr_ptr_add(u8 __iomem *q, u32 val)
 {
 	writel(val, q + NFP_QCP_QUEUE_ADD_WPTR);
@@ -854,23 +623,13 @@ static inline u32 _nfp_qcp_read(u8 __iomem *q, enum nfp_qcp_ptr ptr)
 		return val & NFP_QCP_QUEUE_STS_HI_WRITEPTR_mask;
 }
 
-/**
- * nfp_qcp_rd_ptr_read() - Read the current read pointer value for a queue
- * @q:  Base address for queue structure
- *
- * Return: Value read.
- */
+
 static inline u32 nfp_qcp_rd_ptr_read(u8 __iomem *q)
 {
 	return _nfp_qcp_read(q, NFP_QCP_READ_PTR);
 }
 
-/**
- * nfp_qcp_wr_ptr_read() - Read the current write pointer value for a queue
- * @q:  Base address for queue structure
- *
- * Return: Value read.
- */
+
 static inline u32 nfp_qcp_wr_ptr_read(u8 __iomem *q)
 {
 	return _nfp_qcp_read(q, NFP_QCP_WRITE_PTR);
@@ -921,7 +680,7 @@ static inline void nn_ctrl_bar_unlock(struct nfp_net *nn)
 	up(&nn->bar_lock);
 }
 
-/* Globals */
+
 extern const char nfp_driver_version[];
 
 extern const struct net_device_ops nfp_nfd3_netdev_ops;
@@ -941,7 +700,7 @@ static inline int nfp_net_coalesce_para_check(u32 usecs, u32 pkts)
 	return 0;
 }
 
-/* Prototypes */
+
 void nfp_net_get_fw_version(struct nfp_net_fw_version *fw_ver,
 			    void __iomem *ctrl_bar);
 
@@ -1015,6 +774,6 @@ nfp_net_debugfs_vnic_add(struct nfp_net *nn, struct dentry *ddir)
 static inline void nfp_net_debugfs_dir_clean(struct dentry **dir)
 {
 }
-#endif /* CONFIG_NFP_DEBUG */
+#endif 
 
-#endif /* _NFP_NET_H_ */
+#endif 

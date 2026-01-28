@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Microchip KSZ PTP Implementation
- *
- * Copyright (C) 2020 ARRI Lighting
- * Copyright (C) 2022 Microchip Technology Inc.
- */
+
+
 
 #ifndef _NET_DSA_DRIVERS_KSZ_PTP_H
 #define _NET_DSA_DRIVERS_KSZ_PTP_H
@@ -23,13 +19,13 @@ struct ksz_ptp_data {
 	struct ptp_clock_info caps;
 	struct ptp_clock *clock;
 	struct ptp_pin_desc pin_config[KSZ_PTP_N_GPIO];
-	/* Serializes all operations on the PTP hardware clock */
+	
 	struct mutex lock;
-	/* lock for accessing the clock_time */
+	
 	spinlock_t clock_lock;
 	struct timespec64 clock_time;
 	enum ksz_ptp_tou_mode tou_mode;
-	struct timespec64 perout_target_time_first;  /* start of first pulse */
+	struct timespec64 perout_target_time_first;  
 	struct timespec64 perout_period;
 };
 
@@ -51,7 +47,7 @@ void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p);
 #else
 
 struct ksz_ptp_data {
-	/* Serializes all operations on the PTP hardware clock */
+	
 	struct mutex lock;
 };
 
@@ -81,6 +77,6 @@ static inline void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p) {}
 
 #define ksz_port_deferred_xmit NULL
 
-#endif	/* End of CONFIG_NET_DSA_MICROCHIP_KSZ_PTP */
+#endif	
 
 #endif

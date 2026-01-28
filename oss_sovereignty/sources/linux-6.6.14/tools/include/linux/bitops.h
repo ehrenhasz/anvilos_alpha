@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _TOOLS_LINUX_BITOPS_H_
 #define _TOOLS_LINUX_BITOPS_H_
 
@@ -25,10 +25,7 @@ extern unsigned int __sw_hweight16(unsigned int w);
 extern unsigned int __sw_hweight32(unsigned int w);
 extern unsigned long __sw_hweight64(__u64 w);
 
-/*
- * Defined here because those may be needed by architecture-specific static
- * inlines.
- */
+
 
 #define bitop(op, nr, addr)						\
 	op(nr, addr)
@@ -41,12 +38,7 @@ extern unsigned long __sw_hweight64(__u64 w);
 #define __test_and_change_bit(nr, addr)	bitop(___test_and_change_bit, nr, addr)
 #define test_bit(nr, addr)		bitop(_test_bit, nr, addr)
 
-/*
- * Include this here because some architectures need generic_ffs/fls in
- * scope
- *
- * XXX: this needs to be asm/bitops.h, when we get to per arch optimizations
- */
+
 #include <asm-generic/bitops.h>
 
 #define for_each_set_bit(bit, addr, size) \
@@ -59,7 +51,7 @@ extern unsigned long __sw_hweight64(__u64 w);
 	     (bit) < (size);                                    \
 	     (bit) = find_next_zero_bit((addr), (size), (bit) + 1))
 
-/* same as for_each_set_bit() but use bit as value to start with */
+
 #define for_each_set_bit_from(bit, addr, size) \
 	for ((bit) = find_next_bit((addr), (size), (bit));	\
 	     (bit) < (size);					\
@@ -77,11 +69,7 @@ static inline unsigned fls_long(unsigned long l)
 	return fls64(l);
 }
 
-/**
- * rol32 - rotate a 32-bit value left
- * @word: value to rotate
- * @shift: bits to roll
- */
+
 static inline __u32 rol32(__u32 word, unsigned int shift)
 {
 	return (word << shift) | (word >> ((-shift) & 31));

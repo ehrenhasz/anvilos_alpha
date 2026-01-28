@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-//
-// OWL common clock driver
-//
-// Copyright (c) 2014 Actions Semi Inc.
-// Author: David Liu <liuwei@actions-semi.com>
-//
-// Copyright (c) 2018 Linaro Ltd.
-// Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+
+
+
+
+
+
+
+
 
 #ifndef _OWL_COMMON_H_
 #define _OWL_COMMON_H_
@@ -41,4 +41,4 @@ int owl_clk_regmap_init(struct platform_device *pdev,
 			struct owl_clk_desc *desc);
 int owl_clk_probe(struct device *dev, struct clk_hw_onecell_data *hw_clks);
 
-#endif /* _OWL_COMMON_H_ */
+#endif 

@@ -9,55 +9,55 @@ PID = 0xDF11
 wTransferSize = 2048
 _desc_dev = bytes(
     [
-        0x12,  # bLength
-        0x01,  # bDescriptorType: Device
+        0x12,  
+        0x01,  
         0x00,
-        0x02,  # USB version: 2.00
-        0x00,  # bDeviceClass
-        0x00,  # bDeviceSubClass
-        0x00,  # bDeviceProtocol
-        0x40,  # bMaxPacketSize
+        0x02,  
+        0x00,  
+        0x00,  
+        0x00,  
+        0x40,  
         VID & 0xFF,
-        VID >> 8,  # VID
+        VID >> 8,  
         PID & 0xFF,
-        PID >> 8,  # PID
+        PID >> 8,  
         0x00,
-        0x01,  # bcdDevice: 1.00
-        0x11,  # iManufacturer
-        0x12,  # iProduct
-        0x13,  # iSerialNumber
-        0x01,  # bNumConfigurations: 1
+        0x01,  
+        0x11,  
+        0x12,  
+        0x13,  
+        0x01,  
     ]
 )
 _desc_cfg = bytes(
     [
-        0x09,  # bLength
-        0x02,  # bDescriptorType
+        0x09,  
+        0x02,  
         0x1B,
-        0x00,  # wTotalLength: 27
-        0x01,  # bNumInterfaces
-        0x01,  # bConfigurationValue
-        0x00,  # iConfiguration
-        0x80,  # bmAttributes (bus powered)
-        0x32,  # bMaxPower
-        0x09,  # bLength
-        0x04,  # bDescriptorType
-        0x00,  # bInterfaceNumber
-        0x00,  # bNumEndpointns
-        0x00,  # bAlternateSetting
-        0xFE,  # bInterfaceClass: application specific interface
-        0x01,  # bInterfaceSubClasse: device firmware update
-        0x02,  # bInterfaceProtocol
-        0x14,  # iInterface
-        0x09,  # bLength
-        0x21,  # bDescriptorType
-        0x0B,  # bmAttributes (will detach, upload supported, download supported)
+        0x00,  
+        0x01,  
+        0x01,  
+        0x00,  
+        0x80,  
+        0x32,  
+        0x09,  
+        0x04,  
+        0x00,  
+        0x00,  
+        0x00,  
+        0xFE,  
+        0x01,  
+        0x02,  
+        0x14,  
+        0x09,  
+        0x21,  
+        0x0B,  
         0xFF,
-        0x00,  # wDetatchTimeout
+        0x00,  
         wTransferSize & 0xFF,
-        wTransferSize >> 8,  # wTransferSize
+        wTransferSize >> 8,  
         0x1A,
-        0x01,  # bcdDFUVersion
+        0x01,  
     ]
 )
 _desc_strs = {
@@ -72,13 +72,13 @@ class DFUOverUSB:
         self.dfu = dfu
     def _control_xfer_cb(self, stage, request):
         bmRequestType, bRequest, wValue, wIndex, wLength = struct.unpack("<BBHHH", request)
-        if stage == 1:  # SETUP
+        if stage == 1:  
             if bmRequestType == USB_DIR_OUT | USB_REQ_TYPE_CLASS | USB_REQ_RECIP_INTERFACE:
                 return memoryview(self.usb_buf)[:wLength]
             if bmRequestType == USB_DIR_IN | USB_REQ_TYPE_CLASS | USB_REQ_RECIP_INTERFACE:
                 buf = memoryview(self.usb_buf)[:wLength]
                 return self.dfu.handle_tx(bRequest, wValue, buf)
-        elif stage == 3:  # ACK
+        elif stage == 3:  
             if bmRequestType & USB_DIR_IN:
                 self.dfu.process()
             else:
@@ -174,7 +174,7 @@ class DFU:
                 self.cmd = DFU.CMD_NONE
                 self.state = self.process_dnload()
     def process_dnload(self):
-        ret = -1  # Assume error.
+        ret = -1  
         if self.dnload_block_num == 0:
             if self.dnload_len >= 1 and self.dnload_buf[0] == DFU.CMD_DNLOAD_ERASE:
                 if self.dnload_len == 1:
@@ -196,15 +196,15 @@ class DFU:
         else:
             return DFU.STATE_ERROR
     def do_mass_erase(self):
-        return 0  # indicate success
+        return 0  
     def do_page_erase(self, addr):
-        return 0  # indicate success
+        return 0  
     def do_read(self, addr, buf):
         for i in range(len(buf)):
             buf[i] = i & 0xFF
-        return 0  # indicate success
+        return 0  
     def do_write(self, addr, size, buf):
-        return 0  # indicate success
+        return 0  
 dfu = DFU()
 dfu_usb = DFUOverUSB(dfu)
 usbd = machine.USBDevice()

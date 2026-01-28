@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2016-2017 Google, Inc
- *
- * Fairchild FUSB302 Type-C Chip Driver
- */
+
+
 
 #ifndef FUSB302_REG_H
 #define FUSB302_REG_H
@@ -60,7 +56,7 @@
 #define FUSB_REG_CONTROL2_TOGGLE		BIT(0)
 #define FUSB_REG_CONTROL3			0x09
 #define FUSB_REG_CONTROL3_SEND_HARDRESET	BIT(6)
-#define FUSB_REG_CONTROL3_BIST_TMODE		BIT(5)	/* 302B Only */
+#define FUSB_REG_CONTROL3_BIST_TMODE		BIT(5)	
 #define FUSB_REG_CONTROL3_AUTO_HARDRESET	BIT(4)
 #define FUSB_REG_CONTROL3_AUTO_SOFTRESET	BIT(3)
 #define FUSB_REG_CONTROL3_N_RETRIES		BIT(1)
@@ -160,7 +156,7 @@
 #define FUSB_REG_INTERRUPT_BC_LVL		BIT(0)
 #define FUSB_REG_FIFOS				0x43
 
-/* Tokens defined for the FUSB302 TX FIFO */
+
 enum fusb302_txfifo_tokens {
 	FUSB302_TKN_TXON = 0xA1,
 	FUSB302_TKN_SYNC1 = 0x12,

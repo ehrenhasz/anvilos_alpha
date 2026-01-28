@@ -9,7 +9,7 @@ def args_to_req(ynl, op_name, args, req):
     Verify and convert command-line arguments to the ynl-compatible request.
     """
     valid_attrs = ynl.operation_do_attributes(op_name)
-    valid_attrs.remove('header') # not user-provided
+    valid_attrs.remove('header') 
     if len(args) == 0:
         print(f'no attributes, expected: {valid_attrs}')
         sys.exit(1)

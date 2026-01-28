@@ -10,7 +10,7 @@ trap cleanup EXIT
 run_one() {
 	local -r all="$@"
 	local -r tx_args=${all%rx*}
-	local rx_args=${all#*rx}
+	local rx_args=${all
 	ip netns add "${PEER_NS}"
 	ip -netns "${PEER_NS}" link set lo up
 	ip link add type veth
@@ -64,7 +64,7 @@ if [ ! -f nat6to4.o ]; then
 	echo "Missing nat6to4 helper. Build bpf nat6to4.o selftest first"
 	exit -1
 fi
-if [[ $# -eq 0 ]]; then
+if [[ $
 	run_all
 elif [[ $1 == "__subprocess" ]]; then
 	shift

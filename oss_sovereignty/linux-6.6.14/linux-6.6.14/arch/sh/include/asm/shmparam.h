@@ -1,5 +1,0 @@
-#ifndef __ASM_SH_SHMPARAM_H
-#define __ASM_SH_SHMPARAM_H
-#define	SHMLBA	0x4000		  
-#define __ARCH_FORCE_SHMLBA
-#endif  

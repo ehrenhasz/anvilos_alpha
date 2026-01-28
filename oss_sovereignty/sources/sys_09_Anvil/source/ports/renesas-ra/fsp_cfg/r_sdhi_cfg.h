@@ -16,4 +16,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* R_SDHI_CFG_H_ */
+#endif 

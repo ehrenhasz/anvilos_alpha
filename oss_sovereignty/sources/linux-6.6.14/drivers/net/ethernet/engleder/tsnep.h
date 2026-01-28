@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2021 Gerhard Engleder <gerhard@engleder-embedded.com> */
+
+
 
 #ifndef _TSNEP_H
 #define _TSNEP_H
@@ -170,7 +170,7 @@ struct tsnep_adapter {
 	void __iomem *addr;
 
 	bool gate_control;
-	/* gate control lock */
+	
 	struct mutex gate_control_lock;
 	bool gate_control_active;
 	struct tsnep_gcl gcl[2];
@@ -179,10 +179,10 @@ struct tsnep_adapter {
 	struct hwtstamp_config hwtstamp_config;
 	struct ptp_clock *ptp_clock;
 	struct ptp_clock_info ptp_clock_info;
-	/* ptp clock lock */
+	
 	spinlock_t ptp_lock;
 
-	/* RX flow classification rules lock */
+	
 	struct mutex rxnfc_lock;
 	struct list_head rxnfc_rules;
 	int rxnfc_count;
@@ -240,16 +240,16 @@ static inline int tsnep_ethtool_get_test_count(void)
 
 static inline void tsnep_ethtool_get_test_strings(u8 *data)
 {
-	/* not enabled */
+	
 }
 
 static inline void tsnep_ethtool_self_test(struct net_device *dev,
 					   struct ethtool_test *eth_test,
 					   u64 *data)
 {
-	/* not enabled */
+	
 }
-#endif /* CONFIG_TSNEP_SELFTESTS */
+#endif 
 
 void tsnep_get_system_time(struct tsnep_adapter *adapter, u64 *time);
 int tsnep_set_irq_coalesce(struct tsnep_queue *queue, u32 usecs);
@@ -257,4 +257,4 @@ u32 tsnep_get_irq_coalesce(struct tsnep_queue *queue);
 int tsnep_enable_xsk(struct tsnep_queue *queue, struct xsk_buff_pool *pool);
 void tsnep_disable_xsk(struct tsnep_queue *queue);
 
-#endif /* _TSNEP_H */
+#endif 

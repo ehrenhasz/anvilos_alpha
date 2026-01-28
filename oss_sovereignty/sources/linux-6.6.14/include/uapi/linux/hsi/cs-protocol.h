@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * cmt-speech interface definitions
- *
- * Copyright (C) 2008,2009,2010 Nokia Corporation. All rights reserved.
- *
- * Contact: Kai Vehmanen <kai.vehmanen@nokia.com>
- * Original author: Peter Ujfalusi <peter.ujfalusi@nokia.com>
- */
+
+
 
 #ifndef _CS_PROTOCOL_H
 #define _CS_PROTOCOL_H
@@ -14,13 +7,13 @@
 #include <linux/types.h>
 #include <linux/ioctl.h>
 
-/* chardev parameters */
+
 #define CS_DEV_FILE_NAME		"/dev/cmt_speech"
 
-/* user-space API versioning */
+
 #define CS_IF_VERSION			2
 
-/* APE kernel <-> user space messages */
+
 #define CS_CMD_SHIFT			28
 #define CS_DOMAIN_SHIFT			24
 
@@ -35,59 +28,53 @@
 #define CS_TX_DATA_READY		CS_CMD(3, 0)
 #define CS_TX_DATA_SENT			CS_CMD(4, 0)
 
-/* params to CS_ERROR indication */
+
 #define CS_ERR_PEER_RESET		0
 
-/* ioctl interface */
 
-/* parameters to CS_CONFIG_BUFS ioctl */
+
+
 #define CS_FEAT_TSTAMP_RX_CTRL		(1 << 0)
 #define CS_FEAT_ROLLING_RX_COUNTER	(2 << 0)
 
-/* parameters to CS_GET_STATE ioctl */
-#define CS_STATE_CLOSED			0
-#define CS_STATE_OPENED			1 /* resource allocated */
-#define CS_STATE_CONFIGURED		2 /* data path active */
 
-/* maximum number of TX/RX buffers */
+#define CS_STATE_CLOSED			0
+#define CS_STATE_OPENED			1 
+#define CS_STATE_CONFIGURED		2 
+
+
 #define CS_MAX_BUFFERS_SHIFT		4
 #define CS_MAX_BUFFERS			(1 << CS_MAX_BUFFERS_SHIFT)
 
-/* Parameters for setting up the data buffers */
+
 struct cs_buffer_config {
-	__u32 rx_bufs;	/* number of RX buffer slots */
-	__u32 tx_bufs;	/* number of TX buffer slots */
-	__u32 buf_size;	/* bytes */
-	__u32 flags;	/* see CS_FEAT_* */
+	__u32 rx_bufs;	
+	__u32 tx_bufs;	
+	__u32 buf_size;	
+	__u32 flags;	
 	__u32 reserved[4];
 };
 
-/*
- * struct for monotonic timestamp taken when the
- * last control command was received
- */
+
 struct cs_timestamp {
-	__u32 tv_sec;  /* seconds */
-	__u32 tv_nsec; /* nanoseconds */
+	__u32 tv_sec;  
+	__u32 tv_nsec; 
 };
 
-/*
- * Struct describing the layout and contents of the driver mmap area.
- * This information is meant as read-only information for the application.
- */
+
 struct cs_mmap_config_block {
 	__u32 reserved1;
-	__u32 buf_size;		/* 0=disabled, otherwise the transfer size */
-	__u32 rx_bufs;		/* # of RX buffers */
-	__u32 tx_bufs;		/* # of TX buffers */
+	__u32 buf_size;		
+	__u32 rx_bufs;		
+	__u32 tx_bufs;		
 	__u32 reserved2;
-	/* array of offsets within the mmap area for each RX and TX buffer */
+	
 	__u32 rx_offsets[CS_MAX_BUFFERS];
 	__u32 tx_offsets[CS_MAX_BUFFERS];
 	__u32 rx_ptr;
 	__u32 rx_ptr_boundary;
 	__u32 reserved3[2];
-	/* enabled with CS_FEAT_TSTAMP_RX_CTRL */
+	
 	struct cs_timestamp tstamp_rx_ctrl;
 };
 
@@ -103,4 +90,4 @@ struct cs_mmap_config_block {
 #define CS_GET_IF_VERSION	CS_IOR(30, unsigned int)
 #define CS_CONFIG_BUFS		CS_IOW(31, struct cs_buffer_config)
 
-#endif /* _CS_PROTOCOL_H */
+#endif 

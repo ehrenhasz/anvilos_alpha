@@ -62,13 +62,13 @@ while [ -n "$1" ]; do
 		fi
 		;;
 	--srcdir=*)
-		top_srcdir="${1##--srcdir=}"
+		top_srcdir="${1
 		;;
 	--builddir=*)
-		top_builddir="${1##--builddir=}"
+		top_builddir="${1
 		;;
 	--parallel=*)
-		paraller_jobs="${1##--parallel=}"
+		paraller_jobs="${1
 		if ! [ "$paraller_jobs" -ge 0 ] 2>/dev/null; then
 			echo "invalid argument '$paraller_jobs' for --parallel="
 			exit 1
@@ -81,7 +81,7 @@ while [ -n "$1" ]; do
 		OPTS="$OPTS $1"
 		;;
 	--exclude=*)
-		EXCLUDETESTS="${1##--exclude=}"
+		EXCLUDETESTS="${1
 		;;
 	--*)
 		echo "Unknown option $1"
@@ -160,16 +160,16 @@ else
 	comps=( $(find_test_scripts "$top_srcdir/tests/ts") ) || exit 1
 fi
 if [ -n "$EXCLUDETESTS" ]; then
-	declare -a xcomps		# temporary array
+	declare -a xcomps		
 	for ts in ${comps[@]}; do
-		tsname=${ts##*ts/}	# test name
+		tsname=${ts
 		if [[ "$EXCLUDETESTS" == *${tsname}* ]]; then
 			true
 		else
 			xcomps+=($ts)
 		fi
 	done
-	comps=("${xcomps[@]}")		# replace the array
+	comps=("${xcomps[@]}")		
 fi
 unset LIBMOUNT_DEBUG
 unset LIBBLKID_DEBUG
@@ -208,11 +208,11 @@ declare -a fail_file
 fail_file=( $( < $top_builddir/tests/failures ) ) || exit 1
 echo
 echo "---------------------------------------------------------------------"
-if [ ${#fail_file[@]} -eq 0 ]; then
-	echo "  All ${#comps[@]} tests PASSED"
+if [ ${
+	echo "  All ${
 	res=0
 else
-	echo "  ${#fail_file[@]} tests of ${#comps[@]} FAILED"
+	echo "  ${
 	echo
 	for ts in ${fail_file[@]}; do
 		NAME=$(basename $ts)

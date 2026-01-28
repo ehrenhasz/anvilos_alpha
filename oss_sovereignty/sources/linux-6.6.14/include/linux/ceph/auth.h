@@ -1,16 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _FS_CEPH_AUTH_H
 #define _FS_CEPH_AUTH_H
 
 #include <linux/ceph/types.h>
 #include <linux/ceph/buffer.h>
 
-/*
- * Abstract interface for communicating with the authenticate module.
- * There is some handshake that takes place between us and the monitor
- * to acquire the necessary keys.  These are used to generate an
- * 'authorizer' that we use when connecting to a service (mds, osd).
- */
+
 
 struct ceph_auth_client;
 struct ceph_msg;
@@ -32,36 +27,23 @@ struct ceph_auth_handshake {
 };
 
 struct ceph_auth_client_ops {
-	/*
-	 * true if we are authenticated and can connect to
-	 * services.
-	 */
+	
 	int (*is_authenticated)(struct ceph_auth_client *ac);
 
-	/*
-	 * true if we should (re)authenticate, e.g., when our tickets
-	 * are getting old and crusty.
-	 */
+	
 	int (*should_authenticate)(struct ceph_auth_client *ac);
 
-	/*
-	 * build requests and process replies during monitor
-	 * handshake.  if handle_reply returns -EAGAIN, we build
-	 * another request.
-	 */
+	
 	int (*build_request)(struct ceph_auth_client *ac, void *buf, void *end);
 	int (*handle_reply)(struct ceph_auth_client *ac, u64 global_id,
 			    void *buf, void *end, u8 *session_key,
 			    int *session_key_len, u8 *con_secret,
 			    int *con_secret_len);
 
-	/*
-	 * Create authorizer for connecting to a service, and verify
-	 * the response to authenticate the service.
-	 */
+	
 	int (*create_authorizer)(struct ceph_auth_client *ac, int peer_type,
 				 struct ceph_auth_handshake *auth);
-	/* ensure that an existing authorizer is up to date */
+	
 	int (*update_authorizer)(struct ceph_auth_client *ac, int peer_type,
 				 struct ceph_auth_handshake *auth);
 	int (*add_authorizer_challenge)(struct ceph_auth_client *ac,
@@ -76,7 +58,7 @@ struct ceph_auth_client_ops {
 	void (*invalidate_authorizer)(struct ceph_auth_client *ac,
 				      int peer_type);
 
-	/* reset when we (re)connect to a monitor */
+	
 	void (*reset)(struct ceph_auth_client *ac);
 
 	void (*destroy)(struct ceph_auth_client *ac);
@@ -88,18 +70,18 @@ struct ceph_auth_client_ops {
 };
 
 struct ceph_auth_client {
-	u32 protocol;           /* CEPH_AUTH_* */
-	void *private;          /* for use by protocol implementation */
-	const struct ceph_auth_client_ops *ops;  /* null iff protocol==0 */
+	u32 protocol;           
+	void *private;          
+	const struct ceph_auth_client_ops *ops;  
 
-	bool negotiating;       /* true if negotiating protocol */
-	const char *name;       /* entity name */
-	u64 global_id;          /* our unique id in system */
-	const struct ceph_crypto_key *key;     /* our secret key */
-	unsigned want_keys;     /* which services we want */
+	bool negotiating;       
+	const char *name;       
+	u64 global_id;          
+	const struct ceph_crypto_key *key;     
+	unsigned want_keys;     
 
-	int preferred_mode;	/* CEPH_CON_MODE_* */
-	int fallback_mode;	/* ditto */
+	int preferred_mode;	
+	int fallback_mode;	
 
 	struct mutex mutex;
 };

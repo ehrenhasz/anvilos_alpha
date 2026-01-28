@@ -29,7 +29,7 @@ NR_THREADS=$((6*${NR_CPUS}))
 function do_tests()
 {
 	local i=0
-	while [ "$i" -lt "${#TEST_LIST[@]}" ]; do
+	while [ "$i" -lt "${
 		echo "Running test ${TEST_NAME[$i]}"
 		./param_test ${TEST_LIST[$i]} -r ${REPS} -t ${NR_THREADS} ${@} ${EXTRA_ARGS} || exit 1
 		echo "Running compare-twice test ${TEST_NAME[$i]}"
@@ -60,7 +60,7 @@ INJECT_LIST=(
 IFS="$OLDIFS"
 NR_LOOPS=10000
 i=0
-while [ "$i" -lt "${#INJECT_LIST[@]}" ]; do
+while [ "$i" -lt "${
 	echo "Injecting at <${INJECT_LIST[$i]}>"
 	do_tests -${INJECT_LIST[i]} ${NR_LOOPS}
 	let "i++"
@@ -78,7 +78,7 @@ function inject_blocking()
 	IFS="$OLDIFS"
 	NR_LOOPS=-1
 	i=0
-	while [ "$i" -lt "${#INJECT_LIST[@]}" ]; do
+	while [ "$i" -lt "${
 		echo "Injecting at <${INJECT_LIST[$i]}>"
 		do_tests -${INJECT_LIST[i]} -1 ${@}
 		let "i++"

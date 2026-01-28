@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __XHCI_RZV2M_H
 #define __XHCI_RZV2M_H
 
@@ -13,4 +13,4 @@ static inline int xhci_rzv2m_init_quirk(struct usb_hcd *hcd)
 }
 #endif
 
-#endif /* __XHCI_RZV2M_H */
+#endif 

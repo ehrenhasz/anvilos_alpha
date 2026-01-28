@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2016-2018 Mellanox Technologies. All rights reserved */
+
+
 
 #ifndef _MLXSW_RESOURCES_H
 #define _MLXSW_RESOURCES_H
@@ -58,9 +58,7 @@ enum mlxsw_res_id {
 	MLXSW_RES_ID_MAX_NVE_MC_ENTRIES_IPV4,
 	MLXSW_RES_ID_MAX_NVE_MC_ENTRIES_IPV6,
 
-	/* Internal resources.
-	 * Determined by the SW, not queried from the HW.
-	 */
+	
 	MLXSW_RES_ID_KVD_SINGLE_SIZE,
 	MLXSW_RES_ID_KVD_DOUBLE_SIZE,
 	MLXSW_RES_ID_KVD_LINEAR_SIZE,
@@ -88,9 +86,9 @@ static u16 mlxsw_res_ids[] = {
 	[MLXSW_RES_ID_FID] = 0x2512,
 	[MLXSW_RES_ID_MAX_LAG] = 0x2520,
 	[MLXSW_RES_ID_MAX_LAG_MEMBERS] = 0x2521,
-	[MLXSW_RES_ID_GUARANTEED_SHARED_BUFFER] = 0x2805,	/* Bytes */
-	[MLXSW_RES_ID_CELL_SIZE] = 0x2803,	/* Bytes */
-	[MLXSW_RES_ID_MAX_HEADROOM_SIZE] = 0x2811,	/* Bytes */
+	[MLXSW_RES_ID_GUARANTEED_SHARED_BUFFER] = 0x2805,	
+	[MLXSW_RES_ID_CELL_SIZE] = 0x2803,	
+	[MLXSW_RES_ID_MAX_HEADROOM_SIZE] = 0x2811,	
 	[MLXSW_RES_ID_ACL_MAX_TCAM_REGIONS] = 0x2901,
 	[MLXSW_RES_ID_ACL_MAX_TCAM_RULES] = 0x2902,
 	[MLXSW_RES_ID_ACL_MAX_REGIONS] = 0x2903,

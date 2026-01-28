@@ -3,5 +3,5 @@ if [ ! -f ./configure ]; then
 	exit 1
 fi
 for decl in $(awk '/HAVE_DECL_.*ac_have_decl/ { print $2 }' configure); do
-	git grep -nE '[[:blank:]]*#[[:blank:]]*if(ndef|def)[[:blank:]]*'$decl;
+	git grep -nE '[[:blank:]]*
 done | sort -u

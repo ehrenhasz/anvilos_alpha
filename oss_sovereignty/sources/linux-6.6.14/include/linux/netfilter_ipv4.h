@@ -1,14 +1,10 @@
-/* IPv4-specific defines for netfilter. 
- * (C)1998 Rusty Russell -- This code is GPL.
- */
+
 #ifndef __LINUX_IP_NETFILTER_H
 #define __LINUX_IP_NETFILTER_H
 
 #include <uapi/linux/netfilter_ipv4.h>
 
-/* Extra routing may needed on local out, as the QUEUE target never returns
- * control to the table.
- */
+
 struct ip_rt_info {
 	__be32 daddr;
 	__be32 saddr;
@@ -36,6 +32,6 @@ static inline int nf_ip_route(struct net *net, struct dst_entry **dst,
 {
 	return -EOPNOTSUPP;
 }
-#endif /* CONFIG_INET */
+#endif 
 
-#endif /*__LINUX_IP_NETFILTER_H*/
+#endif 

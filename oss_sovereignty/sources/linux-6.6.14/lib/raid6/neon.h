@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 void raid6_neon1_gen_syndrome_real(int disks, unsigned long bytes, void **ptrs);
 void raid6_neon1_xor_syndrome_real(int disks, int start, int stop,

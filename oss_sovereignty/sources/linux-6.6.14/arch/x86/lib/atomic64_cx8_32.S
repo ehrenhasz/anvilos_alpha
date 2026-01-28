@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * atomic64_t for 586+
- *
- * Copyright © 2010  Luca Barbieri
- */
+
+
 
 #include <linux/linkage.h>
 #include <asm/alternative.h>
@@ -11,7 +7,7 @@
 .macro read64 reg
 	movl %ebx, %eax
 	movl %ecx, %edx
-/* we need LOCK_PREFIX since otherwise cmpxchg8b always does the write */
+
 	LOCK_PREFIX
 	cmpxchg8b (\reg)
 .endm
@@ -23,8 +19,7 @@ SYM_FUNC_END(atomic64_read_cx8)
 
 SYM_FUNC_START(atomic64_set_cx8)
 1:
-/* we don't need LOCK_PREFIX since aligned 64-bit writes
- * are atomic on 586 and newer */
+
 	cmpxchg8b (%esi)
 	jne 1b
 
@@ -124,7 +119,7 @@ SYM_FUNC_END(atomic64_dec_if_positive_cx8)
 SYM_FUNC_START(atomic64_add_unless_cx8)
 	pushl %ebp
 	pushl %ebx
-/* these just push these two parameters on the stack */
+
 	pushl %edi
 	pushl %ecx
 

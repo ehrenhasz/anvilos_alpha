@@ -1,15 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef __SOUND_TLV_H
 #define __SOUND_TLV_H
 
-/*
- *  Advanced Linux Sound Architecture - ALSA - Driver
- *  Copyright (c) 2006 by Jaroslav Kysela <perex@perex.cz>
- */
+
 
 #include <uapi/sound/tlv.h>
 
-/* For historical reasons, these macros are aliases to the ones in UAPI. */
+
 #define TLV_ITEM			SNDRV_CTL_TLVD_ITEM
 #define TLV_LENGTH			SNDRV_CTL_TLVD_LENGTH
 
@@ -34,12 +31,8 @@
 
 #define TLV_DB_GAIN_MUTE		SNDRV_CTL_TLVD_DB_GAIN_MUTE
 
-/*
- * The below assumes that each item TLV is 4 words like DB_SCALE or LINEAR.
- * This is an old fasion and obsoleted by commit bf1d1c9b6179("ALSA: tlv: add
- * DECLARE_TLV_DB_RANGE()").
- */
+
 #define TLV_DB_RANGE_HEAD(num) \
 	SNDRV_CTL_TLVT_DB_RANGE, 6 * (num) * sizeof(unsigned int)
 
-#endif /* __SOUND_TLV_H */
+#endif 

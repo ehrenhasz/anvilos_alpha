@@ -8,7 +8,7 @@ function sudo_echo () {
 	echo "$1" | sudo tee -a "$2" > /dev/null
 }
 NXECUTABLE="$(dirname $0)/nx_huge_pages_test"
-sudo_echo test /dev/null || exit 4 # KSFT_SKIP=4
+sudo_echo test /dev/null || exit 4 
 (
 	set -e
 	sudo_echo 1 /sys/module/kvm/parameters/nx_huge_pages

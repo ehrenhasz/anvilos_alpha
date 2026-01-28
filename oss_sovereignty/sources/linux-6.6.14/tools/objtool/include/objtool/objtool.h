@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2020 Matt Helsley <mhelsley@vmware.com>
- */
+
+
 
 #ifndef _OBJTOOL_H
 #define _OBJTOOL_H
@@ -47,4 +45,4 @@ int check(struct objtool_file *file);
 int orc_dump(const char *objname);
 int orc_create(struct objtool_file *file);
 
-#endif /* _OBJTOOL_H */
+#endif 

@@ -1,40 +1,8 @@
-/*	$OpenBSD: sha2.h,v 1.10 2016/09/03 17:00:29 tedu Exp $	*/
 
-/*
- * FILE:	sha2.h
- * AUTHOR:	Aaron D. Gifford <me@aarongifford.com>
- * 
- * Copyright (c) 2000-2001, Aaron D. Gifford
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the copyright holder nor the names of contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTOR(S) ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTOR(S) BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * $From: sha2.h,v 1.1 2001/11/08 00:02:01 adg Exp adg $
- */
 
-/* OPENBSD ORIGINAL: include/sha2.h */
+
+
+
 
 #ifndef _SSHSHA2_H
 #define _SSHSHA2_H
@@ -44,7 +12,7 @@
 #if !defined(HAVE_SHA256UPDATE) || !defined(HAVE_SHA384UPDATE) || \
     !defined(HAVE_SHA512UPDATE)
 
-/*** SHA-256/384/512 Various Length Definitions ***********************/
+
 #define SHA224_BLOCK_LENGTH		64
 #define SHA224_DIGEST_LENGTH		28
 #define SHA224_DIGEST_STRING_LENGTH	(SHA224_DIGEST_LENGTH * 2 + 1)
@@ -62,7 +30,7 @@
 #define SHA512_256_DIGEST_STRING_LENGTH	(SHA512_256_DIGEST_LENGTH * 2 + 1)
 
 
-/*** SHA-224/256/384/512 Context Structure *******************************/
+
 typedef struct _SHA2_CTX {
 	union {
 		u_int32_t	st32[8];
@@ -90,7 +58,7 @@ char *SHA224FileChunk(const char *, char *, off_t, off_t)
 char *SHA224Data(const u_int8_t *, size_t, char *)
 	__attribute__((__bounded__(__string__,1,2)))
 	__attribute__((__bounded__(__minbytes__,3,SHA224_DIGEST_STRING_LENGTH)));
-#endif /* 0 */
+#endif 
 
 #ifndef HAVE_SHA256UPDATE
 void SHA256Init(SHA2_CTX *);
@@ -109,7 +77,7 @@ char *SHA256FileChunk(const char *, char *, off_t, off_t)
 char *SHA256Data(const u_int8_t *, size_t, char *)
 	__attribute__((__bounded__(__string__,1,2)))
 	__attribute__((__bounded__(__minbytes__,3,SHA256_DIGEST_STRING_LENGTH)));
-#endif /* HAVE_SHA256UPDATE */
+#endif 
 
 #ifndef HAVE_SHA384UPDATE
 void SHA384Init(SHA2_CTX *);
@@ -128,7 +96,7 @@ char *SHA384FileChunk(const char *, char *, off_t, off_t)
 char *SHA384Data(const u_int8_t *, size_t, char *)
 	__attribute__((__bounded__(__string__,1,2)))
 	__attribute__((__bounded__(__minbytes__,3,SHA384_DIGEST_STRING_LENGTH)));
-#endif /* HAVE_SHA384UPDATE */
+#endif 
 
 #ifndef HAVE_SHA512UPDATE
 void SHA512Init(SHA2_CTX *);
@@ -147,7 +115,7 @@ char *SHA512FileChunk(const char *, char *, off_t, off_t)
 char *SHA512Data(const u_int8_t *, size_t, char *)
 	__attribute__((__bounded__(__string__,1,2)))
 	__attribute__((__bounded__(__minbytes__,3,SHA512_DIGEST_STRING_LENGTH)));
-#endif /* HAVE_SHA512UPDATE */
+#endif 
 
 #if 0
 void SHA512_256Init(SHA2_CTX *);
@@ -167,8 +135,8 @@ char *SHA512_256Data(const u_int8_t *, size_t, char *)
 	__attribute__((__bounded__(__string__,1,2)))
 	__attribute__((__bounded__(__minbytes__,3,SHA512_256_DIGEST_STRING_LENGTH)));
 __END_DECLS
-#endif /* 0 */
+#endif 
 
-#endif /* HAVE_SHA{256,384,512}UPDATE */
+#endif 
 
-#endif /* _SSHSHA2_H */
+#endif 

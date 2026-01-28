@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * First generation of pinmux driver for Amlogic Meson SoCs
- *
- * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
- * Copyright (C) 2017 Jerome Brunet  <jbrunet@baylibre.com>
- */
+
+
 
 struct meson8_pmx_data {
 	bool is_gpio;

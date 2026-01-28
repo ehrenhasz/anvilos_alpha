@@ -48,7 +48,7 @@ print_mtime() {
 	if [ -e "$1" ]; then
 		my_mtime=$(find "$1" -printf "%T@\n" | sort -r | head -n 1)
 	fi
-	echo "# Last modified: ${my_mtime}" >> $cpio_list
+	echo "
 	echo "" >> $cpio_list
 }
 list_parse() {
@@ -59,7 +59,7 @@ list_parse() {
 }
 parse() {
 	local location="$1"
-	local name="/${location#${srcdir}}"
+	local name="/${location
 	name=$(echo "$name" | sed -e 's://*:/:g')
 	local mode="$2"
 	local uid="$3"
@@ -103,7 +103,7 @@ unknown_option() {
 	exit 1
 }
 header() {
-	printf "\n#####################\n# $1\n" >> $cpio_list
+	printf "\n
 }
 dir_filelist() {
 	header "$1"
@@ -147,30 +147,30 @@ timestamp=
 cpio_list=$(mktemp ${TMPDIR:-/tmp}/cpiolist.XXXXXX)
 output="/dev/stdout"
 trap "rm -f $cpio_list" EXIT
-while [ $# -gt 0 ]; do
+while [ $
 	arg="$1"
 	shift
 	case "$arg" in
-		"-l")	# files included in initramfs - used by kbuild
+		"-l")	
 			dep_list="$1"
 			echo "deps_initramfs := \\" > $dep_list
 			shift
 			;;
-		"-o")	# generate cpio image named $1
+		"-o")	
 			output="$1"
 			shift
 			;;
-		"-u")	# map $1 to uid=0 (root)
+		"-u")	
 			root_uid="$1"
 			[ "$root_uid" = "-1" ] && root_uid=$(id -u || echo 0)
 			shift
 			;;
-		"-g")	# map $1 to gid=0 (root)
+		"-g")	
 			root_gid="$1"
 			[ "$root_gid" = "-1" ] && root_gid=$(id -g || echo 0)
 			shift
 			;;
-		"-d")	# date for file mtimes
+		"-d")	
 			timestamp="$(date -d"$1" +%s || :)"
 			if test -n "$timestamp"; then
 				timestamp="-t $timestamp"
@@ -186,7 +186,7 @@ while [ $# -gt 0 ]; do
 				"-"*)
 					unknown_option
 					;;
-				*)	# input file/dir - process it
+				*)	
 					input_file "$arg"
 					;;
 			esac

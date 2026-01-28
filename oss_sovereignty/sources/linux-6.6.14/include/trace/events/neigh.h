@@ -249,7 +249,7 @@ DEFINE_EVENT(neigh__update, neigh_cleanup_and_release,
 	TP_ARGS(neigh, rc)
 );
 
-#endif /* _TRACE_NEIGH_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

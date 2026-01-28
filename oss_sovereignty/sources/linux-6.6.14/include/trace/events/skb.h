@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM skb
 
@@ -18,9 +18,7 @@ DEFINE_DROP_REASON(FN, FN)
 #define FN(reason)	{ SKB_DROP_REASON_##reason, #reason },
 #define FNe(reason)	{ SKB_DROP_REASON_##reason, #reason }
 
-/*
- * Tracepoint for free an sk_buff:
- */
+
 TRACE_EVENT(kfree_skb,
 
 	TP_PROTO(struct sk_buff *skb, void *location,
@@ -89,7 +87,7 @@ TRACE_EVENT(skb_copy_datagram_iovec,
 	TP_printk("skbaddr=%p len=%d", __entry->skbaddr, __entry->len)
 );
 
-#endif /* _TRACE_SKB_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

@@ -5,7 +5,7 @@ class ESPNow(ESPNowBase):
     _none_tuple = (None, None)
     def __init__(self):
         super().__init__()
-        self._poll = poll()  # For any() method below...
+        self._poll = poll()  
         self._poll.register(self, POLLIN)
     def irecv(self, timeout_ms=None):
         n = self.recvinto(self._data, timeout_ms)
@@ -16,8 +16,8 @@ class ESPNow(ESPNowBase):
     def __iter__(self):
         return self
     def __next__(self):
-        return self.irecv()  # Use alloc free irecv() method
-    def any(self):  # For the ESP8266 which does not have ESPNow.any()
+        return self.irecv()  
+    def any(self):  
         try:
             next(self._poll.ipoll(0))
             return True

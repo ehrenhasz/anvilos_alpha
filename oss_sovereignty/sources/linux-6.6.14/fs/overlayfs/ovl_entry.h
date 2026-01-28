@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * Copyright (C) 2011 Novell Inc.
- * Copyright (C) 2016 Red Hat, Inc.
- */
+
+
 
 struct ovl_config {
 	char *upperdir;
@@ -24,21 +20,21 @@ struct ovl_config {
 struct ovl_sb {
 	struct super_block *sb;
 	dev_t pseudo_dev;
-	/* Unusable (conflicting) uuid */
+	
 	bool bad_uuid;
-	/* Used as a lower layer (but maybe also as upper) */
+	
 	bool is_lower;
 };
 
 struct ovl_layer {
-	/* ovl_free_fs() relies on @mnt being the first member! */
+	
 	struct vfsmount *mnt;
-	/* Trap in ovl inode cache */
+	
 	struct inode *trap;
 	struct ovl_sb *fs;
-	/* Index of this layer in fs root (upper idx == 0) */
+	
 	int idx;
-	/* One fsid per unique underlying sb (upper fsid == 0) */
+	
 	int fsid;
 };
 
@@ -52,48 +48,48 @@ struct ovl_entry {
 	struct ovl_path __lowerstack[];
 };
 
-/* private information held for overlayfs's superblock */
+
 struct ovl_fs {
 	unsigned int numlayer;
-	/* Number of unique fs among layers including upper fs */
+	
 	unsigned int numfs;
-	/* Number of data-only lower layers */
+	
 	unsigned int numdatalayer;
 	const struct ovl_layer *layers;
 	struct ovl_sb *fs;
-	/* workbasedir is the path at workdir= mount option */
+	
 	struct dentry *workbasedir;
-	/* workdir is the 'work' directory under workbasedir */
+	
 	struct dentry *workdir;
-	/* index directory listing overlay inodes by origin file handle */
+	
 	struct dentry *indexdir;
 	long namelen;
-	/* pathnames of lower and upper dirs, for show_options */
+	
 	struct ovl_config config;
-	/* creds of process who forced instantiation of super block */
+	
 	const struct cred *creator_cred;
 	bool tmpfile;
 	bool noxattr;
 	bool nofh;
-	/* Did we take the inuse lock? */
+	
 	bool upperdir_locked;
 	bool workdir_locked;
-	/* Traps in ovl inode cache */
+	
 	struct inode *workbasedir_trap;
 	struct inode *workdir_trap;
 	struct inode *indexdir_trap;
-	/* -1: disabled, 0: same fs, 1..32: number of unused ino bits */
+	
 	int xino_mode;
-	/* For allocation of non-persistent inode numbers */
+	
 	atomic_long_t last_ino;
-	/* Shared whiteout cache */
+	
 	struct dentry *whiteout;
 	bool no_shared_whiteout;
-	/* r/o snapshot of upperdir sb's only taken on volatile mounts */
+	
 	errseq_t errseq;
 };
 
-/* Number of lower layers, not including data-only layers */
+
 static inline unsigned int ovl_numlowerlayer(struct ovl_fs *ofs)
 {
 	return ofs->numlayer - ofs->numdatalayer - 1;
@@ -146,7 +142,7 @@ static inline struct ovl_path *ovl_lowerdata(struct ovl_entry *oe)
 	return lowerstack ? &lowerstack[oe->__numlower - 1] : NULL;
 }
 
-/* May return NULL if lazy lookup of lowerdata is needed */
+
 static inline struct dentry *ovl_lowerdata_dentry(struct ovl_entry *oe)
 {
 	struct ovl_path *lowerdata = ovl_lowerdata(oe);
@@ -154,7 +150,7 @@ static inline struct dentry *ovl_lowerdata_dentry(struct ovl_entry *oe)
 	return lowerdata ? READ_ONCE(lowerdata->dentry) : NULL;
 }
 
-/* private information held for every overlayfs dentry */
+
 static inline unsigned long *OVL_E_FLAGS(struct dentry *dentry)
 {
 	return (unsigned long *) &dentry->d_fsdata;
@@ -162,8 +158,8 @@ static inline unsigned long *OVL_E_FLAGS(struct dentry *dentry)
 
 struct ovl_inode {
 	union {
-		struct ovl_dir_cache *cache;	/* directory */
-		const char *lowerdata_redirect;	/* regular file */
+		struct ovl_dir_cache *cache;	
+		const char *lowerdata_redirect;	
 	};
 	const char *redirect;
 	u64 version;
@@ -172,7 +168,7 @@ struct ovl_inode {
 	struct dentry *__upperdentry;
 	struct ovl_entry *oe;
 
-	/* synchronize copy up and more */
+	
 	struct mutex lock;
 };
 

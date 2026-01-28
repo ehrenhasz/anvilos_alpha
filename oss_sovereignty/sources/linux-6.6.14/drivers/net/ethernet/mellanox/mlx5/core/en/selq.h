@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 #ifndef __MLX5_EN_SELQ_H__
 #define __MLX5_EN_SELQ_H__
@@ -11,7 +11,7 @@ struct mlx5e_selq_params;
 struct mlx5e_selq {
 	struct mlx5e_selq_params __rcu *active;
 	struct mlx5e_selq_params *standby;
-	struct mutex *state_lock; /* points to priv->state_lock */
+	struct mutex *state_lock; 
 	bool is_prepared;
 };
 
@@ -50,4 +50,4 @@ static inline u16 mlx5e_txq_to_ch_ix_htb(u16 txq, u16 num_channels)
 u16 mlx5e_select_queue(struct net_device *dev, struct sk_buff *skb,
 		       struct net_device *sb_dev);
 
-#endif /* __MLX5_EN_SELQ_H__ */
+#endif 

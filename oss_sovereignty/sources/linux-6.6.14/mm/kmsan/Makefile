@@ -1,20 +1,20 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for KernelMemorySanitizer (KMSAN).
-#
-#
+
+
+
+
+
 obj-y := core.o instrumentation.o init.o hooks.o report.o shadow.o
 
 KMSAN_SANITIZE := n
 KCOV_INSTRUMENT := n
 UBSAN_SANITIZE := n
 
-# Disable instrumentation of KMSAN runtime with other tools.
+
 CC_FLAGS_KMSAN_RUNTIME := -fno-stack-protector
 CC_FLAGS_KMSAN_RUNTIME += $(call cc-option,-fno-conserve-stack)
 CC_FLAGS_KMSAN_RUNTIME += -DDISABLE_BRANCH_PROFILING
 
-# Disable ftrace to avoid recursion.
+
 CFLAGS_REMOVE_core.o = $(CC_FLAGS_FTRACE)
 CFLAGS_REMOVE_hooks.o = $(CC_FLAGS_FTRACE)
 CFLAGS_REMOVE_init.o = $(CC_FLAGS_FTRACE)

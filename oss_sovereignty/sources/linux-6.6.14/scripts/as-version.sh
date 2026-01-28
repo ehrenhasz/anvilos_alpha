@@ -7,7 +7,7 @@ get_canonical_version()
 }
 check_integrated_as()
 {
-	while [ $# -gt 0 ]; do
+	while [ $
 		if [ "$1" = -fintegrated-as ]; then
 			echo LLVM 0
 			exit 0
@@ -24,7 +24,7 @@ IFS=' '
 set -- $1
 min_tool_version=$(dirname $0)/min-tool-version.sh
 if [ "$1" = GNU -a "$2" = assembler ]; then
-	shift $(($# - 1))
+	shift $(($
 	version=$1
 	min_version=$($min_tool_version binutils)
 	name=GNU

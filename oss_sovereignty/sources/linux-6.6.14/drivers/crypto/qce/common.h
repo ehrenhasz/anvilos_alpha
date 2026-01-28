@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2010-2014, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef _COMMON_H_
 #define _COMMON_H_
@@ -13,38 +11,38 @@
 #include <crypto/internal/skcipher.h>
 #include <crypto/internal/aead.h>
 
-/* xts du size */
+
 #define QCE_SECTOR_SIZE			512
 
-/* key size in bytes */
+
 #define QCE_SHA_HMAC_KEY_SIZE		64
 #define QCE_MAX_CIPHER_KEY_SIZE		AES_KEYSIZE_256
 
-/* IV length in bytes */
+
 #define QCE_AES_IV_LENGTH		AES_BLOCK_SIZE
-/* max of AES_BLOCK_SIZE, DES3_EDE_BLOCK_SIZE */
+
 #define QCE_MAX_IV_SIZE			AES_BLOCK_SIZE
 
-/* maximum nonce bytes  */
+
 #define QCE_MAX_NONCE			16
 #define QCE_MAX_NONCE_WORDS		(QCE_MAX_NONCE / sizeof(u32))
 
-/* burst size alignment requirement */
+
 #define QCE_MAX_ALIGN_SIZE		64
 
-/* cipher algorithms */
+
 #define QCE_ALG_DES			BIT(0)
 #define QCE_ALG_3DES			BIT(1)
 #define QCE_ALG_AES			BIT(2)
 
-/* hash and hmac algorithms */
+
 #define QCE_HASH_SHA1			BIT(3)
 #define QCE_HASH_SHA256			BIT(4)
 #define QCE_HASH_SHA1_HMAC		BIT(5)
 #define QCE_HASH_SHA256_HMAC		BIT(6)
 #define QCE_HASH_AES_CMAC		BIT(7)
 
-/* cipher modes */
+
 #define QCE_MODE_CBC			BIT(8)
 #define QCE_MODE_ECB			BIT(9)
 #define QCE_MODE_CTR			BIT(10)
@@ -54,7 +52,7 @@
 
 #define QCE_MODE_CCM_RFC4309		BIT(13)
 
-/* cipher encryption/decryption operations */
+
 #define QCE_ENCRYPT			BIT(30)
 #define QCE_DECRYPT			BIT(31)
 
@@ -101,4 +99,4 @@ int qce_check_status(struct qce_device *qce, u32 *status);
 void qce_get_version(struct qce_device *qce, u32 *major, u32 *minor, u32 *step);
 int qce_start(struct crypto_async_request *async_req, u32 type);
 
-#endif /* _COMMON_H_ */
+#endif 

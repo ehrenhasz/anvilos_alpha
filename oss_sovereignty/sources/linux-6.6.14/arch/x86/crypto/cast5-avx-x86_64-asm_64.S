@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Cast5 Cipher 16-way parallel algorithm (AVX/x86_64)
- *
- * Copyright (C) 2012 Johannes Goetzfried
- *     <Johannes.Goetzfried@informatik.stud.uni-erlangen.de>
- *
- * Copyright © 2012 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
- */
+
+
 
 #include <linux/linkage.h>
 #include <asm/frame.h>
@@ -18,20 +11,18 @@
 .extern cast_s3
 .extern cast_s4
 
-/* structure of crypto context */
+
 #define km	0
 #define kr	(16*4)
 #define rr	((16*4)+16)
 
-/* s-boxes */
+
 #define s1	cast_s1
 #define s2	cast_s2
 #define s3	cast_s3
 #define s4	cast_s4
 
-/**********************************************************************
-  16-way AVX cast5
- **********************************************************************/
+
 #define CTX %r15
 
 #define RL1 %xmm0
@@ -98,7 +89,7 @@
 	leaq		s4(%rip),      RID1;     \
 	op3		(RID1,RID2,4), dst ## d;
 
-#define dummy(d) /* do nothing */
+#define dummy(d) 
 
 #define shr_next(reg) \
 	shrq $16,	reg;
@@ -156,12 +147,12 @@
 
 #define enc_preload_rkr() \
 	vbroadcastss	.L16_mask(%rip),          RKR;      \
-	/* add 16-bit rotation to key rotations (mod 32) */ \
+	 \
 	vpxor		kr(CTX),                  RKR, RKR;
 
 #define dec_preload_rkr() \
 	vbroadcastss	.L16_mask(%rip),          RKR;      \
-	/* add 16-bit rotation to key rotations (mod 32) */ \
+	 \
 	vpxor		kr(CTX),                  RKR, RKR; \
 	vpshufb		.Lbswap128_mask(%rip),    RKR, RKR;
 
@@ -213,26 +204,7 @@
 .text
 
 SYM_FUNC_START_LOCAL(__cast5_enc_blk16)
-	/* input:
-	 *	%rdi: ctx
-	 *	RL1: blocks 1 and 2
-	 *	RR1: blocks 3 and 4
-	 *	RL2: blocks 5 and 6
-	 *	RR2: blocks 7 and 8
-	 *	RL3: blocks 9 and 10
-	 *	RR3: blocks 11 and 12
-	 *	RL4: blocks 13 and 14
-	 *	RR4: blocks 15 and 16
-	 * output:
-	 *	RL1: encrypted blocks 1 and 2
-	 *	RR1: encrypted blocks 3 and 4
-	 *	RL2: encrypted blocks 5 and 6
-	 *	RR2: encrypted blocks 7 and 8
-	 *	RL3: encrypted blocks 9 and 10
-	 *	RR3: encrypted blocks 11 and 12
-	 *	RL4: encrypted blocks 13 and 14
-	 *	RR4: encrypted blocks 15 and 16
-	 */
+	
 
 	pushq %r15;
 	pushq %rbx;
@@ -286,26 +258,7 @@ SYM_FUNC_START_LOCAL(__cast5_enc_blk16)
 SYM_FUNC_END(__cast5_enc_blk16)
 
 SYM_FUNC_START_LOCAL(__cast5_dec_blk16)
-	/* input:
-	 *	%rdi: ctx
-	 *	RL1: encrypted blocks 1 and 2
-	 *	RR1: encrypted blocks 3 and 4
-	 *	RL2: encrypted blocks 5 and 6
-	 *	RR2: encrypted blocks 7 and 8
-	 *	RL3: encrypted blocks 9 and 10
-	 *	RR3: encrypted blocks 11 and 12
-	 *	RL4: encrypted blocks 13 and 14
-	 *	RR4: encrypted blocks 15 and 16
-	 * output:
-	 *	RL1: decrypted blocks 1 and 2
-	 *	RR1: decrypted blocks 3 and 4
-	 *	RL2: decrypted blocks 5 and 6
-	 *	RR2: decrypted blocks 7 and 8
-	 *	RL3: decrypted blocks 9 and 10
-	 *	RR3: decrypted blocks 11 and 12
-	 *	RL4: decrypted blocks 13 and 14
-	 *	RR4: decrypted blocks 15 and 16
-	 */
+	
 
 	pushq %r15;
 	pushq %rbx;
@@ -362,11 +315,7 @@ SYM_FUNC_START_LOCAL(__cast5_dec_blk16)
 SYM_FUNC_END(__cast5_dec_blk16)
 
 SYM_FUNC_START(cast5_ecb_enc_16way)
-	/* input:
-	 *	%rdi: ctx
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	FRAME_BEGIN
 	pushq %r15;
 
@@ -399,11 +348,7 @@ SYM_FUNC_START(cast5_ecb_enc_16way)
 SYM_FUNC_END(cast5_ecb_enc_16way)
 
 SYM_FUNC_START(cast5_ecb_dec_16way)
-	/* input:
-	 *	%rdi: ctx
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 
 	FRAME_BEGIN
 	pushq %r15;
@@ -437,11 +382,7 @@ SYM_FUNC_START(cast5_ecb_dec_16way)
 SYM_FUNC_END(cast5_ecb_dec_16way)
 
 SYM_FUNC_START(cast5_cbc_dec_16way)
-	/* input:
-	 *	%rdi: ctx
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	FRAME_BEGIN
 	pushq %r12;
 	pushq %r15;
@@ -461,7 +402,7 @@ SYM_FUNC_START(cast5_cbc_dec_16way)
 
 	call __cast5_dec_blk16;
 
-	/* xor with src */
+	
 	vmovq (%r12), RX;
 	vpshufd $0x4f, RX, RX;
 	vpxor RX, RR1, RR1;
@@ -489,12 +430,7 @@ SYM_FUNC_START(cast5_cbc_dec_16way)
 SYM_FUNC_END(cast5_cbc_dec_16way)
 
 SYM_FUNC_START(cast5_ctr_16way)
-	/* input:
-	 *	%rdi: ctx
-	 *	%rsi: dst
-	 *	%rdx: src
-	 *	%rcx: iv (big endian, 64bit)
-	 */
+	
 	FRAME_BEGIN
 	pushq %r12;
 	pushq %r15;
@@ -504,43 +440,43 @@ SYM_FUNC_START(cast5_ctr_16way)
 	movq %rdx, %r12;
 
 	vpcmpeqd RTMP, RTMP, RTMP;
-	vpsrldq $8, RTMP, RTMP; /* low: -1, high: 0 */
+	vpsrldq $8, RTMP, RTMP; 
 
 	vpcmpeqd RKR, RKR, RKR;
-	vpaddq RKR, RKR, RKR; /* low: -2, high: -2 */
+	vpaddq RKR, RKR, RKR; 
 	vmovdqa .Lbswap_iv_mask(%rip), R1ST;
 	vmovdqa .Lbswap128_mask(%rip), RKM;
 
-	/* load IV and byteswap */
+	
 	vmovq (%rcx), RX;
 	vpshufb R1ST, RX, RX;
 
-	/* construct IVs */
-	vpsubq RTMP, RX, RX;  /* le: IV1, IV0 */
-	vpshufb RKM, RX, RL1; /* be: IV0, IV1 */
+	
+	vpsubq RTMP, RX, RX;  
+	vpshufb RKM, RX, RL1; 
 	vpsubq RKR, RX, RX;
-	vpshufb RKM, RX, RR1; /* be: IV2, IV3 */
+	vpshufb RKM, RX, RR1; 
 	vpsubq RKR, RX, RX;
-	vpshufb RKM, RX, RL2; /* be: IV4, IV5 */
+	vpshufb RKM, RX, RL2; 
 	vpsubq RKR, RX, RX;
-	vpshufb RKM, RX, RR2; /* be: IV6, IV7 */
+	vpshufb RKM, RX, RR2; 
 	vpsubq RKR, RX, RX;
-	vpshufb RKM, RX, RL3; /* be: IV8, IV9 */
+	vpshufb RKM, RX, RL3; 
 	vpsubq RKR, RX, RX;
-	vpshufb RKM, RX, RR3; /* be: IV10, IV11 */
+	vpshufb RKM, RX, RR3; 
 	vpsubq RKR, RX, RX;
-	vpshufb RKM, RX, RL4; /* be: IV12, IV13 */
+	vpshufb RKM, RX, RL4; 
 	vpsubq RKR, RX, RX;
-	vpshufb RKM, RX, RR4; /* be: IV14, IV15 */
+	vpshufb RKM, RX, RR4; 
 
-	/* store last IV */
-	vpsubq RTMP, RX, RX; /* le: IV16, IV14 */
-	vpshufb R1ST, RX, RX; /* be: IV16, IV16 */
+	
+	vpsubq RTMP, RX, RX; 
+	vpshufb R1ST, RX, RX; 
 	vmovq RX, (%rcx);
 
 	call __cast5_enc_blk16;
 
-	/* dst = src ^ iv */
+	
 	vpxor (0*16)(%r12), RR1, RR1;
 	vpxor (1*16)(%r12), RL1, RL1;
 	vpxor (2*16)(%r12), RR2, RR2;

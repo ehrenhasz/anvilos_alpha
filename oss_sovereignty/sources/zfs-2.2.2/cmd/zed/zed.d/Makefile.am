@@ -53,5 +53,5 @@ zed-install-data-hook:
 
 SHELLCHECKSCRIPTS += $(dist_zedconf_DATA) $(dist_zedexec_SCRIPTS) $(nodist_zedexec_SCRIPTS)
 $(call SHELLCHECK_OPTS,$(dist_zedconf_DATA) $(dist_zedexec_SCRIPTS) $(nodist_zedexec_SCRIPTS)): SHELLCHECK_SHELL = sh
-# False positive: 1>&"${ZED_FLOCK_FD}" looks suspiciously similar to a >&filename bash extension
+
 $(call SHELLCHECK_OPTS,$(dist_zedconf_DATA) $(dist_zedexec_SCRIPTS) $(nodist_zedexec_SCRIPTS)): CHECKBASHISMS_IGNORE = -e 'should be >word 2>&1' -e '&"$${ZED_FLOCK_FD}"'

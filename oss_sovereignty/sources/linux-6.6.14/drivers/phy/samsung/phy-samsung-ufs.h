@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * UFS PHY driver for Samsung EXYNOS SoC
- *
- * Copyright (C) 2020 Samsung Electronics Co., Ltd.
- * Author: Seungwon Jeon <essuuj@gmail.com>
- * Author: Alim Akhtar <alim.akhtar@samsung.com>
- *
- */
+
+
 #ifndef _PHY_SAMSUNG_UFS_
 #define _PHY_SAMSUNG_UFS_
 
@@ -38,27 +31,27 @@
 #define PHY_TRSV_REG_CFG(o, v, d)	\
 	PHY_TRSV_REG_CFG_OFFSET(o, v, d, PHY_TRSV_CH_OFFSET)
 
-/* UFS PHY registers */
+
 #define PHY_PLL_LOCK_STATUS	0x1e
 
 #define PHY_PLL_LOCK_BIT	BIT(5)
 #define PHY_CDR_LOCK_BIT	BIT(4)
 
-/* description for PHY calibration */
+
 enum {
-	/* applicable to any */
+	
 	PWR_DESC_ANY	= 0,
-	/* mode */
+	
 	PWR_DESC_PWM	= 1,
 	PWR_DESC_HS	= 2,
-	/* series */
+	
 	PWR_DESC_SER_A	= 1,
 	PWR_DESC_SER_B	= 2,
-	/* gear */
+	
 	PWR_DESC_G1	= 1,
 	PWR_DESC_G2	= 2,
 	PWR_DESC_G3	= 3,
-	/* field mask */
+	
 	MD_MASK		= 0x3,
 	SR_MASK		= 0x3,
 	GR_MASK		= 0x7,
@@ -83,7 +76,7 @@ enum {
 					 PWR_DESC_ANY, PWR_DESC_HS)
 #define PWR_MODE_ANY		PWR_MODE(PWR_DESC_ANY,\
 					 PWR_DESC_ANY, PWR_DESC_ANY)
-/* PHY calibration point/state */
+
 enum {
 	CFG_PRE_INIT,
 	CFG_POST_INIT,
@@ -143,4 +136,4 @@ extern const struct samsung_ufs_phy_drvdata exynos7_ufs_phy;
 extern const struct samsung_ufs_phy_drvdata exynosautov9_ufs_phy;
 extern const struct samsung_ufs_phy_drvdata fsd_ufs_phy;
 
-#endif /* _PHY_SAMSUNG_UFS_ */
+#endif 

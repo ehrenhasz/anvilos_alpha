@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __BCM47XXNFLASH_H
 #define __BCM47XXNFLASH_H
 
@@ -23,4 +23,4 @@ struct bcm47xxnflash {
 
 int bcm47xxnflash_ops_bcm4706_init(struct bcm47xxnflash *b47n);
 
-#endif /* BCM47XXNFLASH */
+#endif 

@@ -1,11 +1,11 @@
-# DO NOT EDIT. This file is generated from Config.src
-#
-# For a description of the syntax of this configuration file,
-# see docs/Kconfig-language.txt.
-#
+
+
+
+
+
 
 config VOLUMEID
-	bool #No description makes it a hidden option
+	bool 
 	default n
 
 menu "Filesystem/Volume identification"
@@ -147,54 +147,54 @@ config FEATURE_VOLUMEID_UDF
 	bool "udf filesystem"
 	default y
 	depends on VOLUMEID
-### config FEATURE_VOLUMEID_HIGHPOINTRAID
-###	bool "highpoint raid"
-###	default y
-###	depends on VOLUMEID
-### config FEATURE_VOLUMEID_HPFS
-###	bool "hpfs filesystem"
-###	default y
-###	depends on VOLUMEID
-### config FEATURE_VOLUMEID_ISWRAID
-###	bool "intel raid"
-###	default y
-###	depends on VOLUMEID
-### config FEATURE_VOLUMEID_LSIRAID
-###	bool "lsi raid"
-###	default y
-###	depends on VOLUMEID
-### config FEATURE_VOLUMEID_LVM
-###	bool "lvm"
-###	default y
-###	depends on VOLUMEID
-### config FEATURE_VOLUMEID_MAC
-###	bool "mac filesystem"
-###	default y
-###	depends on VOLUMEID
-### config FEATURE_VOLUMEID_MSDOS
-###	bool "msdos filesystem"
-###	default y
-###	depends on VOLUMEID
-### config FEATURE_VOLUMEID_NVIDIARAID
-###	bool "nvidia raid"
-###	default y
-###	depends on VOLUMEID
-### config FEATURE_VOLUMEID_PROMISERAID
-###	bool "promise raid"
-###	default y
-###	depends on VOLUMEID
-### config FEATURE_VOLUMEID_SILICONRAID
-###	bool "silicon raid"
-###	default y
-###	depends on VOLUMEID
-### config FEATURE_VOLUMEID_UFS
-###	bool "ufs filesystem"
-###	default y
-###	depends on VOLUMEID
-### config FEATURE_VOLUMEID_VIARAID
-###	bool "via raid"
-###	default y
-###	depends on VOLUMEID
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 config FEATURE_VOLUMEID_XFS
 	bool "xfs filesystem"
 	default y

@@ -1,9 +1,0 @@
-#include "ulcb-kf-audio-graph-card.dtsi"
-&sound_card {
-	/delete-property/ dais;
-	links = <&rsnd_port0	 
-		 &rsnd_port1	 
-		 &rsnd_port2	 
-		 &rsnd_port3	 
-		>;
-};

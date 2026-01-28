@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# SoC
+
+
 obj-$(CONFIG_SYSC_R8A7742)	+= r8a7742-sysc.o
 obj-$(CONFIG_SYSC_R8A7743)	+= r8a7743-sysc.o
 obj-$(CONFIG_SYSC_R8A7745)	+= r8a7745-sysc.o
@@ -24,7 +24,7 @@ obj-$(CONFIG_SYSC_R8A77995)	+= r8a77995-sysc.o
 obj-$(CONFIG_SYSC_R8A779A0)	+= r8a779a0-sysc.o
 obj-$(CONFIG_SYSC_R8A779F0)	+= r8a779f0-sysc.o
 obj-$(CONFIG_SYSC_R8A779G0)	+= r8a779g0-sysc.o
-# Family
+
 obj-$(CONFIG_SYSC_RCAR)		+= rcar-sysc.o
 obj-$(CONFIG_SYSC_RCAR_GEN4)	+= rcar-gen4-sysc.o
 obj-$(CONFIG_SYSC_RMOBILE)	+= rmobile-sysc.o

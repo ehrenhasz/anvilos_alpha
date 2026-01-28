@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the National Semiconductor Sonic devices.
-#
+
+
+
+
 
 obj-$(CONFIG_MACSONIC) += macsonic.o
 obj-$(CONFIG_MIPS_JAZZ_SONIC) += jazzsonic.o

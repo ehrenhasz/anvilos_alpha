@@ -61,7 +61,7 @@ def main(repo_path, output_path):
                 with open(board_markdown, "r") as fin:
                     f.write(fin.read())
             if blob["deploy"]:
-                f.write("\n\n## Installation instructions\n")
+                f.write("\n\n
             for deploy in blob["deploy"]:
                 with open(os.path.join(board_dir, deploy), "r") as fin:
                     f.write(fin.read())

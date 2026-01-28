@@ -1022,8 +1022,8 @@ do_test_address_proto()
 {
 	local what=$1; shift
 	local addr=$1; shift
-	local addr2=${addr%/*}2/${addr#*/}
-	local addr3=${addr%/*}3/${addr#*/}
+	local addr2=${addr%/*}2/${addr
+	local addr3=${addr%/*}3/${addr
 	local proto
 	local count
 	local ret=0
@@ -1050,19 +1050,19 @@ do_test_address_proto()
 	check_err $?
 	count=$(address_count)
 	check_err $?
-	(( count >= 3 )) # $addr, $addr2 and $addr3 plus any kernel addresses
+	(( count >= 3 )) 
 	check_err $?
 	count=$(address_count proto 0)
 	check_err $?
-	(( count == 1 )) # just $addr3
+	(( count == 1 )) 
 	check_err $?
 	count=$(address_count proto 0x11)
 	check_err $?
-	(( count == 2 )) # $addr and $addr3
+	(( count == 2 )) 
 	check_err $?
 	count=$(address_count proto 0xab)
 	check_err $?
-	(( count == 1 )) # just $addr3
+	(( count == 1 )) 
 	check_err $?
 	ip address del dev "$devdummy" "$addr"
 	ip address del dev "$devdummy" "$addr2"
@@ -1101,7 +1101,7 @@ kci_test_rtnl()
 usage()
 {
 	cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
         -t <test>   Test(s) to run (default: all)
                     (options: $(echo $ALL_TESTS))
 EOF

@@ -1,14 +1,10 @@
-/* vi: set sw=4 ts=4: */
-/*
- * Copyright 2006, Bernhard Reutner-Fischer
- *
- * Licensed under GPLv2 or later, see file LICENSE in this source tree.
- */
+
+
 #ifndef BB_PLATFORM_H
 #define BB_PLATFORM_H 1
 
 
-/* Convenience macros to test the version of gcc. */
+
 #undef __GNUC_PREREQ
 #if defined __GNUC__ && defined __GNUC_MINOR__
 # define __GNUC_PREREQ(maj, min) \
@@ -17,7 +13,7 @@
 # define __GNUC_PREREQ(maj, min) 0
 #endif
 
-/* __restrict is known in EGCS 1.2 and above. */
+
 #if !__GNUC_PREREQ(2,92)
 # ifndef __restrict
 #  define __restrict
@@ -36,7 +32,7 @@
 
 #undef inline
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ > 199901L
-/* it's a keyword */
+
 #elif __GNUC_PREREQ(2,7)
 # define inline __inline__
 #else
@@ -56,22 +52,15 @@
 # define bb_unreachable(altcode) altcode
 #endif
 
-/* "The malloc attribute is used to tell the compiler that a function
- * may be treated as if any non-NULL pointer it returns cannot alias
- * any other pointer valid when the function returns. This will often
- * improve optimization. Standard functions with this property include
- * malloc and calloc. realloc-like functions have this property as long
- * as the old pointer is never referred to (including comparing it
- * to the new pointer) after the function returns a non-NULL value."
- */
+
 #define RETURNS_MALLOC __attribute__ ((malloc))
 #define PACKED __attribute__ ((__packed__))
 #define ALIGNED(m) __attribute__ ((__aligned__(m)))
 
-/* __NO_INLINE__: some gcc's do not honor inlining! :( */
+
 #if __GNUC_PREREQ(3,0) && !defined(__NO_INLINE__)
 # define ALWAYS_INLINE __attribute__ ((always_inline)) inline
-/* I've seen a toolchain where I needed __noinline__ instead of noinline */
+
 # define NOINLINE      __attribute__((__noinline__))
 # if !ENABLE_WERROR
 #  define DEPRECATED __attribute__ ((__deprecated__))
@@ -87,54 +76,44 @@
 # define UNUSED_PARAM_RESULT
 #endif
 
-/* used by unit test machinery to run registration functions before calling main() */
+
 #define INIT_FUNC __attribute__ ((constructor))
 
-/* -fwhole-program makes all symbols local. The attribute externally_visible
- * forces a symbol global.  */
+
 #if __GNUC_PREREQ(4,1)
 # define EXTERNALLY_VISIBLE __attribute__(( visibility("default") ))
-//__attribute__ ((__externally_visible__))
+
 #else
 # define EXTERNALLY_VISIBLE
 #endif
 
-/* At 4.4 gcc become much more anal about this, need to use "aliased" types */
+
 #if __GNUC_PREREQ(4,4)
 # define FIX_ALIASING __attribute__((__may_alias__))
 #else
 # define FIX_ALIASING
 #endif
 
-/* We use __extension__ in some places to suppress -pedantic warnings
- * about GCC extensions.  This feature didn't work properly before
- * gcc 2.8.  */
+
 #if !__GNUC_PREREQ(2,8)
 # ifndef __extension__
 #  define __extension__
 # endif
 #endif
 
-/* FAST_FUNC is a qualifier which (possibly) makes function call faster
- * and/or smaller by using modified ABI. It is usually only needed
- * on non-static, busybox internal functions. Recent versions of gcc
- * optimize statics automatically. FAST_FUNC on static is required
- * only if you need to match a function pointer's type.
- * FAST_FUNC may not work well with -flto so allow user to disable this.
- * (-DFAST_FUNC= )
- */
+
 #ifndef FAST_FUNC
 # if __GNUC_PREREQ(3,0) && defined(i386)
-/* stdcall makes callee to pop arguments from stack, not caller */
+
 #  define FAST_FUNC __attribute__((regparm(3),stdcall))
-/* #elif ... - add your favorite arch today! */
+
 # else
 #  define FAST_FUNC
 # endif
 #endif
 
-/* Make all declarations hidden (-fvisibility flag only affects definitions) */
-/* (don't include system headers after this until corresponding pop!) */
+
+
 #if __GNUC_PREREQ(4,1) && !defined(__CYGWIN__)
 # define PUSH_AND_SET_FUNCTION_VISIBILITY_TO_HIDDEN _Pragma("GCC visibility push(hidden)")
 # define POP_SAVED_FUNCTION_VISIBILITY              _Pragma("GCC visibility pop")
@@ -143,7 +122,7 @@
 # define POP_SAVED_FUNCTION_VISIBILITY
 #endif
 
-/* gcc-2.95 had no va_copy but only __va_copy. */
+
 #if !__GNUC_PREREQ(3,0)
 # include <stdarg.h>
 # if !defined va_copy && defined __va_copy
@@ -152,14 +131,14 @@
 #endif
 
 
-/* ---- Endian Detection ------------------------------------ */
+
 
 #include <limits.h>
 #if defined(__digital__) && defined(__unix__)
 # include <sex.h>
 #elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) \
    || defined(__APPLE__)
-# include <sys/resource.h>  /* rlimit */
+# include <sys/resource.h>  
 # include <machine/endian.h>
 # define bswap_64 __bswap64
 # define bswap_32 __bswap32
@@ -195,11 +174,11 @@
 #endif
 
 #if ULONG_MAX > 0xffffffff
-/* inline 64-bit bswap only on 64-bit arches */
+
 # define bb_bswap_64(x) bswap_64(x)
 #endif
 
-/* SWAP_LEnn means "convert CPU<->little_endian by swapping bytes" */
+
 #if BB_BIG_ENDIAN
 # define SWAP_BE16(x) (x)
 # define SWAP_BE32(x) (x)
@@ -221,7 +200,7 @@
 #endif
 
 
-/* ---- Unaligned access ------------------------------------ */
+
 
 #include <stdint.h>
 typedef int      bb__aliased_int      FIX_ALIASING;
@@ -230,9 +209,7 @@ typedef uint16_t bb__aliased_uint16_t FIX_ALIASING;
 typedef uint32_t bb__aliased_uint32_t FIX_ALIASING;
 typedef uint64_t bb__aliased_uint64_t FIX_ALIASING;
 
-/* NB: unaligned parameter should be a pointer, aligned one -
- * a lvalue. This makes it more likely to not swap them by mistake
- */
+
 #if defined(i386) || defined(__x86_64__) || defined(__powerpc__)
 # define BB_UNALIGNED_MEMACCESS_OK 1
 # define move_from_unaligned_int(v, intp)  ((v) = *(bb__aliased_int*)(intp))
@@ -243,10 +220,10 @@ typedef uint64_t bb__aliased_uint64_t FIX_ALIASING;
 # define move_to_unaligned16(u16p, v)   (*(bb__aliased_uint16_t*)(u16p) = (v))
 # define move_to_unaligned32(u32p, v)   (*(bb__aliased_uint32_t*)(u32p) = (v))
 # define move_to_unaligned64(u64p, v)   (*(bb__aliased_uint64_t*)(u64p) = (v))
-/* #elif ... - add your favorite arch today! */
+
 #else
 # define BB_UNALIGNED_MEMACCESS_OK 0
-/* performs reasonably well (gcc usually inlines memcpy here) */
+
 # define move_from_unaligned_int(v, intp) (memcpy(&(v), (intp), sizeof(int)))
 # define move_from_unaligned_long(v, longp) (memcpy(&(v), (longp), sizeof(long)))
 # define move_from_unaligned16(v, u16p) (memcpy(&(v), (u16p), 2))
@@ -266,41 +243,39 @@ typedef uint64_t bb__aliased_uint64_t FIX_ALIASING;
 } while (0)
 #endif
 
-/* Unaligned, fixed-endian accessors */
+
 #define get_unaligned_le32(buf) ({ uint32_t v; move_from_unaligned32(v, buf); SWAP_LE32(v); })
 #define get_unaligned_be32(buf) ({ uint32_t v; move_from_unaligned32(v, buf); SWAP_BE32(v); })
 #define put_unaligned_le32(val, buf) move_to_unaligned32(buf, SWAP_LE32(val))
 #define put_unaligned_be32(val, buf) move_to_unaligned32(buf, SWAP_BE32(val))
 
-/* unxz needs an aligned fixed-endian accessor.
- * (however, the compiler does not realize it's aligned, the cast is still necessary)
- */
+
 #define get_le32(u32p) ({ uint32_t v = *(bb__aliased_uint32_t*)(u32p); SWAP_LE32(v); })
 
 
-/* ---- Size-saving "small" ints (arch-dependent) ----------- */
+
 
 #if defined(i386) || defined(__x86_64__) || defined(__mips__) || defined(__cris__)
-/* add other arches which benefit from this... */
+
 typedef signed char smallint;
 typedef unsigned char smalluint;
 #else
-/* for arches where byte accesses generate larger code: */
+
 typedef int smallint;
 typedef unsigned smalluint;
 #endif
 
-/* ISO C Standard:  7.16  Boolean type and values  <stdbool.h> */
+
 #if (defined __digital__ && defined __unix__)
-/* old system without (proper) C99 support */
+
 # define bool smalluint
 #else
-/* modern system, so use it */
+
 # include <stdbool.h>
 #endif
 
 
-/*----- Kernel versioning ------------------------------------*/
+
 
 #define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))
 
@@ -311,7 +286,7 @@ typedef unsigned smalluint;
 #endif
 
 
-/* ---- Miscellaneous --------------------------------------- */
+
 
 #if defined __GLIBC__ \
  || defined __UCLIBC__ \
@@ -321,26 +296,26 @@ typedef unsigned smalluint;
 # include <features.h>
 #endif
 
-/* Define bb_setpgrp */
+
 #if (defined(__digital__) && defined(__unix__)) || defined(__FreeBSD__)
-/* use legacy setpgrp(pid_t, pid_t) for now.  move to platform.c */
+
 # define bb_setpgrp() do { pid_t __me = getpid(); setpgrp(__me, __me); } while (0)
 #else
 # define bb_setpgrp() setpgrp()
 #endif
 
-/* fdprintf is more readable, we used it before dprintf was standardized */
+
 #include <unistd.h>
 #define fdprintf dprintf
 
-/* Useful for defeating gcc's alignment of "char message[]"-like data */
+
 #if !defined(__s390__)
-    /* on s390[x], non-word-aligned data accesses require larger code */
+    
 # define ALIGN1 __attribute__((aligned(1)))
 # define ALIGN2 __attribute__((aligned(2)))
 # define ALIGN4 __attribute__((aligned(4)))
 #else
-/* Arches which MUST have 2 or 4 byte alignment for everything are here */
+
 # define ALIGN1
 # define ALIGN2
 # define ALIGN4
@@ -349,11 +324,7 @@ typedef unsigned smalluint;
 #define ALIGN_INT  __attribute__((aligned(sizeof(int))))
 #define ALIGN_PTR  __attribute__((aligned(sizeof(void*))))
 
-/*
- * For 0.9.29 and svn, __ARCH_USE_MMU__ indicates no-mmu reliably.
- * For earlier versions there is no reliable way to check if we are building
- * for a mmu-less system.
- */
+
 #if ENABLE_NOMMU || \
     (defined __UCLIBC__ && \
      UCLIBC_VERSION > KERNEL_VERSION(0, 9, 28) && \
@@ -396,11 +367,9 @@ typedef unsigned smalluint;
 #endif
 
 
-/* ---- Who misses what? ------------------------------------ */
 
-/* Assume all these functions and header files exist by default.
- * Platforms where it is not true will #undef them below.
- */
+
+
 #define HAVE_CLEARENV 1
 #define HAVE_FDATASYNC 1
 #define HAVE_DPRINTF 1
@@ -471,7 +440,7 @@ typedef unsigned smalluint;
 # undef HAVE_UNLOCKED_LINE_OPS
 #endif
 
-/* These BSD-derived OSes share many similarities */
+
 #if (defined __digital__ && defined __unix__) \
  || defined __APPLE__ \
  || defined __OpenBSD__ || defined __NetBSD__
@@ -499,7 +468,7 @@ typedef unsigned smalluint;
 #endif
 
 #if defined(__FreeBSD__)
-/* users say mempcpy is not present in FreeBSD 9.x */
+
 # undef HAVE_MEMPCPY
 # undef HAVE_CLEARENV
 # undef HAVE_FDATASYNC
@@ -513,12 +482,12 @@ typedef unsigned smalluint;
 # undef HAVE_PRINTF_PERCENTM
 # include <osreldate.h>
 # if __FreeBSD_version < 1000029
-#  undef HAVE_STRCHRNUL /* FreeBSD added strchrnul() between 1000028 and 1000029 */
+#  undef HAVE_STRCHRNUL 
 # endif
 #endif
 
 #if defined(__NetBSD__)
-# define HAVE_GETLINE 1  /* Recent NetBSD versions have getline() */
+# define HAVE_GETLINE 1  
 #endif
 
 #if defined(__digital__) && defined(__unix__)
@@ -528,13 +497,13 @@ typedef unsigned smalluint;
 
 #if defined(ANDROID) || defined(__ANDROID__)
 # if __ANDROID_API__ < 8
-   /* ANDROID < 8 has no [f]dprintf at all */
+   
 #  undef HAVE_DPRINTF
 # elif __ANDROID_API__ < 21
-   /* ANDROID < 21 has fdprintf */
+   
 #  define dprintf fdprintf
 # else
-   /* ANDROID >= 21 has standard dprintf */
+   
 # endif
 # if __ANDROID_API__ < 21
 #  undef HAVE_TTYNAME_R
@@ -553,10 +522,7 @@ typedef unsigned smalluint;
 # undef HAVE_PRINTF_PERCENTM
 #endif
 
-/*
- * Now, define prototypes for all the functions defined in platform.c
- * These must come after all the HAVE_* macros are defined (or not)
- */
+
 
 #ifndef HAVE_DPRINTF
 extern int dprintf(int fd, const char *format, ...);
@@ -594,9 +560,7 @@ extern char *stpncpy(char *p, const char *to_add, size_t n) FAST_FUNC;
 
 #ifndef HAVE_MEMPCPY
 #include <string.h>
-/* In case we are wrong about !HAVE_MEMPCPY, and toolchain _does_ have
- * mempcpy(), avoid colliding with it:
- */
+
 #define mempcpy bb__mempcpy
 static ALWAYS_INLINE void *mempcpy(void *dest, const void *src, size_t len)
 {
@@ -617,7 +581,7 @@ extern char *strsep(char **stringp, const char *delim) FAST_FUNC;
 #endif
 
 #ifndef HAVE_STRSIGNAL
-/* Not exactly the same: instead of "Stopped" it shows "STOP" etc */
+
 # define strsignal(sig) get_signame(sig)
 #endif
 
@@ -630,8 +594,8 @@ extern int vasprintf(char **string_ptr, const char *format, va_list p) FAST_FUNC
 #endif
 
 #ifndef HAVE_GETLINE
-# include <stdio.h> /* for FILE */
-# include <sys/types.h> /* size_t */
+# include <stdio.h> 
+# include <sys/types.h> 
 extern ssize_t getline(char **lineptr, size_t *n, FILE *stream) FAST_FUNC;
 #endif
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef BOOT_COMPRESSED_EFI_H
 #define BOOT_COMPRESSED_EFI_H
 
@@ -21,9 +21,7 @@ typedef guid_t efi_guid_t __aligned(__alignof__(u32));
 #define EFI32_LOADER_SIGNATURE	"EL32"
 #define EFI64_LOADER_SIGNATURE	"EL64"
 
-/*
- * Generic EFI table header
- */
+
 typedef	struct {
 	u64 signature;
 	u32 revision;
@@ -36,8 +34,8 @@ typedef	struct {
 #define EFI_UNACCEPTED_MEMORY		15
 
 #define EFI_MEMORY_MORE_RELIABLE \
-				((u64)0x0000000000010000ULL)	/* higher reliability */
-#define EFI_MEMORY_SP		((u64)0x0000000000040000ULL)	/* soft reserved */
+				((u64)0x0000000000010000ULL)	
+#define EFI_MEMORY_SP		((u64)0x0000000000040000ULL)	
 
 #define EFI_PAGE_SHIFT		12
 
@@ -65,7 +63,7 @@ typedef struct {
 
 typedef struct {
 	efi_table_hdr_t hdr;
-	u64 fw_vendor;	/* physical addr of CHAR16 vendor string */
+	u64 fw_vendor;	
 	u32 fw_revision;
 	u32 __pad1;
 	u64 con_in_handle;
@@ -83,7 +81,7 @@ typedef struct {
 
 typedef struct {
 	efi_table_hdr_t hdr;
-	u32 fw_vendor;	/* physical addr of CHAR16 vendor string */
+	u32 fw_vendor;	
 	u32 fw_revision;
 	u32 con_in_handle;
 	u32 con_in;
@@ -97,7 +95,7 @@ typedef struct {
 	u32 tables;
 } efi_system_table_32_t;
 
-/* kexec external ABI */
+
 struct efi_setup_data {
 	u64 fw_vendor;
 	u64 __unused;
@@ -132,5 +130,5 @@ static inline bool efi_soft_reserve_enabled(void)
 {
 	return false;
 }
-#endif /* CONFIG_EFI */
-#endif /* BOOT_COMPRESSED_EFI_H */
+#endif 
+#endif 

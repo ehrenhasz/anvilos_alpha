@@ -32,7 +32,7 @@ struct filter_entry {
 	char			name[];
 };
 
-#define NUM_BUCKET  22  /* 20 + 2 (for outliers in both direction) */
+#define NUM_BUCKET  22  
 
 #ifdef HAVE_BPF_SKEL
 
@@ -43,7 +43,7 @@ int perf_ftrace__latency_read_bpf(struct perf_ftrace *ftrace,
 				  int buckets[]);
 int perf_ftrace__latency_cleanup_bpf(struct perf_ftrace *ftrace);
 
-#else  /* !HAVE_BPF_SKEL */
+#else  
 
 static inline int
 perf_ftrace__latency_prepare_bpf(struct perf_ftrace *ftrace __maybe_unused)
@@ -76,6 +76,6 @@ perf_ftrace__latency_cleanup_bpf(struct perf_ftrace *ftrace __maybe_unused)
 	return -1;
 }
 
-#endif  /* HAVE_BPF_SKEL */
+#endif  
 
-#endif  /* __PERF_FTRACE_H__ */
+#endif  

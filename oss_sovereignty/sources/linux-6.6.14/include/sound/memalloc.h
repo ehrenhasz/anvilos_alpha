@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *                   Takashi Iwai <tiwai@suse.de>
- * 
- *  Generic memory allocators
- */
+
+
 
 #ifndef __SOUND_MEMALLOC_H
 #define __SOUND_MEMALLOC_H
@@ -16,64 +11,56 @@ struct device;
 struct vm_area_struct;
 struct sg_table;
 
-/*
- * buffer device info
- */
+
 struct snd_dma_device {
-	int type;			/* SNDRV_DMA_TYPE_XXX */
-	enum dma_data_direction dir;	/* DMA direction */
-	bool need_sync;			/* explicit sync needed? */
-	struct device *dev;		/* generic device */
+	int type;			
+	enum dma_data_direction dir;	
+	bool need_sync;			
+	struct device *dev;		
 };
 
-/*
- * buffer types
- */
-#define SNDRV_DMA_TYPE_UNKNOWN		0	/* not defined */
-#define SNDRV_DMA_TYPE_CONTINUOUS	1	/* continuous no-DMA memory */
-#define SNDRV_DMA_TYPE_DEV		2	/* generic device continuous */
-#define SNDRV_DMA_TYPE_DEV_WC		5	/* continuous write-combined */
+
+#define SNDRV_DMA_TYPE_UNKNOWN		0	
+#define SNDRV_DMA_TYPE_CONTINUOUS	1	
+#define SNDRV_DMA_TYPE_DEV		2	
+#define SNDRV_DMA_TYPE_DEV_WC		5	
 #ifdef CONFIG_GENERIC_ALLOCATOR
-#define SNDRV_DMA_TYPE_DEV_IRAM		4	/* generic device iram-buffer */
+#define SNDRV_DMA_TYPE_DEV_IRAM		4	
 #else
 #define SNDRV_DMA_TYPE_DEV_IRAM	SNDRV_DMA_TYPE_DEV
 #endif
-#define SNDRV_DMA_TYPE_VMALLOC		7	/* vmalloc'ed buffer */
-#define SNDRV_DMA_TYPE_NONCONTIG	8	/* non-coherent SG buffer */
-#define SNDRV_DMA_TYPE_NONCOHERENT	9	/* non-coherent buffer */
+#define SNDRV_DMA_TYPE_VMALLOC		7	
+#define SNDRV_DMA_TYPE_NONCONTIG	8	
+#define SNDRV_DMA_TYPE_NONCOHERENT	9	
 #ifdef CONFIG_SND_DMA_SGBUF
 #define SNDRV_DMA_TYPE_DEV_SG		SNDRV_DMA_TYPE_NONCONTIG
-#define SNDRV_DMA_TYPE_DEV_WC_SG	6	/* SG write-combined */
+#define SNDRV_DMA_TYPE_DEV_WC_SG	6	
 #else
-#define SNDRV_DMA_TYPE_DEV_SG	SNDRV_DMA_TYPE_DEV /* no SG-buf support */
+#define SNDRV_DMA_TYPE_DEV_SG	SNDRV_DMA_TYPE_DEV 
 #define SNDRV_DMA_TYPE_DEV_WC_SG	SNDRV_DMA_TYPE_DEV_WC
 #endif
-/* fallback types, don't use those directly */
+
 #ifdef CONFIG_SND_DMA_SGBUF
 #define SNDRV_DMA_TYPE_DEV_SG_FALLBACK		10
 #define SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK	11
 #endif
 
-/*
- * info for buffer allocation
- */
+
 struct snd_dma_buffer {
-	struct snd_dma_device dev;	/* device type */
-	unsigned char *area;	/* virtual pointer */
-	dma_addr_t addr;	/* physical address */
-	size_t bytes;		/* buffer size in bytes */
-	void *private_data;	/* private for allocator; don't touch */
+	struct snd_dma_device dev;	
+	unsigned char *area;	
+	dma_addr_t addr;	
+	size_t bytes;		
+	void *private_data;	
 };
 
-/*
- * return the pages matching with the given byte size
- */
+
 static inline unsigned int snd_sgbuf_aligned_pages(size_t size)
 {
 	return (size + PAGE_SIZE - 1) >> PAGE_SHIFT;
 }
 
-/* allocate/release a buffer */
+
 int snd_dma_alloc_dir_pages(int type, struct device *dev,
 			    enum dma_data_direction dir, size_t size,
 			    struct snd_dma_buffer *dmab);
@@ -104,7 +91,7 @@ struct page *snd_sgbuf_get_page(struct snd_dma_buffer *dmab, size_t offset);
 unsigned int snd_sgbuf_get_chunk_size(struct snd_dma_buffer *dmab,
 				      unsigned int ofs, unsigned int size);
 
-/* device-managed memory allocator */
+
 struct snd_dma_buffer *snd_devm_alloc_dir_pages(struct device *dev, int type,
 						enum dma_data_direction dir,
 						size_t size);
@@ -121,5 +108,5 @@ snd_dma_noncontig_sg_table(struct snd_dma_buffer *dmab)
 	return dmab->private_data;
 }
 
-#endif /* __SOUND_MEMALLOC_H */
+#endif 
 

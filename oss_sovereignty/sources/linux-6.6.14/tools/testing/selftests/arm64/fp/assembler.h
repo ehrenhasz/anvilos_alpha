@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2015-2019 ARM Limited.
-// Original author: Dave Martin <Dave.Martin@arm.com>
+
+
+
 
 #ifndef ASSEMBLER_H
 #define ASSEMBLER_H
@@ -54,8 +54,8 @@ endfunction
 	.purgem \name\()_entry
 .endm
 
-// Utility macro to print a literal string
-// Clobbers x0-x4,x8
+
+
 .macro puts string
 	.pushsection .rodata.str1.1, "aMS", @progbits, 1
 .L__puts_literal\@: .string "\string"
@@ -65,4 +65,4 @@ endfunction
 	bl	puts
 .endm
 
-#endif /* ! ASSEMBLER_H */
+#endif 

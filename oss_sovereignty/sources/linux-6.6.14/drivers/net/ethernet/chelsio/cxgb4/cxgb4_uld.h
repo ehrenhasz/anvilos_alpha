@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio T4 Ethernet driver for Linux.
- *
- * Copyright (c) 2003-2016 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
 
 #ifndef __CXGB4_ULD_H
 #define __CXGB4_ULD_H
@@ -46,17 +14,17 @@
 #define MAX_ULD_QSETS 16
 #define MAX_ULD_NPORTS 4
 
-/* ulp_mem_io + ulptx_idata + payload + padding */
+
 #define MAX_IMM_ULPTX_WR_LEN (32 + 8 + 256 + 8)
 
-/* CPL message priority levels */
+
 enum {
-	CPL_PRIORITY_DATA     = 0,  /* data messages */
-	CPL_PRIORITY_SETUP    = 1,  /* connection setup messages */
-	CPL_PRIORITY_TEARDOWN = 0,  /* connection teardown messages */
-	CPL_PRIORITY_LISTEN   = 1,  /* listen start/stop messages */
-	CPL_PRIORITY_ACK      = 1,  /* RX ACK messages */
-	CPL_PRIORITY_CONTROL  = 1   /* control messages */
+	CPL_PRIORITY_DATA     = 0,  
+	CPL_PRIORITY_SETUP    = 1,  
+	CPL_PRIORITY_TEARDOWN = 0,  
+	CPL_PRIORITY_LISTEN   = 1,  
+	CPL_PRIORITY_ACK      = 1,  
+	CPL_PRIORITY_CONTROL  = 1   
 };
 
 #define INIT_TP_WR(w, tid) do { \
@@ -80,7 +48,7 @@ enum {
 	(w)->wr.wr_lo = cpu_to_be64(0); \
 } while (0)
 
-/* Special asynchronous notification message */
+
 #define CXGB4_MSG_AN ((void *)1)
 #define TX_ULD(uld)(((uld) != CXGB4_ULD_CRYPTO) ? CXGB4_TX_OFLD :\
 		      CXGB4_TX_CRYPTO)
@@ -98,10 +66,7 @@ struct eotid_entry {
 	void *data;
 };
 
-/*
- * Holds the size, base address, free list start, etc of the TID, server TID,
- * and active-open TID tables.  The tables themselves are allocated dynamically.
- */
+
 struct tid_info {
 	void **tid_tab;
 	unsigned int tid_base;
@@ -130,7 +95,7 @@ struct tid_info {
 	unsigned int ftid_base;
 	unsigned int aftid_base;
 	unsigned int aftid_end;
-	/* Server filter region */
+	
 	unsigned int sftid_base;
 	unsigned int nsftids;
 
@@ -143,21 +108,21 @@ struct tid_info {
 	unsigned int v6_stids_in_use;
 	unsigned int sftids_in_use;
 
-	/* ETHOFLD range */
+	
 	struct eotid_entry *eotid_tab;
 	unsigned long *eotid_bmap;
 	unsigned int eotid_base;
 	unsigned int neotids;
 
-	/* TIDs in the TCAM */
+	
 	atomic_t tids_in_use;
-	/* TIDs in the HASH */
+	
 	atomic_t hash_tids_in_use;
 	atomic_t conns_in_use;
-	/* ETHOFLD TIDs used for rate limiting */
+	
 	atomic_t eotids_in_use;
 
-	/* lock for setting/clearing filter bitmap */
+	
 	spinlock_t ftid_lock;
 
 	unsigned int tc_hash_tids_max_prio;
@@ -181,7 +146,7 @@ static inline void *lookup_atid(const struct tid_info *t, unsigned int atid)
 
 static inline void *lookup_stid(const struct tid_info *t, unsigned int stid)
 {
-	/* Is it a server filter TID? */
+	
 	if (t->nsftids && (stid >= t->sftid_base)) {
 		stid -= t->sftid_base;
 		stid += t->nstids;
@@ -265,14 +230,12 @@ int cxgb4_create_server_filter(const struct net_device *dev, unsigned int stid,
 int cxgb4_remove_server_filter(const struct net_device *dev, unsigned int stid,
 			       unsigned int queue, bool ipv6);
 
-/* Filter operation context to allow callers of cxgb4_set_filter() and
- * cxgb4_del_filter() to wait for an asynchronous completion.
- */
+
 struct filter_ctx {
-	struct completion completion;	/* completion rendezvous */
-	void *closure;			/* caller's opaque information */
-	int result;			/* result of operation */
-	u32 tid;			/* to store tid */
+	struct completion completion;	
+	void *closure;			
+	int result;			
+	u32 tid;			
 };
 
 struct chcr_ktls {
@@ -353,7 +316,7 @@ struct cxgb4_range {
 	unsigned int size;
 };
 
-struct cxgb4_virt_res {                      /* virtualized HW resources */
+struct cxgb4_virt_res {                      
 	struct cxgb4_range ddp;
 	struct cxgb4_range iscsi;
 	struct cxgb4_range stag;
@@ -416,58 +379,56 @@ struct ch_ipsec_stats_debug {
 #define OCQ_WIN_OFFSET(pdev, vres) \
 	(pci_resource_len((pdev), 2) - roundup_pow_of_two((vres)->ocq.size))
 
-/*
- * Block of information the LLD provides to ULDs attaching to a device.
- */
+
 struct cxgb4_lld_info {
-	struct pci_dev *pdev;                /* associated PCI device */
-	struct l2t_data *l2t;                /* L2 table */
-	struct tid_info *tids;               /* TID table */
-	struct net_device **ports;           /* device ports */
-	const struct cxgb4_virt_res *vr;     /* assorted HW resources */
-	const unsigned short *mtus;          /* MTU table */
-	const unsigned short *rxq_ids;       /* the ULD's Rx queue ids */
-	const unsigned short *ciq_ids;       /* the ULD's concentrator IQ ids */
-	unsigned short nrxq;                 /* # of Rx queues */
-	unsigned short ntxq;                 /* # of Tx queues */
-	unsigned short nciq;		     /* # of concentrator IQ */
-	unsigned char nchan:4;               /* # of channels */
-	unsigned char nports:4;              /* # of ports */
-	unsigned char wr_cred;               /* WR 16-byte credits */
-	unsigned char adapter_type;          /* type of adapter */
-	unsigned char fw_api_ver;            /* FW API version */
-	unsigned char crypto;                /* crypto support */
-	unsigned int fw_vers;                /* FW version */
-	unsigned int iscsi_iolen;            /* iSCSI max I/O length */
-	unsigned int cclk_ps;                /* Core clock period in psec */
-	unsigned short udb_density;          /* # of user DB/page */
-	unsigned short ucq_density;          /* # of user CQs/page */
-	unsigned int sge_host_page_size;     /* SGE host page size */
-	unsigned short filt_mode;            /* filter optional components */
-	unsigned short tx_modq[NCHAN];       /* maps each tx channel to a */
-					     /* scheduler queue */
-	void __iomem *gts_reg;               /* address of GTS register */
-	void __iomem *db_reg;                /* address of kernel doorbell */
-	int dbfifo_int_thresh;		     /* doorbell fifo int threshold */
-	unsigned int sge_ingpadboundary;     /* SGE ingress padding boundary */
-	unsigned int sge_egrstatuspagesize;  /* SGE egress status page size */
-	unsigned int sge_pktshift;           /* Padding between CPL and */
-					     /*	packet data */
-	unsigned int pf;		     /* Physical Function we're using */
-	bool enable_fw_ofld_conn;            /* Enable connection through fw */
-					     /* WR */
-	unsigned int max_ordird_qp;          /* Max ORD/IRD depth per RDMA QP */
-	unsigned int max_ird_adapter;        /* Max IRD memory per adapter */
-	bool ulptx_memwrite_dsgl;            /* use of T5 DSGL allowed */
-	unsigned int iscsi_tagmask;	     /* iscsi ddp tag mask */
-	unsigned int iscsi_pgsz_order;	     /* iscsi ddp page size orders */
-	unsigned int iscsi_llimit;	     /* chip's iscsi region llimit */
-	unsigned int ulp_crypto;             /* crypto lookaside support */
-	void **iscsi_ppm;		     /* iscsi page pod manager */
-	int nodeid;			     /* device numa node id */
-	bool fr_nsmr_tpte_wr_support;	     /* FW supports FR_NSMR_TPTE_WR */
-	bool write_w_imm_support;         /* FW supports WRITE_WITH_IMMEDIATE */
-	bool write_cmpl_support;             /* FW supports WRITE_CMPL WR */
+	struct pci_dev *pdev;                
+	struct l2t_data *l2t;                
+	struct tid_info *tids;               
+	struct net_device **ports;           
+	const struct cxgb4_virt_res *vr;     
+	const unsigned short *mtus;          
+	const unsigned short *rxq_ids;       
+	const unsigned short *ciq_ids;       
+	unsigned short nrxq;                 
+	unsigned short ntxq;                 
+	unsigned short nciq;		     
+	unsigned char nchan:4;               
+	unsigned char nports:4;              
+	unsigned char wr_cred;               
+	unsigned char adapter_type;          
+	unsigned char fw_api_ver;            
+	unsigned char crypto;                
+	unsigned int fw_vers;                
+	unsigned int iscsi_iolen;            
+	unsigned int cclk_ps;                
+	unsigned short udb_density;          
+	unsigned short ucq_density;          
+	unsigned int sge_host_page_size;     
+	unsigned short filt_mode;            
+	unsigned short tx_modq[NCHAN];       
+					     
+	void __iomem *gts_reg;               
+	void __iomem *db_reg;                
+	int dbfifo_int_thresh;		     
+	unsigned int sge_ingpadboundary;     
+	unsigned int sge_egrstatuspagesize;  
+	unsigned int sge_pktshift;           
+					     
+	unsigned int pf;		     
+	bool enable_fw_ofld_conn;            
+					     
+	unsigned int max_ordird_qp;          
+	unsigned int max_ird_adapter;        
+	bool ulptx_memwrite_dsgl;            
+	unsigned int iscsi_tagmask;	     
+	unsigned int iscsi_pgsz_order;	     
+	unsigned int iscsi_llimit;	     
+	unsigned int ulp_crypto;             
+	void **iscsi_ppm;		     
+	int nodeid;			     
+	bool fr_nsmr_tpte_wr_support;	     
+	bool write_w_imm_support;         
+	bool write_cmpl_support;             
 };
 
 struct cxgb4_uld_info {
@@ -536,4 +497,4 @@ int cxgb4_bar2_sge_qregs(struct net_device *dev,
 			 u64 *pbar2_qoffset,
 			 unsigned int *pbar2_qid);
 
-#endif  /* !__CXGB4_ULD_H */
+#endif  

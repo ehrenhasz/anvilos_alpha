@@ -16,7 +16,7 @@ function copy_artefacts {
     done
 }
 function build_board {
-    if [ $# -lt 4 ]; then
+    if [ $
         echo "usage: $0 <board-json-file> <fw-tag> <dest-dir> <exts...>"
         return 1
     fi
@@ -38,7 +38,7 @@ function build_board {
     done
 }
 function build_boards {
-    if [ $# -lt 4 ]; then
+    if [ $
         echo "usage: $0 <check-file> <fw-tag> <dest-dir> <exts...>"
         return 1
     fi

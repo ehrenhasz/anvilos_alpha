@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for native language support
-#
+
+
+
+
 
 obj-$(CONFIG_NLS)		+= nls_base.o
 

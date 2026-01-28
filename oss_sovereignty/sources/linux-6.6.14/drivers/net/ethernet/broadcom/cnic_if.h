@@ -1,13 +1,4 @@
-/* cnic_if.h: QLogic cnic core network driver.
- *
- * Copyright (c) 2006-2014 Broadcom Corporation
- * Copyright (c) 2014-2015 QLogic Corporation
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- */
+
 
 
 #ifndef CNIC_IF_H
@@ -25,7 +16,7 @@
 #define MAX_CNIC_ULP_TYPE_EXT	3
 #define MAX_CNIC_ULP_TYPE	4
 
-/* Use CPU native page size up to 16K for cnic ring sizes.  */
+
 #if (PAGE_SHIFT > 14)
 #define CNIC_PAGE_BITS	14
 #else
@@ -76,7 +67,7 @@ struct kcqe {
 	u32 kcqe_info5;
 	u32 kcqe_info6;
 	u32 kcqe_op_flag;
-		#define KCQE_RAMROD_COMPLETION		(0x1<<27) /* Everest */
+		#define KCQE_RAMROD_COMPLETION		(0x1<<27) 
 		#define KCQE_FLAGS_LAYER_MASK		(0x7<<28)
 		#define KCQE_FLAGS_LAYER_MASK_MISC	(0<<28)
 		#define KCQE_FLAGS_LAYER_MASK_L2	(2<<28)
@@ -177,10 +168,7 @@ struct cnic_fc_npiv_tbl {
 
 struct cnic_ops {
 	struct module	*cnic_owner;
-	/* Calls to these functions are protected by RCU.  When
-	 * unregistering, we wait for any calls to complete before
-	 * continuing.
-	 */
+	
 	int		(*cnic_handler)(void *, void *);
 	int		(*cnic_ctl)(void *, struct cnic_ctl_info *);
 };
@@ -357,10 +345,7 @@ struct cnic_dev {
 #define CNIC_RD16(dev, off)		readw(dev->regview + off)
 
 struct cnic_ulp_ops {
-	/* Calls to these functions are protected by RCU.  When
-	 * unregistering, we wait for any calls to complete before
-	 * continuing.
-	 */
+	
 
 	void (*cnic_init)(struct cnic_dev *dev);
 	void (*cnic_exit)(struct cnic_dev *dev);

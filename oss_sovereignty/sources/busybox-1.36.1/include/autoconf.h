@@ -1,7 +1,4 @@
-/*
- * Automatically generated C config: don't edit
- * Busybox version: 1.36.1
- */
+
 #define AUTOCONF_TIMESTAMP "2026-01-26 20:55:35 CST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
@@ -13,9 +10,7 @@
 #endif
 #define IF_NOT_HAVE_DOT_CONFIG(...)
 
-/*
- * Settings
- */
+
 #define CONFIG_DESKTOP 1
 #define ENABLE_DESKTOP 1
 #ifdef MAKE_SUID
@@ -213,9 +208,7 @@
 #endif
 #define IF_NOT_FEATURE_SYSLOG(...)
 
-/*
- * Build Options
- */
+
 #define CONFIG_STATIC 1
 #define ENABLE_STATIC 1
 #ifdef MAKE_SUID
@@ -309,9 +302,7 @@
 #endif
 #define IF_NOT_STATIC_LIBGCC(...)
 
-/*
- * Installation Options ("make install" behavior)
- */
+
 #define CONFIG_INSTALL_APPLET_SYMLINKS 1
 #define ENABLE_INSTALL_APPLET_SYMLINKS 1
 #ifdef MAKE_SUID
@@ -353,9 +344,7 @@
 #endif
 #define IF_NOT_PREFIX(...)
 
-/*
- * Debugging Options
- */
+
 #undef CONFIG_DEBUG
 #define ENABLE_DEBUG 0
 #define IF_DEBUG(...)
@@ -397,9 +386,7 @@
 #define IF_EFENCE(...)
 #define IF_NOT_EFENCE(...) __VA_ARGS__
 
-/*
- * Library Tuning
- */
+
 #undef CONFIG_FEATURE_USE_BSS_TAIL
 #define ENABLE_FEATURE_USE_BSS_TAIL 0
 #define IF_FEATURE_USE_BSS_TAIL(...)
@@ -693,13 +680,9 @@
 #endif
 #define IF_NOT_TRY_LOOP_CONFIGURE(...)
 
-/*
- * Applets
- */
 
-/*
- * Archival Utilities
- */
+
+
 #define CONFIG_FEATURE_SEAMLESS_XZ 1
 #define ENABLE_FEATURE_SEAMLESS_XZ 1
 #ifdef MAKE_SUID
@@ -1129,9 +1112,7 @@
 #define IF_FEATURE_LZMA_FAST(...)
 #define IF_NOT_FEATURE_LZMA_FAST(...) __VA_ARGS__
 
-/*
- * Coreutils
- */
+
 #define CONFIG_FEATURE_VERBOSE 1
 #define ENABLE_FEATURE_VERBOSE 1
 #ifdef MAKE_SUID
@@ -1141,9 +1122,7 @@
 #endif
 #define IF_NOT_FEATURE_VERBOSE(...)
 
-/*
- * Common options for date and touch
- */
+
 #define CONFIG_FEATURE_TIMEZONE 1
 #define ENABLE_FEATURE_TIMEZONE 1
 #ifdef MAKE_SUID
@@ -1153,9 +1132,7 @@
 #endif
 #define IF_NOT_FEATURE_TIMEZONE(...)
 
-/*
- * Common options for cp and mv
- */
+
 #define CONFIG_FEATURE_PRESERVE_HARDLINKS 1
 #define ENABLE_FEATURE_PRESERVE_HARDLINKS 1
 #ifdef MAKE_SUID
@@ -1165,9 +1142,7 @@
 #endif
 #define IF_NOT_FEATURE_PRESERVE_HARDLINKS(...)
 
-/*
- * Common options for df, du, ls
- */
+
 #define CONFIG_FEATURE_HUMAN_READABLE 1
 #define ENABLE_FEATURE_HUMAN_READABLE 1
 #ifdef MAKE_SUID
@@ -1725,9 +1700,7 @@
 #endif
 #define IF_NOT_SHA3SUM(...)
 
-/*
- * Common options for md5sum, sha1sum, sha256sum, sha512sum, sha3sum
- */
+
 #define CONFIG_FEATURE_MD5_SHA1_SUM_CHECK 1
 #define ENABLE_FEATURE_MD5_SHA1_SUM_CHECK 1
 #ifdef MAKE_SUID
@@ -2317,9 +2290,7 @@
 #endif
 #define IF_NOT_YES(...)
 
-/*
- * Console Utilities
- */
+
 #define CONFIG_CHVT 1
 #define ENABLE_CHVT 1
 #ifdef MAKE_SUID
@@ -2401,9 +2372,7 @@
 #endif
 #define IF_NOT_DEFAULT_SETFONT_DIR(...)
 
-/*
- * Common options for loadfont and setfont
- */
+
 #define CONFIG_FEATURE_LOADFONT_PSF2 1
 #define ENABLE_FEATURE_LOADFONT_PSF2 1
 #ifdef MAKE_SUID
@@ -2501,9 +2470,7 @@
 #endif
 #define IF_NOT_SHOWKEY(...)
 
-/*
- * Debian Utilities
- */
+
 #define CONFIG_PIPE_PROGRESS 1
 #define ENABLE_PIPE_PROGRESS 1
 #ifdef MAKE_SUID
@@ -2569,9 +2536,7 @@
 #endif
 #define IF_NOT_WHICH(...)
 
-/*
- * klibc-utils
- */
+
 #undef CONFIG_MINIPS
 #define ENABLE_MINIPS 0
 #define IF_MINIPS(...)
@@ -2597,9 +2562,7 @@
 #endif
 #define IF_NOT_RUN_INIT(...)
 
-/*
- * Editors
- */
+
 #define CONFIG_AWK 1
 #define ENABLE_AWK 1
 #ifdef MAKE_SUID
@@ -2833,9 +2796,7 @@
 #endif
 #define IF_NOT_FEATURE_ALLOW_EXEC(...)
 
-/*
- * Finding Utilities
- */
+
 #define CONFIG_FIND 1
 #define ENABLE_FIND 1
 #ifdef MAKE_SUID
@@ -3185,9 +3146,7 @@
 #endif
 #define IF_NOT_FEATURE_XARGS_SUPPORT_ARGS_FILE(...)
 
-/*
- * Init Utilities
- */
+
 #define CONFIG_BOOTCHARTD 1
 #define ENABLE_BOOTCHARTD 1
 #ifdef MAKE_SUID
@@ -3337,9 +3296,7 @@
 #endif
 #define IF_NOT_FEATURE_INIT_MODIFY_CMDLINE(...)
 
-/*
- * Login/Password Management Utilities
- */
+
 #define CONFIG_FEATURE_SHADOWPASSWDS 1
 #define ENABLE_FEATURE_SHADOWPASSWDS 1
 #ifdef MAKE_SUID
@@ -3609,9 +3566,7 @@
 #endif
 #define IF_NOT_VLOCK(...)
 
-/*
- * Linux Ext2 FS Progs
- */
+
 #define CONFIG_CHATTR 1
 #define ENABLE_CHATTR 1
 #ifdef MAKE_SUID
@@ -3641,9 +3596,7 @@
 #define IF_TUNE2FS(...)
 #define IF_NOT_TUNE2FS(...) __VA_ARGS__
 
-/*
- * Linux Module Utilities
- */
+
 #define CONFIG_MODPROBE_SMALL 1
 #define ENABLE_MODPROBE_SMALL 1
 #ifdef MAKE_SUID
@@ -3709,9 +3662,7 @@
 #endif
 #define IF_NOT_RMMOD(...)
 
-/*
- * Options common to multiple modutils
- */
+
 #define CONFIG_FEATURE_CMDLINE_MODULE_OPTIONS 1
 #define ENABLE_FEATURE_CMDLINE_MODULE_OPTIONS 1
 #ifdef MAKE_SUID
@@ -3785,9 +3736,7 @@
 #endif
 #define IF_NOT_DEFAULT_DEPMOD_FILE(...)
 
-/*
- * Linux System Utilities
- */
+
 #define CONFIG_ACPID 1
 #define ENABLE_ACPID 1
 #ifdef MAKE_SUID
@@ -4649,9 +4598,7 @@
 #endif
 #define IF_NOT_WALL(...)
 
-/*
- * Common options for mount/umount
- */
+
 #define CONFIG_FEATURE_MOUNT_LOOP 1
 #define ENABLE_FEATURE_MOUNT_LOOP 1
 #ifdef MAKE_SUID
@@ -4681,9 +4628,7 @@
 #endif
 #define IF_NOT_VOLUMEID(...)
 
-/*
- * Filesystem/Volume identification
- */
+
 #define CONFIG_FEATURE_VOLUMEID_BCACHE 1
 #define ENABLE_FEATURE_VOLUMEID_BCACHE 1
 #ifdef MAKE_SUID
@@ -4893,9 +4838,7 @@
 #endif
 #define IF_NOT_FEATURE_VOLUMEID_XFS(...)
 
-/*
- * Miscellaneous Utilities
- */
+
 #define CONFIG_ADJTIMEX 1
 #define ENABLE_ADJTIMEX 1
 #ifdef MAKE_SUID
@@ -5629,9 +5572,7 @@
 #define IF_FEATURE_WATCHDOG_OPEN_TWICE(...)
 #define IF_NOT_FEATURE_WATCHDOG_OPEN_TWICE(...) __VA_ARGS__
 
-/*
- * Networking Utilities
- */
+
 #define CONFIG_FEATURE_IPV6 1
 #define ENABLE_FEATURE_IPV6 1
 #ifdef MAKE_SUID
@@ -6877,9 +6818,7 @@
 #endif
 #define IF_NOT_FEATURE_UDHCPC6_RFC5970(...)
 
-/*
- * Common options for DHCP applets
- */
+
 #define CONFIG_UDHCPC_DEFAULT_INTERFACE "eth0"
 #define ENABLE_UDHCPC_DEFAULT_INTERFACE 1
 #ifdef MAKE_SUID
@@ -6933,9 +6872,7 @@
 #endif
 #define IF_NOT_IFUPDOWN_UDHCPC_CMD_OPTIONS(...)
 
-/*
- * Print Utilities
- */
+
 #define CONFIG_LPD 1
 #define ENABLE_LPD 1
 #ifdef MAKE_SUID
@@ -6961,9 +6898,7 @@
 #endif
 #define IF_NOT_LPQ(...)
 
-/*
- * Mail Utilities
- */
+
 #define CONFIG_FEATURE_MIME_CHARSET "us-ascii"
 #define ENABLE_FEATURE_MIME_CHARSET 1
 #ifdef MAKE_SUID
@@ -7021,9 +6956,7 @@
 #endif
 #define IF_NOT_SENDMAIL(...)
 
-/*
- * Process Utilities
- */
+
 #undef CONFIG_FEATURE_FAST_TOP
 #define ENABLE_FEATURE_FAST_TOP 0
 #define IF_FEATURE_FAST_TOP(...)
@@ -7329,9 +7262,7 @@
 #endif
 #define IF_NOT_WATCH(...)
 
-/*
- * Runit Utilities
- */
+
 #define CONFIG_CHPST 1
 #define ENABLE_CHPST 1
 #ifdef MAKE_SUID
@@ -7485,9 +7416,7 @@
 #define IF_SETSEBOOL(...)
 #define IF_NOT_SETSEBOOL(...) __VA_ARGS__
 
-/*
- * Shells
- */
+
 #define CONFIG_SH_IS_ASH 1
 #define ENABLE_SH_IS_ASH 1
 #ifdef MAKE_SUID
@@ -7973,9 +7902,7 @@
 #define IF_HUSH_MEMLEAK(...)
 #define IF_NOT_HUSH_MEMLEAK(...) __VA_ARGS__
 
-/*
- * Options common to all shells
- */
+
 #define CONFIG_FEATURE_SH_MATH 1
 #define ENABLE_FEATURE_SH_MATH 1
 #ifdef MAKE_SUID
@@ -8041,9 +7968,7 @@
 #endif
 #define IF_NOT_FEATURE_SH_EMBEDDED_SCRIPTS(...)
 
-/*
- * System Logging Utilities
- */
+
 #define CONFIG_KLOGD 1
 #define ENABLE_KLOGD 1
 #ifdef MAKE_SUID
@@ -8053,9 +7978,7 @@
 #endif
 #define IF_NOT_KLOGD(...)
 
-/*
- * klogd should not be used together with syslog to kernel printk buffer
- */
+
 #define CONFIG_FEATURE_KLOGD_KLOGCTL 1
 #define ENABLE_FEATURE_KLOGD_KLOGCTL 1
 #ifdef MAKE_SUID

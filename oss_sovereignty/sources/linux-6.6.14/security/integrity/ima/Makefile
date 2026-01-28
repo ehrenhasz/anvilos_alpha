@@ -1,8 +1,8 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for building Trusted Computing Group's(TCG) runtime Integrity
-# Measurement Architecture(IMA).
-#
+
+
+
+
+
 
 obj-$(CONFIG_IMA) += ima.o
 

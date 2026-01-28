@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_MACHINE_H
 #define __PERF_MACHINE_H
 
@@ -20,7 +20,7 @@ struct thread;
 union perf_event;
 struct machines;
 
-/* Native host kernel uses -1 as pid index in machine */
+
 #define	HOST_KERNEL_ID			(-1)
 #define	DEFAULT_GUEST_KERNEL_ID		(0)
 
@@ -62,7 +62,7 @@ struct machine {
 	} sched, lock;
 	pid_t		  *current_tid;
 	size_t		  current_tid_sz;
-	union { /* Tool specific area */
+	union { 
 		void	  *priv;
 		u64	  db_id;
 	};
@@ -72,22 +72,18 @@ struct machine {
 
 static inline struct threads *machine__threads(struct machine *machine, pid_t tid)
 {
-	/* Cast it to handle tid == -1 */
+	
 	return &machine->threads[(unsigned int)tid % THREADS__TABLE_SIZE];
 }
 
-/*
- * The main kernel (vmlinux) map
- */
+
 static inline
 struct map *machine__kernel_map(struct machine *machine)
 {
 	return machine->vmlinux_map;
 }
 
-/*
- * kernel (the one returned by machine__kernel_map()) plus kernel modules maps
- */
+
 static inline
 struct maps *machine__kernel_maps(struct machine *machine)
 {
@@ -202,10 +198,7 @@ int thread__resolve_callchain(struct thread *thread,
 			      struct addr_location *root_al,
 			      int max_stack);
 
-/*
- * Default guest kernel is defined by parameter --guestkallsyms
- * and --guestmodules
- */
+
 static inline bool machine__is_default_guest(struct machine *machine)
 {
 	return machine ? machine->pid == DEFAULT_GUEST_KERNEL_ID : false;
@@ -284,9 +277,7 @@ int machines__for_each_thread(struct machines *machines,
 pid_t machine__get_current_tid(struct machine *machine, int cpu);
 int machine__set_current_tid(struct machine *machine, int cpu, pid_t pid,
 			     pid_t tid);
-/*
- * For use with libtraceevent's tep_set_function_resolver()
- */
+
 char *machine__resolve_kernel_addr(void *vmachine, unsigned long long *addrp, char **modp);
 
 void machine__get_kallsyms_filename(struct machine *machine, char *buf,
@@ -295,7 +286,7 @@ void machine__get_kallsyms_filename(struct machine *machine, char *buf,
 int machine__create_extra_kernel_maps(struct machine *machine,
 				      struct dso *kernel);
 
-/* Kernel-space maps for symbols that are outside the main kernel map and module maps */
+
 struct extra_kernel_map {
 	u64 start;
 	u64 end;
@@ -313,4 +304,4 @@ int machine__map_x86_64_entry_trampolines(struct machine *machine,
 int machine__resolve(struct machine *machine, struct addr_location *al,
 		     struct perf_sample *sample);
 
-#endif /* __PERF_MACHINE_H */
+#endif 

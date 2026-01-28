@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2016-2017 Micron Technology, Inc.
- *
- *  Authors:
- *	Peter Pan <peterpandong@micron.com>
- */
+
+
 #ifndef __LINUX_MTD_SPINAND_H
 #define __LINUX_MTD_SPINAND_H
 
@@ -16,9 +11,7 @@
 #include <linux/spi/spi.h>
 #include <linux/spi/spi-mem.h>
 
-/**
- * Standard SPI NAND flash operations
- */
+
 
 #define SPINAND_RESET_OP						\
 	SPI_MEM_OP(SPI_MEM_OP_CMD(0xff, 1),				\
@@ -140,23 +133,21 @@
 		   SPI_MEM_OP_NO_DUMMY,					\
 		   SPI_MEM_OP_DATA_OUT(len, buf, 4))
 
-/**
- * Standard SPI NAND flash commands
- */
+
 #define SPINAND_CMD_PROG_LOAD_X4		0x32
 #define SPINAND_CMD_PROG_LOAD_RDM_DATA_X4	0x34
 
-/* feature register */
+
 #define REG_BLOCK_LOCK		0xa0
 #define BL_ALL_UNLOCKED		0x00
 
-/* configuration register */
+
 #define REG_CFG			0xb0
 #define CFG_OTP_ENABLE		BIT(6)
 #define CFG_ECC_ENABLE		BIT(4)
 #define CFG_QUAD_ENABLE		BIT(0)
 
-/* status register */
+
 #define REG_STATUS		0xc0
 #define STATUS_BUSY		BIT(0)
 #define STATUS_ERASE_FAILED	BIT(2)
@@ -170,18 +161,7 @@ struct spinand_op;
 struct spinand_device;
 
 #define SPINAND_MAX_ID_LEN	4
-/*
- * For erase, write and read operation, we got the following timings :
- * tBERS (erase) 1ms to 4ms
- * tPROG 300us to 400us
- * tREAD 25us to 100us
- * In order to minimize latency, the min value is divided by 4 for the
- * initial delay, and dividing by 20 for the poll delay.
- * For reset, 5us/10us/500us if the device is respectively
- * reading/programming/erasing when the RESET occurs. Since we always
- * issue a RESET when the device is IDLE, 5us is selected for both initial
- * and poll delay.
- */
+
 #define SPINAND_READ_INITIAL_DELAY_US	6
 #define SPINAND_READ_POLL_DELAY_US	5
 #define SPINAND_RESET_INITIAL_DELAY_US	5
@@ -193,12 +173,7 @@ struct spinand_device;
 
 #define SPINAND_WAITRDY_TIMEOUT_MS	400
 
-/**
- * struct spinand_id - SPI NAND id structure
- * @data: buffer containing the id bytes. Currently 4 bytes large, but can
- *	  be extended if required
- * @len: ID length
- */
+
 struct spinand_id {
 	u8 data[SPINAND_MAX_ID_LEN];
 	int len;
@@ -210,47 +185,20 @@ enum spinand_readid_method {
 	SPINAND_READID_METHOD_OPCODE_DUMMY,
 };
 
-/**
- * struct spinand_devid - SPI NAND device id structure
- * @id: device id of current chip
- * @len: number of bytes in device id
- * @method: method to read chip id
- *	    There are 3 possible variants:
- *	    SPINAND_READID_METHOD_OPCODE: chip id is returned immediately
- *	    after read_id opcode.
- *	    SPINAND_READID_METHOD_OPCODE_ADDR: chip id is returned after
- *	    read_id opcode + 1-byte address.
- *	    SPINAND_READID_METHOD_OPCODE_DUMMY: chip id is returned after
- *	    read_id opcode + 1 dummy byte.
- */
+
 struct spinand_devid {
 	const u8 *id;
 	const u8 len;
 	const enum spinand_readid_method method;
 };
 
-/**
- * struct manufacurer_ops - SPI NAND manufacturer specific operations
- * @init: initialize a SPI NAND device
- * @cleanup: cleanup a SPI NAND device
- *
- * Each SPI NAND manufacturer driver should implement this interface so that
- * NAND chips coming from this vendor can be initialized properly.
- */
+
 struct spinand_manufacturer_ops {
 	int (*init)(struct spinand_device *spinand);
 	void (*cleanup)(struct spinand_device *spinand);
 };
 
-/**
- * struct spinand_manufacturer - SPI NAND manufacturer instance
- * @id: manufacturer ID
- * @name: manufacturer name
- * @devid_len: number of bytes in device ID
- * @chips: supported SPI NANDs under current manufacturer
- * @nchips: number of SPI NANDs available in chips array
- * @ops: manufacturer operations
- */
+
 struct spinand_manufacturer {
 	u8 id;
 	char *name;
@@ -259,7 +207,7 @@ struct spinand_manufacturer {
 	const struct spinand_manufacturer_ops *ops;
 };
 
-/* SPI NAND manufacturers */
+
 extern const struct spinand_manufacturer alliancememory_spinand_manufacturer;
 extern const struct spinand_manufacturer ato_spinand_manufacturer;
 extern const struct spinand_manufacturer esmt_c8_spinand_manufacturer;
@@ -271,17 +219,7 @@ extern const struct spinand_manufacturer toshiba_spinand_manufacturer;
 extern const struct spinand_manufacturer winbond_spinand_manufacturer;
 extern const struct spinand_manufacturer xtx_spinand_manufacturer;
 
-/**
- * struct spinand_op_variants - SPI NAND operation variants
- * @ops: the list of variants for a given operation
- * @nops: the number of variants
- *
- * Some operations like read-from-cache/write-to-cache have several variants
- * depending on the number of IO lines you use to transfer data or address
- * cycles. This structure is a way to describe the different variants supported
- * by a chip and let the core pick the best one based on the SPI mem controller
- * capabilities.
- */
+
 struct spinand_op_variants {
 	const struct spi_mem_op *ops;
 	unsigned int nops;
@@ -294,16 +232,7 @@ struct spinand_op_variants {
 			sizeof(struct spi_mem_op),			\
 	}
 
-/**
- * spinand_ecc_info - description of the on-die ECC implemented by a SPI NAND
- *		      chip
- * @get_status: get the ECC status. Should return a positive number encoding
- *		the number of corrected bitflips if correction was possible or
- *		-EBADMSG if there are uncorrectable errors. I can also return
- *		other negative error codes if the error is not caused by
- *		uncorrectable bitflips
- * @ooblayout: the OOB layout used by the on-die ECC implementation
- */
+
 struct spinand_ecc_info {
 	int (*get_status)(struct spinand_device *spinand, u8 status);
 	const struct mtd_ooblayout_ops *ooblayout;
@@ -312,33 +241,12 @@ struct spinand_ecc_info {
 #define SPINAND_HAS_QE_BIT		BIT(0)
 #define SPINAND_HAS_CR_FEAT_BIT		BIT(1)
 
-/**
- * struct spinand_ondie_ecc_conf - private SPI-NAND on-die ECC engine structure
- * @status: status of the last wait operation that will be used in case
- *          ->get_status() is not populated by the spinand device.
- */
+
 struct spinand_ondie_ecc_conf {
 	u8 status;
 };
 
-/**
- * struct spinand_info - Structure used to describe SPI NAND chips
- * @model: model name
- * @devid: device ID
- * @flags: OR-ing of the SPINAND_XXX flags
- * @memorg: memory organization
- * @eccreq: ECC requirements
- * @eccinfo: on-die ECC info
- * @op_variants: operations variants
- * @op_variants.read_cache: variants of the read-cache operation
- * @op_variants.write_cache: variants of the write-cache operation
- * @op_variants.update_cache: variants of the update-cache operation
- * @select_target: function used to select a target/die. Required only for
- *		   multi-die chips
- *
- * Each SPI NAND manufacturer driver should have a spinand_info table
- * describing all the chips supported by the driver.
- */
+
 struct spinand_info {
 	const char *model;
 	struct spinand_devid devid;
@@ -397,32 +305,7 @@ struct spinand_dirmap {
 	struct spi_mem_dirmap_desc *rdesc_ecc;
 };
 
-/**
- * struct spinand_device - SPI NAND device instance
- * @base: NAND device instance
- * @spimem: pointer to the SPI mem object
- * @lock: lock used to serialize accesses to the NAND
- * @id: NAND ID as returned by READ_ID
- * @flags: NAND flags
- * @op_templates: various SPI mem op templates
- * @op_templates.read_cache: read cache op template
- * @op_templates.write_cache: write cache op template
- * @op_templates.update_cache: update cache op template
- * @select_target: select a specific target/die. Usually called before sending
- *		   a command addressing a page or an eraseblock embedded in
- *		   this die. Only required if your chip exposes several dies
- * @cur_target: currently selected target/die
- * @eccinfo: on-die ECC information
- * @cfg_cache: config register cache. One entry per die
- * @databuf: bounce buffer for data
- * @oobbuf: bounce buffer for OOB data
- * @scratchbuf: buffer used for everything but page accesses. This is needed
- *		because the spi-mem interface explicitly requests that buffers
- *		passed in spi_mem_op be DMA-able, so we can't based the bufs on
- *		the stack
- * @manufacturer: SPI NAND manufacturer information
- * @priv: manufacturer private data
- */
+
 struct spinand_device {
 	struct nand_device base;
 	struct spi_mem *spimem;
@@ -452,58 +335,32 @@ struct spinand_device {
 	void *priv;
 };
 
-/**
- * mtd_to_spinand() - Get the SPI NAND device attached to an MTD instance
- * @mtd: MTD instance
- *
- * Return: the SPI NAND device attached to @mtd.
- */
+
 static inline struct spinand_device *mtd_to_spinand(struct mtd_info *mtd)
 {
 	return container_of(mtd_to_nanddev(mtd), struct spinand_device, base);
 }
 
-/**
- * spinand_to_mtd() - Get the MTD device embedded in a SPI NAND device
- * @spinand: SPI NAND device
- *
- * Return: the MTD device embedded in @spinand.
- */
+
 static inline struct mtd_info *spinand_to_mtd(struct spinand_device *spinand)
 {
 	return nanddev_to_mtd(&spinand->base);
 }
 
-/**
- * nand_to_spinand() - Get the SPI NAND device embedding an NAND object
- * @nand: NAND object
- *
- * Return: the SPI NAND device embedding @nand.
- */
+
 static inline struct spinand_device *nand_to_spinand(struct nand_device *nand)
 {
 	return container_of(nand, struct spinand_device, base);
 }
 
-/**
- * spinand_to_nand() - Get the NAND device embedded in a SPI NAND object
- * @spinand: SPI NAND device
- *
- * Return: the NAND device embedded in @spinand.
- */
+
 static inline struct nand_device *
 spinand_to_nand(struct spinand_device *spinand)
 {
 	return &spinand->base;
 }
 
-/**
- * spinand_set_of_node - Attach a DT node to a SPI NAND device
- * @spinand: SPI NAND device
- * @np: DT node
- *
- * Attach a DT node to a SPI NAND device.
- */
+
 static inline void spinand_set_of_node(struct spinand_device *spinand,
 				       struct device_node *np)
 {
@@ -518,4 +375,4 @@ int spinand_match_and_init(struct spinand_device *spinand,
 int spinand_upd_cfg(struct spinand_device *spinand, u8 mask, u8 val);
 int spinand_select_target(struct spinand_device *spinand, unsigned int target);
 
-#endif /* __LINUX_MTD_SPINAND_H */
+#endif 

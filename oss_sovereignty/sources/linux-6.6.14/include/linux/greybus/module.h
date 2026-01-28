@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Greybus Module code
- *
- * Copyright 2016 Google Inc.
- * Copyright 2016 Linaro Ltd.
- */
+
+
 
 #ifndef __MODULE_H
 #define __MODULE_H
@@ -33,4 +28,4 @@ int gb_module_add(struct gb_module *module);
 void gb_module_del(struct gb_module *module);
 void gb_module_put(struct gb_module *module);
 
-#endif /* __MODULE_H */
+#endif 

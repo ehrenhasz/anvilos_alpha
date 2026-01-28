@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *    Copyright IBM Corp. 2013
- *    Author(s): Eugene Crosser <eugene.crosser@ru.ibm.com>
- */
+
+
 
 #ifndef __QETH_L2_H__
 #define __QETH_L2_H__
@@ -36,4 +33,4 @@ static inline bool qeth_bridgeport_is_in_use(struct qeth_card *card)
 	       card->options.sbp.hostnotification;
 }
 
-#endif /* __QETH_L2_H__ */
+#endif 

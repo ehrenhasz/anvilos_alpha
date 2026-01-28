@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LIBPERF_EVSEL_H
 #define __LIBPERF_EVSEL_H
 
@@ -47,4 +47,4 @@ LIBPERF_API struct perf_event_attr *perf_evsel__attr(struct perf_evsel *evsel);
 LIBPERF_API void perf_counts_values__scale(struct perf_counts_values *count,
 					   bool scale, __s8 *pscaled);
 
-#endif /* __LIBPERF_EVSEL_H */
+#endif 

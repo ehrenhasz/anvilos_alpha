@@ -33,12 +33,12 @@ basefd = temp_dir + "/nextfd1"
 nextfd = temp_dir + "/nextfd2"
 with open(basefd, "w") as f:
     base_file_no = f.fileno()
-for i in range(1024):  # move GC head forwards by allocating a lot of single blocks
+for i in range(1024):  
     []
 def write_files_without_closing():
     for n in names:
         open(n, "w").write(n)
-    sorted(list(range(128)), key=lambda x: x)  # use up Python and C stack so f is really gone
+    sorted(list(range(128)), key=lambda x: x)  
 write_files_without_closing()
 gc.collect()
 with open(nextfd, "w") as f:

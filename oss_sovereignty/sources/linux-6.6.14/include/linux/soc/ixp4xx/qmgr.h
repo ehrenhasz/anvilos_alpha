@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2007 Krzysztof Halasa <khc@pm.waw.pl>
- */
+
+
 
 #ifndef IXP4XX_QMGR_H
 #define IXP4XX_QMGR_H
@@ -13,9 +11,9 @@
 
 #define HALF_QUEUES	32
 #define QUEUES		64
-#define MAX_QUEUE_LENGTH 4	/* in dwords */
+#define MAX_QUEUE_LENGTH 4	
 
-#define QUEUE_STAT1_EMPTY		1 /* queue status bits */
+#define QUEUE_STAT1_EMPTY		1 
 #define QUEUE_STAT1_NEARLY_EMPTY	2
 #define QUEUE_STAT1_NEARLY_FULL		4
 #define QUEUE_STAT1_FULL		8
@@ -31,7 +29,7 @@
 #define QUEUE_WATERMARK_32_ENTRIES	6
 #define QUEUE_WATERMARK_64_ENTRIES	7
 
-/* queue interrupt request conditions */
+
 #define QUEUE_IRQ_SRC_EMPTY		0
 #define QUEUE_IRQ_SRC_NEARLY_EMPTY	1
 #define QUEUE_IRQ_SRC_NEARLY_FULL	2
@@ -42,16 +40,16 @@
 #define QUEUE_IRQ_SRC_NOT_FULL		7
 
 struct qmgr_regs {
-	u32 acc[QUEUES][MAX_QUEUE_LENGTH]; /* 0x000 - 0x3FF */
-	u32 stat1[4];		/* 0x400 - 0x40F */
-	u32 stat2[2];		/* 0x410 - 0x417 */
-	u32 statne_h;		/* 0x418 - queue nearly empty */
-	u32 statf_h;		/* 0x41C - queue full */
-	u32 irqsrc[4];		/* 0x420 - 0x42F IRC source */
-	u32 irqen[2];		/* 0x430 - 0x437 IRQ enabled */
-	u32 irqstat[2];		/* 0x438 - 0x43F - IRQ access only */
+	u32 acc[QUEUES][MAX_QUEUE_LENGTH]; 
+	u32 stat1[4];		
+	u32 stat2[2];		
+	u32 statne_h;		
+	u32 statf_h;		
+	u32 irqsrc[4];		
+	u32 irqen[2];		
+	u32 irqstat[2];		
 	u32 reserved[1776];
-	u32 sram[2048];		/* 0x2000 - 0x3FFF - config and buffer */
+	u32 sram[2048];		
 };
 
 void qmgr_put_entry(unsigned int queue, u32 val);
@@ -66,17 +64,17 @@ void qmgr_set_irq(unsigned int queue, int src,
 void qmgr_enable_irq(unsigned int queue);
 void qmgr_disable_irq(unsigned int queue);
 
-/* request_ and release_queue() must be called from non-IRQ context */
+
 
 #if DEBUG_QMGR
 extern char qmgr_queue_descs[QUEUES][32];
 
-int qmgr_request_queue(unsigned int queue, unsigned int len /* dwords */,
+int qmgr_request_queue(unsigned int queue, unsigned int len ,
 		       unsigned int nearly_empty_watermark,
 		       unsigned int nearly_full_watermark,
 		       const char *desc_format, const char* name);
 #else
-int __qmgr_request_queue(unsigned int queue, unsigned int len /* dwords */,
+int __qmgr_request_queue(unsigned int queue, unsigned int len ,
 			 unsigned int nearly_empty_watermark,
 			 unsigned int nearly_full_watermark);
 #define qmgr_request_queue(queue, len, nearly_empty_watermark,		\

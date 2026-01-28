@@ -1,8 +1,0 @@
-/dts-v1/;
-#include "meson-gxl-s905d.dtsi"
-#include "meson-gx-libretech-pc.dtsi"
-/ {
-	compatible = "libretech,aml-s905d-pc", "amlogic,s905d",
-		     "amlogic,meson-gxl";
-	model = "Libre Computer AML-S905D-PC";
-};

@@ -1,8 +1,4 @@
-/*
- * Copyright (C) 2016 Icenowy Zheng <icenowy@aosc.io>
- *
- * SPDX-License-Identifier: (GPL-2.0+ OR MIT)
- */
+
 
 #ifndef _DT_BINDINGS_CLOCK_SUN8I_DE2_H_
 #define _DT_BINDINGS_CLOCK_SUN8I_DE2_H_
@@ -18,4 +14,4 @@
 #define CLK_BUS_ROT		9
 #define CLK_ROT			10
 
-#endif /* _DT_BINDINGS_CLOCK_SUN8I_DE2_H_ */
+#endif 

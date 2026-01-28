@@ -1,28 +1,4 @@
-/*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+
 
 #ifndef __XEN_BLKIF__BACKEND__COMMON_H__
 #define __XEN_BLKIF__BACKEND__COMMON_H__
@@ -46,16 +22,10 @@
 
 extern unsigned int xen_blkif_max_ring_order;
 extern unsigned int xenblk_max_queues;
-/*
- * This is the maximum number of segments that would be allowed in indirect
- * requests. This value will also be passed to the frontend.
- */
+
 #define MAX_INDIRECT_SEGMENTS 256
 
-/*
- * Xen use 4K pages. The guest may use different page size (4K or 64K)
- * Number of Xen pages per segment
- */
+
 #define XEN_PAGES_PER_SEGMENT   (PAGE_SIZE / XEN_PAGE_SIZE)
 
 #define XEN_PAGES_PER_INDIRECT_FRAME \
@@ -67,36 +37,33 @@ extern unsigned int xenblk_max_queues;
 	((MAX_INDIRECT_SEGMENTS + SEGS_PER_INDIRECT_FRAME - 1)/SEGS_PER_INDIRECT_FRAME)
 #define INDIRECT_PAGES(_segs) DIV_ROUND_UP(_segs, XEN_PAGES_PER_INDIRECT_FRAME)
 
-/* Not a real protocol.  Used to generate ring structs which contain
- * the elements common to all protocols only.  This way we get a
- * compiler-checkable way to use common struct elements, so we can
- * avoid using switch(protocol) in a number of places.  */
+
 struct blkif_common_request {
 	char dummy;
 };
 
-/* i386 protocol version */
+
 
 struct blkif_x86_32_request_rw {
-	uint8_t        nr_segments;  /* number of segments                   */
-	blkif_vdev_t   handle;       /* only for read/write requests         */
-	uint64_t       id;           /* private guest value, echoed in resp  */
-	blkif_sector_t sector_number;/* start sector idx on disk (r/w only)  */
+	uint8_t        nr_segments;  
+	blkif_vdev_t   handle;       
+	uint64_t       id;           
+	blkif_sector_t sector_number;
 	struct blkif_request_segment seg[BLKIF_MAX_SEGMENTS_PER_REQUEST];
 } __attribute__((__packed__));
 
 struct blkif_x86_32_request_discard {
-	uint8_t        flag;         /* BLKIF_DISCARD_SECURE or zero         */
-	blkif_vdev_t   _pad1;        /* was "handle" for read/write requests */
-	uint64_t       id;           /* private guest value, echoed in resp  */
-	blkif_sector_t sector_number;/* start sector idx on disk (r/w only)  */
+	uint8_t        flag;         
+	blkif_vdev_t   _pad1;        
+	uint64_t       id;           
+	blkif_sector_t sector_number;
 	uint64_t       nr_sectors;
 } __attribute__((__packed__));
 
 struct blkif_x86_32_request_other {
 	uint8_t        _pad1;
 	blkif_vdev_t   _pad2;
-	uint64_t       id;           /* private guest value, echoed in resp  */
+	uint64_t       id;           
 } __attribute__((__packed__));
 
 struct blkif_x86_32_request_indirect {
@@ -107,18 +74,12 @@ struct blkif_x86_32_request_indirect {
 	blkif_vdev_t   handle;
 	uint16_t       _pad1;
 	grant_ref_t    indirect_grefs[BLKIF_MAX_INDIRECT_PAGES_PER_REQUEST];
-	/*
-	 * The maximum number of indirect segments (and pages) that will
-	 * be used is determined by MAX_INDIRECT_SEGMENTS, this value
-	 * is also exported to the guest (via xenstore
-	 * feature-max-indirect-segments entry), so the frontend knows how
-	 * many indirect segments the backend supports.
-	 */
-	uint64_t       _pad2;        /* make it 64 byte aligned */
+	
+	uint64_t       _pad2;        
 } __attribute__((__packed__));
 
 struct blkif_x86_32_request {
-	uint8_t        operation;    /* BLKIF_OP_???                         */
+	uint8_t        operation;    
 	union {
 		struct blkif_x86_32_request_rw rw;
 		struct blkif_x86_32_request_discard discard;
@@ -127,54 +88,48 @@ struct blkif_x86_32_request {
 	} u;
 } __attribute__((__packed__));
 
-/* x86_64 protocol version */
+
 
 struct blkif_x86_64_request_rw {
-	uint8_t        nr_segments;  /* number of segments                   */
-	blkif_vdev_t   handle;       /* only for read/write requests         */
-	uint32_t       _pad1;        /* offsetof(blkif_reqest..,u.rw.id)==8  */
+	uint8_t        nr_segments;  
+	blkif_vdev_t   handle;       
+	uint32_t       _pad1;        
 	uint64_t       id;
-	blkif_sector_t sector_number;/* start sector idx on disk (r/w only)  */
+	blkif_sector_t sector_number;
 	struct blkif_request_segment seg[BLKIF_MAX_SEGMENTS_PER_REQUEST];
 } __attribute__((__packed__));
 
 struct blkif_x86_64_request_discard {
-	uint8_t        flag;         /* BLKIF_DISCARD_SECURE or zero         */
-	blkif_vdev_t   _pad1;        /* was "handle" for read/write requests */
-        uint32_t       _pad2;        /* offsetof(blkif_..,u.discard.id)==8   */
+	uint8_t        flag;         
+	blkif_vdev_t   _pad1;        
+        uint32_t       _pad2;        
 	uint64_t       id;
-	blkif_sector_t sector_number;/* start sector idx on disk (r/w only)  */
+	blkif_sector_t sector_number;
 	uint64_t       nr_sectors;
 } __attribute__((__packed__));
 
 struct blkif_x86_64_request_other {
 	uint8_t        _pad1;
 	blkif_vdev_t   _pad2;
-	uint32_t       _pad3;        /* offsetof(blkif_..,u.discard.id)==8   */
-	uint64_t       id;           /* private guest value, echoed in resp  */
+	uint32_t       _pad3;        
+	uint64_t       id;           
 } __attribute__((__packed__));
 
 struct blkif_x86_64_request_indirect {
 	uint8_t        indirect_op;
 	uint16_t       nr_segments;
-	uint32_t       _pad1;        /* offsetof(blkif_..,u.indirect.id)==8   */
+	uint32_t       _pad1;        
 	uint64_t       id;
 	blkif_sector_t sector_number;
 	blkif_vdev_t   handle;
 	uint16_t       _pad2;
 	grant_ref_t    indirect_grefs[BLKIF_MAX_INDIRECT_PAGES_PER_REQUEST];
-	/*
-	 * The maximum number of indirect segments (and pages) that will
-	 * be used is determined by MAX_INDIRECT_SEGMENTS, this value
-	 * is also exported to the guest (via xenstore
-	 * feature-max-indirect-segments entry), so the frontend knows how
-	 * many indirect segments the backend supports.
-	 */
-	uint32_t       _pad3;        /* make it 64 byte aligned */
+	
+	uint32_t       _pad3;        
 } __attribute__((__packed__));
 
 struct blkif_x86_64_request {
-	uint8_t        operation;    /* BLKIF_OP_???                         */
+	uint8_t        operation;    
 	union {
 		struct blkif_x86_64_request_rw rw;
 		struct blkif_x86_64_request_discard discard;
@@ -203,9 +158,7 @@ enum blkif_protocol {
 	BLKIF_PROTOCOL_X86_64 = 3,
 };
 
-/*
- * Default protocol if the frontend doesn't specify one.
- */
+
 #ifdef CONFIG_X86
 #  define BLKIF_PROTOCOL_DEFAULT BLKIF_PROTOCOL_X86_32
 #else
@@ -213,29 +166,29 @@ enum blkif_protocol {
 #endif
 
 struct xen_vbd {
-	/* What the domain refers to this vbd as. */
+	
 	blkif_vdev_t		handle;
-	/* Non-zero -> read-only */
+	
 	unsigned char		readonly;
-	/* VDISK_xxx */
+	
 	unsigned char		type;
-	/* phys device that this vbd maps to. */
+	
 	u32			pdevice;
 	struct block_device	*bdev;
-	/* Cached size parameter. */
+	
 	sector_t		size;
 	unsigned int		flush_support:1;
 	unsigned int		discard_secure:1;
-	/* Connect-time cached feature_persistent parameter value */
+	
 	unsigned int		feature_gnt_persistent_parm:1;
-	/* Persistent grants feature negotiation result */
+	
 	unsigned int		feature_gnt_persistent:1;
 	unsigned int		overflow_max_grants:1;
 };
 
 struct backend_info;
 
-/* Number of requests that we can fit in a ring */
+
 #define XEN_BLKIF_REQS_PER_PAGE		32
 
 struct persistent_gnt {
@@ -248,35 +201,35 @@ struct persistent_gnt {
 	struct list_head remove_node;
 };
 
-/* Per-ring information. */
+
 struct xen_blkif_ring {
-	/* Physical parameters of the comms window. */
+	
 	unsigned int		irq;
 	union blkif_back_rings	blk_rings;
 	void			*blk_ring;
-	/* Private fields. */
+	
 	spinlock_t		blk_ring_lock;
 
 	wait_queue_head_t	wq;
 	atomic_t		inflight;
 	bool			active;
-	/* One thread per blkif ring. */
+	
 	struct task_struct	*xenblkd;
 	unsigned int		waiting_reqs;
 
-	/* List of all 'pending_req' available */
+	
 	struct list_head	pending_free;
-	/* And its spinlock. */
+	
 	spinlock_t		pending_free_lock;
 	wait_queue_head_t	pending_free_wq;
 
-	/* Tree to store persistent grants. */
+	
 	struct rb_root		persistent_gnts;
 	unsigned int		persistent_gnt_c;
 	atomic_t		persistent_gnt_in_use;
 	unsigned long           next_lru;
 
-	/* Statistics. */
+	
 	unsigned long		st_print;
 	unsigned long long	st_rd_req;
 	unsigned long long	st_wr_req;
@@ -286,38 +239,38 @@ struct xen_blkif_ring {
 	unsigned long long	st_rd_sect;
 	unsigned long long	st_wr_sect;
 
-	/* Used by the kworker that offload work from the persistent purge. */
+	
 	struct list_head	persistent_purge_list;
 	struct work_struct	persistent_purge_work;
 
-	/* Buffer of free pages to map grant refs. */
+	
 	struct gnttab_page_cache free_pages;
 
 	struct work_struct	free_work;
-	/* Thread shutdown wait queue. */
+	
 	wait_queue_head_t	shutdown_wq;
 	struct xen_blkif	*blkif;
 };
 
 struct xen_blkif {
-	/* Unique identifier for this interface. */
+	
 	domid_t			domid;
 	unsigned int		handle;
-	/* Comms information. */
+	
 	enum blkif_protocol	blk_protocol;
-	/* The VBD attached to this interface. */
+	
 	struct xen_vbd		vbd;
-	/* Back pointer to the backend_info. */
+	
 	struct backend_info	*be;
 	atomic_t		refcnt;
-	/* for barrier (drain) requests */
+	
 	struct completion	drain_complete;
 	atomic_t		drain;
 
 	struct work_struct	free_work;
 	unsigned int		nr_ring_pages;
 	bool			multi_ref;
-	/* All rings for this device. */
+	
 	struct xen_blkif_ring	*rings;
 	unsigned int		nr_rings;
 	unsigned long		buffer_squeeze_end;
@@ -335,12 +288,7 @@ struct grant_page {
 	grant_ref_t		gref;
 };
 
-/*
- * Each outstanding request that we've passed to the lower device layers has a
- * 'pending_req' allocated to it. Each buffer_head that completes decrements
- * the pendcnt towards zero. When it hits zero, the specified domain has a
- * response queued for it, with the saved 'id' passed back.
- */
+
 struct pending_req {
 	struct xen_blkif_ring   *ring;
 	u64			id;
@@ -350,7 +298,7 @@ struct pending_req {
 	int			status;
 	struct list_head	free_list;
 	struct grant_page	*segments[MAX_INDIRECT_SEGMENTS];
-	/* Indirect descriptors */
+	
 	struct grant_page	*indirect_pages[MAX_INDIRECT_PAGES];
 	struct seg_buf		seg[MAX_INDIRECT_SEGMENTS];
 	struct bio		*biolist[MAX_INDIRECT_SEGMENTS];
@@ -394,4 +342,4 @@ int xen_blkbk_barrier(struct xenbus_transaction xbt,
 struct xenbus_device *xen_blkbk_xenbus(struct backend_info *be);
 void xen_blkbk_unmap_purged_grants(struct work_struct *work);
 
-#endif /* __XEN_BLKIF__BACKEND__COMMON_H__ */
+#endif 

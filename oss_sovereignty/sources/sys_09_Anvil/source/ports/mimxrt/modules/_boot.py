@@ -24,4 +24,4 @@ except:
         os.chdir("/sdcard")
         sys.path.append("/sdcard")
     except:
-        pass  # Fail silently
+        pass  

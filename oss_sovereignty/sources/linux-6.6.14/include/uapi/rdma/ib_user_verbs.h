@@ -1,48 +1,12 @@
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR Linux-OpenIB) */
-/*
- * Copyright (c) 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005, 2006 Cisco Systems.  All rights reserved.
- * Copyright (c) 2005 PathScale, Inc.  All rights reserved.
- * Copyright (c) 2006 Mellanox Technologies.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
+
 
 #ifndef IB_USER_VERBS_H
 #define IB_USER_VERBS_H
 
 #include <linux/types.h>
 
-/*
- * Increment this value if any changes that break userspace ABI
- * compatibility are made.
- */
+
 #define IB_USER_VERBS_ABI_VERSION	6
 #define IB_USER_VERBS_CMD_THRESHOLD    50
 
@@ -105,32 +69,23 @@ enum {
 	IB_USER_VERBS_EX_CMD_MODIFY_CQ
 };
 
-/* see IBA A19.4.1.1 Placement Types */
+
 enum ib_placement_type {
 	IB_FLUSH_GLOBAL = 1U << 0,
 	IB_FLUSH_PERSISTENT = 1U << 1,
 };
 
-/* see IBA A19.4.1.2 Selectivity Level */
+
 enum ib_selectivity_level {
 	IB_FLUSH_RANGE = 0,
 	IB_FLUSH_MR,
 };
 
-/*
- * Make sure that all structs defined in this file remain laid out so
- * that they pack the same way on 32-bit and 64-bit architectures (to
- * avoid incompatibility between 32-bit userspace and 64-bit kernels).
- * Specifically:
- *  - Do not use pointer types -- pass pointers in __u64 instead.
- *  - Make sure that any structure larger than 4 bytes is padded to a
- *    multiple of 8 bytes.  Otherwise the structure size will be
- *    different between 32-bit and 64-bit architectures.
- */
+
 
 struct ib_uverbs_async_event_desc {
 	__aligned_u64 element;
-	__u32 event_type;	/* enum ib_event_type */
+	__u32 event_type;	
 	__u32 reserved;
 };
 
@@ -144,13 +99,7 @@ struct ib_uverbs_cq_moderation_caps {
 	__u32     reserved;
 };
 
-/*
- * All commands from userspace should start with a __u32 command field
- * followed by __u16 in_words and out_words fields (which give the
- * length of the command block and response buffer if any in 32-bit
- * words).  The kernel driver will read these fields first and read
- * the rest of the command struct based on these value.
- */
+
 
 #define IB_USER_VERBS_CMD_COMMAND_MASK 0xff
 #define IB_USER_VERBS_CMD_FLAG_EXTENDED 0x80000000u
@@ -244,10 +193,7 @@ struct ib_uverbs_odp_caps {
 };
 
 struct ib_uverbs_rss_caps {
-	/* Corresponding bit will be set if qp type from
-	 * 'enum ib_qp_type' is supported, e.g.
-	 * supported_qpts |= 1 << IB_QPT_UD
-	 */
+	
 	__u32 supported_qpts;
 	__u32 max_rwq_indirection_tables;
 	__u32 max_rwq_indirection_table_size;
@@ -255,15 +201,15 @@ struct ib_uverbs_rss_caps {
 };
 
 struct ib_uverbs_tm_caps {
-	/* Max size of rendezvous request message */
+	
 	__u32 max_rndv_hdr_size;
-	/* Max number of entries in tag matching list */
+	
 	__u32 max_num_tags;
-	/* TM flags */
+	
 	__u32 flags;
-	/* Max number of outstanding list operations */
+	
 	__u32 max_ops;
-	/* Max number of SGE in tag matching entry */
+	
 	__u32 max_sge;
 	__u32 reserved;
 };
@@ -274,7 +220,7 @@ struct ib_uverbs_ex_query_device_resp {
 	__u32 response_length;
 	struct ib_uverbs_odp_caps odp_caps;
 	__aligned_u64 timestamp_mask;
-	__aligned_u64 hca_core_clock; /* in KHZ */
+	__aligned_u64 hca_core_clock; 
 	__aligned_u64 device_cap_flags_ex;
 	struct ib_uverbs_rss_caps rss_caps;
 	__u32  max_wq_type_rq;
@@ -294,7 +240,7 @@ struct ib_uverbs_query_port {
 };
 
 struct ib_uverbs_query_port_resp {
-	__u32 port_cap_flags;		/* see ib_uverbs_query_port_cap_flags */
+	__u32 port_cap_flags;		
 	__u32 max_msg_sz;
 	__u32 bad_pkey_cntr;
 	__u32 qkey_viol_cntr;
@@ -314,7 +260,7 @@ struct ib_uverbs_query_port_resp {
 	__u8  active_speed;
 	__u8  phys_state;
 	__u8  link_layer;
-	__u8  flags;			/* see ib_uverbs_query_port_flags */
+	__u8  flags;			
 	__u8  reserved;
 };
 
@@ -434,7 +380,7 @@ struct ib_uverbs_ex_create_cq {
 	__u32 comp_vector;
 	__s32 comp_channel;
 	__u32 comp_mask;
-	__u32 flags;  /* bitmask of ib_uverbs_ex_create_cq_flags */
+	__u32 flags;  
 	__u32 reserved;
 };
 
@@ -560,7 +506,7 @@ struct ib_uverbs_qp_attr {
 	struct ib_uverbs_ah_attr ah_attr;
 	struct ib_uverbs_ah_attr alt_ah_attr;
 
-	/* ib_qp_cap */
+	
 	__u32	max_send_wr;
 	__u32	max_recv_wr;
 	__u32	max_send_sge;
@@ -641,7 +587,7 @@ struct ib_uverbs_open_qp {
 	__aligned_u64 driver_data[];
 };
 
-/* also used for open response */
+
 struct ib_uverbs_create_qp_resp {
 	__u32 qp_handle;
 	__u32 qpn;
@@ -660,10 +606,7 @@ struct ib_uverbs_ex_create_qp_resp {
 	__u32 response_length;
 };
 
-/*
- * This struct needs to remain a multiple of 8 bytes to keep the
- * alignment of the modify QP parameters.
- */
+
 struct ib_uverbs_qp_dest {
 	__u8  dgid[16];
 	__u32 flow_label;
@@ -771,12 +714,7 @@ struct ib_uverbs_destroy_qp_resp {
 	__u32 events_reported;
 };
 
-/*
- * The ib_uverbs_sge structure isn't used anywhere, since we assume
- * the ib_sge structure is packed the same way on 32-bit and 64-bit
- * architectures in both kernel and user space.  It's just here to
- * document the ABI.
- */
+
 struct ib_uverbs_sge {
 	__aligned_u64 addr;
 	__u32 length;
@@ -800,13 +738,13 @@ enum ib_uverbs_wr_opcode {
 	IB_UVERBS_WR_MASKED_ATOMIC_FETCH_AND_ADD = 13,
 	IB_UVERBS_WR_FLUSH = 14,
 	IB_UVERBS_WR_ATOMIC_WRITE = 15,
-	/* Review enum ib_wr_opcode before modifying this */
+	
 };
 
 struct ib_uverbs_send_wr {
 	__aligned_u64 wr_id;
 	__u32 num_sge;
-	__u32 opcode;		/* see enum ib_uverbs_wr_opcode */
+	__u32 opcode;		
 	__u32 send_flags;
 	union {
 		__be32 imm_data;
@@ -917,7 +855,7 @@ struct ib_uverbs_flow_spec_hdr {
 	__u32 type;
 	__u16 size;
 	__u16 reserved;
-	/* followed by flow_spec */
+	
 	__aligned_u64 flow_spec_data[0];
 };
 
@@ -1090,14 +1028,7 @@ struct ib_uverbs_flow_spec_esp {
 };
 
 struct ib_uverbs_flow_gre_filter {
-	/* c_ks_res0_ver field is bits 0-15 in offset 0 of a standard GRE header:
-	 * bit 0 - C - checksum bit.
-	 * bit 1 - reserved. set to 0.
-	 * bit 2 - key bit.
-	 * bit 3 - sequence number bit.
-	 * bits 4:12 - reserved. set to 0.
-	 * bits 13:15 - GRE version.
-	 */
+	
 	__be16 c_ks_res0_ver;
 	__be16 protocol;
 	__be32 key;
@@ -1117,12 +1048,7 @@ struct ib_uverbs_flow_spec_gre {
 };
 
 struct ib_uverbs_flow_mpls_filter {
-	/* The field includes the entire MPLS label:
-	 * bits 0:19 - label field.
-	 * bits 20:22 - traffic class field.
-	 * bits 23 - bottom of stack bit.
-	 * bits 24:31 - ttl field.
-	 */
+	
 	__be32 label;
 };
 
@@ -1147,10 +1073,7 @@ struct ib_uverbs_flow_attr {
 	__u8  reserved[2];
 	__u8  port;
 	__u32 flags;
-	/* Following are the optional layers according to user request
-	 * struct ib_flow_spec_xxx
-	 * struct ib_flow_spec_yyy
-	 */
+	
 	struct ib_uverbs_flow_spec_hdr flow_specs[];
 };
 
@@ -1242,7 +1165,7 @@ struct ib_uverbs_ex_create_wq  {
 	__u32 cq_handle;
 	__u32 max_wr;
 	__u32 max_sge;
-	__u32 create_flags; /* Use enum ib_wq_flags */
+	__u32 create_flags; 
 	__u32 reserved;
 };
 
@@ -1272,19 +1195,16 @@ struct ib_uverbs_ex_modify_wq  {
 	__u32 wq_handle;
 	__u32 wq_state;
 	__u32 curr_wq_state;
-	__u32 flags; /* Use enum ib_wq_flags */
-	__u32 flags_mask; /* Use enum ib_wq_flags */
+	__u32 flags; 
+	__u32 flags_mask; 
 };
 
-/* Prevent memory allocation rather than max expected size */
+
 #define IB_USER_VERBS_MAX_LOG_IND_TBL_SIZE 0x0d
 struct ib_uverbs_ex_create_rwq_ind_table  {
 	__u32 comp_mask;
 	__u32 log_ind_tbl_size;
-	/* Following are the wq handles according to log_ind_tbl_size
-	 * wq_handle1
-	 * wq_handle2
-	 */
+	
 	__u32 wq_handles[];
 };
 
@@ -1314,10 +1234,7 @@ struct ib_uverbs_ex_modify_cq {
 
 #define IB_DEVICE_NAME_MAX 64
 
-/*
- * bits 9, 15, 16, 19, 22, 27, 30, 31, 32, 33, 35 and 37 may be set by old
- * kernels and should not be used.
- */
+
 enum ib_uverbs_device_cap_flags {
 	IB_UVERBS_DEVICE_RESIZE_MAX_WR = 1 << 0,
 	IB_UVERBS_DEVICE_BAD_PKEY_CNTR = 1 << 1,
@@ -1328,7 +1245,7 @@ enum ib_uverbs_device_cap_flags {
 	IB_UVERBS_DEVICE_UD_AV_PORT_ENFORCE = 1 << 6,
 	IB_UVERBS_DEVICE_CURR_QP_STATE_MOD = 1 << 7,
 	IB_UVERBS_DEVICE_SHUTDOWN_PORT = 1 << 8,
-	/* IB_UVERBS_DEVICE_INIT_TYPE = 1 << 9, (not in use) */
+	
 	IB_UVERBS_DEVICE_PORT_ACTIVE_EVENT = 1 << 10,
 	IB_UVERBS_DEVICE_SYS_IMAGE_GUID = 1 << 11,
 	IB_UVERBS_DEVICE_RC_RNR_NAK_GEN = 1 << 12,
@@ -1341,16 +1258,16 @@ enum ib_uverbs_device_cap_flags {
 	IB_UVERBS_DEVICE_MEM_WINDOW_TYPE_2A = 1 << 23,
 	IB_UVERBS_DEVICE_MEM_WINDOW_TYPE_2B = 1 << 24,
 	IB_UVERBS_DEVICE_RC_IP_CSUM = 1 << 25,
-	/* Deprecated. Please use IB_UVERBS_RAW_PACKET_CAP_IP_CSUM. */
+	
 	IB_UVERBS_DEVICE_RAW_IP_CSUM = 1 << 26,
 	IB_UVERBS_DEVICE_MANAGED_FLOW_STEERING = 1 << 29,
-	/* Deprecated. Please use IB_UVERBS_RAW_PACKET_CAP_SCATTER_FCS. */
+	
 	IB_UVERBS_DEVICE_RAW_SCATTER_FCS = 1ULL << 34,
 	IB_UVERBS_DEVICE_PCI_WRITE_END_PADDING = 1ULL << 36,
-	/* Flush placement types */
+	
 	IB_UVERBS_DEVICE_FLUSH_GLOBAL = 1ULL << 38,
 	IB_UVERBS_DEVICE_FLUSH_PERSISTENT = 1ULL << 39,
-	/* Atomic write attributes */
+	
 	IB_UVERBS_DEVICE_ATOMIC_WRITE = 1ULL << 40,
 };
 
@@ -1361,4 +1278,4 @@ enum ib_uverbs_raw_packet_caps {
 	IB_UVERBS_RAW_PACKET_CAP_DELAY_DROP = 1 << 3,
 };
 
-#endif /* IB_USER_VERBS_H */
+#endif 

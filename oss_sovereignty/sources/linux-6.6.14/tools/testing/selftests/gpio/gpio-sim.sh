@@ -308,7 +308,7 @@ CHIPNAME=`configfs_chip_name chip bank`
 SYSFS_PATH="/sys/devices/platform/$DEVNAME/$CHIPNAME/sim_gpio0/value"
 test `cat $SYSFS_PATH` = "0" || fail "incorrect value read from sysfs"
 $BASE_DIR/gpio-mockup-cdev -s 1 /dev/`configfs_chip_name chip bank` 0 &
-sleep 0.1 # FIXME Any better way?
+sleep 0.1 
 test `cat $SYSFS_PATH` = "1" || fail "incorrect value read from sysfs"
 kill $!
 remove_chip chip

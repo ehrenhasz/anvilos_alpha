@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+
 #ifndef __XFS_SCRUB_STATS_H__
 #define __XFS_SCRUB_STATS_H__
 
@@ -34,11 +31,7 @@ static inline u64 xchk_stats_elapsed_ns(u64 since)
 {
 	u64 now = xchk_stats_now();
 
-	/*
-	 * If the system doesn't have a high enough resolution clock, charge at
-	 * least one nanosecond so that our stats don't report instantaneous
-	 * runtimes.
-	 */
+	
 	if (now == since)
 		return 1;
 
@@ -54,6 +47,6 @@ static inline u64 xchk_stats_elapsed_ns(u64 since)
 # define xchk_stats_now()			(0)
 # define xchk_stats_elapsed_ns(x)		(0 * (x))
 # define xchk_stats_merge(mp, sm, run)		((void)0)
-#endif /* CONFIG_XFS_ONLINE_SCRUB_STATS */
+#endif 
 
-#endif /* __XFS_SCRUB_STATS_H__ */
+#endif 

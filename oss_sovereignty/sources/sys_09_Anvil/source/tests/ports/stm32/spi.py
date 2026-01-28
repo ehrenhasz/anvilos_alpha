@@ -12,7 +12,7 @@ spi = SPI(1, SPI.CONTROLLER, baudrate=500000)
 spi = SPI(
     1, SPI.CONTROLLER, 500000, polarity=1, phase=0, bits=8, firstbit=SPI.MSB, ti=False, crc=None
 )
-print(str(spi)[:32], str(spi)[53:])  # don't print baudrate/prescaler
+print(str(spi)[:32], str(spi)[53:])  
 spi.init(SPI.PERIPHERAL, phase=1)
 print(spi)
 try:

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2016 Tom Haynes <loghyr@primarydata.com>
- */
+
+
 #ifndef _NFSD_FLEXFILELAYOUTXDR_H
 #define _NFSD_FLEXFILELAYOUTXDR_H 1
 
@@ -47,4 +45,4 @@ __be32 nfsd4_ff_encode_getdeviceinfo(struct xdr_stream *xdr,
 __be32 nfsd4_ff_encode_layoutget(struct xdr_stream *xdr,
 		struct nfsd4_layoutget *lgp);
 
-#endif /* _NFSD_FLEXFILELAYOUTXDR_H */
+#endif 

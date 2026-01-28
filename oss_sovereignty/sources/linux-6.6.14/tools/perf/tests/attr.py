@@ -301,10 +301,10 @@ def setup_log(verbose):
     ch.setFormatter(formatter)
     log.addHandler(ch)
 USAGE = '''%s [OPTIONS]
-  -d dir  # tests dir
-  -p path # perf binary
-  -t test # single test
-  -v      # verbose level
+  -d dir  
+  -p path 
+  -t test 
+  -v      
 ''' % sys.argv[0]
 def main():
     parser = optparse.OptionParser(usage=USAGE)

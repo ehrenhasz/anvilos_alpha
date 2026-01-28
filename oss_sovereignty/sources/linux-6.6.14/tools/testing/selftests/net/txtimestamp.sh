@@ -17,17 +17,17 @@ run_test_v4v6() {
 }
 run_test_tcpudpraw() {
 	local -r args=$@
-	run_test_v4v6 ${args}		# tcp
-	run_test_v4v6 ${args} -u	# udp
-	run_test_v4v6 ${args} -r	# raw
-	run_test_v4v6 ${args} -R	# raw (IPPROTO_RAW)
-	run_test_v4v6 ${args} -P	# pf_packet
+	run_test_v4v6 ${args}		
+	run_test_v4v6 ${args} -u	
+	run_test_v4v6 ${args} -r	
+	run_test_v4v6 ${args} -R	
+	run_test_v4v6 ${args} -P	
 }
 run_test_all() {
 	setup
-	run_test_tcpudpraw		# setsockopt
-	run_test_tcpudpraw -C		# cmsg
-	run_test_tcpudpraw -n		# timestamp w/o data
+	run_test_tcpudpraw		
+	run_test_tcpudpraw -C		
+	run_test_tcpudpraw -n		
 	echo "OK. All tests passed"
 }
 run_test_one() {
@@ -41,7 +41,7 @@ usage() {
 	echo "  -h|--help Help"
 }
 main() {
-	if [[ $# -eq 0 ]]; then
+	if [[ $
 		run_test_all
 	else
 		if [[ "$1" = "-r" || "$1" == "--run" ]]; then

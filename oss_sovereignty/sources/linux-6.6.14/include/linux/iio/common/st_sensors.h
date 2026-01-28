@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * STMicroelectronics sensors library driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+
 
 #ifndef ST_SENSORS_H
 #define ST_SENSORS_H
@@ -24,10 +18,7 @@
 #define LSM9DS0_IMU_DEV_NAME		"lsm9ds0"
 #define LSM303D_IMU_DEV_NAME		"lsm303d"
 
-/*
- * Buffer size max case: 2bytes per channel, 3 channels in total +
- *			 8bytes timestamp channel (s64)
- */
+
 #define ST_SENSORS_MAX_BUFFER_SIZE		(ALIGN(2 * 3, sizeof(s64)) + \
 						 sizeof(s64))
 
@@ -124,33 +115,19 @@ struct st_sensor_sim {
 	u8 value;
 };
 
-/**
- * struct st_sensor_bdu - ST sensor device block data update
- * @addr: address of the register.
- * @mask: mask to write the block data update flag.
- */
+
 struct st_sensor_bdu {
 	u8 addr;
 	u8 mask;
 };
 
-/**
- * struct st_sensor_das - ST sensor device data alignment selection
- * @addr: address of the register.
- * @mask: mask to write the das flag for left alignment.
- */
+
 struct st_sensor_das {
 	u8 addr;
 	u8 mask;
 };
 
-/**
- * struct st_sensor_int_drdy - ST sensor device drdy line parameters
- * @addr: address of INT drdy register.
- * @mask: mask to enable drdy line.
- * @addr_od: address to enable/disable Open Drain on the INT line.
- * @mask_od: mask to enable/disable Open Drain on the INT line.
- */
+
 struct st_sensor_int_drdy {
 	u8 addr;
 	u8 mask;
@@ -158,17 +135,7 @@ struct st_sensor_int_drdy {
 	u8 mask_od;
 };
 
-/**
- * struct st_sensor_data_ready_irq - ST sensor device data-ready interrupt
- * struct int1 - data-ready configuration register for INT1 pin.
- * struct int2 - data-ready configuration register for INT2 pin.
- * @addr_ihl: address to enable/disable active low on the INT lines.
- * @mask_ihl: mask to enable/disable active low on the INT lines.
- * struct stat_drdy - status register of DRDY (data ready) interrupt.
- * struct ig1 - represents the Interrupt Generator 1 of sensors.
- * @en_addr: address of the enable ig1 register.
- * @en_mask: mask to write the on/off value for enable.
- */
+
 struct st_sensor_data_ready_irq {
 	struct st_sensor_int_drdy int1;
 	struct st_sensor_int_drdy int2;
@@ -184,23 +151,7 @@ struct st_sensor_data_ready_irq {
 	} ig1;
 };
 
-/**
- * struct st_sensor_settings - ST specific sensor settings
- * @wai: Contents of WhoAmI register.
- * @wai_addr: The address of WhoAmI register.
- * @sensors_supported: List of supported sensors by struct itself.
- * @ch: IIO channels for the sensor.
- * @odr: Output data rate register and ODR list available.
- * @pw: Power register of the sensor.
- * @enable_axis: Enable one or more axis of the sensor.
- * @fs: Full scale register and full scale list available.
- * @bdu: Block data update register.
- * @das: Data Alignment Selection register.
- * @drdy_irq: Data ready register of the sensor.
- * @sim: SPI serial interface mode register of the sensor.
- * @multi_read_bit: Use or not particular bit for [I2C/SPI] multi-read.
- * @bootime: samples to discard when sensor passing from power-down to power-up.
- */
+
 struct st_sensor_settings {
 	u8 wai;
 	u8 wai_addr;
@@ -219,25 +170,7 @@ struct st_sensor_settings {
 	unsigned int bootime;
 };
 
-/**
- * struct st_sensor_data - ST sensor device status
- * @trig: The trigger in use by the core driver.
- * @mount_matrix: The mounting matrix of the sensor.
- * @sensor_settings: Pointer to the specific sensor settings in use.
- * @current_fullscale: Maximum range of measure by the sensor.
- * @regmap: Pointer to specific sensor regmap configuration.
- * @enabled: Status of the sensor (false->off, true->on).
- * @odr: Output data rate of the sensor [Hz].
- * num_data_channels: Number of data channels used in buffer.
- * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
- * @int_pin_open_drain: Set the interrupt/DRDY to open drain.
- * @irq: the IRQ number.
- * @edge_irq: the IRQ triggers on edges and need special handling.
- * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
- * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
- * @buffer_data: Data used by buffer part.
- * @odr_lock: Local lock for preventing concurrent ODR accesses/changes
- */
+
 struct st_sensor_data {
 	struct iio_trigger *trig;
 	struct iio_mount_matrix mount_matrix;
@@ -318,20 +251,20 @@ ssize_t st_sensors_sysfs_scale_avail(struct device *dev,
 
 void st_sensors_dev_name_probe(struct device *dev, char *name, int len);
 
-/* Accelerometer */
+
 const struct st_sensor_settings *st_accel_get_settings(const char *name);
 int st_accel_common_probe(struct iio_dev *indio_dev);
 
-/* Gyroscope */
+
 const struct st_sensor_settings *st_gyro_get_settings(const char *name);
 int st_gyro_common_probe(struct iio_dev *indio_dev);
 
-/* Magnetometer */
+
 const struct st_sensor_settings *st_magn_get_settings(const char *name);
 int st_magn_common_probe(struct iio_dev *indio_dev);
 
-/* Pressure */
+
 const struct st_sensor_settings *st_press_get_settings(const char *name);
 int st_press_common_probe(struct iio_dev *indio_dev);
 
-#endif /* ST_SENSORS_H */
+#endif 

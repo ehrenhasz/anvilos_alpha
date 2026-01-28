@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
-**  Copyright (C) 2004-2009 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
+
+
 
 #ifndef __LOWCOMMS_DOT_H__
 #define __LOWCOMMS_DOT_H__
@@ -20,16 +12,13 @@
 
 #define CONN_HASH_SIZE 32
 
-/* This is deliberately very simple because most clusters have simple
- * sequential nodeids, so we should be able to go straight to a connection
- * struct in the array
- */
+
 static inline int nodeid_hash(int nodeid)
 {
 	return nodeid & (CONN_HASH_SIZE-1);
 }
 
-/* check if dlm is running */
+
 bool dlm_lowcomms_is_running(void);
 
 int dlm_lowcomms_start(void);
@@ -52,5 +41,5 @@ void dlm_midcomms_receive_done(int nodeid);
 struct kmem_cache *dlm_lowcomms_writequeue_cache_create(void);
 struct kmem_cache *dlm_lowcomms_msg_cache_create(void);
 
-#endif				/* __LOWCOMMS_DOT_H__ */
+#endif				
 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+
 
 #ifndef __LIB_HV_H__
 #define __LIB_HV_H__
@@ -19,4 +19,4 @@ int mlx5_hv_register_invalidate(struct mlx5_core_dev *dev, void *context,
 void mlx5_hv_unregister_invalidate(struct mlx5_core_dev *dev);
 #endif
 
-#endif /* __LIB_HV_H__ */
+#endif 

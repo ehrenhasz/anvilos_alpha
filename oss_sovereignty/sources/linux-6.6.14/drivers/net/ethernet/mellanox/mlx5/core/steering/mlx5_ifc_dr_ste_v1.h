@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2020 NVIDIA CORPORATION. All rights reserved. */
+
+
 
 #ifndef MLX5_IFC_DR_STE_V1_H
 #define MLX5_IFC_DR_STE_V1_H
@@ -466,4 +466,4 @@ struct mlx5_ifc_ste_icmp_v1_bits {
 	u8         reserved_at_60[0x20];
 };
 
-#endif /* MLX5_IFC_DR_STE_V1_H */
+#endif 

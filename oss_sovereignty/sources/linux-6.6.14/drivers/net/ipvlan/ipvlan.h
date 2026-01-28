@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014 Mahesh Bandewar <maheshb@google.com>
- */
+
+
 #ifndef __IPVLAN_H
 #define __IPVLAN_H
 
@@ -73,15 +71,15 @@ struct ipvl_dev {
 };
 
 struct ipvl_addr {
-	struct ipvl_dev		*master; /* Back pointer to master */
+	struct ipvl_dev		*master; 
 	union {
-		struct in6_addr	ip6;	 /* IPv6 address on logical interface */
-		struct in_addr	ip4;	 /* IPv4 address on logical interface */
+		struct in6_addr	ip6;	 
+		struct in_addr	ip4;	 
 	} ipu;
 #define ip6addr	ipu.ip6
 #define ip4addr ipu.ip4
-	struct hlist_node	hlnode;  /* Hash-table linkage */
-	struct list_head	anode;   /* logical-interface linkage */
+	struct hlist_node	hlnode;  
+	struct list_head	anode;   
 	ipvl_hdr_type		atype;
 	struct rcu_head		rcu;
 };
@@ -201,11 +199,11 @@ static inline int ipvlan_l3s_init(void)
 static inline void ipvlan_l3s_cleanup(void)
 {
 }
-#endif /* CONFIG_IPVLAN_L3S */
+#endif 
 
 static inline bool netif_is_ipvlan_port(const struct net_device *dev)
 {
 	return rcu_access_pointer(dev->rx_handler) == ipvlan_handle_frame;
 }
 
-#endif /* __IPVLAN_H */
+#endif 

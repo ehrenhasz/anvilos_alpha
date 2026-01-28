@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "meson-g12b-s922x.dtsi"
-#include "meson-g12b-odroid-n2.dtsi"
-/ {
-	compatible = "hardkernel,odroid-n2", "amlogic,s922x", "amlogic,g12b";
-	model = "Hardkernel ODROID-N2";
-};

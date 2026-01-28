@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019, Intel Corporation. */
+
+
 
 #ifndef _ICE_XSK_H_
 #define _ICE_XSK_H_
@@ -77,5 +77,5 @@ ice_realloc_zc_buf(struct ice_vsi __always_unused *vsi,
 {
 	return 0;
 }
-#endif /* CONFIG_XDP_SOCKETS */
-#endif /* !_ICE_XSK_H_ */
+#endif 
+#endif 

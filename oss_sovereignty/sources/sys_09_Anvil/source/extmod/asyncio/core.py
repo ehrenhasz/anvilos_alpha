@@ -32,7 +32,7 @@ def sleep(t):
 class IOQueue:
     def __init__(self):
         self.poller = select.poll()
-        self.map = {}  # maps id(stream) to [task_waiting_read, task_waiting_write, stream]
+        self.map = {}  
     def _enqueue(self, s, idx):
         if id(s) not in self.map:
             entry = [None, None, s]
@@ -56,7 +56,7 @@ class IOQueue:
     def remove(self, task):
         while True:
             del_s = None
-            for k in self.map:  # Iterate without allocating on the heap
+            for k in self.map:  
                 q0, q1, s = self.map[k]
                 if q0 is task or q1 is task:
                     del_s = s
@@ -90,8 +90,8 @@ def create_task(coro):
     return t
 def run_until_complete(main_task=None):
     global cur_task
-    excs_all = (CancelledError, Exception)  # To prevent heap allocation in loop
-    excs_stop = (CancelledError, StopIteration)  # To prevent heap allocation in loop
+    excs_all = (CancelledError, Exception)  
+    excs_stop = (CancelledError, StopIteration)  
     while True:
         dt = 1
         while dt > 0:

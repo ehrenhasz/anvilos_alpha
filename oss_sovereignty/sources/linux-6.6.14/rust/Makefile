@@ -1,13 +1,13 @@
-# SPDX-License-Identifier: GPL-2.0
 
-# Where to place rustdoc generated documentation
+
+
 rustdoc_output := $(objtree)/Documentation/output/rust/rustdoc
 
 obj-$(CONFIG_RUST) += core.o compiler_builtins.o
 always-$(CONFIG_RUST) += exports_core_generated.h
 
-# Missing prototypes are expected in the helpers since these are exported
-# for Rust only, thus there is no header nor prototypes.
+
+
 obj-$(CONFIG_RUST) += helpers.o
 CFLAGS_REMOVE_helpers.o = -Wmissing-prototypes -Wmissing-declarations
 
@@ -36,10 +36,10 @@ always-$(CONFIG_RUST_KERNEL_DOCTESTS) += doctests_kernel_generated_kunit.c
 obj-$(CONFIG_RUST_KERNEL_DOCTESTS) += doctests_kernel_generated.o
 obj-$(CONFIG_RUST_KERNEL_DOCTESTS) += doctests_kernel_generated_kunit.o
 
-# Avoids running `$(RUSTC)` for the sysroot when it may not be available.
+
 ifdef CONFIG_RUST
 
-# `$(rust_flags)` is passed in case the user added `--sysroot`.
+
 rustc_sysroot := $(shell $(RUSTC) $(rust_flags) --print sysroot)
 rustc_host_target := $(shell $(RUSTC) --version --verbose | grep -F 'host: ' | cut -d' ' -f2)
 RUST_LIB_SRC ?= $(rustc_sysroot)/lib/rustlib/src/rust/library
@@ -80,17 +80,17 @@ quiet_cmd_rustdoc = RUSTDOC $(if $(rustdoc_host),H, ) $<
 		--crate-name $(subst rustdoc-,,$@) \
 		@$(objtree)/include/generated/rustc_cfg $<
 
-# The `html_logo_url` and `html_favicon_url` forms of the `doc` attribute
-# can be used to specify a custom logo. However:
-#   - The given value is used as-is, thus it cannot be relative or a local file
-#     (unlike the non-custom case) since the generated docs have subfolders.
-#   - It requires adding it to every crate.
-#   - It requires changing `core` which comes from the sysroot.
-#
-# Using `-Zcrate-attr` would solve the last two points, but not the first.
-# The https://github.com/rust-lang/rfcs/pull/3226 RFC suggests two new
-# command-like flags to solve the issue. Meanwhile, we use the non-custom case
-# and then retouch the generated files.
+
+
+
+
+
+
+
+
+
+
+
 rustdoc: rustdoc-core rustdoc-macros rustdoc-compiler_builtins \
     rustdoc-alloc rustdoc-kernel
 	$(Q)cp $(srctree)/Documentation/images/logo.svg $(rustdoc_output)/static.files/
@@ -115,10 +115,10 @@ rustdoc-core: $(RUST_LIB_SRC)/core/src/lib.rs FORCE
 rustdoc-compiler_builtins: $(src)/compiler_builtins.rs rustdoc-core FORCE
 	$(call if_changed,rustdoc)
 
-# We need to allow `rustdoc::broken_intra_doc_links` because some
-# `no_global_oom_handling` functions refer to non-`no_global_oom_handling`
-# functions. Ideally `rustdoc` would have a way to distinguish broken links
-# due to things that are "configured out" vs. entirely non-existing ones.
+
+
+
+
 rustdoc-alloc: private rustc_target_flags = $(alloc-cfgs) \
     -Arustdoc::broken_intra_doc_links
 rustdoc-alloc: $(src)/alloc/lib.rs rustdoc-core rustdoc-compiler_builtins FORCE
@@ -188,8 +188,8 @@ quiet_cmd_rustdoc_test_kernel = RUSTDOC TK $<
     $(objtree)/scripts/rustdoc_test_gen FORCE
 	$(call if_changed,rustdoc_test_kernel)
 
-# We cannot use `-Zpanic-abort-tests` because some tests are dynamic,
-# so for the moment we skip `-Cpanic=abort`.
+
+
 quiet_cmd_rustc_test = RUSTC T  $<
       cmd_rustc_test = \
 	OBJTREE=$(abspath $(objtree)) \
@@ -204,33 +204,33 @@ quiet_cmd_rustc_test = RUSTC T  $<
 
 rusttest: rusttest-macros rusttest-kernel
 
-# This prepares a custom sysroot with our custom `alloc` instead of
-# the standard one.
-#
-# This requires several hacks:
-#   - Unlike `core` and `alloc`, `std` depends on more than a dozen crates,
-#     including third-party crates that need to be downloaded, plus custom
-#     `build.rs` steps. Thus hardcoding things here is not maintainable.
-#   - `cargo` knows how to build the standard library, but it is an unstable
-#     feature so far (`-Zbuild-std`).
-#   - `cargo` only considers the use case of building the standard library
-#     to use it in a given package. Thus we need to create a dummy package
-#     and pick the generated libraries from there.
-#   - Since we only keep a subset of upstream `alloc` in-tree, we need
-#     to recreate it on the fly by putting our sources on top.
-#   - The usual ways of modifying the dependency graph in `cargo` do not seem
-#     to apply for the `-Zbuild-std` steps, thus we have to mislead it
-#     by modifying the sources in the sysroot.
-#   - To avoid messing with the user's Rust installation, we create a clone
-#     of the sysroot. However, `cargo` ignores `RUSTFLAGS` in the `-Zbuild-std`
-#     steps, thus we use a wrapper binary passed via `RUSTC` to pass the flag.
-#
-# In the future, we hope to avoid the whole ordeal by either:
-#   - Making the `test` crate not depend on `std` (either improving upstream
-#     or having our own custom crate).
-#   - Making the tests run in kernel space (requires the previous point).
-#   - Making `std` and friends be more like a "normal" crate, so that
-#     `-Zbuild-std` and related hacks are not needed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 quiet_cmd_rustsysroot = RUSTSYSROOT
       cmd_rustsysroot = \
 	rm -rf $(objtree)/$(obj)/test; \
@@ -238,7 +238,7 @@ quiet_cmd_rustsysroot = RUSTSYSROOT
 	cp -a $(rustc_sysroot) $(objtree)/$(obj)/test/sysroot; \
 	cp -r $(srctree)/$(src)/alloc/* \
 		$(objtree)/$(obj)/test/sysroot/lib/rustlib/src/rust/library/alloc/src; \
-	echo '\#!/bin/sh' > $(objtree)/$(obj)/test/rustc_sysroot; \
+	echo '\
 	echo "$(RUSTC) --sysroot=$(abspath $(objtree)/$(obj)/test/sysroot) \"\$$@\"" \
 		>> $(objtree)/$(obj)/test/rustc_sysroot; \
 	chmod u+x $(objtree)/$(obj)/test/rustc_sysroot; \
@@ -270,12 +270,12 @@ rusttest-kernel: $(src)/kernel/lib.rs rusttest-prepare \
 ifdef CONFIG_CC_IS_CLANG
 bindgen_c_flags = $(c_flags)
 else
-# bindgen relies on libclang to parse C. Ideally, bindgen would support a GCC
-# plugin backend and/or the Clang driver would be perfectly compatible with GCC.
-#
-# For the moment, here we are tweaking the flags on the fly. This is a hack,
-# and some kernel configurations may not work (e.g. `GCC_PLUGIN_RANDSTRUCT`
-# if we end up using one of those structs).
+
+
+
+
+
+
 bindgen_skip_c_flags := -mno-fp-ret-in-387 -mpreferred-stack-boundary=% \
 	-mskip-rax-setup -mgeneral-regs-only -msign-return-address=% \
 	-mindirect-branch=thunk-extern -mindirect-branch-register \
@@ -292,22 +292,22 @@ bindgen_skip_c_flags := -mno-fp-ret-in-387 -mpreferred-stack-boundary=% \
 	-fstrict-flex-arrays=% \
 	--param=% --param asan-%
 
-# Derived from `scripts/Makefile.clang`.
+
 BINDGEN_TARGET_x86	:= x86_64-linux-gnu
 BINDGEN_TARGET		:= $(BINDGEN_TARGET_$(SRCARCH))
 
-# All warnings are inhibited since GCC builds are very experimental,
-# many GCC warnings are not supported by Clang, they may only appear in
-# some configurations, with new GCC versions, etc.
+
+
+
 bindgen_extra_c_flags = -w --target=$(BINDGEN_TARGET)
 
-# Auto variable zero-initialization requires an additional special option with
-# clang that is going to be removed sometime in the future (likely in
-# clang-18), so make sure to pass this option only if clang supports it
-# (libclang major version < 16).
-#
-# https://github.com/llvm/llvm-project/issues/44842
-# https://github.com/llvm/llvm-project/blob/llvmorg-16.0.0-rc2/clang/docs/ReleaseNotes.rst#deprecated-compiler-flags
+
+
+
+
+
+
+
 ifdef CONFIG_INIT_STACK_ALL_ZERO
 libclang_maj_ver=$(shell $(BINDGEN) $(srctree)/scripts/rust_is_available_bindgen_libclang.h 2>&1 | sed -ne 's/.*clang version \([0-9]*\).*/\1/p')
 ifeq ($(shell expr $(libclang_maj_ver) \< 16), 1)
@@ -336,28 +336,28 @@ quiet_cmd_bindgen = BINDGEN $@
 		$(bindgen_target_cflags) $(bindgen_target_extra)
 
 $(obj)/bindings/bindings_generated.rs: private bindgen_target_flags = \
-    $(shell grep -v '^#\|^$$' $(srctree)/$(src)/bindgen_parameters)
+    $(shell grep -v '^
 $(obj)/bindings/bindings_generated.rs: $(src)/bindings/bindings_helper.h \
     $(src)/bindgen_parameters FORCE
 	$(call if_changed_dep,bindgen)
 
 $(obj)/uapi/uapi_generated.rs: private bindgen_target_flags = \
-    $(shell grep -v '^#\|^$$' $(srctree)/$(src)/bindgen_parameters)
+    $(shell grep -v '^
 $(obj)/uapi/uapi_generated.rs: $(src)/uapi/uapi_helper.h \
     $(src)/bindgen_parameters FORCE
 	$(call if_changed_dep,bindgen)
 
-# See `CFLAGS_REMOVE_helpers.o` above. In addition, Clang on C does not warn
-# with `-Wmissing-declarations` (unlike GCC), so it is not strictly needed here
-# given it is `libclang`; but for consistency, future Clang changes and/or
-# a potential future GCC backend for `bindgen`, we disable it too.
+
+
+
+
 $(obj)/bindings/bindings_helpers_generated.rs: private bindgen_target_flags = \
     --blocklist-type '.*' --allowlist-var '' \
     --allowlist-function 'rust_helper_.*'
 $(obj)/bindings/bindings_helpers_generated.rs: private bindgen_target_cflags = \
     -I$(objtree)/$(obj) -Wno-missing-prototypes -Wno-missing-declarations
 $(obj)/bindings/bindings_helpers_generated.rs: private bindgen_target_extra = ; \
-    sed -Ei 's/pub fn rust_helper_([a-zA-Z0-9_]*)/#[link_name="rust_helper_\1"]\n    pub fn \1/g' $@
+    sed -Ei 's/pub fn rust_helper_([a-zA-Z0-9_]*)/
 $(obj)/bindings/bindings_helpers_generated.rs: $(src)/helpers.c FORCE
 	$(call if_changed_dep,bindgen)
 
@@ -387,9 +387,9 @@ quiet_cmd_rustc_procmacro = $(RUSTC_OR_CLIPPY_QUIET) P $@
 		--crate-type proc-macro \
 		--crate-name $(patsubst lib%.so,%,$(notdir $@)) $<
 
-# Procedural macros can only be used with the `rustc` that compiled it.
-# Therefore, to get `libmacros.so` automatically recompiled when the compiler
-# version changes, we add `core.o` as a dependency (even if it is not needed).
+
+
+
 $(obj)/libmacros.so: $(src)/macros/lib.rs $(obj)/core.o FORCE
 	$(call if_changed_dep,rustc_procmacro)
 
@@ -418,7 +418,7 @@ redirect-intrinsics = \
 	__udivmodti4 __udivti3 __umodti3
 
 ifneq ($(or $(CONFIG_ARM64),$(and $(CONFIG_RISCV),$(CONFIG_64BIT))),)
-	# These intrinsics are defined for ARM64 and RISCV64
+	
 	redirect-intrinsics += \
 		__ashrti3 \
 		__ashlti3 __lshrti3
@@ -461,4 +461,4 @@ $(obj)/kernel.o: $(src)/kernel/lib.rs $(obj)/alloc.o $(obj)/build_error.o \
     $(obj)/libmacros.so $(obj)/bindings.o $(obj)/uapi.o FORCE
 	$(call if_changed_dep,rustc_library)
 
-endif # CONFIG_RUST
+endif 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #ifndef _LINUX_RWBASE_RT_H
 #define _LINUX_RWBASE_RT_H
 
@@ -36,4 +36,4 @@ static __always_inline bool rw_base_is_contended(struct rwbase_rt *rwb)
 	return atomic_read(&rwb->readers) > 0;
 }
 
-#endif /* _LINUX_RWBASE_RT_H */
+#endif 

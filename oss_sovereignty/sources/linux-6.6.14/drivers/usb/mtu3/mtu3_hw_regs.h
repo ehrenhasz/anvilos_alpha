@@ -1,26 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mtu3_hw_regs.h - MediaTek USB3 DRD register and field definitions
- *
- * Copyright (C) 2016 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
+
+
 
 #ifndef _SSUSB_HW_REGS_H_
 #define _SSUSB_HW_REGS_H_
 
-/* segment offset of MAC register */
+
 #define SSUSB_DEV_BASE		0x0000
 #define SSUSB_EPCTL_CSR_BASE	0x0800
 #define SSUSB_USB3_MAC_CSR_BASE	0x1400
 #define SSUSB_USB3_SYS_CSR_BASE	0x1400
 #define SSUSB_USB2_CSR_BASE	0x2400
 
-/* IPPC register in Infra */
+
 #define SSUSB_SIFSLV_IPPC_BASE	0x0000
 
-/* --------------- SSUSB_DEV REGISTER DEFINITION --------------- */
+
 
 #define U3D_LV1ISR		(SSUSB_DEV_BASE + 0x0000)
 #define U3D_LV1IER		(SSUSB_DEV_BASE + 0x0004)
@@ -90,9 +84,9 @@
 #define U3D_CAP_EPINFO		(SSUSB_DEV_BASE + 0x0C10)
 #define U3D_MISC_CTRL		(SSUSB_DEV_BASE + 0x0C84)
 
-/*---------------- SSUSB_DEV FIELD DEFINITION ---------------*/
 
-/* U3D_LV1ISR */
+
+
 #define EP_CTRL_INTR		BIT(5)
 #define MAC2_INTR		BIT(4)
 #define DMA_INTR		BIT(3)
@@ -100,16 +94,16 @@
 #define QMU_INTR		BIT(1)
 #define BMU_INTR		BIT(0)
 
-/* U3D_LV1IECR */
+
 #define LV1IECR_MSK		GENMASK(31, 0)
 
-/* U3D_EPISR */
+
 #define EPRISR(x)		(BIT(16) << (x))
 #define SETUPENDISR		BIT(16)
 #define EPTISR(x)		(BIT(0) << (x))
 #define EP0ISR			BIT(0)
 
-/* U3D_EP0CSR */
+
 #define EP0_SENDSTALL		BIT(25)
 #define EP0_FIFOFULL		BIT(23)
 #define EP0_SENTSTALL		BIT(22)
@@ -122,7 +116,7 @@
 #define EP0_MAXPKTSZ(x)		((x) & EP0_MAXPKTSZ_MSK)
 #define EP0_W1C_BITS	(~(EP0_RXPKTRDY | EP0_SETUPPKTRDY | EP0_SENTSTALL))
 
-/* U3D_TX1CSR0 */
+
 #define TX_DMAREQEN		BIT(29)
 #define TX_FIFOFULL		BIT(25)
 #define TX_FIFOEMPTY		BIT(24)
@@ -134,7 +128,7 @@
 #define TX_TXMAXPKTSZ(x)	((x) & TX_TXMAXPKTSZ_MSK)
 #define TX_W1C_BITS		(~(TX_SENTSTALL))
 
-/* U3D_TX1CSR1 */
+
 #define TX_MAX_PKT_G2(x)	(((x) & 0xff) << 24)
 #define TX_MULT_G2(x)		(((x) & 0x7) << 21)
 #define TX_MULT_OG(x)		(((x) & 0x3) << 22)
@@ -153,18 +147,18 @@
 	(g2c) ? TX_MAX_PKT_G2(x_) : TX_MAX_PKT_OG(x_);	\
 })
 
-/* for TX_TYPE & RX_TYPE */
+
 #define TYPE_BULK		(0x0)
 #define TYPE_INT		(0x1)
 #define TYPE_ISO		(0x2)
 #define TYPE_MASK		(0x3)
 
-/* U3D_TX1CSR2 */
+
 #define TX_BINTERVAL(x)		(((x) & 0xff) << 24)
 #define TX_FIFOSEGSIZE(x)	(((x) & 0xf) << 16)
 #define TX_FIFOADDR(x)		(((x) & 0x1fff) << 0)
 
-/* U3D_RX1CSR0 */
+
 #define RX_DMAREQEN		BIT(29)
 #define RX_SENTSTALL		BIT(22)
 #define RX_SENDSTALL		BIT(21)
@@ -173,7 +167,7 @@
 #define RX_RXMAXPKTSZ(x)	((x) & RX_RXMAXPKTSZ_MSK)
 #define RX_W1C_BITS		(~(RX_SENTSTALL | RX_RXPKTRDY))
 
-/* U3D_RX1CSR1 */
+
 #define RX_MAX_PKT_G2(x)	(((x) & 0xff) << 24)
 #define RX_MULT_G2(x)		(((x) & 0x7) << 21)
 #define RX_MULT_OG(x)		(((x) & 0x3) << 22)
@@ -192,42 +186,42 @@
 	(g2c) ? RX_MAX_PKT_G2(x_) : RX_MAX_PKT_OG(x_);	\
 })
 
-/* U3D_RX1CSR2 */
+
 #define RX_BINTERVAL(x)		(((x) & 0xff) << 24)
 #define RX_FIFOSEGSIZE(x)	(((x) & 0xf) << 16)
 #define RX_FIFOADDR(x)		(((x) & 0x1fff) << 0)
 
-/* U3D_QCR0 */
+
 #define QMU_RX_CS_EN(x)		(BIT(16) << (x))
 #define QMU_TX_CS_EN(x)		(BIT(0) << (x))
 #define QMU_CS16B_EN		BIT(0)
 
-/* U3D_QCR1 */
+
 #define QMU_TX_ZLP(x)		(BIT(0) << (x))
 
-/* U3D_QCR3 */
+
 #define QMU_RX_COZ(x)		(BIT(16) << (x))
 #define QMU_RX_ZLP(x)		(BIT(0) << (x))
 
-/* U3D_TXQHIAR1 */
-/* U3D_RXQHIAR1 */
+
+
 #define QMU_LAST_DONE_PTR_HI(x)	(((x) >> 16) & 0xf)
 #define QMU_CUR_GPD_ADDR_HI(x)	(((x) >> 8) & 0xf)
 #define QMU_START_ADDR_HI_MSK	GENMASK(3, 0)
 #define QMU_START_ADDR_HI(x)	(((x) & 0xf) << 0)
 
-/* U3D_TXQCSR1 */
-/* U3D_RXQCSR1 */
+
+
 #define QMU_Q_ACTIVE		BIT(15)
 #define QMU_Q_STOP		BIT(2)
 #define QMU_Q_RESUME		BIT(1)
 #define QMU_Q_START		BIT(0)
 
-/* U3D_QISAR0, U3D_QIER0, U3D_QIESR0, U3D_QIECR0 */
+
 #define QMU_RX_DONE_INT(x)	(BIT(16) << (x))
 #define QMU_TX_DONE_INT(x)	(BIT(0) << (x))
 
-/* U3D_QISAR1, U3D_QIER1, U3D_QIESR1, U3D_QIECR1 */
+
 #define RXQ_ZLPERR_INT		BIT(20)
 #define RXQ_LENERR_INT		BIT(18)
 #define RXQ_CSERR_INT		BIT(17)
@@ -236,28 +230,28 @@
 #define TXQ_CSERR_INT		BIT(1)
 #define TXQ_EMPTY_INT		BIT(0)
 
-/* U3D_TQERRIR0, U3D_TQERRIER0, U3D_TQERRIESR0, U3D_TQERRIECR0 */
+
 #define QMU_TX_LEN_ERR(x)	(BIT(16) << (x))
 #define QMU_TX_CS_ERR(x)	(BIT(0) << (x))
 
-/* U3D_RQERRIR0, U3D_RQERRIER0, U3D_RQERRIESR0, U3D_RQERRIECR0 */
+
 #define QMU_RX_LEN_ERR(x)	(BIT(16) << (x))
 #define QMU_RX_CS_ERR(x)	(BIT(0) << (x))
 
-/* U3D_RQERRIR1, U3D_RQERRIER1, U3D_RQERRIESR1, U3D_RQERRIECR1 */
+
 #define QMU_RX_ZLP_ERR(n)	(BIT(16) << (n))
 
-/* U3D_CAP_EPINFO */
+
 #define CAP_RX_EP_NUM(x)	(((x) >> 8) & 0x1f)
 #define CAP_TX_EP_NUM(x)	((x) & 0x1f)
 
-/* U3D_MISC_CTRL */
+
 #define DMA_ADDR_36BIT		BIT(31)
 #define VBUS_ON			BIT(1)
 #define VBUS_FRC_EN		BIT(0)
 
 
-/*---------------- SSUSB_EPCTL_CSR REGISTER DEFINITION ----------------*/
+
 
 #define U3D_DEVICE_CONF			(SSUSB_EPCTL_CSR_BASE + 0x0000)
 #define U3D_EP_RST			(SSUSB_EPCTL_CSR_BASE + 0x0004)
@@ -265,9 +259,9 @@
 #define U3D_DEV_LINK_INTR_ENABLE	(SSUSB_EPCTL_CSR_BASE + 0x0050)
 #define U3D_DEV_LINK_INTR		(SSUSB_EPCTL_CSR_BASE + 0x0054)
 
-/*---------------- SSUSB_EPCTL_CSR FIELD DEFINITION ----------------*/
 
-/* U3D_DEVICE_CONF */
+
+
 #define DEV_ADDR_MSK		GENMASK(30, 24)
 #define DEV_ADDR(x)		((0x7f & (x)) << 24)
 #define HW_USB2_3_SEL		BIT(18)
@@ -275,18 +269,18 @@
 #define SW_USB2_3_SEL		BIT(16)
 #define SSUSB_DEV_SPEED(x)	((x) & 0x7)
 
-/* U3D_EP_RST */
+
 #define EP1_IN_RST		BIT(17)
 #define EP1_OUT_RST		BIT(1)
 #define EP_RST(is_in, epnum)	(((is_in) ? BIT(16) : BIT(0)) << (epnum))
 #define EP0_RST			BIT(0)
 
-/* U3D_DEV_LINK_INTR_ENABLE */
-/* U3D_DEV_LINK_INTR */
+
+
 #define SSUSB_DEV_SPEED_CHG_INTR	BIT(0)
 
 
-/*---------------- SSUSB_USB3_MAC_CSR REGISTER DEFINITION ----------------*/
+
 
 #define U3D_LTSSM_CTRL		(SSUSB_USB3_MAC_CSR_BASE + 0x0010)
 #define U3D_USB3_CONFIG		(SSUSB_USB3_MAC_CSR_BASE + 0x001C)
@@ -297,23 +291,23 @@
 
 #define U3D_U3U2_SWITCH_CTRL	(SSUSB_USB3_MAC_CSR_BASE + 0x0170)
 
-/*---------------- SSUSB_USB3_MAC_CSR FIELD DEFINITION ----------------*/
 
-/* U3D_LTSSM_CTRL */
+
+
 #define FORCE_POLLING_FAIL	BIT(4)
 #define FORCE_RXDETECT_FAIL	BIT(3)
 #define SOFT_U3_EXIT_EN		BIT(2)
 #define COMPLIANCE_EN		BIT(1)
 #define U1_GO_U2_EN		BIT(0)
 
-/* U3D_USB3_CONFIG */
+
 #define USB3_EN			BIT(0)
 
-/* U3D_LINK_STATE_MACHINE */
+
 #define LTSSM_STATE(x)	((x) & 0x1f)
 
-/* U3D_LTSSM_INTR_ENABLE */
-/* U3D_LTSSM_INTR */
+
+
 #define U3_RESUME_INTR		BIT(18)
 #define U3_LFPS_TMOUT_INTR	BIT(17)
 #define VBUS_FALL_INTR		BIT(16)
@@ -334,10 +328,10 @@
 #define SS_DISABLE_INTR		BIT(1)
 #define SS_INACTIVE_INTR	BIT(0)
 
-/* U3D_U3U2_SWITCH_CTRL */
+
 #define SOFTCON_CLR_AUTO_EN	BIT(0)
 
-/*---------------- SSUSB_USB3_SYS_CSR REGISTER DEFINITION ----------------*/
+
 
 #define U3D_LINK_UX_INACT_TIMER	(SSUSB_USB3_SYS_CSR_BASE + 0x020C)
 #define U3D_LINK_POWER_CONTROL	(SSUSB_USB3_SYS_CSR_BASE + 0x0210)
@@ -345,16 +339,16 @@
 #define U3D_DEV_NOTIF_0		(SSUSB_USB3_SYS_CSR_BASE + 0x0290)
 #define U3D_DEV_NOTIF_1		(SSUSB_USB3_SYS_CSR_BASE + 0x0294)
 
-/*---------------- SSUSB_USB3_SYS_CSR FIELD DEFINITION ----------------*/
 
-/* U3D_LINK_UX_INACT_TIMER */
+
+
 #define DEV_U2_INACT_TIMEOUT_MSK	GENMASK(23, 16)
 #define DEV_U2_INACT_TIMEOUT_VALUE(x)	(((x) & 0xff) << 16)
 #define U2_INACT_TIMEOUT_MSK		GENMASK(15, 8)
 #define U1_INACT_TIMEOUT_MSK		GENMASK(7, 0)
 #define U1_INACT_TIMEOUT_VALUE(x)	((x) & 0xff)
 
-/* U3D_LINK_POWER_CONTROL */
+
 #define SW_U2_ACCEPT_ENABLE	BIT(9)
 #define SW_U1_ACCEPT_ENABLE	BIT(8)
 #define UX_EXIT			BIT(5)
@@ -364,17 +358,17 @@
 #define SW_U2_REQUEST_ENABLE	BIT(1)
 #define SW_U1_REQUEST_ENABLE	BIT(0)
 
-/* U3D_LINK_ERR_COUNT */
+
 #define CLR_LINK_ERR_CNT	BIT(16)
 #define LINK_ERROR_COUNT	GENMASK(15, 0)
 
-/* U3D_DEV_NOTIF_0 */
+
 #define DEV_NOTIF_TYPE_SPECIFIC_LOW_MSK		GENMASK(31, 8)
 #define DEV_NOTIF_VAL_FW(x)		(((x) & 0xff) << 8)
 #define DEV_NOTIF_VAL_LTM(x)	(((x) & 0xfff) << 8)
 #define DEV_NOTIF_VAL_IAM(x)	(((x) & 0xffff) << 8)
 #define DEV_NOTIF_TYPE_MSK		GENMASK(7, 4)
-/* Notification Type */
+
 #define TYPE_FUNCTION_WAKE			(0x1 << 4)
 #define TYPE_LATENCY_TOLERANCE_MESSAGE		(0x2 << 4)
 #define TYPE_BUS_INTERVAL_ADJUST_MESSAGE	(0x3 << 4)
@@ -382,7 +376,7 @@
 #define TYPE_SUBLINK_SPEED			(0x5 << 4)
 #define SEND_DEV_NOTIF			BIT(0)
 
-/*---------------- SSUSB_USB2_CSR REGISTER DEFINITION ----------------*/
+
 
 #define U3D_POWER_MANAGEMENT		(SSUSB_USB2_CSR_BASE + 0x0004)
 #define U3D_DEVICE_CONTROL		(SSUSB_USB2_CSR_BASE + 0x000C)
@@ -395,9 +389,9 @@
 #define U3D_USB20_MISC_CONTROL		(SSUSB_USB2_CSR_BASE + 0x004C)
 #define U3D_USB20_OPSTATE		(SSUSB_USB2_CSR_BASE + 0x0060)
 
-/*---------------- SSUSB_USB2_CSR FIELD DEFINITION ----------------*/
 
-/* U3D_POWER_MANAGEMENT */
+
+
 #define LPM_BESL_STALL		BIT(14)
 #define LPM_BESLD_STALL		BIT(13)
 #define LPM_RWP			BIT(11)
@@ -409,11 +403,11 @@
 #define RESUME			BIT(2)
 #define SUSPENDM_ENABLE		BIT(0)
 
-/* U3D_DEVICE_CONTROL */
+
 #define DC_HOSTREQ		BIT(1)
 #define DC_SESSION		BIT(0)
 
-/* U3D_USB2_TEST_MODE */
+
 #define U2U3_AUTO_SWITCH	BIT(10)
 #define LPM_FORCE_STALL		BIT(8)
 #define FIFO_ACCESS		BIT(6)
@@ -424,8 +418,8 @@
 #define TEST_J_MODE		BIT(1)
 #define TEST_SE0_NAK_MODE	BIT(0)
 
-/* U3D_COMMON_USB_INTR_ENABLE */
-/* U3D_COMMON_USB_INTR */
+
+
 #define LPM_RESUME_INTR		BIT(9)
 #define LPM_INTR		BIT(8)
 #define DISCONN_INTR		BIT(5)
@@ -435,19 +429,19 @@
 #define RESUME_INTR		BIT(1)
 #define SUSPEND_INTR		BIT(0)
 
-/* U3D_LINK_RESET_INFO */
+
 #define WTCHRP_MSK		GENMASK(19, 16)
 
-/* U3D_USB20_LPM_PARAMETER */
+
 #define LPM_BESLCK_U3(x)	(((x) & 0xf) << 12)
 #define LPM_BESLCK(x)		(((x) & 0xf) << 8)
 #define LPM_BESLDCK(x)		(((x) & 0xf) << 4)
 #define LPM_BESL		GENMASK(3, 0)
 
-/* U3D_USB20_MISC_CONTROL */
+
 #define LPM_U3_ACK_EN		BIT(0)
 
-/*---------------- SSUSB_SIFSLV_IPPC REGISTER DEFINITION ----------------*/
+
 
 #define U3D_SSUSB_IP_PW_CTRL0	(SSUSB_SIFSLV_IPPC_BASE + 0x0000)
 #define U3D_SSUSB_IP_PW_CTRL1	(SSUSB_SIFSLV_IPPC_BASE + 0x0004)
@@ -475,21 +469,21 @@
 #define U3D_SSUSB_PRB_CTRL5	(SSUSB_SIFSLV_IPPC_BASE + 0x00C4)
 #define U3D_SSUSB_IP_SPARE0	(SSUSB_SIFSLV_IPPC_BASE + 0x00C8)
 
-/*---------------- SSUSB_SIFSLV_IPPC FIELD DEFINITION ----------------*/
 
-/* U3D_SSUSB_IP_PW_CTRL0 */
+
+
 #define SSUSB_IP_SW_RST			BIT(0)
 
-/* U3D_SSUSB_IP_PW_CTRL1 */
+
 #define SSUSB_IP_HOST_PDN		BIT(0)
 
-/* U3D_SSUSB_IP_PW_CTRL2 */
+
 #define SSUSB_IP_DEV_PDN		BIT(0)
 
-/* U3D_SSUSB_IP_PW_CTRL3 */
+
 #define SSUSB_IP_PCIE_PDN		BIT(0)
 
-/* U3D_SSUSB_IP_PW_STS1 */
+
 #define SSUSB_IP_SLEEP_STS		BIT(30)
 #define SSUSB_U3_MAC_RST_B_STS		BIT(16)
 #define SSUSB_XHCI_RST_B_STS		BIT(11)
@@ -497,34 +491,34 @@
 #define SSUSB_REF_RST_B_STS		BIT(8)
 #define SSUSB_SYSPLL_STABLE		BIT(0)
 
-/* U3D_SSUSB_IP_PW_STS2 */
+
 #define SSUSB_U2_MAC_SYS_RST_B_STS	BIT(0)
 
-/* U3D_SSUSB_OTG_STS */
+
 #define SSUSB_VBUS_VALID		BIT(9)
 
-/* U3D_SSUSB_OTG_STS_CLR */
+
 #define SSUSB_VBUS_INTR_CLR		BIT(6)
 
-/* U3D_SSUSB_IP_XHCI_CAP */
+
 #define SSUSB_IP_XHCI_U2_PORT_NUM(x)	(((x) >> 8) & 0xff)
 #define SSUSB_IP_XHCI_U3_PORT_NUM(x)	((x) & 0xff)
 
-/* U3D_SSUSB_IP_DEV_CAP */
+
 #define SSUSB_IP_DEV_U3_PORT_NUM(x)	((x) & 0xff)
 
-/* U3D_SSUSB_OTG_INT_EN */
+
 #define SSUSB_VBUS_CHG_INT_A_EN		BIT(7)
 #define SSUSB_VBUS_CHG_INT_B_EN		BIT(6)
 
-/* U3D_SSUSB_U3_CTRL_0P */
+
 #define SSUSB_U3_PORT_SSP_SPEED	BIT(9)
 #define SSUSB_U3_PORT_DUAL_MODE	BIT(7)
 #define SSUSB_U3_PORT_HOST_SEL		BIT(2)
 #define SSUSB_U3_PORT_PDN		BIT(1)
 #define SSUSB_U3_PORT_DIS		BIT(0)
 
-/* U3D_SSUSB_U2_CTRL_0P */
+
 #define SSUSB_U2_PORT_RG_IDDIG		BIT(12)
 #define SSUSB_U2_PORT_FORCE_IDDIG	BIT(11)
 #define SSUSB_U2_PORT_VBUSVALID	BIT(9)
@@ -534,10 +528,10 @@
 #define SSUSB_U2_PORT_DIS		BIT(0)
 #define SSUSB_U2_PORT_HOST_SEL	(SSUSB_U2_PORT_VBUSVALID | SSUSB_U2_PORT_HOST)
 
-/* U3D_SSUSB_DEV_RST_CTRL */
+
 #define SSUSB_DEV_SW_RST		BIT(0)
 
-/* U3D_SSUSB_IP_TRUNK_VERS */
+
 #define IP_TRUNK_VERS(x)		(((x) >> 16) & 0xffff)
 
-#endif	/* _SSUSB_HW_REGS_H_ */
+#endif	

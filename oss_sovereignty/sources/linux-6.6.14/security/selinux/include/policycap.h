@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _SELINUX_POLICYCAP_H_
 #define _SELINUX_POLICYCAP_H_
 
-/* Policy capabilities */
+
 enum {
 	POLICYDB_CAP_NETPEER,
 	POLICYDB_CAP_OPENPERM,
@@ -18,4 +18,4 @@ enum {
 
 extern const char *const selinux_policycap_names[__POLICYDB_CAP_MAX];
 
-#endif /* _SELINUX_POLICYCAP_H_ */
+#endif 

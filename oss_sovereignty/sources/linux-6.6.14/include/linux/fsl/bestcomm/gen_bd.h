@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Header for Bestcomm General Buffer Descriptor tasks driver
- *
- * Copyright (C) 2007 Sylvain Munaut <tnt@246tNt.com>
- * Copyright (C) 2006 AppSpec Computer Technologies Corp.
- *                    Jeff Gibbons <jeff.gibbons@appspec.com>
- */
+
+
 
 #ifndef __BESTCOMM_GEN_BD_H__
 #define __BESTCOMM_GEN_BD_H__
@@ -38,10 +32,10 @@ extern void
 bcom_gen_bd_tx_release(struct bcom_task *tsk);
 
 
-/* PSC support utility wrappers */
+
 struct bcom_task * bcom_psc_gen_bd_rx_init(unsigned psc_num, int queue_len,
 					   phys_addr_t fifo, int maxbufsize);
 struct bcom_task * bcom_psc_gen_bd_tx_init(unsigned psc_num, int queue_len,
 					   phys_addr_t fifo);
-#endif  /* __BESTCOMM_GEN_BD_H__ */
+#endif  
 

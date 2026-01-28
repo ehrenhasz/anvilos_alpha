@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Greybus Interface Block code
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+
+
 
 #ifndef __INTERFACE_H
 #define __INTERFACE_H
@@ -35,9 +30,9 @@ struct gb_interface {
 	struct list_head bundles;
 	struct list_head module_node;
 	struct list_head manifest_descs;
-	u8 interface_id;	/* Physical location within the Endo */
+	u8 interface_id;	
 	u8 device_id;
-	u8 features;		/* Feature flags set in the manifest */
+	u8 features;		
 
 	enum gb_interface_type type;
 
@@ -82,4 +77,4 @@ void gb_interface_mailbox_event(struct gb_interface *intf, u16 result,
 
 int gb_interface_request_mode_switch(struct gb_interface *intf);
 
-#endif /* __INTERFACE_H */
+#endif 

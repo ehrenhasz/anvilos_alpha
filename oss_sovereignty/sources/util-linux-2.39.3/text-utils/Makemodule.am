@@ -64,7 +64,7 @@ dist_noinst_DATA += text-utils/pg.1.adoc
 pg_SOURCES = text-utils/pg.c
 pg_CFLAGS = $(AM_CFLAGS) $(BSD_WARN_CFLAGS) $(NCURSES_CFLAGS) $(TINFO_CFLAGS)
 pg_LDADD = $(LDADD) libcommon.la $(NCURSES_LIBS) $(TINFO_LIBS)
-endif # BUILD_PG
+endif 
 
 
 if BUILD_UL
@@ -81,7 +81,7 @@ else
 ul_CFLAGS += $(NCURSES_CFLAGS)
 ul_LDADD += $(NCURSES_LIBS)
 endif
-endif # BUILD_UL
+endif 
 
 
 if BUILD_MORE
@@ -104,5 +104,5 @@ test_more_SOURCES = $(more_SOURCES)
 test_more_CFLAGS = -DTEST_PROGRAM $(more_CFLAGS)
 test_more_LDADD = $(more_LDADD)
 
-endif # BUILD_MORE
+endif 
 

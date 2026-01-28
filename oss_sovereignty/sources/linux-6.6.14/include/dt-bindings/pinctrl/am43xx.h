@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants specific to AM43XX pinctrl bindings.
- */
+
+
 
 #ifndef _DT_BINDINGS_PINCTRL_AM43XX_H
 #define _DT_BINDINGS_PINCTRL_AM43XX_H
@@ -45,10 +43,7 @@
 #define PIN_INPUT_PULLUP	(INPUT_EN | PULL_UP)
 #define PIN_INPUT_PULLDOWN	(INPUT_EN)
 
-/*
- * Macro to allow using the absolute physical address instead of the
- * padconf registers instead of the offset from padconf base.
- */
+
 #define AM4372_IOPAD(pa, val)	(((pa) & 0xffff) - 0x0800) (val)
 
 #endif

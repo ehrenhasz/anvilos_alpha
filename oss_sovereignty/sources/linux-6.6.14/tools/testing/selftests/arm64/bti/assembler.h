@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019  Arm Limited
- * Original author: Dave Martin <Dave.Martin@arm.com>
- */
+
+
 
 #ifndef ASSEMBLER_H
 #define ASSEMBLER_H
@@ -10,7 +7,7 @@
 #define NT_GNU_PROPERTY_TYPE_0	5
 #define GNU_PROPERTY_AARCH64_FEATURE_1_AND	0xc0000000
 
-/* Bits for GNU_PROPERTY_AARCH64_FEATURE_1_BTI */
+
 #define GNU_PROPERTY_AARCH64_FEATURE_1_BTI	(1U << 0)
 #define GNU_PROPERTY_AARCH64_FEATURE_1_PAC	(1U << 1)
 
@@ -77,4 +74,4 @@
 	__bti_\what
 .endm
 
-#endif /* ! ASSEMBLER_H */
+#endif 

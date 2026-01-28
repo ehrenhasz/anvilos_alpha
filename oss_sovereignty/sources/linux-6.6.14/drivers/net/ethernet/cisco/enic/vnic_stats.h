@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+
+
 
 #ifndef _VNIC_STATS_H_
 #define _VNIC_STATS_H_
 
-/* Tx statistics */
+
 struct vnic_tx_stats {
 	u64 tx_frames_ok;
 	u64 tx_unicast_frames_ok;
@@ -23,7 +20,7 @@ struct vnic_tx_stats {
 	u64 rsvd[16];
 };
 
-/* Rx statistics */
+
 struct vnic_rx_stats {
 	u64 rx_frames_ok;
 	u64 rx_frames_total;
@@ -49,7 +46,7 @@ struct vnic_rx_stats {
 	u64 rsvd[16];
 };
 
-/* Generic statistics */
+
 struct vnic_gen_stats {
 	u64 dma_map_error;
 };
@@ -59,4 +56,4 @@ struct vnic_stats {
 	struct vnic_rx_stats rx;
 };
 
-#endif /* _VNIC_STATS_H_ */
+#endif 

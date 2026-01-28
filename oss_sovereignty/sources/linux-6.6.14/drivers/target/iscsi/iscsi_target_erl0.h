@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef ISCSI_TARGET_ERL0_H
 #define ISCSI_TARGET_ERL0_H
 
@@ -19,4 +19,4 @@ extern void iscsit_cause_connection_reinstatement(struct iscsit_conn *, int);
 extern void iscsit_fall_back_to_erl0(struct iscsit_session *);
 extern void iscsit_take_action_for_connection_exit(struct iscsit_conn *, bool *);
 
-#endif   /*** ISCSI_TARGET_ERL0_H ***/
+#endif   

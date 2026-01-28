@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for various Intel thermal drivers.
+
+
+
 
 obj-$(CONFIG_INTEL_TCC)	+= intel_tcc.o
 obj-$(CONFIG_INTEL_POWERCLAMP)	+= intel_powerclamp.o

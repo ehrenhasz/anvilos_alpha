@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * PISMO memory driver - http://www.pismoworld.org/
- */
+
+
 #ifndef __LINUX_MTD_PISMO_H
 #define __LINUX_MTD_PISMO_H
 

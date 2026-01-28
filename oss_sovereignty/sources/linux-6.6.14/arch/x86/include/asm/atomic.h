@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_ATOMIC_H
 #define _ASM_X86_ATOMIC_H
 
@@ -9,17 +9,11 @@
 #include <asm/rmwcc.h>
 #include <asm/barrier.h>
 
-/*
- * Atomic operations that C can't guarantee us.  Useful for
- * resource counting etc..
- */
+
 
 static __always_inline int arch_atomic_read(const atomic_t *v)
 {
-	/*
-	 * Note for KASAN: we deliberately don't use READ_ONCE_NOCHECK() here,
-	 * it's non-inlined function that increases binary size and stack usage.
-	 */
+	
 	return __READ_ONCE((v)->counter);
 }
 
@@ -182,4 +176,4 @@ static __always_inline int arch_atomic_fetch_xor(int i, atomic_t *v)
 # include <asm/atomic64_64.h>
 #endif
 
-#endif /* _ASM_X86_ATOMIC_H */
+#endif 

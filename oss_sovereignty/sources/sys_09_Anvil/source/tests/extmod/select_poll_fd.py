@@ -1,6 +1,6 @@
 try:
     import select, errno
-    select.poll  # Raises AttributeError for CPython implementations without poll()
+    select.poll  
 except (ImportError, AttributeError):
     print("SKIP")
     raise SystemExit

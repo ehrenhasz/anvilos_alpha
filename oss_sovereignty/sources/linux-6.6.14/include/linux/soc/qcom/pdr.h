@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __QCOM_PDR_HELPER__
 #define __QCOM_PDR_HELPER__
 

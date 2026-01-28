@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 TARGETS += alsa
 TARGETS += amd-pstate
 TARGETS += arm64
@@ -99,39 +99,39 @@ TARGETS += vDSO
 TARGETS += mm
 TARGETS += x86
 TARGETS += zram
-#Please keep the TARGETS list alphabetically sorted
-# Run "make quicktest=1 run_tests" or
-# "make quicktest=1 kselftest" from top level Makefile
+
+
+
 
 TARGETS_HOTPLUG = cpu-hotplug
 TARGETS_HOTPLUG += memory-hotplug
 
-# User can optionally provide a TARGETS skiplist.  By default we skip
-# BPF since it has cutting edge build time dependencies which require
-# more effort to install.
+
+
+
 SKIP_TARGETS ?= bpf
 ifneq ($(SKIP_TARGETS),)
 	TMP := $(filter-out $(SKIP_TARGETS), $(TARGETS))
 	override TARGETS := $(TMP)
 endif
 
-# User can set FORCE_TARGETS to 1 to require all targets to be successfully
-# built; make will fail if any of the targets cannot be built. If
-# FORCE_TARGETS is not set (the default), make will succeed if at least one
-# of the targets gets built.
+
+
+
+
 FORCE_TARGETS ?=
 
-# Clear LDFLAGS and MAKEFLAGS when implicit rules are missing.  This provides
-# implicit rules to sub-test Makefiles which avoids build failures in test
-# Makefile that don't have explicit build rules.
+
+
+
 ifeq (,$(LINK.c))
 override LDFLAGS =
 override MAKEFLAGS =
 endif
 
-# Append kselftest to KBUILD_OUTPUT and O to avoid cluttering
-# KBUILD_OUTPUT with selftest objects and headers installed
-# by selftests Makefile or lib.mk.
+
+
+
 ifdef building_out_of_srctree
 override LDFLAGS =
 endif
@@ -143,12 +143,12 @@ ifeq ("$(origin O)", "command line")
 endif
 
 ifneq ($(KBUILD_OUTPUT),)
-  # Make's built-in functions such as $(abspath ...), $(realpath ...) cannot
-  # expand a shell special character '~'. We use a somewhat tedious way here.
+  
+  
   abs_objtree := $(shell cd $(top_srcdir) && mkdir -p $(KBUILD_OUTPUT) && cd $(KBUILD_OUTPUT) && pwd)
   $(if $(abs_objtree),, \
     $(error failed to create output directory "$(KBUILD_OUTPUT)"))
-  # $(realpath ...) resolves symlinks
+  
   abs_objtree := $(realpath $(abs_objtree))
   BUILD := $(abs_objtree)/kselftest
   KHDR_INCLUDES := -isystem ${abs_objtree}/usr/include
@@ -159,14 +159,14 @@ else
   DEFAULT_INSTALL_HDR_PATH := 1
 endif
 
-# Prepare for headers install
+
 include $(top_srcdir)/scripts/subarch.include
 ARCH           ?= $(SUBARCH)
 export BUILD
 export KHDR_INCLUDES
 
-# set default goal to all, so make without a target runs all, even when
-# all isn't the first target in the file.
+
+
 .DEFAULT_GOAL := all
 
 all:
@@ -208,23 +208,23 @@ clean_hotplug:
 run_pstore_crash:
 	$(MAKE) -C pstore run_crash
 
-# Use $BUILD as the default install root. $BUILD points to the
-# right output location for the following cases:
-# 1. output_dir=kernel_src
-# 2. a separate output directory is specified using O= KBUILD_OUTPUT
-# 3. a separate output directory is specified using KBUILD_OUTPUT
-# Avoid conflict with INSTALL_PATH set by the main Makefile
-#
+
+
+
+
+
+
+
 KSFT_INSTALL_PATH ?= $(BUILD)/kselftest_install
 KSFT_INSTALL_PATH := $(abspath $(KSFT_INSTALL_PATH))
-# Avoid changing the rest of the logic here and lib.mk.
+
 INSTALL_PATH := $(KSFT_INSTALL_PATH)
 ALL_SCRIPT := $(INSTALL_PATH)/run_kselftest.sh
 TEST_LIST := $(INSTALL_PATH)/kselftest-list.txt
 
 install: all
 ifdef INSTALL_PATH
-	@# Ask all targets to install their files
+	@
 	mkdir -p $(INSTALL_PATH)/kselftest
 	install -m 744 kselftest/module.sh $(INSTALL_PATH)/kselftest/
 	install -m 744 kselftest/runner.sh $(INSTALL_PATH)/kselftest/
@@ -241,10 +241,10 @@ ifdef INSTALL_PATH
 	done; exit $$ret;
 
 
-	@# Ask all targets to emit their test scripts
-	@# While building kselftest-list.text skip also non-existent TARGET dirs:
-	@# they could be the result of a build failure and should NOT be
-	@# included in the generated runlist.
+	@
+	@
+	@
+	@
 	for TARGET in $(TARGETS); do \
 		BUILD_TARGET=$$BUILD/$$TARGET;	\
 		[ ! -d $(INSTALL_PATH)/$$TARGET ] && printf "Skipping non-existent dir: $$TARGET\n" && continue; \

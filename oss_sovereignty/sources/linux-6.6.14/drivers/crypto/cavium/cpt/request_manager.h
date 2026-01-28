@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 Cavium, Inc.
- */
+
+
 
 #ifndef __REQUEST_MANAGER_H
 #define __REQUEST_MANAGER_H
@@ -22,13 +20,13 @@ union ctrl_info {
 	struct {
 #if defined(__BIG_ENDIAN_BITFIELD)
 		u32 reserved0:26;
-		u32 grp:3; /* Group bits */
-		u32 dma_mode:2; /* DMA mode */
-		u32 se_req:1;/* To SE core */
+		u32 grp:3; 
+		u32 dma_mode:2; 
+		u32 se_req:1;
 #else
-		u32 se_req:1; /* To SE core */
-		u32 dma_mode:2; /* DMA mode */
-		u32 grp:3; /* Group bits */
+		u32 se_req:1; 
+		u32 dma_mode:2; 
+		u32 grp:3; 
 		u32 reserved0:26;
 #endif
 	} s;
@@ -56,19 +54,19 @@ struct buf_ptr {
 };
 
 struct cpt_request_info {
-	u8 incnt; /* Number of input buffers */
-	u8 outcnt; /* Number of output buffers */
-	u16 rlen; /* Output length */
-	union ctrl_info ctrl; /* User control information */
-	struct cptvf_request req; /* Request Information (Core specific) */
+	u8 incnt; 
+	u8 outcnt; 
+	u16 rlen; 
+	union ctrl_info ctrl; 
+	struct cptvf_request req; 
 
 	bool may_sleep;
 
 	struct buf_ptr in[MAX_BUF_CNT];
 	struct buf_ptr out[MAX_BUF_CNT];
 
-	void (*callback)(int, void *); /* Kernel ASYNC request callabck */
-	void *callback_arg; /* Kernel ASYNC request callabck arg */
+	void (*callback)(int, void *); 
+	void *callback_arg; 
 };
 
 struct sglist_component {
@@ -107,10 +105,7 @@ struct cpt_info_buffer {
 	volatile u64 *alternate_caddr;
 };
 
-/*
- * CPT_INST_S software command definitions
- * Words EI (0-3)
- */
+
 union vq_cmd_word0 {
 	u64 u64;
 	struct {
@@ -143,4 +138,4 @@ struct cpt_vq_command {
 
 void vq_post_process(struct cpt_vf *cptvf, u32 qno);
 int process_request(struct cpt_vf *cptvf, struct cpt_request_info *req);
-#endif /* __REQUEST_MANAGER_H */
+#endif 

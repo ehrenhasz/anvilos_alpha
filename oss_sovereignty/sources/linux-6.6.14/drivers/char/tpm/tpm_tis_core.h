@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2005, 2006 IBM Corporation
- * Copyright (C) 2014, 2015 Intel Corporation
- *
- * Authors:
- * Leendert van Doorn <leendert@watson.ibm.com>
- * Kylene Hall <kjhall@us.ibm.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * Device driver for TCG/TCPA TPM (trusted platform module).
- * Specifications at www.trustedcomputinggroup.org
- *
- * This device driver implements the TPM interface as defined in
- * the TCG TPM Interface Spec version 1.2, revision 1.0.
- */
+
+
 
 #ifndef __TPM_TIS_CORE_H__
 #define __TPM_TIS_CORE_H__
@@ -35,7 +20,7 @@ enum tis_status {
 	TPM_STS_DATA_AVAIL = 0x10,
 	TPM_STS_DATA_EXPECT = 0x08,
 	TPM_STS_RESPONSE_RETRY = 0x02,
-	TPM_STS_READ_ZERO = 0x23, /* bits that must be zero on read */
+	TPM_STS_READ_ZERO = 0x23, 
 };
 
 enum tis_int_flags {
@@ -53,15 +38,13 @@ enum tis_int_flags {
 
 enum tis_defaults {
 	TIS_MEM_LEN = 0x5000,
-	TIS_SHORT_TIMEOUT = 750,	/* ms */
-	TIS_LONG_TIMEOUT = 2000,	/* 2 sec */
-	TIS_TIMEOUT_MIN_ATML = 14700,	/* usecs */
-	TIS_TIMEOUT_MAX_ATML = 15000,	/* usecs */
+	TIS_SHORT_TIMEOUT = 750,	
+	TIS_LONG_TIMEOUT = 2000,	
+	TIS_TIMEOUT_MIN_ATML = 14700,	
+	TIS_TIMEOUT_MAX_ATML = 15000,	
 };
 
-/* Some timeout values are needed before it is known whether the chip is
- * TPM 1.0 or TPM 2.0.
- */
+
 #define TIS_TIMEOUT_A_MAX	max_t(int, TIS_SHORT_TIMEOUT, TPM2_TIMEOUT_A)
 #define TIS_TIMEOUT_B_MAX	max_t(int, TIS_LONG_TIMEOUT, TPM2_TIMEOUT_B)
 #define TIS_TIMEOUT_C_MAX	max_t(int, TIS_SHORT_TIMEOUT, TPM2_TIMEOUT_C)
@@ -109,15 +92,11 @@ struct tpm_tis_data {
 	wait_queue_head_t read_queue;
 	const struct tpm_tis_phy_ops *phy_ops;
 	unsigned short rng_quality;
-	unsigned int timeout_min; /* usecs */
-	unsigned int timeout_max; /* usecs */
+	unsigned int timeout_min; 
+	unsigned int timeout_max; 
 };
 
-/*
- * IO modes to indicate how many bytes should be read/written at once in the
- * tpm_tis_phy_ops read_bytes/write_bytes calls. Use TPM_TIS_PHYS_8 to
- * receive/transmit byte-wise, TPM_TIS_PHYS_16 for two bytes etc.
- */
+
 enum tpm_tis_io_mode {
 	TPM_TIS_PHYS_8,
 	TPM_TIS_PHYS_16,
@@ -125,7 +104,7 @@ enum tpm_tis_io_mode {
 };
 
 struct tpm_tis_phy_ops {
-	/* data is passed in little endian */
+	
 	int (*read_bytes)(struct tpm_tis_data *data, u32 addr, u16 len,
 			  u8 *result, enum tpm_tis_io_mode mode);
 	int (*write_bytes)(struct tpm_tis_data *data, u32 addr, u16 len,

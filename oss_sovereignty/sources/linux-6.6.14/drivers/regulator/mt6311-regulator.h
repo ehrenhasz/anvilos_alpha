@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: Henry Chen <henryc.chen@mediatek.com>
- */
+
+
 
 #ifndef __MT6311_REGULATOR_H__
 #define __MT6311_REGULATOR_H__

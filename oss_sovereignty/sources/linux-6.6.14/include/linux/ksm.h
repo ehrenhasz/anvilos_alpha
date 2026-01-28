@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LINUX_KSM_H
 #define __LINUX_KSM_H
-/*
- * Memory merging support.
- *
- * This code enables dynamic sharing of identical pages found in different
- * memory areas, even if they are not shared by fork().
- */
+
 
 #include <linux/bitops.h>
 #include <linux/mm.h>
@@ -26,11 +21,7 @@ int ksm_disable(struct mm_struct *mm);
 
 int __ksm_enter(struct mm_struct *mm);
 void __ksm_exit(struct mm_struct *mm);
-/*
- * To identify zeropages that were mapped by KSM, we reuse the dirty bit
- * in the PTE. If the PTE is dirty, the zeropage was mapped by KSM when
- * deduplicating memory.
- */
+
 #define is_ksm_zero_pte(pte)	(is_zero_pfn(pte_pfn(pte)) && pte_dirty(pte))
 
 extern unsigned long ksm_zero_pages;
@@ -65,17 +56,7 @@ static inline void ksm_exit(struct mm_struct *mm)
 		__ksm_exit(mm);
 }
 
-/*
- * When do_swap_page() first faults in from swap what used to be a KSM page,
- * no problem, it will be assigned to this vma's anon_vma; but thereafter,
- * it might be faulted into a different anon_vma (or perhaps to a different
- * offset in the same anon_vma).  do_swap_page() cannot do all the locking
- * needed to reconstitute a cross-anon_vma KSM page: for now it has to make
- * a copy, and leave remerging the pages to a later pass of ksmd.
- *
- * We'd like to make this conditional on vma->vm_flags & VM_MERGEABLE,
- * but what if the vma was unmerged while the page was swapped out?
- */
+
 struct page *ksm_might_need_to_copy(struct page *page,
 			struct vm_area_struct *vma, unsigned long address);
 
@@ -89,9 +70,9 @@ void collect_procs_ksm(struct page *page, struct list_head *to_kill,
 
 #ifdef CONFIG_PROC_FS
 long ksm_process_profit(struct mm_struct *);
-#endif /* CONFIG_PROC_FS */
+#endif 
 
-#else  /* !CONFIG_KSM */
+#else  
 
 static inline void ksm_add_vma(struct vm_area_struct *vma)
 {
@@ -143,7 +124,7 @@ static inline void rmap_walk_ksm(struct folio *folio,
 static inline void folio_migrate_ksm(struct folio *newfolio, struct folio *old)
 {
 }
-#endif /* CONFIG_MMU */
-#endif /* !CONFIG_KSM */
+#endif 
+#endif 
 
-#endif /* __LINUX_KSM_H */
+#endif 

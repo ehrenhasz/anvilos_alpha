@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  linux/drivers/mmc/core/host.h
- *
- *  Copyright (C) 2003 Russell King, All Rights Reserved.
- *  Copyright 2007 Pierre Ossman
- */
+
+
 #ifndef _MMC_CORE_HOST_H
 #define _MMC_CORE_HOST_H
 

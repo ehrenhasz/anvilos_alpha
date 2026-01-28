@@ -1,7 +1,7 @@
 #ifndef UTIL_LINUX_FINDMNT_H
 #define UTIL_LINUX_FINDMNT_H
 
-/* flags */
+
 enum {
 	FL_EVALUATE	= (1 << 1),
 	FL_CANONICALIZE = (1 << 2),
@@ -25,7 +25,7 @@ enum {
 	FL_DELETED      = (1 << 21),
 	FL_SHELLVAR     = (1 << 22),
 
-	/* basic table settings */
+	
 	FL_ASCII	= (1 << 25),
 	FL_RAW		= (1 << 26),
 	FL_NOHEADINGS	= (1 << 27),
@@ -42,4 +42,4 @@ extern int is_listall_mode(void);
 extern struct libmnt_fs *get_next_fs(struct libmnt_table *tb, struct libmnt_iter *itr);
 extern int verify_table(struct libmnt_table *tb);
 
-#endif /* UTIL_LINUX_FINDMNT_H */
+#endif 

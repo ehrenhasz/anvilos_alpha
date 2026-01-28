@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _X86_MICROCODE_INTERNAL_H
 #define _X86_MICROCODE_INTERNAL_H
 
@@ -10,7 +10,7 @@
 
 struct ucode_patch {
 	struct list_head plist;
-	void *data;		/* Intel uses only this one */
+	void *data;		
 	unsigned int size;
 	u32 patch_id;
 	u16 equiv_cpu;
@@ -33,12 +33,7 @@ struct microcode_ops {
 
 	void (*microcode_fini_cpu)(int cpu);
 
-	/*
-	 * The generic 'microcode_core' part guarantees that
-	 * the callbacks below run on a target cpu when they
-	 * are being called.
-	 * See also the "Synchronization" section in microcode_core.c.
-	 */
+	
 	enum ucode_state (*apply_microcode)(int cpu);
 	int (*collect_cpu_info)(int cpu, struct cpu_signature *csig);
 };
@@ -59,15 +54,7 @@ struct cpio_data find_microcode_in_initrd(const char *path, bool use_pa);
 #define CPUID_IS(a, b, c, ebx, ecx, edx)	\
 		(!(((ebx) ^ (a)) | ((edx) ^ (b)) | ((ecx) ^ (c))))
 
-/*
- * In early loading microcode phase on BSP, boot_cpu_data is not set up yet.
- * x86_cpuid_vendor() gets vendor id for BSP.
- *
- * In 32 bit AP case, accessing boot_cpu_data needs linear address. To simplify
- * coding, we still use x86_cpuid_vendor() to get vendor id for AP.
- *
- * x86_cpuid_vendor() gets vendor information directly from CPUID.
- */
+
 static inline int x86_cpuid_vendor(void)
 {
 	u32 eax = 0x00000000;
@@ -104,7 +91,7 @@ int save_microcode_in_initrd_amd(unsigned int family);
 void reload_ucode_amd(unsigned int cpu);
 struct microcode_ops *init_amd_microcode(void);
 void exit_amd_microcode(void);
-#else /* CONFIG_CPU_SUP_AMD */
+#else 
 static inline void load_ucode_amd_bsp(unsigned int family) { }
 static inline void load_ucode_amd_ap(unsigned int family) { }
 static inline void load_ucode_amd_early(unsigned int family) { }
@@ -112,7 +99,7 @@ static inline int save_microcode_in_initrd_amd(unsigned int family) { return -EI
 static inline void reload_ucode_amd(unsigned int cpu) { }
 static inline struct microcode_ops *init_amd_microcode(void) { return NULL; }
 static inline void exit_amd_microcode(void) { }
-#endif /* !CONFIG_CPU_SUP_AMD */
+#endif 
 
 #ifdef CONFIG_CPU_SUP_INTEL
 void load_ucode_intel_bsp(void);
@@ -120,12 +107,12 @@ void load_ucode_intel_ap(void);
 int save_microcode_in_initrd_intel(void);
 void reload_ucode_intel(void);
 struct microcode_ops *init_intel_microcode(void);
-#else /* CONFIG_CPU_SUP_INTEL */
+#else 
 static inline void load_ucode_intel_bsp(void) { }
 static inline void load_ucode_intel_ap(void) { }
 static inline int save_microcode_in_initrd_intel(void) { return -EINVAL; }
 static inline void reload_ucode_intel(void) { }
 static inline struct microcode_ops *init_intel_microcode(void) { return NULL; }
-#endif  /* !CONFIG_CPU_SUP_INTEL */
+#endif  
 
-#endif /* _X86_MICROCODE_INTERNAL_H */
+#endif 

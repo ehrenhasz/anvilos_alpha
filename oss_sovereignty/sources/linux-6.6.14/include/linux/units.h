@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_UNITS_H
 #define _LINUX_UNITS_H
 
 #include <linux/math.h>
 
-/* Metric prefixes in accordance with Système international (d'unités) */
+
 #define PETA	1000000000000000ULL
 #define TERA	1000000000000ULL
 #define GIGA	1000000000UL
@@ -72,13 +72,7 @@ static inline long celsius_to_deci_kelvin(long t)
 	return DIV_ROUND_CLOSEST(t, MILLIDEGREE_PER_DECIDEGREE);
 }
 
-/**
- * deci_kelvin_to_millicelsius_with_offset - convert Kelvin to Celsius
- * @t: temperature value in decidegrees Kelvin
- * @offset: difference between Kelvin and Celsius in millidegrees
- *
- * Return: temperature value in millidegrees Celsius
- */
+
 static inline long deci_kelvin_to_millicelsius_with_offset(long t, long offset)
 {
 	return t * MILLIDEGREE_PER_DECIDEGREE - offset;
@@ -108,4 +102,4 @@ static inline long celsius_to_kelvin(long t)
 				     MILLIDEGREE_PER_DEGREE);
 }
 
-#endif /* _LINUX_UNITS_H */
+#endif 

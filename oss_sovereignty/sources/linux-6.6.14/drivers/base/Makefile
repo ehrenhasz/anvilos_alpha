@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for the Linux device tree
+
+
 
 obj-y			:= component.o core.o bus.o dd.o syscore.o \
 			   driver.o class.o platform.o \
@@ -31,6 +31,6 @@ obj-y			+= test/
 
 ccflags-$(CONFIG_DEBUG_DRIVER) := -DDEBUG
 
-# define_trace.h needs to know how to find our header
+
 CFLAGS_trace.o		:= -I$(src)
 obj-$(CONFIG_TRACING)	+= trace.o

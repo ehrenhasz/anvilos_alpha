@@ -37,9 +37,9 @@ log_test()
 log_section()
 {
 	echo
-	echo "######################################################################"
+	echo "
 	echo "TEST SECTION: $*"
-	echo "######################################################################"
+	echo "
 }
 check_nettest()
 {
@@ -320,7 +320,7 @@ run_fibrule_tests()
 usage()
 {
 	cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
         -t <test>   Test(s) to run (default: all)
                     (options: $TESTS)
 EOF

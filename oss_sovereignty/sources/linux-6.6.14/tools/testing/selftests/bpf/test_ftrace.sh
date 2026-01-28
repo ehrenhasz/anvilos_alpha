@@ -3,16 +3,16 @@ if [[ -e /sys/kernel/tracing/trace ]]; then
 else
     TR=/sys/kernel/debug/tracing/
 fi
-clear_trace() { # reset trace output
+clear_trace() { 
     echo > $TR/trace
 }
-disable_tracing() { # stop trace recording
+disable_tracing() { 
     echo 0 > $TR/tracing_on
 }
-enable_tracing() { # start trace recording
+enable_tracing() { 
     echo 1 > $TR/tracing_on
 }
-reset_tracer() { # reset the current tracer
+reset_tracer() { 
     echo nop > $TR/current_tracer
 }
 disable_tracing

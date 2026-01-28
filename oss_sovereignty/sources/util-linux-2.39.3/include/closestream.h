@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_CLOSESTREAM_H
 #define UTIL_LINUX_CLOSESTREAM_H
 
@@ -49,14 +46,7 @@ flush_standard_stream(FILE *stream)
 	if (ferror(stream) != 0 || fflush(stream) != 0)
 		goto error;
 
-	/*
-	 * Calling fflush is not sufficient on some filesystems
-	 * like e.g. NFS, which may defer the actual flush until
-	 * close. Calling fsync would help solve this, but would
-	 * probably result in a performance hit. Thus, we work
-	 * around this issue by calling close on a dup'd file
-	 * descriptor from the stream.
-	 */
+	
 	if ((fd = fileno(stream)) < 0 || (fd = dup(fd)) < 0 || close(fd) != 0)
 		goto error;
 
@@ -65,7 +55,7 @@ error:
 	return (errno == EBADF) ? 0 : EOF;
 }
 
-/* Meant to be used atexit(close_stdout); */
+
 static inline void
 close_stdout(void)
 {
@@ -84,9 +74,7 @@ close_stdout(void)
 static inline void
 close_stdout_atexit(void)
 {
-	/*
-	 * Note that close stdout at exit disables ASAN to report memory leaks
-	 */
+	
 #if !HAS_FEATURE_ADDRESS_SANITIZER
 	atexit(close_stdout);
 #endif
@@ -111,4 +99,4 @@ close_fd(int fd)
 	return 0;
 }
 
-#endif /* UTIL_LINUX_CLOSESTREAM_H */
+#endif 

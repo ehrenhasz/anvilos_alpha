@@ -145,6 +145,6 @@ TRACE_EVENT(fsi_master_acf_cmd_same_addr,
 	)
 );
 
-#endif /* _TRACE_FSI_MASTER_ACF_H */
+#endif 
 
 #include <trace/define_trace.h>

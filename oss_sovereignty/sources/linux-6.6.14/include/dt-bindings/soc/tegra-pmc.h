@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2019-2020, NVIDIA CORPORATION.  All rights reserved.
- */
+
+
 
 #ifndef _DT_BINDINGS_SOC_TEGRA_PMC_H
 #define _DT_BINDINGS_SOC_TEGRA_PMC_H
@@ -13,4 +11,4 @@
 
 #define TEGRA_PMC_CLK_MAX		4
 
-#endif	/* _DT_BINDINGS_SOC_TEGRA_PMC_H */
+#endif	

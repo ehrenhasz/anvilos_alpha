@@ -1,55 +1,55 @@
-# SPDX-License-Identifier: GPL-2.0-only
-# Makefile for cpupower
-#
-# Copyright (C) 2005,2006 Dominik Brodowski <linux@dominikbrodowski.net>
-#
-# Based largely on the Makefile for udev by:
-#
-# Copyright (C) 2003,2004 Greg Kroah-Hartman <greg@kroah.com>
-#
+
+
+
+
+
+
+
+
+
 OUTPUT=./
 ifeq ("$(origin O)", "command line")
 	OUTPUT := $(O)/
 endif
 
 ifneq ($(OUTPUT),)
-# check that the output directory actually exists
+
 OUTDIR := $(shell cd $(OUTPUT) && pwd)
 $(if $(OUTDIR),, $(error output directory "$(OUTPUT)" does not exist))
 endif
 
 
-# --- CONFIGURATION BEGIN ---
 
-# Set the following to `true' to make a unstripped, unoptimized
-# binary. Leave this set to `false' for production use.
+
+
+
 DEBUG ?=	true
 
-# make the build silent. Set this to something else to make it noisy again.
+
 V ?=		false
 
-# Internationalization support (output in different languages).
-# Requires gettext.
+
+
 NLS ?=		true
 
-# Set the following to 'true' to build/install the
-# cpufreq-bench benchmarking tool
+
+
 CPUFREQ_BENCH ?= true
 
-# Do not build libraries, but build the code in statically
-# Libraries are still built, otherwise the Makefile code would
-# be rather ugly.
+
+
+
 export STATIC ?= false
 
-# Prefix to the directories we're installing to
+
 DESTDIR ?=
 
-# --- CONFIGURATION END ---
 
 
 
-# Package-related definitions. Distributions can modify the version
-# and _should_ modify the PACKAGE_BUGREPORT definition
+
+
+
 
 VERSION:=			$(shell ./utils/version-gen.sh)
 LIB_MAJ=			0.0.1
@@ -60,9 +60,9 @@ PACKAGE_BUGREPORT =		linux-pm@vger.kernel.org
 LANGUAGES = 			de fr it cs pt ka
 
 
-# Directory definitions. These are default and most probably
-# do not need to be changed. Please note that DESTDIR is
-# added in front of any of them
+
+
+
 
 bindir ?=	/usr/bin
 sbindir ?=	/usr/sbin
@@ -73,19 +73,19 @@ docdir ?=       /usr/share/doc/packages/cpupower
 confdir ?=      /etc/
 bash_completion_dir ?= /usr/share/bash-completion/completions
 
-# Toolchain: what tools do we use, and what options do they need:
+
 
 CP = cp -fpR
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA  = ${INSTALL} -m 644
-#bash completion scripts get sourced and so they should be rw only.
+
 INSTALL_SCRIPT = ${INSTALL} -m 644
 
-# If you are running a cross compiler, you may want to set this
-# to something more interesting, like "arm-linux-".  If you want
-# to compile vs uClibc, that can be done here as well.
-CROSS = #/usr/i386-linux-uclibc/usr/bin/i386-uclibc-
+
+
+
+CROSS = 
 CC = $(CROSS)gcc
 LD = $(CROSS)gcc
 AR = $(CROSS)ar
@@ -94,7 +94,7 @@ RANLIB = $(CROSS)ranlib
 HOSTCC = gcc
 MKDIR = mkdir
 
-# 64bit library detection
+
 include ../../scripts/Makefile.arch
 
 ifeq ($(IS_64_BIT), 1)
@@ -103,17 +103,17 @@ else
 libdir ?=	/usr/lib
 endif
 
-# Now we set up the build system
-#
+
+
 
 GMO_FILES = ${shell for HLANG in ${LANGUAGES}; do echo $(OUTPUT)po/$$HLANG.gmo; done;}
 
 export CROSS CC AR STRIP RANLIB CFLAGS LDFLAGS LIB_OBJS
 
-# check if compiler option is supported
+
 cc-supports = ${shell if $(CC) ${1} -S -o /dev/null -x c /dev/null > /dev/null 2>&1; then echo "$(1)"; fi;}
 
-# use '-Os' optimization if available, else use -O2
+
 OPTIMIZATION := $(call cc-supports,-Os,-O2)
 
 WARNINGS := -Wall -Wchar-subscripts -Wpointer-arith -Wsign-compare
@@ -178,11 +178,11 @@ ifeq ($(strip $(V)),false)
 	ECHO=@echo
 else
 	QUIET=
-	ECHO=@\#
+	ECHO=@\
 endif
 export QUIET ECHO
 
-# if DEBUG is enabled, then we do not strip or optimize
+
 ifeq ($(strip $(DEBUG)),true)
 	override CFLAGS += -O1 -g -DDEBUG
 	STRIPCMD = /bin/true -Since_we_are_debugging
@@ -192,7 +192,7 @@ else
 endif
 
 
-# the actual make rules
+
 
 all: libcpupower $(OUTPUT)cpupower $(COMPILE_NLS) $(COMPILE_BENCH)
 
@@ -209,8 +209,8 @@ $(OUTPUT)libcpupower.so.$(LIB_MAJ): $(LIB_OBJS)
 
 libcpupower: $(OUTPUT)libcpupower.so.$(LIB_MAJ)
 
-# Let all .o files depend on its .c file and all headers
-# Might be worth to put this into utils/Makefile at some point of time
+
+
 $(UTIL_OBJS): $(UTIL_HEADERS)
 
 $(OUTPUT)%.o: %.c
@@ -253,13 +253,13 @@ update-po: $(OUTPUT)po/$(PACKAGE).pot
 compile-bench: $(OUTPUT)libcpupower.so.$(LIB_MAJ)
 	@V=$(V) confdir=$(confdir) $(MAKE) -C bench O=$(OUTPUT)
 
-# we compile into subdirectories. if the target directory is not the
-# source directory, they might not exists. So we depend the various
-# files onto their directories.
+
+
+
 DIRECTORY_DEPS = $(LIB_OBJS) $(UTIL_OBJS) $(GMO_FILES)
 $(DIRECTORY_DEPS): | $(sort $(dir $(DIRECTORY_DEPS)))
 
-# In the second step, we make a rule to actually create these directories
+
 $(sort $(dir $(DIRECTORY_DEPS))):
 	$(ECHO) "  MKDIR      " $@
 	$(QUIET) $(MKDIR) -p $@ 2>/dev/null
@@ -307,7 +307,7 @@ install-gmo: create-gmo
 	done;
 
 install-bench: compile-bench
-	@#DESTDIR must be set from outside to survive
+	@
 	@sbindir=$(sbindir) bindir=$(bindir) docdir=$(docdir) confdir=$(confdir) $(MAKE) -C bench O=$(OUTPUT) install
 
 ifeq ($(strip $(STATIC)),true)

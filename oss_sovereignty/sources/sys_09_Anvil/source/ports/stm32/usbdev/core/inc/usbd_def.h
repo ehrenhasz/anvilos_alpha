@@ -1,50 +1,18 @@
-/**
-  ******************************************************************************
-  * @file    usbd_def.h
-  * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    18-February-2014
-  * @brief   general defines for the usb device library
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
-  */
 
-/* Define to prevent recursive inclusion -------------------------------------*/
+
+
 
 #ifndef __USBD_DEF_H
 #define __USBD_DEF_H
 
-/* Includes ------------------------------------------------------------------*/
+
 #include "usbd_conf.h"
 
-/** @addtogroup STM32_USBD_DEVICE_LIBRARY
-  * @{
-  */
 
-/** @defgroup USB_DEF
-  * @brief general defines for the usb device library file
-  * @{
-  */
 
-/** @defgroup USB_DEF_Exported_Defines
-  * @{
-  */
+
+
+
 
 #ifndef NULL
 #define NULL ((void *)0)
@@ -113,14 +81,14 @@
 #define USB_FS_MAX_PACKET_SIZE                            64
 #define USB_MAX_EP0_SIZE                                  64
 
-/*  Device Status */
+
 #define USBD_STATE_DEFAULT                                1
 #define USBD_STATE_ADDRESSED                              2
 #define USBD_STATE_CONFIGURED                             3
 #define USBD_STATE_SUSPENDED                              4
 
 
-/*  EP0 State */
+
 #define USBD_EP0_IDLE                                     0
 #define USBD_EP0_SETUP                                    1
 #define USBD_EP0_DATA_IN                                  2
@@ -135,14 +103,10 @@
 #define USBD_EP_TYPE_INTR                                 3
 
 
-/**
-  * @}
-  */
 
 
-/** @defgroup USBD_DEF_Exported_TypesDefinitions
-  * @{
-  */
+
+
 
 typedef  struct  usb_setup_req
 {
@@ -160,11 +124,11 @@ typedef struct _Device_cb
 {
   uint8_t  (*Init)             (struct _USBD_HandleTypeDef *pdev , uint8_t cfgidx);
   uint8_t  (*DeInit)           (struct _USBD_HandleTypeDef *pdev , uint8_t cfgidx);
- /* Control Endpoints*/
+ 
   uint8_t  (*Setup)            (struct _USBD_HandleTypeDef *pdev , USBD_SetupReqTypedef  *req);
   uint8_t  (*EP0_TxSent)       (struct _USBD_HandleTypeDef *pdev );
   uint8_t  (*EP0_RxReady)      (struct _USBD_HandleTypeDef *pdev );
-  /* Class Specific Endpoints*/
+  
   uint8_t  (*DataIn)           (struct _USBD_HandleTypeDef *pdev , uint8_t epnum);
   uint8_t  (*DataOut)          (struct _USBD_HandleTypeDef *pdev , uint8_t epnum);
   uint8_t  (*SOF)              (struct _USBD_HandleTypeDef *pdev);
@@ -178,7 +142,7 @@ typedef struct _Device_cb
 
 } USBD_ClassTypeDef;
 
-/* Following USB Device Speed */
+
 typedef enum
 {
   USBD_SPEED_HIGH  = 0,
@@ -186,7 +150,7 @@ typedef enum
   USBD_SPEED_LOW   = 2,
 }USBD_SpeedTypeDef;
 
-/* Following USB Device status */
+
 typedef enum {
   USBD_OK   = 0,
   USBD_BUSY,
@@ -195,14 +159,14 @@ typedef enum {
 
 struct _USBD_HandleTypeDef;
 
-/* USB Device descriptors structure */
+
 typedef struct
 {
   uint8_t *(*GetDeviceDescriptor)(struct _USBD_HandleTypeDef *pdev, uint16_t *length);
   uint8_t *(*GetStrDescriptor)(struct _USBD_HandleTypeDef *pdev, uint8_t idx, uint16_t *length);
 } USBD_DescriptorsTypeDef;
 
-/* USB Device handle structure */
+
 typedef struct
 {
   uint32_t                status;
@@ -211,7 +175,7 @@ typedef struct
   uint32_t                maxpacket;
 } USBD_EndpointTypeDef;
 
-/* USB Device handle structure */
+
 typedef struct _USBD_HandleTypeDef
 {
   uint8_t                 id;
@@ -238,15 +202,11 @@ typedef struct _USBD_HandleTypeDef
   void                    *pData;
 } USBD_HandleTypeDef;
 
-/**
-  * @}
-  */
 
 
 
-/** @defgroup USBD_DEF_Exported_Macros
-  * @{
-  */
+
+
 #define  SWAPBYTE(addr)        (((uint16_t)(*((uint8_t *)(addr)))) + \
                                (((uint16_t)(*(((uint8_t *)(addr)) + 1))) << 8))
 
@@ -259,62 +219,47 @@ typedef struct _USBD_HandleTypeDef
 #if  defined ( __GNUC__ )
   #ifndef __weak
     #define __weak   __attribute__((weak))
-  #endif /* __weak */
+  #endif 
   #ifndef __packed
     #define __packed __attribute__((__packed__))
-  #endif /* __packed */
-#endif /* __GNUC__ */
+  #endif 
+#endif 
 
 
-/* In HS mode and when the DMA is used, all variables and data structures dealing
-   with the DMA during the transaction process should be 4-bytes aligned */
 
-#if defined   (__GNUC__)        /* GNU Compiler */
+
+#if defined   (__GNUC__)        
   #ifndef __ALIGN_END
     #define __ALIGN_END    __attribute__ ((aligned (4)))
-  #endif /* __ALIGN_END */
+  #endif 
   #ifndef __ALIGN_BEGIN
     #define __ALIGN_BEGIN
-  #endif /* __ALIGN_BEGIN */
+  #endif 
 #else
   #define __ALIGN_END
-  #if defined   (__CC_ARM)      /* ARM Compiler */
+  #if defined   (__CC_ARM)      
     #define __ALIGN_BEGIN    __align(4)
-  #elif defined (__ICCARM__)    /* IAR Compiler */
+  #elif defined (__ICCARM__)    
     #define __ALIGN_BEGIN
-  #elif defined  (__TASKING__)  /* TASKING Compiler */
+  #elif defined  (__TASKING__)  
     #define __ALIGN_BEGIN    __align(4)
-  #endif /* __CC_ARM */
-#endif /* __GNUC__ */
+  #endif 
+#endif 
 
 
-/**
-  * @}
-  */
 
-/** @defgroup USBD_DEF_Exported_Variables
-  * @{
-  */
 
-/**
-  * @}
-  */
 
-/** @defgroup USBD_DEF_Exported_FunctionsPrototype
-  * @{
-  */
 
-/**
-  * @}
-  */
 
-#endif /* __USBD_DEF_H */
 
-/**
-  * @}
-  */
 
-/**
-* @}
-*/
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+
+
+#endif 
+
+
+
+
+

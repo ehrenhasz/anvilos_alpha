@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for Intel Software Defined Silicon provisioning tool
+
+
 
 intel_sdsi: intel_sdsi.c
 

@@ -1,7 +1,7 @@
 skip_test() {
 	echo "$1"
 	echo "Test SKIPPED"
-	exit 4 # ksft_skip
+	exit 4 
 }
 [[ $(id -u) -eq 0 ]] || skip_test "Test must be run as root!"
 WAIT_INOTIFY=$(cd $(dirname $0); pwd)/wait_inotify
@@ -100,7 +100,7 @@ test_add_proc()
 		echo "Test FAILED"
 		exit 1
 	}
-	echo $$ > $CGROUP2/cgroup.procs	# Move out the task
+	echo $$ > $CGROUP2/cgroup.procs	
 }
 test_isolated()
 {
@@ -213,7 +213,7 @@ TEST_MATRIX=(
 write_cpu_online()
 {
 	CPU=${1%-*}
-	VAL=${1#*-}
+	VAL=${1
 	CPUFILE=//sys/devices/system/cpu/cpu${CPU}/online
 	if [[ $VAL -eq 0 ]]
 	then
@@ -247,17 +247,17 @@ set_ctrl_state()
 		S=$(expr substr $CMD 1 1)
 		if [[ $S = S ]]
 		then
-			PREFIX=${CMD#?}
+			PREFIX=${CMD
 			COMM="echo ${PREFIX}${CTRL} > $SFILE"
 			eval $COMM $REDIRECT
 		elif [[ $S = C ]]
 		then
-			CPUS=${CMD#?}
+			CPUS=${CMD
 			COMM="echo $CPUS > $CFILE"
 			eval $COMM $REDIRECT
 		elif [[ $S = P ]]
 		then
-			VAL=${CMD#?}
+			VAL=${CMD
 			case $VAL in
 			0)  VAL=member
 			    ;;
@@ -274,7 +274,7 @@ set_ctrl_state()
 			eval $COMM $REDIRECT
 		elif [[ $S = O ]]
 		then
-			VAL=${CMD#?}
+			VAL=${CMD
 			write_cpu_online $VAL
 		elif [[ $S = T ]]
 		then
@@ -392,7 +392,7 @@ run_state_test()
 	CONTROLLER=cpuset
 	CPULIST=0-6
 	I=0
-	eval CNT="\${#$TEST[@]}"
+	eval CNT="\${
 	reset_cgroup_states
 	echo $CPULIST > cpuset.cpus
 	echo root > cpuset.cpus.partition

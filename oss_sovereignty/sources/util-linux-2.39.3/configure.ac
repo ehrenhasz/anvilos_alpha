@@ -63,7 +63,7 @@ LIBFDISK_LT_MINOR=1
 LIBFDISK_LT_MICRO=0
 LIBFDISK_VERSION_INFO=`expr $LIBFDISK_LT_MAJOR + $LIBFDISK_LT_MINOR`:$LIBFDISK_LT_MICRO:$LIBFDISK_LT_MINOR
 
-# Check whether exec_prefix=/usr:
+
 AS_CASE([$exec_prefix:$prefix],
 [NONE:NONE | NONE:/usr | /usr:*],
   [AC_MSG_NOTICE([Default --exec-prefix detected.])
@@ -74,7 +74,7 @@ AS_CASE([$exec_prefix:$prefix],
   ]
 )
 
-# Check whether prefix=/usr
+
 AS_CASE([$prefix],
 [NONE | /usr],
   [AC_MSG_NOTICE([Default --prefix detected.])
@@ -86,10 +86,10 @@ AS_CASE([$prefix],
   ]
 )
 
-# default for old versions without $runstatedir
+
 AS_IF([test x"$runstatedir" = x], [runstatedir='${localstatedir}/run'])
 
-# our default if $localstatedir unchanged
+
 AS_CASE([$localstatedir:$runstatedir],
  [NONE:'${localstatedir}/run' | /var:'${localstatedir}/run' | NONE:'/run' ],
    [runstatedir=/run; AC_MSG_NOTICE([  --runstatedir defaults to /run])]
@@ -98,7 +98,7 @@ AS_CASE([$localstatedir:$runstatedir],
 AC_SUBST([runstatedir])
 
 
-# The original default values of {bin,sbin,lib}dir
+
 usrbin_execdir='${exec_prefix}/bin'
 AC_SUBST([usrbin_execdir])
 
@@ -112,7 +112,7 @@ AS_CASE([$libdir],
 )
 AC_SUBST([usrlib_execdir])
 
-# static configuration maintaned by packages (e.g. /usr/lib)
+
 AC_ARG_VAR([SYSCONFSTATICDIR],
 	   [Path to static system configuration, default ${prefix}/lib])
 AS_IF([test "x$SYSCONFSTATICDIR" = x],
@@ -286,9 +286,9 @@ AS_IF([test -d "$srcdir/po"], [
 "])
 
 AC_CHECK_HEADERS([linux/compiler.h linux/blkpg.h linux/major.h], [], [], [
-#ifdef HAVE_LINUX_COMPILER_H
-#include <linux/compiler.h>
-#endif
+
+
+
 ])
 AC_CHECK_HEADERS([ \
 	asm-generic/fcntl.h \
@@ -367,48 +367,48 @@ AC_CHECK_HEADERS([ \
 	utmpx.h \
 ])
 
-# There is a collision in old kernel-headers. The both files mount.h and fs.h
-# define MS_* macros. Fixed by kernel commit e462ec50cb5fad19f6003a3d8087f4a0945dd2b1.
-#
+
+
+
 AC_CHECK_HEADERS([linux/fs.h ], [], [],
- [#ifdef HAVE_SYS_MOUNT_H
-   # include <linux/fs.h>
-   # include <sys/mount.h>
-  #endif
+ [
+   
+   
+  
 ])
 
 AC_CHECK_HEADERS([linux/mount.h ], [], [],
- [#ifdef HAVE_LINUX_MOUNT_H
-   # include <linux/mount.h>
-   #endif
+ [
+   
+   
 ])
 
 AC_CHECK_HEADERS([linux/gsmmux.h ], [], [],
- [#ifdef LINUX_GSMMUX_H
-   # include <linux/gsmmux.h>
-   #endif
+ [
+   
+   
 ])
 
 AC_CHECK_HEADERS([security/pam_misc.h],
 		[AM_CONDITIONAL([HAVE_LINUXPAM], [true])],
 		[AM_CONDITIONAL([HAVE_LINUXPAM], [false])], [
-#ifdef HAVE_SECURITY_PAM_APPL_H
-#include <security/pam_appl.h>
-#endif
+
+
+
 ])
 
 AC_CHECK_DECLS([BLK_ZONE_REP_CAPACITY], [], [], [
-	#include <linux/blkzoned.h>
+	
 ])
 
 AC_CHECK_DECLS([PR_REP_CAPACITY], [], [], [
-	#include <linux/pr.h>
+	
 ])
 
 AC_CHECK_HEADERS([security/openpam.h], [], [], [
-#ifdef HAVE_SECURITY_PAM_APPL_H
-#include <security/pam_appl.h>
-#endif
+
+
+
 ])
 
 AC_CHECK_HEADERS([langinfo.h],
@@ -417,7 +417,7 @@ AC_CHECK_HEADERS([langinfo.h],
 
 AC_MSG_CHECKING([whether langinfo.h defines ALTMON_x constants])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-	#include <langinfo.h>
+	
 ]], [[
 	char *str;
 	str = nl_langinfo (ALTMON_1);
@@ -443,7 +443,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 
 AC_MSG_CHECKING([whether langinfo.h defines _NL_ABALTMON_x constants])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-	#include <langinfo.h>
+	
 ]], [[
 	char *str;
 	str = nl_langinfo (_NL_ABALTMON_1);
@@ -494,8 +494,8 @@ AS_CASE([$linux_os:$have_linux_version_h],
 )
 
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <time.h>
-#include <unistd.h>
+
+
 ]], [[
     int a = 0;
     struct tm *tm = localtime(0);
@@ -505,20 +505,20 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 [AC_DEFINE([HAVE_TM_GMTOFF], [1], [Does struct tm have a field tm_gmtoff?])
 ])
 
-AC_CHECK_TYPES([struct mount_attr], [], [], [[#include <linux/mount.h>]])
-AC_CHECK_TYPES([enum fsconfig_command], [], [], [[#include <linux/mount.h>]])
+AC_CHECK_TYPES([struct mount_attr], [], [], [[
+AC_CHECK_TYPES([enum fsconfig_command], [], [], [[
 
 AC_CHECK_MEMBERS([struct termios.c_line],,,
-    [[#include <termios.h>]])
+    [[
 
 AC_CHECK_MEMBERS([struct stat.st_mtim.tv_nsec],,,
-    [[#include <sys/stat.h>]])
+    [[
 
-AC_CHECK_TYPES([struct statx], [], [], [[#include <sys/stat.h>]])
+AC_CHECK_TYPES([struct statx], [], [], [[
 AC_CHECK_MEMBERS([struct statx.stx_mnt_id],,,
-    [[#include <sys/stat.h>]])
+    [[
 
-AC_CHECK_DECLS([_NL_TIME_WEEK_1STDAY],[],[],[[#include <langinfo.h>]])
+AC_CHECK_DECLS([_NL_TIME_WEEK_1STDAY],[],[],[[
 
 AC_CHECK_DECL([environ],
 	[AC_DEFINE([HAVE_ENVIRON_DECL], [1],
@@ -532,19 +532,19 @@ AC_CHECK_DECL([strsignal],
 
 AC_CHECK_DECL([TIOCGLCKTRMIOS],
 	      [have_tiocglcktrmios=yes], [have_tiocglcktrmios=no],
-	      [#include <sys/ioctl.h>])
+	      [
 AC_CHECK_DECL([SOCK_CLOEXEC],
 	      [have_sock_cloexec=yes], [have_sock_cloexec=no],
-	      [#include <sys/types.h>
-	       #include <sys/socket.h>])
+	      [
+	       
 AC_CHECK_DECL([SOCK_NONBLOCK],
 	      [have_sock_nonblock=yes], [have_sock_nonblock=no],
-	      [#include <sys/types.h>
-	       #include <sys/socket.h>])
+	      [
+	       
 AC_CHECK_DECL([SO_PASSCRED],
 	      [have_so_passcred=yes], [have_so_passcred=no],
-	      [#include <sys/types.h>
-	       #include <sys/socket.h>])
+	      [
+	       
 
 AC_CHECK_FUNCS([ \
 	clearenv \
@@ -709,8 +709,8 @@ AC_SUBST([RTAS_LIBS])
 
 AC_CHECK_MEMBER([struct sockaddr.sa_len],
 		AC_DEFINE([HAVE_SA_LEN], [1], [Define if struct sockaddr contains sa_len]), [],
-	[#include <sys/types.h>
-	 #include <sys/socket.h>])
+	[
+	 
 
 SOCKET_LIBS=
 AC_SEARCH_LIBS([socket], [socket],
@@ -725,16 +725,16 @@ AC_CHECK_FUNCS([dirfd], [have_dirfd=yes], [have_dirfd=no])
 AS_IF([test x"$have_dirfd" = xno], [
 	AC_CHECK_DECLS([dirfd],
 		[have_dirfd=yes], [have_dirfd=no],
-		[#include <sys/types.h>
-		 #include <dirent.h>])
+		[
+		 
 ])
 
 have_ddfd=no
 AS_IF([test x"$have_dirfd" = xno], [
 	AC_CHECK_MEMBERS([DIR.dd_fd],
 		[have_ddfd=yes], [have_ddfd=no],
-		[#include <sys/types.h>
-		 #include <dirent.h>])
+		[
+		 
 ])
 
 AM_CONDITIONAL([HAVE_DIRFD], [test "x$have_dirfd" = xyes || test "x$have_ddfd" = xyes])
@@ -742,7 +742,7 @@ AM_CONDITIONAL([HAVE_DIRFD], [test "x$have_dirfd" = xyes || test "x$have_ddfd" =
 
 AC_MSG_CHECKING([whether program_invocation_short_name is defined])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-	#include <errno.h>
+	
 ]], [[
 	program_invocation_short_name = "test";
 ]])], [
@@ -764,7 +764,7 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([extern char *__progname;],
 AC_CHECK_DECL([IOC_OPAL_GET_STATUS],
 	[AC_DEFINE([HAVE_OPAL_GET_STATUS], [1],
 		[Define to 1 if OPAL status ioctl is defined])],,
-	      [#include <linux/sed-opal.h>])
+	      [
 
 dnl Static compilation
 m4_define([UL_STATIC_PROGRAMS], [blkid, fdisk, losetup, mount, nsenter, sfdisk, umount, unshare])
@@ -863,7 +863,7 @@ AS_IF([test "x$have_pty_h" = xyes && test "x$have_sys_signalfd_h" = xyes && test
 ])
 
 AC_CHECK_TYPES([union semun], [], [], [[
-#include <sys/sem.h>
+
 ]])
 AC_CHECK_TYPES([loff_t])
 
@@ -874,10 +874,10 @@ AC_ARG_ENABLE([widechar],
 )
 UL_BUILD_INIT([widechar])
 UL_REQUIRES_COMPILE([widechar], [[
-  #include <wchar.h>
-  #include <wctype.h>
-  #include <stdio.h>
-  #include <stdlib.h>
+  
+  
+  
+  
   ]], [[
     wchar_t wc;
     wint_t w;
@@ -894,31 +894,31 @@ AS_IF([test "x$build_widechar" = xyes ], [
 
 
 AC_CHECK_TYPES([cpu_set_t], [have_cpu_set_t=yes], [], [[
-#include <sched.h>
+
 ]])
 
 AM_CONDITIONAL([HAVE_CPU_SET_T], [test "x$have_cpu_set_t" = xyes])
 
 AC_CHECK_TYPES([sighandler_t], [], [], [[
-#include <signal.h>
+
 ]])
 
 AC_CHECK_DECLS([CPU_ALLOC], [], [], [[
-#include <sched.h>
+
 ]])
 
-# on Solaris, you can't mix and match standards, since we use c99
-# apparently at this stage, XOPEN_SOURCE will conflict.  As workaround,
-# check for crypt.h and use that without XOPEN_SOURCE.
+
+
+
 have_crypt=no
 AC_CHECK_HEADERS([crypt.h])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_CRYPT_H
-#include <crypt.h>
-#else
-#define _XOPEN_SOURCE
-#include <unistd.h>
-#endif
+
+
+
+
+
+
 ]], [[
 char *c = crypt("abc","pw");
 ]])],[
@@ -927,12 +927,12 @@ char *c = crypt("abc","pw");
 ],[
   UL_SET_LIBS([-lcrypt])
   AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-  #ifdef HAVE_CRYPT_H
-  #include <crypt.h>
-  #else
-  #define _XOPEN_SOURCE
-  #include <unistd.h>
-  #endif
+  
+  
+  
+  
+  
+  
   ]], [[
   char *c = crypt("abc","pw");
   ]])],[
@@ -964,7 +964,7 @@ AS_IF([test "x$with_selinux" = xno], [
     AM_CONDITIONAL([HAVE_SELINUX], [true])
 
     UL_SET_LIBS([$SELINUX_LIBS])
-    # This function is missing in old libselinux 1.xx versions
+    
     AC_CHECK_FUNCS([security_get_initial_context])
     UL_RESTORE_LIBS
   ])
@@ -1016,8 +1016,8 @@ AS_IF([test "x$with_ncursesw" != xno], [
     AC_CHECK_HEADERS([ncursesw/ncurses.h], [have_ncursesw_header=yes])
     AC_CHECK_HEADERS([ncursesw/term.h])
 
-    # Define HAVE_NCURSES_H only if check for HAVE_NCURSESW_NCURSES_H is
-    # unsuccessful to avoid too many *_H permitations in config.h
+    
+    
     AS_IF([test "x$have_ncursesw_header" = xno], [
 	   AC_CHECK_HEADERS([ncurses.h], [have_ncursesw_header=yes])
 	   AC_CHECK_HEADERS([term.h])
@@ -1049,8 +1049,8 @@ AS_IF([test "x$have_ncursesw" = xno && test "x$with_ncurses" != xno ], [
     AC_CHECK_HEADERS([ncurses/ncurses.h], [have_ncurses_header=yes])
     AC_CHECK_HEADERS([ncurses/term.h])
 
-    # Define HAVE_NCURSES_H only if check for HAVE_NCURSES_NCURSES_H is
-    # unsuccessful to avoid too many *_H permitations in config.h
+    
+    
     AS_IF([test "x$have_ncurses_header" = xno], [
 	   AC_CHECK_HEADERS([ncurses.h], [have_ncurses_header=yes])
 	   AC_CHECK_HEADERS([term.h])
@@ -1079,11 +1079,11 @@ AS_IF([test "x$with_slang" = xyes], [
   AC_CHECK_HEADERS([slang.h slang/slang.h])
   AC_CHECK_HEADERS([slcurses.h slang/slcurses.h],
 		   [have_slang=yes], [], [
-#ifdef HAVE_SLANG_H
-#include <slang.h>
-#elif defined(HAVE_SLANG_SLANG_H)
-#include <slang/slang.h>
-#endif
+
+
+
+
+
 ])
   AS_IF([test "x$have_slang" = xno], [
     AC_MSG_ERROR([slang selected but slcurses.h not found])],
@@ -1449,18 +1449,18 @@ AS_IF([test "x$build_fallocate" = xyes], [
   dnl function prototype.
   AC_MSG_CHECKING([for valid fallocate() function])
   AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_LINUX_FALLOC_H
-# include <linux/falloc.h>
-#endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#endif
+
+
+
+
+
+
+
+
+
+
+
+
 ]],[[
    long ret;
    ret = fallocate(0, FALLOC_FL_KEEP_SIZE, 0xfffffffful, 0xfffffffful);
@@ -1477,18 +1477,18 @@ AS_IF([test "x$build_fallocate" = xyes], [
   dnl check for valid posix_fallocate() function
   AC_MSG_CHECKING([for valid posix_fallocate() function])
   AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_LINUX_FALLOC_H
-# include <linux/falloc.h>
-#endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#endif
+
+
+
+
+
+
+
+
+
+
+
+
 ]],[[
    long ret;
    ret = posix_fallocate(0, 0xfffffffful, 0xfffffffful);
@@ -1514,7 +1514,7 @@ AM_CONDITIONAL([BUILD_UNSHARE], [test "x$build_unshare" = xyes])
 
 AC_MSG_CHECKING([for valid unshare() function])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#include <sched.h>
+
 ]],[[
    int ret;
    ret = unshare(0);
@@ -1540,8 +1540,8 @@ AM_CONDITIONAL([BUILD_NSENTER], [test "x$build_nsenter" = xyes])
 
 AC_MSG_CHECKING([for valid setns() function])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#include <sched.h>
-#include <errno.h>
+
+
 ]],[[
    int ret;
    ret = setns(0, 0);
@@ -1896,10 +1896,10 @@ AS_IF([test "x$build_prlimit" = xyes], [
   dnl check for valid prlimit() function
   AC_MSG_CHECKING([for valid prlimit() function])
   AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <stddef.h>
+
+
+
+
 ]],[[
    int ret;
    ret = prlimit(0, RLIMIT_AS, NULL, NULL);
@@ -2101,8 +2101,8 @@ UL_REQUIRES_LINUX([setarch])
 AM_CONDITIONAL([BUILD_SETARCH], [test "x$build_setarch" = xyes])
 
 
-# build_scriptutils= is just configure-only variable to control
-# script, scriptreplay and scriptlive
+
+
 AC_ARG_ENABLE([scriptutils],
   AS_HELP_STRING([--disable-scriptutils], [do not build script, scriptreplay and scriptlive]),
   [], [UL_DEFAULT_ENABLE([scriptutils], [check])]
@@ -2245,8 +2245,8 @@ AS_IF([test "x$with_user" != xno], [
     [*:yes],
       [AC_DEFINE([HAVE_LIBUSER], [1], [Define if libuser is available])]
   )
-  # temporary solution, libuser has stupid .pc where are exported all
-  # private dependencies to Requires: instead of Requires.private:
+  
+  
   AS_IF([test "x$have_user" = xyes], [
     LIBUSER_LIBS=-luser
   ])
@@ -2390,8 +2390,8 @@ UL_REQUIRES_LINUX([setterm])
 UL_REQUIRES_HAVE([setterm], [ncursesw, ncurses], [ncursesw or ncurses library])
 AM_CONDITIONAL([BUILD_SETTERM], [test "x$build_setterm" = xyes])
 
-# build_schedutils= is just configure-only variable to control
-# ionice, taskset and chrt
+
+
 AC_ARG_ENABLE([schedutils],
   AS_HELP_STRING([--disable-schedutils], [do not build chrt, ionice, taskset]),
   [], [UL_DEFAULT_ENABLE([schedutils], [check])]
@@ -2501,9 +2501,9 @@ AC_ARG_WITH([systemd],
 
 have_systemd=no
 AS_IF([test "x$with_systemd" != xno], [
-  # new version -- all libsystemd-* libs merged into libsystemd
+  
   PKG_CHECK_MODULES([SYSTEMD], [libsystemd], [have_systemd=yes], [have_systemd=no])
-  # old versions
+  
   AS_IF([test "x$have_systemd" != "xyes"], [
     PKG_CHECK_MODULES([SYSTEMD_DAEMON], [libsystemd-daemon],
 		      [have_systemd_daemon=yes], [have_systemd_daemon=no])
@@ -2602,14 +2602,14 @@ AC_ARG_WITH([python],
 have_python=no
 have_libpython=no
 AS_IF([test "x$with_python" != xno], [
-  # We follow distributions default and look for PKG module name "python"
-  # (minimal version is 2) but if major version is explicitly specified by
-  # --with-python=2 or --with-python=3 then we look for PKG module "python2" or
-  # "python3".
+  
+  
+  
+  
   AS_IF([test "x$withval" != xno && test "x$withval" != xyes && test "x$withval" != xcheck],
 	[pymajor="$withval"; PYTHON=python${pymajor}], [pymajor="2"])
 
-  # check for python interpreter
+  
   AM_PATH_PYTHON([$pymajor], [have_python=yes], [have_python=no])
   AS_CASE([$with_python:$have_python],
     [yes:no],
@@ -2617,11 +2617,11 @@ AS_IF([test "x$with_python" != xno], [
     [check:no],
        [AC_MSG_WARN([python interpreter not found, do not build python bindings])],
     [*:yes],
-       # check for python development stuff
+       
        [
          PKG_CHECK_MODULES([PYTHON], [python-$PYTHON_VERSION], [have_libpython=yes], [have_libpython=no])
 
-         # https://github.com/util-linux/util-linux/issues/2366
+         
          AX_COMPARE_VERSION([$PYTHON_VERSION], [ge], [3.12], [
            UL_WARN_ADD([-Wno-error=redundant-decls], [PYTHON_CFLAGS])
          ])
@@ -2639,13 +2639,13 @@ UL_REQUIRES_HAVE([pylibmount], [libpython], [libpython])
 UL_REQUIRES_BUILD([pylibmount], [libmount])
 AM_CONDITIONAL([BUILD_PYLIBMOUNT], [test "x$build_pylibmount" = "xyes"])
 
-# We need to introduce a verbatim dependency into the Makefile, without automake
-# trying to interpret it, so push it as a AM_SUBST_NOTMAKE variable.
+
+
 verbatim_pylibmount_dependency='
 
-# pylibmountexec module must be installed after usrlib_exec libraries,
-# otherwise the libtool relink step will fail to find libmount.la and
-# will try -lmount which is possibly not available.
+
+
+
 install-pylibmountexecLTLIBRARIES: install-usrlib_execLTLIBRARIES
 
 '
@@ -2815,9 +2815,9 @@ AC_DEFINE_UNQUOTED([CONFIG_ADJTIME_PATH], "$ADJTIME_PATH", [Path to hwclock adjt
 
 if test "x${build_alias}" != "x${host_alias}"; then
   AC_MSG_NOTICE([setting link_all_deplibs=unknown for libtool])
-  # work around Debian patch to libtool breaking cross-compiles
-  # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=702737
-  # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=297726
+  
+  
+  
   link_all_deplibs=unknown
 fi
 
@@ -2827,10 +2827,10 @@ LIBS=""
 
 AC_CONFIG_HEADERS([config.h])
 
-#
-# Don't use configure.ac to replace install paths! See Makefile PATHFILES for
-# more details.
-#
+
+
+
+
 AC_CONFIG_FILES([
 Makefile
 libblkid/docs/Makefile

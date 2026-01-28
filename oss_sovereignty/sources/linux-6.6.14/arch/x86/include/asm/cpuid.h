@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * CPUID-related helpers/definitions
- */
+
+
 
 #ifndef _ASM_X86_CPUID_H
 #define _ASM_X86_CPUID_H
@@ -30,7 +28,7 @@ static inline int have_cpuid_p(void)
 static inline void native_cpuid(unsigned int *eax, unsigned int *ebx,
 				unsigned int *ecx, unsigned int *edx)
 {
-	/* ecx is often an input as well as an output. */
+	
 	asm volatile("cpuid"
 	    : "=a" (*eax),
 	      "=b" (*ebx),
@@ -50,9 +48,7 @@ static inline unsigned int native_cpuid_##reg(unsigned int op)	\
 	return reg;						\
 }
 
-/*
- * Native CPUID functions returning a single datum.
- */
+
 native_cpuid_reg(eax)
 native_cpuid_reg(ebx)
 native_cpuid_reg(ecx)
@@ -64,11 +60,7 @@ native_cpuid_reg(edx)
 #define __cpuid			native_cpuid
 #endif
 
-/*
- * Generic CPUID function
- * clear %ecx since some cpus (Cyrix MII) do not set or clear %ecx
- * resulting in stale register contents being returned.
- */
+
 static inline void cpuid(unsigned int op,
 			 unsigned int *eax, unsigned int *ebx,
 			 unsigned int *ecx, unsigned int *edx)
@@ -78,7 +70,7 @@ static inline void cpuid(unsigned int op,
 	__cpuid(eax, ebx, ecx, edx);
 }
 
-/* Some CPUID calls want 'count' to be placed in ecx */
+
 static inline void cpuid_count(unsigned int op, int count,
 			       unsigned int *eax, unsigned int *ebx,
 			       unsigned int *ecx, unsigned int *edx)
@@ -88,9 +80,7 @@ static inline void cpuid_count(unsigned int op, int count,
 	__cpuid(eax, ebx, ecx, edx);
 }
 
-/*
- * CPUID functions returning a single datum
- */
+
 static inline unsigned int cpuid_eax(unsigned int op)
 {
 	unsigned int eax, ebx, ecx, edx;
@@ -168,4 +158,4 @@ static inline uint32_t hypervisor_cpuid_base(const char *sig, uint32_t leaves)
 	return 0;
 }
 
-#endif /* _ASM_X86_CPUID_H */
+#endif 

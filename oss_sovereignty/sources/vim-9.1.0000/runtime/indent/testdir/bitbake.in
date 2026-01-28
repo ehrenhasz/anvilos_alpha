@@ -1,6 +1,6 @@
-# vim: set filetype=bitbake :
 
-# START_INDENT
+
+
 FOO = " \
     bar \
     baz \
@@ -16,4 +16,4 @@ def foo(x):
 if y:
 print(x)
 }
-# END_INDENT
+

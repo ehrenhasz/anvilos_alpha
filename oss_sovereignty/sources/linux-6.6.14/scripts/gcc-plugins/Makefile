@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 $(obj)/randomize_layout_plugin.so: $(obj)/randomize_layout_seed.h
 quiet_cmd_create_randomize_layout_seed = SEEDHDR $@
@@ -13,14 +13,14 @@ $(obj)/randomize_layout_seed.h: $(objtree)/scripts/basic/randstruct.seed FORCE
 	$(call if_changed,create_randomize_layout_seed)
 targets += randomize_layout_seed.h
 
-# Build rules for plugins
-#
-# No extra code is needed for single-file plugins.
-# For multi-file plugins, use *-objs syntax to list the objects.
-#
-# If the plugin foo.so is compiled from foo.c and foo2.c, you can do:
-#
-# foo-objs := foo.o foo2.o
+
+
+
+
+
+
+
+
 
 always-y += $(GCC_PLUGIN)
 

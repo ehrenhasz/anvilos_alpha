@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
 
-/*
- * Node state machine functions for remote device node sm
- */
+
+
+
 
 #ifndef __EFCT_DEVICE_H__
 #define __EFCT_DEVICE_H__
@@ -69,4 +64,4 @@ void
 __efc_d_wait_logo_rsp(struct efc_sm_ctx *ctx,
 		      enum efc_sm_event evt, void *arg);
 
-#endif /* __EFCT_DEVICE_H__ */
+#endif 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NVDIMM Firmware Interface Table - NFIT
- *
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+
 #ifndef __NFIT_H__
 #define __NFIT_H__
 #include <linux/workqueue.h>
@@ -13,21 +9,21 @@
 #include <linux/acpi.h>
 #include <acpi/acuuid.h>
 
-/* ACPI 6.1 */
+
 #define UUID_NFIT_BUS "2f10e7a4-9e91-11e4-89d3-123b93f75cba"
 
-/* https://pmem.io/documents/NVDIMM_DSM_Interface-V1.6.pdf */
+
 #define UUID_NFIT_DIMM "4309ac30-0d11-11e4-9191-0800200c9a66"
 #define UUID_INTEL_BUS "c7d8acd4-2df8-4b82-9f65-a325335af149"
 
-/* https://github.com/HewlettPackard/hpe-nvm/blob/master/Documentation/ */
+
 #define UUID_NFIT_DIMM_N_HPE1 "9002c334-acf3-4c0e-9642-a235f0d53bc6"
 #define UUID_NFIT_DIMM_N_HPE2 "5008664b-b758-41a0-a03c-27c2f2d04f7e"
 
-/* https://msdn.microsoft.com/library/windows/hardware/mt604741 */
+
 #define UUID_NFIT_DIMM_N_MSFT "1ee68b36-d4bd-4a1a-9a16-4f8e53d46e05"
 
-/* http://www.uefi.org/RFIC_LIST (see "Virtual NVDIMM 0x1901") */
+
 #define UUID_NFIT_DIMM_N_HYPERV "5746c5f2-a9a2-4264-ad0e-e4ddc9e09e80"
 
 #define ACPI_NFIT_MEM_FAILED_MASK (ACPI_NFIT_MEM_SAVE_FAILED \
@@ -42,10 +38,7 @@
  | 1 << ND_CMD_SET_CONFIG_DATA | 1 << ND_CMD_VENDOR_EFFECT_LOG_SIZE \
  | 1 << ND_CMD_VENDOR_EFFECT_LOG | 1 << ND_CMD_VENDOR)
 
-/*
- * Command numbers that the kernel needs to know about to handle
- * non-default DSM revision ids
- */
+
 enum nvdimm_family_cmds {
 	NVDIMM_INTEL_LATCH_SHUTDOWN = 10,
 	NVDIMM_INTEL_GET_MODES = 11,
@@ -101,16 +94,13 @@ enum nvdimm_bus_family_cmds {
 (NVDIMM_INTEL_SECURITY_CMDMASK | NVDIMM_INTEL_FW_ACTIVATE_CMDMASK)
 
 enum nfit_uuids {
-	/* for simplicity alias the uuid index with the family id */
+	
 	NFIT_DEV_DIMM = NVDIMM_FAMILY_INTEL,
 	NFIT_DEV_DIMM_N_HPE1 = NVDIMM_FAMILY_HPE1,
 	NFIT_DEV_DIMM_N_HPE2 = NVDIMM_FAMILY_HPE2,
 	NFIT_DEV_DIMM_N_MSFT = NVDIMM_FAMILY_MSFT,
 	NFIT_DEV_DIMM_N_HYPERV = NVDIMM_FAMILY_HYPERV,
-	/*
-	 * to_nfit_bus_uuid() expects to translate bus uuid family ids
-	 * to a UUID index using NVDIMM_FAMILY_MAX as an offset
-	 */
+	
 	NFIT_BUS_INTEL = NVDIMM_FAMILY_MAX + NVDIMM_BUS_FAMILY_INTEL,
 	NFIT_SPA_VOLATILE,
 	NFIT_SPA_PM,
@@ -124,13 +114,10 @@ enum nfit_uuids {
 	NFIT_UUID_MAX,
 };
 
-/*
- * Region format interface codes are stored with the interface as the
- * LSB and the function as the MSB.
- */
-#define NFIT_FIC_BYTE cpu_to_le16(0x101) /* byte-addressable energy backed */
-#define NFIT_FIC_BLK cpu_to_le16(0x201) /* block-addressable non-energy backed */
-#define NFIT_FIC_BYTEN cpu_to_le16(0x301) /* byte-addressable non-energy backed */
+
+#define NFIT_FIC_BYTE cpu_to_le16(0x101) 
+#define NFIT_FIC_BLK cpu_to_le16(0x201) 
+#define NFIT_FIC_BYTEN cpu_to_le16(0x301) 
 
 enum {
 	NFIT_BLK_READ_FLUSH = 1,
@@ -203,7 +190,7 @@ enum nfit_mem_flags {
 
 #define NFIT_DIMM_ID_LEN	22
 
-/* assembled tables for a given dimm/memory-device */
+
 struct nfit_mem {
 	struct nvdimm *nvdimm;
 	struct acpi_nfit_memory_map *memdev_dcr;
@@ -298,7 +285,7 @@ struct nfit_blk {
 		struct acpi_nfit_system_address *spa;
 	} mmio[2];
 	struct nd_region *nd_region;
-	u64 bdw_offset; /* post interleave offset */
+	u64 bdw_offset; 
 	u64 stat_offset;
 	u64 cmd_offset;
 	u32 dimm_flags;
@@ -349,4 +336,4 @@ bool intel_fwa_supported(struct nvdimm_bus *nvdimm_bus);
 extern struct device_attribute dev_attr_firmware_activate_noidle;
 void nfit_intel_shutdown_status(struct nfit_mem *nfit_mem);
 
-#endif /* __NFIT_H__ */
+#endif 

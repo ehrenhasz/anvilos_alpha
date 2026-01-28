@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+
 
 #ifndef _NFP_APP_H
 #define _NFP_APP_H 1
@@ -36,50 +36,7 @@ extern const struct nfp_app_type app_bpf;
 extern const struct nfp_app_type app_flower;
 extern const struct nfp_app_type app_abm;
 
-/**
- * struct nfp_app_type - application definition
- * @id:		application ID
- * @name:	application name
- * @ctrl_cap_mask:  ctrl vNIC capability mask, allows disabling features like
- *		    IRQMOD which are on by default but counter-productive for
- *		    control messages which are often latency-sensitive
- * @ctrl_has_meta:  control messages have prepend of type:5/port:CTRL
- *
- * Callbacks
- * @init:	perform basic app checks and init
- * @clean:	clean app state
- * @extra_cap:	extra capabilities string
- * @ndo_init:	vNIC and repr netdev .ndo_init
- * @ndo_uninit:	vNIC and repr netdev .ndo_unint
- * @vnic_alloc:	allocate vNICs (assign port types, etc.)
- * @vnic_free:	free up app's vNIC state
- * @vnic_init:	vNIC netdev was registered
- * @vnic_clean:	vNIC netdev about to be unregistered
- * @repr_init:	representor about to be registered
- * @repr_preclean:	representor about to unregistered, executed before app
- *			reference to the it is removed
- * @repr_clean:	representor about to be unregistered
- * @repr_open:	representor netdev open callback
- * @repr_stop:	representor netdev stop callback
- * @check_mtu:	MTU change request on a netdev (verify it is valid)
- * @repr_change_mtu:	MTU change request on repr (make and verify change)
- * @port_get_stats:		get extra ethtool statistics for a port
- * @port_get_stats_count:	get count of extra statistics for a port
- * @port_get_stats_strings:	get strings for extra statistics
- * @start:	start application logic
- * @stop:	stop application logic
- * @netdev_event:	Netdevice notifier event
- * @ctrl_msg_rx:    control message handler
- * @ctrl_msg_rx_raw:	handler for control messages from data queues
- * @setup_tc:	setup TC ndo
- * @bpf:	BPF ndo offload-related calls
- * @xdp_offload:    offload an XDP program
- * @eswitch_mode_get:    get SR-IOV eswitch mode
- * @eswitch_mode_set:    set SR-IOV eswitch mode
- * @sriov_enable: app-specific sriov initialisation
- * @sriov_disable: app-specific sriov clean-up
- * @dev_get:	get representor or internal port representing netdev
- */
+
 struct nfp_app_type {
 	enum nfp_app_id id;
 	const char *name;
@@ -146,18 +103,7 @@ struct nfp_app_type {
 				      bool *redir_egress);
 };
 
-/**
- * struct nfp_app - NFP application container
- * @pdev:	backpointer to PCI device
- * @pf:		backpointer to NFP PF structure
- * @cpp:	pointer to the CPP handle
- * @ctrl:	pointer to ctrl vNIC struct
- * @reprs:	array of pointers to representors
- * @type:	pointer to const application ops and info
- * @ctrl_mtu:	MTU to set on the control vNIC (set in .init())
- * @netdev_nb:	Netdevice notifier block
- * @priv:	app-specific priv data
- */
+
 struct nfp_app {
 	struct pci_dev *pdev;
 	struct nfp_pf *pf;
@@ -438,7 +384,7 @@ void nfp_app_free(struct nfp_app *app);
 int nfp_app_start(struct nfp_app *app, struct nfp_net *ctrl);
 void nfp_app_stop(struct nfp_app *app);
 
-/* Callbacks shared between apps */
+
 
 int nfp_app_nic_vnic_alloc(struct nfp_app *app, struct nfp_net *nn,
 			   unsigned int id);

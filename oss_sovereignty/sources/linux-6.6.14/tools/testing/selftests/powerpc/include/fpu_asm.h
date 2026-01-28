@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2016, Cyril Bur, IBM Corp.
- */
+
+
 
 #ifndef _SELFTESTS_POWERPC_FPU_ASM_H
 #define _SELFTESTS_POWERPC_FPU_ASM_H
@@ -47,10 +45,7 @@
 	lfd	f15,(stack_size + STACK_FRAME_MIN_SIZE - 128)(%r1); \
 	lfd	f14,(stack_size + STACK_FRAME_MIN_SIZE - 136)(%r1);
 
-/*
- * Careful calling this, it will 'clobber' fpu (by design)
- * Don't call this from C
- */
+
 FUNC_START(load_fpu)
 	lfd	f14,0(r3)
 	lfd	f15,8(r3)
@@ -73,4 +68,4 @@ FUNC_START(load_fpu)
 	blr
 FUNC_END(load_fpu)
 
-#endif /* _SELFTESTS_POWERPC_FPU_ASM_H */
+#endif 

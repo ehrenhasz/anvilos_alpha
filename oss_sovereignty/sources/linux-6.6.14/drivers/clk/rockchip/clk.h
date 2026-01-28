@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014 MundoReader S.L.
- * Author: Heiko Stuebner <heiko@sntech.de>
- *
- * Copyright (c) 2015 Rockchip Electronics Co. Ltd.
- * Author: Xing Zheng <zhengxing@rock-chips.com>
- *
- * based on
- *
- * samsung/clk.h
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- * Copyright (c) 2013 Linaro Ltd.
- * Author: Thomas Abraham <thomas.ab@samsung.com>
- */
+
+
 
 #ifndef CLK_ROCKCHIP_CLK_H
 #define CLK_ROCKCHIP_CLK_H
@@ -25,7 +12,7 @@ struct clk;
 #define HIWORD_UPDATE(val, mask, shift) \
 		((val) << (shift) | (mask) << ((shift) + 16))
 
-/* register positions shared by PX30, RV1108, RK2928, RK3036, RK3066, RK3188 and RK3228 */
+
 #define BOOST_PLL_H_CON(x)		((x) * 0x4)
 #define BOOST_CLK_CON			0x0008
 #define BOOST_BOOST_CON			0x000c
@@ -328,14 +315,7 @@ enum rockchip_pll_type {
 	.k = _k,						\
 }
 
-/**
- * struct rockchip_clk_provider - information about clock provider
- * @reg_base: virtual address for the register base.
- * @clk_data: holds clock related data like clk* and number of clocks.
- * @cru_node: device-node of the clock-provider
- * @grf: regmap of the general-register-files syscon
- * @lock: maintains exclusion between callbacks for a given clock-provider.
- */
+
 struct rockchip_clk_provider {
 	void __iomem *reg_base;
 	struct clk_onecell_data clk_data;
@@ -348,14 +328,14 @@ struct rockchip_pll_rate_table {
 	unsigned long rate;
 	union {
 		struct {
-			/* for RK3066 */
+			
 			unsigned int nr;
 			unsigned int nf;
 			unsigned int no;
 			unsigned int nb;
 		};
 		struct {
-			/* for RK3036/RK3399 */
+			
 			unsigned int fbdiv;
 			unsigned int postdiv1;
 			unsigned int refdiv;
@@ -364,7 +344,7 @@ struct rockchip_pll_rate_table {
 			unsigned int frac;
 		};
 		struct {
-			/* for RK3588 */
+			
 			unsigned int m;
 			unsigned int p;
 			unsigned int s;
@@ -373,25 +353,7 @@ struct rockchip_pll_rate_table {
 	};
 };
 
-/**
- * struct rockchip_pll_clock - information about pll clock
- * @id: platform specific id of the clock.
- * @name: name of this pll clock.
- * @parent_names: name of the parent clock.
- * @num_parents: number of parents
- * @flags: optional flags for basic clock.
- * @con_offset: offset of the register for configuring the PLL.
- * @mode_offset: offset of the register for configuring the PLL-mode.
- * @mode_shift: offset inside the mode-register for the mode of this pll.
- * @lock_shift: offset inside the lock register for the lock status.
- * @type: Type of PLL to be registered.
- * @pll_flags: hardware-specific flags
- * @rate_table: Table of usable pll rates
- *
- * Flags:
- * ROCKCHIP_PLL_SYNC_RATE - check rate parameters to match against the
- *	rate_table parameters and ajust them if necessary.
- */
+
 struct rockchip_pll_clock {
 	unsigned int		id;
 	const char		*name;
@@ -448,18 +410,7 @@ struct rockchip_cpuclk_rate_table {
 	struct rockchip_cpuclk_clksel post_muxs[ROCKCHIP_CPUCLK_NUM_DIVIDERS];
 };
 
-/**
- * struct rockchip_cpuclk_reg_data - register offsets and masks of the cpuclock
- * @core_reg[]:	register offset of the cores setting register
- * @div_core_shift[]:	cores divider offset used to divide the pll value
- * @div_core_mask[]:	cores divider mask
- * @num_cores:	number of cpu cores
- * @mux_core_reg:       register offset of the cores select parent
- * @mux_core_alt:       mux value to select alternate parent
- * @mux_core_main:	mux value to select main parent of core
- * @mux_core_shift:	offset of the core multiplexer
- * @mux_core_mask:	core multiplexer mask
- */
+
 struct rockchip_cpuclk_reg_data {
 	int	core_reg[ROCKCHIP_CPUCLK_MAX_CORES];
 	u8	div_core_shift[ROCKCHIP_CPUCLK_MAX_CORES];
@@ -482,10 +433,7 @@ struct clk *rockchip_clk_register_mmc(const char *name,
 				const char *const *parent_names, u8 num_parents,
 				void __iomem *reg, int shift);
 
-/*
- * DDRCLK flags, including method of setting the rate
- * ROCKCHIP_DDRCLK_SIP: use SIP call to bl31 to change ddrclk rate.
- */
+
 #define ROCKCHIP_DDRCLK_SIP		BIT(0)
 
 struct clk *rockchip_clk_register_ddrclk(const char *name, int flags,
@@ -965,7 +913,7 @@ struct rockchip_clk_branch {
 		.gate_offset	= -1,				\
 	}
 
-/* SGRF clocks are only accessible from secure mode, so not controllable */
+
 #define SGRF_GATE(_id, cname, pname)				\
 		FACTOR(_id, cname, pname, 0, 1, 1)
 

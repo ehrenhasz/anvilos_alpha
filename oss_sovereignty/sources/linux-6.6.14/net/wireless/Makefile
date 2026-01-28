@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 obj-$(CONFIG_CFG80211) += cfg80211.o
 obj-$(CONFIG_LIB80211) += lib80211.o
 obj-$(CONFIG_LIB80211_CRYPT_WEP) += lib80211_crypt_wep.o
@@ -26,7 +26,7 @@ endif
 
 $(obj)/shipped-certs.c: $(wildcard $(srctree)/$(src)/certs/*.hex)
 	@$(kecho) "  GEN     $@"
-	$(Q)(echo '#include "reg.h"'; \
+	$(Q)(echo '
 	  echo 'const u8 shipped_regdb_certs[] = {'; \
 	  echo | cat - $^ ; \
 	  echo '};'; \
@@ -40,17 +40,17 @@ $(obj)/extra-certs.c: $(CONFIG_CFG80211_EXTRA_REGDB_KEYDIR) \
 	  allf=""; \
 	  for f in $^ ; do \
 	      test -f $$f || continue;\
-	      # similar to hexdump -v -e '1/1 "0x%.2x," "\n"' \
+	      
 	      thisf=$$(od -An -v -tx1 < $$f | \
 	                   sed -e 's/ /\n/g' | \
 	                   sed -e 's/^[0-9a-f]\+$$/\0/;t;d' | \
 	                   sed -e 's/^/0x/;s/$$/,/'); \
-	      # file should not be empty - maybe command substitution failed? \
+	      
 	      test ! -z "$$thisf";\
 	      allf=$$allf$$thisf;\
 	  done; \
 	  ( \
-	      echo '#include "reg.h"'; \
+	      echo '
 	      echo 'const u8 extra_regdb_certs[] = {'; \
 	      echo "$$allf"; \
 	      echo '};'; \

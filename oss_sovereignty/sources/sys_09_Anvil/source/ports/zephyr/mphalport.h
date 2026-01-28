@@ -16,9 +16,9 @@ static inline mp_uint_t mp_hal_ticks_ms(void) {
 }
 
 static inline mp_uint_t mp_hal_ticks_cpu(void) {
-    // ticks_cpu() is defined as using the highest-resolution timing source
-    // in the system. This is usually a CPU clock, but doesn't have to be,
-    // here we just use Zephyr hi-res timer.
+    
+    
+    
     return k_cycle_get_32();
 }
 
@@ -31,7 +31,7 @@ static inline void mp_hal_delay_ms(mp_uint_t delay) {
 }
 
 static inline uint64_t mp_hal_time_ns(void) {
-    // Not currently implemented.
+    
     return 0;
 }
 

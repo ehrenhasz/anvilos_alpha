@@ -4,8 +4,8 @@ from time import sleep
 @asm_pio(sideset_init=PIO.OUT_LOW)
 def pwm_prog():
     pull(noblock) .side(0)
-    mov(x, osr)  # Keep most recent pull data stashed in X, for recycling by noblock
-    mov(y, isr)  # ISR must be preloaded with PWM count max
+    mov(x, osr)  
+    mov(y, isr)  
     label("pwmloop")
     jmp(x_not_y, "skip")
     nop()         .side(1)

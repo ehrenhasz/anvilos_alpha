@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_ENV_H
 #define __PERF_ENV_H
 
@@ -96,10 +96,7 @@ struct perf_env {
 	struct hybrid_node	*hybrid_nodes;
 	struct pmu_caps		*pmu_caps;
 #ifdef HAVE_LIBBPF_SUPPORT
-	/*
-	 * bpf_info_lock protects bpf rbtrees. This is needed because the
-	 * trees are accessed by different threads in perf-top
-	 */
+	
 	struct {
 		struct rw_semaphore	lock;
 		struct rb_root		infos;
@@ -107,27 +104,24 @@ struct perf_env {
 		struct rb_root		btfs;
 		u32			btfs_cnt;
 	} bpf_progs;
-#endif // HAVE_LIBBPF_SUPPORT
-	/* same reason as above (for perf-top) */
+#endif 
+	
 	struct {
 		struct rw_semaphore	lock;
 		struct rb_root		tree;
 	} cgroups;
 
-	/* For fast cpu to numa node lookup via perf_env__numa_node */
+	
 	int			*numa_map;
 	int			 nr_numa_map;
 
-	/* For real clock time reference. */
+	
 	struct {
 		u64	tod_ns;
 		u64	clockid_ns;
 		u64     clockid_res_ns;
 		int	clockid;
-		/*
-		 * enabled is valid for report mode, and is true if above
-		 * values are set, it's set in process_clock_data
-		 */
+		
 		bool	enabled;
 	} clock;
 };
@@ -178,4 +172,4 @@ struct btf_node *__perf_env__find_btf(struct perf_env *env, __u32 btf_id);
 int perf_env__numa_node(struct perf_env *env, struct perf_cpu cpu);
 char *perf_env__find_pmu_cap(struct perf_env *env, const char *pmu_name,
 			     const char *cap);
-#endif /* __PERF_ENV_H */
+#endif 

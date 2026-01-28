@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 
 #ifndef _NLS_UCS2_DATA_H
 #define _NLS_UCS2_DATA_H
@@ -12,4 +12,4 @@ struct UniCaseRange {
 extern signed char NlsUniUpperTable[512];
 extern const struct UniCaseRange NlsUniUpperRange[];
 
-#endif /* _NLS_UCS2_DATA_H */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LIBPERF_THREADMAP_H
 #define __LIBPERF_THREADMAP_H
 
@@ -18,4 +18,4 @@ LIBPERF_API pid_t perf_thread_map__pid(struct perf_thread_map *map, int idx);
 LIBPERF_API struct perf_thread_map *perf_thread_map__get(struct perf_thread_map *map);
 LIBPERF_API void perf_thread_map__put(struct perf_thread_map *map);
 
-#endif /* __LIBPERF_THREADMAP_H */
+#endif 

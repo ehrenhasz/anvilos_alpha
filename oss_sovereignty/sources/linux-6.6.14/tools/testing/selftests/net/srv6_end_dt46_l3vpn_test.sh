@@ -37,9 +37,9 @@ print_log_test_results()
 log_section()
 {
 	echo
-	echo "################################################################################"
+	echo "
 	echo "TEST SECTION: $*"
-	echo "################################################################################"
+	echo "
 }
 cleanup()
 {
@@ -133,11 +133,11 @@ setup()
 	ip link add veth-rt-1 type veth peer name veth-rt-2
 	setup_rt_networking 1
 	setup_rt_networking 2
-	setup_hs 1 1 100  #args: host router tenant
+	setup_hs 1 1 100  
 	setup_hs 2 2 100
 	setup_hs 3 1 200
 	setup_hs 4 2 200
-	setup_vpn_config 1 1 2 2 100  #args: src_host src_router dst_host dst_router tenant
+	setup_vpn_config 1 1 2 2 100  
 	setup_vpn_config 2 2 1 1 100
 	setup_vpn_config 3 1 4 2 200
 	setup_vpn_config 4 2 3 1 200

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * acpi/internal.h
- * For use by Linux/ACPI infrastructure, not drivers
- *
- * Copyright (c) 2009, Intel Corporation.
- */
+
+
 
 #ifndef _ACPI_INTERNAL_H_
 #define _ACPI_INTERNAL_H_
@@ -85,9 +80,7 @@ bool acpi_scan_is_offline(struct acpi_device *adev, bool uevent);
 acpi_status acpi_sysfs_table_handler(u32 event, void *table, void *context);
 void acpi_scan_table_notify(void);
 
-/* --------------------------------------------------------------------------
-                     Device Node Initialization / Removal
-   -------------------------------------------------------------------------- */
+
 #define ACPI_STA_DEFAULT (ACPI_STA_DEVICE_PRESENT | ACPI_STA_DEVICE_ENABLED | \
 			  ACPI_STA_DEVICE_UI | ACPI_STA_DEVICE_FUNCTIONING)
 
@@ -113,16 +106,12 @@ bool acpi_device_is_first_physical_node(struct acpi_device *adev,
 					const struct device *dev);
 int acpi_bus_register_early_device(int type);
 
-/* --------------------------------------------------------------------------
-                     Device Matching and Notification
-   -------------------------------------------------------------------------- */
+
 const struct acpi_device *acpi_companion_match(const struct device *dev);
 int __acpi_device_uevent_modalias(const struct acpi_device *adev,
 				  struct kobj_uevent_env *env);
 
-/* --------------------------------------------------------------------------
-                                  Power Resource
-   -------------------------------------------------------------------------- */
+
 void acpi_power_resources_list_free(struct list_head *list);
 int acpi_extract_power_resources(union acpi_object *package, unsigned int start,
 				 struct list_head *list);
@@ -136,15 +125,11 @@ int acpi_power_on_resources(struct acpi_device *device, int state);
 int acpi_power_transition(struct acpi_device *device, int state);
 void acpi_turn_off_unused_power_resources(void);
 
-/* --------------------------------------------------------------------------
-                              Device Power Management
-   -------------------------------------------------------------------------- */
+
 int acpi_device_get_power(struct acpi_device *device, int *state);
 int acpi_wakeup_device_init(void);
 
-/* --------------------------------------------------------------------------
-                                  Processor
-   -------------------------------------------------------------------------- */
+
 #ifdef CONFIG_ARCH_MIGHT_HAVE_ACPI_PDC
 void acpi_early_processor_control_setup(void);
 void acpi_early_processor_set_pdc(void);
@@ -155,14 +140,12 @@ bool processor_physically_present(acpi_handle handle);
 static inline void acpi_early_processor_control_setup(void) {}
 #endif
 
-/* --------------------------------------------------------------------------
-                                  Embedded Controller
-   -------------------------------------------------------------------------- */
+
 
 enum acpi_ec_event_state {
-	EC_EVENT_READY = 0,	/* Event work can be submitted */
-	EC_EVENT_IN_PROGRESS,	/* Event work is pending or being processed */
-	EC_EVENT_COMPLETE,	/* Event work processing has completed */
+	EC_EVENT_READY = 0,	
+	EC_EVENT_IN_PROGRESS,	
+	EC_EVENT_COMPLETE,	
 };
 
 struct acpi_ec {
@@ -192,8 +175,8 @@ struct acpi_ec {
 
 extern struct acpi_ec *first_ec;
 
-/* If we find an EC via the ECDT, we need to keep a ptr to its context */
-/* External interfaces use first EC only, so remember */
+
+
 typedef int (*acpi_ec_query_func) (void *data);
 
 void acpi_ec_init(void);
@@ -212,9 +195,7 @@ bool acpi_ec_dispatch_gpe(void);
 #endif
 
 
-/*--------------------------------------------------------------------------
-                                  Suspend/Resume
-  -------------------------------------------------------------------------- */
+
 #ifdef CONFIG_ACPI_SYSTEM_POWER_STATES_SUPPORT
 extern bool acpi_s2idle_wakeup(void);
 extern int acpi_sleep_init(void);
@@ -246,9 +227,7 @@ static inline bool force_storage_d3(void)
 }
 #endif
 
-/*--------------------------------------------------------------------------
-				Device properties
-  -------------------------------------------------------------------------- */
+
 #define ACPI_DT_NAMESPACE_HID	"PRP0001"
 
 void acpi_init_properties(struct acpi_device *adev);
@@ -260,9 +239,7 @@ void acpi_extract_apple_properties(struct acpi_device *adev);
 static inline void acpi_extract_apple_properties(struct acpi_device *adev) {}
 #endif
 
-/*--------------------------------------------------------------------------
-				Watchdog
-  -------------------------------------------------------------------------- */
+
 
 #ifdef CONFIG_ACPI_WATCHDOG
 void acpi_watchdog_init(void);
@@ -276,4 +253,4 @@ void acpi_init_lpit(void);
 static inline void acpi_init_lpit(void) { }
 #endif
 
-#endif /* _ACPI_INTERNAL_H_ */
+#endif 

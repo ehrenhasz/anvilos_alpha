@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_DMA_MACRO_REGS_H_
 #define ASIC_REG_DMA_MACRO_REGS_H_
 
-/*
- *****************************************
- *   DMA_MACRO (Prototype: DMA_MACRO)
- *****************************************
- */
+
 
 #define mmDMA_MACRO_LBW_RANGE_HIT_BLOCK                              0x4B0000
 
@@ -177,4 +165,4 @@
 
 #define mmDMA_MACRO_RAZWI_HBW_RD_ID                                  0x4B0158
 
-#endif /* ASIC_REG_DMA_MACRO_REGS_H_ */
+#endif 

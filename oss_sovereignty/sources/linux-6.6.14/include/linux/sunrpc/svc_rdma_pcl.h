@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2020, Oracle and/or its affiliates
- */
+
+
 
 #ifndef SVC_RDMA_PCL_H
 #define SVC_RDMA_PCL_H
@@ -30,32 +28,19 @@ struct svc_rdma_pcl {
 	struct list_head	cl_chunks;
 };
 
-/**
- * pcl_init - Initialize a parsed chunk list
- * @pcl: parsed chunk list to initialize
- *
- */
+
 static inline void pcl_init(struct svc_rdma_pcl *pcl)
 {
 	INIT_LIST_HEAD(&pcl->cl_chunks);
 }
 
-/**
- * pcl_is_empty - Return true if parsed chunk list is empty
- * @pcl: parsed chunk list
- *
- */
+
 static inline bool pcl_is_empty(const struct svc_rdma_pcl *pcl)
 {
 	return list_empty(&pcl->cl_chunks);
 }
 
-/**
- * pcl_first_chunk - Return first chunk in a parsed chunk list
- * @pcl: parsed chunk list
- *
- * Returns the first chunk in the list, or NULL if the list is empty.
- */
+
 static inline struct svc_rdma_chunk *
 pcl_first_chunk(const struct svc_rdma_pcl *pcl)
 {
@@ -65,13 +50,7 @@ pcl_first_chunk(const struct svc_rdma_pcl *pcl)
 				ch_list);
 }
 
-/**
- * pcl_next_chunk - Return next chunk in a parsed chunk list
- * @pcl: a parsed chunk list
- * @chunk: chunk in @pcl
- *
- * Returns the next chunk in the list, or NULL if @chunk is already last.
- */
+
 static inline struct svc_rdma_chunk *
 pcl_next_chunk(const struct svc_rdma_pcl *pcl, struct svc_rdma_chunk *chunk)
 {
@@ -80,32 +59,19 @@ pcl_next_chunk(const struct svc_rdma_pcl *pcl, struct svc_rdma_chunk *chunk)
 	return list_next_entry(chunk, ch_list);
 }
 
-/**
- * pcl_for_each_chunk - Iterate over chunks in a parsed chunk list
- * @pos: the loop cursor
- * @pcl: a parsed chunk list
- */
+
 #define pcl_for_each_chunk(pos, pcl) \
 	for (pos = list_first_entry(&(pcl)->cl_chunks, struct svc_rdma_chunk, ch_list); \
 	     &pos->ch_list != &(pcl)->cl_chunks; \
 	     pos = list_next_entry(pos, ch_list))
 
-/**
- * pcl_for_each_segment - Iterate over segments in a parsed chunk
- * @pos: the loop cursor
- * @chunk: a parsed chunk
- */
+
 #define pcl_for_each_segment(pos, chunk) \
 	for (pos = &(chunk)->ch_segments[0]; \
 	     pos <= &(chunk)->ch_segments[(chunk)->ch_segcount - 1]; \
 	     pos++)
 
-/**
- * pcl_chunk_end_offset - Return offset of byte range following @chunk
- * @chunk: chunk in @pcl
- *
- * Returns starting offset of the region just after @chunk
- */
+
 static inline unsigned int
 pcl_chunk_end_offset(const struct svc_rdma_chunk *chunk)
 {
@@ -125,4 +91,4 @@ extern int pcl_process_nonpayloads(const struct svc_rdma_pcl *pcl,
 						void *),
 				   void *data);
 
-#endif	/* SVC_RDMA_PCL_H */
+#endif	

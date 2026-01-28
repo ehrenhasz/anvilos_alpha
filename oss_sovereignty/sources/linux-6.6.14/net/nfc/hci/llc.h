@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Link Layer Control manager
- *
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
- */
+
+
 
 #ifndef __LOCAL_LLC_H_
 #define __LOCAL_LLC_H_
@@ -53,4 +49,4 @@ static inline int nfc_llc_shdlc_register(void)
 }
 #endif
 
-#endif /* __LOCAL_LLC_H_ */
+#endif 

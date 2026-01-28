@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Driver for NXP PN533 NFC Chip
- *
- * Copyright (C) 2011 Instituto Nokia de Tecnologia
- * Copyright (C) 2012-2013 Tieto Poland
- */
+
+
 
 #define PN533_DEVICE_STD		0x1
 #define PN533_DEVICE_PASORI		0x2
@@ -23,48 +18,42 @@
 				   NFC_PROTO_ISO14443_MASK | \
 				   NFC_PROTO_NFC_DEP_MASK)
 
-/* Standard pn533 frame definitions (standard and extended)*/
+
 #define PN533_STD_FRAME_HEADER_LEN (sizeof(struct pn533_std_frame) \
-					+ 2) /* data[0] TFI, data[1] CC */
-#define PN533_STD_FRAME_TAIL_LEN 2 /* data[len] DCS, data[len + 1] postamble*/
+					+ 2) 
+#define PN533_STD_FRAME_TAIL_LEN 2 
 
 #define PN533_EXT_FRAME_HEADER_LEN (sizeof(struct pn533_ext_frame) \
-					+ 2) /* data[0] TFI, data[1] CC */
+					+ 2) 
 
 #define PN533_CMD_DATAEXCH_HEAD_LEN 1
 #define PN533_CMD_DATAEXCH_DATA_MAXLEN	262
-#define PN533_CMD_DATAFRAME_MAXLEN	240	/* max data length (send) */
+#define PN533_CMD_DATAFRAME_MAXLEN	240	
 
-/*
- * Max extended frame payload len, excluding TFI and CC
- * which are already in PN533_FRAME_HEADER_LEN.
- */
+
 #define PN533_STD_FRAME_MAX_PAYLOAD_LEN 263
 
 
-/* Preamble (1), SoPC (2), ACK Code (2), Postamble (1) */
+
 #define PN533_STD_FRAME_ACK_SIZE 6
-/*
- * Preamble (1), SoPC (2), Packet Length (1), Packet Length Checksum (1),
- * Specific Application Level Error Code (1) , Postamble (1)
- */
+
 #define PN533_STD_ERROR_FRAME_SIZE 8
 #define PN533_STD_FRAME_CHECKSUM(f) (f->data[f->datalen])
 #define PN533_STD_FRAME_POSTAMBLE(f) (f->data[f->datalen + 1])
-/* Half start code (3), LEN (4) should be 0xffff for extended frame */
+
 #define PN533_STD_IS_EXTENDED(hdr) ((hdr)->datalen == 0xFF \
 					&& (hdr)->datalen_checksum == 0xFF)
 #define PN533_EXT_FRAME_CHECKSUM(f) (f->data[be16_to_cpu(f->datalen)])
 
-/* start of frame */
+
 #define PN533_STD_FRAME_SOF 0x00FF
 
-/* standard frame identifier: in/out/error */
-#define PN533_STD_FRAME_IDENTIFIER(f) (f->data[0]) /* TFI */
+
+#define PN533_STD_FRAME_IDENTIFIER(f) (f->data[0]) 
 #define PN533_STD_FRAME_DIR_OUT 0xD4
 #define PN533_STD_FRAME_DIR_IN 0xD5
 
-/* PN533 Commands */
+
 #define PN533_FRAME_CMD(f) (f->data[1])
 
 #define PN533_CMD_GET_FIRMWARE_VERSION 0x02
@@ -86,7 +75,7 @@
 
 #define PN533_CMD_RESPONSE(cmd) (cmd + 1)
 
-/* PN533 Return codes */
+
 #define PN533_CMD_RET_MASK 0x3F
 #define PN533_CMD_MI_MASK 0x40
 #define PN533_CMD_RET_SUCCESS 0x00
@@ -100,7 +89,7 @@ enum  pn533_protocol_type {
 	PN533_PROTO_REQ_RESP
 };
 
-/* Poll modulations */
+
 enum {
 	PN533_POLL_MOD_106KBPS_A,
 	PN533_POLL_MOD_212KBPS_FELICA,
@@ -121,10 +110,10 @@ struct pn533_std_frame {
 	u8 data[];
 } __packed;
 
-struct pn533_ext_frame {	/* Extended Information frame */
+struct pn533_ext_frame {	
 	u8 preamble;
 	__be16 start_frame;
-	__be16 eif_flag;	/* fixed to 0xFFFF */
+	__be16 eif_flag;	
 	__be16 datalen;
 	u8 datalen_checksum;
 	u8 data[];
@@ -152,7 +141,7 @@ struct pn533 {
 	struct list_head cmd_queue;
 	struct pn533_cmd *cmd;
 	u8 cmd_pending;
-	struct mutex cmd_lock;  /* protects cmd queue */
+	struct mutex cmd_lock;  
 
 	void *cmd_complete_mi_arg;
 	void *cmd_complete_dep_arg;
@@ -217,13 +206,7 @@ struct pn533_phy_ops {
 			  struct sk_buff *out);
 	int (*send_ack)(struct pn533 *dev, gfp_t flags);
 	void (*abort_cmd)(struct pn533 *priv, gfp_t flags);
-	/*
-	 * dev_up and dev_down are optional.
-	 * They are used to inform the phy layer that the nfc chip
-	 * is going to be really used very soon. The phy layer can then
-	 * bring up it's interface to the chip and have it suspended for power
-	 * saving reasons otherwise.
-	 */
+	
 	int (*dev_up)(struct pn533 *priv);
 	int (*dev_down)(struct pn533 *priv);
 };

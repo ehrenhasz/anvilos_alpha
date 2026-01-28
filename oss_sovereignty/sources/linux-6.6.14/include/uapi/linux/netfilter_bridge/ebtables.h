@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- *  ebtables
- *
- *	Authors:
- *	Bart De Schuymer		<bdschuym@pandora.be>
- *
- *  ebtables.c,v 2.0, April, 2002
- *
- *  This code is strongly inspired by the iptables code which is
- *  Copyright (C) 1999 Paul `Rusty' Russell & Michael J. Neuling
- */
+
+
 
 #ifndef _UAPI__LINUX_BRIDGE_EFF_H
 #define _UAPI__LINUX_BRIDGE_EFF_H
@@ -22,15 +12,13 @@
 #define EBT_FUNCTION_MAXNAMELEN EBT_TABLE_MAXNAMELEN
 #define EBT_EXTENSION_MAXNAMELEN 31
 
-/* verdicts >0 are "branches" */
+
 #define EBT_ACCEPT   -1
 #define EBT_DROP     -2
 #define EBT_CONTINUE -3
 #define EBT_RETURN   -4
 #define NUM_STANDARD_TARGETS   4
-/* ebtables target modules store the verdict inside an int. We can
- * reclaim a part of this int for backwards compatible extensions.
- * The 4 lsb are more than enough to store the verdict. */
+
 #define EBT_VERDICT_BITS 0x0000000F
 
 struct xt_match;
@@ -44,15 +32,15 @@ struct ebt_counter {
 struct ebt_replace {
 	char name[EBT_TABLE_MAXNAMELEN];
 	unsigned int valid_hooks;
-	/* nr of rules in the table */
+	
 	unsigned int nentries;
-	/* total size of the entries */
+	
 	unsigned int entries_size;
-	/* start of the chains */
+	
 	struct ebt_entries __user *hook_entry[NF_BR_NUMHOOKS];
-	/* nr of counters userspace expects back */
+	
 	unsigned int num_counters;
-	/* where the kernel will put the old counters */
+	
 	struct ebt_counter __user *counters;
 	char __user *entries;
 };
@@ -60,48 +48,39 @@ struct ebt_replace {
 struct ebt_replace_kernel {
 	char name[EBT_TABLE_MAXNAMELEN];
 	unsigned int valid_hooks;
-	/* nr of rules in the table */
+	
 	unsigned int nentries;
-	/* total size of the entries */
+	
 	unsigned int entries_size;
-	/* start of the chains */
+	
 	struct ebt_entries *hook_entry[NF_BR_NUMHOOKS];
-	/* nr of counters userspace expects back */
+	
 	unsigned int num_counters;
-	/* where the kernel will put the old counters */
+	
 	struct ebt_counter *counters;
 	char *entries;
 };
 
 struct ebt_entries {
-	/* this field is always set to zero
-	 * See EBT_ENTRY_OR_ENTRIES.
-	 * Must be same size as ebt_entry.bitmask */
+	
 	unsigned int distinguisher;
-	/* the chain name */
+	
 	char name[EBT_CHAIN_MAXNAMELEN];
-	/* counter offset for this chain */
+	
 	unsigned int counter_offset;
-	/* one standard (accept, drop, return) per hook */
+	
 	int policy;
-	/* nr. of entries */
+	
 	unsigned int nentries;
-	/* entry list */
+	
 	char data[] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
 
-/* used for the bitmask of struct ebt_entry */
 
-/* This is a hack to make a difference between an ebt_entry struct and an
- * ebt_entries struct when traversing the entries from start to end.
- * Using this simplifies the code a lot, while still being able to use
- * ebt_entries.
- * Contrary, iptables doesn't use something like ebt_entries and therefore uses
- * different techniques for naming the policy and such. So, iptables doesn't
- * need a hack like this.
- */
+
+
 #define EBT_ENTRY_OR_ENTRIES 0x01
-/* these are the normal masks */
+
 #define EBT_NOPROTO 0x02
 #define EBT_802_3 0x04
 #define EBT_SOURCEMAC 0x08
@@ -127,7 +106,7 @@ struct ebt_entry_match {
 		};
 		struct xt_match *match;
 	} u;
-	/* size of data */
+	
 	unsigned int match_size;
 	unsigned char data[] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
@@ -140,7 +119,7 @@ struct ebt_entry_watcher {
 		};
 		struct xt_target *watcher;
 	} u;
-	/* size of data */
+	
 	unsigned int watcher_size;
 	unsigned char data[] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
@@ -153,7 +132,7 @@ struct ebt_entry_target {
 		};
 		struct xt_target *target;
 	} u;
-	/* size of data */
+	
 	unsigned int target_size;
 	unsigned char data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
@@ -164,30 +143,30 @@ struct ebt_standard_target {
 	int verdict;
 };
 
-/* one entry */
+
 struct ebt_entry {
-	/* this needs to be the first field */
+	
 	unsigned int bitmask;
 	unsigned int invflags;
 	__be16 ethproto;
-	/* the physical in-dev */
+	
 	char in[IFNAMSIZ];
-	/* the logical in-dev */
+	
 	char logical_in[IFNAMSIZ];
-	/* the physical out-dev */
+	
 	char out[IFNAMSIZ];
-	/* the logical out-dev */
+	
 	char logical_out[IFNAMSIZ];
 	unsigned char sourcemac[ETH_ALEN];
 	unsigned char sourcemsk[ETH_ALEN];
 	unsigned char destmac[ETH_ALEN];
 	unsigned char destmsk[ETH_ALEN];
-	__struct_group(/* no tag */, offsets, /* no attrs */,
-		/* sizeof ebt_entry + matches */
+	__struct_group(, offsets, ,
+		
 		unsigned int watchers_offset;
-		/* sizeof ebt_entry + matches + watchers */
+		
 		unsigned int target_offset;
-		/* sizeof ebt_entry + matches + watchers + target */
+		
 		unsigned int next_offset;
 	);
 	unsigned char elems[] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
@@ -199,7 +178,7 @@ ebt_get_target(struct ebt_entry *e)
 	return (struct ebt_entry_target *)((char *)e + e->target_offset);
 }
 
-/* {g,s}etsockopt numbers */
+
 #define EBT_BASE_CTL            128
 
 #define EBT_SO_SET_ENTRIES      (EBT_BASE_CTL)
@@ -213,8 +192,7 @@ ebt_get_target(struct ebt_entry *e)
 #define EBT_SO_GET_MAX          (EBT_SO_GET_INIT_ENTRIES+1)
 
 
-/* blatently stolen from ip_tables.h
- * fn returns 0 to continue iteration */
+
 #define EBT_MATCH_ITERATE(e, fn, args...)                   \
 ({                                                          \
 	unsigned int __i;                                   \
@@ -284,4 +262,4 @@ ebt_get_target(struct ebt_entry *e)
 	__ret;                                              \
 })
 
-#endif /* _UAPI__LINUX_BRIDGE_EFF_H */
+#endif 

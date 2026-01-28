@@ -1,8 +1,8 @@
-// A pico-sdk board definition is required since the WeAct Studio boards are
-// not officially supported.
-//
-// Officially supported boards:
-//     https://github.com/raspberrypi/pico-sdk/tree/master/src/boards/include/boards
+
+
+
+
+
 
 #ifndef _BOARDS_WEACTSTUDIO_8MB_H
 #define _BOARDS_WEACTSTUDIO_8MB_H

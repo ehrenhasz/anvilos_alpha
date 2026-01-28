@@ -1,13 +1,13 @@
-################################################################################
-# Initial setup of Makefile environment.
 
-# Select the variant to build for:
+
+
+
 ifdef VARIANT_DIR
-# Custom variant path - remove trailing slash and get the final component of
-# the path as the variant name.
+
+
 VARIANT ?= $(notdir $(VARIANT_DIR:/=))
 else
-# If not given on the command line, then default to standard.
+
 VARIANT ?= standard
 VARIANT_DIR ?= variants/$(VARIANT)
 endif
@@ -16,24 +16,24 @@ ifeq ($(wildcard $(VARIANT_DIR)/.),)
 $(error Invalid VARIANT specified: $(VARIANT_DIR))
 endif
 
-# If the build directory is not given, make it reflect the variant name.
+
 BUILD ?= build-$(VARIANT)
 
 include ../../py/mkenv.mk
 include $(VARIANT_DIR)/mpconfigvariant.mk
 
-# Use the default frozen manifest, variants may override this.
+
 FROZEN_MANIFEST ?= variants/manifest.py
 
-# Qstr definitions (must come before including py.mk).
+
 QSTR_DEFS = qstrdefsport.h
 
-# Include py core make definitions.
+
 include $(TOP)/py/py.mk
 include $(TOP)/extmod/extmod.mk
 
-################################################################################
-# Project specific settings and compiler/linker flags.
+
+
 
 CC = emcc
 LD = emcc
@@ -95,8 +95,8 @@ JSFLAGS += --js-library library.js
 JSFLAGS += -s SUPPORT_LONGJMP=emscripten
 JSFLAGS += -s MODULARIZE -s EXPORT_NAME=_createMicroPythonModule
 
-################################################################################
-# Source files and libraries.
+
+
 
 SRC_SHARED = $(addprefix shared/,\
 	runtime/interrupt_char.c \
@@ -115,7 +115,7 @@ SRC_C += \
 	objjsproxy.c \
 	proxy_c.c \
 
-# List of sources for qstr extraction.
+
 SRC_QSTR += $(SRC_C) $(SRC_SHARED)
 
 SRC_JS += \
@@ -127,8 +127,8 @@ OBJ += $(PY_O)
 OBJ += $(addprefix $(BUILD)/, $(SRC_SHARED:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 
-################################################################################
-# Main targets.
+
+
 
 .PHONY: all repl min test test_min
 
@@ -153,7 +153,7 @@ test: $(BUILD)/micropython.mjs $(TOP)/tests/run-tests.py
 test_min: $(BUILD)/micropython.min.mjs $(TOP)/tests/run-tests.py
 	cd $(TOP)/tests && MICROPY_MICROPYTHON_MJS=../ports/webassembly/$< ./run-tests.py --target webassembly
 
-################################################################################
-# Remaining make rules.
+
+
 
 include $(TOP)/py/mkrules.mk

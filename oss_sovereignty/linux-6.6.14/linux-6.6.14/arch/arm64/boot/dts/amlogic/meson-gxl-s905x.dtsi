@@ -1,9 +1,0 @@
-#include "meson-gxl.dtsi"
-#include "meson-gxl-mali.dtsi"
-/ {
-	compatible = "amlogic,s905x", "amlogic,meson-gxl";
-};
-&ethmac {
-	phy-mode = "rmii";
-	phy-handle = <&internal_phy>;
-};

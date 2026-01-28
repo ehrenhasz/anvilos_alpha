@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * BlueZ - Bluetooth protocol stack for Linux
- *
- * Copyright (C) 2021 Intel Corporation
- */
+
+
 
 #define UINT_PTR(_handle)		((void *)((uintptr_t)_handle))
 #define PTR_UINT(_ptr)			((uintptr_t)((void *)_ptr))
@@ -20,10 +16,7 @@ struct hci_cmd_sync_work_entry {
 };
 
 struct adv_info;
-/* Function with sync suffix shall not be called with hdev->lock held as they
- * wait the command to complete and in the meantime an event could be received
- * which could attempt to acquire hdev->lock causing a deadlock.
- */
+
 struct sk_buff *__hci_cmd_sync(struct hci_dev *hdev, u16 opcode, u32 plen,
 			       const void *param, u32 timeout);
 struct sk_buff *hci_cmd_sync(struct hci_dev *hdev, u16 opcode, u32 plen,

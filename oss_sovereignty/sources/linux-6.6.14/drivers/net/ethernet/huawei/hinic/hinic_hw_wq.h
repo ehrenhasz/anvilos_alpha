@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+
 
 #ifndef HINIC_HW_WQ_H
 #define HINIC_HW_WQ_H
@@ -32,7 +29,7 @@ struct hinic_wq {
 	u16             num_wqebbs_per_page;
 	u16		wqebbs_per_page_shift;
 	u16		wqebb_size_shift;
-	/* The addresses are 64 bit in the HW */
+	
 	u64             block_paddr;
 	void            **shadow_block_vaddr;
 	u64             *block_vaddr;
@@ -51,7 +48,7 @@ struct hinic_wqs {
 	struct hinic_hwif       *hwif;
 	int                     num_pages;
 
-	/* The addresses are 64 bit in the HW */
+	
 	u64                     *page_paddr;
 	u64                     **page_vaddr;
 	void                    ***shadow_page_vaddr;
@@ -61,12 +58,12 @@ struct hinic_wqs {
 	int                     return_blk_pos;
 	int                     num_free_blks;
 
-	/* Lock for getting a free block from the WQ set */
+	
 	struct semaphore        alloc_blocks_lock;
 };
 
 struct hinic_cmdq_pages {
-	/* The addresses are 64 bit in the HW */
+	
 	u64                     page_paddr;
 	u64                     *page_vaddr;
 	void                    **shadow_page_vaddr;

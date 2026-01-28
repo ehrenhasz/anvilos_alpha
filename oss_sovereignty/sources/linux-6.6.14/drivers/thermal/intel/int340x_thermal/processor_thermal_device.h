@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * processor_thermal_device.h
- * Copyright (c) 2020, Intel Corporation.
- */
+
+
 
 #ifndef __PROCESSOR_THERMAL_DEVICE_H__
 #define __PROCESSOR_THERMAL_DEVICE_H__

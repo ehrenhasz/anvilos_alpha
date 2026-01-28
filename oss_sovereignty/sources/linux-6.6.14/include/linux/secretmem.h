@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _LINUX_SECRETMEM_H
 #define _LINUX_SECRETMEM_H
 
@@ -10,12 +10,7 @@ static inline bool folio_is_secretmem(struct folio *folio)
 {
 	struct address_space *mapping;
 
-	/*
-	 * Using folio_mapping() is quite slow because of the actual call
-	 * instruction.
-	 * We know that secretmem pages are not compound and LRU so we can
-	 * save a couple of cycles here.
-	 */
+	
 	if (folio_test_large(folio) || !folio_test_lru(folio))
 		return false;
 
@@ -48,6 +43,6 @@ static inline bool secretmem_active(void)
 	return false;
 }
 
-#endif /* CONFIG_SECRETMEM */
+#endif 
 
-#endif /* _LINUX_SECRETMEM_H */
+#endif 

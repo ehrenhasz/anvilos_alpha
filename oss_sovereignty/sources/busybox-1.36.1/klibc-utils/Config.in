@@ -1,19 +1,19 @@
-# DO NOT EDIT. This file is generated from Config.src
-#
-# For a description of the syntax of this configuration file,
-# see docs/Kconfig-language.txt.
-#
+
+
+
+
+
 
 menu "klibc-utils"
 
 config MINIPS
 	bool "minips (11 kb)"
-	default n  # for god's sake, just use "ps" name in your scripts
+	default n  
 	help
 	Alias to "ps".
 config NUKE
 	bool "nuke (2.9 kb)"
-	default n  # off by default: too "accidentally destructive"
+	default n  
 	help
 	Alias to "rm -rf".
 config RESUME

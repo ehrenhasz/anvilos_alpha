@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Shadow Call Stack support.
- *
- * Copyright (C) 2019 Google LLC
- */
+
+
 
 #ifndef _LINUX_SCS_H
 #define _LINUX_SCS_H
@@ -19,7 +15,7 @@
 #define SCS_SIZE		(PAGE_SIZE << SCS_ORDER)
 #define GFP_SCS			(GFP_KERNEL | __GFP_ZERO)
 
-/* An illegal pointer value to mark the end of the shadow stack. */
+
 #define SCS_END_MAGIC		(0x5f6UL + POISON_POINTER_DELTA)
 
 #define task_scs(tsk)		(task_thread_info(tsk)->scs_base)
@@ -33,10 +29,7 @@ void scs_release(struct task_struct *tsk);
 
 static inline void scs_task_reset(struct task_struct *tsk)
 {
-	/*
-	 * Reset the shadow stack to the base address in case the task
-	 * is reused.
-	 */
+	
 	task_scs_sp(tsk) = task_scs(tsk);
 }
 
@@ -69,7 +62,7 @@ static inline bool scs_is_enabled(void)
 	return scs_is_dynamic();
 }
 
-#else /* CONFIG_SHADOW_CALL_STACK */
+#else 
 
 static inline void *scs_alloc(int node) { return NULL; }
 static inline void scs_free(void *s) {}
@@ -81,6 +74,6 @@ static inline bool task_scs_end_corrupted(struct task_struct *tsk) { return fals
 static inline bool scs_is_enabled(void) { return false; }
 static inline bool scs_is_dynamic(void) { return false; }
 
-#endif /* CONFIG_SHADOW_CALL_STACK */
+#endif 
 
-#endif /* _LINUX_SCS_H */
+#endif 

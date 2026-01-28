@@ -1,10 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- *
- * Written by Karel Zak <kzak@redhat.com>
- *            Petr Uzel <petr.uzel@suse.cz>
- */
+
 
 #ifndef UTIL_LINUX_ALL_IO_H
 #define UTIL_LINUX_ALL_IO_H
@@ -32,7 +26,7 @@ static inline int write_all(int fd, const void *buf, size_t count)
 				buf = (const void *) ((const char *) buf + tmp);
 		} else if (errno != EINTR && errno != EAGAIN)
 			return -1;
-		if (errno == EAGAIN)	/* Try later, *sigh* */
+		if (errno == EAGAIN)	
 			xusleep(250000);
 	}
 	return 0;
@@ -52,7 +46,7 @@ static inline int fwrite_all(const void *ptr, size_t size,
 				ptr = (const void *) ((const char *) ptr + (tmp * size));
 		} else if (errno != EINTR && errno != EAGAIN)
 			return -1;
-		if (errno == EAGAIN)	/* Try later, *sigh* */
+		if (errno == EAGAIN)	
 			xusleep(250000);
 	}
 	return 0;
@@ -141,4 +135,4 @@ static inline ssize_t sendfile_all(int out, int in, off_t *off, size_t count)
 	return -1;
 #endif
 }
-#endif /* UTIL_LINUX_ALL_IO_H */
+#endif 

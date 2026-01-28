@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-or-later
-#
-# X86 Android tablet support Makefile
-#
+
+
+
+
 
 obj-$(CONFIG_X86_ANDROID_TABLETS) += x86-android-tablets.o
 

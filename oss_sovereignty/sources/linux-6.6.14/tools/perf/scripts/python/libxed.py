@@ -47,11 +47,11 @@ class LibXED():
 		return XEDInstruction(self)
 	def SetMode(self, inst, mode):
 		if mode:
-			inst.state.mode = 4 # 32-bit
-			inst.state.width = 4 # 4 bytes
+			inst.state.mode = 4 
+			inst.state.width = 4 
 		else:
-			inst.state.mode = 1 # 64-bit
-			inst.state.width = 8 # 8 bytes
+			inst.state.mode = 1 
+			inst.state.width = 8 
 		self.xed_operand_values_set_mode(inst.xedp, inst.statep)
 	def DisassembleOne(self, inst, bytes_ptr, bytes_cnt, ip):
 		self.xed_decoded_inst_zero_keep_mode(inst.xedp)

@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the touchscreen drivers.
-#
 
-# Each configuration option enables a list of files.
+
+
+
+
+
 
 wm97xx-ts-y := wm97xx-core.o
 goodix_ts-y := goodix.o goodix_fwupload.o

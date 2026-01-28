@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_FAULT_INJECT_H
 #define _LINUX_FAULT_INJECT_H
 
@@ -10,10 +10,7 @@
 #include <linux/ratelimit.h>
 #include <linux/atomic.h>
 
-/*
- * For explanation of the elements of this struct, see
- * Documentation/fault-injection/fault-injection.rst
- */
+
 struct fault_attr {
 	unsigned long probability;
 	unsigned long interval;
@@ -56,7 +53,7 @@ bool should_fail(struct fault_attr *attr, ssize_t size);
 struct dentry *fault_create_debugfs_attr(const char *name,
 			struct dentry *parent, struct fault_attr *attr);
 
-#else /* CONFIG_FAULT_INJECTION_DEBUG_FS */
+#else 
 
 static inline struct dentry *fault_create_debugfs_attr(const char *name,
 			struct dentry *parent, struct fault_attr *attr)
@@ -64,7 +61,7 @@ static inline struct dentry *fault_create_debugfs_attr(const char *name,
 	return ERR_PTR(-ENODEV);
 }
 
-#endif /* CONFIG_FAULT_INJECTION_DEBUG_FS */
+#endif 
 
 #ifdef CONFIG_FAULT_INJECTION_CONFIGFS
 
@@ -75,7 +72,7 @@ struct fault_config {
 
 void fault_config_init(struct fault_config *config, const char *name);
 
-#else /* CONFIG_FAULT_INJECTION_CONFIGFS */
+#else 
 
 struct fault_config {
 };
@@ -85,9 +82,9 @@ static inline void fault_config_init(struct fault_config *config,
 {
 }
 
-#endif /* CONFIG_FAULT_INJECTION_CONFIGFS */
+#endif 
 
-#endif /* CONFIG_FAULT_INJECTION */
+#endif 
 
 struct kmem_cache;
 
@@ -100,7 +97,7 @@ static inline bool __should_fail_alloc_page(gfp_t gfp_mask, unsigned int order)
 {
 	return false;
 }
-#endif /* CONFIG_FAIL_PAGE_ALLOC */
+#endif 
 
 int should_failslab(struct kmem_cache *s, gfp_t gfpflags);
 #ifdef CONFIG_FAILSLAB
@@ -110,6 +107,6 @@ static inline bool __should_failslab(struct kmem_cache *s, gfp_t gfpflags)
 {
 	return false;
 }
-#endif /* CONFIG_FAILSLAB */
+#endif 
 
-#endif /* _LINUX_FAULT_INJECT_H */
+#endif 

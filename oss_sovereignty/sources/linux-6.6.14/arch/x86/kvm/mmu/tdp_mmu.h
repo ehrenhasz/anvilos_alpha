@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #ifndef __KVM_X86_MMU_TDP_MMU_H
 #define __KVM_X86_MMU_TDP_MMU_H
@@ -75,4 +75,4 @@ static inline bool is_tdp_mmu_page(struct kvm_mmu_page *sp) { return sp->tdp_mmu
 static inline bool is_tdp_mmu_page(struct kvm_mmu_page *sp) { return false; }
 #endif
 
-#endif /* __KVM_X86_MMU_TDP_MMU_H */
+#endif 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright(c) 2016-20 Intel Corporation.
- */
+
+
 
 	.macro ENCLU
 	.byte 0x0f, 0x01, 0xd7
@@ -61,7 +59,7 @@ encl_entry_core:
 
 	pop	%rbx # pop the enclave base address
 
-	/* Clear volatile GPRs, except RAX (EEXIT function). */
+	
 	xor     %rcx, %rcx
 	xor     %rdx, %rdx
 	xor     %rdi, %rdi

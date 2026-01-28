@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM bpf_trace
 
@@ -25,7 +25,7 @@ TRACE_EVENT(bpf_trace_printk,
 	TP_printk("%s", __get_str(bpf_string))
 );
 
-#endif /* _TRACE_BPF_TRACE_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

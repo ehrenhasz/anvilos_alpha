@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NF_CONNTRACK_TFTP_H
 #define _NF_CONNTRACK_TFTP_H
 
@@ -23,4 +23,4 @@ extern unsigned int (*nf_nat_tftp_hook)(struct sk_buff *skb,
 				        enum ip_conntrack_info ctinfo,
 				        struct nf_conntrack_expect *exp);
 
-#endif /* _NF_CONNTRACK_TFTP_H */
+#endif 

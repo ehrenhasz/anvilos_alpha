@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Marvell EBU SoC common clock handling
- *
- * Copyright (C) 2012 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Andrew Lunn <andrew@lunn.ch>
- *
- */
+
+
 
 #ifndef __CLK_MVEBU_COMMON_H_
 #define __CLK_MVEBU_COMMON_H_
@@ -48,9 +39,6 @@ void __init mvebu_coreclk_setup(struct device_node *np,
 void __init mvebu_clk_gating_setup(struct device_node *np,
 				   const struct clk_gating_soc_desc *desc);
 
-/*
- * This function is shared among the Kirkwood, Armada 370, Armada XP
- * and Armada 375 SoC
- */
+
 u32 kirkwood_fix_sscg_deviation(u32 system_clk);
 #endif

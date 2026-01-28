@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Texas Instruments Ethernet Switch Driver
- *
- * Copyright (C) 2013 Texas Instruments
- *
- */
+
+
 #ifndef __CPSW_H__
 #define __CPSW_H__
 
@@ -23,4 +19,4 @@ void cpsw_phy_sel(struct device *dev, phy_interface_t phy_mode, int slave)
 #endif
 int ti_cm_get_macid(struct device *dev, int slave, u8 *mac_addr);
 
-#endif /* __CPSW_H__ */
+#endif 

@@ -1,5 +1,5 @@
 
-# libmount.h is generated, so it's store in builddir!
+
 mountincdir = $(includedir)/libmount
 nodist_mountinc_HEADERS = libmount/src/libmount.h
 
@@ -46,7 +46,7 @@ if HAVE_BTRFS
 libmount_la_SOURCES += libmount/src/btrfs.c
 endif
 
-endif # LINUX
+endif 
 
 
 libmount_la_LIBADD = \
@@ -187,7 +187,7 @@ check_PROGRAMS += test_mount_fuzz
 
 test_mount_fuzz_SOURCES = libmount/src/fuzz.c
 
-# https://google.github.io/oss-fuzz/getting-started/new-project-guide/#Requirements
+
 nodist_EXTRA_test_mount_fuzz_SOURCES = dummy.cxx
 
 test_mount_fuzz_CFLAGS = $(libmount_tests_cflags)
@@ -195,10 +195,10 @@ test_mount_fuzz_LDFLAGS = $(libmount_tests_ldflags) -lpthread
 test_mount_fuzz_LDADD = $(libmount_tests_ldadd) $(LIB_FUZZING_ENGINE)
 endif
 
-endif # BUILD_LIBMOUNT_TESTS
+endif 
 
 
-# move lib from $(usrlib_execdir) to $(libdir) if needed
+
 install-exec-hook-libmount:
 	if test "$(usrlib_execdir)" != "$(libdir)" -a -f "$(DESTDIR)$(usrlib_execdir)/libmount.so"; then \
 		$(MKDIR_P) $(DESTDIR)$(libdir); \

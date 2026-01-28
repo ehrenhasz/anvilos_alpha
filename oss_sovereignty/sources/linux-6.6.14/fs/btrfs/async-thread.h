@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2007 Oracle.  All rights reserved.
- * Copyright (C) 2014 Fujitsu.  All rights reserved.
- */
+
+
 
 #ifndef BTRFS_ASYNC_THREAD_H
 #define BTRFS_ASYNC_THREAD_H
@@ -19,7 +16,7 @@ struct btrfs_work {
 	btrfs_func_t ordered_func;
 	btrfs_func_t ordered_free;
 
-	/* Don't touch things below */
+	
 	struct work_struct normal_work;
 	struct list_head ordered_list;
 	struct btrfs_workqueue *wq;

@@ -41,7 +41,7 @@
 # This code is described in an Intel White-Paper:
 # "Fast SHA-256 Implementations on Intel Architecture Processors"
 #
-# To find it, surf to http://www.intel.com/p/en_US/embedded
+# To find it, surf to http:
 # and search for that title.
 #
 ########################################################################

@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# QorIQ DPAA2 DPIO driver
-#
+
+
+
+
 
 obj-$(CONFIG_FSL_MC_DPIO) += fsl-mc-dpio.o
 

@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-// Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
-// stmmac HW Interface Callbacks
+
+
+
 
 #ifndef __STMMAC_HWIF_H__
 #define __STMMAC_HWIF_H__
@@ -32,62 +32,61 @@ struct dma_desc;
 struct dma_extended_desc;
 struct dma_edesc;
 
-/* Descriptors helpers */
+
 struct stmmac_desc_ops {
-	/* DMA RX descriptor ring initialization */
+	
 	void (*init_rx_desc)(struct dma_desc *p, int disable_rx_ic, int mode,
 			int end, int bfsize);
-	/* DMA TX descriptor ring initialization */
+	
 	void (*init_tx_desc)(struct dma_desc *p, int mode, int end);
-	/* Invoked by the xmit function to prepare the tx descriptor */
+	
 	void (*prepare_tx_desc)(struct dma_desc *p, int is_fs, int len,
 			bool csum_flag, int mode, bool tx_own, bool ls,
 			unsigned int tot_pkt_len);
 	void (*prepare_tso_tx_desc)(struct dma_desc *p, int is_fs, int len1,
 			int len2, bool tx_own, bool ls, unsigned int tcphdrlen,
 			unsigned int tcppayloadlen);
-	/* Set/get the owner of the descriptor */
+	
 	void (*set_tx_owner)(struct dma_desc *p);
 	int (*get_tx_owner)(struct dma_desc *p);
-	/* Clean the tx descriptor as soon as the tx irq is received */
+	
 	void (*release_tx_desc)(struct dma_desc *p, int mode);
-	/* Clear interrupt on tx frame completion. When this bit is
-	 * set an interrupt happens as soon as the frame is transmitted */
+	
 	void (*set_tx_ic)(struct dma_desc *p);
-	/* Last tx segment reports the transmit status */
+	
 	int (*get_tx_ls)(struct dma_desc *p);
-	/* Return the transmit status looking at the TDES1 */
+	
 	int (*tx_status)(struct stmmac_extra_stats *x,
 			 struct dma_desc *p, void __iomem *ioaddr);
-	/* Get the buffer size from the descriptor */
+	
 	int (*get_tx_len)(struct dma_desc *p);
-	/* Handle extra events on specific interrupts hw dependent */
+	
 	void (*set_rx_owner)(struct dma_desc *p, int disable_rx_ic);
-	/* Get the receive frame size */
+	
 	int (*get_rx_frame_len)(struct dma_desc *p, int rx_coe_type);
-	/* Return the reception status looking at the RDES1 */
+	
 	int (*rx_status)(struct stmmac_extra_stats *x,
 			 struct dma_desc *p);
 	void (*rx_extended_status)(struct stmmac_extra_stats *x,
 				   struct dma_extended_desc *p);
-	/* Set tx timestamp enable bit */
+	
 	void (*enable_tx_timestamp) (struct dma_desc *p);
-	/* get tx timestamp status */
+	
 	int (*get_tx_timestamp_status) (struct dma_desc *p);
-	/* get timestamp value */
+	
 	void (*get_timestamp)(void *desc, u32 ats, u64 *ts);
-	/* get rx timestamp status */
+	
 	int (*get_rx_timestamp_status)(void *desc, void *next_desc, u32 ats);
-	/* Display ring */
+	
 	void (*display_ring)(void *head, unsigned int size, bool rx,
 			     dma_addr_t dma_rx_phy, unsigned int desc_size);
-	/* set MSS via context descriptor */
+	
 	void (*set_mss)(struct dma_desc *p, unsigned int mss);
-	/* set descriptor skbuff address */
+	
 	void (*set_addr)(struct dma_desc *p, dma_addr_t addr);
-	/* clear descriptor */
+	
 	void (*clear)(struct dma_desc *p);
-	/* RSS */
+	
 	int (*get_rx_hash)(struct dma_desc *p, u32 *hash,
 			   enum pkt_hash_types *type);
 	void (*get_rx_header_len)(struct dma_desc *p, unsigned int *len);
@@ -163,9 +162,9 @@ struct stmmac_desc_ops {
 struct stmmac_dma_cfg;
 struct dma_features;
 
-/* Specific DMA helpers */
+
 struct stmmac_dma_ops {
-	/* DMA core initialization */
+	
 	int (*reset)(void __iomem *ioaddr);
 	void (*init)(void __iomem *ioaddr, struct stmmac_dma_cfg *dma_cfg,
 		     int atds);
@@ -177,9 +176,9 @@ struct stmmac_dma_ops {
 	void (*init_tx_chan)(struct stmmac_priv *priv, void __iomem *ioaddr,
 			     struct stmmac_dma_cfg *dma_cfg,
 			     dma_addr_t phy, u32 chan);
-	/* Configure the AXI Bus Mode Register */
+	
 	void (*axi)(void __iomem *ioaddr, struct stmmac_axi *axi);
-	/* Dump DMA registers */
+	
 	void (*dump_regs)(struct stmmac_priv *priv, void __iomem *ioaddr,
 			  u32 *reg_space);
 	void (*dma_rx_mode)(struct stmmac_priv *priv, void __iomem *ioaddr,
@@ -187,7 +186,7 @@ struct stmmac_dma_ops {
 			    int fifosz, u8 qmode);
 	void (*dma_tx_mode)(struct stmmac_priv *priv, void __iomem *ioaddr,
 			    int mode, u32 channel, int fifosz, u8 qmode);
-	/* To track extra statistic (if supported) */
+	
 	void (*dma_diagnostic_fr)(struct stmmac_extra_stats *x,
 				  void __iomem *ioaddr);
 	void (*enable_dma_transmission) (void __iomem *ioaddr);
@@ -205,10 +204,10 @@ struct stmmac_dma_ops {
 			u32 chan);
 	int (*dma_interrupt)(struct stmmac_priv *priv, void __iomem *ioaddr,
 			     struct stmmac_extra_stats *x, u32 chan, u32 dir);
-	/* If supported then get the optional core features */
+	
 	int (*get_hw_feature)(void __iomem *ioaddr,
 			      struct dma_features *dma_cap);
-	/* Program the HW RX Watchdog */
+	
 	void (*rx_watchdog)(struct stmmac_priv *priv, void __iomem *ioaddr,
 			    u32 riwt, u32 queue);
 	void (*set_tx_ring_len)(struct stmmac_priv *priv, void __iomem *ioaddr,
@@ -296,55 +295,55 @@ struct stmmac_pps_cfg;
 struct stmmac_rss;
 struct stmmac_est;
 
-/* Helpers to program the MAC core */
+
 struct stmmac_ops {
-	/* MAC core initialization */
+	
 	void (*core_init)(struct mac_device_info *hw, struct net_device *dev);
-	/* Get phylink capabilities */
+	
 	void (*phylink_get_caps)(struct stmmac_priv *priv);
-	/* Enable the MAC RX/TX */
+	
 	void (*set_mac)(void __iomem *ioaddr, bool enable);
-	/* Enable and verify that the IPC module is supported */
+	
 	int (*rx_ipc)(struct mac_device_info *hw);
-	/* Enable RX Queues */
+	
 	void (*rx_queue_enable)(struct mac_device_info *hw, u8 mode, u32 queue);
-	/* RX Queues Priority */
+	
 	void (*rx_queue_prio)(struct mac_device_info *hw, u32 prio, u32 queue);
-	/* TX Queues Priority */
+	
 	void (*tx_queue_prio)(struct mac_device_info *hw, u32 prio, u32 queue);
-	/* RX Queues Routing */
+	
 	void (*rx_queue_routing)(struct mac_device_info *hw, u8 packet,
 				 u32 queue);
-	/* Program RX Algorithms */
+	
 	void (*prog_mtl_rx_algorithms)(struct mac_device_info *hw, u32 rx_alg);
-	/* Program TX Algorithms */
+	
 	void (*prog_mtl_tx_algorithms)(struct mac_device_info *hw, u32 tx_alg);
-	/* Set MTL TX queues weight */
+	
 	void (*set_mtl_tx_queue_weight)(struct stmmac_priv *priv,
 					struct mac_device_info *hw,
 					u32 weight, u32 queue);
-	/* RX MTL queue to RX dma mapping */
+	
 	void (*map_mtl_to_dma)(struct mac_device_info *hw, u32 queue, u32 chan);
-	/* Configure AV Algorithm */
+	
 	void (*config_cbs)(struct stmmac_priv *priv, struct mac_device_info *hw,
 			   u32 send_slope, u32 idle_slope, u32 high_credit,
 			   u32 low_credit, u32 queue);
-	/* Dump MAC registers */
+	
 	void (*dump_regs)(struct mac_device_info *hw, u32 *reg_space);
-	/* Handle extra events on specific interrupts hw dependent */
+	
 	int (*host_irq_status)(struct mac_device_info *hw,
 			       struct stmmac_extra_stats *x);
-	/* Handle MTL interrupts */
+	
 	int (*host_mtl_irq_status)(struct stmmac_priv *priv,
 				   struct mac_device_info *hw, u32 chan);
-	/* Multicast filter setting */
+	
 	void (*set_filter)(struct mac_device_info *hw, struct net_device *dev);
-	/* Flow control setting */
+	
 	void (*flow_ctrl)(struct mac_device_info *hw, unsigned int duplex,
 			  unsigned int fc, unsigned int pause_time, u32 tx_cnt);
-	/* Set power management mode (e.g. magic frame) */
+	
 	void (*pmt)(struct mac_device_info *hw, unsigned long mode);
-	/* Set/Get Unicast MAC addresses */
+	
 	void (*set_umac_addr)(struct mac_device_info *hw,
 			      const unsigned char *addr,
 			      unsigned int reg_n);
@@ -359,12 +358,12 @@ struct stmmac_ops {
 	void (*debug)(struct stmmac_priv *priv, void __iomem *ioaddr,
 		      struct stmmac_extra_stats *x, u32 rx_queues,
 		      u32 tx_queues);
-	/* PCS calls */
+	
 	void (*pcs_ctrl_ane)(void __iomem *ioaddr, bool ane, bool srgmi_ral,
 			     bool loopback);
 	void (*pcs_rane)(void __iomem *ioaddr, bool restart);
 	void (*pcs_get_adv_lp)(void __iomem *ioaddr, struct rgmii_adv *adv);
-	/* Safety Features */
+	
 	int (*safety_feat_config)(void __iomem *ioaddr, unsigned int asp,
 				  struct stmmac_safety_feature_cfg *safety_cfg);
 	int (*safety_feat_irq_status)(struct net_device *ndev,
@@ -372,19 +371,19 @@ struct stmmac_ops {
 			struct stmmac_safety_stats *stats);
 	int (*safety_feat_dump)(struct stmmac_safety_stats *stats,
 			int index, unsigned long *count, const char **desc);
-	/* Flexible RX Parser */
+	
 	int (*rxp_config)(void __iomem *ioaddr, struct stmmac_tc_entry *entries,
 			  unsigned int count);
-	/* Flexible PPS */
+	
 	int (*flex_pps_config)(void __iomem *ioaddr, int index,
 			       struct stmmac_pps_cfg *cfg, bool enable,
 			       u32 sub_second_inc, u32 systime_flags);
-	/* Loopback for selftests */
+	
 	void (*set_mac_loopback)(void __iomem *ioaddr, bool enable);
-	/* RSS */
+	
 	int (*rss_configure)(struct mac_device_info *hw,
 			     struct stmmac_rss *cfg, u32 num_rxq);
-	/* VLAN */
+	
 	void (*update_vlan_hash)(struct mac_device_info *hw, u32 hash,
 				 __le16 perfect_match, bool is_double);
 	void (*enable_vlan)(struct mac_device_info *hw, u32 type);
@@ -396,11 +395,11 @@ struct stmmac_ops {
 				   __be16 proto, u16 vid);
 	void (*restore_hw_vlan_rx_fltr)(struct net_device *dev,
 					struct mac_device_info *hw);
-	/* TX Timestamp */
+	
 	int (*get_mac_tx_timestamp)(struct mac_device_info *hw, u64 *ts);
-	/* Source Address Insertion / Replacement */
+	
 	void (*sarc_configure)(void __iomem *ioaddr, int val);
-	/* Filtering */
+	
 	int (*config_l3_filter)(struct mac_device_info *hw, u32 filter_no,
 				bool en, bool ipv6, bool sa, bool inv,
 				u32 match);
@@ -526,7 +525,7 @@ struct stmmac_ops {
 #define stmmac_fpe_irq_status(__priv, __args...) \
 	stmmac_do_callback(__priv, mac, fpe_irq_status, __args)
 
-/* PTP and HW Timer helpers */
+
 struct stmmac_hwtimestamp {
 	void (*config_hw_tstamping) (void __iomem *ioaddr, u32 data);
 	void (*config_sub_second_increment)(void __iomem *ioaddr, u32 ptp_clock,
@@ -563,7 +562,7 @@ struct stmmac_hwtimestamp {
 struct stmmac_tx_queue;
 struct stmmac_rx_queue;
 
-/* Helpers to manage the descriptors for chain and ring modes */
+
 struct stmmac_mode_ops {
 	void (*init) (void *des, dma_addr_t phy_addr, unsigned int size,
 		      unsigned int extend_desc);
@@ -666,10 +665,10 @@ extern const struct stmmac_desc_ops dwxgmac210_desc_ops;
 extern const struct stmmac_mmc_ops dwmac_mmc_ops;
 extern const struct stmmac_mmc_ops dwxgmac_mmc_ops;
 
-#define GMAC_VERSION		0x00000020	/* GMAC CORE Version */
-#define GMAC4_VERSION		0x00000110	/* GMAC4+ CORE Version */
+#define GMAC_VERSION		0x00000020	
+#define GMAC4_VERSION		0x00000110	
 
 int stmmac_reset(struct stmmac_priv *priv, void __iomem *ioaddr);
 int stmmac_hwif_init(struct stmmac_priv *priv);
 
-#endif /* __STMMAC_HWIF_H__ */
+#endif 

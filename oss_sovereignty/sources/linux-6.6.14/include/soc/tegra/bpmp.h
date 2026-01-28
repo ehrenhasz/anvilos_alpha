@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016, NVIDIA CORPORATION.  All rights reserved.
- */
+
+
 
 #ifndef __SOC_TEGRA_BPMP_H
 #define __SOC_TEGRA_BPMP_H
@@ -222,4 +220,4 @@ static inline int tegra_bpmp_init_debugfs(struct tegra_bpmp *bpmp)
 #endif
 
 
-#endif /* __SOC_TEGRA_BPMP_H */
+#endif 

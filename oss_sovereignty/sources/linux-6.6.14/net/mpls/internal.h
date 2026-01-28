@@ -1,11 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef MPLS_INTERNAL_H
 #define MPLS_INTERNAL_H
 #include <net/mpls.h>
 
-/* put a reasonable limit on the number of labels
- * we will accept from userspace
- */
+
 #define MAX_NEW_LABELS 30
 
 struct mpls_entry_decoded {
@@ -71,27 +69,22 @@ struct sk_buff;
 
 #define LABEL_NOT_SPECIFIED (1 << 20)
 
-/* This maximum ha length copied from the definition of struct neighbour */
+
 #define VIA_ALEN_ALIGN sizeof(unsigned long)
 #define MAX_VIA_ALEN (ALIGN(MAX_ADDR_LEN, VIA_ALEN_ALIGN))
 
 enum mpls_payload_type {
-	MPT_UNSPEC, /* IPv4 or IPv6 */
+	MPT_UNSPEC, 
 	MPT_IPV4 = 4,
 	MPT_IPV6 = 6,
 
-	/* Other types not implemented:
-	 *  - Pseudo-wire with or without control word (RFC4385)
-	 *  - GAL (RFC5586)
-	 */
+	
 };
 
-struct mpls_nh { /* next hop label forwarding entry */
+struct mpls_nh { 
 	struct net_device	*nh_dev;
 
-	/* nh_flags is accessed under RCU in the packet path; it is
-	 * modified handling netdev events with rtnl lock held
-	 */
+	
 	unsigned int		nh_flags;
 	u8			nh_labels;
 	u8			nh_via_alen;
@@ -101,14 +94,12 @@ struct mpls_nh { /* next hop label forwarding entry */
 	u32			nh_label[];
 };
 
-/* offset of via from beginning of mpls_nh */
+
 #define MPLS_NH_VIA_OFF(num_labels) \
 		ALIGN(sizeof(struct mpls_nh) + (num_labels) * sizeof(u32), \
 		      VIA_ALEN_ALIGN)
 
-/* all nexthops within a route have the same size based on the
- * max number of labels and max via length across all nexthops
- */
+
 #define MPLS_NH_SIZE(num_labels, max_via_alen)		\
 		(MPLS_NH_VIA_OFF((num_labels)) +	\
 		ALIGN((max_via_alen), VIA_ALEN_ALIGN))
@@ -119,37 +110,15 @@ enum mpls_ttl_propagation {
 	MPLS_TTL_PROP_DISABLED,
 };
 
-/* The route, nexthops and vias are stored together in the same memory
- * block:
- *
- * +----------------------+
- * | mpls_route           |
- * +----------------------+
- * | mpls_nh 0            |
- * +----------------------+
- * | alignment padding    |   4 bytes for odd number of labels
- * +----------------------+
- * | via[rt_max_alen] 0   |
- * +----------------------+
- * | alignment padding    |   via's aligned on sizeof(unsigned long)
- * +----------------------+
- * | ...                  |
- * +----------------------+
- * | mpls_nh n-1          |
- * +----------------------+
- * | via[rt_max_alen] n-1 |
- * +----------------------+
- */
-struct mpls_route { /* next hop label forwarding entry */
+
+struct mpls_route { 
 	struct rcu_head		rt_rcu;
 	u8			rt_protocol;
 	u8			rt_payload_type;
 	u8			rt_max_alen;
 	u8			rt_ttl_propagate;
 	u8			rt_nhn;
-	/* rt_nhn_alive is accessed under RCU in the packet path; it
-	 * is modified handling netdev events with rtnl lock held
-	 */
+	
 	u8			rt_nhn_alive;
 	u8			rt_nh_size;
 	u8			rt_via_offset;
@@ -199,4 +168,4 @@ bool mpls_pkt_too_big(const struct sk_buff *skb, unsigned int mtu);
 void mpls_stats_inc_outucastpkts(struct net_device *dev,
 				 const struct sk_buff *skb);
 
-#endif /* MPLS_INTERNAL_H */
+#endif 

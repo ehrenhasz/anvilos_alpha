@@ -1,26 +1,4 @@
-/* Software floating-point emulation.
-   Basic two-word fraction declaration and manipulation.
-   Copyright (C) 1997,1998,1999 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-   Contributed by Richard Henderson (rth@cygnus.com),
-		  Jakub Jelinek (jj@ultra.linux.cz),
-		  David S. Miller (davem@redhat.com) and
-		  Peter Maydell (pmaydell@chiark.greenend.org.uk).
 
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public
-   License along with the GNU C Library; see the file COPYING.LIB.  If
-   not, write to the Free Software Foundation, Inc.,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #ifndef __MATH_EMU_OP_2_H__
 #define __MATH_EMU_OP_2_H__
@@ -63,7 +41,7 @@
 	    })))
 
 
-/* Right shift with sticky-lsb.  */
+
 #define _FP_FRAC_SRS_2(X, N, sz) (					       \
 	(void) (((N) < _FP_W_TYPE_SIZE)					       \
 	  ? ({								       \
@@ -105,7 +83,7 @@
     }				\
   } while(0)
 
-/* Predicates */
+
 #define _FP_FRAC_NEGP_2(X)	((_FP_WS_TYPE)X##_f1 < 0)
 #define _FP_FRAC_ZEROP_2(X)	((X##_f1 | X##_f0) == 0)
 #define _FP_FRAC_OVERP_2(fs,X)	(_FP_FRAC_HIGH_##fs(X) & _FP_OVERFLOW_##fs)
@@ -120,9 +98,7 @@
 #define _FP_MINFRAC_2		0, 1
 #define _FP_MAXFRAC_2		(~(_FP_WS_TYPE)0), (~(_FP_WS_TYPE)0)
 
-/*
- * Internals 
- */
+
 
 #define __FP_FRAC_SET_2(X,I1,I0)	(X##_f0 = I0, X##_f1 = I1)
 
@@ -172,10 +148,7 @@
 
 #endif
 
-/*
- * Unpack the raw bits of a native fp value.  Do not classify or
- * normalize the data.
- */
+
 
 #define _FP_UNPACK_RAW_2(fs, X, val)			\
   do {							\
@@ -199,9 +172,7 @@
   } while (0)
 
 
-/*
- * Repack the raw bits of a native fp value.
- */
+
 
 #define _FP_PACK_RAW_2(fs, val, X)			\
   do {							\
@@ -227,11 +198,9 @@
   } while (0)
 
 
-/*
- * Multiplication algorithms:
- */
 
-/* Given a 1W * 1W => 2W primitive, do the extended multiplication.  */
+
+
 
 #define _FP_MUL_MEAT_2_wide(wfracbits, R, X, Y, doit)			\
   do {									\
@@ -251,17 +220,13 @@
 		    _FP_FRAC_WORD_4(_z,3),_FP_FRAC_WORD_4(_z,2),	\
 		    _FP_FRAC_WORD_4(_z,1));				\
 									\
-    /* Normalize since we know where the msb of the multiplicands	\
-       were (bit B), we know that the msb of the of the product is	\
-       at either 2B or 2B-1.  */					\
+    					\
     _FP_FRAC_SRS_4(_z, wfracbits-1, 2*wfracbits);			\
     R##_f0 = _FP_FRAC_WORD_4(_z,0);					\
     R##_f1 = _FP_FRAC_WORD_4(_z,1);					\
   } while (0)
 
-/* Given a 1W * 1W => 2W primitive, do the extended multiplication.
-   Do only 3 multiplications instead of four. This one is for machines
-   where multiplication is much more expensive than subtraction.  */
+
 
 #define _FP_MUL_MEAT_2_wide_3mul(wfracbits, R, X, Y, doit)		\
   do {									\
@@ -295,9 +260,7 @@
 		    _c_f1, _c_f0,					\
 		    _FP_FRAC_WORD_4(_z,3), _FP_FRAC_WORD_4(_z,2));	\
 									\
-    /* Normalize since we know where the msb of the multiplicands	\
-       were (bit B), we know that the msb of the of the product is	\
-       at either 2B or 2B-1.  */					\
+    					\
     _FP_FRAC_SRS_4(_z, wfracbits-1, 2*wfracbits);			\
     R##_f0 = _FP_FRAC_WORD_4(_z,0);					\
     R##_f1 = _FP_FRAC_WORD_4(_z,1);					\
@@ -312,37 +275,28 @@
 									\
     mpn_mul_n(_z_f, _x, _y, 2);						\
 									\
-    /* Normalize since we know where the msb of the multiplicands	\
-       were (bit B), we know that the msb of the of the product is	\
-       at either 2B or 2B-1.  */					\
+    					\
     _FP_FRAC_SRS_4(_z, wfracbits-1, 2*wfracbits);			\
     R##_f0 = _z_f[0];							\
     R##_f1 = _z_f[1];							\
   } while (0)
 
-/* Do at most 120x120=240 bits multiplication using double floating
-   point multiplication.  This is useful if floating point
-   multiplication has much bigger throughput than integer multiply.
-   It is supposed to work for _FP_W_TYPE_SIZE 64 and wfracbits
-   between 106 and 120 only.  
-   Caller guarantees that X and Y has (1LLL << (wfracbits - 1)) set.
-   SETFETZ is a macro which will disable all FPU exceptions and set rounding
-   towards zero,  RESETFE should optionally reset it back.  */
+
 
 #define _FP_MUL_MEAT_2_120_240_double(wfracbits, R, X, Y, setfetz, resetfe)	\
   do {										\
     static const double _const[] = {						\
-      /* 2^-24 */ 5.9604644775390625e-08,					\
-      /* 2^-48 */ 3.5527136788005009e-15,					\
-      /* 2^-72 */ 2.1175823681357508e-22,					\
-      /* 2^-96 */ 1.2621774483536189e-29,					\
-      /* 2^28 */ 2.68435456e+08,						\
-      /* 2^4 */ 1.600000e+01,							\
-      /* 2^-20 */ 9.5367431640625e-07,						\
-      /* 2^-44 */ 5.6843418860808015e-14,					\
-      /* 2^-68 */ 3.3881317890172014e-21,					\
-      /* 2^-92 */ 2.0194839173657902e-28,					\
-      /* 2^-116 */ 1.2037062152420224e-35};					\
+       5.9604644775390625e-08,					\
+       3.5527136788005009e-15,					\
+       2.1175823681357508e-22,					\
+       1.2621774483536189e-29,					\
+       2.68435456e+08,						\
+       1.600000e+01,							\
+       9.5367431640625e-07,						\
+       5.6843418860808015e-14,					\
+       3.3881317890172014e-21,					\
+       2.0194839173657902e-28,					\
+       1.2037062152420224e-35};					\
     double _a240, _b240, _c240, _d240, _e240, _f240, 				\
 	   _g240, _h240, _i240, _j240, _k240;					\
     union { double d; UDItype i; } _l240, _m240, _n240, _o240,			\
@@ -416,9 +370,7 @@
     resetfe;									\
   } while (0)
 
-/*
- * Division algorithms:
- */
+
 
 #define _FP_DIV_MEAT_2_udiv(fs, R, X, Y)				\
   do {									\
@@ -437,8 +389,7 @@
 	_n_f0 = 0;							\
       }									\
 									\
-    /* Normalize, i.e. make the most significant bit of the 		\
-       denominator set. */						\
+    						\
     _FP_FRAC_SLL_2(Y, _FP_WFRACXBITS_##fs);				\
 									\
     udiv_qrnnd(R##_f1, _r_f1, _n_f2, _n_f1, Y##_f1);			\
@@ -458,13 +409,7 @@
 									\
     if (_r_f1 == Y##_f1)						\
       {									\
-	/* This is a special case, not an optimization			\
-	   (_r/Y##_f1 would not fit into UWtype).			\
-	   As _r is guaranteed to be < Y,  R##_f0 can be either		\
-	   (UWtype)-1 or (UWtype)-2.  But as we know what kind		\
-	   of bits it is (sticky, guard, round),  we don't care.	\
-	   We also don't care what the reminder is,  because the	\
-	   guard bit will be set anyway.  -jj */			\
+				\
 	R##_f0 = -1;							\
       }									\
     else								\
@@ -515,11 +460,7 @@
   } while (0)
 
 
-/*
- * Square root algorithms:
- * We have just one right now, maybe Newton approximation
- * should be added for those machines where division is fast.
- */
+
  
 #define _FP_SQRT_MEAT_2(R, S, T, X, q)			\
   do {							\
@@ -561,10 +502,7 @@
   } while (0)
 
 
-/*
- * Assembly/disassembly for converting to/from integral types.  
- * No shifting or overflow handled here.
- */
+
 
 #define _FP_FRAC_ASSEMBLE_2(r, X, rsize)	\
 	(void) (((rsize) <= _FP_W_TYPE_SIZE)	\
@@ -581,9 +519,7 @@
     X##_f1 = (rsize <= _FP_W_TYPE_SIZE ? 0 : r >> _FP_W_TYPE_SIZE);	\
   } while (0)
 
-/*
- * Convert FP values between word sizes
- */
+
 
 #define _FP_FRAC_CONV_1_2(dfs, sfs, D, S)				\
   do {									\

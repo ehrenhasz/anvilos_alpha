@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
-//
-// Device Tree binding constants for Actions Semi S700 Reset Management Unit
-//
-// Copyright (c) 2018 Linaro Ltd.
+
+
+
+
+
 
 #ifndef __DT_BINDINGS_ACTIONS_S700_RESET_H
 #define __DT_BINDINGS_ACTIONS_S700_RESET_H
@@ -31,4 +31,4 @@
 #define RESET_UART5				21
 #define RESET_UART6				22
 
-#endif /* __DT_BINDINGS_ACTIONS_S700_RESET_H */
+#endif 

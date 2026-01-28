@@ -71,7 +71,7 @@ def intparse(statestr, defmask="0xffffffff"):
     if defmask is not None:
         secondnum = defmask
         if statestr[count] == "/":
-            secondnum = statestr[count + 1 :]  # this is wrong...
+            secondnum = statestr[count + 1 :]  
         m = int(secondnum, 0)
     return statestr[totalparse + 1 :], k, m
 def parse_flags(flag_str, flag_vals):
@@ -1224,9 +1224,9 @@ class ovskey(nla):
                         print_str += "),"
         return print_str
 class OvsPacket(GenericNetlinkSocket):
-    OVS_PACKET_CMD_MISS = 1  # Flow table miss
-    OVS_PACKET_CMD_ACTION = 2  # USERSPACE action
-    OVS_PACKET_CMD_EXECUTE = 3  # Apply actions to packet
+    OVS_PACKET_CMD_MISS = 1  
+    OVS_PACKET_CMD_ACTION = 2  
+    OVS_PACKET_CMD_EXECUTE = 3  
     class ovs_packet_msg(ovs_dp_msg):
         nla_map = (
             ("OVS_PACKET_ATTR_UNSPEC", "none"),

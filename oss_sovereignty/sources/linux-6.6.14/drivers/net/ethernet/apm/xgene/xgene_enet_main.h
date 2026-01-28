@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Applied Micro X-Gene SoC Ethernet Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Authors: Iyappan Subramanian <isubramanian@apm.com>
- *	    Ravi Patel <rapatel@apm.com>
- *	    Keyur Chudgar <kchudgar@apm.com>
- */
+
+
 
 #ifndef __XGENE_ENET_MAIN_H__
 #define __XGENE_ENET_MAIN_H__
@@ -86,7 +80,7 @@ enum xgene_enet_buf_len {
 	SIZE_16K = 16384
 };
 
-/* software context of a descriptor ring */
+
 struct xgene_enet_desc_ring {
 	struct net_device *ndev;
 	u16 id;
@@ -179,7 +173,7 @@ struct xgene_cle_ops {
 	int (*cle_init)(struct xgene_enet_pdata *pdata);
 };
 
-/* ethernet private data */
+
 struct xgene_enet_pdata {
 	struct net_device *ndev;
 	struct mii_bus *mdio_bus;
@@ -214,9 +208,9 @@ struct xgene_enet_pdata {
 	u64 *extd_stats;
 	u64 false_rflr;
 	u64 vlan_rjbr;
-	spinlock_t stats_lock; /* statistics lock */
+	spinlock_t stats_lock; 
 	const struct xgene_mac_ops *mac_ops;
-	spinlock_t mac_lock; /* mac lock */
+	spinlock_t mac_lock; 
 	const struct xgene_port_ops *port_ops;
 	struct xgene_ring_ops *ring_ops;
 	const struct xgene_cle_ops *cle_ops;
@@ -228,7 +222,7 @@ struct xgene_enet_pdata {
 	u16 ring_num;
 	u32 mss[NUM_MSS_REG];
 	u32 mss_refcnt[NUM_MSS_REG];
-	spinlock_t mss_lock;  /* mss lock */
+	spinlock_t mss_lock;  
 	u8 tx_delay;
 	u8 rx_delay;
 	bool mdio_driver;
@@ -261,4 +255,4 @@ static inline u16 xgene_enet_dst_ring_num(struct xgene_enet_desc_ring *ring)
 void xgene_enet_set_ethtool_ops(struct net_device *netdev);
 int xgene_extd_stats_init(struct xgene_enet_pdata *pdata);
 
-#endif /* __XGENE_ENET_MAIN_H__ */
+#endif 

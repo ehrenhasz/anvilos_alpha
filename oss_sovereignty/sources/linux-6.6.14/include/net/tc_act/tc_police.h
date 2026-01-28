@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_TC_POLICE_H
 #define __NET_TC_POLICE_H
 
@@ -33,7 +33,7 @@ struct tcf_police {
 
 #define to_police(pc) ((struct tcf_police *)pc)
 
-/* old policer structure from before tc actions */
+
 struct tc_police_compat {
 	u32			index;
 	int			action;
@@ -72,29 +72,7 @@ static inline u32 tcf_police_burst(const struct tc_action *act)
 	params = rcu_dereference_protected(police->params,
 					   lockdep_is_held(&police->tcf_lock));
 
-	/*
-	 *  "rate" bytes   "burst" nanoseconds
-	 *  ------------ * -------------------
-	 *    1 second          2^6 ticks
-	 *
-	 * ------------------------------------
-	 *        NSEC_PER_SEC nanoseconds
-	 *        ------------------------
-	 *              2^6 ticks
-	 *
-	 *    "rate" bytes   "burst" nanoseconds            2^6 ticks
-	 *  = ------------ * ------------------- * ------------------------
-	 *      1 second          2^6 ticks        NSEC_PER_SEC nanoseconds
-	 *
-	 *   "rate" * "burst"
-	 * = ---------------- bytes/nanosecond
-	 *    NSEC_PER_SEC^2
-	 *
-	 *
-	 *   "rate" * "burst"
-	 * = ---------------- bytes/second
-	 *     NSEC_PER_SEC
-	 */
+	
 	burst = div_u64(params->tcfp_burst * params->rate.rate_bytes_ps,
 			NSEC_PER_SEC);
 
@@ -120,29 +98,7 @@ static inline u32 tcf_police_burst_pkt(const struct tc_action *act)
 	params = rcu_dereference_protected(police->params,
 					   lockdep_is_held(&police->tcf_lock));
 
-	/*
-	 *  "rate" pkts     "burst" nanoseconds
-	 *  ------------ *  -------------------
-	 *    1 second          2^6 ticks
-	 *
-	 * ------------------------------------
-	 *        NSEC_PER_SEC nanoseconds
-	 *        ------------------------
-	 *              2^6 ticks
-	 *
-	 *    "rate" pkts    "burst" nanoseconds            2^6 ticks
-	 *  = ------------ * ------------------- * ------------------------
-	 *      1 second          2^6 ticks        NSEC_PER_SEC nanoseconds
-	 *
-	 *   "rate" * "burst"
-	 * = ---------------- pkts/nanosecond
-	 *    NSEC_PER_SEC^2
-	 *
-	 *
-	 *   "rate" * "burst"
-	 * = ---------------- pkts/second
-	 *     NSEC_PER_SEC
-	 */
+	
 	burst = div_u64(params->tcfp_pkt_burst * params->ppsrate.rate_pkts_ps,
 			NSEC_PER_SEC);
 
@@ -189,4 +145,4 @@ static inline u16 tcf_police_rate_overhead(const struct tc_action *act)
 	return params->rate.overhead;
 }
 
-#endif /* __NET_TC_POLICE_H */
+#endif 

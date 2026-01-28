@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NF_INTERNALS_H
 #define _NF_INTERNALS_H
 
@@ -6,7 +6,7 @@
 #include <linux/skbuff.h>
 #include <linux/netdevice.h>
 
-/* nf_conntrack_netlink.c: applied on tuple filters */
+
 #define CTA_FILTER_F_CTA_IP_SRC			(1 << 0)
 #define CTA_FILTER_F_CTA_IP_DST			(1 << 1)
 #define CTA_FILTER_F_CTA_TUPLE_ZONE		(1 << 2)
@@ -23,13 +23,13 @@
 #define CTA_FILTER_F_ALL			(CTA_FILTER_F_MAX-1)
 #define CTA_FILTER_FLAG(ctattr) CTA_FILTER_F_ ## ctattr
 
-/* nf_queue.c */
+
 void nf_queue_nf_hook_drop(struct net *net);
 
-/* nf_log.c */
+
 int __init netfilter_log_init(void);
 
-/* core.c */
+
 void nf_hook_entries_delete_raw(struct nf_hook_entries __rcu **pp,
 				const struct nf_hook_ops *reg);
 int nf_hook_entries_insert_raw(struct nf_hook_entries __rcu **pp,

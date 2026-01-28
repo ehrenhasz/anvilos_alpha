@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AppArmor security module
- *
- * This file contains AppArmor filesystem definitions.
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2010 Canonical Ltd.
- */
+
+
 
 #ifndef __AA_APPARMORFS_H
 #define __AA_APPARMORFS_H
@@ -121,7 +114,7 @@ int __aa_fs_create_rawdata(struct aa_ns *ns, struct aa_loaddata *rawdata);
 #else
 static inline void __aa_fs_remove_rawdata(struct aa_loaddata *rawdata)
 {
-	/* empty stub */
+	
 }
 
 static inline int __aa_fs_create_rawdata(struct aa_ns *ns,
@@ -129,6 +122,6 @@ static inline int __aa_fs_create_rawdata(struct aa_ns *ns,
 {
 	return 0;
 }
-#endif /* CONFIG_SECURITY_APPARMOR_EXPORT_BINARY */
+#endif 
 
-#endif /* __AA_APPARMORFS_H */
+#endif 

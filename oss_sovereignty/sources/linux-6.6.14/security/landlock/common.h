@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Landlock LSM - Common constants and helpers
- *
- * Copyright © 2016-2020 Mickaël Salaün <mic@digikod.net>
- * Copyright © 2018-2020 ANSSI
- */
+
+
 
 #ifndef _SECURITY_LANDLOCK_COMMON_H
 #define _SECURITY_LANDLOCK_COMMON_H
@@ -17,4 +12,4 @@
 
 #define pr_fmt(fmt) LANDLOCK_NAME ": " fmt
 
-#endif /* _SECURITY_LANDLOCK_COMMON_H */
+#endif 

@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Copyright 2022 NXP
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM	mv88e6xxx
@@ -85,12 +84,12 @@ DEFINE_EVENT(mv88e6xxx_vtu_violation, mv88e6xxx_vtu_miss_violation,
 	     TP_PROTO(const struct device *dev, int spid, u16 vid),
 	     TP_ARGS(dev, spid, vid));
 
-#endif /* _MV88E6XXX_TRACE_H */
+#endif 
 
-/* We don't want to use include/trace/events */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE	trace
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

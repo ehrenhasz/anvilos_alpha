@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+
+
 
 #ifndef __UTIL_DOT_H__
 #define __UTIL_DOT_H__
@@ -188,29 +185,20 @@ static inline unsigned int gfs2_tune_get_i(struct gfs2_tune *gt,
 	return x;
 }
 
-/**
- * gfs2_withdraw_delayed - withdraw as soon as possible without deadlocks
- * @sdp: the superblock
- */
+
 static inline void gfs2_withdraw_delayed(struct gfs2_sbd *sdp)
 {
 	set_bit(SDF_WITHDRAWING, &sdp->sd_flags);
 }
 
-/**
- * gfs2_withdrawn - test whether the file system is withdrawing or withdrawn
- * @sdp: the superblock
- */
+
 static inline bool gfs2_withdrawn(struct gfs2_sbd *sdp)
 {
 	return test_bit(SDF_WITHDRAWN, &sdp->sd_flags) ||
 		test_bit(SDF_WITHDRAWING, &sdp->sd_flags);
 }
 
-/**
- * gfs2_withdrawing - check if a withdraw is pending
- * @sdp: the superblock
- */
+
 static inline bool gfs2_withdrawing(struct gfs2_sbd *sdp)
 {
 	return test_bit(SDF_WITHDRAWING, &sdp->sd_flags) &&
@@ -229,4 +217,4 @@ __printf(2, 3)
 void gfs2_lm(struct gfs2_sbd *sdp, const char *fmt, ...);
 int gfs2_withdraw(struct gfs2_sbd *sdp);
 
-#endif /* __UTIL_DOT_H__ */
+#endif 

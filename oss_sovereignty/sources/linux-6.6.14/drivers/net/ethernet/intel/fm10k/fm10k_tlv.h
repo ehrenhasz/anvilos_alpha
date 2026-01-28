@@ -1,31 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2013 - 2019 Intel Corporation. */
+
+
 
 #ifndef _FM10K_TLV_H_
 #define _FM10K_TLV_H_
 
-/* forward declaration */
+
 struct fm10k_msg_data;
 
 #include "fm10k_type.h"
 
-/* Message / Argument header format
- *    3			  2		      1			  0
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |	     Length	   | Flags |	      Type / ID		   |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *
- * The message header format described here is used for messages that are
- * passed between the PF and the VF.  To allow for messages larger then
- * mailbox size we will provide a message with the above header and it
- * will be segmented and transported to the mailbox to the other side where
- * it is reassembled.  It contains the following fields:
- * Length: Length of the message in bytes excluding the message header
- * Flags: TBD
- * Type/ID: These will be the message/argument types we pass
- */
-/* message data header */
+
+
 #define FM10K_TLV_ID_SHIFT		0
 #define FM10K_TLV_ID_SIZE		16
 #define FM10K_TLV_ID_MASK		((1u << FM10K_TLV_ID_SIZE) - 1)
@@ -161,4 +146,4 @@ s32 fm10k_tlv_msg_test(struct fm10k_hw *, u32 **, struct fm10k_mbx_info *);
 	FM10K_MSG_HANDLER(FM10K_TLV_MSG_ID_TEST, fm10k_tlv_msg_test_attr, func)
 #define FM10K_TLV_MSG_ERROR_HANDLER(func) \
 	FM10K_MSG_HANDLER(FM10K_TLV_ERROR, NULL, func)
-#endif /* _FM10K_MSG_H_ */
+#endif 

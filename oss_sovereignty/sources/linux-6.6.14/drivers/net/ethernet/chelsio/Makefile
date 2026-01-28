@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Chelsio network device drivers.
-#
+
+
+
+
 
 obj-$(CONFIG_CHELSIO_T1) += cxgb/
 obj-$(CONFIG_CHELSIO_T3) += cxgb3/

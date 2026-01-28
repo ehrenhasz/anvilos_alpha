@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+
 #ifndef __PERF_BPF_MAP_H
 #define __PERF_BPF_MAP_H 1
 
@@ -18,6 +18,6 @@ static inline int bpf_map__fprintf(struct bpf_map *map __maybe_unused, FILE *fp 
 	return 0;
 }
 
-#endif // HAVE_LIBBPF_SUPPORT
+#endif 
 
-#endif // __PERF_BPF_MAP_H
+#endif 

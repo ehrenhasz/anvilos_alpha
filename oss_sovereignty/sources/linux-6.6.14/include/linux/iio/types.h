@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* industrial I/O data types needed both in and out of kernel
- *
- * Copyright (c) 2008 Jonathan Cameron
- */
+
+
 
 #ifndef _IIO_TYPES_H_
 #define _IIO_TYPES_H_
@@ -28,7 +25,7 @@ enum iio_event_info {
 #define IIO_VAL_INT_PLUS_NANO 3
 #define IIO_VAL_INT_PLUS_MICRO_DB 4
 #define IIO_VAL_INT_MULTIPLE 5
-#define IIO_VAL_INT_64 6 /* 64-bit data, val is lower 32 bits */
+#define IIO_VAL_INT_64 6 
 #define IIO_VAL_FRACTIONAL 10
 #define IIO_VAL_FRACTIONAL_LOG2 11
 #define IIO_VAL_CHAR 12
@@ -70,4 +67,4 @@ enum iio_chan_info_enum {
 	IIO_CHAN_INFO_ZEROPOINT,
 };
 
-#endif /* _IIO_TYPES_H_ */
+#endif 

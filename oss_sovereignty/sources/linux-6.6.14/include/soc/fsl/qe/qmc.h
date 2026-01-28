@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * QMC management
- *
- * Copyright 2022 CS GROUP France
- *
- * Author: Herve Codina <herve.codina@bootlin.com>
- */
+
+
 #ifndef __SOC_FSL_QMC_H__
 #define __SOC_FSL_QMC_H__
 
@@ -68,4 +62,4 @@ int qmc_chan_start(struct qmc_chan *chan, int direction);
 int qmc_chan_stop(struct qmc_chan *chan, int direction);
 int qmc_chan_reset(struct qmc_chan *chan, int direction);
 
-#endif /* __SOC_FSL_QMC_H__ */
+#endif 

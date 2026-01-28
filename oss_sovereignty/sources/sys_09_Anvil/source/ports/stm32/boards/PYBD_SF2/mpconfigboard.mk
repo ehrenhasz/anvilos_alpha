@@ -1,4 +1,4 @@
-# MCU settings
+
 MCU_SERIES = f7
 CMSIS_MCU = STM32F722xx
 MICROPY_FLOAT_IMPL = single
@@ -9,7 +9,7 @@ TEXT1_ADDR = 0x90000000
 TEXT0_SECTIONS = .isr_vector .text .data .ARM
 TEXT1_SECTIONS = .text_ext
 
-# MicroPython settings
+
 MICROPY_PY_BLUETOOTH ?= 1
 MICROPY_BLUETOOTH_NIMBLE ?= 1
 MICROPY_BLUETOOTH_BTSTACK ?= 0
@@ -19,5 +19,5 @@ MICROPY_PY_SSL = 1
 MICROPY_SSL_MBEDTLS = 1
 MICROPY_VFS_LFS2 = 1
 
-# PYBD-specific frozen modules
+
 FROZEN_MANIFEST ?= $(BOARD_DIR)/manifest.py

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_SHM_H_
 #define _LINUX_SHM_H_
 
@@ -21,7 +21,7 @@ void exit_shm(struct task_struct *task);
 #define shm_init_task(task) INIT_LIST_HEAD(&(task)->sysvshm.shm_clist)
 #else
 struct sysv_shm {
-	/* empty */
+	
 };
 
 static inline long do_shmat(int shmid, char __user *shmaddr,
@@ -42,4 +42,4 @@ static inline void shm_init_task(struct task_struct *task)
 }
 #endif
 
-#endif /* _LINUX_SHM_H_ */
+#endif 

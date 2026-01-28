@@ -21,7 +21,7 @@ codepoint2name[ord(":")] = "colon"
 codepoint2name[ord(";")] = "semicolon"
 codepoint2name[ord("/")] = "slash"
 codepoint2name[ord("%")] = "percent"
-codepoint2name[ord("#")] = "hash"
+codepoint2name[ord("
 codepoint2name[ord("(")] = "paren_open"
 codepoint2name[ord(")")] = "paren_close"
 codepoint2name[ord("[")] = "bracket_open"
@@ -41,7 +41,7 @@ codepoint2name[ord("|")] = "pipe"
 codepoint2name[ord("~")] = "tilde"
 static_qstr_list = [
     "",
-    "__dir__",  # Put __dir__ after empty qstr for builtin dir() to work
+    "__dir__",  
     "\n",
     " ",
     "*",

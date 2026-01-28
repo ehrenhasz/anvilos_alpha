@@ -1,18 +1,10 @@
-/*
- * Copyright (c) Yann Collet, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under both the BSD-style license (found in the
- * LICENSE file in the root directory of this source tree) and the GPLv2 (found
- * in the COPYING file in the root directory of this source tree).
- * You may select, at your option, one of the above-listed licenses.
- */
+
 
 #ifndef ZSTD_LDM_GEARTAB_H
 #define ZSTD_LDM_GEARTAB_H
 
-#include "../common/compiler.h" /* UNUSED_ATTR */
-#include "../common/mem.h"      /* U64 */
+#include "../common/compiler.h" 
+#include "../common/mem.h"      
 
 static UNUSED_ATTR const U64 ZSTD_ldm_gearTab[256] = {
     0xf5b8f72c5f77775c, 0x84935f266b7ac412, 0xb647ada9ca730ccc,
@@ -103,4 +95,4 @@ static UNUSED_ATTR const U64 ZSTD_ldm_gearTab[256] = {
     0x2b4da14f2613d8f4
 };
 
-#endif /* ZSTD_LDM_GEARTAB_H */
+#endif 

@@ -1,7 +1,4 @@
-/*
- * Copyright (C) 2017 Socionext Inc.
- *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
- */
+
 
 #ifndef _DT_BINDINGS_GPIO_UNIPHIER_H
 #define _DT_BINDINGS_GPIO_UNIPHIER_H
@@ -15,4 +12,4 @@
 
 #define UNIPHIER_GPIO_IRQ(n)		((UNIPHIER_GPIO_IRQ_OFFSET) + (n))
 
-#endif /* _DT_BINDINGS_GPIO_UNIPHIER_H */
+#endif 

@@ -1,19 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Encode/decode NLM basic data types
- *
- * Basic NLMv3 XDR data types are not defined in an IETF standards
- * document.  X/Open has a description of these data types that
- * is useful.  See Chapter 10 of "Protocols for Interworking:
- * XNFS, Version 3W".
- *
- * Basic NLMv4 XDR data types are defined in Appendix II.1.4 of
- * RFC 1813: "NFS Version 3 Protocol Specification".
- *
- * Author: Chuck Lever <chuck.lever@oracle.com>
- *
- * Copyright (c) 2020, Oracle and/or its affiliates.
- */
+
+
 
 #ifndef _LOCKD_SVCXDR_H_
 #define _LOCKD_SVCXDR_H_
@@ -63,12 +49,7 @@ svcxdr_decode_string(struct xdr_stream *xdr, char **data, unsigned int *data_len
 	return true;
 }
 
-/*
- * NLM cookies are defined by specification to be a variable-length
- * XDR opaque no longer than 1024 bytes. However, this implementation
- * limits their length to 32 bytes, and treats zero-length cookies
- * specially.
- */
+
 static inline bool
 svcxdr_decode_cookie(struct xdr_stream *xdr, struct nlm_cookie *cookie)
 {
@@ -90,7 +71,7 @@ svcxdr_decode_cookie(struct xdr_stream *xdr, struct nlm_cookie *cookie)
 
 	return true;
 
-	/* apparently HPUX can return empty cookies */
+	
 out_hpux:
 	cookie->len = 4;
 	memset(cookie->data, 0, 4);
@@ -139,4 +120,4 @@ svcxdr_encode_owner(struct xdr_stream *xdr, const struct xdr_netobj *obj)
 	return xdr_stream_encode_opaque(xdr, obj->data, obj->len) > 0;
 }
 
-#endif /* _LOCKD_SVCXDR_H_ */
+#endif 

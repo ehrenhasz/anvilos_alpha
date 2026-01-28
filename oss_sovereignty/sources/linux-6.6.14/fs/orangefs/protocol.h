@@ -1,37 +1,25 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/spinlock_types.h>
 #include <linux/slab.h>
 #include <linux/ioctl.h>
 
-/* khandle stuff  ***********************************************************/
 
-/*
- * The 2.9 core will put 64 bit handles in here like this:
- *    1234 0000 0000 5678
- * The 3.0 and beyond cores will put 128 bit handles in here like this:
- *    1234 5678 90AB CDEF
- * The kernel module will always use the first four bytes and
- * the last four bytes as an inum.
- */
+
+
 struct orangefs_khandle {
 	unsigned char u[16];
 }  __aligned(8);
 
-/*
- * kernel version of an object ref.
- */
+
 struct orangefs_object_kref {
 	struct orangefs_khandle khandle;
 	__s32 fs_id;
 	__s32 __pad1;
 };
 
-/*
- * compare 2 khandles assumes little endian thus from large address to
- * small address
- */
+
 static inline int ORANGEFS_khandle_cmp(const struct orangefs_khandle *kh1,
 				   const struct orangefs_khandle *kh2)
 {
@@ -64,42 +52,29 @@ static inline void ORANGEFS_khandle_from(struct orangefs_khandle *kh,
 
 }
 
-/* pvfs2-types.h ************************************************************/
+
 
 #define ORANGEFS_SUPER_MAGIC 0x20030528
 
-/*
- * ORANGEFS error codes are a signed 32-bit integer. Error codes are negative, but
- * the sign is stripped before decoding.
- */
 
-/* Bit 31 is not used since it is the sign. */
 
-/*
- * Bit 30 specifies that this is a ORANGEFS error. A ORANGEFS error is either an
- * encoded errno value or a ORANGEFS protocol error.
- */
+
+
+
 #define ORANGEFS_ERROR_BIT (1 << 30)
 
-/*
- * Bit 29 specifies that this is a ORANGEFS protocol error and not an encoded
- * errno value.
- */
+
 #define ORANGEFS_NON_ERRNO_ERROR_BIT (1 << 29)
 
-/*
- * Bits 9, 8, and 7 specify the error class, which encodes the section of
- * server code the error originated in for logging purposes. It is not used
- * in the kernel except to be masked out.
- */
+
 #define ORANGEFS_ERROR_CLASS_BITS 0x380
 
-/* Bits 6 - 0 are reserved for the actual error code. */
+
 #define ORANGEFS_ERROR_NUMBER_BITS 0x7f
 
-/* Encoded errno values decoded by PINT_errno_mapping in orangefs-utils.c. */
 
-/* Our own ORANGEFS protocol error codes. */
+
+
 #define ORANGEFS_ECANCEL    (1|ORANGEFS_NON_ERRNO_ERROR_BIT|ORANGEFS_ERROR_BIT)
 #define ORANGEFS_EDEVINIT   (2|ORANGEFS_NON_ERRNO_ERROR_BIT|ORANGEFS_ERROR_BIT)
 #define ORANGEFS_EDETAIL    (3|ORANGEFS_NON_ERRNO_ERROR_BIT|ORANGEFS_ERROR_BIT)
@@ -110,7 +85,7 @@ static inline void ORANGEFS_khandle_from(struct orangefs_khandle *kh,
 #define ORANGEFS_ENOTPVFS   (8|ORANGEFS_NON_ERRNO_ERROR_BIT|ORANGEFS_ERROR_BIT)
 #define ORANGEFS_ESECURITY  (9|ORANGEFS_NON_ERRNO_ERROR_BIT|ORANGEFS_ERROR_BIT)
 
-/* permission bits */
+
 #define ORANGEFS_O_EXECUTE (1 << 0)
 #define ORANGEFS_O_WRITE   (1 << 1)
 #define ORANGEFS_O_READ    (1 << 2)
@@ -120,7 +95,7 @@ static inline void ORANGEFS_khandle_from(struct orangefs_khandle *kh,
 #define ORANGEFS_U_EXECUTE (1 << 6)
 #define ORANGEFS_U_WRITE   (1 << 7)
 #define ORANGEFS_U_READ    (1 << 8)
-/* no ORANGEFS_U_VTX (sticky bit) */
+
 #define ORANGEFS_G_SGID    (1 << 10)
 #define ORANGEFS_U_SUID    (1 << 11)
 
@@ -171,38 +146,17 @@ static inline void ORANGEFS_khandle_from(struct orangefs_khandle *kh,
 #define ORANGEFS_XATTR_CREATE  0x1
 #define ORANGEFS_MAX_SERVER_ADDR_LEN 256
 #define ORANGEFS_NAME_MAX                256
-/*
- * max extended attribute name len as imposed by the VFS and exploited for the
- * upcall request types.
- * NOTE: Please retain them as multiples of 8 even if you wish to change them
- * This is *NECESSARY* for supporting 32 bit user-space binaries on a 64-bit
- * kernel. Due to implementation within DBPF, this really needs to be
- * ORANGEFS_NAME_MAX, which it was the same value as, but no reason to let it
- * break if that changes in the future.
- */
-#define ORANGEFS_MAX_XATTR_NAMELEN   ORANGEFS_NAME_MAX	/* Not the same as
-						 * XATTR_NAME_MAX defined
-						 * by <linux/xattr.h>
-						 */
-#define ORANGEFS_MAX_XATTR_VALUELEN  8192	/* Not the same as XATTR_SIZE_MAX
-					 * defined by <linux/xattr.h>
-					 */
-#define ORANGEFS_MAX_XATTR_LISTLEN   16	/* Not the same as XATTR_LIST_MAX
-					 * defined by <linux/xattr.h>
-					 */
-/*
- * ORANGEFS I/O operation types, used in both system and server interfaces.
- */
+
+#define ORANGEFS_MAX_XATTR_NAMELEN   ORANGEFS_NAME_MAX	
+#define ORANGEFS_MAX_XATTR_VALUELEN  8192	
+#define ORANGEFS_MAX_XATTR_LISTLEN   16	
+
 enum ORANGEFS_io_type {
 	ORANGEFS_IO_READ = 1,
 	ORANGEFS_IO_WRITE = 2
 };
 
-/*
- * If this enum is modified the server parameters related to the precreate pool
- * batch and low threshold sizes may need to be modified  to reflect this
- * change.
- */
+
 enum orangefs_ds_type {
 	ORANGEFS_TYPE_NONE = 0,
 	ORANGEFS_TYPE_METAFILE = (1 << 0),
@@ -210,19 +164,19 @@ enum orangefs_ds_type {
 	ORANGEFS_TYPE_DIRECTORY = (1 << 2),
 	ORANGEFS_TYPE_SYMLINK = (1 << 3),
 	ORANGEFS_TYPE_DIRDATA = (1 << 4),
-	ORANGEFS_TYPE_INTERNAL = (1 << 5)	/* for the server's private use */
+	ORANGEFS_TYPE_INTERNAL = (1 << 5)	
 };
 
-/* This structure is used by the VFS-client interaction alone */
+
 struct ORANGEFS_keyval_pair {
 	char key[ORANGEFS_MAX_XATTR_NAMELEN];
-	__s32 key_sz;	/* __s32 for portable, fixed-size structures */
+	__s32 key_sz;	
 	__s32 val_sz;
 	char val[ORANGEFS_MAX_XATTR_VALUELEN];
 };
 
-/* pvfs2-sysint.h ***********************************************************/
-/* Describes attributes for a file, directory, or symlink. */
+
+
 struct ORANGEFS_sys_attr_s {
 	__u32 owner;
 	__u32 group;
@@ -232,27 +186,27 @@ struct ORANGEFS_sys_attr_s {
 	__u64 ctime;
 	__s64 size;
 
-	/* NOTE: caller must free if valid */
+	
 	char *link_target;
 
-	/* Changed to __s32 so that size of structure does not change */
+	
 	__s32 dfile_count;
 
-	/* Changed to __s32 so that size of structure does not change */
+	
 	__s32 distr_dir_servers_initial;
 
-	/* Changed to __s32 so that size of structure does not change */
+	
 	__s32 distr_dir_servers_max;
 
-	/* Changed to __s32 so that size of structure does not change */
+	
 	__s32 distr_dir_split_size;
 
 	__u32 mirror_copies_count;
 
-	/* NOTE: caller must free if valid */
+	
 	char *dist_name;
 
-	/* NOTE: caller must free if valid */
+	
 	char *dist_params;
 
 	__s64 dirent_count;
@@ -264,9 +218,9 @@ struct ORANGEFS_sys_attr_s {
 
 #define ORANGEFS_LOOKUP_LINK_NO_FOLLOW 0
 
-/* pint-dev.h ***************************************************************/
 
-/* parameter structure used in ORANGEFS_DEV_DEBUG ioctl command */
+
+
 struct dev_mask_info_s {
 	enum {
 		KERNEL_MASK,
@@ -280,17 +234,17 @@ struct dev_mask2_info_s {
 	__u64 mask2_value;
 };
 
-/* pvfs2-util.h *************************************************************/
+
 __s32 ORANGEFS_util_translate_mode(int mode);
 
-/* pvfs2-debug.h ************************************************************/
+
 #include "orangefs-debug.h"
 
-/* pvfs2-internal.h *********************************************************/
+
 #define llu(x) (unsigned long long)(x)
 #define lld(x) (long long)(x)
 
-/* pint-dev-shared.h ********************************************************/
+
 #define ORANGEFS_DEV_MAGIC 'k'
 
 #define ORANGEFS_READDIR_DEFAULT_DESC_COUNT  5
@@ -306,7 +260,7 @@ __s32 ORANGEFS_util_translate_mode(int mode);
 #define DEV_CLIENT_STRING       0x9
 #define DEV_MAX_NR              0xa
 
-/* supported ioctls, codes are with respect to user-space */
+
 enum {
 	ORANGEFS_DEV_GET_MAGIC = _IOW(ORANGEFS_DEV_MAGIC, DEV_GET_MAGIC, __s32),
 	ORANGEFS_DEV_GET_MAX_UPSIZE =
@@ -326,21 +280,11 @@ enum {
 	ORANGEFS_DEV_MAXNR = DEV_MAX_NR,
 };
 
-/*
- * version number for use in communicating between kernel space and user
- * space. Zero signifies the upstream version of the kernel module.
- */
+
 #define ORANGEFS_KERNEL_PROTO_VERSION 0
 #define ORANGEFS_MINIMUM_USERSPACE_VERSION 20903
 
-/*
- * describes memory regions to map in the ORANGEFS_DEV_MAP ioctl.
- * NOTE: See devorangefs-req.c for 32 bit compat structure.
- * Since this structure has a variable-sized layout that is different
- * on 32 and 64 bit platforms, we need to normalize to a 64 bit layout
- * on such systems before servicing ioctl calls from user-space binaries
- * that may be 32 bit!
- */
+
 struct ORANGEFS_dev_map_desc {
 	void __user *ptr;
 	__s32 total_size;
@@ -348,11 +292,11 @@ struct ORANGEFS_dev_map_desc {
 	__s32 count;
 };
 
-/* gossip.h *****************************************************************/
+
 
 extern __u64 orangefs_gossip_debug_mask;
 
-/* try to avoid function call overhead by checking masks in macro */
+
 #define gossip_debug(mask, fmt, ...)					\
 do {									\
 	if (orangefs_gossip_debug_mask & (mask))			\

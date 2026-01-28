@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * R-Car Gen3 Clock Pulse Generator
- *
- * Copyright (C) 2015-2018 Glider bvba
- * Copyright (C) 2018 Renesas Electronics Corp.
- *
- */
+
+
 
 #ifndef __CLK_RENESAS_RCAR_GEN3_CPG_H__
 #define __CLK_RENESAS_RCAR_GEN3_CPG_H__
@@ -20,17 +14,17 @@ enum rcar_gen3_clk_types {
 	CLK_TYPE_GEN3_SDH,
 	CLK_TYPE_GEN3_SD,
 	CLK_TYPE_GEN3_R,
-	CLK_TYPE_GEN3_MDSEL,	/* Select parent/divider using mode pin */
+	CLK_TYPE_GEN3_MDSEL,	
 	CLK_TYPE_GEN3_Z,
 	CLK_TYPE_GEN3_ZG,
-	CLK_TYPE_GEN3_OSC,	/* OSC EXTAL predivider and fixed divider */
-	CLK_TYPE_GEN3_RCKSEL,	/* Select parent/divider using RCKCR.CKSEL */
+	CLK_TYPE_GEN3_OSC,	
+	CLK_TYPE_GEN3_RCKSEL,	
 	CLK_TYPE_GEN3_RPCSRC,
-	CLK_TYPE_GEN3_E3_RPCSRC,/* Select parent/divider using RPCCKCR.DIV */
+	CLK_TYPE_GEN3_E3_RPCSRC,
 	CLK_TYPE_GEN3_RPC,
 	CLK_TYPE_GEN3_RPCD2,
 
-	/* SoC specific definitions start here */
+	
 	CLK_TYPE_GEN3_SOC_BASE,
 };
 

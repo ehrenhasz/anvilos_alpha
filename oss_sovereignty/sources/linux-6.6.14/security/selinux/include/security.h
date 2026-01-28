@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Security server interface.
- *
- * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
- *
- */
+
+
 
 #ifndef _SELINUX_SECURITY_H_
 #define _SELINUX_SECURITY_H_
@@ -21,11 +16,11 @@
 #include "flask.h"
 #include "policycap.h"
 
-#define SECSID_NULL			0x00000000 /* unspecified SID */
-#define SECSID_WILD			0xffffffff /* wildcard SID */
-#define SECCLASS_NULL			0x0000 /* no class */
+#define SECSID_NULL			0x00000000 
+#define SECSID_WILD			0xffffffff 
+#define SECCLASS_NULL			0x0000 
 
-/* Identify specific policy version changes */
+
 #define POLICYDB_VERSION_BASE		15
 #define POLICYDB_VERSION_BOOL		16
 #define POLICYDB_VERSION_IPV6		17
@@ -45,22 +40,22 @@
 #define POLICYDB_VERSION_XPERMS_IOCTL	30
 #define POLICYDB_VERSION_INFINIBAND		31
 #define POLICYDB_VERSION_GLBLUB		32
-#define POLICYDB_VERSION_COMP_FTRANS	33 /* compressed filename transitions */
+#define POLICYDB_VERSION_COMP_FTRANS	33 
 
-/* Range of policy versions we understand*/
+
 #define POLICYDB_VERSION_MIN   POLICYDB_VERSION_BASE
 #define POLICYDB_VERSION_MAX   POLICYDB_VERSION_COMP_FTRANS
 
-/* Mask for just the mount related flags */
+
 #define SE_MNTMASK	0x0f
-/* Super block security struct flags for mount options */
-/* BE CAREFUL, these need to be the low order bits for selinux_get_mnt_opts */
+
+
 #define CONTEXT_MNT	0x01
 #define FSCONTEXT_MNT	0x02
 #define ROOTCONTEXT_MNT	0x04
 #define DEFCONTEXT_MNT	0x08
 #define SBLABEL_MNT	0x10
-/* Non-mount related flags */
+
 #define SE_SBINITIALIZED	0x0100
 #define SE_SBPROC		0x0200
 #define SE_SBGENFS		0x0400
@@ -77,14 +72,11 @@ struct netlbl_lsm_secattr;
 
 extern int selinux_enabled_boot;
 
-/*
- * type_datum properties
- * available at the kernel policy version >= POLICYDB_VERSION_BOUNDARY
- */
+
 #define TYPEDATUM_PROPERTY_PRIMARY	0x0001
 #define TYPEDATUM_PROPERTY_ATTRIBUTE	0x0002
 
-/* limitation of boundary depth  */
+
 #define POLICYDB_BOUNDS_MAXDEPTH	4
 
 struct selinux_policy;
@@ -109,13 +101,13 @@ extern struct selinux_state selinux_state;
 
 static inline bool selinux_initialized(void)
 {
-	/* do a synchronized load to avoid race conditions */
+	
 	return smp_load_acquire(&selinux_state.initialized);
 }
 
 static inline void selinux_mark_initialized(void)
 {
-	/* do a synchronized write to avoid race conditions */
+	
 	smp_store_release(&selinux_state.initialized, true);
 }
 
@@ -142,7 +134,7 @@ static inline void enforcing_set(bool value)
 
 static inline bool checkreqprot_get(void)
 {
-	/* non-zero/true checkreqprot values are no longer supported */
+	
 	return 0;
 }
 
@@ -233,11 +225,11 @@ struct extended_perms_decision {
 };
 
 struct extended_perms {
-	u16 len;	/* length associated decision chain */
-	struct extended_perms_data drivers; /* flag drivers that are used */
+	u16 len;	
+	struct extended_perms_data drivers; 
 };
 
-/* definitions of av_decision.flags */
+
 #define AVD_FLAGS_PERMISSIVE	0x0001
 
 void security_compute_av(u32 ssid, u32 tsid,
@@ -312,14 +304,14 @@ int security_get_permissions(struct selinux_policy *policy,
 int security_get_reject_unknown(void);
 int security_get_allow_unknown(void);
 
-#define SECURITY_FS_USE_XATTR		1 /* use xattr */
-#define SECURITY_FS_USE_TRANS		2 /* use transition SIDs, e.g. devpts/tmpfs */
-#define SECURITY_FS_USE_TASK		3 /* use task SIDs, e.g. pipefs/sockfs */
-#define SECURITY_FS_USE_GENFS		4 /* use the genfs support */
-#define SECURITY_FS_USE_NONE		5 /* no labeling support */
-#define SECURITY_FS_USE_MNTPOINT	6 /* use mountpoint labeling */
-#define SECURITY_FS_USE_NATIVE		7 /* use native label support */
-#define SECURITY_FS_USE_MAX		7 /* Highest SECURITY_FS_USE_XXX */
+#define SECURITY_FS_USE_XATTR		1 
+#define SECURITY_FS_USE_TRANS		2 
+#define SECURITY_FS_USE_TASK		3 
+#define SECURITY_FS_USE_GENFS		4 
+#define SECURITY_FS_USE_NONE		5 
+#define SECURITY_FS_USE_MNTPOINT	6 
+#define SECURITY_FS_USE_NATIVE		7 
+#define SECURITY_FS_USE_MAX		7 
 
 int security_fs_use(struct super_block *sb);
 
@@ -348,25 +340,21 @@ static inline int security_netlbl_sid_to_secattr(u32 sid,
 {
 	return -ENOENT;
 }
-#endif /* CONFIG_NETLABEL */
+#endif 
 
 const char *security_get_initial_sid_context(u32 sid);
 
-/*
- * status notifier using mmap interface
- */
+
 extern struct page *selinux_kernel_status_page(void);
 
 #define SELINUX_KERNEL_STATUS_VERSION	1
 struct selinux_kernel_status {
-	u32	version;	/* version number of the structure */
-	u32	sequence;	/* sequence number of seqlock logic */
-	u32	enforcing;	/* current setting of enforcing mode */
-	u32	policyload;	/* times of policy reloaded */
-	u32	deny_unknown;	/* current setting of deny_unknown */
-	/*
-	 * The version > 0 supports above members.
-	 */
+	u32	version;	
+	u32	sequence;	
+	u32	enforcing;	
+	u32	policyload;	
+	u32	deny_unknown;	
+	
 } __packed;
 
 extern void selinux_status_update_setenforce(bool enforcing);
@@ -382,4 +370,4 @@ extern void ebitmap_cache_init(void);
 extern void hashtab_cache_init(void);
 extern int security_sidtab_hash_stats(char *page);
 
-#endif /* _SELINUX_SECURITY_H_ */
+#endif 

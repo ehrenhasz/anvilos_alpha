@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __MTD_MTDRAM_H__
 #define __MTD_MTDRAM_H__
 
@@ -6,4 +6,4 @@
 int mtdram_init_device(struct mtd_info *mtd, void *mapped_address,
 			unsigned long size, const char *name);
 
-#endif /* __MTD_MTDRAM_H__ */
+#endif 

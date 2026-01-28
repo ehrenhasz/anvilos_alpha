@@ -1,10 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * tcan4x5x - Texas Instruments TCAN4x5x Family CAN controller driver
- *
- * Copyright (c) 2020 Pengutronix,
- *                    Marc Kleine-Budde <kernel@pengutronix.de>
- */
+
 
 #ifndef _TCAN4X5X_H
 #define _TCAN4X5X_H
@@ -47,7 +41,7 @@ struct tcan4x5x_priv {
 static inline void
 tcan4x5x_spi_cmd_set_len(struct tcan4x5x_buf_cmd *cmd, u8 len)
 {
-	/* number of u32 */
+	
 	cmd->len = len >> 2;
 }
 

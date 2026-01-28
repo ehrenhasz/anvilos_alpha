@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Freescale DPAA Ethernet controllers
-#
 
-# Include FMan headers
+
+
+
+
+
 FMAN        = $(srctree)/drivers/net/ethernet/freescale/fman
 ccflags-y += -I$(FMAN)
 

@@ -1,23 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB CDC common helpers
- *
- * Copyright (c) 2015 Oliver Neukum <oneukum@suse.com>
- */
+
+
 #ifndef __LINUX_USB_CDC_H
 #define __LINUX_USB_CDC_H
 
 #include <uapi/linux/usb/cdc.h>
 
-/*
- * inofficial magic numbers
- */
+
 
 #define CDC_PHONET_MAGIC_NUMBER		0xAB
 
-/*
- * parsing CDC headers
- */
+
 
 struct usb_cdc_parsed_header {
 	struct usb_cdc_union_desc *usb_cdc_union_desc;
@@ -45,4 +37,4 @@ int cdc_parse_cdc_header(struct usb_cdc_parsed_header *hdr,
 				u8 *buffer,
 				int buflen);
 
-#endif /* __LINUX_USB_CDC_H */
+#endif 

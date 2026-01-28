@@ -1,5 +1,5 @@
 ROUTER_NUM_NETIFS=4
-: ${TIMEOUT:=20000} # ms
+: ${TIMEOUT:=20000} 
 router_h1_create()
 {
 	simple_if_init $h1 192.0.1.1/24

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_KVM_CLOCK_H
 #define _ASM_X86_KVM_CLOCK_H
 
@@ -18,4 +18,4 @@ static inline struct pvclock_vsyscall_time_info *this_cpu_hvclock(void)
 	return this_cpu_read(hv_clock_per_cpu);
 }
 
-#endif /* _ASM_X86_KVM_CLOCK_H */
+#endif 

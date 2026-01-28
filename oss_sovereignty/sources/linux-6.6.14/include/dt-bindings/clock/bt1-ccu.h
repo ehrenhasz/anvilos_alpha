@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
- *
- * Baikal-T1 CCU clock indices
- */
+
+
 #ifndef __DT_BINDINGS_CLOCK_BT1_CCU_H
 #define __DT_BINDINGS_CLOCK_BT1_CCU_H
 
@@ -45,4 +41,4 @@
 #define CCU_SYS_TIMER2_CLK		17
 #define CCU_SYS_WDT_CLK			18
 
-#endif /* __DT_BINDINGS_CLOCK_BT1_CCU_H */
+#endif 

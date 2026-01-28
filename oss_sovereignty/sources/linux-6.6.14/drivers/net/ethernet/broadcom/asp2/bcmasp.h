@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __BCMASP_H
 #define __BCMASP_H
 
@@ -45,8 +45,8 @@
 #define ASP_RX_CTRL_FB_0_FRAME_COUNT		0x14
 #define ASP_RX_CTRL_FB_1_FRAME_COUNT		0x18
 #define ASP_RX_CTRL_FB_8_FRAME_COUNT		0x1c
-/* asp2.1 diverges offsets here */
-/* ASP2.0 */
+
+
 #define ASP_RX_CTRL_FB_OUT_FRAME_COUNT		0x20
 #define ASP_RX_CTRL_FB_FILT_OUT_FRAME_COUNT	0x24
 #define ASP_RX_CTRL_FLUSH			0x28
@@ -54,7 +54,7 @@
 #define  ASP_CTRL_UMAC1_FLUSH_MASK		(BIT(1) | BIT(13))
 #define  ASP_CTRL_SPB_FLUSH_MASK		(BIT(8) | BIT(20))
 #define ASP_RX_CTRL_FB_RX_FIFO_DEPTH		0x30
-/* ASP2.1 */
+
 #define ASP_RX_CTRL_FB_9_FRAME_COUNT_2_1	0x20
 #define ASP_RX_CTRL_FB_10_FRAME_COUNT_2_1	0x24
 #define ASP_RX_CTRL_FB_OUT_FRAME_COUNT_2_1	0x28
@@ -164,13 +164,13 @@ struct bcmasp_tx_cb {
 };
 
 struct bcmasp_res {
-	/* Per interface resources */
-	/* Port */
+	
+	
 	void __iomem		*umac;
 	void __iomem		*umac2fb;
 	void __iomem		*rgmii;
 
-	/* TX slowpath/configuration */
+	
 	void __iomem		*tx_spb_ctrl;
 	void __iomem		*tx_spb_top;
 	void __iomem		*tx_epkt_core;
@@ -187,18 +187,7 @@ struct bcmasp_desc {
 	#define DESC_RX_SYM_ERR	BIT_ULL(42)
 	#define DESC_NO_OCT_ALN BIT_ULL(43)
 	#define DESC_PKT_TRUC	BIT_ULL(44)
-	/*  39:0 (TX/RX) bits 0-39 of buf addr
-	 *    40 (RX) checksum
-	 *    41 (RX) crc_error
-	 *    42 (RX) rx_symbol_error
-	 *    43 (RX) non_octet_aligned
-	 *    44 (RX) pkt_truncated
-	 *    45 Reserved
-	 * 56:46 (RX) mac_filter_id
-	 * 60:57 (RX) rx_port_num (0-unicmac0, 1-unimac1)
-	 *    61 Reserved
-	 * 63:62 (TX) forward CRC, overwrite CRC
-	 */
+	
 	u32		size;
 	u32		flags;
 	#define DESC_INT_EN     BIT(0)
@@ -209,27 +198,13 @@ struct bcmasp_desc {
 	#define DESC_SCRAM_END  BIT(9)
 	#define DESC_PCPP       BIT(10)
 	#define DESC_PPPP       BIT(11)
-	/*     0 (TX) tx_int_en
-	 *     1 (TX/RX) SOF
-	 *     2 (TX/RX) EOF
-	 *     3 (TX) epkt_command
-	 *   6:4 (TX) PA
-	 *     7 (TX) pause at desc end
-	 *     8 (TX) scram_start
-	 *     9 (TX) scram_end
-	 *    10 (TX) PCPP
-	 *    11 (TX) PPPP
-	 * 14:12 Reserved
-	 *    15 (TX) pid ch Valid
-	 * 19:16 (TX) data_pkt_type
-	 * 32:20 (TX) pid_channel (RX) nw_filter_id
-	 */
+	
 };
 
 struct bcmasp_intf;
 
 struct bcmasp_intf_stats64 {
-	/* Rx Stats */
+	
 	u64_stats_t	rx_packets;
 	u64_stats_t	rx_bytes;
 	u64_stats_t	rx_errors;
@@ -237,7 +212,7 @@ struct bcmasp_intf_stats64 {
 	u64_stats_t	rx_crc_errs;
 	u64_stats_t	rx_sym_errs;
 
-	/* Tx Stats*/
+	
 	u64_stats_t	tx_packets;
 	u64_stats_t	tx_bytes;
 
@@ -279,16 +254,16 @@ struct bcmasp_intf {
 	struct net_device		*ndev;
 	struct bcmasp_priv		*parent;
 
-	/* ASP Ch */
+	
 	int				channel;
 	int				port;
 	const struct bcmasp_intf_ops	*ops;
 
-	/* Used for splitting shared resources */
+	
 	int				index;
 
 	struct napi_struct		tx_napi;
-	/* TX ring, starts on a new cacheline boundary */
+	
 	void __iomem			*tx_spb_dma;
 	int				tx_spb_index;
 	int				tx_spb_clean_index;
@@ -298,7 +273,7 @@ struct bcmasp_intf {
 	dma_addr_t			tx_spb_dma_read;
 	struct bcmasp_tx_cb		*tx_cbs;
 
-	/* RX ring, starts on a new cacheline boundary */
+	
 	void __iomem			*rx_edpkt_cfg;
 	void __iomem			*rx_edpkt_dma;
 	int				rx_edpkt_index;
@@ -307,7 +282,7 @@ struct bcmasp_intf {
 	dma_addr_t			rx_edpkt_dma_addr;
 	dma_addr_t			rx_edpkt_dma_read;
 
-	/* RX buffer prefetcher ring*/
+	
 	void				*rx_ring_cpu;
 	dma_addr_t			rx_ring_dma;
 	dma_addr_t			rx_ring_dma_valid;
@@ -316,7 +291,7 @@ struct bcmasp_intf {
 	struct bcmasp_res		res;
 	unsigned int			crc_fwd;
 
-	/* PHY device */
+	
 	struct device_node		*phy_dn;
 	struct device_node		*ndev_dn;
 	phy_interface_t			phy_interface;
@@ -327,13 +302,13 @@ struct bcmasp_intf {
 
 	u32				msg_enable;
 
-	/* Statistics */
+	
 	struct bcmasp_intf_stats64	stats64;
 	struct bcmasp_mib_counters	mib;
 
 	u32				wolopts;
 	u8				sopass[SOPASS_MAX];
-	/* Used if per intf wol irq */
+	
 	int				wol_irq;
 	unsigned int			wol_irq_enabled:1;
 
@@ -353,7 +328,7 @@ struct bcmasp_net_filter {
 
 #define NUM_MDA_FILTERS				32
 struct bcmasp_mda_filter {
-	/* Current owner of this filter */
+	
 	int		port;
 	bool		en;
 	u8		addr[ETH_ALEN];
@@ -382,7 +357,7 @@ struct bcmasp_priv {
 	int				irq;
 	u32				irq_mask;
 
-	/* Used if shared wol irq */
+	
 	struct mutex			wol_lock;
 	int				wol_irq;
 	unsigned long			wol_irq_enabled_mask;
@@ -398,15 +373,15 @@ struct bcmasp_priv {
 
 	struct bcmasp_mda_filter	mda_filters[NUM_MDA_FILTERS];
 
-	/* MAC destination address filters lock */
+	
 	spinlock_t			mda_lock;
 
-	/* Protects accesses to ASP_CTRL_CLOCK_CTRL */
+	
 	spinlock_t			clk_lock;
 
 	struct bcmasp_net_filter	net_filters[NUM_NET_FILTERS];
 
-	/* Network filter lock */
+	
 	struct mutex			net_lock;
 };
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _FS_CEPH_AUTH_X_H
 #define _FS_CEPH_AUTH_X_H
 
@@ -9,9 +9,7 @@
 #include "crypto.h"
 #include "auth_x_protocol.h"
 
-/*
- * Handle ticket for a single service.
- */
+
 struct ceph_x_ticket_handler {
 	struct rb_node node;
 	unsigned int service;
@@ -25,7 +23,7 @@ struct ceph_x_ticket_handler {
 	time64_t renew_after, expires;
 };
 
-#define CEPHX_AU_ENC_BUF_LEN	128  /* big enough for encrypted blob */
+#define CEPHX_AU_ENC_BUF_LEN	128  
 
 struct ceph_x_authorizer {
 	struct ceph_authorizer base;

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021 Mellanox Technologies. */
+
+
 
 #ifndef _MLX5_ESW_BRIDGE_PRIVATE_
 #define _MLX5_ESW_BRIDGE_PRIVATE_
@@ -248,4 +248,4 @@ void mlx5_esw_bridge_debugfs_offloads_cleanup(struct mlx5_esw_bridge_offloads *b
 void mlx5_esw_bridge_debugfs_init(struct net_device *br_netdev, struct mlx5_esw_bridge *bridge);
 void mlx5_esw_bridge_debugfs_cleanup(struct mlx5_esw_bridge *bridge);
 
-#endif /* _MLX5_ESW_BRIDGE_PRIVATE_ */
+#endif 

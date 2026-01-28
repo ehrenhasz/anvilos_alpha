@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NET		Generic infrastructure for Network protocols.
- *
- *		Definitions for request_sock
- *
- * Authors:	Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- *
- * 		From code originally in include/net/tcp.h
- */
+
+
 #ifndef _REQUEST_SOCK_H
 #define _REQUEST_SOCK_H
 
@@ -48,8 +40,7 @@ struct saved_syn {
 	u8 data[];
 };
 
-/* struct request_sock - mini sock to represent a connection request
- */
+
 struct request_sock {
 	struct sock_common		__req_common;
 #define rsk_refcnt			__req_common.skc_refcnt
@@ -60,9 +51,9 @@ struct request_sock {
 
 	struct request_sock		*dl_next;
 	u16				mss;
-	u8				num_retrans; /* number of retransmits */
-	u8				syncookie:1; /* syncookie: encode tcpopts in timestamp */
-	u8				num_timeout:7; /* number of timeouts */
+	u8				num_retrans; 
+	u8				syncookie:1; 
+	u8				num_timeout:7; 
 	u32				ts_recent;
 	struct timer_list		rsk_timer;
 	const struct request_sock_ops	*rsk_ops;
@@ -135,43 +126,18 @@ static inline void reqsk_put(struct request_sock *req)
 		reqsk_free(req);
 }
 
-/*
- * For a TCP Fast Open listener -
- *	lock - protects the access to all the reqsk, which is co-owned by
- *		the listener and the child socket.
- *	qlen - pending TFO requests (still in TCP_SYN_RECV).
- *	max_qlen - max TFO reqs allowed before TFO is disabled.
- *
- *	XXX (TFO) - ideally these fields can be made as part of "listen_sock"
- *	structure above. But there is some implementation difficulty due to
- *	listen_sock being part of request_sock_queue hence will be freed when
- *	a listener is stopped. But TFO related fields may continue to be
- *	accessed even after a listener is closed, until its sk_refcnt drops
- *	to 0 implying no more outstanding TFO reqs. One solution is to keep
- *	listen_opt around until	sk_refcnt drops to 0. But there is some other
- *	complexity that needs to be resolved. E.g., a listener can be disabled
- *	temporarily through shutdown()->tcp_disconnect(), and re-enabled later.
- */
-struct fastopen_queue {
-	struct request_sock	*rskq_rst_head; /* Keep track of past TFO */
-	struct request_sock	*rskq_rst_tail; /* requests that caused RST.
-						 * This is part of the defense
-						 * against spoofing attack.
-						 */
-	spinlock_t	lock;
-	int		qlen;		/* # of pending (TCP_SYN_RECV) reqs */
-	int		max_qlen;	/* != 0 iff TFO is currently enabled */
 
-	struct tcp_fastopen_context __rcu *ctx; /* cipher context for cookie */
+struct fastopen_queue {
+	struct request_sock	*rskq_rst_head; 
+	struct request_sock	*rskq_rst_tail; 
+	spinlock_t	lock;
+	int		qlen;		
+	int		max_qlen;	
+
+	struct tcp_fastopen_context __rcu *ctx; 
 };
 
-/** struct request_sock_queue - queue of request_socks
- *
- * @rskq_accept_head - FIFO head of established children
- * @rskq_accept_tail - FIFO tail of established children
- * @rskq_defer_accept - User waits for some data after accept()
- *
- */
+
 struct request_sock_queue {
 	spinlock_t		rskq_lock;
 	u8			rskq_defer_accept;
@@ -182,9 +148,7 @@ struct request_sock_queue {
 
 	struct request_sock	*rskq_accept_head;
 	struct request_sock	*rskq_accept_tail;
-	struct fastopen_queue	fastopenq;  /* Check max_qlen != 0 to determine
-					     * if TFO is enabled.
-					     */
+	struct fastopen_queue	fastopenq;  
 };
 
 void reqsk_queue_alloc(struct request_sock_queue *queue);
@@ -238,4 +202,4 @@ static inline int reqsk_queue_len_young(const struct request_sock_queue *queue)
 	return atomic_read(&queue->young);
 }
 
-#endif /* _REQUEST_SOCK_H */
+#endif 

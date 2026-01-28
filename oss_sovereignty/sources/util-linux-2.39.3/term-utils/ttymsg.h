@@ -3,4 +3,4 @@
 
 char *ttymsg(struct iovec *iov, size_t iovcnt, char *line, int tmout);
 
-#endif /* UTIL_LINUX_TERM_TTYMSG_H */
+#endif 

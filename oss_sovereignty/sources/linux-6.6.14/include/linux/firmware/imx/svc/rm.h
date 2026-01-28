@@ -1,25 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017-2020 NXP
- *
- * Header file containing the public API for the System Controller (SC)
- * Resource Management (RM) function. This includes functions for
- * partitioning resources, pads, and memory regions.
- *
- * RM_SVC (SVC) Resource Management Service
- *
- * Module for the Resource Management (RM) service.
- */
+
+
 
 #ifndef _SC_RM_API_H
 #define _SC_RM_API_H
 
 #include <linux/firmware/imx/sci.h>
 
-/*
- * This type is used to indicate RPC RM function calls.
- */
+
 enum imx_sc_rm_func {
 	IMX_SC_RM_FUNC_UNKNOWN = 0,
 	IMX_SC_RM_FUNC_PARTITION_ALLOC = 1,

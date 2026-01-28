@@ -1,21 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 #ifndef MLX5_TIMEOUTS_H
 #define MLX5_TIMEOUTS_H
 
 enum mlx5_timeouts_types {
-	/* pre init timeouts (not read from FW) */
+	
 	MLX5_TO_FW_PRE_INIT_TIMEOUT_MS,
 	MLX5_TO_FW_PRE_INIT_ON_RECOVERY_TIMEOUT_MS,
 	MLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS,
 	MLX5_TO_FW_PRE_INIT_WAIT_MS,
 
-	/* init segment timeouts */
+	
 	MLX5_TO_FW_INIT_MS,
 	MLX5_TO_CMD_MS,
 
-	/* DTOR timeouts */
+	
 	MLX5_TO_PCI_TOGGLE_MS,
 	MLX5_TO_HEALTH_POLL_INTERVAL_MS,
 	MLX5_TO_FULL_CRDUMP_MS,
@@ -40,4 +40,4 @@ u64 _mlx5_tout_ms(struct mlx5_core_dev *dev, enum mlx5_timeouts_types type);
 
 #define mlx5_tout_ms(dev, type) _mlx5_tout_ms(dev, MLX5_TO_##type##_MS)
 
-# endif /* MLX5_TIMEOUTS_H */
+# endif 

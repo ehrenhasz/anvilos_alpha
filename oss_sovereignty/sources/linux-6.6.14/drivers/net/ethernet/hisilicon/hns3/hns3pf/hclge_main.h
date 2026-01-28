@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-// Copyright (c) 2016-2017 Hisilicon Limited.
+
+
 
 #ifndef __HCLGE_MAIN_H
 #define __HCLGE_MAIN_H
@@ -42,11 +42,11 @@
 
 #define HCLGE_NIC_CSQ_DEPTH_REG		0x27008
 
-/* bar registers for common func */
+
 #define HCLGE_GRO_EN_REG		0x28000
 #define HCLGE_RXD_ADV_LAYOUT_EN_REG	0x28008
 
-/* bar registers for rcb */
+
 #define HCLGE_RING_RX_ADDR_L_REG	0x80000
 #define HCLGE_RING_RX_ADDR_H_REG	0x80004
 #define HCLGE_RING_RX_BD_NUM_REG	0x80008
@@ -74,7 +74,7 @@
 #define HCLGE_RING_TX_BD_ERR_REG	0x80074
 #define HCLGE_RING_EN_REG		0x80090
 
-/* bar registers for tqp interrupt */
+
 #define HCLGE_TQP_INTR_CTRL_REG		0x20000
 #define HCLGE_TQP_INTR_GL0_REG		0x20100
 #define HCLGE_TQP_INTR_GL1_REG		0x20200
@@ -101,13 +101,13 @@
 #define HCLGE_PHY_PAGE_MDIX		0
 #define HCLGE_PHY_PAGE_COPPER		0
 
-/* Page Selection Reg. */
+
 #define HCLGE_PHY_PAGE_REG		22
 
-/* Copper Specific Control Register */
+
 #define HCLGE_PHY_CSC_REG		16
 
-/* Copper Specific Status Register */
+
 #define HCLGE_PHY_CSS_REG		17
 
 #define HCLGE_PHY_MDIX_CTRL_S		5
@@ -118,7 +118,7 @@
 
 #define HCLGE_GET_DFX_REG_TYPE_CNT	4
 
-/* Factor used to calculate offset and bitmap of VF num */
+
 #define HCLGE_VF_NUM_PER_CMD           64
 
 #define HCLGE_MAX_QSET_NUM		1024
@@ -140,7 +140,7 @@ enum HLCGE_PORT_TYPE {
 #define HCLGE_NETWORK_PORT_ID_S		0
 #define HCLGE_NETWORK_PORT_ID_M		GENMASK(3, 0)
 
-/* Reset related Registers */
+
 #define HCLGE_PF_OTHER_INT_REG		0x20600
 #define HCLGE_MISC_RESET_STS_REG	0x20700
 #define HCLGE_MISC_VECTOR_INT_STS	0x20800
@@ -152,15 +152,15 @@ enum HLCGE_PORT_TYPE {
 #define HCLGE_FUN_RST_ING		0x20C00
 #define HCLGE_FUN_RST_ING_B		0
 
-/* Vector0 register bits define */
+
 #define HCLGE_VECTOR0_REG_PTP_INT_B	0
 #define HCLGE_VECTOR0_GLOBALRESET_INT_B	5
 #define HCLGE_VECTOR0_CORERESET_INT_B	6
 #define HCLGE_VECTOR0_IMPRESET_INT_B	7
 
-/* Vector0 interrupt CMDQ event source register(RW) */
+
 #define HCLGE_VECTOR0_CMDQ_SRC_REG	0x27100
-/* CMDQ register bits for RX event(=MBX event) */
+
 #define HCLGE_VECTOR0_RX_CMDQ_INT_B	1
 
 #define HCLGE_VECTOR0_IMP_RESET_INT_B	1
@@ -171,7 +171,7 @@ enum HLCGE_PORT_TYPE {
 
 #define HCLGE_TQP_MEM_SIZE		0x10000
 #define HCLGE_MEM_BAR			4
-/* in the bar4, the first half is for roce, and the second half is for nic */
+
 #define HCLGE_NIC_MEM_OFFSET(hdev)	\
 	(pci_resource_len((hdev)->pdev, HCLGE_MEM_BAR) >> 1)
 #define HCLGE_TQP_MEM_OFFSET(hdev, i)	\
@@ -187,7 +187,7 @@ enum HLCGE_PORT_TYPE {
 #define HCLGE_SUPPORT_25G_BIT		BIT(2)
 #define HCLGE_SUPPORT_50G_BIT		BIT(3)
 #define HCLGE_SUPPORT_100G_BIT		BIT(4)
-/* to be compatible with exsit board */
+
 #define HCLGE_SUPPORT_40G_BIT		BIT(5)
 #define HCLGE_SUPPORT_100M_BIT		BIT(6)
 #define HCLGE_SUPPORT_10M_BIT		BIT(7)
@@ -229,16 +229,16 @@ enum hclge_evt_cause {
 };
 
 enum HCLGE_MAC_SPEED {
-	HCLGE_MAC_SPEED_UNKNOWN = 0,		/* unknown */
-	HCLGE_MAC_SPEED_10M	= 10,		/* 10 Mbps */
-	HCLGE_MAC_SPEED_100M	= 100,		/* 100 Mbps */
-	HCLGE_MAC_SPEED_1G	= 1000,		/* 1000 Mbps   = 1 Gbps */
-	HCLGE_MAC_SPEED_10G	= 10000,	/* 10000 Mbps  = 10 Gbps */
-	HCLGE_MAC_SPEED_25G	= 25000,	/* 25000 Mbps  = 25 Gbps */
-	HCLGE_MAC_SPEED_40G	= 40000,	/* 40000 Mbps  = 40 Gbps */
-	HCLGE_MAC_SPEED_50G	= 50000,	/* 50000 Mbps  = 50 Gbps */
-	HCLGE_MAC_SPEED_100G	= 100000,	/* 100000 Mbps = 100 Gbps */
-	HCLGE_MAC_SPEED_200G	= 200000	/* 200000 Mbps = 200 Gbps */
+	HCLGE_MAC_SPEED_UNKNOWN = 0,		
+	HCLGE_MAC_SPEED_10M	= 10,		
+	HCLGE_MAC_SPEED_100M	= 100,		
+	HCLGE_MAC_SPEED_1G	= 1000,		
+	HCLGE_MAC_SPEED_10G	= 10000,	
+	HCLGE_MAC_SPEED_25G	= 25000,	
+	HCLGE_MAC_SPEED_40G	= 40000,	
+	HCLGE_MAC_SPEED_50G	= 50000,	
+	HCLGE_MAC_SPEED_100G	= 100000,	
+	HCLGE_MAC_SPEED_200G	= 200000	
 };
 
 enum HCLGE_MAC_DUPLEX {
@@ -250,7 +250,7 @@ enum HCLGE_MAC_DUPLEX {
 #define QUERY_ACTIVE_SPEED	1
 
 struct hclge_wol_info {
-	u32 wol_support_mode; /* store the wake on lan info */
+	u32 wol_support_mode; 
 	u32 wol_current_mode;
 	u8 wol_sopass[SOPASS_MAX];
 	u8 wol_sopass_size;
@@ -260,21 +260,21 @@ struct hclge_mac {
 	u8 mac_id;
 	u8 phy_addr;
 	u8 flag;
-	u8 media_type;	/* port media type, e.g. fibre/copper/backplane */
+	u8 media_type;	
 	u8 mac_addr[ETH_ALEN];
 	u8 autoneg;
 	u8 duplex;
 	u8 support_autoneg;
-	u8 speed_type;	/* 0: sfp speed, 1: active speed */
+	u8 speed_type;	
 	u8 lane_num;
 	u32 speed;
 	u32 max_speed;
-	u32 speed_ability; /* speed ability supported by current media */
-	u32 module_type; /* sub media type, e.g. kr/cr/sr/lr */
-	u32 fec_mode; /* active fec mode */
+	u32 speed_ability; 
+	u32 module_type; 
+	u32 fec_mode; 
 	u32 user_fec_mode;
 	u32 fec_ability;
-	int link;	/* store the link status of mac & phy (if phy exists) */
+	int link;	
 	struct hclge_wol_info wol;
 	struct phy_device *phydev;
 	struct mii_bus *mdio_bus;
@@ -329,7 +329,7 @@ enum hclge_link_fail_code {
 #define HCLGE_SCH_MODE_DWRR	1
 struct hclge_pg_info {
 	u8 pg_id;
-	u8 pg_sch_mode;		/* 0: sp; 1: dwrr */
+	u8 pg_sch_mode;		
 	u8 tc_bit_map;
 	u32 bw_limit;
 	u8 tc_dwrr[HNAE3_MAX_TC];
@@ -337,7 +337,7 @@ struct hclge_pg_info {
 
 struct hclge_tc_info {
 	u8 tc_id;
-	u8 tc_sch_mode;		/* 0: sp; 1: dwrr */
+	u8 tc_sch_mode;		
 	u8 pgid;
 	u32 bw_limit;
 };
@@ -361,17 +361,17 @@ struct hclge_cfg {
 
 struct hclge_tm_info {
 	u8 num_tc;
-	u8 num_pg;      /* It must be 1 if vNET-Base schd */
+	u8 num_pg;      
 	u8 pg_dwrr[HCLGE_PG_NUM];
 	u8 prio_tc[HNAE3_MAX_USER_PRIO];
 	struct hclge_pg_info pg_info[HCLGE_PG_NUM];
 	struct hclge_tc_info tc_info[HNAE3_MAX_TC];
 	enum hclge_fc_mode fc_mode;
-	u8 hw_pfc_map; /* Allow for packet drop or not on this TC */
-	u8 pfc_en;	/* PFC enabled or not for user priority */
+	u8 hw_pfc_map; 
+	u8 pfc_en;	
 };
 
-/* max number of mac statistics on each version */
+
 #define HCLGE_MAC_STATS_MAX_NUM_V1		87
 #define HCLGE_MAC_STATS_MAX_NUM_V2		105
 
@@ -381,7 +381,7 @@ struct hclge_comm_stats_str {
 	unsigned long offset;
 };
 
-/* mac stats ,opcode id: 0x0032 */
+
 struct hclge_mac_stats {
 	u64 mac_tx_mac_pause_num;
 	u64 mac_rx_mac_pause_num;
@@ -473,7 +473,7 @@ struct hclge_mac_stats {
 	u64 mac_tx_ctrl_pkt_num;
 	u64 mac_rx_ctrl_pkt_num;
 
-	/* duration of pfc */
+	
 	u64 mac_tx_pfc_pri0_xoff_time;
 	u64 mac_tx_pfc_pri1_xoff_time;
 	u64 mac_tx_pfc_pri2_xoff_time;
@@ -491,21 +491,21 @@ struct hclge_mac_stats {
 	u64 mac_rx_pfc_pri6_xoff_time;
 	u64 mac_rx_pfc_pri7_xoff_time;
 
-	/* duration of pause */
+	
 	u64 mac_tx_pause_xoff_time;
 	u64 mac_rx_pause_xoff_time;
 };
 
 #define HCLGE_STATS_TIMER_INTERVAL	300UL
 
-/* fec stats ,opcode id: 0x0316 */
+
 #define HCLGE_FEC_STATS_MAX_LANES	8
 struct hclge_fec_stats {
-	/* fec rs mode total stats */
+	
 	u64 rs_corr_blocks;
 	u64 rs_uncorr_blocks;
 	u64 rs_error_blocks;
-	/* fec base-r mode per lanes stats */
+	
 	u64 base_r_lane_num;
 	u64 base_r_corr_blocks;
 	u64 base_r_uncorr_blocks;
@@ -545,10 +545,7 @@ enum HCLGE_FD_STAGE {
 	MAX_STAGE_NUM,
 };
 
-/* OUTER_XXX indicates tuples in tunnel header of tunnel packet
- * INNER_XXX indicate tuples in tunneled header of tunnel packet or
- *           tuples of non-tunnel packet
- */
+
 enum HCLGE_FD_TUPLE {
 	OUTER_DST_MAC,
 	OUTER_SRC_MAC,
@@ -609,7 +606,7 @@ enum HCLGE_FD_KEY_OPT {
 
 struct key_info {
 	u8 key_type;
-	u8 key_length; /* use bit as unit */
+	u8 key_length; 
 	enum HCLGE_FD_KEY_OPT key_opt;
 	int offset;
 	int moffset;
@@ -625,7 +622,7 @@ struct key_info {
 #define HCLGE_FD_USER_DEF_OFFSET	GENMASK(15, 0)
 #define HCLGE_FD_USER_DEF_OFFSET_UNMASK	GENMASK(15, 0)
 
-/* assigned by firmware, the real filter number for each pf may be less */
+
 #define MAX_FD_FILTER_NUM	4096
 #define HCLGE_ARFS_EXPIRE_INTERVAL	5UL
 
@@ -691,9 +688,9 @@ struct hclge_fd_key_cfg {
 
 struct hclge_fd_cfg {
 	u8 fd_mode;
-	u16 max_key_length; /* use bit as unit */
-	u32 rule_num[MAX_STAGE_NUM]; /* rule entry number */
-	u16 cnt_num[MAX_STAGE_NUM]; /* rule hit counter number */
+	u16 max_key_length; 
+	u32 rule_num[MAX_STAGE_NUM]; 
+	u16 cnt_num[MAX_STAGE_NUM]; 
 	struct hclge_fd_key_cfg key_cfg[MAX_STAGE_NUM];
 	struct hclge_fd_user_def_cfg user_def_cfg[HCLGE_FD_USER_DEF_LAYER_NUM];
 };
@@ -703,9 +700,7 @@ struct hclge_fd_cfg {
 struct hclge_fd_rule_tuples {
 	u8 src_mac[ETH_ALEN];
 	u8 dst_mac[ETH_ALEN];
-	/* Be compatible for ip address of both ipv4 and ipv6.
-	 * For ipv4 address, we store it in src/dst_ip[3].
-	 */
+	
 	u32 src_ip[IPV6_SIZE];
 	u32 dst_ip[IPV6_SIZE];
 	u16 src_port;
@@ -731,7 +726,7 @@ struct hclge_fd_rule {
 			u8 tc;
 		} cls_flower;
 		struct {
-			u16 flow_id; /* only used for arfs */
+			u16 flow_id; 
 		} arfs;
 		struct {
 			struct hclge_fd_user_def_info user_def;
@@ -784,17 +779,17 @@ struct hclge_vport_vlan_cfg {
 };
 
 struct hclge_rst_stats {
-	u32 reset_done_cnt;	/* the number of reset has completed */
-	u32 hw_reset_done_cnt;	/* the number of HW reset has completed */
-	u32 pf_rst_cnt;		/* the number of PF reset */
-	u32 flr_rst_cnt;	/* the number of FLR */
-	u32 global_rst_cnt;	/* the number of GLOBAL */
-	u32 imp_rst_cnt;	/* the number of IMP reset */
-	u32 reset_cnt;		/* the number of reset */
-	u32 reset_fail_cnt;	/* the number of reset fail */
+	u32 reset_done_cnt;	
+	u32 hw_reset_done_cnt;	
+	u32 pf_rst_cnt;		
+	u32 flr_rst_cnt;	
+	u32 global_rst_cnt;	
+	u32 imp_rst_cnt;	
+	u32 reset_cnt;		
+	u32 reset_fail_cnt;	
 };
 
-/* time and register status when mac tunnel interruption occur */
+
 struct hclge_mac_tnl_stats {
 	u64 time;
 	u32 status;
@@ -819,24 +814,7 @@ struct hclge_vf_vlan_cfg {
 
 #pragma pack()
 
-/* For each bit of TCAM entry, it uses a pair of 'x' and
- * 'y' to indicate which value to match, like below:
- * ----------------------------------
- * | bit x | bit y |  search value  |
- * ----------------------------------
- * |   0   |   0   |   always hit   |
- * ----------------------------------
- * |   1   |   0   |   match '0'    |
- * ----------------------------------
- * |   0   |   1   |   match '1'    |
- * ----------------------------------
- * |   1   |   1   |   invalid      |
- * ----------------------------------
- * Then for input key(k) and mask(v), we can calculate the value by
- * the formulae:
- *	x = (~k) & v
- *	y = k & v
- */
+
 #define calc_x(x, k, v) ((x) = ~(k) & (v))
 #define calc_y(y, k, v) ((y) = (k) & (v))
 
@@ -859,26 +837,26 @@ struct hclge_dev {
 	enum hnae3_reset_type reset_type;
 	enum hnae3_reset_type reset_level;
 	unsigned long default_reset_request;
-	unsigned long reset_request;	/* reset has been requested */
-	unsigned long reset_pending;	/* client rst is pending to be served */
+	unsigned long reset_request;	
+	unsigned long reset_pending;	
 	struct hclge_rst_stats rst_stats;
-	struct semaphore reset_sem;	/* protect reset process */
+	struct semaphore reset_sem;	
 	u32 fw_version;
-	u16 num_tqps;			/* Num task queue pairs of this PF */
-	u16 num_req_vfs;		/* Num VFs requested for this PF */
+	u16 num_tqps;			
+	u16 num_req_vfs;		
 
-	u16 base_tqp_pid;	/* Base task tqp physical id of this PF */
-	u16 alloc_rss_size;		/* Allocated RSS task queue */
-	u16 vf_rss_size_max;		/* HW defined VF max RSS task queue */
-	u16 pf_rss_size_max;		/* HW defined PF max RSS task queue */
-	u32 tx_spare_buf_size;		/* HW defined TX spare buffer size */
+	u16 base_tqp_pid;	
+	u16 alloc_rss_size;		
+	u16 vf_rss_size_max;		
+	u16 pf_rss_size_max;		
+	u32 tx_spare_buf_size;		
 
-	u16 fdir_pf_filter_count; /* Num of guaranteed filters for this PF */
-	u16 num_alloc_vport;		/* Num vports this driver supports */
+	u16 fdir_pf_filter_count; 
+	u16 num_alloc_vport;		
 	u32 numa_node_mask;
 	u16 rx_buf_len;
-	u16 num_tx_desc;		/* desc num of per tx queue */
-	u16 num_rx_desc;		/* desc num of per rx queue */
+	u16 num_tx_desc;		
+	u16 num_rx_desc;		
 	u8 hw_tc_map;
 	enum hclge_fc_mode fc_mode_last_time;
 	u8 support_sfp_query;
@@ -898,8 +876,8 @@ struct hclge_dev {
 	u16 num_msi_used;
 	u16 *vector_status;
 	int *vector_irq;
-	u16 num_nic_msi;	/* Num of nic vectors for this PF */
-	u16 num_roce_msi;	/* Num of roce vectors for this PF */
+	u16 num_nic_msi;	
+	u16 num_roce_msi;	
 
 	unsigned long service_timer_period;
 	unsigned long service_timer_previous;
@@ -907,7 +885,7 @@ struct hclge_dev {
 	struct delayed_work service_task;
 
 	bool cur_promisc;
-	int num_alloc_vfs;	/* Actual number of VFs allocated */
+	int num_alloc_vfs;	
 
 	struct hclge_comm_tqp *htqp;
 	struct hclge_vport *vport;
@@ -921,12 +899,12 @@ struct hclge_dev {
 #define HCLGE_FLAG_DCB_CAPABLE		BIT(1)
 	u32 flag;
 
-	u32 pkt_buf_size; /* Total pf buf size for tx/rx */
-	u32 tx_buf_size; /* Tx buffer size for each TC */
-	u32 dv_buf_size; /* Dv buffer size for each TC */
+	u32 pkt_buf_size; 
+	u32 tx_buf_size; 
+	u32 dv_buf_size; 
 
-	u32 mps; /* Max packet size */
-	/* vport_lock protect resource shared by vports */
+	u32 mps; 
+	
 	struct mutex vport_lock;
 
 	struct hclge_vlan_type_cfg vlan_type_cfg;
@@ -938,7 +916,7 @@ struct hclge_dev {
 
 	struct hclge_fd_cfg fd_cfg;
 	struct hlist_head fd_rule_list;
-	spinlock_t fd_rule_lock; /* protect fd_rule_list and fd_bmap */
+	spinlock_t fd_rule_lock; 
 	u16 hclge_fd_rule_num;
 	unsigned long serv_processed_cnt;
 	unsigned long last_serv_processed;
@@ -950,13 +928,13 @@ struct hclge_dev {
 	bool gro_en;
 
 	u16 wanted_umv_size;
-	/* max available unicast mac vlan space */
+	
 	u16 max_umv_size;
-	/* private unicast mac vlan space, it's same for PF and its VFs */
+	
 	u16 priv_umv_size;
-	/* unicast mac vlan space shared by PF and its VFs */
+	
 	u16 share_umv_size;
-	/* multicast mac address number used by PF and its VFs */
+	
 	u16 used_mc_mac_num;
 
 	DECLARE_KFIFO(mac_tnl_log, struct hclge_mac_tnl_stats,
@@ -967,28 +945,28 @@ struct hclge_dev {
 	struct hclge_comm_rss_cfg rss_cfg;
 };
 
-/* VPort level vlan tag configuration for TX direction */
+
 struct hclge_tx_vtag_cfg {
-	bool accept_tag1;	/* Whether accept tag1 packet from host */
-	bool accept_untag1;	/* Whether accept untag1 packet from host */
+	bool accept_tag1;	
+	bool accept_untag1;	
 	bool accept_tag2;
 	bool accept_untag2;
-	bool insert_tag1_en;	/* Whether insert inner vlan tag */
-	bool insert_tag2_en;	/* Whether insert outer vlan tag */
-	u16  default_tag1;	/* The default inner vlan tag to insert */
-	u16  default_tag2;	/* The default outer vlan tag to insert */
+	bool insert_tag1_en;	
+	bool insert_tag2_en;	
+	u16  default_tag1;	
+	u16  default_tag2;	
 	bool tag_shift_mode_en;
 };
 
-/* VPort level vlan tag configuration for RX direction */
+
 struct hclge_rx_vtag_cfg {
-	bool rx_vlan_offload_en; /* Whether enable rx vlan offload */
-	bool strip_tag1_en;	 /* Whether strip inner vlan tag */
-	bool strip_tag2_en;	 /* Whether strip outer vlan tag */
-	bool vlan1_vlan_prionly; /* Inner vlan tag up to descriptor enable */
-	bool vlan2_vlan_prionly; /* Outer vlan tag up to descriptor enable */
-	bool strip_tag1_discard_en; /* Inner vlan tag discard for BD enable */
-	bool strip_tag2_discard_en; /* Outer vlan tag discard for BD enable */
+	bool rx_vlan_offload_en; 
+	bool strip_tag1_en;	 
+	bool strip_tag2_en;	 
+	bool vlan1_vlan_prionly; 
+	bool vlan2_vlan_prionly; 
+	bool strip_tag1_discard_en; 
+	bool strip_tag2_discard_en; 
 };
 
 enum HCLGE_VPORT_STATE {
@@ -1006,7 +984,7 @@ enum HCLGE_VPORT_NEED_NOTIFY {
 };
 
 struct hclge_vlan_info {
-	u16 vlan_proto; /* so far support 802.1Q only */
+	u16 vlan_proto; 
 	u16 qos;
 	u16 vlan_tag;
 };
@@ -1030,10 +1008,10 @@ struct hclge_vf_info {
 };
 
 struct hclge_vport {
-	u16 alloc_tqps;	/* Allocated Tx/Rx queues */
+	u16 alloc_tqps;	
 
 	u16 qs_offset;
-	u32 bw_limit;		/* VSI BW Limit (0 = disabled) */
+	u32 bw_limit;		
 	u8  dwrr;
 
 	bool req_vlan_fltr_en;
@@ -1046,24 +1024,24 @@ struct hclge_vport {
 	u16 used_umv_num;
 
 	u16 vport_id;
-	struct hclge_dev *back;  /* Back reference to associated dev */
+	struct hclge_dev *back;  
 	struct hnae3_handle nic;
 	struct hnae3_handle roce;
 
 	unsigned long state;
 	unsigned long need_notify;
 	unsigned long last_active_jiffies;
-	u32 mps; /* Max packet size */
+	u32 mps; 
 	struct hclge_vf_info vf_info;
 
 	u8 overflow_promisc_flags;
 	u8 last_promisc_flags;
 
-	spinlock_t mac_list_lock; /* protect mac address need to add/detele */
-	struct list_head uc_mac_list;   /* Store VF unicast table */
-	struct list_head mc_mac_list;   /* Store VF multicast table */
+	spinlock_t mac_list_lock; 
+	struct list_head uc_mac_list;   
+	struct list_head mc_mac_list;   
 
-	struct list_head vlan_list;     /* Store VF vlan table */
+	struct list_head vlan_list;     
 };
 
 struct hclge_speed_bit_map {
@@ -1072,8 +1050,8 @@ struct hclge_speed_bit_map {
 };
 
 struct hclge_mac_speed_map {
-	u32 speed_drv; /* speed defined in driver */
-	u32 speed_fw; /* speed defined in firmware */
+	u32 speed_drv; 
+	u32 speed_fw; 
 };
 
 int hclge_set_vport_promisc_mode(struct hclge_vport *vport, bool en_uc_pmc,

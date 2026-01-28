@@ -1,9 +1,4 @@
-/*
- * Copyright (C) 2008-2009 Karel Zak <kzak@redhat.com>
- *
- * This file may be redistributed under the terms of the
- * GNU Lesser General Public License.
- */
+
 #ifndef _BLKID_SUPERBLOCKS_H
 #define _BLKID_SUPERBLOCKS_H
 
@@ -101,9 +96,7 @@ extern const struct blkid_idinfo zonefs_idinfo;
 extern const struct blkid_idinfo erofs_idinfo;
 extern const struct blkid_idinfo cs_fvault2_idinfo;
 
-/*
- * superblock functions
- */
+
 extern int blkid_probe_set_version(blkid_probe pr, const char *version);
 extern int blkid_probe_sprintf_version(blkid_probe pr, const char *fmt, ...)
 		__attribute__ ((__format__ (__printf__, 2, 3)));
@@ -133,4 +126,4 @@ int blkid_probe_set_fsendianness(blkid_probe pr, enum BLKID_ENDIANNESS endiannes
 extern int blkid_probe_is_bitlocker(blkid_probe pr);
 extern int blkid_probe_is_ntfs(blkid_probe pr);
 
-#endif /* _BLKID_SUPERBLOCKS_H */
+#endif 

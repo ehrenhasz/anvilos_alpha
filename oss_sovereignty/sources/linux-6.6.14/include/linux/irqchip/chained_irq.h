@@ -1,22 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Chained IRQ handlers support.
- *
- * Copyright (C) 2011 ARM Ltd.
- */
+
+
 #ifndef __IRQCHIP_CHAINED_IRQ_H
 #define __IRQCHIP_CHAINED_IRQ_H
 
 #include <linux/irq.h>
 
-/*
- * Entry/exit functions for chained handlers where the primary IRQ chip
- * may implement either fasteoi or level-trigger flow control.
- */
+
 static inline void chained_irq_enter(struct irq_chip *chip,
 				     struct irq_desc *desc)
 {
-	/* FastEOI controllers require no action on entry. */
+	
 	if (chip->irq_eoi)
 		return;
 
@@ -38,4 +31,4 @@ static inline void chained_irq_exit(struct irq_chip *chip,
 		chip->irq_unmask(&desc->irq_data);
 }
 
-#endif /* __IRQCHIP_CHAINED_IRQ_H */
+#endif 

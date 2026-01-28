@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef LINUX_KEXEC_H
 #define LINUX_KEXEC_H
 
@@ -22,8 +22,7 @@
 #include <uapi/linux/kexec.h>
 #include <linux/verification.h>
 
-/* Location of a reserved region to hold the crash kernel.
- */
+
 extern struct resource crashk_res;
 extern struct resource crashk_low_res;
 extern note_buf_t __percpu *crash_notes;
@@ -36,7 +35,7 @@ extern note_buf_t __percpu *crash_notes;
 #include <linux/highmem.h>
 #include <asm/kexec.h>
 
-/* Verify architecture specific macros are defined */
+
 
 #ifndef KEXEC_SOURCE_MEMORY_LIMIT
 #error KEXEC_SOURCE_MEMORY_LIMIT not defined
@@ -72,22 +71,12 @@ extern note_buf_t __percpu *crash_notes;
 
 #define KEXEC_CORE_NOTE_NAME	CRASH_CORE_NOTE_NAME
 
-/*
- * This structure is used to hold the arguments that are used when loading
- * kernel binaries.
- */
+
 
 typedef unsigned long kimage_entry_t;
 
 struct kexec_segment {
-	/*
-	 * This pointer can point to user memory if kexec_load() system
-	 * call is used or will point to kernel memory if
-	 * kexec_file_load() system call is used.
-	 *
-	 * Use ->buf when expecting to deal with user memory and use ->kbuf
-	 * when expecting to deal with kernel memory.
-	 */
+	
 	union {
 		void __user *buf;
 		void *kbuf;
@@ -101,27 +90,18 @@ struct kexec_segment {
 struct compat_kexec_segment {
 	compat_uptr_t buf;
 	compat_size_t bufsz;
-	compat_ulong_t mem;	/* User space sees this as a (void *) ... */
+	compat_ulong_t mem;	
 	compat_size_t memsz;
 };
 #endif
 
 #ifdef CONFIG_KEXEC_FILE
 struct purgatory_info {
-	/*
-	 * Pointer to elf header at the beginning of kexec_purgatory.
-	 * Note: kexec_purgatory is read only
-	 */
+	
 	const Elf_Ehdr *ehdr;
-	/*
-	 * Temporary, modifiable buffer for sechdrs used for relocation.
-	 * This memory can be freed post image load.
-	 */
+	
 	Elf_Shdr *sechdrs;
-	/*
-	 * Temporary, modifiable buffer for stripped purgatory used for
-	 * relocation. This memory can be freed post image load.
-	 */
+	
 	void *purgatory_buf;
 };
 
@@ -154,26 +134,12 @@ int kexec_image_probe_default(struct kimage *image, void *buf,
 			      unsigned long buf_len);
 int kexec_image_post_load_cleanup_default(struct kimage *image);
 
-/*
- * If kexec_buf.mem is set to this value, kexec_locate_mem_hole()
- * will try to allocate free memory. Arch may overwrite it.
- */
+
 #ifndef KEXEC_BUF_MEM_UNKNOWN
 #define KEXEC_BUF_MEM_UNKNOWN 0
 #endif
 
-/**
- * struct kexec_buf - parameters for finding a place for a buffer in memory
- * @image:	kexec image in which memory to search.
- * @buffer:	Contents which will be copied to the allocated memory.
- * @bufsz:	Size of @buffer.
- * @mem:	On return will have address of the buffer in memory.
- * @memsz:	Size for the buffer in memory.
- * @buf_align:	Minimum alignment needed.
- * @buf_min:	The buffer can't be placed below this address.
- * @buf_max:	The buffer can't be placed above this address.
- * @top_down:	Allocate from top of memory.
- */
+
 struct kexec_buf {
 	struct kimage *image;
 	void *buffer;
@@ -217,14 +183,7 @@ extern int kexec_add_buffer(struct kexec_buf *kbuf);
 int kexec_locate_mem_hole(struct kexec_buf *kbuf);
 
 #ifndef arch_kexec_locate_mem_hole
-/**
- * arch_kexec_locate_mem_hole - Find free memory to place the segments.
- * @kbuf:                       Parameters for the memory search.
- *
- * On success, kbuf->mem will have the start address of the memory region found.
- *
- * Return: 0 on success, negative errno on error.
- */
+
 static inline int arch_kexec_locate_mem_hole(struct kexec_buf *kbuf)
 {
 	return kexec_locate_mem_hole(kbuf);
@@ -232,15 +191,7 @@ static inline int arch_kexec_locate_mem_hole(struct kexec_buf *kbuf)
 #endif
 
 #ifndef arch_kexec_apply_relocations_add
-/*
- * arch_kexec_apply_relocations_add - apply relocations of type RELA
- * @pi:		Purgatory to be relocated.
- * @section:	Section relocations applying to.
- * @relsec:	Section containing RELAs.
- * @symtab:	Corresponding symtab.
- *
- * Return: 0 on success, negative errno on error.
- */
+
 static inline int
 arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
 				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
@@ -251,15 +202,7 @@ arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
 #endif
 
 #ifndef arch_kexec_apply_relocations
-/*
- * arch_kexec_apply_relocations - apply relocations of type REL
- * @pi:		Purgatory to be relocated.
- * @section:	Section relocations applying to.
- * @relsec:	Section containing RELs.
- * @symtab:	Corresponding symtab.
- *
- * Return: 0 on success, negative errno on error.
- */
+
 static inline int
 arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
 			     const Elf_Shdr *relsec, const Elf_Shdr *symtab)
@@ -268,14 +211,11 @@ arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
 	return -ENOEXEC;
 }
 #endif
-#endif /* CONFIG_KEXEC_FILE */
+#endif 
 
 #ifdef CONFIG_KEXEC_ELF
 struct kexec_elf_info {
-	/*
-	 * Where the ELF binary contents are kept.
-	 * Memory managed by the user of the struct.
-	 */
+	
 	const char *buffer;
 
 	const struct elfhdr *ehdr;
@@ -301,7 +241,7 @@ struct kimage {
 	unsigned long start;
 	struct page *control_code_page;
 	struct page *swap_page;
-	void *vmcoreinfo_data_copy; /* locates in the crash memory */
+	void *vmcoreinfo_data_copy; 
 
 	unsigned long nr_segments;
 	struct kexec_segment segment[KEXEC_SEGMENT_MAX];
@@ -310,18 +250,18 @@ struct kimage {
 	struct list_head dest_pages;
 	struct list_head unusable_pages;
 
-	/* Address of next control page to allocate for crash kernels. */
+	
 	unsigned long control_page;
 
-	/* Flags to indicate special processing */
+	
 	unsigned int type : 1;
 #define KEXEC_TYPE_DEFAULT 0
 #define KEXEC_TYPE_CRASH   1
 	unsigned int preserve_context : 1;
-	/* If set, we are using file mode kexec syscall */
+	
 	unsigned int file_mode:1;
 #ifdef CONFIG_CRASH_HOTPLUG
-	/* If set, allow changes to elfcorehdr of kexec_load'd image */
+	
 	unsigned int update_elfcorehdr:1;
 #endif
 
@@ -330,7 +270,7 @@ struct kimage {
 #endif
 
 #ifdef CONFIG_KEXEC_FILE
-	/* Additional fields for file based kexec syscall */
+	
 	void *kernel_buf;
 	unsigned long kernel_buf_len;
 
@@ -340,13 +280,13 @@ struct kimage {
 	char *cmdline_buf;
 	unsigned long cmdline_buf_len;
 
-	/* File operations provided by image loader */
+	
 	const struct kexec_file_ops *fops;
 
-	/* Image loader handling the kernel can store a pointer here */
+	
 	void *image_loader_data;
 
-	/* Information for loading purgatory */
+	
 	struct purgatory_info purgatory_info;
 #endif
 
@@ -357,20 +297,20 @@ struct kimage {
 #endif
 
 #ifdef CONFIG_IMA_KEXEC
-	/* Virtual address of IMA measurement buffer for kexec syscall */
+	
 	void *ima_buffer;
 
 	phys_addr_t ima_buffer_addr;
 	size_t ima_buffer_size;
 #endif
 
-	/* Core ELF header buffer */
+	
 	void *elf_headers;
 	unsigned long elf_headers_sz;
 	unsigned long elf_load_addr;
 };
 
-/* kexec interface functions */
+
 extern void machine_kexec(struct kimage *image);
 extern int machine_kexec_prepare(struct kimage *image);
 extern void machine_kexec_cleanup(struct kimage *image);
@@ -398,31 +338,25 @@ bool kexec_load_permitted(int kexec_image_type);
 #define kexec_flush_icache_page(page)
 #endif
 
-/* List of defined/legal kexec flags */
+
 #ifndef CONFIG_KEXEC_JUMP
 #define KEXEC_FLAGS    (KEXEC_ON_CRASH | KEXEC_UPDATE_ELFCOREHDR)
 #else
 #define KEXEC_FLAGS    (KEXEC_ON_CRASH | KEXEC_PRESERVE_CONTEXT | KEXEC_UPDATE_ELFCOREHDR)
 #endif
 
-/* List of defined/legal kexec file flags */
+
 #define KEXEC_FILE_FLAGS	(KEXEC_FILE_UNLOAD | KEXEC_FILE_ON_CRASH | \
 				 KEXEC_FILE_NO_INITRAMFS)
 
-/* flag to track if kexec reboot is in progress */
+
 extern bool kexec_in_progress;
 
 int crash_shrink_memory(unsigned long new_size);
 ssize_t crash_get_memory_size(void);
 
 #ifndef arch_kexec_protect_crashkres
-/*
- * Protection mechanism for crashkernel reserved memory after
- * the kdump kernel is loaded.
- *
- * Provide an empty default implementation here -- architecture
- * code may override this
- */
+
 static inline void arch_kexec_protect_crashkres(void) { }
 #endif
 
@@ -504,7 +438,7 @@ static inline int crash_hotplug_memory_support(void) { return 0; }
 static inline unsigned int crash_get_elfcorehdr_size(void) { return 0; }
 #endif
 
-#else /* !CONFIG_KEXEC_CORE */
+#else 
 struct pt_regs;
 struct task_struct;
 static inline void __crash_kexec(struct pt_regs *regs) { }
@@ -512,7 +446,7 @@ static inline void crash_kexec(struct pt_regs *regs) { }
 static inline int kexec_should_crash(struct task_struct *p) { return 0; }
 static inline int kexec_crash_loaded(void) { return 0; }
 #define kexec_in_progress false
-#endif /* CONFIG_KEXEC_CORE */
+#endif 
 
 #ifdef CONFIG_KEXEC_SIG
 void set_kexec_sig_enforced(void);
@@ -520,6 +454,6 @@ void set_kexec_sig_enforced(void);
 static inline void set_kexec_sig_enforced(void) {}
 #endif
 
-#endif /* !defined(__ASSEBMLY__) */
+#endif 
 
-#endif /* LINUX_KEXEC_H */
+#endif 

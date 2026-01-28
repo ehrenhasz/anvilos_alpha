@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 Cadence Design Systems Inc.
- *
- * Author: Boris Brezillon <boris.brezillon@bootlin.com>
- */
+
+
 
 #ifndef I3C_INTERNALS_H
 #define I3C_INTERNALS_H
@@ -24,4 +20,4 @@ int i3c_dev_enable_ibi_locked(struct i3c_dev_desc *dev);
 int i3c_dev_request_ibi_locked(struct i3c_dev_desc *dev,
 			       const struct i3c_ibi_setup *req);
 void i3c_dev_free_ibi_locked(struct i3c_dev_desc *dev);
-#endif /* I3C_INTERNAL_H */
+#endif 

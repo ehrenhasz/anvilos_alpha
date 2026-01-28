@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- * Copyright 1997 Transmeta Corporation - All Rights Reserved
- * Copyright 1999-2000 Jeremy Fitzhardinge <jeremy@goop.org>
- * Copyright 2005-2006,2013,2017-2018 Ian Kent <raven@themaw.net>
- *
- * This file is part of the Linux kernel and is made available under
- * the terms of the GNU General Public License, version 2, or at your
- * option, any later version, incorporated herein by reference.
- *
- * ----------------------------------------------------------------------- */
+
+
 
 #ifndef _UAPI_LINUX_AUTO_FS_H
 #define _UAPI_LINUX_AUTO_FS_H
@@ -17,7 +8,7 @@
 #include <linux/limits.h>
 #ifndef __KERNEL__
 #include <sys/ioctl.h>
-#endif /* __KERNEL__ */
+#endif 
 
 #define AUTOFS_PROTO_VERSION		5
 #define AUTOFS_MIN_PROTO_VERSION	3
@@ -25,26 +16,20 @@
 
 #define AUTOFS_PROTO_SUBVERSION		5
 
-/*
- * The wait_queue_token (autofs_wqt_t) is part of a structure which is passed
- * back to the kernel via ioctl from userspace. On architectures where 32- and
- * 64-bit userspace binaries can be executed it's important that the size of
- * autofs_wqt_t stays constant between 32- and 64-bit Linux kernels so that we
- * do not break the binary ABI interface by changing the structure size.
- */
-#if defined(__ia64__) || defined(__alpha__) /* pure 64bit architectures */
+
+#if defined(__ia64__) || defined(__alpha__) 
 typedef unsigned long autofs_wqt_t;
 #else
 typedef unsigned int autofs_wqt_t;
 #endif
 
-/* Packet types */
-#define autofs_ptype_missing	0	/* Missing entry (mount request) */
-#define autofs_ptype_expire	1	/* Expire entry (umount request) */
+
+#define autofs_ptype_missing	0	
+#define autofs_ptype_expire	1	
 
 struct autofs_packet_hdr {
-	int proto_version;		/* Protocol version */
-	int type;			/* Type of packet */
+	int proto_version;		
+	int type;			
 };
 
 struct autofs_packet_missing {
@@ -54,7 +39,7 @@ struct autofs_packet_missing {
 	char name[NAME_MAX+1];
 };	
 
-/* v3 expire (via ioctl) */
+
 struct autofs_packet_expire {
 	struct autofs_packet_hdr hdr;
 	int len;
@@ -87,9 +72,9 @@ enum {
 				     AUTOFS_IOC_EXPIRE_CMD, \
 				     struct autofs_packet_expire)
 
-/* autofs version 4 and later definitions */
 
-/* Mask for expire behaviour */
+
+
 #define AUTOFS_EXP_NORMAL		0x00
 #define AUTOFS_EXP_IMMEDIATE		0x01
 #define AUTOFS_EXP_LEAVES		0x02
@@ -135,11 +120,7 @@ static inline unsigned int autofs_type_trigger(unsigned int type)
 	return (type == AUTOFS_TYPE_DIRECT || type == AUTOFS_TYPE_OFFSET);
 }
 
-/*
- * This isn't really a type as we use it to say "no type set" to
- * indicate we want to search for "any" mount in the
- * autofs_dev_ioctl_ismountpoint() device ioctl function.
- */
+
 static inline void set_autofs_type_any(unsigned int *type)
 {
 	*type = AUTOFS_TYPE_ANY;
@@ -150,29 +131,29 @@ static inline unsigned int autofs_type_any(unsigned int type)
 	return (type == AUTOFS_TYPE_ANY);
 }
 
-/* Daemon notification packet types */
+
 enum autofs_notify {
 	NFY_NONE,
 	NFY_MOUNT,
 	NFY_EXPIRE
 };
 
-/* Kernel protocol version 4 packet types */
 
-/* Expire entry (umount request) */
+
+
 #define autofs_ptype_expire_multi	2
 
-/* Kernel protocol version 5 packet types */
 
-/* Indirect mount missing and expire requests. */
+
+
 #define autofs_ptype_missing_indirect	3
 #define autofs_ptype_expire_indirect	4
 
-/* Direct mount missing and expire requests */
+
 #define autofs_ptype_missing_direct	5
 #define autofs_ptype_expire_direct	6
 
-/* v4 multi expire (via pipe) */
+
 struct autofs_packet_expire_multi {
 	struct autofs_packet_hdr hdr;
 	autofs_wqt_t wait_queue_token;
@@ -187,7 +168,7 @@ union autofs_packet_union {
 	struct autofs_packet_expire_multi expire_multi;
 };
 
-/* autofs v5 common packet struct */
+
 struct autofs_v5_packet {
 	struct autofs_packet_hdr hdr;
 	autofs_wqt_t wait_queue_token;
@@ -216,9 +197,9 @@ union autofs_v5_packet_union {
 };
 
 enum {
-	AUTOFS_IOC_EXPIRE_MULTI_CMD = 0x66, /* AUTOFS_IOC_EXPIRE_CMD + 1 */
+	AUTOFS_IOC_EXPIRE_MULTI_CMD = 0x66, 
 	AUTOFS_IOC_PROTOSUBVER_CMD,
-	AUTOFS_IOC_ASKUMOUNT_CMD = 0x70, /* AUTOFS_DEV_IOCTL_VERSION_CMD - 1 */
+	AUTOFS_IOC_ASKUMOUNT_CMD = 0x70, 
 };
 
 #define AUTOFS_IOC_EXPIRE_MULTI		_IOW(AUTOFS_IOCTL, \
@@ -228,4 +209,4 @@ enum {
 #define AUTOFS_IOC_ASKUMOUNT		_IOR(AUTOFS_IOCTL, \
 					     AUTOFS_IOC_ASKUMOUNT_CMD, int)
 
-#endif /* _UAPI_LINUX_AUTO_FS_H */
+#endif 

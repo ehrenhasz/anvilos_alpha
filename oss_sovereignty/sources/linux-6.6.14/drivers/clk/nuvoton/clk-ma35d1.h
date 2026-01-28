@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2023 Nuvoton Technology Corp.
- * Author: Chi-Fang Li <cfli0@nuvoton.com>
- */
+
+
 
 #ifndef __DRV_CLK_NUVOTON_MA35D1_H
 #define __DRV_CLK_NUVOTON_MA35D1_H
@@ -15,4 +12,4 @@ struct clk_hw *ma35d1_reg_adc_clkdiv(struct device *dev, const char *name,
 				     unsigned long flags, void __iomem *reg,
 				     u8 shift, u8 width, u32 mask_bit);
 
-#endif /* __DRV_CLK_NUVOTON_MA35D1_H */
+#endif 

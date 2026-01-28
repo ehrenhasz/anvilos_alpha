@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021 Mellanox Technologies. */
+
+
 
 #ifndef __MLX5_EN_TC_SAMPLE_H__
 #define __MLX5_EN_TC_SAMPLE_H__
@@ -39,7 +39,7 @@ mlx5e_tc_sample_init(struct mlx5_eswitch *esw, struct mlx5e_post_act *post_act);
 void
 mlx5e_tc_sample_cleanup(struct mlx5e_tc_psample *tc_psample);
 
-#else /* CONFIG_MLX5_TC_SAMPLE */
+#else 
 
 static inline struct mlx5_flow_handle *
 mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
@@ -62,5 +62,5 @@ mlx5e_tc_sample_cleanup(struct mlx5e_tc_psample *tc_psample) {}
 static inline void
 mlx5e_tc_sample_skb(struct sk_buff *skb, struct mlx5_mapped_obj *mapped_obj) {}
 
-#endif /* CONFIG_MLX5_TC_SAMPLE */
-#endif /* __MLX5_EN_TC_SAMPLE_H__ */
+#endif 
+#endif 

@@ -1,66 +1,37 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Global definitions for the ANSI FDDI interface.
- *
- * Version:	@(#)if_fddi.h	1.0.3	Oct  6 2018
- *
- * Author:	Lawrence V. Stefani, <stefani@yahoo.com>
- * Maintainer:	Maciej W. Rozycki, <macro@orcam.me.uk>
- *
- *		if_fddi.h is based on previous if_ether.h and if_tr.h work by
- *			Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
- *			Donald Becker, <becker@super.org>
- *			Alan Cox, <alan@lxorguk.ukuu.org.uk>
- *			Steve Whitehouse, <gw7rrm@eeshack3.swan.ac.uk>
- *			Peter De Schrijver, <stud11@cc4.kuleuven.ac.be>
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- */
+
+
 #ifndef _UAPI_LINUX_IF_FDDI_H
 #define _UAPI_LINUX_IF_FDDI_H
 
 #include <linux/types.h>
 
-/*
- *  Define max and min legal sizes.  The frame sizes do not include
- *  4 byte FCS/CRC (frame check sequence).
- */
-#define FDDI_K_ALEN		6	/* Octets in one FDDI address */
-#define FDDI_K_8022_HLEN	16	/* Total octets in 802.2 header */
-#define FDDI_K_SNAP_HLEN	21	/* Total octets in 802.2 SNAP header */
-#define FDDI_K_8022_ZLEN	16	/* Min octets in 802.2 frame sans
-					   FCS */
-#define FDDI_K_SNAP_ZLEN	21	/* Min octets in 802.2 SNAP frame sans
-					   FCS */
-#define FDDI_K_8022_DLEN	4475	/* Max octets in 802.2 payload */
-#define FDDI_K_SNAP_DLEN	4470	/* Max octets in 802.2 SNAP payload */
-#define FDDI_K_LLC_ZLEN		13	/* Min octets in LLC frame sans FCS */
-#define FDDI_K_LLC_LEN		4491	/* Max octets in LLC frame sans FCS */
-#define FDDI_K_OUI_LEN		3	/* Octets in OUI in 802.2 SNAP
-					   header */
 
-/* Define FDDI Frame Control (FC) Byte masks */
-#define FDDI_FC_K_CLASS_MASK		0x80	/* class bit */
+#define FDDI_K_ALEN		6	
+#define FDDI_K_8022_HLEN	16	
+#define FDDI_K_SNAP_HLEN	21	
+#define FDDI_K_8022_ZLEN	16	
+#define FDDI_K_SNAP_ZLEN	21	
+#define FDDI_K_8022_DLEN	4475	
+#define FDDI_K_SNAP_DLEN	4470	
+#define FDDI_K_LLC_ZLEN		13	
+#define FDDI_K_LLC_LEN		4491	
+#define FDDI_K_OUI_LEN		3	
+
+
+#define FDDI_FC_K_CLASS_MASK		0x80	
 #define FDDI_FC_K_CLASS_SYNC		0x80
 #define FDDI_FC_K_CLASS_ASYNC		0x00
-#define FDDI_FC_K_ALEN_MASK		0x40	/* address length bit */
+#define FDDI_FC_K_ALEN_MASK		0x40	
 #define FDDI_FC_K_ALEN_48		0x40
 #define FDDI_FC_K_ALEN_16		0x00
-#define FDDI_FC_K_FORMAT_MASK		0x30	/* format bits */
+#define FDDI_FC_K_FORMAT_MASK		0x30	
 #define FDDI_FC_K_FORMAT_FUTURE		0x30
 #define FDDI_FC_K_FORMAT_IMPLEMENTOR	0x20
 #define FDDI_FC_K_FORMAT_LLC		0x10
 #define FDDI_FC_K_FORMAT_MANAGEMENT	0x00
-#define FDDI_FC_K_CONTROL_MASK		0x0f	/* control bits */
+#define FDDI_FC_K_CONTROL_MASK		0x0f	
 
-/* Define FDDI Frame Control (FC) Byte specific values */
+
 #define FDDI_FC_K_VOID			0x00
 #define FDDI_FC_K_NON_RESTRICTED_TOKEN	0x80
 #define FDDI_FC_K_RESTRICTED_TOKEN	0xC0
@@ -78,39 +49,39 @@
 #define FDDI_FC_K_RESERVED_MIN		0x70
 #define FDDI_FC_K_RESERVED_MAX		0x7F
 
-/* Define LLC and SNAP constants */
+
 #define FDDI_EXTENDED_SAP		0xAA
 #define FDDI_UI_CMD			0x03
 
-/* Define 802.2 Type 1 header */
+
 struct fddi_8022_1_hdr {
-	__u8	dsap;			/* destination service access point */
-	__u8	ssap;			/* source service access point */
-	__u8	ctrl;			/* control byte #1 */
+	__u8	dsap;			
+	__u8	ssap;			
+	__u8	ctrl;			
 } __attribute__((packed));
 
-/* Define 802.2 Type 2 header */
+
 struct fddi_8022_2_hdr {
-	__u8	dsap;			/* destination service access point */
-	__u8	ssap;			/* source service access point */
-	__u8	ctrl_1;			/* control byte #1 */
-	__u8	ctrl_2;			/* control byte #2 */
+	__u8	dsap;			
+	__u8	ssap;			
+	__u8	ctrl_1;			
+	__u8	ctrl_2;			
 } __attribute__((packed));
 
-/* Define 802.2 SNAP header */
+
 struct fddi_snap_hdr {
-	__u8	dsap;			/* always 0xAA */
-	__u8	ssap;			/* always 0xAA */
-	__u8	ctrl;			/* always 0x03 */
-	__u8	oui[FDDI_K_OUI_LEN];	/* organizational universal id */
-	__be16	ethertype;		/* packet type ID field */
+	__u8	dsap;			
+	__u8	ssap;			
+	__u8	ctrl;			
+	__u8	oui[FDDI_K_OUI_LEN];	
+	__be16	ethertype;		
 } __attribute__((packed));
 
-/* Define FDDI LLC frame header */
+
 struct fddihdr {
-	__u8	fc;			/* frame control */
-	__u8	daddr[FDDI_K_ALEN];	/* destination address */
-	__u8	saddr[FDDI_K_ALEN];	/* source address */
+	__u8	fc;			
+	__u8	daddr[FDDI_K_ALEN];	
+	__u8	saddr[FDDI_K_ALEN];	
 	union {
 		struct fddi_8022_1_hdr	llc_8022_1;
 		struct fddi_8022_2_hdr	llc_8022_2;
@@ -119,4 +90,4 @@ struct fddihdr {
 } __attribute__((packed));
 
 
-#endif /* _UAPI_LINUX_IF_FDDI_H */
+#endif 

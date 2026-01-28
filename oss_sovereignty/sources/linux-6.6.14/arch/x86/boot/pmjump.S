@@ -1,14 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* ----------------------------------------------------------------------- *
- *
- *   Copyright (C) 1991, 1992 Linus Torvalds
- *   Copyright 2007 rPath, Inc. - All Rights Reserved
- *
- * ----------------------------------------------------------------------- */
 
-/*
- * The actual transition into protected mode
- */
+
+
+
 
 #include <asm/boot.h>
 #include <asm/processor-flags.h>
@@ -18,9 +11,7 @@
 	.text
 	.code16
 
-/*
- * void protected_mode_jump(u32 entrypoint, u32 bootparams);
- */
+
 SYM_FUNC_START_NOALIGN(protected_mode_jump)
 	movl	%edx, %esi		# Pointer to boot_params table
 

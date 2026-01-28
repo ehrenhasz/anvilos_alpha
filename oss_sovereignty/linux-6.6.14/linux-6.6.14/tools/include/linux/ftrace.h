@@ -1,3 +1,0 @@
-#ifndef _TOOLS_INCLUDE_LINUX_FTRACE_H
-#define _TOOLS_INCLUDE_LINUX_FTRACE_H
-#endif  

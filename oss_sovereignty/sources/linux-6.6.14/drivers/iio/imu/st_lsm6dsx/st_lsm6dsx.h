@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * STMicroelectronics st_lsm6dsx sensor driver
- *
- * Copyright 2016 STMicroelectronics Inc.
- *
- * Lorenzo Bianconi <lorenzo.bianconi@st.com>
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+
 
 #ifndef ST_LSM6DSX_H
 #define ST_LSM6DSX_H
@@ -159,15 +152,7 @@ struct st_lsm6dsx_fs_table_entry {
 	int fs_len;
 };
 
-/**
- * struct st_lsm6dsx_fifo_ops - ST IMU FIFO settings
- * @update_fifo: Update FIFO configuration callback.
- * @read_fifo: Read FIFO callback.
- * @fifo_th: FIFO threshold register info (addr + mask).
- * @fifo_diff: FIFO diff status register info (addr + mask).
- * @max_size: Sensor max fifo length in FIFO words.
- * @th_wl: FIFO threshold word length.
- */
+
 struct st_lsm6dsx_fifo_ops {
 	int (*update_fifo)(struct st_lsm6dsx_sensor *sensor, bool enable);
 	int (*read_fifo)(struct st_lsm6dsx_hw *hw);
@@ -183,14 +168,7 @@ struct st_lsm6dsx_fifo_ops {
 	u8 th_wl;
 };
 
-/**
- * struct st_lsm6dsx_hw_ts_settings - ST IMU hw timer settings
- * @timer_en: Hw timer enable register info (addr + mask).
- * @hr_timer: Hw timer resolution register info (addr + mask).
- * @fifo_en: Hw timer FIFO enable register info (addr + mask).
- * @decimator: Hw timer FIFO decimator register info (addr + mask).
- * @freq_fine: Difference in % of ODR with respect to the typical.
- */
+
 struct st_lsm6dsx_hw_ts_settings {
 	struct st_lsm6dsx_reg timer_en;
 	struct st_lsm6dsx_reg hr_timer;
@@ -199,21 +177,7 @@ struct st_lsm6dsx_hw_ts_settings {
 	u8 freq_fine;
 };
 
-/**
- * struct st_lsm6dsx_shub_settings - ST IMU hw i2c controller settings
- * @page_mux: register page mux info (addr + mask).
- * @master_en: master config register info (addr + mask).
- * @pullup_en: i2c controller pull-up register info (addr + mask).
- * @aux_sens: aux sensor register info (addr + mask).
- * @wr_once: write_once register info (addr + mask).
- * @emb_func:  embedded function register info (addr + mask).
- * @num_ext_dev: max number of slave devices.
- * @shub_out: sensor hub first output register info.
- * @slv0_addr: slave0 address in secondary page.
- * @dw_slv0_addr: slave0 write register address in secondary page.
- * @batch_en: Enable/disable FIFO batching.
- * @pause: controller pause value.
- */
+
 struct st_lsm6dsx_shub_settings {
 	struct st_lsm6dsx_reg page_mux;
 	struct {
@@ -254,19 +218,7 @@ enum st_lsm6dsx_ext_sensor_id {
 	ST_LSM6DSX_ID_MAGN,
 };
 
-/**
- * struct st_lsm6dsx_ext_dev_settings - i2c controller slave settings
- * @i2c_addr: I2c slave address list.
- * @wai: Wai address info.
- * @id: external sensor id.
- * @odr_table: Output data rate of the sensor [Hz].
- * @fs_table: Configured sensor sensitivity table depending on full scale.
- * @temp_comp: Temperature compensation register info (addr + mask).
- * @pwr_table: Power on register info (addr + mask).
- * @off_canc: Offset cancellation register info (addr + mask).
- * @bdu: Block data update register info (addr + mask).
- * @out: Output register info.
- */
+
 struct st_lsm6dsx_ext_dev_settings {
 	u8 i2c_addr[2];
 	struct {
@@ -290,24 +242,7 @@ struct st_lsm6dsx_ext_dev_settings {
 	} out;
 };
 
-/**
- * struct st_lsm6dsx_settings - ST IMU sensor settings
- * @reset: register address for reset.
- * @boot: register address for boot.
- * @bdu: register address for Block Data Update.
- * @id: List of hw id/device name supported by the driver configuration.
- * @channels: IIO channels supported by the device.
- * @irq_config: interrupts related registers.
- * @drdy_mask: register info for data-ready mask (addr + mask).
- * @odr_table: Hw sensors odr table (Hz + val).
- * @samples_to_discard: Number of samples to discard for filters settling time.
- * @fs_table: Hw sensors gain table (gain + val).
- * @decimator: List of decimator register info (addr + mask).
- * @batch: List of FIFO batching register info (addr + mask).
- * @fifo_ops: Sensor hw FIFO parameters.
- * @ts_settings: Hw timer related settings.
- * @shub_settings: i2c controller related settings.
- */
+
 struct st_lsm6dsx_settings {
 	struct st_lsm6dsx_reg reset;
 	struct st_lsm6dsx_reg boot;
@@ -357,20 +292,7 @@ enum st_lsm6dsx_fifo_mode {
 	ST_LSM6DSX_FIFO_CONT = 0x6,
 };
 
-/**
- * struct st_lsm6dsx_sensor - ST IMU sensor instance
- * @name: Sensor name.
- * @id: Sensor identifier.
- * @hw: Pointer to instance of struct st_lsm6dsx_hw.
- * @gain: Configured sensor sensitivity.
- * @odr: Output data rate of the sensor [Hz].
- * @samples_to_discard: Number of samples to discard for filters settling time.
- * @watermark: Sensor watermark level.
- * @decimator: Sensor decimation factor.
- * @sip: Number of samples in a given pattern.
- * @ts_ref: Sensor timestamp reference for hw one.
- * @ext_info: Sensor settings if it is connected to i2c controller
- */
+
 struct st_lsm6dsx_sensor {
 	char name[32];
 	enum st_lsm6dsx_sensor_id id;
@@ -392,29 +314,7 @@ struct st_lsm6dsx_sensor {
 	} ext_info;
 };
 
-/**
- * struct st_lsm6dsx_hw - ST IMU MEMS hw instance
- * @dev: Pointer to instance of struct device (I2C or SPI).
- * @regmap: Register map of the device.
- * @irq: Device interrupt line (I2C or SPI).
- * @fifo_lock: Mutex to prevent concurrent access to the hw FIFO.
- * @conf_lock: Mutex to prevent concurrent FIFO configuration update.
- * @page_lock: Mutex to prevent concurrent memory page configuration.
- * @suspend_mask: Suspended sensor bitmask.
- * @enable_mask: Enabled sensor bitmask.
- * @fifo_mask: Enabled hw FIFO bitmask.
- * @ts_gain: Hw timestamp rate after internal calibration.
- * @ts_sip: Total number of timestamp samples in a given pattern.
- * @sip: Total number of samples (acc/gyro/ts) in a given pattern.
- * @buff: Device read buffer.
- * @irq_routing: pointer to interrupt routing configuration.
- * @event_threshold: wakeup event threshold.
- * @enable_event: enabled event bitmask.
- * @iio_devs: Pointers to acc/gyro iio_dev instances.
- * @settings: Pointer to the specific sensor settings in use.
- * @orientation: sensor chip orientation relative to main hardware.
- * @scan: Temporary buffers used to align data before iio_push_to_buffers()
- */
+
 struct st_lsm6dsx_hw {
 	struct device *dev;
 	struct regmap *regmap;
@@ -442,7 +342,7 @@ struct st_lsm6dsx_hw {
 	const struct st_lsm6dsx_settings *settings;
 
 	struct iio_mount_matrix orientation;
-	/* Ensure natural alignment of buffer elements */
+	
 	struct {
 		__le16 channels[3];
 		s64 ts __aligned(8);
@@ -547,4 +447,4 @@ struct iio_chan_spec_ext_info __maybe_unused st_lsm6dsx_ext_info[] = {
 	{ }
 };
 
-#endif /* ST_LSM6DSX_H */
+#endif 

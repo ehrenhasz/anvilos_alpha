@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Red Hat, Inc.
- * Copyright (C) 2012 Jeremy Kerr <jeremy.kerr@canonical.com>
- */
+
+
 #ifndef EFIVAR_FS_INTERNAL_H
 #define EFIVAR_FS_INTERNAL_H
 
@@ -57,4 +54,4 @@ extern struct inode *efivarfs_get_inode(struct super_block *sb,
 
 extern struct list_head efivarfs_list;
 
-#endif /* EFIVAR_FS_INTERNAL_H */
+#endif 

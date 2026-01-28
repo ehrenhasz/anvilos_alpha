@@ -1,9 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- *
- * Written by Karel Zak <kzak@redhat.com>
- */
+
 #ifndef UTIL_LINUX_TTYUTILS_H
 #define UTIL_LINUX_TTYUTILS_H
 
@@ -22,25 +17,25 @@
 #else
 # define TTY_MODE 0600
 #endif
-#define TTYGRPNAME      "tty"   /* name of group to own ttys */
+#define TTYGRPNAME      "tty"   
 
-/* Some shorthands for control characters. */
-#define CTL(x)		((x) ^ 0100)	/* Assumes ASCII dialect */
-#define CR		CTL('M')	/* carriage return */
-#define NL		CTL('J')	/* line feed */
-#define BS		CTL('H')	/* back space */
-#define DEL		CTL('?')	/* delete */
 
-/* Defaults for line-editing etc. characters; you may want to change these. */
-#define DEF_ERASE	DEL		/* default erase character */
-#define DEF_INTR	CTL('C')	/* default interrupt character */
-#define DEF_QUIT	CTL('\\')	/* default quit char */
-#define DEF_KILL	CTL('U')	/* default kill char */
-#define DEF_EOF		CTL('D')	/* default EOF char */
+#define CTL(x)		((x) ^ 0100)	
+#define CR		CTL('M')	
+#define NL		CTL('J')	
+#define BS		CTL('H')	
+#define DEL		CTL('?')	
+
+
+#define DEF_ERASE	DEL		
+#define DEF_INTR	CTL('C')	
+#define DEF_QUIT	CTL('\\')	
+#define DEF_KILL	CTL('U')	
+#define DEF_EOF		CTL('D')	
 #define DEF_EOL		0
-#define DEF_SWITCH	0		/* default switch char */
+#define DEF_SWITCH	0		
 
-/* Fallback for termios->c_cc[] */
+
 #ifndef CREPRINT
 # define CREPRINT	('r' & 037)
 #endif
@@ -48,33 +43,33 @@
 # define CDISCARD	('o' & 037)
 #endif
 
-/* Default termios->iflag */
+
 #ifndef TTYDEF_IFLAG
 # define TTYDEF_IFLAG	(BRKINT | ICRNL | IMAXBEL | IXON | IXANY)
 #endif
 
-/* Default termios->oflag */
+
 #ifndef TTYDEF_OFLAG
-# define TTYDEF_OFLAG	(OPOST | ONLCR /*| OXTABS*/)
+# define TTYDEF_OFLAG	(OPOST | ONLCR )
 #endif
 
-/* Default termios->lflag */
+
 #ifndef TTYDEF_LFLAG
 # define TTYDEF_LFLAG	(ECHO | ICANON | ISIG | IEXTEN | ECHOE|ECHOKE|ECHOCTL)
 #endif
 
-/* Default termios->cflag */
+
 #ifndef TTYDEF_CFLAG
 # define TTYDEF_CFLAG	(CREAD | CS8 | HUPCL)
 #endif
 
-/* Storage for things detected while the login name was read. */
+
 struct chardata {
-	int erase;		/* erase character */
-	int kill;		/* kill character */
-	int eol;		/* end-of-line character */
-	int parity;		/* what parity did we see */
-	int capslock;		/* upper case without lower case */
+	int erase;		
+	int kill;		
+	int eol;		
+	int parity;		
+	int capslock;		
 };
 
 #define INIT_CHARDATA(ptr) do {              \
@@ -97,7 +92,7 @@ extern int get_terminal_name(const char **path, const char **name,
 
 static inline void reset_virtual_console(struct termios *tp, int flags)
 {
-	/* Use defaults of <sys/ttydefaults.h> for base settings */
+	
 	tp->c_iflag |= TTYDEF_IFLAG;
 	tp->c_oflag |= TTYDEF_OFLAG;
 	tp->c_lflag |= TTYDEF_LFLAG;
@@ -109,9 +104,7 @@ static inline void reset_virtual_console(struct termios *tp, int flags)
 		tp->c_cflag |= (B38400 | TTYDEF_CFLAG);
 	}
 
-	/* Sane setting, allow eight bit characters, no carriage return delay
-	 * the same result as `stty sane cr0 pass8'
-	 */
+	
 #ifndef IUCLC
 # define IUCLC 0
 #endif
@@ -178,19 +171,16 @@ static inline void reset_virtual_console(struct termios *tp, int flags)
 #endif
 #ifdef IUTF8
 	if (flags & UL_TTY_UTF8)
-		tp->c_iflag |= IUTF8;	    /* Set UTF-8 input flag */
+		tp->c_iflag |= IUTF8;	    
 	else
 		tp->c_iflag &= ~IUTF8;
 #endif
-	/* VTIME and VMIN can overlap with VEOF and VEOL since they are
-	 * only used for non-canonical mode. We just set the at the
-	 * beginning, so nothing bad should happen.
-	 */
+	
 	tp->c_cc[VTIME]    = 0;
 	tp->c_cc[VMIN]     = 1;
 	tp->c_cc[VINTR]    = CINTR;
 	tp->c_cc[VQUIT]    = CQUIT;
-	tp->c_cc[VERASE]   = CERASE; /* ASCII DEL (0177) */
+	tp->c_cc[VERASE]   = CERASE; 
 	tp->c_cc[VKILL]    = CKILL;
 	tp->c_cc[VEOF]     = CEOF;
 #ifdef VSWTC
@@ -209,4 +199,4 @@ static inline void reset_virtual_console(struct termios *tp, int flags)
 	tp->c_cc[VEOL2]    = _POSIX_VDISABLE;
 }
 
-#endif /* UTIL_LINUX_TTYUTILS_H */
+#endif 

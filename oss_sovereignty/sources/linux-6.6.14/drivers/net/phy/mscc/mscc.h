@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Driver for Microsemi VSC85xx PHYs
- *
- * Copyright (c) 2016 Microsemi Corporation
- */
+
+
 
 #ifndef _MSCC_PHY_H_
 #define _MSCC_PHY_H_
@@ -23,8 +19,8 @@ enum rgmii_clock_delay {
 	RGMII_CLK_DELAY_3_4_NS = 7
 };
 
-/* Microsemi VSC85xx PHY registers */
-/* IEEE 802. Std Registers */
+
+
 #define MSCC_PHY_BYPASS_CONTROL		  18
 #define DISABLE_HP_AUTO_MDIX_MASK	  0x0080
 #define DISABLE_PAIR_SWAP_CORR_MASK	  0x0020
@@ -126,26 +122,24 @@ enum rgmii_clock_delay {
 #define PHY_S6G_CFG2_FSM_CLK_BP          23
 
 #define MSCC_EXT_PAGE_ACCESS		  31
-#define MSCC_PHY_PAGE_STANDARD		  0x0000 /* Standard registers */
-#define MSCC_PHY_PAGE_EXTENDED		  0x0001 /* Extended registers */
-#define MSCC_PHY_PAGE_EXTENDED_2	  0x0002 /* Extended reg - page 2 */
-#define MSCC_PHY_PAGE_EXTENDED_3	  0x0003 /* Extended reg - page 3 */
-#define MSCC_PHY_PAGE_EXTENDED_4	  0x0004 /* Extended reg - page 4 */
+#define MSCC_PHY_PAGE_STANDARD		  0x0000 
+#define MSCC_PHY_PAGE_EXTENDED		  0x0001 
+#define MSCC_PHY_PAGE_EXTENDED_2	  0x0002 
+#define MSCC_PHY_PAGE_EXTENDED_3	  0x0003 
+#define MSCC_PHY_PAGE_EXTENDED_4	  0x0004 
 #define MSCC_PHY_PAGE_CSR_CNTL		  MSCC_PHY_PAGE_EXTENDED_4
 #define MSCC_PHY_PAGE_MACSEC		  MSCC_PHY_PAGE_EXTENDED_4
-/* Extended reg - GPIO; this is a bank of registers that are shared for all PHYs
- * in the same package.
- */
-#define MSCC_PHY_PAGE_EXTENDED_GPIO	  0x0010 /* Extended reg - GPIO */
-#define MSCC_PHY_PAGE_1588		  0x1588 /* PTP (1588) */
-#define MSCC_PHY_PAGE_TEST		  0x2a30 /* Test reg */
-#define MSCC_PHY_PAGE_TR		  0x52b5 /* Token ring registers */
+
+#define MSCC_PHY_PAGE_EXTENDED_GPIO	  0x0010 
+#define MSCC_PHY_PAGE_1588		  0x1588 
+#define MSCC_PHY_PAGE_TEST		  0x2a30 
+#define MSCC_PHY_PAGE_TR		  0x52b5 
 #define MSCC_PHY_GPIO_CONTROL_2           14
 
-#define MSCC_PHY_COMA_MODE		  0x2000 /* input(1) / output(0) */
-#define MSCC_PHY_COMA_OUTPUT		  0x1000 /* value to output */
+#define MSCC_PHY_COMA_MODE		  0x2000 
+#define MSCC_PHY_COMA_OUTPUT		  0x1000 
 
-/* Extended Page 1 Registers */
+
 #define MSCC_PHY_CU_MEDIA_CRC_VALID_CNT	  18
 #define VALID_CRC_CNT_CRC_MASK		  GENMASK(13, 0)
 
@@ -167,15 +161,15 @@ enum rgmii_clock_delay {
 
 #define MSCC_PHY_VERIPHY_CNTL_3		  26
 
-/* Extended Page 2 Registers */
+
 #define MSCC_PHY_CU_PMD_TX_CNTL		  16
 
-/* RGMII setting controls at address 18E2, for VSC8572 and similar */
+
 #define VSC8572_RGMII_CNTL		  18
 #define VSC8572_RGMII_RX_DELAY_MASK	  0x000E
 #define VSC8572_RGMII_TX_DELAY_MASK	  0x0070
 
-/* RGMII controls at address 20E2, for VSC8502 and similar */
+
 #define VSC8502_RGMII_CNTL		  20
 #define VSC8502_RGMII_RX_DELAY_MASK	  0x0070
 #define VSC8502_RGMII_TX_DELAY_MASK	  0x0007
@@ -195,13 +189,13 @@ enum rgmii_clock_delay {
 #define MSCC_PHY_EXTENDED_INT		  28
 #define MSCC_PHY_EXTENDED_INT_MS_EGR	  BIT(9)
 
-/* Extended Page 3 Registers */
+
 #define MSCC_PHY_SERDES_TX_VALID_CNT	  21
 #define MSCC_PHY_SERDES_TX_CRC_ERR_CNT	  22
 #define MSCC_PHY_SERDES_RX_VALID_CNT	  28
 #define MSCC_PHY_SERDES_RX_CRC_ERR_CNT	  29
 
-/* Extended page GPIO Registers */
+
 #define MSCC_DW8051_CNTL_STATUS		  0
 #define MICRO_NSOFT_RESET		  0x8000
 #define RUN_FROM_INT_ROM		  0x4000
@@ -213,7 +207,7 @@ enum rgmii_clock_delay {
 #define MICRO_CLK_DIVIDE(x)		  ((x) >> 1)
 #define MSCC_DW8051_VLD_MASK		  0xf1ff
 
-/* x Address in range 1-4 */
+
 #define MSCC_TRAP_ROM_ADDR(x)		  ((x) * 2 + 1)
 #define MSCC_PATCH_RAM_ADDR(x)		  (((x) + 1) * 2)
 #define MSCC_INT_MEM_ADDR		  11
@@ -259,7 +253,7 @@ enum rgmii_clock_delay {
 #define MAC_CFG_QSGMII			  0x4000
 #define MAC_CFG_RGMII			  0x8000
 
-/* Test page Registers */
+
 #define MSCC_PHY_TEST_PAGE_5		  5
 #define MSCC_PHY_TEST_PAGE_8		  8
 #define TR_CLK_DISABLE			  0x8000
@@ -267,16 +261,14 @@ enum rgmii_clock_delay {
 #define MSCC_PHY_TEST_PAGE_20		  20
 #define MSCC_PHY_TEST_PAGE_24		  24
 
-/* Token ring page Registers */
+
 #define MSCC_PHY_TR_CNTL		  16
 #define TR_WRITE			  0x8000
 #define TR_ADDR(x)			  (0x7fff & (x))
 #define MSCC_PHY_TR_LSB			  17
 #define MSCC_PHY_TR_MSB			  18
 
-/* Microsemi PHY ID's
- *   Code assumes lowest nibble is 0
- */
+
 #define PHY_ID_VSC8501			  0x00070530
 #define PHY_ID_VSC8502			  0x00070630
 #define PHY_ID_VSC8504			  0x000704c0
@@ -370,20 +362,13 @@ struct vsc8531_private {
 	const struct vsc85xx_hw_stat *hw_stats;
 	u64 *stats;
 	int nstats;
-	/* PHY address within the package. */
+	
 	u8 addr;
-	/* For multiple port PHYs; the MDIO address of the base PHY in the
-	 * package.
-	 */
+	
 	unsigned int base_addr;
 
 #if IS_ENABLED(CONFIG_MACSEC)
-	/* MACsec fields:
-	 * - One SecY per device (enforced at the s/w implementation level)
-	 * - macsec_flows: list of h/w flows
-	 * - ingr_flows: bitmap of ingress flows
-	 * - egr_flows: bitmap of egress flows
-	 */
+	
 	struct macsec_secy *secy;
 	struct list_head macsec_flows;
 	unsigned long ingr_flows;
@@ -394,28 +379,19 @@ struct vsc8531_private {
 
 	bool input_clk_init;
 	struct vsc85xx_ptp *ptp;
-	/* LOAD/SAVE GPIO pin, used for retrieving or setting time to the PHC. */
+	
 	struct gpio_desc *load_save;
 
-	/* For multiple port PHYs; the MDIO address of the base PHY in the
-	 * pair of two PHYs that share a 1588 engine. PHY0 and PHY2 are coupled.
-	 * PHY1 and PHY3 as well. PHY0 and PHY1 are base PHYs for their
-	 * respective pair.
-	 */
+	
 	unsigned int ts_base_addr;
 	u8 ts_base_phy;
 
-	/* ts_lock: used for per-PHY timestamping operations.
-	 * phc_lock: used for per-PHY PHC opertations.
-	 */
+	
 	struct mutex ts_lock;
 	struct mutex phc_lock;
 };
 
-/* Shared structure between the PHYs of the same package.
- * gpio_lock: used for PHC operations. Common for all PHYs as the load/save GPIO
- * is shared.
- */
+
 struct vsc85xx_shared_private {
 	struct mutex gpio_lock;
 };
@@ -425,7 +401,7 @@ struct vsc8531_edge_rate_table {
 	u32 vddmac;
 	u32 slowdown[8];
 };
-#endif /* CONFIG_OF_MDIO */
+#endif 
 
 enum csr_target {
 	MACRO_CTRL  = 0x07,
@@ -492,4 +468,4 @@ static inline irqreturn_t vsc8584_handle_ts_interrupt(struct phy_device *phydev)
 }
 #endif
 
-#endif /* _MSCC_PHY_H_ */
+#endif 

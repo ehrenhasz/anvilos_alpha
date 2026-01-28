@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sctp
 
@@ -84,7 +84,7 @@ TRACE_EVENT(sctp_probe,
 		  __entry->unack_data)
 );
 
-#endif /* _TRACE_SCTP_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

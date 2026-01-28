@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2021 Google LLC
- * Author: Daeho Jeong <daehojeong@google.com>
- */
+
+
 #ifndef __F2FS_IOSTAT_H__
 #define __F2FS_IOSTAT_H__
 
@@ -20,13 +17,13 @@ enum iostat_lat_type {
 #define NUM_PREALLOC_IOSTAT_CTXS	128
 #define DEFAULT_IOSTAT_PERIOD_MS	3000
 #define MIN_IOSTAT_PERIOD_MS		100
-/* maximum period of iostat tracing is 1 day */
+
 #define MAX_IOSTAT_PERIOD_MS		8640000
 
 struct iostat_lat_info {
-	unsigned long sum_lat[MAX_IO_TYPE][NR_PAGE_TYPE];	/* sum of io latencies */
-	unsigned long peak_lat[MAX_IO_TYPE][NR_PAGE_TYPE];	/* peak io latency */
-	unsigned int bio_cnt[MAX_IO_TYPE][NR_PAGE_TYPE];	/* bio count */
+	unsigned long sum_lat[MAX_IO_TYPE][NR_PAGE_TYPE];	
+	unsigned long peak_lat[MAX_IO_TYPE][NR_PAGE_TYPE];	
+	unsigned int bio_cnt[MAX_IO_TYPE][NR_PAGE_TYPE];	
 };
 
 extern int __maybe_unused iostat_info_seq_show(struct seq_file *seq,
@@ -82,4 +79,4 @@ static inline void f2fs_destroy_iostat_processing(void) {}
 static inline int f2fs_init_iostat(struct f2fs_sb_info *sbi) { return 0; }
 static inline void f2fs_destroy_iostat(struct f2fs_sb_info *sbi) {}
 #endif
-#endif /* __F2FS_IOSTAT_H__ */
+#endif 

@@ -1,16 +1,6 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved		by Bram Moolenaar
- *				GUI/Motif support by Robert Webb
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- * See README.txt for an overview of the Vim source code.
- */
 
-/*
- * Icons used by the toolbar code.
- */
+
+
 #include "../pixmaps/tb_new.xpm"
 #include "../pixmaps/tb_open.xpm"
 #include "../pixmaps/tb_close.xpm"
@@ -45,9 +35,7 @@
 #include "../pixmaps/tb_maxwidth.xpm"
 #include "../pixmaps/tb_minwidth.xpm"
 
-/*
- * Those are the pixmaps used for the default buttons.
- */
+
 static char **(built_in_pixmaps[]) =
 {
     tb_new_xpm,
@@ -84,7 +72,7 @@ static char **(built_in_pixmaps[]) =
     tb_exit_xpm
 };
 
-// Indices for named colors
+
 #define BACKGROUND	0
 #define FOREGROUND	1
 #define BOTTOM_SHADOW	2

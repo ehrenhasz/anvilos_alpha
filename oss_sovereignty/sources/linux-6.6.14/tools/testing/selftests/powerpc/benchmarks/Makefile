@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 TEST_GEN_PROGS := gettimeofday context_switch fork mmap_bench futex_bench null_syscall
 TEST_GEN_FILES := exec_target
 

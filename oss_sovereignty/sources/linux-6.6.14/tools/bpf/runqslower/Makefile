@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+
 include ../../scripts/Makefile.include
 
 OUTPUT ?= $(abspath .output)/
@@ -16,7 +16,7 @@ CFLAGS := -g -Wall $(CLANG_CROSS_FLAGS)
 CFLAGS += $(EXTRA_CFLAGS)
 LDFLAGS += $(EXTRA_LDFLAGS)
 
-# Try to detect best kernel BTF source
+
 KERNEL_REL := $(shell uname -r)
 VMLINUX_BTF_PATHS := $(if $(O),$(O)/vmlinux)		\
 	$(if $(KBUILD_OUTPUT),$(KBUILD_OUTPUT)/vmlinux) \

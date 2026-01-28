@@ -155,8 +155,8 @@ dist_zpoolcompat_DATA = \
 	%D%/compatibility.d/zol-0.7 \
 	%D%/compatibility.d/zol-0.8
 
-# canonical <- alias symbolic link pairs
-# eg: "2018" is a link to "compat-2018"
+
+
 zpoolcompatlinks = \
 	"compat-2018		2018" \
 	"compat-2019		2019" \

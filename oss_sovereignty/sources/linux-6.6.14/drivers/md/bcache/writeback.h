@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _BCACHE_WRITEBACK_H
 #define _BCACHE_WRITEBACK_H
 
@@ -9,7 +9,7 @@
 #define CUTOFF_WRITEBACK_SYNC_MAX	90
 
 #define MAX_WRITEBACKS_IN_PASS  5
-#define MAX_WRITESIZE_IN_PASS   5000	/* *512b */
+#define MAX_WRITESIZE_IN_PASS   5000	
 
 #define WRITEBACK_RATE_UPDATE_SECS_MAX		60
 #define WRITEBACK_RATE_UPDATE_SECS_DEFAULT	5
@@ -21,11 +21,7 @@
 #define BCH_WRITEBACK_FRAGMENT_THRESHOLD_HIGH 64
 
 #define BCH_DIRTY_INIT_THRD_MAX	12
-/*
- * 14 (16384ths) is chosen here as something that each backing device
- * should be a reasonable fraction of the share, and not to blow up
- * until individual backing devices are a petabyte.
- */
+
 #define WRITEBACK_SHARE_SHIFT   14
 
 struct bch_dirty_init_state;
@@ -61,17 +57,14 @@ static inline int offset_to_stripe(struct bcache_device *d,
 {
 	do_div(offset, d->stripe_size);
 
-	/* d->nr_stripes is in range [1, INT_MAX] */
+	
 	if (unlikely(offset >= d->nr_stripes)) {
 		pr_err("Invalid stripe %llu (>= nr_stripes %d).\n",
 			offset, d->nr_stripes);
 		return -EINVAL;
 	}
 
-	/*
-	 * Here offset is definitly smaller than INT_MAX,
-	 * return it as int will never overflow.
-	 */
+	
 	return offset;
 }
 
@@ -137,7 +130,7 @@ static inline void bch_writeback_add(struct cached_dev *dc)
 	    !atomic_xchg(&dc->has_dirty, 1)) {
 		if (BDEV_STATE(&dc->sb) != BDEV_STATE_DIRTY) {
 			SET_BDEV_STATE(&dc->sb, BDEV_STATE_DIRTY);
-			/* XXX: should do this synchronously */
+			
 			bch_write_bdev_super(dc, NULL);
 		}
 

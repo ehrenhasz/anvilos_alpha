@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * include/linux/input/ad714x.h
- *
- * AD714x is very flexible, it can be used as buttons, scrollwheel,
- * slider, touchpad at the same time. That depends on the boards.
- * The platform_data for the device's "struct device" holds this
- * information.
- *
- * Copyright 2009-2011 Analog Devices Inc.
- */
+
+
 
 #ifndef __LINUX_INPUT_AD714X_H__
 #define __LINUX_INPUT_AD714X_H__
@@ -17,7 +8,7 @@
 #define STAGE_CFGREG_NUM       8
 #define SYS_CFGREG_NUM         8
 
-/* board information which need be initialized in arch/mach... */
+
 struct ad714x_slider_plat {
 	int start_stage;
 	int end_stage;

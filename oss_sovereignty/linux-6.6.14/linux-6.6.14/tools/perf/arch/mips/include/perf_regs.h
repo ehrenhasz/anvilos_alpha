@@ -1,8 +1,0 @@
-#ifndef ARCH_PERF_REGS_H
-#define ARCH_PERF_REGS_H
-#include <stdlib.h>
-#include <linux/types.h>
-#include <asm/perf_regs.h>
-#define PERF_REGS_MAX PERF_REG_MIPS_MAX
-#define PERF_REGS_MASK ((1ULL << PERF_REG_MIPS_MAX) - 1)
-#endif  

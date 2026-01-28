@@ -21,11 +21,11 @@ class RAMBlockDevice:
             self.data[addr + i] = buf[i]
         return self.ret
     def ioctl(self, op, arg):
-        if op == 4:  # block count
+        if op == 4:  
             return len(self.data) // self.ERASE_BLOCK_SIZE
-        if op == 5:  # block size
+        if op == 5:  
             return self.ERASE_BLOCK_SIZE
-        if op == 6:  # erase block
+        if op == 6:  
             return 0
 def corrupt(bdev, block):
     addr = block * bdev.ERASE_BLOCK_SIZE
@@ -50,14 +50,14 @@ def test(bdev, vfs_class):
         print("statvfs OSError")
     fs = create_vfs(bdev, vfs_class)
     f = fs.open("f", "r")
-    bdev.ret = -5  # EIO
+    bdev.ret = -5  
     try:
         f.read(10)
     except OSError:
         print("read OSError")
     fs = create_vfs(bdev, vfs_class)
     f = fs.open("f", "a")
-    bdev.ret = -5  # EIO
+    bdev.ret = -5  
     try:
         f.write("test")
     except OSError:
@@ -65,7 +65,7 @@ def test(bdev, vfs_class):
     fs = create_vfs(bdev, vfs_class)
     f = fs.open("f", "w")
     f.write("test")
-    bdev.ret = -5  # EIO
+    bdev.ret = -5  
     try:
         f.close()
     except OSError:
@@ -73,7 +73,7 @@ def test(bdev, vfs_class):
     fs = create_vfs(bdev, vfs_class)
     f = fs.open("f", "w")
     f.write("test")
-    bdev.ret = -5  # EIO
+    bdev.ret = -5  
     try:
         f.flush()
     except OSError:

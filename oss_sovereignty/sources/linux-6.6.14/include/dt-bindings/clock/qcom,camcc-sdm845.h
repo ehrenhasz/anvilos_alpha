@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_SDM_CAM_CC_SDM845_H
 #define _DT_BINDINGS_CLK_SDM_CAM_CC_SDM845_H
 
-/* CAM_CC clock registers */
+
 #define CAM_CC_BPS_AHB_CLK				0
 #define CAM_CC_BPS_AREG_CLK				1
 #define CAM_CC_BPS_AXI_CLK				2
@@ -93,7 +91,7 @@
 #define CAM_CC_SOC_AHB_CLK				83
 #define CAM_CC_SYS_TMR_CLK				84
 
-/* CAM_CC Resets */
+
 #define TITAN_CAM_CC_CCI_BCR				0
 #define TITAN_CAM_CC_CPAS_BCR				1
 #define TITAN_CAM_CC_CSI0PHY_BCR			2
@@ -105,7 +103,7 @@
 #define TITAN_CAM_CC_MCLK3_BCR				8
 #define TITAN_CAM_CC_TITAN_TOP_BCR			9
 
-/* CAM_CC GDSCRs */
+
 #define BPS_GDSC					0
 #define IPE_0_GDSC					1
 #define IPE_1_GDSC					2

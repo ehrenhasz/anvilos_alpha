@@ -5,7 +5,7 @@ def is_leap(year):
     return (year % 4) == 0
 def test():
     seconds = 0
-    wday = 3  # Jan 1, 1970 was a Thursday
+    wday = 3  
     for year in range(1970, 2038):
         print("Testing %d" % year)
         yday = 1

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright (C) 2019 Xilinx Inc.
- *
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_VERSAL_H
 #define _DT_BINDINGS_CLK_VERSAL_H

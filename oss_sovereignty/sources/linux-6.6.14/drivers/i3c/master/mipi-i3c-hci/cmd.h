@@ -1,26 +1,15 @@
-/* SPDX-License-Identifier: BSD-3-Clause */
-/*
- * Copyright (c) 2020, MIPI Alliance, Inc.
- *
- * Author: Nicolas Pitre <npitre@baylibre.com>
- *
- * Common command/response related stuff
- */
+
+
 
 #ifndef CMD_H
 #define CMD_H
 
-/*
- * Those bits are common to all descriptor formats and
- * may be manipulated by the core code.
- */
+
 #define CMD_0_TOC			W0_BIT_(31)
 #define CMD_0_ROC			W0_BIT_(30)
 #define CMD_0_ATTR			W0_MASK(2, 0)
 
-/*
- * Response Descriptor Structure
- */
+
 #define RESP_STATUS(resp)		FIELD_GET(GENMASK(31, 28), resp)
 #define RESP_TID(resp)			FIELD_GET(GENMASK(27, 24), resp)
 #define RESP_DATA_LENGTH(resp)		FIELD_GET(GENMASK(21,  0), resp)
@@ -42,14 +31,14 @@ enum hci_resp_err {
 	RESP_ERR_BUS_XFER_ABORTED	= 0x9,
 	RESP_ERR_NOT_SUPPORTED		= 0xa,
 	RESP_ERR_ABORTED_WITH_CRC	= 0xb,
-	/* 0xc to 0xf are reserved for transfer specific errors */
+	
 };
 
-/* TID generation (4 bits wide in all cases) */
+
 #define hci_get_tid(bits) \
 	(atomic_inc_return_relaxed(&hci->next_cmd_tid) % (1U << 4))
 
-/* This abstracts operations with our command descriptor formats */
+
 struct hci_cmd_ops {
 	int (*prep_ccc)(struct i3c_hci *hci, struct hci_xfer *xfer,
 			u8 ccc_addr, u8 ccc_cmd, bool raw);
@@ -60,7 +49,7 @@ struct hci_cmd_ops {
 	int (*perform_daa)(struct i3c_hci *hci);
 };
 
-/* Our various instances */
+
 extern const struct hci_cmd_ops mipi_i3c_hci_cmd_v1;
 extern const struct hci_cmd_ops mipi_i3c_hci_cmd_v2;
 

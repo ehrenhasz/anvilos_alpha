@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+
 
 #ifndef __IVPU_PM_H__
 #define __IVPU_PM_H__
@@ -37,4 +35,4 @@ void ivpu_rpm_put(struct ivpu_device *vdev);
 
 void ivpu_pm_schedule_recovery(struct ivpu_device *vdev);
 
-#endif /* __IVPU_PM_H__ */
+#endif 

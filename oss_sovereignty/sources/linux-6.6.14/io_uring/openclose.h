@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 int __io_close_fixed(struct io_ring_ctx *ctx, unsigned int issue_flags,
 		     unsigned int offset);

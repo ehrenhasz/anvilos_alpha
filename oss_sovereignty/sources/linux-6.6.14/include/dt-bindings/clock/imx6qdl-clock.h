@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2014 Freescale Semiconductor, Inc.
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_IMX6QDL_H
 #define __DT_BINDINGS_CLOCK_IMX6QDL_H
@@ -277,4 +275,4 @@
 #define IMX6QDL_CLK_ENET_REF_PAD		267
 #define IMX6QDL_CLK_END				268
 
-#endif /* __DT_BINDINGS_CLOCK_IMX6QDL_H */
+#endif 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 #include <linux/sched.h>
 #include <linux/ptrace.h>
 #include <stdint.h>
@@ -62,10 +62,10 @@ typedef struct {
 typedef int pid_t;
 
 typedef struct {
-	void* f_back; // PyFrameObject.f_back, previous frame
-	void* f_code; // PyFrameObject.f_code, pointer to PyCodeObject
-	void* co_filename; // PyCodeObject.co_filename
-	void* co_name; // PyCodeObject.co_name
+	void* f_back; 
+	void* f_code; 
+	void* co_filename; 
+	void* co_name; 
 } FrameData;
 
 #ifdef SUBPROGS
@@ -87,7 +87,7 @@ static void *get_thread_state(void *tls_base, PidData *pidData)
 static __always_inline bool get_frame_data(void *frame_ptr, PidData *pidData,
 					   FrameData *frame, Symbol *symbol)
 {
-	// read data from PyFrameObject
+	
 	bpf_probe_read_user(&frame->f_back,
 			    sizeof(frame->f_back),
 			    frame_ptr + pidData->offsets.PyFrameObject_back);
@@ -95,7 +95,7 @@ static __always_inline bool get_frame_data(void *frame_ptr, PidData *pidData,
 			    sizeof(frame->f_code),
 			    frame_ptr + pidData->offsets.PyFrameObject_code);
 
-	// read data from PyCodeObject
+	
 	if (!frame->f_code)
 		return false;
 	bpf_probe_read_user(&frame->co_filename,
@@ -104,7 +104,7 @@ static __always_inline bool get_frame_data(void *frame_ptr, PidData *pidData,
 	bpf_probe_read_user(&frame->co_name,
 			    sizeof(frame->co_name),
 			    frame->f_code + pidData->offsets.PyCodeObject_name);
-	// read actual names into symbol
+	
 	if (frame->co_filename)
 		bpf_probe_read_user_str(&symbol->file,
 					sizeof(symbol->file),
@@ -209,7 +209,7 @@ static int process_frame_callback(__u32 i, struct process_frame_ctx *ctx)
 	}
 	return 0;
 }
-#endif /* USE_BPF_LOOP */
+#endif 
 
 #ifdef GLOBAL_FUNC
 __noinline
@@ -296,19 +296,19 @@ int __on_event(struct bpf_raw_tracepoint_args *ctx)
 		return 0;
 #else
 #if defined(USE_ITER)
-/* no for loop, no unrolling */
+
 #elif defined(NO_UNROLL)
 #pragma clang loop unroll(disable)
 #elif defined(UNROLL_COUNT)
 #pragma clang loop unroll_count(UNROLL_COUNT)
 #else
 #pragma clang loop unroll(full)
-#endif /* NO_UNROLL */
-		/* Unwind python stack */
+#endif 
+		
 #ifdef USE_ITER
 		int i;
 		bpf_for(i, 0, STACK_MAX_LEN) {
-#else /* !USE_ITER */
+#else 
 		for (int i = 0; i < STACK_MAX_LEN; ++i) {
 #endif
 			if (frame_ptr && get_frame_data(frame_ptr, pidData, &frame, &sym)) {
@@ -327,7 +327,7 @@ int __on_event(struct bpf_raw_tracepoint_args *ctx)
 				frame_ptr = frame.f_back;
 			}
 		}
-#endif /* USE_BPF_LOOP */
+#endif 
 		event->stack_complete = frame_ptr == NULL;
 	} else {
 		event->stack_complete = 1;

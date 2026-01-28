@@ -1,19 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Cryptographic API.
- *
- * ARIA Cipher Algorithm.
- *
- * Documentation of ARIA can be found in RFC 5794.
- * Copyright (c) 2022 Taehee Yoo <ap420073@gmail.com>
- * Copyright (c) 2022 Taehee Yoo <ap420073@gmail.com>
- *
- * Information for ARIA
- *     http://210.104.33.10/ARIA/index-e.html (English)
- *     http://seed.kisa.or.kr/ (Korean)
- *
- * Public domain version is distributed above.
- */
+
+
 
 #ifndef _CRYPTO_ARIA_H
 #define _CRYPTO_ARIA_H
@@ -339,7 +325,7 @@ static inline u32 aria_m(u32 t0)
 	return rotr32(t0, 8) ^ rotr32(t0 ^ rotr32(t0, 8), 16);
 }
 
-/* S-Box Layer 1 + M */
+
 static inline void aria_sbox_layer1_with_pre_diff(u32 *t0, u32 *t1, u32 *t2,
 						  u32 *t3)
 {
@@ -361,7 +347,7 @@ static inline void aria_sbox_layer1_with_pre_diff(u32 *t0, u32 *t1, u32 *t2,
 	      x2[get_u8(*t3, 3)];
 }
 
-/* S-Box Layer 2 + M */
+
 static inline void aria_sbox_layer2_with_pre_diff(u32 *t0, u32 *t1, u32 *t2,
 						  u32 *t3)
 {
@@ -383,7 +369,7 @@ static inline void aria_sbox_layer2_with_pre_diff(u32 *t0, u32 *t1, u32 *t2,
 	      s2[get_u8(*t3, 3)];
 }
 
-/* Word-level diffusion */
+
 static inline void aria_diff_word(u32 *t0, u32 *t1, u32 *t2, u32 *t3)
 {
 	*t1 ^= *t2;
@@ -395,7 +381,7 @@ static inline void aria_diff_word(u32 *t0, u32 *t1, u32 *t2, u32 *t3)
 	*t1 ^= *t2;
 }
 
-/* Byte-level diffusion */
+
 static inline void aria_diff_byte(u32 *t1, u32 *t2, u32 *t3)
 {
 	*t1 = ((*t1 << 8) & 0xff00ff00) ^ ((*t1 >> 8) & 0x00ff00ff);
@@ -403,7 +389,7 @@ static inline void aria_diff_byte(u32 *t1, u32 *t2, u32 *t3)
 	*t3 = bswap32(*t3);
 }
 
-/* Key XOR Layer */
+
 static inline void aria_add_round_key(u32 *rk, u32 *t0, u32 *t1, u32 *t2,
 				      u32 *t3)
 {
@@ -412,7 +398,7 @@ static inline void aria_add_round_key(u32 *rk, u32 *t0, u32 *t1, u32 *t2,
 	*t2 ^= rk[2];
 	*t3 ^= rk[3];
 }
-/* Odd round Substitution & Diffusion */
+
 static inline void aria_subst_diff_odd(u32 *t0, u32 *t1, u32 *t2, u32 *t3)
 {
 	aria_sbox_layer1_with_pre_diff(t0, t1, t2, t3);
@@ -421,7 +407,7 @@ static inline void aria_subst_diff_odd(u32 *t0, u32 *t1, u32 *t2, u32 *t3)
 	aria_diff_word(t0, t1, t2, t3);
 }
 
-/* Even round Substitution & Diffusion */
+
 static inline void aria_subst_diff_even(u32 *t0, u32 *t1, u32 *t2, u32 *t3)
 {
 	aria_sbox_layer2_with_pre_diff(t0, t1, t2, t3);
@@ -430,7 +416,7 @@ static inline void aria_subst_diff_even(u32 *t0, u32 *t1, u32 *t2, u32 *t3)
 	aria_diff_word(t0, t1, t2, t3);
 }
 
-/* Q, R Macro expanded ARIA GSRK */
+
 static inline void aria_gsrk(u32 *rk, u32 *x, u32 *y, u32 n)
 {
 	int q = 4 - (n / 32);

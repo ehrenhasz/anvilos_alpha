@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Linux TCP/IP (INET6) layer.
-#
+
+
+
+
 
 obj-$(CONFIG_IPV6) += ipv6.o
 

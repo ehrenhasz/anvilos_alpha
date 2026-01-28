@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_GENERIC_BITOPS_ATOMIC_H_
 #define _ASM_GENERIC_BITOPS_ATOMIC_H_
 
@@ -6,10 +6,7 @@
 #include <linux/compiler.h>
 #include <asm/barrier.h>
 
-/*
- * Implementation of atomic bitops using atomic-fetch ops.
- * See Documentation/atomic_bitops.txt for details.
- */
+
 
 static __always_inline void
 arch_set_bit(unsigned int nr, volatile unsigned long *p)
@@ -67,4 +64,4 @@ arch_test_and_change_bit(unsigned int nr, volatile unsigned long *p)
 
 #include <asm-generic/bitops/instrumented-atomic.h>
 
-#endif /* _ASM_GENERIC_BITOPS_ATOMIC_H */
+#endif 

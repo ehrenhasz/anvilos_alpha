@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/include/linux/sunrpc/svc_xprt.h
- *
- * RPC server transport I/O
- */
+
+
 
 #ifndef SUNRPC_SVC_XPRT_H
 #define SUNRPC_SVC_XPRT_H
@@ -39,11 +35,7 @@ struct svc_xprt_class {
 	int			xcl_ident;
 };
 
-/*
- * This is embedded in an object that wants a callback before deleting
- * an xprt; intended for use by NFSv4.1, which needs to know when a
- * client's tcp connection (and hence possibly a backchannel) goes away.
- */
+
 struct svc_xpt_user {
 	struct list_head list;
 	void (*callback)(struct svc_xpt_user *);
@@ -57,48 +49,46 @@ struct svc_xprt {
 	struct list_head	xpt_ready;
 	unsigned long		xpt_flags;
 
-	struct svc_serv		*xpt_server;	/* service for transport */
-	atomic_t    	    	xpt_reserved;	/* space on outq that is rsvd */
-	atomic_t		xpt_nr_rqsts;	/* Number of requests */
-	struct mutex		xpt_mutex;	/* to serialize sending data */
-	spinlock_t		xpt_lock;	/* protects sk_deferred
-						 * and xpt_auth_cache */
-	void			*xpt_auth_cache;/* auth cache */
-	struct list_head	xpt_deferred;	/* deferred requests that need
-						 * to be revisted */
-	struct sockaddr_storage	xpt_local;	/* local address */
-	size_t			xpt_locallen;	/* length of address */
-	struct sockaddr_storage	xpt_remote;	/* remote peer's address */
-	size_t			xpt_remotelen;	/* length of address */
+	struct svc_serv		*xpt_server;	
+	atomic_t    	    	xpt_reserved;	
+	atomic_t		xpt_nr_rqsts;	
+	struct mutex		xpt_mutex;	
+	spinlock_t		xpt_lock;	
+	void			*xpt_auth_cache;
+	struct list_head	xpt_deferred;	
+	struct sockaddr_storage	xpt_local;	
+	size_t			xpt_locallen;	
+	struct sockaddr_storage	xpt_remote;	
+	size_t			xpt_remotelen;	
 	char			xpt_remotebuf[INET6_ADDRSTRLEN + 10];
-	struct list_head	xpt_users;	/* callbacks on free */
+	struct list_head	xpt_users;	
 
 	struct net		*xpt_net;
 	netns_tracker		ns_tracker;
 	const struct cred	*xpt_cred;
-	struct rpc_xprt		*xpt_bc_xprt;	/* NFSv4.1 backchannel */
-	struct rpc_xprt_switch	*xpt_bc_xps;	/* NFSv4.1 backchannel */
+	struct rpc_xprt		*xpt_bc_xprt;	
+	struct rpc_xprt_switch	*xpt_bc_xps;	
 };
 
-/* flag bits for xpt_flags */
+
 enum {
-	XPT_BUSY,		/* enqueued/receiving */
-	XPT_CONN,		/* conn pending */
-	XPT_CLOSE,		/* dead or dying */
-	XPT_DATA,		/* data pending */
-	XPT_TEMP,		/* connected transport */
-	XPT_DEAD,		/* transport closed */
-	XPT_CHNGBUF,		/* need to change snd/rcv buf sizes */
-	XPT_DEFERRED,		/* deferred request pending */
-	XPT_OLD,		/* used for xprt aging mark+sweep */
-	XPT_LISTENER,		/* listening endpoint */
-	XPT_CACHE_AUTH,		/* cache auth info */
-	XPT_LOCAL,		/* connection from loopback interface */
-	XPT_KILL_TEMP,		/* call xpo_kill_temp_xprt before closing */
-	XPT_CONG_CTRL,		/* has congestion control */
-	XPT_HANDSHAKE,		/* xprt requests a handshake */
-	XPT_TLS_SESSION,	/* transport-layer security established */
-	XPT_PEER_AUTH,		/* peer has been authenticated */
+	XPT_BUSY,		
+	XPT_CONN,		
+	XPT_CLOSE,		
+	XPT_DATA,		
+	XPT_TEMP,		
+	XPT_DEAD,		
+	XPT_CHNGBUF,		
+	XPT_DEFERRED,		
+	XPT_OLD,		
+	XPT_LISTENER,		
+	XPT_CACHE_AUTH,		
+	XPT_LOCAL,		
+	XPT_KILL_TEMP,		
+	XPT_CONG_CTRL,		
+	XPT_HANDSHAKE,		
+	XPT_TLS_SESSION,	
+	XPT_PEER_AUTH,		
 };
 
 static inline void unregister_xpt_user(struct svc_xprt *xpt, struct svc_xpt_user *u)
@@ -112,11 +102,7 @@ static inline int register_xpt_user(struct svc_xprt *xpt, struct svc_xpt_user *u
 {
 	spin_lock(&xpt->xpt_lock);
 	if (test_bit(XPT_CLOSE, &xpt->xpt_flags)) {
-		/*
-		 * The connection is about to be deleted soon (or,
-		 * worse, may already be deleted--in which case we've
-		 * already notified the xpt_users).
-		 */
+		
 		spin_unlock(&xpt->xpt_lock);
 		return -ENOTCONN;
 	}
@@ -237,4 +223,4 @@ static inline char *__svc_print_addr(const struct sockaddr *addr,
 
 	return buf;
 }
-#endif /* SUNRPC_SVC_XPRT_H */
+#endif 

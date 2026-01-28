@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+
 
 #ifndef __EFCLIB_H__
 #define __EFCLIB_H__
@@ -24,16 +21,16 @@
 
 #define EFC_FC_ELS_DEFAULT_RETRIES	3
 
-/* Timeouts */
+
 #define EFC_FC_ELS_SEND_DEFAULT_TIMEOUT	0
 #define EFC_FC_FLOGI_TIMEOUT_SEC	5
 #define EFC_SHUTDOWN_TIMEOUT_USEC	30000000
 
-/* Return values for calls from base driver to libefc */
+
 #define EFC_SCSI_CALL_COMPLETE		0
 #define EFC_SCSI_CALL_ASYNC		1
 
-/* Local port topology */
+
 enum efc_nport_topology {
 	EFC_NPORT_TOPO_UNKNOWN = 0,
 	EFC_NPORT_TOPO_FABRIC,
@@ -60,7 +57,7 @@ enum efc_node_send_ls_acc {
 
 enum efc_sm_event;
 
-/* State machine context header  */
+
 struct efc_sm_ctx {
 	void (*current_state)(struct efc_sm_ctx *ctx,
 			      enum efc_sm_event evt, void *arg);
@@ -69,7 +66,7 @@ struct efc_sm_ctx {
 	void		*app;
 };
 
-/* Description of discovered Fabric Domain */
+
 struct efc_domain_record {
 	u32		index;
 	u32		priority;
@@ -85,7 +82,7 @@ struct efc_domain_record {
 	bool		is_nport;
 };
 
-/* Domain events */
+
 enum efc_hw_domain_event {
 	EFC_HW_DOMAIN_ALLOC_OK,
 	EFC_HW_DOMAIN_ALLOC_FAIL,
@@ -98,41 +95,7 @@ enum efc_hw_domain_event {
 	EFC_HW_DOMAIN_CHANGED,
 };
 
-/**
- * Fibre Channel port object
- *
- * @list_entry:		nport list entry
- * @ref:		reference count, each node takes a reference
- * @release:		function to free nport object
- * @efc:		pointer back to efc
- * @instance_index:	unique instance index value
- * @display_name:	port display name
- * @is_vport:		Is NPIV port
- * @free_req_pending:	pending request to free resources
- * @attached:		mark attached if reg VPI succeeds
- * @p2p_winner:		TRUE if we're the point-to-point winner
- * @domain:		pointer back to domain
- * @wwpn:		port wwpn
- * @wwnn:		port wwnn
- * @tgt_data:		target backend private port data
- * @ini_data:		initiator backend private port data
- * @indicator:		VPI
- * @fc_id:		port FC address
- * @dma:		memory for Service Parameters
- * @wwnn_str:		wwpn string
- * @sli_wwpn:		SLI provided wwpn
- * @sli_wwnn:		SLI provided wwnn
- * @sm:			nport state machine context
- * @lookup:		fc_id to node lookup object
- * @enable_ini:		SCSI initiator enabled for this port
- * @enable_tgt:		SCSI target enabled for this port
- * @enable_rscn:	port will be expecting RSCN
- * @shutting_down:	nport in process of shutting down
- * @p2p_port_id:	our port id for point-to-point
- * @topology:		topology: fabric/p2p/unknown
- * @service_params:	login parameters
- * @p2p_remote_port_id:	remote node's port id for point-to-point
- */
+
 
 struct efc_nport {
 	struct list_head	list_entry;
@@ -172,41 +135,7 @@ struct efc_nport {
 	u32			p2p_remote_port_id;
 };
 
-/**
- * Fibre Channel domain object
- *
- * This object is a container for the various SLI components needed
- * to connect to the domain of a FC or FCoE switch
- * @efc:		pointer back to efc
- * @instance_index:	unique instance index value
- * @display_name:	Node display name
- * @nport_list:		linked list of nports associated with this domain
- * @ref:		Reference count, each nport takes a reference
- * @release:		Function to free domain object
- * @ini_domain:		initiator backend private domain data
- * @tgt_domain:		target backend private domain data
- * @sm:			state machine context
- * @fcf:		FC Forwarder table index
- * @fcf_indicator:	FCFI
- * @indicator:		VFI
- * @nport_count:	Number of nports allocated
- * @dma:		memory for Service Parameters
- * @fcf_wwn:		WWN for FCF/switch
- * @drvsm:		driver domain sm context
- * @attached:		set true after attach completes
- * @is_fc:		is FC
- * @is_loop:		is loop topology
- * @is_nlport:		is public loop
- * @domain_found_pending:A domain found is pending, drec is updated
- * @req_domain_free:	True if domain object should be free'd
- * @req_accept_frames:	set in domain state machine to enable frames
- * @domain_notify_pend:	Set in domain SM to avoid duplicate node event post
- * @pending_drec:	Pending drec if a domain found is pending
- * @service_params:	any nports service parameters
- * @flogi_service_params:Fabric/P2p service parameters from FLOGI
- * @lookup:		d_id to node lookup object
- * @nport:		Pointer to first (physical) SLI port
- */
+
 struct efc_domain {
 	struct efc		*efc;
 	char			display_name[EFC_NAME_LENGTH];
@@ -216,14 +145,14 @@ struct efc_domain {
 	void			*ini_domain;
 	void			*tgt_domain;
 
-	/* Declarations private to HW/SLI */
+	
 	u32			fcf;
 	u32			fcf_indicator;
 	u32			indicator;
 	u32			nport_count;
 	struct efc_dma		dma;
 
-	/* Declarations private to FC trannport */
+	
 	u64			fcf_wwn;
 	struct efc_sm_ctx	drvsm;
 	bool			attached;
@@ -244,18 +173,7 @@ struct efc_domain {
 	struct efc_nport	*nport;
 };
 
-/**
- * Remote Node object
- *
- * This object represents a connection between the SLI port and another
- * Nx_Port on the fabric. Note this can be either a well known port such
- * as a F_Port (i.e. ff:ff:fe) or another N_Port.
- * @indicator:		RPI
- * @fc_id:		FC address
- * @attached:		true if attached
- * @nport:		associated SLI port
- * @node:		associated node
- */
+
 struct efc_remote_node {
 	u32			indicator;
 	u32			index;
@@ -267,56 +185,7 @@ struct efc_remote_node {
 	void			*node;
 };
 
-/**
- * FC Node object
- * @efc:		pointer back to efc structure
- * @display_name:	Node display name
- * @nort:		Assosiated nport pointer.
- * @hold_frames:	hold incoming frames if true
- * @els_io_enabled:	Enable allocating els ios for this node
- * @els_ios_lock:	lock to protect the els ios list
- * @els_ios_list:	ELS I/O's for this node
- * @ini_node:		backend initiator private node data
- * @tgt_node:		backend target private node data
- * @rnode:		Remote node
- * @sm:			state machine context
- * @evtdepth:		current event posting nesting depth
- * @req_free:		this node is to be free'd
- * @attached:		node is attached (REGLOGIN complete)
- * @fcp_enabled:	node is enabled to handle FCP
- * @rscn_pending:	for name server node RSCN is pending
- * @send_plogi:		send PLOGI accept, upon completion of node attach
- * @send_plogi_acc:	TRUE if io_alloc() is enabled.
- * @send_ls_acc:	type of LS acc to send
- * @ls_acc_io:		SCSI IO for LS acc
- * @ls_acc_oxid:	OX_ID for pending accept
- * @ls_acc_did:		D_ID for pending accept
- * @shutdown_reason:	reason for node shutdown
- * @sparm_dma_buf:	service parameters buffer
- * @service_params:	plogi/acc frame from remote device
- * @pend_frames_lock:	lock for inbound pending frames list
- * @pend_frames:	inbound pending frames list
- * @pend_frames_processed:count of frames processed in hold frames interval
- * @ox_id_in_use:	used to verify one at a time us of ox_id
- * @els_retries_remaining:for ELS, number of retries remaining
- * @els_req_cnt:	number of outstanding ELS requests
- * @els_cmpl_cnt:	number of outstanding ELS completions
- * @abort_cnt:		Abort counter for debugging purpos
- * @current_state_name:	current node state
- * @prev_state_name:	previous node state
- * @current_evt:	current event
- * @prev_evt:		previous event
- * @targ:		node is target capable
- * @init:		node is init capable
- * @refound:		Handle node refound case when node is being deleted
- * @els_io_pend_list:	list of pending (not yet processed) ELS IOs
- * @els_io_active_list:	list of active (processed) ELS IOs
- * @nodedb_state:	Node debugging, saved state
- * @gidpt_delay_timer:	GIDPT delay timer
- * @time_last_gidpt_msec:Start time of last target RSCN GIDPT
- * @wwnn:		remote port WWNN
- * @wwpn:		remote port WWPN
- */
+
 struct efc_node {
 	struct efc		*efc;
 	char			display_name[EFC_NAME_LENGTH];
@@ -338,7 +207,7 @@ struct efc_node {
 	void			*tgt_node;
 
 	struct efc_remote_node	rnode;
-	/* Declarations private to FC trannport */
+	
 	struct efc_sm_ctx	sm;
 	u32			evtdepth;
 
@@ -375,19 +244,7 @@ struct efc_node {
 	char			wwpn[EFC_WWN_LENGTH];
 };
 
-/**
- * NPIV port
- *
- * Collection of the information required to restore a virtual port across
- * link events
- * @wwnn:		node name
- * @wwpn:		port name
- * @fc_id:		port id
- * @tgt_data:		target backend pointer
- * @ini_data:		initiator backend pointe
- * @nport:		Used to match record after attaching for update
- *
- */
+
 
 struct efc_vport {
 	struct list_head	list_entry;
@@ -404,7 +261,7 @@ struct efc_vport {
 #define node_printf(node, fmt, args...) \
 	efc_log_info(node->efc, "[%s] " fmt, node->display_name, ##args)
 
-/* Node SM IO Context Callback structure */
+
 struct efc_node_cb {
 	int			status;
 	int			ext_status;
@@ -412,7 +269,7 @@ struct efc_node_cb {
 	struct efc_hw_rq_buffer *payload;
 	struct efc_dma		els_rsp;
 
-	/* Actual length of data received */
+	
 	int			rsp_len;
 };
 
@@ -421,16 +278,7 @@ struct efc_hw_rq_buffer {
 	struct efc_dma		dma;
 };
 
-/**
- * FC sequence object
- *
- * Defines a general FC sequence object
- * @hw:			HW that owns this sequence
- * @fcfi:		FCFI associated with sequence
- * @header:		Received frame header
- * @payload:		Received frame header
- * @hw_priv:		HW private context
- */
+
 struct efc_hw_sequence {
 	struct list_head	list_entry;
 	void			*hw;
@@ -467,39 +315,39 @@ union efc_disc_io_param {
 };
 
 struct efc_disc_io {
-	struct efc_dma		req;         /* send buffer */
-	struct efc_dma		rsp;         /* receive buffer */
-	enum efc_disc_io_type	io_type;     /* EFC_DISC_IO_TYPE enum*/
-	u16			xmit_len;    /* Length of els request*/
-	u16			rsp_len;     /* Max length of rsps to be rcvd */
-	u32			rpi;         /* Registered RPI */
-	u32			vpi;         /* VPI for this nport */
+	struct efc_dma		req;         
+	struct efc_dma		rsp;         
+	enum efc_disc_io_type	io_type;     
+	u16			xmit_len;    
+	u16			rsp_len;     
+	u32			rpi;         
+	u32			vpi;         
 	u32			s_id;
 	u32			d_id;
-	bool			rpi_registered; /* if false, use tmp RPI */
+	bool			rpi_registered; 
 	union efc_disc_io_param iparam;
 };
 
-/* Return value indiacating the sequence can not be freed */
+
 #define EFC_HW_SEQ_HOLD		0
-/* Return value indiacating the sequence can be freed */
+
 #define EFC_HW_SEQ_FREE		1
 
 struct libefc_function_template {
-	/*Sport*/
+	
 	int (*new_nport)(struct efc *efc, struct efc_nport *sp);
 	void (*del_nport)(struct efc *efc, struct efc_nport *sp);
 
-	/*Scsi Node*/
+	
 	int (*scsi_new_node)(struct efc *efc, struct efc_node *n);
 	int (*scsi_del_node)(struct efc *efc, struct efc_node *n, int reason);
 
 	int (*issue_mbox_rqst)(void *efct, void *buf, void *cb, void *arg);
-	/*Send ELS IO*/
+	
 	int (*send_els)(struct efc *efc, struct efc_disc_io *io);
-	/*Send BLS IO*/
+	
 	int (*send_bls)(struct efc *efc, u32 type, struct sli_bls_params *bls);
-	/*Free HW frame*/
+	
 	int (*hw_seq_free)(struct efc *efc, struct efc_hw_sequence *seq);
 };
 
@@ -511,7 +359,7 @@ struct libefc_function_template {
 #define EFC_LOG_DOMAIN_SM	0x20
 #define EFC_LOG_SM		0x40
 
-/* efc library port structure */
+
 struct efc {
 	void			*base;
 	struct pci_dev		*pci;
@@ -530,13 +378,11 @@ struct efc {
 	u32			link_status;
 
 	struct list_head	vport_list;
-	/* lock to protect the vport list */
+	
 	spinlock_t		vport_lock;
 
 	struct libefc_function_template tt;
-	/* lock to protect the discovery library.
-	 * Refer to efclib.c for more details.
-	 */
+	
 	spinlock_t		lock;
 
 	bool			enable_ini;
@@ -557,33 +403,27 @@ struct efc {
 	mempool_t		*els_io_pool;
 	atomic_t		els_io_alloc_failed_count;
 
-	/* hold pending frames */
+	
 	bool			hold_frames;
-	/* lock to protect pending frames list access */
+	
 	spinlock_t		pend_frames_lock;
 	struct list_head	pend_frames;
-	/* count of pending frames that were processed */
+	
 	u32			pend_frames_processed;
 
 };
 
-/*
- * EFC library registration
- * **********************************/
+
 int efcport_init(struct efc *efc);
 void efcport_destroy(struct efc *efc);
-/*
- * EFC Domain
- * **********************************/
+
 int efc_domain_cb(void *arg, int event, void *data);
 void
 efc_register_domain_free_cb(struct efc *efc,
 			    void (*callback)(struct efc *efc, void *arg),
 			    void *arg);
 
-/*
- * EFC nport
- * **********************************/
+
 void efc_nport_cb(void *arg, int event, void *data);
 struct efc_vport *
 efc_vport_create_spec(struct efc *efc, u64 wwnn, u64 wwpn, u32 fc_id,
@@ -597,27 +437,21 @@ int efc_nport_vport_del(struct efc *efc, struct efc_domain *domain,
 
 void efc_vport_del_all(struct efc *efc);
 
-/*
- * EFC Node
- * **********************************/
+
 int efc_remote_node_cb(void *arg, int event, void *data);
 void efc_node_fcid_display(u32 fc_id, char *buffer, u32 buf_len);
 void efc_node_post_shutdown(struct efc_node *node, void *arg);
 u64 efc_node_get_wwpn(struct efc_node *node);
 
-/*
- * EFC FCP/ELS/CT interface
- * **********************************/
+
 void efc_dispatch_frame(struct efc *efc, struct efc_hw_sequence *seq);
 void efc_disc_io_complete(struct efc_disc_io *io, u32 len, u32 status,
 			  u32 ext_status);
 
-/*
- * EFC SCSI INTERACTION LAYER
- * **********************************/
+
 void efc_scsi_sess_reg_complete(struct efc_node *node, u32 status);
 void efc_scsi_del_initiator_complete(struct efc *efc, struct efc_node *node);
 void efc_scsi_del_target_complete(struct efc *efc, struct efc_node *node);
 void efc_scsi_io_list_empty(struct efc *efc, struct efc_node *node);
 
-#endif /* __EFCLIB_H__ */
+#endif 

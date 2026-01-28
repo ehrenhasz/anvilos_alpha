@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# Core
+
+
 obj-$(CONFIG_EINT_MTK)			+= mtk-eint.o
 obj-$(CONFIG_PINCTRL_MTK)		+= pinctrl-mtk-common.o
 obj-$(CONFIG_PINCTRL_MTK_V2)		+= pinctrl-mtk-common-v2.o
@@ -7,7 +7,7 @@ obj-$(CONFIG_PINCTRL_MTK_MTMIPS)	+= pinctrl-mtmips.o
 obj-$(CONFIG_PINCTRL_MTK_MOORE)		+= pinctrl-moore.o
 obj-$(CONFIG_PINCTRL_MTK_PARIS)		+= pinctrl-paris.o
 
-# SoC Drivers
+
 obj-$(CONFIG_PINCTRL_MT7620)		+= pinctrl-mt7620.o
 obj-$(CONFIG_PINCTRL_MT7621)		+= pinctrl-mt7621.o
 obj-$(CONFIG_PINCTRL_MT76X8)		+= pinctrl-mt76x8.o

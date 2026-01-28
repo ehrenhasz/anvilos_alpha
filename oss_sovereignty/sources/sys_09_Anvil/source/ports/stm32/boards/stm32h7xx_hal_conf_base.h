@@ -1,32 +1,8 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 #ifndef MICROPY_INCLUDED_STM32H7XX_HAL_CONF_BASE_H
 #define MICROPY_INCLUDED_STM32H7XX_HAL_CONF_BASE_H
 
-// Enable various HAL modules
+
 #define HAL_ADC_MODULE_ENABLED
 #define HAL_CORTEX_MODULE_ENABLED
 #define HAL_CRC_MODULE_ENABLED
@@ -53,19 +29,19 @@
 #define HAL_USART_MODULE_ENABLED
 #define HAL_WWDG_MODULE_ENABLED
 
-// Oscillator values in Hz
+
 #define CSI_VALUE (4000000)
 #define HSI_VALUE (64000000)
 
-// SysTick has the highest priority
+
 #define TICK_INT_PRIORITY (0x00)
 
-// Miscellaneous HAL settings
+
 #define USE_RTOS            0
 #define USE_SD_TRANSCEIVER  0
 #define USE_SPI_CRC         1
 
-// Include various HAL modules for convenience
+
 #include "stm32h7xx_hal_dma.h"
 #include "stm32h7xx_hal_mdma.h"
 #include "stm32h7xx_hal_adc.h"
@@ -99,13 +75,13 @@
 #include "stm32h7xx_ll_rtc.h"
 #include "stm32h7xx_ll_usart.h"
 
-// HAL parameter assertions are disabled
+
 #define assert_param(expr) ((void)0)
 
-// The STM32H7xx HAL defines LPUART1 AF macros without numbers.
+
 #ifndef GPIO_AF3_LPUART1
 #define GPIO_AF3_LPUART1 GPIO_AF3_LPUART
 #define GPIO_AF8_LPUART1 GPIO_AF8_LPUART
 #endif
 
-#endif // MICROPY_INCLUDED_STM32H7XX_HAL_CONF_BASE_H
+#endif 

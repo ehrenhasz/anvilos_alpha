@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Interface for implementing AF_XDP zero-copy support in drivers.
- * Copyright(c) 2020 Intel Corporation.
- */
+
+
 
 #ifndef _LINUX_XDP_SOCK_DRV_H
 #define _LINUX_XDP_SOCK_DRV_H
@@ -94,7 +92,7 @@ static inline bool xsk_is_eop_desc(struct xdp_desc *desc)
 	return !xp_mb_desc(desc);
 }
 
-/* Returns as many entries as possible up to max. 0 <= N <= max. */
+
 static inline u32 xsk_buff_alloc_batch(struct xsk_buff_pool *pool, struct xdp_buff **xdp, u32 max)
 {
 	return xp_alloc_batch(pool, xdp, max);
@@ -334,6 +332,6 @@ static inline void xsk_buff_raw_dma_sync_for_device(struct xsk_buff_pool *pool,
 {
 }
 
-#endif /* CONFIG_XDP_SOCKETS */
+#endif 
 
-#endif /* _LINUX_XDP_SOCK_DRV_H */
+#endif 

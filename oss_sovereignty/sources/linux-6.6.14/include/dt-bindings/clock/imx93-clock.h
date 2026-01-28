@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ OR MIT */
-/*
- * Copyright 2022 NXP
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_IMX93_CLK_H
 #define __DT_BINDINGS_CLOCK_IMX93_CLK_H

@@ -14,17 +14,14 @@
 #include <pwd.h>
 #include <stdint.h>
 
-/*
- * SHM_DEST and SHM_LOCKED are defined in kernel headers, but inside
- * #ifdef __KERNEL__ ... #endif
- */
+
 #ifndef SHM_DEST
-  /* shm_mode upper byte flags */
-# define SHM_DEST	01000	/* segment will be destroyed on last detach */
-# define SHM_LOCKED	02000	/* segment will not be swapped */
+  
+# define SHM_DEST	01000	
+# define SHM_LOCKED	02000	
 #endif
 
-/* For older kernels the same holds for the defines below */
+
 #ifndef MSG_STAT
 # define MSG_STAT	11
 # define MSG_INFO	12
@@ -35,9 +32,9 @@
 # define SHM_INFO	14
 struct shm_info {
 	int used_ids;
-	unsigned long shm_tot;		/* total allocated shm */
-	unsigned long shm_rss;		/* total resident shm */
-	unsigned long shm_swp;		/* total swapped shm */
+	unsigned long shm_tot;		
+	unsigned long shm_rss;		
+	unsigned long shm_swp;		
 	unsigned long swap_attempts;
 	unsigned long swap_successes;
 };
@@ -48,18 +45,14 @@ struct shm_info {
 # define SEM_INFO	19
 #endif
 
-/* Some versions of libc only define IPC_INFO when __USE_GNU is defined. */
+
 #ifndef IPC_INFO
 # define IPC_INFO	3
 #endif
 
-/*
- *  * The last arg of semctl is a union semun, but where is it defined? X/OPEN
- *   * tells us to define it ourselves, but until recently Linux include files
- *    * would also define it.
- *     */
+
 #ifndef HAVE_UNION_SEMUN
-/* according to X/OPEN we have to define it ourselves */
+
 union semun {
 	int val;
 	struct semid_ds *buf;
@@ -68,18 +61,14 @@ union semun {
 };
 #endif
 
-/*
- * X/OPEN (Jan 1987) does not define fields key, seq in struct ipc_perm;
- *	glibc-1.09 has no support for sysv ipc.
- *	glibc 2 uses __key, __seq
- */
+
 #if defined (__GLIBC__) && __GLIBC__ >= 2
 # define KEY __key
 #else
 # define KEY key
 #endif
 
-/* Size printing in ipcs is using these. */
+
 enum {
 	IPC_UNIT_DEFAULT,
 	IPC_UNIT_BYTES,
@@ -88,20 +77,20 @@ enum {
 };
 
 struct ipc_limits {
-	uint64_t	shmmni;		/* max number of segments */
-	uint64_t	shmmax;		/* max segment size */
-	uint64_t	shmall;		/* max total shared memory */
-	uint64_t	shmmin;		/* min segment size */
+	uint64_t	shmmni;		
+	uint64_t	shmmax;		
+	uint64_t	shmall;		
+	uint64_t	shmmin;		
 
-	int		semmni;		/* max number of arrays */
-	int		semmsl;		/* max semaphores per array */
-	int		semmns;		/* max semaphores system wide */
-	int		semopm;		/* max ops per semop call */
-	unsigned int	semvmx;		/* semaphore max value (constant) */
+	int		semmni;		
+	int		semmsl;		
+	int		semmns;		
+	int		semopm;		
+	unsigned int	semvmx;		
 
-	int		msgmni;		/* max queues system wide */
-	uint64_t	msgmax;		/* max size of message */
-	int		msgmnb;		/* default max size of queue */
+	int		msgmni;		
+	uint64_t	msgmax;		
+	int		msgmnb;		
 };
 
 extern int ipc_msg_get_limits(struct ipc_limits *lim);
@@ -111,24 +100,23 @@ extern int ipc_shm_get_limits(struct ipc_limits *lim);
 struct ipc_stat {
 	int		id;
 	key_t		key;
-	uid_t		uid;    /* current uid */
-	gid_t		gid;    /* current gid */
-	uid_t		cuid;    /* creator uid */
-	gid_t		cgid;    /* creator gid */
+	uid_t		uid;    
+	gid_t		gid;    
+	uid_t		cuid;    
+	gid_t		cgid;    
 	unsigned int	mode;
 };
 
 extern void ipc_print_perms(FILE *f, struct ipc_stat *is);
 extern void ipc_print_size(int unit, char *msg, uint64_t size, const char *end, int width);
 
-/* See 'struct shmid_kernel' in kernel sources
- */
+
 struct shm_data {
 	struct ipc_stat	shm_perm;
 
 	uint64_t	shm_nattch;
 	uint64_t	shm_segsz;
-	int64_t		shm_atim;	/* __kernel_time_t is signed long */
+	int64_t		shm_atim;	
 	int64_t		shm_dtim;
 	int64_t		shm_ctim;
 	pid_t		shm_cprid;
@@ -142,13 +130,12 @@ struct shm_data {
 extern int ipc_shm_get_info(int id, struct shm_data **shmds);
 extern void ipc_shm_free_info(struct shm_data *shmds);
 
-/* See 'struct sem_array' in kernel sources
- */
+
 struct sem_elem {
 	int	semval;
-	int	ncount;		/* processes waiting on increase semval */
-	int	zcount;		/* processes waiting on semval set to zero */
-	pid_t	pid;		/* process last executed semop(2) call */
+	int	ncount;		
+	int	zcount;		
+	pid_t	pid;		
 };
 struct sem_data {
 	struct ipc_stat sem_perm;
@@ -164,8 +151,7 @@ struct sem_data {
 extern int ipc_sem_get_info(int id, struct sem_data **semds);
 extern void ipc_sem_free_info(struct sem_data *semds);
 
-/* See 'struct msg_queue' in kernel sources
- */
+
 struct msg_data {
 	struct ipc_stat msg_perm;
 
@@ -184,4 +170,4 @@ struct msg_data {
 extern int ipc_msg_get_info(int id, struct msg_data **msgds);
 extern void ipc_msg_free_info(struct msg_data *msgds);
 
-#endif /* UTIL_LINUX_IPCUTILS_H */
+#endif 

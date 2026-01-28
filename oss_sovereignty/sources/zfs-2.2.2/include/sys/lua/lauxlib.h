@@ -1,8 +1,4 @@
-/*
-** $Id: lauxlib.h,v 1.120.1.1 2013/04/12 18:48:47 roberto Exp $
-** Auxiliary functions for building Lua libraries
-** See Copyright Notice in lua.h
-*/
+
 
 
 #ifndef lauxlib_h
@@ -13,7 +9,7 @@
 
 
 
-/* extra error code for `luaL_load' */
+
 #define LUA_ERRFILE     (LUA_ERRERR+1)
 
 
@@ -59,7 +55,7 @@ LUALIB_API int (luaL_error) (lua_State *L, const char *fmt, ...);
 LUALIB_API int (luaL_checkoption) (lua_State *L, int narg, const char *def,
                                    const char *const lst[]);
 
-/* pre-defined references */
+
 #define LUA_NOREF       (-2)
 #define LUA_REFNIL      (-1)
 
@@ -85,11 +81,7 @@ LUALIB_API void (luaL_traceback) (lua_State *L, lua_State *L1,
 LUALIB_API void (luaL_requiref) (lua_State *L, const char *modname,
                                  lua_CFunction openf, int glb);
 
-/*
-** ===============================================================
-** some useful macros
-** ===============================================================
-*/
+
 
 
 #define luaL_newlibtable(L,l)	\
@@ -121,18 +113,14 @@ LUALIB_API void (luaL_requiref) (lua_State *L, const char *modname,
 #define luaL_loadbuffer(L,s,sz,n)	luaL_loadbufferx(L,s,sz,n,NULL)
 
 
-/*
-** {======================================================
-** Generic Buffer manipulation
-** =======================================================
-*/
+
 
 typedef struct luaL_Buffer {
-  char *b;  /* buffer address */
-  size_t size;  /* buffer size */
-  size_t n;  /* number of characters in buffer */
+  char *b;  
+  size_t size;  
+  size_t n;  
   lua_State *L;
-  char initb[LUAL_BUFFERSIZE];  /* initial buffer */
+  char initb[LUAL_BUFFERSIZE];  
 } luaL_Buffer;
 
 
@@ -153,10 +141,10 @@ LUALIB_API char *(luaL_buffinitsize) (lua_State *L, luaL_Buffer *B, size_t sz);
 
 #define luaL_prepbuffer(B)	luaL_prepbuffsize(B, LUAL_BUFFERSIZE)
 
-/* }====================================================== */
 
 
-/* compatibility with old module system */
+
+
 #if defined(LUA_COMPAT_MODULE)
 
 LUALIB_API void (luaL_pushmodule) (lua_State *L, const char *modname,

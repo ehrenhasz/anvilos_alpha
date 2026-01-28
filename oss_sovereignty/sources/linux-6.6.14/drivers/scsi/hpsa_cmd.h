@@ -1,38 +1,20 @@
-/*
- *    Disk Array driver for HP Smart Array SAS controllers
- *    Copyright (c) 2019-2020 Microchip Technology Inc. and its subsidiaries
- *    Copyright 2016 Microsemi Corporation
- *    Copyright 2014-2015 PMC-Sierra, Inc.
- *    Copyright 2000,2009-2015 Hewlett-Packard Development Company, L.P.
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; version 2 of the License.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- *    NON INFRINGEMENT.  See the GNU General Public License for more details.
- *
- *    Questions/Comments/Bugfixes to esc.storagedev@microsemi.com
- *
- */
+
 #ifndef HPSA_CMD_H
 #define HPSA_CMD_H
 
 #include <linux/compiler.h>
 
-#include <linux/build_bug.h> /* static_assert */
-#include <linux/stddef.h> /* offsetof */
+#include <linux/build_bug.h> 
+#include <linux/stddef.h> 
 
-/* general boundary defintions */
-#define SENSEINFOBYTES          32 /* may vary between hbas */
-#define SG_ENTRIES_IN_CMD	32 /* Max SG entries excluding chain blocks */
+
+#define SENSEINFOBYTES          32 
+#define SG_ENTRIES_IN_CMD	32 
 #define HPSA_SG_CHAIN		0x80000000
 #define HPSA_SG_LAST		0x40000000
 #define MAXREPLYQS              256
 
-/* Command Status value */
+
 #define CMD_SUCCESS             0x0000
 #define CMD_TARGET_STATUS       0x0001
 #define CMD_DATA_UNDERRUN       0x0002
@@ -49,12 +31,9 @@
 #define CMD_TMF_STATUS		0x000D
 #define CMD_IOACCEL_DISABLED	0x000E
 #define CMD_CTLR_LOCKUP		0xffff
-/* Note: CMD_CTLR_LOCKUP is not a value defined by the CISS spec
- * it is a value defined by the driver that commands can be marked
- * with when a controller lockup has been detected by the driver
- */
 
-/* TMF function status values */
+
+
 #define CISS_TMF_COMPLETE	0x00
 #define CISS_TMF_INVALID_FRAME	0x02
 #define CISS_TMF_NOT_SUPPORTED	0x04
@@ -63,16 +42,16 @@
 #define CISS_TMF_WRONG_LUN	0x09
 #define CISS_TMF_OVERLAPPED_TAG 0x0a
 
-/* Unit Attentions ASC's as defined for the MSA2012sa */
+
 #define POWER_OR_RESET			0x29
 #define STATE_CHANGED			0x2a
 #define UNIT_ATTENTION_CLEARED		0x2f
 #define LUN_FAILED			0x3e
 #define REPORT_LUNS_CHANGED		0x3f
 
-/* Unit Attentions ASCQ's as defined for the MSA2012sa */
 
-	/* These ASCQ's defined for ASC = POWER_OR_RESET */
+
+	
 #define POWER_ON_RESET			0x00
 #define POWER_ON_REBOOT			0x01
 #define SCSI_BUS_RESET			0x02
@@ -81,30 +60,30 @@
 #define TRANSCEIVER_SE			0x05
 #define TRANSCEIVER_LVD			0x06
 
-	/* These ASCQ's defined for ASC = STATE_CHANGED */
+	
 #define RESERVATION_PREEMPTED		0x03
 #define ASYM_ACCESS_CHANGED		0x06
 #define LUN_CAPACITY_CHANGED		0x09
 
-/* transfer direction */
+
 #define XFER_NONE               0x00
 #define XFER_WRITE              0x01
 #define XFER_READ               0x02
 #define XFER_RSVD               0x03
 
-/* task attribute */
+
 #define ATTR_UNTAGGED           0x00
 #define ATTR_SIMPLE             0x04
 #define ATTR_HEADOFQUEUE        0x05
 #define ATTR_ORDERED            0x06
 #define ATTR_ACA                0x07
 
-/* cdb type */
+
 #define TYPE_CMD		0x00
 #define TYPE_MSG		0x01
-#define TYPE_IOACCEL2_CMD	0x81 /* 0x81 is not used by hardware */
+#define TYPE_IOACCEL2_CMD	0x81 
 
-/* Message Types  */
+
 #define HPSA_TASK_MANAGEMENT    0x00
 #define HPSA_RESET              0x01
 #define HPSA_SCAN               0x02
@@ -116,7 +95,7 @@
 #define HPSA_LUN_RESET_TYPE     0x04
 #define HPSA_NEXUS_RESET_TYPE   0x05
 
-/* Task Management Functions */
+
 #define HPSA_TMF_ABORT_TASK     0x00
 #define HPSA_TMF_ABORT_TASK_SET 0x01
 #define HPSA_TMF_CLEAR_ACA      0x02
@@ -127,13 +106,13 @@
 
 
 
-/* config space register offsets */
+
 #define CFG_VENDORID            0x00
 #define CFG_DEVICEID            0x02
 #define CFG_I2OBAR              0x10
 #define CFG_MEM1BAR             0x14
 
-/* i2o space register offsets */
+
 #define I2O_IBDB_SET            0x20
 #define I2O_IBDB_CLEAR          0x70
 #define I2O_INT_STATUS          0x30
@@ -142,7 +121,7 @@
 #define I2O_OBPOST_Q            0x44
 #define I2O_DMA1_CFG		0x214
 
-/* Configuration Table */
+
 #define CFGTBL_ChangeReq        0x00000001l
 #define CFGTBL_AccCmds          0x00000001l
 #define DOORBELL_CTLR_RESET	0x00000004l
@@ -162,7 +141,7 @@
 #define CFGTBL_BusType_Fibre1G  0x00000100l
 #define CFGTBL_BusType_Fibre2G  0x00000200l
 
-/* VPD Inquiry types */
+
 #define HPSA_INQUIRY_FAILED		0x02
 #define HPSA_VPD_SUPPORTED_PAGES        0x00
 #define HPSA_VPD_LV_DEVICE_ID           0x83
@@ -171,7 +150,7 @@
 #define HPSA_VPD_LV_STATUS		0xC3
 #define HPSA_VPD_HEADER_SZ              4
 
-/* Logical volume states */
+
 #define HPSA_VPD_LV_STATUS_UNSUPPORTED			0xff
 #define HPSA_LV_OK                                      0x0
 #define HPSA_LV_FAILED					0x01
@@ -197,57 +176,49 @@ union u64bit {
 	u64 val;
 };
 
-/* FIXME this is a per controller value (barf!) */
+
 #define HPSA_MAX_LUN 1024
 #define HPSA_MAX_PHYS_LUN 1024
 #define MAX_EXT_TARGETS 32
 #define HPSA_MAX_DEVICES (HPSA_MAX_PHYS_LUN + HPSA_MAX_LUN + \
-	MAX_EXT_TARGETS + 1) /* + 1 is for the controller itself */
+	MAX_EXT_TARGETS + 1) 
 
-/* SCSI-3 Commands */
+
 #define HPSA_INQUIRY 0x12
 struct InquiryData {
 	u8 data_byte[36];
 } __packed;
 
-#define HPSA_REPORT_LOG 0xc2    /* Report Logical LUNs */
-#define HPSA_REPORT_PHYS 0xc3   /* Report Physical LUNs */
+#define HPSA_REPORT_LOG 0xc2    
+#define HPSA_REPORT_PHYS 0xc3   
 #define HPSA_REPORT_PHYS_EXTENDED 0x02
-#define HPSA_CISS_READ	0xc0	/* CISS Read */
-#define HPSA_GET_RAID_MAP 0xc8	/* CISS Get RAID Layout Map */
+#define HPSA_CISS_READ	0xc0	
+#define HPSA_GET_RAID_MAP 0xc8	
 
 #define RAID_MAP_MAX_ENTRIES   256
 
 struct raid_map_disk_data {
-	u32   ioaccel_handle;         /**< Handle to access this disk via the
-					*  I/O accelerator */
-	u8    xor_mult[2];            /**< XOR multipliers for this position,
-					*  valid for data disks only */
+	u32   ioaccel_handle;         
+	u8    xor_mult[2];            
 	u8    reserved[2];
 } __packed;
 
 struct raid_map_data {
-	__le32   structure_size;	/* Size of entire structure in bytes */
-	__le32   volume_blk_size;	/* bytes / block in the volume */
-	__le64   volume_blk_cnt;	/* logical blocks on the volume */
-	u8    phys_blk_shift;		/* Shift factor to convert between
-					 * units of logical blocks and physical
-					 * disk blocks */
-	u8    parity_rotation_shift;	/* Shift factor to convert between units
-					 * of logical stripes and physical
-					 * stripes */
-	__le16   strip_size;		/* blocks used on each disk / stripe */
-	__le64   disk_starting_blk;	/* First disk block used in volume */
-	__le64   disk_blk_cnt;		/* disk blocks used by volume / disk */
-	__le16   data_disks_per_row;	/* data disk entries / row in the map */
-	__le16   metadata_disks_per_row;/* mirror/parity disk entries / row
-					 * in the map */
-	__le16   row_cnt;		/* rows in each layout map */
-	__le16   layout_map_count;	/* layout maps (1 map per mirror/parity
-					 * group) */
-	__le16   flags;			/* Bit 0 set if encryption enabled */
+	__le32   structure_size;	
+	__le32   volume_blk_size;	
+	__le64   volume_blk_cnt;	
+	u8    phys_blk_shift;		
+	u8    parity_rotation_shift;	
+	__le16   strip_size;		
+	__le64   disk_starting_blk;	
+	__le64   disk_blk_cnt;		
+	__le16   data_disks_per_row;	
+	__le16   metadata_disks_per_row;
+	__le16   row_cnt;		
+	__le16   layout_map_count;	
+	__le16   flags;			
 #define RAID_MAP_FLAG_ENCRYPT_ON  0x01
-	__le16   dekindex;		/* Data encryption key index. */
+	__le16   dekindex;		
 	u8    reserved[16];
 	struct raid_map_disk_data data[RAID_MAP_MAX_ENTRIES];
 } __packed;
@@ -269,9 +240,9 @@ struct ext_report_lun_entry {
 	u8 wwid[8];
 	u8 device_type;
 	u8 device_flags;
-	u8 lun_count; /* multi-lun device, how many luns */
+	u8 lun_count; 
 	u8 redundant_paths;
-	u32 ioaccel_handle; /* ioaccel1 only uses lower 16 bits */
+	u32 ioaccel_handle; 
 } __packed;
 
 struct ReportExtendedLUNdata {
@@ -287,11 +258,11 @@ struct SenseSubsystem_info {
 	u8 reserved1[1108];
 } __packed;
 
-/* BMIC commands */
+
 #define BMIC_READ 0x26
 #define BMIC_WRITE 0x27
 #define BMIC_CACHE_FLUSH 0xc2
-#define HPSA_CACHE_FLUSH 0x01	/* C2 was already being used by HPSA */
+#define HPSA_CACHE_FLUSH 0x01	
 #define BMIC_FLASH_FIRMWARE 0xF7
 #define BMIC_SENSE_CONTROLLER_PARAMETERS 0x64
 #define BMIC_IDENTIFY_PHYSICAL_DEVICE 0x15
@@ -302,23 +273,23 @@ struct SenseSubsystem_info {
 #define BMIC_SENSE_SUBSYSTEM_INFORMATION 0x66
 #define BMIC_SENSE_STORAGE_BOX_PARAMS 0x65
 
-/* Command List Structure */
+
 union SCSI3Addr {
 	struct {
 		u8 Dev;
 		u8 Bus:6;
-		u8 Mode:2;        /* b00 */
+		u8 Mode:2;        
 	} PeripDev;
 	struct {
 		u8 DevLSB;
 		u8 DevMSB:6;
-		u8 Mode:2;        /* b01 */
+		u8 Mode:2;        
 	} LogDev;
 	struct {
 		u8 Dev:5;
 		u8 Bus:3;
 		u8 Targ:6;
-		u8 Mode:2;        /* b10 */
+		u8 Mode:2;        
 	} LogUnit;
 } __packed;
 
@@ -326,7 +297,7 @@ struct PhysDevAddr {
 	u32             TargetId:24;
 	u32             Bus:6;
 	u32             Mode:2;
-	/* 2 level target device addr */
+	
 	union SCSI3Addr  Target[2];
 } __packed;
 
@@ -353,12 +324,7 @@ struct CommandListHeader {
 
 struct RequestBlock {
 	u8   CDBLen;
-	/*
-	 * type_attr_dir:
-	 * type: low 3 bits
-	 * attr: middle 3 bits
-	 * dir: high 2 bits
-	 */
+	
 	u8	type_attr_dir;
 #define TYPE_ATTR_DIR(t, a, d) ((((d) & 0x03) << 6) |\
 				(((a) & 0x07) << 3) |\
@@ -389,8 +355,8 @@ union MoreErrInfo {
 	} Common_Info;
 	struct {
 		u8  Reserved[2];
-		u8  offense_size; /* size of offending entry */
-		u8  offense_num;  /* byte # of offense 0-base */
+		u8  offense_size; 
+		u8  offense_num;  
 		u32 offense_value;
 	} Invalid_Cmd;
 } __packed;
@@ -403,7 +369,7 @@ struct ErrorInfo {
 	union MoreErrInfo  MoreErrInfo;
 	u8               SenseInfo[SENSEINFOBYTES];
 } __packed;
-/* Command types */
+
 #define CMD_IOCTL_PEND  0x01
 #define CMD_SCSI	0x03
 #define CMD_IOACCEL1	0x04
@@ -414,16 +380,8 @@ struct ErrorInfo {
 #define DIRECT_LOOKUP_MASK (~((1 << DIRECT_LOOKUP_SHIFT) - 1))
 
 #define HPSA_ERROR_BIT          0x02
-struct ctlr_info; /* defined in hpsa.h */
-/* The size of this structure needs to be divisible by 128
- * on all architectures.  The low 4 bits of the addresses
- * are used as follows:
- *
- * bit 0: to device, used to indicate "performant mode" command
- *        from device, indidcates error status.
- * bit 1-3: to device, indicates block fetch table entry for
- *          reducing DMA in fetching commands from host memory.
- */
+struct ctlr_info; 
+
 
 #define COMMANDLIST_ALIGNMENT 128
 struct CommandList {
@@ -431,9 +389,9 @@ struct CommandList {
 	struct RequestBlock      Request;
 	struct ErrDescriptor     ErrDesc;
 	struct SGDescriptor      SG[SG_ENTRIES_IN_CMD];
-	/* information associated with the command */
-	u32			   busaddr; /* physical addr of this record */
-	struct ErrorInfo *err_info; /* pointer to the allocated mem */
+	
+	u32			   busaddr; 
+	struct ErrorInfo *err_info; 
 	struct ctlr_info	   *h;
 	int			   cmd_type;
 	long			   cmdindex;
@@ -441,66 +399,49 @@ struct CommandList {
 	struct scsi_cmnd *scsi_cmd;
 	struct work_struct work;
 
-	/*
-	 * For commands using either of the two "ioaccel" paths to
-	 * bypass the RAID stack and go directly to the physical disk
-	 * phys_disk is a pointer to the hpsa_scsi_dev_t to which the
-	 * i/o is destined.  We need to store that here because the command
-	 * may potentially encounter TASK SET FULL and need to be resubmitted
-	 * For "normal" i/o's not using the "ioaccel" paths, phys_disk is
-	 * not used.
-	 */
+	
 	struct hpsa_scsi_dev_t *phys_disk;
 
 	bool retry_pending;
 	struct hpsa_scsi_dev_t *device;
-	atomic_t refcount; /* Must be last to avoid memset in hpsa_cmd_init() */
+	atomic_t refcount; 
 } __aligned(COMMANDLIST_ALIGNMENT);
 
-/*
- * Make sure our embedded atomic variable is aligned. Otherwise we break atomic
- * operations on architectures that don't support unaligned atomics like IA64.
- *
- * The assert guards against reintroductin against unwanted __packed to
- * the struct CommandList.
- */
+
 static_assert(offsetof(struct CommandList, refcount) % __alignof__(atomic_t) == 0);
 
-/* Max S/G elements in I/O accelerator command */
+
 #define IOACCEL1_MAXSGENTRIES           24
 #define IOACCEL2_MAXSGENTRIES		28
 
-/*
- * Structure for I/O accelerator (mode 1) commands.
- * Note that this structure must be 128-byte aligned in size.
- */
+
 #define IOACCEL1_COMMANDLIST_ALIGNMENT 128
 struct io_accel1_cmd {
-	__le16 dev_handle;		/* 0x00 - 0x01 */
-	u8  reserved1;			/* 0x02 */
-	u8  function;			/* 0x03 */
-	u8  reserved2[8];		/* 0x04 - 0x0B */
-	u32 err_info;			/* 0x0C - 0x0F */
-	u8  reserved3[2];		/* 0x10 - 0x11 */
-	u8  err_info_len;		/* 0x12 */
-	u8  reserved4;			/* 0x13 */
-	u8  sgl_offset;			/* 0x14 */
-	u8  reserved5[7];		/* 0x15 - 0x1B */
-	__le32 transfer_len;		/* 0x1C - 0x1F */
-	u8  reserved6[4];		/* 0x20 - 0x23 */
-	__le16 io_flags;		/* 0x24 - 0x25 */
-	u8  reserved7[14];		/* 0x26 - 0x33 */
-	u8  LUN[8];			/* 0x34 - 0x3B */
-	__le32 control;			/* 0x3C - 0x3F */
-	u8  CDB[16];			/* 0x40 - 0x4F */
-	u8  reserved8[16];		/* 0x50 - 0x5F */
-	__le16 host_context_flags;	/* 0x60 - 0x61 */
-	__le16 timeout_sec;		/* 0x62 - 0x63 */
-	u8  ReplyQueue;			/* 0x64 */
-	u8  reserved9[3];		/* 0x65 - 0x67 */
-	__le64 tag;			/* 0x68 - 0x6F */
-	__le64 host_addr;		/* 0x70 - 0x77 */
-	u8  CISS_LUN[8];		/* 0x78 - 0x7F */
+	__le16 dev_handle;		
+	u8  reserved1;			
+	u8  function;			
+	u8  reserved2[8];		
+	u32 err_info;			
+	u8  reserved3[2];		
+	u8  err_info_len;		
+	u8  reserved4;			
+	u8  sgl_offset;			
+	u8  reserved5[7];		
+	__le32 transfer_len;		
+	u8  reserved6[4];		
+	__le16 io_flags;		
+	u8  reserved7[14];		
+	u8  LUN[8];			
+	__le32 control;			
+	u8  CDB[16];			
+	u8  reserved8[16];		
+	__le16 host_context_flags;	
+	__le16 timeout_sec;		
+	u8  ReplyQueue;			
+	u8  reserved9[3];		
+	__le64 tag;			
+	__le64 host_addr;		
+	u8  CISS_LUN[8];		
 	struct SGDescriptor SG[IOACCEL1_MAXSGENTRIES];
 } __packed __aligned(IOACCEL1_COMMANDLIST_ALIGNMENT);
 
@@ -534,23 +475,21 @@ struct ioaccel2_sg_element {
 #define IOACCEL2_LAST_SG 0x40
 } __packed;
 
-/*
- * SCSI Response Format structure for IO Accelerator Mode 2
- */
+
 struct io_accel2_scsi_response {
 	u8 IU_type;
 #define IOACCEL2_IU_TYPE_SRF			0x60
 	u8 reserved1[3];
-	u8 req_id[4];		/* request identifier */
+	u8 req_id[4];		
 	u8 reserved2[4];
-	u8 serv_response;		/* service response */
+	u8 serv_response;		
 #define IOACCEL2_SERV_RESPONSE_COMPLETE		0x000
 #define IOACCEL2_SERV_RESPONSE_FAILURE		0x001
 #define IOACCEL2_SERV_RESPONSE_TMF_COMPLETE	0x002
 #define IOACCEL2_SERV_RESPONSE_TMF_SUCCESS	0x003
 #define IOACCEL2_SERV_RESPONSE_TMF_REJECTED	0x004
 #define IOACCEL2_SERV_RESPONSE_TMF_WRONG_LUN	0x005
-	u8 status;			/* status */
+	u8 status;			
 #define IOACCEL2_STATUS_SR_TASK_COMP_GOOD	0x00
 #define IOACCEL2_STATUS_SR_TASK_COMP_CHK_COND	0x02
 #define IOACCEL2_STATUS_SR_TASK_COMP_BUSY	0x08
@@ -564,76 +503,68 @@ struct io_accel2_scsi_response {
 #define IOACCEL2_STATUS_SR_INVALID_DEVICE	0x04
 #define IOACCEL2_STATUS_SR_UNDERRUN		0x51
 #define IOACCEL2_STATUS_SR_OVERRUN		0x75
-	u8 data_present;		/* low 2 bits */
+	u8 data_present;		
 #define IOACCEL2_NO_DATAPRESENT		0x000
 #define IOACCEL2_RESPONSE_DATAPRESENT	0x001
 #define IOACCEL2_SENSE_DATA_PRESENT	0x002
 #define IOACCEL2_RESERVED		0x003
-	u8 sense_data_len;		/* sense/response data length */
-	u8 resid_cnt[4];		/* residual count */
-	u8 sense_data_buff[32];		/* sense/response data buffer */
+	u8 sense_data_len;		
+	u8 resid_cnt[4];		
+	u8 sense_data_buff[32];		
 } __packed;
 
-/*
- * Structure for I/O accelerator (mode 2 or m2) commands.
- * Note that this structure must be 128-byte aligned in size.
- */
+
 #define IOACCEL2_COMMANDLIST_ALIGNMENT 128
 struct io_accel2_cmd {
-	u8  IU_type;			/* IU Type */
-	u8  direction;			/* direction, memtype, and encryption */
-#define IOACCEL2_DIRECTION_MASK		0x03 /* bits 0,1: direction  */
-#define IOACCEL2_DIRECTION_MEMTYPE_MASK	0x04 /* bit 2: memtype source/dest */
-					     /*     0b=PCIe, 1b=DDR */
-#define IOACCEL2_DIRECTION_ENCRYPT_MASK	0x08 /* bit 3: encryption flag */
-					     /*     0=off, 1=on */
-	u8  reply_queue;		/* Reply Queue ID */
-	u8  reserved1;			/* Reserved */
-	__le32 scsi_nexus;		/* Device Handle */
-	__le32 Tag;			/* cciss tag, lower 4 bytes only */
-	__le32 tweak_lower;		/* Encryption tweak, lower 4 bytes */
-	u8  cdb[16];			/* SCSI Command Descriptor Block */
-	u8  cciss_lun[8];		/* 8 byte SCSI address */
-	__le32 data_len;		/* Total bytes to transfer */
-	u8  cmd_priority_task_attr;	/* priority and task attrs */
+	u8  IU_type;			
+	u8  direction;			
+#define IOACCEL2_DIRECTION_MASK		0x03 
+#define IOACCEL2_DIRECTION_MEMTYPE_MASK	0x04 
+					     
+#define IOACCEL2_DIRECTION_ENCRYPT_MASK	0x08 
+					     
+	u8  reply_queue;		
+	u8  reserved1;			
+	__le32 scsi_nexus;		
+	__le32 Tag;			
+	__le32 tweak_lower;		
+	u8  cdb[16];			
+	u8  cciss_lun[8];		
+	__le32 data_len;		
+	u8  cmd_priority_task_attr;	
 #define IOACCEL2_PRIORITY_MASK 0x78
 #define IOACCEL2_ATTR_MASK 0x07
-	u8  sg_count;			/* Number of sg elements */
-	__le16 dekindex;		/* Data encryption key index */
-	__le64 err_ptr;			/* Error Pointer */
-	__le32 err_len;			/* Error Length*/
-	__le32 tweak_upper;		/* Encryption tweak, upper 4 bytes */
+	u8  sg_count;			
+	__le16 dekindex;		
+	__le64 err_ptr;			
+	__le32 err_len;			
+	__le32 tweak_upper;		
 	struct ioaccel2_sg_element sg[IOACCEL2_MAXSGENTRIES];
 	struct io_accel2_scsi_response error_data;
 } __packed __aligned(IOACCEL2_COMMANDLIST_ALIGNMENT);
 
-/*
- * defines for Mode 2 command struct
- * FIXME: this can't be all I need mfm
- */
+
 #define IOACCEL2_IU_TYPE	0x40
 #define IOACCEL2_IU_TMF_TYPE	0x41
 #define IOACCEL2_DIR_NO_DATA	0x00
 #define IOACCEL2_DIR_DATA_IN	0x01
 #define IOACCEL2_DIR_DATA_OUT	0x02
 #define IOACCEL2_TMF_ABORT	0x01
-/*
- * SCSI Task Management Request format for Accelerator Mode 2
- */
+
 struct hpsa_tmf_struct {
-	u8 iu_type;		/* Information Unit Type */
-	u8 reply_queue;		/* Reply Queue ID */
-	u8 tmf;			/* Task Management Function */
-	u8 reserved1;		/* byte 3 Reserved */
-	__le32 it_nexus;	/* SCSI I-T Nexus */
-	u8 lun_id[8];		/* LUN ID for TMF request */
-	__le64 tag;		/* cciss tag associated w/ request */
-	__le64 abort_tag;	/* cciss tag of SCSI cmd or TMF to abort */
-	__le64 error_ptr;		/* Error Pointer */
-	__le32 error_len;		/* Error Length */
+	u8 iu_type;		
+	u8 reply_queue;		
+	u8 tmf;			
+	u8 reserved1;		
+	__le32 it_nexus;	
+	u8 lun_id[8];		
+	__le64 tag;		
+	__le64 abort_tag;	
+	__le64 error_ptr;		
+	__le32 error_len;		
 } __packed __aligned(IOACCEL2_COMMANDLIST_ALIGNMENT);
 
-/* Configuration Table Structure */
+
 struct HostWrite {
 	__le32		TransportRequest;
 	__le32		command_pool_addr_hi;
@@ -673,7 +604,7 @@ struct CfgTable {
 	__le32		TMFSupportFlags;
 	u8		TMFTagMask[8];
 	u8		reserved[0x78 - 0x70];
-	__le32		misc_fw_support;		/* offset 0x78 */
+	__le32		misc_fw_support;		
 #define			MISC_FW_DOORBELL_RESET		0x02
 #define			MISC_FW_DOORBELL_RESET2		0x010
 #define			MISC_FW_RAID_OFFLOAD_BASIC	0x020
@@ -709,26 +640,26 @@ struct hpsa_pci_info {
 } __packed;
 
 struct bmic_identify_controller {
-	u8	configured_logical_drive_count;	/* offset 0 */
+	u8	configured_logical_drive_count;	
 	u8	pad1[153];
-	__le16	extended_logical_unit_count;	/* offset 154 */
+	__le16	extended_logical_unit_count;	
 	u8	pad2[136];
-	u8	controller_mode;	/* offset 292 */
+	u8	controller_mode;	
 	u8	pad3[32];
 } __packed;
 
 
 struct bmic_identify_physical_device {
-	u8    scsi_bus;          /* SCSI Bus number on controller */
-	u8    scsi_id;           /* SCSI ID on this bus */
-	__le16 block_size;	     /* sector size in bytes */
-	__le32 total_blocks;	     /* number for sectors on drive */
-	__le32 reserved_blocks;   /* controller reserved (RIS) */
-	u8    model[40];         /* Physical Drive Model */
-	u8    serial_number[40]; /* Drive Serial Number */
-	u8    firmware_revision[8]; /* drive firmware revision */
-	u8    scsi_inquiry_bits; /* inquiry byte 7 bits */
-	u8    compaq_drive_stamp; /* 0 means drive not stamped */
+	u8    scsi_bus;          
+	u8    scsi_id;           
+	__le16 block_size;	     
+	__le32 total_blocks;	     
+	__le32 reserved_blocks;   
+	u8    model[40];         
+	u8    serial_number[40]; 
+	u8    firmware_revision[8]; 
+	u8    scsi_inquiry_bits; 
+	u8    compaq_drive_stamp; 
 	u8    last_failure_reason;
 #define BMIC_LAST_FAILURE_TOO_SMALL_IN_LOAD_CONFIG		0x01
 #define BMIC_LAST_FAILURE_ERROR_ERASING_RIS			0x02
@@ -786,18 +717,18 @@ struct bmic_identify_physical_device {
 
 	u8     flags;
 	u8     more_flags;
-	u8     scsi_lun;          /* SCSI LUN for phys drive */
+	u8     scsi_lun;          
 	u8     yet_more_flags;
 	u8     even_more_flags;
-	__le32 spi_speed_rules;/* SPI Speed data:Ultra disable diagnose */
-	u8     phys_connector[2];         /* connector number on controller */
-	u8     phys_box_on_bus;  /* phys enclosure this drive resides */
-	u8     phys_bay_in_box;  /* phys drv bay this drive resides */
-	__le32 rpm;              /* Drive rotational speed in rpm */
-	u8     device_type;       /* type of drive */
+	__le32 spi_speed_rules;
+	u8     phys_connector[2];         
+	u8     phys_box_on_bus;  
+	u8     phys_bay_in_box;  
+	__le32 rpm;              
+	u8     device_type;       
 #define BMIC_DEVICE_TYPE_CONTROLLER	0x07
 
-	u8     sata_version;     /* only valid when drive_type is SATA */
+	u8     sata_version;     
 	__le64 big_total_block_count;
 	__le64 ris_starting_lba;
 	__le32 ris_size;
@@ -825,11 +756,11 @@ struct bmic_identify_physical_device {
 	u8     current_temperature_degreesC;
 	u8     temperature_threshold_degreesC;
 	u8     max_temperature_degreesC;
-	u8     logical_blocks_per_phys_block_exp; /* phyblocksize = 512*2^exp */
+	u8     logical_blocks_per_phys_block_exp; 
 	__le16 current_queue_depth_limit;
 	u8     reserved_switch_stuff[60];
-	__le16 power_on_hours; /* valid only if gas gauge supported */
-	__le16 percent_endurance_used; /* valid only if gas gauge supported. */
+	__le16 power_on_hours; 
+	__le16 percent_endurance_used; 
 #define BMIC_PHYS_DRIVE_SSD_WEAROUT(idphydrv) \
 	((idphydrv->percent_endurance_used & 0x80) || \
 	 (idphydrv->percent_endurance_used > 10000))
@@ -865,8 +796,8 @@ struct bmic_sense_subsystem_info {
 	u8	reserved[3];
 	u8	chasis_serial_number[32];
 	u8	primary_world_wide_id[8];
-	u8	primary_array_serial_number[32]; /* NULL terminated */
-	u8	primary_cache_serial_number[32]; /* NULL terminated */
+	u8	primary_array_serial_number[32]; 
+	u8	primary_cache_serial_number[32]; 
 	u8	reserved_2[8];
 	u8	secondary_array_serial_number[32];
 	u8	secondary_cache_serial_number[32];
@@ -885,4 +816,4 @@ struct bmic_sense_storage_box_params {
 	u8	reserved_4[296];
 } __packed;
 
-#endif /* HPSA_CMD_H */
+#endif 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2017-2019 Mellanox Technologies. All rights reserved */
+
+
 
 #ifndef _MLXFW_MFA2_FILE_H
 #define _MLXFW_MFA2_FILE_H
@@ -13,8 +13,8 @@ struct mlxfw_mfa2_file {
 	u16 dev_count;
 	const struct mlxfw_mfa2_tlv *first_component;
 	u16 component_count;
-	const void *cb; /* components block */
-	u32 cb_archive_size; /* size of compressed components block */
+	const void *cb; 
+	u32 cb_archive_size; 
 };
 
 static inline bool mlxfw_mfa2_valid_ptr(const struct mlxfw_mfa2_file *mfa2_file,

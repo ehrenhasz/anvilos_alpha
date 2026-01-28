@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020, Linaro Ltd.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SDX55_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SDX55_H
@@ -109,7 +106,7 @@
 #define GCC_USB3PHY_PHY_BCR					13
 #define GCC_USB_PHY_CFG_AHB2PHY_BCR				14
 
-/* GCC power domains */
+
 #define USB30_GDSC						0
 #define PCIE_GDSC						1
 #define EMAC_GDSC						2

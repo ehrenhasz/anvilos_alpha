@@ -27,7 +27,7 @@ _load_key_cb() {
             zfs load-key "${ENCRYPTIONROOT}"
             ;;
         file)
-            KEYFILE="${KEYLOCATION#file://}"
+            KEYFILE="${KEYLOCATION
             [ -r "${KEYFILE}" ] || udevadm settle
             [ -r "${KEYFILE}" ] || {
                 info "ZFS: Waiting for key ${KEYFILE} for ${ENCRYPTIONROOT}..."

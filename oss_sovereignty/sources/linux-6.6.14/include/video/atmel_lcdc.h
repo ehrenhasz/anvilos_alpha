@@ -1,25 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Header file for AT91/AT32 LCD Controller
- *
- *  Data structure and register user interface
- *
- *  Copyright (C) 2007 Atmel Corporation
- */
+
+
 #ifndef __ATMEL_LCDC_H__
 #define __ATMEL_LCDC_H__
 
 #include <linux/workqueue.h>
 
-/* Way LCD wires are connected to the chip:
- * Some Atmel chips use BGR color mode (instead of standard RGB)
- * A swapped wiring onboard can bring to RGB mode.
- */
+
 #define ATMEL_LCDC_WIRING_BGR	0
 #define ATMEL_LCDC_WIRING_RGB	1
 
 
- /* LCD Controller info data structure, stored in device platform_data */
+ 
 struct atmel_lcdfb_pdata {
 	unsigned int		guard_time;
 	bool			lcdcon_is_backlight;
@@ -186,4 +177,4 @@ struct atmel_lcdfb_pdata {
 
 #define ATMEL_LCDC_LUT(n)	(0x0c00 + ((n)*4))
 
-#endif /* __ATMEL_LCDC_H__ */
+#endif 

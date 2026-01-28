@@ -33,9 +33,9 @@ print_log_test_results()
 log_section()
 {
 	echo
-	echo "################################################################################"
+	echo "
 	echo "TEST SECTION: $*"
-	echo "################################################################################"
+	echo "
 }
 ip_expand_args()
 {
@@ -246,7 +246,7 @@ vrf_strict_mode_tests_mix()
 usage()
 {
 	cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
 	-t <test>	Test(s) to run (default: all)
 			(options: $TESTS)
 EOF

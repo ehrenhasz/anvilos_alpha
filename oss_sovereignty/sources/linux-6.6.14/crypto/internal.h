@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Cryptographic API.
- *
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- * Copyright (c) 2005 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+
 #ifndef _CRYPTO_INTERNAL_H
 #define _CRYPTO_INTERNAL_H
 
@@ -57,7 +52,7 @@ enum {
 
 #define CRYPTOA_MAX (__CRYPTOA_MAX - 1)
 
-/* Maximum number of (rtattr) parameters for each template. */
+
 #define CRYPTO_MAX_ATTRS 32
 
 extern struct list_head crypto_alg_list;
@@ -84,7 +79,7 @@ static inline void set_crypto_boot_test_finished(void)
 {
 	static_branch_enable(&__crypto_boot_test_finished);
 }
-#endif /* !CONFIG_CRYPTO_MANAGER_DISABLE_TESTS */
+#endif 
 
 #ifdef CONFIG_PROC_FS
 void __init crypto_init_proc(void);
@@ -216,5 +211,5 @@ static inline struct crypto_tfm *crypto_tfm_get(struct crypto_tfm *tfm)
 	return refcount_inc_not_zero(&tfm->refcnt) ? tfm : ERR_PTR(-EOVERFLOW);
 }
 
-#endif	/* _CRYPTO_INTERNAL_H */
+#endif	
 

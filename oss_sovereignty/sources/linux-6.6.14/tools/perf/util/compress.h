@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef PERF_COMPRESS_H
 #define PERF_COMPRESS_H
 
@@ -35,7 +35,7 @@ size_t zstd_compress_stream_to_records(struct zstd_data *data, void *dst, size_t
 
 size_t zstd_decompress_stream(struct zstd_data *data, void *src, size_t src_size,
 			      void *dst, size_t dst_size);
-#else /* !HAVE_ZSTD_SUPPORT */
+#else 
 
 static inline int zstd_init(struct zstd_data *data __maybe_unused, int level __maybe_unused)
 {
@@ -65,4 +65,4 @@ static inline size_t zstd_decompress_stream(struct zstd_data *data __maybe_unuse
 }
 #endif
 
-#endif /* PERF_COMPRESS_H */
+#endif 

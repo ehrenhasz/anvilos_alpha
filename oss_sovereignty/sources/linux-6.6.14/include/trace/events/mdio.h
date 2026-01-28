@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mdio
 
@@ -37,7 +37,7 @@ TRACE_EVENT_CONDITION(mdio_access,
 		  __entry->addr, __entry->regnum, __entry->val)
 );
 
-#endif /* if !defined(_TRACE_MDIO_H) || defined(TRACE_HEADER_MULTI_READ) */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

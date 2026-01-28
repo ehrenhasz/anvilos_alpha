@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File aq_ring.h: Declaration of functions for Rx/Tx rings. */
+
+
+
 
 #ifndef AQ_RING_H
 #define AQ_RING_H
@@ -26,23 +22,12 @@ struct aq_rxpage {
 	unsigned int pg_off;
 };
 
-/*           TxC       SOP        DX         EOP
- *         +----------+----------+----------+-----------
- *   8bytes|len l3,l4 | pa       | pa       | pa
- *         +----------+----------+----------+-----------
- * 4/8bytes|len pkt   |len pkt   |          | skb
- *         +----------+----------+----------+-----------
- * 4/8bytes|is_gso    |len,flags |len       |len,is_eop
- *         +----------+----------+----------+-----------
- *
- *  This aq_ring_buff_s doesn't have endianness dependency.
- *  It is __packed for cache line optimizations.
- */
+
 struct __packed aq_ring_buff_s {
 	union {
-		/* RX/TX */
+		
 		dma_addr_t pa;
-		/* RX */
+		
 		struct {
 			u32 rss_hash;
 			u16 next;
@@ -51,13 +36,13 @@ struct __packed aq_ring_buff_s {
 			struct aq_rxpage rxdata;
 			u16 vlan_rx_tag;
 		};
-		/* EOP */
+		
 		struct {
 			dma_addr_t pa_eop;
 			struct sk_buff *skb;
 			struct xdp_frame *xdpf;
 		};
-		/* TxC */
+		
 		struct {
 			u32 mss;
 			u8 len_l2;
@@ -94,7 +79,7 @@ struct __packed aq_ring_buff_s {
 };
 
 struct aq_ring_stats_rx_s {
-	struct u64_stats_sync syncp;	/* must be first */
+	struct u64_stats_sync syncp;	
 	u64 errors;
 	u64 packets;
 	u64 bytes;
@@ -115,7 +100,7 @@ struct aq_ring_stats_rx_s {
 };
 
 struct aq_ring_stats_tx_s {
-	struct u64_stats_sync syncp;	/* must be first */
+	struct u64_stats_sync syncp;	
 	u64 errors;
 	u64 packets;
 	u64 bytes;
@@ -134,15 +119,15 @@ enum atl_ring_type {
 
 struct aq_ring_s {
 	struct aq_ring_buff_s *buff_ring;
-	u8 *dx_ring;		/* descriptors ring, dma shared mem */
+	u8 *dx_ring;		
 	struct aq_nic_s *aq_nic;
-	unsigned int idx;	/* for HW layer registers operations */
+	unsigned int idx;	
 	unsigned int hw_head;
 	unsigned int sw_head;
 	unsigned int sw_tail;
-	unsigned int size;	/* descriptors number */
-	unsigned int dx_size;	/* TX or RX descriptor size,  */
-				/* stored here for fater math */
+	unsigned int size;	
+	unsigned int dx_size;	
+				
 	u16 page_order;
 	u16 page_offset;
 	u16 frame_max;
@@ -214,4 +199,4 @@ void aq_ring_hwts_rx_clean(struct aq_ring_s *self, struct aq_nic_s *aq_nic);
 
 unsigned int aq_ring_fill_stats_data(struct aq_ring_s *self, u64 *data);
 
-#endif /* AQ_RING_H */
+#endif 

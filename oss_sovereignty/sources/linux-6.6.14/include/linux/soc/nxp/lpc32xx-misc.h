@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Author: Kevin Wells <kevin.wells@nxp.com>
- *
- * Copyright (C) 2010 NXP Semiconductors
- */
+
+
 
 #ifndef __SOC_LPC32XX_MISC_H
 #define __SOC_LPC32XX_MISC_H
@@ -30,4 +26,4 @@ static inline void lpc32xx_loopback_set(resource_size_t mapbase, int state)
 }
 #endif
 
-#endif  /* __SOC_LPC32XX_MISC_H */
+#endif  

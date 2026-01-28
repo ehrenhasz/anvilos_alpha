@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * ibmvfc.h -- driver for IBM Power Virtual Fibre Channel Adapter
- *
- * Written By: Brian King <brking@linux.vnet.ibm.com>, IBM Corporation
- *
- * Copyright (C) IBM Corporation, 2008
- */
+
+
 
 #ifndef _IBMVFC_H
 #define _IBMVFC_H
@@ -48,14 +42,7 @@
 #define IBMVFC_MIG_NO_SUB_TO_CRQ	0
 #define IBMVFC_MIG_NO_N_TO_M		0
 
-/*
- * Ensure we have resources for ERP and initialization:
- * 1 for ERP
- * 1 for initialization
- * 1 for NPIV Logout
- * 2 for BSG passthru
- * 2 for each discovery thread
- */
+
 #define IBMVFC_NUM_INTERNAL_REQ	(1 + 1 + 1 + 2 + (disc_threads * 2))
 
 #define IBMVFC_MAD_SUCCESS		0x00
@@ -189,7 +176,7 @@ struct ibmvfc_common_svc_parms {
 	__be16 fcph_version;
 	__be16 b2b_credit;
 	__be16 features;
-	__be16 bb_rcv_sz; /* upper nibble is BB_SC_N */
+	__be16 bb_rcv_sz; 
 	__be32 ratov;
 	__be32 edtov;
 } __packed __aligned(4);
@@ -298,7 +285,7 @@ struct ibmvfc_port_login {
 	__be32 blksz;
 	__be32 hdr_per_blk;
 	__be16 status;
-	__be16 error;		/* also fc_reason */
+	__be16 error;		
 	__be16 fc_explain;
 	__be16 fc_type;
 	__be32 reserved2;
@@ -354,7 +341,7 @@ struct ibmvfc_process_login {
 	struct ibmvfc_prli_svc_parms parms;
 	u8 reserved[48];
 	__be16 status;
-	__be16 error;			/* also fc_reason */
+	__be16 error;			
 	__be32 reserved2;
 	__be64 target_wwpn;
 	__be64 reserved3[2];
@@ -736,7 +723,7 @@ struct ibmvfc_target {
 	struct kref kref;
 };
 
-/* a unit of work for the hosting partition */
+
 struct ibmvfc_event {
 	struct list_head queue_list;
 	struct list_head cancel;
@@ -760,7 +747,7 @@ struct ibmvfc_event {
 	u16 hwq;
 };
 
-/* a pool of event structs for use */
+
 struct ibmvfc_event_pool {
 	struct ibmvfc_event *events;
 	u32 size;
@@ -797,7 +784,7 @@ struct ibmvfc_queue {
 
 	union ibmvfc_iu cancel_rsp;
 
-	/* Sub-CRQ fields */
+	
 	unsigned long cookie;
 	unsigned long vios_cookie;
 	unsigned long hw_irq;

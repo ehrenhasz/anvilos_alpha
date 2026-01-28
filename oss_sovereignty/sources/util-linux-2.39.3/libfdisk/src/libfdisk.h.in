@@ -18,28 +18,28 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _LIBFDISK_H
-#define _LIBFDISK_H
 
-#ifdef __cplusplus
+
+
+
 extern "C" {
-#endif
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <sys/types.h>
+
+
+
+
+
 
 /**
  * LIBFDISK_VERSION:
  *
  * Library version string
  */
-#define LIBFDISK_VERSION   "@LIBFDISK_VERSION@"
 
-#define LIBFDISK_MAJOR_VERSION   @LIBFDISK_MAJOR_VERSION@
-#define LIBFDISK_MINOR_VERSION   @LIBFDISK_MINOR_VERSION@
-#define LIBFDISK_PATCH_VERSION   @LIBFDISK_PATCH_VERSION@
+
+
+
+
 
 /**
  * fdisk_context:
@@ -173,8 +173,8 @@ extern int fdisk_get_library_features(const char ***features);
 
 /* context.h */
 
-#define FDISK_PLURAL	0
-#define FDISK_SINGULAR	1
+
+
 
 struct fdisk_context *fdisk_new_context(void);
 struct fdisk_context *fdisk_new_nested_context(struct fdisk_context *parent, const char *name);
@@ -190,7 +190,7 @@ size_t fdisk_get_nlabels(struct fdisk_context *cxt);
 
 int fdisk_has_label(struct fdisk_context *cxt);
 int fdisk_is_labeltype(struct fdisk_context *cxt, enum fdisk_labeltype id);
-#define fdisk_is_label(c, x) fdisk_is_labeltype(c, FDISK_DISKLABEL_ ## x)
+
 
 
 int fdisk_assign_device(struct fdisk_context *cxt,
@@ -575,9 +575,9 @@ extern struct fdisk_partition *fdisk_table_get_partition_by_partno(
 extern int fdisk_apply_table(struct fdisk_context *cxt, struct fdisk_table *tb);
 
 /* alignment.c */
-#define FDISK_ALIGN_UP		1
-#define FDISK_ALIGN_DOWN	2
-#define FDISK_ALIGN_NEAREST	3
+
+
+
 
 fdisk_sector_t fdisk_align_lba(struct fdisk_context *cxt, fdisk_sector_t lba, int direction);
 fdisk_sector_t fdisk_align_lba_in_range(struct fdisk_context *cxt,
@@ -617,7 +617,7 @@ extern int fdisk_iter_get_direction(struct fdisk_iter *itr);
 
 
 /* dos.c */
-#define DOS_FLAG_ACTIVE	1
+
 
 extern int fdisk_dos_fix_chs(struct fdisk_context *cxt);
 extern int fdisk_dos_move_begin(struct fdisk_context *cxt, size_t i);
@@ -696,8 +696,8 @@ enum fdisk_labelitem_bsd {
 };
 
 /* sgi.h */
-#define SGI_FLAG_BOOT	1
-#define SGI_FLAG_SWAP	2
+
+
 extern int fdisk_sgi_set_bootfile(struct fdisk_context *cxt);
 extern int fdisk_sgi_create_info(struct fdisk_context *cxt);
 
@@ -729,7 +729,7 @@ enum fdisk_labelitem_sgi {
  * GPT attribute; marks a partition as system partition (disk
  * partitioning utilities must preserve the partition as is)
  */
-#define GPT_FLAG_REQUIRED	1
+
 
 /**
  * GPT_FLAG_NOBLOCK:
@@ -737,14 +737,14 @@ enum fdisk_labelitem_sgi {
  * GPT attribute; EFI firmware should ignore the content of the
  * partition and not try to read from it
  */
-#define GPT_FLAG_NOBLOCK	2
+
 
 /**
  * GPT_FLAG_LEGACYBOOT:
  *
  * GPT attribute; use the partition for legacy boot method
  */
-#define GPT_FLAG_LEGACYBOOT	3
+
 
 /**
  * GPT_FLAG_GUIDSPECIFIC:
@@ -762,7 +762,7 @@ enum fdisk_labelitem_sgi {
  * // toggle bit 60
  * fdisk_toggle_partition_flag(cxt, n, 60);
  */
-#define GPT_FLAG_GUIDSPECIFIC	4
+
 
 extern int fdisk_gpt_is_hybrid(struct fdisk_context *cxt);
 extern int fdisk_gpt_set_npartitions(struct fdisk_context *cxt, uint32_t nents);
@@ -829,7 +829,7 @@ int fdisk_apply_script(struct fdisk_context *cxt, struct fdisk_script *dp);
 
 
 /* ask.c */
-#define fdisk_is_ask(a, x) (fdisk_ask_get_type(a) == FDISK_ASKTYPE_ ## x)
+
 
 int fdisk_set_ask(struct fdisk_context *cxt,
 		int (*ask_cb)(struct fdisk_context *, struct fdisk_ask *, void *),
@@ -888,8 +888,8 @@ int fdisk_warnx(struct fdisk_context *cxt, const char *fmt, ...)
 /* utils.h */
 extern char *fdisk_partname(const char *dev, size_t partno);
 
-#ifdef __cplusplus
-}
-#endif
 
-#endif /* _LIBFDISK_H */
+}
+
+
+

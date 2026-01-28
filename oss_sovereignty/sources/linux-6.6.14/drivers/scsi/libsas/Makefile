@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Kernel Makefile for the libsas helpers
-#
-# Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
-# Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
-#
+
+
+
+
+
+
+
 
 obj-$(CONFIG_SCSI_SAS_LIBSAS) += libsas.o
 libsas-y +=  sas_init.o     \

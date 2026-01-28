@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * u_uac1.h - Utility definitions for UAC1 function
- *
- * Copyright (C) 2016 Ruslan Bilovol <ruslan.bilovol@gmail.com>
- */
+
+
 
 #ifndef __U_UAC1_H
 #define __U_UAC1_H
@@ -23,9 +19,9 @@
 
 #define UAC1_DEF_MUTE_PRESENT	1
 #define UAC1_DEF_VOLUME_PRESENT 1
-#define UAC1_DEF_MIN_DB		(-100*256)	/* -100 dB */
-#define UAC1_DEF_MAX_DB		0		/* 0 dB */
-#define UAC1_DEF_RES_DB		(1*256)	/* 1 dB */
+#define UAC1_DEF_MIN_DB		(-100*256)	
+#define UAC1_DEF_MAX_DB		0		
+#define UAC1_DEF_RES_DB		(1*256)	
 
 
 struct f_uac1_opts {
@@ -58,4 +54,4 @@ struct f_uac1_opts {
 	int				refcnt;
 };
 
-#endif /* __U_UAC1_H */
+#endif 

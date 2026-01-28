@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Freescale MPC85xx Memory Controller kernel module
- * Author: Dave Jiang <djiang@mvista.com>
- *
- * 2006-2007 (c) MontaVista Software, Inc.
- */
+
+
 #ifndef _MPC85XX_EDAC_H_
 #define _MPC85XX_EDAC_H_
 
@@ -14,9 +9,7 @@
 #define mpc85xx_printk(level, fmt, arg...) \
 	edac_printk(level, "MPC85xx", fmt, ##arg)
 
-/*
- * L2 Err defines
- */
+
 #define MPC85XX_L2_ERRINJHI	0x0000
 #define MPC85XX_L2_ERRINJLO	0x0004
 #define MPC85XX_L2_ERRINJCTL	0x0008
@@ -30,7 +23,7 @@
 #define MPC85XX_L2_ERRADDR	0x0050
 #define MPC85XX_L2_ERRCTL	0x0058
 
-/* Error Interrupt Enable */
+
 #define L2_EIE_L2CFGINTEN	0x1
 #define L2_EIE_SBECCINTEN	0x4
 #define L2_EIE_MBECCINTEN	0x8
@@ -38,7 +31,7 @@
 #define L2_EIE_MASK	(L2_EIE_L2CFGINTEN | L2_EIE_SBECCINTEN | \
 			L2_EIE_MBECCINTEN | L2_EIE_TPARINTEN)
 
-/* Error Detect */
+
 #define L2_EDE_L2CFGERR		0x1
 #define L2_EDE_SBECCERR		0x4
 #define L2_EDE_MBECCERR		0x8
@@ -51,9 +44,7 @@
 #define L2_EDE_MASK	(L2_EDE_L2CFGERR | L2_EDE_SBECCERR | \
 			L2_EDE_MBECCERR | L2_EDE_TPARERR | L2_EDE_MULL2ERR)
 
-/*
- * PCI Err defines
- */
+
 #define PCI_EDE_TOE			0x00000001
 #define PCI_EDE_SCM			0x00000002
 #define PCI_EDE_IRMSV			0x00000004

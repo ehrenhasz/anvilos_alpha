@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 ifeq ($(CONFIG_ARCH_OMAP2PLUS), y)
 
 obj-y					+= clk.o autoidle.o clockdomain.o
@@ -21,6 +21,6 @@ obj-$(CONFIG_SOC_DRA7XX)		+= $(clk-common) clk-7xx.o \
 
 obj-$(CONFIG_SOC_AM43XX)		+= $(clk-common) dpll3xxx.o clk-43xx.o
 
-endif	# CONFIG_ARCH_OMAP2PLUS
+endif	
 
 obj-$(CONFIG_COMMON_CLK_TI_ADPLL)	+= adpll.o

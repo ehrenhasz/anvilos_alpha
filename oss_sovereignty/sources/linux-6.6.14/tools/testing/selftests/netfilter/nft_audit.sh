@@ -13,7 +13,7 @@ echo "logging into $logfile"
 logread_pid=$!
 trap 'kill $logread_pid; rm -f $logfile $rulefile' EXIT
 exec 3<"$logfile"
-do_test() { # (cmd, log)
+do_test() { 
 	echo -n "testing for cmd: $1 ... "
 	cat <&3 >/dev/null
 	$1 >/dev/null || exit 1

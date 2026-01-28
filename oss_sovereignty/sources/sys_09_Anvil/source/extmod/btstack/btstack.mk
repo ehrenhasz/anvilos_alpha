@@ -1,4 +1,4 @@
-# Makefile directives for BlueKitchen BTstack
+
 
 ifeq ($(MICROPY_BLUETOOTH_BTSTACK),1)
 
@@ -78,7 +78,7 @@ endif
 
 SRC_THIRDPARTY_C += $(SRC_BTSTACK_C)
 
-# Suppress some warnings.
+
 BTSTACK_WARNING_CFLAGS = -Wno-old-style-definition -Wno-unused-variable -Wno-unused-parameter -Wno-implicit-fallthrough
 ifneq ($(CC),clang)
 BTSTACK_WARNING_CFLAGS += -Wno-format

@@ -1,5 +1,0 @@
-&touchscreen {
-	touchscreen-inverted-x;
-	touchscreen-inverted-y;
-	status = "okay";
-};

@@ -1,18 +1,18 @@
-// this ALWAYS GENERATED file contains the definitions for the interfaces
 
 
-// File created by MIDL compiler version 3.01.75
-// at Wed Jun 06 18:20:37 2001
-// Compiler settings for .\if_ole.idl:
-//  Os (OptLev=s), W1, Zp8, env=Win32, ms_ext, c_ext
-//  error checks: none
-//@@MIDL_FILE_HEADING(  )
+
+
+
+
+
+
+
 #include "rpc.h"
 #include "rpcndr.h"
 #ifndef COM_NO_WINDOWS_H
 #include "windows.h"
 #include "ole2.h"
-#endif //COM_NO_WINDOWS_H
+#endif 
 
 #ifndef __if_ole_h__
 #define __if_ole_h__
@@ -21,12 +21,12 @@
 extern "C"{
 #endif
 
-// Forward Declarations
+
 
 #ifndef __IVim_FWD_DEFINED__
 #define __IVim_FWD_DEFINED__
 typedef interface IVim IVim;
-#endif	// __IVim_FWD_DEFINED__
+#endif	
 
 
 #ifndef __Vim_FWD_DEFINED__
@@ -36,12 +36,12 @@ typedef interface IVim IVim;
 typedef class Vim Vim;
 #else
 typedef struct Vim Vim;
-#endif // __cplusplus
+#endif 
 
-#endif	// __Vim_FWD_DEFINED__
+#endif	
 
 
-// header files for imported files
+
 #include "oaidl.h"
 
 #ifndef __MIDL_user_allocate_free_DEFINED__
@@ -53,38 +53,20 @@ typedef struct Vim Vim;
 #ifndef __IVim_INTERFACE_DEFINED__
 #define __IVim_INTERFACE_DEFINED__
 
-//***************************************
-// Generated header for interface: IVim
-// at Wed Jun 06 18:20:37 2001
-// using MIDL 3.01.75
-//**************************************
-// [oleautomation][dual][unique][helpstring][uuid][object]
-
-
-
-EXTERN_C const IID IID_IVim;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-
-    interface DECLSPEC_UUID("0F0BFAE2-4C90-11d1-82D7-0004AC368519")
-    IVim : public IDispatch
-    {
-    public:
-	virtual HRESULT STDMETHODCALLTYPE SendKeys(
-	    /* [in] */ BSTR keys) = 0;
+/ BSTR keys) = 0;
 
 	virtual HRESULT STDMETHODCALLTYPE Eval(
-	    /* [in] */ BSTR expr,
-	    /* [retval][out] */ BSTR __RPC_FAR *result) = 0;
+	     BSTR expr,
+	     BSTR __RPC_FAR *result) = 0;
 
 	virtual HRESULT STDMETHODCALLTYPE SetForeground( void) = 0;
 
 	virtual HRESULT STDMETHODCALLTYPE GetHwnd(
-	    /* [retval][out] */ UINT_PTR __RPC_FAR *result) = 0;
+	     UINT_PTR __RPC_FAR *result) = 0;
 
     };
 
-#else	// C style interface
+#else	
 
     typedef struct IVimVtbl
     {
@@ -92,8 +74,8 @@ EXTERN_C const IID IID_IVim;
 
 	HRESULT ( STDMETHODCALLTYPE __RPC_FAR *QueryInterface )(
 	    IVim __RPC_FAR * This,
-	    /* [in] */ REFIID riid,
-	    /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+	     REFIID riid,
+	     void __RPC_FAR *__RPC_FAR *ppvObject);
 
 	ULONG ( STDMETHODCALLTYPE __RPC_FAR *AddRef )(
 	    IVim __RPC_FAR * This);
@@ -103,48 +85,48 @@ EXTERN_C const IID IID_IVim;
 
 	HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetTypeInfoCount )(
 	    IVim __RPC_FAR * This,
-	    /* [out] */ UINT __RPC_FAR *pctinfo);
+	     UINT __RPC_FAR *pctinfo);
 
 	HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetTypeInfo )(
 	    IVim __RPC_FAR * This,
-	    /* [in] */ UINT iTInfo,
-	    /* [in] */ LCID lcid,
-	    /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *ppTInfo);
+	     UINT iTInfo,
+	     LCID lcid,
+	     ITypeInfo __RPC_FAR *__RPC_FAR *ppTInfo);
 
 	HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetIDsOfNames )(
 	    IVim __RPC_FAR * This,
-	    /* [in] */ REFIID riid,
-	    /* [size_is][in] */ LPOLESTR __RPC_FAR *rgszNames,
-	    /* [in] */ UINT cNames,
-	    /* [in] */ LCID lcid,
-	    /* [size_is][out] */ DISPID __RPC_FAR *rgDispId);
+	     REFIID riid,
+	     LPOLESTR __RPC_FAR *rgszNames,
+	     UINT cNames,
+	     LCID lcid,
+	     DISPID __RPC_FAR *rgDispId);
 
-	/* [local] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *Invoke )(
+	 HRESULT ( STDMETHODCALLTYPE __RPC_FAR *Invoke )(
 	    IVim __RPC_FAR * This,
-	    /* [in] */ DISPID dispIdMember,
-	    /* [in] */ REFIID riid,
-	    /* [in] */ LCID lcid,
-	    /* [in] */ WORD wFlags,
-	    /* [out][in] */ DISPPARAMS __RPC_FAR *pDispParams,
-	    /* [out] */ VARIANT __RPC_FAR *pVarResult,
-	    /* [out] */ EXCEPINFO __RPC_FAR *pExcepInfo,
-	    /* [out] */ UINT __RPC_FAR *puArgErr);
+	     DISPID dispIdMember,
+	     REFIID riid,
+	     LCID lcid,
+	     WORD wFlags,
+	     DISPPARAMS __RPC_FAR *pDispParams,
+	     VARIANT __RPC_FAR *pVarResult,
+	     EXCEPINFO __RPC_FAR *pExcepInfo,
+	     UINT __RPC_FAR *puArgErr);
 
 	HRESULT ( STDMETHODCALLTYPE __RPC_FAR *SendKeys )(
 	    IVim __RPC_FAR * This,
-	    /* [in] */ BSTR keys);
+	     BSTR keys);
 
 	HRESULT ( STDMETHODCALLTYPE __RPC_FAR *Eval )(
 	    IVim __RPC_FAR * This,
-	    /* [in] */ BSTR expr,
-	    /* [retval][out] */ BSTR __RPC_FAR *result);
+	     BSTR expr,
+	     BSTR __RPC_FAR *result);
 
 	HRESULT ( STDMETHODCALLTYPE __RPC_FAR *SetForeground )(
 	    IVim __RPC_FAR * This);
 
 	HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetHwnd )(
 	    IVim __RPC_FAR * This,
-	    /* [retval][out] */ UINT_PTR __RPC_FAR *result);
+	     UINT_PTR __RPC_FAR *result);
 
 	END_INTERFACE
     } IVimVtbl;
@@ -192,16 +174,16 @@ EXTERN_C const IID IID_IVim;
 #define IVim_GetHwnd(This,result)	\
     (This)->lpVtbl -> GetHwnd(This,result)
 
-#endif // COBJMACROS
+#endif 
 
 
-#endif	// C style interface
+#endif	
 
 
 
 HRESULT STDMETHODCALLTYPE IVim_SendKeys_Proxy(
     IVim __RPC_FAR * This,
-    /* [in] */ BSTR keys);
+     BSTR keys);
 
 
 void __RPC_STUB IVim_SendKeys_Stub(
@@ -213,8 +195,8 @@ void __RPC_STUB IVim_SendKeys_Stub(
 
 HRESULT STDMETHODCALLTYPE IVim_Eval_Proxy(
     IVim __RPC_FAR * This,
-    /* [in] */ BSTR expr,
-    /* [retval][out] */ BSTR __RPC_FAR *result);
+     BSTR expr,
+     BSTR __RPC_FAR *result);
 
 
 void __RPC_STUB IVim_Eval_Stub(
@@ -237,7 +219,7 @@ void __RPC_STUB IVim_SetForeground_Stub(
 
 HRESULT STDMETHODCALLTYPE IVim_GetHwnd_Proxy(
     IVim __RPC_FAR * This,
-    /* [retval][out] */ UINT_PTR __RPC_FAR *result);
+     UINT_PTR __RPC_FAR *result);
 
 
 void __RPC_STUB IVim_GetHwnd_Stub(
@@ -248,19 +230,19 @@ void __RPC_STUB IVim_GetHwnd_Stub(
 
 
 
-#endif	// __IVim_INTERFACE_DEFINED__
+#endif	
 
 
 
 #ifndef __Vim_LIBRARY_DEFINED__
 #define __Vim_LIBRARY_DEFINED__
 
-//***************************************
-// Generated header for library: Vim
-// at Wed Jun 06 18:20:37 2001
-// using MIDL 3.01.75
-//**************************************
-// [version][helpstring][uuid]
+
+
+
+
+
+
 
 
 
@@ -272,16 +254,16 @@ EXTERN_C const CLSID CLSID_Vim;
 class DECLSPEC_UUID("0F0BFAE1-4C90-11d1-82D7-0004AC368519")
 Vim;
 #endif
-#endif // __Vim_LIBRARY_DEFINED__
+#endif 
 
-// Additional Prototypes for ALL interfaces
+
 
 unsigned long		  __RPC_USER  BSTR_UserSize(	 unsigned long __RPC_FAR *, unsigned long	     , BSTR __RPC_FAR * );
 unsigned char __RPC_FAR * __RPC_USER  BSTR_UserMarshal(  unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, BSTR __RPC_FAR * );
 unsigned char __RPC_FAR * __RPC_USER  BSTR_UserUnmarshal(unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, BSTR __RPC_FAR * );
 void			  __RPC_USER  BSTR_UserFree(	 unsigned long __RPC_FAR *, BSTR __RPC_FAR * );
 
-// end of Additional Prototypes
+
 
 #ifdef __cplusplus
 }

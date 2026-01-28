@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __BLK_NULL_BLK_H
 #define __BLK_NULL_BLK_H
 
@@ -41,13 +41,7 @@ struct nullb_queue {
 };
 
 struct nullb_zone {
-	/*
-	 * Zone lock to prevent concurrent modification of a zone write
-	 * pointer position and condition: with memory backing, a write
-	 * command execution may sleep on memory allocation. For this case,
-	 * use mutex as the zone lock. Otherwise, use the spinlock for
-	 * locking the zone.
-	 */
+	
 	union {
 		spinlock_t spinlock;
 		struct mutex mutex;
@@ -60,7 +54,7 @@ struct nullb_zone {
 	unsigned int capacity;
 };
 
-/* Queue modes */
+
 enum {
 	NULL_Q_BIO	= 0,
 	NULL_Q_RQ	= 1,
@@ -75,9 +69,9 @@ struct nullb_device {
 	struct fault_config requeue_config;
 	struct fault_config init_hctx_fault_config;
 #endif
-	struct radix_tree_root data; /* data stored in the disk */
-	struct radix_tree_root cache; /* disk cache data */
-	unsigned long flags; /* device flags */
+	struct radix_tree_root data; 
+	struct radix_tree_root cache; 
+	unsigned long flags; 
 	unsigned int curr_cache;
 	struct badblocks badblocks;
 
@@ -91,35 +85,35 @@ struct nullb_device {
 	bool need_zone_res_mgmt;
 	spinlock_t zone_res_lock;
 
-	unsigned long size; /* device size in MB */
-	unsigned long completion_nsec; /* time in ns to complete a request */
-	unsigned long cache_size; /* disk cache size in MB */
-	unsigned long zone_size; /* zone size in MB if device is zoned */
-	unsigned long zone_capacity; /* zone capacity in MB if device is zoned */
-	unsigned int zone_nr_conv; /* number of conventional zones */
-	unsigned int zone_max_open; /* max number of open zones */
-	unsigned int zone_max_active; /* max number of active zones */
-	unsigned int submit_queues; /* number of submission queues */
-	unsigned int prev_submit_queues; /* number of submission queues before change */
-	unsigned int poll_queues; /* number of IOPOLL submission queues */
-	unsigned int prev_poll_queues; /* number of IOPOLL submission queues before change */
-	unsigned int home_node; /* home node for the device */
-	unsigned int queue_mode; /* block interface */
-	unsigned int blocksize; /* block size */
-	unsigned int max_sectors; /* Max sectors per command */
-	unsigned int irqmode; /* IRQ completion handler */
-	unsigned int hw_queue_depth; /* queue depth */
-	unsigned int index; /* index of the disk, only valid with a disk */
-	unsigned int mbps; /* Bandwidth throttle cap (in MB/s) */
-	bool blocking; /* blocking blk-mq device */
-	bool use_per_node_hctx; /* use per-node allocation for hardware context */
-	bool power; /* power on/off the device */
-	bool memory_backed; /* if data is stored in memory */
-	bool discard; /* if support discard */
-	bool zoned; /* if device is zoned */
-	bool virt_boundary; /* virtual boundary on/off for the device */
-	bool no_sched; /* no IO scheduler for the device */
-	bool shared_tag_bitmap; /* use hostwide shared tags */
+	unsigned long size; 
+	unsigned long completion_nsec; 
+	unsigned long cache_size; 
+	unsigned long zone_size; 
+	unsigned long zone_capacity; 
+	unsigned int zone_nr_conv; 
+	unsigned int zone_max_open; 
+	unsigned int zone_max_active; 
+	unsigned int submit_queues; 
+	unsigned int prev_submit_queues; 
+	unsigned int poll_queues; 
+	unsigned int prev_poll_queues; 
+	unsigned int home_node; 
+	unsigned int queue_mode; 
+	unsigned int blocksize; 
+	unsigned int max_sectors; 
+	unsigned int irqmode; 
+	unsigned int hw_queue_depth; 
+	unsigned int index; 
+	unsigned int mbps; 
+	bool blocking; 
+	bool use_per_node_hctx; 
+	bool power; 
+	bool memory_backed; 
+	bool discard; 
+	bool zoned; 
+	bool virt_boundary; 
+	bool no_sched; 
+	bool shared_tag_bitmap; 
 };
 
 struct nullb {
@@ -188,5 +182,5 @@ static inline ssize_t zone_cond_store(struct nullb_device *dev,
 	return -EOPNOTSUPP;
 }
 #define null_report_zones	NULL
-#endif /* CONFIG_BLK_DEV_ZONED */
-#endif /* __NULL_BLK_H */
+#endif 
+#endif 

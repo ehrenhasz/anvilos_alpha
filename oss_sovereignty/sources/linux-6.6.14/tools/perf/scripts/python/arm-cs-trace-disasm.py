@@ -31,7 +31,7 @@ def get_optional(perf_dict, field):
        return "[unknown]"
 def get_offset(perf_dict, field):
 	if field in perf_dict:
-		return "+%#x" % perf_dict[field]
+		return "+%
 	return ""
 def get_dso_file_path(dso_name, dso_build_id):
 	if (dso_name == "[kernel.kallsyms]" or dso_name == "vmlinux"):
@@ -56,8 +56,8 @@ def read_disam(dso_fname, dso_start, start_addr, stop_addr):
 		start_addr = start_addr - dso_start;
 		stop_addr = stop_addr - dso_start;
 		disasm = [ options.objdump_name, "-d", "-z",
-			   "--start-address="+format(start_addr,"#x"),
-			   "--stop-address="+format(stop_addr,"#x") ]
+			   "--start-address="+format(start_addr,"
+			   "--stop-address="+format(stop_addr,"
 		disasm += [ dso_fname ]
 		disasm_output = check_output(disasm).decode('utf-8').split('\n')
 		disasm_cache[addr_range] = disasm_output

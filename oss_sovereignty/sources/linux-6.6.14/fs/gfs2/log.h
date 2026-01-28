@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+
+
 
 #ifndef __LOG_DOT_H__
 #define __LOG_DOT_H__
@@ -13,18 +10,10 @@
 #include "incore.h"
 #include "inode.h"
 
-/*
- * The minimum amount of log space required for a log flush is one block for
- * revokes and one block for the log header.  Log flushes other than
- * GFS2_LOG_HEAD_FLUSH_NORMAL may write one or two more log headers.
- */
+
 #define GFS2_LOG_FLUSH_MIN_BLOCKS 4
 
-/**
- * gfs2_log_lock - acquire the right to mess with the log manager
- * @sdp: the filesystem
- *
- */
+
 
 static inline void gfs2_log_lock(struct gfs2_sbd *sdp)
 __acquires(&sdp->sd_log_lock)
@@ -32,11 +21,7 @@ __acquires(&sdp->sd_log_lock)
 	spin_lock(&sdp->sd_log_lock);
 }
 
-/**
- * gfs2_log_unlock - release the right to mess with the log manager
- * @sdp: the filesystem
- *
- */
+
 
 static inline void gfs2_log_unlock(struct gfs2_sbd *sdp)
 __releases(&sdp->sd_log_lock)
@@ -95,4 +80,4 @@ extern void gfs2_glock_remove_revoke(struct gfs2_glock *gl);
 extern void gfs2_flush_revokes(struct gfs2_sbd *sdp);
 extern void gfs2_ail_drain(struct gfs2_sbd *sdp);
 
-#endif /* __LOG_DOT_H__ */
+#endif 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Greybus driver and device API
- *
- * Copyright 2014-2015 Google Inc.
- * Copyright 2014-2015 Linaro Ltd.
- */
+
+
 
 #ifndef __LINUX_GREYBUS_H
 #define __LINUX_GREYBUS_H
@@ -33,7 +28,7 @@
 #include <linux/greybus/connection.h>
 #include <linux/greybus/operation.h>
 
-/* Matches up with the Greybus Protocol specification document */
+
 #define GREYBUS_VERSION_MAJOR	0x00
 #define GREYBUS_VERSION_MINOR	0x01
 
@@ -49,8 +44,8 @@
 	.match_flags	= GREYBUS_ID_MATCH_CLASS,		\
 	.class		= (c),
 
-/* Maximum number of CPorts */
-#define CPORT_ID_MAX	4095		/* UniPro max id is 4095 */
+
+#define CPORT_ID_MAX	4095		
 #define CPORT_ID_BAD	U16_MAX
 
 struct greybus_driver {
@@ -76,25 +71,18 @@ static inline void *greybus_get_drvdata(struct gb_bundle *bundle)
 	return dev_get_drvdata(&bundle->dev);
 }
 
-/* Don't call these directly, use the module_greybus_driver() macro instead */
+
 int greybus_register_driver(struct greybus_driver *driver,
 			    struct module *module, const char *mod_name);
 void greybus_deregister_driver(struct greybus_driver *driver);
 
-/* define to get proper THIS_MODULE and KBUILD_MODNAME values */
+
 #define greybus_register(driver) \
 	greybus_register_driver(driver, THIS_MODULE, KBUILD_MODNAME)
 #define greybus_deregister(driver) \
 	greybus_deregister_driver(driver)
 
-/**
- * module_greybus_driver() - Helper macro for registering a Greybus driver
- * @__greybus_driver: greybus_driver structure
- *
- * Helper macro for Greybus drivers to set up proper module init / exit
- * functions.  Replaces module_init() and module_exit() and keeps people from
- * printing pointless things to the kernel log when their driver is loaded.
- */
+
 #define module_greybus_driver(__greybus_driver)	\
 	module_driver(__greybus_driver, greybus_register, greybus_deregister)
 
@@ -148,5 +136,5 @@ static inline bool cport_id_valid(struct gb_host_device *hd, u16 cport_id)
 	return cport_id != CPORT_ID_BAD && cport_id < hd->num_cports;
 }
 
-#endif /* __KERNEL__ */
-#endif /* __LINUX_GREYBUS_H */
+#endif 
+#endif 

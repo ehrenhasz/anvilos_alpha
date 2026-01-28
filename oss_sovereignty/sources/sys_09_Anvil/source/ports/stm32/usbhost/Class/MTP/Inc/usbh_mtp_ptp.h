@@ -1,58 +1,24 @@
-/**
-  ******************************************************************************
-  * @file    usbh_mtp_ptp.h
-  * @author  MCD Application Team
-  * @version V3.0.0
-  * @date    18-February-2014
-  * @brief   Header file for usbh_mtp_ptp.c
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
-  */ 
+ 
 
-/* Define to prevent recursive  ----------------------------------------------*/
+
 #ifndef __USBH_MTP_PTP_H__
 #define __USBH_MTP_PTP_H__
 
-/* Includes ------------------------------------------------------------------*/
+
 #include "usbh_core.h"
 
-/** @addtogroup USBH_LIB
-  * @{
-  */
 
-/** @addtogroup USBH_CLASS
-  * @{
-  */
 
-/** @addtogroup USBH_MTP_PTP_CLASS
-  * @{
-  */
+
+
+
   
-/** @defgroup USBH_MTP_PTP
-  * @brief This file is the Header file for usbh_mtp_ptp.c
-  * @{
-  */ 
+ 
 
 
-/* Operation Codes */
 
-/* PTP v1.0 operation codes */
+
+
 #define PTP_OC_Undefined                0x1000
 #define PTP_OC_GetDeviceInfo            0x1001
 #define PTP_OC_OpenSession              0x1002
@@ -83,7 +49,7 @@
 #define PTP_OC_GetPartialObject         0x101B
 #define PTP_OC_InitiateOpenCapture      0x101C
     
-/* PTP v1.1 operation codes */
+
 #define PTP_OC_StartEnumHandles		0x101D
 #define PTP_OC_EnumHandles		0x101E
 #define PTP_OC_StopEnumHandles		0x101F
@@ -94,7 +60,7 @@
 #define PTP_OC_GetStreamInfo		0x1024
 #define PTP_OC_GetStream		0x1025
 
-    /* Microsoft / MTP extension codes */
+    
 #define PTP_OC_GetObjectPropsSupported	 0x9801
 #define PTP_OC_GetObjectPropDesc	 0x9802
 #define PTP_OC_GetObjectPropValue	 0x9803
@@ -109,9 +75,9 @@
 #define PTP_OC_Skip			 0x9820
 
     
-/* Response Codes */
 
-/* PTP v1.0 response codes */
+
+
 #define PTP_RC_Undefined                0x2000
 #define PTP_RC_OK                       0x2001
 #define PTP_RC_GeneralError             0x2002
@@ -145,12 +111,12 @@
 #define PTP_RC_SessionAlreadyOpened     0x201E
 #define PTP_RC_TransactionCanceled      0x201F
 #define PTP_RC_SpecificationOfDestinationUnsupported       0x2020
-/* PTP v1.1 response codes */
+
 #define PTP_RC_InvalidEnumHandle	0x2021
 #define PTP_RC_NoStreamEnabled		0x2022
 #define PTP_RC_InvalidDataSet		0x2023
     
-/* USB container types */
+
 
 #define PTP_USB_CONTAINER_UNDEFINED	 0x0000
 #define PTP_USB_CONTAINER_COMMAND	 0x0001
@@ -158,7 +124,7 @@
 #define PTP_USB_CONTAINER_RESPONSE	 0x0003
 #define PTP_USB_CONTAINER_EVENT		 0x0004
 
-/* PTP/IP definitions */
+
 #define PTPIP_INIT_COMMAND_REQUEST	1
 #define PTPIP_INIT_COMMAND_ACK		2
 #define PTPIP_INIT_EVENT_REQUEST	3
@@ -174,15 +140,13 @@
 #define PTPIP_PING			13
 #define PTPIP_PONG			14
 
-/* Transaction data phase description */
-#define PTP_DP_NODATA		0x0000	/* no data phase */
-#define PTP_DP_SENDDATA		0x0001	/* sending data */
-#define PTP_DP_GETDATA		0x0002	/* receiving data */
-#define PTP_DP_DATA_MASK	0x00ff	/* data phase mask */
+
+#define PTP_DP_NODATA		0x0000	
+#define PTP_DP_SENDDATA		0x0001	
+#define PTP_DP_GETDATA		0x0002	
+#define PTP_DP_DATA_MASK	0x00ff	
     
-/** @defgroup USBH_MTP_PTP_Exported_Types
-  * @{
-  */ 
+ 
 
 typedef enum 
 {
@@ -208,20 +172,20 @@ typedef enum
 } 
 PTP_ProcessStateTypeDef;  
 
-/* PTP request/response/event general PTP container (transport independent) */
+
 typedef struct 
 {
 	uint16_t Code;
 	uint32_t SessionID;
 	uint32_t Transaction_ID;
-	/* params  may be of any type of size less or equal to uint32_t */
+	
 	uint32_t Param1;
 	uint32_t Param2;
 	uint32_t Param3;
-	/* events can only have three parameters */
+	
 	uint32_t Param4;
 	uint32_t Param5;
-	/* the number of meaningfull parameters */
+	
 	uint8_t	 Nparam;
 }
 PTP_ContainerTypedef; 
@@ -282,7 +246,7 @@ typedef struct
 }
 PTP_DataContainerTypedef;
 
-/* PTP USB Asynchronous Event Interrupt Data Format */
+
 typedef struct 
 {
   uint32_t length;
@@ -295,7 +259,7 @@ typedef struct
 }
 PTP_EventContainerTypedef;
 
-/* Structure for PTP Transport process */
+
 typedef struct
 {
   PTP_ProcessStateTypeDef      state;
@@ -304,41 +268,41 @@ typedef struct
   PTP_DataContainerTypedef     data_container;  
   PTP_RespContainerTypedef     resp_container;    
 
-  /* ptp transaction ID */
+  
   uint32_t	transaction_id;
   
-  /* ptp session ID */
+  
   uint32_t	session_id; 
   
-  /* device flags */
+  
   uint32_t	flags;  
 
-  /****** PTP transfer control *******/ 
+   
   
-  /* Data pointer */
+  
   uint8_t	*data_ptr;  
 
-  /* Data length */
+  
   int32_t	data_length;
   
-  /* Data length */
+  
   uint32_t	data_packet;
   
-  /* Data length */
+  
   uint32_t	iteration;  
   
-  /* Packet Index */
+  
   uint32_t   data_packet_counter;
   
-  /****** Object transfer control *******/
   
-  /* object pointer */
+  
+  
   uint8_t	*object_ptr;
 
 }
 PTP_HandleTypeDef;
 
-/* DeviceInfo data offset */
+
 #define PTP_di_StandardVersion		 0
 #define PTP_di_VendorExtensionID	 2
 #define PTP_di_VendorExtensionVersion	 6
@@ -346,14 +310,14 @@ PTP_HandleTypeDef;
 #define PTP_di_FunctionalMode		 8
 #define PTP_di_OperationsSupported	10
 
-/* Max info items size */
+
 #define PTP_SUPPORTED_OPERATIONS_NBR    100
 #define PTP_SUPPORTED_EVENTS_NBR        100
 #define PTP_SUPPORTED_PROPRIETIES_NBR   100
 #define PTP_CAPTURE_FORMATS_NBR         100
 #define PTP_IMAGE_FORMATS_NBR           100
 #define PTP_MAX_STR_SIZE                255
-/* PTP device info structure */
+
 typedef struct
 {
   uint16_t StandardVersion;
@@ -379,7 +343,7 @@ typedef struct
 PTP_DeviceInfoTypedef;
 
 #define PTP_MAX_STORAGE_UNITS_NBR      5
-/* PTP storageIDs structute (returned by GetStorageIDs) */
+
 typedef struct
 {
   uint32_t n;
@@ -387,7 +351,7 @@ typedef struct
 }
 PTP_StorageIDsTypedef;
 
-/* PTP StorageInfo structure (returned by GetStorageInfo) */
+
 
 #define PTP_si_StorageType		 0
 #define PTP_si_FilesystemType		 2
@@ -398,7 +362,7 @@ PTP_StorageIDsTypedef;
 #define PTP_si_StorageDescription	26
 
 
-/* PTP Storage Types */
+
 
 #define PTP_ST_Undefined			0x0000
 #define PTP_ST_FixedROM				0x0001
@@ -406,14 +370,14 @@ PTP_StorageIDsTypedef;
 #define PTP_ST_FixedRAM				0x0003
 #define PTP_ST_RemovableRAM			0x0004
 
-/* PTP FilesystemType Values */
+
 
 #define PTP_FST_Undefined			0x0000
 #define PTP_FST_GenericFlat			0x0001
 #define PTP_FST_GenericHierarchical		0x0002
 #define PTP_FST_DCF				0x0003
 
-/* PTP StorageInfo AccessCapability Values */
+
 
 #define PTP_AC_ReadWrite			0x0000
 #define PTP_AC_ReadOnly				0x0001
@@ -432,9 +396,9 @@ typedef struct
 }
 PTP_StorageInfoTypedef;
 
-/* PTP Object Format Codes */
 
-/* ancillary formats */
+
+
 #define PTP_OFC_Undefined			0x3000
 #define PTP_OFC_Defined				0x3800
 #define PTP_OFC_Association			0x3001
@@ -449,8 +413,8 @@ PTP_StorageInfoTypedef;
 #define PTP_OFC_AVI				0x300A
 #define PTP_OFC_MPEG				0x300B
 #define PTP_OFC_ASF				0x300C
-#define PTP_OFC_QT				0x300D /* guessing */
-/* image formats */
+#define PTP_OFC_QT				0x300D 
+
 #define PTP_OFC_EXIF_JPEG			0x3801
 #define PTP_OFC_TIFF_EP				0x3802
 #define PTP_OFC_FlashPix			0x3803
@@ -467,16 +431,16 @@ PTP_StorageInfoTypedef;
 #define PTP_OFC_TIFF_IT				0x380E
 #define PTP_OFC_JP2				0x380F
 #define PTP_OFC_JPX				0x3810
-/* ptp v1.1 has only DNG new */
+
 #define PTP_OFC_DNG				0x3811
 
-/* MTP extensions */
+
 #define PTP_OFC_MTP_MediaCard			0xb211
 #define PTP_OFC_MTP_MediaCardGroup		0xb212
 #define PTP_OFC_MTP_Encounter			0xb213
 #define PTP_OFC_MTP_EncounterBox		0xb214
 #define PTP_OFC_MTP_M4A				0xb215
-#define PTP_OFC_MTP_ZUNEUNDEFINED		0xb217 /* Unknown file type */
+#define PTP_OFC_MTP_ZUNEUNDEFINED		0xb217 
 #define PTP_OFC_MTP_Firmware			0xb802
 #define PTP_OFC_MTP_WindowsImageFormat		0xb881
 #define PTP_OFC_MTP_UndefinedAudio		0xb900
@@ -529,7 +493,7 @@ PTP_StorageInfoTypedef;
 #define PTP_OFC_MTP_MediaCast			0xbe81
 #define PTP_OFC_MTP_Section			0xbe82
 
-/* MTP specific Object Properties */
+
 #define PTP_OPC_StorageID				0xDC01
 #define PTP_OPC_ObjectFormat				0xDC02
 #define PTP_OPC_ProtectionStatus			0xDC03
@@ -698,11 +662,11 @@ PTP_StorageInfoTypedef;
 #define PTP_OPC_EncodingProfile				0xDEA1
 #define PTP_OPC_BuyFlag					0xD901
 
-/* WiFi Provisioning MTP Extension property codes */
+
 #define PTP_OPC_WirelessConfigurationFile		0xB104
 
 
-/* PTP Association Types */
+
 #define PTP_AT_Undefined			0x0000
 #define PTP_AT_GenericFolder			0x0001
 #define PTP_AT_Album				0x0002
@@ -744,8 +708,7 @@ typedef struct
   uint32_t StorageID;
   uint16_t ObjectFormat;
   uint16_t ProtectionStatus;
-  /* In the regular objectinfo this is 32bit, but we keep the general object size here
-     that also arrives via other methods and so use 64bit */
+  
   uint64_t ObjectCompressedSize;
   uint16_t ThumbFormat;
   uint32_t ThumbCompressedSize;
@@ -765,7 +728,7 @@ typedef struct
 }
 PTP_ObjectInfoTypedef;
 
-/* Object Property Describing Dataset (DevicePropDesc) */
+
 
 typedef union  _PTP_PropertyValueTypedef
 {
@@ -793,7 +756,7 @@ typedef struct
 }
 PTP_PropDescRangeFormTypedef;
 
-/* Property Describing Dataset, Enum Form */
+
 
 typedef struct 
 {
@@ -802,7 +765,7 @@ typedef struct
 }
 PTP_PropDescEnumFormTypedef;
 
-/* (MTP) Object Property pack/unpack */
+
 #define PTP_opd_ObjectPropertyCode	0
 #define PTP_opd_DataType		2
 #define PTP_opd_GetSet			4
@@ -823,7 +786,7 @@ typedef struct
 }
 PTP_ObjectPropDescTypeDef;
 
-/* Metadata lists for MTP operations */
+
 typedef struct
 {
 	uint16_t 	 	property;
@@ -834,13 +797,13 @@ typedef struct
 MTP_PropertiesTypedef;
 
 
-/* Device Property Form Flag */
+
 
 #define PTP_DPFF_None			0x00
 #define PTP_DPFF_Range			0x01
 #define PTP_DPFF_Enumeration		0x02
 
-/* Object Property Codes used by MTP (first 3 are same as DPFF codes) */
+
 #define PTP_OPFF_None			0x00
 #define PTP_OPFF_Range			0x01
 #define PTP_OPFF_Enumeration		0x02
@@ -850,14 +813,14 @@ MTP_PropertiesTypedef;
 #define PTP_OPFF_ByteArray		0x06
 #define PTP_OPFF_LongString		0xFF
 
-/* Device Property pack/unpack */
+
 
 #define PTP_dpd_DevicePropertyCode	0
 #define PTP_dpd_DataType		2
 #define PTP_dpd_GetSet			4
 #define PTP_dpd_FactoryDefaultValue	5
 
-/* Device Property Describing Dataset (DevicePropDesc) */
+
 
 typedef struct 
 {
@@ -874,7 +837,7 @@ typedef struct
 }
 PTP_DevicePropDescTypdef;
 
-/* DataType Codes */
+
 
 #define PTP_DTC_UNDEF		0x0000
 #define PTP_DTC_INT8		0x0001
@@ -903,7 +866,7 @@ PTP_DevicePropDescTypdef;
 
 #define PTP_DTC_STR		0xFFFF
 
-/* PTP Event Codes */
+
 
 #define PTP_EC_Undefined		0x4000
 #define PTP_EC_CancelTransaction	0x4001
@@ -922,28 +885,16 @@ PTP_DevicePropDescTypdef;
 #define PTP_EC_UnreportedStatus		0x400E
 
 
-/**
-  * @}
-  */ 
+ 
 
-/** @defgroup USBH_MTP_PTP_Exported_Macros
-  * @{
-  */ 
-/**
-  * @}
-  */ 
+ 
+ 
 
-/** @defgroup USBH_MTP_PTP_Exported_Variables
-  * @{
-  */ 
+ 
 
-/**
-  * @}
-  */ 
+ 
 
-/** @defgroup USBH_MTP_PTP_Exported_FunctionsPrototype
-  * @{
-  */ 
+ 
 USBH_StatusTypeDef USBH_PTP_Init(USBH_HandleTypeDef *phost);
 USBH_StatusTypeDef USBH_PTP_Process (USBH_HandleTypeDef *phost);
 
@@ -1012,27 +963,17 @@ USBH_StatusTypeDef USBH_PTP_GetDevicePropDesc (USBH_HandleTypeDef *phost,
                                                 uint16_t propcode, 
 			                      PTP_DevicePropDescTypdef* devicepropertydesc);
 
-/**
-  * @}
-  */ 
+ 
 
-#endif  //__USBH_MTP_PTP_H__
+#endif  
 
 
-/**
-  * @}
-  */ 
+ 
 
-/**
-  * @}
-  */
 
-/**
-  * @}
-  */ 
 
-/**
-  * @}
-  */
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+ 
+
+
+
 

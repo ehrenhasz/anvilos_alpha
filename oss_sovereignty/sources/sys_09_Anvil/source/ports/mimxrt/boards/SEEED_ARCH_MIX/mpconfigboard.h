@@ -3,7 +3,7 @@
 
 #define MICROPY_PY_NETWORK_HOSTNAME_DEFAULT "mpy-arch-mix"
 
-// MIMXRT1050_EVKB has 1 user LED
+
 #define MICROPY_HW_LED1_PIN (pin_GPIO_AD_B0_09)
 #define MICROPY_HW_LED2_PIN (pin_GPIO_AD_B0_10)
 #define MICROPY_HW_LED3_PIN (pin_GPIO_AD_B0_11)
@@ -12,12 +12,12 @@
 
 #define MICROPY_HW_NUM_PIN_IRQS (4 * 32 + 3)
 
-// Define mapping logical UART # to hardware UART #
-// LPUART1 on J3_19/J3_20  -> 1
-// LPUART2 on J4_16/J4_17  -> 2
-// LPUART3 on J4_06/J4_07  -> 3
-// LPUART8 on J4_10/J4_11  -> 4
-// LPUART4 on J5_08/J5_12  -> 5
+
+
+
+
+
+
 
 #define MICROPY_HW_UART_NUM     (sizeof(uart_index_table) / sizeof(uart_index_table)[0])
 #define MICROPY_HW_UART_INDEX   { 0, 1, 2, 3, 8, 4 }
@@ -64,11 +64,11 @@
 #define DMA_REQ_SRC_TX { 0, kDmaRequestMuxLPSPI1Tx, kDmaRequestMuxLPSPI2Tx, \
                          kDmaRequestMuxLPSPI3Tx, kDmaRequestMuxLPSPI4Tx }
 
-// Define the mapping hardware I2C # to logical I2C #
-// SDA/SCL      HW-I2C    Logical I2C
-// J3_17/J3_16  LPI2C1 ->    0
-// J4_06/J4_07  LPI2C3 ->    1
-// J5_05/J5_04  LPI2C2 ->    2
+
+
+
+
+
 
 #define MICROPY_HW_I2C_INDEX   { 1, 3, 2 }
 
@@ -98,13 +98,13 @@
 
 #define I2S_GPIO_MAP \
     { \
-        I2S_GPIO(1, MCK, TX, GPIO_AD_B1_09, IOMUXC_GPIO_AD_B1_09_SAI1_MCLK), /* pin J4 09 */ \
-        I2S_GPIO(1, SCK, RX, GPIO_AD_B1_11, IOMUXC_GPIO_AD_B1_11_SAI1_RX_BCLK), /* pin J4 11 */ \
-        I2S_GPIO(1, WS, RX, GPIO_AD_B1_10, IOMUXC_GPIO_AD_B1_10_SAI1_RX_SYNC), /* pin J4 10 */ \
-        I2S_GPIO(1, SD, RX, GPIO_AD_B1_12, IOMUXC_GPIO_AD_B1_12_SAI1_RX_DATA00), /* pin J4 12 */ \
-        I2S_GPIO(1, SCK, TX, GPIO_AD_B1_14, IOMUXC_GPIO_AD_B1_14_SAI1_TX_BCLK), /* pin J4 14 */ \
-        I2S_GPIO(1, WS, TX, GPIO_AD_B1_15, IOMUXC_GPIO_AD_B1_15_SAI1_TX_SYNC), /* pin J4 15 */ \
-        I2S_GPIO(1, SD, TX, GPIO_AD_B1_13, IOMUXC_GPIO_AD_B1_13_SAI1_TX_DATA00) /* pin J4 13 */ \
+        I2S_GPIO(1, MCK, TX, GPIO_AD_B1_09, IOMUXC_GPIO_AD_B1_09_SAI1_MCLK),  \
+        I2S_GPIO(1, SCK, RX, GPIO_AD_B1_11, IOMUXC_GPIO_AD_B1_11_SAI1_RX_BCLK),  \
+        I2S_GPIO(1, WS, RX, GPIO_AD_B1_10, IOMUXC_GPIO_AD_B1_10_SAI1_RX_SYNC),  \
+        I2S_GPIO(1, SD, RX, GPIO_AD_B1_12, IOMUXC_GPIO_AD_B1_12_SAI1_RX_DATA00),  \
+        I2S_GPIO(1, SCK, TX, GPIO_AD_B1_14, IOMUXC_GPIO_AD_B1_14_SAI1_TX_BCLK),  \
+        I2S_GPIO(1, WS, TX, GPIO_AD_B1_15, IOMUXC_GPIO_AD_B1_15_SAI1_TX_SYNC),  \
+        I2S_GPIO(1, SD, TX, GPIO_AD_B1_13, IOMUXC_GPIO_AD_B1_13_SAI1_TX_DATA00)  \
     }
 
 #define USDHC_DUMMY_PIN NULL, 0
@@ -120,8 +120,8 @@
         .data3 = { GPIO_SD_B0_05_USDHC1_DATA3 }, \
     }
 
-// Network definitions
-// Transceiver Phy Address & Type
+
+
 #define ENET_PHY_ADDRESS    (1)
 #define ENET_PHY            LAN8720
 #define ENET_PHY_OPS        phylan8720_ops
@@ -139,7 +139,7 @@
     { IOMUXC_GPIO_EMC_41_ENET_MDIO, 0, 0xB0E9u }, \
     { IOMUXC_GPIO_EMC_40_ENET_MDC, 0, 0xB0E9u },
 
-// --- SEMC --- //
+
 #define MIMXRT_IOMUXC_SEMC_DATA00 IOMUXC_GPIO_EMC_00_SEMC_DATA00
 #define MIMXRT_IOMUXC_SEMC_DATA01 IOMUXC_GPIO_EMC_01_SEMC_DATA01
 #define MIMXRT_IOMUXC_SEMC_DATA02 IOMUXC_GPIO_EMC_02_SEMC_DATA02

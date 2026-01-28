@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019, Intel Corporation. */
+
+
 
 #ifndef _ICE_FLEX_PIPE_H_
 #define _ICE_FLEX_PIPE_H_
@@ -35,10 +35,10 @@ int ice_udp_tunnel_unset_port(struct net_device *netdev, unsigned int table,
 			      unsigned int idx, struct udp_tunnel_info *ti);
 int ice_set_dvm_boost_entries(struct ice_hw *hw);
 
-/* Rx parser PTYPE functions */
+
 bool ice_hw_ptype_ena(struct ice_hw *hw, u16 ptype);
 
-/* XLT2/VSI group functions */
+
 int
 ice_add_prof(struct ice_hw *hw, enum ice_block blk, u64 id, u8 ptypes[],
 	     const struct ice_ptype_attributes *attr, u16 attr_cnt,
@@ -63,4 +63,4 @@ ice_pkg_buf_alloc_single_section(struct ice_hw *hw, u32 type, u16 size,
 struct ice_buf *ice_pkg_buf(struct ice_buf_build *bld);
 void ice_pkg_buf_free(struct ice_hw *hw, struct ice_buf_build *bld);
 
-#endif /* _ICE_FLEX_PIPE_H_ */
+#endif 

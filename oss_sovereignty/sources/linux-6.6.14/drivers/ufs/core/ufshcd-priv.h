@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 
 #ifndef _UFSHCD_PRIV_H_
 #define _UFSHCD_PRIV_H_
@@ -99,7 +99,7 @@ int ufshcd_exec_raw_upiu_cmd(struct ufs_hba *hba,
 
 int ufshcd_wb_toggle(struct ufs_hba *hba, bool enable);
 
-/* Wrapper functions for safely calling variant operations */
+
 static inline const char *ufshcd_get_var_name(struct ufs_hba *hba)
 {
 	if (hba->vops)
@@ -290,12 +290,7 @@ static inline int ufshcd_mcq_vops_config_esi(struct ufs_hba *hba)
 
 extern const struct ufs_pm_lvl_states ufs_pm_lvl_states[];
 
-/**
- * ufshcd_scsi_to_upiu_lun - maps scsi LUN to UPIU LUN
- * @scsi_lun: scsi LUN id
- *
- * Return: UPIU LUN id
- */
+
 static inline u8 ufshcd_scsi_to_upiu_lun(unsigned int scsi_lun)
 {
 	if (scsi_is_wlun(scsi_lun))
@@ -349,12 +344,7 @@ static inline int ufshcd_rpm_put(struct ufs_hba *hba)
 	return pm_runtime_put(&hba->ufs_device_wlun->sdev_gendev);
 }
 
-/**
- * ufs_is_valid_unit_desc_lun - checks if the given LUN has a unit descriptor
- * @dev_info: pointer of instance of struct ufs_dev_info
- * @lun: LU number to check
- * @return: true if the lun has a matching unit descriptor, false otherwise
- */
+
 static inline bool ufs_is_valid_unit_desc_lun(struct ufs_dev_info *dev_info, u8 lun)
 {
 	if (!dev_info || !dev_info->max_lu_supported) {
@@ -414,4 +404,4 @@ static inline u32 ufshcd_mcq_get_sq_head_slot(struct ufs_hw_queue *q)
 	return val / sizeof(struct utp_transfer_req_desc);
 }
 
-#endif /* _UFSHCD_PRIV_H_ */
+#endif 

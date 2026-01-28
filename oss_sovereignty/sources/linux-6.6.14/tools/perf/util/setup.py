@@ -60,7 +60,7 @@ libtraceevent = getenv('LIBTRACEEVENT')
 libapikfs = getenv('LIBAPI')
 libperf = getenv('LIBPERF')
 ext_sources = [f.strip() for f in open('util/python-ext-sources')
-				if len(f.strip()) > 0 and f[0] != '#']
+				if len(f.strip()) > 0 and f[0] != '
 extra_libraries = []
 if '-DHAVE_LIBTRACEEVENT' in cflags:
     extra_libraries += [ 'traceevent' ]

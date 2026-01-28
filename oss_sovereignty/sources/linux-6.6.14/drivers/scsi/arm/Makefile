@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for drivers/scsi/arm
-#
+
+
+
+
 
 acornscsi_mod-objs	:= acornscsi.o acornscsi-io.o
 

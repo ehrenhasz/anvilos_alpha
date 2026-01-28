@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0-only
+
 include ../../scripts/Makefile.include
 include ../../scripts/utilities.mak
 
 ARTICLES =
-# with their own formatting rules.
+
 SP_ARTICLES =
 
 MAN1_TXT= \
@@ -32,7 +32,7 @@ DOC_MAN1=$(addprefix $(OUTPUT),$(_DOC_MAN1))
 DOC_MAN5=$(addprefix $(OUTPUT),$(_DOC_MAN5))
 DOC_MAN7=$(addprefix $(OUTPUT),$(_DOC_MAN7))
 
-# Make the path relative to DESTDIR, not prefix
+
 ifndef DESTDIR
 prefix?=$(HOME)
 endif
@@ -87,28 +87,28 @@ ifeq ($(_tmp_tool_path),)
 endif
 endif
 
-#
-# For asciidoc ...
-#	-7.1.2,	no extra settings are needed.
-#	8.0-,	set ASCIIDOC8.
-#
 
-#
-# For docbook-xsl ...
-#	-1.68.1,	set ASCIIDOC_NO_ROFF? (based on changelog from 1.73.0)
-#	1.69.0,		no extra settings are needed?
-#	1.69.1-1.71.0,	set DOCBOOK_SUPPRESS_SP?
-#	1.71.1,		no extra settings are needed?
-#	1.72.0,		set DOCBOOK_XSL_172.
-#	1.73.0-,	set ASCIIDOC_NO_ROFF
-#
 
-#
-# If you had been using DOCBOOK_XSL_172 in an attempt to get rid
-# of 'the ".ft C" problem' in your generated manpages, and you
-# instead ended up with weird characters around callouts, try
-# using ASCIIDOC_NO_ROFF instead (it works fine with ASCIIDOC8).
-#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ifdef ASCIIDOC8
 ASCIIDOC_EXTRA += -a asciidoc7compatible
@@ -118,8 +118,8 @@ ASCIIDOC_EXTRA += -a perf-asciidoc-no-roff
 MANPAGE_XSL = manpage-1.72.xsl
 else
 	ifdef ASCIIDOC_NO_ROFF
-	# docbook-xsl after 1.72 needs the regular XSL, but will not
-	# pass-thru raw roff codes from asciidoc.conf, so turn them off.
+	
+	
 	ASCIIDOC_EXTRA += -a perf-asciidoc-no-roff
 	endif
 endif
@@ -131,24 +131,24 @@ XMLTO_EXTRA += -m manpage-suppress-sp.xsl
 endif
 
 SHELL_PATH ?= $(SHELL)
-# Shell quote;
+
 SHELL_PATH_SQ = $(subst ','\'',$(SHELL_PATH))
 
-#
-# Please note that there is a minor bug in asciidoc.
-# The version after 6.0.3 _will_ include the patch found here:
-#   http://marc.theaimsgroup.com/?l=perf&m=111558757202243&w=2
-#
-# Until that version is released you may have to apply the patch
-# yourself - yes, all 6 characters of it!
-#
 
-QUIET_SUBDIR0  = +$(MAKE) -C # space to separate -C and subdir
+
+
+
+
+
+
+
+
+QUIET_SUBDIR0  = +$(MAKE) -C 
 QUIET_SUBDIR1  =
 
 ifneq ($(findstring $(MAKEFLAGS),w),w)
 PRINT_DIR = --no-print-directory
-else # "make -w"
+else 
 NO_SUBDIR = :
 endif
 
@@ -193,11 +193,11 @@ endif
 do-install-man: man
 	$(call QUIET_INSTALL, Documentation-man) \
 		$(INSTALL) -d -m 755 $(DESTDIR)$(man1dir); \
-#		$(INSTALL) -d -m 755 $(DESTDIR)$(man5dir); \
-#		$(INSTALL) -d -m 755 $(DESTDIR)$(man7dir); \
+
+
 		$(INSTALL) -m 644 $(DOC_MAN1) $(DESTDIR)$(man1dir); \
-#		$(INSTALL) -m 644 $(DOC_MAN5) $(DESTDIR)$(man5dir); \
-#		$(INSTALL) -m 644 $(DOC_MAN7) $(DESTDIR)$(man7dir)
+
+
 
 install-man: check-man-tools man do-install-man
 
@@ -220,13 +220,13 @@ install-info: info
 	  echo "No directory found in $(DESTDIR)$(infodir)" >&2 ; \
 	fi
 
-#install-html: html
-#	'$(SHELL_PATH_SQ)' ./install-webdoc.sh $(DESTDIR)$(htmldir)
 
 
-#
-# Determine "include::" file references in asciidoc files.
-#
+
+
+
+
+
 $(OUTPUT)doc.dep : $(wildcard *.txt) build-docdep.perl
 	$(QUIET_GEN)$(RM) $@+ $@ && \
 	$(PERL_PATH) ./build-docdep.perl >$@+ $(QUIET_STDERR) && \
@@ -250,8 +250,8 @@ $(MAN_HTML): $(OUTPUT)%.html : %.txt
 		$(ASCIIDOC_EXTRA) -aperf_version=$(PERF_VERSION) -o $@+ $< && \
 	mv $@+ $@
 
-# Generate date from either KBUILD_BUILD_TIMESTAMP or git log of
-# the doc input file
+
+
 PERF_DATE = $(strip \
               $(if $(KBUILD_BUILD_TIMESTAMP), \
                 $(shell date -u -d '$(KBUILD_BUILD_TIMESTAMP)' +%Y-%m-%d), \
@@ -302,14 +302,14 @@ $(patsubst %,%.html,$(ARTICLES)) : %.html : %.txt
 
 WEBDOC_DEST = /pub/software/tools/perf/docs
 
-# UNIMPLEMENTED
-#install-webdoc : html
-#	'$(SHELL_PATH_SQ)' ./install-webdoc.sh $(WEBDOC_DEST)
 
-# quick-install: quick-install-man
 
-# quick-install-man:
-#	'$(SHELL_PATH_SQ)' ./install-doc-quick.sh $(DOC_REF) $(DESTDIR)$(mandir)
 
-#quick-install-html:
-#	'$(SHELL_PATH_SQ)' ./install-doc-quick.sh $(HTML_REF) $(DESTDIR)$(htmldir)
+
+
+
+
+
+
+
+

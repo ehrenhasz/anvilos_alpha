@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __OF_RESERVED_MEM_H
 #define __OF_RESERVED_MEM_H
 
@@ -66,19 +66,10 @@ static inline struct reserved_mem *of_reserved_mem_lookup(struct device_node *np
 }
 #endif
 
-/**
- * of_reserved_mem_device_init() - assign reserved memory region to given device
- * @dev:	Pointer to the device to configure
- *
- * This function assigns respective DMA-mapping operations based on the first
- * reserved memory region specified by 'memory-region' property in device tree
- * node of the given device.
- *
- * Returns error code or zero on success.
- */
+
 static inline int of_reserved_mem_device_init(struct device *dev)
 {
 	return of_reserved_mem_device_init_by_idx(dev, dev->of_node, 0);
 }
 
-#endif /* __OF_RESERVED_MEM_H */
+#endif 

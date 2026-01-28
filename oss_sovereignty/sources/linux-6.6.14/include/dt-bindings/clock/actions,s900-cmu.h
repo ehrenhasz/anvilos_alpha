@@ -1,20 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Device Tree binding constants for Actions Semi S900 Clock Management Unit
-//
-// Copyright (c) 2014 Actions Semi Inc.
-// Copyright (c) 2018 Linaro Ltd.
+
+
+
+
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_S900_CMU_H
 #define __DT_BINDINGS_CLOCK_S900_CMU_H
 
 #define CLK_NONE			0
 
-/* fixed rate clocks */
+
 #define CLK_LOSC			1
 #define CLK_HOSC			2
 
-/* pll clocks */
+
 #define CLK_CORE_PLL			3
 #define CLK_DEV_PLL			4
 #define CLK_DDR_PLL			5
@@ -24,7 +24,7 @@
 #define CLK_ASSIST_PLL			9
 #define CLK_AUDIO_PLL			10
 
-/* system clock */
+
 #define CLK_CPU				15
 #define CLK_DEV				16
 #define CLK_NOC				17
@@ -34,7 +34,7 @@
 #define CLK_APB				21
 #define CLK_DMAC			22
 
-/* peripheral device clock */
+
 #define CLK_GPIO			23
 
 #define CLK_BISP			24
@@ -126,4 +126,4 @@
 
 #define CLK_NR_CLKS			(CLK_RMII_REF + 1)
 
-#endif /* __DT_BINDINGS_CLOCK_S900_CMU_H */
+#endif 

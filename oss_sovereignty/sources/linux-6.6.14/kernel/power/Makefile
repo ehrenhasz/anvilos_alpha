@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 ifeq ($(CONFIG_DYNAMIC_DEBUG), y)
 CFLAGS_swap.o                   := -DDEBUG

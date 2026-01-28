@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the ATM Protocol Families.
-#
+
+
+
+
 
 atm-y		:= addr.o pvc.o signaling.o svc.o ioctl.o common.o atm_misc.o raw.o resources.o atm_sysfs.o
 mpoa-objs	:= mpc.o mpoa_caches.o mpoa_proc.o

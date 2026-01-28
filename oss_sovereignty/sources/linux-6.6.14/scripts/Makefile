@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-###
-# scripts contains sources for various helper programs used throughout
-# the kernel for the build process.
+
+
+
+
 
 hostprogs-always-$(CONFIG_KALLSYMS)			+= kallsyms
 hostprogs-always-$(BUILD_C_RECORDMCOUNT)		+= recordmcount
@@ -41,15 +41,15 @@ ifdef CONFIG_BUILDTIME_MCOUNT_SORT
 HOSTCFLAGS_sorttable.o += -DMCOUNT_SORT_ENABLED
 endif
 
-# The following programs are only built on demand
+
 hostprogs += unifdef
 
-# The module linker script is preprocessed on demand
+
 targets += module.lds
 
 subdir-$(CONFIG_GCC_PLUGINS) += gcc-plugins
 subdir-$(CONFIG_MODVERSIONS) += genksyms
 subdir-$(CONFIG_SECURITY_SELINUX) += selinux
 
-# Let clean descend into subdirs
+
 subdir-	+= basic dtc gdb kconfig mod

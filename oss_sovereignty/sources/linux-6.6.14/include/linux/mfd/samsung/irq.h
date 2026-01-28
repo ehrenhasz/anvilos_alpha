@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2012 Samsung Electronics Co., Ltd
- *              http://www.samsung.com
- */
+
+
 
 #ifndef __LINUX_MFD_SEC_IRQ_H
 #define __LINUX_MFD_SEC_IRQ_H
@@ -147,7 +144,7 @@ enum s2mpu02_irq {
 	S2MPU02_IRQ_NR,
 };
 
-/* Masks for interrupts are the same as in s2mps11 */
+
 #define S2MPS14_IRQ_TSD_MASK		(1 << 2)
 
 enum s5m8767_irq {
@@ -194,4 +191,4 @@ enum s5m8767_irq {
 #define S5M8767_IRQ_RTC1S_MASK		(1 << 4)
 #define S5M8767_IRQ_WTSR_MASK		(1 << 5)
 
-#endif /*  __LINUX_MFD_SEC_IRQ_H */
+#endif 

@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_PCIE_AUX_REGS_H_
 #define ASIC_REG_PCIE_AUX_REGS_H_
 
-/*
- *****************************************
- *   PCIE_AUX
- *   (Prototype: PCIE_AUX)
- *****************************************
- */
+
 
 #define mmPCIE_AUX_APB_TIMEOUT 0x4C07004
 
@@ -290,4 +277,4 @@
 
 #define mmPCIE_AUX_BUS_MSTR_EN_CLR_INTR_MASK 0x4C079D0
 
-#endif /* ASIC_REG_PCIE_AUX_REGS_H_ */
+#endif 

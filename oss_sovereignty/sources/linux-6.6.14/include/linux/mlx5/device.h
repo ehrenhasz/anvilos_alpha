@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
 
 #ifndef MLX5_DEVICE_H
 #define MLX5_DEVICE_H
@@ -46,7 +16,7 @@
 #error Host endianness not defined
 #endif
 
-/* helper macros */
+
 #define __mlx5_nullp(typ) ((struct mlx5_ifc_##typ##_bits *)0)
 #define __mlx5_bit_sz(typ, fld) sizeof(__mlx5_nullp(typ)->fld)
 #define __mlx5_bit_off(typ, fld) (offsetof(struct mlx5_ifc_##typ##_bits, fld))
@@ -70,7 +40,7 @@
 #define MLX5_BYTE_OFF(typ, fld) (__mlx5_bit_off(typ, fld) / 8)
 #define MLX5_ADDR_OF(typ, p, fld) ((void *)((uint8_t *)(p) + MLX5_BYTE_OFF(typ, fld)))
 
-/* insert a value to a struct */
+
 #define MLX5_SET(typ, p, fld, v) do { \
 	u32 _v = v; \
 	BUILD_BUG_ON(__mlx5_st_sz_bits(typ) % 32);             \
@@ -139,7 +109,7 @@ __mlx5_mask16(typ, fld))
 		     << __mlx5_16_bit_off(typ, fld))); \
 } while (0)
 
-/* Big endian getters */
+
 #define MLX5_GET64_BE(typ, p, fld) (*((__be64 *)(p) +\
 	__mlx5_64_off(typ, fld)))
 
@@ -304,15 +274,13 @@ enum {
 	MLX5_EVENT_QUEUE_TYPE_DCT = 6,
 };
 
-/* mlx5 components can subscribe to any one of these events via
- * mlx5_eq_notifier_register API.
- */
+
 enum mlx5_event {
-	/* Special value to subscribe to any event */
+	
 	MLX5_EVENT_TYPE_NOTIFY_ANY	   = 0x0,
-	/* HW events enum start: comp events are not subscribable */
+	
 	MLX5_EVENT_TYPE_COMP		   = 0x0,
-	/* HW Async events enum start: subscribable events */
+	
 	MLX5_EVENT_TYPE_PATH_MIG	   = 0x01,
 	MLX5_EVENT_TYPE_COMM_EST	   = 0x02,
 	MLX5_EVENT_TYPE_SQ_DRAINED	   = 0x03,
@@ -491,13 +459,7 @@ enum {
 };
 
 enum {
-	/*
-	 * Max wqe size for rdma read is 512 bytes, so this
-	 * limits our max_sge_rd as the wqe needs to fit:
-	 * - ctrl segment (16 bytes)
-	 * - rdma segment (16 bytes)
-	 * - scatter elements (16 bytes each)
-	 */
+	
 	MLX5_MAX_SGE_RD	= (512 - 16 - 16) / 16
 };
 
@@ -826,7 +788,7 @@ struct mlx5_cqe64 {
 	u8		hds_ip_ext;
 	u8		l4_l3_hdr_type;
 	__be16		vlan_info;
-	__be32		srqn; /* [31:24]: lro_num_seg, [23:0]: srqn */
+	__be32		srqn; 
 	union {
 		__be32 immediate;
 		__be32 inval_rkey;
@@ -893,7 +855,7 @@ static inline u8 get_cqe_opcode(struct mlx5_cqe64 *cqe)
 
 static inline u8 get_cqe_enhanced_num_mini_cqes(struct mlx5_cqe64 *cqe)
 {
-	/* num_of_mini_cqes is zero based */
+	
 	return get_cqe_opcode(cqe) + 1;
 }
 
@@ -989,18 +951,14 @@ enum {
 
 enum {
 	CQE_RSS_HTYPE_IP	= GENMASK(3, 2),
-	/* cqe->rss_hash_type[3:2] - IP destination selected for hash
-	 * (00 = none,  01 = IPv4, 10 = IPv6, 11 = Reserved)
-	 */
+	
 	CQE_RSS_IP_NONE		= 0x0,
 	CQE_RSS_IPV4		= 0x1,
 	CQE_RSS_IPV6		= 0x2,
 	CQE_RSS_RESERVED	= 0x3,
 
 	CQE_RSS_HTYPE_L4	= GENMASK(7, 6),
-	/* cqe->rss_hash_type[7:6] - L4 destination selected for hash
-	 * (00 = none, 01 = TCP. 10 = UDP, 11 = IPSEC.SPI
-	 */
+	
 	CQE_RSS_L4_NONE		= 0x0,
 	CQE_RSS_L4_TCP		= 0x1,
 	CQE_RSS_L4_UDP		= 0x2,
@@ -1071,10 +1029,7 @@ enum {
 };
 
 struct mlx5_mkey_seg {
-	/* This is a two bit field occupying bits 31-30.
-	 * bit 31 is always 0,
-	 * bit 30 is zero for regular MRs and 1 (e.g free) for UMRs that do not have translation
-	 */
+	
 	u8		status;
 	u8		pcie_control;
 	u8		flags;
@@ -1190,17 +1145,15 @@ enum mlx5_flex_parser_protos {
 	MLX5_FLEX_PROTO_ICMPV6	      = 1 << 9,
 };
 
-/* MLX5 DEV CAPs */
 
-/* TODO: EAT.ME */
+
+
 enum mlx5_cap_mode {
 	HCA_CAP_OPMOD_GET_MAX	= 0,
 	HCA_CAP_OPMOD_GET_CUR	= 1,
 };
 
-/* Any new cap addition must update mlx5_hca_caps_alloc() to allocate
- * capability memory.
- */
+
 enum mlx5_cap_type {
 	MLX5_CAP_GENERAL = 0,
 	MLX5_CAP_ETHERNET_OFFLOADS,
@@ -1226,7 +1179,7 @@ enum mlx5_cap_type {
 	MLX5_CAP_GENERAL_2 = 0x20,
 	MLX5_CAP_PORT_SELECTION = 0x25,
 	MLX5_CAP_ADV_VIRTUALIZATION = 0x26,
-	/* NUM OF CAP Types */
+	
 	MLX5_CAP_NUM
 };
 
@@ -1256,7 +1209,7 @@ enum mlx5_qcam_feature_groups {
 	MLX5_QCAM_FEATURE_ENHANCED_FEATURES         = 0x0,
 };
 
-/* GET Dev Caps macros */
+
 #define MLX5_CAP_GEN(mdev, cap) \
 	MLX5_GET(cmd_hca_cap, mdev->caps.hca[MLX5_CAP_GENERAL]->cur, cap)
 
@@ -1481,4 +1434,4 @@ static inline u16 mlx5_to_sw_pkey_sz(int pkey_sz)
 				MLX5_BY_PASS_NUM_DONT_TRAP_PRIOS +\
 				MLX5_BY_PASS_NUM_MULTICAST_PRIOS)
 
-#endif /* MLX5_DEVICE_H */
+#endif 

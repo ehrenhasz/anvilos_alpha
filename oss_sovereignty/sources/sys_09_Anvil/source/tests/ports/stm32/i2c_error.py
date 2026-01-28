@@ -6,34 +6,34 @@ if not hasattr(pyb, "Accel"):
 pyb.Accel()
 i2c = I2C(1, I2C.CONTROLLER, dma=True)
 pyb.disable_irq()
-i2c.mem_read(1, 76, 0x0A)  # should succeed
+i2c.mem_read(1, 76, 0x0A)  
 pyb.enable_irq()
 try:
     pyb.disable_irq()
-    i2c.mem_read(1, 77, 0x0A)  # should fail
+    i2c.mem_read(1, 77, 0x0A)  
 except OSError as e:
     pyb.enable_irq()
     print(repr(e))
-i2c.mem_read(1, 76, 0x0A)  # should succeed
+i2c.mem_read(1, 76, 0x0A)  
 pyb.disable_irq()
-i2c.mem_write(1, 76, 0x0A)  # should succeed
+i2c.mem_write(1, 76, 0x0A)  
 pyb.enable_irq()
 try:
     pyb.disable_irq()
-    i2c.mem_write(1, 77, 0x0A)  # should fail
+    i2c.mem_write(1, 77, 0x0A)  
 except OSError as e:
     pyb.enable_irq()
     print(repr(e))
-i2c.mem_write(1, 76, 0x0A)  # should succeed
-i2c.mem_read(1, 76, 0x0A)  # should succeed
+i2c.mem_write(1, 76, 0x0A)  
+i2c.mem_read(1, 76, 0x0A)  
 try:
-    i2c.mem_read(1, 77, 0x0A)  # should fail
+    i2c.mem_read(1, 77, 0x0A)  
 except OSError as e:
     print(repr(e))
-i2c.mem_read(1, 76, 0x0A)  # should succeed
-i2c.mem_write(1, 76, 0x0A)  # should succeed
+i2c.mem_read(1, 76, 0x0A)  
+i2c.mem_write(1, 76, 0x0A)  
 try:
-    i2c.mem_write(1, 77, 0x0A)  # should fail
+    i2c.mem_write(1, 77, 0x0A)  
 except OSError as e:
     print(repr(e))
-i2c.mem_write(1, 76, 0x0A)  # should succeed
+i2c.mem_write(1, 76, 0x0A)  

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef ASM_KVM_CACHE_REGS_H
 #define ASM_KVM_CACHE_REGS_H
 
@@ -43,13 +43,7 @@ BUILD_KVM_GPR_ACCESSORS(r14, R14)
 BUILD_KVM_GPR_ACCESSORS(r15, R15)
 #endif
 
-/*
- * avail  dirty
- * 0	  0	  register in VMCS/VMCB
- * 0	  1	  *INVALID*
- * 1	  0	  register in vcpu->arch
- * 1	  1	  register in vcpu->arch, needs to be stored back
- */
+
 static inline bool kvm_register_is_available(struct kvm_vcpu *vcpu,
 					     enum kvm_reg reg)
 {
@@ -75,23 +69,14 @@ static inline void kvm_register_mark_dirty(struct kvm_vcpu *vcpu,
 	__set_bit(reg, (unsigned long *)&vcpu->arch.regs_dirty);
 }
 
-/*
- * kvm_register_test_and_mark_available() is a special snowflake that uses an
- * arch bitop directly to avoid the explicit instrumentation that comes with
- * the generic bitops.  This allows code that cannot be instrumented (noinstr
- * functions), e.g. the low level VM-Enter/VM-Exit paths, to cache registers.
- */
+
 static __always_inline bool kvm_register_test_and_mark_available(struct kvm_vcpu *vcpu,
 								 enum kvm_reg reg)
 {
 	return arch___test_and_set_bit(reg, (unsigned long *)&vcpu->arch.regs_avail);
 }
 
-/*
- * The "raw" register helpers are only for cases where the full 64 bits of a
- * register are read/written irrespective of current vCPU mode.  In other words,
- * odds are good you shouldn't be using the raw variants.
- */
+
 static inline unsigned long kvm_register_read_raw(struct kvm_vcpu *vcpu, int reg)
 {
 	if (WARN_ON_ONCE((unsigned int)reg >= NR_VCPU_REGS))
@@ -135,7 +120,7 @@ static inline void kvm_rsp_write(struct kvm_vcpu *vcpu, unsigned long val)
 
 static inline u64 kvm_pdptr_read(struct kvm_vcpu *vcpu, int index)
 {
-	might_sleep();  /* on svm */
+	might_sleep();  
 
 	if (!kvm_register_is_available(vcpu, VCPU_EXREG_PDPTR))
 		static_call(kvm_x86_cache_reg)(vcpu, VCPU_EXREG_PDPTR);

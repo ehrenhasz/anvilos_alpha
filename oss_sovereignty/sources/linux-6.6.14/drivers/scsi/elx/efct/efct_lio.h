@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+
 
 #ifndef __EFCT_LIO_H__
 #define __EFCT_LIO_H__
@@ -32,17 +29,12 @@ struct efct_lio_wq_data {
 	struct work_struct	work;
 };
 
-/* Target private efct structure */
+
 struct efct_scsi_tgt {
 	u32			max_sge;
 	u32			max_sgl;
 
-	/*
-	 * Variables used to send task set full. We are using a high watermark
-	 * method to send task set full. We will reserve a fixed number of IOs
-	 * per initiator plus a fudge factor. Once we reach this number,
-	 * then the target will start sending task set full/busy responses.
-	 */
+	
 	atomic_t		initiator_count;
 	atomic_t		ios_in_use;
 	atomic_t		io_high_watermark;
@@ -55,7 +47,7 @@ struct efct_scsi_tgt {
 	struct efct_lio_tpg	*tpg;
 
 	struct list_head	vport_list;
-	/* Protects vport list*/
+	
 	spinlock_t		efct_lio_lock;
 
 	u64			wwnn;
@@ -122,7 +114,7 @@ struct efct_scsi_tgt_io {
 	u32			transferred_len;
 };
 
-/* Handler return codes */
+
 enum {
 	SCSI_HANDLER_DATAPHASE_STARTED = 1,
 	SCSI_HANDLER_RESP_STARTED,
@@ -186,4 +178,4 @@ struct efct_lio_vport_list_t {
 int efct_scsi_tgt_driver_init(void);
 int efct_scsi_tgt_driver_exit(void);
 
-#endif /*__EFCT_LIO_H__ */
+#endif 

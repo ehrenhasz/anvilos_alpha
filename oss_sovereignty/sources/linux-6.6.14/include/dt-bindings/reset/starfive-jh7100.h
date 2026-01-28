@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2021 Ahmad Fatoum, Pengutronix
- */
+
+
 
 #ifndef __DT_BINDINGS_RESET_STARFIVE_JH7100_H__
 #define __DT_BINDINGS_RESET_STARFIVE_JH7100_H__
@@ -123,4 +121,4 @@
 
 #define JH7100_RSTN_END			114
 
-#endif /* __DT_BINDINGS_RESET_STARFIVE_JH7100_H__ */
+#endif 

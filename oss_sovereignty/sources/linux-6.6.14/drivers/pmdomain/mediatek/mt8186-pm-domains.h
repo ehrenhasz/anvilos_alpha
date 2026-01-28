@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
- */
+
+
 
 #ifndef __SOC_MEDIATEK_MT8186_PM_DOMAINS_H
 #define __SOC_MEDIATEK_MT8186_PM_DOMAINS_H
@@ -10,9 +7,7 @@
 #include "mtk-pm-domains.h"
 #include <dt-bindings/power/mt8186-power.h>
 
-/*
- * MT8186 power domain support
- */
+
 
 static const struct scpsys_domain_data scpsys_domain_data_mt8186[] = {
 	[MT8186_POWER_DOMAIN_MFG0] = {
@@ -339,4 +334,4 @@ static const struct scpsys_soc_data mt8186_scpsys_data = {
 	.num_domains = ARRAY_SIZE(scpsys_domain_data_mt8186),
 };
 
-#endif /* __SOC_MEDIATEK_MT8186_PM_DOMAINS_H */
+#endif 

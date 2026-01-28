@@ -37,40 +37,40 @@ valid_header = bytes([77, 6, mpy_arch, 31])
 user_files = {
     '/mod0.mpy': bytes([77, 6, 0xfc | mpy_arch, 31]),
     '/mod1.mpy': valid_header + (
-        b'\x02' # n_qstr
-        b'\x00' # n_obj
-        b'\x0emod1.py\x00' # qstr0 = "mod1.py"
-        b'\x0aouter\x00' # qstr1 = "outer"
-        b'\x2c' # 5 bytes, have children, bytecode
-            b'\x00\x02' # prelude
-            b'\x01' # simple name (qstr index)
-            b'\x51' # LOAD_CONST_NONE
-            b'\x63' # RETURN_VALUE
-        b'\x02' # 2 children
-            b'\x42' # 8 bytes, no children, viper code
-                b'\x00\x00\x00\x00\x00\x00\x00\x00' # dummy machine code
-                b'\x00' # scope_flags
-            b'\x43' # 8 bytes, no children, asm code
-                b'\x00\x00\x00\x00\x00\x00\x00\x00' # dummy machine code
-                b'\x00\x00\x00' # scope_flags, n_pos_args, type_sig
+        b'\x02' 
+        b'\x00' 
+        b'\x0emod1.py\x00' 
+        b'\x0aouter\x00' 
+        b'\x2c' 
+            b'\x00\x02' 
+            b'\x01' 
+            b'\x51' 
+            b'\x63' 
+        b'\x02' 
+            b'\x42' 
+                b'\x00\x00\x00\x00\x00\x00\x00\x00' 
+                b'\x00' 
+            b'\x43' 
+                b'\x00\x00\x00\x00\x00\x00\x00\x00' 
+                b'\x00\x00\x00' 
     ),
     '/mod2.mpy': valid_header + (
-        b'\x02' # n_qstr
-        b'\x00' # n_obj
-        b'\x0emod2.py\x00' # qstr0 = "mod2.py"
-        b'\x0aouter\x00' # qstr1 = "outer"
-        b'\x2c' # 5 bytes, have children, bytecode
-            b'\x00\x02' # prelude
-            b'\x01' # simple name (qstr index)
-            b'\x51' # LOAD_CONST_NONE
-            b'\x63' # RETURN_VALUE
-        b'\x01' # 1 child
-            b'\x22' # 4 bytes, no children, viper code
-                b'\x00\x00\x00\x00' # dummy machine code
-                b'\x70' # scope_flags: VIPERBSS | VIPERRODATA | VIPERRELOC
-                b'\x06\x04' # rodata=6 bytes, bss=4 bytes
-                b'rodata' # rodata content
-                b'\x03\x01\x00' # dummy relocation of rodata
+        b'\x02' 
+        b'\x00' 
+        b'\x0emod2.py\x00' 
+        b'\x0aouter\x00' 
+        b'\x2c' 
+            b'\x00\x02' 
+            b'\x01' 
+            b'\x51' 
+            b'\x63' 
+        b'\x01' 
+            b'\x22' 
+                b'\x00\x00\x00\x00' 
+                b'\x70' 
+                b'\x06\x04' 
+                b'rodata' 
+                b'\x03\x01\x00' 
     ),
 }
 vfs.mount(UserFS(user_files), "/userfs")

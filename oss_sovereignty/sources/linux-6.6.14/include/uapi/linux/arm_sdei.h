@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/* Copyright (C) 2017 Arm Ltd. */
+
+
 #ifndef _UAPI_LINUX_ARM_SDEI_H
 #define _UAPI_LINUX_ARM_SDEI_H
 
@@ -36,7 +36,7 @@
 #define SDEI_VERSION_MINOR(x)	(x>>SDEI_VERSION_MINOR_SHIFT & SDEI_VERSION_MINOR_MASK)
 #define SDEI_VERSION_VENDOR(x)	(x>>SDEI_VERSION_VENDOR_SHIFT & SDEI_VERSION_VENDOR_MASK)
 
-/* SDEI return values */
+
 #define SDEI_SUCCESS		0
 #define SDEI_NOT_SUPPORTED	-1
 #define SDEI_INVALID_PARAMETERS	-2
@@ -44,30 +44,30 @@
 #define SDEI_PENDING		-5
 #define SDEI_OUT_OF_RESOURCE	-10
 
-/* EVENT_REGISTER flags */
+
 #define SDEI_EVENT_REGISTER_RM_ANY	0
 #define SDEI_EVENT_REGISTER_RM_PE	1
 
-/* EVENT_STATUS return value bits */
+
 #define SDEI_EVENT_STATUS_RUNNING	2
 #define SDEI_EVENT_STATUS_ENABLED	1
 #define SDEI_EVENT_STATUS_REGISTERED	0
 
-/* EVENT_COMPLETE status values */
+
 #define SDEI_EV_HANDLED	0
 #define SDEI_EV_FAILED	1
 
-/* GET_INFO values */
+
 #define SDEI_EVENT_INFO_EV_TYPE			0
 #define SDEI_EVENT_INFO_EV_SIGNALED		1
 #define SDEI_EVENT_INFO_EV_PRIORITY		2
 #define SDEI_EVENT_INFO_EV_ROUTING_MODE		3
 #define SDEI_EVENT_INFO_EV_ROUTING_AFF		4
 
-/* and their results */
+
 #define SDEI_EVENT_TYPE_PRIVATE			0
 #define SDEI_EVENT_TYPE_SHARED			1
 #define SDEI_EVENT_PRIORITY_NORMAL		0
 #define SDEI_EVENT_PRIORITY_CRITICAL		1
 
-#endif /* _UAPI_LINUX_ARM_SDEI_H */
+#endif 

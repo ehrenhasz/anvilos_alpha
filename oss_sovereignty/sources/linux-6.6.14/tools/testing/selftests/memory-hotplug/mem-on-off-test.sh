@@ -27,7 +27,7 @@ hotpluggable_memory()
 	for memory in $SYSFS/devices/system/memory/memory*; do
 		if grep -q 1 $memory/removable &&
 		   grep -q $state $memory/state; then
-			echo ${memory##/*/memory}
+			echo ${memory
 		fi
 	done
 }

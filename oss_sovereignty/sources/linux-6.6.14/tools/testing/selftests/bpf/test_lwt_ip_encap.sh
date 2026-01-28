@@ -55,7 +55,7 @@ print_test_summary_and_exit()
 }
 setup()
 {
-	set -e  # exit on error
+	set -e  
 	TEST_STATUS=0
 	ip netns add "${NS1}"
 	ip netns add "${NS2}"
@@ -127,9 +127,9 @@ setup()
 	ip -netns ${NS2} link set dev veth7 up
 	ip -netns ${NS3} link set dev veth8 up
 	ip -netns ${NS1}    route add ${IPv4_2}/32  dev veth1 ${VRF}
-	ip -netns ${NS1}    route add default dev veth1 via ${IPv4_2} ${VRF}  # go top by default
+	ip -netns ${NS1}    route add default dev veth1 via ${IPv4_2} ${VRF}  
 	ip -netns ${NS1} -6 route add ${IPv6_2}/128 dev veth1 ${VRF}
-	ip -netns ${NS1} -6 route add default dev veth1 via ${IPv6_2} ${VRF}  # go top by default
+	ip -netns ${NS1} -6 route add default dev veth1 via ${IPv6_2} ${VRF}  
 	ip -netns ${NS1}    route add ${IPv4_6}/32  dev veth5 ${VRF}
 	ip -netns ${NS1}    route add ${IPv4_7}/32  dev veth5 via ${IPv4_6} ${VRF}
 	ip -netns ${NS1}    route add ${IPv4_8}/32  dev veth5 via ${IPv4_6} ${VRF}
@@ -167,7 +167,7 @@ setup()
 	ip -netns ${NS1} -6 route add ${IPv6_GRE}/128 dev veth5 via ${IPv6_6} ${VRF}
 	ip -netns ${NS2} -6 route add ${IPv6_GRE}/128 dev veth7 via ${IPv6_8} ${VRF}
 	TMPFILE=$(mktemp /tmp/test_lwt_ip_encap.XXXXXX)
-	sleep 1  # reduce flakiness
+	sleep 1  
 	set +e
 }
 cleanup()
@@ -222,7 +222,7 @@ test_gso()
 	local readonly PROTO=$1
 	local readonly PKT_SZ=5000
 	local IP_DST=""
-	: > ${TMPFILE}  # trim the capture file
+	: > ${TMPFILE}  
 	command -v nc >/dev/null 2>&1 || \
 		{ echo >&2 "nc is not available: skipping TSO tests"; return; }
 	if [ "${PROTO}" == "IPv4" ] ; then
@@ -238,10 +238,10 @@ test_gso()
 		echo "    test_gso: unknown PROTO: ${PROTO}"
 		TEST_STATUS=1
 	fi
-	sleep 1  # let nc start listening
+	sleep 1  
 	ip netns exec ${NS1} bash -c \
 		"dd if=/dev/zero bs=$PKT_SZ count=1 > /dev/tcp/${IP_DST}/9000 2>/dev/null"
-	sleep 2 # let the packet get delivered
+	sleep 2 
 	SZ=$(stat -c %s ${TMPFILE})
 	if [ "$SZ" != "$PKT_SZ" ] ; then
 		echo "    test_gso failed: ${PROTO}"

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * property.h - Unified device property interface.
- *
- * Copyright (C) 2014, Intel Corporation
- * Authors: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- *          Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+
 
 #ifndef _LINUX_PROPERTY_H_
 #define _LINUX_PROPERTY_H_
@@ -85,13 +79,7 @@ bool fwnode_device_is_compatible(const struct fwnode_handle *fwnode, const char 
 	return fwnode_property_match_string(fwnode, "compatible", compat) >= 0;
 }
 
-/**
- * device_is_compatible - match 'compatible' property of the device with a given string
- * @dev: Pointer to the struct device
- * @compat: The string to match 'compatible' property with
- *
- * Returns: true if matches, otherwise false.
- */
+
 static inline bool device_is_compatible(const struct device *dev, const char *compat)
 {
 	return fwnode_device_is_compatible(dev_fwnode(dev), compat);
@@ -273,12 +261,7 @@ fwnode_property_string_array_count(const struct fwnode_handle *fwnode,
 
 struct software_node;
 
-/**
- * struct software_node_ref_args - Reference property with additional arguments
- * @node: Reference to a software node
- * @nargs: Number of elements in @args array
- * @args: Integer arguments
- */
+
 struct software_node_ref_args {
 	const struct software_node *node;
 	unsigned int nargs;
@@ -292,15 +275,7 @@ struct software_node_ref_args {
 	.args = { __VA_ARGS__ },				\
 }
 
-/**
- * struct property_entry - "Built-in" device property representation.
- * @name: Name of the property.
- * @length: Length of data making up the value.
- * @is_inline: True when the property value is stored inline.
- * @type: Type of the data in unions.
- * @pointer: Pointer to the property when it is not stored inline.
- * @value: Value of the property when it is stored inline.
- */
+
 struct property_entry {
 	const char *name;
 	size_t length;
@@ -318,11 +293,7 @@ struct property_entry {
 	};
 };
 
-/*
- * Note: the below initializers for the anonymous union are carefully
- * crafted to avoid gcc-4.4.4's problems with initialization of anon unions
- * and structs.
- */
+
 #define __PROPERTY_ENTRY_ARRAY_LEN(_name_, _elem_, _Type_, _val_, _len_)		\
 (struct property_entry) {								\
 	.name = _name_,									\
@@ -427,17 +398,7 @@ static inline bool fwnode_graph_is_endpoint(const struct fwnode_handle *fwnode)
 	return fwnode_property_present(fwnode, "remote-endpoint");
 }
 
-/*
- * Fwnode lookup flags
- *
- * @FWNODE_GRAPH_ENDPOINT_NEXT: In the case of no exact match, look for the
- *				closest endpoint ID greater than the specified
- *				one.
- * @FWNODE_GRAPH_DEVICE_DISABLED: That the device to which the remote
- *				  endpoint of the given endpoint belongs to,
- *				  may be disabled, or that the endpoint is not
- *				  connected.
- */
+
 #define FWNODE_GRAPH_ENDPOINT_NEXT	BIT(0)
 #define FWNODE_GRAPH_DEVICE_DISABLED	BIT(1)
 
@@ -473,15 +434,10 @@ int fwnode_connection_find_matches(const struct fwnode_handle *fwnode,
 				   devcon_match_fn_t match,
 				   void **matches, unsigned int matches_len);
 
-/* -------------------------------------------------------------------------- */
-/* Software fwnode support - when HW description is incomplete or missing */
 
-/**
- * struct software_node - Software node description
- * @name: Name of the software node
- * @parent: Parent of the software node
- * @properties: Array of device properties
- */
+
+
+
 struct software_node {
 	const char *name;
 	const struct software_node *parent;
@@ -515,4 +471,4 @@ int device_create_managed_software_node(struct device *dev,
 					const struct property_entry *properties,
 					const struct software_node *parent);
 
-#endif /* _LINUX_PROPERTY_H_ */
+#endif 

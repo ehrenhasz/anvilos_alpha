@@ -1,22 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET  is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Definitions for the IP router.
- *
- * Version:	@(#)route.h	1.0.4	05/27/93
- *
- * Authors:	Ross Biro
- *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
- * Fixes:
- *		Alan Cox	:	Reformatted. Added ip_rt_local()
- *		Alan Cox	:	Support for TCP parameters.
- *		Alexey Kuznetsov:	Major changes for new routing code.
- *		Mike McLagan    :	Routing by source
- *		Robert Olsson   :	Added rt_cache statistics
- */
+
+
 #ifndef _ROUTE_H
 #define _ROUTE_H
 
@@ -69,13 +52,13 @@ struct rtable {
 	int			rt_iif;
 
 	u8			rt_gw_family;
-	/* Info on neighbour */
+	
 	union {
 		__be32		rt_gw4;
 		struct in6_addr	rt_gw6;
 	};
 
-	/* Miscellaneous cached information */
+	
 	u32			rt_mtu_locked:1,
 				rt_pmtu:31;
 };
@@ -251,9 +234,7 @@ int fib_dump_info_fnhe(struct sk_buff *skb, struct netlink_callback *cb,
 
 static inline void ip_rt_put(struct rtable *rt)
 {
-	/* dst_release() accepts a NULL parameter.
-	 * We rely on dst being first structure in struct rtable
-	 */
+	
 	BUILD_BUG_ON(offsetof(struct rtable, dst) != 0);
 	dst_release(&rt->dst);
 }
@@ -267,29 +248,7 @@ static inline char rt_tos2priority(u8 tos)
 	return ip_tos2prio[IPTOS_TOS(tos)>>1];
 }
 
-/* ip_route_connect() and ip_route_newports() work in tandem whilst
- * binding a socket for a new outgoing connection.
- *
- * In order to use IPSEC properly, we must, in the end, have a
- * route that was looked up using all available keys including source
- * and destination ports.
- *
- * However, if a source port needs to be allocated (the user specified
- * a wildcard source port) we need to obtain addressing information
- * in order to perform that allocation.
- *
- * So ip_route_connect() looks up a route using wildcarded source and
- * destination ports in the key, simply so that we can get a pair of
- * addresses to use for port allocation.
- *
- * Later, once the ports are allocated, ip_route_newports() will make
- * another route lookup if needed to make sure we catch any IPSEC
- * rules keyed on the port information.
- *
- * The callers allocate the flow key on their stack, and must pass in
- * the same flowi4 object to both the ip_route_connect() and the
- * ip_route_newports() calls.
- */
+
 
 static inline void ip_route_connect_init(struct flowi4 *fl4, __be32 dst,
 					 __be32 src, int oif, u8 protocol,
@@ -394,4 +353,4 @@ static inline struct neighbour *ip_neigh_for_gw(struct rtable *rt,
 	return neigh;
 }
 
-#endif	/* _ROUTE_H */
+#endif	

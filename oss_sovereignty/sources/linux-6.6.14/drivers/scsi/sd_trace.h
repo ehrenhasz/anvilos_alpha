@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2022 Western Digital Corporation or its affiliates.
- */
+
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sd
 
@@ -76,9 +74,9 @@ TRACE_EVENT(scsi_zone_wp_update,
 		      __entry->lun, __entry->rq_sector, __entry->wp_offset,
 		      __entry->good_bytes)
 );
-#endif /* _SD_TRACE_H */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/scsi
 #include <trace/define_trace.h>

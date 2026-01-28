@@ -1,24 +1,13 @@
-/* vi: set sw=4 ts=4: */
-/*
- * This header makes it easier to include kernel headers
- * which use u32 and such.
- *
- * Licensed under GPLv2, see file LICENSE in this source tree.
- */
+
+
 #ifndef FIX_U32_H
 #define FIX_U32_H 1
 
-/* Try hard to pull in u32 types and such.
- * Otherwise, #include "fix_u32.h" + #include <linux/foo.h>
- * may end up typedef'ing bb_hack_u32 inside foo.h,
- * and repeated typedefs aren't allowed in C/C++.
- */
+
 #include <asm/types.h>
 #include <linux/types.h>
 
-/* In case above includes still failed to provide the types,
- * provide them ourself
- */
+
 #undef __u64
 #undef u64
 #undef u32

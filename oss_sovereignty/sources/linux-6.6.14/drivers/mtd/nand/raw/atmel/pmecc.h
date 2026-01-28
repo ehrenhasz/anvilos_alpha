@@ -1,35 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * © Copyright 2016 ATMEL
- * © Copyright 2016 Free Electrons
- *
- * Author: Boris Brezillon <boris.brezillon@free-electrons.com>
- *
- * Derived from the atmel_nand.c driver which contained the following
- * copyrights:
- *
- *    Copyright © 2003 Rick Bronson
- *
- *    Derived from drivers/mtd/nand/autcpu12.c (removed in v3.8)
- *        Copyright © 2001 Thomas Gleixner (gleixner@autronix.de)
- *
- *    Derived from drivers/mtd/spia.c (removed in v3.8)
- *        Copyright © 2000 Steven J. Hill (sjhill@cotw.com)
- *
- *
- *    Add Hardware ECC support for AT91SAM9260 / AT91SAM9263
- *        Richard Genoud (richard.genoud@gmail.com), Adeneo Copyright © 2007
- *
- *        Derived from Das U-Boot source code
- *              (u-boot-1.1.5/board/atmel/at91sam9263ek/nand.c)
- *        © Copyright 2006 ATMEL Rousset, Lacressonniere Nicolas
- *
- *    Add Programmable Multibit ECC support for various AT91 SoC
- *        © Copyright 2012 ATMEL, Hong Xu
- *
- *    Add Nand Flash Controller support for SAMA5 SoC
- *        © Copyright 2013 ATMEL, Josh Wu (josh.wu@atmel.com)
- */
+
+
 
 #ifndef ATMEL_PMECC_H
 #define ATMEL_PMECC_H
@@ -67,4 +37,4 @@ bool atmel_pmecc_correct_erased_chunks(struct atmel_pmecc_user *user);
 void atmel_pmecc_get_generated_eccbytes(struct atmel_pmecc_user *user,
 					int sector, void *ecc);
 
-#endif /* ATMEL_PMECC_H */
+#endif 

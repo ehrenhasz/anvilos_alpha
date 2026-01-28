@@ -1,16 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef _MEDIA_FRAME_VECTOR_H
 #define _MEDIA_FRAME_VECTOR_H
 
-/* Container for pinned pfns / pages in frame_vector.c */
+
 struct frame_vector {
-	unsigned int nr_allocated;	/* Number of frames we have space for */
-	unsigned int nr_frames;	/* Number of frames stored in ptrs array */
-	bool got_ref;		/* Did we pin pages by getting page ref? */
-	bool is_pfns;		/* Does array contain pages or pfns? */
-	void *ptrs[];		/* Array of pinned pfns / pages. Use
-				 * pfns_vector_pages() or pfns_vector_pfns()
-				 * for access */
+	unsigned int nr_allocated;	
+	unsigned int nr_frames;	
+	bool got_ref;		
+	bool is_pfns;		
+	void *ptrs[];		
 };
 
 struct frame_vector *frame_vector_create(unsigned int nr_frames);
@@ -44,4 +42,4 @@ static inline unsigned long *frame_vector_pfns(struct frame_vector *vec)
 	return (unsigned long *)(vec->ptrs);
 }
 
-#endif /* _MEDIA_FRAME_VECTOR_H */
+#endif 

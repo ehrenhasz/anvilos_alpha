@@ -20,7 +20,7 @@ IPCS_LIMITS=(
 	$($TS_HELPER_SYSINFO ULONG_MAX32)
 	$($TS_HELPER_SYSINFO ULONG_MAX32)
 )
-IPCS_IDX=$(seq 0 $(( ${#IPCS_PROCFILES[*]} - 1 )))
+IPCS_IDX=$(seq 0 $(( ${
 UINT64_MAX=$($TS_HELPER_SYSINFO UINT64_MAX)
 function ipcs_limits_check {
 	for i in $IPCS_IDX; do

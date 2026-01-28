@@ -1,21 +1,10 @@
-/*
- * SPDX-License-Identifier: GPL-2.0-or-later
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * Copyright (C) 2011 Sami Kerola <kerolasa@iki.fi>
- */
+
 #ifndef UTIL_LINUX_MINIX_PROGRAMS_H
 #define UTIL_LINUX_MINIX_PROGRAMS_H
 
 #include "minix.h"
 
-/*
- * Global variables.
- */
+
 extern int fs_version;
 extern char *super_block_buffer;
 
@@ -29,9 +18,7 @@ extern char *super_block_buffer;
 
 #define UPPER(size,n) ((size+((n)-1))/(n))
 
-/*
- * Inline functions.
- */
+
 static inline unsigned long get_ninodes(void)
 {
 	switch (fs_version) {
@@ -125,4 +112,4 @@ static inline size_t get_inode_buffer_size(void)
 	return inode_blocks() * MINIX_BLOCK_SIZE;
 }
 
-#endif				/* UTIL_LINUX_MINIX_PROGRAMS_H */
+#endif				

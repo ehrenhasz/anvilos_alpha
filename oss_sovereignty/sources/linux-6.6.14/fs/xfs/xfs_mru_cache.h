@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2006-2007 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef __XFS_MRU_CACHE_H__
 #define __XFS_MRU_CACHE_H__
 
@@ -13,7 +10,7 @@ struct xfs_mru_cache_elem {
 	unsigned long	key;
 };
 
-/* Function pointer type for callback to free a client's data pointer. */
+
 typedef void (*xfs_mru_cache_free_func_t)(void *, struct xfs_mru_cache_elem *);
 
 int xfs_mru_cache_init(void);
@@ -31,4 +28,4 @@ struct xfs_mru_cache_elem *
 xfs_mru_cache_lookup(struct xfs_mru_cache *mru, unsigned long key);
 void xfs_mru_cache_done(struct xfs_mru_cache *mru);
 
-#endif /* __XFS_MRU_CACHE_H__ */
+#endif 

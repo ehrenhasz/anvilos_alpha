@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+
 
 #if defined(_KERNEL)
 #if defined(HAVE_DECLARE_EVENT_CLASS)
@@ -35,15 +16,8 @@
 #include <linux/vfs_compat.h>
 #include <sys/types.h>
 
-/*
- * Generic support for three argument tracepoints of the form:
- *
- * DTRACE_PROBE3(...,
- *     znode_t *, ...,
- *     zfs_ace_hdr_t *, ...,
- *     uint32_t, ...);
- */
-/* BEGIN CSTYLED */
+
+
 DECLARE_EVENT_CLASS(zfs_ace_class,
 	TP_PROTO(znode_t *zn, zfs_ace_hdr_t *ace, uint32_t mask_matched),
 	TP_ARGS(zn, ace, mask_matched),
@@ -133,7 +107,7 @@ DECLARE_EVENT_CLASS(zfs_ace_class,
 	    __entry->z_type, __entry->z_flags, __entry->z_access_mask,
 	    __entry->mask_matched)
 );
-/* END CSTYLED */
+
 
 #define	DEFINE_ACE_EVENT(name) \
 DEFINE_EVENT(zfs_ace_class, name, \
@@ -142,7 +116,7 @@ DEFINE_EVENT(zfs_ace_class, name, \
 DEFINE_ACE_EVENT(zfs_zfs__ace__denies);
 DEFINE_ACE_EVENT(zfs_zfs__ace__allows);
 
-#endif /* _TRACE_ACL_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
@@ -156,5 +130,5 @@ DEFINE_DTRACE_PROBE3(zfs__ace__denies);
 DEFINE_DTRACE_PROBE3(zfs__ace__allows);
 DEFINE_DTRACE_PROBE(zfs__fastpath__execute__access__miss);
 
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif 
+#endif 

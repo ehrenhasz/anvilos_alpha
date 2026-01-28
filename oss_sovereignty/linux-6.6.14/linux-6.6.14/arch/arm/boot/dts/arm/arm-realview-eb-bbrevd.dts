@@ -1,5 +1,0 @@
-#include "arm-realview-eb.dts"
-#include "arm-realview-eb-bbrevd.dtsi"
-/ {
-	model = "ARM RealView Emulation Baseboard Rev D";
-};

@@ -1,24 +1,4 @@
-/*
-   BlueZ - Bluetooth protocol stack for Linux
-   Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation;
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
-   IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
-   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
-   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
-   SOFTWARE IS DISCLAIMED.
-*/
 
 #ifndef __SMP_H
 #define __SMP_H
@@ -142,7 +122,7 @@ struct smp_cmd_keypress_notify {
 #define SMP_MIN_ENC_KEY_SIZE		7
 #define SMP_MAX_ENC_KEY_SIZE		16
 
-/* LTK types used in internal storage (struct smp_ltk) */
+
 enum {
 	SMP_STK,
 	SMP_LTK,
@@ -174,13 +154,13 @@ static inline u8 smp_ltk_sec_level(struct smp_ltk *key)
 	return BT_SECURITY_MEDIUM;
 }
 
-/* Key preferences for smp_sufficient security */
+
 enum smp_key_pref {
 	SMP_ALLOW_STK,
 	SMP_USE_LTK,
 };
 
-/* SMP Commands */
+
 int smp_cancel_and_remove_pairing(struct hci_dev *hdev, bdaddr_t *bdaddr,
 				  u8 addr_type);
 bool smp_sufficient_security(struct hci_conn *hcon, u8 sec_level,
@@ -211,4 +191,4 @@ static inline int bt_selftest_smp(void)
 
 #endif
 
-#endif /* __SMP_H */
+#endif 

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0+ OR MIT
+
 
 TEST_PROGS = bridge_igmp.sh \
 	bridge_locked_port.sh \

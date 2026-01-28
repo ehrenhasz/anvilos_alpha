@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 obj-$(CONFIG_SCSI_UFSHCD)		+= ufshcd-core.o
 ufshcd-core-y				+= ufshcd.o ufs-sysfs.o ufs-mcq.o

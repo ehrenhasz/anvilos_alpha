@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile to build the network driver for ServerEngine's BladeEngine.
-#
+
+
+
+
 
 obj-$(CONFIG_BE2NET) += be2net.o
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2005-2007 Takahiro Hirofuchi
- */
+
+
 
 #ifndef __VHCI_DRIVER_H
 #define __VHCI_DRIVER_H
@@ -29,13 +27,13 @@ struct usbip_imported_device {
 	uint8_t busnum;
 	uint8_t devnum;
 
-	/* usbip_class_device list */
+	
 	struct usbip_usb_device udev;
 };
 
 struct usbip_vhci_driver {
 
-	/* /sys/devices/platform/vhci_hcd */
+	
 	struct udev_device *hc_device;
 
 	int ncontrollers;
@@ -56,7 +54,7 @@ int usbip_vhci_get_free_port(uint32_t speed);
 int usbip_vhci_attach_device2(uint8_t port, int sockfd, uint32_t devid,
 		uint32_t speed);
 
-/* will be removed */
+
 int usbip_vhci_attach_device(uint8_t port, int sockfd, uint8_t busnum,
 		uint8_t devnum, uint32_t speed);
 
@@ -64,4 +62,4 @@ int usbip_vhci_detach_device(uint8_t port);
 
 int usbip_vhci_imported_device_dump(struct usbip_imported_device *idev);
 
-#endif /* __VHCI_DRIVER_H */
+#endif 

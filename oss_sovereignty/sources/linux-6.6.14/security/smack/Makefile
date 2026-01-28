@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile for the SMACK LSM
-#
+
+
+
+
 
 obj-$(CONFIG_SECURITY_SMACK) := smack.o
 

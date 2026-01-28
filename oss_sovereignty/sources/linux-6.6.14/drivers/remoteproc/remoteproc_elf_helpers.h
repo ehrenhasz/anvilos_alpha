@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Remote processor elf helpers defines
- *
- * Copyright (C) 2020 Kalray, Inc.
- */
+
+
 
 #ifndef REMOTEPROC_ELF_LOADER_H
 #define REMOTEPROC_ELF_LOADER_H
@@ -11,15 +7,7 @@
 #include <linux/elf.h>
 #include <linux/types.h>
 
-/**
- * fw_elf_get_class - Get elf class
- * @fw: the ELF firmware image
- *
- * Note that we use elf32_hdr to access the class since the start of the
- * struct is the same for both elf class
- *
- * Return: elf class of the firmware
- */
+
 static inline u8 fw_elf_get_class(const struct firmware *fw)
 {
 	struct elf32_hdr *ehdr = (struct elf32_hdr *)fw->data;
@@ -36,7 +24,7 @@ static inline void elf_hdr_init_ident(struct elf32_hdr *hdr, u8 class)
 	hdr->e_ident[EI_OSABI] = ELFOSABI_NONE;
 }
 
-/* Generate getter and setter for a specific elf struct/field */
+
 #define ELF_GEN_FIELD_GET_SET(__s, __field, __type) \
 static inline __type elf_##__s##_get_##__field(u8 class, const void *arg) \
 { \
@@ -119,4 +107,4 @@ static inline unsigned int elf_strtbl_add(const char *name, void *ehdr, u8 class
 	return ret;
 }
 
-#endif /* REMOTEPROC_ELF_LOADER_H */
+#endif 

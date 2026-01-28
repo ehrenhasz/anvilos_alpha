@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Hash algorithms.
- * 
- * Copyright (c) 2008 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+
 
 #ifndef _CRYPTO_INTERNAL_HASH_H
 #define _CRYPTO_INTERNAL_HASH_H
@@ -279,5 +275,5 @@ static inline struct crypto_shash *__crypto_shash_cast(struct crypto_tfm *tfm)
 	return container_of(tfm, struct crypto_shash, base);
 }
 
-#endif	/* _CRYPTO_INTERNAL_HASH_H */
+#endif	
 

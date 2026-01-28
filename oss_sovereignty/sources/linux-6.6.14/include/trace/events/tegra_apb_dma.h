@@ -55,7 +55,7 @@ TRACE_EVENT(tegra_dma_isr,
 	TP_printk("%s: irq %d\n",  __get_str(chan), __entry->irq)
 );
 
-#endif /* _TRACE_TEGRA_APB_DMA_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

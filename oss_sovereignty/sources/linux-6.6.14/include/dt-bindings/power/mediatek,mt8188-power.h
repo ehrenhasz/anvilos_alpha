@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Garmin Chang <garmin.chang@mediatek.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_POWER_MT8188_POWER_H
 #define _DT_BINDINGS_POWER_MT8188_POWER_H
@@ -41,4 +38,4 @@
 #define MT8188_POWER_DOMAIN_CAM_SUBA			31
 #define MT8188_POWER_DOMAIN_CAM_SUBB			32
 
-#endif /* _DT_BINDINGS_POWER_MT8188_POWER_H */
+#endif 

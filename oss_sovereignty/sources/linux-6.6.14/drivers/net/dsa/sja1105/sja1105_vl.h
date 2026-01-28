@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2020 NXP
- */
+
+
 #ifndef _SJA1105_VL_H
 #define _SJA1105_VL_H
 
@@ -69,6 +68,6 @@ static inline int sja1105_vl_stats(struct sja1105_private *priv, int port,
 	return -EOPNOTSUPP;
 }
 
-#endif /* IS_ENABLED(CONFIG_NET_DSA_SJA1105_VL) */
+#endif 
 
-#endif /* _SJA1105_VL_H */
+#endif 

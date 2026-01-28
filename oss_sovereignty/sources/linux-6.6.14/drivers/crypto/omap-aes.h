@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Cryptographic API.
- *
- * Support for OMAP AES HW ACCELERATOR defines
- *
- * Copyright (c) 2015 Texas Instruments Incorporated
- */
+
+
 #ifndef __OMAP_AES_H__
 #define __OMAP_AES_H__
 
@@ -16,10 +10,7 @@
 
 #define _calc_walked(inout) (dd->inout##_walk.offset - dd->inout##_sg->offset)
 
-/*
- * OMAP TRM gives bitfields as start:end, where start is the higher bit
- * number. For example 7:0
- */
+
 #define FLD_MASK(start, end)	(((1 << ((start) - (end) + 1)) - 1) << (end))
 #define FLD_VAL(val, start, end) (((val) << (end)) & FLD_MASK(start, end))
 
@@ -108,7 +99,7 @@ struct omap_aes_reqctx {
 	unsigned long mode;
 	u8 iv[AES_BLOCK_SIZE];
 	u32 auth_tag[AES_BLOCK_SIZE / sizeof(u32)];
-	struct skcipher_request fallback_req;	// keep at the end
+	struct skcipher_request fallback_req;	
 };
 
 #define OMAP_AES_QUEUE_LENGTH	1
@@ -169,10 +160,7 @@ struct omap_aes_dev {
 	struct aead_request		*aead_req;
 	struct crypto_engine		*engine;
 
-	/*
-	 * total is used by PIO mode for book keeping so introduce
-	 * variable total_save as need it to calc page_order
-	 */
+	
 	size_t				total;
 	size_t				total_save;
 	size_t				assoc_len;
@@ -181,7 +169,7 @@ struct omap_aes_dev {
 	struct scatterlist		*in_sg;
 	struct scatterlist		*out_sg;
 
-	/* Buffers for copying for unaligned cases */
+	
 	struct scatterlist		in_sgl[2];
 	struct scatterlist		out_sgl;
 	struct scatterlist		*orig_out;

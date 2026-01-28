@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-# Most of this file is copied from tools/lib/bpf/Makefile
+
+
 
 LIBPERF_VERSION = 0
 LIBPERF_PATCHLEVEL = 0
@@ -11,15 +11,15 @@ ifeq ($(srctree),)
 srctree := $(patsubst %/,%,$(dir $(CURDIR)))
 srctree := $(patsubst %/,%,$(dir $(srctree)))
 srctree := $(patsubst %/,%,$(dir $(srctree)))
-#$(info Determined 'srctree' to be $(srctree))
+
 endif
 
 INSTALL = install
 
-# Use DESTDIR for installing into a different root directory.
-# This is useful for building a package. The program will be
-# installed in this directory as if it was the root directory.
-# Then the build tool can move it later.
+
+
+
+
 DESTDIR ?=
 DESTDIR_SQ = '$(subst ','\'',$(DESTDIR))'
 
@@ -35,7 +35,7 @@ endif
 prefix ?=
 libdir = $(prefix)/$(libdir_relative)
 
-# Shell quotes
+
 libdir_SQ = $(subst ','\'',$(libdir))
 libdir_relative_SQ = $(subst ','\'',$(libdir_relative))
 
@@ -54,7 +54,7 @@ endif
 
 TEST_ARGS := $(if $(V),-v)
 
-# Set compile option CFLAGS
+
 ifdef EXTRA_CFLAGS
   CFLAGS := $(EXTRA_CFLAGS)
 else
@@ -69,7 +69,7 @@ INCLUDES = \
 -I$(srctree)/tools/arch/$(SRCARCH)/include/uapi \
 -I$(srctree)/tools/include/uapi
 
-# Append required CFLAGS
+
 override CFLAGS += $(EXTRA_WARNINGS)
 override CFLAGS += -Werror -Wall
 override CFLAGS += -fPIC

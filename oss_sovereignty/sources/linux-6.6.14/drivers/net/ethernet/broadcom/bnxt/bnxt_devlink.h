@@ -1,18 +1,11 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2017 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+
 
 #ifndef BNXT_DEVLINK_H
 #define BNXT_DEVLINK_H
 
-/* Struct to hold housekeeping info needed by devlink interface */
+
 struct bnxt_dl {
-	struct bnxt *bp;	/* back ptr to the controlling dev */
+	struct bnxt *bp;	
 	bool remote_reset;
 };
 
@@ -79,4 +72,4 @@ void bnxt_dl_fw_reporters_destroy(struct bnxt *bp);
 int bnxt_dl_register(struct bnxt *bp);
 void bnxt_dl_unregister(struct bnxt *bp);
 
-#endif /* BNXT_DEVLINK_H */
+#endif 

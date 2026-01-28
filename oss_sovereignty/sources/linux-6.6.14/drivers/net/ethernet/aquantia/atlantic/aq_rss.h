@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * aQuantia Corporation Network Driver
- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
- */
 
-/* File aq_rss.h: Receive Side Scaling definitions. */
+
+
+
 
 #ifndef AQ_RSS_H
 #define AQ_RSS_H
@@ -20,4 +17,4 @@ struct aq_rss_parameters {
 	u8 indirection_table[AQ_CFG_RSS_INDIRECTION_TABLE_MAX];
 };
 
-#endif /* AQ_RSS_H */
+#endif 

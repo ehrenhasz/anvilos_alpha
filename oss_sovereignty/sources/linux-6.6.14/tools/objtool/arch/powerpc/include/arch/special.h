@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef _PPC_ARCH_SPECIAL_H
 #define _PPC_ARCH_SPECIAL_H
 
@@ -18,4 +18,4 @@
 #define ALT_ORIG_LEN_OFFSET 10
 #define ALT_NEW_LEN_OFFSET 11
 
-#endif /* _PPC_ARCH_SPECIAL_H */
+#endif 

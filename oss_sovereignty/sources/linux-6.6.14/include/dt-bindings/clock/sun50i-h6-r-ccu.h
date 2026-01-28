@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017 Icenowy Zheng <icenowy@aosc.xyz>
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_SUN50I_H6_R_CCU_H_
 #define _DT_BINDINGS_CLK_SUN50I_H6_R_CCU_H_
@@ -24,4 +22,4 @@
 #define CLK_R_APB2_RSB		13
 #define CLK_R_APB1_RTC		14
 
-#endif /* _DT_BINDINGS_CLK_SUN50I_H6_R_CCU_H_ */
+#endif 

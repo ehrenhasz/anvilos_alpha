@@ -12,7 +12,7 @@ readonly DADDR4='192.168.1.2'
 readonly SADDR6='fd::1'
 readonly DADDR6='fd::2'
 readonly path_sysctl_mem="net.core.optmem_max"
-if [[ "$#" -eq "0" ]]; then
+if [[ "$
 	IPs=( "4" "6" )
 	for IP in "${IPs[@]}"; do
 		for mode in $(seq 1 3); do
@@ -23,7 +23,7 @@ if [[ "$#" -eq "0" ]]; then
 	echo "OK. All tests passed"
 	exit 0
 fi
-if [[ "$#" -lt "2" ]]; then
+if [[ "$
 	echo "Usage: $0 [4|6] [tcp|udp|raw|raw_hdrincl|packet|packet_dgram] <args>"
 	exit 1
 fi

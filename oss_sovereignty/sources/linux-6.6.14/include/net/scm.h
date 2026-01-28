@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LINUX_NET_SCM_H
 #define __LINUX_NET_SCM_H
 
@@ -11,9 +11,7 @@
 #include <linux/sched/signal.h>
 #include <net/compat.h>
 
-/* Well, we should have at least one descriptor open
- * to accept passed FDs 8)
- */
+
 #define SCM_MAX_FD	253
 
 struct scm_creds {
@@ -30,11 +28,11 @@ struct scm_fp_list {
 };
 
 struct scm_cookie {
-	struct pid		*pid;		/* Skb credentials */
-	struct scm_fp_list	*fp;		/* Passed files		*/
-	struct scm_creds	creds;		/* Skb credentials	*/
+	struct pid		*pid;		
+	struct scm_fp_list	*fp;		
+	struct scm_creds	creds;		
 #ifdef CONFIG_SECURITY_NETWORK
-	u32			secid;		/* Passed security ID 	*/
+	u32			secid;		
 #endif
 };
 
@@ -52,7 +50,7 @@ static __inline__ void unix_get_peersec_dgram(struct socket *sock, struct scm_co
 #else
 static __inline__ void unix_get_peersec_dgram(struct socket *sock, struct scm_cookie *scm)
 { }
-#endif /* CONFIG_SECURITY_NETWORK */
+#endif 
 
 static __inline__ void scm_set_cred(struct scm_cookie *scm,
 				    struct pid *pid, kuid_t uid, kgid_t gid)
@@ -119,16 +117,14 @@ static inline bool scm_has_secdata(struct socket *sock)
 {
 	return false;
 }
-#endif /* CONFIG_SECURITY_NETWORK */
+#endif 
 
 static __inline__ void scm_pidfd_recv(struct msghdr *msg, struct scm_cookie *scm)
 {
 	struct file *pidfd_file = NULL;
 	int len, pidfd;
 
-	/* put_cmsg() doesn't return an error if CMSG is truncated,
-	 * that's why we need to opencode these checks here.
-	 */
+	
 	if (msg->msg_flags & MSG_CMSG_COMPAT)
 		len = sizeof(struct compat_cmsghdr) + sizeof(int);
 	else
@@ -208,5 +204,5 @@ static inline void scm_recv_unix(struct socket *sock, struct msghdr *msg,
 	scm_destroy_cred(scm);
 }
 
-#endif /* __LINUX_NET_SCM_H */
+#endif 
 

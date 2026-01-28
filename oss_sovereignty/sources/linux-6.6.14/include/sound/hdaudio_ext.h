@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __SOUND_HDAUDIO_EXT_H
 #define __SOUND_HDAUDIO_EXT_H
 
@@ -34,17 +34,7 @@ enum hdac_ext_stream_type {
 	HDAC_EXT_STREAM_TYPE_LINK
 };
 
-/**
- * hdac_ext_stream: HDAC extended stream for extended HDA caps
- *
- * @hstream: hdac_stream
- * @pphc_addr: processing pipe host stream pointer
- * @pplc_addr: processing pipe link stream pointer
- * @decoupled: stream host and link is decoupled
- * @link_locked: link is locked
- * @link_prepared: link is prepared
- * @link_substream: link substream
- */
+
 struct hdac_ext_stream {
 	struct hdac_stream hstream;
 
@@ -90,9 +80,9 @@ int snd_hdac_ext_stream_setup(struct hdac_ext_stream *hext_stream, int fmt);
 struct hdac_ext_link {
 	struct hdac_bus *bus;
 	int index;
-	void __iomem *ml_addr; /* link output stream reg pointer */
-	u32 lcaps;   /* link capablities */
-	u16 lsdiid;  /* link sdi identifier */
+	void __iomem *ml_addr; 
+	u32 lcaps;   
+	u16 lsdiid;  
 
 	int ref_count;
 
@@ -158,7 +148,7 @@ void snd_hdac_ext_bus_link_power(struct hdac_device *codec, bool enable);
 
 struct hdac_ext_device;
 
-/* ops common to all codec drivers */
+
 struct hdac_ext_codec_ops {
 	int (*build_controls)(struct hdac_ext_device *dev);
 	int (*init)(struct hdac_ext_device *dev);
@@ -179,4 +169,4 @@ struct hdac_ext_dma_params {
 int snd_hda_ext_driver_register(struct hdac_driver *drv);
 void snd_hda_ext_driver_unregister(struct hdac_driver *drv);
 
-#endif /* __SOUND_HDAUDIO_EXT_H */
+#endif 

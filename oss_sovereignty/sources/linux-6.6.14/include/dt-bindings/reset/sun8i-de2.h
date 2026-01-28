@@ -1,8 +1,4 @@
-/*
- * Copyright (C) 2016 Icenowy Zheng <icenowy@aosc.io>
- *
- * SPDX-License-Identifier: (GPL-2.0+ OR MIT)
- */
+
 
 #ifndef _DT_BINDINGS_RESET_SUN8I_DE2_H_
 #define _DT_BINDINGS_RESET_SUN8I_DE2_H_
@@ -12,4 +8,4 @@
 #define RST_WB		2
 #define RST_ROT		3
 
-#endif /* _DT_BINDINGS_RESET_SUN8I_DE2_H_ */
+#endif 

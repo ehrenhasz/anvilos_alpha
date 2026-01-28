@@ -23,7 +23,7 @@ except TypeError:
     print("TypeError")
 print("a" "b")
 print("a" '''b''')
-print("a" # inline comment
+print("a" 
     "b")
 print("a" \
     "b")

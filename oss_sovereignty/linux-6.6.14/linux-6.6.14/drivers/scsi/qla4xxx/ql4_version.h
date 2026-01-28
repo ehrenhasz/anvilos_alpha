@@ -1,1 +1,0 @@
-#define QLA4XXX_DRIVER_VERSION	"5.04.00-k6"

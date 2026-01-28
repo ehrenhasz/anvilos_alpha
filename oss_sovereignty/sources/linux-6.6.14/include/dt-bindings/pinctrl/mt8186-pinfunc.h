@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (C) 2021 MediaTek Inc.
- * Author: Guodong Liu <Guodong.Liu@mediatek.com>
- *
- */
+
+
 
 #ifndef __MT8186_PINFUNC_H
 #define __MT8186_PINFUNC_H
@@ -1171,4 +1167,4 @@
 #define PINMUX_GPIO184__FUNC_GPIO184 (MTK_PIN_NO(184) | 0)
 #define PINMUX_GPIO184__FUNC_SPMI_SDA (MTK_PIN_NO(184) | 1)
 
-#endif /* __MT8186_PINFUNC_H */
+#endif 

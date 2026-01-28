@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef _LINUX_FPGA_BRIDGE_H
 #define _LINUX_FPGA_BRIDGE_H
@@ -8,13 +8,7 @@
 
 struct fpga_bridge;
 
-/**
- * struct fpga_bridge_ops - ops for low level FPGA bridge drivers
- * @enable_show: returns the FPGA bridge's status
- * @enable_set: set an FPGA bridge as enabled or disabled
- * @fpga_bridge_remove: set FPGA into a specific state during driver remove
- * @groups: optional attribute groups.
- */
+
 struct fpga_bridge_ops {
 	int (*enable_show)(struct fpga_bridge *bridge);
 	int (*enable_set)(struct fpga_bridge *bridge, bool enable);
@@ -22,37 +16,18 @@ struct fpga_bridge_ops {
 	const struct attribute_group **groups;
 };
 
-/**
- * struct fpga_bridge_info - collection of parameters an FPGA Bridge
- * @name: fpga bridge name
- * @br_ops: pointer to structure of fpga bridge ops
- * @priv: fpga bridge private data
- *
- * fpga_bridge_info contains parameters for the register function. These
- * are separated into an info structure because they some are optional
- * others could be added to in the future. The info structure facilitates
- * maintaining a stable API.
- */
+
 struct fpga_bridge_info {
 	const char *name;
 	const struct fpga_bridge_ops *br_ops;
 	void *priv;
 };
 
-/**
- * struct fpga_bridge - FPGA bridge structure
- * @name: name of low level FPGA bridge
- * @dev: FPGA bridge device
- * @mutex: enforces exclusive reference to bridge
- * @br_ops: pointer to struct of FPGA bridge ops
- * @info: fpga image specific information
- * @node: FPGA bridge list node
- * @priv: low level driver private date
- */
+
 struct fpga_bridge {
 	const char *name;
 	struct device dev;
-	struct mutex mutex; /* for exclusive reference to bridge */
+	struct mutex mutex; 
 	const struct fpga_bridge_ops *br_ops;
 	struct fpga_image_info *info;
 	struct list_head node;
@@ -85,4 +60,4 @@ fpga_bridge_register(struct device *parent, const char *name,
 		     void *priv);
 void fpga_bridge_unregister(struct fpga_bridge *br);
 
-#endif /* _LINUX_FPGA_BRIDGE_H */
+#endif 

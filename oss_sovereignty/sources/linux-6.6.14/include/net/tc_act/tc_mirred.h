@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_TC_MIR_H
 #define __NET_TC_MIR_H
 
@@ -56,4 +56,4 @@ static inline struct net_device *tcf_mirred_dev(const struct tc_action *a)
 	return rtnl_dereference(to_mirred(a)->tcfm_dev);
 }
 
-#endif /* __NET_TC_MIR_H */
+#endif 

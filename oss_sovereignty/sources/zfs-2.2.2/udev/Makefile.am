@@ -7,7 +7,7 @@ SUBSTFILES += $(udevrule_DATA)
 
 
 dist_udev_SCRIPTS = %D%/vdev_id
-# TODO: #12084: SHELLCHECKSCRIPTS += %D%/vdev_id
+
 
 
 udev_PROGRAMS    = %D%/zvol_id

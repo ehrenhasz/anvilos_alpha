@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * include/media/i2c/lm3560.h
- *
- * Copyright (C) 2013 Texas Instruments
- *
- * Contact: Daniel Jeong <gshark.jeong@gmail.com>
- *			Ldd-Mlp <ldd-mlp@list.ti.com>
- */
+
+
 
 #ifndef __LM3560_H__
 #define __LM3560_H__
@@ -17,9 +10,7 @@
 #define LM3560_NAME	"lm3560"
 #define LM3560_I2C_ADDR	(0x53)
 
-/*  FLASH Brightness
- *	min 62500uA, step 62500uA, max 1000000uA
- */
+
 #define LM3560_FLASH_BRT_MIN 62500
 #define LM3560_FLASH_BRT_STEP 62500
 #define LM3560_FLASH_BRT_MAX 1000000
@@ -29,9 +20,7 @@
 #define LM3560_FLASH_BRT_REG_TO_uA(a)		\
 	((a) * LM3560_FLASH_BRT_STEP + LM3560_FLASH_BRT_MIN)
 
-/*  FLASH TIMEOUT DURATION
- *	min 32ms, step 32ms, max 1024ms
- */
+
 #define LM3560_FLASH_TOUT_MIN 32
 #define LM3560_FLASH_TOUT_STEP 32
 #define LM3560_FLASH_TOUT_MAX 1024
@@ -41,9 +30,7 @@
 #define LM3560_FLASH_TOUT_REG_TO_ms(a)		\
 	((a) * LM3560_FLASH_TOUT_STEP + LM3560_FLASH_TOUT_MIN)
 
-/*  TORCH BRT
- *	min 31250uA, step 31250uA, max 250000uA
- */
+
 #define LM3560_TORCH_BRT_MIN 31250
 #define LM3560_TORCH_BRT_STEP 31250
 #define LM3560_TORCH_BRT_MAX 250000
@@ -66,13 +53,7 @@ enum lm3560_peak_current {
 	LM3560_PEAK_3600mA = 0x60
 };
 
-/* struct lm3560_platform_data
- *
- * @peak :  peak current
- * @max_flash_timeout: flash timeout
- * @max_flash_brt: flash mode led brightness
- * @max_torch_brt: torch mode led brightness
- */
+
 struct lm3560_platform_data {
 	enum lm3560_peak_current peak;
 
@@ -81,4 +62,4 @@ struct lm3560_platform_data {
 	u32 max_torch_brt[LM3560_LED_MAX];
 };
 
-#endif /* __LM3560_H__ */
+#endif 

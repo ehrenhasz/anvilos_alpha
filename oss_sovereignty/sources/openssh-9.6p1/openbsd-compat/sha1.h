@@ -1,10 +1,6 @@
-/*	$OpenBSD: sha1.h,v 1.24 2012/12/05 23:19:57 deraadt Exp $	*/
 
-/*
- * SHA-1 in C
- * By Steve Reid <steve@edmweb.com>
- * 100% Public Domain
- */
+
+
 
 #ifndef _SHA1_H
 #define _SHA1_H
@@ -54,5 +50,5 @@ char *SHA1Data(const u_int8_t *, size_t, char *)
         x[3] = ntohl(x[3]);                                             \
         x[4] = ntohl(x[4]); } while (0)
 
-#endif /* !WITH_OPENSSL */
-#endif /* _SHA1_H */
+#endif 
+#endif 

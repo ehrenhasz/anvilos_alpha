@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2018 Chelsio Communications, Inc. */
+
+
 
 #ifndef __CHCR_IPSEC_H__
 #define __CHCR_IPSEC_H__
@@ -54,5 +54,5 @@ struct ipsec_sa_entry {
 	char key[2 * AES_MAX_KEY_SIZE];
 };
 
-#endif /* __CHCR_IPSEC_H__ */
+#endif 
 

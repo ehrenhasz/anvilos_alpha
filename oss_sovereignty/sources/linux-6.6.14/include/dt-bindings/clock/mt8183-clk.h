@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Weiyi Lu <weiyi.lu@mediatek.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_MT8183_H
 #define _DT_BINDINGS_CLK_MT8183_H
 
-/* APMIXED */
+
 #define CLK_APMIXED_ARMPLL_LL		0
 #define CLK_APMIXED_ARMPLL_L		1
 #define CLK_APMIXED_CCIPLL		2
@@ -32,7 +29,7 @@
 #define CLK_APMIXED_MIPID1_26M		21
 #define CLK_APMIXED_NR_CLK		22
 
-/* TOPCKGEN */
+
 #define CLK_TOP_MUX_AXI			0
 #define CLK_TOP_MUX_MM			1
 #define CLK_TOP_MUX_CAM			2
@@ -167,7 +164,7 @@
 #define CLK_TOP_UNIVPLL_D3_D16		131
 #define CLK_TOP_NR_CLK			132
 
-/* CAMSYS */
+
 #define CLK_CAM_LARB6			0
 #define CLK_CAM_DFP_VAD			1
 #define CLK_CAM_CAM			2
@@ -180,7 +177,7 @@
 #define CLK_CAM_LARB3			9
 #define CLK_CAM_NR_CLK			10
 
-/* INFRACFG_AO */
+
 #define CLK_INFRA_PMIC_TMR		0
 #define CLK_INFRA_PMIC_AP		1
 #define CLK_INFRA_PMIC_MD		2
@@ -284,15 +281,15 @@
 #define CLK_INFRA_FBIST2FPC		100
 #define CLK_INFRA_NR_CLK		101
 
-/* PERICFG */
+
 #define CLK_PERI_AXI			0
 #define CLK_PERI_NR_CLK			1
 
-/* MFGCFG */
+
 #define CLK_MFG_BG3D			0
 #define CLK_MFG_NR_CLK			1
 
-/* IMG */
+
 #define CLK_IMG_OWE			0
 #define CLK_IMG_WPE_B			1
 #define CLK_IMG_WPE_A			2
@@ -305,7 +302,7 @@
 #define CLK_IMG_LARB5			9
 #define CLK_IMG_NR_CLK			10
 
-/* MMSYS_CONFIG */
+
 #define CLK_MM_SMI_COMMON		0
 #define CLK_MM_SMI_LARB0		1
 #define CLK_MM_SMI_LARB1		2
@@ -354,18 +351,18 @@
 #define CLK_MM_DBI_IF			45
 #define CLK_MM_NR_CLK			46
 
-/* VDEC_GCON */
+
 #define CLK_VDEC_VDEC			0
 #define CLK_VDEC_LARB1			1
 #define CLK_VDEC_NR_CLK			2
 
-/* VENC_GCON */
+
 #define CLK_VENC_LARB			0
 #define CLK_VENC_VENC			1
 #define CLK_VENC_JPGENC			2
 #define CLK_VENC_NR_CLK			3
 
-/* AUDIO */
+
 #define CLK_AUDIO_TML			0
 #define CLK_AUDIO_DAC_PREDIS		1
 #define CLK_AUDIO_DAC			2
@@ -383,7 +380,7 @@
 #define CLK_AUDIO_TDM			14
 #define CLK_AUDIO_NR_CLK		15
 
-/* IPU_CONN */
+
 #define CLK_IPU_CONN_IPU		0
 #define CLK_IPU_CONN_AHB		1
 #define CLK_IPU_CONN_AXI		2
@@ -401,26 +398,26 @@
 #define CLK_IPU_CONN_CAB3TO1_SLICE	14
 #define CLK_IPU_CONN_NR_CLK		15
 
-/* IPU_ADL */
+
 #define CLK_IPU_ADL_CABGEN		0
 #define CLK_IPU_ADL_NR_CLK		1
 
-/* IPU_CORE0 */
+
 #define CLK_IPU_CORE0_JTAG		0
 #define CLK_IPU_CORE0_AXI		1
 #define CLK_IPU_CORE0_IPU		2
 #define CLK_IPU_CORE0_NR_CLK		3
 
-/* IPU_CORE1 */
+
 #define CLK_IPU_CORE1_JTAG		0
 #define CLK_IPU_CORE1_AXI		1
 #define CLK_IPU_CORE1_IPU		2
 #define CLK_IPU_CORE1_NR_CLK		3
 
-/* MCUCFG */
+
 #define CLK_MCU_MP0_SEL			0
 #define CLK_MCU_MP2_SEL			1
 #define CLK_MCU_BUS_SEL			2
 #define CLK_MCU_NR_CLK			3
 
-#endif /* _DT_BINDINGS_CLK_MT8183_H */
+#endif 

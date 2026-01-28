@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 struct io_tctx_node {
 	struct list_head	ctx_node;
@@ -19,9 +19,7 @@ int io_ringfd_register(struct io_ring_ctx *ctx, void __user *__arg,
 int io_ringfd_unregister(struct io_ring_ctx *ctx, void __user *__arg,
 			 unsigned nr_args);
 
-/*
- * Note that this task has used io_uring. We use it for cancelation purposes.
- */
+
 static inline int io_uring_add_tctx_node(struct io_ring_ctx *ctx)
 {
 	struct io_uring_task *tctx = current->io_uring;

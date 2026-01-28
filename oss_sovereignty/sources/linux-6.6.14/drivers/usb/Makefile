@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the kernel USB device drivers.
-#
 
-# Object files in subdirectories
+
+
+
+
+
 
 obj-$(CONFIG_USB_COMMON)	+= common/
 obj-$(CONFIG_USB)		+= core/

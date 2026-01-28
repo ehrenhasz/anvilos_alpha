@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * auxtrace.h: AUX area trace support
- * Copyright (c) 2013-2015, Intel Corporation.
- */
+
+
 
 #ifndef __PERF_AUXTRACE_H
 #define __PERF_AUXTRACE_H
@@ -11,7 +8,7 @@
 #include <errno.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdio.h> // FILE
+#include <stdio.h> 
 #include <linux/list.h>
 #include <linux/perf_event.h>
 #include <linux/types.h>
@@ -38,7 +35,7 @@ enum auxtrace_error_type {
        PERF_AUXTRACE_ERROR_MAX
 };
 
-/* Auxtrace records must have the same alignment as perf event records */
+
 #define PERF_AUXTRACE_RECORD_ALIGNMENT 8
 
 enum auxtrace_type {
@@ -64,59 +61,7 @@ enum itrace_period_type {
 #define AUXTRACE_LOG_FLG_ON_ERROR	(1 << ('e' - 'a'))
 #define AUXTRACE_LOG_FLG_USE_STDOUT	(1 << ('o' - 'a'))
 
-/**
- * struct itrace_synth_opts - AUX area tracing synthesis options.
- * @set: indicates whether or not options have been set
- * @default_no_sample: Default to no sampling.
- * @inject: indicates the event (not just the sample) must be fully synthesized
- *          because 'perf inject' will write it out
- * @instructions: whether to synthesize 'instructions' events
- * @cycles: whether to synthesize 'cycles' events
- *          (not fully accurate, since CYC packets are only emitted
- *          together with other events, such as branches)
- * @branches: whether to synthesize 'branches' events
- *            (branch misses only for Arm SPE)
- * @transactions: whether to synthesize events for transactions
- * @ptwrites: whether to synthesize events for ptwrites
- * @pwr_events: whether to synthesize power events
- * @other_events: whether to synthesize other events recorded due to the use of
- *                aux_output
- * @intr_events: whether to synthesize interrupt events
- * @errors: whether to synthesize decoder error events
- * @dont_decode: whether to skip decoding entirely
- * @log: write a decoding log
- * @calls: limit branch samples to calls (can be combined with @returns)
- * @returns: limit branch samples to returns (can be combined with @calls)
- * @callchain: add callchain to 'instructions' events
- * @add_callchain: add callchain to existing event records
- * @thread_stack: feed branches to the thread_stack
- * @last_branch: add branch context to 'instruction' events
- * @add_last_branch: add branch context to existing event records
- * @approx_ipc: approximate IPC
- * @flc: whether to synthesize first level cache events
- * @llc: whether to synthesize last level cache events
- * @tlb: whether to synthesize TLB events
- * @remote_access: whether to synthesize remote access events
- * @mem: whether to synthesize memory events
- * @timeless_decoding: prefer "timeless" decoding i.e. ignore timestamps
- * @vm_time_correlation: perform VM Time Correlation
- * @vm_tm_corr_dry_run: VM Time Correlation dry-run
- * @vm_tm_corr_args:  VM Time Correlation implementation-specific arguments
- * @callchain_sz: maximum callchain size
- * @last_branch_sz: branch context size
- * @period: 'instructions' events period
- * @period_type: 'instructions' events period type
- * @initial_skip: skip N events at the beginning.
- * @cpu_bitmap: CPUs for which to synthesize events, or NULL for all
- * @ptime_range: time intervals to trace or NULL
- * @range_num: number of time intervals to trace
- * @error_plus_flags: flags to affect what errors are reported
- * @error_minus_flags: flags to affect what errors are reported
- * @log_plus_flags: flags to affect what is logged
- * @log_minus_flags: flags to affect what is logged
- * @quick: quicker (less detailed) decoding
- * @log_on_error_size: size of log to keep for outputting log only on errors
- */
+
 struct itrace_synth_opts {
 	bool			set;
 	bool			default_no_sample;
@@ -165,12 +110,7 @@ struct itrace_synth_opts {
 	unsigned int		log_on_error_size;
 };
 
-/**
- * struct auxtrace_index_entry - indexes a AUX area tracing event within a
- *                               perf.data file.
- * @file_offset: offset within the perf.data file
- * @sz: size of the event
- */
+
 struct auxtrace_index_entry {
 	u64			file_offset;
 	u64			sz;
@@ -178,30 +118,14 @@ struct auxtrace_index_entry {
 
 #define PERF_AUXTRACE_INDEX_ENTRY_COUNT 256
 
-/**
- * struct auxtrace_index - index of AUX area tracing events within a perf.data
- *                         file.
- * @list: linking a number of arrays of entries
- * @nr: number of entries
- * @entries: array of entries
- */
+
 struct auxtrace_index {
 	struct list_head	list;
 	size_t			nr;
 	struct auxtrace_index_entry entries[PERF_AUXTRACE_INDEX_ENTRY_COUNT];
 };
 
-/**
- * struct auxtrace - session callbacks to allow AUX area data decoding.
- * @process_event: lets the decoder see all session events
- * @process_auxtrace_event: process a PERF_RECORD_AUXTRACE event
- * @queue_data: queue an AUX sample or PERF_RECORD_AUXTRACE event for later
- *              processing
- * @dump_auxtrace_sample: dump AUX area sample data
- * @flush_events: process any remaining data
- * @free_events: free resources associated with event processing
- * @free: free resources associated with the session
- */
+
 struct auxtrace {
 	int (*process_event)(struct perf_session *session,
 			     union perf_event *event,
@@ -223,29 +147,7 @@ struct auxtrace {
 				  struct evsel *evsel);
 };
 
-/**
- * struct auxtrace_buffer - a buffer containing AUX area tracing data.
- * @list: buffers are queued in a list held by struct auxtrace_queue
- * @size: size of the buffer in bytes
- * @pid: in per-thread mode, the pid this buffer is associated with
- * @tid: in per-thread mode, the tid this buffer is associated with
- * @cpu: in per-cpu mode, the cpu this buffer is associated with
- * @data: actual buffer data (can be null if the data has not been loaded)
- * @data_offset: file offset at which the buffer can be read
- * @mmap_addr: mmap address at which the buffer can be read
- * @mmap_size: size of the mmap at @mmap_addr
- * @data_needs_freeing: @data was malloc'd so free it when it is no longer
- *                      needed
- * @consecutive: the original data was split up and this buffer is consecutive
- *               to the previous buffer
- * @offset: offset as determined by aux_head / aux_tail members of struct
- *          perf_event_mmap_page
- * @reference: an implementation-specific reference determined when the data is
- *             recorded
- * @buffer_nr: used to number each buffer
- * @use_size: implementation actually only uses this number of bytes
- * @use_data: implementation actually only uses data starting at this address
- */
+
 struct auxtrace_buffer {
 	struct list_head	list;
 	size_t			size;
@@ -265,14 +167,7 @@ struct auxtrace_buffer {
 	void			*use_data;
 };
 
-/**
- * struct auxtrace_queue - a queue of AUX area tracing data buffers.
- * @head: head of buffer list
- * @tid: in per-thread mode, the tid this queue is associated with
- * @cpu: in per-cpu mode, the cpu this queue is associated with
- * @set: %true once this queue has been dedicated to a specific thread or cpu
- * @priv: implementation-specific data
- */
+
 struct auxtrace_queue {
 	struct list_head	head;
 	pid_t			tid;
@@ -281,14 +176,7 @@ struct auxtrace_queue {
 	void			*priv;
 };
 
-/**
- * struct auxtrace_queues - an array of AUX area tracing queues.
- * @queue_array: array of queues
- * @nr_queues: number of queues
- * @new_data: set whenever new data is queued
- * @populated: queues have been fully populated using the auxtrace_index
- * @next_buffer_nr: used to number each buffer
- */
+
 struct auxtrace_queues {
 	struct auxtrace_queue	*queue_array;
 	unsigned int		nr_queues;
@@ -297,41 +185,20 @@ struct auxtrace_queues {
 	u64			next_buffer_nr;
 };
 
-/**
- * struct auxtrace_heap_item - element of struct auxtrace_heap.
- * @queue_nr: queue number
- * @ordinal: value used for sorting (lowest ordinal is top of the heap) expected
- *           to be a timestamp
- */
+
 struct auxtrace_heap_item {
 	unsigned int		queue_nr;
 	u64			ordinal;
 };
 
-/**
- * struct auxtrace_heap - a heap suitable for sorting AUX area tracing queues.
- * @heap_array: the heap
- * @heap_cnt: the number of elements in the heap
- * @heap_sz: maximum number of elements (grows as needed)
- */
+
 struct auxtrace_heap {
 	struct auxtrace_heap_item	*heap_array;
 	unsigned int		heap_cnt;
 	unsigned int		heap_sz;
 };
 
-/**
- * struct auxtrace_mmap - records an mmap of the auxtrace buffer.
- * @base: address of mapped area
- * @userpg: pointer to buffer's perf_event_mmap_page
- * @mask: %0 if @len is not a power of two, otherwise (@len - %1)
- * @len: size of mapped area
- * @prev: previous aux_head
- * @idx: index of this mmap
- * @tid: tid for a per-thread mmap (also set if there is only 1 tid on a per-cpu
- *       mmap) otherwise %0
- * @cpu: cpu number for a per-cpu mmap otherwise %-1
- */
+
 struct auxtrace_mmap {
 	void		*base;
 	void		*userpg;
@@ -343,21 +210,7 @@ struct auxtrace_mmap {
 	int		cpu;
 };
 
-/**
- * struct auxtrace_mmap_params - parameters to set up struct auxtrace_mmap.
- * @mask: %0 if @len is not a power of two, otherwise (@len - %1)
- * @offset: file offset of mapped area
- * @len: size of mapped area
- * @prot: mmap memory protection
- * @idx: index of this mmap
- * @tid: tid for a per-thread mmap (also set if there is only 1 tid on a per-cpu
- *       mmap) otherwise %0
- * @mmap_needed: set to %false for non-auxtrace events. This is needed because
- *               auxtrace mmapping is done in the same code path as non-auxtrace
- *               mmapping but not every evsel that needs non-auxtrace mmapping
- *               also needs auxtrace mmapping.
- * @cpu: cpu number for a per-cpu mmap otherwise %-1
- */
+
 struct auxtrace_mmap_params {
 	size_t		mask;
 	off_t		offset;
@@ -369,23 +222,7 @@ struct auxtrace_mmap_params {
 	struct perf_cpu	cpu;
 };
 
-/**
- * struct auxtrace_record - callbacks for recording AUX area data.
- * @recording_options: validate and process recording options
- * @info_priv_size: return the size of the private data in auxtrace_info_event
- * @info_fill: fill-in the private data in auxtrace_info_event
- * @free: free this auxtrace record structure
- * @snapshot_start: starting a snapshot
- * @snapshot_finish: finishing a snapshot
- * @find_snapshot: find data to snapshot within auxtrace mmap
- * @parse_snapshot_options: parse snapshot options
- * @reference: provide a 64-bit reference number for auxtrace_event
- * @read_finish: called after reading from an auxtrace mmap
- * @alignment: alignment (if any) for AUX area data
- * @default_aux_sample_size: default sample size for --aux sample option
- * @pmu: associated pmu
- * @evlist: selected events list
- */
+
 struct auxtrace_record {
 	int (*recording_options)(struct auxtrace_record *itr,
 				 struct evlist *evlist,
@@ -413,23 +250,7 @@ struct auxtrace_record {
 	struct evlist *evlist;
 };
 
-/**
- * struct addr_filter - address filter.
- * @list: list node
- * @range: true if it is a range filter
- * @start: true if action is 'filter' or 'start'
- * @action: 'filter', 'start' or 'stop' ('tracestop' is accepted but converted
- *          to 'stop')
- * @sym_from: symbol name for the filter address
- * @sym_to: symbol name that determines the filter size
- * @sym_from_idx: selects n'th from symbols with the same name (0 means global
- *                and less than 0 means symbol must be unique)
- * @sym_to_idx: same as @sym_from_idx but for @sym_to
- * @addr: filter address
- * @size: filter region size (for range filters)
- * @filename: DSO file name or NULL for the kernel
- * @str: allocated string that contains the other string members
- */
+
 struct addr_filter {
 	struct list_head	list;
 	bool			range;
@@ -445,11 +266,7 @@ struct addr_filter {
 	char			*str;
 };
 
-/**
- * struct addr_filters - list of address filters.
- * @head: list of address filters
- * @cnt: number of address filters
- */
+
 struct addr_filters {
 	struct list_head	head;
 	int			cnt;
@@ -474,7 +291,7 @@ static inline u64 auxtrace_mmap__read_head(struct auxtrace_mmap *mm,
 #endif
 	head = READ_ONCE(pc->aux_head);
 
-	/* Ensure all reads are done after we read the head */
+	
 	smp_rmb();
 	return head;
 }
@@ -488,7 +305,7 @@ static inline int auxtrace_mmap__write_tail(struct auxtrace_mmap *mm, u64 tail,
 	if (kernel_is_64_bit)
 		return compat_auxtrace_mmap__write_tail(mm, tail);
 #endif
-	/* Ensure all reads are done before we write the tail out */
+	
 	smp_mb();
 	WRITE_ONCE(pc->aux_tail, tail);
 	return 0;

@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# generic gpio support: platform drivers, dedicated expander chips, etc
+
+
 
 ccflags-$(CONFIG_DEBUG_GPIO)	+= -DDEBUG
 
@@ -12,11 +12,11 @@ obj-$(CONFIG_GPIO_SYSFS)	+= gpiolib-sysfs.o
 obj-$(CONFIG_GPIO_ACPI)		+= gpiolib-acpi.o
 obj-$(CONFIG_GPIOLIB)		+= gpiolib-swnode.o
 
-# Device drivers. Generally keep list sorted alphabetically
+
 obj-$(CONFIG_GPIO_REGMAP)	+= gpio-regmap.o
 obj-$(CONFIG_GPIO_GENERIC)	+= gpio-generic.o
 
-# directly supported by gpio-generic
+
 gpio-generic-$(CONFIG_GPIO_GENERIC)	+= gpio-mmio.o
 
 obj-$(CONFIG_GPIO_104_DIO_48E)		+= gpio-104-dio-48e.o

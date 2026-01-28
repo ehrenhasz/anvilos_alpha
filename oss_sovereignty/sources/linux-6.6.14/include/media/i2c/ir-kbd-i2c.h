@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _IR_I2C
 #define _IR_I2C
 
 #include <media/rc-core.h>
 
-#define DEFAULT_POLLING_INTERVAL	100	/* ms */
+#define DEFAULT_POLLING_INTERVAL	100	
 
 struct IR_i2c;
 
@@ -13,19 +13,19 @@ struct IR_i2c {
 	struct i2c_client      *c;
 	struct rc_dev          *rc;
 
-	/* Used to avoid fast repeating */
+	
 	unsigned char          old;
 
-	u32                    polling_interval; /* in ms */
+	u32                    polling_interval; 
 
 	struct delayed_work    work;
 	char                   phys[32];
 	int                    (*get_key)(struct IR_i2c *ir,
 					  enum rc_proto *protocol,
 					  u32 *scancode, u8 *toggle);
-	/* tx */
+	
 	struct i2c_client      *tx_c;
-	struct mutex	       lock;	/* do not poll Rx during Tx */
+	struct mutex	       lock;	
 	unsigned int	       carrier;
 	unsigned int	       duty_cycle;
 };
@@ -41,17 +41,14 @@ enum ir_kbd_get_key_fn {
 	IR_KBD_GET_KEY_AVERMEDIA_CARDBUS,
 };
 
-/* Can be passed when instantiating an ir_video i2c device */
+
 struct IR_i2c_init_data {
 	char			*ir_codes;
 	const char		*name;
-	u64			type; /* RC_PROTO_BIT_RC5, etc */
-	u32			polling_interval; /* 0 means DEFAULT_POLLING_INTERVAL */
+	u64			type; 
+	u32			polling_interval; 
 
-	/*
-	 * Specify either a function pointer or a value indicating one of
-	 * ir_kbd_i2c's internal get_key functions
-	 */
+	
 	int                    (*get_key)(struct IR_i2c *ir,
 					  enum rc_proto *protocol,
 					  u32 *scancode, u8 *toggle);

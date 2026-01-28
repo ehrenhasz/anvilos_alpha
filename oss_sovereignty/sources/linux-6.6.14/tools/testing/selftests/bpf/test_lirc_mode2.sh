@@ -7,7 +7,7 @@ if [ $UID != 0 ]; then
 fi
 GREEN='\033[0;92m'
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+NC='\033[0m' 
 modprobe rc-loopback
 for i in /sys/class/rc/rc*
 do

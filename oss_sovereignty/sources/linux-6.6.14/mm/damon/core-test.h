@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Data Access Monitor Unit Tests
- *
- * Copyright 2019 Amazon.com, Inc. or its affiliates.  All rights reserved.
- *
- * Author: SeongJae Park <sjpark@amazon.de>
- */
+
+
 
 #ifdef CONFIG_DAMON_KUNIT_TEST
 
@@ -64,16 +58,7 @@ static void damon_test_target(struct kunit *test)
 	damon_destroy_ctx(c);
 }
 
-/*
- * Test kdamond_reset_aggregated()
- *
- * DAMON checks access to each region and aggregates this information as the
- * access frequency of each region.  In detail, it increases '->nr_accesses' of
- * regions that an access has confirmed.  'kdamond_reset_aggregated()' flushes
- * the aggregated information ('->nr_accesses' of each regions) to the result
- * buffer.  As a result of the flushing, the '->nr_accesses' of regions are
- * initialized to zero.
- */
+
 static void damon_test_aggregate(struct kunit *test)
 {
 	struct damon_ctx *ctx = damon_new_ctx();
@@ -102,16 +87,16 @@ static void damon_test_aggregate(struct kunit *test)
 	it = 0;
 	damon_for_each_target(t, ctx) {
 		ir = 0;
-		/* '->nr_accesses' should be zeroed */
+		
 		damon_for_each_region(r, t) {
 			KUNIT_EXPECT_EQ(test, 0u, r->nr_accesses);
 			ir++;
 		}
-		/* regions should be preserved */
+		
 		KUNIT_EXPECT_EQ(test, 3, ir);
 		it++;
 	}
-	/* targets also should be preserved */
+	
 	KUNIT_EXPECT_EQ(test, 3, it);
 
 	damon_destroy_ctx(ctx);
@@ -200,7 +185,7 @@ static void damon_test_merge_regions_of(struct kunit *test)
 	}
 
 	damon_merge_regions_of(t, 9, 9999);
-	/* 0-112, 114-130, 130-156, 156-170 */
+	
 	KUNIT_EXPECT_EQ(test, damon_nr_regions(t), 5u);
 	for (i = 0; i < 5; i++) {
 		r = __nth_region_of(t, i);
@@ -237,20 +222,20 @@ static void damon_test_ops_registration(struct kunit *test)
 	struct damon_ctx *c = damon_new_ctx();
 	struct damon_operations ops, bak;
 
-	/* DAMON_OPS_{V,P}ADDR are registered on subsys_initcall */
+	
 	KUNIT_EXPECT_EQ(test, damon_select_ops(c, DAMON_OPS_VADDR), 0);
 	KUNIT_EXPECT_EQ(test, damon_select_ops(c, DAMON_OPS_PADDR), 0);
 
-	/* Double-registration is prohibited */
+	
 	ops.id = DAMON_OPS_VADDR;
 	KUNIT_EXPECT_EQ(test, damon_register_ops(&ops), -EINVAL);
 	ops.id = DAMON_OPS_PADDR;
 	KUNIT_EXPECT_EQ(test, damon_register_ops(&ops), -EINVAL);
 
-	/* Unknown ops id cannot be registered */
+	
 	KUNIT_EXPECT_EQ(test, damon_select_ops(c, NR_DAMON_OPS), -EINVAL);
 
-	/* Registration should success after unregistration */
+	
 	mutex_lock(&damon_ops_lock);
 	bak = damon_registered_ops[DAMON_OPS_VADDR];
 	damon_registered_ops[DAMON_OPS_VADDR] = (struct damon_operations){};
@@ -263,7 +248,7 @@ static void damon_test_ops_registration(struct kunit *test)
 	damon_registered_ops[DAMON_OPS_VADDR] = bak;
 	mutex_unlock(&damon_ops_lock);
 
-	/* Check double-registration failure again */
+	
 	KUNIT_EXPECT_EQ(test, damon_register_ops(&ops), -EINVAL);
 }
 
@@ -367,27 +352,27 @@ static void damos_test_filter_out(struct kunit *test)
 	r = damon_new_region(DAMON_MIN_REGION * 3, DAMON_MIN_REGION * 5);
 	damon_add_region(r, t);
 
-	/* region in the range */
+	
 	KUNIT_EXPECT_TRUE(test, __damos_filter_out(NULL, t, r, f));
 	KUNIT_EXPECT_EQ(test, damon_nr_regions(t), 1);
 
-	/* region before the range */
+	
 	r->ar.start = DAMON_MIN_REGION * 1;
 	r->ar.end = DAMON_MIN_REGION * 2;
 	KUNIT_EXPECT_FALSE(test, __damos_filter_out(NULL, t, r, f));
 	KUNIT_EXPECT_EQ(test, damon_nr_regions(t), 1);
 
-	/* region after the range */
+	
 	r->ar.start = DAMON_MIN_REGION * 6;
 	r->ar.end = DAMON_MIN_REGION * 8;
 	KUNIT_EXPECT_FALSE(test, __damos_filter_out(NULL, t, r, f));
 	KUNIT_EXPECT_EQ(test, damon_nr_regions(t), 1);
 
-	/* region started before the range */
+	
 	r->ar.start = DAMON_MIN_REGION * 1;
 	r->ar.end = DAMON_MIN_REGION * 4;
 	KUNIT_EXPECT_FALSE(test, __damos_filter_out(NULL, t, r, f));
-	/* filter should have split the region */
+	
 	KUNIT_EXPECT_EQ(test, r->ar.start, DAMON_MIN_REGION * 1);
 	KUNIT_EXPECT_EQ(test, r->ar.end, DAMON_MIN_REGION * 2);
 	KUNIT_EXPECT_EQ(test, damon_nr_regions(t), 2);
@@ -396,11 +381,11 @@ static void damos_test_filter_out(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, r2->ar.end, DAMON_MIN_REGION * 4);
 	damon_destroy_region(r2, t);
 
-	/* region started in the range */
+	
 	r->ar.start = DAMON_MIN_REGION * 2;
 	r->ar.end = DAMON_MIN_REGION * 8;
 	KUNIT_EXPECT_TRUE(test, __damos_filter_out(NULL, t, r, f));
-	/* filter should have split the region */
+	
 	KUNIT_EXPECT_EQ(test, r->ar.start, DAMON_MIN_REGION * 2);
 	KUNIT_EXPECT_EQ(test, r->ar.end, DAMON_MIN_REGION * 6);
 	KUNIT_EXPECT_EQ(test, damon_nr_regions(t), 2);
@@ -436,6 +421,6 @@ static struct kunit_suite damon_test_suite = {
 };
 kunit_test_suite(damon_test_suite);
 
-#endif /* _DAMON_CORE_TEST_H */
+#endif 
 
-#endif	/* CONFIG_DAMON_KUNIT_TEST */
+#endif	

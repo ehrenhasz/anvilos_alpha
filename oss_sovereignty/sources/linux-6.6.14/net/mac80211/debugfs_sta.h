@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __MAC80211_DEBUGFS_STA_H
 #define __MAC80211_DEBUGFS_STA_H
 
@@ -24,4 +24,4 @@ static inline void ieee80211_link_sta_debugfs_drv_add(struct link_sta_info *link
 static inline void ieee80211_link_sta_debugfs_drv_remove(struct link_sta_info *link_sta) {}
 #endif
 
-#endif /* __MAC80211_DEBUGFS_STA_H */
+#endif 

@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2019 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
 
 #ifndef ASIC_REG_GOYA_REGS_H_
 #define ASIC_REG_GOYA_REGS_H_
@@ -119,4 +114,4 @@
 
 #define mmGIC_DISTRIBUTOR__5_GICD_SETSPI_NSR                         0x800040
 
-#endif /* ASIC_REG_GOYA_REGS_H_ */
+#endif 

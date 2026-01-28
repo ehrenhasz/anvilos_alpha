@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __CGROUP_H__
 #define __CGROUP_H__
 
@@ -17,7 +17,7 @@ struct cgroup {
 	refcount_t		refcnt;
 };
 
-extern int nr_cgroups; /* number of explicit cgroups defined */
+extern int nr_cgroups; 
 extern bool cgrp_event_expanded;
 
 struct cgroup *cgroup__get(struct cgroup *cgroup);
@@ -47,8 +47,8 @@ static inline int read_cgroup_id(struct cgroup *cgrp __maybe_unused)
 {
 	return -1;
 }
-#endif  /* HAVE_FILE_HANDLE */
+#endif  
 
 int cgroup_is_v2(const char *subsys);
 
-#endif /* __CGROUP_H__ */
+#endif 

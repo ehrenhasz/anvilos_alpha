@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2014 Cisco Systems, Inc.  All rights reserved. */
+
+
 
 #ifndef __SNIC_DISC_H
 #define __SNIC_DISC_H
@@ -32,8 +32,8 @@ struct snic_disc {
 enum snic_tgt_state {
 	SNIC_TGT_STAT_NONE,
 	SNIC_TGT_STAT_INIT,
-	SNIC_TGT_STAT_ONLINE,	/* Target is Online */
-	SNIC_TGT_STAT_OFFLINE,	/* Target is Offline */
+	SNIC_TGT_STAT_ONLINE,	
+	SNIC_TGT_STAT_OFFLINE,	
 	SNIC_TGT_STAT_DEL,
 };
 
@@ -44,13 +44,13 @@ struct snic_tgt_priv {
 	char *name[SNIC_TGT_NAM_LEN];
 
 	union {
-		/*DAS Target specific info */
-		/*SAN Target specific info */
+		
+		
 		u8 dummmy;
 	} u;
 };
 
-/* snic tgt flags */
+
 #define SNIC_TGT_SCAN_PENDING	0x01
 
 struct snic_tgt {
@@ -107,4 +107,4 @@ snic_tgt_chkready(struct snic_tgt *tgt)
 
 const char *snic_tgt_state_to_str(int);
 int snic_tgt_scsi_abort_io(struct snic_tgt *);
-#endif /* end of  __SNIC_DISC_H */
+#endif 

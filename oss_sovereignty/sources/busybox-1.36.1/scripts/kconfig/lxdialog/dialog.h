@@ -1,22 +1,4 @@
-/*
- *  dialog.h -- common declarations for all dialog modules
- *
- *  AUTHOR: Savio Lam (lam836@cs.cuhk.hk)
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
+
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -30,18 +12,11 @@
 #endif
 #include CURSES_LOC
 
-/*
- * Colors in ncurses 1.9.9e do not work properly since foreground and
- * background colors are OR'd rather than separately masked.  This version
- * of dialog was hacked to work with ncurses 1.9.9e, making it incompatible
- * with standard curses.  The simplest fix (to make this work with standard
- * curses) uses the wbkgdset() function, not used in the original hack.
- * Turn it off if we're building with 1.9.9e, since it just confuses things.
- */
+
 #if defined(NCURSES_VERSION) && defined(_NEED_WRAP) && !defined(GCC_PRINTFLIKE)
 #define OLD_NCURSES 1
 #undef  wbkgdset
-#define wbkgdset(w,p)		/*nothing */
+#define wbkgdset(w,p)		
 #else
 #define OLD_NCURSES 0
 #endif
@@ -86,9 +61,7 @@
 #define ACS_DARROW 'v'
 #endif
 
-/*
- * Attribute names
- */
+
 #define screen_attr                   attributes[0]
 #define shadow_attr                   attributes[1]
 #define dialog_attr                   attributes[2]
@@ -119,12 +92,10 @@
 #define uarrow_attr                   attributes[27]
 #define darrow_attr                   attributes[28]
 
-/* number of attributes */
+
 #define ATTRIBUTE_COUNT               29
 
-/*
- * Global variables
- */
+
 extern bool use_colors;
 extern bool use_shadow;
 
@@ -132,9 +103,7 @@ extern chtype attributes[];
 
 extern const char *backtitle;
 
-/*
- * Function prototypes
- */
+
 extern void create_rc(const char *filename);
 extern int parse_rc(void);
 
@@ -165,13 +134,5 @@ extern char dialog_input_result[];
 int dialog_inputbox(const char *title, const char *prompt, int height,
 		    int width, const char *init);
 
-/*
- * This is the base for fictitious keys, which activate
- * the buttons.
- *
- * Mouse-generated keys are the following:
- *   -- the first 32 are used as numbers, in addition to '0'-'9'
- *   -- the lowercase are used to signal mouse-enter events (M_EVENT + 'o')
- *   -- uppercase chars are used to invoke the button (M_EVENT + 'O')
- */
+
 #define M_EVENT (KEY_MAX+1)

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2014 Cisco Systems, Inc.  All rights reserved. */
+
+
 
 #ifndef _VNIC_CQ_FW_H_
 #define _VNIC_CQ_FW_H_
@@ -45,4 +45,4 @@ vnic_cq_fw_service(struct vnic_cq *cq,
 	return work_done;
 }
 
-#endif /* _VNIC_CQ_FW_H_ */
+#endif 

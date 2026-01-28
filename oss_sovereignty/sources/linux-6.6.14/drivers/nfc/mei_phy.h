@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LOCAL_MEI_PHY_H_
 #define __LOCAL_MEI_PHY_H_
 
@@ -11,23 +11,7 @@
 #define MEI_NFC_HEADER_SIZE 10
 #define MEI_NFC_MAX_HCI_PAYLOAD 300
 
-/**
- * struct nfc_mei_phy
- *
- * @cldev: mei client device
- * @hdev:   nfc hci device
 
- * @send_wq: send completion wait queue
- * @fw_ivn: NFC Interface Version Number
- * @vendor_id: NFC manufacturer ID
- * @radio_type: NFC radio type
- * @reserved: reserved for alignment
- * @req_id:  message counter
- * @recv_req_id: reception message counter
- * @powered: the device is in powered state
- * @hard_fault: < 0 if hardware error occurred
- *    and prevents normal operation.
- */
 struct nfc_mei_phy {
 	struct mei_cl_device *cldev;
 	struct nfc_hci_dev *hdev;
@@ -50,4 +34,4 @@ extern const struct nfc_phy_ops mei_phy_ops;
 struct nfc_mei_phy *nfc_mei_phy_alloc(struct mei_cl_device *device);
 void nfc_mei_phy_free(struct nfc_mei_phy *phy);
 
-#endif /* __LOCAL_MEI_PHY_H_ */
+#endif 

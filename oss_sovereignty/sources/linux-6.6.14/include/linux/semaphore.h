@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2008 Intel Corporation
- * Author: Matthew Wilcox <willy@linux.intel.com>
- *
- * Please see kernel/locking/semaphore.c for documentation of these functions
- */
+
+
 #ifndef __LINUX_SEMAPHORE_H
 #define __LINUX_SEMAPHORE_H
 
 #include <linux/list.h>
 #include <linux/spinlock.h>
 
-/* Please don't access any members of this structure directly */
+
 struct semaphore {
 	raw_spinlock_t		lock;
 	unsigned int		count;
@@ -25,12 +20,7 @@ struct semaphore {
 	.wait_list	= LIST_HEAD_INIT((name).wait_list),		\
 }
 
-/*
- * Unlike mutexes, binary semaphores do not have an owner, so up() can
- * be called in a different thread from the one which called down().
- * It is also safe to call down_trylock() and up() from interrupt
- * context.
- */
+
 #define DEFINE_SEMAPHORE(_name, _n)	\
 	struct semaphore _name = __SEMAPHORE_INITIALIZER(_name, _n)
 
@@ -48,4 +38,4 @@ extern int __must_check down_trylock(struct semaphore *sem);
 extern int __must_check down_timeout(struct semaphore *sem, long jiffies);
 extern void up(struct semaphore *sem);
 
-#endif /* __LINUX_SEMAPHORE_H */
+#endif 

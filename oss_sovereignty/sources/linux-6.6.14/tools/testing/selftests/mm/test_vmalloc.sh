@@ -60,25 +60,25 @@ usage()
 	echo
 	echo "Example usage:"
 	echo
-	echo "# Shows help message"
+	echo "
 	echo "./${DRIVER}.sh"
 	echo
-	echo "# Runs 1 test(id_1), repeats it 5 times by NUM_CPUS workers"
+	echo "
 	echo "./${DRIVER}.sh nr_threads=$NUM_CPUS run_test_mask=1 test_repeat_count=5"
 	echo
-	echo -n "# Runs 4 tests(id_1|id_2|id_4|id_16) on one CPU with "
+	echo -n "
 	echo "sequential order"
 	echo -n "./${DRIVER}.sh sequential_test_order=1 "
 	echo "run_test_mask=23"
 	echo
-	echo -n "# Runs all tests by NUM_CPUS workers, shuffled order, repeats "
+	echo -n "
 	echo "20 times"
 	echo "./${DRIVER}.sh nr_threads=$NUM_CPUS test_repeat_count=20"
 	echo
-	echo "# Performance analysis"
+	echo "
 	echo "./${DRIVER}.sh performance"
 	echo
-	echo "# Stress testing"
+	echo "
 	echo "./${DRIVER}.sh stress"
 	echo
 	exit 0
@@ -88,7 +88,7 @@ function validate_passed_args()
 	VALID_ARGS=`modinfo $DRIVER | awk '/parm:/ {print $2}' | sed 's/:.*//'`
 	for passed_arg in $@; do
 		key=${passed_arg//=*/}
-		val="${passed_arg:$((${#key}+1))}"
+		val="${passed_arg:$((${
 		valid=0
 		for valid_arg in $VALID_ARGS; do
 			if [[ $key = $valid_arg ]] && [[ $val -gt 0 ]]; then
@@ -112,7 +112,7 @@ function run_manual_check()
 }
 function run_test()
 {
-	if [ $# -eq 0 ]; then
+	if [ $
 		usage
 	else
 		if [[ "$1" = "performance" ]]; then

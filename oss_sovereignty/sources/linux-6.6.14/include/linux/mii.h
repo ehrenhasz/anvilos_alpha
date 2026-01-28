@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/mii.h: definitions for MII-compatible transceivers
- * Originally drivers/net/sunhme.h.
- *
- * Copyright (C) 1996, 1999, 2001 David S. Miller (davem@redhat.com)
- */
+
+
 #ifndef __LINUX_MII_H__
 #define __LINUX_MII_H__
 
@@ -21,9 +16,9 @@ struct mii_if_info {
 	int phy_id_mask;
 	int reg_num_mask;
 
-	unsigned int full_duplex : 1;	/* is full duplex? */
-	unsigned int force_media : 1;	/* is autoneg. disabled? */
-	unsigned int supports_gmii : 1; /* are GMII registers supported? */
+	unsigned int full_duplex : 1;	
+	unsigned int force_media : 1;	
+	unsigned int supports_gmii : 1; 
 
 	struct net_device *dev;
 	int (*mdio_read) (struct net_device *dev, int phy_id, int location);
@@ -53,20 +48,7 @@ static inline struct mii_ioctl_data *if_mii(struct ifreq *rq)
 	return (struct mii_ioctl_data *) &rq->ifr_ifru;
 }
 
-/**
- * mii_nway_result
- * @negotiated: value of MII ANAR and'd with ANLPAR
- *
- * Given a set of MII abilities, check each bit and returns the
- * currently supported media, in the priority order defined by
- * IEEE 802.3u.  We use LPA_xxx constants but note this is not the
- * value of LPA solely, as described above.
- *
- * The one exception to IEEE 802.3u is that 100baseT4 is placed
- * between 100T-full and 100T-half.  If your phy does not support
- * 100T4 this is fine.  If your phy places 100T4 elsewhere in the
- * priority order, you will need to roll your own function.
- */
+
 static inline unsigned int mii_nway_result (unsigned int negotiated)
 {
 	unsigned int ret;
@@ -85,15 +67,7 @@ static inline unsigned int mii_nway_result (unsigned int negotiated)
 	return ret;
 }
 
-/**
- * mii_duplex
- * @duplex_lock: Non-zero if duplex is locked at full
- * @negotiated: value of MII ANAR and'd with ANLPAR
- *
- * A small helper function for a common case.  Returns one
- * if the media is operating or locked at full duplex, and
- * returns zero otherwise.
- */
+
 static inline unsigned int mii_duplex (unsigned int duplex_lock,
 				       unsigned int negotiated)
 {
@@ -104,14 +78,7 @@ static inline unsigned int mii_duplex (unsigned int duplex_lock,
 	return 0;
 }
 
-/**
- * ethtool_adv_to_mii_adv_t
- * @ethadv: the ethtool advertisement settings
- *
- * A small helper function that translates ethtool advertisement
- * settings to phy autonegotiation advertisements for the
- * MII_ADVERTISE register.
- */
+
 static inline u32 ethtool_adv_to_mii_adv_t(u32 ethadv)
 {
 	u32 result = 0;
@@ -132,14 +99,7 @@ static inline u32 ethtool_adv_to_mii_adv_t(u32 ethadv)
 	return result;
 }
 
-/**
- * linkmode_adv_to_mii_adv_t
- * @advertising: the linkmode advertisement settings
- *
- * A small helper function that translates linkmode advertisement
- * settings to phy autonegotiation advertisements for the
- * MII_ADVERTISE register.
- */
+
 static inline u32 linkmode_adv_to_mii_adv_t(unsigned long *advertising)
 {
 	u32 result = 0;
@@ -160,13 +120,7 @@ static inline u32 linkmode_adv_to_mii_adv_t(unsigned long *advertising)
 	return result;
 }
 
-/**
- * mii_adv_to_ethtool_adv_t
- * @adv: value of the MII_ADVERTISE register
- *
- * A small helper function that translates MII_ADVERTISE bits
- * to ethtool advertisement settings.
- */
+
 static inline u32 mii_adv_to_ethtool_adv_t(u32 adv)
 {
 	u32 result = 0;
@@ -187,14 +141,7 @@ static inline u32 mii_adv_to_ethtool_adv_t(u32 adv)
 	return result;
 }
 
-/**
- * ethtool_adv_to_mii_ctrl1000_t
- * @ethadv: the ethtool advertisement settings
- *
- * A small helper function that translates ethtool advertisement
- * settings to phy autonegotiation advertisements for the
- * MII_CTRL1000 register when in 1000T mode.
- */
+
 static inline u32 ethtool_adv_to_mii_ctrl1000_t(u32 ethadv)
 {
 	u32 result = 0;
@@ -207,14 +154,7 @@ static inline u32 ethtool_adv_to_mii_ctrl1000_t(u32 ethadv)
 	return result;
 }
 
-/**
- * linkmode_adv_to_mii_ctrl1000_t
- * @advertising: the linkmode advertisement settings
- *
- * A small helper function that translates linkmode advertisement
- * settings to phy autonegotiation advertisements for the
- * MII_CTRL1000 register when in 1000T mode.
- */
+
 static inline u32 linkmode_adv_to_mii_ctrl1000_t(unsigned long *advertising)
 {
 	u32 result = 0;
@@ -229,14 +169,7 @@ static inline u32 linkmode_adv_to_mii_ctrl1000_t(unsigned long *advertising)
 	return result;
 }
 
-/**
- * mii_ctrl1000_to_ethtool_adv_t
- * @adv: value of the MII_CTRL1000 register
- *
- * A small helper function that translates MII_CTRL1000
- * bits, when in 1000Base-T mode, to ethtool
- * advertisement settings.
- */
+
 static inline u32 mii_ctrl1000_to_ethtool_adv_t(u32 adv)
 {
 	u32 result = 0;
@@ -249,14 +182,7 @@ static inline u32 mii_ctrl1000_to_ethtool_adv_t(u32 adv)
 	return result;
 }
 
-/**
- * mii_lpa_to_ethtool_lpa_t
- * @adv: value of the MII_LPA register
- *
- * A small helper function that translates MII_LPA
- * bits, when in 1000Base-T mode, to ethtool
- * LP advertisement settings.
- */
+
 static inline u32 mii_lpa_to_ethtool_lpa_t(u32 lpa)
 {
 	u32 result = 0;
@@ -267,14 +193,7 @@ static inline u32 mii_lpa_to_ethtool_lpa_t(u32 lpa)
 	return result | mii_adv_to_ethtool_adv_t(lpa);
 }
 
-/**
- * mii_stat1000_to_ethtool_lpa_t
- * @adv: value of the MII_STAT1000 register
- *
- * A small helper function that translates MII_STAT1000
- * bits, when in 1000Base-T mode, to ethtool
- * advertisement settings.
- */
+
 static inline u32 mii_stat1000_to_ethtool_lpa_t(u32 lpa)
 {
 	u32 result = 0;
@@ -287,15 +206,7 @@ static inline u32 mii_stat1000_to_ethtool_lpa_t(u32 lpa)
 	return result;
 }
 
-/**
- * mii_stat1000_mod_linkmode_lpa_t
- * @advertising: target the linkmode advertisement settings
- * @adv: value of the MII_STAT1000 register
- *
- * A small helper function that translates MII_STAT1000 bits, when in
- * 1000Base-T mode, to linkmode advertisement settings. Other bits in
- * advertising are not changes.
- */
+
 static inline void mii_stat1000_mod_linkmode_lpa_t(unsigned long *advertising,
 						   u32 lpa)
 {
@@ -306,14 +217,7 @@ static inline void mii_stat1000_mod_linkmode_lpa_t(unsigned long *advertising,
 			 advertising, lpa & LPA_1000FULL);
 }
 
-/**
- * ethtool_adv_to_mii_adv_x
- * @ethadv: the ethtool advertisement settings
- *
- * A small helper function that translates ethtool advertisement
- * settings to phy autonegotiation advertisements for the
- * MII_CTRL1000 register when in 1000Base-X mode.
- */
+
 static inline u32 ethtool_adv_to_mii_adv_x(u32 ethadv)
 {
 	u32 result = 0;
@@ -330,14 +234,7 @@ static inline u32 ethtool_adv_to_mii_adv_x(u32 ethadv)
 	return result;
 }
 
-/**
- * mii_adv_to_ethtool_adv_x
- * @adv: value of the MII_CTRL1000 register
- *
- * A small helper function that translates MII_CTRL1000
- * bits, when in 1000Base-X mode, to ethtool
- * advertisement settings.
- */
+
 static inline u32 mii_adv_to_ethtool_adv_x(u32 adv)
 {
 	u32 result = 0;
@@ -354,14 +251,7 @@ static inline u32 mii_adv_to_ethtool_adv_x(u32 adv)
 	return result;
 }
 
-/**
- * mii_adv_mod_linkmode_adv_t
- * @advertising:pointer to destination link mode.
- * @adv: value of the MII_ADVERTISE register
- *
- * A small helper function that translates MII_ADVERTISE bits to
- * linkmode advertisement settings. Leaves other bits unchanged.
- */
+
 static inline void mii_adv_mod_linkmode_adv_t(unsigned long *advertising,
 					      u32 adv)
 {
@@ -384,15 +274,7 @@ static inline void mii_adv_mod_linkmode_adv_t(unsigned long *advertising,
 			 advertising, adv & ADVERTISE_PAUSE_ASYM);
 }
 
-/**
- * mii_adv_to_linkmode_adv_t
- * @advertising:pointer to destination link mode.
- * @adv: value of the MII_ADVERTISE register
- *
- * A small helper function that translates MII_ADVERTISE bits
- * to linkmode advertisement settings. Clears the old value
- * of advertising.
- */
+
 static inline void mii_adv_to_linkmode_adv_t(unsigned long *advertising,
 					     u32 adv)
 {
@@ -401,14 +283,7 @@ static inline void mii_adv_to_linkmode_adv_t(unsigned long *advertising,
 	mii_adv_mod_linkmode_adv_t(advertising, adv);
 }
 
-/**
- * mii_lpa_to_linkmode_lpa_t
- * @adv: value of the MII_LPA register
- *
- * A small helper function that translates MII_LPA bits, when in
- * 1000Base-T mode, to linkmode LP advertisement settings. Clears the
- * old value of advertising
- */
+
 static inline void mii_lpa_to_linkmode_lpa_t(unsigned long *lp_advertising,
 					     u32 lpa)
 {
@@ -420,14 +295,7 @@ static inline void mii_lpa_to_linkmode_lpa_t(unsigned long *lp_advertising,
 
 }
 
-/**
- * mii_lpa_mod_linkmode_lpa_t
- * @adv: value of the MII_LPA register
- *
- * A small helper function that translates MII_LPA bits, when in
- * 1000Base-T mode, to linkmode LP advertisement settings. Leaves
- * other bits unchanged.
- */
+
 static inline void mii_lpa_mod_linkmode_lpa_t(unsigned long *lp_advertising,
 					      u32 lpa)
 {
@@ -446,13 +314,7 @@ static inline void mii_ctrl1000_mod_linkmode_adv_t(unsigned long *advertising,
 			 ctrl1000 & ADVERTISE_1000FULL);
 }
 
-/**
- * linkmode_adv_to_lcl_adv_t
- * @advertising:pointer to linkmode advertising
- *
- * A small helper function that translates linkmode advertising to LVL
- * pause capabilities.
- */
+
 static inline u32 linkmode_adv_to_lcl_adv_t(unsigned long *advertising)
 {
 	u32 lcl_adv = 0;
@@ -467,12 +329,7 @@ static inline u32 linkmode_adv_to_lcl_adv_t(unsigned long *advertising)
 	return lcl_adv;
 }
 
-/**
- * mii_lpa_mod_linkmode_x - decode the link partner's config_reg to linkmodes
- * @linkmodes: link modes array
- * @lpa: config_reg word from link partner
- * @fd_bit: link mode for 1000XFULL bit
- */
+
 static inline void mii_lpa_mod_linkmode_x(unsigned long *linkmodes, u16 lpa,
 					 int fd_bit)
 {
@@ -486,11 +343,7 @@ static inline void mii_lpa_mod_linkmode_x(unsigned long *linkmodes, u16 lpa,
 			 lpa & LPA_1000XFULL);
 }
 
-/**
- * linkmode_adv_to_mii_adv_x - encode a linkmode to config_reg
- * @linkmodes: linkmodes
- * @fd_bit: full duplex bit
- */
+
 static inline u16 linkmode_adv_to_mii_adv_x(const unsigned long *linkmodes,
 					    int fd_bit)
 {
@@ -506,10 +359,7 @@ static inline u16 linkmode_adv_to_mii_adv_x(const unsigned long *linkmodes,
 	return adv;
 }
 
-/**
- * mii_advertise_flowctrl - get flow control advertisement flags
- * @cap: Flow control capabilities (FLOW_CTRL_RX, FLOW_CTRL_TX or both)
- */
+
 static inline u16 mii_advertise_flowctrl(int cap)
 {
 	u16 adv = 0;
@@ -522,13 +372,7 @@ static inline u16 mii_advertise_flowctrl(int cap)
 	return adv;
 }
 
-/**
- * mii_resolve_flowctrl_fdx
- * @lcladv: value of MII ADVERTISE register
- * @rmtadv: value of MII LPA register
- *
- * Resolve full duplex flow control as per IEEE 802.3-2005 table 28B-3
- */
+
 static inline u8 mii_resolve_flowctrl_fdx(u16 lcladv, u16 rmtadv)
 {
 	u8 cap = 0;
@@ -545,15 +389,7 @@ static inline u8 mii_resolve_flowctrl_fdx(u16 lcladv, u16 rmtadv)
 	return cap;
 }
 
-/**
- * mii_bmcr_encode_fixed - encode fixed speed/duplex settings to a BMCR value
- * @speed: a SPEED_* value
- * @duplex: a DUPLEX_* value
- *
- * Encode the speed and duplex to a BMCR value. 2500, 1000, 100 and 10 Mbps are
- * supported. 2500Mbps is encoded to 1000Mbps. Other speeds are encoded as 10
- * Mbps. Unknown duplex values are encoded to half-duplex.
- */
+
 static inline u16 mii_bmcr_encode_fixed(int speed, int duplex)
 {
 	u16 bmcr;
@@ -580,4 +416,4 @@ static inline u16 mii_bmcr_encode_fixed(int speed, int duplex)
 	return bmcr;
 }
 
-#endif /* __LINUX_MII_H__ */
+#endif 

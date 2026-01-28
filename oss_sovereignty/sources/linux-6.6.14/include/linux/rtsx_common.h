@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Driver for Realtek driver-based card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG <wei_wang@realsil.com.cn>
- */
+
+
 
 #ifndef __RTSX_COMMON_H
 #define __RTSX_COMMON_H

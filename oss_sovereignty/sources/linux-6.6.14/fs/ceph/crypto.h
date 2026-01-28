@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Ceph fscrypt functionality
- */
+
+
 
 #ifndef _CEPH_CRYPTO_H
 #define _CEPH_CRYPTO_H
@@ -19,27 +17,19 @@ struct ceph_mds_request;
 
 struct ceph_fname {
 	struct inode	*dir;
-	char		*name;		// b64 encoded, possibly hashed
-	unsigned char	*ctext;		// binary crypttext (if any)
-	u32		name_len;	// length of name buffer
-	u32		ctext_len;	// length of crypttext
+	char		*name;		
+	unsigned char	*ctext;		
+	u32		name_len;	
+	u32		ctext_len;	
 	bool		no_copy;
 };
 
-/*
- * Header for the crypted file when truncating the size, this
- * will be sent to MDS, and the MDS will update the encrypted
- * last block and then truncate the size.
- */
+
 struct ceph_fscrypt_truncate_size_header {
 	__u8  ver;
 	__u8  compat;
 
-	/*
-	 * It will be sizeof(assert_ver + file_offset + block_size)
-	 * if the last block is empty when it's located in a file
-	 * hole. Or the data_len will plus CEPH_FSCRYPT_BLOCK_SIZE.
-	 */
+	
 	__le32 data_len;
 
 	__le64 change_attr;
@@ -62,31 +52,7 @@ static inline u32 ceph_fscrypt_auth_len(struct ceph_fscrypt_auth *fa)
 }
 
 #ifdef CONFIG_FS_ENCRYPTION
-/*
- * We want to encrypt filenames when creating them, but the encrypted
- * versions of those names may have illegal characters in them. To mitigate
- * that, we base64 encode them, but that gives us a result that can exceed
- * NAME_MAX.
- *
- * Follow a similar scheme to fscrypt itself, and cap the filename to a
- * smaller size. If the ciphertext name is longer than the value below, then
- * sha256 hash the remaining bytes.
- *
- * For the fscrypt_nokey_name struct the dirhash[2] member is useless in ceph
- * so the corresponding struct will be:
- *
- * struct fscrypt_ceph_nokey_name {
- *	u8 bytes[157];
- *	u8 sha256[SHA256_DIGEST_SIZE];
- * }; // 180 bytes => 240 bytes base64-encoded, which is <= NAME_MAX (255)
- *
- * (240 bytes is the maximum size allowed for snapshot names to take into
- *  account the format: '_<SNAPSHOT-NAME>_<INODE-NUMBER>'.)
- *
- * Note that for long names that end up having their tail portion hashed, we
- * must also store the full encrypted name (in the dentry's alternate_name
- * field).
- */
+
 #define CEPH_NOHASH_NAME_MAX (180 - SHA256_DIGEST_SIZE)
 
 #define CEPH_BASE64_CHARS(nbytes) DIV_ROUND_UP((nbytes) * 4, 3)
@@ -128,19 +94,14 @@ int ceph_fscrypt_prepare_readdir(struct inode *dir);
 
 static inline unsigned int ceph_fscrypt_blocks(u64 off, u64 len)
 {
-	/* crypto blocks cannot span more than one page */
+	
 	BUILD_BUG_ON(CEPH_FSCRYPT_BLOCK_SHIFT > PAGE_SHIFT);
 
 	return ((off+len+CEPH_FSCRYPT_BLOCK_SIZE-1) >> CEPH_FSCRYPT_BLOCK_SHIFT) -
 		(off >> CEPH_FSCRYPT_BLOCK_SHIFT);
 }
 
-/*
- * If we have an encrypted inode then we must adjust the offset and
- * range of the on-the-wire read to cover an entire encryption block.
- * The copy will be done using the original offset and length, after
- * we've decrypted the result.
- */
+
 static inline void ceph_fscrypt_adjust_off_and_len(struct inode *inode,
 						   u64 *off, u64 *len)
 {
@@ -170,7 +131,7 @@ static inline struct page *ceph_fscrypt_pagecache_page(struct page *page)
 	return fscrypt_is_bounce_page(page) ? fscrypt_pagecache_page(page) : page;
 }
 
-#else /* CONFIG_FS_ENCRYPTION */
+#else 
 
 static inline void ceph_fscrypt_set_ops(struct super_block *sb)
 {
@@ -278,11 +239,11 @@ static inline struct page *ceph_fscrypt_pagecache_page(struct page *page)
 {
 	return page;
 }
-#endif /* CONFIG_FS_ENCRYPTION */
+#endif 
 
 static inline loff_t ceph_fscrypt_page_offset(struct page *page)
 {
 	return page_offset(ceph_fscrypt_pagecache_page(page));
 }
 
-#endif /* _CEPH_CRYPTO_H */
+#endif 

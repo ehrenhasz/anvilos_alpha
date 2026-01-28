@@ -148,7 +148,7 @@ systemdsystemunit_DATA += \
 		sys-utils/fstrim.service \
 		sys-utils/fstrim.timer
 endif
-endif # BUILD_FSTRIM
+endif 
 
 PATHFILES += sys-utils/fstrim.service
 EXTRA_DIST += sys-utils/fstrim.timer
@@ -284,7 +284,7 @@ uninstall-hook-setarch:
 INSTALL_EXEC_HOOKS += install-exec-hook-setarch
 UNINSTALL_HOOKS += uninstall-hook-setarch
 
-endif # BUILD_SETARCH
+endif 
 
 
 if BUILD_EJECT
@@ -312,7 +312,7 @@ losetup_static_LDFLAGS = -all-static
 losetup_static_LDADD = $(losetup_LDADD)
 losetup_static_CFLAGS = $(AM_CFLAGS) -I$(ul_libsmartcols_incdir)
 endif
-endif # BUILD_LOSETUP
+endif 
 
 
 if BUILD_ZRAMCTL
@@ -397,7 +397,7 @@ if MAKEINSTALL_DO_SETUID
 endif
 
 INSTALL_EXEC_HOOKS += install-exec-hook-mount
-endif # BUILD_MOUNT
+endif 
 
 
 if BUILD_SWAPON
@@ -565,7 +565,7 @@ endif
 if HAVE_AUDIT
 hwclock_LDADD += -laudit
 endif
-endif # BUILD_HWCLOCK
+endif 
 
 if BUILD_SETPRIV
 usrbin_exec_PROGRAMS += setpriv

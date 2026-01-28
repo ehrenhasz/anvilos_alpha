@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile for the Microchip Lan966x network device drivers.
-#
+
+
+
+
 
 obj-$(CONFIG_LAN966X_SWITCH) += lan966x-switch.o
 
@@ -18,5 +18,5 @@ lan966x-switch-objs  := lan966x_main.o lan966x_phylink.o lan966x_port.o \
 lan966x-switch-$(CONFIG_LAN966X_DCB) += lan966x_dcb.o
 lan966x-switch-$(CONFIG_DEBUG_FS) += lan966x_vcap_debugfs.o
 
-# Provide include files
+
 ccflags-y += -I$(srctree)/drivers/net/ethernet/microchip/vcap

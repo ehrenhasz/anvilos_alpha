@@ -102,7 +102,7 @@ if test "$GCC" = yes; then
   dnl double free.  This happens in expand_filename(), because the optimizer
   dnl swaps two blocks of code, both using "repl", that can't be swapped.
   if test "$gccversion" = "3.0.1" -o "$gccversion" = "3.0.2" -o "$gccversion" = "4.0.1"; then
-    echo 'GCC [[34]].0.[[12]] has a bug in the optimizer, disabling "-O#"'
+    echo 'GCC [[34]].0.[[12]] has a bug in the optimizer, disabling "-O
     CFLAGS=`echo "$CFLAGS" | sed 's/-O[[23456789]]/-O/'`
   else
     if test "$gccversion" = "3.1" -o "$gccversion" = "3.2" -o "$gccversion" = "3.2.1" && `echo "$CFLAGS" | grep -v fno-strength-reduce >/dev/null`; then
@@ -306,7 +306,7 @@ fi
 dnl Mac OS X 10.9+ no longer include AvailabilityMacros.h in Carbon
 dnl so we need to include it to have access to version macros.
 AC_CHECK_HEADERS(AvailabilityMacros.h)
-# 10.5 and earlier lack dispatch
+
 AC_CHECK_HEADERS(dispatch/dispatch.h)
 
 AC_SUBST(OS_EXTRA_SRC)
@@ -326,7 +326,7 @@ if test "$cross_compiling" = no; then
     case "$withval" in
     */*) ;;
     no)
-      # avoid adding local dir to LDFLAGS and CPPFLAGS
+      
       have_local_include=yes
       have_local_lib=yes
       ;;
@@ -397,17 +397,17 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([ ],
    Treat any failure as ASCII for compatibility with existing art.
    Use compile-time rather than run-time tests for cross-compiler
    tolerance.  */
-#if '0'!=240
+
 make an error "Character set is not EBCDIC"
-#endif ])],
-[ # TryCompile action if true
+
+[ 
 cf_cv_ebcdic=yes ],
-[ # TryCompile action if false
+[ 
 cf_cv_ebcdic=no])
-# end of TryCompile ])
-# end of CacheVal CvEbcdic
+
+
 AC_MSG_RESULT($cf_cv_ebcdic)
-case "$cf_cv_ebcdic" in  #(vi
+case "$cf_cv_ebcdic" in  
     yes)	AC_DEFINE(EBCDIC)
 		line_break='"\\n"'
 		;;
@@ -446,9 +446,9 @@ case $vim_cv_uname_output in
 		  echo "------------------------------------------"
 		  exit 1
 		fi
-		# Set CFLAGS for configure process.
-		# This will be reset later for config.mk.
-		# Use haltonmsg to force error for missing H files.
+		
+		
+		
 		CFLAGS="$CFLAGS -D_ALL_SOURCE -Wc,float(ieee),haltonmsg(3296)";
 		LDFLAGS="$LDFLAGS -Wl,EDIT=NO"
 		AC_MSG_RESULT(yes)
@@ -484,7 +484,7 @@ if test "$enable_smack" = "yes"; then
 fi
 if test "$enable_smack" = "yes"; then
   AC_MSG_CHECKING(for XATTR_NAME_SMACKEXEC in linux/xattr.h)
-  AC_EGREP_CPP(XATTR_NAME_SMACKEXEC, [#include <linux/xattr.h>],
+  AC_EGREP_CPP(XATTR_NAME_SMACKEXEC, [
 	       AC_MSG_RESULT(yes),
 	       AC_MSG_RESULT(no); enable_smack="no")
 fi
@@ -682,8 +682,8 @@ if test "$enable_luainterp" = "yes" -o "$enable_luainterp" = "dynamic"; then
 	else
 	  AC_MSG_RESULT(no)
 
-	  # Detect moonjit:
-	  # https://groups.google.com/forum/#!topic/vim_use/O0vek60WuTk
+	  
+	  
 	  lua_suf=/moonjit-2.3
 	  inc_path="$vi_cv_path_lua_pfx/include"
 	  for dir in "$inc_path"/moonjit-[[0-9]]* ; do
@@ -1126,7 +1126,7 @@ if test "$enable_perlinterp" = "yes" -o "$enable_perlinterp" = "dynamic"; then
      if test $badthreads = no; then
       AC_MSG_RESULT(OK)
       eval `$vi_cv_path_perl -V:shrpenv`
-      if test "X$shrpenv" = "XUNKNOWN"; then # pre 5.003_04
+      if test "X$shrpenv" = "XUNKNOWN"; then 
 	shrpenv=""
       fi
       vi_cv_perllib=`$vi_cv_path_perl -MConfig -e 'print $Config{privlibexp}'`
@@ -1764,7 +1764,7 @@ if test "$python_ok" = yes && test "$python3_ok" = yes; then
   dnl -ldl must go first to make this work on Archlinux (Roland Puntaier)
   LIBS="-ldl $LIBS"
   AC_RUN_IFELSE([AC_LANG_SOURCE([
-    #include <dlfcn.h>
+    
     /* If this program fails, then RTLD_GLOBAL is needed.
      * RTLD_GLOBAL will be used and then it is not possible to
      * have both python versions enabled in the same vim instance.
@@ -1809,8 +1809,8 @@ if test "$python_ok" = yes && test "$python3_ok" = yes; then
   dnl -ldl must go first to make this work on Archlinux (Roland Puntaier)
   LIBS="-ldl $LIBS"
   AC_RUN_IFELSE([AC_LANG_SOURCE([
-    #include <dlfcn.h>
-    #include <wchar.h>
+    
+    
     /* If this program fails, then RTLD_GLOBAL is needed.
      * RTLD_GLOBAL will be used and then it is not possible to
      * have both python versions enabled in the same vim instance.
@@ -2202,15 +2202,15 @@ if test "$enable_channel" = "yes"; then
 
   AC_CACHE_CHECK([whether compiling with IPv6 networking is possible], [vim_cv_ipv6_networking],
     [AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+
+
+
+
+
+
+
+
+
 	/* Check bitfields */
 	struct nbbuf {
 	unsigned int  initDone:1;
@@ -2238,15 +2238,15 @@ if test "$enable_channel" = "yes"; then
     AC_CHECK_LIB(nsl, gethostbyname)
     AC_CACHE_CHECK([whether compiling with IPv4 networking is possible], [vim_cv_ipv4_networking],
       [AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+
+
+
+
+
+
+
+
+
 	/* Check bitfields */
 	struct nbbuf {
 	unsigned int  initDone:1;
@@ -2429,8 +2429,8 @@ else
   AC_MSG_CHECKING(if X11 header files can be found)
   cflags_save=$CFLAGS
   CFLAGS="$CFLAGS $X_CFLAGS"
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <X11/Xlib.h>
-#include <X11/Intrinsic.h>], )],
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
+
 	AC_MSG_RESULT(yes),
 	AC_MSG_RESULT(no); no_x=yes)
   CFLAGS=$cflags_save
@@ -2471,10 +2471,10 @@ else
     else
       CFLAGS="$CFLAGS $X_CFLAGS"
     fi
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <X11/Xlib.h>], )],
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 	AC_MSG_RESULT(no),
 	CFLAGS="$CFLAGS -Wno-implicit-int"
-	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <X11/Xlib.h>], )],
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 	    AC_MSG_RESULT(yes); cflags_save="$cflags_save -Wno-implicit-int",
 	    AC_MSG_RESULT(test failed)
 	)
@@ -2681,12 +2681,12 @@ AC_DEFUN(AM_PATH_GTK,
       dnl
       rm -f conf.gtktest
       AC_RUN_IFELSE([AC_LANG_SOURCE([
-#include <gtk/gtk.h>
-#include <stdio.h>
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
+
+
+
+
+
+
 
 int
 main ()
@@ -2696,7 +2696,7 @@ char *tmp_version;
 
 system ("touch conf.gtktest");
 
-/* HP/UX 9 (%@#!) writes to sscanf strings */
+/* HP/UX 9 (%@
 tmp_version = g_strdup("$min_gtk_version");
 if (sscanf(tmp_version, "%d.%d.%d", &major, &minor, &micro) != 3) {
    printf("%s, bad version string\n", "$min_gtk_version");
@@ -3139,7 +3139,7 @@ if test -z "$SKIP_MOTIF" -o -z "$SKIP_GTK2" -o -z "$SKIP_GTK3"; then
   dnl automatically disable XIM when XIMtext isn't in X11/Xlib.h
   if test ! "$enable_xim" = "no"; then
     AC_MSG_CHECKING(for XIMText in X11/Xlib.h)
-    AC_EGREP_CPP(XIMText, [#include <X11/Xlib.h>],
+    AC_EGREP_CPP(XIMText, [
 		  AC_MSG_RESULT(yes),
 		  AC_MSG_RESULT(no; xim has been disabled); enable_xim="no")
   fi
@@ -3158,8 +3158,8 @@ if test -z "$SKIP_MOTIF"; then
 dnl Xmu/Editres.h may exist but can only be used after including Intrinsic.h
   AC_MSG_CHECKING([for X11/Xmu/Editres.h])
   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
-#include <X11/Intrinsic.h>
-#include <X11/Xmu/Editres.h>],
+
+
 		      [int i; i = 0;])],
 	      AC_MSG_RESULT(yes)
 		      AC_DEFINE(HAVE_X11_XMU_EDITRES_H),
@@ -3180,7 +3180,7 @@ if test -z "$SKIP_MOTIF"; then
   if test "x$ac_cv_header_Xm_XpmP_h" = "xyes"; then
     dnl Solaris uses XpmAttributes_21, very annoying.
     AC_MSG_CHECKING([for XpmAttributes_21 in Xm/XpmP.h])
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <Xm/XpmP.h>], [XpmAttributes_21 attr;])],
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 	AC_MSG_RESULT(yes); AC_DEFINE(XPMATTRIBUTES_TYPE, XpmAttributes_21),
 	AC_MSG_RESULT(no); AC_DEFINE(XPMATTRIBUTES_TYPE, XpmAttributes)
 	)
@@ -3272,12 +3272,12 @@ dnl Checks for libraries and include files.
 AC_CACHE_CHECK([whether toupper is broken], [vim_cv_toupper_broken],
   [
     AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include "confdefs.h"
-#include <ctype.h>
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
+
+
+
+
+
+
 int main() { exit(toupper('A') == 'A' && tolower('z') == 'z'); }
   ]])],[
     vim_cv_toupper_broken=yes
@@ -3292,12 +3292,12 @@ if test "x$vim_cv_toupper_broken" = "xyes" ; then
 fi
 
 AC_MSG_CHECKING(whether __DATE__ and __TIME__ work)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <stdio.h>], [printf("(" __DATE__ " " __TIME__ ")");])],
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_DATE_TIME),
 	AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING(whether __attribute__((unused)) is allowed)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <stdio.h>], [int x __attribute__((unused));])],
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_ATTRIBUTE_UNUSED),
 	AC_MSG_RESULT(no))
 
@@ -3314,7 +3314,7 @@ dnl If sys/wait.h is not found it might still exist but not be POSIX
 dnl compliant. In that case we define HAVE_UNION_WAIT (for NeXT)
 if test $ac_cv_header_sys_wait_h = no; then
   AC_MSG_CHECKING([for sys/wait.h that defines union wait])
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <sys/wait.h>],
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 			[union wait xx, yy; xx = yy])],
 		AC_MSG_RESULT(yes)
 			AC_DEFINE(HAVE_SYS_WAIT_H)
@@ -3335,22 +3335,22 @@ AC_CHECK_HEADERS(stdint.h stdlib.h string.h \
 
 dnl sys/ptem.h depends on sys/stream.h on Solaris
 AC_CHECK_HEADERS(sys/ptem.h, [], [],
-[#if defined HAVE_SYS_STREAM_H
-#  include <sys/stream.h>
-#endif])
+[
+
+
 
 dnl sys/sysctl.h depends on sys/param.h on OpenBSD
 AC_CHECK_HEADERS(sys/sysctl.h, [], [],
-[#if defined HAVE_SYS_PARAM_H
-#  include <sys/param.h>
-#endif])
+[
+
+
 
 
 dnl pthread_np.h may exist but can only be used after including pthread.h
 AC_MSG_CHECKING([for pthread_np.h])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
-#include <pthread.h>
-#include <pthread_np.h>],
+
+
 		      [int i; i = 0;])],
 	      AC_MSG_RESULT(yes)
 		      AC_DEFINE(HAVE_PTHREAD_NP_H),
@@ -3367,19 +3367,19 @@ AC_MSG_CHECKING([if strings.h can be included after string.h])
 cppflags_save=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
-#if defined(_AIX) && !defined(_AIX51) && !defined(_NO_PROTO)
-# define _NO_PROTO	/* like in os_unix.h, causes conflict for AIX (Winn) */
+
+
 			/* but don't do it on AIX 5.1 (Uribarri) */
-#endif
-#ifdef HAVE_XM_XM_H
-# include <Xm/Xm.h>	/* This breaks it for HP-UX 11 (Squassabia) */
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#endif
-#if defined(HAVE_STRINGS_H)
-# include <strings.h>
-#endif
+
+
+
+
+
+
+
+
+
+
 		], [int i; i = 0;])],
 		AC_MSG_RESULT(yes),
 		AC_DEFINE(NO_STRINGS_WITH_STRING_H)
@@ -3414,20 +3414,20 @@ changequote(<<,>>)dnl
 <<(^|[^a-zA-Z_0-9])rlim_t[^a-zA-Z_0-9]>>dnl
 changequote([,]),
   [
-#include <sys/types.h>
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
-#ifdef HAVE_SYS_RESOURCE_H
-# include <sys/resource.h>
-#endif
+
+
+
+
+
+
+
+
 	  ], ac_cv_type_rlim_t=yes, ac_cv_type_rlim_t=no)
 	  AC_MSG_RESULT($ac_cv_type_rlim_t)
 fi
 if test $ac_cv_type_rlim_t = no; then
   cat >> confdefs.h <<\EOF
-#define rlim_t unsigned long
+
 EOF
 fi
 
@@ -3437,31 +3437,31 @@ if eval "test \"`echo '$''{'ac_cv_type_stack_t'+set}'`\" = set"; then
 else
   AC_EGREP_CPP(stack_t,
   [
-#include <sys/types.h>
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
-#include <signal.h>
+
+
+
+
+
+
 	  ], ac_cv_type_stack_t=yes, ac_cv_type_stack_t=no)
 	  AC_MSG_RESULT($ac_cv_type_stack_t)
 fi
 if test $ac_cv_type_stack_t = no; then
   cat >> confdefs.h <<\EOF
-#define stack_t struct sigaltstack
+
 EOF
 fi
 
 dnl BSDI uses ss_base while others use ss_sp for the stack pointer.
 AC_MSG_CHECKING(whether stack_t has an ss_base field)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
-#include <sys/types.h>
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
-#include <signal.h>
-#include "confdefs.h"
+
+
+
+
+
+
+
 			], [stack_t sigstk; sigstk.ss_base = 0; ])],
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_SS_BASE),
 	AC_MSG_RESULT(no))
@@ -3496,13 +3496,13 @@ else
       dnl e.g., shared library that cannot be found
       dnl compile and run a test program to be sure
       AC_RUN_IFELSE([AC_LANG_SOURCE([
-#ifdef HAVE_TERMCAP_H
-# include <termcap.h>
-#endif
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
+
+
+
+
+
+
+
 int main() {char *s; s=(char *)tgoto("%p1%d", 0, 1); exit(0); }])],
 			  res="OK", res="FAIL", res="FAIL")
       if test "$res" = "OK"; then
@@ -3531,17 +3531,17 @@ fi
 AC_CACHE_CHECK([whether we talk terminfo], [vim_cv_terminfo],
   [
     AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include "confdefs.h"
-#ifdef HAVE_TERMCAP_H
-# include <termcap.h>
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#endif
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
+
+
+
+
+
+
+
+
+
+
+
 int main()
 {char *s; s=(char *)tgoto("%p1%d", 0, 1); exit(!strcmp(s==0 ? "" : s, "1")); }
     ]])],[
@@ -3560,14 +3560,14 @@ fi
 AC_CACHE_CHECK([what tgetent() returns for an unknown terminal], [vim_cv_tgetent],
   [
     AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include "confdefs.h"
-#ifdef HAVE_TERMCAP_H
-# include <termcap.h>
-#endif
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
+
+
+
+
+
+
+
+
 int main()
 {char s[10000]; int res = tgetent(s, "thisterminaldoesnotexist"); exit(res != 0); }
     ]])],[
@@ -3585,17 +3585,17 @@ fi
 
 AC_MSG_CHECKING(whether termcap.h contains ospeed)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#ifdef HAVE_TERMCAP_H
-# include <termcap.h>
-#endif
+
+
+
 			], [ospeed = 20000])],
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_OSPEED),
 	[AC_MSG_RESULT(no)
 	AC_MSG_CHECKING(whether ospeed can be extern)
 	AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#ifdef HAVE_TERMCAP_H
-# include <termcap.h>
-#endif
+
+
+
 extern short ospeed;
 			], [ospeed = 20000])],
 		AC_MSG_RESULT(yes); AC_DEFINE(OSPEED_EXTERN),
@@ -3604,17 +3604,17 @@ extern short ospeed;
 
 AC_MSG_CHECKING([whether termcap.h contains UP, BC and PC])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#ifdef HAVE_TERMCAP_H
-# include <termcap.h>
-#endif
+
+
+
 			], [if (UP == 0 && BC == 0) PC = 1])],
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_UP_BC_PC),
 	[AC_MSG_RESULT(no)
 	AC_MSG_CHECKING([whether UP, BC and PC can be extern])
 	AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#ifdef HAVE_TERMCAP_H
-# include <termcap.h>
-#endif
+
+
+
 extern char *UP, *BC, PC;
 			], [if (UP == 0 && BC == 0) PC = 1])],
 		AC_MSG_RESULT(yes); AC_DEFINE(UP_BC_PC_EXTERN),
@@ -3623,19 +3623,19 @@ extern char *UP, *BC, PC;
 
 AC_MSG_CHECKING(whether tputs() uses outfuntype)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
-#ifdef HAVE_TERMCAP_H
-# include <termcap.h>
-#endif
+
+
+
 			], [extern int xx(); tputs("test", 1, (outfuntype)xx)])],
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_OUTFUNTYPE),
 	AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING([whether del_curterm() can be used])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#ifdef HAVE_TERMCAP_H
-# include <termcap.h>
-#endif
-#include <term.h>
+
+
+
+
 			], [if (cur_term) del_curterm(cur_term);])],
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_DEL_CURTERM),
 	AC_MSG_RESULT(no))
@@ -3643,9 +3643,9 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([
 dnl On some SCO machines sys/select redefines struct timeval
 AC_MSG_CHECKING([whether sys/select.h and sys/time.h may both be included])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/select.h>], )],
+
+
+
 	  AC_MSG_RESULT(yes)
 			AC_DEFINE(SYS_SELECT_WITH_SYS_TIME),
 	  AC_MSG_RESULT(no))
@@ -3684,9 +3684,9 @@ else
 fi
 dnl SCO uses ptyp%d
 AC_EGREP_CPP(yes,
-[#ifdef M_UNIX
+[
    yes;
-#endif
+
 	], ptys=`echo /dev/ptyp??`, ptys=`echo $pdir/pty??`)
 dnl if test -c /dev/ptyp19; then
 dnl ptys=`echo /dev/ptyp??`
@@ -3708,7 +3708,7 @@ dnl Checks for library functions. ===================================
 dnl check if struct sigcontext is defined (used for SGI only)
 AC_MSG_CHECKING(for struct sigcontext)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
-#include <signal.h>
+
 int test_sig()
 {
     struct sigcontext *scont;
@@ -3724,10 +3724,10 @@ dnl system("sh -c pwd")
 AC_CACHE_CHECK([getcwd implementation is broken], [vim_cv_getcwd_broken],
   [
     AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include "confdefs.h"
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+
+
+
+
 char *dagger[] = { "IFS=pwd", 0 };
 int main()
 {
@@ -3805,7 +3805,7 @@ if test "$enable_canberra" = "yes"; then
   fi
   LIBS="$LIBS $canberra_lib"
   AC_LINK_IFELSE([AC_LANG_PROGRAM([
-  # include <canberra.h>
+  
       ], [
      ca_context *hello;
      ca_context_create(&hello);])],
@@ -3844,7 +3844,7 @@ if test "$enable_libsodium" = "yes"; then
   CFLAGS="$CFLAGS $libsodium_cflags"
   LIBS="$LIBS $libsodium_lib"
   AC_LINK_IFELSE([AC_LANG_PROGRAM([
-  # include <sodium.h>
+  
       ], [
      printf("%d", sodium_init()); ])],
        AC_MSG_RESULT(yes); AC_DEFINE(HAVE_SODIUM),
@@ -3854,8 +3854,8 @@ fi
 dnl fstatfs() can take 2 to 4 arguments, try to use st_blksize if possible
 AC_MSG_CHECKING(for st_blksize)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-[#include <sys/types.h>
-#include <sys/stat.h>],
+[
+
 [	struct stat st;
 	int n;
 
@@ -3869,12 +3869,12 @@ dnl Run the program to find out if timer_create(CLOCK_MONOTONIC) actually
 dnl works, on Solaris timer_create() exists but fails at runtime.
 AC_CACHE_CHECK([for timer_create without -lrt], [vim_cv_timer_create], [
 AC_RUN_IFELSE([AC_LANG_PROGRAM([
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
-#include <signal.h>
-#include <time.h>
+
+
+
+
+
+
 static void set_flag(union sigval sv) {}
 ], [
   struct timespec ts;
@@ -3897,12 +3897,12 @@ if test "x$vim_cv_timer_create" = "xno" ; then
   LIBS="$LIBS -lrt"
   AC_CACHE_CHECK([for timer_create with -lrt], [vim_cv_timer_create_with_lrt], [
     AC_RUN_IFELSE([AC_LANG_PROGRAM([
-    #if STDC_HEADERS
-    # include <stdlib.h>
-    # include <stddef.h>
-    #endif
-    #include <signal.h>
-    #include <time.h>
+    
+    
+    
+    
+    
+    
     static void set_flag(union sigval sv) {}
     ], [
       struct timespec ts;
@@ -3934,13 +3934,13 @@ fi
 AC_CACHE_CHECK([whether stat() ignores a trailing slash], [vim_cv_stat_ignores_slash],
   [
     AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include "confdefs.h"
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
-#include <sys/types.h>
-#include <sys/stat.h>
+
+
+
+
+
+
+
 int main() {struct stat st;  exit(stat("configure/", &st) != 0); }
     ]])],[
       vim_cv_stat_ignores_slash=yes
@@ -3960,17 +3960,17 @@ AC_CACHE_CHECK([for nanoseconds field of struct stat],
   ac_cv_struct_st_mtim_nsec,
   [ac_save_CPPFLAGS="$CPPFLAGS"
    ac_cv_struct_st_mtim_nsec=no
-   # st_mtim.tv_nsec -- the usual case
-   # st_mtim._tv_nsec -- Solaris 2.6, if
-   #	(defined _XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED == 1
-   #	 && !defined __EXTENSIONS__)
-   # st_mtim.st__tim.tv_nsec -- UnixWare 2.1.2
-   # st_mtime_n -- AIX 5.2 and above
-   # st_mtimespec.tv_nsec -- Darwin (Mac OSX)
+   
+   
+   
+   
+   
+   
+   
    for ac_val in st_mtim.tv_nsec st_mtim._tv_nsec st_mtim.st__tim.tv_nsec st_mtime_n st_mtimespec.tv_nsec; do
      CPPFLAGS="$ac_save_CPPFLAGS -DST_MTIM_NSEC=$ac_val"
-     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <sys/types.h>
-#include <sys/stat.h>], [struct stat s; s.ST_MTIM_NSEC;])],
+     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
+
        [ac_cv_struct_st_mtim_nsec=$ac_val; break])
    done
    CPPFLAGS="$ac_save_CPPFLAGS"
@@ -3988,16 +3988,16 @@ AC_MSG_CHECKING(for iconv_open())
 save_LIBS="$LIBS"
 LIBS="$LIBS -liconv"
 AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#ifdef HAVE_ICONV_H
-# include <iconv.h>
-#endif
+
+
+
     ], [iconv_open("fr", "to");])],
     AC_MSG_RESULT(yes; with -liconv); AC_DEFINE(HAVE_ICONV),
     LIBS="$save_LIBS"
     AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#ifdef HAVE_ICONV_H
-# include <iconv.h>
-#endif
+
+
+
 	], [iconv_open("fr", "to");])],
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_ICONV),
 	AC_MSG_RESULT(no)))
@@ -4005,9 +4005,9 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([
 
 AC_MSG_CHECKING(for nl_langinfo(CODESET))
 AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#ifdef HAVE_LANGINFO_H
-# include <langinfo.h>
-#endif
+
+
+
 ], [char *cs = nl_langinfo(CODESET);])],
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_NL_LANGINFO_CODESET),
 	AC_MSG_RESULT(no))
@@ -4018,26 +4018,26 @@ AC_CHECK_LIB(m, strtod)
 dnl isinf() and isnan() need to include header files and may need -lm.
 AC_MSG_CHECKING([for isinf()])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#ifdef HAVE_MATH_H
-# include <math.h>
-#endif
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
+
+
+
+
+
+
+
 ], [int r = isinf(1.11); ])],
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_ISINF),
 	AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING([for isnan()])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#ifdef HAVE_MATH_H
-# include <math.h>
-#endif
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
+
+
+
+
+
+
+
 ], [int r = isnan(1.11); ])],
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_ISNAN),
 	AC_MSG_RESULT(no))
@@ -4057,10 +4057,10 @@ if test "$enable_acl" = "yes"; then
 
   AC_MSG_CHECKING(for POSIX ACL support)
   AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#include <sys/types.h>
-#ifdef HAVE_SYS_ACL_H
-# include <sys/acl.h>
-#endif
+
+
+
+
 acl_t acl;], [acl = acl_get_file("foo", ACL_TYPE_ACCESS);
 	acl_set_file("foo", ACL_TYPE_ACCESS, acl);
 	acl_free(acl);])],
@@ -4070,28 +4070,28 @@ acl_t acl;], [acl = acl_get_file("foo", ACL_TYPE_ACCESS);
   AC_CHECK_LIB(sec, acl_get, [LIBS="$LIBS -lsec"; AC_DEFINE(HAVE_SOLARIS_ZFS_ACL)],
   AC_MSG_CHECKING(for Solaris ACL support)
   AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#ifdef HAVE_SYS_ACL_H
-# include <sys/acl.h>
-#endif], [acl("foo", GETACLCNT, 0, NULL);
+
+
+
 	])],
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_SOLARIS_ACL),
 	AC_MSG_RESULT(no)))
 
   AC_MSG_CHECKING(for AIX ACL support)
   AC_LINK_IFELSE([AC_LANG_PROGRAM([
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
-#ifdef HAVE_SYS_ACL_H
-# include <sys/acl.h>
-#endif
-#ifdef HAVE_SYS_ACCESS_H
-# include <sys/access.h>
-#endif
-#define _ALL_SOURCE
 
-#include <sys/stat.h>
+
+
+
+
+
+
+
+
+
+
+
+
 
 int aclsize;
 struct acl *aclent;], [aclsize = sizeof(struct acl);
@@ -4112,7 +4112,7 @@ if test "x$GTK_CFLAGS" != "x"; then
   CFLAGS="$CFLAGS $GTK_CFLAGS"
   LIBS="$LIBS $GTK_LIBS"
   AC_LINK_IFELSE([AC_LANG_PROGRAM(
-  [#include <gtk/gtk.h>],
+  [
   [ pango_shape_full(NULL, 0, NULL, 0, NULL, NULL); ])],
 	  AC_MSG_RESULT(yes); AC_DEFINE(HAVE_PANGO_SHAPE_FULL),
 	  AC_MSG_RESULT(no))
@@ -4131,8 +4131,8 @@ if test "$enable_gpm" = "yes" -o "$enable_gpm" = "dynamic"; then
   AC_CACHE_CHECK([for gpm], vi_cv_have_gpm,
 	[olibs="$LIBS" ; LIBS="-lgpm"]
 	AC_LINK_IFELSE([AC_LANG_PROGRAM(
-	    [#include <gpm.h>
-	    #include <linux/keyboard.h>],
+	    [
+	    
 	    [Gpm_GetLibVersion(NULL);])],
 	    dnl Configure defines HAVE_GPM, if it is defined feature.h defines
 	    dnl FEAT_MOUSE_GPM if mouse support is included
@@ -4164,9 +4164,9 @@ if test "$enable_sysmouse" = "yes"; then
   dnl defines FEAT_SYSMOUSE if mouse support is included
   AC_CACHE_CHECK([for sysmouse], vi_cv_have_sysmouse,
 	AC_LINK_IFELSE([AC_LANG_PROGRAM(
-	    [#include <sys/consio.h>
-	     #include <signal.h>
-	     #include <sys/fbio.h>],
+	    [
+	     
+	     
 	    [struct mouse_info   mouse;
 	     mouse.operation = MOUSE_MODE;
 	     mouse.operation = MOUSE_SHOW;
@@ -4185,39 +4185,39 @@ fi
 dnl make sure the FD_CLOEXEC flag for fcntl()'s F_SETFD command is known
 AC_MSG_CHECKING(for FD_CLOEXEC)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-[#if HAVE_FCNTL_H
-# include <fcntl.h>
-#endif],
+[
+
+
 [	int flag = FD_CLOEXEC;])],
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_FD_CLOEXEC),
 	AC_MSG_RESULT(not usable))
 
 dnl rename needs to be checked separately to work on Nextstep with cc
 AC_MSG_CHECKING(for rename)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([#include <stdio.h>], [rename("this", "that")])],
+AC_LINK_IFELSE([AC_LANG_PROGRAM([
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_RENAME),
 	AC_MSG_RESULT(no))
 
 dnl check for dirfd()
 AC_MSG_CHECKING(for dirfd)
 AC_LINK_IFELSE([AC_LANG_PROGRAM(
-[#include <sys/types.h>
-#include <dirent.h>],
+[
+
 [DIR * dir=opendir("dirname"); dirfd(dir);])],
 AC_MSG_RESULT(yes); AC_DEFINE(HAVE_DIRFD), AC_MSG_RESULT(not usable))
 
 dnl check for flock()
 AC_MSG_CHECKING(for flock)
 AC_LINK_IFELSE([AC_LANG_PROGRAM(
-[#include <sys/file.h>],
+[
 [flock(10, LOCK_SH);])],
 AC_MSG_RESULT(yes); AC_DEFINE(HAVE_FLOCK), AC_MSG_RESULT(not usable))
 
 dnl sysctl() may exist but not the arguments we use
 AC_MSG_CHECKING(for sysctl)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-[#include <sys/types.h>
-#include <sys/sysctl.h>],
+[
+
 [[	int mib[2], r;
 	size_t len;
 
@@ -4233,8 +4233,8 @@ dnl sysinfo() may exist but not be Linux compatible.
 dnl On some FreeBSD systems it may depend on libsysinfo, try to link
 AC_MSG_CHECKING(for sysinfo)
 AC_LINK_IFELSE([AC_LANG_PROGRAM(
-[#include <sys/types.h>
-#include <sys/sysinfo.h>],
+[
+
 [	struct sysinfo sinfo;
 	int t;
 
@@ -4247,8 +4247,8 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM(
 dnl struct sysinfo may have the mem_unit field or not
 AC_MSG_CHECKING(for sysinfo.mem_unit)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-[#include <sys/types.h>
-#include <sys/sysinfo.h>],
+[
+
 [	struct sysinfo sinfo;
 	sinfo.mem_unit = 1;
 	])],
@@ -4258,8 +4258,8 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 dnl struct sysinfo may have the uptime field or not
 AC_MSG_CHECKING(for sysinfo.uptime)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-[#include <sys/types.h>
-#include <sys/sysinfo.h>],
+[
+
 [	struct sysinfo sinfo;
         long ut;
 
@@ -4272,7 +4272,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 dnl sysconf() may exist but not support what we want to use
 AC_MSG_CHECKING(for sysconf)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-[#include <unistd.h>],
+[
 [	(void)sysconf(_SC_PAGESIZE);
 	(void)sysconf(_SC_PHYS_PAGES);
 	])],
@@ -4282,7 +4282,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 dnl check if we have _SC_SIGSTKSZ via sysconf()
 AC_MSG_CHECKING(for _SC_SIGSTKSZ via sysconf())
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-[#include <unistd.h>],
+[
 [	(void)sysconf(_SC_SIGSTKSZ);
 	])],
 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_SYSCONF_SIGSTKSZ),
@@ -4300,12 +4300,12 @@ AC_DEFINE_UNQUOTED(VIM_SIZEOF_LONG, [$ac_cv_sizeof_long])
 dnl Make sure that uint32_t is really 32 bits unsigned.
 AC_MSG_CHECKING([uint32_t is 32 bits])
 AC_RUN_IFELSE([AC_LANG_SOURCE([
-#ifdef HAVE_STDINT_H
-# include <stdint.h>
-#endif
-#ifdef HAVE_INTTYPES_H
-# include <inttypes.h>
-#endif
+
+
+
+
+
+
 int main() {
   uint32_t nr1 = (uint32_t)-1;
   uint32_t nr2 = (uint32_t)0xffffffffUL;
@@ -4320,14 +4320,14 @@ dnl Check for memmove() before bcopy(), makes memmove() be used when both are
 dnl present, fixes problem with incompatibility between Solaris 2.4 and 2.5.
 
 [bcopy_test_prog='
-#include "confdefs.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#endif
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#endif
+
+
+
+
+
+
+
+
 int main() {
   char buf[10];
   strcpy(buf, "abcdefghi");
@@ -4343,7 +4343,7 @@ int main() {
 
 AC_CACHE_CHECK([whether memmove handles overlaps],[vim_cv_memmove_handles_overlap],
   [
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[#define mch_memmove(s,d,l) memmove(d,s,l) $bcopy_test_prog]])],
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
       [
 	vim_cv_memmove_handles_overlap=yes
       ],[
@@ -4358,7 +4358,7 @@ if test "x$vim_cv_memmove_handles_overlap" = "xyes" ; then
 else
   AC_CACHE_CHECK([whether bcopy handles overlaps],[vim_cv_bcopy_handles_overlap],
     [
-      AC_RUN_IFELSE([AC_LANG_SOURCE([[#define mch_bcopy(s,d,l) bcopy(d,s,l) $bcopy_test_prog]])],
+      AC_RUN_IFELSE([AC_LANG_SOURCE([[
       [
 	vim_cv_bcopy_handles_overlap=yes
       ],[
@@ -4373,7 +4373,7 @@ else
   else
     AC_CACHE_CHECK([whether memcpy handles overlaps],[vim_cv_memcpy_handles_overlap],
       [
-	AC_RUN_IFELSE([AC_LANG_SOURCE([[#define mch_memcpy(s,d,l) memcpy(d,s,l) $bcopy_test_prog]])],
+	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 	  [
 	    vim_cv_memcpy_handles_overlap=yes
 	  ],[
@@ -4400,7 +4400,7 @@ if test "x$with_x" = "xyes"; then
   CFLAGS="$CFLAGS $X_CFLAGS"
 
   AC_MSG_CHECKING(whether X_LOCALE needed)
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <X11/Xlocale.h>],)],
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
       AC_LINK_IFELSE([AC_LANG_CALL([],[_Xsetlocale])], [AC_MSG_RESULT(yes)
 	      AC_DEFINE(X_LOCALE)], AC_MSG_RESULT(no)),
       AC_MSG_RESULT(no))
@@ -4478,12 +4478,12 @@ if test "$enable_nls" = "yes"; then
       olibs=$LIBS
       LIBS=""
       AC_LINK_IFELSE([AC_LANG_PROGRAM(
-	[#include <libintl.h>],
+	[
 	[gettext("Test");])],
 	AC_MSG_RESULT([gettext() works]); have_gettext="yes"; LIBS=$olibs,
 	  LIBS="-lintl"
 	  AC_LINK_IFELSE([AC_LANG_PROGRAM(
-	      [#include <libintl.h>],
+	      [
 	      [gettext("Test");])],
 	      AC_MSG_RESULT([gettext() works with -lintl]); have_gettext="yes";
 	      LIBS="$olibs -lintl",
@@ -4501,7 +4501,7 @@ if test "$enable_nls" = "yes"; then
       dnl _nl_msg_cat_cntr is required for GNU gettext
       AC_MSG_CHECKING([for _nl_msg_cat_cntr])
       AC_LINK_IFELSE([AC_LANG_PROGRAM(
-		[#include <libintl.h>
+		[
 		extern int _nl_msg_cat_cntr;],
 		[++_nl_msg_cat_cntr;])],
 		AC_MSG_RESULT([yes]); AC_DEFINE(HAVE_NL_MSG_CAT_CNTR),
@@ -4682,7 +4682,7 @@ dnl At least GNU ld supports --as-needed which provides the same functionality
 dnl at linker level. Let's use it.
 AC_MSG_CHECKING(linker --as-needed support)
 LINK_AS_NEEDED=
-# Check if linker supports --as-needed and --no-as-needed options
+
 if $CC -Wl,--help 2>/dev/null | grep as-needed > /dev/null; then
   if ! echo "$LDFLAGS" | grep -q -- '-Wl,[[^[:space:]]]*--as-needed'; then
     LDFLAGS="$LDFLAGS -Wl,--as-needed"
@@ -4696,7 +4696,7 @@ else
 fi
 AC_SUBST(LINK_AS_NEEDED)
 
-# IBM z/OS reset CFLAGS for config.mk
+
 if test "$zOSUnix" = "yes"; then
 	CFLAGS="-D_ALL_SOURCE -Wc,float\(ieee\),dll"
 fi

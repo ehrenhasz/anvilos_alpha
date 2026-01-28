@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __DT_IDLE_GENPD
 #define __DT_IDLE_GENPD
 

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 ifeq ($(srctree),)
 srctree := $(patsubst %/,%,$(dir $(CURDIR)))
 srctree := $(patsubst %/,%,$(dir $(srctree)))
@@ -30,8 +30,8 @@ build     := -f $(srctree)/tools/build/Makefile.build dir=. obj
 
 all: $(OUTPUT)fixdep
 
-# Make sure there's anything to clean,
-# feature contains check for existing OUTPUT
+
+
 TMP_O := $(if $(OUTPUT),$(OUTPUT)feature/,./)
 
 clean:

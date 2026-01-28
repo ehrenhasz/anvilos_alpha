@@ -18,7 +18,7 @@ def routedict_to_structinit_single(name, D, return_name=False):
 		'\t\t */',
   ]
   if (False):
-    D0 = D # (src-> dest->reg_value)
+    D0 = D 
   else:
     D0 = dict()
     for src, destD in D.items():
@@ -197,7 +197,7 @@ struct ni_device_routes {table_name} = {{\
         f.write('\n'.join(s_chunks))
         f.write('\n')
     with open(os.path.join(self.OUTPUT_DIR, self.MKFILE_SEGMENTS), 'w') as f:
-      f.write('# This is the segment that should be included in comedi/drivers/Makefile\n')
+      f.write('
       f.write('ni_routing-objs\t\t\t\t+= \\\n')
       f.write('\n'.join(objs))
       f.write('\n')
@@ -205,7 +205,7 @@ struct ni_device_routes {table_name} = {{\
     with open(os.path.join(self.OUTPUT_DIR, EXTERN_H), 'w') as f:
       f.write(self.extern_header.format(
         filename=EXTERN_H, externs='\n'.join(externs)))
-    chunks.append('\tNULL,') # terminate list
+    chunks.append('\tNULL,') 
     chunks.append('};')
     return '\n'.join(chunks)
   def save(self):
@@ -349,7 +349,7 @@ const struct family_route_values {table_name} = {{\
         f.write('\n'.join(s_chunks))
         f.write( '\n' )
     with open(os.path.join(self.OUTPUT_DIR, self.MKFILE_SEGMENTS), 'w') as f:
-      f.write('# This is the segment that should be included in comedi/drivers/Makefile\n')
+      f.write('
       f.write('ni_routing-objs\t\t\t\t+= \\\n')
       f.write('\n'.join(objs))
       f.write('\n')
@@ -357,7 +357,7 @@ const struct family_route_values {table_name} = {{\
     with open(os.path.join(self.OUTPUT_DIR, EXTERN_H), 'w') as f:
       f.write(self.extern_header.format(
         filename=EXTERN_H, externs='\n'.join(externs)))
-    chunks.append('\tNULL,') # terminate list
+    chunks.append('\tNULL,') 
     chunks.append('};')
     return '\n'.join(chunks)
   def save(self):

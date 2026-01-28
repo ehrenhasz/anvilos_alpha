@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM page_ref
 
@@ -129,7 +129,7 @@ DEFINE_EVENT(page_ref_mod_template, page_ref_unfreeze,
 	TP_ARGS(page, v)
 );
 
-#endif /* _TRACE_PAGE_COUNT_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

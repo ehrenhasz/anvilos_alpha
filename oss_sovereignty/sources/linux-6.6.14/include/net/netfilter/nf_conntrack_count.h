@@ -10,9 +10,9 @@ struct nf_conncount_data;
 
 struct nf_conncount_list {
 	spinlock_t list_lock;
-	u32 last_gc;		/* jiffies at most recent gc */
-	struct list_head head;	/* connections with the same filtering key */
-	unsigned int count;	/* length of list */
+	u32 last_gc;		
+	struct list_head head;	
+	unsigned int count;	
 };
 
 struct nf_conncount_data *nf_conncount_init(struct net *net, unsigned int family,

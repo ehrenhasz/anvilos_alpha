@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef _SLIC_H
 #define _SLIC_H
@@ -121,110 +121,93 @@
 #define SLIC_GRCR_HASHSIZE_SHIFT	17
 #define SLIC_GRCR_HASHSIZE		14
 
-/* Reset Register */
+
 #define SLIC_REG_RESET			0x0000
-/* Interrupt Control Register */
+
 #define SLIC_REG_ICR			0x0008
-/* Interrupt status pointer */
+
 #define SLIC_REG_ISP			0x0010
-/* Interrupt status */
+
 #define SLIC_REG_ISR			0x0018
-/* Header buffer address reg
- * 31-8 - phy addr of set of contiguous hdr buffers
- *  7-0 - number of buffers passed
- * Buffers are 256 bytes long on 256-byte boundaries.
- */
+
 #define SLIC_REG_HBAR			0x0020
-/* Data buffer handle & address reg
- * 4 sets of registers; Buffers are 2K bytes long 2 per 4K page.
- */
+
 #define SLIC_REG_DBAR			0x0028
-/* Xmt Cmd buf addr regs.
- * 1 per XMT interface
- * 31-5 - phy addr of host command buffer
- *  4-0 - length of cmd in multiples of 32 bytes
- * Buffers are 32 bytes up to 512 bytes long
- */
+
 #define SLIC_REG_CBAR			0x0030
-/* Write control store */
+
 #define	SLIC_REG_WCS			0x0034
-/*Response buffer address reg.
- * 31-8 - phy addr of set of contiguous response buffers
- * 7-0 - number of buffers passed
- * Buffers are 32 bytes long on 32-byte boundaries.
- */
+
 #define	SLIC_REG_RBAR			0x0038
-/* Read statistics (UPR) */
+
 #define	SLIC_REG_RSTAT			0x0040
-/* Read link status */
+
 #define	SLIC_REG_LSTAT			0x0048
-/* Write Mac Config */
+
 #define	SLIC_REG_WMCFG			0x0050
-/* Write phy register */
+
 #define SLIC_REG_WPHY			0x0058
-/* Rcv Cmd buf addr reg */
+
 #define	SLIC_REG_RCBAR			0x0060
-/* Read SLIC Config*/
+
 #define SLIC_REG_RCONFIG		0x0068
-/* Interrupt aggregation time */
+
 #define SLIC_REG_INTAGG			0x0070
-/* Write XMIT config reg */
+
 #define	SLIC_REG_WXCFG			0x0078
-/* Write RCV config reg */
+
 #define	SLIC_REG_WRCFG			0x0080
-/* Write rcv addr a low */
+
 #define	SLIC_REG_WRADDRAL		0x0088
-/* Write rcv addr a high */
+
 #define	SLIC_REG_WRADDRAH		0x0090
-/* Write rcv addr b low */
+
 #define	SLIC_REG_WRADDRBL		0x0098
-/* Write rcv addr b high */
+
 #define	SLIC_REG_WRADDRBH		0x00a0
-/* Low bits of mcast mask */
+
 #define	SLIC_REG_MCASTLOW		0x00a8
-/* High bits of mcast mask */
+
 #define	SLIC_REG_MCASTHIGH		0x00b0
-/* Ping the card */
+
 #define SLIC_REG_PING			0x00b8
-/* Dump command */
+
 #define SLIC_REG_DUMP_CMD		0x00c0
-/* Dump data pointer */
+
 #define SLIC_REG_DUMP_DATA		0x00c8
-/* Read card's pci_status register */
+
 #define	SLIC_REG_PCISTATUS		0x00d0
-/* Write hostid field */
+
 #define SLIC_REG_WRHOSTID		0x00d8
-/* Put card in a low power state */
+
 #define SLIC_REG_LOW_POWER		0x00e0
-/* Force slic into quiescent state  before soft reset */
+
 #define SLIC_REG_QUIESCE		0x00e8
-/* Reset interface queues */
+
 #define SLIC_REG_RESET_IFACE		0x00f0
-/* Register is only written when it has changed.
- * Bits 63-32 for host i/f addrs.
- */
+
 #define SLIC_REG_ADDR_UPPER		0x00f8
-/* 64 bit Header buffer address reg */
+
 #define SLIC_REG_HBAR64			0x0100
-/* 64 bit Data buffer handle & address reg */
+
 #define SLIC_REG_DBAR64			0x0108
-/* 64 bit Xmt Cmd buf addr regs. */
+
 #define SLIC_REG_CBAR64			0x0110
-/* 64 bit Response buffer address reg.*/
+
 #define SLIC_REG_RBAR64			0x0118
-/* 64 bit Rcv Cmd buf addr reg*/
+
 #define	SLIC_REG_RCBAR64		0x0120
-/* Read statistics (64 bit UPR) */
+
 #define	SLIC_REG_RSTAT64		0x0128
-/* Download Gigabit RCV sequencer ucode */
+
 #define SLIC_REG_RCV_WCS		0x0130
-/* Write VlanId field */
+
 #define SLIC_REG_WRVLANID		0x0138
-/* Read Transformer info */
+
 #define SLIC_REG_READ_XF_INFO		0x0140
-/* Write Transformer info */
+
 #define SLIC_REG_WRITE_XF_INFO		0x0148
-/* Write card ticks per second */
+
 #define SLIC_REG_TICKS_PER_SEC		0x0170
 #define SLIC_REG_HOSTID			0x1554
 
@@ -246,7 +229,7 @@
 #define PCI_SUBDEVICE_ID_ALACRITECH_SEN2102EF	0x0011
 #define PCI_SUBDEVICE_ID_ALACRITECH_SEN2102ET	0x0012
 
-/* Note: power of two required for number descriptors  */
+
 #define SLIC_NUM_RX_LES			256
 #define SLIC_RX_BUFF_SIZE		2048
 #define SLIC_RX_BUFF_ALIGN		256
@@ -306,104 +289,96 @@ struct slic_upr {
 struct slic_upr_list {
 	bool pending;
 	struct list_head list;
-	/* upr list lock */
+	
 	spinlock_t lock;
 };
 
-/* SLIC EEPROM structure for Mojave */
+
 struct slic_mojave_eeprom {
-	__le16 id;		/* 00 EEPROM/FLASH Magic code 'A5A5'*/
-	__le16 eeprom_code_size;/* 01 Size of EEPROM Codes (bytes * 4)*/
-	__le16 flash_size;	/* 02 Flash size */
-	__le16 eeprom_size;	/* 03 EEPROM Size */
-	__le16 vendor_id;	/* 04 Vendor ID */
-	__le16 dev_id;		/* 05 Device ID */
-	u8 rev_id;		/* 06 Revision ID */
-	u8 class_code[3];	/* 07 Class Code */
-	u8 irqpin_dbg;		/* 08 Debug Interrupt pin */
-	u8 irqpin;		/*    Network Interrupt Pin */
-	u8 min_grant;		/* 09 Minimum grant */
-	u8 max_lat;		/*    Maximum Latency */
-	__le16 pci_stat;	/* 10 PCI Status */
-	__le16 sub_vendor_id;	/* 11 Subsystem Vendor Id */
-	__le16 sub_id;		/* 12 Subsystem ID */
-	__le16 dev_id_dbg;	/* 13 Debug Device Id */
-	__le16 ramrom;		/* 14 Dram/Rom function */
-	__le16 dram_size2pci;	/* 15 DRAM size to PCI (bytes * 64K) */
-	__le16 rom_size2pci;	/* 16 ROM extension size to PCI (bytes * 4k) */
-	u8 pad[2];		/* 17 Padding */
-	u8 freetime;		/* 18 FreeTime setting */
-	u8 ifctrl;		/* 10-bit interface control (Mojave only) */
-	__le16 dram_size;	/* 19 DRAM size (bytes * 64k) */
-	u8 mac[ETH_ALEN];	/* 20 MAC addresses */
+	__le16 id;		
+	__le16 eeprom_code_size;
+	__le16 flash_size;	
+	__le16 eeprom_size;	
+	__le16 vendor_id;	
+	__le16 dev_id;		
+	u8 rev_id;		
+	u8 class_code[3];	
+	u8 irqpin_dbg;		
+	u8 irqpin;		
+	u8 min_grant;		
+	u8 max_lat;		
+	__le16 pci_stat;	
+	__le16 sub_vendor_id;	
+	__le16 sub_id;		
+	__le16 dev_id_dbg;	
+	__le16 ramrom;		
+	__le16 dram_size2pci;	
+	__le16 rom_size2pci;	
+	u8 pad[2];		
+	u8 freetime;		
+	u8 ifctrl;		
+	__le16 dram_size;	
+	u8 mac[ETH_ALEN];	
 	u8 mac2[ETH_ALEN];
 	u8 pad2[6];
-	u16 dev_id2;		/* Device ID for 2nd PCI function */
-	u8 irqpin2;		/* Interrupt pin for 2nd PCI function */
-	u8 class_code2[3];	/* Class Code for 2nd PCI function */
-	u16 cfg_byte6;		/* Config Byte 6 */
-	u16 pme_cap;		/* Power Mgment capabilities */
-	u16 nwclk_ctrl;		/* NetworkClockControls */
-	u8 fru_format;		/* Alacritech FRU format type */
-	u8 fru_assembly[6];	/* Alacritech FRU information */
+	u16 dev_id2;		
+	u8 irqpin2;		
+	u8 class_code2[3];	
+	u16 cfg_byte6;		
+	u16 pme_cap;		
+	u16 nwclk_ctrl;		
+	u8 fru_format;		
+	u8 fru_assembly[6];	
 	u8 fru_rev[2];
 	u8 fru_serial[14];
 	u8 fru_pad[3];
-	u8 oem_fru[28];		/* optional OEM FRU format type */
-	u8 pad3[4];		/* Pad to 128 bytes - includes 2 cksum bytes
-				 * (if OEM FRU info exists) and two unusable
-				 * bytes at the end
-				 */
+	u8 oem_fru[28];		
+	u8 pad3[4];		
 };
 
-/* SLIC EEPROM structure for Oasis */
+
 struct slic_oasis_eeprom {
-	__le16 id;		/* 00 EEPROM/FLASH Magic code 'A5A5' */
-	__le16 eeprom_code_size;/* 01 Size of EEPROM Codes (bytes * 4)*/
-	__le16 spidev0_cfg;	/* 02 Flash Config for SPI device 0 */
-	__le16 spidev1_cfg;	/* 03 Flash Config for SPI device 1 */
-	__le16 vendor_id;	/* 04 Vendor ID */
-	__le16 dev_id;		/* 05 Device ID (function 0) */
-	u8 rev_id;		/* 06 Revision ID */
-	u8 class_code0[3];	/* 07 Class Code for PCI function 0 */
-	u8 irqpin1;		/* 08 Interrupt pin for PCI function 1*/
-	u8 class_code1[3];	/* 09 Class Code for PCI function 1 */
-	u8 irqpin2;		/* 10 Interrupt pin for PCI function 2*/
-	u8 irqpin0;		/*    Interrupt pin for PCI function 0*/
-	u8 min_grant;		/* 11 Minimum grant */
-	u8 max_lat;		/*    Maximum Latency */
-	__le16 sub_vendor_id;	/* 12 Subsystem Vendor Id */
-	__le16 sub_id;		/* 13 Subsystem ID */
-	__le16 flash_size;	/* 14 Flash size (bytes / 4K) */
-	__le16 dram_size2pci;	/* 15 DRAM size to PCI (bytes / 64K) */
-	__le16 rom_size2pci;	/* 16 Flash (ROM extension) size to PCI
-				 *   (bytes / 4K)
-				 */
-	__le16 dev_id1;		/* 17 Device Id (function 1) */
-	__le16 dev_id2;		/* 18 Device Id (function 2) */
-	__le16 dev_stat_cfg;	/* 19 Device Status Config Bytes 6-7 */
-	__le16 pme_cap;		/* 20 Power Mgment capabilities */
-	u8 msi_cap;		/* 21 MSI capabilities */
-	u8 clock_div;		/*    Clock divider */
-	__le16 pci_stat_lo;	/* 22 PCI Status bits 15:0 */
-	__le16 pci_stat_hi;	/* 23 PCI Status bits 31:16 */
-	__le16 dram_cfg_lo;	/* 24 DRAM Configuration bits 15:0 */
-	__le16 dram_cfg_hi;	/* 25 DRAM Configuration bits 31:16 */
-	__le16 dram_size;	/* 26 DRAM size (bytes / 64K) */
-	__le16 gpio_tbi_ctrl;	/* 27 GPIO/TBI controls for functions 1/0 */
-	__le16 eeprom_size;	/* 28 EEPROM Size */
-	u8 mac[ETH_ALEN];	/* 29 MAC addresses (2 ports) */
+	__le16 id;		
+	__le16 eeprom_code_size;
+	__le16 spidev0_cfg;	
+	__le16 spidev1_cfg;	
+	__le16 vendor_id;	
+	__le16 dev_id;		
+	u8 rev_id;		
+	u8 class_code0[3];	
+	u8 irqpin1;		
+	u8 class_code1[3];	
+	u8 irqpin2;		
+	u8 irqpin0;		
+	u8 min_grant;		
+	u8 max_lat;		
+	__le16 sub_vendor_id;	
+	__le16 sub_id;		
+	__le16 flash_size;	
+	__le16 dram_size2pci;	
+	__le16 rom_size2pci;	
+	__le16 dev_id1;		
+	__le16 dev_id2;		
+	__le16 dev_stat_cfg;	
+	__le16 pme_cap;		
+	u8 msi_cap;		
+	u8 clock_div;		
+	__le16 pci_stat_lo;	
+	__le16 pci_stat_hi;	
+	__le16 dram_cfg_lo;	
+	__le16 dram_cfg_hi;	
+	__le16 dram_size;	
+	__le16 gpio_tbi_ctrl;	
+	__le16 eeprom_size;	
+	u8 mac[ETH_ALEN];	
 	u8 mac2[ETH_ALEN];
-	u8 fru_format;		/* 35 Alacritech FRU format type */
-	u8 fru_assembly[6];	/* Alacritech FRU information */
+	u8 fru_format;		
+	u8 fru_assembly[6];	
 	u8 fru_rev[2];
 	u8 fru_serial[14];
 	u8 fru_pad[3];
-	u8 oem_fru[28];		/* optional OEM FRU information */
-	u8 pad[4];		/* Pad to 128 bytes - includes 2 checksum bytes
-				 * (if OEM FRU info exists) and two unusable
-				 * bytes at the end
-				 */
+	u8 oem_fru[28];		
+	u8 pad[4];		
 };
 
 struct slic_stats {
@@ -413,19 +388,19 @@ struct slic_stats {
 	u64 rx_errors;
 	u64 tx_packets;
 	u64 tx_bytes;
-	/* HW STATS */
+	
 	u64 rx_buff_miss;
 	u64 tx_dropped;
 	u64 irq_errs;
-	/* transport layer */
+	
 	u64 rx_tpcsum;
 	u64 rx_tpoflow;
 	u64 rx_tphlen;
-	/* ip layer */
+	
 	u64 rx_ipcsum;
 	u64 rx_iplen;
 	u64 rx_iphlen;
-	/* link layer */
+	
 	u64 rx_early;
 	u64 rx_buffoflow;
 	u64 rx_lcode;
@@ -433,7 +408,7 @@ struct slic_stats {
 	u64 rx_crc;
 	u64 rx_oflow802;
 	u64 rx_uflow802;
-	/* oasis only */
+	
 	u64 tx_carrier;
 	struct u64_stats_sync syncp;
 };
@@ -536,7 +511,7 @@ struct slic_device {
 	struct pci_dev *pdev;
 	struct net_device *netdev;
 	void __iomem *regs;
-	/* upper address setting lock */
+	
 	spinlock_t upper_lock;
 	struct slic_shmem shmem;
 	struct napi_struct napi;
@@ -545,7 +520,7 @@ struct slic_device {
 	struct slic_stat_queue stq;
 	struct slic_stats stats;
 	struct slic_upr_list upr_list;
-	/* link configuration lock */
+	
 	spinlock_t link_lock;
 	bool promisc;
 	int speed;
@@ -570,4 +545,4 @@ static inline void slic_flush_write(struct slic_device *sdev)
 	(void)ioread32(sdev->regs + SLIC_REG_HOSTID);
 }
 
-#endif /* _SLIC_H */
+#endif 

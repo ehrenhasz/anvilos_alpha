@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2016 Socionext Inc.
- *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
- */
+
+
 
 #ifndef __CLK_UNIPHIER_H__
 #define __CLK_UNIPHIER_H__
@@ -157,4 +154,4 @@ extern const struct uniphier_clk_data uniphier_ld4_peri_clk_data[];
 extern const struct uniphier_clk_data uniphier_pro4_peri_clk_data[];
 extern const struct uniphier_clk_data uniphier_pro4_sg_clk_data[];
 
-#endif /* __CLK_UNIPHIER_H__ */
+#endif 

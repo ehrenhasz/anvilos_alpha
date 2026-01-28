@@ -1,6 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- * Copyright (c) 2019, Vladimir Oltean <olteanv@gmail.com>
- */
+
 
 #ifndef _NET_DSA_8021Q_H
 #define _NET_DSA_8021Q_H
@@ -28,4 +26,4 @@ int dsa_8021q_rx_source_port(u16 vid);
 
 bool vid_is_dsa_8021q(u16 vid);
 
-#endif /* _NET_DSA_8021Q_H */
+#endif 

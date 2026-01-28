@@ -1,17 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (c) 2016 BayLibre, SAS.
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+
 #ifndef _DT_BINDINGS_AMLOGIC_MESON8B_RESET_H
 #define _DT_BINDINGS_AMLOGIC_MESON8B_RESET_H
 
-/*	RESET0					*/
+
 #define RESET_HIU			0
 #define RESET_VLD			1
 #define RESET_IQIDCT			2
 #define RESET_MC			3
-/*					8	*/
+
 #define RESET_VIU			5
 #define RESET_AIU			6
 #define RESET_MCPU			7
@@ -23,9 +20,9 @@
 #define RESET_MDEC			13
 #define RESET_VLD_PART			14
 #define RESET_VIFIFO			15
-/*					16-31	*/
-/*	RESET1					*/
-/*					32	*/
+
+
+
 #define RESET_DEMUX			33
 #define RESET_USB_OTG			34
 #define RESET_DDR			35
@@ -41,8 +38,8 @@
 #define RESET_AHB_DATA			45
 #define RESET_AHB_CNTL			46
 #define RESET_ROM_BOOT			47
-/*					48-63	*/
-/*	RESET2					*/
+
+
 #define RESET_VD_RMEM			64
 #define RESET_AUDIN			65
 #define RESET_DBLK			66
@@ -59,8 +56,8 @@
 #define RESET_MEDIA_CPU			77
 #define RESET_MALI			78
 #define RESET_HDMI_SYSTEM_RESET		79
-/*					80-95	*/
-/*	RESET3					*/
+
+
 #define RESET_RING_OSCILLATOR		96
 #define RESET_SYS_CPU_0			97
 #define RESET_EFUSE			98
@@ -77,8 +74,8 @@
 #define RESET_DEMUX_RESET_0		109
 #define RESET_DEMUX_RESET_1		110
 #define RESET_DEMUX_RESET_2		111
-/*					112-127	*/
-/*	RESET4					*/
+
+
 #define RESET_PL310			128
 #define RESET_A5_APB			129
 #define RESET_A5_AXI			130
@@ -93,16 +90,16 @@
 #define RESET_A5_DEBUG			139
 #define RESET_VDI6			140
 #define RESET_VENCL			141
-/*					142-159	*/
-/*	RESET5					*/
+
+
 #define RESET_DDR_PLL			160
 #define RESET_MISC_PLL			161
 #define RESET_SYS_PLL			162
 #define RESET_HPLL_PLL			163
 #define RESET_AUDIO_PLL			164
 #define RESET_VID2_PLL			165
-/*					166-191	*/
-/*	RESET6					*/
+
+
 #define RESET_PERIPHS_GENERAL		192
 #define RESET_PERIPHS_IR_REMOTE		193
 #define RESET_PERIPHS_SMART_CARD	194
@@ -119,8 +116,8 @@
 #define RESET_PERIPHS_SPI_0		205
 #define RESET_PERIPHS_SPI_1		206
 #define RESET_PERIPHS_LED_PWM		207
-/*					208-223	*/
-/*	RESET7					*/
-/*					224-255	*/
+
+
+
 
 #endif

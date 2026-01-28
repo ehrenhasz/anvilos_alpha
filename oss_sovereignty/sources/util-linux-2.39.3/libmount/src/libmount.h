@@ -1,25 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1-or-later */
-/*
- * libmount.h - libmount API
- *
- * This file is part of libmount from util-linux project.
- *
- * Copyright (C) 2008-2018 Karel Zak <kzak@redhat.com>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
+
+
 
 #ifndef _LIBMOUNT_MOUNT_H
 #define _LIBMOUNT_MOUNT_H
@@ -32,10 +12,7 @@ extern "C" {
 #include <mntent.h>
 #include <sys/types.h>
 
-/* Make sure libc MS_* definitions are used by default. Note that MS_* flags
- * may be already defined by linux/fs.h or another file -- in this case we
- * don't want to include sys/mount.h at all to avoid collisions.
- */
+
 #if defined(__linux__) && !defined(MS_RDONLY)
 # include <sys/mount.h>
 #endif
@@ -45,35 +22,16 @@ extern "C" {
 #define LIBMOUNT_MINOR_VERSION   39
 #define LIBMOUNT_PATCH_VERSION   3
 
-/**
- * libmnt_cache:
- *
- * Stores canonicalized paths and evaluated tags
- */
+
 struct libmnt_cache;
 
-/**
- * libmnt_lock:
- *
- * Stores information about the locked file
- */
+
 struct libmnt_lock;
 
-/**
- * libmnt_iter:
- *
- * Generic iterator (stores state about lists)
- */
+
 struct libmnt_iter;
 
-/**
- * libmnt_optmap:
- * @name: option name[=type] where type is printf-like type specifier")
- * @id: option ID or MS_* flags (e.g MS_RDONLY)
- * @mask: MNT_{NOMTAB,INVERT,...} mask
- *
- * Mount options description (map)
- */
+
 struct libmnt_optmap
 {
 	const char	*name;
@@ -81,228 +39,96 @@ struct libmnt_optmap
 	int		mask;
 };
 
-/*
- * mount options map masks
- */
-#define MNT_INVERT	(1 << 1) /* invert the mountflag */
-#define MNT_NOMTAB	(1 << 2) /* skip in the mtab option string */
-#define MNT_PREFIX	(1 << 3) /* prefix used for some options (e.g. "x-foo") */
-#define MNT_NOHLPS	(1 << 4) /* don't add the option to mount.<type> helpers command line */
-#define MNT_NOFSTAB	(1 << 5) /* not expected in fstab */
-#define MNT_SUPERBLOCK	(1 << 6) /* MS_* for mount(2), otherwise requires fsconfig() */
 
-/**
- * libmnt_fs:
- *
- * Parsed fstab or mountinfo entry
- */
+#define MNT_INVERT	(1 << 1) 
+#define MNT_NOMTAB	(1 << 2) 
+#define MNT_PREFIX	(1 << 3) 
+#define MNT_NOHLPS	(1 << 4) 
+#define MNT_NOFSTAB	(1 << 5) 
+#define MNT_SUPERBLOCK	(1 << 6) 
+
+
 struct libmnt_fs;
 
-/**
- * libmnt_table:
- *
- * List of struct libmnt_fs entries (parsed fstab or mountinfo)
- */
+
 struct libmnt_table;
 
-/**
- * libmnt_update
- *
- * utab update description
- */
+
 struct libmnt_update;
 
-/**
- * libmnt_context
- *
- * Mount/umount status
- */
+
 struct libmnt_context;
 
-/**
- * libmnt_monitor
- *
- * Mount tables monitor
- */
+
 struct libmnt_monitor;
 
-/**
- * libmnt_tabdiff:
- *
- * Stores mountinfo state
- */
+
 struct libmnt_tabdiff;
 
-/**
- * libmnt_ns:
- *
- * Describes mount namespace
- */
+
 struct libmnt_ns;
 
-/*
- * Actions
- */
+
 enum {
 	MNT_ACT_MOUNT = 1,
 	MNT_ACT_UMOUNT
 };
 
-/*
- * Errors -- by default libmount returns -errno for generic errors (ENOMEM,
- * EINVAL, ...) and for mount(2) errors, but for some specific operations it
- * returns private error codes. Note that maximum system errno value should be
- * 4095 on UNIXes.
- *
- * See also mnt_context_get_syscall_errno() and mnt_context_get_helper_status().
- */
-/**
- * MNT_ERR_NOFSTAB:
- *
- * not found required entry in fstab
- */
+
+
 #define MNT_ERR_NOFSTAB      5000
-/**
- * MNT_ERR_NOFSTYPE:
- *
- * failed to detect filesystem type
- */
+
 #define MNT_ERR_NOFSTYPE     5001
-/**
- * MNT_ERR_NOSOURCE:
- *
- * required mount source undefined
- */
+
 #define MNT_ERR_NOSOURCE     5002
-/**
- * MNT_ERR_LOOPDEV:
- *
- * loopdev setup failed, errno set by libc
- */
+
 #define MNT_ERR_LOOPDEV      5003
-/**
- * MNT_ERR_MOUNTOPT:
- *
- * failed to parse/use userspace mount options
- */
+
 #define MNT_ERR_MOUNTOPT     5004
-/**
- * MNT_ERR_APPLYFLAGS:
- *
- * failed to apply MS_PROPAGATION flags, and MOUNT_ATTR_* attributes for
- * mount_setattr(2)
- */
+
 #define MNT_ERR_APPLYFLAGS   5005
-/**
- * MNT_ERR_AMBIFS:
- *
- * libblkid detected more filesystems on the device
- */
+
 #define MNT_ERR_AMBIFS       5006
-/**
- * MNT_ERR_LOOPOVERLAP:
- *
- * detected overlapping loop device that cannot be re-used
- */
+
 #define MNT_ERR_LOOPOVERLAP 5007
-/**
- * MNT_ERR_LOCK:
- *
- * failed to lock utab or so.
- */
+
 #define MNT_ERR_LOCK         5008
-/**
- * MNT_ERR_NAMESPACE:
- *
- * failed to switch namespace
- */
+
 #define MNT_ERR_NAMESPACE    5009
-/**
- * MNT_ERR_ONLYONCE:
- *
- * filesystem mounted, but --onlyonce specified
- */
+
 #define MNT_ERR_ONLYONCE    5010
-/**
- * MNT_ERR_CHOWN:
- *
- * filesystem mounted, but subsequent X-mount.owner=/X-mount.group= lchown(2) failed
- */
+
 #define MNT_ERR_CHOWN    5011
-/**
- * MNT_ERR_CHMOD:
- *
- * filesystem mounted, but subsequent X-mount.mode= chmod(2) failed
- */
+
 #define MNT_ERR_CHMOD    5012
-/**
- * MNT_ERR_IDMAP:
- *
- * filesystem mounted, but subsequent X-mount.idmap= failed
- */
+
 #define MNT_ERR_IDMAP    5013
 
 
-/*
- * Overall return codes -- based on mount(8) and umount(8) return codes.
- * See mnt_context_get_excode() for more details.
- */
 
-/**
- * MNT_EX_SUCCESS:
- *
- * [u]mount(8) exit code: no errors
- */
+
+
 #define MNT_EX_SUCCESS	0
 
-/**
- * MNT_EX_USAGE:
- *
- * [u]mount(8) exit code: incorrect invocation or permission
- */
+
 #define MNT_EX_USAGE	1
 
-/**
- * MNT_EX_SYSERR:
- *
- * [u]mount(8) exit code: out of memory, cannot fork, ...
- */
+
 #define MNT_EX_SYSERR	2
 
-/**
- * MNT_EX_SOFTWARE:
- *
- * [u]mount(8) exit code: internal mount bug or wrong version
- */
+
 #define MNT_EX_SOFTWARE	4
 
-/**
- * MNT_EX_USER:
- *
- * [u]mount(8) exit code: user interrupt
- */
+
 #define MNT_EX_USER	8
 
-/**
- * MNT_EX_FILEIO:
- *
- * [u]mount(8) exit code: problems writing, locking, ... utab
- */
+
 #define MNT_EX_FILEIO	16
 
-/**
- * MNT_EX_FAIL:
- *
- * [u]mount(8) exit code: mount failure
- */
+
 #define MNT_EX_FAIL	32
 
-/**
- * MNT_EX_SOMEOK:
- *
- * [u]mount(8) exit code: some mount succeeded; usually when executed with
- * --all options. Never returned by libmount.
- */
+
 #define MNT_EX_SOMEOK	64
 
 
@@ -324,15 +150,15 @@ enum {
 #endif
 
 
-/* init.c */
+
 extern void mnt_init_debug(int mask);
 
-/* version.c */
+
 extern int mnt_parse_version_string(const char *ver_string);
 extern int mnt_get_library_version(const char **ver_string);
 extern int mnt_get_library_features(const char ***features);
 
-/* utils.c */
+
 extern char *mnt_mangle(const char *str)
 			__ul_attribute__((warn_unused_result));
 extern char *mnt_unmangle(const char *str)
@@ -355,7 +181,7 @@ extern char *mnt_get_mountpoint(const char *path)
 extern int mnt_guess_system_root(dev_t devno, struct libmnt_cache *cache, char **path)
 			__ul_attribute__((nonnull(3)));
 
-/* cache.c */
+
 extern struct libmnt_cache *mnt_new_cache(void)
 			__ul_attribute__((warn_unused_result));
 extern void mnt_free_cache(struct libmnt_cache *cache);
@@ -391,7 +217,7 @@ extern char *mnt_resolve_spec(const char *spec, struct libmnt_cache *cache)
 extern char *mnt_pretty_path(const char *path, struct libmnt_cache *cache)
 			__ul_attribute__((warn_unused_result));
 
-/* optstr.c */
+
 extern int mnt_optstr_next_option(char **optstr, char **name, size_t *namesz,
 				char **value, size_t *valuesz);
 extern int mnt_optstr_append_option(char **optstr, const char *name,
@@ -419,7 +245,7 @@ extern int mnt_optstr_get_flags(const char *optstr, unsigned long *flags,
 extern int mnt_optstr_apply_flags(char **optstr, unsigned long flags,
                                 const struct libmnt_optmap *map);
 
-/* iter.c */
+
 enum {
 
 	MNT_ITER_FORWARD = 0,
@@ -434,14 +260,14 @@ extern void mnt_reset_iter(struct libmnt_iter *itr, int direction)
 extern int mnt_iter_get_direction(struct libmnt_iter *itr)
 			__ul_attribute__((nonnull));
 
-/* optmap.c */
+
 enum {
 	MNT_LINUX_MAP = 1,
 	MNT_USERSPACE_MAP
 };
 extern const struct libmnt_optmap *mnt_get_builtin_optmap(int id);
 
-/* lock.c */
+
 extern struct libmnt_lock *mnt_new_lock(const char *datafile, pid_t id)
 			__ul_attribute__((warn_unused_result));
 extern void mnt_free_lock(struct libmnt_lock *ml);
@@ -450,7 +276,7 @@ extern void mnt_unlock_file(struct libmnt_lock *ml);
 extern int mnt_lock_file(struct libmnt_lock *ml);
 extern int mnt_lock_block_signals(struct libmnt_lock *ml, int enable);
 
-/* fs.c */
+
 extern struct libmnt_fs *mnt_new_fs(void)
 			__ul_attribute__((warn_unused_result));
 extern void mnt_free_fs(struct libmnt_fs *fs);
@@ -547,7 +373,7 @@ extern int mnt_fs_is_regularfs(struct libmnt_fs *fs);
 extern void mnt_free_mntent(struct mntent *mnt);
 extern int mnt_fs_to_mntent(struct libmnt_fs *fs, struct mntent **mnt);
 
-/* tab-parse.c */
+
 extern struct libmnt_table *mnt_new_table_from_file(const char *filename)
 			__ul_attribute__((warn_unused_result));
 extern struct libmnt_table *mnt_new_table_from_dir(const char *dirname)
@@ -563,7 +389,7 @@ extern int mnt_table_parse_mtab(struct libmnt_table *tb, const char *filename);
 extern int mnt_table_set_parser_errcb(struct libmnt_table *tb,
                 int (*cb)(struct libmnt_table *tb, const char *filename, int line));
 
-/* tab.c */
+
 extern struct libmnt_table *mnt_new_table(void)
 			__ul_attribute__((warn_unused_result));
 extern void mnt_free_table(struct libmnt_table *tb);
@@ -609,7 +435,7 @@ extern int mnt_table_set_iter(struct libmnt_table *tb, struct libmnt_iter *itr,
 			      struct libmnt_fs *fs);
 
 enum {
-	MNT_UNIQ_FORWARD  = (1 << 1),	/* default is backward */
+	MNT_UNIQ_FORWARD  = (1 << 1),	
 	MNT_UNIQ_KEEPTREE = (1 << 2)
 };
 extern int mnt_table_uniq_fs(struct libmnt_table *tb, int flags,
@@ -643,7 +469,7 @@ extern int mnt_table_find_next_fs(struct libmnt_table *tb,
 
 extern int mnt_table_is_fs_mounted(struct libmnt_table *tb, struct libmnt_fs *fstab_fs);
 
-/* tab_update.c */
+
 extern struct libmnt_update *mnt_new_update(void)
 			__ul_attribute__((warn_unused_result));
 extern void mnt_free_update(struct libmnt_update *upd);
@@ -660,13 +486,13 @@ extern int mnt_update_force_rdonly(struct libmnt_update *upd, int rdonly);
 extern const char *mnt_update_get_filename(struct libmnt_update *upd);
 extern struct libmnt_fs *mnt_update_get_fs(struct libmnt_update *upd);
 
-/* tab_diff.c */
+
 enum {
 	MNT_TABDIFF_MOUNT = 1,
 	MNT_TABDIFF_UMOUNT,
 	MNT_TABDIFF_MOVE,
 	MNT_TABDIFF_REMOUNT,
-	MNT_TABDIFF_PROPAGATION,	/* not implemented yet (TODO) */
+	MNT_TABDIFF_PROPAGATION,	
 };
 
 extern struct libmnt_tabdiff *mnt_new_tabdiff(void)
@@ -683,10 +509,10 @@ extern int mnt_tabdiff_next_change(struct libmnt_tabdiff *df,
 				   struct libmnt_fs **new_fs,
 				   int *oper);
 
-/* monitor.c */
+
 enum {
-	MNT_MONITOR_TYPE_USERSPACE = 1,	/* userspace mount options */
-	MNT_MONITOR_TYPE_KERNEL		/* kernel mount table */
+	MNT_MONITOR_TYPE_USERSPACE = 1,	
+	MNT_MONITOR_TYPE_KERNEL		
 };
 
 extern struct libmnt_monitor *mnt_new_monitor(void);
@@ -706,26 +532,24 @@ extern int mnt_monitor_next_change(struct libmnt_monitor *mn,
 extern int mnt_monitor_event_cleanup(struct libmnt_monitor *mn);
 
 
-/* context.c */
 
-/*
- * Mode for mount options from fstab), see mnt_context_set_optsmode().
- */
+
+
 enum {
-	MNT_OMODE_IGNORE  = (1 << 1),	/* ignore fstab options */
-	MNT_OMODE_APPEND  = (1 << 2),	/* append fstab options to existing options */
-	MNT_OMODE_PREPEND = (1 << 3),	/* prepend fstab options to existing options */
-	MNT_OMODE_REPLACE = (1 << 4),	/* replace existing options with options from mtab/fstab */
+	MNT_OMODE_IGNORE  = (1 << 1),	
+	MNT_OMODE_APPEND  = (1 << 2),	
+	MNT_OMODE_PREPEND = (1 << 3),	
+	MNT_OMODE_REPLACE = (1 << 4),	
 
-	MNT_OMODE_FORCE   = (1 << 5),   /* always read fstab options */
+	MNT_OMODE_FORCE   = (1 << 5),   
 
-	MNT_OMODE_FSTAB   = (1 << 10),	/* read from fstab */
-	MNT_OMODE_MTAB    = (1 << 11),	/* read from mountinfo if fstab not enabled or failed */
-	MNT_OMODE_NOTAB   = (1 << 12),	/* do not read fstab at all */
+	MNT_OMODE_FSTAB   = (1 << 10),	
+	MNT_OMODE_MTAB    = (1 << 11),	
+	MNT_OMODE_NOTAB   = (1 << 12),	
 
-	/* default */
+	
 	MNT_OMODE_AUTO   = (MNT_OMODE_PREPEND | MNT_OMODE_FSTAB | MNT_OMODE_MTAB),
-	/* non-root users */
+	
 	MNT_OMODE_USER   = (MNT_OMODE_REPLACE | MNT_OMODE_FORCE | MNT_OMODE_FSTAB)
 };
 
@@ -886,7 +710,7 @@ extern struct libmnt_ns *mnt_context_switch_origin_ns(struct libmnt_context *cxt
 extern struct libmnt_ns *mnt_context_switch_target_ns(struct libmnt_context *cxt);
 
 
-/* context_mount.c */
+
 extern int mnt_context_mount(struct libmnt_context *cxt);
 extern int mnt_context_umount(struct libmnt_context *cxt);
 extern int mnt_context_next_mount(struct libmnt_context *cxt,
@@ -905,7 +729,7 @@ extern int mnt_context_prepare_mount(struct libmnt_context *cxt)
 extern int mnt_context_do_mount(struct libmnt_context *cxt);
 extern int mnt_context_finalize_mount(struct libmnt_context *cxt);
 
-/* context_umount.c */
+
 extern int mnt_context_find_umount_fs(struct libmnt_context *cxt,
 			       const char *tgt,
 			       struct libmnt_fs **pfs);
@@ -922,9 +746,7 @@ extern int mnt_context_finalize_umount(struct libmnt_context *cxt);
 extern int mnt_context_tab_applied(struct libmnt_context *cxt);
 extern int mnt_context_set_syscall_status(struct libmnt_context *cxt, int status);
 
-/*
- * mount(8) userspace options masks (MNT_MAP_USERSPACE map)
- */
+
 #define MNT_MS_NOAUTO	(1 << 2)
 #define MNT_MS_USER	(1 << 3)
 #define MNT_MS_USERS	(1 << 4)
@@ -951,103 +773,98 @@ extern int mnt_context_set_syscall_status(struct libmnt_context *cxt, int status
 #define MNT_MS_ROOT_HASH_SIG (1 << 25)
 #define MNT_MS_VERITY_ON_CORRUPTION (1 << 26)
 
-/*
- * mount(2) MS_* masks (MNT_MAP_LINUX map)
- */
+
 #ifndef MS_RDONLY
-#define MS_RDONLY	 1	/* Mount read-only */
+#define MS_RDONLY	 1	
 #endif
 #ifndef MS_NOSUID
-#define MS_NOSUID	 2	/* Ignore suid and sgid bits */
+#define MS_NOSUID	 2	
 #endif
 #ifndef MS_NODEV
-#define MS_NODEV	 4	/* Disallow access to device special files */
+#define MS_NODEV	 4	
 #endif
 #ifndef MS_NOEXEC
-#define MS_NOEXEC	 8	/* Disallow program execution */
+#define MS_NOEXEC	 8	
 #endif
 #ifndef MS_SYNCHRONOUS
-#define MS_SYNCHRONOUS	16	/* Writes are synced at once */
+#define MS_SYNCHRONOUS	16	
 #endif
 #ifndef MS_REMOUNT
-#define MS_REMOUNT	32	/* Alter flags of a mounted FS */
+#define MS_REMOUNT	32	
 #endif
 #ifndef MS_MANDLOCK
-#define MS_MANDLOCK	64	/* Allow mandatory locks on an FS */
+#define MS_MANDLOCK	64	
 #endif
 #ifndef MS_DIRSYNC
-#define MS_DIRSYNC	128	/* Directory modifications are synchronous */
+#define MS_DIRSYNC	128	
 #endif
 #ifndef MS_NOSYMFOLLOW
-#define MS_NOSYMFOLLOW	256	/* Don't follow symlinks */
+#define MS_NOSYMFOLLOW	256	
 #endif
 #ifndef MS_NOATIME
-#define MS_NOATIME	0x400	/* 1024: Do not update access times. */
+#define MS_NOATIME	0x400	
 #endif
 #ifndef MS_NODIRATIME
-#define MS_NODIRATIME   0x800	/* 2048: Don't update directory access times */
+#define MS_NODIRATIME   0x800	
 #endif
 #ifndef MS_BIND
-#define	MS_BIND		0x1000	/* 4096: Mount existing tree elsewhere as well */
+#define	MS_BIND		0x1000	
 #endif
 #ifndef MS_MOVE
-#define MS_MOVE		0x2000	/* 8192: Atomically move the tree */
+#define MS_MOVE		0x2000	
 #endif
 #ifndef MS_REC
-#define MS_REC		0x4000	/* 16384: Recursive loopback */
+#define MS_REC		0x4000	
 #endif
 #ifndef MS_SILENT
-#define MS_SILENT	0x8000	/* 32768: Don't emit certain kernel messages */
+#define MS_SILENT	0x8000	
 #endif
 #ifndef MS_UNBINDABLE
-#define MS_UNBINDABLE	(1<<17)	/* 131072: Make unbindable */
+#define MS_UNBINDABLE	(1<<17)	
 #endif
 #ifndef MS_PRIVATE
-#define MS_PRIVATE	(1<<18)	/* 262144: Make private */
+#define MS_PRIVATE	(1<<18)	
 #endif
 #ifndef MS_SLAVE
-#define MS_SLAVE	(1<<19)	/* 524288: Make slave */
+#define MS_SLAVE	(1<<19)	
 #endif
 #ifndef MS_SHARED
-#define MS_SHARED	(1<<20)	/* 1048576: Make shared */
+#define MS_SHARED	(1<<20)	
 #endif
 #ifndef MS_RELATIME
-#define MS_RELATIME	(1<<21) /* 2097152: Update atime relative to mtime/ctime */
+#define MS_RELATIME	(1<<21) 
 #endif
 #ifndef MS_I_VERSION
-#define MS_I_VERSION	(1<<23)	/* Update the inode I_version field */
+#define MS_I_VERSION	(1<<23)	
 #endif
 #ifndef MS_STRICTATIME
-#define MS_STRICTATIME	(1<<24) /* Always perform atime updates */
+#define MS_STRICTATIME	(1<<24) 
 #endif
 #ifndef MS_LAZYTIME
-#define MS_LAZYTIME     (1<<25) /* Update the on-disk [acm]times lazily */
+#define MS_LAZYTIME     (1<<25) 
 #endif
 
 
-/*
- * Magic mount flag number. Had to be or-ed to the flag values.  Deprecated and
- * no more used since libmount v2.33; required for Linux <= 2.4.
- */
+
 #ifndef MS_MGC_VAL
-#define MS_MGC_VAL 0xC0ED0000	/* magic flag number to indicate "new" flags */
+#define MS_MGC_VAL 0xC0ED0000	
 #endif
 #ifndef MS_MGC_MSK
-#define MS_MGC_MSK 0xffff0000	/* magic flag number mask */
+#define MS_MGC_MSK 0xffff0000	
 #endif
 
 
-/* Shared-subtree options */
+
 #define MS_PROPAGATION  (MS_SHARED|MS_SLAVE|MS_UNBINDABLE|MS_PRIVATE)
 
-/* Options that we make ordinary users have by default.  */
+
 #define MS_SECURE	(MS_NOEXEC|MS_NOSUID|MS_NODEV)
 
-/* Options that we make owner-mounted devices have by default */
+
 #define MS_OWNERSECURE	(MS_NOSUID|MS_NODEV)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _LIBMOUNT_MOUNT_H */
+#endif 

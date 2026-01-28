@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+
+
 
 #ifndef __MESON_CLKC_H
 #define __MESON_CLKC_H
@@ -23,4 +20,4 @@ struct meson_eeclkc_data {
 
 int meson_eeclkc_probe(struct platform_device *pdev);
 
-#endif /* __MESON_CLKC_H */
+#endif 

@@ -1,5 +1,5 @@
-# Example command line to manually build source
-# make modules -C /home/aimeat/anvilos/oss_sovereignty/linux-6.6.14  M=/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/blk_queue_discard
+
+
 
 ccflags-y := -Werror -Wframe-larger-than=4096
 ccflags-y += -Wframe-larger-than=8192

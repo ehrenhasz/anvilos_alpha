@@ -1,11 +1,11 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Linux network device drivers.
-#
 
-#
-# Networking Core Drivers
-#
+
+
+
+
+
+
+
 obj-$(CONFIG_BONDING) += bonding/
 obj-$(CONFIG_IPVLAN) += ipvlan/
 obj-$(CONFIG_IPVTAP) += ipvlan/
@@ -41,9 +41,9 @@ obj-$(CONFIG_NET_VRF) += vrf.o
 obj-$(CONFIG_VSOCKMON) += vsockmon.o
 obj-$(CONFIG_MHI_NET) += mhi_net.o
 
-#
-# Networking Drivers
-#
+
+
+
 obj-$(CONFIG_ARCNET) += arcnet/
 obj-$(CONFIG_DEV_APPLETALK) += appletalk/
 obj-$(CONFIG_CAIF) += caif/

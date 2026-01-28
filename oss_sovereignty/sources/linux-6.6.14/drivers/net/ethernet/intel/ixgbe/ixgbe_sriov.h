@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 1999 - 2018 Intel Corporation. */
+
+
 
 #ifndef _IXGBE_SRIOV_H_
 #define _IXGBE_SRIOV_H_
 
-/*  ixgbe driver limit the max number of VFs could be enabled to
- *  63 (IXGBE_MAX_VF_FUNCTIONS - 1)
- */
+
 #define IXGBE_MAX_VFS_DRV_LIMIT  (IXGBE_MAX_VF_FUNCTIONS - 1)
 #define IXGBE_MAX_VFS_1TC		IXGBE_MAX_VF_FUNCTIONS
 #define IXGBE_MAX_VFS_4TC		32
@@ -49,5 +47,5 @@ static inline void ixgbe_set_vmvir(struct ixgbe_adapter *adapter,
 	IXGBE_WRITE_REG(hw, IXGBE_VMVIR(vf), vmvir);
 }
 
-#endif /* _IXGBE_SRIOV_H_ */
+#endif 
 

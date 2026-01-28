@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef QCOM_PHY_QMP_PCS_UFS_V4_H_
 #define QCOM_PHY_QMP_PCS_UFS_V4_H_
 
-/* Only for QMP V4 PHY - UFS PCS registers */
+
 #define QPHY_V4_PCS_UFS_PHY_START			0x000
 #define QPHY_V4_PCS_UFS_POWER_DOWN_CONTROL		0x004
 #define QPHY_V4_PCS_UFS_SW_RESET			0x008

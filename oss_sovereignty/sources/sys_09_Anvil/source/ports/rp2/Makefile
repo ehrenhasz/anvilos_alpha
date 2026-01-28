@@ -1,14 +1,14 @@
-# Makefile for micropython on Raspberry Pi RP2
-#
-# This is a simple wrapper around cmake
 
-# Select the board to build for:
+
+
+
+
 ifdef BOARD_DIR
-# Custom board path - remove trailing slash and get the final component of
-# the path as the board name.
+
+
 BOARD ?= $(notdir $(BOARD_DIR:/=))
 else
-# If not given on the command line, then default to RPI_PICO.
+
 BOARD ?= RPI_PICO
 BOARD_DIR ?= boards/$(BOARD)
 endif
@@ -20,8 +20,8 @@ endif
 $(error Invalid BOARD specified: $(BOARD_DIR))
 endif
 
-# If the build directory is not given, make it reflect the board name (and
-# optionally the board variant).
+
+
 ifneq ($(BOARD_VARIANT),)
 BUILD ?= build-$(BOARD)-$(BOARD_VARIANT)
 else
@@ -61,13 +61,13 @@ all:
 clean:
 	$(RM) -rf $(BUILD)
 
-# First ensure that pico-sdk is initialised, then use cmake to pick everything
-# else (including board-specific dependencies).
-# Running the build with ECHO_SUBMODULES set will trigger py/mkrules.cmake to
-# print out the value of the GIT_SUBMODULES variable, prefixed with
-# "GIT_SUBMODULES", and then abort. This extracts out that line from the cmake
-# output and passes the list of submodules to py/mkrules.mk which does the
-# `git submodule init` on each.
+
+
+
+
+
+
+
 submodules:
 	$(MAKE) -f ../../py/mkrules.mk GIT_SUBMODULES="lib/pico-sdk" submodules
 	@GIT_SUBMODULES=$$(cmake -B $(BUILD)/submodules -DECHO_SUBMODULES=1 ${CMAKE_ARGS} -S . 2>&1 | \

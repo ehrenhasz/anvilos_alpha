@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2002 ARM Limited, All Rights Reserved.
- */
+
+
 
 #ifndef _IRQ_GIC_COMMON_H
 #define _IRQ_GIC_COMMON_H
@@ -33,4 +31,4 @@ void gic_enable_of_quirks(const struct device_node *np,
 #define RDIST_FLAGS_RD_TABLES_PREALLOCATED     (1 << 1)
 #define RDIST_FLAGS_FORCE_NON_SHAREABLE        (1 << 2)
 
-#endif /* _IRQ_GIC_COMMON_H */
+#endif 

@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
-#
+
+
+
+
 
 ifeq ($(CONFIG_X86_32),y)
 	BITS := 32

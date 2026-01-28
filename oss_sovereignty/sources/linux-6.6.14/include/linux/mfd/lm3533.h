@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * lm3533.h -- LM3533 interface
- *
- * Copyright (C) 2011-2012 Texas Instruments
- *
- * Author: Johan Hovold <jhovold@gmail.com>
- */
+
+
 
 #ifndef __LINUX_MFD_LM3533_H
 #define __LINUX_MFD_LM3533_H
@@ -38,22 +32,22 @@ struct lm3533_ctrlbank {
 };
 
 struct lm3533_als_platform_data {
-	unsigned pwm_mode:1;		/* PWM input mode (default analog) */
-	u8 r_select;			/* 1 - 127 (ignored in PWM-mode) */
+	unsigned pwm_mode:1;		
+	u8 r_select;			
 };
 
 struct lm3533_bl_platform_data {
 	char *name;
-	u16 max_current;		/* 5000 - 29800 uA (800 uA step) */
-	u8 default_brightness;		/* 0 - 255 */
-	u8 pwm;				/* 0 - 0x3f */
+	u16 max_current;		
+	u8 default_brightness;		
+	u8 pwm;				
 };
 
 struct lm3533_led_platform_data {
 	char *name;
 	const char *default_trigger;
-	u16 max_current;		/* 5000 - 29800 uA (800 uA step) */
-	u8 pwm;				/* 0 - 0x3f */
+	u16 max_current;		
+	u8 pwm;				
 };
 
 enum lm3533_boost_freq {
@@ -97,4 +91,4 @@ extern int lm3533_read(struct lm3533 *lm3533, u8 reg, u8 *val);
 extern int lm3533_write(struct lm3533 *lm3533, u8 reg, u8 val);
 extern int lm3533_update(struct lm3533 *lm3533, u8 reg, u8 val, u8 mask);
 
-#endif	/* __LINUX_MFD_LM3533_H */
+#endif	

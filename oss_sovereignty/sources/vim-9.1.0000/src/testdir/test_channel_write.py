@@ -7,4 +7,4 @@ if __name__ == "__main__":
         done = done + 1
         print(done)
         sys.stdout.flush()
-        time.sleep(0.05)  # sleep 50 msec
+        time.sleep(0.05)  

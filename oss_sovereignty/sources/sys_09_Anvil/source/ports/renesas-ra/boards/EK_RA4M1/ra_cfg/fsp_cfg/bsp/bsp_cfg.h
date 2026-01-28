@@ -1,4 +1,4 @@
-/* generated configuration header file - do not edit */
+
 #ifndef BSP_CFG_H_
 #define BSP_CFG_H_
 #ifdef __cplusplus
@@ -59,4 +59,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* BSP_CFG_H_ */
+#endif 

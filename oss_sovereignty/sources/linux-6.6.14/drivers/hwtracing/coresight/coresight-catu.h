@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 Arm Limited. All rights reserved.
- *
- * Author: Suzuki K Poulose <suzuki.poulose@arm.com>
- */
+
+
 
 #ifndef _CORESIGHT_CATU_H
 #define _CORESIGHT_CATU_H
 
 #include "coresight-priv.h"
 
-/* Register offset from base */
+
 #define CATU_CONTROL		0x000
 #define CATU_MODE		0x004
 #define CATU_AXICTRL		0x008
@@ -37,17 +33,7 @@
 	(CATU_AXICTRL_ARCACHE(arcache) | ((arprot) & CATU_AXICTRL_ARPROT_MASK))
 
 #define AXI3_AxCACHE_WB_READ_ALLOC	0x7
-/*
- * AXI - ARPROT bits:
- * See AMBA AXI & ACE Protocol specification (ARM IHI 0022E)
- * sectionA4.7 Access Permissions.
- *
- * Bit 0: 0 - Unprivileged access, 1 - Privileged access
- * Bit 1: 0 - Secure access, 1 - Non-secure access.
- * Bit 2: 0 - Data access, 1 - instruction access.
- *
- * CATU AXICTRL:ARPROT[2] is res0 as we always access data.
- */
+
 #define CATU_OS_ARPROT			0x2
 
 #define CATU_OS_AXICTRL		\

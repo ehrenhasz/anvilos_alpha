@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _CSS_H
 #define _CSS_H
 
@@ -14,9 +14,7 @@
 
 #include "cio.h"
 
-/*
- * path grouping stuff
- */
+
 #define SPID_FUNC_SINGLE_PATH	   0x00
 #define SPID_FUNC_MULTI_PATH	   0x80
 #define SPID_FUNC_ESTABLISH	   0x00
@@ -34,19 +32,17 @@
 #define SNID_STATE3_MULTI_PATH	   1
 #define SNID_STATE3_SINGLE_PATH	   0
 
-/*
- * Conditions used to specify which subchannels need evaluation
- */
+
 enum css_eval_cond {
-	CSS_EVAL_NO_PATH,		/* Subchannels with no operational paths */
-	CSS_EVAL_NOT_ONLINE	/* sch without an online-device */
+	CSS_EVAL_NO_PATH,		
+	CSS_EVAL_NOT_ONLINE	
 };
 
 struct path_state {
-	__u8  state1 : 2;	/* path state value 1 */
-	__u8  state2 : 2;	/* path state value 2 */
-	__u8  state3 : 1;	/* path state value 3 */
-	__u8  resvd  : 3;	/* reserved */
+	__u8  state1 : 2;	
+	__u8  state2 : 2;	
+	__u8  state3 : 1;	
+	__u8  resvd  : 3;	
 } __attribute__ ((packed));
 
 struct extended_cssid {
@@ -56,32 +52,21 @@ struct extended_cssid {
 
 struct pgid {
 	union {
-		__u8 fc;   	/* SPID function code */
-		struct path_state ps;	/* SNID path state */
+		__u8 fc;   	
+		struct path_state ps;	
 	} __attribute__ ((packed)) inf;
 	union {
-		__u32 cpu_addr	: 16;	/* CPU address */
+		__u32 cpu_addr	: 16;	
 		struct extended_cssid ext_cssid;
 	} __attribute__ ((packed)) pgid_high;
-	__u32 cpu_id	: 24;	/* CPU identification */
-	__u32 cpu_model : 16;	/* CPU model */
-	__u32 tod_high;		/* high word TOD clock */
+	__u32 cpu_id	: 24;	
+	__u32 cpu_model : 16;	
+	__u32 tod_high;		
 } __attribute__ ((packed));
 
 struct subchannel;
 struct chp_link;
-/**
- * struct css_driver - device driver for subchannels
- * @subchannel_type: subchannel type supported by this driver
- * @drv: embedded device driver structure
- * @irq: called on interrupts
- * @chp_event: called for events affecting a channel path
- * @sch_event: called for events affecting the subchannel
- * @probe: function called on probe
- * @remove: function called on remove
- * @shutdown: called at device shutdown
- * @settle: wait for asynchronous work to finish
- */
+
 struct css_driver {
 	struct css_device_id *subchannel_type;
 	struct device_driver drv;
@@ -115,33 +100,33 @@ void css_update_ssd_info(struct subchannel *sch);
 struct channel_subsystem {
 	u8 cssid;
 	u8 iid;
-	bool id_valid; /* cssid,iid */
+	bool id_valid; 
 	struct channel_path *chps[__MAX_CHPID + 1];
 	struct device device;
 	struct pgid global_pgid;
 	struct mutex mutex;
-	/* channel measurement related */
+	
 	int cm_enabled;
 	void *cub_addr1;
 	void *cub_addr2;
-	/* for orphaned ccw devices */
+	
 	struct subchannel *pseudo_subchannel;
 };
 #define to_css(dev) container_of(dev, struct channel_subsystem, device)
 
 extern struct channel_subsystem *channel_subsystems[];
 
-/* Dummy helper which needs to change once we support more than one css. */
+
 static inline struct channel_subsystem *css_by_id(u8 cssid)
 {
 	return channel_subsystems[0];
 }
 
-/* Dummy iterator which needs to change once we support more than one css. */
+
 #define for_each_css(css)						\
 	for ((css) = channel_subsystems[0]; (css); (css) = NULL)
 
-/* Helper functions to build lists for the slow path. */
+
 void css_schedule_eval(struct subchannel_id schid);
 void css_schedule_eval_all(void);
 void css_schedule_eval_cond(enum css_eval_cond, unsigned long delay);

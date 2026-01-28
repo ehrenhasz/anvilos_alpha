@@ -1,23 +1,11 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved	by Bram Moolenaar
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- * See README.txt for an overview of the Vim source code.
- */
-/*
- * Python extensions by Paul Moore, David Leonard, Roland Puntaier, Nikolay
- * Pavlov.
- *
- * Common code for if_python.c and if_python3.c.
- */
+
+
 
 #if PY_VERSION_HEX < 0x02050000
-typedef int Py_ssize_t;  // Python 2.4 and earlier don't have this type.
+typedef int Py_ssize_t;  
 #endif
 
-// Use values that are known to work, others may make Vim crash.
+
 #define ENC_OPT (enc_utf8 ? "utf-8" : enc_dbcs ? "euc-jp" : (char *)p_enc)
 #define DOPY_FUNC "_vim_pydo"
 
@@ -31,8 +19,8 @@ static const char *vim_special_path = "_vim_path_";
 #define PyErr_VIM_FORMAT(str, arg) PyErr_FORMAT(VimError, str, arg)
 
 #ifdef USE_LIMITED_API
-// Limited Python API. Need to call only exposed functions and remap macros.
-// PyTypeObject is an opaque struct.
+
+
 
 typedef struct {
     lenfunc sq_length;
@@ -54,15 +42,15 @@ typedef struct {
     objobjargproc mp_ass_subscript;
 } PyMappingMethods;
 
-// This struct emulates the concrete _typeobject struct to allow the code to
-// work the same way in both limited and full Python APIs.
+
+
 struct typeobject_wrapper {
     const char *tp_name;
     Py_ssize_t tp_basicsize;
     unsigned long tp_flags;
 
-    // When adding new slots below, also need to make sure we add ADD_TP_SLOT
-    // call in AddHeapType for it.
+    
+    
 
     destructor tp_dealloc;
     reprfunc tp_repr;
@@ -94,17 +82,17 @@ struct typeobject_wrapper {
     static struct typeobject_wrapper type; \
     static PyTypeObject* type##Ptr = NULL
 
-// PyObject_HEAD_INIT_TYPE and PyObject_FINISH_INIT_TYPE need to come in pairs
-// We first initialize with NULL because the type is not allocated until
-// init_types() is called later. It's in FINISH_INIT_TYPE where we fill the
-// type in with the newly allocated type.
+
+
+
+
 # define PyObject_HEAD_INIT_TYPE(type) PyObject_HEAD_INIT(NULL)
 # define PyObject_FINISH_INIT_TYPE(obj, type) obj.ob_base.ob_type = type##Ptr
 
 # define Py_TYPE_GET_TP_ALLOC(type) ((allocfunc)PyType_GetSlot(type, Py_tp_alloc))
 # define Py_TYPE_GET_TP_METHODS(type) ((PyMethodDef *)PyType_GetSlot(type, Py_tp_methods))
 
-// PyObject_NEW is not part of stable ABI, but PyObject_Malloc/Init are.
+
 static PyObject* Vim_PyObject_New(PyTypeObject *type, size_t objsize)
 {
     PyObject *obj = (PyObject *)PyObject_Malloc(objsize);
@@ -115,13 +103,13 @@ static PyObject* Vim_PyObject_New(PyTypeObject *type, size_t objsize)
 # undef PyObject_NEW
 # define PyObject_NEW(type, typeobj) ((type *)Vim_PyObject_New(typeobj, sizeof(type)))
 
-// This is a somewhat convoluted because limited API doesn't expose an easy way
-// to get the tp_name field, and so we have to manually reconstruct it as
-// "__module__.__name__" (with __module__ omitted for builtins to emulate
-// Python behavior). Also, some of the more convenient functions like
-// PyUnicode_AsUTF8AndSize and PyType_GetQualName() are not available until
-// late Python 3 versions, and won't be available if you set Py_LIMITED_API too
-// low.
+
+
+
+
+
+
+
 # define PyErr_FORMAT_TYPE(msg, obj) \
     do { \
 	PyObject* qualname = PyObject_GetAttrString((PyObject*)(obj)->ob_type, "__qualname__"); \
@@ -155,15 +143,15 @@ static PyObject* Vim_PyObject_New(PyTypeObject *type, size_t objsize)
 # define PyTuple_GET_ITEM(o, pos) PyTuple_GetItem(o, pos)
 # define PyTuple_GET_SIZE(o) PyTuple_Size(o)
 
-// PyList_SET_ITEM and PyList_SetItem have slightly different behaviors. The
-// former will leave the old item dangling, and the latter will decref on it.
-// Since we only use this on new lists, this difference doesn't matter.
+
+
+
 # define PyList_SET_ITEM(list, i, item) PyList_SetItem(list, i, item)
 
 # if Py_LIMITED_API < 0x03080000
-// PyIter_check only became part of stable ABI in 3.8, and there is no easy way
-// to check for it in the API. We simply return false as a compromise. This
-// does mean we should avoid compiling with stable ABI < 3.8.
+
+
+
 #  undef PyIter_Check
 #  define PyIter_Check(obj) (FALSE)
 # endif
@@ -176,13 +164,13 @@ static PyTypeObject* AddHeapType(struct typeobject_wrapper* type_object)
     type_spec.itemsize = 0;
     type_spec.flags = type_object->tp_flags;
 
-    // We just need to statically allocate a large enough buffer that can hold
-    // all slots. We need to leave a null-terminated slot at the end.
+    
+    
     PyType_Slot slots[40] = { {0, NULL} };
     size_t slot_i = 0;
 
 # define ADD_TP_SLOT(slot_name) \
-    if (slot_i >= 40) return NULL; /* this should never happen */ \
+    if (slot_i >= 40) return NULL;  \
     if (type_object->slot_name != NULL) \
     { \
 	slots[slot_i].slot = Py_##slot_name; \
@@ -190,7 +178,7 @@ static PyTypeObject* AddHeapType(struct typeobject_wrapper* type_object)
 	++slot_i; \
     }
 # define ADD_TP_SUB_SLOT(sub_slot, slot_name) \
-    if (slot_i >= 40) return NULL; /* this should never happen */ \
+    if (slot_i >= 40) return NULL;  \
     if (type_object->sub_slot != NULL && type_object->sub_slot->slot_name != NULL) \
     { \
 	slots[slot_i].slot = Py_##slot_name; \
@@ -235,16 +223,16 @@ static PyTypeObject* AddHeapType(struct typeobject_wrapper* type_object)
     return (PyTypeObject*)newtype;
 }
 
-// Add a heap type, since static types do not work in limited API
-// Each PYTYPE_READY is paired with PYTYPE_CLEANUP.
-//
-// Note that we don't call Py_DECREF(type##Ptr) in clean up. The reason for
-// that in 3.7, it's possible to de-allocate a heap type before all instances
-// are cleared, leading to a crash, whereas in 3.8 the semantics were changed
-// and instances hold strong references to types. Since these types are
-// designed to be static, just keep them around to avoid having to write
-// version-specific handling. Vim does not re-start the Python runtime so there
-// will be no long-term leak.
+
+
+
+
+
+
+
+
+
+
 # define PYTYPE_READY(type) \
     type##Ptr = AddHeapType(&(type)); \
     if (type##Ptr == NULL) \
@@ -252,11 +240,11 @@ static PyTypeObject* AddHeapType(struct typeobject_wrapper* type_object)
 # define PYTYPE_CLEANUP(type) \
     type##Ptr = NULL;
 
-// Limited API does not provide PyRun_* functions. Need to implement manually
-// using PyCompile and PyEval.
+
+
 static PyObject* Vim_PyRun_String(const char *str, int start, PyObject *globals, PyObject *locals)
 {
-    // Just pass "" for filename for now.
+    
     PyObject* compiled = Py_CompileString(str, "", start);
     if (compiled == NULL)
 	return NULL;
@@ -267,7 +255,7 @@ static PyObject* Vim_PyRun_String(const char *str, int start, PyObject *globals,
 }
 static int Vim_PyRun_SimpleString(const char *str)
 {
-    // This function emulates CPython's implementation.
+    
     PyObject* m = PyImport_AddModule("__main__");
     if (m == NULL)
 	return -1;
@@ -284,9 +272,9 @@ static int Vim_PyRun_SimpleString(const char *str)
 #define PyRun_String Vim_PyRun_String
 #define PyRun_SimpleString Vim_PyRun_SimpleString
 
-#else // !defined(USE_LIMITED_API)
+#else 
 
-// Full Python API. Can make use of structs and macros directly.
+
 # define DEFINE_PY_TYPE_OBJECT(type) \
     static PyTypeObject type; \
     static PyTypeObject* type##Ptr = &type
@@ -302,7 +290,7 @@ static int Vim_PyRun_SimpleString(const char *str)
     PyErr_FORMAT(PyExc_TypeError, msg, \
 	    Py_TYPE_NAME(obj))
 
-// Add a static type
+
 # define PYTYPE_READY(type) \
     if (PyType_Ready(type##Ptr)) \
 	return -1;
@@ -362,29 +350,19 @@ static PyObject *py_find_module;
 
 static PyObject *VimError;
 
-/*
- * obtain a lock on the Vim data structures
- */
+
     static void
 Python_Lock_Vim(void)
 {
 }
 
-/*
- * release a lock on the Vim data structures
- */
+
     static void
 Python_Release_Vim(void)
 {
 }
 
-/*
- * The "todecref" argument holds a pointer to PyObject * that must be
- * DECREF'ed after returned char_u * is no longer needed or NULL if all what
- * was needed to generate returned value is object.
- *
- * Use Py_XDECREF to decrement reference count.
- */
+
     static char_u *
 StringToChars(PyObject *obj, PyObject **todecref)
 {
@@ -576,9 +554,9 @@ ObjectDir(PyObject *self, char **attributes)
     return ret;
 }
 
-// Output buffer management
 
-// Function to write a line, points to either msg() or emsg().
+
+
 typedef int (*writefn)(char *);
 
 DEFINE_PY_TYPE_OBJECT(OutputType);
@@ -623,7 +601,7 @@ OutputSetattr(PyObject *self_obj, char *name, PyObject *valObject)
     return -1;
 }
 
-// Buffer IO, we write one whole line at a time.
+
 static garray_T io_ga = {0, 0, 1, 80, NULL};
 static writefn old_fn = NULL;
 
@@ -643,16 +621,16 @@ writer(writefn fn, char_u *str, PyInt n)
 {
     char_u *ptr;
 
-    // Flush when switching output function.
+    
     if (fn != old_fn)
 	PythonIO_Flush();
     old_fn = fn;
 
-    // Write each NL separated line.  Text after the last NL is kept for
-    // writing later.
-    // For normal messages: Do not output when "got_int" was set.  This avoids
-    // a loop gone crazy flooding the terminal with messages.  Also for when
-    // "q" is pressed at the more-prompt.
+    
+    
+    
+    
+    
     while (n > 0 && (ptr = memchr(str, '\n', n)) != NULL
 					  && (fn == (writefn)emsg || !got_int))
     {
@@ -669,7 +647,7 @@ writer(writefn fn, char_u *str, PyInt n)
 	io_ga.ga_len = 0;
     }
 
-    // Put the remaining text into io_ga for later printing.
+    
     if (n > 0 && (fn == (writefn)emsg || !got_int)
 					&& ga_grow(&io_ga, (int)(n + 1)) == OK)
     {
@@ -732,7 +710,7 @@ OutputWritelines(OutputObject *self, PyObject *seq)
 
     Py_DECREF(iterator);
 
-    // Iterator may have finished due to an exception
+    
     if (PyErr_Occurred())
 	return NULL;
 
@@ -743,7 +721,7 @@ OutputWritelines(OutputObject *self, PyObject *seq)
     static PyObject *
 AlwaysNone(PyObject *self UNUSED, PyObject *args UNUSED)
 {
-    // do nothing
+    
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -752,7 +730,7 @@ AlwaysNone(PyObject *self UNUSED, PyObject *args UNUSED)
     static PyObject *
 AlwaysFalse(PyObject *self UNUSED, PyObject *args UNUSED)
 {
-    // do nothing
+    
     PyObject	*ret = Py_False;
     Py_INCREF(ret);
     return ret;
@@ -762,17 +740,17 @@ AlwaysFalse(PyObject *self UNUSED, PyObject *args UNUSED)
     static PyObject *
 AlwaysTrue(PyObject *self UNUSED, PyObject *args UNUSED)
 {
-    // do nothing
+    
     PyObject	*ret = Py_True;
     Py_INCREF(ret);
     return ret;
 }
 #define ALWAYS_TRUE AlwaysTrue(NULL, NULL)
 
-/***************/
+
 
 static struct PyMethodDef OutputMethods[] = {
-    // name,	    function,				calling,	doc
+    
     {"write",	    (PyCFunction)OutputWrite,		METH_O,		""},
     {"writelines",  (PyCFunction)OutputWritelines,	METH_O,		""},
     {"flush",	    (PyCFunction)AlwaysNone,		METH_NOARGS,	""},
@@ -873,16 +851,13 @@ LoaderLoadModule(LoaderObject *self, PyObject *args UNUSED)
 }
 
 static struct PyMethodDef LoaderMethods[] = {
-    // name,	    function,				calling,	doc
+    
     {"load_module", (PyCFunction)LoaderLoadModule,	METH_VARARGS,	""},
     { NULL,	    NULL,				0,		NULL}
 };
 #endif
 
-/*
- * Check to see whether a Vim error has been reported, or a keyboard
- * interrupt has been detected.
- */
+
     static void
 VimTryStart(void)
 {
@@ -893,10 +868,10 @@ VimTryStart(void)
 VimTryEnd(void)
 {
     --trylevel;
-    // Without this it stops processing all subsequent Vim script commands and
-    // generates strange error messages if I e.g. try calling Test() in a cycle
+    
+    
     did_emsg = FALSE;
-    // Keyboard interrupt should be preferred over anything else
+    
     if (got_int)
     {
 	if (did_throw)
@@ -929,13 +904,13 @@ VimTryEnd(void)
     }
     else if (!did_throw)
 	return (PyErr_Occurred() ? -1 : 0);
-    // Python exception is preferred over Vim one; unlikely to occur though
+    
     else if (PyErr_Occurred())
     {
 	discard_current_exception();
 	return -1;
     }
-    // Finally transform Vim script exception to python one
+    
     else
     {
 	PyErr_SetVim((char *)current_exception->value);
@@ -955,7 +930,7 @@ VimCheckInterrupt(void)
     return 0;
 }
 
-// Vim module - Implementation
+
 
     static PyObject *
 VimCommand(PyObject *self UNUSED, PyObject *string)
@@ -987,13 +962,7 @@ VimCommand(PyObject *self UNUSED, PyObject *string)
     return ret;
 }
 
-/*
- * Function to translate a typval_T into a PyObject; this will recursively
- * translate lists/dictionaries into their Python equivalents.
- *
- * The depth parameter is to avoid infinite recursion, set it to 1 when
- * you call VimToPython.
- */
+
     static PyObject *
 VimToPython(typval_T *our_tv, int depth, PyObject *lookup_dict)
 {
@@ -1001,7 +970,7 @@ VimToPython(typval_T *our_tv, int depth, PyObject *lookup_dict)
     PyObject	*newObj;
     char	ptrBuf[sizeof(void *) * 2 + 3];
 
-    // Avoid infinite recursion
+    
     if (depth > 100)
     {
 	Py_INCREF(Py_None);
@@ -1009,8 +978,8 @@ VimToPython(typval_T *our_tv, int depth, PyObject *lookup_dict)
 	return ret;
     }
 
-    // Check if we run into a recursive loop.  The item must be in lookup_dict
-    // then and we can use it again.
+    
+    
     if ((our_tv->v_type == VAR_LIST && our_tv->vval.v_list != NULL)
 	    || (our_tv->v_type == VAR_DICT && our_tv->vval.v_dict != NULL))
     {
@@ -1032,7 +1001,7 @@ VimToPython(typval_T *our_tv, int depth, PyObject *lookup_dict)
     {
 	char buf[NUMBUFLEN];
 
-	// For backwards compatibility numbers are stored as strings.
+	
 	sprintf(buf, "%ld", (long)our_tv->vval.v_number);
 	ret = PyString_FromString((char *)buf);
     }
@@ -1187,8 +1156,8 @@ VimEval(PyObject *self UNUSED, PyObject *args)
 	return NULL;
     }
 
-    // Convert the Vim type into a Python type.  Create a dictionary that's
-    // used to check for recursive loops.
+    
+    
     if (!(lookup_dict = PyDict_New()))
 	ret = NULL;
     else
@@ -1387,9 +1356,7 @@ VimForeachRTP(PyObject *self UNUSED, PyObject *callable)
     return data.result;
 }
 
-/*
- * _vim_runtimepath_ special path implementation.
- */
+
 
     static void
 map_finder_callback(char_u *path, void *_data)
@@ -1409,7 +1376,7 @@ map_finder_callback(char_u *path, void *_data)
 #endif
 #define PY_ALTERNATE_DIR_STRING "pythonx"
 
-#define PYTHONX_STRING_LENGTH 7 // STRLEN("pythonx")
+#define PYTHONX_STRING_LENGTH 7 
     if (!(pathbuf = PyMem_New(char,
 		    pathlen + STRLEN(PATHSEPSTR) + PYTHONX_STRING_LENGTH + 1)))
     {
@@ -1506,7 +1473,7 @@ FinderFindSpec(PyObject *self, PyObject *args)
     static PyObject *
 FinderFindModule(PyObject* self UNUSED, PyObject* args UNUSED)
 {
-    // Apparently returning None works.
+    
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -1554,10 +1521,7 @@ find_module(char *fullname, char *tail, PyObject *new_path)
 
     if ((dot = (char *)vim_strchr((char_u *) tail, '.')))
     {
-	/*
-	 * There is a dot in the name: call find_module recursively without the
-	 * first component
-	 */
+	
 	PyObject	*newest_path;
 	int		partlen = (int) (dot - 1 - tail);
 
@@ -1673,12 +1637,10 @@ VimPathHook(PyObject *self UNUSED, PyObject *args)
     return NULL;
 }
 
-/*
- * Vim module - Definitions
- */
+
 
 static struct PyMethodDef VimMethods[] = {
-    // name,	    function,			calling,			documentation
+    
     {"command",	    VimCommand,			METH_O,				"Execute a Vim ex-mode command" },
     {"eval",	    VimEval,			METH_VARARGS,			"Evaluate an expression using Vim evaluator" },
     {"bindeval",    VimEvalPy,			METH_O,				"Like eval(), but returns objects attached to Vim ones"},
@@ -1695,9 +1657,7 @@ static struct PyMethodDef VimMethods[] = {
     { NULL,	    NULL,			0,				NULL}
 };
 
-/*
- * Generic iterator object
- */
+
 
 DEFINE_PY_TYPE_OBJECT(IterType);
 
@@ -1706,9 +1666,9 @@ typedef void (*destructorfun)(void *);
 typedef int (*traversefun)(void *, visitproc, void *);
 typedef int (*clearfun)(void **);
 
-// Main purpose of this object is removing the need for do python
-// initialization (i.e. PyType_Ready and setting type attributes) for a big
-// bunch of objects.
+
+
+
 typedef struct
 {
     PyObject_HEAD
@@ -1761,7 +1721,7 @@ IterTraverse(PyObject *self_obj, visitproc visit, void *arg)
 	return 0;
 }
 
-// Mac OSX defines clear() somewhere.
+
 #ifdef clear
 # undef clear
 #endif
@@ -1975,7 +1935,7 @@ DictionaryLength(DictionaryObject *self)
 #define DICT_FLAG_HAS_DEFAULT	0x01
 #define DICT_FLAG_POP		0x02
 #define DICT_FLAG_NONE_DEFAULT	0x04
-#define DICT_FLAG_RETURN_BOOL	0x08 // Incompatible with DICT_FLAG_POP
+#define DICT_FLAG_RETURN_BOOL	0x08 
 #define DICT_FLAG_RETURN_PAIR	0x10
 
     static PyObject *
@@ -2426,7 +2386,7 @@ DictionaryUpdate(DictionaryObject *self, PyObject *args, PyObject *kwargs)
 
 	    Py_DECREF(iterator);
 
-	    // Iterator may have finished due to an exception
+	    
 	    if (PyErr_Occurred())
 		return NULL;
 	}
@@ -2490,16 +2450,16 @@ DictionaryHasKey(DictionaryObject *self, PyObject *keyObject)
 }
 
 static PySequenceMethods DictionaryAsSeq = {
-    0,					// sq_length
-    0,					// sq_concat
-    0,					// sq_repeat
-    0,					// sq_item
-    0,					// sq_slice
-    0,					// sq_ass_item
-    0,					// sq_ass_slice
-    (objobjproc) DictionaryContains,	// sq_contains
-    0,					// sq_inplace_concat
-    0,					// sq_inplace_repeat
+    0,					
+    0,					
+    0,					
+    0,					
+    0,					
+    0,					
+    0,					
+    (objobjproc) DictionaryContains,	
+    0,					
+    0,					
 };
 
 static PyMappingMethods DictionaryAsMapping = {
@@ -2604,7 +2564,7 @@ list_py_concat(list_T *l, PyObject *obj, PyObject *lookup_dict)
 
     Py_DECREF(iterator);
 
-    // Iterator may have finished due to an exception
+    
     if (PyErr_Occurred())
 	return -1;
 
@@ -2682,7 +2642,7 @@ ListIndex(ListObject *self, Py_ssize_t index)
     li = list_find(self->list, (long) index);
     if (li == NULL)
     {
-	// No more suitable format specifications in python-2.3
+	
 	PyErr_VIM_FORMAT(N_("internal error: failed to get Vim list item %d"),
 		(int) index);
 	return NULL;
@@ -2809,7 +2769,7 @@ ListAssSlice(ListObject *self, Py_ssize_t first,
 
     if (step != 1 && slicelen == 0)
     {
-	// Nothing to do. Only error out if obj has some items.
+	
 	int		ret = 0;
 
 	if (obj == NULL)
@@ -2831,7 +2791,7 @@ ListAssSlice(ListObject *self, Py_ssize_t first,
     }
 
     if (obj != NULL)
-	// XXX May allocate zero bytes.
+	
 	if (!(lis = PyMem_New(listitem_T *, slicelen * 2)))
 	{
 	    PyErr_NoMemory();
@@ -3190,22 +3150,22 @@ ListSetattr(PyObject *self_obj, char *name, PyObject *valObject)
 }
 
 static PySequenceMethods ListAsSeq = {
-    (lenfunc)		ListLength,	 // sq_length,	  len(x)
-    (binaryfunc)	0,		 // RangeConcat, sq_concat,  x+y
-    0,					 // RangeRepeat, sq_repeat,  x*n
-    (PyIntArgFunc)	ListIndex,	 // sq_item,	  x[i]
-    0,					 // was_sq_slice,     x[i:j]
-    (PyIntObjArgProc)	ListAssIndex,	 // sq_as_item,  x[i]=v
-    0,					 // was_sq_ass_slice, x[i:j]=v
-    0,					 // sq_contains
-    (binaryfunc)	ListConcatInPlace,// sq_inplace_concat
-    0,					 // sq_inplace_repeat
+    (lenfunc)		ListLength,	 
+    (binaryfunc)	0,		 
+    0,					 
+    (PyIntArgFunc)	ListIndex,	 
+    0,					 
+    (PyIntObjArgProc)	ListAssIndex,	 
+    0,					 
+    0,					 
+    (binaryfunc)	ListConcatInPlace,
+    0,					 
 };
 
 static PyMappingMethods ListAsMapping = {
-    /* mp_length	*/ (lenfunc) ListLength,
-    /* mp_subscript     */ (binaryfunc) ListItem,
-    /* mp_ass_subscript */ (objobjargproc) ListAssItem,
+     (lenfunc) ListLength,
+     (binaryfunc) ListItem,
+     (objobjargproc) ListAssItem,
 };
 
 static struct PyMethodDef ListMethods[] = {
@@ -3438,12 +3398,7 @@ FunctionAttr(FunctionObject *self, char *name)
     return NULL;
 }
 
-/*
- * Populate partial_T given function object.
- *
- * "exported" should be set to true when it is needed to construct a partial
- * that may be stored in a variable (i.e. may be freed by Vim).
- */
+
     static void
 set_partial(FunctionObject *self, partial_T *pt, int exported)
 {
@@ -3598,9 +3553,7 @@ static struct PyMethodDef FunctionMethods[] = {
     { NULL,	NULL,			0,				NULL}
 };
 
-/*
- * Options object
- */
+
 
 DEFINE_PY_TYPE_OBJECT(OptionsType);
 
@@ -3960,16 +3913,16 @@ OptionsAssItem(OptionsObject *self, PyObject *keyObject, PyObject *valObject)
 }
 
 static PySequenceMethods OptionsAsSeq = {
-    0,					// sq_length
-    0,					// sq_concat
-    0,					// sq_repeat
-    0,					// sq_item
-    0,					// sq_slice
-    0,					// sq_ass_item
-    0,					// sq_ass_slice
-    (objobjproc) OptionsContains,	// sq_contains
-    0,					// sq_inplace_concat
-    0,					// sq_inplace_repeat
+    0,					
+    0,					
+    0,					
+    0,					
+    0,					
+    0,					
+    0,					
+    (objobjproc) OptionsContains,	
+    0,					
+    0,					
 };
 
 static PyMappingMethods OptionsAsMapping = {
@@ -3978,7 +3931,7 @@ static PyMappingMethods OptionsAsMapping = {
     (objobjargproc) OptionsAssItem,
 };
 
-// Tabpage object
+
 
 typedef struct
 {
@@ -4069,7 +4022,7 @@ TabPageAttr(TabPageObject *self, char *name)
 	return NEW_DICTIONARY(self->tab->tp_vars);
     else if (strcmp(name, "window") == 0)
     {
-	// For current tab window.c does not bother to set or update tp_curwin
+	
 	if (self->tab == curtab)
 	    return WindowNew(curwin, curtab);
 	else
@@ -4099,14 +4052,12 @@ TabPageRepr(PyObject *self_obj)
 }
 
 static struct PyMethodDef TabPageMethods[] = {
-    // name,	    function,			calling,	documentation
+    
     {"__dir__",	    (PyCFunction)TabPageDir,	METH_NOARGS,	""},
     { NULL,	    NULL,			0,		NULL}
 };
 
-/*
- * Window list object
- */
+
 
 DEFINE_PY_TYPE_OBJECT(TabListType);
 static PySequenceMethods TabListAsSeq;
@@ -4149,9 +4100,7 @@ TabListItem(PyObject *self UNUSED, PyInt n)
     return NULL;
 }
 
-/*
- * Window object
- */
+
 
 typedef struct
 {
@@ -4183,21 +4132,7 @@ CheckWindowCb(void *self)
     static PyObject *
 WindowNew(win_T *win, tabpage_T *tab)
 {
-    /*
-     * We need to handle deletion of windows underneath us.
-     * If we add a "w_python*_ref" field to the win_T structure,
-     * then we can get at it in win_free() in vim. We then
-     * need to create only ONE Python object per window - if
-     * we try to create a second, just INCREF the existing one
-     * and return it. The (single) Python object referring to
-     * the window is stored in "w_python*_ref".
-     * On a win_free() we set the Python object's win_T* field
-     * to an invalid value. We trap all uses of a window
-     * object, and reject them if the win_T* field is invalid.
-     *
-     * Python2 and Python3 get different fields and different objects:
-     * w_python_ref and w_python3_ref fields respectively.
-     */
+    
 
     WindowObject *self;
 
@@ -4254,7 +4189,7 @@ get_firstwin(TabPageObject *tabObject)
     {
 	if (CheckTabPage(tabObject))
 	    return NULL;
-	// For current tab window.c does not bother to set or update tp_firstwin
+	
 	else if (tabObject->tab == curtab)
 	    return firstwin;
 	else
@@ -4264,7 +4199,7 @@ get_firstwin(TabPageObject *tabObject)
 	return firstwin;
 }
 
-// Use the same order as in the WindowAttr() function.
+
 static char *WindowAttrs[] = {
     "buffer",
     "cursor",
@@ -4367,7 +4302,7 @@ WindowSetattr(PyObject *self_obj, char *name, PyObject *valObject)
 	    return -1;
 	}
 
-	// Check for keyboard interrupts
+	
 	if (VimCheckInterrupt())
 	    return -1;
 
@@ -4375,7 +4310,7 @@ WindowSetattr(PyObject *self_obj, char *name, PyObject *valObject)
 	self->win->w_cursor.col = col;
 	self->win->w_set_curswant = TRUE;
 	self->win->w_cursor.coladd = 0;
-	// When column is out of range silently correct it.
+	
 	check_cursor_col_win(self->win);
 
 	update_screen(UPD_VALID);
@@ -4455,14 +4390,12 @@ WindowRepr(PyObject *self_obj)
 }
 
 static struct PyMethodDef WindowMethods[] = {
-    // name,	    function,			calling,	documentation
+    
     {"__dir__",	    (PyCFunction)WindowDir,	METH_NOARGS,	""},
     { NULL,	    NULL,			0,		NULL}
 };
 
-/*
- * Window list object
- */
+
 
 DEFINE_PY_TYPE_OBJECT(WinListType);
 static PySequenceMethods WinListAsSeq;
@@ -4538,15 +4471,7 @@ WinListItem(WinListObject *self, PyInt n)
     return NULL;
 }
 
-/*
- * Convert a Python string into a Vim line.
- *
- * The result is in allocated memory. All internal nulls are replaced by
- * newline characters. It is an error for the string to contain newline
- * characters.
- *
- * On errors, the Python exception data is set, and NULL is returned.
- */
+
     static char *
 StringToLine(PyObject *obj)
 {
@@ -4590,12 +4515,7 @@ StringToLine(PyObject *obj)
 	return NULL;
     }
 
-    /*
-     * Error checking: String must not contain newlines, as we
-     * are replacing a single line, and we must replace it with
-     * a single line.
-     * A trailing newline is removed, so that append(f.readlines()) works.
-     */
+    
     p = memchr(str, '\n', len);
     if (p != NULL)
     {
@@ -4609,10 +4529,7 @@ StringToLine(PyObject *obj)
 	}
     }
 
-    /*
-     * Create a copy of the string, with internal nulls replaced by
-     * newline characters, as is the Vim convention.
-     */
+    
     save = alloc(len+1);
     if (save == NULL)
     {
@@ -4630,16 +4547,12 @@ StringToLine(PyObject *obj)
     }
 
     save[i] = '\0';
-    Py_XDECREF(bytes);  // Python 2 does nothing here
+    Py_XDECREF(bytes);  
 
     return save;
 }
 
-/*
- * Get a line from the specified buffer. The line number is
- * in Vim format (1-based). The line is returned as a Python
- * string object.
- */
+
     static PyObject *
 GetBufferLine(buf_T *buf, PyInt n)
 {
@@ -4647,11 +4560,7 @@ GetBufferLine(buf_T *buf, PyInt n)
 }
 
 
-/*
- * Get a list of lines from the specified buffer. The line numbers
- * are in Vim format (1-based). The range is from lo up to, but not
- * including, hi. The list is returned as a Python list of string objects.
- */
+
     static PyObject *
 GetBufferLineList(buf_T *buf, PyInt lo, PyInt hi)
 {
@@ -4682,25 +4591,21 @@ GetBufferLineList(buf_T *buf, PyInt lo, PyInt hi)
 	PyList_SET_ITEM(list, i, string);
     }
 
-    // The ownership of the Python list is passed to the caller (ie,
-    // the caller should Py_DECREF() the object when it is finished
-    // with it).
+    
+    
+    
 
     return list;
 }
 
-/*
- * Check if deleting lines made the cursor position invalid.
- * Changed the lines from "lo" to "hi" and added "extra" lines (negative if
- * deleted).
- */
+
     static void
 py_fix_cursor(linenr_T lo, linenr_T hi, linenr_T extra)
 {
     if (curwin->w_cursor.lnum >= lo)
     {
-	// Adjust the cursor position if it's in/after the changed
-	// lines.
+	
+	
 	if (curwin->w_cursor.lnum >= hi)
 	{
 	    curwin->w_cursor.lnum += extra;
@@ -4718,26 +4623,18 @@ py_fix_cursor(linenr_T lo, linenr_T hi, linenr_T extra)
     invalidate_botline();
 }
 
-/*
- * Replace a line in the specified buffer. The line number is
- * in Vim format (1-based). The replacement line is given as
- * a Python string object. The object is checked for validity
- * and correct format. Errors are returned as a value of FAIL.
- * The return value is OK on success.
- * If OK is returned and len_change is not NULL, *len_change
- * is set to the change in the buffer length.
- */
+
     static int
 SetBufferLine(buf_T *buf, PyInt n, PyObject *line, PyInt *len_change)
 {
     bufref_T	save_curbuf = {NULL, 0, 0};
     switchwin_T	switchwin;
 
-    // First of all, we check the type of the supplied Python object.
-    // There are three cases:
-    //	  1. NULL, or None - this is a deletion.
-    //	  2. A string	   - this is a replacement.
-    //	  3. Anything else - this is an error.
+    
+    
+    
+    
+    
     if (line == Py_None || line == NULL)
     {
 	PyErr_Clear();
@@ -4754,12 +4651,12 @@ SetBufferLine(buf_T *buf, PyInt n, PyObject *line, PyInt *len_change)
 	{
 	    if (buf == curbuf && (switchwin.sw_curwin != NULL
 					   || save_curbuf.br_buf == NULL))
-		// Using an existing window for the buffer, adjust the cursor
-		// position.
+		
+		
 		py_fix_cursor((linenr_T)n, (linenr_T)n + 1, (linenr_T)-1);
 	    if (save_curbuf.br_buf == NULL)
-		// Only adjust marks if we managed to switch to a window that
-		// holds the buffer, otherwise line numbers will be invalid.
+		
+		
 		deleted_lines_mark((linenr_T)n, 1L);
 	}
 
@@ -4782,7 +4679,7 @@ SetBufferLine(buf_T *buf, PyInt n, PyObject *line, PyInt *len_change)
 
 	VimTryStart();
 
-	// We do not need to free "save" if ml_replace() consumes it.
+	
 	PyErr_Clear();
 	switch_to_win_for_buf(buf, &switchwin, &save_curbuf);
 
@@ -4801,7 +4698,7 @@ SetBufferLine(buf_T *buf, PyInt n, PyObject *line, PyInt *len_change)
 
 	restore_win_for_buf(&switchwin, &save_curbuf);
 
-	// Check that the cursor is not beyond the end of the line now.
+	
 	if (buf == curbuf)
 	    check_cursor_col();
 
@@ -4820,15 +4717,7 @@ SetBufferLine(buf_T *buf, PyInt n, PyObject *line, PyInt *len_change)
     }
 }
 
-/*
- * Replace a range of lines in the specified buffer. The line numbers are in
- * Vim format (1-based). The range is from lo up to, but not including, hi.
- * The replacement lines are given as a Python list of string objects. The
- * list is checked for validity and correct format. Errors are returned as a
- * value of FAIL.  The return value is OK on success.
- * If OK is returned and len_change is not NULL, *len_change
- * is set to the change in the buffer length.
- */
+
     static int
 SetBufferLineList(
 	buf_T *buf,
@@ -4840,11 +4729,11 @@ SetBufferLineList(
     bufref_T	save_curbuf = {NULL, 0, 0};
     switchwin_T	switchwin;
 
-    // First of all, we check the type of the supplied Python object.
-    // There are three cases:
-    //	  1. NULL, or None - this is a deletion.
-    //	  2. A list	   - this is a replacement.
-    //	  3. Anything else - this is an error.
+    
+    
+    
+    
+    
     if (list == Py_None || list == NULL)
     {
 	PyInt	i;
@@ -4869,12 +4758,12 @@ SetBufferLineList(
 	    }
 	    if (buf == curbuf && (switchwin.sw_curwin != NULL
 					       || save_curbuf.br_buf == NULL))
-		// Using an existing window for the buffer, adjust the cursor
-		// position.
+		
+		
 		py_fix_cursor((linenr_T)lo, (linenr_T)hi, (linenr_T)-n);
 	    if (save_curbuf.br_buf == NULL)
-		// Only adjust marks if we managed to switch to a window that
-		// holds the buffer, otherwise line numbers will be invalid.
+		
+		
 		deleted_lines_mark((linenr_T)lo, (long)i);
 	}
 
@@ -4893,10 +4782,10 @@ SetBufferLineList(
 	PyInt	i;
 	PyInt	new_len = PyList_Size(list);
 	PyInt	old_len = hi - lo;
-	PyInt	extra = 0;	// lines added to text, can be negative
+	PyInt	extra = 0;	
 	char	**array;
 
-	if (new_len == 0)	// avoid allocating zero bytes
+	if (new_len == 0)	
 	    array = NULL;
 	else
 	{
@@ -4925,16 +4814,16 @@ SetBufferLineList(
 	VimTryStart();
 	PyErr_Clear();
 
-	// START of region without "return".  Must call restore_buffer()!
+	
 	switchwin.sw_curwin = NULL;
 	switch_to_win_for_buf(buf, &switchwin, &save_curbuf);
 
 	if (u_save((linenr_T)(lo-1), (linenr_T)hi) == FAIL)
 	    RAISE_UNDO_FAIL;
 
-	// If the size of the range is reducing (ie, new_len < old_len) we
-	// need to delete some old_len. We do this at the start, by
-	// repeatedly deleting line "lo".
+	
+	
+	
 	if (!PyErr_Occurred())
 	{
 	    for (i = 0; i < old_len - new_len; ++i)
@@ -4946,9 +4835,9 @@ SetBufferLineList(
 	    extra -= i;
 	}
 
-	// For as long as possible, replace the existing old_len with the
-	// new old_len. This is a more efficient operation, as it requires
-	// less memory allocation and freeing.
+	
+	
+	
 	if (!PyErr_Occurred())
 	{
 	    for (i = 0; i < old_len && i < new_len; ++i)
@@ -4962,9 +4851,9 @@ SetBufferLineList(
 	else
 	    i = 0;
 
-	// Now we may need to insert the remaining new old_len. If we do, we
-	// must free the strings as we finish with them (we can't pass the
-	// responsibility to Vim in this case).
+	
+	
+	
 	if (!PyErr_Occurred())
 	{
 	    while (i < new_len)
@@ -4981,22 +4870,22 @@ SetBufferLineList(
 	    }
 	}
 
-	// Free any left-over old_len, as a result of an error
+	
 	while (i < new_len)
 	{
 	    vim_free(array[i]);
 	    ++i;
 	}
 
-	// Free the array of old_len. All of its contents have now
-	// been dealt with (either freed, or the responsibility passed
-	// to vim.
+	
+	
+	
 	PyMem_Free(array);
 
-	// Adjust marks. Invalidate any which lie in the
-	// changed range, and move any in the remainder of the buffer.
-	// Only adjust marks if we managed to switch to a window that holds
-	// the buffer, otherwise line numbers will be invalid.
+	
+	
+	
+	
 	if (save_curbuf.br_buf == NULL)
 	{
 	    mark_adjust((linenr_T)lo, (linenr_T)(hi - 1),
@@ -5006,11 +4895,11 @@ SetBufferLineList(
 
 	if (buf == curbuf && (switchwin.sw_curwin != NULL
 					   || save_curbuf.br_buf == NULL))
-	    // Using an existing window for the buffer, adjust the cursor
-	    // position.
+	    
+	    
 	    py_fix_cursor((linenr_T)lo, (linenr_T)hi, (linenr_T)extra);
 
-	// END of region without "return".
+	
 	restore_win_for_buf(&switchwin, &save_curbuf);
 
 	if (VimTryEnd())
@@ -5028,23 +4917,15 @@ SetBufferLineList(
     }
 }
 
-/*
- * Insert a number of lines into the specified buffer after the specified line.
- * The line number is in Vim format (1-based). The lines to be inserted are
- * given as a Python list of string objects or as a single string. The lines
- * to be added are checked for validity and correct format. Errors are
- * returned as a value of FAIL.  The return value is OK on success.
- * If OK is returned and len_change is not NULL, *len_change
- * is set to the change in the buffer length.
- */
+
     static int
 InsertBufferLines(buf_T *buf, PyInt n, PyObject *lines, PyInt *len_change)
 {
     bufref_T	save_curbuf = {NULL, 0, 0};
     switchwin_T	switchwin;
 
-    // First of all, we check the type of the supplied Python object.
-    // It must be a string or a list, or the call is in error.
+    
+    
     if (PyBytes_Check(lines) || PyUnicode_Check(lines))
     {
 	char		*str = StringToLine(lines);
@@ -5061,8 +4942,8 @@ InsertBufferLines(buf_T *buf, PyInt n, PyObject *lines, PyInt *len_change)
 	else if (ml_append((linenr_T)n, (char_u *)str, 0, FALSE) == FAIL)
 	    RAISE_INSERT_LINE_FAIL;
 	else if (save_curbuf.br_buf == NULL)
-	    // Only adjust marks if we managed to switch to a window that
-	    // holds the buffer, otherwise line numbers will be invalid.
+	    
+	    
 	    appended_lines_mark((linenr_T)n, 1L);
 
 	vim_free(str);
@@ -5119,7 +5000,7 @@ InsertBufferLines(buf_T *buf, PyInt n, PyObject *lines, PyInt *len_change)
 		{
 		    RAISE_INSERT_LINE_FAIL;
 
-		    // Free the rest of the lines
+		    
 		    while (i < size)
 			vim_free(array[i++]);
 
@@ -5128,13 +5009,13 @@ InsertBufferLines(buf_T *buf, PyInt n, PyObject *lines, PyInt *len_change)
 		vim_free(array[i]);
 	    }
 	    if (i > 0 && save_curbuf.br_buf == NULL)
-		// Only adjust marks if we managed to switch to a window that
-		// holds the buffer, otherwise line numbers will be invalid.
+		
+		
 		appended_lines_mark((linenr_T)n, (long)i);
 	}
 
-	// Free the array of lines. All of its contents have now
-	// been freed.
+	
+	
 	PyMem_Free(array);
 	restore_win_for_buf(&switchwin, &save_curbuf);
 
@@ -5155,10 +5036,7 @@ InsertBufferLines(buf_T *buf, PyInt n, PyObject *lines, PyInt *len_change)
     }
 }
 
-/*
- * Common routines for buffers and line ranges
- * -------------------------------------------
- */
+
 
 typedef struct
 {
@@ -5280,14 +5158,14 @@ RBAsSlice(
     PyInt size;
     PyInt len_change;
 
-    // Self must be a valid buffer
+    
     if (CheckBuffer(self))
 	return -1;
 
     if (end == -1)
 	end = self->buf->b_ml.ml_line_count;
 
-    // Sort out the slice range
+    
     size = end - start + 1;
 
     if (lo < 0)
@@ -5352,7 +5230,7 @@ RBAppend(
     return Py_None;
 }
 
-// Range object
+
 
 DEFINE_PY_TYPE_OBJECT(RangeType);
 static PySequenceMethods RangeAsSeq;
@@ -5418,9 +5296,9 @@ RangeClear(PyObject *self_obj)
     static PyInt
 RangeLength(RangeObject *self)
 {
-    // HOW DO WE SIGNAL AN ERROR FROM THIS FUNCTION?
+    
     if (CheckBuffer(self->buf))
-	return -1; // ???
+	return -1; 
 
     return (self->end - self->start + 1);
 }
@@ -5474,7 +5352,7 @@ RangeRepr(PyObject *self_obj)
 }
 
 static struct PyMethodDef RangeMethods[] = {
-    // name,	function,			calling,	documentation
+    
     {"append",	(PyCFunction)RangeAppend,	METH_VARARGS,	"Append data to the Vim range" },
     {"__dir__",	(PyCFunction)RangeDir,		METH_NOARGS,	""},
     { NULL,	NULL,				0,		NULL}
@@ -5487,23 +5365,7 @@ static PyMappingMethods BufferAsMapping;
     static PyObject *
 BufferNew(buf_T *buf)
 {
-    /*
-     * We need to handle deletion of buffers underneath us.
-     * If we add a "b_python*_ref" field to the buf_T structure,
-     * then we can get at it in buf_freeall() in vim. We then
-     * need to create only ONE Python object per buffer - if
-     * we try to create a second, just INCREF the existing one
-     * and return it. The (single) Python object referring to
-     * the buffer is stored in "b_python*_ref".
-     * Question: what to do on a buf_freeall(). We'll probably
-     * have to either delete the Python object (DECREF it to
-     * zero - a bad idea, as it leaves dangling refs!) or
-     * set the buf_T * value to an invalid value (-1?), which
-     * means we need checks in all access functions... Bah.
-     *
-     * Python2 and Python3 get different fields and different objects:
-     * b_python_ref and b_python3_ref fields respectively.
-     */
+    
 
     BufferObject *self;
 
@@ -5537,9 +5399,9 @@ BufferDestructor(PyObject *self_obj)
     static PyInt
 BufferLength(BufferObject *self)
 {
-    // HOW DO WE SIGNAL AN ERROR FROM THIS FUNCTION?
+    
     if (CheckBuffer(self))
-	return -1; // ???
+	return -1; 
 
     return (PyInt)(self->buf->b_ml.ml_line_count);
 }
@@ -5617,7 +5479,7 @@ BufferSetattr(PyObject *self_obj, char *name, PyObject *valObject)
 	    return -1;
 
 	VimTryStart();
-	// Using aucmd_*: autocommands will be executed by rename_buffer
+	
 	aucmd_prepbuf(&aco, self->buf);
 	if (curbuf == self->buf)
 	{
@@ -5690,7 +5552,7 @@ BufferMark(BufferObject *self, PyObject *pmarkObject)
 
     if (posp->lnum <= 0)
     {
-	// Or raise an error?
+	
 	Py_INCREF(Py_None);
 	return Py_None;
     }
@@ -5731,7 +5593,7 @@ BufferRepr(PyObject *self_obj)
 }
 
 static struct PyMethodDef BufferMethods[] = {
-    // name,	    function,			calling,	documentation
+    
     {"append",	    (PyCFunction)BufferAppend,	METH_VARARGS,	"Append data to Vim buffer" },
     {"mark",	    (PyCFunction)BufferMark,	METH_O,		"Return (row,col) representing position of named mark" },
     {"range",	    (PyCFunction)BufferRange,	METH_VARARGS,	"Return a range object which represents the part of the given buffer between line numbers s and e" },
@@ -5739,9 +5601,7 @@ static struct PyMethodDef BufferMethods[] = {
     { NULL,	    NULL,			0,		NULL}
 };
 
-/*
- * Buffer list object - Implementation
- */
+
 
 DEFINE_PY_TYPE_OBJECT(BufMapType);
 
@@ -5794,7 +5654,7 @@ BufMapItem(PyObject *self UNUSED, PyObject *keyObject)
 BufMapIterDestruct(void* arg)
 {
     PyObject *buffer = (PyObject*)arg;
-    // Iteration was stopped before all buffers were processed
+    
     if (buffer)
     {
 	Py_DECREF(buffer);
@@ -5842,8 +5702,8 @@ BufMapIterNext(void **arg)
     else if (!(next = BufferNew(((BufferObject *)(ret))->buf->b_next)))
 	return NULL;
     *buffer = next;
-    // Do not increment reference: we no longer hold it (decref), but whoever
-    // on other side will hold (incref). Decref+incref = nothing.
+    
+    
     return ret;
 }
 
@@ -5865,7 +5725,7 @@ static PyMappingMethods BufMapAsMapping = {
     (objobjargproc) 0,
 };
 
-// Current items object
+
 
 static char *CurrentAttrs[] = {
     "buffer", "window", "line", "range", "tabpage",
@@ -6009,7 +5869,7 @@ CurrentSetattr(PyObject *self UNUSED, char *name, PyObject *valObject)
 }
 
 static struct PyMethodDef CurrentMethods[] = {
-    // name,	    function,			calling,	documentation
+    
     {"__dir__",	    (PyCFunction)CurrentDir,	METH_NOARGS,	""},
     { NULL,	    NULL,			0,		NULL}
 };
@@ -6120,7 +5980,7 @@ run_do(const char *cmd, void *arg UNUSED
 #ifdef PY_CAN_RECURSE
 	*pygilstate = PyGILState_Ensure();
 #endif
-	// Check the line number, the command my have deleted lines.
+	
 	if (lnum > curbuf->b_ml.ml_line_count
 		|| !(line = GetBufferLine(curbuf, lnum)))
 	    goto err;
@@ -6135,7 +5995,7 @@ run_do(const char *cmd, void *arg UNUSED
 	if (!ret)
 	    goto err;
 
-	// Check that the command didn't switch to another buffer.
+	
 	if (curbuf != was_curbuf)
 	{
 	    Py_XDECREF(ret);
@@ -6494,8 +6354,8 @@ convert_dl(PyObject *obj, typval_T *tv,
 	    tv->v_type = VAR_UNKNOWN;
 	    return -1;
 	}
-	// As we are not using copy_tv which increments reference count we must
-	// do it ourself.
+	
+	
 	if (tv->v_type == VAR_DICT)
 	    ++tv->vval.v_dict->dv_refcount;
 	else if (tv->v_type == VAR_LIST)
@@ -6685,7 +6545,7 @@ _ConvertFromPyObject(PyObject *obj, typval_T *tv, PyObject *lookup_dict)
     }
     else if (PyObject_HasAttrString(obj, "keys"))
 	return convert_dl(obj, tv, pymap_to_tv, lookup_dict);
-    // PyObject_GetIter can create built-in iterator for any sequence object
+    
     else if (PyIter_Check(obj) || PySequence_Check(obj))
 	return convert_dl(obj, tv, pyseq_to_tv, lookup_dict);
     else if (PyMapping_Check(obj))
@@ -6818,15 +6678,15 @@ init_structs(void)
     OutputType.tp_new = call_PyType_GenericNew;
     OutputType.tp_free = call_PyObject_Free;
 # ifndef USE_LIMITED_API
-    // The std printer type is only exposed in full API. It is not essential
-    // anyway and so in limited API we don't set it.
+    
+    
     OutputType.tp_base = &PyStdPrinter_Type;
 # endif
 #else
     OutputType.tp_getattr = OutputGetattr;
     OutputType.tp_setattr = OutputSetattr;
-    // Disabled, because this causes a crash in test86
-    // OutputType.tp_base = &PyFile_Type;
+    
+    
 #endif
 
     CLEAR_FIELD(IterType);
@@ -7067,10 +6927,10 @@ init_types(void)
 #endif
 
 #ifdef USE_LIMITED_API
-    // We need to finish initializing all the static objects because the types
-    // are only just allocated on the heap now.
-    // Each PyObject_HEAD_INIT_TYPE should correspond to a
-    // PyObject_FINISH_INIT_TYPE below.
+    
+    
+    
+    
     PyObject_FINISH_INIT_TYPE(Output, OutputType);
     PyObject_FINISH_INIT_TYPE(Error, OutputType);
     PyObject_FINISH_INIT_TYPE(TheBufferMap, BufMapType);
@@ -7143,7 +7003,7 @@ init_sys_path(void)
 	       "You should now do the following:\n"
 	       "- append vim.path_hook to sys.path_hooks\n"
 	       "- append vim.VIM_SPECIAL_PATH to sys.path\n"));
-	VimTryEnd(); // Discard the error
+	VimTryEnd(); 
 	Py_DECREF(path_hook);
 	return 0;
     }
@@ -7171,7 +7031,7 @@ init_sys_path(void)
 	VimTryStart();
 	emsg(_("Failed to set path: sys.path is not a list\n"
 	       "You should now append vim.VIM_SPECIAL_PATH to sys.path"));
-	VimTryEnd(); // Discard the error
+	VimTryEnd(); 
     }
 
     return 0;
@@ -7326,8 +7186,8 @@ populate_module(PyObject *m)
 
     if ((py_find_module = PyObject_GetAttrString(cls, "find_module")))
     {
-	// find_module() is deprecated, this may stop working in some later
-	// version.
+	
+	
 	ADD_OBJECT(m, "_find_module", py_find_module);
     }
 

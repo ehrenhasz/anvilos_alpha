@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+
 
 #ifndef NFP_NET_REPR_H
 #define NFP_NET_REPR_H
@@ -11,25 +11,13 @@ struct nfp_port;
 
 #include <net/dst_metadata.h>
 
-/**
- * struct nfp_reprs - container for representor netdevs
- * @num_reprs:	Number of elements in reprs array
- * @reprs:	Array of representor netdevs
- */
+
 struct nfp_reprs {
 	unsigned int num_reprs;
 	struct net_device __rcu *reprs[];
 };
 
-/**
- * struct nfp_repr_pcpu_stats
- * @rx_packets:	Received packets
- * @rx_bytes:	Received bytes
- * @tx_packets:	Transmitted packets
- * @tx_bytes:	Transmitted dropped
- * @tx_drops:	Packets dropped on transmit
- * @syncp:	Reference count
- */
+
 struct nfp_repr_pcpu_stats {
 	u64 rx_packets;
 	u64 rx_bytes;
@@ -39,15 +27,7 @@ struct nfp_repr_pcpu_stats {
 	struct u64_stats_sync syncp;
 };
 
-/**
- * struct nfp_repr - priv data for representor netdevs
- * @netdev:	Back pointer to netdev
- * @dst:	Destination for packet TX
- * @port:	Port of representor
- * @app:	APP handle
- * @stats:	Statistic of packets hitting CPU
- * @app_priv:	Pointer for APP data
- */
+
 struct nfp_repr {
 	struct net_device *netdev;
 	struct metadata_dst *dst;
@@ -57,13 +37,7 @@ struct nfp_repr {
 	void *app_priv;
 };
 
-/**
- * enum nfp_repr_type - type of representor
- * @NFP_REPR_TYPE_PHYS_PORT:	external NIC port
- * @NFP_REPR_TYPE_PF:		physical function
- * @NFP_REPR_TYPE_VF:		virtual function
- * @__NFP_REPR_TYPE_MAX:	number of representor types
- */
+
 enum nfp_repr_type {
 	NFP_REPR_TYPE_PHYS_PORT,
 	NFP_REPR_TYPE_PF,
@@ -111,4 +85,4 @@ static inline struct net_device *nfp_repr_alloc(struct nfp_app *app)
 {
 	return nfp_repr_alloc_mqs(app, 1, 1);
 }
-#endif /* NFP_NET_REPR_H */
+#endif 

@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2020 TOSHIBA CORPORATION
- * Copyright (c) 2020 Toshiba Electronic Devices & Storage Corporation
- * Copyright (c) 2020 Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- */
+
+
 
 #ifndef __VISCONTI_PINCTRL_COMMON_H__
 #define __VISCONTI_PINCTRL_COMMON_H__
 
 struct pinctrl_pin_desc;
 
-/* PIN */
+
 #define VISCONTI_PINS(pins_name, ...)  \
 	static const unsigned int pins_name ## _pins[] = { __VA_ARGS__ }
 
@@ -33,7 +29,7 @@ struct visconti_desc_pin {
 	.pud_shift = p_sh,					\
 }
 
-/* Group */
+
 #define VISCONTI_GROUPS(groups_name, ...)	\
 	static const char * const groups_name ## _grps[] = { __VA_ARGS__ }
 
@@ -62,7 +58,7 @@ struct visconti_pin_group {
 	}						\
 }
 
-/* MUX */
+
 struct visconti_pin_function {
 	const char *name;
 	const char * const *groups;
@@ -76,7 +72,7 @@ struct visconti_pin_function {
 	.nr_groups = ARRAY_SIZE(func ## _grps),	\
 }
 
-/* chip dependent data */
+
 struct visconti_pinctrl_devdata {
 	const struct visconti_desc_pin *pins;
 	unsigned int nr_pins;
@@ -93,4 +89,4 @@ struct visconti_pinctrl_devdata {
 int visconti_pinctrl_probe(struct platform_device *pdev,
 			   const struct visconti_pinctrl_devdata *devdata);
 
-#endif /* __VISCONTI_PINCTRL_COMMON_H__ */
+#endif 

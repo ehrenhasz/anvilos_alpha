@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- */
+
+
 
 #ifndef _BR_PRIVATE_STP_H
 #define _BR_PRIVATE_STP_H
@@ -12,7 +7,7 @@
 #define BPDU_TYPE_CONFIG 0
 #define BPDU_TYPE_TCN 0x80
 
-/* IEEE 802.1D-1998 timer values */
+
 #define BR_MIN_HELLO_TIME	(1*HZ)
 #define BR_MAX_HELLO_TIME	(10*HZ)
 
@@ -38,7 +33,7 @@ struct br_config_bpdu {
 	int		forward_delay;
 };
 
-/* called under bridge lock */
+
 static inline int br_is_designated_port(const struct net_bridge_port *p)
 {
 	return !memcmp(&p->designated_bridge, &p->br->bridge_id, 8) &&
@@ -46,7 +41,7 @@ static inline int br_is_designated_port(const struct net_bridge_port *p)
 }
 
 
-/* br_stp.c */
+
 void br_become_root_bridge(struct net_bridge *br);
 void br_config_bpdu_generation(struct net_bridge *);
 void br_configuration_update(struct net_bridge *);
@@ -59,7 +54,7 @@ void br_transmit_tcn(struct net_bridge *br);
 void br_topology_change_detection(struct net_bridge *br);
 void __br_set_topology_change(struct net_bridge *br, unsigned char val);
 
-/* br_stp_bpdu.c */
+
 void br_send_config_bpdu(struct net_bridge_port *, struct br_config_bpdu *);
 void br_send_tcn_bpdu(struct net_bridge_port *);
 

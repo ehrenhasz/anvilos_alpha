@@ -1,22 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2019 Solarflare Communications Inc.
- * Copyright 2020-2022 Xilinx Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+
 
 #ifndef EF100_MAE_H
 #define EF100_MAE_H
-/* MCDI interface for the ef100 Match-Action Engine */
+
 
 #include <net/devlink.h>
 #include "net_driver.h"
 #include "tc.h"
-#include "mcdi_pcol.h" /* needed for various MC_CMD_MAE_*_NULL defines */
+#include "mcdi_pcol.h" 
 
 int efx_mae_allocate_mport(struct efx_nic *efx, u32 *id, u32 *label);
 int efx_mae_free_mport(struct efx_nic *efx, u32 id);
@@ -31,13 +23,13 @@ int efx_mae_lookup_mport(struct efx_nic *efx, u32 selector, u32 *id);
 struct mae_mport_desc {
 	u32 mport_id;
 	u32 flags;
-	u32 caller_flags; /* enum mae_mport_desc_caller_flags */
-	u32 mport_type; /* MAE_MPORT_DESC_MPORT_TYPE_* */
+	u32 caller_flags; 
+	u32 mport_type; 
 	union {
-		u32 port_idx; /* for mport_type == NET_PORT */
-		u32 alias_mport_id; /* for mport_type == ALIAS */
-		struct { /* for mport_type == VNIC */
-			u32 vnic_client_type; /* MAE_MPORT_DESC_VNIC_CLIENT_TYPE_* */
+		u32 port_idx; 
+		u32 alias_mport_id; 
+		struct { 
+			u32 vnic_client_type; 
 			u32 interface_idx;
 			u16 pf_idx;
 			u16 vf_idx;
@@ -51,12 +43,7 @@ int efx_mae_enumerate_mports(struct efx_nic *efx);
 struct mae_mport_desc *efx_mae_get_mport(struct efx_nic *efx, u32 mport_id);
 void efx_mae_put_mport(struct efx_nic *efx, struct mae_mport_desc *desc);
 
-/**
- * struct efx_mae - MAE information
- *
- * @efx: The associated NIC
- * @mports_ht: m-port descriptions from MC_CMD_MAE_MPORT_READ_JOURNAL
- */
+
 struct efx_mae {
 	struct efx_nic *efx;
 	struct rhashtable mports_ht;
@@ -122,7 +109,7 @@ int efx_mae_unregister_encap_match(struct efx_nic *efx,
 int efx_mae_insert_lhs_rule(struct efx_nic *efx, struct efx_tc_lhs_rule *rule,
 			    u32 prio);
 int efx_mae_remove_lhs_rule(struct efx_nic *efx, struct efx_tc_lhs_rule *rule);
-struct efx_tc_ct_entry; /* see tc_conntrack.h */
+struct efx_tc_ct_entry; 
 int efx_mae_insert_ct(struct efx_nic *efx, struct efx_tc_ct_entry *conn);
 int efx_mae_remove_ct(struct efx_nic *efx, struct efx_tc_ct_entry *conn);
 
@@ -136,4 +123,4 @@ void efx_fini_mae(struct efx_nic *efx);
 void efx_mae_remove_mport(void *desc, void *arg);
 int efx_mae_fw_lookup_mport(struct efx_nic *efx, u32 selector, u32 *id);
 int efx_mae_lookup_mport(struct efx_nic *efx, u32 vf, u32 *id);
-#endif /* EF100_MAE_H */
+#endif 

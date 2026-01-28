@@ -15,7 +15,7 @@ According to AN12077:
     due to ROM code requires at least 64 KB of RAM for its execution.
     2.1.1.1. Static configuration - Page 4
 """
-ocram_min_size = 0x00010000  # 64 KB
+ocram_min_size = 0x00010000  
 def mimxrt_default_parser(defines_file, features_file, ld_script):
     with open(ld_script, "r") as input_file:
         input_str = input_file.read()
@@ -81,7 +81,7 @@ def mimxrt_106x_gen_code(extract_dict):
     avail_flexram = extract_dict["fsl_ram_bank_size"] * extract_dict["fsl_bank_nbr"]
     flexram_configurable_ocram = (
         extract_dict["ocram_size"] % 524288
-    )  # 512kB OCRAM are not part of FlexRAM configurable memory
+    )  
     if (
         flexram_configurable_ocram + extract_dict["dtcm_size"] + extract_dict["itcm_size"]
     ) > avail_flexram:
@@ -110,7 +110,7 @@ def mimxrt_1176_gen_code(extract_dict):
     avail_flexram = extract_dict["fsl_ram_bank_size"] * extract_dict["fsl_bank_nbr"]
     flexram_configurable_ocram = (
         extract_dict["ocram_size"] % 524288
-    )  # 512kB OCRAM are not part of FlexRAM configurable memory
+    )  
     if (
         flexram_configurable_ocram + extract_dict["dtcm_size"] + extract_dict["itcm_size"]
     ) > avail_flexram:

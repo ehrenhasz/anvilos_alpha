@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef __PERF_MAP_SYMBOL
 #define __PERF_MAP_SYMBOL 1
 
@@ -22,4 +22,4 @@ struct addr_map_symbol {
 	u64	      phys_addr;
 	u64	      data_page_size;
 };
-#endif // __PERF_MAP_SYMBOL
+#endif 

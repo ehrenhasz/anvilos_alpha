@@ -35,7 +35,7 @@ class __FS:
     if path == '/__injected.mpy':
       return tuple(0 for _ in range(10))
     else:
-      raise OSError(-2) # ENOENT
+      raise OSError(-2) 
   def open(self, path, mode):
     return __File()
 vfs.mount(__FS(), '/__remote')

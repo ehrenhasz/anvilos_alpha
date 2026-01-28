@@ -11,7 +11,7 @@ TR_CMD=$(command -v tr)
 tap_prefix()
 {
 	if [ ! -x /usr/bin/perl ]; then
-		sed -e 's/^/# /'
+		sed -e 's/^/
 	else
 		"$BASE_DIR"/kselftest/prefix.pl
 	fi
@@ -43,7 +43,7 @@ run_one()
 	settings="$BASE_DIR/$DIR/settings"
 	if [ -r "$settings" ] ; then
 		while read line ; do
-			if echo "$line" | grep -q '^#'; then
+			if echo "$line" | grep -q '^
 				continue
 			fi
 			field=$(echo "$line" | cut -d= -f1)
@@ -53,14 +53,14 @@ run_one()
 	fi
 	if [ -n "$kselftest_override_timeout" ]; then
 		kselftest_timeout="$kselftest_override_timeout"
-		echo "# overriding timeout to $kselftest_timeout" >> "$logfile"
+		echo "
 	else
-		echo "# timeout set to $kselftest_timeout" >> "$logfile"
+		echo "
 	fi
 	TEST_HDR_MSG="selftests: $DIR: $BASENAME_TEST"
-	echo "# $TEST_HDR_MSG"
+	echo "
 	if [ ! -e "$TEST" ]; then
-		echo "# Warning: file $TEST is missing!"
+		echo "
 		echo "not ok $test_num $TEST_HDR_MSG"
 	else
 		if [ -x /usr/bin/stdbuf ]; then
@@ -69,8 +69,8 @@ run_one()
 		eval kselftest_cmd_args="\$${kselftest_cmd_args_ref:-}"
 		cmd="$stdbuf ./$BASENAME_TEST $kselftest_cmd_args"
 		if [ ! -x "$TEST" ]; then
-			echo "# Warning: file $TEST is not executable"
-			if [ $(head -n 1 "$TEST" | cut -c -2) = "#!" ]
+			echo "
+			if [ $(head -n 1 "$TEST" | cut -c -2) = "
 			then
 				interpreter=$(head -n 1 "$TEST" | cut -c 3-)
 				cmd="$stdbuf $interpreter ./$BASENAME_TEST"
@@ -86,12 +86,12 @@ run_one()
 		echo "ok $test_num $TEST_HDR_MSG") ||
 		(rc=$?;	\
 		if [ $rc -eq $skip_rc ]; then	\
-			echo "ok $test_num $TEST_HDR_MSG # SKIP"
+			echo "ok $test_num $TEST_HDR_MSG 
 		elif [ $rc -eq $timeout_rc ]; then \
-			echo "#"
-			echo "not ok $test_num $TEST_HDR_MSG # TIMEOUT $kselftest_timeout seconds"
+			echo "
+			echo "not ok $test_num $TEST_HDR_MSG 
 		else
-			echo "not ok $test_num $TEST_HDR_MSG # exit=$rc"
+			echo "not ok $test_num $TEST_HDR_MSG 
 		fi)
 		cd - >/dev/null
 	fi
@@ -99,7 +99,7 @@ run_one()
 run_many()
 {
 	echo "TAP version 13"
-	DIR="${PWD#${BASE_DIR}/}"
+	DIR="${PWD
 	test_num=0
 	total=$(echo "$@" | wc -w)
 	echo "1..$total"

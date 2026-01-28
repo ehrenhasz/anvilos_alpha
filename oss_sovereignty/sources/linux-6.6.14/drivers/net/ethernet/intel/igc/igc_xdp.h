@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2020, Intel Corporation. */
+
+
 
 #ifndef _IGC_XDP_H_
 #define _IGC_XDP_H_
@@ -14,4 +14,4 @@ static inline bool igc_xdp_is_enabled(struct igc_adapter *adapter)
 	return !!adapter->xdp_prog;
 }
 
-#endif /* _IGC_XDP_H_ */
+#endif 

@@ -1,6 +1,6 @@
-# Author: Ada (Haowen) Yu <me@yuhaowen.com>
 
-# Common components
+
+
 include Make_all.mak
 
 SED = LANG=C sed
@@ -8,7 +8,7 @@ SED = LANG=C sed
 all: $(CONVERTED)
 
 
-# Convert menu_zh_cn.utf-8.vim to create menu_chinese_gb.936.vim.
+
 menu_chinese_gb.936.vim: menu_zh_cn.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t CP936 $< | \
@@ -16,7 +16,7 @@ menu_chinese_gb.936.vim: menu_zh_cn.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_zh_tw.utf-8.vim to create menu_chinese_taiwan.950.vim.
+
 menu_chinese_taiwan.950.vim: menu_zh_tw.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t CP950 $< | \
@@ -24,7 +24,7 @@ menu_chinese_taiwan.950.vim: menu_zh_tw.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_cs_cz.utf-8.vim to create menu_cs_cz.iso_8859-2.vim.
+
 menu_cs_cz.iso_8859-2.vim: menu_cs_cz.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t ISO-8859-2 $< | \
@@ -33,7 +33,7 @@ menu_cs_cz.iso_8859-2.vim: menu_cs_cz.utf-8.vim
 			-e 's/\(" Menu Translations:.*\)(.*)/\1(ISO8859-2)/' \
 			> $@
 
-# Convert menu_cs_cz.utf-8.vim to create menu_czech_czech_republic.1250.vim.
+
 menu_czech_czech_republic.1250.vim: menu_cs_cz.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t CP1250 $< | \
@@ -42,7 +42,7 @@ menu_czech_czech_republic.1250.vim: menu_cs_cz.utf-8.vim
 			-e 's/\(" Menu Translations:.*\)(.*)/\1(CP1250)/' \
 			> $@
 
-# Convert menu_cs_cz.utf-8.vim to create menu_czech_czech_republic.ascii.vim.
+
 menu_czech_czech_republic.ascii.vim: menu_cs_cz.utf-8.vim
 	rm -f $@
 	$(SED) -e 's/Á/A/g' -e 's/á/a/g' -e 's/Č/C/g' -e 's/č/c/g' -e 's/Ď/D/g' \
@@ -56,7 +56,7 @@ menu_czech_czech_republic.ascii.vim: menu_cs_cz.utf-8.vim
 		-e 's/\(" Menu Translations:.*\)(.*)/\1(ASCII - without diacritics)/' \
 		$< > $@
 
-# Convert menu_ja_jp.utf-8.vim to create menu_ja_jp.euc-jp.vim.
+
 menu_ja_jp.euc-jp.vim: menu_ja_jp.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t EUC-JP $< | \
@@ -65,7 +65,7 @@ menu_ja_jp.euc-jp.vim: menu_ja_jp.utf-8.vim
 			-e 's/\(" Menu Translations:.*\)(.*)/\1(EUC-JP)/' \
 			> $@
 
-# Convert menu_ja_jp.utf-8.vim to create menu_japanese_japan.932.vim.
+
 menu_japanese_japan.932.vim: menu_ja_jp.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t CP932 $< | \
@@ -74,7 +74,7 @@ menu_japanese_japan.932.vim: menu_ja_jp.utf-8.vim
 			-e 's/\(" Menu Translations:.*\)(.*)/\1(CP932)/' \
 			> $@
 
-# Convert menu_ko_kr.utf-8.vim to create menu_ko_kr.euckr.vim.
+
 menu_ko_kr.euckr.vim: menu_ko_kr.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t EUC-KR $< | \
@@ -82,7 +82,7 @@ menu_ko_kr.euckr.vim: menu_ko_kr.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_pl_pl.utf-8.vim to create menu_pl_pl.iso_8859-2.vim.
+
 menu_pl_pl.iso_8859-2.vim: menu_pl_pl.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t ISO-8859-2 $< | \
@@ -90,7 +90,7 @@ menu_pl_pl.iso_8859-2.vim: menu_pl_pl.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_pl_pl.utf-8.vim to create menu_polish_poland.1250.vim.
+
 menu_polish_poland.1250.vim: menu_pl_pl.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t CP1250 $< | \
@@ -98,7 +98,7 @@ menu_polish_poland.1250.vim: menu_pl_pl.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_ru_ru.utf-8.vim to create menu_ru_ru.koi8-r.vim.
+
 menu_ru_ru.koi8-r.vim: menu_ru_ru.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t KOI8-R $< | \
@@ -106,7 +106,7 @@ menu_ru_ru.koi8-r.vim: menu_ru_ru.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_ru_ru.utf-8.vim to create menu_ru_ru.cp1251.vim.
+
 menu_ru_ru.cp1251.vim: menu_ru_ru.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t CP1251 $< | \
@@ -114,7 +114,7 @@ menu_ru_ru.cp1251.vim: menu_ru_ru.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_sl_si.utf-8.vim to create menu_sl_si.cp1250.vim.
+
 menu_sl_si.cp1250.vim: menu_sl_si.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t CP1250 $< | \
@@ -122,8 +122,8 @@ menu_sl_si.cp1250.vim: menu_sl_si.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# for naming encodings, see `:h encoding-names`
-# Convert menu_sl_si.utf-8.vim to create menu_sl_si.latin2.vim.
+
+
 menu_sl_si.latin2.vim: menu_sl_si.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t ISO-8859-2 $< | \
@@ -131,7 +131,7 @@ menu_sl_si.latin2.vim: menu_sl_si.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_tr_tr.utf-8.vim to create menu_tr_tr.cp1254.vim.
+
 menu_tr_tr.cp1254.vim: menu_tr_tr.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t CP1254 $< | \
@@ -139,7 +139,7 @@ menu_tr_tr.cp1254.vim: menu_tr_tr.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_tr_tr.utf-8.vim to create menu_tr_tr.iso_8859-9.vim.
+
 menu_tr_tr.iso_8859-9.vim: menu_tr_tr.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t ISO-8859-9 $< | \
@@ -147,7 +147,7 @@ menu_tr_tr.iso_8859-9.vim: menu_tr_tr.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_sr_rs.utf-8.vim to create menu_sr_rs.iso_8859-5.vim.
+
 menu_sr_rs.iso_8859-5.vim: menu_sr_rs.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t ISO-8859-5 $< | \
@@ -155,8 +155,8 @@ menu_sr_rs.iso_8859-5.vim: menu_sr_rs.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# for naming encodings, see `:h encoding-names`
-# Convert menu_sr_rs.utf-8.vim to create menu_sr_rs.iso_8859-2.vim.
+
+
 menu_sr_rs.iso_8859-2.vim: menu_sr_rs.utf-8.vim
 	rm -f $@
 	$(SED) -e 's/а/a/g' -e 's/б/b/g' -e 's/в/v/g' -e 's/г/g/g' -e 's/д/d/g' \
@@ -176,7 +176,7 @@ menu_sr_rs.iso_8859-2.vim: menu_sr_rs.utf-8.vim
 		$< | iconv -f UTF-8 -t ISO-8859-2 \
 		> $@
 
-# Convert menu_sr_rs.utf-8.vim to create menu_sr_rs.ascii.vim.
+
 menu_sr_rs.ascii.vim: menu_sr_rs.utf-8.vim
 	rm -f $@
 	$(SED) -e 's/а/a/g' -e 's/б/b/g' -e 's/в/v/g' -e 's/г/g/g' -e 's/д/d/g' \
@@ -195,7 +195,7 @@ menu_sr_rs.ascii.vim: menu_sr_rs.utf-8.vim
 		-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 		$< > $@
 	
-# Convert menu_uk_ua.utf-8.vim to create menu_uk_ua.cp1251.vim.
+
 menu_uk_ua.cp1251.vim: menu_uk_ua.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t CP1251 $< | \
@@ -203,7 +203,7 @@ menu_uk_ua.cp1251.vim: menu_uk_ua.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_uk_ua.utf-8.vim to create menu_uk_ua.koi8-u.vim.
+
 menu_uk_ua.koi8-u.vim: menu_uk_ua.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t KOI8-U $< | \
@@ -211,7 +211,7 @@ menu_uk_ua.koi8-u.vim: menu_uk_ua.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_hu_hu.utf-8.vim to create menu_hu_hu.iso_8859-2.vim.
+
 menu_hu_hu.iso_8859-2.vim: menu_hu_hu.utf-8.vim
 	rm -f $@
 	iconv -f UTF-8 -t ISO-8859-2 $< | \
@@ -219,7 +219,7 @@ menu_hu_hu.iso_8859-2.vim: menu_hu_hu.utf-8.vim
 			-e 's/" Original translations/" Generated from $<, DO NOT EDIT/' \
 			> $@
 
-# Convert menu_slovak_slovak_republic.1250.vim to create menu_sk_sk.iso_8859-2.vim.
+
 menu_sk_sk.iso_8859-2.vim: menu_slovak_slovak_republic.1250.vim
 	rm -f $@
 	iconv -f CP1250 -t ISO-8859-2 $< | \

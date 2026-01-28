@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2006, 2007 Eugene Konev <ejka@openwrt.org>
- */
+
+
 
 #ifndef __VLYNQ_H__
 #define __VLYNQ_H__
@@ -146,4 +144,4 @@ extern int vlynq_set_remote_mapping(struct vlynq_device *dev, u32 tx_offset,
 extern int vlynq_set_local_irq(struct vlynq_device *dev, int virq);
 extern int vlynq_set_remote_irq(struct vlynq_device *dev, int virq);
 
-#endif /* __VLYNQ_H__ */
+#endif 

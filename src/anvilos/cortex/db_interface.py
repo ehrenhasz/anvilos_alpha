@@ -124,3 +124,17 @@ class CortexDB:
                 INSERT INTO sys_goals (id, goal, stat, timestamp)
                 VALUES (?, ?, 0, ?)
             """, (str(uuid.uuid4()), goal, time.time()))
+
+    def fetch_jammed_card(self) -> Optional[Dict[str, Any]]:
+        """Fetches a single card with status 9 (Jam)."""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            row = conn.execute("SELECT * FROM card_stack WHERE stat = 9 ORDER BY timestamp ASC LIMIT 1").fetchone()
+            if row:
+                return dict(row)
+        return None
+
+    def update_card_status(self, card_id: str, status: int) -> None:
+        """Updates just the status of a card."""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute("UPDATE card_stack SET stat = ? WHERE id = ?", (status, card_id))

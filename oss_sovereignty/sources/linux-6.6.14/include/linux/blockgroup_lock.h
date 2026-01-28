@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_BLOCKGROUP_LOCK_H
 #define _LINUX_BLOCKGROUP_LOCK_H
-/*
- * Per-blockgroup locking for ext2 and ext3.
- *
- * Simple hashed spinlocking.
- */
+
 
 #include <linux/spinlock.h>
 #include <linux/cache.h>

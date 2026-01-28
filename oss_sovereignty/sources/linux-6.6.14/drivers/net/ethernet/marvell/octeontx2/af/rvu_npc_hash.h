@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2022 Marvell.
- *
- */
+
+
 
 #ifndef __RVU_NPC_HASH_H
 #define __RVU_NPC_HASH_H
@@ -42,13 +38,13 @@
 		    NPC_AF_INTFX_HASHX_RESULT_CTRL(intf, ld), cfg)
 
 struct npc_mcam_kex_hash {
-	/* NPC_AF_INTF(0..1)_LID(0..7)_LT(0..15)_LD(0..1)_CFG */
+	
 	bool lid_lt_ld_hash_en[NPC_MAX_INTF][NPC_MAX_LID][NPC_MAX_LT][NPC_MAX_LD];
-	/* NPC_AF_INTF(0..1)_HASH(0..1)_CFG */
+	
 	u64 hash[NPC_MAX_INTF][NPC_MAX_HASH];
-	/* NPC_AF_INTF(0..1)_HASH(0..1)_MASK(0..1) */
+	
 	u64 hash_mask[NPC_MAX_INTF][NPC_MAX_HASH][NPC_MAX_HASH_MASK];
-	/* NPC_AF_INTF(0..1)_HASH(0..1)_RESULT_CTRL */
+	
 	u64 hash_ctrl[NPC_MAX_INTF][NPC_MAX_HASH];
 } __packed;
 
@@ -124,18 +120,18 @@ static struct npc_mcam_kex_hash npc_mkex_hash_default __maybe_unused = {
 
 	.hash_ctrl = {
 	[NIX_INTF_RX] = {
-		[0] = GENMASK_ULL(63, 32), /* MSB 32 bit is mask and LSB 32 bit is offset. */
-		[1] = GENMASK_ULL(63, 32), /* MSB 32 bit is mask and LSB 32 bit is offset. */
+		[0] = GENMASK_ULL(63, 32), 
+		[1] = GENMASK_ULL(63, 32), 
 	},
 
 	[NIX_INTF_TX] = {
-		[0] = GENMASK_ULL(63, 32), /* MSB 32 bit is mask and LSB 32 bit is offset. */
-		[1] = GENMASK_ULL(63, 32), /* MSB 32 bit is mask and LSB 32 bit is offset. */
+		[0] = GENMASK_ULL(63, 32), 
+		[1] = GENMASK_ULL(63, 32), 
 	},
 	},
 };
 
-/* If exact match table support is enabled, enable drop rules */
+
 #define NPC_MCAM_DROP_RULE_MAX 30
 #define NPC_MCAM_SDP_DROP_RULE_IDX 0
 
@@ -151,10 +147,10 @@ enum npc_exact_opc_type {
 struct npc_exact_table_entry {
 	struct list_head list;
 	struct list_head glist;
-	u32 seq_id;	/* Sequence number of entry */
-	u32 index;	/* Mem table or cam table index */
+	u32 seq_id;	
+	u32 index;	
 	u32 mcam_idx;
-		/* Mcam index. This is valid only if "cmd" field is false */
+		
 	enum npc_exact_opc_type opc_type;
 	u16 chan;
 	u16 pcifunc;
@@ -163,11 +159,11 @@ struct npc_exact_table_entry {
 	u8 ctype;
 	u8 cgx_id;
 	u8 lmac_id;
-	bool cmd;	/* Is added by ethtool command ? */
+	bool cmd;	
 };
 
 struct npc_exact_table {
-	struct mutex lock;	/* entries update lock */
+	struct mutex lock;	
 	unsigned long *id_bmap;
 	int num_drop_rules;
 	u32 tot_ids;
@@ -178,9 +174,9 @@ struct npc_exact_table {
 		int ways;
 		int depth;
 		unsigned long *bmap;
-		u64 mask;	// Masks before hash calculation.
-		u16 hash_mask;	// 11 bits for hash mask
-		u16 hash_offset; // 11 bits offset
+		u64 mask;	
+		u16 hash_mask;	
+		u16 hash_offset; 
 	} mem_table;
 
 	struct {
@@ -236,4 +232,4 @@ void rvu_npc_exact_reset(struct rvu *rvu, u16 pcifunc);
 u16 rvu_npc_exact_drop_rule_to_pcifunc(struct rvu *rvu, u32 drop_rule_idx);
 int rvu_npc_exact_promisc_disable(struct rvu *rvu, u16 pcifunc);
 int rvu_npc_exact_promisc_enable(struct rvu *rvu, u16 pcifunc);
-#endif /* RVU_NPC_HASH_H */
+#endif 

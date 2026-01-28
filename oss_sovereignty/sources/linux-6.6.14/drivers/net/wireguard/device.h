@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+
 
 #ifndef _WG_DEVICE_H
 #define _WG_DEVICE_H
@@ -33,7 +31,7 @@ struct crypt_queue {
 
 struct prev_queue {
 	struct sk_buff *head, *tail, *peeked;
-	struct { struct sk_buff *next, *prev; } empty; // Match first 2 members of struct sk_buff.
+	struct { struct sk_buff *next, *prev; } empty; 
 	atomic_t count;
 };
 
@@ -59,4 +57,4 @@ struct wg_device {
 int wg_device_init(void);
 void wg_device_uninit(void);
 
-#endif /* _WG_DEVICE_H */
+#endif 

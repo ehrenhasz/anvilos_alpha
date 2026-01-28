@@ -16,8 +16,8 @@ _OCF_BLE_INIT = const(0x66)
 _HCI_KIND_VENDOR_RESPONSE = const(0x11)
 _OBFUSCATION_KEY = const(0x0573B55AA)
 STAGING_AREA_START = 0x80C0000
-_MAGIC_FUS_ACTIVE = const(0xA94656B9)  # AN5185
-_MAGIC_IPCC_MEM_INCORRECT = const(0x3DE96F61)  # # AN5185
+_MAGIC_FUS_ACTIVE = const(0xA94656B9)  
+_MAGIC_IPCC_MEM_INCORRECT = const(0x3DE96F61)  
 _FW_VERSION_FUS = const(0)
 _FW_VERSION_WS = const(1)
 _STATE_IDLE = const(0)
@@ -72,9 +72,9 @@ class _Flash:
     def lock(self):
         machine.mem32[stm.FLASH + stm.FLASH_CR] = _Flash._FLASH_CR_LOCK_MASK
     def erase_page(self, page):
-        assert 0 <= page <= 255  # 1MiB range (4k page)
+        assert 0 <= page <= 255  
         self.wait_not_busy()
-        cr = page << 3 | 1 << 1  # PNB  # PER
+        cr = page << 3 | 1 << 1  
         machine.mem32[stm.FLASH + stm.FLASH_CR] = cr
         machine.mem32[stm.FLASH + stm.FLASH_CR] = cr | _Flash._FLASH_CR_STRT_MASK
         self.wait_not_busy()
@@ -82,7 +82,7 @@ class _Flash:
     def write(self, addr, buf, sz, key=0):
         assert sz % 4 == 0
         self.wait_not_busy()
-        cr = 1 << 0  # PG
+        cr = 1 << 0  
         machine.mem32[stm.FLASH + stm.FLASH_CR] = cr
         off = 0
         while off < sz:
@@ -234,10 +234,10 @@ def _stat_and_start_copy(path, copying_state, copied_state):
         _fus_fwdelete()
     else:
         log("Copying {} to flash", path)
-        _write_state(copying_state)  # Either _STATE_COPYING_FUS or _STATE_COPYING_WS
+        _write_state(copying_state)  
         _copy_file_to_flash(path)
         log("Copying complete")
-        _write_state(copied_state)  # Either _STATE_COPIED_FUS or _STATE_COPIED_WS
+        _write_state(copied_state)  
     return True
 def resume():
     log("Checking firmware update progress...")
@@ -384,7 +384,7 @@ def install_boot():
         print("boot.py doesn't exists, adding with upgrade handler.")
     with open(boot_py, mode) as boot:
         boot.write(header)
-        boot.write("# Handle rfcore updates.\n")
+        boot.write("
         boot.write("import rfcore_firmware\n")
         boot.write("rfcore_firmware.resume()\n")
 def check_for_updates(force=False):

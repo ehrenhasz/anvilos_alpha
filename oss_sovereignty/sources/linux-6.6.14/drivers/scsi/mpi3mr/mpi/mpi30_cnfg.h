@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright 2017-2023 Broadcom Inc. All rights reserved.
- */
+
+
 #ifndef MPI30_CNFG_H
 #define MPI30_CNFG_H     1
 #define MPI3_CONFIG_PAGETYPE_IO_UNIT                    (0x00)

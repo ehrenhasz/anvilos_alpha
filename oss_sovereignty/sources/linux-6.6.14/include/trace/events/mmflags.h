@@ -1,17 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/node.h>
 #include <linux/mmzone.h>
 #include <linux/compaction.h>
-/*
- * The order of these masks is important. Matching masks will be seen
- * first and the left over flags will end up showing by themselves.
- *
- * For example, if we have GFP_KERNEL before GFP_USER we wil get:
- *
- *  GFP_KERNEL|GFP_HARDWALL
- *
- * Thus most bits set go first.
- */
+
 
 #define gfpflag_string(flag) {(__force unsigned long)flag, #flag}
 
@@ -215,7 +206,7 @@ IF_HAVE_VM_SOFTDIRTY(VM_SOFTDIRTY,	"softdirty"	)		\
 	EM( COMPACT_NOT_SUITABLE_ZONE,	"not_suitable_zone")	\
 	EMe(COMPACT_CONTENDED,		"contended")
 
-/* High-level compaction status feedback */
+
 #define COMPACTION_FAILED	1
 #define COMPACTION_WITHDRAWN	2
 #define COMPACTION_PROGRESS	3
@@ -274,10 +265,7 @@ IF_HAVE_VM_SOFTDIRTY(VM_SOFTDIRTY,	"softdirty"	)		\
 		EM (LRU_ACTIVE_FILE, "active_file") \
 		EMe(LRU_UNEVICTABLE, "unevictable")
 
-/*
- * First define the enums in the above macros to be exported to userspace
- * via TRACE_DEFINE_ENUM().
- */
+
 #undef EM
 #undef EMe
 #define EM(a, b)	TRACE_DEFINE_ENUM(a);
@@ -285,14 +273,11 @@ IF_HAVE_VM_SOFTDIRTY(VM_SOFTDIRTY,	"softdirty"	)		\
 
 COMPACTION_STATUS
 COMPACTION_PRIORITY
-/* COMPACTION_FEEDBACK are defines not enums. Not needed here. */
+
 ZONE_TYPE
 LRU_NAMES
 
-/*
- * Now redefine the EM() and EMe() macros to map the enums to the strings
- * that will be printed in the output.
- */
+
 #undef EM
 #undef EMe
 #define EM(a, b)	{a, b},

@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef _DMA_H_
 #define _DMA_H_
 
 #include <linux/dmaengine.h>
 
-/* maximum data transfer block size between BAM and CE */
+
 #define QCE_BAM_BURST_SIZE		64
 
 #define QCE_AUTHIV_REGS_CNT		16
@@ -45,4 +43,4 @@ struct scatterlist *
 qce_sgtable_add(struct sg_table *sgt, struct scatterlist *sg_add,
 		unsigned int max_len);
 
-#endif /* _DMA_H_ */
+#endif 

@@ -1,33 +1,9 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 #ifndef MICROPY_INCLUDED_PY_DYNRUNTIME_H
 #define MICROPY_INCLUDED_PY_DYNRUNTIME_H
 
-// This header file contains definitions to dynamically implement the static
-// MicroPython runtime API defined in py/obj.h and py/runtime.h.
+
+
 
 #include "py/binary.h"
 #include "py/nativeglue.h"
@@ -49,15 +25,15 @@
 #undef mp_const_empty_tuple
 #undef nlr_raise
 
-/******************************************************************************/
-// Memory allocation
+
+
 
 #define m_malloc(n)                     (m_malloc_dyn((n)))
 #define m_free(ptr)                     (m_free_dyn((ptr)))
 #define m_realloc(ptr, new_num_bytes)   (m_realloc_dyn((ptr), (new_num_bytes)))
 
 static inline void *m_malloc_dyn(size_t n) {
-    // TODO won't raise on OOM
+    
     return mp_fun_table.realloc_(NULL, n, false);
 }
 
@@ -66,19 +42,19 @@ static inline void m_free_dyn(void *ptr) {
 }
 
 static inline void *m_realloc_dyn(void *ptr, size_t new_num_bytes) {
-    // TODO won't raise on OOM
+    
     return mp_fun_table.realloc_(ptr, new_num_bytes, true);
 }
 
-/******************************************************************************/
-// Printing
+
+
 
 #define mp_plat_print               (*mp_fun_table.plat_print)
 #define mp_printf(p, ...)           (mp_fun_table.printf_((p), __VA_ARGS__))
 #define mp_vprintf(p, fmt, args)    (mp_fun_table.vprintf_((p), (fmt), (args)))
 
-/******************************************************************************/
-// Types and objects
+
+
 
 #define MP_OBJ_NEW_QSTR(x)                  (mp_fun_table.native_to_obj(x, MP_NATIVE_TYPE_QSTR))
 
@@ -155,8 +131,8 @@ static inline mp_obj_t mp_obj_cast_to_native_base_dyn(mp_obj_t self_in, mp_const
     if (MP_OBJ_FROM_PTR(self_type) == native_type) {
         return self_in;
     } else if (MP_OBJ_TYPE_GET_SLOT_OR_NULL(self_type, parent) != native_type) {
-        // The self_in object is not a direct descendant of native_type, so fail the cast.
-        // This is a very simple version of mp_obj_is_subclass_fast that could be improved.
+        
+        
         return MP_OBJ_NULL;
     } else {
         mp_obj_instance_t *self = (mp_obj_instance_t *)MP_OBJ_TO_PTR(self_in);
@@ -174,7 +150,7 @@ static inline void *mp_obj_str_get_data_dyn(mp_obj_t o, size_t *l) {
 }
 
 static inline mp_obj_t mp_obj_len_dyn(mp_obj_t o) {
-    // If bytes implemented MP_UNARY_OP_LEN could use: mp_unary_op(MP_UNARY_OP_LEN, o)
+    
     return mp_fun_table.call_function_n_kw(mp_fun_table.load_name(MP_QSTR_len), 1, &o);
 }
 
@@ -184,8 +160,8 @@ static inline void *mp_obj_malloc_helper_dyn(size_t num_bytes, const mp_obj_type
     return base;
 }
 
-/******************************************************************************/
-// General runtime functions
+
+
 
 #define mp_binary_get_size(struct_type, val_type, palign) (mp_fun_table.binary_get_size((struct_type), (val_type), (palign)))
 #define mp_binary_get_val_array(typecode, p, index) (mp_fun_table.binary_get_val_array((typecode), (p), (index)))
@@ -242,14 +218,14 @@ static inline void *mp_obj_malloc_helper_dyn(size_t num_bytes, const mp_obj_type
 #define mp_import_all(module) \
     (mp_fun_table.import_all((module))
 
-/******************************************************************************/
-// Exceptions
+
+
 
 #define mp_obj_exception_make_new               (MP_OBJ_TYPE_GET_SLOT(&mp_type_Exception, make_new))
 #define mp_obj_exception_print                  (MP_OBJ_TYPE_GET_SLOT(&mp_type_Exception, print))
 #define mp_obj_exception_attr                   (MP_OBJ_TYPE_GET_SLOT(&mp_type_Exception, attr))
 
-#define mp_obj_new_exception(o)                 ((mp_obj_t)(o)) // Assumes returned object will be raised, will create instance then
+#define mp_obj_new_exception(o)                 ((mp_obj_t)(o)) 
 #define mp_obj_new_exception_arg1(e_type, arg)  (mp_obj_new_exception_arg1_dyn((e_type), (arg)))
 
 #define nlr_raise(o)                            (mp_raise_dyn(o))
@@ -286,8 +262,8 @@ static inline void mp_obj_exception_init(mp_obj_full_type_t *exc, qstr name, con
     MP_OBJ_TYPE_SET_SLOT(exc, parent, base, 3);
 }
 
-/******************************************************************************/
-// Floating point
+
+
 
 #define mp_obj_new_float_from_f(f)  (mp_fun_table.obj_new_float_from_f((f)))
 #define mp_obj_new_float_from_d(d)  (mp_fun_table.obj_new_float_from_d((d)))
@@ -302,10 +278,10 @@ static inline void mp_obj_exception_init(mp_obj_full_type_t *exc, qstr name, con
 #define mp_obj_get_float(o)         (mp_obj_get_float_to_d((o)))
 #endif
 
-/******************************************************************************/
-// Inline function definitions.
 
-// *items may point inside a GC block
+
+
+
 static inline void mp_obj_get_array_dyn(mp_obj_t o, size_t *len, mp_obj_t **items) {
     const mp_obj_type_t *type = mp_obj_get_type(o);
     if (type == &mp_type_tuple) {
@@ -321,4 +297,4 @@ static inline void mp_obj_get_array_dyn(mp_obj_t o, size_t *len, mp_obj_t **item
     }
 }
 
-#endif // MICROPY_INCLUDED_PY_DYNRUNTIME_H
+#endif 

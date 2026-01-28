@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  USB HID quirks support for Linux
- *
- *  Copyright (c) 1999 Andreas Gal
- *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
- *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
- *  Copyright (c) 2006-2007 Jiri Kosina
- */
 
-/*
- */
+
+
+
 
 #ifndef HID_IDS_H_FILE
 #define HID_IDS_H_FILE
@@ -939,10 +931,7 @@
 #define USB_DEVICE_ID_MS_TYPE_COVER_2    0x07a9
 #define USB_DEVICE_ID_MS_POWER_COVER     0x07da
 #define USB_DEVICE_ID_MS_SURFACE3_COVER		0x07de
-/*
- * For a description of the Xbox controller models, refer to:
- * https://en.wikipedia.org/wiki/Xbox_Wireless_Controller#Summary
- */
+
 #define USB_DEVICE_ID_MS_XBOX_CONTROLLER_MODEL_1708	0x02fd
 #define USB_DEVICE_ID_MS_XBOX_CONTROLLER_MODEL_1708_BLE	0x0b20
 #define USB_DEVICE_ID_MS_XBOX_CONTROLLER_MODEL_1914	0x0b13
@@ -1439,8 +1428,8 @@
 #define USB_DEVICE_ID_PRIMAX_PIXART_MOUSE_4E22	0x4e22
 
 
-#define USB_VENDOR_ID_RISO_KAGAKU	0x1294	/* Riso Kagaku Corp. */
-#define USB_DEVICE_ID_RI_KA_WEBMAIL	0x1320	/* Webmail Notifier */
+#define USB_VENDOR_ID_RISO_KAGAKU	0x1294	
+#define USB_DEVICE_ID_RI_KA_WEBMAIL	0x1320	
 
 #define USB_VENDOR_ID_MULTIPLE_1781	0x1781
 #define USB_DEVICE_ID_RAPHNET_4NES4SNES_OLD	0x0a9d

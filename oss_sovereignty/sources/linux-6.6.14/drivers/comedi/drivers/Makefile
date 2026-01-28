@@ -1,18 +1,18 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for individual comedi drivers
-#
+
+
+
 ccflags-$(CONFIG_COMEDI_DEBUG)		:= -DDEBUG
 
-# Comedi "helper" modules
+
 obj-$(CONFIG_COMEDI_8254)		+= comedi_8254.o
 obj-$(CONFIG_COMEDI_ISADMA)		+= comedi_isadma.o
 
-# Comedi misc drivers
+
 obj-$(CONFIG_COMEDI_BOND)		+= comedi_bond.o
 obj-$(CONFIG_COMEDI_TEST)		+= comedi_test.o
 obj-$(CONFIG_COMEDI_PARPORT)		+= comedi_parport.o
 
-# Comedi ISA drivers
+
 obj-$(CONFIG_COMEDI_AMPLC_DIO200_ISA)	+= amplc_dio200.o
 obj-$(CONFIG_COMEDI_AMPLC_PC236_ISA)	+= amplc_pc236.o
 obj-$(CONFIG_COMEDI_AMPLC_PC263_ISA)	+= amplc_pc263.o
@@ -59,7 +59,7 @@ obj-$(CONFIG_COMEDI_PCMUIO)		+= pcmuio.o
 obj-$(CONFIG_COMEDI_MULTIQ3)		+= multiq3.o
 obj-$(CONFIG_COMEDI_S526)		+= s526.o
 
-# Comedi PCI drivers
+
 obj-$(CONFIG_COMEDI_8255_PCI)		+= 8255_pci.o
 obj-$(CONFIG_COMEDI_ADDI_WATCHDOG)	+= addi_watchdog.o
 obj-$(CONFIG_COMEDI_ADDI_APCI_1032)	+= addi_apci_1032.o
@@ -116,7 +116,7 @@ obj-$(CONFIG_COMEDI_S626)		+= s626.o
 obj-$(CONFIG_COMEDI_SSV_DNP)		+= ssv_dnp.o
 obj-$(CONFIG_COMEDI_MF6X4)		+= mf6x4.o
 
-# Comedi PCMCIA drivers
+
 obj-$(CONFIG_COMEDI_CB_DAS16_CS)	+= cb_das16_cs.o
 obj-$(CONFIG_COMEDI_DAS08_CS)		+= das08_cs.o
 obj-$(CONFIG_COMEDI_NI_DAQ_700_CS)	+= ni_daq_700.o
@@ -125,7 +125,7 @@ obj-$(CONFIG_COMEDI_NI_LABPC_CS)	+= ni_labpc_cs.o
 obj-$(CONFIG_COMEDI_NI_MIO_CS)		+= ni_mio_cs.o
 obj-$(CONFIG_COMEDI_QUATECH_DAQP_CS)	+= quatech_daqp_cs.o
 
-# Comedi USB drivers
+
 obj-$(CONFIG_COMEDI_DT9812)		+= dt9812.o
 obj-$(CONFIG_COMEDI_NI_USB6501)		+= ni_usb6501.o
 obj-$(CONFIG_COMEDI_USBDUX)		+= usbdux.o
@@ -133,7 +133,7 @@ obj-$(CONFIG_COMEDI_USBDUXFAST)		+= usbduxfast.o
 obj-$(CONFIG_COMEDI_USBDUXSIGMA)	+= usbduxsigma.o
 obj-$(CONFIG_COMEDI_VMK80XX)		+= vmk80xx.o
 
-# Comedi NI drivers
+
 obj-$(CONFIG_COMEDI_MITE)		+= mite.o
 obj-$(CONFIG_COMEDI_NI_TIO)		+= ni_tio.o
 obj-$(CONFIG_COMEDI_NI_TIOCMD)		+= ni_tiocmd.o

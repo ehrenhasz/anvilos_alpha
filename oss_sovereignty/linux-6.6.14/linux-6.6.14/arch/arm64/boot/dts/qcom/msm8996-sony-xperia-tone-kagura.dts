@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "msm8996-sony-xperia-tone.dtsi"
-/ {
-	model = "Sony Xperia XZ";
-	compatible = "sony,kagura-row", "qcom,msm8996";
-	chassis-type = "handset";
-};

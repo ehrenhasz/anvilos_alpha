@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-only
+
 obj-$(CONFIG_CRYPTO_DEV_OCTEONTX2_CPT) += rvu_cptcommon.o rvu_cptpf.o rvu_cptvf.o
 
 rvu_cptcommon-objs := cn10k_cpt.o otx2_cptlf.o otx2_cpt_mbox_common.o

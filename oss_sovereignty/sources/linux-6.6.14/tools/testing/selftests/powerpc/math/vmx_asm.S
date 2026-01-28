@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2015, Cyril Bur, IBM Corp.
- */
+
+
 
 #include "basic_asm.h"
 #include "vmx_asm.h"

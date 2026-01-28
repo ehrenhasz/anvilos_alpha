@@ -1,13 +1,13 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 obj-$(CONFIG_SUNXI_CCU)		+= sunxi-ccu.o
 
-# Common objects
+
 sunxi-ccu-y			+= ccu_common.o
 sunxi-ccu-y			+= ccu_mmc_timing.o
 sunxi-ccu-y			+= ccu_reset.o
 
-# Base clock types
+
 sunxi-ccu-y			+= ccu_div.o
 sunxi-ccu-y			+= ccu_frac.o
 sunxi-ccu-y			+= ccu_gate.o
@@ -16,14 +16,14 @@ sunxi-ccu-y			+= ccu_mult.o
 sunxi-ccu-y			+= ccu_phase.o
 sunxi-ccu-y			+= ccu_sdm.o
 
-# Multi-factor clocks
+
 sunxi-ccu-y			+= ccu_nk.o
 sunxi-ccu-y			+= ccu_nkm.o
 sunxi-ccu-y			+= ccu_nkmp.o
 sunxi-ccu-y			+= ccu_nm.o
 sunxi-ccu-y			+= ccu_mp.o
 
-# SoC support
+
 obj-$(CONFIG_SUNIV_F1C100S_CCU)	+= suniv-f1c100s-ccu.o
 obj-$(CONFIG_SUN20I_D1_CCU)	+= sun20i-d1-ccu.o
 obj-$(CONFIG_SUN20I_D1_R_CCU)	+= sun20i-d1-r-ccu.o

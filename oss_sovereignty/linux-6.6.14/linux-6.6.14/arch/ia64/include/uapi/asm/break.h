@@ -1,6 +1,0 @@
-#ifndef _ASM_IA64_BREAK_H
-#define _ASM_IA64_BREAK_H
-#define __IA64_BREAK_KDB		0x80100
-#define __IA64_BREAK_KPROBE		0x81000  
-#define __IA64_BREAK_SYSCALL		0x100000
-#endif  

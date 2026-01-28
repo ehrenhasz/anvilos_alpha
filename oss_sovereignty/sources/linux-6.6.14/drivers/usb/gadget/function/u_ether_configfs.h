@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * u_ether_configfs.h
- *
- * Utility definitions for configfs support in USB Ethernet functions
- *
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>
- */
+
+
 
 #ifndef __U_ETHER_CONFIGFS_H
 #define __U_ETHER_CONFIGFS_H
@@ -197,4 +188,4 @@ out:									\
 									\
 	CONFIGFS_ATTR(_f_##_opts_, _n_)
 
-#endif /* __U_ETHER_CONFIGFS_H */
+#endif 

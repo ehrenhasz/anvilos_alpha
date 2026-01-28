@@ -210,13 +210,13 @@ set cpo-=C
 " START_INDENT
 syn region Text
 \ start='foo'
-#\ comment
+
 \ end='bar'
 " END_INDENT
 
 " START_INDENT
 au CursorHold * echom 'BEFORE bar'
-#\ some comment
+
 | echom 'AFTER bar'
 " END_INDENT
 
@@ -286,14 +286,14 @@ enddef
 " START_INDENT
 echo {
 a: 0,
-# b
-# c
+
+
 }
 " END_INDENT
 
 " START_INDENT
 echo search(
-# comment
+
 '1'
 .. '2'
 )
@@ -301,16 +301,16 @@ echo search(
 
 " START_INDENT
 if true
-var v = (      # trailing "(" starts line continuation
-3 + 4      # nothing special
-)              # end of expression indicates continued line
-var x: number  # needs to align with previous "var"
+var v = (      
+3 + 4      
+)              
+var x: number  
 endif
 " END_INDENT
 
 " START_INDENT
-def Func() # {{{
-# comment
+def Func() 
+
 if true
 return
 endif
@@ -339,7 +339,7 @@ augroup END
 
 " START_INDENT
 var n =
-# comment
+
 1
 + 2
 
@@ -399,7 +399,7 @@ echo
 " START_INDENT
 try
 echo 1
-catch /pat /  # comment
+catch /pat /  
 echo 2
 endtry
 " END_INDENT
@@ -555,7 +555,7 @@ enddef
 " START_INDENT
 def Func(
 n: number)
-#
+
 echo
 enddef
 " END_INDENT
@@ -564,8 +564,8 @@ enddef
 " INDENT_AT  this-line
 def Func(
 	n: number)
-    #
-echo  # this-line
+    
+echo  
 enddef
 " END_INDENT
 
@@ -668,8 +668,8 @@ endif
 " START_INDENT
 var d = {
 a: 0,
-# a ' quote {{{
-#}}}
+
+
 b: 0,
 }
 " END_INDENT
@@ -788,10 +788,10 @@ enddef
 " END_INDENT
 
 " START_INDENT
-# test for control-flow keyword followed by commented fold marker {{{
+
 if true
 echo
-endif #}}}
+endif 
 " END_INDENT
 
 " START_INDENT

@@ -37,8 +37,8 @@ class PluginMgr:
             for fn in filenames:
                 if (fn.endswith('.py') and
                     not fn == '__init__.py' and
-                    not fn.startswith('#') and
-                    not fn.startswith('.#')):
+                    not fn.startswith('
+                    not fn.startswith('.
                     mn = fn[0:-3]
                     foo = importlib.import_module('plugins.' + mn)
                     self.plugins[mn] = foo
@@ -414,7 +414,7 @@ def test_runner(pm, args, filtered_tests):
             index += 1
             continue
         try:
-            badtest = tidx  # in case it goes bad
+            badtest = tidx  
             res = run_one_test(pm, args, index, tidx)
             tsr.add_resultdata(res)
         except PluginMgrTestFail as pmtf:
@@ -707,7 +707,7 @@ def set_operation_mode(pm, parser, args, remaining):
     if args.list:
         list_test_cases(alltests)
         exit(0)
-    exit_code = 0 # KSFT_PASS
+    exit_code = 0 
     if len(alltests):
         req_plugins = pm.get_required_plugins(alltests)
         try:
@@ -717,7 +717,7 @@ def set_operation_mode(pm, parser, args, remaining):
             print('{}'.format(pde.missing_pg))
         catresults = test_runner(pm, args, alltests)
         if catresults.count_failures() != 0:
-            exit_code = 1 # KSFT_FAIL
+            exit_code = 1 
         if args.format == 'none':
             print('Test results output suppression requested\n')
         else:
@@ -742,7 +742,7 @@ def set_operation_mode(pm, parser, args, remaining):
                         gid=int(os.getenv('SUDO_GID')))
     else:
         print('No tests found\n')
-        exit_code = 4 # KSFT_SKIP
+        exit_code = 4 
     exit(exit_code)
 def main():
     """

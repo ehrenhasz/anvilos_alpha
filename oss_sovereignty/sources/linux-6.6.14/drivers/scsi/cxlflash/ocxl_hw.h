@@ -1,14 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * CXL Flash Device Driver
- *
- * Written by: Matthew R. Ochs <mrochs@linux.vnet.ibm.com>, IBM Corporation
- *	       Uma Krishnan <ukrishn@linux.vnet.ibm.com>, IBM Corporation
- *
- * Copyright (C) 2018 IBM Corporation
- */
 
-#define OCXL_MAX_IRQS	4	/* Max interrupts per process */
+
+
+#define OCXL_MAX_IRQS	4	
 
 struct ocxlflash_irqs {
 	int hwirq;
@@ -16,29 +9,29 @@ struct ocxlflash_irqs {
 	void __iomem *vtrig;
 };
 
-/* OCXL hardware AFU associated with the host */
+
 struct ocxl_hw_afu {
-	struct ocxlflash_context *ocxl_ctx; /* Host context */
-	struct pci_dev *pdev;		/* PCI device */
-	struct device *dev;		/* Generic device */
-	bool perst_same_image;		/* Same image loaded on perst */
+	struct ocxlflash_context *ocxl_ctx; 
+	struct pci_dev *pdev;		
+	struct device *dev;		
+	bool perst_same_image;		
 
-	struct ocxl_fn_config fcfg;	/* DVSEC config of the function */
-	struct ocxl_afu_config acfg;	/* AFU configuration data */
+	struct ocxl_fn_config fcfg;	
+	struct ocxl_afu_config acfg;	
 
-	int fn_actag_base;		/* Function acTag base */
-	int fn_actag_enabled;		/* Function acTag number enabled */
-	int afu_actag_base;		/* AFU acTag base */
-	int afu_actag_enabled;		/* AFU acTag number enabled */
+	int fn_actag_base;		
+	int fn_actag_enabled;		
+	int afu_actag_base;		
+	int afu_actag_enabled;		
 
-	phys_addr_t ppmmio_phys;	/* Per process MMIO space */
-	phys_addr_t gmmio_phys;		/* Global AFU MMIO space */
-	void __iomem *gmmio_virt;	/* Global MMIO map */
+	phys_addr_t ppmmio_phys;	
+	phys_addr_t gmmio_phys;		
+	void __iomem *gmmio_virt;	
 
-	void *link_token;		/* Link token for the SPA */
-	struct idr idr;			/* IDR to manage contexts */
-	int max_pasid;			/* Maximum number of contexts */
-	bool is_present;		/* Function has AFUs defined */
+	void *link_token;		
+	struct idr idr;			
+	int max_pasid;			
+	bool is_present;		
 };
 
 enum ocxlflash_ctx_state {
@@ -48,25 +41,25 @@ enum ocxlflash_ctx_state {
 };
 
 struct ocxlflash_context {
-	struct ocxl_hw_afu *hw_afu;	/* HW AFU back pointer */
-	struct address_space *mapping;	/* Mapping for pseudo filesystem */
-	bool master;			/* Whether this is a master context */
-	int pe;				/* Process element */
+	struct ocxl_hw_afu *hw_afu;	
+	struct address_space *mapping;	
+	bool master;			
+	int pe;				
 
-	phys_addr_t psn_phys;		/* Process mapping */
-	u64 psn_size;			/* Process mapping size */
+	phys_addr_t psn_phys;		
+	u64 psn_size;			
 
-	spinlock_t slock;		/* Protects irq/fault/event updates */
-	wait_queue_head_t wq;		/* Wait queue for poll and interrupts */
-	struct mutex state_mutex;	/* Mutex to update context state */
-	enum ocxlflash_ctx_state state;	/* Context state */
+	spinlock_t slock;		
+	wait_queue_head_t wq;		
+	struct mutex state_mutex;	
+	enum ocxlflash_ctx_state state;	
 
-	struct ocxlflash_irqs *irqs;	/* Pointer to array of structures */
-	int num_irqs;			/* Number of interrupts */
-	bool pending_irq;		/* Pending interrupt on the context */
-	ulong irq_bitmap;		/* Bits indicating pending irq num */
+	struct ocxlflash_irqs *irqs;	
+	int num_irqs;			
+	bool pending_irq;		
+	ulong irq_bitmap;		
 
-	u64 fault_addr;			/* Address that triggered the fault */
-	u64 fault_dsisr;		/* Value of dsisr register at fault */
-	bool pending_fault;		/* Pending translation fault */
+	u64 fault_addr;			
+	u64 fault_dsisr;		
+	bool pending_fault;		
 };

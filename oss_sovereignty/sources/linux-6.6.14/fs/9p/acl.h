@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 */
-/*
- * Copyright IBM Corporation, 2010
- * Author Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
- */
+
+
 #ifndef FS_9P_ACL_H
 #define FS_9P_ACL_H
 
@@ -51,4 +48,4 @@ static inline int v9fs_acl_mode(struct inode *dir, umode_t *modep,
 }
 
 #endif
-#endif /* FS_9P_XATTR_H */
+#endif 

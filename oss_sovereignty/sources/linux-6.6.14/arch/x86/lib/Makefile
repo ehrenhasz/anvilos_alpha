@@ -1,20 +1,20 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for x86 specific library files.
-#
 
-# Produces uninteresting flaky coverage.
+
+
+
+
+
 KCOV_INSTRUMENT_delay.o	:= n
 
-# KCSAN uses udelay for introducing watchpoint delay; avoid recursion.
+
 KCSAN_SANITIZE_delay.o := n
 ifdef CONFIG_KCSAN
-# In case KCSAN+lockdep+ftrace are enabled, disable ftrace for delay.o to avoid
-# lockdep -> [other libs] -> KCSAN -> udelay -> ftrace -> lockdep recursion.
+
+
 CFLAGS_REMOVE_delay.o = $(CC_FLAGS_FTRACE)
 endif
 
-# Early boot use of cmdline; don't instrument it
+
 ifdef CONFIG_AMD_MEM_ENCRYPT
 KCOV_INSTRUMENT_cmdline.o := n
 KASAN_SANITIZE_cmdline.o  := n

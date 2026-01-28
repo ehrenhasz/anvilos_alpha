@@ -17,7 +17,7 @@ class RungeKutta(object):
                     feval = f(*arguments)
                 except OverflowError:
                     return False
-                if abs(feval) > 1e2:  # stop integrating
+                if abs(feval) > 1e2:  
                     return False
                 ktmp[if_] = self.dh * feval
             k = ktmp[:]
@@ -38,9 +38,9 @@ class RungeKutta(object):
     def series(self):
         return zip(*self.Trajectory)
 sysSM = (
-    lambda *a: 41.0 / 96.0 / math.pi**2 * a[1] ** 3,  # g1
-    lambda *a: -19.0 / 96.0 / math.pi**2 * a[2] ** 3,  # g2
-    lambda *a: -42.0 / 96.0 / math.pi**2 * a[3] ** 3,  # g3
+    lambda *a: 41.0 / 96.0 / math.pi**2 * a[1] ** 3,  
+    lambda *a: -19.0 / 96.0 / math.pi**2 * a[2] ** 3,  
+    lambda *a: -42.0 / 96.0 / math.pi**2 * a[3] ** 3,  
     lambda *a: 1.0
     / 16.0
     / math.pi**2
@@ -49,7 +49,7 @@ sysSM = (
         - 8.0 * a[3] ** 2 * a[4]
         - 9.0 / 4.0 * a[2] ** 2 * a[4]
         - 17.0 / 12.0 * a[1] ** 2 * a[4]
-    ),  # yt
+    ),  
     lambda *a: 1.0
     / 16.0
     / math.pi**2
@@ -61,7 +61,7 @@ sysSM = (
         + 9.0 / 8.0 * a[2] ** 4
         + 3.0 / 8.0 * a[1] ** 4
         + 3.0 / 4.0 * a[2] ** 2 * a[1] ** 2
-    ),  # lambda
+    ),  
 )
 def drange(start, stop, step):
     r = start
@@ -85,8 +85,8 @@ def phaseDiagram(system, trajStart, trajPlot, h=0.1, tend=1.0, range=1.0):
                 p2 = rk.Trajectory[2 * l]
                 x1, y1 = trajPlot(p1)
                 x2, y2 = trajPlot(p2)
-                dx = -0.5 * (y2 - y1)  # orthogonal to line
-                dy = 0.5 * (x2 - x1)  # orthogonal to line
+                dx = -0.5 * (y2 - y1)  
+                dy = 0.5 * (x2 - x1)  
                 print(x1 + dx, y1 + dy)
                 print(x2, y2)
                 print(x1 - dx, y1 - dy)
@@ -98,4 +98,4 @@ def singleTraj(system, trajStart, h=0.02, tend=1.0):
     for i in range(len(rk.Trajectory)):
         tr = rk.Trajectory[i]
         print(" ".join(["{:.4f}".format(t) for t in tr]))
-singleTraj(sysSM, [0.354, 0.654, 1.278, 0.983, 0.131], h=0.5, tend=math.log(10**17))  # true values
+singleTraj(sysSM, [0.354, 0.654, 1.278, 0.983, 0.131], h=0.5, tend=math.log(10**17))  

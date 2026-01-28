@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef _KMEMLEAK_H
 #define _KMEMLEAK_H
 

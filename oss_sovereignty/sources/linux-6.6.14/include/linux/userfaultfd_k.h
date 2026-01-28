@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  include/linux/userfaultfd_k.h
- *
- *  Copyright (C) 2015  Red Hat, Inc.
- *
- */
+
+
 
 #ifndef _LINUX_USERFAULTFD_K_H
 #define _LINUX_USERFAULTFD_K_H
 
 #ifdef CONFIG_USERFAULTFD
 
-#include <linux/userfaultfd.h> /* linux/include/uapi/linux/userfaultfd.h */
+#include <linux/userfaultfd.h> 
 
 #include <linux/fcntl.h>
 #include <linux/mm.h>
@@ -20,16 +15,10 @@
 #include <asm-generic/pgtable_uffd.h>
 #include <linux/hugetlb_inline.h>
 
-/* The set of all possible UFFD-related VM flags. */
+
 #define __VM_UFFD_FLAGS (VM_UFFD_MISSING | VM_UFFD_WP | VM_UFFD_MINOR)
 
-/*
- * CAREFUL: Check include/uapi/asm-generic/fcntl.h when defining
- * new flags, since they might collide with O_* ones. We want
- * to re-use O_* flags that couldn't possibly have a meaning
- * from userfaultfd, in order to leave a free define-space for
- * shared O_* flags.
- */
+
 #define UFFD_CLOEXEC O_CLOEXEC
 #define UFFD_NONBLOCK O_NONBLOCK
 
@@ -38,10 +27,10 @@
 
 extern vm_fault_t handle_userfault(struct vm_fault *vmf, unsigned long reason);
 
-/* A combined operation mode + behavior flags. */
+
 typedef unsigned int __bitwise uffd_flags_t;
 
-/* Mutually exclusive modes of operation. */
+
 enum mfill_atomic_mode {
 	MFILL_ATOMIC_COPY,
 	MFILL_ATOMIC_ZEROPAGE,
@@ -66,7 +55,7 @@ static inline uffd_flags_t uffd_flags_set_mode(uffd_flags_t flags, enum mfill_at
 	return flags | ((__force uffd_flags_t) mode);
 }
 
-/* Flags controlling behavior. These behavior changes are mode-independent. */
+
 #define MFILL_ATOMIC_WP MFILL_ATOMIC_FLAG(0)
 
 extern int mfill_atomic_install_pte(pmd_t *dst_pmd,
@@ -93,36 +82,20 @@ extern int mwriteprotect_range(struct mm_struct *dst_mm,
 extern long uffd_wp_range(struct vm_area_struct *vma,
 			  unsigned long start, unsigned long len, bool enable_wp);
 
-/* mm helpers */
+
 static inline bool is_mergeable_vm_userfaultfd_ctx(struct vm_area_struct *vma,
 					struct vm_userfaultfd_ctx vm_ctx)
 {
 	return vma->vm_userfaultfd_ctx.ctx == vm_ctx.ctx;
 }
 
-/*
- * Never enable huge pmd sharing on some uffd registered vmas:
- *
- * - VM_UFFD_WP VMAs, because write protect information is per pgtable entry.
- *
- * - VM_UFFD_MINOR VMAs, because otherwise we would never get minor faults for
- *   VMAs which share huge pmds. (If you have two mappings to the same
- *   underlying pages, and fault in the non-UFFD-registered one with a write,
- *   with huge pmd sharing this would *also* setup the second UFFD-registered
- *   mapping, and we'd not get minor faults.)
- */
+
 static inline bool uffd_disable_huge_pmd_share(struct vm_area_struct *vma)
 {
 	return vma->vm_flags & (VM_UFFD_WP | VM_UFFD_MINOR);
 }
 
-/*
- * Don't do fault around for either WP or MINOR registered uffd range.  For
- * MINOR registered range, fault around will be a total disaster and ptes can
- * be installed without notifications; for WP it should mostly be fine as long
- * as the fault around checks for pte_none() before the installation, however
- * to be super safe we just forbid it.
- */
+
 static inline bool uffd_disable_fault_around(struct vm_area_struct *vma)
 {
 	return vma->vm_flags & (VM_UFFD_WP | VM_UFFD_MINOR);
@@ -167,11 +140,7 @@ static inline bool vma_can_userfault(struct vm_area_struct *vma,
 	    (!is_vm_hugetlb_page(vma) && !vma_is_shmem(vma)))
 		return false;
 #ifndef CONFIG_PTE_MARKER_UFFD_WP
-	/*
-	 * If user requested uffd-wp but not enabled pte markers for
-	 * uffd-wp, then shmem & hugetlbfs are not supported but only
-	 * anonymous.
-	 */
+	
 	if ((vm_flags & VM_UFFD_WP) && !vma_is_anonymous(vma))
 		return false;
 #endif
@@ -198,9 +167,9 @@ extern void userfaultfd_unmap_complete(struct mm_struct *mm,
 				       struct list_head *uf);
 extern bool userfaultfd_wp_unpopulated(struct vm_area_struct *vma);
 
-#else /* CONFIG_USERFAULTFD */
+#else 
 
-/* mm helpers */
+
 static inline vm_fault_t handle_userfault(struct vm_fault *vmf,
 				unsigned long reason)
 {
@@ -297,22 +266,19 @@ static inline bool userfaultfd_wp_unpopulated(struct vm_area_struct *vma)
 	return false;
 }
 
-#endif /* CONFIG_USERFAULTFD */
+#endif 
 
 static inline bool userfaultfd_wp_use_markers(struct vm_area_struct *vma)
 {
-	/* Only wr-protect mode uses pte markers */
+	
 	if (!userfaultfd_wp(vma))
 		return false;
 
-	/* File-based uffd-wp always need markers */
+	
 	if (!vma_is_anonymous(vma))
 		return true;
 
-	/*
-	 * Anonymous uffd-wp only needs the markers if WP_UNPOPULATED
-	 * enabled (to apply markers on zero pages).
-	 */
+	
 	return userfaultfd_wp_unpopulated(vma);
 }
 
@@ -342,10 +308,7 @@ static inline bool pte_marker_uffd_wp(pte_t pte)
 #endif
 }
 
-/*
- * Returns true if this is a swap pte and was uffd-wp wr-protected in either
- * forms (pte marker or a normal swap pte), false otherwise.
- */
+
 static inline bool pte_swp_uffd_wp_any(pte_t pte)
 {
 #ifdef CONFIG_PTE_MARKER_UFFD_WP
@@ -361,4 +324,4 @@ static inline bool pte_swp_uffd_wp_any(pte_t pte)
 	return false;
 }
 
-#endif /* _LINUX_USERFAULTFD_K_H */
+#endif 

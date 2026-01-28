@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG <wei_wang@realsil.com.cn>
- */
+
+
 
 #ifndef __RTSX_PCR_H
 #define __RTSX_PCR_H
@@ -78,10 +72,10 @@ void rts5228_init_params(struct rtsx_pcr *pcr);
 static inline u8 map_sd_drive(int idx)
 {
 	u8 sd_drive[4] = {
-		0x01,	/* Type D */
-		0x02,	/* Type C */
-		0x05,	/* Type A */
-		0x03	/* Type B */
+		0x01,	
+		0x02,	
+		0x05,	
+		0x03	
 	};
 
 	return sd_drive[idx];
@@ -115,7 +109,7 @@ do {									\
 	pcr->ms_pull_ctl_disable_tbl = __device##_ms_pull_ctl_disable_tbl; \
 } while (0)
 
-/* generic operations */
+
 int rtsx_gops_pm_reset(struct rtsx_pcr *pcr);
 int rtsx_set_ltr_latency(struct rtsx_pcr *pcr, u32 latency);
 int rtsx_set_l1off_sub(struct rtsx_pcr *pcr, u8 val);

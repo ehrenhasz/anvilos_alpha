@@ -4,7 +4,7 @@
 #define MICROPY_HW_XOSC32K                  (1)
 #define MICROPY_HW_QSPIFLASH                GD25Q16C
 
-// defines for WLAN
+
 #define MICROPY_HW_WIFI_SPI_ID              (2)
 #define MICROPY_HW_WIFI_SPI_BAUDRATE        (8000000)
 
@@ -15,9 +15,9 @@
 #define MICROPY_HW_NINA_ACK                 (36)
 #define MICROPY_HW_NINA_GPIO1               (15)
 #define MICROPY_HW_NINA_RESET               (37)
-// #define MICROPY_HW_NINA_GPIO0               (33)
 
-// defines for BLE
+
+
 #define MICROPY_PY_BLUETOOTH_NINAW10        (1)
 
 #define MICROPY_HW_BLE_UART_ID              (0)

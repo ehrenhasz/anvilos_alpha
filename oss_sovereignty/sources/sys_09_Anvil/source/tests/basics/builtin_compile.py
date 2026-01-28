@@ -26,6 +26,6 @@ def test():
         exec(compile('noexist', 'file', 'exec'))
     except NameError:
         print("NameError")
-    print(x) # check 'x' still exists as a global
+    print(x) 
     print(type(hash(compile("", "", "exec"))))
 test()

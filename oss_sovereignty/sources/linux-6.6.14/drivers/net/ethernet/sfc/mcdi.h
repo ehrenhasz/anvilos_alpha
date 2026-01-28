@@ -1,25 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2008-2013 Solarflare Communications Inc.
- */
+
+
 
 #ifndef EFX_MCDI_H
 #define EFX_MCDI_H
 
-/**
- * enum efx_mcdi_state - MCDI request handling state
- * @MCDI_STATE_QUIESCENT: No pending MCDI requests. If the caller holds the
- *	mcdi @iface_lock then they are able to move to %MCDI_STATE_RUNNING
- * @MCDI_STATE_RUNNING_SYNC: There is a synchronous MCDI request pending.
- *	Only the thread that moved into this state is allowed to move out of it.
- * @MCDI_STATE_RUNNING_ASYNC: There is an asynchronous MCDI request pending.
- * @MCDI_STATE_PROXY_WAIT: An MCDI request has completed with a response that
- *	indicates we must wait for a proxy try again message.
- * @MCDI_STATE_COMPLETED: An MCDI request has completed, but the owning thread
- *	has not yet consumed the result. For all other threads, equivalent to
- *	%MCDI_STATE_RUNNING.
- */
+
 enum efx_mcdi_state {
 	MCDI_STATE_QUIESCENT,
 	MCDI_STATE_RUNNING_SYNC,
@@ -28,42 +13,14 @@ enum efx_mcdi_state {
 	MCDI_STATE_COMPLETED,
 };
 
-/**
- * enum efx_mcdi_mode - MCDI transaction mode
- * @MCDI_MODE_POLL: poll for MCDI completion, until timeout
- * @MCDI_MODE_EVENTS: wait for an mcdi_event.  On timeout, poll once
- * @MCDI_MODE_FAIL: we think MCDI is dead, so fail-fast all calls
- */
+
 enum efx_mcdi_mode {
 	MCDI_MODE_POLL,
 	MCDI_MODE_EVENTS,
 	MCDI_MODE_FAIL,
 };
 
-/**
- * struct efx_mcdi_iface - MCDI protocol context
- * @efx: The associated NIC.
- * @state: Request handling state. Waited for by @wq.
- * @mode: Poll for mcdi completion, or wait for an mcdi_event.
- * @wq: Wait queue for threads waiting for @state != %MCDI_STATE_RUNNING
- * @new_epoch: Indicates start of day or start of MC reboot recovery
- * @iface_lock: Serialises access to @seqno, @credits and response metadata
- * @seqno: The next sequence number to use for mcdi requests.
- * @credits: Number of spurious MCDI completion events allowed before we
- *     trigger a fatal error
- * @resprc: Response error/success code (Linux numbering)
- * @resp_hdr_len: Response header length
- * @resp_data_len: Response data (SDU or error) length
- * @async_lock: Serialises access to @async_list while event processing is
- *	enabled
- * @async_list: Queue of asynchronous requests
- * @async_timer: Timer for asynchronous request timeout
- * @logging_buffer: buffer that may be used to build MCDI tracing messages
- * @logging_enabled: whether to trace MCDI
- * @proxy_rx_handle: Most recently received proxy authorisation handle
- * @proxy_rx_status: Status of most recent proxy authorisation
- * @proxy_rx_wq: Wait queue for updates to proxy_rx_handle
- */
+
 struct efx_mcdi_iface {
 	struct efx_nic *efx;
 	enum efx_mcdi_state state;
@@ -110,12 +67,7 @@ struct efx_mcdi_mtd_partition {
 #define to_efx_mcdi_mtd_partition(mtd)				\
 	container_of(mtd, struct efx_mcdi_mtd_partition, common.mtd)
 
-/**
- * struct efx_mcdi_data - extra state for NICs that implement MCDI
- * @iface: Interface/protocol state
- * @hwmon: Hardware monitor state
- * @fn_flags: Flags for this function, as returned by %MC_CMD_DRV_ATTACH.
- */
+
 struct efx_mcdi_data {
 	struct efx_mcdi_iface iface;
 #ifdef CONFIG_SFC_MCDI_MON
@@ -185,11 +137,7 @@ void efx_mcdi_flush_async(struct efx_nic *efx);
 void efx_mcdi_process_event(struct efx_channel *channel, efx_qword_t *event);
 void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
 
-/* We expect that 16- and 32-bit fields in MCDI requests and responses
- * are appropriately aligned, but 64-bit fields are only
- * 32-bit-aligned.  Also, on Siena we must copy to the MC shared
- * memory strictly 32 bits at a time, so add any necessary padding.
- */
+
 #define MCDI_TX_BUF_LEN(_len) DIV_ROUND_UP((_len), 4)
 #define _MCDI_DECLARE_BUF(_name, _len)					\
 	efx_dword_t _name[DIV_ROUND_UP(_len, 4)]
@@ -201,10 +149,7 @@ void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
 	((u8 *)(_buf) + (_offset))
 #define MCDI_PTR(_buf, _field)						\
 	_MCDI_PTR(_buf, MC_CMD_ ## _field ## _OFST)
-/* Use MCDI_STRUCT_ functions to access members of MCDI structuredefs.
- * _buf should point to the start of the structure, typically obtained with
- * MCDI_DECLARE_STRUCT_PTR(structure) = _MCDI_DWORD(mcdi_buf, FIELD_WHICH_IS_STRUCT);
- */
+
 #define MCDI_STRUCT_PTR(_buf, _field)					\
 	_MCDI_PTR(_buf, _field ## _OFST)
 #define _MCDI_CHECK_ALIGN(_ofst, _align)				\
@@ -246,7 +191,7 @@ void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
 #define MCDI_STRUCT_WORD(_buf, _field)                                  \
 	((void)BUILD_BUG_ON_ZERO(_field ## _LEN != 2),  \
 	le16_to_cpu(*(__force const __le16 *)MCDI_STRUCT_PTR(_buf, _field)))
-/* Write a 16-bit field defined in the protocol as being big-endian. */
+
 #define MCDI_SET_WORD_BE(_buf, _field, _value) do {			\
 	BUILD_BUG_ON(MC_CMD_ ## _field ## _LEN != 2);			\
 	BUILD_BUG_ON(MC_CMD_ ## _field ## _OFST & 1);			\
@@ -265,7 +210,7 @@ void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
 	EFX_DWORD_FIELD(*_MCDI_DWORD(_buf, _field), EFX_DWORD_0)
 #define MCDI_STRUCT_DWORD(_buf, _field)                                 \
 	EFX_DWORD_FIELD(*_MCDI_STRUCT_DWORD(_buf, _field), EFX_DWORD_0)
-/* Write a 32-bit field defined in the protocol as being big-endian. */
+
 #define MCDI_STRUCT_SET_DWORD_BE(_buf, _field, _value) do {		\
 	BUILD_BUG_ON(_field ## _LEN != 4);				\
 	BUILD_BUG_ON(_field ## _OFST & 3);				\
@@ -444,4 +389,4 @@ int efx_mcdi_mtd_sync(struct mtd_info *mtd);
 void efx_mcdi_mtd_rename(struct efx_mtd_partition *part);
 #endif
 
-#endif /* EFX_MCDI_H */
+#endif 

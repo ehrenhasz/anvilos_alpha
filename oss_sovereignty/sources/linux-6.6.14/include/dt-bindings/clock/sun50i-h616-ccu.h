@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (C) 2020 Arm Ltd.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_SUN50I_H616_H_
 #define _DT_BINDINGS_CLK_SUN50I_H616_H_
@@ -113,4 +111,4 @@
 #define CLK_BUS_HDCP		127
 #define CLK_PLL_SYSTEM_32K	128
 
-#endif /* _DT_BINDINGS_CLK_SUN50I_H616_H_ */
+#endif 

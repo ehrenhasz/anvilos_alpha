@@ -142,10 +142,10 @@ fbuf.poly(12, 2, poly_star, col)
 fbuf.poly(12, 2, poly_star, col_fill, True)
 print_buffer(buf, w, h)
 print()
-poly_empty = array("h")  # Will draw nothing at all.
-poly_one = array("h", (20, 20))  # Will draw a single point.
-poly_two = array("h", (10, 10, 5, 5))  # Will draw a single line.
-poly_wrong_length = array("h", (2, 2, 4))  # Will round down to one point.
+poly_empty = array("h")  
+poly_one = array("h", (20, 20))  
+poly_two = array("h", (10, 10, 5, 5))  
+poly_wrong_length = array("h", (2, 2, 4))  
 fbuf.fill(0)
 fbuf.poly(0, 0, poly_empty, col)
 fbuf.poly(0, 0, poly_one, col)

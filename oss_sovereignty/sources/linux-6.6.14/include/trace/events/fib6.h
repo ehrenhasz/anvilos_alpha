@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM fib6
 
@@ -83,7 +83,7 @@ TRACE_EVENT(fib6_table_lookup,
 		  __entry->name, __entry->gw, __entry->err)
 );
 
-#endif /* _TRACE_FIB6_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

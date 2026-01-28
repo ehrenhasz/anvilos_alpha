@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * TI TPS68470 PMIC platform data definition.
- *
- * Copyright (c) 2021 Red Hat Inc.
- *
- * Red Hat authors:
- * Hans de Goede <hdegoede@redhat.com>
- */
+
+
 #ifndef __PDATA_TPS68470_H
 #define __PDATA_TPS68470_H
 

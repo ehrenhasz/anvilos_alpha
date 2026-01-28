@@ -1,42 +1,10 @@
-/**
-  ******************************************************************************
-  * @file    usbh_def.h
-  * @author  MCD Application Team
-  * @version V3.0.0
-  * @date    18-February-2014
-  * @brief   Definitions used in the USB host library
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
-  */ 
+ 
 
-/** @addtogroup USBH_LIB
-  * @{
-  */
 
-/** @addtogroup USBH_LIB_CORE
-* @{
-*/
+
+
   
-/** @defgroup USBH_DEF
-  * @brief This file is includes USB descriptors
-  * @{
-  */ 
+ 
 
 #ifndef  USBH_DEF_H
 #define  USBH_DEF_H
@@ -97,25 +65,25 @@
 #define  USB_LEN_OTG_DESC                               0x03
 #define  USB_LEN_SETUP_PKT                              0x08
 
-/* bmRequestType :D7 Data Phase Transfer Direction  */
+
 #define  USB_REQ_DIR_MASK                               0x80
 #define  USB_H2D                                        0x00
 #define  USB_D2H                                        0x80
 
-/* bmRequestType D6..5 Type */
+
 #define  USB_REQ_TYPE_STANDARD                          0x00
 #define  USB_REQ_TYPE_CLASS                             0x20
 #define  USB_REQ_TYPE_VENDOR                            0x40
 #define  USB_REQ_TYPE_RESERVED                          0x60
 
-/* bmRequestType D4..0 Recipient */
+
 #define  USB_REQ_RECIPIENT_DEVICE                       0x00
 #define  USB_REQ_RECIPIENT_INTERFACE                    0x01
 #define  USB_REQ_RECIPIENT_ENDPOINT                     0x02
 #define  USB_REQ_RECIPIENT_OTHER                        0x03
 
-/* Table 9-4. Standard Request Codes  */
-/* bRequest , Value */
+
+
 #define  USB_REQ_GET_STATUS                             0x00
 #define  USB_REQ_CLEAR_FEATURE                          0x01
 #define  USB_REQ_SET_FEATURE                            0x03
@@ -128,7 +96,7 @@
 #define  USB_REQ_SET_INTERFACE                          0x0B
 #define  USB_REQ_SYNCH_FRAME                            0x0C
 
-/* Table 9-5. Descriptor Types of USB Specifications */
+
 #define  USB_DESC_TYPE_DEVICE                              1
 #define  USB_DESC_TYPE_CONFIGURATION                       2
 #define  USB_DESC_TYPE_STRING                              3
@@ -147,8 +115,8 @@
 #define USB_INTERFACE_DESC_SIZE                            9
 #define USB_ENDPOINT_DESC_SIZE                             7
 
-/* Descriptor Type and Descriptor Index  */
-/* Use the following values when calling the function USBH_GetDescriptor  */
+
+
 #define  USB_DESC_DEVICE                    ((USB_DESC_TYPE_DEVICE << 8) & 0xFF00)
 #define  USB_DESC_CONFIGURATION             ((USB_DESC_TYPE_CONFIGURATION << 8) & 0xFF00)
 #define  USB_DESC_STRING                    ((USB_DESC_TYPE_STRING << 8) & 0xFF00)
@@ -179,9 +147,7 @@
 #define USBH_DEVICE_ADDRESS                             1
 
 
-/**
-  * @}
-  */ 
+ 
 
 
 #define USBH_CONFIGURATION_DESCRIPTOR_SIZE (USB_CONFIGURATION_DESC_SIZE \
@@ -232,21 +198,19 @@ typedef struct _DeviceDescriptor
 {
   uint8_t   bLength;
   uint8_t   bDescriptorType;
-  uint16_t  bcdUSB;        /* USB Specification Number which device complies too */
+  uint16_t  bcdUSB;        
   uint8_t   bDeviceClass;
   uint8_t   bDeviceSubClass; 
   uint8_t   bDeviceProtocol;
-  /* If equal to Zero, each interface specifies its own class
-  code if equal to 0xFF, the class code is vendor specified.
-  Otherwise field is valid Class Code.*/
+  
   uint8_t   bMaxPacketSize;
-  uint16_t  idVendor;      /* Vendor ID (Assigned by USB Org) */
-  uint16_t  idProduct;     /* Product ID (Assigned by Manufacturer) */
-  uint16_t  bcdDevice;     /* Device Release Number */
-  uint8_t   iManufacturer;  /* Index of Manufacturer String Descriptor */
-  uint8_t   iProduct;       /* Index of Product String Descriptor */
-  uint8_t   iSerialNumber;  /* Index of Serial Number String Descriptor */
-  uint8_t   bNumConfigurations; /* Number of Possible Configurations */
+  uint16_t  idVendor;      
+  uint16_t  idProduct;     
+  uint16_t  bcdDevice;     
+  uint8_t   iManufacturer;  
+  uint8_t   iProduct;       
+  uint8_t   iSerialNumber;  
+  uint8_t   bNumConfigurations; 
 }
 USBH_DevDescTypeDef;
 
@@ -254,10 +218,10 @@ typedef struct _EndpointDescriptor
 {
   uint8_t   bLength;
   uint8_t   bDescriptorType;
-  uint8_t   bEndpointAddress;   /* indicates what endpoint this descriptor is describing */
-  uint8_t   bmAttributes;       /* specifies the transfer type. */
-  uint16_t  wMaxPacketSize;    /* Maximum Packet Size this endpoint is capable of sending or receiving */  
-  uint8_t   bInterval;          /* is used to specify the polling interval of certain transfers. */
+  uint8_t   bEndpointAddress;   
+  uint8_t   bmAttributes;       
+  uint16_t  wMaxPacketSize;      
+  uint8_t   bInterval;          
 }
 USBH_EpDescTypeDef;
 
@@ -266,12 +230,12 @@ typedef struct _InterfaceDescriptor
   uint8_t bLength;
   uint8_t bDescriptorType;
   uint8_t bInterfaceNumber;
-  uint8_t bAlternateSetting;    /* Value used to select alternative setting */
-  uint8_t bNumEndpoints;        /* Number of Endpoints used for this interface */
-  uint8_t bInterfaceClass;      /* Class Code (Assigned by USB Org) */
-  uint8_t bInterfaceSubClass;   /* Subclass Code (Assigned by USB Org) */
-  uint8_t bInterfaceProtocol;   /* Protocol Code */
-  uint8_t iInterface;           /* Index of String Descriptor Describing this interface */
+  uint8_t bAlternateSetting;    
+  uint8_t bNumEndpoints;        
+  uint8_t bInterfaceClass;      
+  uint8_t bInterfaceSubClass;   
+  uint8_t bInterfaceProtocol;   
+  uint8_t iInterface;           
   USBH_EpDescTypeDef               Ep_Desc[USBH_MAX_NUM_ENDPOINTS];   
 }
 USBH_InterfaceDescTypeDef;
@@ -281,18 +245,18 @@ typedef struct _ConfigurationDescriptor
 {
   uint8_t   bLength;
   uint8_t   bDescriptorType;
-  uint16_t  wTotalLength;        /* Total Length of Data Returned */
-  uint8_t   bNumInterfaces;       /* Number of Interfaces */
-  uint8_t   bConfigurationValue;  /* Value to use as an argument to select this configuration*/
-  uint8_t   iConfiguration;       /*Index of String Descriptor Describing this configuration */
-  uint8_t   bmAttributes;         /* D7 Bus Powered , D6 Self Powered, D5 Remote Wakeup , D4..0 Reserved (0)*/
-  uint8_t   bMaxPower;            /*Maximum Power Consumption */
+  uint16_t  wTotalLength;        
+  uint8_t   bNumInterfaces;       
+  uint8_t   bConfigurationValue;  
+  uint8_t   iConfiguration;       
+  uint8_t   bmAttributes;         
+  uint8_t   bMaxPower;            
   USBH_InterfaceDescTypeDef        Itf_Desc[USBH_MAX_NUM_INTERFACES];
 }
 USBH_CfgDescTypeDef;
 
 
-/* Following USB Host status */
+
 typedef enum 
 {
   USBH_OK   = 0,
@@ -304,9 +268,7 @@ typedef enum
 }USBH_StatusTypeDef;
 
 
-/** @defgroup USBH_CORE_Exported_Types
-  * @{
-  */
+
 
 typedef enum 
 {
@@ -316,7 +278,7 @@ typedef enum
     
 }USBH_SpeedTypeDef;
 
-/* Following states are used for gState */
+
 typedef enum 
 {
   HOST_IDLE =0,
@@ -334,7 +296,7 @@ typedef enum
   HOST_ABORT_STATE,  
 }HOST_StateTypeDef;  
 
-/* Following states are used for EnumerationState */
+
 typedef enum 
 {
   ENUM_IDLE = 0,
@@ -347,7 +309,7 @@ typedef enum
   ENUM_GET_SERIALNUM_STRING_DESC,
 } ENUM_StateTypeDef;  
 
-/* Following states are used for CtrlXferStateMachine */
+
 typedef enum 
 {
   CTRL_IDLE =0,
@@ -367,7 +329,7 @@ typedef enum
 }CTRL_StateTypeDef;  
 
 
-/* Following states are used for RequestState */
+
 typedef enum 
 {
   CMD_IDLE =0,
@@ -394,7 +356,7 @@ typedef enum
 }
 USBH_OSEventTypeDef;
 
-/* Control request structure */
+
 typedef struct 
 {
   uint8_t               pipe_in; 
@@ -409,7 +371,7 @@ typedef struct
 
 } USBH_CtrlTypeDef;
 
-/* Attached device structure */
+
 typedef struct
 {
 #if (USBH_KEEP_CFG_DESCRIPTOR == 1)  
@@ -427,7 +389,7 @@ typedef struct
 
 struct _USBH_HandleTypeDef;
 
-/* USB Host Class structure */
+
 typedef struct 
 {
   const char          *Name;
@@ -440,11 +402,11 @@ typedef struct
   void*                pData;
 } USBH_ClassTypeDef;
 
-/* USB Host handle structure */
+
 typedef struct _USBH_HandleTypeDef
 {
-  __IO HOST_StateTypeDef     gState;       /*  Host State Machine Value */
-  ENUM_StateTypeDef     EnumState;    /* Enumeration state Machine */
+  __IO HOST_StateTypeDef     gState;       
+  ENUM_StateTypeDef     EnumState;    
   CMD_StateTypeDef      RequestState;       
   USBH_CtrlTypeDef      Control;
   USBH_DeviceTypeDef    device;
@@ -468,13 +430,13 @@ typedef struct _USBH_HandleTypeDef
 #if  defined ( __GNUC__ )
   #ifndef __weak
     #define __weak   __attribute__((weak))
-  #endif /* __weak */
+  #endif 
   #ifndef __packed
     #define __packed __attribute__((__packed__))
-  #endif /* __packed */
-#endif /* __GNUC__ */
+  #endif 
+#endif 
 
 #endif
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
 

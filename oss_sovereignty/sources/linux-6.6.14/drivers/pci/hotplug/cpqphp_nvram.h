@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Compaq Hot Plug Controller Driver
- *
- * Copyright (C) 1995,2001 Compaq Computer Corporation
- * Copyright (C) 2001 Greg Kroah-Hartman (greg@kroah.com)
- *
- * All rights reserved.
- *
- * Send feedback to <greg@kroah.com>
- *
- */
+
+
 
 #ifndef _CPQPHP_NVRAM_H
 #define _CPQPHP_NVRAM_H

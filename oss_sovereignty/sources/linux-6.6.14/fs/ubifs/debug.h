@@ -1,77 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of UBIFS.
- *
- * Copyright (C) 2006-2008 Nokia Corporation.
- *
- * Authors: Artem Bityutskiy (Битюцкий Артём)
- *          Adrian Hunter
- */
+
+
 
 #ifndef __UBIFS_DEBUG_H__
 #define __UBIFS_DEBUG_H__
 
-/* Checking helper functions */
+
 typedef int (*dbg_leaf_callback)(struct ubifs_info *c,
 				 struct ubifs_zbranch *zbr, void *priv);
 typedef int (*dbg_znode_callback)(struct ubifs_info *c,
 				  struct ubifs_znode *znode, void *priv);
 
-/*
- * The UBIFS debugfs directory name pattern and maximum name length (3 for "ubi"
- * + 1 for "_" and plus 2x2 for 2 UBI numbers and 1 for the trailing zero byte.
- */
+
 #define UBIFS_DFS_DIR_NAME "ubi%d_%d"
 #define UBIFS_DFS_DIR_LEN  (3 + 1 + 2*2 + 1)
 
-/**
- * ubifs_debug_info - per-FS debugging information.
- * @old_zroot: old index root - used by 'dbg_check_old_index()'
- * @old_zroot_level: old index root level - used by 'dbg_check_old_index()'
- * @old_zroot_sqnum: old index root sqnum - used by 'dbg_check_old_index()'
- *
- * @pc_happened: non-zero if an emulated power cut happened
- * @pc_delay: 0=>don't delay, 1=>delay a time, 2=>delay a number of calls
- * @pc_timeout: time in jiffies when delay of failure mode expires
- * @pc_cnt: current number of calls to failure mode I/O functions
- * @pc_cnt_max: number of calls by which to delay failure mode
- *
- * @chk_lpt_sz: used by LPT tree size checker
- * @chk_lpt_sz2: used by LPT tree size checker
- * @chk_lpt_wastage: used by LPT tree size checker
- * @chk_lpt_lebs: used by LPT tree size checker
- * @new_nhead_offs: used by LPT tree size checker
- * @new_ihead_lnum: used by debugging to check @c->ihead_lnum
- * @new_ihead_offs: used by debugging to check @c->ihead_offs
- *
- * @saved_lst: saved lprops statistics (used by 'dbg_save_space_info()')
- * @saved_bi: saved budgeting information
- * @saved_free: saved amount of free space
- * @saved_idx_gc_cnt: saved value of @c->idx_gc_cnt
- *
- * @chk_gen: if general extra checks are enabled
- * @chk_index: if index xtra checks are enabled
- * @chk_orph: if orphans extra checks are enabled
- * @chk_lprops: if lprops extra checks are enabled
- * @chk_fs: if UBIFS contents extra checks are enabled
- * @tst_rcvry: if UBIFS recovery testing mode enabled
- *
- * @dfs_dir_name: name of debugfs directory containing this file-system's files
- * @dfs_dir: direntry object of the file-system debugfs directory
- * @dfs_dump_lprops: "dump lprops" debugfs knob
- * @dfs_dump_budg: "dump budgeting information" debugfs knob
- * @dfs_dump_tnc: "dump TNC" debugfs knob
- * @dfs_chk_gen: debugfs knob to enable UBIFS general extra checks
- * @dfs_chk_index: debugfs knob to enable UBIFS index extra checks
- * @dfs_chk_orph: debugfs knob to enable UBIFS orphans extra checks
- * @dfs_chk_lprops: debugfs knob to enable UBIFS LEP properties extra checks
- * @dfs_chk_fs: debugfs knob to enable UBIFS contents extra checks
- * @dfs_tst_rcvry: debugfs knob to enable UBIFS recovery testing
- * @dfs_ro_error: debugfs knob to switch UBIFS to R/O mode (different to
- *                re-mounting to R/O mode because it does not flush any buffers
- *                and UBIFS just starts returning -EROFS on all write
- *               operations)
- */
+
 struct ubifs_debug_info {
 	struct ubifs_zbranch old_zroot;
 	int old_zroot_level;
@@ -117,16 +60,7 @@ struct ubifs_debug_info {
 	struct dentry *dfs_ro_error;
 };
 
-/**
- * ubifs_global_debug_info - global (not per-FS) UBIFS debugging information.
- *
- * @chk_gen: if general extra checks are enabled
- * @chk_index: if index xtra checks are enabled
- * @chk_orph: if orphans extra checks are enabled
- * @chk_lprops: if lprops extra checks are enabled
- * @chk_fs: if UBIFS contents extra checks are enabled
- * @tst_rcvry: if UBIFS recovery testing mode enabled
- */
+
 struct ubifs_global_debug_info {
 	unsigned int chk_gen:1;
 	unsigned int chk_index:1;
@@ -166,37 +100,37 @@ void ubifs_assert_failed(struct ubifs_info *c, const char *expr,
 		 dbg_snprintf_key(c, key, __tmp_key_buf, DBG_KEY_BUF_LEN));    \
 } while (0)
 
-/* General messages */
+
 #define dbg_gen(fmt, ...)   ubifs_dbg_msg("gen", fmt, ##__VA_ARGS__)
-/* Additional journal messages */
+
 #define dbg_jnl(fmt, ...)   ubifs_dbg_msg("jnl", fmt, ##__VA_ARGS__)
 #define dbg_jnlk(key, fmt, ...) \
 	ubifs_dbg_msg_key("jnl", key, fmt, ##__VA_ARGS__)
-/* Additional TNC messages */
+
 #define dbg_tnc(fmt, ...)   ubifs_dbg_msg("tnc", fmt, ##__VA_ARGS__)
 #define dbg_tnck(key, fmt, ...) \
 	ubifs_dbg_msg_key("tnc", key, fmt, ##__VA_ARGS__)
-/* Additional lprops messages */
+
 #define dbg_lp(fmt, ...)    ubifs_dbg_msg("lp", fmt, ##__VA_ARGS__)
-/* Additional LEB find messages */
+
 #define dbg_find(fmt, ...)  ubifs_dbg_msg("find", fmt, ##__VA_ARGS__)
-/* Additional mount messages */
+
 #define dbg_mnt(fmt, ...)   ubifs_dbg_msg("mnt", fmt, ##__VA_ARGS__)
 #define dbg_mntk(key, fmt, ...) \
 	ubifs_dbg_msg_key("mnt", key, fmt, ##__VA_ARGS__)
-/* Additional I/O messages */
+
 #define dbg_io(fmt, ...)    ubifs_dbg_msg("io", fmt, ##__VA_ARGS__)
-/* Additional commit messages */
+
 #define dbg_cmt(fmt, ...)   ubifs_dbg_msg("cmt", fmt, ##__VA_ARGS__)
-/* Additional budgeting messages */
+
 #define dbg_budg(fmt, ...)  ubifs_dbg_msg("budg", fmt, ##__VA_ARGS__)
-/* Additional log messages */
+
 #define dbg_log(fmt, ...)   ubifs_dbg_msg("log", fmt, ##__VA_ARGS__)
-/* Additional gc messages */
+
 #define dbg_gc(fmt, ...)    ubifs_dbg_msg("gc", fmt, ##__VA_ARGS__)
-/* Additional scan messages */
+
 #define dbg_scan(fmt, ...)  ubifs_dbg_msg("scan", fmt, ##__VA_ARGS__)
-/* Additional recovery messages */
+
 #define dbg_rcvry(fmt, ...) ubifs_dbg_msg("rcvry", fmt, ##__VA_ARGS__)
 
 extern struct ubifs_global_debug_info ubifs_dbg;
@@ -233,7 +167,7 @@ static inline int dbg_is_power_cut(const struct ubifs_info *c)
 int ubifs_debugging_init(struct ubifs_info *c);
 void ubifs_debugging_exit(struct ubifs_info *c);
 
-/* Dump functions */
+
 const char *dbg_ntype(int type);
 const char *dbg_cstate(int cmt_state);
 const char *dbg_jhead(int jhead);
@@ -265,7 +199,7 @@ void ubifs_dump_lpt_lebs(const struct ubifs_info *c);
 int dbg_walk_index(struct ubifs_info *c, dbg_leaf_callback leaf_cb,
 		   dbg_znode_callback znode_cb, void *priv);
 
-/* Checking functions */
+
 void dbg_save_space_info(struct ubifs_info *c);
 int dbg_check_space_info(struct ubifs_info *c);
 int dbg_check_lprops(struct ubifs_info *c);
@@ -295,10 +229,10 @@ int dbg_leb_change(struct ubifs_info *c, int lnum, const void *buf, int len);
 int dbg_leb_unmap(struct ubifs_info *c, int lnum);
 int dbg_leb_map(struct ubifs_info *c, int lnum);
 
-/* Debugfs-related stuff */
+
 void dbg_debugfs_init(void);
 void dbg_debugfs_exit(void);
 void dbg_debugfs_init_fs(struct ubifs_info *c);
 void dbg_debugfs_exit_fs(struct ubifs_info *c);
 
-#endif /* !__UBIFS_DEBUG_H__ */
+#endif 

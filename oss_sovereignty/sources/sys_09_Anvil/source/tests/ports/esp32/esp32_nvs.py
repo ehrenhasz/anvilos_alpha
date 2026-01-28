@@ -19,23 +19,23 @@ print(buf2)
 print(len(blob2), len2)
 nvs.erase_key("key1")
 try:
-    nvs.erase_key("key1")  # not found
+    nvs.erase_key("key1")  
 except OSError as e:
     print(e)
 try:
-    nvs.get_i32("key1")  # not found
+    nvs.get_i32("key1")  
 except OSError as e:
     print(e)
 try:
-    nvs.get_i32("blob1")  # not found (blob1 exists but diff type)
+    nvs.get_i32("blob1")  
 except OSError as e:
     print(e)
 try:
     buf3 = bytearray(10)
-    nvs.get_blob("blob1", buf3)  # invalid length (too short)
+    nvs.get_blob("blob1", buf3)  
 except OSError as e:
     print(e)
-nvs.commit()  # we're not verifying that this does anything, just doesn't error
+nvs.commit()  
 nvs2 = NVS("mp-test2")
 try:
     print(nvs2.get_i32("key2"))

@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 struct mlx5dr_dbg_dump_info {
-	struct mutex dbg_mutex; /* protect dbg lists */
+	struct mutex dbg_mutex; 
 	struct dentry *steering_debugfs;
 	struct dentry *fdb_debugfs;
 };

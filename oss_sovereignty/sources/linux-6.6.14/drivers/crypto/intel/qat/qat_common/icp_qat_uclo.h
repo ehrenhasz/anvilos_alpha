@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+
 #ifndef __ICP_QAT_UCLO_H__
 #define __ICP_QAT_UCLO_H__
 
@@ -45,15 +45,15 @@
 #define ICP_QAT_SIMG_AE_INIT_SEQ_LEN    (50 * sizeof(unsigned long long))
 #define ICP_QAT_SIMG_AE_INSTS_LEN       (0x4000 * sizeof(unsigned long long))
 
-#define DSS_FWSK_MODULUS_LEN    384 /* RSA3K */
+#define DSS_FWSK_MODULUS_LEN    384 
 #define DSS_FWSK_EXPONENT_LEN   4
 #define DSS_FWSK_PADDING_LEN    380
-#define DSS_SIGNATURE_LEN       384 /* RSA3K */
+#define DSS_SIGNATURE_LEN       384 
 
-#define CSS_FWSK_MODULUS_LEN    256 /* RSA2K */
+#define CSS_FWSK_MODULUS_LEN    256 
 #define CSS_FWSK_EXPONENT_LEN   4
 #define CSS_FWSK_PADDING_LEN    252
-#define CSS_SIGNATURE_LEN       256 /* RSA2K */
+#define CSS_SIGNATURE_LEN       256 
 
 #define ICP_QAT_CSS_FWSK_MODULUS_LEN(handle)	((handle)->chip_info->css_3k ? \
 						DSS_FWSK_MODULUS_LEN  : \

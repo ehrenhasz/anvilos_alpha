@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell RVU Ethernet driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+
 
 #ifndef OTX2_PTP_H
 #define OTX2_PTP_H

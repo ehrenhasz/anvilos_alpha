@@ -1,32 +1,9 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+
 
 #if defined(_KERNEL)
 #if defined(HAVE_DECLARE_EVENT_CLASS)
 
-/*
- * If tracepoints are available define dtrace_probe events for vdev
- * related probes.  Definitions in include/os/linux/spl/sys/trace.h
- * will map DTRACE_PROBE* calls to tracepoints.
- */
+
 
 #undef TRACE_SYSTEM
 #define	TRACE_SYSTEM zfs
@@ -40,15 +17,8 @@
 #include <linux/tracepoint.h>
 #include <sys/types.h>
 
-/*
- * Generic support for three argument tracepoints of the form:
- *
- * DTRACE_PROBE3(...,
- *     spa_t *, ...,
- *     uint64_t, ...,
- *     uint64_t, ...);
- */
-/* BEGIN CSTYLED */
+
+
 DECLARE_EVENT_CLASS(zfs_removing_class_3,
 	TP_PROTO(spa_t *spa, uint64_t offset, uint64_t size),
 	TP_ARGS(spa, offset, size),
@@ -66,7 +36,7 @@ DECLARE_EVENT_CLASS(zfs_removing_class_3,
 	    __entry->vdev_spa, __entry->vdev_offset,
 	    __entry->vdev_size)
 );
-/* END CSTYLED */
+
 
 #define	DEFINE_REMOVE_FREE_EVENT(name) \
 DEFINE_EVENT(zfs_removing_class_3, name, \
@@ -75,16 +45,8 @@ DEFINE_EVENT(zfs_removing_class_3, name, \
 DEFINE_REMOVE_FREE_EVENT(zfs_remove__free__synced);
 DEFINE_REMOVE_FREE_EVENT(zfs_remove__free__unvisited);
 
-/*
- * Generic support for four argument tracepoints of the form:
- *
- * DTRACE_PROBE4(...,
- *     spa_t *, ...,
- *     uint64_t, ...,
- *     uint64_t, ...,
- *     uint64_t, ...);
- */
-/* BEGIN CSTYLED */
+
+
 DECLARE_EVENT_CLASS(zfs_removing_class_4,
 	TP_PROTO(spa_t *spa, uint64_t offset, uint64_t size, uint64_t txg),
 	TP_ARGS(spa, offset, size, txg),
@@ -111,7 +73,7 @@ DEFINE_EVENT(zfs_removing_class_4, name, \
     TP_ARGS(spa, offset, size, txg))
 DEFINE_REMOVE_FREE_EVENT_TXG(zfs_remove__free__inflight);
 
-#endif /* _TRACE_VDEV_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
@@ -121,16 +83,11 @@ DEFINE_REMOVE_FREE_EVENT_TXG(zfs_remove__free__inflight);
 
 #else
 
-/*
- * When tracepoints are not available, a DEFINE_DTRACE_PROBE* macro is
- * needed for each DTRACE_PROBE.  These will be used to generate stub
- * tracing functions and prototypes for those functions.  See
- * include/os/linux/spl/sys/trace.h.
- */
+
 
 DEFINE_DTRACE_PROBE3(remove__free__synced);
 DEFINE_DTRACE_PROBE3(remove__free__unvisited);
 DEFINE_DTRACE_PROBE4(remove__free__inflight);
 
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif 
+#endif 

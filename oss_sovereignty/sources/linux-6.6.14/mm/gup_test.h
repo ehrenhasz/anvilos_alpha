@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef __GUP_TEST_H
 #define __GUP_TEST_H
 
@@ -26,10 +26,7 @@ struct gup_test {
 	__u32 nr_pages_per_call;
 	__u32 gup_flags;
 	__u32 test_flags;
-	/*
-	 * Each non-zero entry is the number of the page (1-based: first page is
-	 * page 1, so that zero entries mean "do nothing") from the .addr base.
-	 */
+	
 	__u32 which_pages[GUP_TEST_MAX_PAGES_TO_DUMP];
 };
 
@@ -42,4 +39,4 @@ struct pin_longterm_test {
 	__u32 flags;
 };
 
-#endif	/* __GUP_TEST_H */
+#endif	

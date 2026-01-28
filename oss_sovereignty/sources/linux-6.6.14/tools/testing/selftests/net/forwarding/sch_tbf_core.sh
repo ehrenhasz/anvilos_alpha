@@ -127,7 +127,7 @@ do_tbf_test()
 	local vlan=$1; shift
 	local mbit=$1; shift
 	start_traffic $h1.$vlan $(ipaddr 1 $vlan) $(ipaddr 2 $vlan) $h2_mac
-	sleep 5 # Wait for the burst to dwindle
+	sleep 5 
 	local t2=$(busywait_for_counter 1000 +1 tbf_get_counter $vlan)
 	sleep 10
 	local t3=$(tbf_get_counter $vlan)

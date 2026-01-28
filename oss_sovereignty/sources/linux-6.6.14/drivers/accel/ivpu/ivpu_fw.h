@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+
 
 #ifndef __IVPU_FW_H__
 #define __IVPU_FW_H__
@@ -22,7 +20,7 @@ struct ivpu_fw_info {
 	u64 image_load_offset;
 	u32 image_size;
 	u32 shave_nn_size;
-	u64 entry_point; /* Cold or warm boot entry point for next boot */
+	u64 entry_point; 
 	u64 cold_boot_entry_point;
 	u32 trace_level;
 	u32 trace_destination_mask;
@@ -39,4 +37,4 @@ static inline bool ivpu_fw_is_cold_boot(struct ivpu_device *vdev)
 	return vdev->fw->entry_point == vdev->fw->cold_boot_entry_point;
 }
 
-#endif /* __IVPU_FW_H__ */
+#endif 

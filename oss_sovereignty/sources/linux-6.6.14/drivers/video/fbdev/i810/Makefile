@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Intel 810/815 framebuffer driver
-#
+
+
+
+
 
 obj-$(CONFIG_FB_I810)		+= i810fb.o
 

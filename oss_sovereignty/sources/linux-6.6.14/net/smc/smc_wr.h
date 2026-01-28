@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- * Work Requests exploiting Infiniband API
- *
- * Copyright IBM Corp. 2016
- *
- * Author(s):  Steffen Maier <maier@linux.vnet.ibm.com>
- */
+
+
 
 #ifndef SMC_WR_H
 #define SMC_WR_H
@@ -19,11 +11,11 @@
 #include "smc.h"
 #include "smc_core.h"
 
-#define SMC_WR_BUF_CNT 16	/* # of ctrl buffers per link */
+#define SMC_WR_BUF_CNT 16	
 
 #define SMC_WR_TX_WAIT_FREE_SLOT_TIME	(10 * HZ)
 
-#define SMC_WR_TX_SIZE 44 /* actual size of wr_send data (<=SMC_WR_BUF_SIZE) */
+#define SMC_WR_TX_SIZE 44 
 
 #define SMC_WR_TX_PEND_PRIV_SIZE 32
 
@@ -41,14 +33,12 @@ typedef bool (*smc_wr_tx_filter)(struct smc_wr_tx_pend_priv *,
 typedef void (*smc_wr_tx_dismisser)(struct smc_wr_tx_pend_priv *);
 
 struct smc_wr_rx_handler {
-	struct hlist_node	list;	/* hash table collision resolution */
+	struct hlist_node	list;	
 	void			(*handler)(struct ib_wc *, void *);
 	u8			type;
 };
 
-/* Only used by RDMA write WRs.
- * All other WRs (CDC/LLC) use smc_wr_tx_send handling WR_ID implicitly
- */
+
 static inline long smc_wr_tx_get_next_wr_id(struct smc_link *link)
 {
 	return atomic_long_inc_return(&link->wr_tx_id);
@@ -87,14 +77,14 @@ static inline void smc_wr_wakeup_reg_wait(struct smc_link *lnk)
 	wake_up(&lnk->wr_reg_wait);
 }
 
-/* post a new receive work request to fill a completed old work request entry */
+
 static inline int smc_wr_rx_post(struct smc_link *link)
 {
 	int rc;
 	u64 wr_id, temp_wr_id;
 	u32 index;
 
-	wr_id = ++link->wr_rx_id; /* tasklet context, thus not atomic */
+	wr_id = ++link->wr_rx_id; 
 	temp_wr_id = wr_id;
 	index = do_div(temp_wr_id, link->wr_rx_cnt);
 	link->wr_rx_ibs[index].wr_id = wr_id;
@@ -136,4 +126,4 @@ int smc_wr_rx_post_init(struct smc_link *link);
 void smc_wr_rx_cq_handler(struct ib_cq *ib_cq, void *cq_context);
 int smc_wr_reg_send(struct smc_link *link, struct ib_mr *mr);
 
-#endif /* SMC_WR_H */
+#endif 

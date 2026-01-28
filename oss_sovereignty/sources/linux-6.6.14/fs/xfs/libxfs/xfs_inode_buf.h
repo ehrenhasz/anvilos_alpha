@@ -1,22 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2003,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef	__XFS_INODE_BUF_H__
 #define	__XFS_INODE_BUF_H__
 
 struct xfs_inode;
 struct xfs_dinode;
 
-/*
- * Inode location information.  Stored in the inode and passed to
- * xfs_imap_to_bp() to get a buffer and dinode for a given inode.
- */
+
 struct xfs_imap {
-	xfs_daddr_t	im_blkno;	/* starting BB of inode chunk */
-	unsigned short	im_len;		/* length in BBs of inode chunk */
-	unsigned short	im_boffset;	/* inode offset in block in bytes */
+	xfs_daddr_t	im_blkno;	
+	unsigned short	im_len;		
+	unsigned short	im_boffset;	
 };
 
 int	xfs_imap_to_bp(struct xfs_mount *mp, struct xfs_trans *tp,
@@ -51,4 +45,4 @@ xfs_dinode_good_version(struct xfs_mount *mp, uint8_t version)
 }
 
 
-#endif	/* __XFS_INODE_BUF_H__ */
+#endif	

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #include <linux/pe.h>
 
@@ -15,14 +15,14 @@
 __efistub_efi_zboot_header:
 .Ldoshdr:
 	.long		MZ_MAGIC
-	.ascii		"zimg"					// image type
-	.long		__efistub__gzdata_start - .Ldoshdr	// payload offset
-	.long		__efistub__gzdata_size - ZBOOT_SIZE_LEN	// payload size
-	.long		0, 0					// reserved
-	.asciz		COMP_TYPE				// compression type
+	.ascii		"zimg"					
+	.long		__efistub__gzdata_start - .Ldoshdr	
+	.long		__efistub__gzdata_size - ZBOOT_SIZE_LEN	
+	.long		0, 0					
+	.asciz		COMP_TYPE				
 	.org		.Ldoshdr + 0x38
 	.long		LINUX_PE_MAGIC
-	.long		.Lpehdr - .Ldoshdr			// PE header offset
+	.long		.Lpehdr - .Ldoshdr			
 
 .Lpehdr:
 	.long		PE_MAGIC
@@ -54,8 +54,8 @@ __efistub_efi_zboot_header:
 	.long		4096
 	.long		512
 	.short		0, 0
-	.short		LINUX_EFISTUB_MAJOR_VERSION	// MajorImageVersion
-	.short		LINUX_EFISTUB_MINOR_VERSION	// MinorImageVersion
+	.short		LINUX_EFISTUB_MAJOR_VERSION	
+	.short		LINUX_EFISTUB_MINOR_VERSION	
 	.short		0, 0
 	.long		0
 	.long		_end - .Ldoshdr
@@ -72,39 +72,39 @@ __efistub_efi_zboot_header:
 	.long		0
 	.long		(.Lsection_table - .) / 8
 
-	.quad		0				// ExportTable
-	.quad		0				// ImportTable
-	.quad		0				// ResourceTable
-	.quad		0				// ExceptionTable
-	.quad		0				// CertificationTable
-	.quad		0				// BaseRelocationTable
+	.quad		0				
+	.quad		0				
+	.quad		0				
+	.quad		0				
+	.quad		0				
+	.quad		0				
 #if defined(PE_DLL_CHAR_EX) || defined(CONFIG_DEBUG_EFI)
-	.long		.Lefi_debug_table - .Ldoshdr	// DebugTable
+	.long		.Lefi_debug_table - .Ldoshdr	
 	.long		.Lefi_debug_table_size
 
 	.section	".rodata", "a"
 	.p2align	2
 .Lefi_debug_table:
-	// EFI_IMAGE_DEBUG_DIRECTORY_ENTRY[]
+	
 #ifdef PE_DLL_CHAR_EX
-	.long		0					// Characteristics
-	.long		0					// TimeDateStamp
-	.short		0					// MajorVersion
-	.short		0					// MinorVersion
-	.long		IMAGE_DEBUG_TYPE_EX_DLLCHARACTERISTICS	// Type
-	.long		4					// SizeOfData
-	.long		0					// RVA
-	.long		.Lefi_dll_characteristics_ex - .Ldoshdr	// FileOffset
+	.long		0					
+	.long		0					
+	.short		0					
+	.short		0					
+	.long		IMAGE_DEBUG_TYPE_EX_DLLCHARACTERISTICS	
+	.long		4					
+	.long		0					
+	.long		.Lefi_dll_characteristics_ex - .Ldoshdr	
 #endif
 #ifdef CONFIG_DEBUG_EFI
-	.long		0					// Characteristics
-	.long		0					// TimeDateStamp
-	.short		0					// MajorVersion
-	.short		0					// MinorVersion
-	.long		IMAGE_DEBUG_TYPE_CODEVIEW		// Type
-	.long		.Lefi_debug_entry_size			// SizeOfData
-	.long		0					// RVA
-	.long		.Lefi_debug_entry - .Ldoshdr		// FileOffset
+	.long		0					
+	.long		0					
+	.short		0					
+	.short		0					
+	.long		IMAGE_DEBUG_TYPE_CODEVIEW		
+	.long		.Lefi_debug_entry_size			
+	.long		0					
+	.long		.Lefi_debug_entry - .Ldoshdr		
 #endif
 	.set		.Lefi_debug_table_size, . - .Lefi_debug_table
 	.previous
@@ -143,11 +143,11 @@ __efistub_efi_zboot_header:
 #endif
 #ifdef CONFIG_DEBUG_EFI
 .Lefi_debug_entry:
-	// EFI_IMAGE_DEBUG_CODEVIEW_NB10_ENTRY
-	.ascii		"NB10"				// Signature
-	.long		0				// Unknown
-	.long		0				// Unknown2
-	.long		0				// Unknown3
+	
+	.ascii		"NB10"				
+	.long		0				
+	.long		0				
+	.long		0				
 
 	.asciz		ZBOOT_EFI_PATH
 

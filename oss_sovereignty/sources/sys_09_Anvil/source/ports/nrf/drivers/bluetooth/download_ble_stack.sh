@@ -1,9 +1,9 @@
 function download_s110_nrf51_8_0_0
 {
     echo ""
-    echo "####################################"
-    echo "### Downloading s110_nrf51_8.0.0 ###"
-    echo "####################################"
+    echo "
+    echo "
+    echo "
     echo ""
     mkdir -p $1/s110_nrf51_8.0.0
     cd $1/s110_nrf51_8.0.0
@@ -18,9 +18,9 @@ function download_s110_nrf51_8_0_0
 function download_s132_nrf52_6_1_1
 {
     echo ""
-    echo "####################################"
-    echo "### Downloading s132_nrf52_6.1.1 ###"
-    echo "####################################"
+    echo "
+    echo "
+    echo "
     echo ""
     mkdir -p $1/s132_nrf52_6.1.1
     cd $1/s132_nrf52_6.1.1
@@ -35,9 +35,9 @@ function download_s132_nrf52_6_1_1
 function download_s140_nrf52_6_1_1
 {
     echo ""
-    echo "####################################"
-    echo "### Downloading s140_nrf52_6.1.1 ###"
-    echo "####################################"
+    echo "
+    echo "
+    echo "
     echo ""
     mkdir -p $1/s140_nrf52_6.1.1
     cd $1/s140_nrf52_6.1.1
@@ -52,9 +52,9 @@ function download_s140_nrf52_6_1_1
 function download_s140_nrf52_7_3_0
 {
     echo ""
-    echo "####################################"
-    echo "### Downloading s140_nrf52_7.3.0 ###"
-    echo "####################################"
+    echo "
+    echo "
+    echo "
     echo ""
     mkdir -p $1/s140_nrf52_7.3.0
     cd $1/s140_nrf52_7.3.0
@@ -67,7 +67,7 @@ function download_s140_nrf52_7_3_0
     cd -
 }
 SCRIPT_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ $# -eq 0 ]; then
+if [ $
     echo "No Bluetooth LE stack defined, downloading all."
     download_s110_nrf51_8_0_0 ${SCRIPT_DIR}
     download_s132_nrf52_6_1_1 ${SCRIPT_DIR}

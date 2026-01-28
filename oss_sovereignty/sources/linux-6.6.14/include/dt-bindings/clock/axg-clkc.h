@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Meson-AXG clock tree IDs
- *
- * Copyright (c) 2017 Amlogic, Inc. All rights reserved.
- */
+
+
 
 #ifndef __AXG_CLKC_H
 #define __AXG_CLKC_H
@@ -145,4 +141,4 @@
 #define CLKID_VDIN_MEAS_DIV			135
 #define CLKID_VDIN_MEAS				136
 
-#endif /* __AXG_CLKC_H */
+#endif 

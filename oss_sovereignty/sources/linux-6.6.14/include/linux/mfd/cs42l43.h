@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * CS42L43 core driver external data
- *
- * Copyright (C) 2022-2023 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- */
+
+
 
 #include <linux/completion.h>
 #include <linux/device.h>
@@ -91,7 +86,7 @@ struct cs42l43 {
 	int firmware_error;
 
 	unsigned int sdw_freq;
-	/* Lock to gate control of the PLL and its sources. */
+	
 	struct mutex pll_lock;
 
 	bool sdw_pll_active;
@@ -99,4 +94,4 @@ struct cs42l43 {
 	bool hw_lock;
 };
 
-#endif /* CS42L43_CORE_EXT_H */
+#endif 

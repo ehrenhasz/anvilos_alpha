@@ -1,18 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Author(s)......: Holger Smolinski <Holger.Smolinski@de.ibm.com>
- *		    Horst Hummel <Horst.Hummel@de.ibm.com>
- * Bugreports.to..: <Linux390@de.ibm.com>
- * Copyright IBM Corp. 1999, 2000
- *
- */
+
+
 
 #ifndef DASD_ECKD_H
 #define DASD_ECKD_H
 
-/*****************************************************************************
- * SECTION: CCW Definitions
- ****************************************************************************/
+
 #define DASD_ECKD_CCW_NOP		 0x03
 #define DASD_ECKD_CCW_WRITE		 0x05
 #define DASD_ECKD_CCW_READ		 0x06
@@ -53,32 +45,24 @@
 #define DASD_ECKD_CCW_RCD		 0xFA
 #define DASD_ECKD_CCW_DSO		 0xF7
 
-/* Define Subsystem Function / Orders */
+
 #define DSO_ORDER_RAS			 0x81
 
-/*
- * Perform Subsystem Function / Orders
- */
+
 #define PSF_ORDER_PRSSD			 0x18
 #define PSF_ORDER_CUIR_RESPONSE		 0x1A
 #define PSF_ORDER_SSC			 0x1D
 
-/*
- * Perform Subsystem Function / Sub-Orders
- */
-#define PSF_SUBORDER_QHA		 0x1C /* Query Host Access */
-#define PSF_SUBORDER_PPRCEQ		 0x50 /* PPRC Extended Query */
-#define PSF_SUBORDER_VSQ		 0x52 /* Volume Storage Query */
-#define PSF_SUBORDER_LCQ		 0x53 /* Logical Configuration Query */
 
-/*
- * PPRC Extended Query Scopes
- */
-#define PPRCEQ_SCOPE_4			 0x04 /* Scope 4 for PPRC Extended Query */
+#define PSF_SUBORDER_QHA		 0x1C 
+#define PSF_SUBORDER_PPRCEQ		 0x50 
+#define PSF_SUBORDER_VSQ		 0x52 
+#define PSF_SUBORDER_LCQ		 0x53 
 
-/*
- * CUIR response condition codes
- */
+
+#define PPRCEQ_SCOPE_4			 0x04 
+
+
 #define PSF_CUIR_INVALID		 0x00
 #define PSF_CUIR_COMPLETED		 0x01
 #define PSF_CUIR_NOT_SUPPORTED		 0x02
@@ -90,15 +74,11 @@
 #define PSF_CUIR_SOFTWARE_FAILURE	 0x08
 #define PSF_CUIR_NOT_RECOGNIZED		 0x09
 
-/*
- * CUIR codes
- */
+
 #define CUIR_QUIESCE			 0x01
 #define CUIR_RESUME			 0x02
 
-/*
- * Out-of-space (OOS) Codes
- */
+
 #define REPO_WARN			 0x01
 #define REPO_EXHAUST			 0x02
 #define POOL_WARN			 0x03
@@ -106,9 +86,7 @@
 #define REPO_RELIEVE			 0x05
 #define POOL_RELIEVE			 0x06
 
-/*
- * attention message definitions
- */
+
 #define ATTENTION_LENGTH_CUIR		 0x0e
 #define ATTENTION_FORMAT_CUIR		 0x01
 #define ATTENTION_LENGTH_OOS		 0x10
@@ -116,9 +94,7 @@
 
 #define DASD_ECKD_PG_GROUPED		 0x10
 
-/*
- * Size that is reported for large volumes in the old 16-bit no_cyl field
- */
+
 #define LV_COMPAT_CYL 0xFFFE
 
 
@@ -128,15 +104,11 @@
 #define DASD_ECKD_PATH_THRHLD		 256
 #define DASD_ECKD_PATH_INTERVAL		 300
 
-/*
- * Maximum number of blocks to be chained
- */
+
 #define DASD_ECKD_MAX_BLOCKS		 190
 #define DASD_ECKD_MAX_BLOCKS_RAW	 256
 
-/*****************************************************************************
- * SECTION: Type Definitions
- ****************************************************************************/
+
 
 struct eckd_count {
 	__u16 cyl;
@@ -159,31 +131,31 @@ struct chr_t {
 
 struct DE_eckd_data {
 	struct {
-		unsigned char perm:2;	/* Permissions on this extent */
+		unsigned char perm:2;	
 		unsigned char reserved:1;
-		unsigned char seek:2;	/* Seek control */
-		unsigned char auth:2;	/* Access authorization */
-		unsigned char pci:1;	/* PCI Fetch mode */
+		unsigned char seek:2;	
+		unsigned char auth:2;	
+		unsigned char pci:1;	
 	} __attribute__ ((packed)) mask;
 	struct {
-		unsigned char mode:2;	/* Architecture mode */
-		unsigned char ckd:1;	/* CKD Conversion */
-		unsigned char operation:3;	/* Operation mode */
-		unsigned char cfw:1;	/* Cache fast write */
-		unsigned char dfw:1;	/* DASD fast write */
+		unsigned char mode:2;	
+		unsigned char ckd:1;	
+		unsigned char operation:3;	
+		unsigned char cfw:1;	
+		unsigned char dfw:1;	
 	} __attribute__ ((packed)) attributes;
-	__u16 blk_size;		/* Blocksize */
+	__u16 blk_size;		
 	__u16 fast_write_id;
-	__u8 ga_additional;	/* Global Attributes Additional */
-	__u8 ga_extended;	/* Global Attributes Extended	*/
+	__u8 ga_additional;	
+	__u8 ga_extended;	
 	struct ch_t beg_ext;
 	struct ch_t end_ext;
-	unsigned long ep_sys_time; /* Ext Parameter - System Time Stamp */
-	__u8 ep_format;        /* Extended Parameter format byte       */
-	__u8 ep_prio;          /* Extended Parameter priority I/O byte */
-	__u8 ep_reserved1;     /* Extended Parameter Reserved	       */
-	__u8 ep_rec_per_track; /* Number of records on a track	       */
-	__u8 ep_reserved[4];   /* Extended Parameter Reserved	       */
+	unsigned long ep_sys_time; 
+	__u8 ep_format;        
+	__u8 ep_prio;          
+	__u8 ep_reserved1;     
+	__u8 ep_rec_per_track; 
+	__u8 ep_reserved[4];   
 } __attribute__ ((packed));
 
 struct LO_eckd_data {
@@ -230,7 +202,7 @@ struct LRE_eckd_data {
 	__u8 extended_parameter[];
 } __attribute__ ((packed));
 
-/* Prefix data for format 0x00 and 0x01 */
+
 struct PFX_eckd_data {
 	unsigned char format;
 	struct {
@@ -322,7 +294,7 @@ struct dasd_eckd_characteristics {
 	__u32 long_no_cyl;
 } __attribute__ ((packed));
 
-/* elements of the configuration data */
+
 struct dasd_ned {
 	struct {
 		__u8 identifier:2;
@@ -354,10 +326,10 @@ struct dasd_sneq {
 	} __attribute__ ((packed)) flags;
 	__u8 res1;
 	__u16 format;
-	__u8 res2[4];		/* byte  4- 7 */
-	__u8 sua_flags;		/* byte  8    */
-	__u8 base_unit_addr;	/* byte  9    */
-	__u8 res3[22];		/* byte 10-31 */
+	__u8 res2[4];		
+	__u8 sua_flags;		
+	__u8 base_unit_addr;	
+	__u8 res3[22];		
 } __attribute__ ((packed));
 
 struct vd_sneq {
@@ -367,9 +339,9 @@ struct vd_sneq {
 	} __attribute__ ((packed)) flags;
 	__u8 res1;
 	__u16 format;
-	__u8 res2[4];	/* byte  4- 7 */
-	__u8 uit[16];	/* byte  8-23 */
-	__u8 res3[8];	/* byte 24-31 */
+	__u8 res2[4];	
+	__u8 uit[16];	
+	__u8 res3[8];	
 } __attribute__ ((packed));
 
 struct dasd_gneq {
@@ -401,9 +373,7 @@ struct dasd_rssd_messages {
 	char messages[4087];
 } __packed;
 
-/*
- * Read Subsystem Data - Volume Storage Query
- */
+
 struct dasd_rssd_vsq {
 	struct {
 		__u8 tse:1;
@@ -423,15 +393,13 @@ struct dasd_rssd_vsq {
 	__u32 logical_capacity;
 } __packed;
 
-/*
- * Extent Pool Summary
- */
+
 struct dasd_ext_pool_sum {
 	__u16 pool_id;
 	__u8 repo_warn_thrshld;
 	__u8 warn_thrshld;
 	struct {
-		__u8 type:1;			/* 0 - CKD / 1 - FB */
+		__u8 type:1;			
 		__u8 track_space_efficient:1;
 		__u8 extent_space_efficient:1;
 		__u8 standard_volume:1;
@@ -450,22 +418,20 @@ struct dasd_ext_pool_sum {
 	__u8 unused;
 } __packed;
 
-/*
- * Read Subsystem Data-Response - Logical Configuration Query - Header
- */
+
 struct dasd_rssd_lcq {
-	__u16 data_length;		/* Length of data returned */
-	__u16 pool_count;		/* Count of extent pools returned - Max: 448 */
+	__u16 data_length;		
+	__u16 pool_count;		
 	struct {
-		__u8 pool_info_valid:1;	/* Detailed Information valid */
+		__u8 pool_info_valid:1;	
 		__u8 pool_id_volume:1;
 		__u8 pool_id_cec:1;
 		__u8 unused0:5;
 		__u8 unused1;
 	} __packed header_flags;
-	char sfi_type[6];		/* Storage Facility Image Type (EBCDIC) */
-	char sfi_model[3];		/* Storage Facility Image Model (EBCDIC) */
-	__u8 sfi_seq_num[10];		/* Storage Facility Image Sequence Number */
+	char sfi_type[6];		
+	char sfi_model[3];		
+	__u8 sfi_seq_num[10];		
 	__u8 reserved[7];
 	struct dasd_ext_pool_sum ext_pool_sum[448];
 } __packed;
@@ -530,9 +496,7 @@ struct dasd_psf_query_host_access {
 	__u8 host_access_information[16394];
 } __packed;
 
-/*
- * Perform Subsystem Function - Prepare for Read Subsystem Data
- */
+
 struct dasd_psf_prssd_data {
 	unsigned char order;
 	unsigned char flags;
@@ -544,9 +508,7 @@ struct dasd_psf_prssd_data {
 	unsigned char varies[5];
 } __attribute__ ((packed));
 
-/*
- * Perform Subsystem Function - Set Subsystem Characteristics
- */
+
 struct dasd_psf_ssc_data {
 	unsigned char order;
 	unsigned char flags;
@@ -555,7 +517,7 @@ struct dasd_psf_ssc_data {
 	unsigned char reserved[59];
 } __attribute__((packed));
 
-/* Maximum number of extents for a single Release Allocated Space command */
+
 #define DASD_ECKD_RAS_EXTS_MAX		110U
 
 struct dasd_dso_ras_ext_range {
@@ -563,38 +525,34 @@ struct dasd_dso_ras_ext_range {
 	struct ch_t end_ext;
 } __packed;
 
-/*
- * Define Subsystem Operation - Release Allocated Space
- */
+
 struct dasd_dso_ras_data {
 	__u8 order;
 	struct {
-		__u8 message:1;		/* Must be zero */
+		__u8 message:1;		
 		__u8 reserved1:2;
-		__u8 vol_type:1;	/* 0 - CKD/FBA, 1 - FB */
+		__u8 vol_type:1;	
 		__u8 reserved2:4;
 	} __packed flags;
-	/* Operation Flags to specify scope */
+	
 	struct {
 		__u8 reserved1:2;
-		/* Release Space by Extent */
-		__u8 by_extent:1;	/* 0 - entire volume, 1 - specified extents */
+		
+		__u8 by_extent:1;	
 		__u8 guarantee_init:1;
-		__u8 force_release:1;	/* Internal - will be ignored */
+		__u8 force_release:1;	
 		__u16 reserved2:11;
 	} __packed op_flags;
 	__u8 lss;
 	__u8 dev_addr;
 	__u32 reserved1;
 	__u8 reserved2[10];
-	__u16 nr_exts;			/* Defines number of ext_scope - max 110 */
+	__u16 nr_exts;			
 	__u16 reserved3;
 } __packed;
 
 
-/*
- * some structures and definitions for alias handling
- */
+
 struct dasd_unit_address_configuration {
 	struct {
 		char ua_type;
@@ -605,7 +563,7 @@ struct dasd_unit_address_configuration {
 
 #define MAX_DEVICES_PER_LCU 256
 
-/* flags on the LCU  */
+
 #define NEED_UAC_UPDATE  0x01
 #define UPDATE_PENDING	0x02
 
@@ -668,7 +626,7 @@ struct dasd_conf_data {
 struct dasd_conf {
 	u8 *data;
 	int len;
-	/* pointers to specific parts in the conf_data */
+	
 	struct dasd_ned *ned;
 	struct dasd_sneq *sneq;
 	struct vd_sneq *vdsneq;
@@ -682,13 +640,13 @@ struct dasd_eckd_private {
 	struct eckd_count count_area[5];
 	int init_cqr_status;
 	int uses_cdl;
-	struct attrib_data_t attrib;	/* e.g. cache operations */
+	struct attrib_data_t attrib;	
 	struct dasd_rssd_features features;
 	struct dasd_rssd_vsq vsq;
 	struct dasd_ext_pool_sum eps;
 	u32 real_cyl;
 
-	/* alias management */
+	
 	struct dasd_uid uid;
 	struct alias_pav_group *pavgroup;
 	struct alias_lcu *lcu;
@@ -708,4 +666,4 @@ struct dasd_device *dasd_alias_get_start_dev(struct dasd_device *);
 void dasd_alias_handle_summary_unit_check(struct work_struct *);
 void dasd_eckd_reset_ccw_to_base_io(struct dasd_ccw_req *);
 int dasd_alias_update_add_device(struct dasd_device *);
-#endif				/* DASD_ECKD_H */
+#endif				

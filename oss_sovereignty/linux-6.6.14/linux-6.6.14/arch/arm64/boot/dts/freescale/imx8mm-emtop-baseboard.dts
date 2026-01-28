@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "imx8mm-emtop-som.dtsi"
-/ {
-	model = "Emtop Embedded Solutions i.MX8M Mini Baseboard V1";
-	compatible = "ees,imx8mm-emtop-baseboard", "ees,imx8mm-emtop-som",
-		"fsl,imx8mm";
-};

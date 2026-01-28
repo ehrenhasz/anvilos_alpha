@@ -10,7 +10,7 @@ usage() {
 	exit 1
 }
 abis=
-while [ $# -gt 0 ]
+while [ $
 do
 	case $1 in
 	--abis)
@@ -23,7 +23,7 @@ do
 		break;;
 	esac
 done
-if [ $# -ne 2 ]; then
+if [ $
 	usage
 fi
 infile="$1"

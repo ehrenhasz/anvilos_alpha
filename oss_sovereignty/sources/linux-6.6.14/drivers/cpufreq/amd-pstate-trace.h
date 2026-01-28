@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * amd-pstate-trace.h - AMD Processor P-state Frequency Driver Tracer
- *
- * Copyright (C) 2021 Advanced Micro Devices, Inc. All Rights Reserved.
- *
- * Author: Huang Rui <ray.huang@amd.com>
- */
+
+
 
 #if !defined(_AMD_PSTATE_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _AMD_PSTATE_TRACE_H
@@ -88,9 +82,9 @@ TRACE_EVENT(amd_pstate_perf,
 		 )
 );
 
-#endif /* _AMD_PSTATE_TRACE_H */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 

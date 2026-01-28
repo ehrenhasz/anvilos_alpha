@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- *
- * Copyright (C) 2022 Renesas Electronics Corp.
- */
+
 #ifndef __DT_BINDINGS_CLOCK_R9A09G011_CPG_H__
 #define __DT_BINDINGS_CLOCK_R9A09G011_CPG_H__
 
 #include <dt-bindings/clock/renesas-cpg-mssr.h>
 
-/* Module Clocks */
+
 #define R9A09G011_SYS_CLK		0
 #define R9A09G011_PFC_PCLK		1
 #define R9A09G011_PMC_CORE_CLOCK	2
@@ -240,7 +237,7 @@
 #define R9A09G011_MMC_PCLK		205
 #define R9A09G011_DDI_APBCLK		206
 
-/* Resets */
+
 #define R9A09G011_SYS_RST_N		0
 #define R9A09G011_PFC_PRESETN		1
 #define R9A09G011_RAMA_ARESETN		2
@@ -349,4 +346,4 @@
 #define R9A09G011_DDI_RESET		93
 #define R9A09G011_DDI_RESETN_APB	94
 
-#endif /* __DT_BINDINGS_CLOCK_R9A09G011_CPG_H__ */
+#endif 

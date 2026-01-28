@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Generic GPIO card-detect helper header
- *
- * Copyright (C) 2011, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
- */
+
+
 
 #ifndef MMC_SLOT_GPIO_H
 #define MMC_SLOT_GPIO_H

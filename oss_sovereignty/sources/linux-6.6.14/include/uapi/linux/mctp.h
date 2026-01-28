@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Management Component Transport Protocol (MCTP)
- *
- * Copyright (c) 2021 Code Construct
- * Copyright (c) 2021 Google
- */
+
+
 
 #ifndef __UAPI_MCTP_H
 #define __UAPI_MCTP_H
@@ -54,15 +49,9 @@ struct sockaddr_mctp_ext {
 struct mctp_ioc_tag_ctl {
 	mctp_eid_t	peer_addr;
 
-	/* For SIOCMCTPALLOCTAG: must be passed as zero, kernel will
-	 * populate with the allocated tag value. Returned tag value will
-	 * always have TO and PREALLOC set.
-	 *
-	 * For SIOCMCTPDROPTAG: userspace provides tag value to drop, from
-	 * a prior SIOCMCTPALLOCTAG call (and so must have TO and PREALLOC set).
-	 */
+	
 	__u8		tag;
 	__u16		flags;
 };
 
-#endif /* __UAPI_MCTP_H */
+#endif 

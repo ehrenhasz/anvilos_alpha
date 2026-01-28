@@ -1,25 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * CAN driver for PEAK System PCAN-USB Pro adapter
- * Derived from the PCAN project file driver/src/pcan_usbpro_fw.h
- *
- * Copyright (C) 2003-2011 PEAK System-Technik GmbH
- * Copyright (C) 2011-2012 Stephane Grosjean <s.grosjean@peak-system.com>
- */
+
+
 #ifndef PCAN_USB_PRO_H
 #define PCAN_USB_PRO_H
 
-/*
- * USB Vendor request data types
- */
+
 #define PCAN_USBPRO_REQ_INFO		0
 #define PCAN_USBPRO_REQ_FCT		2
 
-/* Vendor Request value for XXX_INFO */
+
 #define PCAN_USBPRO_INFO_BL		0
 #define PCAN_USBPRO_INFO_FW		1
 
-/* PCAN-USB Pro (FD) Endpoints */
+
 #define PCAN_USBPRO_EP_CMDOUT		1
 #define PCAN_USBPRO_EP_CMDIN		(PCAN_USBPRO_EP_CMDOUT | USB_DIR_IN)
 #define PCAN_USBPRO_EP_MSGOUT_0		2
@@ -27,11 +19,11 @@
 #define PCAN_USBPRO_EP_MSGOUT_1		3
 #define PCAN_USBPRO_EP_UNUSED		(PCAN_USBPRO_EP_MSGOUT_1 | USB_DIR_IN)
 
-/* Vendor Request value for XXX_FCT */
-#define PCAN_USBPRO_FCT_DRVLD		5 /* tell device driver is loaded */
+
+#define PCAN_USBPRO_FCT_DRVLD		5 
 #define PCAN_USBPRO_FCT_DRVLD_REQ_LEN	16
 
-/* PCAN_USBPRO_INFO_BL vendor request record type */
+
 struct __packed pcan_usb_pro_blinfo {
 	__le32 ctrl_type;
 	u8 version[4];
@@ -45,7 +37,7 @@ struct __packed pcan_usb_pro_blinfo {
 	__le32 hw_rev;
 };
 
-/* PCAN_USBPRO_INFO_FW vendor request record type */
+
 struct __packed pcan_usb_pro_fwinfo {
 	__le32 ctrl_type;
 	u8 version[4];
@@ -56,9 +48,7 @@ struct __packed pcan_usb_pro_fwinfo {
 	__le32 fw_type;
 };
 
-/*
- * USB Command record types
- */
+
 #define PCAN_USBPRO_SETBTR	0x02
 #define PCAN_USBPRO_SETBUSACT	0x04
 #define PCAN_USBPRO_SETSILENT	0x05
@@ -77,7 +67,7 @@ struct __packed pcan_usb_pro_fwinfo {
 #define PCAN_USBPRO_TXMSG4	0x42
 #define PCAN_USBPRO_TXMSG0	0x43
 
-/* record structures */
+
 struct __packed pcan_usb_pro_btr {
 	u8 data_type;
 	u8 channel;

@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2015-2016, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
 
 #ifndef __MLX5_EN_STATS_H__
 #define __MLX5_EN_STATS_H__
@@ -60,7 +30,7 @@
 
 struct counter_desc {
 	char		format[ETH_GSTRING_LEN];
-	size_t		offset; /* Byte offset */
+	size_t		offset; 
 };
 
 enum {
@@ -129,7 +99,7 @@ void mlx5e_stats_rmon_get(struct mlx5e_priv *priv,
 void mlx5e_get_link_ext_stats(struct net_device *dev,
 			      struct ethtool_link_ext_stats *stats);
 
-/* Concrete NIC Stats */
+
 
 struct mlx5e_sw_stats {
 	u64 rx_packets;
@@ -399,7 +369,7 @@ struct mlx5e_rq_stats {
 };
 
 struct mlx5e_sq_stats {
-	/* commonly accessed in data path */
+	
 	u64 packets;
 	u64 bytes;
 	u64 xmit_more;
@@ -424,12 +394,12 @@ struct mlx5e_sq_stats {
 	u64 tls_drop_no_sync_data;
 	u64 tls_drop_bypass_req;
 #endif
-	/* less likely accessed in data path */
+	
 	u64 csum_none;
 	u64 stopped;
 	u64 dropped;
 	u64 recover;
-	/* dirtied @completion */
+	
 	u64 cqes ____cacheline_aligned_in_smp;
 	u64 wake;
 	u64 cqe_err;
@@ -442,7 +412,7 @@ struct mlx5e_xdpsq_stats {
 	u64 nops;
 	u64 full;
 	u64 err;
-	/* dirtied @completion */
+	
 	u64 cqes ____cacheline_aligned_in_smp;
 };
 
@@ -520,4 +490,4 @@ extern MLX5E_DECLARE_STATS_GRP(ipsec_sw);
 extern MLX5E_DECLARE_STATS_GRP(ptp);
 extern MLX5E_DECLARE_STATS_GRP(macsec_hw);
 
-#endif /* __MLX5_EN_STATS_H__ */
+#endif 

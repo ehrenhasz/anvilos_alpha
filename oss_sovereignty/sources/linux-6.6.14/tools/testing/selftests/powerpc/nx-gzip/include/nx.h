@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2020 IBM Corp.
- *
- */
+
+
 #ifndef _NX_H
 #define _NX_H
 
@@ -17,9 +14,9 @@
 
 struct nx842_func_args {
 	bool use_crc;
-	bool decompress;		/* true decompress; false compress */
+	bool decompress;		
 	bool move_data;
-	int timeout;			/* seconds */
+	int timeout;			
 };
 
 struct nxbuf_t {
@@ -27,7 +24,7 @@ struct nxbuf_t {
 	char *buf;
 };
 
-/* @function should be EFT (aka 842), GZIP etc */
+
 void *nx_function_begin(int function, int pri);
 
 int nx_function(void *handle, struct nxbuf_t *in, struct nxbuf_t *out,
@@ -35,4 +32,4 @@ int nx_function(void *handle, struct nxbuf_t *in, struct nxbuf_t *out,
 
 int nx_function_end(void *handle);
 
-#endif	/* _NX_H */
+#endif	

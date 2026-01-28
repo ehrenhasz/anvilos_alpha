@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * arm_spe_decoder.h: Arm Statistical Profiling Extensions support
- * Copyright (c) 2019-2020, Arm Ltd.
- */
+
+
 
 #ifndef INCLUDE__ARM_SPE_DECODER_H__
 #define INCLUDE__ARM_SPE_DECODER_H__
@@ -27,17 +24,17 @@ enum arm_spe_sample_type {
 };
 
 enum arm_spe_op_type {
-	/* First level operation type */
+	
 	ARM_SPE_OP_OTHER	= 1 << 0,
 	ARM_SPE_OP_LDST		= 1 << 1,
 	ARM_SPE_OP_BRANCH_ERET	= 1 << 2,
 
-	/* Second level operation type for OTHER */
+	
 	ARM_SPE_OP_SVE_OTHER		= 1 << 16,
 	ARM_SPE_OP_SVE_FP		= 1 << 17,
 	ARM_SPE_OP_SVE_PRED_OTHER	= 1 << 18,
 
-	/* Second level operation type for LDST */
+	
 	ARM_SPE_OP_LD			= 1 << 16,
 	ARM_SPE_OP_ST			= 1 << 17,
 	ARM_SPE_OP_ATOMIC		= 1 << 18,
@@ -51,7 +48,7 @@ enum arm_spe_op_type {
 	ARM_SPE_OP_SVE_PRED_LDST	= 1 << 26,
 	ARM_SPE_OP_SVE_SG		= 1 << 27,
 
-	/* Second level operation type for BRANCH_ERET */
+	
 	ARM_SPE_OP_BR_COND	= 1 << 16,
 	ARM_SPE_OP_BR_INDIRECT	= 1 << 17,
 };

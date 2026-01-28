@@ -1,8 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- * The MIT License (MIT)
- * Copyright (c) 2022 Arduino SA
- */
+
 
 #define MICROPY_HW_BOARD_NAME           "Arduino Nano 33 BLE Sense"
 #define MICROPY_HW_MCU_NAME             "NRF52840"
@@ -33,30 +29,30 @@
 #define MICROPY_HW_ENABLE_DAC           (0)
 #define MICROPY_HW_ENABLE_CAN           (0)
 
-// LEDs config
-#define MICROPY_HW_LED_COUNT            (4)     // 3 RGB + 1 Yellow
-#define MICROPY_HW_LED_PULLUP           (1)     // RGB LED is active low
-#define MICROPY_HW_LED4_PULLUP          (0)     // Yellow is active high
-#define MICROPY_HW_LED1                 (24)    // RED
-#define MICROPY_HW_LED2                 (16)    // GREEN
-#define MICROPY_HW_LED3                 (6)     // BLUE
-#define MICROPY_HW_LED4                 (13)    // Yellow
+
+#define MICROPY_HW_LED_COUNT            (4)     
+#define MICROPY_HW_LED_PULLUP           (1)     
+#define MICROPY_HW_LED4_PULLUP          (0)     
+#define MICROPY_HW_LED1                 (24)    
+#define MICROPY_HW_LED2                 (16)    
+#define MICROPY_HW_LED3                 (6)     
+#define MICROPY_HW_LED4                 (13)    
 #define HELP_TEXT_BOARD_LED             "1,2,3,4"
 
-// UART config
+
 #define MICROPY_HW_UART1_TX             (32 + 3)
 #define MICROPY_HW_UART1_RX             (32 + 10)
-// #define MICROPY_HW_UART1_CTS            (7)
-// #define MICROPY_HW_UART1_RTS            (5)
-// #define MICROPY_HW_UART1_HWFC           (1)
 
-// SPI0 config
+
+
+
+
 #define MICROPY_HW_SPI0_NAME            "SPI0"
 #define MICROPY_HW_SPI0_SCK             (13)
 #define MICROPY_HW_SPI0_MOSI            (32 + 1)
 #define MICROPY_HW_SPI0_MISO            (32 + 8)
 
-// PWM config
+
 #define MICROPY_HW_PWM0_NAME            "PWM0"
 #define MICROPY_HW_PWM1_NAME            "PWM1"
 #define MICROPY_HW_PWM2_NAME            "PWM2"

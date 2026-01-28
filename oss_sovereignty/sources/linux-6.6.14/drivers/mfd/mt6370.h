@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2022 Richtek Technology Corp.
- *
- * Author: ChiYuan Huang <cy_huang@richtek.com>
- */
+
+
 
 #ifndef __MFD_MT6370_H__
 #define __MFD_MT6370_H__
 
-/* IRQ definitions */
+
 #define MT6370_IRQ_DIRCHGON		0
 #define MT6370_IRQ_CHG_TREG		4
 #define MT6370_IRQ_CHG_AICR		5
@@ -96,4 +92,4 @@ struct mt6370_info {
 	struct regmap_irq_chip_data *irq_data;
 };
 
-#endif /* __MFD_MT6375_H__ */
+#endif 

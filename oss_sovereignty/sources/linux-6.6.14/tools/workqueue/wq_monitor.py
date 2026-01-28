@@ -44,14 +44,14 @@ def err(s):
 workqueues              = prog['workqueues']
 WQ_UNBOUND              = prog['WQ_UNBOUND']
 WQ_MEM_RECLAIM          = prog['WQ_MEM_RECLAIM']
-PWQ_STAT_STARTED        = prog['PWQ_STAT_STARTED']      # work items started execution
-PWQ_STAT_COMPLETED      = prog['PWQ_STAT_COMPLETED']	# work items completed execution
-PWQ_STAT_CPU_TIME       = prog['PWQ_STAT_CPU_TIME']     # total CPU time consumed
-PWQ_STAT_CPU_INTENSIVE  = prog['PWQ_STAT_CPU_INTENSIVE'] # wq_cpu_intensive_thresh_us violations
-PWQ_STAT_CM_WAKEUP      = prog['PWQ_STAT_CM_WAKEUP']    # concurrency-management worker wakeups
-PWQ_STAT_REPATRIATED    = prog['PWQ_STAT_REPATRIATED']  # unbound workers brought back into scope
-PWQ_STAT_MAYDAY         = prog['PWQ_STAT_MAYDAY']	# maydays to rescuer
-PWQ_STAT_RESCUED        = prog['PWQ_STAT_RESCUED']	# linked work items executed by rescuer
+PWQ_STAT_STARTED        = prog['PWQ_STAT_STARTED']      
+PWQ_STAT_COMPLETED      = prog['PWQ_STAT_COMPLETED']	
+PWQ_STAT_CPU_TIME       = prog['PWQ_STAT_CPU_TIME']     
+PWQ_STAT_CPU_INTENSIVE  = prog['PWQ_STAT_CPU_INTENSIVE'] 
+PWQ_STAT_CM_WAKEUP      = prog['PWQ_STAT_CM_WAKEUP']    
+PWQ_STAT_REPATRIATED    = prog['PWQ_STAT_REPATRIATED']  
+PWQ_STAT_MAYDAY         = prog['PWQ_STAT_MAYDAY']	
+PWQ_STAT_RESCUED        = prog['PWQ_STAT_RESCUED']	
 PWQ_NR_STATS            = prog['PWQ_NR_STATS']
 class WqStats:
     def __init__(self, wq):

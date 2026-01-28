@@ -1,4 +1,4 @@
-if [ "$#" -ne 1 ]; then
+if [ "$
     echo "Usage: appsign.sh *build dir*"
     exit 1
 fi

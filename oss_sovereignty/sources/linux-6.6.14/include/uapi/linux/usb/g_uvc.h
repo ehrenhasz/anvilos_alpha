@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- * g_uvc.h  --  USB Video Class Gadget driver API
- *
- * Copyright (C) 2009-2010 Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+
 
 #ifndef __LINUX_USB_G_UVC_H
 #define __LINUX_USB_G_UVC_H
@@ -39,4 +35,4 @@ struct uvc_event {
 
 #define UVCIOC_SEND_RESPONSE		_IOW('U', 1, struct uvc_request_data)
 
-#endif /* __LINUX_USB_G_UVC_H */
+#endif 

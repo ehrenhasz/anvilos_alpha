@@ -1,10 +1,10 @@
-# Select the board to build for:
+
 ifdef BOARD_DIR
-# Custom board path - remove trailing slash and get the final component of
-# the path as the board name.
+
+
 BOARD ?= $(notdir $(BOARD_DIR:/=))
 else
-# If not given on the command line, then default to ADAFRUIT_ITSYBITSY_M4_EXPRESS.
+
 BOARD ?= ADAFRUIT_ITSYBITSY_M4_EXPRESS
 BOARD_DIR ?= boards/$(BOARD)
 endif
@@ -24,13 +24,13 @@ include ../../py/mkenv.mk
 include $(BOARD_DIR)/mpconfigboard.mk
 include mcu/$(MCU_SERIES_LOWER)/mpconfigmcu.mk
 
-# Qstr definitions (must come before including py.mk)
+
 QSTR_DEFS = qstrdefsport.h
 QSTR_GLOBAL_DEPENDENCIES = $(BOARD_DIR)/mpconfigboard.h mcu/$(MCU_SERIES_LOWER)/mpconfigmcu.h
 
 FROZEN_MANIFEST ?= boards/manifest.py
 
-# Include py core make definitions
+
 include $(TOP)/py/py.mk
 include $(TOP)/extmod/extmod.mk
 
@@ -68,7 +68,7 @@ CFLAGS += $(INC) -Wall -Werror -std=c99 -nostdlib -mthumb $(CFLAGS_MCU) -fsingle
 CFLAGS += -DMCU_$(MCU_SERIES) -D__$(CMSIS_MCU)__
 CFLAGS += $(CFLAGS_EXTRA)
 
-# Strip the letter 'K' from MICROPY_HW_CODESIZE for use by C code.
+
 CFLAGS += -DMICROPY_HW_CODESIZE=$(strip $(subst K,' ', $(MICROPY_HW_CODESIZE)))
 
 LDFLAGS += -nostdlib $(addprefix -T,$(LD_FILES)) -Map=$@.map --cref
@@ -76,8 +76,8 @@ LDFLAGS += --defsym=_codesize=$(MICROPY_HW_CODESIZE)
 
 LIBS += $(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
 
-# Tune for Debugging or Optimization
-CFLAGS += -g  # always include debug info in the ELF
+
+CFLAGS += -g  
 ifeq ($(DEBUG),1)
 CFLAGS += -O0
 else
@@ -86,10 +86,10 @@ LDFLAGS += --gc-sections --print-memory-usage
 CFLAGS += -fdata-sections -ffunction-sections
 endif
 
-# Flags for optional C++ source code
+
 CXXFLAGS += $(filter-out -std=c99,$(CFLAGS))
 
-# TODO make this common -- shouldn't be using these "private" vars from py.mk
+
 ifneq ($(SRC_CXX)$(SRC_USERMOD_CXX)$(SRC_USERMOD_LIB_CXX),)
 LIBSTDCPP_FILE_NAME = "$(shell $(CXX) $(CXXFLAGS) -print-file-name=libstdc++.a)"
 LDFLAGS += -L"$(shell dirname $(LIBSTDCPP_FILE_NAME))"
@@ -159,7 +159,7 @@ TINYUSB_SRC_C += $(addprefix lib/tinyusb/src/,\
 DRIVERS_SRC_C += \
 	drivers/bus/softspi.c \
 
-# List of sources for qstr extraction
+
 SRC_QSTR += $(SRC_C) $(SHARED_SRC_C) $(SRC_CXX) $(GEN_PINS_SRC)
 
 OBJ += $(PY_O)
@@ -185,10 +185,10 @@ $(BUILD)/firmware.bin: $(BUILD)/firmware.elf
 $(BUILD)/firmware.uf2: $(BUILD)/firmware.bin
 	$(Q)$(PYTHON) $(UF2CONV) -b $(TEXT0) -c -o $@ $<
 
-# pin_af.c: $(BUILD)/$(GEN_PIN_AF) | $(HEADER_BUILD)
 
-# Use a pattern rule here so that make will only call make-pins.py once to make
-# both pins_$(BOARD).c and pins.h
+
+
+
 $(BUILD)/%_$(BOARD).c $(HEADER_BUILD)/%.h: $(BOARD_DIR)/%.csv $(MAKE_PINS) $(AF_FILE) $(PREFIX_FILE) | $(HEADER_BUILD)
 	$(ECHO) "GEN $@"
 	$(Q)$(PYTHON) $(MAKE_PINS) --board-csv $(BOARD_PINS) --af-csv $(AF_FILE) --prefix $(PREFIX_FILE) \

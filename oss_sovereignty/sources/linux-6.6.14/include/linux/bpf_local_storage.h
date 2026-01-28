@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 Facebook
- * Copyright 2020 Google LLC.
- */
+
+
 
 #ifndef _BPF_LOCAL_STORAGE_H
 #define _BPF_LOCAL_STORAGE_H
@@ -26,32 +23,10 @@ struct bpf_local_storage_map_bucket {
 	raw_spinlock_t lock;
 };
 
-/* Thp map is not the primary owner of a bpf_local_storage_elem.
- * Instead, the container object (eg. sk->sk_bpf_storage) is.
- *
- * The map (bpf_local_storage_map) is for two purposes
- * 1. Define the size of the "local storage".  It is
- *    the map's value_size.
- *
- * 2. Maintain a list to keep track of all elems such
- *    that they can be cleaned up during the map destruction.
- *
- * When a bpf local storage is being looked up for a
- * particular object,  the "bpf_map" pointer is actually used
- * as the "key" to search in the list of elem in
- * the respective bpf_local_storage owned by the object.
- *
- * e.g. sk->sk_bpf_storage is the mini-map with the "bpf_map" pointer
- * as the searching key.
- */
+
 struct bpf_local_storage_map {
 	struct bpf_map map;
-	/* Lookup elem does not require accessing the map.
-	 *
-	 * Updating/Deleting requires a bucket lock to
-	 * link/unlink the elem from the map.  Having
-	 * multiple buckets to improve contention.
-	 */
+	
 	struct bpf_local_storage_map_bucket *buckets;
 	u32 bucket_log;
 	u16 elem_size;
@@ -62,43 +37,32 @@ struct bpf_local_storage_map {
 };
 
 struct bpf_local_storage_data {
-	/* smap is used as the searching key when looking up
-	 * from the object's bpf_local_storage.
-	 *
-	 * Put it in the same cacheline as the data to minimize
-	 * the number of cachelines accessed during the cache hit case.
-	 */
+	
 	struct bpf_local_storage_map __rcu *smap;
 	u8 data[] __aligned(8);
 };
 
-/* Linked to bpf_local_storage and bpf_local_storage_map */
+
 struct bpf_local_storage_elem {
-	struct hlist_node map_node;	/* Linked to bpf_local_storage_map */
-	struct hlist_node snode;	/* Linked to bpf_local_storage */
+	struct hlist_node map_node;	
+	struct hlist_node snode;	
 	struct bpf_local_storage __rcu *local_storage;
 	struct rcu_head rcu;
-	/* 8 bytes hole */
-	/* The data is stored in another cacheline to minimize
-	 * the number of cachelines access during a cache hit.
-	 */
+	
+	
 	struct bpf_local_storage_data sdata ____cacheline_aligned;
 };
 
 struct bpf_local_storage {
 	struct bpf_local_storage_data __rcu *cache[BPF_LOCAL_STORAGE_CACHE_SIZE];
 	struct bpf_local_storage_map __rcu *smap;
-	struct hlist_head list; /* List of bpf_local_storage_elem */
-	void *owner;		/* The object that owns the above "list" of
-				 * bpf_local_storage_elem.
-				 */
+	struct hlist_head list; 
+	void *owner;		
 	struct rcu_head rcu;
-	raw_spinlock_t lock;	/* Protect adding/removing from the "list" */
+	raw_spinlock_t lock;	
 };
 
-/* U16_MAX is much more than enough for sk local storage
- * considering a tcp_sock is ~2k.
- */
+
 #define BPF_LOCAL_STORAGE_MAX_VALUE_SIZE				       \
 	min_t(u32,                                                             \
 	      (KMALLOC_MAX_SIZE - MAX_BPF_STACK -                              \
@@ -121,7 +85,7 @@ static struct bpf_local_storage_cache name = {			\
 	.idx_lock = __SPIN_LOCK_UNLOCKED(name.idx_lock),	\
 }
 
-/* Helper functions for bpf_local_storage */
+
 int bpf_local_storage_map_alloc_check(union bpf_attr *attr);
 
 struct bpf_map *
@@ -173,4 +137,4 @@ bpf_local_storage_update(void *owner, struct bpf_local_storage_map *smap,
 
 u64 bpf_local_storage_map_mem_usage(const struct bpf_map *map);
 
-#endif /* _BPF_LOCAL_STORAGE_H */
+#endif 

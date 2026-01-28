@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the AMD network device drivers.
-#
+
+
+
+
 
 obj-$(CONFIG_A2065) += a2065.o
 obj-$(CONFIG_AMD8111_ETH) += amd8111e.o

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _NF_SYNPROXY_H
 #define _NF_SYNPROXY_H
 
@@ -20,4 +20,4 @@ struct nf_synproxy_info {
 	__u16	mss;
 };
 
-#endif /* _NF_SYNPROXY_H */
+#endif 

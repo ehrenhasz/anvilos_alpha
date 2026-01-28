@@ -109,7 +109,7 @@ try:
 except:
     print("Exception")
 try:
-    os.mkfs("flash")  # incorrect path format
+    os.mkfs("flash")  
 except:
     print("Exception")
 try:

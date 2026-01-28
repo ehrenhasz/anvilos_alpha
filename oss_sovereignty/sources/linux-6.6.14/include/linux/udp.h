@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Definitions for the UDP protocol.
- *
- * Version:	@(#)udp.h	1.0.2	04/28/93
- *
- * Author:	Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
- */
+
+
 #ifndef _LINUX_UDP_H
 #define _LINUX_UDP_H
 
@@ -33,19 +23,19 @@ static inline u32 udp_hashfn(const struct net *net, u32 num, u32 mask)
 }
 
 enum {
-	UDP_FLAGS_CORK,		/* Cork is required */
-	UDP_FLAGS_NO_CHECK6_TX, /* Send zero UDP6 checksums on TX? */
-	UDP_FLAGS_NO_CHECK6_RX, /* Allow zero UDP6 checksums on RX? */
-	UDP_FLAGS_GRO_ENABLED,	/* Request GRO aggregation */
+	UDP_FLAGS_CORK,		
+	UDP_FLAGS_NO_CHECK6_TX, 
+	UDP_FLAGS_NO_CHECK6_RX, 
+	UDP_FLAGS_GRO_ENABLED,	
 	UDP_FLAGS_ACCEPT_FRAGLIST,
 	UDP_FLAGS_ACCEPT_L4,
-	UDP_FLAGS_ENCAP_ENABLED, /* This socket enabled encap */
-	UDP_FLAGS_UDPLITE_SEND_CC, /* set via udplite setsockopt */
-	UDP_FLAGS_UDPLITE_RECV_CC, /* set via udplite setsockopt */
+	UDP_FLAGS_ENCAP_ENABLED, 
+	UDP_FLAGS_UDPLITE_SEND_CC, 
+	UDP_FLAGS_UDPLITE_RECV_CC, 
 };
 
 struct udp_sock {
-	/* inet_sock has to be the first member */
+	
 	struct inet_sock inet;
 #define udp_port_hash		inet.sk.__sk_common.skc_u16hashes[0]
 #define udp_portaddr_hash	inet.sk.__sk_common.skc_u16hashes[1]
@@ -53,30 +43,23 @@ struct udp_sock {
 
 	unsigned long	 udp_flags;
 
-	int		 pending;	/* Any pending frames ? */
-	__u8		 encap_type;	/* Is this an Encapsulation socket? */
+	int		 pending;	
+	__u8		 encap_type;	
 
-	/*
-	 * Following member retains the information to create a UDP header
-	 * when the socket is uncorked.
-	 */
-	__u16		 len;		/* total length of pending frames */
+	
+	__u16		 len;		
 	__u16		 gso_size;
-	/*
-	 * Fields specific to UDP-Lite.
-	 */
+	
 	__u16		 pcslen;
 	__u16		 pcrlen;
-	/*
-	 * For encapsulation sockets.
-	 */
+	
 	int (*encap_rcv)(struct sock *sk, struct sk_buff *skb);
 	void (*encap_err_rcv)(struct sock *sk, struct sk_buff *skb, int err,
 			      __be16 port, u32 info, u8 *payload);
 	int (*encap_err_lookup)(struct sock *sk, struct sk_buff *skb);
 	void (*encap_destroy)(struct sock *sk);
 
-	/* GRO functions for UDP socket */
+	
 	struct sk_buff *	(*gro_receive)(struct sock *sk,
 					       struct list_head *head,
 					       struct sk_buff *skb);
@@ -84,13 +67,13 @@ struct udp_sock {
 						struct sk_buff *skb,
 						int nhoff);
 
-	/* udp_recvmsg try to use this before splicing sk_receive_queue */
+	
 	struct sk_buff_head	reader_queue ____cacheline_aligned_in_smp;
 
-	/* This field is dirtied by udp_recvmsg() */
+	
 	int		forward_deficit;
 
-	/* This fields follows rcvbuf value, and is touched by udp_recvmsg */
+	
 	int		forward_threshold;
 };
 
@@ -170,4 +153,4 @@ static inline void udp_allow_gso(struct sock *sk)
 
 #define IS_UDPLITE(__sk) (__sk->sk_protocol == IPPROTO_UDPLITE)
 
-#endif	/* _LINUX_UDP_H */
+#endif	

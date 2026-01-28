@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM bpf_test_run
 
@@ -46,5 +46,5 @@ BPF_TEST_RUN_DEFINE_EVENT(bpf_test_finish, bpf_test_finish,
 
 #endif
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

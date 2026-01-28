@@ -23,7 +23,7 @@ try:
 except OSError as e:
     exc = e
 micropython.heap_unlock()
-print("exc:", exc)  # exc empty due to no memory
+print("exc:", exc)  
 micropython.alloc_emergency_exception_buf(256)
 exc = "FAILED TO RAISE"
 micropython.heap_lock()

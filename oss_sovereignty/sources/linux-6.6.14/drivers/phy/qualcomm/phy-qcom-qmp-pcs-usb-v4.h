@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef QCOM_PHY_QMP_PCS_USB_V4_H_
 #define QCOM_PHY_QMP_PCS_USB_V4_H_
 
-/* Only for QMP V4 PHY - USB3 PCS registers */
+
 #define QPHY_V4_PCS_USB3_POWER_STATE_CONFIG1		0x000
 #define QPHY_V4_PCS_USB3_AUTONOMOUS_MODE_STATUS		0x004
 #define QPHY_V4_PCS_USB3_AUTONOMOUS_MODE_CTRL		0x008

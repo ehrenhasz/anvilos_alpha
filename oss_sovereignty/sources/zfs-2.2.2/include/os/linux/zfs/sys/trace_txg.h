@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+
 
 #if defined(_KERNEL)
 #if defined(HAVE_DECLARE_EVENT_CLASS)
@@ -34,14 +15,8 @@
 #include <linux/tracepoint.h>
 #include <sys/types.h>
 
-/*
- * Generic support for two argument tracepoints of the form:
- *
- * DTRACE_PROBE2(...,
- *     dsl_pool_t *, ...,
- *     uint64_t, ...);
- */
-/* BEGIN CSTYLED */
+
+
 DECLARE_EVENT_CLASS(zfs_txg_class,
 	TP_PROTO(dsl_pool_t *dp, uint64_t txg),
 	TP_ARGS(dp, txg),
@@ -53,7 +28,7 @@ DECLARE_EVENT_CLASS(zfs_txg_class,
 	),
 	TP_printk("txg %llu", __entry->txg)
 );
-/* END CSTYLED */
+
 
 #define	DEFINE_TXG_EVENT(name) \
 DEFINE_EVENT(zfs_txg_class, name, \
@@ -66,7 +41,7 @@ DEFINE_TXG_EVENT(zfs_txg__syncing);
 DEFINE_TXG_EVENT(zfs_txg__synced);
 DEFINE_TXG_EVENT(zfs_txg__quiesced);
 
-#endif /* _TRACE_TXG_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
@@ -83,5 +58,5 @@ DEFINE_DTRACE_PROBE2(txg__syncing);
 DEFINE_DTRACE_PROBE2(txg__synced);
 DEFINE_DTRACE_PROBE2(txg__quiesced);
 
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif 
+#endif 

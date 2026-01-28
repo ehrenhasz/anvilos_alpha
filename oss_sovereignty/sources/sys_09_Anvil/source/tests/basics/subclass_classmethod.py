@@ -19,6 +19,6 @@ class A(object):
         print(self.foo)
 class B(A):
     foo = 1
-B.bar() # class calling classmethod
-B().bar() # instance calling classmethod
-B().baz() # instance calling normal method
+B.bar() 
+B().bar() 
+B().baz() 

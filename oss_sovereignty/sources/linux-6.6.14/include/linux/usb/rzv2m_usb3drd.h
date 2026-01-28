@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __RZV2M_USB3DRD_H
 #define __RZV2M_USB3DRD_H
 
@@ -17,4 +17,4 @@ void rzv2m_usb3drd_reset(struct device *dev, bool host);
 static inline void rzv2m_usb3drd_reset(struct device *dev, bool host) { }
 #endif
 
-#endif /* __RZV2M_USB3DRD_H */
+#endif 

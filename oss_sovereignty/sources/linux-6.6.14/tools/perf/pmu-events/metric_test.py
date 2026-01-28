@@ -45,7 +45,7 @@ class TestMetricExpressions(unittest.TestCase):
     after = before
     self.assertEqual(ParsePerfJson(before).ToPerfJson(), after)
   def test_IfElseTests(self):
-    before = r'Event1 if #smt_on else Event2'
+    before = r'Event1 if 
     after = f'({before})'
     self.assertEqual(ParsePerfJson(before).ToPerfJson(), after)
     before = r'Event1 if 0 else Event2'

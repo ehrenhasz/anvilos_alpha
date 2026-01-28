@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __HID_LG4FF_H
 #define __HID_LG4FF_H
 
 #ifdef CONFIG_LOGIWHEELS_FF
-extern int lg4ff_no_autoswitch; /* From hid-lg.c */
+extern int lg4ff_no_autoswitch; 
 
 int lg4ff_adjust_input_event(struct hid_device *hid, struct hid_field *field,
 			     struct hid_usage *usage, s32 value, struct lg_drv_data *drv_data);

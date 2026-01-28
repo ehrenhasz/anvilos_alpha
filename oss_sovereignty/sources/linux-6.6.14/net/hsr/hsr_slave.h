@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2011-2014 Autronica Fire and Security AS
- *
- *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
- *
- * include file for HSR and PRP.
- */
+
+
 
 #ifndef __HSR_SLAVE_H
 #define __HSR_SLAVE_H
@@ -34,4 +29,4 @@ static inline struct hsr_port *hsr_port_get_rcu(const struct net_device *dev)
 
 bool hsr_invalid_dan_ingress_frame(__be16 protocol);
 
-#endif /* __HSR_SLAVE_H */
+#endif 

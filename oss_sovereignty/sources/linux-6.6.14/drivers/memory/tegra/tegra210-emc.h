@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2015-2020, NVIDIA CORPORATION.  All rights reserved.
- */
+
+
 
 #ifndef TEGRA210_EMC_H
 #define TEGRA210_EMC_H
@@ -17,7 +15,7 @@
 
 #define EMC_STATUS_UPDATE_TIMEOUT				1000
 
-/* register definitions */
+
 #define EMC_INTSTATUS						0x0
 #define EMC_INTSTATUS_CLKCHANGE_COMPLETE			BIT(4)
 #define EMC_DBG							0x8
@@ -875,7 +873,7 @@ enum tegra210_emc_refresh {
 	TEGRA210_EMC_REFRESH_NOMINAL = 0,
 	TEGRA210_EMC_REFRESH_2X,
 	TEGRA210_EMC_REFRESH_4X,
-	TEGRA210_EMC_REFRESH_THROTTLE, /* 4x Refresh + derating. */
+	TEGRA210_EMC_REFRESH_THROTTLE, 
 };
 
 #define DRAM_TYPE_DDR3		0
@@ -888,12 +886,12 @@ struct tegra210_emc {
 	struct device *dev;
 	struct clk *clk;
 
-	/* nominal EMC frequency table */
+	
 	struct tegra210_emc_timing *nominal;
-	/* derated EMC frequency table */
+	
 	struct tegra210_emc_timing *derated;
 
-	/* currently selected table (nominal or derated) */
+	
 	struct tegra210_emc_timing *timings;
 	unsigned int num_timings;
 
@@ -984,7 +982,7 @@ static inline u32 div_o3(u32 a, u32 b)
 	return result;
 }
 
-/* from tegra210-emc-r21021.c */
+
 extern const struct tegra210_emc_sequence tegra210_emc_r21021;
 
 int tegra210_emc_set_refresh(struct tegra210_emc *emc,

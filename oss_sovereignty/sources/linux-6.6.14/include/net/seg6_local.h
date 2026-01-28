@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  SR-IPv6 implementation
- *
- *  Authors:
- *  David Lebrun <david.lebrun@uclouvain.be>
- *  eBPF support: Mathieu Xhonneux <m.xhonneux@gmail.com>
- */
+
+
 
 #ifndef _NET_SEG6_LOCAL_H
 #define _NET_SEG6_LOCAL_H

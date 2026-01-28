@@ -1,18 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * max8998-private.h - Voltage regulator driver for the Maxim 8998
- *
- *  Copyright (C) 2009-2010 Samsung Electrnoics
- *  Kyungmin Park <kyungmin.park@samsung.com>
- *  Marek Szyprowski <m.szyprowski@samsung.com>
- */
+
+
 
 #ifndef __LINUX_MFD_MAX8998_PRIV_H
 #define __LINUX_MFD_MAX8998_PRIV_H
 
 #define MAX8998_NUM_IRQ_REGS	4
 
-/* MAX 8998 registers */
+
 enum {
 	MAX8998_REG_IRQ1,
 	MAX8998_REG_IRQ2,
@@ -61,7 +55,7 @@ enum {
 	MAX8998_REG_LBCNFG2,
 };
 
-/* IRQ definitions */
+
 enum {
 	MAX8998_IRQ_DCINF,
 	MAX8998_IRQ_DCINR,
@@ -88,11 +82,11 @@ enum {
 	MAX8998_IRQ_NR,
 };
 
-/* MAX8998 various variants */
+
 enum {
-	TYPE_MAX8998 = 0, /* Default */
-	TYPE_LP3974,	/* National version of MAX8998 */
-	TYPE_LP3979,	/* Added AVS */
+	TYPE_MAX8998 = 0, 
+	TYPE_LP3974,	
+	TYPE_LP3979,	
 };
 
 #define MAX8998_IRQ_DCINF_MASK		(1 << 2)
@@ -121,21 +115,7 @@ enum {
 
 struct irq_domain;
 
-/**
- * struct max8998_dev - max8998 master device for sub-drivers
- * @dev: master device of the chip (can be used to access platform data)
- * @pdata: platform data for the driver and subdrivers
- * @i2c: i2c client private data for regulator
- * @rtc: i2c client private data for rtc
- * @iolock: mutex for serializing io access
- * @irqlock: mutex for buslock
- * @irq_base: base IRQ number for max8998, required for IRQs
- * @irq: generic IRQ number for max8998
- * @ono: power onoff IRQ number for max8998
- * @irq_masks_cur: currently active value
- * @irq_masks_cache: cached hardware value
- * @type: indicate which max8998 "variant" is used
- */
+
 struct max8998_dev {
 	struct device *dev;
 	struct max8998_platform_data *pdata;
@@ -166,4 +146,4 @@ extern int max8998_bulk_write(struct i2c_client *i2c, u8 reg, int count,
 		u8 *buf);
 extern int max8998_update_reg(struct i2c_client *i2c, u8 reg, u8 val, u8 mask);
 
-#endif /*  __LINUX_MFD_MAX8998_PRIV_H */
+#endif 

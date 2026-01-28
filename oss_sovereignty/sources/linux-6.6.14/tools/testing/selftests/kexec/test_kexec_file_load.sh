@@ -58,7 +58,7 @@ check_for_modsig()
 {
 	local module_sig_string="~Module signature appended~"
 	local ret=0
-	tail --bytes $((${#module_sig_string} + 1)) $KERNEL_IMAGE | \
+	tail --bytes $((${
 		grep -q "$module_sig_string"
 	if [ $? -eq 0 ]; then
 		ret=1

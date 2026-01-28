@@ -1,24 +1,4 @@
-/*
- * Copyright © 2014 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
 #ifndef DRM_DISPLAYID_H
 #define DRM_DISPLAYID_H
 
@@ -29,11 +9,11 @@ struct drm_edid;
 
 #define VESA_IEEE_OUI				0x3a0292
 
-/* DisplayID Structure versions */
+
 #define DISPLAY_ID_STRUCTURE_VER_12		0x12
 #define DISPLAY_ID_STRUCTURE_VER_20		0x20
 
-/* DisplayID Structure v1r2 Data Blocks */
+
 #define DATA_BLOCK_PRODUCT_ID			0x00
 #define DATA_BLOCK_DISPLAY_PARAMETERS		0x01
 #define DATA_BLOCK_COLOR_CHARACTERISTICS	0x02
@@ -55,7 +35,7 @@ struct drm_edid;
 #define DATA_BLOCK_VENDOR_SPECIFIC		0x7f
 #define DATA_BLOCK_CTA				0x81
 
-/* DisplayID Structure v2r0 Data Blocks */
+
 #define DATA_BLOCK_2_PRODUCT_ID			0x20
 #define DATA_BLOCK_2_DISPLAY_PARAMETERS		0x21
 #define DATA_BLOCK_2_TYPE_7_DETAILED_TIMING	0x22
@@ -69,7 +49,7 @@ struct drm_edid;
 #define DATA_BLOCK_2_VENDOR_SPECIFIC		0x7e
 #define DATA_BLOCK_2_CTA_DISPLAY_ID		0x81
 
-/* DisplayID Structure v1r2 Product Type */
+
 #define PRODUCT_TYPE_EXTENSION			0
 #define PRODUCT_TYPE_TEST			1
 #define PRODUCT_TYPE_PANEL			2
@@ -78,7 +58,7 @@ struct drm_edid;
 #define PRODUCT_TYPE_REPEATER			5
 #define PRODUCT_TYPE_DIRECT_DRIVE		6
 
-/* DisplayID Structure v2r0 Display Product Primary Use Case (~Product Type) */
+
 #define PRIMARY_USE_EXTENSION			0
 #define PRIMARY_USE_TEST			1
 #define PRIMARY_USE_GENERIC			2
@@ -139,11 +119,7 @@ struct displayid_vesa_vendor_specific_block {
 	u8 mso;
 } __packed;
 
-/*
- * DisplayID iteration.
- *
- * Do not access directly, this is private.
- */
+
 struct displayid_iter {
 	const struct drm_edid *drm_edid;
 

@@ -1,25 +1,4 @@
-/*
-   RFCOMM implementation for Linux Bluetooth stack (BlueZ)
-   Copyright (C) 2002 Maxim Krasnyansky <maxk@qualcomm.com>
-   Copyright (C) 2002 Marcel Holtmann <marcel@holtmann.org>
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation;
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
-   IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
-   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
-   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
-   SOFTWARE IS DISCLAIMED.
-*/
 
 #include <linux/refcount.h>
 
@@ -104,7 +83,7 @@
 struct rfcomm_hdr {
 	u8 addr;
 	u8 ctrl;
-	u8 len;    /* Actual size can be 2 bytes */
+	u8 len;    
 } __packed;
 
 struct rfcomm_cmd {
@@ -149,7 +128,7 @@ struct rfcomm_msc {
 	u8  v24_sig;
 } __packed;
 
-/* ---- Core structures, flags etc ---- */
+
 
 struct rfcomm_session {
 	struct list_head list;
@@ -159,7 +138,7 @@ struct rfcomm_session {
 	unsigned long    flags;
 	int              initiator;
 
-	/* Default DLC parameters */
+	
 	int    cfc;
 	uint   mtu;
 
@@ -199,7 +178,7 @@ struct rfcomm_dlc {
 	void (*modem_status)(struct rfcomm_dlc *d, u8 v24_sig);
 };
 
-/* DLC and session flags */
+
 #define RFCOMM_RX_THROTTLED 0
 #define RFCOMM_TX_THROTTLED 1
 #define RFCOMM_TIMED_OUT    2
@@ -211,26 +190,26 @@ struct rfcomm_dlc {
 #define RFCOMM_DEFER_SETUP  8
 #define RFCOMM_ENC_DROP     9
 
-/* Scheduling flags and events */
+
 #define RFCOMM_SCHED_WAKEUP 31
 
-/* MSC exchange flags */
+
 #define RFCOMM_MSCEX_TX     1
 #define RFCOMM_MSCEX_RX     2
 #define RFCOMM_MSCEX_OK     (RFCOMM_MSCEX_TX + RFCOMM_MSCEX_RX)
 
-/* CFC states */
+
 #define RFCOMM_CFC_UNKNOWN  -1
 #define RFCOMM_CFC_DISABLED 0
 #define RFCOMM_CFC_ENABLED  RFCOMM_MAX_CREDITS
 
-/* ---- RFCOMM SEND RPN ---- */
+
 int rfcomm_send_rpn(struct rfcomm_session *s, int cr, u8 dlci,
 			u8 bit_rate, u8 data_bits, u8 stop_bits,
 			u8 parity, u8 flow_ctrl_settings,
 			u8 xon_char, u8 xoff_char, u16 param_mask);
 
-/* ---- RFCOMM DLCs (channels) ---- */
+
 struct rfcomm_dlc *rfcomm_dlc_alloc(gfp_t prio);
 void rfcomm_dlc_free(struct rfcomm_dlc *d);
 int  rfcomm_dlc_open(struct rfcomm_dlc *d, bdaddr_t *src, bdaddr_t *dst,
@@ -272,11 +251,11 @@ static inline void rfcomm_dlc_unthrottle(struct rfcomm_dlc *d)
 		__rfcomm_dlc_unthrottle(d);
 }
 
-/* ---- RFCOMM sessions ---- */
+
 void   rfcomm_session_getaddr(struct rfcomm_session *s, bdaddr_t *src,
 								bdaddr_t *dst);
 
-/* ---- RFCOMM sockets ---- */
+
 struct sockaddr_rc {
 	sa_family_t	rc_family;
 	bdaddr_t	rc_bdaddr;
@@ -316,7 +295,7 @@ void rfcomm_cleanup_sockets(void);
 int  rfcomm_connect_ind(struct rfcomm_session *s, u8 channel,
 							struct rfcomm_dlc **d);
 
-/* ---- RFCOMM TTY ---- */
+
 #define RFCOMM_MAX_DEV  256
 
 #define RFCOMMCREATEDEV		_IOW('R', 200, int)
@@ -325,14 +304,14 @@ int  rfcomm_connect_ind(struct rfcomm_session *s, u8 channel,
 #define RFCOMMGETDEVINFO	_IOR('R', 211, int)
 #define RFCOMMSTEALDLC		_IOW('R', 220, int)
 
-/* rfcomm_dev.flags bit definitions */
+
 #define RFCOMM_REUSE_DLC      0
 #define RFCOMM_RELEASE_ONHUP  1
 #define RFCOMM_HANGUP_NOW     2
 #define RFCOMM_TTY_ATTACHED   3
-#define RFCOMM_DEFUNCT_BIT4   4	  /* don't reuse this bit - userspace visible */
+#define RFCOMM_DEFUNCT_BIT4   4	  
 
-/* rfcomm_dev.status bit definitions */
+
 #define RFCOMM_DEV_RELEASED   0
 #define RFCOMM_TTY_OWNED      1
 
@@ -372,4 +351,4 @@ static inline void rfcomm_cleanup_ttys(void)
 {
 }
 #endif
-#endif /* __RFCOMM_H */
+#endif 

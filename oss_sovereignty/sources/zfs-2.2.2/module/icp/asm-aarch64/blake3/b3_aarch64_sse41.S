@@ -1,35 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
 
-/*
- * Based on BLAKE3 v1.3.1, https://github.com/BLAKE3-team/BLAKE3
- * Copyright (c) 2019-2022 Samuel Neves
- * Copyright (c) 2022-2023 Tino Reichardt <milky-zfs@mcmilk.de>
- *
- * This is converted assembly: SSE4.1 -> ARMv8-A
- * Used tools: SIMDe https://github.com/simd-everywhere/simde
- *
- * Should work on FreeBSD, Linux and macOS
- * see: https://github.com/mcmilk/BLAKE3-tests/blob/master/contrib/simde.sh
- */
+
+
 
 #if defined(__aarch64__)
 	.text

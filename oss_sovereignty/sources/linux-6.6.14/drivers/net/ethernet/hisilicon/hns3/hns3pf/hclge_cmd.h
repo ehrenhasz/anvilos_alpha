@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-// Copyright (c) 2016-2017 Hisilicon Limited.
+
+
 
 #ifndef __HCLGE_CMD_H
 #define __HCLGE_CMD_H
@@ -38,14 +38,14 @@ struct hclge_config_rcb_init_cmd {
 };
 
 struct hclge_tqp_map_cmd {
-	__le16 tqp_id;	/* Absolute tqp id for in this pf */
-	u8 tqp_vf;	/* VF id */
+	__le16 tqp_id;	
+	u8 tqp_vf;	
 #define HCLGE_TQP_MAP_TYPE_PF		0
 #define HCLGE_TQP_MAP_TYPE_VF		1
 #define HCLGE_TQP_MAP_TYPE_B		0
 #define HCLGE_TQP_MAP_EN_B		1
-	u8 tqp_flag;	/* Indicate it's pf or vf tqp */
-	__le16 tqp_vid; /* Virtual id in this pf/vf */
+	u8 tqp_flag;	
+	__le16 tqp_vid; 
 	u8 rsv[18];
 };
 
@@ -76,8 +76,8 @@ struct hclge_ctrl_vector_chain_cmd {
 };
 
 #define HCLGE_MAX_TC_NUM		8
-#define HCLGE_TC0_PRI_BUF_EN_B	15 /* Bit 15 indicate enable or not */
-#define HCLGE_BUF_UNIT_S	7  /* Buf size is united by 128 bytes */
+#define HCLGE_TC0_PRI_BUF_EN_B	15 
+#define HCLGE_BUF_UNIT_S	7  
 struct hclge_tx_buff_alloc_cmd {
 	__le16 tx_pkt_buff[HCLGE_MAX_TC_NUM];
 	u8 tx_buff_rsv[8];
@@ -119,10 +119,10 @@ struct hclge_tc_thrd {
 };
 
 struct hclge_priv_buf {
-	struct hclge_waterline wl;	/* Waterline for low and high */
-	u32 buf_size;	/* TC private buffer size */
+	struct hclge_waterline wl;	
+	u32 buf_size;	
 	u32 tx_buf_size;
-	u32 enable;	/* Enable TC private buffer or not */
+	u32 enable;	
 };
 
 struct hclge_shared_buf {
@@ -256,14 +256,14 @@ struct hclge_link_status_cmd {
 	u8 rsv[23];
 };
 
-/* for DEVICE_VERSION_V1/2, reference to promisc cmd byte8 */
+
 #define HCLGE_PROMISC_EN_UC	1
 #define HCLGE_PROMISC_EN_MC	2
 #define HCLGE_PROMISC_EN_BC	3
 #define HCLGE_PROMISC_TX_EN	4
 #define HCLGE_PROMISC_RX_EN	5
 
-/* for DEVICE_VERSION_V3, reference to promisc cmd byte10 */
+
 #define HCLGE_PROMISC_UC_RX_EN	2
 #define HCLGE_PROMISC_MC_RX_EN	3
 #define HCLGE_PROMISC_BC_RX_EN	4
@@ -343,11 +343,11 @@ struct hclge_config_auto_neg_cmd {
 
 struct hclge_sfp_info_cmd {
 	__le32 speed;
-	u8 query_type; /* 0: sfp speed, 1: active speed */
+	u8 query_type; 
 	u8 active_fec;
-	u8 autoneg; /* autoneg state */
-	u8 autoneg_ability; /* whether support autoneg */
-	__le32 speed_ability; /* speed ability for current media */
+	u8 autoneg; 
+	u8 autoneg_ability; 
+	__le32 speed_ability; 
 	__le32 module_type;
 	u8 fec_ability;
 	u8 lane_num;
@@ -373,11 +373,11 @@ struct hclge_config_fec_cmd {
 #define HCLGE_FEC_STATS_CMD_NUM 4
 
 struct hclge_query_fec_stats_cmd {
-	/* fec rs mode total stats */
+	
 	__le32 rs_fec_corr_blocks;
 	__le32 rs_fec_uncorr_blocks;
 	__le32 rs_fec_error_blocks;
-	/* fec base-r mode per lanes stats */
+	
 	u8 base_r_lane_num;
 	u8 rsv[3];
 	__le32 base_r_fec_corr_blocks;
@@ -393,15 +393,15 @@ struct hclge_config_max_frm_size_cmd {
 };
 
 enum hclge_mac_vlan_tbl_opcode {
-	HCLGE_MAC_VLAN_ADD,	/* Add new or modify mac_vlan */
-	HCLGE_MAC_VLAN_UPDATE,  /* Modify other fields of this table */
-	HCLGE_MAC_VLAN_REMOVE,  /* Remove a entry through mac_vlan key */
-	HCLGE_MAC_VLAN_LKUP,    /* Lookup a entry through mac_vlan key */
+	HCLGE_MAC_VLAN_ADD,	
+	HCLGE_MAC_VLAN_UPDATE,  
+	HCLGE_MAC_VLAN_REMOVE,  
+	HCLGE_MAC_VLAN_LKUP,    
 };
 
 enum hclge_mac_vlan_add_resp_code {
-	HCLGE_ADD_UC_OVERFLOW = 2,	/* ADD failed for UC overflow */
-	HCLGE_ADD_MC_OVERFLOW,		/* ADD failed for MC overflow */
+	HCLGE_ADD_UC_OVERFLOW = 2,	
+	HCLGE_ADD_MC_OVERFLOW,		
 };
 
 #define HCLGE_MAC_VLAN_BIT0_EN_B	0
@@ -662,11 +662,11 @@ struct hclge_common_lb_cmd {
 	u8 rsv[21];
 };
 
-#define HCLGE_DEFAULT_TX_BUF		0x4000	 /* 16k  bytes */
-#define HCLGE_TOTAL_PKT_BUF		0x108000 /* 1.03125M bytes */
-#define HCLGE_DEFAULT_DV		0xA000	 /* 40k byte */
-#define HCLGE_DEFAULT_NON_DCB_DV	0x7800	/* 30K byte */
-#define HCLGE_NON_DCB_ADDITIONAL_BUF	0x1400	/* 5120 byte */
+#define HCLGE_DEFAULT_TX_BUF		0x4000	 
+#define HCLGE_TOTAL_PKT_BUF		0x108000 
+#define HCLGE_DEFAULT_DV		0xA000	 
+#define HCLGE_DEFAULT_NON_DCB_DV	0x7800	
+#define HCLGE_NON_DCB_ADDITIONAL_BUF	0x1400	
 
 #define HCLGE_LED_LOCATE_STATE_S	0
 #define HCLGE_LED_LOCATE_STATE_M	GENMASK(1, 0)
@@ -831,7 +831,7 @@ struct hclge_dev_specs_1_cmd {
 	u8 rsv2[5];
 };
 
-/* mac speed type defined in firmware command */
+
 enum HCLGE_FIRMWARE_MAC_SPEED {
 	HCLGE_FW_MAC_SPEED_1G,
 	HCLGE_FW_MAC_SPEED_10G,

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * 9P Client Definitions
- *
- *  Copyright (C) 2008 by Eric Van Hensbergen <ericvh@gmail.com>
- *  Copyright (C) 2007 by Latchesar Ionkov <lucho@ionkov.net>
- */
+
+
 
 #ifndef NET_9P_CLIENT_H
 #define NET_9P_CLIENT_H
@@ -13,14 +8,10 @@
 #include <linux/idr.h>
 #include <linux/tracepoint-defs.h>
 
-/* Number of requests per row */
+
 #define P9_ROW_MAXTAG 255
 
-/** enum p9_proto_versions - 9P protocol versions
- * @p9_proto_legacy: 9P Legacy mode, pre-9P2000.u
- * @p9_proto_2000u: 9P2000.u extension
- * @p9_proto_2000L: 9P2000.L extension
- */
+
 
 enum p9_proto_versions {
 	p9_proto_legacy,
@@ -29,15 +20,7 @@ enum p9_proto_versions {
 };
 
 
-/**
- * enum p9_trans_status - different states of underlying transports
- * @Connected: transport is connected and healthy
- * @Disconnected: transport has been disconnected
- * @Hung: transport is connected by wedged
- *
- * This enumeration details the various states a transport
- * instatiation can be in.
- */
+
 
 enum p9_trans_status {
 	Connected,
@@ -46,15 +29,7 @@ enum p9_trans_status {
 	Hung,
 };
 
-/**
- * enum p9_req_status_t - status of a request
- * @REQ_STATUS_ALLOC: request has been allocated but not sent
- * @REQ_STATUS_UNSENT: request waiting to be sent
- * @REQ_STATUS_SENT: request sent to server
- * @REQ_STATUS_RCVD: response received from server
- * @REQ_STATUS_FLSHD: request has been flushed
- * @REQ_STATUS_ERROR: request encountered an error on the client side
- */
+
 
 enum p9_req_status_t {
 	REQ_STATUS_ALLOC,
@@ -65,15 +40,7 @@ enum p9_req_status_t {
 	REQ_STATUS_ERROR,
 };
 
-/**
- * struct p9_req_t - request slots
- * @status: status of this request slot
- * @t_err: transport error
- * @wq: wait_queue for the client to block on for this request
- * @tc: the request fcall structure
- * @rc: the response fcall structure
- * @req_list: link for higher level objects to chain requests
- */
+
 struct p9_req_t {
 	int status;
 	int t_err;
@@ -84,21 +51,7 @@ struct p9_req_t {
 	struct list_head req_list;
 };
 
-/**
- * struct p9_client - per client instance state
- * @lock: protect @fids and @reqs
- * @msize: maximum data size negotiated by protocol
- * @proto_version: 9P protocol version to use
- * @trans_mod: module API instantiated with this client
- * @status: connection state
- * @trans: tranport instance state and API
- * @fids: All active FID handles
- * @reqs: All active requests.
- * @name: node name used as client id
- *
- * The client structure is used to keep track of various per-client
- * state that has been instantiated.
- */
+
 struct p9_client {
 	spinlock_t lock;
 	unsigned int msize;
@@ -126,19 +79,7 @@ struct p9_client {
 	char name[__NEW_UTS_LEN + 1];
 };
 
-/**
- * struct p9_fid - file system entity handle
- * @clnt: back pointer to instantiating &p9_client
- * @fid: numeric identifier for this handle
- * @mode: current mode of this fid (enum?)
- * @qid: the &p9_qid server identifier this handle points to
- * @iounit: the server reported maximum transaction size for this file
- * @uid: the numeric uid of the local user who owns this handle
- * @rdir: readdir accounting structure (allocated on demand)
- * @dlist: per-dentry fid tracking
- *
- * TODO: This needs lots of explanation.
- */
+
 enum fid_source {
 	FID_FROM_OTHER,
 	FID_FROM_INODE,
@@ -156,17 +97,11 @@ struct p9_fid {
 
 	void *rdir;
 
-	struct hlist_node dlist;	/* list of all fids attached to a dentry */
+	struct hlist_node dlist;	
 	struct hlist_node ilist;
 };
 
-/**
- * struct p9_dirent - directory entry structure
- * @qid: The p9 server qid for this dirent
- * @d_off: offset to the next dirent
- * @d_type: type of file
- * @d_name: file name
- */
+
 
 struct p9_dirent {
 	struct p9_qid qid;
@@ -238,22 +173,12 @@ static inline int p9_req_try_get(struct p9_req_t *r)
 
 int p9_req_put(struct p9_client *c, struct p9_req_t *r);
 
-/* We cannot have the real tracepoints in header files,
- * use a wrapper function */
+
 DECLARE_TRACEPOINT(9p_fid_ref);
 void do_trace_9p_fid_get(struct p9_fid *fid);
 void do_trace_9p_fid_put(struct p9_fid *fid);
 
-/* fid reference counting helpers:
- *  - fids used for any length of time should always be referenced through
- *    p9_fid_get(), and released with p9_fid_put()
- *  - v9fs_fid_lookup() or similar will automatically call get for you
- *    and also require a put
- *  - the *_fid_add() helpers will stash the fid in the inode,
- *    at which point it is the responsibility of evict_inode()
- *    to call the put
- *  - the last put will automatically send a clunk to the server
- */
+
 static inline struct p9_fid *p9_fid_get(struct p9_fid *fid)
 {
 	if (tracepoint_enabled(9p_fid_ref))
@@ -297,4 +222,4 @@ int p9_client_readlink(struct p9_fid *fid, char **target);
 int p9_client_init(void);
 void p9_client_exit(void);
 
-#endif /* NET_9P_CLIENT_H */
+#endif 

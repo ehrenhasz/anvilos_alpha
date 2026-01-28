@@ -1,61 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2010 Marco Stornelli <marco.stornelli@gmail.com>
- * Copyright (C) 2011 Kees Cook <keescook@chromium.org>
- * Copyright (C) 2011 Google, Inc.
- */
+
+
 
 #include <linux/pstore_ram.h>
 
-/*
- * Choose whether access to the RAM zone requires locking or not.  If a zone
- * can be written to from different CPUs like with ftrace for example, then
- * PRZ_FLAG_NO_LOCK is used. For all other cases, locking is required.
- */
+
 #define PRZ_FLAG_NO_LOCK	BIT(0)
-/*
- * If a PRZ should only have a single-boot lifetime, this marks it as
- * getting wiped after its contents get copied out after boot.
- */
+
 #define PRZ_FLAG_ZAP_OLD	BIT(1)
 
-/**
- * struct persistent_ram_zone - Details of a persistent RAM zone (PRZ)
- *                              used as a pstore backend
- *
- * @paddr:	physical address of the mapped RAM area
- * @size:	size of mapping
- * @label:	unique name of this PRZ
- * @type:	frontend type for this PRZ
- * @flags:	holds PRZ_FLAGS_* bits
- *
- * @buffer_lock:
- *	locks access to @buffer "size" bytes and "start" offset
- * @buffer:
- *	pointer to actual RAM area managed by this PRZ
- * @buffer_size:
- *	bytes in @buffer->data (not including any trailing ECC bytes)
- *
- * @par_buffer:
- *	pointer into @buffer->data containing ECC bytes for @buffer->data
- * @par_header:
- *	pointer into @buffer->data containing ECC bytes for @buffer header
- *	(i.e. all fields up to @data)
- * @rs_decoder:
- *	RSLIB instance for doing ECC calculations
- * @corrected_bytes:
- *	ECC corrected bytes accounting since boot
- * @bad_blocks:
- *	ECC uncorrectable bytes accounting since boot
- * @ecc_info:
- *	ECC configuration details
- *
- * @old_log:
- *	saved copy of @buffer->data prior to most recent wipe
- * @old_log_size:
- *	bytes contained in @old_log
- *
- */
+
 struct persistent_ram_zone {
 	phys_addr_t paddr;
 	size_t size;

@@ -1,21 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _MC6821_H_
 #define _MC6821_H_
 
-/*
- * This file describes the memery mapping of the MC6821 PIA.
- * The unions describe overlayed registers. Which of them is used is
- * determined by bit 2 of the corresponding control register.
- * this files expects the PIA_REG_PADWIDTH to be defined the numeric
- * value of the register spacing.
- *
- * Data came from MFC-31-Developer Kit (from Ralph Seidel,
- * zodiac@darkness.gun.de) and Motorola Data Sheet (from 
- * Richard Hirst, srh@gpt.co.uk)
- *
- * 6.11.95 copyright Joerg Dorchain (dorchain@mpi-sb.mpg.de)
- *
- */
+
 
 #ifndef PIA_REG_PADWIDTH
 #define PIA_REG_PADWIDTH 255

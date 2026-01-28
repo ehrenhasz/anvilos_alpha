@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: MIT */
 
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- */
+
+
 
 #ifndef AMDTEE_PRIVATE_H
 #define AMDTEE_PRIVATE_H
@@ -17,7 +15,7 @@
 #define DRIVER_NAME	"amdtee"
 #define DRIVER_AUTHOR   "AMD-TEE Linux driver team"
 
-/* Some GlobalPlatform error codes used in this driver */
+
 #define TEEC_SUCCESS			0x00000000
 #define TEEC_ERROR_GENERIC		0xFFFF0000
 #define TEEC_ERROR_BAD_PARAMETERS	0xFFFF0006
@@ -26,52 +24,33 @@
 
 #define TEEC_ORIGIN_COMMS		0x00000002
 
-/* Maximum number of sessions which can be opened with a Trusted Application */
+
 #define TEE_NUM_SESSIONS			32
 
 #define TA_LOAD_PATH				"/amdtee"
 #define TA_PATH_MAX				60
 
-/**
- * struct amdtee - main service struct
- * @teedev:		client device
- * @pool:		shared memory pool
- */
+
 struct amdtee {
 	struct tee_device *teedev;
 	struct tee_shm_pool *pool;
 };
 
-/**
- * struct amdtee_session - Trusted Application (TA) session related information.
- * @ta_handle:     handle to Trusted Application (TA) loaded in TEE environment
- * @refcount:      counter to keep track of sessions opened for the TA instance
- * @session_info:  an array pointing to TA allocated session data.
- * @sess_mask:     session usage bit-mask. If a particular bit is set, then the
- *                 corresponding @session_info entry is in use or valid.
- *
- * Session structure is updated on open_session and this information is used for
- * subsequent operations with the Trusted Application.
- */
+
 struct amdtee_session {
 	struct list_head list_node;
 	u32 ta_handle;
 	struct kref refcount;
 	u32 session_info[TEE_NUM_SESSIONS];
 	DECLARE_BITMAP(sess_mask, TEE_NUM_SESSIONS);
-	spinlock_t lock;	/* synchronizes access to @sess_mask */
+	spinlock_t lock;	
 };
 
-/**
- * struct amdtee_context_data - AMD-TEE driver context data
- * @sess_list:    Keeps track of sessions opened in current TEE context
- * @shm_list:     Keeps track of buffers allocated and mapped in current TEE
- *                context
- */
+
 struct amdtee_context_data {
 	struct list_head sess_list;
 	struct list_head shm_list;
-	struct mutex shm_mutex;   /* synchronizes access to @shm_list */
+	struct mutex shm_mutex;   
 };
 
 struct amdtee_driver_data {
@@ -83,23 +62,14 @@ struct shmem_desc {
 	u64 size;
 };
 
-/**
- * struct amdtee_shm_data - Shared memory data
- * @kaddr:	Kernel virtual address of shared memory
- * @buf_id:	Buffer id of memory mapped by TEE_CMD_ID_MAP_SHARED_MEM
- */
+
 struct amdtee_shm_data {
 	struct  list_head shm_node;
 	void    *kaddr;
 	u32     buf_id;
 };
 
-/**
- * struct amdtee_ta_data - Keeps track of all TAs loaded in AMD Secure
- *			   Processor
- * @ta_handle:	Handle to TA loaded in TEE
- * @refcount:	Reference count for the loaded TA
- */
+
 struct amdtee_ta_data {
 	struct list_head list_node;
 	u32 ta_handle;
@@ -108,15 +78,7 @@ struct amdtee_ta_data {
 
 #define LOWER_TWO_BYTE_MASK	0x0000FFFF
 
-/**
- * set_session_id() - Sets the session identifier.
- * @ta_handle:      [in] handle of the loaded Trusted Application (TA)
- * @session_index:  [in] Session index. Range: 0 to (TEE_NUM_SESSIONS - 1).
- * @session:        [out] Pointer to session id
- *
- * Lower two bytes of the session identifier represents the TA handle and the
- * upper two bytes is session index.
- */
+
 static inline void set_session_id(u32 ta_handle, u32 session_index,
 				  u32 *session)
 {
@@ -169,4 +131,4 @@ int handle_invoke_cmd(struct tee_ioctl_invoke_arg *arg, u32 sinfo,
 struct tee_shm_pool *amdtee_config_shm(void);
 
 u32 get_buffer_id(struct tee_shm *shm);
-#endif /*AMDTEE_PRIVATE_H*/
+#endif 

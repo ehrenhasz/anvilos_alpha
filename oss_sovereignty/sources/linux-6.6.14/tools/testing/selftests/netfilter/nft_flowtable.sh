@@ -170,8 +170,8 @@ check_counters()
 	local ok=1
 	local orig=$(ip netns exec $nsr1 nft reset counter inet filter routed_orig | grep packets)
 	local repl=$(ip netns exec $nsr1 nft reset counter inet filter routed_repl | grep packets)
-	local orig_cnt=${orig#*bytes}
-	local repl_cnt=${repl#*bytes}
+	local orig_cnt=${orig
+	local repl_cnt=${repl
 	local fs=$(du -sb $nsin)
 	local max_orig=${fs%%/*}
 	local max_repl=$((max_orig/4))
@@ -195,10 +195,10 @@ check_dscp()
 	local ok=1
 	local counter=$(ip netns exec $ns2 nft reset counter inet filter ip4dscp3 | grep packets)
 	local pc4=${counter%*bytes*}
-	local pc4=${pc4#*packets}
+	local pc4=${pc4
 	local counter=$(ip netns exec $ns2 nft reset counter inet filter ip4dscp0 | grep packets)
 	local pc4z=${counter%*bytes*}
-	local pc4z=${pc4z#*packets}
+	local pc4z=${pc4z
 	case "$what" in
 	"dscp_none")
 		if [ $pc4 -gt 0 ] || [ $pc4z -eq 0 ]; then

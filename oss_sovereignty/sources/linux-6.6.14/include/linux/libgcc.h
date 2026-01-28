@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * include/lib/libgcc.h
- */
+
+
 
 #ifndef __LIB_LIBGCC_H
 #define __LIB_LIBGCC_H
@@ -34,4 +32,4 @@ long long notrace __lshrdi3(long long u, word_type b);
 long long notrace __muldi3(long long u, long long v);
 word_type notrace __ucmpdi2(unsigned long long a, unsigned long long b);
 
-#endif /* __ASM_LIBGCC_H */
+#endif 

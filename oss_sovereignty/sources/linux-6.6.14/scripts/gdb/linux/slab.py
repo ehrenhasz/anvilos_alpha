@@ -127,7 +127,7 @@ def slabtrace(alloc, cache_name):
         addr = slab_address(slab)
         while p != gdb.Value(0):
             index = __obj_to_index(cache, addr, p)
-            obj_map[index] = True # free objects
+            obj_map[index] = True 
             p = get_freepointer(cache, p)
     def process_slab(loc_track, slab_list, alloc, cache):
         for slab in lists.list_for_each_entry(slab_list, slab_ptr_type, "slab_list"):
@@ -213,7 +213,7 @@ class LxSlabTrace(gdb.Command):
         if not constants.LX_CONFIG_SLUB_DEBUG:
             raise gdb.GdbError("CONFIG_SLUB_DEBUG is not enabled")
         argv = gdb.string_to_argv(arg)
-        alloc = track_alloc # default show alloc_traces
+        alloc = track_alloc 
         if len(argv) == 3:
             if argv[2] == '--alloc':
                 alloc = track_alloc

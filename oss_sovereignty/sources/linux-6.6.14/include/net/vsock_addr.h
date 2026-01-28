@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * VMware vSockets Driver
- *
- * Copyright (C) 2007-2013 VMware, Inc. All rights reserved.
- */
+
+
 
 #ifndef _VSOCK_ADDR_H_
 #define _VSOCK_ADDR_H_

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Serial core related functions, serial port device drivers do not need this.
- *
- * Copyright (C) 2023 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tony Lindgren <tony@atomide.com>
- */
+
+
 
 #define to_serial_base_ctrl_device(d) container_of((d), struct serial_ctrl_device, dev)
 #define to_serial_base_port_device(d) container_of((d), struct serial_port_device, dev)

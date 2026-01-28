@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM devfreq
 
@@ -62,7 +62,7 @@ TRACE_EVENT(devfreq_monitor,
 		__entry->total_time == 0 ? 0 :
 			(100 * __entry->busy_time) / __entry->total_time)
 );
-#endif /* _TRACE_DEVFREQ_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

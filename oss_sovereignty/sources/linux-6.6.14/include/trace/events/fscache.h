@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* FS-Cache tracepoints
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM fscache
 
@@ -13,9 +9,7 @@
 #include <linux/fscache.h>
 #include <linux/tracepoint.h>
 
-/*
- * Define enums for tracing information.
- */
+
 #ifndef __FSCACHE_DECLARE_TRACE_ENUMS_ONCE_ONLY
 #define __FSCACHE_DECLARE_TRACE_ENUMS_ONCE_ONLY
 
@@ -102,9 +96,7 @@ enum fscache_access_trace {
 
 #endif
 
-/*
- * Declare tracing information enums and their string mappings for display.
- */
+
 #define fscache_cache_traces						\
 	EM(fscache_cache_collision,		"*COLLIDE*")		\
 	EM(fscache_cache_get_acquire,		"GET acq  ")		\
@@ -181,9 +173,7 @@ enum fscache_access_trace {
 	EM(fscache_access_relinquish_volume_end,"END   rlq_vol")	\
 	E_(fscache_access_unlive,		"END   unlive ")
 
-/*
- * Export enum symbols via userspace.
- */
+
 #undef EM
 #undef E_
 #define EM(a, b) TRACE_DEFINE_ENUM(a);
@@ -194,10 +184,7 @@ fscache_volume_traces;
 fscache_cookie_traces;
 fscache_access_traces;
 
-/*
- * Now redefine the EM() and E_() macros to map the enums to the strings that
- * will be printed in the output.
- */
+
 #undef EM
 #undef E_
 #define EM(a, b)	{ a, b },
@@ -497,7 +484,7 @@ TRACE_EVENT(fscache_resize,
 		      __entry->new_size)
 	    );
 
-#endif /* _TRACE_FSCACHE_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

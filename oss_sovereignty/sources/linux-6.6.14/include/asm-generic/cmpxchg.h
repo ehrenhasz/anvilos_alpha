@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Generic UP xchg and cmpxchg using interrupt disablement.  Does not
- * support SMP.
- */
+
+
 
 #ifndef __ASM_GENERIC_CMPXCHG_H
 #define __ASM_GENERIC_CMPXCHG_H
@@ -14,10 +11,7 @@
 #include <linux/types.h>
 #include <linux/irqflags.h>
 
-/*
- * This function doesn't exist, so you'll get a linker error if
- * something tries to do an invalidly-sized xchg().
- */
+
 extern void __generic_xchg_called_with_bad_pointer(void);
 
 static inline
@@ -35,7 +29,7 @@ unsigned long __generic_xchg(unsigned long x, volatile void *ptr, int size)
 		*(volatile u8 *)ptr = (x & 0xffu);
 		local_irq_restore(flags);
 		return ret;
-#endif /* __xchg_u8 */
+#endif 
 
 	case 2:
 #ifdef __xchg_u16
@@ -46,7 +40,7 @@ unsigned long __generic_xchg(unsigned long x, volatile void *ptr, int size)
 		*(volatile u16 *)ptr = (x & 0xffffu);
 		local_irq_restore(flags);
 		return ret;
-#endif /* __xchg_u16 */
+#endif 
 
 	case 4:
 #ifdef __xchg_u32
@@ -57,7 +51,7 @@ unsigned long __generic_xchg(unsigned long x, volatile void *ptr, int size)
 		*(volatile u32 *)ptr = (x & 0xffffffffu);
 		local_irq_restore(flags);
 		return ret;
-#endif /* __xchg_u32 */
+#endif 
 
 #ifdef CONFIG_64BIT
 	case 8:
@@ -69,8 +63,8 @@ unsigned long __generic_xchg(unsigned long x, volatile void *ptr, int size)
 		*(volatile u64 *)ptr = x;
 		local_irq_restore(flags);
 		return ret;
-#endif /* __xchg_u64 */
-#endif /* CONFIG_64BIT */
+#endif 
+#endif 
 
 	default:
 		__generic_xchg_called_with_bad_pointer();
@@ -83,9 +77,7 @@ unsigned long __generic_xchg(unsigned long x, volatile void *ptr, int size)
 		__generic_xchg((unsigned long)(x), (ptr), sizeof(*(ptr))));	\
 })
 
-/*
- * Atomic compare and exchange.
- */
+
 #include <asm-generic/cmpxchg-local.h>
 
 #define generic_cmpxchg_local(ptr, o, n) ({					\
@@ -112,4 +104,4 @@ unsigned long __generic_xchg(unsigned long x, volatile void *ptr, int size)
 #define arch_cmpxchg		arch_cmpxchg_local
 #define arch_cmpxchg64		arch_cmpxchg64_local
 
-#endif /* __ASM_GENERIC_CMPXCHG_H */
+#endif 

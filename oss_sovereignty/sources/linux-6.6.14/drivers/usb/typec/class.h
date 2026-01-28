@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef __USB_TYPEC_CLASS__
 #define __USB_TYPEC_CLASS__
@@ -21,7 +21,7 @@ struct typec_cable {
 	enum typec_plug_type		type;
 	struct usb_pd_identity		*identity;
 	unsigned int			active:1;
-	u16				pd_revision; /* 0300H = "3.0" */
+	u16				pd_revision; 
 };
 
 struct typec_partner {
@@ -31,7 +31,7 @@ struct typec_partner {
 	enum typec_accessory		accessory;
 	struct ida			mode_ids;
 	int				num_altmodes;
-	u16				pd_revision; /* 0300H = "3.0" */
+	u16				pd_revision; 
 	enum usb_pd_svdm_ver		svdm_version;
 
 	struct usb_power_delivery	*pd;
@@ -88,4 +88,4 @@ static inline int typec_link_ports(struct typec_port *connector) { return 0; }
 static inline void typec_unlink_ports(struct typec_port *connector) { }
 #endif
 
-#endif /* __USB_TYPEC_CLASS__ */
+#endif 

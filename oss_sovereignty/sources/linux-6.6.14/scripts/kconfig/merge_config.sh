@@ -75,7 +75,7 @@ while true; do
 		;;
 	esac
 done
-if [ "$#" -lt 1 ] ; then
+if [ "$
 	usage
 	exit
 fi
@@ -94,7 +94,7 @@ if [ ! -r "$INITFILE" ]; then
 fi
 MERGE_LIST=$*
 SED_CONFIG_EXP1="s/^\(${CONFIG_PREFIX}[a-zA-Z0-9_]*\)=.*/\1/p"
-SED_CONFIG_EXP2="s/^# \(${CONFIG_PREFIX}[a-zA-Z0-9_]*\) is not set$/\1/p"
+SED_CONFIG_EXP2="s/^
 TMP_FILE=$(mktemp ./.tmp.config.XXXXXXXXXX)
 MERGE_FILE=$(mktemp ./.merge_tmp.config.XXXXXXXXXX)
 echo "Using $INITFILE as base"
@@ -113,7 +113,7 @@ for ORIG_MERGE_FILE in $MERGE_LIST ; do
 		PREV_VAL=$(grep -w $CFG $TMP_FILE)
 		NEW_VAL=$(grep -w $CFG $MERGE_FILE)
 		BUILTIN_FLAG=false
-		if [ "$BUILTIN" = "true" ] && [ "${NEW_VAL#CONFIG_*=}" = "m" ] && [ "${PREV_VAL#CONFIG_*=}" = "y" ]; then
+		if [ "$BUILTIN" = "true" ] && [ "${NEW_VAL
 			${WARNOVERRIDE} Previous  value: $PREV_VAL
 			${WARNOVERRIDE} New value:       $NEW_VAL
 			${WARNOVERRIDE} -y passed, will not demote y to m
@@ -144,9 +144,9 @@ if [ "$STRICT_MODE_VIOLATED" = "true" ]; then
 fi
 if [ "$RUNMAKE" = "false" ]; then
 	cp -T -- "$TMP_FILE" "$KCONFIG_CONFIG"
-	echo "#"
-	echo "# merged configuration written to $KCONFIG_CONFIG (needs make)"
-	echo "#"
+	echo "
+	echo "
+	echo "
 	exit
 fi
 OUTPUT_ARG=""

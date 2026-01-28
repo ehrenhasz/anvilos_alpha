@@ -1,42 +1,9 @@
-/*
- * This file is part of the Chelsio T6 Crypto driver for Linux.
- *
- * Copyright (c) 2003-2016 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+
 
 #ifndef __CHCR_ALGO_H__
 #define __CHCR_ALGO_H__
 
-/* Crypto key context */
+
 #define KEY_CONTEXT_CTX_LEN_S           24
 #define KEY_CONTEXT_CTX_LEN_M           0xff
 #define KEY_CONTEXT_CTX_LEN_V(x)        ((x) << KEY_CONTEXT_CTX_LEN_S)
@@ -226,10 +193,10 @@
 					ULP_TX_SC_MORE_V((immdatalen)))
 #define MAX_NK 8
 #define MAX_DSGL_ENT			32
-#define MIN_AUTH_SG			1 /* IV */
-#define MIN_GCM_SG			1 /* IV */
-#define MIN_DIGEST_SG			1 /*Partial Buffer*/
-#define MIN_CCM_SG			1 /*IV+B0*/
+#define MIN_AUTH_SG			1 
+#define MIN_GCM_SG			1 
+#define MIN_DIGEST_SG			1 
+#define MIN_CCM_SG			1 
 #define CIP_SPACE_LEFT(len) \
 	((SGE_MAX_WR_LEN - CIP_WR_MIN_LEN - (len)))
 #define HASH_SPACE_LEFT(len) \
@@ -278,10 +245,7 @@ enum {
 	NUMBER_OF_ROUNDS_14 = 14,
 };
 
-/*
- * CCM defines values of 4, 6, 8, 10, 12, 14, and 16 octets,
- * where they indicate the size of the integrity check value (ICV)
- */
+
 enum {
 	ICV_4  = 4,
 	ICV_6  = 6,
@@ -356,18 +320,18 @@ static inline void copy_hash_init_values(char *key, int digestsize)
 	}
 }
 
-/* Number of len fields(8) * size of one addr field */
+
 #define PHYSDSGL_MAX_LEN_SIZE 16
 
 static inline u16 get_space_for_phys_dsgl(unsigned int sgl_entr)
 {
-	/* len field size + addr field size */
+	
 	return ((sgl_entr >> 3) + ((sgl_entr % 8) ?
 				   1 : 0)) * PHYSDSGL_MAX_LEN_SIZE +
 		(sgl_entr << 3) + ((sgl_entr % 2 ? 1 : 0) << 3);
 }
 
-/* The AES s-transform matrix (s-box). */
+
 static const u8 aes_sbox[256] = {
 	99,  124, 119, 123, 242, 107, 111, 197, 48,  1,   103, 43,  254, 215,
 	171, 118, 202, 130, 201, 125, 250, 89,  71,  240, 173, 212, 162, 175,
@@ -402,4 +366,4 @@ static inline u32 aes_ks_subword(const u32 w)
 	return *(u32 *)(&bytes[0]);
 }
 
-#endif /* __CHCR_ALGO_H__ */
+#endif 

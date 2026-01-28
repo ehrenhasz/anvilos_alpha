@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _XT_STATE_H
 #define _XT_STATE_H
 
@@ -10,4 +10,4 @@
 struct xt_state_info {
 	unsigned int statemask;
 };
-#endif /*_XT_STATE_H*/
+#endif 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * MacBook (Pro) SPI keyboard and touchpad driver
- *
- * Copyright (c) 2015-2019 Federico Lorenzi
- * Copyright (c) 2017-2019 Ronald Tschalär
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM applespi
@@ -84,9 +79,9 @@ TRACE_EVENT(applespi_irq_received,
 	"\n"
 );
 
-#endif /* _APPLESPI_TRACE_H_ */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/input/keyboard
 #define TRACE_INCLUDE_FILE applespi_trace

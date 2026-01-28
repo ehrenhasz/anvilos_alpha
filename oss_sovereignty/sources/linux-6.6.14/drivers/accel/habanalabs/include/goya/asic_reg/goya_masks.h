@@ -1,16 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
 
 #ifndef ASIC_REG_GOYA_MASKS_H_
 #define ASIC_REG_GOYA_MASKS_H_
 
 #include "goya_regs.h"
 
-/* Useful masks for bits in various registers */
+
 #define QMAN_DMA_ENABLE		(\
 	(1 << DMA_QM_0_GLBL_CFG0_PQF_EN_SHIFT) | \
 	(1 << DMA_QM_0_GLBL_CFG0_CQF_EN_SHIFT) | \
@@ -157,7 +152,7 @@
 	(1 << TPC0_CMDQ_GLBL_PROT_CP_ERR_PROT_SHIFT) | \
 	(1 << TPC0_CMDQ_GLBL_PROT_DMA_ERR_PROT_SHIFT))
 
-/* RESETS */
+
 #define DMA_MME_TPC_RESET	(\
 			1 << PSOC_GLOBAL_CONF_SW_ALL_RST_CFG_TPC_SHIFT |\
 			1 << PSOC_GLOBAL_CONF_SW_ALL_RST_CFG_MME_SHIFT |\
@@ -264,4 +259,4 @@
 #define PSOC_ETR_AXICTL_PROTCTRLBIT1_MASK	0x2
 #define PSOC_ETR_AXICTL_WRBURSTLEN_MASK		0xF00
 
-#endif /* ASIC_REG_GOYA_MASKS_H_ */
+#endif 

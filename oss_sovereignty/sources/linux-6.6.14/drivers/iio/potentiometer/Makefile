@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for industrial I/O potentiometer drivers
-#
 
-# When adding new entries keep the list in alphabetical order
+
+
+
+
+
 obj-$(CONFIG_AD5110) += ad5110.o
 obj-$(CONFIG_AD5272) += ad5272.o
 obj-$(CONFIG_DS1803) += ds1803.o

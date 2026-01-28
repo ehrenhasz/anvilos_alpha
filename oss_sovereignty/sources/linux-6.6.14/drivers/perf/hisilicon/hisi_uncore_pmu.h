@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * HiSilicon SoC Hardware event counters support
- *
- * Copyright (C) 2017 HiSilicon Limited
- * Author: Anurup M <anurup.m@huawei.com>
- *         Shaokun Zhang <zhangshaokun@hisilicon.com>
- *
- * This code is based on the uncore PMUs like arm-cci and arm-ccn.
- */
+
+
 #ifndef __HISI_UNCORE_PMU_H__
 #define __HISI_UNCORE_PMU_H__
 
@@ -68,7 +60,7 @@ struct hisi_uncore_ops {
 	void (*disable_filter)(struct perf_event *event);
 };
 
-/* Describes the HISI PMU chip features information */
+
 struct hisi_pmu_dev_info {
 	const char *name;
 	const struct attribute_group **attr_groups;
@@ -81,15 +73,15 @@ struct hisi_pmu_hwevents {
 	const struct attribute_group **attr_groups;
 };
 
-/* Generic pmu struct for different pmu types */
+
 struct hisi_pmu {
 	struct pmu pmu;
 	const struct hisi_uncore_ops *ops;
 	const struct hisi_pmu_dev_info *dev_info;
 	struct hisi_pmu_hwevents pmu_events;
-	/* associated_cpus: All CPUs associated with the PMU */
+	
 	cpumask_t associated_cpus;
-	/* CPU used for counting */
+	
 	int on_cpu;
 	int irq;
 	struct device *dev;
@@ -98,13 +90,13 @@ struct hisi_pmu {
 	int sicl_id;
 	int ccl_id;
 	void __iomem *base;
-	/* the ID of the PMU modules */
+	
 	u32 index_id;
-	/* For DDRC PMU v2: each DDRC has more than one DMC */
+	
 	u32 sub_id;
 	int num_counters;
 	int counter_bits;
-	/* check event code range */
+	
 	int check_event;
 	u32 identifier;
 };
@@ -136,4 +128,4 @@ int hisi_uncore_pmu_init_irq(struct hisi_pmu *hisi_pmu,
 			     struct platform_device *pdev);
 
 void hisi_pmu_init(struct hisi_pmu *hisi_pmu, struct module *module);
-#endif /* __HISI_UNCORE_PMU_H__ */
+#endif 

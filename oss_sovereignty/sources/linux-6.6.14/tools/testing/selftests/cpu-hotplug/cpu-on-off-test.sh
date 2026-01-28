@@ -20,20 +20,20 @@ prerequisite()
 	fi
 	echo "CPU online/offline summary:"
 	online_cpus=`cat $SYSFS/devices/system/cpu/online`
-	online_max=${online_cpus##*-}
+	online_max=${online_cpus
 	if [[ "$online_cpus" = "$online_max" ]]; then
 		echo "$msg: since there is only one cpu: $online_cpus"
 		exit $ksft_skip
 	fi
 	present_cpus=`cat $SYSFS/devices/system/cpu/present`
-	present_max=${present_cpus##*-}
+	present_max=${present_cpus
 	echo "present_cpus = $present_cpus present_max = $present_max"
 	echo -e "\t Cpus in online state: $online_cpus"
 	offline_cpus=`cat $SYSFS/devices/system/cpu/offline`
 	if [[ "a$offline_cpus" = "a" ]]; then
 		offline_cpus=0
 	else
-		offline_max=${offline_cpus##*-}
+		offline_max=${offline_cpus
 	fi
 	echo -e "\t Cpus in offline state: $offline_cpus"
 }
@@ -42,7 +42,7 @@ hotpluggable_cpus()
 	local state=${1:-.\*}
 	for cpu in $SYSFS/devices/system/cpu/cpu*; do
 		if [ -f $cpu/online ] && grep -q $state $cpu/online; then
-			echo ${cpu##/*/cpu}
+			echo ${cpu
 		fi
 	done
 }

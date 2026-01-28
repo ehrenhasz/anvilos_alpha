@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) IBM Corporation 2023 */
+
+
 
 #ifndef DRIVERS_FSI_MASTER_I2CR_H
 #define DRIVERS_FSI_MASTER_I2CR_H
@@ -13,7 +13,7 @@ struct i2c_client;
 
 struct fsi_master_i2cr {
 	struct fsi_master master;
-	struct mutex lock;	/* protect HW access */
+	struct mutex lock;	
 	struct i2c_client *client;
 };
 
@@ -30,4 +30,4 @@ static inline bool is_fsi_master_i2cr(struct fsi_master *master)
 	return false;
 }
 
-#endif /* DRIVERS_FSI_MASTER_I2CR_H */
+#endif 

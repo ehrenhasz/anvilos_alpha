@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Pinctrl / GPIO driver for StarFive JH7110 SoC
- *
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- */
+
+
 
 #ifndef __PINCTRL_STARFIVE_JH7110_H__
 #define __PINCTRL_STARFIVE_JH7110_H__
@@ -18,7 +14,7 @@ struct jh7110_pinctrl {
 	raw_spinlock_t lock;
 	void __iomem *base;
 	struct pinctrl_dev *pctl;
-	/* register read/write mutex */
+	
 	struct mutex mutex;
 	const struct jh7110_pinctrl_soc_info *info;
 	u32 *saved_regs;
@@ -40,7 +36,7 @@ struct jh7110_pinctrl_soc_info {
 	unsigned int ngpios;
 	unsigned int gc_base;
 
-	/* gpio dout/doen/din/gpioinput register */
+	
 	unsigned int dout_reg_base;
 	unsigned int dout_mask;
 	unsigned int doen_reg_base;
@@ -53,12 +49,12 @@ struct jh7110_pinctrl_soc_info {
 
 	unsigned int nsaved_regs;
 
-	/* generic pinmux */
+	
 	int (*jh7110_set_one_pin_mux)(struct jh7110_pinctrl *sfp,
 				      unsigned int pin,
 				      unsigned int din, u32 dout,
 				      u32 doen, u32 func);
-	/* gpio chip */
+	
 	int (*jh7110_get_padcfg_base)(struct jh7110_pinctrl *sfp,
 				      unsigned int pin);
 	void (*jh7110_gpio_irq_handler)(struct irq_desc *desc);
@@ -71,4 +67,4 @@ int jh7110_pinctrl_probe(struct platform_device *pdev);
 struct jh7110_pinctrl *jh7110_from_irq_desc(struct irq_desc *desc);
 extern const struct dev_pm_ops jh7110_pinctrl_pm_ops;
 
-#endif /* __PINCTRL_STARFIVE_JH7110_H__ */
+#endif 

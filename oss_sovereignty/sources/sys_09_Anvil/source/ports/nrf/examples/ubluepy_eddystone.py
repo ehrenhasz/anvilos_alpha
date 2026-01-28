@@ -6,8 +6,8 @@ BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE = const(
     BLE_GAP_ADV_FLAG_LE_GENERAL_DISC_MODE | BLE_GAP_ADV_FLAG_BR_EDR_NOT_SUPPORTED
 )
 EDDYSTONE_FRAME_TYPE_URL = const(0x10)
-EDDYSTONE_URL_PREFIX_HTTP_WWW = const(0x00)  # "http://www".
-EDDYSTONE_URL_SUFFIX_DOT_COM = const(0x01)  # ".com"
+EDDYSTONE_URL_PREFIX_HTTP_WWW = const(0x00)  
+EDDYSTONE_URL_SUFFIX_DOT_COM = const(0x01)  
 def string_to_binarray(text):
     b = bytearray([])
     for c in text:
@@ -26,7 +26,7 @@ def generate_eddystone_adv_packet(url):
     packet_uuid16 = gen_ad_type_content(
         constants.ad_types.AD_TYPE_16BIT_SERVICE_UUID_COMPLETE, uuid
     )
-    rssi = 0xEE  # -18 dB, approx signal strength at 0m.
+    rssi = 0xEE  
     eddystone_data = bytearray([])
     eddystone_data.append(EDDYSTONE_FRAME_TYPE_URL)
     eddystone_data.append(rssi)

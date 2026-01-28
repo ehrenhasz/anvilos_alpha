@@ -1,23 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2018-2021, Intel Corporation. */
+
+
 
 #ifndef _ICE_VF_LIB_PRIVATE_H_
 #define _ICE_VF_LIB_PRIVATE_H_
 
 #include "ice_vf_lib.h"
 
-/* This header file is for exposing functions in ice_vf_lib.c to other files
- * which are also conditionally compiled depending on CONFIG_PCI_IOV.
- * Functions which may be used by other files should be exposed as part of
- * ice_vf_lib.h
- *
- * Functions in this file are exposed only when CONFIG_PCI_IOV is enabled, and
- * thus this header must not be included by .c files which may be compiled
- * with CONFIG_PCI_IOV disabled.
- *
- * To avoid this, only include this header file directly within .c files that
- * are conditionally enabled in the "ice-$(CONFIG_PCI_IOV)" block.
- */
+
 
 #ifndef CONFIG_PCI_IOV
 #warning "Only include ice_vf_lib_private.h in CONFIG_PCI_IOV virtualization files"
@@ -39,4 +28,4 @@ int ice_vf_init_host_cfg(struct ice_vf *vf, struct ice_vsi *vsi);
 void ice_vf_invalidate_vsi(struct ice_vf *vf);
 void ice_vf_vsi_release(struct ice_vf *vf);
 
-#endif /* _ICE_VF_LIB_PRIVATE_H_ */
+#endif 

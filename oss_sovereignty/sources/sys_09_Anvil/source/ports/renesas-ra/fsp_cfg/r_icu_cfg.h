@@ -9,4 +9,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* R_ICU_CFG_H_ */
+#endif 

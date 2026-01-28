@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-#  Makefile for the Linux Controller Area Network core.
-#
+
+
+
+
 
 obj-$(CONFIG_CAN)	+= can.o
 can-y			:= af_can.o

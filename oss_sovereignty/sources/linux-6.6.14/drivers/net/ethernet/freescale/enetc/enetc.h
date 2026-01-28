@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/* Copyright 2017-2019 NXP */
+
+
 
 #include <linux/timer.h>
 #include <linux/pci.h>
@@ -27,8 +27,8 @@ struct enetc_tx_swbd {
 		struct xdp_frame *xdp_frame;
 	};
 	dma_addr_t dma;
-	struct page *page;	/* valid only if is_xdp_tx */
-	u16 page_offset;	/* valid only if is_xdp_tx */
+	struct page *page;	
+	u16 page_offset;	
 	u16 len;
 	enum dma_data_direction dir;
 	u8 is_dma_page:1;
@@ -41,8 +41,8 @@ struct enetc_tx_swbd {
 };
 
 #define ENETC_RX_MAXFRM_SIZE	ENETC_MAC_MAXFRM_SIZE
-#define ENETC_RXB_TRUESIZE	2048 /* PAGE_SIZE >> 1 */
-#define ENETC_RXB_PAD		NET_SKB_PAD /* add extra space if needed */
+#define ENETC_RXB_TRUESIZE	2048 
+#define ENETC_RXB_PAD		NET_SKB_PAD 
 #define ENETC_RXB_DMA_SIZE	\
 	(SKB_WITH_OVERHEAD(ENETC_RXB_TRUESIZE) - ENETC_RXB_PAD)
 #define ENETC_RXB_DMA_SIZE_XDP	\
@@ -56,9 +56,9 @@ struct enetc_rx_swbd {
 	u16 len;
 };
 
-/* ENETC overhead: optional extension BD + 1 BD gap */
+
 #define ENETC_TXBDS_NEEDED(val)	((val) + 2)
-/* max # of chained Tx BDs is 15, including head and extension BD */
+
 #define ENETC_MAX_SKB_FRAGS	13
 #define ENETC_TXBDS_MAX_NEEDED	ENETC_TXBDS_NEEDED(ENETC_MAX_SKB_FRAGS + 1)
 
@@ -87,13 +87,13 @@ struct enetc_xdp_data {
 #define ENETC_DEFAULT_TX_WORK		(ENETC_TX_RING_DEFAULT_SIZE / 2)
 
 struct enetc_bdr_resource {
-	/* Input arguments saved for teardown */
-	struct device *dev; /* for DMA mapping */
+	
+	struct device *dev; 
 	size_t bd_count;
 	size_t bd_size;
 
-	/* Resource proper */
-	void *bd_base; /* points to Rx or Tx BD ring */
+	
+	void *bd_base; 
 	dma_addr_t bd_dma_base;
 	union {
 		struct enetc_tx_swbd *tx_swbd;
@@ -104,16 +104,16 @@ struct enetc_bdr_resource {
 };
 
 struct enetc_bdr {
-	struct device *dev; /* for DMA mapping */
+	struct device *dev; 
 	struct net_device *ndev;
-	void *bd_base; /* points to Rx or Tx BD ring */
+	void *bd_base; 
 	union {
 		void __iomem *tpir;
 		void __iomem *rcir;
 	};
 	u16 index;
 	u16 prio;
-	int bd_count; /* # of BDs */
+	int bd_count; 
 	int next_to_use;
 	int next_to_clean;
 	union {
@@ -121,10 +121,10 @@ struct enetc_bdr {
 		struct enetc_rx_swbd *rx_swbd;
 	};
 	union {
-		void __iomem *tcir; /* Tx */
-		int next_to_alloc; /* Rx */
+		void __iomem *tcir; 
+		int next_to_alloc; 
 	};
-	void __iomem *idr; /* Interrupt Detect Register pointer */
+	void __iomem *idr; 
 
 	int buffer_offset;
 	struct enetc_xdp_data xdp;
@@ -132,10 +132,10 @@ struct enetc_bdr {
 	struct enetc_ring_stats stats;
 
 	dma_addr_t bd_dma_base;
-	u8 tsd_enable; /* Time specific departure */
-	bool ext_en; /* enable h/w descriptor extensions */
+	u8 tsd_enable; 
+	bool ext_en; 
 
-	/* DMA buffer for TSO headers */
+	
 	char *tso_headers;
 	dma_addr_t tso_headers_dma;
 } ____cacheline_aligned_in_smp;
@@ -162,15 +162,15 @@ static inline int enetc_swbd_unused(struct enetc_bdr *bdr)
 	return bdr->bd_count + bdr->next_to_clean - bdr->next_to_alloc - 1;
 }
 
-/* Control BD ring */
+
 #define ENETC_CBDR_DEFAULT_SIZE	64
 struct enetc_cbdr {
-	void *bd_base; /* points to Rx or Tx BD ring */
+	void *bd_base; 
 	void __iomem *pir;
 	void __iomem *cir;
-	void __iomem *mr; /* mode register */
+	void __iomem *mr; 
 
-	int bd_count; /* # of BDs */
+	int bd_count; 
 	int next_to_use;
 	int next_to_clean;
 
@@ -234,20 +234,20 @@ enum enetc_errata {
 #define ENETC_SI_F_QBV  BIT(1)
 #define ENETC_SI_F_QBU  BIT(2)
 
-/* PCI IEP device data */
+
 struct enetc_si {
 	struct pci_dev *pdev;
 	struct enetc_hw hw;
 	enum enetc_errata errata;
 
-	struct net_device *ndev; /* back ref. */
+	struct net_device *ndev; 
 
 	struct enetc_cbdr cbd_ring;
 
-	int num_rx_rings; /* how many rings are available in the SI */
+	int num_rx_rings; 
 	int num_tx_rings;
 	int num_fs_entries;
-	int num_rss; /* number of RSS buckets */
+	int num_rss; 
 	unsigned short pad;
 	int hw_features;
 };
@@ -305,7 +305,7 @@ struct enetc_cls_rule {
 	int used;
 };
 
-#define ENETC_MAX_BDR_INT	2 /* fixed to max # of available cpus */
+#define ENETC_MAX_BDR_INT	2 
 struct psfp_cap {
 	u32 max_streamid;
 	u32 max_psfp_filter;
@@ -316,7 +316,7 @@ struct psfp_cap {
 
 #define ENETC_F_TX_TSTAMP_MASK	0xff
 enum enetc_active_offloads {
-	/* 8 bits reserved for TX timestamp types (hwtstamp_tx_types) */
+	
 	ENETC_F_TX_TSTAMP		= BIT(0),
 	ENETC_F_TX_ONESTEP_SYNC_TSTAMP	= BIT(1),
 
@@ -330,14 +330,14 @@ enum enetc_flags_bit {
 	ENETC_TX_ONESTEP_TSTAMP_IN_PROGRESS = 0,
 };
 
-/* interrupt coalescing modes */
+
 enum enetc_ic_mode {
-	/* one interrupt per frame */
+	
 	ENETC_IC_NONE = 0,
-	/* activated when int coalescing time is set to a non-0 value */
+	
 	ENETC_IC_RX_MANUAL = BIT(0),
 	ENETC_IC_TX_MANUAL = BIT(1),
-	/* use dynamic interrupt moderation */
+	
 	ENETC_IC_RX_ADAPTIVE = BIT(2),
 };
 
@@ -347,10 +347,10 @@ enum enetc_ic_mode {
 
 struct enetc_ndev_priv {
 	struct net_device *ndev;
-	struct device *dev; /* dma-mapping device */
+	struct device *dev; 
 	struct enetc_si *si;
 
-	int bdr_int_num; /* number of Rx/Tx ring interrupts */
+	int bdr_int_num; 
 	struct enetc_int_vector *int_vector[ENETC_MAX_BDR_INT];
 	u16 num_rx_rings, num_tx_rings;
 	u16 rx_bd_count, tx_bd_count;
@@ -361,7 +361,7 @@ struct enetc_ndev_priv {
 
 	enum enetc_active_offloads active_offloads;
 
-	u32 speed; /* store speed for compare update pspeed */
+	u32 speed; 
 
 	struct enetc_bdr **xdp_tx_ring;
 	struct enetc_bdr *tx_ring[16];
@@ -373,7 +373,7 @@ struct enetc_ndev_priv {
 
 	struct psfp_cap psfp_cap;
 
-	/* Minimum number of TX queues required by the network stack */
+	
 	unsigned int min_num_stack_tx_queues;
 
 	struct phylink *phylink;
@@ -387,15 +387,13 @@ struct enetc_ndev_priv {
 	struct work_struct	tx_onestep_tstamp;
 	struct sk_buff_head	tx_skbs;
 
-	/* Serialize access to MAC Merge state between ethtool requests
-	 * and link state updates
-	 */
+	
 	struct mutex		mm_lock;
 };
 
-/* Messaging */
 
-/* VF-PF set primary MAC address message format */
+
+
 struct enetc_msg_cmd_set_primary_mac {
 	struct enetc_msg_cmd_header header;
 	struct sockaddr mac;
@@ -403,12 +401,12 @@ struct enetc_msg_cmd_set_primary_mac {
 
 #define ENETC_CBD(R, i)	(&(((struct enetc_cbd *)((R).bd_base))[i]))
 
-#define ENETC_CBDR_TIMEOUT	1000 /* usecs */
+#define ENETC_CBDR_TIMEOUT	1000 
 
-/* PTP driver exports */
+
 extern int enetc_phc_index;
 
-/* SI common */
+
 u32 enetc_port_mac_rd(struct enetc_si *si, u32 reg);
 void enetc_port_mac_wr(struct enetc_si *si, u32 reg, u32 val);
 int enetc_pci_probe(struct pci_dev *pdev, const char *name, int sizeof_priv);
@@ -435,12 +433,12 @@ int enetc_setup_bpf(struct net_device *ndev, struct netdev_bpf *bpf);
 int enetc_xdp_xmit(struct net_device *ndev, int num_frames,
 		   struct xdp_frame **frames, u32 flags);
 
-/* ethtool */
+
 void enetc_set_ethtool_ops(struct net_device *ndev);
 void enetc_mm_link_state_update(struct enetc_ndev_priv *priv, bool link);
 void enetc_mm_commit_preemptible_tcs(struct enetc_ndev_priv *priv);
 
-/* control buffer descriptor ring (CBDR) */
+
 int enetc_setup_cbdr(struct device *dev, struct enetc_hw *hw, int bd_count,
 		     struct enetc_cbdr *cbdr);
 void enetc_teardown_cbdr(struct enetc_cbdr *cbdr);
@@ -513,14 +511,14 @@ static inline void enetc_get_max_cap(struct enetc_ndev_priv *priv)
 
 	reg = enetc_port_rd(hw, ENETC_PSIDCAPR);
 	priv->psfp_cap.max_streamid = reg & ENETC_PSIDCAPR_MSK;
-	/* Port stream filter capability */
+	
 	reg = enetc_port_rd(hw, ENETC_PSFCAPR);
 	priv->psfp_cap.max_psfp_filter = reg & ENETC_PSFCAPR_MSK;
-	/* Port stream gate capability */
+	
 	reg = enetc_port_rd(hw, ENETC_PSGCAPR);
 	priv->psfp_cap.max_psfp_gate = (reg & ENETC_PSGCAPR_SGIT_MSK);
 	priv->psfp_cap.max_psfp_gatelist = (reg & ENETC_PSGCAPR_GCL_MSK) >> 16;
-	/* Port flow meter capability */
+	
 	reg = enetc_port_rd(hw, ENETC_PFMCAPR);
 	priv->psfp_cap.max_psfp_meter = reg & ENETC_PFMCAPR_MSK;
 }

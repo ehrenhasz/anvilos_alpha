@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2018 Chelsio Communications, Inc.
- */
+
+
 
 #ifndef __CHTLS_H__
 #define __CHTLS_H__
@@ -130,7 +128,7 @@ struct sge_opaque_hdr {
 #define AEAD_EXPLICIT_DATA_SIZE		8
 #define TLS_HEADER_LENGTH		5
 #define SCMD_CIPH_MODE_AES_GCM		2
-/* Any MFS size should work and come from openssl */
+
 #define TLS_MFS				16384
 
 #define RSS_HDR sizeof(struct rss_header)
@@ -148,19 +146,19 @@ enum {
 	CHTLS_LISTEN_STOP,
 };
 
-/* Flags for return value of CPL message handlers */
+
 enum {
-	CPL_RET_BUF_DONE =    1,   /* buffer processing done */
-	CPL_RET_BAD_MSG =     2,   /* bad CPL message */
-	CPL_RET_UNKNOWN_TID = 4    /* unexpected unknown TID */
+	CPL_RET_BUF_DONE =    1,   
+	CPL_RET_BAD_MSG =     2,   
+	CPL_RET_UNKNOWN_TID = 4    
 };
 
 #define LISTEN_INFO_HASH_SIZE 32
 #define RSPQ_HASH_BITS 5
 struct listen_info {
-	struct listen_info *next;  /* Link to next entry */
-	struct sock *sk;           /* The listening socket */
-	unsigned int stid;         /* The server TID */
+	struct listen_info *next;  
+	struct sock *sk;           
+	unsigned int stid;         
 };
 
 enum {
@@ -169,19 +167,19 @@ enum {
 };
 
 enum csk_flags {
-	CSK_CALLBACKS_CHKD,	/* socket callbacks have been sanitized */
-	CSK_ABORT_REQ_RCVD,	/* received one ABORT_REQ_RSS message */
-	CSK_TX_MORE_DATA,	/* sending ULP data; don't set SHOVE bit */
-	CSK_TX_WAIT_IDLE,	/* suspend Tx until in-flight data is ACKed */
-	CSK_ABORT_SHUTDOWN,	/* shouldn't send more abort requests */
-	CSK_ABORT_RPL_PENDING,	/* expecting an abort reply */
-	CSK_CLOSE_CON_REQUESTED,/* we've sent a close_conn_req */
-	CSK_TX_DATA_SENT,	/* sent a TX_DATA WR on this connection */
-	CSK_TX_FAILOVER,	/* Tx traffic failing over */
-	CSK_UPDATE_RCV_WND,	/* Need to update rcv window */
-	CSK_RST_ABORTED,	/* outgoing RST was aborted */
-	CSK_TLS_HANDSHK,	/* TLS Handshake */
-	CSK_CONN_INLINE,	/* Connection on HW */
+	CSK_CALLBACKS_CHKD,	
+	CSK_ABORT_REQ_RCVD,	
+	CSK_TX_MORE_DATA,	
+	CSK_TX_WAIT_IDLE,	
+	CSK_ABORT_SHUTDOWN,	
+	CSK_ABORT_RPL_PENDING,	
+	CSK_CLOSE_CON_REQUESTED,
+	CSK_TX_DATA_SENT,	
+	CSK_TX_FAILOVER,	
+	CSK_UPDATE_RCV_WND,	
+	CSK_RST_ABORTED,	
+	CSK_TLS_HANDSHK,	
+	CSK_CONN_INLINE,	
 };
 
 enum chtls_cdev_state {
@@ -200,7 +198,7 @@ struct key_map {
 	unsigned int start;
 	unsigned int available;
 	unsigned int size;
-	spinlock_t lock; /* lock for key id request from map */
+	spinlock_t lock; 
 } __packed;
 
 struct tls_scmd {
@@ -214,7 +212,7 @@ struct chtls_dev {
 	struct cxgb4_lld_info *lldi;
 	struct pci_dev *pdev;
 	struct listen_info *listen_hash_tab[LISTEN_INFO_HASH_SIZE];
-	spinlock_t listen_lock; /* lock for listen list */
+	spinlock_t listen_lock; 
 	struct net_device **ports;
 	struct tid_info *tids;
 	unsigned int pfvf;
@@ -279,14 +277,14 @@ struct chtls_hws {
 struct chtls_sock {
 	struct sock *sk;
 	struct chtls_dev *cdev;
-	struct l2t_entry *l2t_entry;    /* pointer to the L2T entry */
-	struct net_device *egress_dev;  /* TX_CHAN for act open retry */
+	struct l2t_entry *l2t_entry;    
+	struct net_device *egress_dev;  
 
 	struct sk_buff_head txq;
 	struct sk_buff *wr_skb_head;
 	struct sk_buff *wr_skb_tail;
 	struct sk_buff *ctrl_skb_cache;
-	struct sk_buff *txdata_skb_cache; /* abort path messages */
+	struct sk_buff *txdata_skb_cache; 
 	struct kref kref;
 	unsigned long flags;
 	u32 opt2;
@@ -294,7 +292,7 @@ struct chtls_sock {
 	u32 wr_unacked;
 	u32 wr_max_credits;
 	u32 wr_nondata;
-	u32 hwtid;               /* TCP Control Block ID */
+	u32 hwtid;               
 	u32 txq_idx;
 	u32 rss_qid;
 	u32 tid;
@@ -305,7 +303,7 @@ struct chtls_sock {
 	u32 rx_chan;
 	u32 sndbuf;
 	u32 txplen_max;
-	u32 mtu_idx;           /* MTU table index */
+	u32 mtu_idx;           
 	u32 smac_idx;
 	u8 port_id;
 	u8 tos;
@@ -315,7 +313,7 @@ struct chtls_sock {
 	u32 snd_win;
 	u32 rcv_win;
 
-	void *passive_reap_next;        /* placeholder for passive */
+	void *passive_reap_next;        
 	struct chtls_hws tlshws;
 	struct synq {
 		struct sk_buff *next;
@@ -340,7 +338,7 @@ struct tlsrx_cmp_hdr {
 	u8  res_to_mac_error;
 } __packed;
 
-/* res_to_mac_error fields */
+
 #define TLSRX_HDR_PKT_INT_ERROR_S   4
 #define TLSRX_HDR_PKT_INT_ERROR_M   0x1
 #define TLSRX_HDR_PKT_INT_ERROR_V(x) \
@@ -382,8 +380,8 @@ struct tlsrx_cmp_hdr {
 
 struct ulp_mem_rw {
 	__be32 cmd;
-	__be32 len16;             /* command length */
-	__be32 dlen;              /* data length in 32-byte units */
+	__be32 len16;             
+	__be32 dlen;              
 	__be32 lock_addr;
 };
 
@@ -402,31 +400,26 @@ struct tls_key_req {
 	struct ulptx_idata sc_imm;
 };
 
-/*
- * This lives in skb->cb and is used to chain WRs in a linked list.
- */
+
 struct wr_skb_cb {
-	struct l2t_skb_cb l2t;          /* reserve space for l2t CB */
-	struct sk_buff *next_wr;        /* next write request */
+	struct l2t_skb_cb l2t;          
+	struct sk_buff *next_wr;        
 };
 
-/* Per-skb backlog handler.  Run when a socket's backlog is processed. */
+
 struct blog_skb_cb {
 	void (*backlog_rcv)(struct sock *sk, struct sk_buff *skb);
 	struct chtls_dev *cdev;
 };
 
-/*
- * Similar to tcp_skb_cb but with ULP elements added to support TLS,
- * etc.
- */
+
 struct ulp_skb_cb {
-	struct wr_skb_cb wr;		/* reserve space for write request */
-	u16 flags;			/* TCP-like flags */
+	struct wr_skb_cb wr;		
+	u16 flags;			
 	u8 psh;
-	u8 ulp_mode;			/* ULP mode/submode of sk_buff */
-	u32 seq;			/* TCP sequence number */
-	union { /* ULP-specific fields */
+	u8 ulp_mode;			
+	u32 seq;			
+	union { 
 		struct {
 			u8  type;
 			u8  ofld;
@@ -438,21 +431,19 @@ struct ulp_skb_cb {
 #define ULP_SKB_CB(skb) ((struct ulp_skb_cb *)&((skb)->cb[0]))
 #define BLOG_SKB_CB(skb) ((struct blog_skb_cb *)(skb)->cb)
 
-/*
- * Flags for ulp_skb_cb.flags.
- */
+
 enum {
-	ULPCB_FLAG_NEED_HDR  = 1 << 0,	/* packet needs a TX_DATA_WR header */
-	ULPCB_FLAG_NO_APPEND = 1 << 1,	/* don't grow this skb */
-	ULPCB_FLAG_BARRIER   = 1 << 2,	/* set TX_WAIT_IDLE after sending */
-	ULPCB_FLAG_HOLD      = 1 << 3,	/* skb not ready for Tx yet */
-	ULPCB_FLAG_COMPL     = 1 << 4,	/* request WR completion */
-	ULPCB_FLAG_URG       = 1 << 5,	/* urgent data */
-	ULPCB_FLAG_TLS_HDR   = 1 << 6,  /* payload with tls hdr */
-	ULPCB_FLAG_NO_HDR    = 1 << 7,  /* not a ofld wr */
+	ULPCB_FLAG_NEED_HDR  = 1 << 0,	
+	ULPCB_FLAG_NO_APPEND = 1 << 1,	
+	ULPCB_FLAG_BARRIER   = 1 << 2,	
+	ULPCB_FLAG_HOLD      = 1 << 3,	
+	ULPCB_FLAG_COMPL     = 1 << 4,	
+	ULPCB_FLAG_URG       = 1 << 5,	
+	ULPCB_FLAG_TLS_HDR   = 1 << 6,  
+	ULPCB_FLAG_NO_HDR    = 1 << 7,  
 };
 
-/* The ULP mode/submode of an skbuff */
+
 #define skb_ulp_mode(skb)  (ULP_SKB_CB(skb)->ulp_mode)
 #define TCP_PAGE(sk)   (sk->sk_frag.page)
 #define TCP_OFF(sk)    (sk->sk_frag.offset)
@@ -548,10 +539,10 @@ static inline void send_or_defer(struct sock *sk, struct tcp_sock *tp,
 	struct chtls_sock *csk = rcu_dereference_sk_user_data(sk);
 
 	if (through_l2t) {
-		/* send through L2T */
+		
 		cxgb4_l2t_send(csk->egress_dev, skb, csk->l2t_entry);
 	} else {
-		/* send directly */
+		
 		cxgb4_ofld_send(csk->egress_dev, skb);
 	}
 }

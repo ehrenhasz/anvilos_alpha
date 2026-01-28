@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef _I8042_ACPIPNPIO_H
 #define _I8042_ACPIPNPIO_H
 
@@ -8,17 +8,13 @@
 #include <asm/x86_init.h>
 #endif
 
-/*
- * Names.
- */
+
 
 #define I8042_KBD_PHYS_DESC "isa0060/serio0"
 #define I8042_AUX_PHYS_DESC "isa0060/serio1"
 #define I8042_MUX_PHYS_DESC "isa0060/serio%d"
 
-/*
- * IRQs.
- */
+
 
 #if defined(__ia64__)
 # define I8042_MAP_IRQ(x)	isa_irq_to_vector((x))
@@ -32,9 +28,7 @@
 static int i8042_kbd_irq;
 static int i8042_aux_irq;
 
-/*
- * Register numbers.
- */
+
 
 #define I8042_COMMAND_REG	i8042_command_reg
 #define I8042_STATUS_REG	i8042_command_reg
@@ -84,13 +78,7 @@ static inline void i8042_write_command(int val)
 #define SERIO_QUIRK_DRITEK		BIT(13)
 #define SERIO_QUIRK_NOPNP		BIT(14)
 
-/* Quirk table for different mainboards. Options similar or identical to i8042
- * module parameters.
- * ORDERING IS IMPORTANT! The first match will be apllied and the rest ignored.
- * This allows entries to overwrite vendor wide quirks on a per device basis.
- * Where this is irrelevant, entries are sorted case sensitive by DMI_SYS_VENDOR
- * and/or DMI_BOARD_VENDOR to make it easier to avoid dublicate entries.
- */
+
 static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 	{
 		.matches = {
@@ -107,7 +95,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* Asus X450LCP */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "X450LCP"),
@@ -115,7 +103,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_NEVER)
 	},
 	{
-		/* ASUS ZenBook UX425UA/QA */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "ZenBook UX425"),
@@ -123,32 +111,30 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_PROBE_DEFER | SERIO_QUIRK_RESET_NEVER)
 	},
 	{
-		/* ASUS ZenBook UM325UA/QA */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "ZenBook UX325"),
 		},
 		.driver_data = (void *)(SERIO_QUIRK_PROBE_DEFER | SERIO_QUIRK_RESET_NEVER)
 	},
-	/*
-	 * On some Asus laptops, just running self tests cause problems.
-	 */
+	
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-			DMI_MATCH(DMI_CHASSIS_TYPE, "10"), /* Notebook */
+			DMI_MATCH(DMI_CHASSIS_TYPE, "10"), 
 		},
 		.driver_data = (void *)(SERIO_QUIRK_RESET_NEVER)
 	},
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-			DMI_MATCH(DMI_CHASSIS_TYPE, "31"), /* Convertible Notebook */
+			DMI_MATCH(DMI_CHASSIS_TYPE, "31"), 
 		},
 		.driver_data = (void *)(SERIO_QUIRK_RESET_NEVER)
 	},
 	{
-		/* ASUS P65UP5 - AUX LOOP command does not raise AUX IRQ */
+		
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "ASUSTeK Computer INC."),
 			DMI_MATCH(DMI_BOARD_NAME, "P/I-P65UP5"),
@@ -157,7 +143,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* ASUS G1S */
+		
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "ASUSTeK Computer Inc."),
 			DMI_MATCH(DMI_BOARD_NAME, "G1S"),
@@ -173,7 +159,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Acer Aspire 5710 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire 5710"),
@@ -181,7 +167,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Acer Aspire 7738 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire 7738"),
@@ -189,7 +175,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Acer Aspire 5536 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire 5536"),
@@ -198,11 +184,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/*
-		 * Acer Aspire 5738z
-		 * Touchpad stops working in mux mode when dis- + re-enabled
-		 * with the touchpad enable/disable toggle hotkey
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire 5738"),
@@ -210,7 +192,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Acer Aspire One 150 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "AOA150"),
@@ -218,7 +200,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
 	{
-		/* Acer Aspire One 532h */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "AO532h"),
@@ -274,14 +256,9 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		},
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
-	/*
-	 * Some Wistron based laptops need us to explicitly enable the 'Dritek
-	 * keyboard extension' to make their extra keys start generating scancodes.
-	 * Originally, this was just confined to older laptops, but a few Acer laptops
-	 * have turned up in 2007 that also need this again.
-	 */
+	
 	{
-		/* Acer Aspire 5100 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire 5100"),
@@ -289,7 +266,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_DRITEK)
 	},
 	{
-		/* Acer Aspire 5610 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire 5610"),
@@ -297,7 +274,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_DRITEK)
 	},
 	{
-		/* Acer Aspire 5630 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire 5630"),
@@ -305,7 +282,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_DRITEK)
 	},
 	{
-		/* Acer Aspire 5650 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire 5650"),
@@ -313,7 +290,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_DRITEK)
 	},
 	{
-		/* Acer Aspire 5680 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire 5680"),
@@ -321,7 +298,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_DRITEK)
 	},
 	{
-		/* Acer Aspire 5720 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire 5720"),
@@ -329,7 +306,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_DRITEK)
 	},
 	{
-		/* Acer Aspire 9110 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire 9110"),
@@ -337,7 +314,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_DRITEK)
 	},
 	{
-		/* Acer TravelMate 660 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate 660"),
@@ -345,7 +322,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_DRITEK)
 	},
 	{
-		/* Acer TravelMate 2490 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate 2490"),
@@ -353,7 +330,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_DRITEK)
 	},
 	{
-		/* Acer TravelMate 4280 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate 4280"),
@@ -361,7 +338,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_DRITEK)
 	},
 	{
-		/* Acer TravelMate P459-G2-M */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate P459-G2-M"),
@@ -369,7 +346,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Amoi M636/A737 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Amoi Electronics CO.,LTD."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "M636/A737 platform"),
@@ -384,7 +361,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* Compal HEL80I */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "COMPAL"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "HEL80I"),
@@ -408,7 +385,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* Advent 4211 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "DIXONSXP"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Advent 4211"),
@@ -416,7 +393,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
 	{
-		/* Dell Embedded Box PC 3000 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Embedded Box PC 3000"),
@@ -424,7 +401,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* Dell XPS M1530 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "XPS M1530"),
@@ -432,7 +409,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Dell Vostro 1510 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Vostro1510"),
@@ -440,7 +417,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Dell Vostro V13 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Vostro V13"),
@@ -448,7 +425,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_NOTIMEOUT)
 	},
 	{
-		/* Dell Vostro 1320 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Vostro 1320"),
@@ -456,7 +433,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
 	{
-		/* Dell Vostro 1520 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Vostro 1520"),
@@ -464,7 +441,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
 	{
-		/* Dell Vostro 1720 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Vostro 1720"),
@@ -472,7 +449,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
 	{
-		/* Entroware Proteus */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Entroware"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Proteus"),
@@ -480,15 +457,9 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		},
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS)
 	},
-	/*
-	 * Some Fujitsu notebooks are having trouble with touchpads if
-	 * active multiplexing mode is activated. Luckily they don't have
-	 * external PS/2 ports so we can safely disable it.
-	 * ... apparently some Toshibas don't like MUX mode either and
-	 * die horrible death on reboot.
-	 */
+	
 	{
-		/* Fujitsu Lifebook P7010/P7010D */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "P7010"),
@@ -496,7 +467,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Fujitsu Lifebook P5020D */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LifeBook P Series"),
@@ -504,7 +475,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Fujitsu Lifebook S2000 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LifeBook S Series"),
@@ -512,7 +483,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Fujitsu Lifebook S6230 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LifeBook S6230"),
@@ -520,7 +491,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Fujitsu Lifebook T725 laptop */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK T725"),
@@ -528,7 +499,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_NOTIMEOUT)
 	},
 	{
-		/* Fujitsu Lifebook U745 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK U745"),
@@ -536,7 +507,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Fujitsu T70H */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "FMVLT70H"),
@@ -544,8 +515,8 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Fujitsu A544 laptop */
-		/* https://bugzilla.redhat.com/show_bug.cgi?id=1111138 */
+		
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK A544"),
@@ -553,8 +524,8 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOTIMEOUT)
 	},
 	{
-		/* Fujitsu AH544 laptop */
-		/* https://bugzilla.kernel.org/show_bug.cgi?id=69731 */
+		
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK AH544"),
@@ -562,8 +533,8 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOTIMEOUT)
 	},
 	{
-		/* Fujitsu U574 laptop */
-		/* https://bugzilla.kernel.org/show_bug.cgi?id=69731 */
+		
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK U574"),
@@ -571,7 +542,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOTIMEOUT)
 	},
 	{
-		/* Fujitsu UH554 laptop */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK UH544"),
@@ -579,7 +550,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOTIMEOUT)
 	},
 	{
-		/* Fujitsu Lifebook P7010 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU SIEMENS"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "0000000000"),
@@ -587,7 +558,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Fujitsu-Siemens Lifebook T3010 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU SIEMENS"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK T3010"),
@@ -595,7 +566,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Fujitsu-Siemens Lifebook E4010 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU SIEMENS"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK E4010"),
@@ -603,7 +574,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Fujitsu-Siemens Amilo Pro 2010 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU SIEMENS"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "AMILO Pro V2010"),
@@ -611,7 +582,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Fujitsu-Siemens Amilo Pro 2030 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU SIEMENS"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "AMILO PRO V2030"),
@@ -619,7 +590,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Fujitsu Lifebook A574/H */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "FMVA0501PZ"),
@@ -627,7 +598,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Fujitsu Lifebook E5411 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU CLIENT COMPUTING LIMITED"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK E5411"),
@@ -635,7 +606,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOAUX)
 	},
 	{
-		/* Gigabyte M912 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "GIGABYTE"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "M912"),
@@ -644,7 +615,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* Gigabyte Spring Peak - defines wrong chassis type */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "GIGABYTE"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Spring Peak"),
@@ -652,7 +623,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* Gigabyte T1005 - defines wrong chassis type ("Other") */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "GIGABYTE"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "T1005"),
@@ -660,19 +631,16 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* Gigabyte T1005M/P - defines wrong chassis type ("Other") */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "GIGABYTE"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "T1005M/P"),
 		},
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
-	/*
-	 * Some laptops need keyboard reset before probing for the trackpad to get
-	 * it detected, initialised & finally work.
-	 */
+	
 	{
-		/* Gigabyte P35 v2 - Elantech touchpad */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "GIGABYTE"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "P35V2"),
@@ -680,7 +648,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_KBDRESET)
 	},
 		{
-		/* Aorus branded Gigabyte X3 Plus - Elantech touchpad */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "GIGABYTE"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "X3"),
@@ -688,7 +656,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_KBDRESET)
 	},
 	{
-		/* Gigabyte P34 - Elantech touchpad */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "GIGABYTE"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "P34"),
@@ -696,7 +664,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_KBDRESET)
 	},
 	{
-		/* Gigabyte P57 - Elantech touchpad */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "GIGABYTE"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "P57"),
@@ -704,7 +672,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_KBDRESET)
 	},
 	{
-		/* Gericom Bellagio */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Gericom"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "N34AS6"),
@@ -712,7 +680,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Gigabyte M1022M netbook */
+		
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co.,Ltd."),
 			DMI_MATCH(DMI_BOARD_NAME, "M1022E"),
@@ -729,11 +697,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/*
-		 * HP Pavilion DV4017EA -
-		 * errors on MUX ports are reported without raising AUXDATA
-		 * causing "spurious NAK" messages.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Pavilion dv4000 (EA032EA#ABF)"),
@@ -741,10 +705,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/*
-		 * HP Pavilion ZT1000 -
-		 * like DV4017EA does not raise AUXERR for errors on MUX ports.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pavilion Notebook PC"),
@@ -753,10 +714,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/*
-		 * HP Pavilion DV4270ca -
-		 * like DV4017EA does not raise AUXERR for errors on MUX ports.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Pavilion dv4000 (EH476UA#ABL)"),
@@ -764,7 +722,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Newer HP Pavilion dv4 models */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pavilion dv4 Notebook PC"),
@@ -772,7 +730,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_NOTIMEOUT)
 	},
 	{
-		/* IBM 2656 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "IBM"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "2656"),
@@ -780,7 +738,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Avatar AVIU-145A6 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Intel"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "IC4I"),
@@ -788,7 +746,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Intel MBO Desktop D845PESV */
+		
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Intel Corporation"),
 			DMI_MATCH(DMI_BOARD_NAME, "D845PESV"),
@@ -796,10 +754,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOPNP)
 	},
 	{
-		/*
-		 * Intel NUC D54250WYK - does not have i8042 controller but
-		 * declares PS/2 devices in DSDT.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Intel Corporation"),
 			DMI_MATCH(DMI_BOARD_NAME, "D54250WYK"),
@@ -807,7 +762,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOPNP)
 	},
 	{
-		/* Lenovo 3000 n100 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "076804U"),
@@ -815,7 +770,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Lenovo XiaoXin Air 12 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "80UN"),
@@ -823,7 +778,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Lenovo LaVie Z */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo LaVie Z"),
@@ -831,7 +786,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Lenovo Ideapad U455 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "20046"),
@@ -839,7 +794,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
 	{
-		/* Lenovo ThinkPad L460 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad L460"),
@@ -847,7 +802,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
 	{
-		/* Lenovo ThinkPad Twist S230u */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "33474HU"),
@@ -855,7 +810,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
 	{
-		/* LG Electronics X110 */
+		
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "LG Electronics Inc."),
 			DMI_MATCH(DMI_BOARD_NAME, "X110"),
@@ -863,7 +818,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
 	{
-		/* Medion Akoya Mini E1210 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "MEDION"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "E1210"),
@@ -871,7 +826,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
 	{
-		/* Medion Akoya E1222 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "MEDION"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "E122X"),
@@ -879,7 +834,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
 	{
-		/* MSI Wind U-100 */
+		
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "MICRO-STAR INTERNATIONAL CO., LTD"),
 			DMI_MATCH(DMI_BOARD_NAME, "U-100"),
@@ -887,11 +842,8 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS | SERIO_QUIRK_NOPNP)
 	},
 	{
-		/*
-		 * No data is coming from the touchscreen unless KBC
-		 * is in legacy mode.
-		 */
-		/* Panasonic CF-29 */
+		
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Matsushita"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "CF-29"),
@@ -899,7 +851,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Medion Akoya E7225 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Medion"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Akoya E7225"),
@@ -908,7 +860,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* Microsoft Virtual Machine */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Virtual Machine"),
@@ -917,7 +869,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* Medion MAM 2070 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "MAM 2070"),
@@ -926,7 +878,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* TUXEDO BU1406 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "N24_25BU"),
@@ -934,7 +886,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* OQO Model 01 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "OQO"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "ZEPTO"),
@@ -950,7 +902,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* Acer Aspire 5 A515 */
+		
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "PK"),
 			DMI_MATCH(DMI_BOARD_NAME, "Grumpy_PK"),
@@ -958,7 +910,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOPNP)
 	},
 	{
-		/* ULI EV4873 - AUX LOOP does not work properly */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ULI"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "EV4873"),
@@ -967,10 +919,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/*
-		 * Arima-Rioworks HDAMB -
-		 * AUX LOOP command does not raise AUX IRQ
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "RIOWORKS"),
 			DMI_MATCH(DMI_BOARD_NAME, "HDAMB"),
@@ -979,7 +928,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
 	{
-		/* Sharp Actius MM20 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "SHARP"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "PC-MM20 Series"),
@@ -987,11 +936,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/*
-		 * Sony Vaio FZ-240E -
-		 * reset and GET ID commands issued via KBD port are
-		 * sometimes being delivered to AUX3.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Sony Corporation"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "VGN-FZ240E"),
@@ -999,11 +944,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/*
-		 * Most (all?) VAIOs do not have external PS/2 ports nor
-		 * they implement active multiplexing properly, and
-		 * MUX discovery usually messes up keyboard/touchpad.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Sony Corporation"),
 			DMI_MATCH(DMI_BOARD_NAME, "VAIO"),
@@ -1011,7 +952,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/* Sony Vaio FS-115b */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Sony Corporation"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "VGN-FS115B"),
@@ -1019,10 +960,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
 	{
-		/*
-		 * Sony Vaio VGN-CS series require MUX or the touch sensor
-		 * buttons will disturb touchpad operation
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Sony Corporation"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "VGN-CS"),
@@ -1050,13 +988,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		},
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
 	},
-	/*
-	 * A lot of modern Clevo barebones have touchpad and/or keyboard issues
-	 * after suspend fixable with nomux + reset + noloop + nopnp. Luckily,
-	 * none of them have an external PS/2 port so this can safely be set for
-	 * all of them. These two are based on a Clevo design, but have the
-	 * board_name changed.
-	 */
+	
 	{
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "TUXEDO"),
@@ -1074,19 +1006,16 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
 	},
 	{
-		/* Mivvy M310 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "VIOOO"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "N10"),
 		},
 		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
 	},
-	/*
-	 * Some laptops need keyboard reset before probing for the trackpad to get
-	 * it detected, initialised & finally work.
-	 */
+	
 	{
-		/* Schenker XMG C504 - Elantech touchpad */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "XMG"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "C504"),
@@ -1094,7 +1023,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_KBDRESET)
 	},
 	{
-		/* Blue FB5601 */
+		
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "blue"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "FB5601"),
@@ -1102,16 +1031,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		},
 		.driver_data = (void *)(SERIO_QUIRK_NOLOOP)
 	},
-	/*
-	 * A lot of modern Clevo barebones have touchpad and/or keyboard issues
-	 * after suspend fixable with nomux + reset + noloop + nopnp. Luckily,
-	 * none of them have an external PS/2 port so this can safely be set for
-	 * all of them.
-	 * Clevo barebones come with board_vendor and/or system_vendor set to
-	 * either the very generic string "Notebook" and/or a different value
-	 * for each individual reseller. The only somewhat universal way to
-	 * identify them is by board_name.
-	 */
+	
 	{
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "LAPQC71A"),
@@ -1141,13 +1061,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
 	},
 	{
-		/*
-		 * Setting SERIO_QUIRK_NOMUX or SERIO_QUIRK_RESET_ALWAYS makes
-		 * the keyboard very laggy for ~5 seconds after boot and
-		 * sometimes also after resume.
-		 * However both are required for the keyboard to not fail
-		 * completely sometimes after boot or resume.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "N150CU"),
 		},
@@ -1162,13 +1076,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
 	},
 	{
-		/*
-		 * Setting SERIO_QUIRK_NOMUX or SERIO_QUIRK_RESET_ALWAYS makes
-		 * the keyboard very laggy for ~5 seconds after boot and
-		 * sometimes also after resume.
-		 * However both are required for the keyboard to not fail
-		 * completely sometimes after boot or resume.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "NHxxRZQ"),
 		},
@@ -1182,16 +1090,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
 	},
-	/*
-	 * At least one modern Clevo barebone has the touchpad connected both
-	 * via PS/2 and i2c interface. This causes a race condition between the
-	 * psmouse and i2c-hid driver. Since the full capability of the touchpad
-	 * is available via the i2c interface and the device has no external
-	 * PS/2 port, it is safe to just ignore all ps2 mouses here to avoid
-	 * this issue. The known affected device is the
-	 * TUXEDO InfinityBook S17 Gen6 / Clevo NS70MU which comes with one of
-	 * the two different dmi strings below. NS50MU is not a typo!
-	 */
+	
 	{
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "NS50MU"),
@@ -1216,11 +1115,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
 	},
 	{
-		/*
-		 * This is only a partial board_name and might be followed by
-		 * another letter or number. DMI_MATCH however does do partial
-		 * matching.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "P65xH"),
 		},
@@ -1228,7 +1123,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
 	},
 	{
-		/* Clevo P650RS, 650RP6, Sager NP8152-S, and others */
+		
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "P65xRP"),
 		},
@@ -1236,11 +1131,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
 	},
 	{
-		/*
-		 * This is only a partial board_name and might be followed by
-		 * another letter or number. DMI_MATCH however does do partial
-		 * matching.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "P65_P67H"),
 		},
@@ -1248,11 +1139,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
 	},
 	{
-		/*
-		 * This is only a partial board_name and might be followed by
-		 * another letter or number. DMI_MATCH however does do partial
-		 * matching.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "P65_67RP"),
 		},
@@ -1260,11 +1147,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
 	},
 	{
-		/*
-		 * This is only a partial board_name and might be followed by
-		 * another letter or number. DMI_MATCH however does do partial
-		 * matching.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "P65_67RS"),
 		},
@@ -1272,11 +1155,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
 	},
 	{
-		/*
-		 * This is only a partial board_name and might be followed by
-		 * another letter or number. DMI_MATCH however does do partial
-		 * matching.
-		 */
+		
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "P67xRP"),
 		},
@@ -1297,7 +1176,7 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
 	},
-	/* See comment on TUXEDO InfinityBook S17 Gen6 / Clevo NS70MU above */
+	
 	{
 		.matches = {
 			DMI_MATCH(DMI_BOARD_NAME, "PD5x_7xPNP_PNR_PNN_PNT"),
@@ -1325,29 +1204,29 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
 static const struct dmi_system_id i8042_dmi_laptop_table[] __initconst = {
 	{
 		.matches = {
-			DMI_MATCH(DMI_CHASSIS_TYPE, "8"), /* Portable */
+			DMI_MATCH(DMI_CHASSIS_TYPE, "8"), 
 		},
 	},
 	{
 		.matches = {
-			DMI_MATCH(DMI_CHASSIS_TYPE, "9"), /* Laptop */
+			DMI_MATCH(DMI_CHASSIS_TYPE, "9"), 
 		},
 	},
 	{
 		.matches = {
-			DMI_MATCH(DMI_CHASSIS_TYPE, "10"), /* Notebook */
+			DMI_MATCH(DMI_CHASSIS_TYPE, "10"), 
 		},
 	},
 	{
 		.matches = {
-			DMI_MATCH(DMI_CHASSIS_TYPE, "14"), /* Sub-Notebook */
+			DMI_MATCH(DMI_CHASSIS_TYPE, "14"), 
 		},
 	},
 	{ }
 };
 #endif
 
-#endif /* CONFIG_X86 */
+#endif 
 
 #ifdef CONFIG_PNP
 #include <linux/pnp.h>
@@ -1396,7 +1275,7 @@ static int i8042_pnp_kbd_probe(struct pnp_dev *dev, const struct pnp_device_id *
 			       sizeof(i8042_kbd_firmware_id));
 	i8042_kbd_fwnode = dev_fwnode(&dev->dev);
 
-	/* Keyboard ports are always supposed to be wakeup-enabled */
+	
 	device_set_wakeup_enable(&dev->dev, true);
 
 	i8042_pnp_kbd_devices++;
@@ -1604,10 +1483,10 @@ static int __init i8042_pnp_init(void)
 	return 0;
 }
 
-#else  /* !CONFIG_PNP */
+#else  
 static inline int i8042_pnp_init(void) { return 0; }
 static inline void i8042_pnp_exit(void) { }
-#endif /* CONFIG_PNP */
+#endif 
 
 
 #ifdef CONFIG_X86
@@ -1634,7 +1513,7 @@ static void __init i8042_check_quirks(void)
 		i8042_unlock = true;
 	if (quirks & SERIO_QUIRK_PROBE_DEFER)
 		i8042_probe_defer = true;
-	/* Honor module parameter when value is not default */
+	
 	if (i8042_reset == I8042_RESET_DEFAULT) {
 		if (quirks & SERIO_QUIRK_RESET_ALWAYS)
 			i8042_reset = I8042_RESET_ALWAYS;
@@ -1668,18 +1547,12 @@ static int __init i8042_platform_init(void)
 
 #ifdef CONFIG_X86
 	u8 a20_on = 0xdf;
-	/* Just return if platform does not have i8042 controller */
+	
 	if (x86_platform.legacy.i8042 == X86_LEGACY_I8042_PLATFORM_ABSENT)
 		return -ENODEV;
 #endif
 
-/*
- * On ix86 platforms touching the i8042 data register region can do really
- * bad things. Because of this the region is always reserved on ix86 boxes.
- *
- *	if (!request_region(I8042_DATA_REG, 16, "i8042"))
- *		return -EBUSY;
- */
+
 
 	i8042_kbd_irq = I8042_MAP_IRQ(1);
 	i8042_aux_irq = I8042_MAP_IRQ(12);
@@ -1720,14 +1593,10 @@ static int __init i8042_platform_init(void)
 		return retval;
 
 #ifdef CONFIG_X86
-	/*
-	 * A20 was already enabled during early kernel init. But some buggy
-	 * BIOSes (in MSI Laptops) require A20 to be enabled using 8042 to
-	 * resume from S3. So we do it here and hope that nothing breaks.
-	 */
+	
 	i8042_command(&a20_on, 0x10d1);
-	i8042_command(NULL, 0x00ff);	/* Null command for SMM firmware */
-#endif /* CONFIG_X86 */
+	i8042_command(NULL, 0x00ff);	
+#endif 
 
 	return retval;
 }
@@ -1737,4 +1606,4 @@ static inline void i8042_platform_exit(void)
 	i8042_pnp_exit();
 }
 
-#endif /* _I8042_ACPIPNPIO_H */
+#endif 

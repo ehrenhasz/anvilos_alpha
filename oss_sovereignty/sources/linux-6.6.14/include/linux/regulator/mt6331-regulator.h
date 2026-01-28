@@ -1,21 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 Collabora Ltd.
- * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+
 
 #ifndef __LINUX_REGULATOR_MT6331_H
 #define __LINUX_REGULATOR_MT6331_H
 
 enum {
-	/* BUCK */
+	
 	MT6331_ID_VDVFS11 = 0,
 	MT6331_ID_VDVFS12,
 	MT6331_ID_VDVFS13,
 	MT6331_ID_VDVFS14,
 	MT6331_ID_VCORE2,
 	MT6331_ID_VIO18,
-	/* LDO */
+	
 	MT6331_ID_VTCXO1,
 	MT6331_ID_VTCXO2,
 	MT6331_ID_AVDD32_AUD,
@@ -43,4 +40,4 @@ enum {
 	MT6331_ID_VREG_MAX
 };
 
-#endif /* __LINUX_REGULATOR_MT6331_H */
+#endif 

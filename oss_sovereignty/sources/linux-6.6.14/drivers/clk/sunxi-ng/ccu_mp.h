@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Maxime Ripard. All rights reserved.
- */
+
+
 
 #ifndef _CCU_MP_H_
 #define _CCU_MP_H_
@@ -14,11 +12,7 @@
 #include "ccu_mult.h"
 #include "ccu_mux.h"
 
-/*
- * struct ccu_mp - Definition of an M-P clock
- *
- * Clocks based on the formula parent >> P / M
- */
+
 struct ccu_mp {
 	u32			enable;
 
@@ -140,14 +134,7 @@ static inline struct ccu_mp *hw_to_ccu_mp(struct clk_hw *hw)
 
 extern const struct clk_ops ccu_mp_ops;
 
-/*
- * Special class of M-P clock that supports MMC timing modes
- *
- * Since the MMC clock registers all follow the same layout, we can
- * simplify the macro for this particular case. In addition, as
- * switching modes also affects the output clock rate, we need to
- * have CLK_GET_RATE_NOCACHE for all these types of clocks.
- */
+
 
 #define SUNXI_CCU_MP_MMC_WITH_MUX_GATE(_struct, _name, _parents, _reg,	\
 				       _flags)				\
@@ -169,4 +156,4 @@ extern const struct clk_ops ccu_mp_ops;
 
 extern const struct clk_ops ccu_mp_mmc_ops;
 
-#endif /* _CCU_MP_H_ */
+#endif 

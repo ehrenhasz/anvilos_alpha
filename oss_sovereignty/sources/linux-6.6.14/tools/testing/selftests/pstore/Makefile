@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for pstore selftests.
-# Expects pstore backend is registered.
+
+
+
 
 all:
 

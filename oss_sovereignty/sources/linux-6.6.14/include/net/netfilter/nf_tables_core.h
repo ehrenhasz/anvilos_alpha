@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NET_NF_TABLES_CORE_H
 #define _NET_NF_TABLES_CORE_H
 
@@ -116,10 +116,10 @@ nft_set_do_lookup(const struct net *net, const struct nft_set *set,
 }
 #endif
 
-/* called from nft_pipapo_avx2.c */
+
 bool nft_pipapo_lookup(const struct net *net, const struct nft_set *set,
 		       const u32 *key, const struct nft_set_ext **ext);
-/* called from nft_set_pipapo.c */
+
 bool nft_pipapo_avx2_lookup(const struct net *net, const struct nft_set *set,
 			    const u32 *key, const struct nft_set_ext **ext);
 
@@ -180,4 +180,4 @@ void nft_objref_eval(const struct nft_expr *expr, struct nft_regs *regs,
 		     const struct nft_pktinfo *pkt);
 void nft_objref_map_eval(const struct nft_expr *expr, struct nft_regs *regs,
 			 const struct nft_pktinfo *pkt);
-#endif /* _NET_NF_TABLES_CORE_H */
+#endif 

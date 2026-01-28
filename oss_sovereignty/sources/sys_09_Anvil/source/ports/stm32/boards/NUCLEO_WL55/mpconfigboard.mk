@@ -5,9 +5,9 @@ STARTUP_FILE = $(STM32LIB_CMSIS_BASE)/Source/Templates/gcc/startup_stm32wl55xx_c
 LD_FILES = boards/stm32wl55xc.ld boards/common_basic.ld
 TEXT0_ADDR = 0x08000000
 
-# MicroPython settings
+
 MICROPY_VFS_FAT = 0
 MICROPY_VFS_LFS2 = 1
 
-# Board-specific manifest (doesn't include default modules, adds LoRa driver).
+
 FROZEN_MANIFEST ?= $(BOARD_DIR)/manifest.py

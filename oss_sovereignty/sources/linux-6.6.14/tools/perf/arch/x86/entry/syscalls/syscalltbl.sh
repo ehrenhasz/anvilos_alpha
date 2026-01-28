@@ -15,7 +15,7 @@ sorted_table=$(mktemp /tmp/syscalltbl.XXXXXX)
 grep '^[0-9]' "$in" | sort -n > $sorted_table
 max_nr=0
 while read nr _abi name entry _compat; do
-    if [ $nr -ge 512 ] ; then # discard compat sycalls
+    if [ $nr -ge 512 ] ; then 
         break
     fi
     emit "$nr" "$name"
@@ -23,4 +23,4 @@ while read nr _abi name entry _compat; do
 done < $sorted_table
 rm -f $sorted_table
 echo "};"
-echo "#define SYSCALLTBL_${arch}_MAX_ID ${max_nr}"
+echo "

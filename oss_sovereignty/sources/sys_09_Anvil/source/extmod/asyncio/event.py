@@ -1,8 +1,8 @@
 from . import core
 class Event:
     def __init__(self):
-        self.state = False  # False=unset; True=set
-        self.waiting = core.TaskQueue()  # Queue of Tasks waiting on completion of this event
+        self.state = False  
+        self.waiting = core.TaskQueue()  
     def is_set(self):
         return self.state
     def set(self):
@@ -23,9 +23,9 @@ try:
         def __init__(self):
             self.state = 0
         def ioctl(self, req, flags):
-            if req == 3:  # MP_STREAM_POLL
+            if req == 3:  
                 return self.state * flags
-            return -1  # Other requests are unsupported
+            return -1  
         def set(self):
             self.state = 1
         def clear(self):

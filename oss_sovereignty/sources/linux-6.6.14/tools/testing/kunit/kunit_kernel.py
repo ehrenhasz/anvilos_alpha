@@ -69,7 +69,7 @@ class LinuxSourceTreeOperations:
 		_, stderr = proc.communicate()
 		if proc.returncode != 0:
 			raise BuildError(stderr.decode())
-		if stderr:  # likely only due to build warnings
+		if stderr:  
 			print(stderr.decode())
 	def start(self, params: List[str], build_dir: str) -> subprocess.Popen:
 		raise RuntimeError('not implemented!')
@@ -233,7 +233,7 @@ class LinuxSourceTree:
 			return False
 		old_path = get_old_kunitconfig_path(build_dir)
 		if os.path.exists(old_path):
-			os.remove(old_path)  # write_to_file appends to the file
+			os.remove(old_path)  
 		self._kconfig.write_to_file(old_path)
 		return True
 	def _kunitconfig_changed(self, build_dir: str) -> bool:
@@ -274,7 +274,7 @@ class LinuxSourceTree:
 			args.append('kunit.filter_action=' + filter_action)
 		args.append('kunit.enable=1')
 		process = self._ops.start(args, build_dir)
-		assert process.stdout is not None  # tell mypy it's set
+		assert process.stdout is not None  
 		def _wait_proc() -> None:
 			try:
 				process.wait(timeout=timeout)

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mptcp
 
@@ -178,7 +178,7 @@ TRACE_EVENT(subflow_check_data_avail,
 		  __entry->skb)
 );
 
-#endif /* _TRACE_MPTCP_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

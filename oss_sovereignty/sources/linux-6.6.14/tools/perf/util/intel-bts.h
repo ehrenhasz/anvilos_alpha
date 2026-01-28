@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * intel-bts.h: Intel Processor Trace support
- * Copyright (c) 2013-2014, Intel Corporation.
- */
+
+
 
 #ifndef INCLUDE__PERF_INTEL_BTS_H__
 #define INCLUDE__PERF_INTEL_BTS_H__

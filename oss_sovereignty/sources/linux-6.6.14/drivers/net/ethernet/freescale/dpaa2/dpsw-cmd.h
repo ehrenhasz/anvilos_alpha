@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2014-2016 Freescale Semiconductor Inc.
- * Copyright 2017-2021 NXP
- *
- */
+
+
 
 #ifndef __FSL_DPSW_CMD_H
 #define __FSL_DPSW_CMD_H
 
 #include "dpsw.h"
 
-/* DPSW Version */
+
 #define DPSW_VER_MAJOR		8
 #define DPSW_VER_MINOR		9
 
@@ -21,7 +17,7 @@
 #define DPSW_CMD_ID(id)	(((id) << DPSW_CMD_ID_OFFSET) | DPSW_CMD_BASE_VERSION)
 #define DPSW_CMD_V2(id) (((id) << DPSW_CMD_ID_OFFSET) | DPSW_CMD_VERSION_2)
 
-/* Command IDs */
+
 #define DPSW_CMDID_CLOSE                    DPSW_CMD_ID(0x800)
 #define DPSW_CMDID_OPEN                     DPSW_CMD_ID(0x802)
 
@@ -97,7 +93,7 @@
 #define DPSW_CMDID_SET_EGRESS_FLOOD         DPSW_CMD_ID(0x0AC)
 #define DPSW_CMDID_IF_SET_LEARNING_MODE     DPSW_CMD_ID(0x0AD)
 
-/* Macros for accessing command fields smaller than 1byte */
+
 #define DPSW_MASK(field)        \
 	GENMASK(DPSW_##field##_SHIFT + DPSW_##field##_SIZE - 1, \
 		DPSW_##field##_SHIFT)
@@ -117,19 +113,19 @@ struct dpsw_cmd_open {
 #define DPSW_COMPONENT_TYPE_SIZE	4
 
 struct dpsw_cmd_create {
-	/* cmd word 0 */
+	
 	__le16 num_ifs;
 	u8 max_fdbs;
 	u8 max_meters_per_if;
-	/* from LSB: only the first 4 bits */
+	
 	u8 component_type;
 	u8 pad[3];
-	/* cmd word 1 */
+	
 	__le16 max_vlans;
 	__le16 max_fdb_entries;
 	__le16 fdb_aging_time;
 	__le16 max_fdb_mc_groups;
-	/* cmd word 2 */
+	
 	__le64 options;
 };
 
@@ -141,7 +137,7 @@ struct dpsw_cmd_destroy {
 #define DPSW_ENABLE_SIZE  1
 
 struct dpsw_rsp_is_enabled {
-	/* from LSB: enable:1 */
+	
 	u8 enabled;
 };
 
@@ -198,28 +194,26 @@ struct dpsw_cmd_clear_irq_status {
 #define DPSW_BROADCAST_CFG_SIZE		4
 
 struct dpsw_rsp_get_attr {
-	/* cmd word 0 */
+	
 	__le16 num_ifs;
 	u8 max_fdbs;
 	u8 num_fdbs;
 	__le16 max_vlans;
 	__le16 num_vlans;
-	/* cmd word 1 */
+	
 	__le16 max_fdb_entries;
 	__le16 fdb_aging_time;
 	__le32 dpsw_id;
-	/* cmd word 2 */
+	
 	__le16 mem_size;
 	__le16 max_fdb_mc_groups;
 	u8 max_meters_per_if;
-	/* from LSB only the first 4 bits */
+	
 	u8 component_type;
-	/* [0:3] - flooding configuration
-	 * [4:7] - broadcast configuration
-	 */
+	
 	u8 repl_cfg;
 	u8 pad;
-	/* cmd word 3 */
+	
 	__le64 options;
 };
 
@@ -232,7 +226,7 @@ struct dpsw_rsp_get_attr {
 
 struct dpsw_cmd_if_set_tci {
 	__le16 if_id;
-	/* from LSB: VLAN_ID:12 DEI:1 PCP:3 */
+	
 	__le16 conf;
 };
 
@@ -253,7 +247,7 @@ struct dpsw_rsp_if_get_tci {
 struct dpsw_cmd_if_set_stp {
 	__le16 if_id;
 	__le16 vlan_id;
-	/* only the first LSB 4 bits */
+	
 	u8 state;
 };
 
@@ -262,7 +256,7 @@ struct dpsw_cmd_if_set_stp {
 
 struct dpsw_cmd_if_get_counter {
 	__le16 if_id;
-	/* from LSB: type:5 */
+	
 	u8 type;
 };
 
@@ -283,17 +277,17 @@ struct dpsw_cmd_if {
 #define DPSW_ACCEPT_ALL_VLAN_SIZE	1
 
 struct dpsw_rsp_if_get_attr {
-	/* cmd word 0 */
-	/* from LSB: admit_untagged:4 enabled:1 accept_all_vlan:1 */
+	
+	
 	u8 conf;
 	u8 pad1;
 	u8 num_tcs;
 	u8 pad2;
 	__le16 qdid;
-	/* cmd word 1 */
+	
 	__le32 options;
 	__le32 pad3;
-	/* cmd word 2 */
+	
 	__le32 rate;
 };
 
@@ -303,13 +297,13 @@ struct dpsw_cmd_if_set_max_frame_length {
 };
 
 struct dpsw_cmd_if_set_link_cfg {
-	/* cmd word 0 */
+	
 	__le16 if_id;
 	u8 pad[6];
-	/* cmd word 1 */
+	
 	__le32 rate;
 	__le32 pad1;
-	/* cmd word 2 */
+	
 	__le64 options;
 };
 
@@ -321,14 +315,14 @@ struct dpsw_cmd_if_get_link_state {
 #define DPSW_UP_SIZE	1
 
 struct dpsw_rsp_if_get_link_state {
-	/* cmd word 0 */
+	
 	__le32 pad0;
 	u8 up;
 	u8 pad1[3];
-	/* cmd word 1 */
+	
 	__le32 rate;
 	__le32 pad2;
-	/* cmd word 2 */
+	
 	__le64 options;
 };
 
@@ -338,21 +332,21 @@ struct dpsw_vlan_add {
 };
 
 struct dpsw_cmd_vlan_add_if {
-	/* cmd word 0 */
+	
 	__le16 options;
 	__le16 vlan_id;
 	__le16 fdb_id;
 	__le16 pad0;
-	/* cmd word 1-4 */
+	
 	__le64 if_id;
 };
 
 struct dpsw_cmd_vlan_manage_if {
-	/* cmd word 0 */
+	
 	__le16 pad0;
 	__le16 vlan_id;
 	__le32 pad1;
-	/* cmd word 1-4 */
+	
 	__le64 if_id;
 };
 
@@ -379,26 +373,26 @@ struct dpsw_cmd_fdb_remove {
 #define DPSW_ENTRY_TYPE_SIZE	4
 
 struct dpsw_cmd_fdb_unicast_op {
-	/* cmd word 0 */
+	
 	__le16 fdb_id;
 	u8 mac_addr[6];
-	/* cmd word 1 */
+	
 	__le16 if_egress;
-	/* only the first 4 bits from LSB */
+	
 	u8 type;
 };
 
 struct dpsw_cmd_fdb_multicast_op {
-	/* cmd word 0 */
+	
 	__le16 fdb_id;
 	__le16 num_ifs;
-	/* only the first 4 bits from LSB */
+	
 	u8 type;
 	u8 pad[3];
-	/* cmd word 1 */
+	
 	u8 mac_addr[6];
 	__le16 pad2;
-	/* cmd word 2-5 */
+	
 	__le64 if_id;
 };
 
@@ -437,7 +431,7 @@ struct dpsw_cmd_ctrl_if_set_queue {
 	__le32 dest_id;
 	u8 dest_priority;
 	u8 pad;
-	/* from LSB: dest_type:4 */
+	
 	u8 dest_type;
 	u8 qtype;
 	__le64 user_ctx;
@@ -466,7 +460,7 @@ struct dpsw_cmd_set_egress_flood {
 
 struct dpsw_cmd_if_set_learning_mode {
 	__le16 if_id;
-	/* only the first 4 bits from LSB */
+	
 	u8 mode;
 };
 
@@ -532,7 +526,7 @@ struct dpsw_cmd_acl_entry {
 	__le16 acl_id;
 	__le16 result_if_id;
 	__le32 precedence;
-	/* from LSB only the first 4 bits */
+	
 	u8 result_action;
 	u8 pad[7];
 	__le64 pad2[4];
@@ -549,8 +543,8 @@ struct dpsw_cmd_set_reflection_if {
 struct dpsw_cmd_if_reflection {
 	__le16 if_id;
 	__le16 vlan_id;
-	/* only 2 bits from the LSB */
+	
 	u8 filter;
 };
 #pragma pack(pop)
-#endif /* __FSL_DPSW_CMD_H */
+#endif 

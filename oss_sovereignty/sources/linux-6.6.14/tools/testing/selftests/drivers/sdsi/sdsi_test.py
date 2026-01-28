@@ -49,15 +49,15 @@ class TestSDSiFilesClass:
     def test_sysfs_file_permissions(self, socket):
         folder = self.get_dev_folder(socket)
         mode = os.stat(folder + "guid").st_mode & 0o777
-        assert mode == 0o444    # Read all
+        assert mode == 0o444    
         mode = os.stat(folder + "registers").st_mode & 0o777
-        assert mode == 0o400    # Read owner
+        assert mode == 0o400    
         mode = os.stat(folder + "provision_akc").st_mode & 0o777
-        assert mode == 0o200    # Read owner
+        assert mode == 0o200    
         mode = os.stat(folder + "provision_cap").st_mode & 0o777
-        assert mode == 0o200    # Read owner
+        assert mode == 0o200    
         mode = os.stat(folder + "state_certificate").st_mode & 0o777
-        assert mode == 0o400    # Read owner
+        assert mode == 0o400    
     def test_sysfs_file_ownership(self, socket):
         folder = self.get_dev_folder(socket)
         st = os.stat(folder + "guid")

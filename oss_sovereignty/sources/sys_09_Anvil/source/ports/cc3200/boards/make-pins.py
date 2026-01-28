@@ -80,7 +80,7 @@ class Pin:
         print("extern pin_obj_t pin_{:s};".format(self.name), file=out_header)
 class Pins:
     def __init__(self):
-        self.board_pins = []  # list of pin objects
+        self.board_pins = []  
     def find_pin(self, port, gpio_bit):
         for pin in self.board_pins:
             if pin.port == port and pin.gpio_bit == gpio_bit:

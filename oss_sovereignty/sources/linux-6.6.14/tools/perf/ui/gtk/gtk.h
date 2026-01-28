@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _PERF_GTK_H_
 #define _PERF_GTK_H_ 1
 
@@ -66,4 +66,4 @@ int hist_entry__gtk_annotate(struct hist_entry *he,
 			     struct hist_browser_timer *hbt);
 void perf_gtk__show_annotations(void);
 
-#endif /* _PERF_GTK_H_ */
+#endif 

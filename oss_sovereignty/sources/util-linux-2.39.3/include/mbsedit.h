@@ -1,9 +1,4 @@
-/*
- * SPDX-License-Identifier: LGPL-2.1-or-later
- *
- * This file may be distributed under the terms of the
- * GNU Lesser General Public License.
- */
+
 #ifndef UTIL_LINUX_MBSEDIT_H
 # define UTIL_LINUX_MBSEDIT_H
 
@@ -11,13 +6,13 @@
 #include "widechar.h"
 
 struct mbs_editor {
-	char	*buf;		/* buffer */
-	size_t	max_bytes;	/* size of the buffer */
-	size_t	max_cells;	/* maximal allowed number of cells */
-	size_t	cur_cells;	/* number of cells to print the buffer */
-	size_t  cur_bytes;	/* number of chars in bytes */
-	size_t  cursor;		/* cursor position in bytes */
-	size_t  cursor_cells;	/* cursor position in cells */
+	char	*buf;		
+	size_t	max_bytes;	
+	size_t	max_cells;	
+	size_t	cur_cells;	
+	size_t  cur_bytes;	
+	size_t  cursor;		
+	size_t  cursor_cells;	
 };
 
 enum {
@@ -35,4 +30,4 @@ int mbs_edit_delete(struct mbs_editor *edit);
 int mbs_edit_backspace(struct mbs_editor *edit);
 int mbs_edit_insert(struct mbs_editor *edit, wint_t c);
 
-#endif /* UTIL_LINUX_MBSEDIT_H */
+#endif 

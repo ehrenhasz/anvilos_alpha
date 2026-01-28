@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_INCLUDE_PATH ../../drivers/dma-buf
 #define TRACE_SYSTEM sync_trace
@@ -27,7 +27,7 @@ TRACE_EVENT(sync_timeline,
 	TP_printk("name=%s value=%d", __get_str(name), __entry->value)
 );
 
-#endif /* if !defined(_TRACE_SYNC_H) || defined(TRACE_HEADER_MULTI_READ) */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

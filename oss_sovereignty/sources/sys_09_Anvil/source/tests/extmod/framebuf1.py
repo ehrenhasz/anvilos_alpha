@@ -40,7 +40,7 @@ for mapping in maps.keys():
     fbuf.rect(1, 1, 3, 3, 1)
     print("rect", buf)
     fbuf.fill(0)
-    fbuf.fill_rect(0, 0, 0, 3, 1)  # zero width, no-operation
+    fbuf.fill_rect(0, 0, 0, 3, 1)  
     fbuf.fill_rect(1, 1, 3, 3, 1)
     print("fill_rect", buf)
     fbuf.fill(0)
@@ -64,7 +64,7 @@ for mapping in maps.keys():
     fbuf.fill(0)
     fbuf.text("hello", 0, 0, 1)
     print(buf)
-    fbuf.text("hello", 0, 0, 0)  # clear
+    fbuf.text("hello", 0, 0, 0)  
     print(buf)
     fbuf.text(str(chr(31)), 0, 0)
     print(buf)

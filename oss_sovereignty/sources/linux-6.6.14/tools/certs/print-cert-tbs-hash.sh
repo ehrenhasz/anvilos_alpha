@@ -1,7 +1,7 @@
 set -u -e -o pipefail
 CERT="${1:-}"
 BASENAME="$(basename -- "${BASH_SOURCE[0]}")"
-if [ $# -ne 1 ] || [ ! -f "${CERT}" ]; then
+if [ $
 	echo "usage: ${BASENAME} <certificate>" >&2
 	exit 1
 fi
@@ -16,7 +16,7 @@ RANGE_AND_DIGEST_RE='
 RANGE_AND_DIGEST=($(echo "${PEM}" | \
 	openssl asn1parse -in - | \
 	sed -n -e "${RANGE_AND_DIGEST_RE}"))
-if [ "${#RANGE_AND_DIGEST[@]}" != 3 ]; then
+if [ "${
 	echo "ERROR: Failed to parse TBSCertificate." >&2
 	exit 1
 fi

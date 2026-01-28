@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c)  2018 Intel Corporation */
+
+
 
 #ifndef _IGC_HW_H_
 #define _IGC_HW_H_
@@ -33,7 +33,7 @@
 #define IGC_DEV_ID_I226_BLANK_NVM		0x125F
 #define IGC_DEV_ID_I225_BLANK_NVM		0x15FD
 
-/* Function pointers for the MAC. */
+
 struct igc_mac_operations {
 	s32 (*check_for_link)(struct igc_hw *hw);
 	s32 (*reset_hw)(struct igc_hw *hw);
@@ -50,7 +50,7 @@ struct igc_mac_operations {
 enum igc_mac_type {
 	igc_undefined = 0,
 	igc_i225,
-	igc_num_macs  /* List is 1-based, so subtract 1 for true count. */
+	igc_num_macs  
 };
 
 enum igc_media_type {
@@ -133,7 +133,7 @@ struct igc_phy_info {
 
 	u32 addr;
 	u32 id;
-	u32 reset_delay_us; /* in usec */
+	u32 reset_delay_us; 
 	u32 revision;
 
 	enum igc_media_type media_type;
@@ -162,12 +162,12 @@ enum igc_fc_mode {
 };
 
 struct igc_fc_info {
-	u32 high_water;     /* Flow control high-water mark */
-	u32 low_water;      /* Flow control low-water mark */
-	u16 pause_time;     /* Flow control pause timer */
-	bool send_xon;      /* Flow control send XON */
-	bool strict_ieee;   /* Strict IEEE mode */
-	enum igc_fc_mode current_mode; /* Type of flow control */
+	u32 high_water;     
+	u32 low_water;      
+	u16 pause_time;     
+	bool send_xon;      
+	bool strict_ieee;   
+	enum igc_fc_mode current_mode; 
 	enum igc_fc_mode requested_mode;
 };
 
@@ -201,7 +201,7 @@ struct igc_hw {
 	u8 revision_id;
 };
 
-/* Statistics counters collected by the MAC */
+
 struct igc_hw_stats {
 	u64 crcerrs;
 	u64 algnerrc;
@@ -285,4 +285,4 @@ s32  igc_write_pcie_cap_reg(struct igc_hw *hw, u32 reg, u16 *value);
 void igc_read_pci_cfg(struct igc_hw *hw, u32 reg, u16 *value);
 void igc_write_pci_cfg(struct igc_hw *hw, u32 reg, u16 *value);
 
-#endif /* _IGC_HW_H_ */
+#endif 

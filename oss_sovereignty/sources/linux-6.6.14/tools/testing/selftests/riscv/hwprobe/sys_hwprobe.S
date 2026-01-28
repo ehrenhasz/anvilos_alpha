@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2023 Rivos, Inc */
+
+
 
 .text
 .global riscv_hwprobe

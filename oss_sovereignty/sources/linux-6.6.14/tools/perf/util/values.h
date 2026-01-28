@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_VALUES_H
 #define __PERF_VALUES_H
 
@@ -25,4 +25,4 @@ int perf_read_values_add_value(struct perf_read_values *values,
 void perf_read_values_display(FILE *fp, struct perf_read_values *values,
 			      int raw);
 
-#endif /* __PERF_VALUES_H */
+#endif 

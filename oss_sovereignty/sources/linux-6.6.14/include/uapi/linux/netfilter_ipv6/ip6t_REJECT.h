@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _IP6T_REJECT_H
 #define _IP6T_REJECT_H
 
@@ -17,7 +17,7 @@ enum ip6t_reject_with {
 };
 
 struct ip6t_reject_info {
-	__u32	with;	/* reject type */
+	__u32	with;	
 };
 
-#endif /*_IP6T_REJECT_H*/
+#endif 

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * xdp_diag: interface for query/monitor XDP sockets
- * Copyright(c) 2019 Intel Corporation.
- */
+
+
 
 #ifndef _LINUX_XDP_DIAG_H
 #define _LINUX_XDP_DIAG_H
@@ -26,7 +23,7 @@ struct xdp_diag_msg {
 	__u32	xdiag_cookie[2];
 };
 
-#define XDP_SHOW_INFO		(1 << 0) /* Basic information */
+#define XDP_SHOW_INFO		(1 << 0) 
 #define XDP_SHOW_RING_CFG	(1 << 1)
 #define XDP_SHOW_UMEM		(1 << 2)
 #define XDP_SHOW_MEMINFO	(1 << 3)
@@ -54,7 +51,7 @@ struct xdp_diag_info {
 };
 
 struct xdp_diag_ring {
-	__u32	entries; /*num descs */
+	__u32	entries; 
 };
 
 #define XDP_DU_F_ZEROCOPY (1 << 0)
@@ -80,4 +77,4 @@ struct xdp_diag_stats {
 	__u64	n_tx_ring_empty;
 };
 
-#endif /* _LINUX_XDP_DIAG_H */
+#endif 

@@ -5,7 +5,7 @@ dist_noinst_DATA += misc-utils/cal.1.adoc
 cal_SOURCES = misc-utils/cal.c
 cal_CFLAGS = $(AM_CFLAGS)
 cal_LDADD = $(LDADD) libcommon.la libtcolors.la
-# tinfo or ncurses are optional
+
 if HAVE_TINFO
 cal_LDADD += $(TINFO_LIBS)
 cal_CFLAGS += $(TINFO_CFLAGS)
@@ -14,13 +14,13 @@ if HAVE_NCURSES
 cal_LDADD += $(NCURSES_LIBS)
 cal_CFLAGS += $(NCURSES_CFLAGS)
 endif
-endif # !HAVE_TINFO
+endif 
 
 check_PROGRAMS += test_cal
 test_cal_SOURCES = $(cal_SOURCES)
 test_cal_LDADD = $(cal_LDADD)
 test_cal_CFLAGS = -DTEST_CAL $(cal_CFLAGS)
-endif # BUILD_CAL
+endif 
 
 
 if BUILD_LOGGER
@@ -39,7 +39,7 @@ check_PROGRAMS += test_logger
 test_logger_SOURCES = $(logger_SOURCES)
 test_logger_LDADD = $(logger_LDADD)
 test_logger_CFLAGS = -DTEST_LOGGER $(logger_CFLAGS)
-endif # BUILD_LOGGER
+endif 
 
 
 if BUILD_LOOK
@@ -97,7 +97,7 @@ lsblk_CFLAGS = $(AM_CFLAGS) -I$(ul_libblkid_incdir) -I$(ul_libmount_incdir) -I$(
 if HAVE_UDEV
 lsblk_LDADD += -ludev
 endif
-endif # BUILD_LSBLK
+endif 
 
 if BUILD_UUIDGEN
 usrbin_exec_PROGRAMS += uuidgen
@@ -137,7 +137,7 @@ check_PROGRAMS += test_uuidd
 test_uuidd_SOURCES = misc-utils/test_uuidd.c
 test_uuidd_LDADD =  $(LDADD) libcommon.la libuuid.la -lpthread
 test_uuidd_CFLAGS = $(AM_CFLAGS) -I$(ul_libuuid_incdir)
-endif # BUILD_UUIDD
+endif 
 
 PATHFILES += \
 	misc-utils/uuidd.rc \
@@ -160,7 +160,7 @@ blkid_static_LDFLAGS = -all-static
 blkid_static_LDADD = $(LDADD) libblkid.la
 blkid_static_CFLAGS = $(AM_CFLAGS) -I$(ul_libblkid_incdir)
 endif
-endif # BUILD_BLKID
+endif 
 
 
 if BUILD_FINDFS
@@ -199,7 +199,7 @@ findmnt_SOURCES = misc-utils/findmnt.c \
 if HAVE_UDEV
 findmnt_LDADD += -ludev
 endif
-endif # BUILD_FINDMNT
+endif 
 
 
 if BUILD_KILL

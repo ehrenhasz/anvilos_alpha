@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- * Manage send buffer
- *
- * Copyright IBM Corp. 2016
- *
- * Author(s):  Ursula Braun <ubraun@linux.vnet.ibm.com>
- */
+
+
 
 #ifndef SMC_TX_H
 #define SMC_TX_H
@@ -37,4 +29,4 @@ void smc_tx_consumer_update(struct smc_connection *conn, bool force);
 int smcd_tx_ism_write(struct smc_connection *conn, void *data, size_t len,
 		      u32 offset, int signal);
 
-#endif /* SMC_TX_H */
+#endif 

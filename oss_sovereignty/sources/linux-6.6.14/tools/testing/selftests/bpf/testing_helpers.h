@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-/* Copyright (C) 2020 Facebook, Inc. */
+
+
 
 #ifndef __TESTING_HELPERS_H
 #define __TESTING_HELPERS_H
@@ -18,9 +18,7 @@ int bpf_test_load_program(enum bpf_prog_type type, const struct bpf_insn *insns,
 			  __u32 kern_version, char *log_buf,
 			  size_t log_buf_sz);
 
-/*
- * below function is exported for testing in prog_test test
- */
+
 struct test_filter_set;
 int parse_test_list(const char *s,
 		    struct test_filter_set *test_set,
@@ -43,4 +41,4 @@ static inline __u64 get_time_ns(void)
 	return (u64)t.tv_sec * 1000000000 + t.tv_nsec;
 }
 
-#endif /* __TESTING_HELPERS_H */
+#endif 

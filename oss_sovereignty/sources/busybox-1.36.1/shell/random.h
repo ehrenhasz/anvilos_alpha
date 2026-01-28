@@ -1,26 +1,20 @@
-/* vi: set sw=4 ts=4: */
-/*
- * $RANDOM support.
- *
- * Copyright (C) 2009 Denys Vlasenko
- *
- * Licensed under GPLv2, see file LICENSE in this source tree.
- */
+
+
 #ifndef SHELL_RANDOM_H
 #define SHELL_RANDOM_H 1
 
 PUSH_AND_SET_FUNCTION_VISIBILITY_TO_HIDDEN
 
 typedef struct random_t {
-	/* State of random number generators: */
+	
 
-	/* Galois LFSR (fast but weak) */
-	int32_t galois_LFSR; /* must be signed! */
+	
+	int32_t galois_LFSR; 
 
-	/* LCG (fast but weak) */
+	
 	uint32_t LCG;
 
-	/* 64-bit xorshift (fast, moderate strength) */
+	
 	uint32_t xs64_x;
 	uint32_t xs64_y;
 } random_t;

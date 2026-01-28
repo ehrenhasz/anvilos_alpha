@@ -1,38 +1,11 @@
-/*
- * tcic.h 1.13 1999/10/25 20:03:34
- *
- * The contents of this file are subject to the Mozilla Public License
- * Version 1.1 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License
- * at http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
- * the License for the specific language governing rights and
- * limitations under the License. 
- *
- * The initial developer of the original code is David A. Hinds
- * <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
- * are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
- *
- * Alternatively, the contents of this file may be used under the
- * terms of the GNU General Public License version 2 (the "GPL"), in which
- * case the provisions of the GPL are applicable instead of the
- * above.  If you wish to allow the use of your version of this file
- * only under the terms of the GPL and not to allow others to use
- * your version of this file under the MPL, indicate your decision by
- * deleting the provisions above and replace them with the notice and
- * other provisions required by the GPL.  If you do not delete the
- * provisions above, a recipient may use your version of this file
- * under either the MPL or the GPL.
- */
+
 
 #ifndef _LINUX_TCIC_H
 #define _LINUX_TCIC_H
 
 #define TCIC_BASE		0x240
 
-/* offsets of registers from TCIC_BASE */
+
 #define TCIC_DATA		0x00
 #define TCIC_ADDR		0x02
 #define TCIC_SCTRL		0x06
@@ -47,7 +20,7 @@
 #define TCIC_SS_SHFT		12
 #define TCIC_SS_MASK		0x7000
 
-/* Flags for TCIC_ADDR */
+
 #define TCIC_ADR2_REG		0x8000
 #define TCIC_ADR2_INDREG	0x0800
 
@@ -58,7 +31,7 @@
 #define TCIC_ADDR_IO		0x04000000
 #define TCIC_ADDR_MASK		0x03ffffff
 
-/* Flags for TCIC_SCTRL */
+
 #define TCIC_SCTRL_ENA		0x01
 #define TCIC_SCTRL_INCMODE	0x18
 #define TCIC_SCTRL_INCMODE_HOLD	0x00
@@ -68,17 +41,17 @@
 #define TCIC_SCTRL_EDCSUM	0x20
 #define TCIC_SCTRL_RESET	0x80
 
-/* Flags for TCIC_SSTAT */
+
 #define TCIC_SSTAT_6US		0x01
 #define TCIC_SSTAT_10US		0x02
 #define TCIC_SSTAT_PROGTIME	0x04
 #define TCIC_SSTAT_LBAT1	0x08
 #define TCIC_SSTAT_LBAT2	0x10
-#define TCIC_SSTAT_RDY		0x20	/* Inverted */
+#define TCIC_SSTAT_RDY		0x20	
 #define TCIC_SSTAT_WP		0x40
-#define TCIC_SSTAT_CD		0x80	/* Card detect */
+#define TCIC_SSTAT_CD		0x80	
 
-/* Flags for TCIC_MODE */
+
 #define TCIC_MODE_PGMMASK	0x1f
 #define TCIC_MODE_NORMAL	0x00
 #define TCIC_MODE_PGMWR		0x01
@@ -88,7 +61,7 @@
 #define TCIC_MODE_PGMWORD	0x10
 #define TCIC_MODE_AUXSEL_MASK	0xe0
 
-/* Registers accessed through TCIC_AUX, by setting TCIC_MODE */
+
 #define TCIC_AUX_TCTL		(0<<5)
 #define TCIC_AUX_PCTL		(1<<5)
 #define TCIC_AUX_WCTL		(2<<5)
@@ -98,7 +71,7 @@
 #define TCIC_AUX_ILOCK		(6<<5)
 #define TCIC_AUX_TEST		(7<<5)
 
-/* Flags for TCIC_PWR */
+
 #define TCIC_PWR_VCC(sock)	(0x01<<(sock))
 #define TCIC_PWR_VCC_MASK	0x03
 #define TCIC_PWR_VPP(sock)	(0x08<<(sock))
@@ -106,7 +79,7 @@
 #define TCIC_PWR_CLIMENA	0x40
 #define TCIC_PWR_CLIMSTAT	0x80
 
-/* Flags for TCIC_ICSR */
+
 #define TCIC_ICSR_CLEAR		0x01
 #define TCIC_ICSR_SET		0x02
 #define TCIC_ICSR_JAM		(TCIC_ICSR_CLEAR|TCIC_ICSR_SET)
@@ -117,18 +90,18 @@
 #define TCIC_ICSR_CDCHG		0x40
 #define TCIC_ICSR_IOCHK		0x80
 
-/* Flags for TCIC_IENA */
+
 #define TCIC_IENA_CFG_MASK	0x03
-#define TCIC_IENA_CFG_OFF	0x00	/* disabled */
-#define TCIC_IENA_CFG_OD	0x01	/* active low, open drain */
-#define TCIC_IENA_CFG_LOW	0x02	/* active low, totem pole */
-#define TCIC_IENA_CFG_HIGH	0x03	/* active high, totem pole */
+#define TCIC_IENA_CFG_OFF	0x00	
+#define TCIC_IENA_CFG_OD	0x01	
+#define TCIC_IENA_CFG_LOW	0x02	
+#define TCIC_IENA_CFG_HIGH	0x03	
 #define TCIC_IENA_ILOCK		0x08
 #define TCIC_IENA_PROGTIME	0x10
-#define TCIC_IENA_ERR		0x20	/* overcurrent or iochk */
+#define TCIC_IENA_ERR		0x20	
 #define TCIC_IENA_CDCHG		0x40
 
-/* Flags for TCIC_AUX_WCTL */
+
 #define TCIC_WAIT_COUNT_MASK	0x001f
 #define TCIC_WAIT_ASYNC		0x0020
 #define TCIC_WAIT_SENSE		0x0040
@@ -142,7 +115,7 @@
 #define TCIC_WCTL_LWP		0x4000
 #define TCIC_WCTL_LCD		0x8000
 
-/* Flags for TCIC_AUX_SYSCFG */
+
 #define TCIC_SYSCFG_IRQ_MASK	0x000f
 #define TCIC_SYSCFG_MCSFULL	0x0010
 #define TCIC_SYSCFG_IO1723	0x0020
@@ -178,14 +151,12 @@
 
 #define TCIC_TEST_DIAG		0x8000
 
-/*
- * Indirectly addressed registers
- */
+
 
 #define TCIC_SCF1(sock)	((sock)<<3)
 #define TCIC_SCF2(sock) (((sock)<<3)+2)
 
-/* Flags for SCF1 */
+
 #define TCIC_SCF1_IRQ_MASK	0x000f
 #define TCIC_SCF1_IRQ_OFF	0x0000
 #define TCIC_SCF1_IRQOC		0x0010
@@ -202,7 +173,7 @@
 #define TCIC_SCF1_DELWR		0x4000
 #define TCIC_SCF1_HD7IDE	0x8000
 
-/* Flags for SCF2 */
+
 #define TCIC_SCF2_RI		0x0001
 #define TCIC_SCF2_IDBR		0x0002
 #define TCIC_SCF2_MDBR		0x0004
@@ -213,7 +184,7 @@
 #define TCIC_SCF2_MCD		0x0080
 #define TCIC_SCF2_MALL		0x00f8
 
-/* Indirect addresses for memory window registers */
+
 #define TCIC_MWIN(sock,map)	(0x100+(((map)+((sock)<<2))<<3))
 #define TCIC_MBASE_X		2
 #define TCIC_MMAP_X		4
@@ -241,7 +212,7 @@
 #define TCIC_MCTL_SS_MASK	TCIC_SS_MASK
 #define TCIC_MCTL_ENA		0x8000
 
-/* Indirect addresses for I/O window registers */
+
 #define TCIC_IWIN(sock,map)	(0x200+(((map)+((sock)<<1))<<2))
 #define TCIC_IBASE_X		0
 #define TCIC_ICTL_X		2
@@ -263,4 +234,4 @@
 #define TCIC_ICTL_SS_MASK	TCIC_SS_MASK
 #define TCIC_ICTL_ENA		TCIC_MCTL_ENA
 
-#endif /* _LINUX_TCIC_H */
+#endif 

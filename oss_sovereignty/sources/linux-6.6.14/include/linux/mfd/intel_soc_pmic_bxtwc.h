@@ -1,19 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Header file for Intel Broxton Whiskey Cove PMIC
- *
- * Copyright (C) 2015 Intel Corporation. All rights reserved.
- */
+
+
 
 #ifndef __INTEL_BXTWC_H__
 #define __INTEL_BXTWC_H__
 
-/* BXT WC devices */
+
 #define BXTWC_DEVICE1_ADDR		0x4E
 #define BXTWC_DEVICE2_ADDR		0x4F
 #define BXTWC_DEVICE3_ADDR		0x5E
 
-/* device1 Registers */
+
 #define BXTWC_CHIPID			0x4E00
 #define BXTWC_CHIPVER			0x4E01
 

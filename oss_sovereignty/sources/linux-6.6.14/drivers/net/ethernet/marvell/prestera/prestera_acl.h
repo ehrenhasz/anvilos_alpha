@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2020-2021 Marvell International Ltd. All rights reserved. */
+
+
 
 #ifndef _PRESTERA_ACL_H_
 #define _PRESTERA_ACL_H_
@@ -97,10 +97,7 @@ struct prestera_acl_hw_action_info {
 	};
 };
 
-/* This struct (arg) used only to be passed as parameter for
- * acl_rule_entry_create. Must be flat. Can contain object keys, which will be
- * resolved to object links, before saving to acl_rule_entry struct
- */
+
 struct prestera_acl_rule_entry_arg {
 	u32 vtcam_id;
 	struct {
@@ -125,7 +122,7 @@ struct prestera_acl_rule_entry_arg {
 };
 
 struct prestera_acl_rule {
-	struct rhash_head ht_node; /* Member of acl HT */
+	struct rhash_head ht_node; 
 	struct list_head list;
 	struct prestera_acl_ruleset *ruleset;
 	struct prestera_acl_ruleset *jump_ruleset;
@@ -206,4 +203,4 @@ int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup, u8 dir,
 int prestera_acl_vtcam_id_put(struct prestera_acl *acl, u32 vtcam_id);
 int prestera_acl_chain_to_client(u32 chain_index, bool ingress, u32 *client);
 
-#endif /* _PRESTERA_ACL_H_ */
+#endif 

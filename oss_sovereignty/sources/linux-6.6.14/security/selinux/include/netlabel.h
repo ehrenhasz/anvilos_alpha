@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * SELinux interface to the NetLabel subsystem
- *
- * Author: Paul Moore <paul@paul-moore.com>
- */
 
-/*
- * (c) Copyright Hewlett-Packard Development Company, L.P., 2006
- */
+
+
+
 
 #ifndef _SELINUX_NETLABEL_H_
 #define _SELINUX_NETLABEL_H_
@@ -145,6 +139,6 @@ static inline int selinux_netlbl_socket_connect_locked(struct sock *sk,
 {
 	return 0;
 }
-#endif /* CONFIG_NETLABEL */
+#endif 
 
 #endif

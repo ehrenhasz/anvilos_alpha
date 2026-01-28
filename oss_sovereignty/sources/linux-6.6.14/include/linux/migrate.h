@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_MIGRATE_H
 #define _LINUX_MIGRATE_H
 
@@ -12,44 +12,11 @@ typedef void free_folio_t(struct folio *folio, unsigned long private);
 
 struct migration_target_control;
 
-/*
- * Return values from addresss_space_operations.migratepage():
- * - negative errno on page migration failure;
- * - zero on page migration success;
- */
+
 #define MIGRATEPAGE_SUCCESS		0
 #define MIGRATEPAGE_UNMAP		1
 
-/**
- * struct movable_operations - Driver page migration
- * @isolate_page:
- * The VM calls this function to prepare the page to be moved.  The page
- * is locked and the driver should not unlock it.  The driver should
- * return ``true`` if the page is movable and ``false`` if it is not
- * currently movable.  After this function returns, the VM uses the
- * page->lru field, so the driver must preserve any information which
- * is usually stored here.
- *
- * @migrate_page:
- * After isolation, the VM calls this function with the isolated
- * @src page.  The driver should copy the contents of the
- * @src page to the @dst page and set up the fields of @dst page.
- * Both pages are locked.
- * If page migration is successful, the driver should call
- * __ClearPageMovable(@src) and return MIGRATEPAGE_SUCCESS.
- * If the driver cannot migrate the page at the moment, it can return
- * -EAGAIN.  The VM interprets this as a temporary migration failure and
- * will retry it later.  Any other error value is a permanent migration
- * failure and migration will not be retried.
- * The driver shouldn't touch the @src->lru field while in the
- * migrate_page() function.  It may write to @dst->lru.
- *
- * @putback_page:
- * If migration fails on the isolated page, the VM informs the driver
- * that the page is no longer a candidate for migration by calling
- * this function.  The driver should put the isolated page back into
- * its own data structure.
- */
+
 struct movable_operations {
 	bool (*isolate_page)(struct page *, isolate_mode_t);
 	int (*migrate_page)(struct page *dst, struct page *src,
@@ -57,7 +24,7 @@ struct movable_operations {
 	void (*putback_page)(struct page *);
 };
 
-/* Defined in mm/debug.c: */
+
 extern const char *migrate_reason_names[MR_TYPES];
 
 #ifdef CONFIG_MIGRATION
@@ -101,7 +68,7 @@ static inline int migrate_huge_page_move_mapping(struct address_space *mapping,
 	return -ENOSYS;
 }
 
-#endif /* CONFIG_MIGRATION */
+#endif 
 
 #ifdef CONFIG_COMPACTION
 bool PageMovable(struct page *page);
@@ -148,17 +115,13 @@ int migrate_misplaced_page(struct page *page, struct vm_area_struct *vma,
 static inline int migrate_misplaced_page(struct page *page,
 					 struct vm_area_struct *vma, int node)
 {
-	return -EAGAIN; /* can't migrate now */
+	return -EAGAIN; 
 }
-#endif /* CONFIG_NUMA_BALANCING */
+#endif 
 
 #ifdef CONFIG_MIGRATION
 
-/*
- * Watch out for PAE architecture, which has an unsigned long, and might not
- * have enough bits to store all physical address and flags. So far we have
- * enough room for all our flags.
- */
+
 #define MIGRATE_PFN_VALID	(1UL << 0)
 #define MIGRATE_PFN_MIGRATE	(1UL << 1)
 #define MIGRATE_PFN_WRITE	(1UL << 3)
@@ -184,14 +147,7 @@ enum migrate_vma_direction {
 
 struct migrate_vma {
 	struct vm_area_struct	*vma;
-	/*
-	 * Both src and dst array must be big enough for
-	 * (end - start) >> PAGE_SHIFT entries.
-	 *
-	 * The src array must not be modified by the caller after
-	 * migrate_vma_setup(), and must not change the dst array after
-	 * migrate_vma_pages() returns.
-	 */
+	
 	unsigned long		*dst;
 	unsigned long		*src;
 	unsigned long		cpages;
@@ -199,21 +155,11 @@ struct migrate_vma {
 	unsigned long		start;
 	unsigned long		end;
 
-	/*
-	 * Set to the owner value also stored in page->pgmap->owner for
-	 * migrating out of device private memory. The flags also need to
-	 * be set to MIGRATE_VMA_SELECT_DEVICE_PRIVATE.
-	 * The caller should always set this field when using mmu notifier
-	 * callbacks to avoid device MMU invalidations for device private
-	 * pages that are not being migrated.
-	 */
+	
 	void			*pgmap_owner;
 	unsigned long		flags;
 
-	/*
-	 * Set to vmf->page if this is being called to migrate a page as part of
-	 * a migrate_to_ram() callback.
-	 */
+	
 	struct page		*fault_page;
 };
 
@@ -227,6 +173,6 @@ void migrate_device_pages(unsigned long *src_pfns, unsigned long *dst_pfns,
 void migrate_device_finalize(unsigned long *src_pfns,
 			unsigned long *dst_pfns, unsigned long npages);
 
-#endif /* CONFIG_MIGRATION */
+#endif 
 
-#endif /* _LINUX_MIGRATE_H */
+#endif 

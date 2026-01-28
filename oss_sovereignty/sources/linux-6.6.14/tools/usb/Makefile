@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for USB tools
+
+
 include ../scripts/Makefile.include
 
 bindir ?= /usr/bin
@@ -9,8 +9,8 @@ srctree := $(patsubst %/,%,$(dir $(CURDIR)))
 srctree := $(patsubst %/,%,$(dir $(srctree)))
 endif
 
-# Do not use make's built-in rules
-# (this improves performance and avoids hard-to-debug behaviour);
+
+
 MAKEFLAGS += -r
 
 override CFLAGS += -O2 -Wall -Wextra -g -D_GNU_SOURCE -I$(OUTPUT)include -I$(srctree)/tools/include

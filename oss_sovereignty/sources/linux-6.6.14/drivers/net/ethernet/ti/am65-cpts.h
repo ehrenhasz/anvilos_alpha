@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* TI K3 AM65 CPTS driver interface
- *
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com
- */
+
+
 
 #ifndef K3_CPTS_H_
 #define K3_CPTS_H_
@@ -86,4 +83,4 @@ static inline void am65_cpts_resume(struct am65_cpts *cpts)
 }
 #endif
 
-#endif /* K3_CPTS_H_ */
+#endif 

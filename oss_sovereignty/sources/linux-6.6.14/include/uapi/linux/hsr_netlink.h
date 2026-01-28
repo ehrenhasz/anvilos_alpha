@@ -1,23 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- * Copyright 2011-2013 Autronica Fire and Security AS
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * Author(s):
- *	2011-2013 Arvid Brodin, arvid.brodin@xdin.com
- */
+
+
 
 #ifndef __UAPI_HSR_NETLINK_H
 #define __UAPI_HSR_NETLINK_H
 
-/* Generic Netlink HSR family definition
- */
 
-/* attributes for HSR or PRP node */
+
+
 enum {
 	HSR_A_UNSPEC,
 	HSR_A_NODE_ADDR,
@@ -35,7 +24,7 @@ enum {
 #define HSR_A_MAX (__HSR_A_MAX - 1)
 
 
-/* commands */
+
 enum {
 	HSR_C_UNSPEC,
 	HSR_C_RING_ERROR,
@@ -48,4 +37,4 @@ enum {
 };
 #define HSR_C_MAX (__HSR_C_MAX - 1)
 
-#endif /* __UAPI_HSR_NETLINK_H */
+#endif 

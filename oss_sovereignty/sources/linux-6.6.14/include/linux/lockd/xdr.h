@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/include/linux/lockd/xdr.h
- *
- * XDR types for the NLM protocol
- *
- * Copyright (C) 1996 Olaf Kirch <okir@monad.swb.de>
- */
+
+
 
 #ifndef LOCKD_XDR_H
 #define LOCKD_XDR_H
@@ -35,10 +29,10 @@ struct svc_rqst;
 
 #define nlm_drop_reply		cpu_to_be32(30000)
 
-/* Lock info passed via NLM */
+
 struct nlm_lock {
 	char *			caller;
-	unsigned int		len; 	/* length of "caller" */
+	unsigned int		len; 	
 	struct nfs_fh		fh;
 	struct xdr_netobj	oh;
 	u32			svid;
@@ -47,11 +41,7 @@ struct nlm_lock {
 	struct file_lock	fl;
 };
 
-/*
- *	NLM cookies. Technically they can be 1K, but Linux only uses 8 bytes.
- *	FreeBSD uses 16, Apple Mac OS X 10.3 uses 20. Therefore we set it to
- *	32 bytes.
- */
+
  
 struct nlm_cookie
 {
@@ -59,9 +49,7 @@ struct nlm_cookie
 	unsigned int len;
 };
 
-/*
- * Generic lockd arguments for all but sm_notify
- */
+
 struct nlm_args {
 	struct nlm_cookie	cookie;
 	struct nlm_lock		lock;
@@ -75,18 +63,14 @@ struct nlm_args {
 
 typedef struct nlm_args nlm_args;
 
-/*
- * Generic lockd result
- */
+
 struct nlm_res {
 	struct nlm_cookie	cookie;
 	__be32			status;
 	struct nlm_lock		lock;
 };
 
-/*
- * statd callback when client has rebooted
- */
+
 struct nlm_reboot {
 	char			*mon;
 	unsigned int		len;
@@ -94,9 +78,7 @@ struct nlm_reboot {
 	struct nsm_private	priv;
 };
 
-/*
- * Contents of statd callback when monitored host rebooted
- */
+
 #define NLMSVC_XDRSIZE		sizeof(struct nlm_args)
 
 bool	nlmsvc_decode_void(struct svc_rqst *rqstp, struct xdr_stream *xdr);
@@ -114,4 +96,4 @@ bool	nlmsvc_encode_res(struct svc_rqst *rqstp, struct xdr_stream *xdr);
 bool	nlmsvc_encode_void(struct svc_rqst *rqstp, struct xdr_stream *xdr);
 bool	nlmsvc_encode_shareres(struct svc_rqst *rqstp, struct xdr_stream *xdr);
 
-#endif /* LOCKD_XDR_H */
+#endif 

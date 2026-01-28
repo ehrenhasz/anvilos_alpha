@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_DEBUGREG_H
 #define _ASM_X86_DEBUGREG_H
 
@@ -9,9 +9,7 @@
 DECLARE_PER_CPU(unsigned long, cpu_dr7);
 
 #ifndef CONFIG_PARAVIRT_XXL
-/*
- * These special macros can be used to get or set a debugging register
- */
+
 #define get_debugreg(var, register)				\
 	(var) = native_get_debugreg(register)
 #define set_debugreg(value, register)				\
@@ -20,7 +18,7 @@ DECLARE_PER_CPU(unsigned long, cpu_dr7);
 
 static __always_inline unsigned long native_get_debugreg(int regno)
 {
-	unsigned long val = 0;	/* Damn you, gcc! */
+	unsigned long val = 0;	
 
 	switch (regno) {
 	case 0:
@@ -39,19 +37,7 @@ static __always_inline unsigned long native_get_debugreg(int regno)
 		asm("mov %%db6, %0" :"=r" (val));
 		break;
 	case 7:
-		/*
-		 * Apply __FORCE_ORDER to DR7 reads to forbid re-ordering them
-		 * with other code.
-		 *
-		 * This is needed because a DR7 access can cause a #VC exception
-		 * when running under SEV-ES. Taking a #VC exception is not a
-		 * safe thing to do just anywhere in the entry code and
-		 * re-ordering might place the access into an unsafe location.
-		 *
-		 * This happened in the NMI handler, where the DR7 read was
-		 * re-ordered to happen before the call to sev_es_ist_enter(),
-		 * causing stack recursion.
-		 */
+		
 		asm volatile("mov %%db7, %0" : "=r" (val) : __FORCE_ORDER);
 		break;
 	default:
@@ -79,15 +65,7 @@ static __always_inline void native_set_debugreg(int regno, unsigned long value)
 		asm("mov %0, %%db6"	::"r" (value));
 		break;
 	case 7:
-		/*
-		 * Apply __FORCE_ORDER to DR7 writes to forbid re-ordering them
-		 * with other code.
-		 *
-		 * While is didn't happen with a DR7 write (see the DR7 read
-		 * comment above which explains where it happened), add the
-		 * __FORCE_ORDER here too to avoid similar problems in the
-		 * future.
-		 */
+		
 		asm volatile("mov %0, %%db7"	::"r" (value), __FORCE_ORDER);
 		break;
 	default:
@@ -97,10 +75,10 @@ static __always_inline void native_set_debugreg(int regno, unsigned long value)
 
 static inline void hw_breakpoint_disable(void)
 {
-	/* Zero the control register for HW Breakpoint */
+	
 	set_debugreg(0UL, 7);
 
-	/* Zero-out the individual HW breakpoint address registers */
+	
 	set_debugreg(0UL, 0);
 	set_debugreg(0UL, 1);
 	set_debugreg(0UL, 2);
@@ -122,14 +100,10 @@ static __always_inline unsigned long local_db_save(void)
 		return 0;
 
 	get_debugreg(dr7, 7);
-	dr7 &= ~0x400; /* architecturally set bit */
+	dr7 &= ~0x400; 
 	if (dr7)
 		set_debugreg(0, 7);
-	/*
-	 * Ensure the compiler doesn't lower the above statements into
-	 * the critical section; disabling breakpoints late would not
-	 * be good.
-	 */
+	
 	barrier();
 
 	return dr7;
@@ -137,11 +111,7 @@ static __always_inline unsigned long local_db_save(void)
 
 static __always_inline void local_db_restore(unsigned long dr7)
 {
-	/*
-	 * Ensure the compiler doesn't raise this statement into
-	 * the critical section; enabling breakpoints early would
-	 * not be good.
-	 */
+	
 	barrier();
 	if (dr7)
 		set_debugreg(dr7, 7);
@@ -158,4 +128,4 @@ static inline unsigned long amd_get_dr_addr_mask(unsigned int dr)
 }
 #endif
 
-#endif /* _ASM_X86_DEBUGREG_H */
+#endif 

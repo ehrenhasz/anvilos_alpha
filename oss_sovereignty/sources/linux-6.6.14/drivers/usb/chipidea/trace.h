@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Trace support header file for device mode
- *
- * Copyright (C) 2020 NXP
- *
- * Author: Peter Chen <peter.chen@nxp.com>
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM chipidea
@@ -79,9 +73,9 @@ DEFINE_EVENT(ci_log_trb, ci_complete_td,
 	TP_ARGS(hwep, hwreq, td)
 );
 
-#endif /* __LINUX_CHIPIDEA_TRACE */
+#endif 
 
-/* this part must be outside header guard */
+
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _MULTIPATH_H
 #define _MULTIPATH_H
 
@@ -16,11 +16,7 @@ struct mpconf {
 	mempool_t		pool;
 };
 
-/*
- * this is our 'private' 'collective' MULTIPATH buffer head.
- * it contains information about what kind of IO operations were started
- * for this MULTIPATH operation, and about their status:
- */
+
 
 struct multipath_bh {
 	struct mddev			*mddev;

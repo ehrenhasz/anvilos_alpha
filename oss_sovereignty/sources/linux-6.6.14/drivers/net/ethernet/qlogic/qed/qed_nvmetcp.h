@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* Copyright 2021 Marvell. All rights reserved. */
+
+
 
 #ifndef _QED_NVMETCP_H
 #define _QED_NVMETCP_H
@@ -18,7 +18,7 @@
 
 #define QED_NVMETCP_FW_CQ_SIZE (4 * 1024)
 
-/* tcp parameters */
+
 #define QED_TCP_FLOW_LABEL 0
 #define QED_TCP_TWO_MSL_TIMER 4000
 #define QED_TCP_HALF_WAY_CLOSE_TIMEOUT 10
@@ -26,7 +26,7 @@
 #define QED_TCP_SWS_TIMER 5000
 
 struct qed_nvmetcp_info {
-	spinlock_t lock; /* Connection resources. */
+	spinlock_t lock; 
 	struct list_head free_list;
 	u16 max_num_outstanding_tasks;
 	void *event_context;
@@ -89,7 +89,7 @@ int qed_nvmetcp_alloc(struct qed_hwfn *p_hwfn);
 void qed_nvmetcp_setup(struct qed_hwfn *p_hwfn);
 void qed_nvmetcp_free(struct qed_hwfn *p_hwfn);
 
-#else /* IS_ENABLED(CONFIG_QED_NVMETCP) */
+#else 
 static inline int qed_nvmetcp_alloc(struct qed_hwfn *p_hwfn)
 {
 	return -EINVAL;
@@ -98,6 +98,6 @@ static inline int qed_nvmetcp_alloc(struct qed_hwfn *p_hwfn)
 static inline void qed_nvmetcp_setup(struct qed_hwfn *p_hwfn) {}
 static inline void qed_nvmetcp_free(struct qed_hwfn *p_hwfn) {}
 
-#endif /* IS_ENABLED(CONFIG_QED_NVMETCP) */
+#endif 
 
 #endif

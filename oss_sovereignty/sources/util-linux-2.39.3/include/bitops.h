@@ -1,9 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- *
- * Written by Karel Zak <kzak@redhat.com>
- */
+
 #ifndef BITOPS_H
 #define BITOPS_H
 
@@ -16,16 +11,12 @@
 
 #if defined(HAVE_ENDIAN_H)
 #  include <endian.h>
-#elif defined(HAVE_SYS_ENDIAN_H)	/* BSDs have them here */
+#elif defined(HAVE_SYS_ENDIAN_H)	
 #  include <sys/endian.h>
 #endif
 
 #if !(defined(HAVE_BYTESWAP_H) && defined(HAVE_ENDIAN_H))
-/*
- * When both byteswap.h and endian.h are preseent, the proper macros are defined
- * as those files are glibc compatible.  Otherwise, compensate for the slightly
- * different interfaces between the different BSDs.
- */
+
 #if defined(__OpenBSD__)
 # include <sys/types.h>
 # define be16toh(x) betoh16(x)
@@ -55,11 +46,7 @@
 #endif
 #endif
 
-/*
- * Fallbacks
- * casts are necessary for constants, because we never know how for sure
- * how U/UL/ULL map to __u16, __u32, __u64. At least not in a portable way.
- */
+
 #ifndef bswap_16
 # define bswap_16(x) ((uint16_t)( \
 	(((uint16_t)(x) & 0x00FF) << 8) | \
@@ -116,9 +103,7 @@
 # endif
 #endif
 
-/*
- * Byte swab macros (based on linux/byteorder/swab.h)
- */
+
 #define swab16(x) bswap_16(x)
 #define swab32(x) bswap_32(x)
 #define swab64(x) bswap_64(x)
@@ -139,9 +124,7 @@
 #define be32_to_cpu(x) ((uint32_t) be32toh(x))
 #define be64_to_cpu(x) ((uint64_t) be64toh(x))
 
-/*
- * Bit map related macros. Usually provided by libc.
- */
+
 #ifndef NBBY
 # define NBBY            CHAR_BIT
 #endif
@@ -153,5 +136,5 @@
 # define isclr(a,i)	(((a)[(i)/NBBY] & (1<<((i)%NBBY))) == 0)
 #endif
 
-#endif /* BITOPS_H */
+#endif 
 

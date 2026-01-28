@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+
 
 #ifndef __USER_CONFIG_MANAGEMENT_H__
 #define __USER_CONFIG_MANAGEMENT_H__
@@ -64,4 +62,4 @@ struct ksmbd_user *ksmbd_alloc_user(struct ksmbd_login_response *resp);
 void ksmbd_free_user(struct ksmbd_user *user);
 int ksmbd_anonymous_user(struct ksmbd_user *user);
 bool ksmbd_compare_user(struct ksmbd_user *u1, struct ksmbd_user *u2);
-#endif /* __USER_CONFIG_MANAGEMENT_H__ */
+#endif 

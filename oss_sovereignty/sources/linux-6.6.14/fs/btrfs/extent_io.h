@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef BTRFS_EXTENT_IO_H
 #define BTRFS_EXTENT_IO_H
@@ -17,44 +17,35 @@ enum {
 	EXTENT_BUFFER_UPTODATE,
 	EXTENT_BUFFER_DIRTY,
 	EXTENT_BUFFER_CORRUPT,
-	/* this got triggered by readahead */
+	
 	EXTENT_BUFFER_READAHEAD,
 	EXTENT_BUFFER_TREE_REF,
 	EXTENT_BUFFER_STALE,
 	EXTENT_BUFFER_WRITEBACK,
-	/* read IO error */
+	
 	EXTENT_BUFFER_READ_ERR,
 	EXTENT_BUFFER_UNMAPPED,
 	EXTENT_BUFFER_IN_TREE,
-	/* write IO error */
+	
 	EXTENT_BUFFER_WRITE_ERR,
 	EXTENT_BUFFER_NO_CHECK,
-	/* Indicate that extent buffer pages a being read */
+	
 	EXTENT_BUFFER_READING,
 };
 
-/* these are flags for __process_pages_contig */
+
 enum {
 	ENUM_BIT(PAGE_UNLOCK),
-	/* Page starts writeback, clear dirty bit and set writeback bit */
+	
 	ENUM_BIT(PAGE_START_WRITEBACK),
 	ENUM_BIT(PAGE_END_WRITEBACK),
 	ENUM_BIT(PAGE_SET_ORDERED),
 };
 
-/*
- * page->private values.  Every page that is controlled by the extent
- * map has page->private set to one.
- */
+
 #define EXTENT_PAGE_PRIVATE 1
 
-/*
- * The extent buffer bitmap operations are done with byte granularity instead of
- * word granularity for two reasons:
- * 1. The bitmaps must be little-endian on disk.
- * 2. Bitmap items are not guaranteed to be aligned to a word and therefore a
- *    single word in a bitmap may straddle two pages in the extent buffer.
- */
+
 #define BIT_BYTE(nr) ((nr) / BITS_PER_BYTE)
 #define BYTE_MASK ((1 << BITS_PER_BYTE) - 1)
 #define BITMAP_FIRST_BYTE_MASK(start) \
@@ -82,7 +73,7 @@ struct extent_buffer {
 	int read_mirror;
 	struct rcu_head rcu_head;
 	pid_t lock_owner;
-	/* >= 0 if eb belongs to a log tree, -1 otherwise */
+	
 	s8 log_index;
 
 	struct rw_semaphore lock;
@@ -96,51 +87,30 @@ struct extent_buffer {
 struct btrfs_eb_write_context {
 	struct writeback_control *wbc;
 	struct extent_buffer *eb;
-	/* Block group @eb resides in. Only used for zoned mode. */
+	
 	struct btrfs_block_group *zoned_bg;
 };
 
-/*
- * Get the correct offset inside the page of extent buffer.
- *
- * @eb:		target extent buffer
- * @start:	offset inside the extent buffer
- *
- * Will handle both sectorsize == PAGE_SIZE and sectorsize < PAGE_SIZE cases.
- */
+
 static inline size_t get_eb_offset_in_page(const struct extent_buffer *eb,
 					   unsigned long offset)
 {
-	/*
-	 * For sectorsize == PAGE_SIZE case, eb->start will always be aligned
-	 * to PAGE_SIZE, thus adding it won't cause any difference.
-	 *
-	 * For sectorsize < PAGE_SIZE, we must only read the data that belongs
-	 * to the eb, thus we have to take the eb->start into consideration.
-	 */
+	
 	return offset_in_page(offset + eb->start);
 }
 
 static inline unsigned long get_eb_page_index(unsigned long offset)
 {
-	/*
-	 * For sectorsize == PAGE_SIZE case, plain >> PAGE_SHIFT is enough.
-	 *
-	 * For sectorsize < PAGE_SIZE case, we only support 64K PAGE_SIZE,
-	 * and have ensured that all tree blocks are contained in one page,
-	 * thus we always get index == 0.
-	 */
+	
 	return offset >> PAGE_SHIFT;
 }
 
-/*
- * Structure to record how many bytes and which ranges are set/cleared
- */
+
 struct extent_changeset {
-	/* How many bytes are set/cleared in this operation */
+	
 	u64 bytes_changed;
 
-	/* Changed ranges */
+	
 	struct ulist range_changed;
 };
 
@@ -220,13 +190,7 @@ void btrfs_readahead_node_child(struct extent_buffer *node, int slot);
 
 static inline int num_extent_pages(const struct extent_buffer *eb)
 {
-	/*
-	 * For sectorsize == PAGE_SIZE case, since nodesize is always aligned to
-	 * sectorsize, it's just eb->len >> PAGE_SHIFT.
-	 *
-	 * For sectorsize < PAGE_SIZE case, we could have nodesize < PAGE_SIZE,
-	 * thus have to ensure we get at least one page.
-	 */
+	
 	return (eb->len >> PAGE_SHIFT) ?: 1;
 }
 

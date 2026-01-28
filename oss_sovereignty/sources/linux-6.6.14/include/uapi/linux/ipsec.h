@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _LINUX_IPSEC_H
 #define _LINUX_IPSEC_H
 
-/* The definitions, required to talk to KAME racoon IKE. */
+
 
 #include <linux/pfkeyv2.h>
 
@@ -11,7 +11,7 @@
 #define IPSEC_PROTO_ANY		255
 
 enum {
-	IPSEC_MODE_ANY		= 0,	/* We do not support this for SA */
+	IPSEC_MODE_ANY		= 0,	
 	IPSEC_MODE_TRANSPORT	= 1,
 	IPSEC_MODE_TUNNEL	= 2,
 	IPSEC_MODE_BEET         = 3
@@ -21,7 +21,7 @@ enum {
 	IPSEC_DIR_ANY		= 0,
 	IPSEC_DIR_INBOUND	= 1,
 	IPSEC_DIR_OUTBOUND	= 2,
-	IPSEC_DIR_FWD		= 3,	/* It is our own */
+	IPSEC_DIR_FWD		= 3,	
 	IPSEC_DIR_MAX		= 4,
 	IPSEC_DIR_INVALID	= 5
 };
@@ -45,4 +45,4 @@ enum {
 
 #define IPSEC_REPLAYWSIZE  32
 
-#endif	/* _LINUX_IPSEC_H */
+#endif	

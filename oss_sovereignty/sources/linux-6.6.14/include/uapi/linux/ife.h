@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef __UAPI_IFE_H
 #define __UAPI_IFE_H
 
@@ -13,7 +13,7 @@ enum {
 	__IFE_META_MAX
 };
 
-/*Can be overridden at runtime by module option*/
+
 #define IFE_META_MAX (__IFE_META_MAX - 1)
 
 #endif

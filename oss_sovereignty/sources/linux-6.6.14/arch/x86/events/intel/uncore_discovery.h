@@ -1,24 +1,24 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Generic device ID of a discovery table device */
+
+
 #define UNCORE_DISCOVERY_TABLE_DEVICE		0x09a7
-/* Capability ID for a discovery table device */
+
 #define UNCORE_EXT_CAP_ID_DISCOVERY		0x23
-/* First DVSEC offset */
+
 #define UNCORE_DISCOVERY_DVSEC_OFFSET		0x8
-/* Mask of the supported discovery entry type */
+
 #define UNCORE_DISCOVERY_DVSEC_ID_MASK		0xffff
-/* PMON discovery entry type ID */
+
 #define UNCORE_DISCOVERY_DVSEC_ID_PMON		0x1
-/* Second DVSEC offset */
+
 #define UNCORE_DISCOVERY_DVSEC2_OFFSET		0xc
-/* Mask of the discovery table BAR offset */
+
 #define UNCORE_DISCOVERY_DVSEC2_BIR_MASK	0x7
-/* Discovery table BAR base offset */
+
 #define UNCORE_DISCOVERY_BIR_BASE		0x10
-/* Discovery table BAR step */
+
 #define UNCORE_DISCOVERY_BIR_STEP		0x4
-/* Global discovery table size */
+
 #define UNCORE_DISCOVERY_GLOBAL_MAP_SIZE	0x20
 
 #define UNCORE_DISCOVERY_PCI_DOMAIN_OFFSET	28
@@ -75,7 +75,7 @@ struct uncore_global_discovery {
 		};
 	};
 
-	u64	ctl;		/* Global Control Address */
+	u64	ctl;		
 
 	union {
 		u64	table3;
@@ -101,7 +101,7 @@ struct uncore_unit_discovery {
 			};
 		};
 
-	u64	ctl;		/* Unit Control Address */
+	u64	ctl;		
 
 	union {
 		u64	table3;
@@ -116,16 +116,16 @@ struct uncore_unit_discovery {
 struct intel_uncore_discovery_type {
 	struct rb_node	node;
 	enum uncore_access_type	access_type;
-	u64		box_ctrl;	/* Unit ctrl addr of the first box */
-	u64		*box_ctrl_die;	/* Unit ctrl addr of the first box of each die */
-	u16		type;		/* Type ID of the uncore block */
+	u64		box_ctrl;	
+	u64		*box_ctrl_die;	
+	u16		type;		
 	u8		num_counters;
 	u8		counter_width;
-	u8		ctl_offset;	/* Counter Control 0 offset */
-	u8		ctr_offset;	/* Counter 0 offset */
-	u16		num_boxes;	/* number of boxes for the uncore block */
-	unsigned int	*ids;		/* Box IDs */
-	unsigned int	*box_offset;	/* Box offset */
+	u8		ctl_offset;	
+	u8		ctr_offset;	
+	u16		num_boxes;	
+	unsigned int	*ids;		
+	unsigned int	*box_offset;	
 };
 
 bool intel_uncore_has_discovery_tables(int *ignore);

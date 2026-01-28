@@ -1,9 +1,0 @@
-/dts-v1/;
-#include "imx6dl.dtsi"
-#include "imx6qdl-dhcom-som.dtsi"
-#include "imx6qdl-dhcom-picoitx.dtsi"
-/ {
-	model = "DH electronics i.MX6DL DHCOM on PicoITX";
-	compatible = "dh,imx6dl-dhcom-picoitx", "dh,imx6dl-dhcom-som",
-		     "fsl,imx6dl";
-};

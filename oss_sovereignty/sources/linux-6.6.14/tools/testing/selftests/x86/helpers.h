@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #ifndef __SELFTESTS_X86_HELPERS_H
 #define __SELFTESTS_X86_HELPERS_H
 
@@ -22,4 +22,4 @@ static inline void set_eflags(unsigned long eflags)
 #endif
 }
 
-#endif /* __SELFTESTS_X86_HELPERS_H */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM vmalloc
 
@@ -7,19 +7,7 @@
 
 #include <linux/tracepoint.h>
 
-/**
- * alloc_vmap_area - called when a new vmap allocation occurs
- * @addr:	an allocated address
- * @size:	a requested size
- * @align:	a requested alignment
- * @vstart:	a requested start range
- * @vend:	a requested end range
- * @failed:	an allocation failed or not
- *
- * This event is used for a debug purpose, it can give an extra
- * information for a developer about how often it occurs and which
- * parameters are passed for further validation.
- */
+
 TRACE_EVENT(alloc_vmap_area,
 
 	TP_PROTO(unsigned long addr, unsigned long size, unsigned long align,
@@ -50,16 +38,7 @@ TRACE_EVENT(alloc_vmap_area,
 		__entry->vstart, __entry->vend, __entry->failed)
 );
 
-/**
- * purge_vmap_area_lazy - called when vmap areas were lazily freed
- * @start:		purging start address
- * @end:		purging end address
- * @npurged:	numbed of purged vmap areas
- *
- * This event is used for a debug purpose. It gives some
- * indication about start:end range and how many objects
- * are released.
- */
+
 TRACE_EVENT(purge_vmap_area_lazy,
 
 	TP_PROTO(unsigned long start, unsigned long end,
@@ -83,17 +62,7 @@ TRACE_EVENT(purge_vmap_area_lazy,
 		__entry->start, __entry->end, __entry->npurged)
 );
 
-/**
- * free_vmap_area_noflush - called when a vmap area is freed
- * @va_start:		a start address of VA
- * @nr_lazy:		number of current lazy pages
- * @nr_lazy_max:	number of maximum lazy pages
- *
- * This event is used for a debug purpose. It gives some
- * indication about a VA that is released, number of current
- * outstanding areas and a maximum allowed threshold before
- * dropping all of them.
- */
+
 TRACE_EVENT(free_vmap_area_noflush,
 
 	TP_PROTO(unsigned long va_start, unsigned long nr_lazy,
@@ -117,7 +86,7 @@ TRACE_EVENT(free_vmap_area_noflush,
 		__entry->va_start, __entry->nr_lazy, __entry->nr_lazy_max)
 );
 
-#endif /*  _TRACE_VMALLOC_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
+
+
 
 #ifndef __MLX5_LIB_SMFS_H__
 #define __MLX5_LIB_SMFS_H__
@@ -33,4 +33,4 @@ mlx5_smfs_rule_create(struct mlx5dr_matcher *matcher, struct mlx5_flow_spec *spe
 void
 mlx5_smfs_rule_destroy(struct mlx5dr_rule *rule);
 
-#endif /* __MLX5_LIB_SMFS_H__ */
+#endif 

@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Header File for Loongson SPI Driver. */
-/* Copyright (C) 2023 Loongson Technology Corporation Limited */
+
+
+
 
 #ifndef __LINUX_SPI_LOONGSON_H
 #define __LINUX_SPI_LOONGSON_H
@@ -17,7 +17,7 @@
 #define	LOONGSON_SPI_SFCS_REG	0x05
 #define	LOONGSON_SPI_TIMI_REG	0x06
 
-/* Bits definition for Loongson SPI register */
+
 #define	LOONGSON_SPI_PARA_MEM_EN	BIT(0)
 #define	LOONGSON_SPI_SPCR_CPHA	BIT(2)
 #define	LOONGSON_SPI_SPCR_CPOL	BIT(3)
@@ -46,4 +46,4 @@ struct loongson_spi {
 
 int loongson_spi_init_controller(struct device *dev, void __iomem *reg);
 extern const struct dev_pm_ops loongson_spi_dev_pm_ops;
-#endif /* __LINUX_SPI_LOONGSON_H */
+#endif 

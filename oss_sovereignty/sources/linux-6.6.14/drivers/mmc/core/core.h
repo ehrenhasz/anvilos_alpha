@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  linux/drivers/mmc/core/core.h
- *
- *  Copyright (C) 2003 Russell King, All Rights Reserved.
- *  Copyright 2007 Pierre Ossman
- */
+
+
 #ifndef _MMC_CORE_CORE_H
 #define _MMC_CORE_CORE_H
 
@@ -82,10 +77,10 @@ int mmc_attach_mmc(struct mmc_host *host);
 int mmc_attach_sd(struct mmc_host *host);
 int mmc_attach_sdio(struct mmc_host *host);
 
-/* Module parameters */
+
 extern bool use_spi_crc;
 
-/* Debugfs information for hosts and cards */
+
 #ifdef CONFIG_DEBUG_FS
 void mmc_add_host_debugfs(struct mmc_host *host);
 void mmc_remove_host_debugfs(struct mmc_host *host);
@@ -137,12 +132,7 @@ void mmc_put_card(struct mmc_card *card, struct mmc_ctx *ctx);
 
 int mmc_card_alternative_gpt_sector(struct mmc_card *card, sector_t *sector);
 
-/**
- *	mmc_claim_host - exclusively claim a host
- *	@host: mmc host to claim
- *
- *	Claim a host for a set of operations.
- */
+
 static inline void mmc_claim_host(struct mmc_host *host)
 {
 	__mmc_claim_host(host, NULL, NULL);
@@ -152,30 +142,14 @@ int mmc_cqe_start_req(struct mmc_host *host, struct mmc_request *mrq);
 void mmc_cqe_post_req(struct mmc_host *host, struct mmc_request *mrq);
 int mmc_cqe_recovery(struct mmc_host *host);
 
-/**
- *	mmc_pre_req - Prepare for a new request
- *	@host: MMC host to prepare command
- *	@mrq: MMC request to prepare for
- *
- *	mmc_pre_req() is called in prior to mmc_start_req() to let
- *	host prepare for the new request. Preparation of a request may be
- *	performed while another request is running on the host.
- */
+
 static inline void mmc_pre_req(struct mmc_host *host, struct mmc_request *mrq)
 {
 	if (host->ops->pre_req)
 		host->ops->pre_req(host, mrq);
 }
 
-/**
- *	mmc_post_req - Post process a completed request
- *	@host: MMC host to post process command
- *	@mrq: MMC request to post process for
- *	@err: Error, if non zero, clean up any resources made in pre_req
- *
- *	Let the host post process a completed request. Post processing of
- *	a request may be performed while another request is running.
- */
+
 static inline void mmc_post_req(struct mmc_host *host, struct mmc_request *mrq,
 				int err)
 {

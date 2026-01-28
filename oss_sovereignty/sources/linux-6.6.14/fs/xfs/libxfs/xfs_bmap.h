@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2000-2006 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef __XFS_BMAP_H__
 #define	__XFS_BMAP_H__
 
@@ -14,77 +11,57 @@ struct xfs_mount;
 struct xfs_trans;
 struct xfs_alloc_arg;
 
-/*
- * Argument structure for xfs_bmap_alloc.
- */
+
 struct xfs_bmalloca {
-	struct xfs_trans	*tp;	/* transaction pointer */
-	struct xfs_inode	*ip;	/* incore inode pointer */
-	struct xfs_bmbt_irec	prev;	/* extent before the new one */
-	struct xfs_bmbt_irec	got;	/* extent after, or delayed */
+	struct xfs_trans	*tp;	
+	struct xfs_inode	*ip;	
+	struct xfs_bmbt_irec	prev;	
+	struct xfs_bmbt_irec	got;	
 
-	xfs_fileoff_t		offset;	/* offset in file filling in */
-	xfs_extlen_t		length;	/* i/o length asked/allocated */
-	xfs_fsblock_t		blkno;	/* starting block of new extent */
+	xfs_fileoff_t		offset;	
+	xfs_extlen_t		length;	
+	xfs_fsblock_t		blkno;	
 
-	struct xfs_btree_cur	*cur;	/* btree cursor */
-	struct xfs_iext_cursor	icur;	/* incore extent cursor */
-	int			nallocs;/* number of extents alloc'd */
-	int			logflags;/* flags for transaction logging */
+	struct xfs_btree_cur	*cur;	
+	struct xfs_iext_cursor	icur;	
+	int			nallocs;
+	int			logflags;
 
-	xfs_extlen_t		total;	/* total blocks needed for xaction */
-	xfs_extlen_t		minlen;	/* minimum allocation size (blocks) */
-	xfs_extlen_t		minleft; /* amount must be left after alloc */
-	bool			eof;	/* set if allocating past last extent */
-	bool			wasdel;	/* replacing a delayed allocation */
-	bool			aeof;	/* allocated space at eof */
-	bool			conv;	/* overwriting unwritten extents */
-	int			datatype;/* data type being allocated */
+	xfs_extlen_t		total;	
+	xfs_extlen_t		minlen;	
+	xfs_extlen_t		minleft; 
+	bool			eof;	
+	bool			wasdel;	
+	bool			aeof;	
+	bool			conv;	
+	int			datatype;
 	uint32_t		flags;
 };
 
 #define	XFS_BMAP_MAX_NMAP	4
 
-/*
- * Flags for xfs_bmapi_*
- */
-#define XFS_BMAPI_ENTIRE	(1u << 0) /* return entire extent untrimmed */
-#define XFS_BMAPI_METADATA	(1u << 1) /* mapping metadata not user data */
-#define XFS_BMAPI_ATTRFORK	(1u << 2) /* use attribute fork not data */
-#define XFS_BMAPI_PREALLOC	(1u << 3) /* preallocating unwritten space */
-#define XFS_BMAPI_CONTIG	(1u << 4) /* must allocate only one extent */
-/*
- * unwritten extent conversion - this needs write cache flushing and no additional
- * allocation alignments. When specified with XFS_BMAPI_PREALLOC it converts
- * from written to unwritten, otherwise convert from unwritten to written.
- */
+
+#define XFS_BMAPI_ENTIRE	(1u << 0) 
+#define XFS_BMAPI_METADATA	(1u << 1) 
+#define XFS_BMAPI_ATTRFORK	(1u << 2) 
+#define XFS_BMAPI_PREALLOC	(1u << 3) 
+#define XFS_BMAPI_CONTIG	(1u << 4) 
+
 #define XFS_BMAPI_CONVERT	(1u << 5)
 
-/*
- * allocate zeroed extents - this requires all newly allocated user data extents
- * to be initialised to zero. It will be ignored if XFS_BMAPI_METADATA is set.
- * Use in conjunction with XFS_BMAPI_CONVERT to convert unwritten extents found
- * during the allocation range to zeroed written extents.
- */
+
 #define XFS_BMAPI_ZERO		(1u << 6)
 
-/*
- * Map the inode offset to the block given in ap->firstblock.  Primarily
- * used for reflink.  The range must be in a hole, and this flag cannot be
- * turned on with PREALLOC or CONVERT, and cannot be used on the attr fork.
- *
- * For bunmapi, this flag unmaps the range without adjusting quota, reducing
- * refcount, or freeing the blocks.
- */
+
 #define XFS_BMAPI_REMAP		(1u << 7)
 
-/* Map something in the CoW fork. */
+
 #define XFS_BMAPI_COWFORK	(1u << 8)
 
-/* Skip online discard of freed extents */
+
 #define XFS_BMAPI_NODISCARD	(1u << 9)
 
-/* Do not update the rmap btree.  Used for reconstructing bmbt from rmapbt. */
+
 #define XFS_BMAPI_NORMAP	(1u << 10)
 
 #define XFS_BMAPI_FLAGS \
@@ -116,15 +93,11 @@ static inline int xfs_bmapi_whichfork(uint32_t bmapi_flags)
 	return XFS_DATA_FORK;
 }
 
-/*
- * Special values for xfs_bmbt_irec_t br_startblock field.
- */
+
 #define	DELAYSTARTBLOCK		((xfs_fsblock_t)-1LL)
 #define	HOLESTARTBLOCK		((xfs_fsblock_t)-2LL)
 
-/*
- * Flags for xfs_bmap_add_extent*.
- */
+
 #define BMAP_LEFT_CONTIG	(1u << 0)
 #define BMAP_RIGHT_CONTIG	(1u << 1)
 #define BMAP_LEFT_FILLING	(1u << 2)
@@ -144,7 +117,7 @@ static inline int xfs_bmapi_whichfork(uint32_t bmapi_flags)
 	{ BMAP_ATTRFORK,	"ATTR" }, \
 	{ BMAP_COWFORK,		"COW" }
 
-/* Return true if the extent is an allocated extent, written or not. */
+
 static inline bool xfs_bmap_is_real_extent(const struct xfs_bmbt_irec *irec)
 {
 	return irec->br_startblock != HOLESTARTBLOCK &&
@@ -152,20 +125,14 @@ static inline bool xfs_bmap_is_real_extent(const struct xfs_bmbt_irec *irec)
 		!isnullstartblock(irec->br_startblock);
 }
 
-/*
- * Return true if the extent is a real, allocated extent, or false if it is  a
- * delayed allocation, and unwritten extent or a hole.
- */
+
 static inline bool xfs_bmap_is_written_extent(struct xfs_bmbt_irec *irec)
 {
 	return xfs_bmap_is_real_extent(irec) &&
 	       irec->br_state != XFS_EXT_UNWRITTEN;
 }
 
-/*
- * Check the mapping for obviously garbage allocations that could trash the
- * filesystem immediately.
- */
+
 #define xfs_valid_startblock(ip, startblock) \
 	((startblock) != 0 || XFS_IS_REALTIME_INODE(ip))
 
@@ -277,4 +244,4 @@ extern struct kmem_cache	*xfs_bmap_intent_cache;
 int __init xfs_bmap_intent_init_cache(void);
 void xfs_bmap_intent_destroy_cache(void);
 
-#endif	/* __XFS_BMAP_H__ */
+#endif	

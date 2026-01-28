@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Generator for SIMPLE_IPA pass related boilerplate code/data
- *
- * Supports gcc 4.5-6
- *
- * Usage:
- *
- * 1. before inclusion define PASS_NAME
- * 2. before inclusion define NO_* for unimplemented callbacks
- *    NO_GATE
- *    NO_EXECUTE
- * 3. before inclusion define PROPERTIES_* and TODO_FLAGS_* to override
- *    the default 0 values
- * 4. for convenience, all the above will be undefined after inclusion!
- * 5. the only exported name is make_PASS_NAME_pass() to register with gcc
- */
+
+
 
 #ifndef PASS_NAME
 #error at least PASS_NAME must be defined
@@ -107,7 +92,7 @@ opt_pass *_MAKE_PASS_NAME_PASS(void)
 	return new _PASS_NAME_PASS();
 }
 
-/* clean up user provided defines */
+
 #undef PASS_NAME
 #undef NO_GATE
 #undef NO_EXECUTE
@@ -118,7 +103,7 @@ opt_pass *_MAKE_PASS_NAME_PASS(void)
 #undef TODO_FLAGS_FINISH
 #undef TODO_FLAGS_START
 
-/* clean up generated defines */
+
 #undef _EXECUTE
 #undef __EXECUTE
 #undef _GATE
@@ -137,4 +122,4 @@ opt_pass *_MAKE_PASS_NAME_PASS(void)
 #undef _PASS_NAME_PASS_DATA
 #undef __PASS_NAME_PASS_DATA
 
-#endif /* PASS_NAME */
+#endif 

@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
+
 KASAN_SANITIZE := n
 UBSAN_SANITIZE := n
 KCOV_INSTRUMENT := n
 
-# Disable ftrace to avoid recursion.
+
 CFLAGS_REMOVE_common.o = $(CC_FLAGS_FTRACE)
 CFLAGS_REMOVE_generic.o = $(CC_FLAGS_FTRACE)
 CFLAGS_REMOVE_init.o = $(CC_FLAGS_FTRACE)
@@ -16,11 +16,11 @@ CFLAGS_REMOVE_shadow.o = $(CC_FLAGS_FTRACE)
 CFLAGS_REMOVE_hw_tags.o = $(CC_FLAGS_FTRACE)
 CFLAGS_REMOVE_sw_tags.o = $(CC_FLAGS_FTRACE)
 
-# Function splitter causes unnecessary splits in __asan_load1/__asan_store1
-# see: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=63533
+
+
 CC_FLAGS_KASAN_RUNTIME := $(call cc-option, -fno-conserve-stack)
 CC_FLAGS_KASAN_RUNTIME += -fno-stack-protector
-# Disable branch tracing to avoid recursion.
+
 CC_FLAGS_KASAN_RUNTIME += -DDISABLE_BRANCH_PROFILING
 
 CFLAGS_common.o := $(CC_FLAGS_KASAN_RUNTIME)
@@ -37,10 +37,10 @@ CFLAGS_sw_tags.o := $(CC_FLAGS_KASAN_RUNTIME)
 
 CFLAGS_KASAN_TEST := $(CFLAGS_KASAN) $(call cc-disable-warning, vla)
 ifndef CONFIG_CC_HAS_KASAN_MEMINTRINSIC_PREFIX
-# If compiler instruments memintrinsics by prefixing them with __asan/__hwasan,
-# we need to treat them normally (as builtins), otherwise the compiler won't
-# recognize them as instrumentable. If it doesn't instrument them, we need to
-# pass -fno-builtin, so the compiler doesn't inline them.
+
+
+
+
 CFLAGS_KASAN_TEST += -fno-builtin
 endif
 

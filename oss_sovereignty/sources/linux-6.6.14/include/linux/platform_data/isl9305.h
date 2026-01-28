@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * isl9305 - Intersil ISL9305 DCDC regulator
- *
- * Copyright 2014 Linaro Ltd
- *
- * Author: Mark Brown <broonie@kernel.org>
- */
+
+
 
 #ifndef __ISL9305_H
 #define __ISL9305_H

@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for BestComm & co
-#
+
+
+
+
 
 bestcomm-core-objs	:= bestcomm.o sram.o
 bestcomm-ata-objs	:= ata.o bcom_ata_task.o

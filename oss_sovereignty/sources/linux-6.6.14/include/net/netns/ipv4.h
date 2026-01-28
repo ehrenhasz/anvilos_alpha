@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ipv4 in net namespaces
- */
+
+
 
 #ifndef __NETNS_IPV4_H__
 #define __NETNS_IPV4_H__
@@ -34,7 +32,7 @@ struct inet_hashinfo;
 struct inet_timewait_death_row {
 	refcount_t		tw_refcount;
 
-	/* Padding to avoid false sharing, tw_refcount can be often written */
+	
 	struct inet_hashinfo 	*hashinfo ____cacheline_aligned_in_smp;
 	int			sysctl_max_tw_buckets;
 };
@@ -100,7 +98,7 @@ struct netns_ipv4 {
 	u8 sysctl_ip_fwd_update_priority;
 	u8 sysctl_ip_nonlocal_bind;
 	u8 sysctl_ip_autobind_reuse;
-	/* Shall we try to damage output packets if routing dev changes? */
+	
 	u8 sysctl_ip_dynaddr;
 	u8 sysctl_ip_early_demux;
 #ifdef CONFIG_NET_L3_MASTER_DEV
@@ -150,9 +148,9 @@ struct netns_ipv4 {
 	u8 sysctl_tcp_stdurg;
 	u8 sysctl_tcp_rfc1337;
 	u8 sysctl_tcp_abort_on_overflow;
-	u8 sysctl_tcp_fack; /* obsolete */
+	u8 sysctl_tcp_fack; 
 	int sysctl_tcp_max_reordering;
-	int sysctl_tcp_adv_win_scale; /* obsolete */
+	int sysctl_tcp_adv_win_scale; 
 	u8 sysctl_tcp_dsack;
 	u8 sysctl_tcp_app_win;
 	u8 sysctl_tcp_frto;
@@ -232,10 +230,10 @@ struct netns_ipv4 {
 #endif
 
 	struct fib_notifier_ops	*notifier_ops;
-	unsigned int	fib_seq;	/* protected by rtnl_mutex */
+	unsigned int	fib_seq;	
 
 	struct fib_notifier_ops	*ipmr_notifier_ops;
-	unsigned int	ipmr_seq;	/* protected by rtnl_mutex */
+	unsigned int	ipmr_seq;	
 
 	atomic_t	rt_genid;
 	siphash_key_t	ip_id_key;

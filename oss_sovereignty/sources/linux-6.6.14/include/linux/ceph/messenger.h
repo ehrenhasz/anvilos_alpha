@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __FS_CEPH_MESSENGER_H
 #define __FS_CEPH_MESSENGER_H
 
@@ -19,17 +19,15 @@ struct ceph_msg;
 struct ceph_connection;
 struct ceph_msg_data_cursor;
 
-/*
- * Ceph defines these callbacks for handling connection events.
- */
+
 struct ceph_connection_operations {
 	struct ceph_connection *(*get)(struct ceph_connection *);
 	void (*put)(struct ceph_connection *);
 
-	/* handle an incoming message. */
+	
 	void (*dispatch) (struct ceph_connection *con, struct ceph_msg *m);
 
-	/* authorize an outgoing connection */
+	
 	struct ceph_auth_handshake *(*get_authorizer) (
 				struct ceph_connection *con,
 			       int *proto, int force_new);
@@ -39,11 +37,10 @@ struct ceph_connection_operations {
 	int (*verify_authorizer_reply) (struct ceph_connection *con);
 	int (*invalidate_authorizer)(struct ceph_connection *con);
 
-	/* there was some error on the socket (disconnect, whatever) */
+	
 	void (*fault) (struct ceph_connection *con);
 
-	/* a remote host as terminated a message exchange session, and messages
-	 * we sent (or they tried to send us) may be lost. */
+	
 	void (*peer_reset) (struct ceph_connection *con);
 
 	struct ceph_msg * (*alloc_msg) (struct ceph_connection *con,
@@ -55,7 +52,7 @@ struct ceph_connection_operations {
 	int (*sign_message) (struct ceph_msg *msg);
 	int (*check_message_signature) (struct ceph_msg *msg);
 
-	/* msgr2 authentication exchange */
+	
 	int (*get_auth_request)(struct ceph_connection *con,
 				void *buf, int *buf_len,
 				void **authorizer, int *authorizer_len);
@@ -72,58 +69,37 @@ struct ceph_connection_operations {
 				      const int *allowed_protos, int proto_cnt,
 				      const int *allowed_modes, int mode_cnt);
 
-	/**
-	 * sparse_read: read sparse data
-	 * @con: connection we're reading from
-	 * @cursor: data cursor for reading extents
-	 * @buf: optional buffer to read into
-	 *
-	 * This should be called more than once, each time setting up to
-	 * receive an extent into the current cursor position, and zeroing
-	 * the holes between them.
-	 *
-	 * Returns amount of data to be read (in bytes), 0 if reading is
-	 * complete, or -errno if there was an error.
-	 *
-	 * If @buf is set on a >0 return, then the data should be read into
-	 * the provided buffer. Otherwise, it should be read into the cursor.
-	 *
-	 * The sparse read operation is expected to initialize the cursor
-	 * with a length covering up to the end of the last extent.
-	 */
+	
 	int (*sparse_read)(struct ceph_connection *con,
 			   struct ceph_msg_data_cursor *cursor,
 			   char **buf);
 
 };
 
-/* use format string %s%lld */
+
 #define ENTITY_NAME(n) ceph_entity_type_name((n).type), le64_to_cpu((n).num)
 
 struct ceph_messenger {
-	struct ceph_entity_inst inst;    /* my name+address */
+	struct ceph_entity_inst inst;    
 	struct ceph_entity_addr my_enc_addr;
 
 	atomic_t stopping;
 	possible_net_t net;
 
-	/*
-	 * the global_seq counts connections i (attempt to) initiate
-	 * in order to disambiguate certain connect race conditions.
-	 */
+	
 	u32 global_seq;
 	spinlock_t global_seq_lock;
 };
 
 enum ceph_msg_data_type {
-	CEPH_MSG_DATA_NONE,	/* message contains no data payload */
-	CEPH_MSG_DATA_PAGES,	/* data source/destination is a page array */
-	CEPH_MSG_DATA_PAGELIST,	/* data source/destination is a pagelist */
+	CEPH_MSG_DATA_NONE,	
+	CEPH_MSG_DATA_PAGES,	
+	CEPH_MSG_DATA_PAGELIST,	
 #ifdef CONFIG_BLOCK
-	CEPH_MSG_DATA_BIO,	/* data source/destination is a bio list */
-#endif /* CONFIG_BLOCK */
-	CEPH_MSG_DATA_BVECS,	/* data source/destination is a bio_vec array */
-	CEPH_MSG_DATA_ITER,	/* data source/destination is an iov_iter */
+	CEPH_MSG_DATA_BIO,	
+#endif 
+	CEPH_MSG_DATA_BVECS,	
+	CEPH_MSG_DATA_ITER,	
 };
 
 #ifdef CONFIG_BLOCK
@@ -150,15 +126,11 @@ struct ceph_bio_iter {
 	}								      \
 } while (0)
 
-/*
- * Advance @it by @n bytes.
- */
+
 #define ceph_bio_iter_advance(it, n)					      \
 	__ceph_bio_iter_advance_step(it, n, 0)
 
-/*
- * Advance @it by @n bytes, executing BVEC_STEP for each bio_vec.
- */
+
 #define ceph_bio_iter_advance_step(it, n, BVEC_STEP)			      \
 	__ceph_bio_iter_advance_step(it, n, ({				      \
 		struct bio_vec bv;					      \
@@ -170,7 +142,7 @@ struct ceph_bio_iter {
 			(void)(BVEC_STEP);				      \
 	}))
 
-#endif /* CONFIG_BLOCK */
+#endif 
 
 struct ceph_bvec_iter {
 	struct bio_vec *bvecs;
@@ -183,15 +155,11 @@ struct ceph_bvec_iter {
 	bvec_iter_advance((it)->bvecs, &(it)->iter, (n));		      \
 } while (0)
 
-/*
- * Advance @it by @n bytes.
- */
+
 #define ceph_bvec_iter_advance(it, n)					      \
 	__ceph_bvec_iter_advance_step(it, n, 0)
 
-/*
- * Advance @it by @n bytes, executing BVEC_STEP for each bio_vec.
- */
+
 #define ceph_bvec_iter_advance_step(it, n, BVEC_STEP)			      \
 	__ceph_bvec_iter_advance_step(it, n, ({				      \
 		struct bio_vec bv;					      \
@@ -216,12 +184,12 @@ struct ceph_msg_data {
 			struct ceph_bio_iter	bio_pos;
 			u32			bio_length;
 		};
-#endif /* CONFIG_BLOCK */
+#endif 
 		struct ceph_bvec_iter	bvec_pos;
 		struct {
 			struct page	**pages;
-			size_t		length;		/* total # bytes */
-			unsigned int	alignment;	/* first page */
+			size_t		length;		
+			unsigned int	alignment;	
 			bool		own_pages;
 		};
 		struct ceph_pagelist	*pagelist;
@@ -230,25 +198,25 @@ struct ceph_msg_data {
 };
 
 struct ceph_msg_data_cursor {
-	size_t			total_resid;	/* across all data items */
+	size_t			total_resid;	
 
-	struct ceph_msg_data	*data;		/* current data item */
-	size_t			resid;		/* bytes not yet consumed */
-	int			sr_resid;	/* residual sparse_read len */
-	bool			need_crc;	/* crc update needed */
+	struct ceph_msg_data	*data;		
+	size_t			resid;		
+	int			sr_resid;	
+	bool			need_crc;	
 	union {
 #ifdef CONFIG_BLOCK
 		struct ceph_bio_iter	bio_iter;
-#endif /* CONFIG_BLOCK */
+#endif 
 		struct bvec_iter	bvec_iter;
-		struct {				/* pages */
-			unsigned int	page_offset;	/* offset in page */
-			unsigned short	page_index;	/* index in array */
-			unsigned short	page_count;	/* pages in array */
+		struct {				
+			unsigned int	page_offset;	
+			unsigned short	page_index;	
+			unsigned short	page_count;	
 		};
-		struct {				/* pagelist */
-			struct page	*page;		/* page from list */
-			size_t		offset;		/* bytes from list */
+		struct {				
+			struct page	*page;		
+			size_t		offset;		
 		};
 		struct {
 			struct iov_iter		iov_iter;
@@ -257,18 +225,14 @@ struct ceph_msg_data_cursor {
 	};
 };
 
-/*
- * a single message.  it contains a header (src, dest, message type, etc.),
- * footer (crc values, mainly), a "front" message body, and possibly a
- * data payload (stored in some number of pages).
- */
+
 struct ceph_msg {
-	struct ceph_msg_header hdr;	/* header */
+	struct ceph_msg_header hdr;	
 	union {
-		struct ceph_msg_footer footer;		/* footer */
-		struct ceph_msg_footer_old old_footer;	/* old format footer */
+		struct ceph_msg_footer footer;		
+		struct ceph_msg_footer_old old_footer;	
 	};
-	struct kvec front;              /* unaligned blobs of message */
+	struct kvec front;              
 	struct ceph_buffer *middle;
 
 	size_t				data_length;
@@ -278,7 +242,7 @@ struct ceph_msg {
 	struct ceph_msg_data_cursor	cursor;
 
 	struct ceph_connection *con;
-	struct list_head list_head;	/* links for connection lists */
+	struct list_head list_head;	
 
 	struct kref kref;
 	bool more_to_follow;
@@ -289,9 +253,7 @@ struct ceph_msg {
 	struct ceph_msgpool *pool;
 };
 
-/*
- * connection states
- */
+
 #define CEPH_CON_S_CLOSED		1
 #define CEPH_CON_S_PREOPEN		2
 #define CEPH_CON_S_V1_BANNER		3
@@ -306,60 +268,54 @@ struct ceph_msg {
 #define CEPH_CON_S_OPEN			12
 #define CEPH_CON_S_STANDBY		13
 
-/*
- * ceph_connection flag bits
- */
-#define CEPH_CON_F_LOSSYTX		0  /* we can close channel or drop
-					      messages on errors */
-#define CEPH_CON_F_KEEPALIVE_PENDING	1  /* we need to send a keepalive */
-#define CEPH_CON_F_WRITE_PENDING	2  /* we have data ready to send */
-#define CEPH_CON_F_SOCK_CLOSED		3  /* socket state changed to closed */
-#define CEPH_CON_F_BACKOFF		4  /* need to retry queuing delayed
-					      work */
 
-/* ceph connection fault delay defaults, for exponential backoff */
+#define CEPH_CON_F_LOSSYTX		0  
+#define CEPH_CON_F_KEEPALIVE_PENDING	1  
+#define CEPH_CON_F_WRITE_PENDING	2  
+#define CEPH_CON_F_SOCK_CLOSED		3  
+#define CEPH_CON_F_BACKOFF		4  
+
+
 #define BASE_DELAY_INTERVAL	(HZ / 4)
 #define MAX_DELAY_INTERVAL	(15 * HZ)
 
 struct ceph_connection_v1_info {
-	struct kvec out_kvec[8],         /* sending header/footer data */
+	struct kvec out_kvec[8],         
 		*out_kvec_cur;
-	int out_kvec_left;   /* kvec's left in out_kvec */
-	int out_skip;        /* skip this many bytes */
-	int out_kvec_bytes;  /* total bytes left */
-	bool out_more;       /* there is more data after the kvecs */
+	int out_kvec_left;   
+	int out_skip;        
+	int out_kvec_bytes;  
+	bool out_more;       
 	bool out_msg_done;
 
 	struct ceph_auth_handshake *auth;
-	int auth_retry;       /* true if we need a newer authorizer */
+	int auth_retry;       
 
-	/* connection negotiation temps */
+	
 	u8 in_banner[CEPH_BANNER_MAX_LEN];
 	struct ceph_entity_addr actual_peer_addr;
 	struct ceph_entity_addr peer_addr_for_me;
 	struct ceph_msg_connect out_connect;
 	struct ceph_msg_connect_reply in_reply;
 
-	int in_base_pos;     /* bytes read */
+	int in_base_pos;     
 
-	/* sparse reads */
-	struct kvec in_sr_kvec; /* current location to receive into */
-	u64 in_sr_len;		/* amount of data in this extent */
+	
+	struct kvec in_sr_kvec; 
+	u64 in_sr_len;		
 
-	/* message in temps */
-	u8 in_tag;           /* protocol control byte */
+	
+	u8 in_tag;           
 	struct ceph_msg_header in_hdr;
-	__le64 in_temp_ack;  /* for reading an ack */
+	__le64 in_temp_ack;  
 
-	/* message out temps */
+	
 	struct ceph_msg_header out_hdr;
-	__le64 out_temp_ack;  /* for writing an ack */
-	struct ceph_timespec out_temp_keepalive2;  /* for writing keepalive2
-						      stamp */
+	__le64 out_temp_ack;  
+	struct ceph_timespec out_temp_keepalive2;  
 
-	u32 connect_seq;      /* identify the most recent connection
-				 attempt for this session */
-	u32 peer_global_seq;  /* peer's global seq for this connection */
+	u32 connect_seq;      
+	u32 peer_global_seq;  
 };
 
 #define CEPH_CRC_LEN			4
@@ -380,9 +336,9 @@ struct ceph_connection_v1_info {
 #define CEPH_FRAME_MAX_SEGMENT_COUNT	4
 
 struct ceph_frame_desc {
-	int fd_tag;  /* FRAME_TAG_* */
+	int fd_tag;  
 	int fd_seg_cnt;
-	int fd_lens[CEPH_FRAME_MAX_SEGMENT_COUNT];  /* logical */
+	int fd_lens[CEPH_FRAME_MAX_SEGMENT_COUNT];  
 	int fd_aligns[CEPH_FRAME_MAX_SEGMENT_COUNT];
 };
 
@@ -393,27 +349,26 @@ struct ceph_gcm_nonce {
 
 struct ceph_connection_v2_info {
 	struct iov_iter in_iter;
-	struct kvec in_kvecs[5];  /* recvmsg */
-	struct bio_vec in_bvec;  /* recvmsg (in_cursor) */
+	struct kvec in_kvecs[5];  
+	struct bio_vec in_bvec;  
 	int in_kvec_cnt;
-	int in_state;  /* IN_S_* */
+	int in_state;  
 
 	struct iov_iter out_iter;
-	struct kvec out_kvecs[8];  /* sendmsg */
-	struct bio_vec out_bvec;  /* sendpage (out_cursor, out_zero),
-				     sendmsg (out_enc_pages) */
+	struct kvec out_kvecs[8];  
+	struct bio_vec out_bvec;  
 	int out_kvec_cnt;
-	int out_state;  /* OUT_S_* */
+	int out_state;  
 
-	int out_zero;  /* # of zero bytes to send */
-	bool out_iter_sendpage;  /* use sendpage if possible */
+	int out_zero;  
+	bool out_iter_sendpage;  
 
 	struct ceph_frame_desc in_desc;
 	struct ceph_msg_data_cursor in_cursor;
 	struct ceph_msg_data_cursor out_cursor;
 
-	struct crypto_shash *hmac_tfm;  /* post-auth signature */
-	struct crypto_aead *gcm_tfm;  /* on-wire encryption */
+	struct crypto_shash *hmac_tfm;  
+	struct crypto_aead *gcm_tfm;  
 	struct aead_request *gcm_req;
 	struct crypto_wait gcm_wait;
 	struct ceph_gcm_nonce in_gcm_nonce;
@@ -428,7 +383,7 @@ struct ceph_connection_v2_info {
 	int out_enc_resid;
 	int out_enc_i;
 
-	int con_mode;  /* CEPH_CON_MODE_* */
+	int con_mode;  
 
 	void *conn_bufs[16];
 	int conn_buf_cnt;
@@ -448,7 +403,7 @@ struct ceph_connection_v2_info {
 	u8 in_buf[CEPH_PREAMBLE_SECURE_LEN];
 	u8 out_buf[CEPH_PREAMBLE_SECURE_LEN];
 	struct {
-		u8 late_status;  /* FRAME_LATE_STATUS_* */
+		u8 late_status;  
 		union {
 			struct {
 				u32 front_crc;
@@ -460,13 +415,7 @@ struct ceph_connection_v2_info {
 	} out_epil;
 };
 
-/*
- * A single connection with another host.
- *
- * We maintain a queue of outgoing messages, and some session state to
- * ensure that we can preserve the lossless, ordered delivery of
- * messages in the case of a TCP disconnect.
- */
+
 struct ceph_connection {
 	void *private;
 
@@ -474,37 +423,36 @@ struct ceph_connection {
 
 	struct ceph_messenger *msgr;
 
-	int state;  /* CEPH_CON_S_* */
+	int state;  
 	atomic_t sock_state;
 	struct socket *sock;
 
-	unsigned long flags;  /* CEPH_CON_F_* */
-	const char *error_msg;  /* error message, if any */
+	unsigned long flags;  
+	const char *error_msg;  
 
-	struct ceph_entity_name peer_name; /* peer name */
-	struct ceph_entity_addr peer_addr; /* peer address */
+	struct ceph_entity_name peer_name; 
+	struct ceph_entity_addr peer_addr; 
 	u64 peer_features;
 
 	struct mutex mutex;
 
-	/* out queue */
+	
 	struct list_head out_queue;
-	struct list_head out_sent;   /* sending or sent but unacked */
-	u64 out_seq;		     /* last message queued for send */
+	struct list_head out_sent;   
+	u64 out_seq;		     
 
-	u64 in_seq, in_seq_acked;  /* last message received, acked */
+	u64 in_seq, in_seq_acked;  
 
 	struct ceph_msg *in_msg;
-	struct ceph_msg *out_msg;        /* sending message (== tail of
-					    out_sent) */
+	struct ceph_msg *out_msg;        
 
 	struct page *bounce_page;
-	u32 in_front_crc, in_middle_crc, in_data_crc;  /* calculated crc */
+	u32 in_front_crc, in_middle_crc, in_data_crc;  
 
-	struct timespec64 last_keepalive_ack; /* keepalive2 ack stamp */
+	struct timespec64 last_keepalive_ack; 
 
-	struct delayed_work work;	    /* send|recv work */
-	unsigned long       delay;          /* current delay interval */
+	struct delayed_work work;	    
+	unsigned long       delay;          
 
 	union {
 		struct ceph_connection_v1_info v1;
@@ -550,7 +498,7 @@ int ceph_con_in_msg_alloc(struct ceph_connection *con,
 			  struct ceph_msg_header *hdr, int *skip);
 void ceph_con_get_out_msg(struct ceph_connection *con);
 
-/* messenger_v1.c */
+
 int ceph_con_v1_try_read(struct ceph_connection *con);
 int ceph_con_v1_try_write(struct ceph_connection *con);
 void ceph_con_v1_revoke(struct ceph_connection *con);
@@ -559,7 +507,7 @@ bool ceph_con_v1_opened(struct ceph_connection *con);
 void ceph_con_v1_reset_session(struct ceph_connection *con);
 void ceph_con_v1_reset_protocol(struct ceph_connection *con);
 
-/* messenger_v2.c */
+
 int ceph_con_v2_try_read(struct ceph_connection *con);
 int ceph_con_v2_try_write(struct ceph_connection *con);
 void ceph_con_v2_revoke(struct ceph_connection *con);
@@ -608,7 +556,7 @@ extern void ceph_msg_data_add_pagelist(struct ceph_msg *msg,
 #ifdef CONFIG_BLOCK
 void ceph_msg_data_add_bio(struct ceph_msg *msg, struct ceph_bio_iter *bio_pos,
 			   u32 length);
-#endif /* CONFIG_BLOCK */
+#endif 
 void ceph_msg_data_add_bvecs(struct ceph_msg *msg,
 			     struct ceph_bvec_iter *bvec_pos);
 void ceph_msg_data_add_iter(struct ceph_msg *msg,

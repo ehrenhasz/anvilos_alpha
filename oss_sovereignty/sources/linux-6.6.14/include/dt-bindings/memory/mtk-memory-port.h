@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2020 MediaTek Inc.
- * Author: Yong Wu <yong.wu@mediatek.com>
- */
+
+
 #ifndef __DT_BINDINGS_MEMORY_MTK_MEMORY_PORT_H_
 #define __DT_BINDINGS_MEMORY_MTK_MEMORY_PORT_H_
 

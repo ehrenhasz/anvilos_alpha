@@ -1,14 +1,5 @@
-/* vi:set ts=8 sts=4 sw=4 noet: */
-/*
- * Author: MURAOKA Taro <koron.kaoriya@gmail.com>
- *
- * Contributors:
- *  - Ken Takata
- *  - Yasuhiro Matsumoto
- *
- * Copyright (C) 2013 MURAOKA Taro <koron.kaoriya@gmail.com>
- * THIS FILE IS DISTRIBUTED UNDER THE VIM LICENSE.
- */
+
+
 
 #define WIN32_LEAN_AND_MEAN
 
@@ -25,7 +16,7 @@
 #include <d2d1.h>
 #include <d2d1helper.h>
 
-// Disable these macros to compile with old VC and newer SDK (V8.1 or later).
+
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
 # define _COM_Outptr_ __out
 # define _In_reads_(s)
@@ -93,7 +84,7 @@ unload(HINSTANCE &hinst)
 	hinst = NULL;
     }
 }
-#endif // DYNAMIC_DIRECTX
+#endif 
 
 template <class T> inline void SafeRelease(T **ppT)
 {
@@ -310,7 +301,7 @@ struct DWriteContext {
 
     D2D1_TEXT_ANTIALIAS_MODE mTextAntialiasMode;
 
-    // METHODS
+    
 
     DWriteContext();
 
@@ -400,11 +391,11 @@ public:
 };
 
 struct TextRendererContext {
-    // const fields.
+    
     COLORREF color;
     FLOAT cellWidth;
 
-    // working fields.
+    
     FLOAT offsetX;
 };
 
@@ -419,7 +410,7 @@ public:
 	AddRef();
     }
 
-    // add "virtual" to avoid a compiler warning
+    
     virtual ~TextRenderer()
     {
     }
@@ -436,7 +427,7 @@ public:
 	__maybenull void* clientDrawingContext UNUSED,
 	__out DWRITE_MATRIX* transform)
     {
-	// forward the render target's transform
+	
 	pDWC_->mRT->GetTransform(
 		reinterpret_cast<D2D1_MATRIX_3X2_F*>(transform));
 	return S_OK;
@@ -514,7 +505,7 @@ public:
 		&enumerator);
 	    if (SUCCEEDED(hr))
 	    {
-		// Draw by IDWriteFactory2 for color emoji
+		
 		BOOL hasRun = TRUE;
 		enumerator->MoveNext(&hasRun);
 		while (hasRun)
@@ -538,7 +529,7 @@ public:
 	}
 #endif
 
-	// Draw by IDWriteFactory (without color emoji)
+	
 	pDWC_->mRT->DrawGlyphRun(
 		D2D1::Point2F(
 		    baselineOriginX + context->offsetX,
@@ -699,7 +690,7 @@ DWriteContext::CreateDeviceResources()
 
     if (SUCCEEDED(hr))
     {
-	// This always succeeds.
+	
 	mRT->QueryInterface(
 		__uuidof(ID2D1GdiInteropRenderTarget),
 		reinterpret_cast<void**>(&mGDIRT));
@@ -733,7 +724,7 @@ DWriteContext::DiscardDeviceResources()
 DWriteContext::CreateTextFormatFromLOGFONT(const LOGFONTW &logFont,
 	IDWriteTextFormat **ppTextFormat)
 {
-    // Most of this function is copied from: https://github.com/Microsoft/Windows-classic-samples/blob/master/Samples/Win7Samples/multimedia/DirectWrite/RenderTest/TextHelpers.cpp
+    
     HRESULT hr = S_OK;
     IDWriteTextFormat *pTextFormat = NULL;
 
@@ -747,22 +738,22 @@ DWriteContext::CreateTextFormatFromLOGFONT(const LOGFONTW &logFont,
 	hr = mGdiInterop->CreateFontFromLOGFONT(&logFont, &font);
     }
 
-    // Get the font family to which this font belongs.
+    
     if (SUCCEEDED(hr))
     {
 	hr = font->GetFontFamily(&fontFamily);
     }
 
-    // Get the family names. This returns an object that encapsulates one or
-    // more names with the same meaning but in different languages.
+    
+    
     if (SUCCEEDED(hr))
     {
 	hr = fontFamily->GetFamilyNames(&localizedFamilyNames);
     }
 
-    // Get the family name at index zero. If we were going to display the name
-    // we'd want to try to find one that matched the use locale, but for
-    // purposes of creating a text format object any language will do.
+    
+    
+    
 
     wchar_t familyName[100];
     if (SUCCEEDED(hr))
@@ -773,36 +764,36 @@ DWriteContext::CreateTextFormatFromLOGFONT(const LOGFONTW &logFont,
 
     if (SUCCEEDED(hr))
     {
-	// Use lfHeight of the LOGFONT as font size.
+	
 	fontSize = float(logFont.lfHeight);
 
 	if (fontSize < 0)
 	{
-	    // Negative lfHeight represents the size of the em unit.
+	    
 	    fontSize = -fontSize;
 	}
 	else
 	{
-	    // Positive lfHeight represents the cell height (ascent +
-	    // descent).
+	    
+	    
 	    DWRITE_FONT_METRICS fontMetrics;
 	    font->GetMetrics(&fontMetrics);
 
-	    // Convert the cell height (ascent + descent) from design units
-	    // to ems.
+	    
+	    
 	    float cellHeight = static_cast<float>(
 		    fontMetrics.ascent + fontMetrics.descent)
 		/ fontMetrics.designUnitsPerEm;
 
-	    // Divide the font size by the cell height to get the font em
-	    // size.
+	    
+	    
 	    fontSize /= cellHeight;
 	}
     }
 
-    // The text format includes a locale name. Ideally, this would be the
-    // language of the text, which may or may not be the same as the primary
-    // language of the user. However, for our purposes the user locale will do.
+    
+    
+    
     wchar_t localeName[LOCALE_NAME_MAX_LENGTH];
     if (SUCCEEDED(hr))
     {
@@ -812,10 +803,10 @@ DWriteContext::CreateTextFormatFromLOGFONT(const LOGFONTW &logFont,
 
     if (SUCCEEDED(hr))
     {
-	// Create the text format object.
+	
 	hr = mDWriteFactory->CreateTextFormat(
 		familyName,
-		NULL, // no custom font collection
+		NULL, 
 		font->GetWeight(),
 		font->GetStyle(),
 		font->GetStretch(),
@@ -1011,7 +1002,7 @@ DWriteContext::DrawText(const WCHAR *text, int len,
 {
     if (mFallbackDC)
     {
-	// Fall back to GDI rendering.
+	
 	HRESULT hr = SetDrawingMode(DM_INTEROP);
 	if (SUCCEEDED(hr))
 	{
@@ -1052,8 +1043,8 @@ DWriteContext::FillRect(const RECT *rc, COLORREF color)
 {
     if (mDMode == DM_INTEROP)
     {
-	// GDI functions are used before this call.  Keep using GDI.
-	// (Switching to Direct2D causes terrible slowdown.)
+	
+	
 	HBRUSH hbr = ::CreateSolidBrush(color);
 	::FillRect(mInteropHDC, rc, hbr);
 	::DeleteObject(HGDIOBJ(hbr));
@@ -1073,8 +1064,8 @@ DWriteContext::DrawLine(int x1, int y1, int x2, int y2, COLORREF color)
 {
     if (mDMode == DM_INTEROP)
     {
-	// GDI functions are used before this call.  Keep using GDI.
-	// (Switching to Direct2D causes terrible slowdown.)
+	
+	
 	HPEN hpen = ::CreatePen(PS_SOLID, 1, color);
 	HGDIOBJ old_pen = ::SelectObject(mInteropHDC, HGDIOBJ(hpen));
 	::MoveToEx(mInteropHDC, x1, y1, NULL);
@@ -1097,14 +1088,14 @@ DWriteContext::SetPixel(int x, int y, COLORREF color)
 {
     if (mDMode == DM_INTEROP)
     {
-	// GDI functions are used before this call.  Keep using GDI.
-	// (Switching to Direct2D causes terrible slowdown.)
+	
+	
 	::SetPixel(mInteropHDC, x, y, color);
     }
     else
     {
 	SetDrawingMode(DM_DIRECTX);
-	// Direct2D doesn't have SetPixel API.  Use DrawLine instead.
+	
 	mRT->DrawLine(
 		D2D1::Point2F(FLOAT(x), FLOAT(y) + 0.5f),
 		D2D1::Point2F(FLOAT(x+1), FLOAT(y) + 0.5f),
@@ -1210,14 +1201,14 @@ DWriteContext::GetRenderingParams(
     return params;
 }
 
-////////////////////////////////////////////////////////////////////////////
-// PUBLIC C INTERFACES
+
+
 
     void
 DWrite_Init(void)
 {
 #ifdef DYNAMIC_DIRECTX
-    // Load libraries.
+    
     hD2D1DLL = vimLoadLib("d2d1.dll");
     hDWriteDLL = vimLoadLib("dwrite.dll");
     if (hD2D1DLL == NULL || hDWriteDLL == NULL)
@@ -1225,7 +1216,7 @@ DWrite_Init(void)
 	DWrite_Final();
 	return;
     }
-    // Get address of procedures.
+    
     pGetUserDefaultLocaleName = (PGETUSERDEFAULTLOCALENAME)GetProcAddress(
 	    GetModuleHandle("kernel32.dll"), "GetUserDefaultLocaleName");
     pD2D1CreateFactory = (PD2D1CREATEFACTORY)GetProcAddress(hD2D1DLL,

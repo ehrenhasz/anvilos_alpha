@@ -1,7 +1,5 @@
-/* vi: set sw=4 ts=4: */
-/*
- * Licensed under GPLv2, see file LICENSE in this source tree.
- */
+
+
 #ifndef UNICODE_H
 #define UNICODE_H 1
 
@@ -51,18 +49,18 @@ enum {
 #  define ENABLE_UNICODE_BIDI_SUPPORT 0
 # endif
 
-/* Number of unicode chars. Falls back to strlen() on invalid unicode */
+
 size_t FAST_FUNC unicode_strlen(const char *string);
-/* Width on terminal */
+
 size_t FAST_FUNC unicode_strwidth(const char *string);
 enum {
 	UNI_FLAG_PAD = (1 << 0),
 };
-//UNUSED: unsigned FAST_FUNC unicode_padding_to_width(unsigned width, const char *src);
-//UNUSED: char* FAST_FUNC unicode_conv_to_printable2(uni_stat_t *stats, const char *src, unsigned width, int flags);
+
+
 char* FAST_FUNC unicode_conv_to_printable(uni_stat_t *stats, const char *src);
-//UNUSED: char* FAST_FUNC unicode_conv_to_printable_maxwidth(uni_stat_t *stats, const char *src, unsigned maxwidth);
-char* FAST_FUNC unicode_conv_to_printable_fixedwidth(/*uni_stat_t *stats,*/ const char *src, unsigned width);
+
+char* FAST_FUNC unicode_conv_to_printable_fixedwidth( const char *src, unsigned width);
 
 # if ENABLE_UNICODE_USING_LOCALE
 
@@ -72,7 +70,7 @@ void reinit_unicode(const char *LANG) FAST_FUNC;
 
 # else
 
-/* Homegrown Unicode support. It knows only C and Unicode locales. */
+
 
 #  if !ENABLE_FEATURE_CHECK_UNICODE_IN_ENV
 #   define unicode_status UNICODE_ON
@@ -87,7 +85,7 @@ void reinit_unicode(const char *LANG) FAST_FUNC;
 #  undef MB_CUR_MAX
 #  define MB_CUR_MAX 6
 
-/* Prevent name collisions */
+
 #  define wint_t    bb_wint_t
 #  define mbstate_t bb_mbstate_t
 #  define mbstowcs  bb_mbstowcs
@@ -120,9 +118,9 @@ int unicode_bidi_is_neutral_wchar(wint_t wc) FAST_FUNC;
 #  endif
 
 
-# endif /* !UNICODE_USING_LOCALE */
+# endif 
 
-#endif /* UNICODE_SUPPORT */
+#endif 
 
 POP_SAVED_FUNCTION_VISIBILITY
 

@@ -27,7 +27,7 @@ def test():
         for func_name, _ in EXPECTED_MAP:
             try:
                 time_func = getattr(time, func_name, None) or globals()[func_name]
-                now = time_func()  # may raise AttributeError
+                now = time_func()  
             except (KeyError, AttributeError):
                 continue
             try:

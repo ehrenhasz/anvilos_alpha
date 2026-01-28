@@ -175,7 +175,7 @@ test_ets_strict()
 	check_err $? "Could not get high enough prio-2 ingress rate"
 	local rate_2_in=${rate_2[0]}
 	local rate_2_eg=${rate_2[1]}
-	stop_traffic # $h2.222
+	stop_traffic 
 	start_traffic $h1.111 192.0.2.33 192.0.2.34 $h3mac
 	local -a rate_1
 	rate_1=($(measure_rate $swp1 $h3 rx_octets_prio_1 "prio 1"))
@@ -190,8 +190,8 @@ test_ets_strict()
 	check_err $? "Could not get high enough prio-2 ingress rate with prio-1"
 	local rate_3_in=${rate_3[0]}
 	local rate_3_eg=${rate_3[1]}
-	stop_traffic # $h2.222
-	stop_traffic # $h1.111
+	stop_traffic 
+	stop_traffic 
 	local rel32=$(rel $rate_2_eg $rate_3_eg)
 	check_err $(bc <<< "$rel32 < 95")
 	log_test "strict priority"

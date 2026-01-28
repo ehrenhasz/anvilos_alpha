@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef __PACKET_DIAG_H__
 #define __PACKET_DIAG_H__
 
@@ -13,9 +13,9 @@ struct packet_diag_req {
 	__u32	pdiag_cookie[2];
 };
 
-#define PACKET_SHOW_INFO	0x00000001 /* Basic packet_sk information */
-#define PACKET_SHOW_MCLIST	0x00000002 /* A set of packet_diag_mclist-s */
-#define PACKET_SHOW_RING_CFG	0x00000004 /* Rings configuration parameters */
+#define PACKET_SHOW_INFO	0x00000001 
+#define PACKET_SHOW_MCLIST	0x00000002 
+#define PACKET_SHOW_RING_CFG	0x00000004 
 #define PACKET_SHOW_FANOUT	0x00000008
 #define PACKET_SHOW_MEMINFO	0x00000010
 #define PACKET_SHOW_FILTER	0x00000020
@@ -30,7 +30,7 @@ struct packet_diag_msg {
 };
 
 enum {
-	/* PACKET_DIAG_NONE, standard nl API requires this attribute!  */
+	
 	PACKET_DIAG_INFO,
 	PACKET_DIAG_MCLIST,
 	PACKET_DIAG_RX_RING,
@@ -65,7 +65,7 @@ struct packet_diag_mclist {
 	__u32	pdmc_count;
 	__u16	pdmc_type;
 	__u16	pdmc_alen;
-	__u8	pdmc_addr[32]; /* MAX_ADDR_LEN */
+	__u8	pdmc_addr[32]; 
 };
 
 struct packet_diag_ring {

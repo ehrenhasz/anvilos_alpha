@@ -80,17 +80,17 @@ def instance0():
     multitest.globals(BDADDR=ble.config("mac"))
     ((char_handle,),) = ble.gatts_register_services(SERVICES)
     print("gap_advertise")
-    ble.gap_advertise(20_000, b"\x02\x01\x06\x04\xffMPY")  # \x04\x09MPY
+    ble.gap_advertise(20_000, b"\x02\x01\x06\x04\xffMPY")  
     multitest.next()
     try:
-        ble.gatts_write(char_handle, "periph0")  ###
+        ble.gatts_write(char_handle, "periph0")  
         conn_handle = wait_for_event(_IRQ_CENTRAL_CONNECT, TIMEOUT_MS * 10)
         wait_for_event(_IRQ_GATTS_WRITE, TIMEOUT_MS)
         print("sync A")
         ble.gatts_write(char_handle, "periph1")
         time.sleep_ms(100)
         ble.gatts_write(char_handle, "periph2")
-        ble.gatts_notify(conn_handle, char_handle)  ###
+        ble.gatts_notify(conn_handle, char_handle)  
         time.sleep_ms(100)
         ble.gatts_write(char_handle, "periph3", True)
         time.sleep_ms(100)
@@ -99,14 +99,14 @@ def instance0():
         print("sync B")
         ble.gatts_write(char_handle, "periph4", False)
         time.sleep_ms(100)
-        ble.gatts_write(char_handle, "periph5", True)  ###
+        ble.gatts_write(char_handle, "periph5", True)  
         time.sleep_ms(100)
         multitest.broadcast("B")
         wait_for_event(_IRQ_GATTS_WRITE, TIMEOUT_MS)
         print("sync C")
         ble.gatts_write(char_handle, "periph6", False)
         time.sleep_ms(100)
-        ble.gatts_write(char_handle, "periph7", True)  ###
+        ble.gatts_write(char_handle, "periph7", True)  
         time.sleep_ms(100)
         multitest.broadcast("C")
         wait_for_event(_IRQ_GATTS_WRITE, TIMEOUT_MS)
@@ -116,7 +116,7 @@ def instance0():
         ble.gatts_write(char_handle, "periph9", True)
         time.sleep_ms(100)
         ble.gatts_write(char_handle, "periph10")
-        ble.gatts_notify(conn_handle, char_handle)  ###
+        ble.gatts_notify(conn_handle, char_handle)  
         time.sleep_ms(100)
         multitest.broadcast("D")
         wait_for_event(_IRQ_CENTRAL_DISCONNECT, TIMEOUT_MS)

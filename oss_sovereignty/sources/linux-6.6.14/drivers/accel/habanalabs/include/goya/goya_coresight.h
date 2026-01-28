@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
 
 #ifndef GOYA_CORESIGHT_H
 #define GOYA_CORESIGHT_H
@@ -196,4 +191,4 @@ enum goya_debug_spmu_regs_index {
 	GOYA_SPMU_LAST = GOYA_SPMU_TPC7_EML
 };
 
-#endif /* GOYA_CORESIGHT_H */
+#endif 

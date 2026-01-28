@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_PARTX_H
 #define UTIL_LINUX_PARTX_H
 
@@ -18,7 +15,7 @@
 #endif
 
 #ifndef BLKPG_RESIZE_PARTITION
-# define BLKPG_RESIZE_PARTITION	3		/* since Linux 3.6 */
+# define BLKPG_RESIZE_PARTITION	3		
 #endif
 
 
@@ -64,4 +61,4 @@ static inline int partx_resize_partition(int fd, int partno,
 	return ioctl(fd, BLKPG, &a);
 }
 
-#endif /*  UTIL_LINUX_PARTX_H */
+#endif 

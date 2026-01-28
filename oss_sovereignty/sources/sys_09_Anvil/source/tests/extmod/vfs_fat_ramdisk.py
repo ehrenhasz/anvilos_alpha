@@ -15,9 +15,9 @@ class RAMFS:
         for i in range(len(buf)):
             self.data[n * self.SEC_SIZE + i] = buf[i]
     def ioctl(self, op, arg):
-        if op == 4:  # MP_BLOCKDEV_IOCTL_BLOCK_COUNT
+        if op == 4:  
             return len(self.data) // self.SEC_SIZE
-        if op == 5:  # MP_BLOCKDEV_IOCTL_BLOCK_SIZE
+        if op == 5:  
             return self.SEC_SIZE
 try:
     bdev = RAMFS(50)
@@ -38,8 +38,8 @@ except OSError as e:
 with fs.open("foo_file.txt", "w") as f:
     f.write("hello!")
 print(list(fs.ilistdir()))
-print("stat root:", fs.stat("/")[:-3])  # timestamps differ across runs
-print("stat file:", fs.stat("foo_file.txt")[:-3])  # timestamps differ across runs
+print("stat root:", fs.stat("/")[:-3])  
+print("stat file:", fs.stat("foo_file.txt")[:-3])  
 print(b"FOO_FILETXT" in bdev.data)
 print(b"hello!" in bdev.data)
 fs.mkdir("foo_dir")

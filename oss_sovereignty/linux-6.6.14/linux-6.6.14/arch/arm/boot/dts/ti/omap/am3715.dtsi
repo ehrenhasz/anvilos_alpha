@@ -1,4 +1,0 @@
-#include "omap36xx.dtsi"
-&iva {
-	status = "disabled";
-};

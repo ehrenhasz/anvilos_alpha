@@ -60,4 +60,4 @@ set_and_print_wakeup(0x10000 * 1000)
 set_and_print_wakeup(0x10001 * 1000)
 set_and_print_wakeup(0x1FFFF * 1000)
 set_and_print_wakeup(0x20000 * 1000)
-set_and_print_wakeup(0x20001 * 1000)  # exception
+set_and_print_wakeup(0x20001 * 1000)  

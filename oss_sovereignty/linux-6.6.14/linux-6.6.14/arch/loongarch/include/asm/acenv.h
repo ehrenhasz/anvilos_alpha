@@ -1,3 +1,0 @@
-#ifndef _ASM_LOONGARCH_ACENV_H
-#define _ASM_LOONGARCH_ACENV_H
-#endif  

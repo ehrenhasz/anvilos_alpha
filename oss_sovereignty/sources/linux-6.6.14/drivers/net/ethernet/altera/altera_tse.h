@@ -1,21 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Altera Triple-Speed Ethernet MAC driver
- * Copyright (C) 2008-2014 Altera Corporation. All rights reserved
- *
- * Contributors:
- *   Dalon Westergreen
- *   Thomas Chou
- *   Ian Abbott
- *   Yuriy Kozlov
- *   Tobias Klauser
- *   Andriy Smolskyy
- *   Roman Bulgakov
- *   Dmytro Mytarchuk
- *   Matthew Gerlach
- *
- * Original driver contributed by SLS.
- * Major updates contributed by GlobalLogic
- */
+
+
 
 #ifndef __ALTERA_TSE_H__
 #define __ALTERA_TSE_H__
@@ -30,30 +14,27 @@
 #include <linux/phylink.h>
 
 #define ALTERA_TSE_SW_RESET_WATCHDOG_CNTR	10000
-#define ALTERA_TSE_MAC_FIFO_WIDTH		4	/* TX/RX FIFO width in
-							 * bytes
-							 */
-/* Rx FIFO default settings */
+#define ALTERA_TSE_MAC_FIFO_WIDTH		4	
+
 #define ALTERA_TSE_RX_SECTION_EMPTY	16
 #define ALTERA_TSE_RX_SECTION_FULL	0
 #define ALTERA_TSE_RX_ALMOST_EMPTY	8
 #define ALTERA_TSE_RX_ALMOST_FULL	8
 
-/* Tx FIFO default settings */
+
 #define ALTERA_TSE_TX_SECTION_EMPTY	16
 #define ALTERA_TSE_TX_SECTION_FULL	0
 #define ALTERA_TSE_TX_ALMOST_EMPTY	8
 #define ALTERA_TSE_TX_ALMOST_FULL	3
 
-/* MAC function configuration default settings */
+
 #define ALTERA_TSE_TX_IPG_LENGTH	12
 
 #define ALTERA_TSE_PAUSE_QUANTA		0xffff
 
 #define GET_BIT_VALUE(v, bit)		(((v) >> (bit)) & 0x1)
 
-/* MAC Command_Config Register Bit Definitions
- */
+
 #define MAC_CMDCFG_TX_ENA			BIT(0)
 #define MAC_CMDCFG_RX_ENA			BIT(1)
 #define MAC_CMDCFG_XON_GEN			BIT(2)
@@ -110,17 +91,13 @@
 #define MAC_CMDCFG_DISABLE_READ_TIMEOUT_GET(v)	GET_BIT_VALUE(v, 27)
 #define MAC_CMDCFG_CNT_RESET_GET(v)		GET_BIT_VALUE(v, 31)
 
-/* MDIO registers within MAC register Space
- */
+
 struct altera_tse_mdio {
-	u32 control;	/* PHY device operation control register */
-	u32 status;	/* PHY device operation status register */
-	u32 phy_id1;	/* Bits 31:16 of PHY identifier */
-	u32 phy_id2;	/* Bits 15:0 of PHY identifier */
-	u32 auto_negotiation_advertisement;	/* Auto-negotiation
-							 * advertisement
-							 * register
-							 */
+	u32 control;	
+	u32 status;	
+	u32 phy_id1;	
+	u32 phy_id2;	
+	u32 auto_negotiation_advertisement;	
 	u32 remote_partner_base_page_ability;
 
 	u32 reg6;
@@ -151,180 +128,150 @@ struct altera_tse_mdio {
 	u32 reg1f;
 };
 
-/* MAC register Space. Note that some of these registers may or may not be
- * present depending upon options chosen by the user when the core was
- * configured and built. Please consult the Altera Triple Speed Ethernet User
- * Guide for details.
- */
+
 struct altera_tse_mac {
-	/* Bits 15:0: MegaCore function revision (0x0800). Bit 31:16: Customer
-	 * specific revision
-	 */
+	
 	u32 megacore_revision;
-	/* Provides a memory location for user applications to test the device
-	 * memory operation.
-	 */
+	
 	u32 scratch_pad;
-	/* The host processor uses this register to control and configure the
-	 * MAC block
-	 */
+	
 	u32 command_config;
-	/* 32-bit primary MAC address word 0 bits 0 to 31 of the primary
-	 * MAC address
-	 */
+	
 	u32 mac_addr_0;
-	/* 32-bit primary MAC address word 1 bits 32 to 47 of the primary
-	 * MAC address
-	 */
+	
 	u32 mac_addr_1;
-	/* 14-bit maximum frame length. The MAC receive logic */
+	
 	u32 frm_length;
-	/* The pause quanta is used in each pause frame sent to a remote
-	 * Ethernet device, in increments of 512 Ethernet bit times
-	 */
+	
 	u32 pause_quanta;
-	/* 12-bit receive FIFO section-empty threshold */
+	
 	u32 rx_section_empty;
-	/* 12-bit receive FIFO section-full threshold */
+	
 	u32 rx_section_full;
-	/* 12-bit transmit FIFO section-empty threshold */
+	
 	u32 tx_section_empty;
-	/* 12-bit transmit FIFO section-full threshold */
+	
 	u32 tx_section_full;
-	/* 12-bit receive FIFO almost-empty threshold */
+	
 	u32 rx_almost_empty;
-	/* 12-bit receive FIFO almost-full threshold */
+	
 	u32 rx_almost_full;
-	/* 12-bit transmit FIFO almost-empty threshold */
+	
 	u32 tx_almost_empty;
-	/* 12-bit transmit FIFO almost-full threshold */
+	
 	u32 tx_almost_full;
-	/* MDIO address of PHY Device 0. Bits 0 to 4 hold a 5-bit PHY address */
+	
 	u32 mdio_phy0_addr;
-	/* MDIO address of PHY Device 1. Bits 0 to 4 hold a 5-bit PHY address */
+	
 	u32 mdio_phy1_addr;
 
-	/* Bit[15:0]—16-bit holdoff quanta */
+	
 	u32 holdoff_quant;
 
-	/* only if 100/1000 BaseX PCS, reserved otherwise */
+	
 	u32 reserved1[5];
 
-	/* Minimum IPG between consecutive transmit frame in terms of bytes */
+	
 	u32 tx_ipg_length;
 
-	/* IEEE 802.3 oEntity Managed Object Support */
+	
 
-	/* The MAC addresses */
+	
 	u32 mac_id_1;
 	u32 mac_id_2;
 
-	/* Number of frames transmitted without error including pause frames */
+	
 	u32 frames_transmitted_ok;
-	/* Number of frames received without error including pause frames */
+	
 	u32 frames_received_ok;
-	/* Number of frames received with a CRC error */
+	
 	u32 frames_check_sequence_errors;
-	/* Frame received with an alignment error */
+	
 	u32 alignment_errors;
-	/* Sum of payload and padding octets of frames transmitted without
-	 * error
-	 */
+	
 	u32 octets_transmitted_ok;
-	/* Sum of payload and padding octets of frames received without error */
+	
 	u32 octets_received_ok;
 
-	/* IEEE 802.3 oPausedEntity Managed Object Support */
+	
 
-	/* Number of transmitted pause frames */
+	
 	u32 tx_pause_mac_ctrl_frames;
-	/* Number of Received pause frames */
+	
 	u32 rx_pause_mac_ctrl_frames;
 
-	/* IETF MIB (MIB-II) Object Support */
+	
 
-	/* Number of frames received with error */
+	
 	u32 if_in_errors;
-	/* Number of frames transmitted with error */
+	
 	u32 if_out_errors;
-	/* Number of valid received unicast frames */
+	
 	u32 if_in_ucast_pkts;
-	/* Number of valid received multicasts frames (without pause) */
+	
 	u32 if_in_multicast_pkts;
-	/* Number of valid received broadcast frames */
+	
 	u32 if_in_broadcast_pkts;
 	u32 if_out_discards;
-	/* The number of valid unicast frames transmitted */
+	
 	u32 if_out_ucast_pkts;
-	/* The number of valid multicast frames transmitted,
-	 * excluding pause frames
-	 */
+	
 	u32 if_out_multicast_pkts;
 	u32 if_out_broadcast_pkts;
 
-	/* IETF RMON MIB Object Support */
+	
 
-	/* Counts the number of dropped packets due to internal errors
-	 * of the MAC client.
-	 */
+	
 	u32 ether_stats_drop_events;
-	/* Total number of bytes received. Good and bad frames. */
+	
 	u32 ether_stats_octets;
-	/* Total number of packets received. Counts good and bad packets. */
+	
 	u32 ether_stats_pkts;
-	/* Number of packets received with less than 64 bytes. */
+	
 	u32 ether_stats_undersize_pkts;
-	/* The number of frames received that are longer than the
-	 * value configured in the frm_length register
-	 */
+	
 	u32 ether_stats_oversize_pkts;
-	/* Number of received packet with 64 bytes */
+	
 	u32 ether_stats_pkts_64_octets;
-	/* Frames (good and bad) with 65 to 127 bytes */
+	
 	u32 ether_stats_pkts_65to127_octets;
-	/* Frames (good and bad) with 128 to 255 bytes */
+	
 	u32 ether_stats_pkts_128to255_octets;
-	/* Frames (good and bad) with 256 to 511 bytes */
+	
 	u32 ether_stats_pkts_256to511_octets;
-	/* Frames (good and bad) with 512 to 1023 bytes */
+	
 	u32 ether_stats_pkts_512to1023_octets;
-	/* Frames (good and bad) with 1024 to 1518 bytes */
+	
 	u32 ether_stats_pkts_1024to1518_octets;
 
-	/* Any frame length from 1519 to the maximum length configured in the
-	 * frm_length register, if it is greater than 1518
-	 */
+	
 	u32 ether_stats_pkts_1519tox_octets;
-	/* Too long frames with CRC error */
+	
 	u32 ether_stats_jabbers;
-	/* Too short frames with CRC error */
+	
 	u32 ether_stats_fragments;
 
 	u32 reserved2;
 
-	/* FIFO control register */
+	
 	u32 tx_cmd_stat;
 	u32 rx_cmd_stat;
 
-	/* Extended Statistics Counters */
+	
 	u32 msb_octets_transmitted_ok;
 	u32 msb_octets_received_ok;
 	u32 msb_ether_stats_octets;
 
 	u32 reserved3;
 
-	/* Multicast address resolution table, mapped in the controller address
-	 * space
-	 */
+	
 	u32 hash_table[64];
 
-	/* Registers 0 to 31 within PHY device 0/1 connected to the MDIO PHY
-	 * management interface
-	 */
+	
 	struct altera_tse_mdio mdio_phy0;
 	struct altera_tse_mdio mdio_phy1;
 
-	/* 4 Supplemental MAC Addresses */
+	
 	u32 supp_mac_addr_0_0;
 	u32 supp_mac_addr_0_1;
 	u32 supp_mac_addr_1_0;
@@ -336,7 +283,7 @@ struct altera_tse_mac {
 
 	u32 reserved4[8];
 
-	/* IEEE 1588v2 Feature */
+	
 	u32 tx_period;
 	u32 tx_adjust_fns;
 	u32 tx_adjust_ns;
@@ -349,15 +296,12 @@ struct altera_tse_mac {
 
 #define tse_csroffs(a) (offsetof(struct altera_tse_mac, a))
 
-/* Transmit and Receive Command Registers Bit Definitions
- */
+
 #define ALTERA_TSE_TX_CMD_STAT_OMIT_CRC		BIT(17)
 #define ALTERA_TSE_TX_CMD_STAT_TX_SHIFT16	BIT(18)
 #define ALTERA_TSE_RX_CMD_STAT_RX_SHIFT16	BIT(25)
 
-/* Wrapper around a pointer to a socket buffer,
- * so a DMA handle can be stored along with the buffer
- */
+
 struct tse_buffer {
 	struct list_head lh;
 	struct sk_buff *skb;
@@ -371,7 +315,7 @@ struct altera_tse_private;
 #define ALTERA_DTYPE_SGDMA 1
 #define ALTERA_DTYPE_MSGDMA 2
 
-/* standard DMA interface for SGDMA and MSGDMA */
+
 struct altera_dmaops {
 	int altera_dtype;
 	int dmamask;
@@ -391,57 +335,56 @@ struct altera_dmaops {
 	void (*start_rxdma)(struct altera_tse_private *);
 };
 
-/* This structure is private to each device.
- */
+
 struct altera_tse_private {
 	struct net_device *dev;
 	struct device *device;
 	struct napi_struct napi;
 
-	/* MAC address space */
+	
 	struct altera_tse_mac __iomem *mac_dev;
 
-	/* TSE Revision */
+	
 	u32	revision;
 
-	/* mSGDMA Rx Dispatcher address space */
+	
 	void __iomem *rx_dma_csr;
 	void __iomem *rx_dma_desc;
 	void __iomem *rx_dma_resp;
 
-	/* mSGDMA Tx Dispatcher address space */
+	
 	void __iomem *tx_dma_csr;
 	void __iomem *tx_dma_desc;
 
-	/* SGMII PCS address space */
+	
 	void __iomem *pcs_base;
 
-	/* Rx buffers queue */
+	
 	struct tse_buffer *rx_ring;
 	u32 rx_cons;
 	u32 rx_prod;
 	u32 rx_ring_size;
 	u32 rx_dma_buf_sz;
 
-	/* Tx ring buffer */
+	
 	struct tse_buffer *tx_ring;
 	u32 tx_prod;
 	u32 tx_cons;
 	u32 tx_ring_size;
 
-	/* Interrupts */
+	
 	u32 tx_irq;
 	u32 rx_irq;
 
-	/* RX/TX MAC FIFO configs */
+	
 	u32 tx_fifo_depth;
 	u32 rx_fifo_depth;
 
-	/* Hash filter settings */
+	
 	u32 hash_filter;
 	u32 added_unicast;
 
-	/* Descriptor memory info for managing SGDMA */
+	
 	u32 txdescmem;
 	u32 rxdescmem;
 	dma_addr_t rxdescmem_busaddr;
@@ -454,22 +397,22 @@ struct altera_tse_private {
 	struct list_head txlisthd;
 	struct list_head rxlisthd;
 
-	/* MAC command_config register protection */
+	
 	spinlock_t mac_cfg_lock;
-	/* Tx path protection */
+	
 	spinlock_t tx_lock;
-	/* Rx DMA & interrupt control protection */
+	
 	spinlock_t rxdma_irq_lock;
 
-	/* PHY */
-	int phy_addr;		/* PHY's MDIO address, -1 for autodetection */
+	
+	int phy_addr;		
 	phy_interface_t phy_iface;
 	struct mii_bus *mdio;
 	int oldspeed;
 	int oldduplex;
 	int oldlink;
 
-	/* ethtool msglvl option */
+	
 	u32 msg_enable;
 
 	struct altera_dmaops *dmaops;
@@ -479,8 +422,7 @@ struct altera_tse_private {
 	struct phylink_pcs *pcs;
 };
 
-/* Function prototypes
- */
+
 void altera_tse_set_ethtool_ops(struct net_device *);
 
 static inline
@@ -528,4 +470,4 @@ void csrwr8(u8 val, void __iomem *mac, size_t offs)
 	writeb(val, paddr);
 }
 
-#endif /* __ALTERA_TSE_H__ */
+#endif 

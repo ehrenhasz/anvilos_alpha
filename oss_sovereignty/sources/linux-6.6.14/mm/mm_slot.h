@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #ifndef _LINUX_MM_SLOT_H
 #define _LINUX_MM_SLOT_H
@@ -6,12 +6,7 @@
 #include <linux/hashtable.h>
 #include <linux/slab.h>
 
-/*
- * struct mm_slot - hash lookup from mm to mm_slot
- * @hash: link to the mm_slots hash list
- * @mm_node: link into the mm_slots list
- * @mm: the mm that this information is valid for
- */
+
 struct mm_slot {
 	struct hlist_node hash;
 	struct list_head mm_node;
@@ -23,7 +18,7 @@ struct mm_slot {
 
 static inline void *mm_slot_alloc(struct kmem_cache *cache)
 {
-	if (!cache)	/* initialization failed */
+	if (!cache)	
 		return NULL;
 	return kmem_cache_zalloc(cache, GFP_KERNEL);
 }
@@ -52,4 +47,4 @@ static inline void mm_slot_free(struct kmem_cache *cache, void *objp)
 	hash_add(_hashtable, &_mm_slot->hash, (unsigned long)_mm);	       \
 })
 
-#endif /* _LINUX_MM_SLOT_H */
+#endif 

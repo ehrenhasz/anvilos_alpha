@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  SR-IPv6 implementation
- *
- *  Author:
- *  David Lebrun <david.lebrun@uclouvain.be>
- */
+
+
 
 #ifndef _NET_SEG6_HMAC_H
 #define _NET_SEG6_HMAC_H

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021 Mellanox Technologies. */
+
+
 
 #ifndef __MLX5_ESW_FT_H__
 #define __MLX5_ESW_FT_H__
@@ -27,7 +27,7 @@ u16
 mlx5_esw_indir_table_decap_vport(struct mlx5_flow_attr *attr);
 
 #else
-/* indir API stubs */
+
 static inline struct mlx5_esw_indir_table *
 mlx5_esw_indir_table_init(void)
 {
@@ -69,4 +69,4 @@ mlx5_esw_indir_table_decap_vport(struct mlx5_flow_attr *attr)
 }
 #endif
 
-#endif /* __MLX5_ESW_FT_H__ */
+#endif 

@@ -1,6 +1,6 @@
 system_mke2fs='/sbin/mke2fs -O ^resize_inode'
 bbox_mke2fs='./busybox mke2fs'
-gen_image() { # params: mke2fs_invocation image_name
+gen_image() { 
     >$2
     dd seek=$((kilobytes-1)) bs=1K count=1 </dev/zero of=$2 >/dev/null 2>&1 || exit 1
     $1 -F $2 $kilobytes >$2.raw_out 2>&1 || return 1

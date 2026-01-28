@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+
+
 
 #ifndef _VNIC_NIC_H_
 #define _VNIC_NIC_H_
@@ -58,4 +55,4 @@ static inline void vnic_set_nic_cfg(u32 *nic_cfg,
 			<< NIC_CFG_IG_VLAN_STRIP_EN_SHIFT);
 }
 
-#endif /* _VNIC_NIC_H_ */
+#endif 

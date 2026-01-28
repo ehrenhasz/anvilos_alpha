@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * trace.h - DesignWare USB3 DRD Controller Trace Support
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - https://www.ti.com
- *
- * Author: Felipe Balbi <balbi@ti.com>
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM dwc3
@@ -335,9 +329,9 @@ DEFINE_EVENT(dwc3_log_ep, dwc3_gadget_ep_disable,
 	TP_ARGS(dep)
 );
 
-#endif /* __DWC3_TRACE_H */
+#endif 
 
-/* this part has to be here */
+
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

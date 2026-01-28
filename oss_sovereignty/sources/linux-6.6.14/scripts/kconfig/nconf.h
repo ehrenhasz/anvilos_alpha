@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2008 Nir Tzachar <nir.tzachar@gmail.com>
- *
- * Derived from menuconfig.
- */
+
+
 
 #include <ctype.h>
 #include <errno.h>
@@ -69,7 +65,7 @@ void set_colors(void);
 
 typedef int (*extra_key_cb_fn)(int, size_t, size_t, void *);
 
-/* this changes the windows attributes !!! */
+
 void print_in_middle(WINDOW *win, int y, int width, const char *str, int attrs);
 int get_line_length(const char *line);
 int get_line_no(const char *text);

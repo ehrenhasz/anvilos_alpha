@@ -249,7 +249,7 @@ def read_exclude_file(fname):
     with open(fname) as fd:
         for line in fd:
             line = line.strip()
-            if line.startswith('#'):
+            if line.startswith('
                 continue
             if not len(line):
                 continue

@@ -1,35 +1,35 @@
-#
-# Makefile to run all tests for Vim
-#
 
-# Use console or GUI.
+
+
+
+
 VIMPROG = ../vim
 XXDPROG = ../xxd/xxd
-# VIMPROG = ../gvim
+
 
 SCRIPTSOURCE = ../../runtime
 
-# Comment out this line to see the verbose output of tests.
-#
-# Catches SwapExists to avoid hanging at the ATTENTION prompt.
+
+
+
 REDIR_TEST_TO_NULL = --cmd 'au SwapExists * let v:swapchoice = "e"' | LC_ALL=C LANG=C LANGUAGE=C awk '/Executing Test_/{match($$0, "([0-9][0-9]:[0-9][0-9] *)?Executing Test_[^\\)]*\\)"); print substr($$0, RSTART, RLENGTH) "\r"; fflush()}'
 
-# Uncomment this line to use valgrind for memory leaks and extra warnings.
-#   The output goes into a file "valgrind.testN"
-#   Vim should be compiled with EXITFREE to avoid false warnings.
-#   This will make testing about 10 times as slow.
-# VALGRIND = valgrind --tool=memcheck --leak-check=yes --num-callers=45 --log-file=valgrind.$*
 
-# To execute one test, e.g. in gdb, use something like this:
-# run -f -u unix.vim --gui-dialog-file guidialog -U NONE --noplugin --not-a-term -S runtest.vim test_name.vim
+
+
+
+
+
+
+
 
 default: nongui
 
-# The list of tests is common to all systems.
-# This defines SCRIPTS_TINY_OUT, NEW_TESTS and NEW_TESTS_RES.
+
+
 include Make_all.mak
 
-# Explicit dependencies.
+
 test_options.res test_alot.res: opt_test.vim
 
 .SUFFIXES: .in .out .res .vim
@@ -43,7 +43,7 @@ tiny:	nolog tinytests report
 benchmark: $(SCRIPTS_BENCH)
 
 report:
-	@# without the +eval feature test_result.log is a copy of test.log
+	@
 	@/bin/sh -c "if test -f test.log; \
 		then cp test.log test_result.log; \
 		else echo No failures reported > test_result.log; \
@@ -61,8 +61,8 @@ report:
 $(SCRIPTS_TINY_OUT) $(NEW_TESTS_RES): $(VIMPROG)
 
 
-# Execute an individual new style test, e.g.:
-# 	make test_largefile
+
+
 $(NEW_TESTS):
 	rm -f $@.res $(CLEANUP_FILES)
 	@MAKEFLAGS=--no-print-directory $(MAKE) -f Makefile $@.res VIMPROG=$(VIMPROG) XXDPROG=$(XXDPROG) SCRIPTSOURCE=$(SCRIPTSOURCE)
@@ -71,7 +71,7 @@ $(NEW_TESTS):
 		exit 1; \
 	fi
 
-# Run only tests specific for Vim9 script
+
 test_vim9:
 	rm -f test_vim9_*.res $(CLEANUP_FILES)
 	@MAKEFLAGS=--no-print-directory $(MAKE) -f Makefile $(TEST_VIM9_RES) VIMPROG=$(VIMPROG) XXDPROG=$(XXDPROG) SCRIPTSOURCE=$(SCRIPTSOURCE)
@@ -86,8 +86,8 @@ RM_ON_RUN = test.out X* viminfo
 RM_ON_START = test.ok benchmark.out
 RUN_VIM = VIMRUNTIME=$(SCRIPTSOURCE) $(VALGRIND) $(VIMPROG) -f $(GUI_FLAG) -u unix.vim $(NO_INITS) -s dotest.in
 
-# Delete files that may interfere with running tests.  This includes some files
-# that may result from working on the tests, not only from running them.
+
+
 clean:
 	-rm -rf *.out *.failed *.res *.rej *.orig XfakeHOME Xdir1 Xfind
 	-rm -f opt_test.vim test_result.log $(CLEANUP_FILES)
@@ -96,7 +96,7 @@ clean:
 	-rm -f asan.*
 	-rm -f guidialog guidialogfile
 
-# Delete the files produced by benchmarking, so they can run again.
+
 benchmarkclean:
 	rm -f $(SCRIPTS_BENCH)
 
@@ -104,19 +104,19 @@ nolog:
 	-rm -f test_result.log $(CLEANUP_FILES)
 
 
-# Tiny tests.  Works even without the +eval feature.
+
 tinytests: $(SCRIPTS_TINY_OUT)
 
 .in.out:
 	-rm -rf $*.failed test.ok $(RM_ON_RUN)
 	cp $*.ok test.ok
-	@# Sleep a moment to avoid that the xterm title is messed up.
-	@# 200 msec is sufficient, but only modern sleep supports a fraction of
-	@# a second, fall back to a second if it fails.
+	@
+	@
+	@
 	@-/bin/sh -c "sleep .2 > /dev/null 2>&1 || sleep 1"
 	$(RUN_VIM) $*.in $(REDIR_TEST_TO_NULL)
 
-	@# Check if the test.out file matches test.ok.
+	@
 	@/bin/sh -c "if test -f test.out; then \
 		  if diff test.out $*.ok; \
 		  then mv -f test.out $*.out; \
@@ -130,10 +130,10 @@ tinytests: $(SCRIPTS_TINY_OUT)
 	-rm -rf X* test.ok viminfo
 
 
-# New style of tests uses Vim script with assert calls.  These are easier
-# to write and a lot easier to read and debug.
-# Limitation: Only works with the +eval feature.
-# Add --gui-dialog-file to avoid getting stuck in a dialog.
+
+
+
+
 RUN_VIMTEST = VIMRUNTIME=$(SCRIPTSOURCE) $(VALGRIND) $(VIMPROG) -f $(GUI_FLAG) -u unix.vim --gui-dialog-file guidialog
 
 newtests: newtestssilent
@@ -168,9 +168,9 @@ test_xxd.res:
 
 test_bench_regexp.res: test_bench_regexp.vim
 	-rm -rf benchmark.out $(RM_ON_RUN)
-	@# Sleep a moment to avoid that the xterm title is messed up.
-	@# 200 msec is sufficient, but only modern sleep supports a fraction of
-	@# a second, fall back to a second if it fails.
+	@
+	@
+	@
 	@-/bin/sh -c "sleep .2 > /dev/null 2>&1 || sleep 1"
 	$(RUN_VIMTEST) $(NO_INITS) -S runtest.vim $*.vim $(REDIR_TEST_TO_NULL)
 	@/bin/sh -c "if test -f benchmark.out; then cat benchmark.out; fi"

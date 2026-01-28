@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "sun8i-r16-nintendo-nes-classic.dts"
-/ {
-	model = "Nintendo SuperNES Classic Edition";
-	compatible = "nintendo,super-nes-classic", "nintendo,nes-classic",
-		     "allwinner,sun8i-r16", "allwinner,sun8i-a33";
-};

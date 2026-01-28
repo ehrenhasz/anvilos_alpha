@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef GPIOLIB_OF_H
 #define GPIOLIB_OF_H
@@ -36,8 +36,8 @@ static inline int of_gpio_get_count(struct device *dev, const char *con_id)
 {
 	return 0;
 }
-#endif /* CONFIG_OF_GPIO */
+#endif 
 
 extern struct notifier_block gpio_of_notifier;
 
-#endif /* GPIOLIB_OF_H */
+#endif 

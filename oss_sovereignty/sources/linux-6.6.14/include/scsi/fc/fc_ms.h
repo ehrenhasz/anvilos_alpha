@@ -1,56 +1,39 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2011 Intel Corporation. All rights reserved.
- *
- * Maintained at www.Open-FCoE.org
- */
+
+
 
 #ifndef _FC_MS_H_
 #define	_FC_MS_H_
 
 #include <linux/types.h>
 
-/*
- * Fibre Channel Services - Management Service (MS)
- * From T11.org FC-GS-4 Rev 7.91 February 4, 2004
- */
 
-/*
- * Fabric Device Management Interface
- */
 
-/*
- * Common-transport sub-type for FDMI
- */
-#define	FC_FDMI_SUBTYPE	    0x10 /* fs_ct_hdr.ct_fs_subtype */
 
-/*
- * Management server FDMI specifications.
- */
-#define	FDMI_V1	    1 /* FDMI version 1 specifications */
-#define	FDMI_V2	    2 /* FDMI version 2 specifications */
 
-/*
- * Management server FDMI Requests.
- */
+
+#define	FC_FDMI_SUBTYPE	    0x10 
+
+
+#define	FDMI_V1	    1 
+#define	FDMI_V2	    2 
+
+
 enum fc_fdmi_req {
-	FC_FDMI_GRHL = 0x0100,	/* Get Registered HBA List */
-	FC_FDMI_GHAT = 0x0101,	/* Get HBA Attributes */
-	FC_FDMI_GRPL = 0x0102,	/* Get Registered Port List */
-	FC_FDMI_GPAT = 0x0110,	/* Get Port Attributes */
-	FC_FDMI_RHBA = 0x0200,	/* Register HBA */
-	FC_FDMI_RHAT = 0x0201,	/* Register HBA Attributes */
-	FC_FDMI_RPRT = 0x0210,	/* Register Port */
-	FC_FDMI_RPA = 0x0211,	/* Register Port Attributes */
-	FC_FDMI_DHBA = 0x0300,	/* Deregister HBA */
-	FC_FDMI_DHAT = 0x0301,	/* Deregister HBA Attributes */
-	FC_FDMI_DPRT = 0x0310,	/* Deregister Port */
-	FC_FDMI_DPA = 0x0311,	/* Deregister Port Attributes */
+	FC_FDMI_GRHL = 0x0100,	
+	FC_FDMI_GHAT = 0x0101,	
+	FC_FDMI_GRPL = 0x0102,	
+	FC_FDMI_GPAT = 0x0110,	
+	FC_FDMI_RHBA = 0x0200,	
+	FC_FDMI_RHAT = 0x0201,	
+	FC_FDMI_RPRT = 0x0210,	
+	FC_FDMI_RPA = 0x0211,	
+	FC_FDMI_DHBA = 0x0300,	
+	FC_FDMI_DHAT = 0x0301,	
+	FC_FDMI_DPRT = 0x0310,	
+	FC_FDMI_DPA = 0x0311,	
 };
 
-/*
- * HBA Attribute Entry Type
- */
+
 enum fc_fdmi_hba_attr_type {
 	FC_FDMI_HBA_ATTR_NODENAME = 0x0001,
 	FC_FDMI_HBA_ATTR_MANUFACTURER = 0x0002,
@@ -72,9 +55,7 @@ enum fc_fdmi_hba_attr_type {
 	FC_FDMI_HBA_ATTR_VENDORIDENTIFIER = 0x00E0,
 };
 
-/*
- * HBA Attribute Length
- */
+
 #define FC_FDMI_HBA_ATTR_NODENAME_LEN		8
 #define FC_FDMI_HBA_ATTR_MANUFACTURER_LEN	64
 #define FC_FDMI_HBA_ATTR_SERIALNUMBER_LEN	64
@@ -94,9 +75,7 @@ enum fc_fdmi_hba_attr_type {
 #define FC_FDMI_HBA_ATTR_BIOSSTATE_LEN    4
 #define FC_FDMI_HBA_ATTR_VENDORIDENTIFIER_LEN 8
 
-/*
- * Port Attribute Type
- */
+
 enum fc_fdmi_port_attr_type {
 	FC_FDMI_PORT_ATTR_FC4TYPES = 0x0001,
 	FC_FDMI_PORT_ATTR_SUPPORTEDSPEED = 0x0002,
@@ -116,9 +95,7 @@ enum fc_fdmi_port_attr_type {
 	FC_FDMI_PORT_ATTR_PORTID = 0x103,
 };
 
-/*
- * Port Attribute Length
- */
+
 #define FC_FDMI_PORT_ATTR_FC4TYPES_LEN		32
 #define FC_FDMI_PORT_ATTR_SUPPORTEDSPEED_LEN	4
 #define FC_FDMI_PORT_ATTR_CURRENTPORTSPEED_LEN	4
@@ -137,23 +114,17 @@ enum fc_fdmi_port_attr_type {
 #define FC_FDMI_PORT_ATTR_PORTID_LEN		4
 
 
-/*
- * HBA Attribute ID
- */
+
 struct fc_fdmi_hba_identifier {
 	__be64		id;
 };
 
-/*
- * Port Name
- */
+
 struct fc_fdmi_port_name {
 	__be64		portname;
 };
 
-/*
- * Attribute Entry Block for HBA/Port Attributes
- */
+
 #define FC_FDMI_ATTR_ENTRY_HEADER_LEN	4
 struct fc_fdmi_attr_entry {
 	__be16		type;
@@ -161,83 +132,63 @@ struct fc_fdmi_attr_entry {
 	__u8		value[];
 } __attribute__((__packed__));
 
-/*
- * Common for HBA/Port Attributes
- */
+
 struct fs_fdmi_attrs {
 	__be32				numattrs;
 	struct fc_fdmi_attr_entry	attr[];
 } __attribute__((__packed__));
 
-/*
- * Registered Port List
- */
+
 struct fc_fdmi_rpl {
 	__be32				numport;
 	struct fc_fdmi_port_name	port[1];
 } __attribute__((__packed__));
 
-/*
- * Register HBA (RHBA)
- */
+
 struct fc_fdmi_rhba {
 	struct fc_fdmi_hba_identifier hbaid;
 	struct fc_fdmi_rpl		 port;
 	struct fs_fdmi_attrs		 hba_attrs;
 } __attribute__((__packed__));
 
-/*
- * Register HBA Attributes (RHAT)
- */
+
 struct fc_fdmi_rhat {
 	struct fc_fdmi_hba_identifier hbaid;
 	struct fs_fdmi_attrs		 hba_attrs;
 } __attribute__((__packed__));
 
-/*
- * Register Port (RPRT)
- */
+
 struct fc_fdmi_rprt {
 	struct fc_fdmi_hba_identifier hbaid;
 	struct fc_fdmi_port_name	 port;
 	struct fs_fdmi_attrs		 hba_attrs;
 } __attribute__((__packed__));
 
-/*
- * Register Port Attributes (RPA)
- */
+
 struct fc_fdmi_rpa {
 	struct fc_fdmi_port_name	 port;
 	struct fs_fdmi_attrs		 hba_attrs;
 } __attribute__((__packed__));
 
-/*
- * Deregister Port (DPRT)
- */
+
 struct fc_fdmi_dprt {
 	struct fc_fdmi_port_name	 port;
 } __attribute__((__packed__));
 
-/*
- * Deregister Port Attributes (DPA)
- */
+
 struct fc_fdmi_dpa {
 	struct fc_fdmi_port_name	 port;
 	struct fs_fdmi_attrs		 hba_attrs;
 } __attribute__((__packed__));
 
-/*
- * Deregister HBA Attributes (DHAT)
- */
+
 struct fc_fdmi_dhat {
 	struct fc_fdmi_hba_identifier hbaid;
 } __attribute__((__packed__));
 
-/*
- * Deregister HBA (DHBA)
- */
+
 struct fc_fdmi_dhba {
 	struct fc_fdmi_hba_identifier hbaid;
 } __attribute__((__packed__));
 
-#endif /* _FC_MS_H_ */
+#endif 

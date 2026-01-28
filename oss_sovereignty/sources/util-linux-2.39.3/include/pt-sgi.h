@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_PT_SGI_H
 #define UTIL_LINUX_PT_SGI_H
 
@@ -12,7 +9,7 @@
 #define SGI_MAXPARTITIONS	16
 #define SGI_MAXVOLUMES		15
 
-/* partition types */
+
 enum {
 	SGI_TYPE_VOLHDR		= 0x00,
 	SGI_TYPE_TRKREPL	= 0x01,
@@ -38,16 +35,16 @@ struct sgi_device_parameter {
 
 	uint16_t pcylcount;
 	uint16_t head_vol0;
-	uint16_t ntrks;		/* tracks in cyl 0 or vol 0 */
+	uint16_t ntrks;		
 
 	unsigned char cmd_tag_queue_depth;
 	unsigned char unused0;
 
 	uint16_t unused1;
-	uint16_t nsect;		/* sectors/tracks in cyl 0 or vol 0 */
+	uint16_t nsect;		
 	uint16_t bytes;
 	uint16_t ilfact;
-	uint32_t flags;		/* SGI_DEVPARAM_* controller flags */
+	uint32_t flags;		
 	uint32_t datarate;
 	uint32_t retries_on_error;
 	uint32_t ms_per_word;
@@ -71,28 +68,28 @@ enum {
 
 
 struct sgi_disklabel {
-	uint32_t magic;			/* magic number */
-	uint16_t root_part_num;		/* # root partition */
-	uint16_t swap_part_num;		/* # swap partition */
-	unsigned char boot_file[16];	/* name of boot file */
+	uint32_t magic;			
+	uint16_t root_part_num;		
+	uint16_t swap_part_num;		
+	unsigned char boot_file[16];	
 
-	struct sgi_device_parameter	devparam;	/* not used now */
+	struct sgi_device_parameter	devparam;	
 
 	struct sgi_volume {
-		unsigned char name[8];	/* name of volume */
-		uint32_t block_num;	/* logical block number */
-		uint32_t num_bytes;	/* how big, in bytes */
+		unsigned char name[8];	
+		uint32_t block_num;	
+		uint32_t num_bytes;	
 	} __attribute__((packed)) volume[SGI_MAXVOLUMES];
 
 	struct sgi_partition {
-		uint32_t num_blocks;	/* size in logical blocks */
-		uint32_t first_block;	/* first logical block */
-		uint32_t type;		/* type of this partition */
+		uint32_t num_blocks;	
+		uint32_t first_block;	
+		uint32_t type;		
 	} __attribute__((packed)) partitions[SGI_MAXPARTITIONS];
 
-	/* checksum is the 32bit 2's complement sum of the disklabel */
-	uint32_t csum;			/* disk label checksum */
-	uint32_t padding;		/* padding */
+	
+	uint32_t csum;			
+	uint32_t padding;		
 } __attribute__((packed));
 
 static inline uint32_t sgi_pt_checksum(struct sgi_disklabel *label)
@@ -116,4 +113,4 @@ static inline uint32_t sgi_pt_checksum(struct sgi_disklabel *label)
 	return sum;
 }
 
-#endif /* UTIL_LINUX_PT_SGI_H */
+#endif 

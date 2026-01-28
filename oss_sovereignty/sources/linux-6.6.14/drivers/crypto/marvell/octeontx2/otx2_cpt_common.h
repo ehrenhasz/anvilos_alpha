@@ -1,6 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- * Copyright (C) 2020 Marvell.
- */
+
 
 #ifndef __OTX2_CPT_COMMON_H
 #define __OTX2_CPT_COMMON_H
@@ -26,7 +24,7 @@
 #define OTX2_CPT_NAME_LENGTH 64
 #define OTX2_CPT_DMA_MINALIGN 128
 
-/* HW capability flags */
+
 #define CN10K_MBOX  0
 #define CN10K_LMTST 1
 
@@ -39,16 +37,13 @@ enum otx2_cpt_eng_type {
 	OTX2_CPT_MAX_ENG_TYPES,
 };
 
-/* Take mbox id from end of CPT mbox range in AF (range 0xA00 - 0xBFF) */
+
 #define MBOX_MSG_RX_INLINE_IPSEC_LF_CFG 0xBFE
 #define MBOX_MSG_GET_ENG_GRP_NUM        0xBFF
 #define MBOX_MSG_GET_CAPS               0xBFD
 #define MBOX_MSG_GET_KVF_LIMITS         0xBFC
 
-/*
- * Message request to config cpt lf for inline inbound ipsec.
- * This message is only used between CPT PF <-> CPT VF
- */
+
 struct otx2_cpt_rx_inline_lf_cfg {
 	struct mbox_msghdr hdr;
 	u16 sso_pf_func;
@@ -59,11 +54,7 @@ struct otx2_cpt_rx_inline_lf_cfg {
 	u32 reserved;
 };
 
-/*
- * Message request and response to get engine group number
- * which has attached a given type of engines (SE, AE, IE)
- * This messages are only used between CPT PF <=> CPT VF
- */
+
 struct otx2_cpt_egrp_num_msg {
 	struct mbox_msghdr hdr;
 	u8 eng_type;
@@ -75,10 +66,7 @@ struct otx2_cpt_egrp_num_rsp {
 	u8 eng_grp_num;
 };
 
-/*
- * Message request and response to get kernel crypto limits
- * This messages are only used between CPT PF <-> CPT VF
- */
+
 struct otx2_cpt_kvf_limits_msg {
 	struct mbox_msghdr hdr;
 };
@@ -88,7 +76,7 @@ struct otx2_cpt_kvf_limits_rsp {
 	u8 kvf_limits;
 };
 
-/* CPT HW capabilities */
+
 union otx2_cpt_eng_caps {
 	u64 u;
 	struct {
@@ -106,11 +94,7 @@ union otx2_cpt_eng_caps {
 	};
 };
 
-/*
- * Message request and response to get HW capabilities for each
- * engine type (SE, IE, AE).
- * This messages are only used between CPT PF <=> CPT VF
- */
+
 struct otx2_cpt_caps_msg {
 	struct mbox_msghdr hdr;
 };
@@ -172,4 +156,4 @@ int otx2_cpt_detach_rsrcs_msg(struct otx2_cptlfs_info *lfs);
 int otx2_cpt_msix_offset_msg(struct otx2_cptlfs_info *lfs);
 int otx2_cpt_sync_mbox_msg(struct otx2_mbox *mbox);
 
-#endif /* __OTX2_CPT_COMMON_H */
+#endif 

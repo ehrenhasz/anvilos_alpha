@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- * Manage RMBE
- *
- * Copyright IBM Corp. 2016
- *
- * Author(s):  Ursula Braun <ubraun@linux.vnet.ibm.com>
- */
+
+
 
 #ifndef SMC_RX_H
 #define SMC_RX_H
@@ -28,4 +20,4 @@ static inline int smc_rx_data_available(struct smc_connection *conn)
 	return atomic_read(&conn->bytes_to_rcv);
 }
 
-#endif /* SMC_RX_H */
+#endif 

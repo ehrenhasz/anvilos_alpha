@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2013 QLogic Corporation
- */
+
+
 
 #ifndef __QL483XX_H
 #define __QL483XX_H
 
-/* Indirectly Mapped Registers */
+
 #define QLA83XX_FLASH_SPI_STATUS	0x2808E010
 #define QLA83XX_FLASH_SPI_CONTROL	0x2808E014
 #define QLA83XX_FLASH_STATUS		0x42100004
@@ -18,24 +15,24 @@
 #define QLA83XX_FLASH_DIRECT_WINDOW	0x42110030
 #define QLA83XX_FLASH_DIRECT_DATA(DATA) (0x42150000 | (0x0000FFFF&DATA))
 
-/* Directly Mapped Registers in 83xx register table */
 
-/* Flash access regs */
+
+
 #define QLA83XX_FLASH_LOCK		0x3850
 #define QLA83XX_FLASH_UNLOCK		0x3854
 #define QLA83XX_FLASH_LOCK_ID		0x3500
 
-/* Driver Lock regs */
+
 #define QLA83XX_DRV_LOCK		0x3868
 #define QLA83XX_DRV_UNLOCK		0x386C
 #define QLA83XX_DRV_LOCK_ID		0x3504
 #define QLA83XX_DRV_LOCKRECOVERY	0x379C
 
-/* IDC version */
+
 #define QLA83XX_IDC_VER_MAJ_VALUE       0x1
 #define QLA83XX_IDC_VER_MIN_VALUE       0x0
 
-/* IDC Registers : Driver Coexistence Defines */
+
 #define QLA83XX_CRB_IDC_VER_MAJOR	0x3780
 #define QLA83XX_CRB_IDC_VER_MINOR	0x3798
 #define QLA83XX_IDC_DRV_CTRL		0x3790
@@ -50,7 +47,7 @@
 #define QLA83XX_PORT2_IFB_PAUSE_THRS	0x0B200704
 #define QLA83XX_PORT3_IFB_PAUSE_THRS	0x0B201704
 
-/* set value to pause threshold value */
+
 #define QLA83XX_SET_PAUSE_VAL		0x0
 #define QLA83XX_SET_TC_MAX_CELL_VAL	0x03FF03FF
 
@@ -64,14 +61,14 @@
 #define QLA83XX_RESET_EPG_SHIM		0x28084EC0
 #define QLA83XX_RESET_ETHER_PCS		0x28084ED0
 
-/* qla_83xx_reg_tbl registers */
+
 #define QLA83XX_PEG_HALT_STATUS1	0x34A8
 #define QLA83XX_PEG_HALT_STATUS2	0x34AC
-#define QLA83XX_PEG_ALIVE_COUNTER	0x34B0 /* FW_HEARTBEAT */
+#define QLA83XX_PEG_ALIVE_COUNTER	0x34B0 
 #define QLA83XX_FW_CAPABILITIES		0x3528
-#define QLA83XX_CRB_DRV_ACTIVE		0x3788 /* IDC_DRV_PRESENCE */
-#define QLA83XX_CRB_DEV_STATE		0x3784 /* IDC_DEV_STATE */
-#define QLA83XX_CRB_DRV_STATE		0x378C /* IDC_DRV_ACK */
+#define QLA83XX_CRB_DRV_ACTIVE		0x3788 
+#define QLA83XX_CRB_DEV_STATE		0x3784 
+#define QLA83XX_CRB_DRV_STATE		0x378C 
 #define QLA83XX_CRB_DRV_SCRATCH		0x3548
 #define QLA83XX_CRB_DEV_PART_INFO1	0x37E0
 #define QLA83XX_CRB_DEV_PART_INFO2	0x37E4
@@ -97,7 +94,7 @@
 #define QLA83XX_MAX_LINK_SPEED(f)       (0x36F0+(((f) / 4) * 4))
 #define QLA83XX_LINK_SPEED_FACTOR	10
 
-/* FLASH API Defines */
+
 #define QLA83xx_FLASH_MAX_WAIT_USEC	100
 #define QLA83XX_FLASH_LOCK_TIMEOUT	10000
 #define QLA83XX_FLASH_SECTOR_SIZE	65536
@@ -125,7 +122,7 @@
 #define QLA83XX_MBX_INTR_ENABLE		0x1000
 #define QLA83XX_MBX_INTR_MASK		0x1200
 
-/* IDC Control Register bit defines */
+
 #define DONTRESET_BIT0		0x1
 #define GRACEFUL_RESET_BIT1	0x2
 
@@ -133,18 +130,18 @@
 #define QLA83XX_HALT_STATUS_FW_RESET		(0x2 << 29)
 #define QLA83XX_HALT_STATUS_UNRECOVERABLE	(0x4 << 29)
 
-/* Firmware image definitions */
+
 #define QLA83XX_BOOTLOADER_FLASH_ADDR	0x10000
 #define QLA83XX_BOOT_FROM_FLASH		0
 
 #define QLA83XX_IDC_PARAM_ADDR		0x3e8020
-/* Reset template definitions */
+
 #define QLA83XX_MAX_RESET_SEQ_ENTRIES	16
 #define QLA83XX_RESTART_TEMPLATE_SIZE	0x2000
 #define QLA83XX_RESET_TEMPLATE_ADDR	0x4F0000
 #define QLA83XX_RESET_SEQ_VERSION	0x0101
 
-/* Reset template entry opcodes */
+
 #define OPCODE_NOP			0x0000
 #define OPCODE_WRITE_LIST		0x0001
 #define OPCODE_READ_WRITE_LIST		0x0002
@@ -156,7 +153,7 @@
 #define OPCODE_TMPL_END			0x0080
 #define OPCODE_POLL_READ_LIST		0x0100
 
-/* Template Header */
+
 #define RESET_TMPLT_HDR_SIGNATURE	0xCAFE
 struct qla4_83xx_reset_template_hdr {
 	__le16	version;
@@ -169,7 +166,7 @@ struct qla4_83xx_reset_template_hdr {
 	__le16	start_seq_offset;
 } __packed;
 
-/* Common Entry Header. */
+
 struct qla4_83xx_reset_entry_hdr {
 	__le16 cmd;
 	__le16 size;
@@ -177,13 +174,13 @@ struct qla4_83xx_reset_entry_hdr {
 	__le16 delay;
 } __packed;
 
-/* Generic poll entry type. */
+
 struct qla4_83xx_poll {
 	__le32  test_mask;
 	__le32  test_value;
 } __packed;
 
-/* Read modify write entry type. */
+
 struct qla4_83xx_rmw {
 	__le32  test_mask;
 	__le32  xor_value;
@@ -194,13 +191,13 @@ struct qla4_83xx_rmw {
 	uint8_t rsvd;
 } __packed;
 
-/* Generic Entry Item with 2 DWords. */
+
 struct qla4_83xx_entry {
 	__le32 arg1;
 	__le32 arg2;
 } __packed;
 
-/* Generic Entry Item with 4 DWords.*/
+
 struct qla4_83xx_quad_entry {
 	__le32 dr_addr;
 	__le32 dr_value;
@@ -222,7 +219,7 @@ struct qla4_83xx_reset_template {
 	uint8_t template_end;
 };
 
-/* POLLRD Entry */
+
 struct qla83xx_minidump_entry_pollrd {
 	struct qla8xxx_minidump_entry_hdr h;
 	uint32_t select_addr;
@@ -280,7 +277,7 @@ struct qla8044_minidump_entry_pollwr {
 
 } __packed;
 
-/* RDMUX2 Entry */
+
 struct qla83xx_minidump_entry_rdmux2 {
 	struct qla8xxx_minidump_entry_hdr h;
 	uint32_t select_addr_1;
@@ -295,7 +292,7 @@ struct qla83xx_minidump_entry_rdmux2 {
 	uint8_t rsvd[2];
 };
 
-/* POLLRDMWR Entry */
+
 struct qla83xx_minidump_entry_pollrdmwr {
 	struct qla8xxx_minidump_entry_hdr h;
 	uint32_t addr_1;
@@ -308,12 +305,12 @@ struct qla83xx_minidump_entry_pollrdmwr {
 	uint32_t data_size;
 };
 
-/* IDC additional information */
+
 struct qla4_83xx_idc_information {
-	uint32_t request_desc;  /* IDC request descriptor */
-	uint32_t info1; /* IDC additional info */
-	uint32_t info2; /* IDC additional info */
-	uint32_t info3; /* IDC additional info */
+	uint32_t request_desc;  
+	uint32_t info1; 
+	uint32_t info2; 
+	uint32_t info3; 
 };
 
 #define QLA83XX_PEX_DMA_ENGINE_INDEX		8
@@ -324,9 +321,9 @@ struct qla4_83xx_idc_information {
 #define QLA83XX_PEX_DMA_CMD_STS_AND_CNTRL	0x08
 
 #define QLA83XX_PEX_DMA_READ_SIZE	(16 * 1024)
-#define QLA83XX_PEX_DMA_MAX_WAIT	(100 * 100) /* Max wait of 100 msecs */
+#define QLA83XX_PEX_DMA_MAX_WAIT	(100 * 100) 
 
-/* Read Memory: For Pex-DMA */
+
 struct qla4_83xx_minidump_entry_rdmem_pex_dma {
 	struct qla8xxx_minidump_entry_hdr h;
 	uint32_t desc_card_addr;
@@ -340,13 +337,12 @@ struct qla4_83xx_minidump_entry_rdmem_pex_dma {
 
 struct qla4_83xx_pex_dma_descriptor {
 	struct {
-		uint32_t read_data_size; /* 0-23: size, 24-31: rsvd */
+		uint32_t read_data_size; 
 		uint8_t rsvd[2];
 		uint16_t dma_desc_cmd;
 	} cmd;
 	uint64_t src_addr;
-	uint64_t dma_bus_addr; /* 0-3: desc-cmd, 4-7: pci-func,
-				* 8-15: desc-cmd */
+	uint64_t dma_bus_addr; 
 	uint8_t rsvd[24];
 } __packed;
 

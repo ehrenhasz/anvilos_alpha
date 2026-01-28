@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __TARGET_USB_GADGET_H__
 #define __TARGET_USB_GADGET_H__
 
 #include <linux/kref.h>
-/* #include <linux/usb/uas.h> */
+
 #include <linux/usb/composite.h>
 #include <linux/usb/uas.h>
 #include <linux/usb/storage.h>
@@ -32,12 +32,12 @@ struct tcm_usbg_nexus {
 
 struct usbg_tpg {
 	struct mutex tpg_mutex;
-	/* SAS port target portal group tag for TCM */
+	
 	u16 tport_tpgt;
-	/* Pointer back to usbg_tport */
+	
 	struct usbg_tport *tport;
 	struct workqueue_struct *workqueue;
-	/* Returned by usbg_make_tpg() */
+	
 	struct se_portal_group se_tpg;
 	u32 gadget_connect;
 	struct tcm_usbg_nexus *tpg_nexus;
@@ -47,11 +47,11 @@ struct usbg_tpg {
 };
 
 struct usbg_tport {
-	/* Binary World Wide unique Port Name for SAS Target port */
+	
 	u64 tport_wwpn;
-	/* ASCII formatted WWPN for SAS Target port */
+	
 	char tport_name[USBG_NAMELEN];
-	/* Returned by usbg_make_tport() */
+	
 	struct se_wwn tport_wwn;
 };
 
@@ -64,25 +64,25 @@ enum uas_state {
 
 #define USBG_MAX_CMD    64
 struct usbg_cmd {
-	/* common */
+	
 	u8 cmd_buf[USBG_MAX_CMD];
 	u32 data_len;
 	struct work_struct work;
 	int unpacked_lun;
 	struct se_cmd se_cmd;
-	void *data_buf; /* used if no sg support available */
+	void *data_buf; 
 	struct f_uas *fu;
 	struct completion write_complete;
 	struct kref ref;
 
-	/* UAS only */
+	
 	u16 tag;
 	u16 prio_attr;
 	struct sense_iu sense_iu;
 	enum uas_state state;
 	struct uas_stream *stream;
 
-	/* BOT only */
+	
 	__le32 bot_tag;
 	unsigned int csw_code;
 	unsigned is_read:1;
@@ -121,15 +121,15 @@ struct f_uas {
 	struct usb_ep		*ep_in;
 	struct usb_ep		*ep_out;
 
-	/* UAS */
+	
 	struct usb_ep		*ep_status;
 	struct usb_ep		*ep_cmd;
 	struct uas_stream	stream[UASP_SS_EP_COMP_NUM_STREAMS];
 
-	/* BOT */
+	
 	struct bot_status	bot_status;
 	struct usb_request	*bot_req_in;
 	struct usb_request	*bot_req_out;
 };
 
-#endif /* __TARGET_USB_GADGET_H__ */
+#endif 

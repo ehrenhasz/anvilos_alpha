@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Linux isofs filesystem routines.
-#
+
+
+
+
 
 obj-$(CONFIG_ISO9660_FS) += isofs.o
 

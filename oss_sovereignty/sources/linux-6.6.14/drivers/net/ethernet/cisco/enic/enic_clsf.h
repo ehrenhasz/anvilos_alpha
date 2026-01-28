@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ENIC_CLSF_H_
 #define _ENIC_CLSF_H_
 
@@ -31,6 +31,6 @@ static inline void enic_rfs_timer_stop(struct enic *enic)
 #else
 static inline void enic_rfs_timer_start(struct enic *enic) {}
 static inline void enic_rfs_timer_stop(struct enic *enic) {}
-#endif /* CONFIG_RFS_ACCEL */
+#endif 
 
-#endif /* _ENIC_CLSF_H_ */
+#endif 

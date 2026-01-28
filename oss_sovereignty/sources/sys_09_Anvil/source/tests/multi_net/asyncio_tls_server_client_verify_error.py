@@ -41,7 +41,7 @@ async def tcp_client(message):
         IP,
         PORT,
         ssl=client_ctx,
-        server_hostname="foobar.local",  # incorrect server_hostname
+        server_hostname="foobar.local",  
     )
     try:
         print("write:", message)

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Internal interface to pinctrl device tree integration
- *
- * Copyright (C) 2012 NVIDIA CORPORATION. All rights reserved.
- */
+
+
 
 #include <linux/errno.h>
 

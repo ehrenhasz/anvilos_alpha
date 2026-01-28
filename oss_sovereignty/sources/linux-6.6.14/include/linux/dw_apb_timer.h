@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * (C) Copyright 2009 Intel Corporation
- * Author: Jacob Pan (jacob.jun.pan@intel.com)
- *
- * Shared with ARM platforms, Jamie Iles, Picochip 2011
- *
- * Support for the Synopsys DesignWare APB Timers.
- */
+
+
 #ifndef __DW_APB_TIMER_H__
 #define __DW_APB_TIMER_H__
 
@@ -48,4 +41,4 @@ void dw_apb_clocksource_register(struct dw_apb_clocksource *dw_cs);
 void dw_apb_clocksource_start(struct dw_apb_clocksource *dw_cs);
 u64 dw_apb_clocksource_read(struct dw_apb_clocksource *dw_cs);
 
-#endif /* __DW_APB_TIMER_H__ */
+#endif 

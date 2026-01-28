@@ -1,14 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __TRACE_PROBE_KERNEL_H_
 #define __TRACE_PROBE_KERNEL_H_
 
-/*
- * This depends on trace_probe.h, but can not include it due to
- * the way trace_probe_tmpl.h is used by trace_kprobe.c and trace_eprobe.c.
- * Which means that any other user must include trace_probe.h before including
- * this file.
- */
-/* Return the length of string -- including null terminal byte */
+
+
 static nokprobe_inline int
 fetch_store_strlen_user(unsigned long addr)
 {
@@ -17,7 +12,7 @@ fetch_store_strlen_user(unsigned long addr)
 	return strnlen_user_nofault(uaddr, MAX_STRING_SIZE);
 }
 
-/* Return the length of string -- including null terminal byte */
+
 static nokprobe_inline int
 fetch_store_strlen(unsigned long addr)
 {
@@ -44,10 +39,7 @@ static nokprobe_inline void set_data_loc(int ret, void *dest, void *__dest, void
 	*(u32 *)dest = make_data_loc(ret, __dest - base);
 }
 
-/*
- * Fetch a null-terminated string from user. Caller MUST set *(u32 *)buf
- * with max length and relative data location.
- */
+
 static nokprobe_inline int
 fetch_store_string_user(unsigned long addr, void *dest, void *base)
 {
@@ -67,10 +59,7 @@ fetch_store_string_user(unsigned long addr, void *dest, void *base)
 	return ret;
 }
 
-/*
- * Fetch a null-terminated string. Caller MUST set *(u32 *)buf with max
- * length and relative data location.
- */
+
 static nokprobe_inline int
 fetch_store_string(unsigned long addr, void *dest, void *base)
 {
@@ -88,10 +77,7 @@ fetch_store_string(unsigned long addr, void *dest, void *base)
 
 	__dest = get_loc_data(dest, base);
 
-	/*
-	 * Try to get string again, since the string can be changed while
-	 * probing.
-	 */
+	
 	ret = strncpy_from_kernel_nofault(__dest, (void *)addr, maxlen);
 	set_data_loc(ret, dest, __dest, base);
 
@@ -116,4 +102,4 @@ probe_mem_read(void *dest, void *src, size_t size)
 	return copy_from_kernel_nofault(dest, src, size);
 }
 
-#endif /* __TRACE_PROBE_KERNEL_H_ */
+#endif 

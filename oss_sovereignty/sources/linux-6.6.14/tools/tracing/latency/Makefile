@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for vm tools
-#
+
+
+
 VAR_CFLAGS := $(shell pkg-config --cflags libtracefs 2>/dev/null)
 VAR_LDLIBS := $(shell pkg-config --libs libtracefs 2>/dev/null)
 

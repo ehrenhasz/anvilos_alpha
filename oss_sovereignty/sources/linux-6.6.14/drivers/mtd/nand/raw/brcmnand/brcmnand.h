@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright © 2015 Broadcom Corporation
- */
+
+
 
 #ifndef __BRCMNAND_H__
 #define __BRCMNAND_H__
@@ -13,10 +11,7 @@ struct platform_device;
 struct dev_pm_ops;
 struct brcmnand_io_ops;
 
-/* Special register offset constant to intercept a non-MMIO access
- * to the flash cache register space. This is intentionally large
- * not to overlap with an existing offset.
- */
+
 #define BRCMNAND_NON_MMIO_FC_ADDR	0xffffffff
 
 struct brcmnand_soc {
@@ -48,14 +43,7 @@ static inline void brcmnand_soc_data_bus_unprepare(struct brcmnand_soc *soc,
 
 static inline u32 brcmnand_readl(void __iomem *addr)
 {
-	/*
-	 * MIPS endianness is configured by boot strap, which also reverses all
-	 * bus endianness (i.e., big-endian CPU + big endian bus ==> native
-	 * endian I/O).
-	 *
-	 * Other architectures (e.g., ARM) either do not support big endian, or
-	 * else leave I/O in little endian mode.
-	 */
+	
 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		return __raw_readl(addr);
 	else
@@ -64,7 +52,7 @@ static inline u32 brcmnand_readl(void __iomem *addr)
 
 static inline void brcmnand_writel(u32 val, void __iomem *addr)
 {
-	/* See brcmnand_readl() comments */
+	
 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		__raw_writel(val, addr);
 	else
@@ -92,4 +80,4 @@ int brcmnand_remove(struct platform_device *pdev);
 
 extern const struct dev_pm_ops brcmnand_pm_ops;
 
-#endif /* __BRCMNAND_H__ */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 
 #ifndef __ACPI_CPPC_H__
 #define __ACPI_CPPC_H__
@@ -18,4 +18,4 @@ enum acpi_cppc_value {
 unsigned long acpi_cppc_get_data(unsigned int cpu,
 				 enum acpi_cppc_value which);
 
-#endif /* _ACPI_CPPC_H */
+#endif 

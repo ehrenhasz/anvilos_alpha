@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_PAGE_REF_H
 #define _LINUX_PAGE_REF_H
 
@@ -17,13 +17,7 @@ DECLARE_TRACEPOINT(page_ref_unfreeze);
 
 #ifdef CONFIG_DEBUG_PAGE_REF
 
-/*
- * Ideally we would want to use the trace_<tracepoint>_enabled() helper
- * functions. But due to include header file issues, that is not
- * feasible. Instead we have to open code the static key functions.
- *
- * See trace_##name##_enabled(void) in include/linux/tracepoint.h
- */
+
 #define page_ref_tracepoint_active(t) tracepoint_enabled(t)
 
 extern void __page_ref_set(struct page *page, int v);
@@ -67,23 +61,7 @@ static inline int page_ref_count(const struct page *page)
 	return atomic_read(&page->_refcount);
 }
 
-/**
- * folio_ref_count - The reference count on this folio.
- * @folio: The folio.
- *
- * The refcount is usually incremented by calls to folio_get() and
- * decremented by calls to folio_put().  Some typical users of the
- * folio refcount:
- *
- * - Each reference from a page table
- * - The page cache
- * - Filesystem private data
- * - The LRU list
- * - Pipes
- * - Direct IO which references this page in the process address space
- *
- * Return: The number of references to this folio.
- */
+
 static inline int folio_ref_count(const struct folio *folio)
 {
 	return page_ref_count(&folio->page);
@@ -106,10 +84,7 @@ static inline void folio_set_count(struct folio *folio, int v)
 	set_page_count(&folio->page, v);
 }
 
-/*
- * Setup the page count before being freed into the page allocator for
- * the first time (boot or memory hotplug)
- */
+
 static inline void init_page_count(struct page *page)
 {
 	set_page_count(page, 1);
@@ -247,17 +222,7 @@ static inline bool folio_ref_add_unless(struct folio *folio, int nr, int u)
 	return page_ref_add_unless(&folio->page, nr, u);
 }
 
-/**
- * folio_try_get - Attempt to increase the refcount on a folio.
- * @folio: The folio.
- *
- * If you do not already have a reference to a folio, you can attempt to
- * get one using this function.  It may fail if, for example, the folio
- * has been freed since you found a pointer to it, or it is frozen for
- * the purposes of splitting or migration.
- *
- * Return: True if the reference count was successfully incremented.
- */
+
 static inline bool folio_try_get(struct folio *folio)
 {
 	return folio_ref_add_unless(folio, 1, 0);
@@ -266,11 +231,7 @@ static inline bool folio_try_get(struct folio *folio)
 static inline bool folio_ref_try_add_rcu(struct folio *folio, int count)
 {
 #ifdef CONFIG_TINY_RCU
-	/*
-	 * The caller guarantees the folio will not be freed from interrupt
-	 * context, so (on !SMP) we only need preemption to be disabled
-	 * and TINY_RCU does that for us.
-	 */
+	
 # ifdef CONFIG_PREEMPT_COUNT
 	VM_BUG_ON(!in_atomic() && !irqs_disabled());
 # endif
@@ -278,36 +239,14 @@ static inline bool folio_ref_try_add_rcu(struct folio *folio, int count)
 	folio_ref_add(folio, count);
 #else
 	if (unlikely(!folio_ref_add_unless(folio, count, 0))) {
-		/* Either the folio has been freed, or will be freed. */
+		
 		return false;
 	}
 #endif
 	return true;
 }
 
-/**
- * folio_try_get_rcu - Attempt to increase the refcount on a folio.
- * @folio: The folio.
- *
- * This is a version of folio_try_get() optimised for non-SMP kernels.
- * If you are still holding the rcu_read_lock() after looking up the
- * page and know that the page cannot have its refcount decreased to
- * zero in interrupt context, you can use this instead of folio_try_get().
- *
- * Example users include get_user_pages_fast() (as pages are not unmapped
- * from interrupt context) and the page cache lookups (as pages are not
- * truncated from interrupt context).  We also know that pages are not
- * frozen in interrupt context for the purposes of splitting or migration.
- *
- * You can also use this function if you're holding a lock that prevents
- * pages being frozen & removed; eg the i_pages lock for the page cache
- * or the mmap_lock or page table lock for page tables.  In this case,
- * it will always succeed, and you could have used a plain folio_get(),
- * but it's sometimes more convenient to have a common function called
- * from both locked and RCU-protected contexts.
- *
- * Return: True if the reference count was successfully incremented.
- */
+
 static inline bool folio_try_get_rcu(struct folio *folio)
 {
 	return folio_ref_try_add_rcu(folio, 1);

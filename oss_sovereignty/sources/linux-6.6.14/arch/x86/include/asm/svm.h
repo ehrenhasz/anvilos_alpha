@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __SVM_H
 #define __SVM_H
 
@@ -7,10 +7,7 @@
 
 #include <asm/hyperv-tlfs.h>
 
-/*
- * 32-bit intercept words in the VMCB Control Area, starting
- * at Byte offset 000h.
- */
+
 
 enum intercept_words {
 	INTERCEPT_CR = 0,
@@ -23,7 +20,7 @@ enum intercept_words {
 };
 
 enum {
-	/* Byte offset 000h (word 0) */
+	
 	INTERCEPT_CR0_READ = 0,
 	INTERCEPT_CR3_READ = 3,
 	INTERCEPT_CR4_READ = 4,
@@ -32,7 +29,7 @@ enum {
 	INTERCEPT_CR3_WRITE = 16 + 3,
 	INTERCEPT_CR4_WRITE = 16 + 4,
 	INTERCEPT_CR8_WRITE = 16 + 8,
-	/* Byte offset 004h (word 1) */
+	
 	INTERCEPT_DR0_READ = 32,
 	INTERCEPT_DR1_READ,
 	INTERCEPT_DR2_READ,
@@ -49,9 +46,9 @@ enum {
 	INTERCEPT_DR5_WRITE,
 	INTERCEPT_DR6_WRITE,
 	INTERCEPT_DR7_WRITE,
-	/* Byte offset 008h (word 2) */
+	
 	INTERCEPT_EXCEPTION_OFFSET = 64,
-	/* Byte offset 00Ch (word 3) */
+	
 	INTERCEPT_INTR = 96,
 	INTERCEPT_NMI,
 	INTERCEPT_SMI,
@@ -84,7 +81,7 @@ enum {
 	INTERCEPT_TASK_SWITCH,
 	INTERCEPT_FERR_FREEZE,
 	INTERCEPT_SHUTDOWN,
-	/* Byte offset 010h (word 4) */
+	
 	INTERCEPT_VMRUN = 128,
 	INTERCEPT_VMMCALL,
 	INTERCEPT_VMLOAD,
@@ -110,7 +107,7 @@ enum {
 	TRAP_CR6_WRITE,
 	TRAP_CR7_WRITE,
 	TRAP_CR8_WRITE,
-	/* Byte offset 014h (word 5) */
+	
 	INTERCEPT_INVLPGB = 160,
 	INTERCEPT_INVLPGB_ILLEGAL,
 	INTERCEPT_INVPCID,
@@ -152,17 +149,14 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
 	u64 next_rip;
 	u8 insn_len;
 	u8 insn_bytes[15];
-	u64 avic_backing_page;	/* Offset 0xe0 */
-	u8 reserved_6[8];	/* Offset 0xe8 */
-	u64 avic_logical_id;	/* Offset 0xf0 */
-	u64 avic_physical_id;	/* Offset 0xf8 */
+	u64 avic_backing_page;	
+	u8 reserved_6[8];	
+	u64 avic_logical_id;	
+	u64 avic_physical_id;	
 	u8 reserved_7[8];
-	u64 vmsa_pa;		/* Used for an SEV-ES guest */
+	u64 vmsa_pa;		
 	u8 reserved_8[720];
-	/*
-	 * Offset 0x3e0, 32 bytes reserved
-	 * for use by hypervisor/software.
-	 */
+	
 	union {
 		struct hv_vmcb_enlightenments hv_enlightenments;
 		u8 reserved_sw[32];
@@ -244,7 +238,7 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
 #define SVM_TSC_RATIO_DEFAULT	0x0100000000ULL
 
 
-/* AVIC */
+
 #define AVIC_LOGICAL_ID_ENTRY_GUEST_PHYSICAL_ID_MASK	(0xFFULL)
 #define AVIC_LOGICAL_ID_ENTRY_VALID_BIT			31
 #define AVIC_LOGICAL_ID_ENTRY_VALID_MASK		(1 << 31)
@@ -273,15 +267,10 @@ enum avic_ipi_failure_cause {
 
 #define AVIC_PHYSICAL_MAX_INDEX_MASK	GENMASK_ULL(8, 0)
 
-/*
- * For AVIC, the max index allowed for physical APIC ID table is 0xfe (254), as
- * 0xff is a broadcast to all CPUs, i.e. can't be targeted individually.
- */
+
 #define AVIC_MAX_PHYSICAL_ID		0XFEULL
 
-/*
- * For x2AVIC, the max index allowed for physical APIC ID table is 0x1ff (511).
- */
+
 #define X2AVIC_MAX_PHYSICAL_ID		0x1FFUL
 
 static_assert((AVIC_MAX_PHYSICAL_ID & AVIC_PHYSICAL_MAX_INDEX_MASK) == AVIC_MAX_PHYSICAL_ID);
@@ -298,7 +287,7 @@ struct vmcb_seg {
 	u64 base;
 } __packed;
 
-/* Save area definition for legacy and SEV-MEM guests */
+
 struct vmcb_save_area {
 	struct vmcb_seg es;
 	struct vmcb_seg cs;
@@ -310,7 +299,7 @@ struct vmcb_save_area {
 	struct vmcb_seg ldtr;
 	struct vmcb_seg idtr;
 	struct vmcb_seg tr;
-	/* Reserved fields are named following their struct offset */
+	
 	u8 reserved_0xa0[42];
 	u8 vmpl;
 	u8 cpl;
@@ -347,10 +336,10 @@ struct vmcb_save_area {
 	u64 last_excp_from;
 	u64 last_excp_to;
 	u8 reserved_0x298[72];
-	u64 spec_ctrl;		/* Guest version of SPEC_CTRL at 0x2E0 */
+	u64 spec_ctrl;		
 } __packed;
 
-/* Save area definition for SEV-ES and SEV-SNP guests */
+
 struct sev_es_save_area {
 	struct vmcb_seg es;
 	struct vmcb_seg cs;
@@ -418,7 +407,7 @@ struct sev_es_save_area {
 	u64 rcx;
 	u64 rdx;
 	u64 rbx;
-	u64 reserved_0x320;	/* rsp already available at 0x01d8 */
+	u64 reserved_0x320;	
 	u64 rbp;
 	u64 rsi;
 	u64 rdi;
@@ -445,7 +434,7 @@ struct sev_es_save_area {
 	u64 xcr0;
 	u8 reserved_0x3f0[16];
 
-	/* Floating point area */
+	
 	u64 x87_dp;
 	u32 mxcsr;
 	u16 x87_ftw;
@@ -509,7 +498,7 @@ struct ghcb {
 	u8 shared_buffer[GHCB_SHARED_BUF_SIZE];
 
 	u8 reserved_0xff0[10];
-	u16 protocol_version;	/* negotiated SEV-ES/GHCB protocol version */
+	u16 protocol_version;	
 	u32 ghcb_usage;
 } __packed;
 
@@ -531,7 +520,7 @@ static inline void __unused_size_checks(void)
 	BUILD_BUG_ON(sizeof(struct vmcb_control_area)	!= EXPECTED_VMCB_CONTROL_AREA_SIZE);
 	BUILD_BUG_ON(sizeof(struct ghcb)		!= EXPECTED_GHCB_SIZE);
 
-	/* Check offsets of reserved fields */
+	
 
 	BUILD_BUG_RESERVED_OFFSET(vmcb_save_area, 0xa0);
 	BUILD_BUG_RESERVED_OFFSET(vmcb_save_area, 0xcc);
@@ -627,7 +616,7 @@ struct vmcb {
 
 #define SVM_CR0_SELECTIVE_MASK (X86_CR0_TS | X86_CR0_MP)
 
-/* GHCB Accessor functions */
+
 
 #define GHCB_BITMAP_IDX(field)							\
 	(offsetof(struct ghcb_save_area, field) / sizeof(u64))

@@ -91,7 +91,7 @@ hex_speed_value_get()
 	local speed=$1; shift
 	local shift_size=${speed_values[$speed]}
 	speed=$((0x1 << $"shift_size"))
-	printf "%#x" "$speed"
+	printf "%
 }
 subset_of_common_speeds_get()
 {
@@ -110,7 +110,7 @@ subset_of_common_speeds_get()
 						$speed))
 		fi
 	done
-	printf "%#x" "$speed_to_advertise"
+	printf "%
 }
 speed_to_advertise_get()
 {
@@ -125,7 +125,7 @@ speed_to_advertise_get()
 						$speed))
 		fi
 	done
-	printf "%#x" "$speed_to_advertise"
+	printf "%
 }
 advertise_subset_of_speeds()
 {
@@ -176,7 +176,7 @@ check_highest_speed_is_chosen()
 	setup_wait_dev_with_timeout $h2
 	chosen_speed=$(ethtool $h1 | grep 'Speed:')
 	chosen_speed=${chosen_speed%"Mb/s"*}
-	chosen_speed=${chosen_speed#*"Speed: "}
+	chosen_speed=${chosen_speed
 	((chosen_speed == max_speed))
 	check_err $? "h1 advertise $speed_to_advertise, h2 sync to speed $chosen_speed"
 	log_test "check highest speed"

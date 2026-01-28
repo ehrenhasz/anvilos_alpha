@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mlx5
@@ -48,9 +48,9 @@ DEFINE_EVENT(mlx5_sf_dev_template, mlx5_sf_dev_del,
 	     TP_ARGS(dev, sfdev, aux_id)
 	     );
 
-#endif /* _MLX5_SF_DEV_TP_ */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH sf/dev/diag
 #undef TRACE_INCLUDE_FILE

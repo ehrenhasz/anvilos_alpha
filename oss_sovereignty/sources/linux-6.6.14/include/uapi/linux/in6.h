@@ -1,23 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- *	Types and definitions for AF_INET6 
- *	Linux INET6 implementation 
- *
- *	Authors:
- *	Pedro Roque		<roque@di.fc.ul.pt>	
- *
- *	Sources:
- *	IPv6 Program Interfaces for BSD Systems
- *      <draft-ietf-ipngwg-bsd-api-05.txt>
- *
- *	Advanced Sockets API for IPv6
- *	<draft-stevens-advanced-api-00.txt>
- *
- *	This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
- */
+
+
 
 #ifndef _UAPI_LINUX_IN6_H
 #define _UAPI_LINUX_IN6_H
@@ -25,9 +7,7 @@
 #include <linux/types.h>
 #include <linux/libc-compat.h>
 
-/*
- *	IPv6 address structure
- */
+
 
 #if __UAPI_DEF_IN6_ADDR
 struct in6_addr {
@@ -44,27 +24,27 @@ struct in6_addr {
 #define s6_addr32		in6_u.u6_addr32
 #endif
 };
-#endif /* __UAPI_DEF_IN6_ADDR */
+#endif 
 
 #if __UAPI_DEF_SOCKADDR_IN6
 struct sockaddr_in6 {
-	unsigned short int	sin6_family;    /* AF_INET6 */
-	__be16			sin6_port;      /* Transport layer port # */
-	__be32			sin6_flowinfo;  /* IPv6 flow information */
-	struct in6_addr		sin6_addr;      /* IPv6 address */
-	__u32			sin6_scope_id;  /* scope id (new in RFC2553) */
+	unsigned short int	sin6_family;    
+	__be16			sin6_port;      
+	__be32			sin6_flowinfo;  
+	struct in6_addr		sin6_addr;      
+	__u32			sin6_scope_id;  
 };
-#endif /* __UAPI_DEF_SOCKADDR_IN6 */
+#endif 
 
 #if __UAPI_DEF_IPV6_MREQ
 struct ipv6_mreq {
-	/* IPv6 multicast address of group */
+	
 	struct in6_addr ipv6mr_multiaddr;
 
-	/* local IPv6 address of interface */
+	
 	int		ipv6mr_ifindex;
 };
-#endif /* __UAPI_DEF_IVP6_MREQ */
+#endif 
 
 #define ipv6mr_acaddr	ipv6mr_multiaddr
 
@@ -77,7 +57,7 @@ struct in6_flowlabel_req {
 	__u16 	flr_expires;
 	__u16	flr_linger;
 	__u32	__flr_pad;
-	/* Options in format of IPV6_PKTOPTIONS */
+	
 };
 
 #define IPV6_FL_A_GET	0
@@ -96,18 +76,12 @@ struct in6_flowlabel_req {
 #define IPV6_FL_S_ANY		255
 
 
-/*
- *	Bitmask constant declarations to help applications select out the 
- *	flow label and priority fields.
- *
- *	Note that this are in host byte order while the flowinfo field of
- *	sockaddr_in6 is in network byte order.
- */
+
 
 #define IPV6_FLOWINFO_FLOWLABEL		0x000fffff
 #define IPV6_FLOWINFO_PRIORITY		0x0ff00000
 
-/* These definitions are obsolete */
+
 #define IPV6_PRIORITY_UNCHARACTERIZED	0x0000
 #define IPV6_PRIORITY_FILLER		0x0100
 #define IPV6_PRIORITY_UNATTENDED	0x0200
@@ -125,33 +99,27 @@ struct in6_flowlabel_req {
 #define IPV6_PRIORITY_14		0x0e00
 #define IPV6_PRIORITY_15		0x0f00
 
-/*
- *	IPV6 extension headers
- */
-#if __UAPI_DEF_IPPROTO_V6
-#define IPPROTO_HOPOPTS		0	/* IPv6 hop-by-hop options	*/
-#define IPPROTO_ROUTING		43	/* IPv6 routing header		*/
-#define IPPROTO_FRAGMENT	44	/* IPv6 fragmentation header	*/
-#define IPPROTO_ICMPV6		58	/* ICMPv6			*/
-#define IPPROTO_NONE		59	/* IPv6 no next header		*/
-#define IPPROTO_DSTOPTS		60	/* IPv6 destination options	*/
-#define IPPROTO_MH		135	/* IPv6 mobility header		*/
-#endif /* __UAPI_DEF_IPPROTO_V6 */
 
-/*
- *	IPv6 TLV options.
- */
+#if __UAPI_DEF_IPPROTO_V6
+#define IPPROTO_HOPOPTS		0	
+#define IPPROTO_ROUTING		43	
+#define IPPROTO_FRAGMENT	44	
+#define IPPROTO_ICMPV6		58	
+#define IPPROTO_NONE		59	
+#define IPPROTO_DSTOPTS		60	
+#define IPPROTO_MH		135	
+#endif 
+
+
 #define IPV6_TLV_PAD1		0
 #define IPV6_TLV_PADN		1
 #define IPV6_TLV_ROUTERALERT	5
-#define IPV6_TLV_CALIPSO	7	/* RFC 5570 */
-#define IPV6_TLV_IOAM		49	/* TEMPORARY IANA allocation for IOAM */
+#define IPV6_TLV_CALIPSO	7	
+#define IPV6_TLV_IOAM		49	
 #define IPV6_TLV_JUMBO		194
-#define IPV6_TLV_HAO		201	/* home address option */
+#define IPV6_TLV_HAO		201	
 
-/*
- *	IPV6 socket options
- */
+
 #if __UAPI_DEF_IPV6_OPTIONS
 #define IPV6_ADDRFORM		1
 #define IPV6_2292PKTINFO	2
@@ -162,7 +130,7 @@ struct in6_flowlabel_req {
 #define IPV6_CHECKSUM		7
 #define IPV6_2292HOPLIMIT	8
 #define IPV6_NEXTHOP		9
-#define IPV6_AUTHHDR		10	/* obsolete */
+#define IPV6_AUTHHDR		10	
 #define IPV6_FLOWINFO		11
 
 #define IPV6_UNICAST_HOPS	16
@@ -182,21 +150,17 @@ struct in6_flowlabel_req {
 #define IPV6_ROUTER_ALERT_ISOLATE	30
 #define IPV6_RECVERR_RFC4884	31
 
-/* IPV6_MTU_DISCOVER values */
+
 #define IPV6_PMTUDISC_DONT		0
 #define IPV6_PMTUDISC_WANT		1
 #define IPV6_PMTUDISC_DO		2
 #define IPV6_PMTUDISC_PROBE		3
-/* same as IPV6_PMTUDISC_PROBE, provided for symetry with IPv4
- * also see comments on IP_PMTUDISC_INTERFACE
- */
+
 #define IPV6_PMTUDISC_INTERFACE		4
-/* weaker version of IPV6_PMTUDISC_INTERFACE, which allows packets to
- * get fragmented if they exceed the interface mtu
- */
+
 #define IPV6_PMTUDISC_OMIT		5
 
-/* Flowlabel */
+
 #define IPV6_FLOWLABEL_MGR	32
 #define IPV6_FLOWINFO_SEND	33
 
@@ -205,24 +169,9 @@ struct in6_flowlabel_req {
 #define IPV6_HDRINCL		36
 #endif
 
-/*
- * Multicast:
- * Following socket options are shared between IPv4 and IPv6.
- *
- * MCAST_JOIN_GROUP		42
- * MCAST_BLOCK_SOURCE		43
- * MCAST_UNBLOCK_SOURCE		44
- * MCAST_LEAVE_GROUP		45
- * MCAST_JOIN_SOURCE_GROUP	46
- * MCAST_LEAVE_SOURCE_GROUP	47
- * MCAST_MSFILTER		48
- */
 
-/*
- * Advanced API (RFC3542) (1)
- *
- * Note: IPV6_RECVRTHDRDSTOPTS does not exist. see net/ipv6/datagram.c.
- */
+
+
 
 #define IPV6_RECVPKTINFO	49
 #define IPV6_PKTINFO		50
@@ -238,39 +187,20 @@ struct in6_flowlabel_req {
 #define IPV6_RECVPATHMTU	60
 #define IPV6_PATHMTU		61
 #define IPV6_DONTFRAG		62
-#if 0	/* not yet */
+#if 0	
 #define IPV6_USE_MIN_MTU	63
 #endif
 
-/*
- * Netfilter (1)
- *
- * Following socket options are used in ip6_tables;
- * see include/linux/netfilter_ipv6/ip6_tables.h.
- *
- * IP6T_SO_SET_REPLACE / IP6T_SO_GET_INFO		64
- * IP6T_SO_SET_ADD_COUNTERS / IP6T_SO_GET_ENTRIES	65
- */
 
-/*
- * Advanced API (RFC3542) (2)
- */
+
+
 #define IPV6_RECVTCLASS		66
 #define IPV6_TCLASS		67
 
-/*
- * Netfilter (2)
- *
- * Following socket options are used in ip6_tables;
- * see include/linux/netfilter_ipv6/ip6_tables.h.
- *
- * IP6T_SO_GET_REVISION_MATCH	68
- * IP6T_SO_GET_REVISION_TARGET	69
- * IP6T_SO_ORIGINAL_DST		80
- */
+
 
 #define IPV6_AUTOFLOWLABEL	70
-/* RFC5014: Source address selection */
+
 #define IPV6_ADDR_PREFERENCES	72
 
 #define IPV6_PREFER_SRC_TMP		0x0001
@@ -281,7 +211,7 @@ struct in6_flowlabel_req {
 #define IPV6_PREFER_SRC_CGA		0x0008
 #define IPV6_PREFER_SRC_NONCGA		0x0800
 
-/* RFC5082: Generalized Ttl Security Mechanism */
+
 #define IPV6_MINHOPCOUNT		73
 
 #define IPV6_ORIGDSTADDR        74
@@ -291,12 +221,5 @@ struct in6_flowlabel_req {
 #define IPV6_RECVFRAGSIZE	77
 #define IPV6_FREEBIND		78
 
-/*
- * Multicast Routing:
- * see include/uapi/linux/mroute6.h.
- *
- * MRT6_BASE			200
- * ...
- * MRT6_MAX
- */
-#endif /* _UAPI_LINUX_IN6_H */
+
+#endif 

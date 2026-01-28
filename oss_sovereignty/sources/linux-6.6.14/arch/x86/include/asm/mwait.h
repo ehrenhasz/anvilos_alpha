@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_MWAIT_H
 #define _ASM_X86_MWAIT_H
 
@@ -29,7 +29,7 @@
 static __always_inline void __monitor(const void *eax, unsigned long ecx,
 			     unsigned long edx)
 {
-	/* "monitor %eax, %ecx, %edx;" */
+	
 	asm volatile(".byte 0x0f, 0x01, 0xc8;"
 		     :: "a" (eax), "c" (ecx), "d"(edx));
 }
@@ -37,7 +37,7 @@ static __always_inline void __monitor(const void *eax, unsigned long ecx,
 static __always_inline void __monitorx(const void *eax, unsigned long ecx,
 			      unsigned long edx)
 {
-	/* "monitorx %eax, %ecx, %edx;" */
+	
 	asm volatile(".byte 0x0f, 0x01, 0xfa;"
 		     :: "a" (eax), "c" (ecx), "d"(edx));
 }
@@ -46,43 +46,18 @@ static __always_inline void __mwait(unsigned long eax, unsigned long ecx)
 {
 	mds_idle_clear_cpu_buffers();
 
-	/* "mwait %eax, %ecx;" */
+	
 	asm volatile(".byte 0x0f, 0x01, 0xc9;"
 		     :: "a" (eax), "c" (ecx));
 }
 
-/*
- * MWAITX allows for a timer expiration to get the core out a wait state in
- * addition to the default MWAIT exit condition of a store appearing at a
- * monitored virtual address.
- *
- * Registers:
- *
- * MWAITX ECX[1]: enable timer if set
- * MWAITX EBX[31:0]: max wait time expressed in SW P0 clocks. The software P0
- * frequency is the same as the TSC frequency.
- *
- * Below is a comparison between MWAIT and MWAITX on AMD processors:
- *
- *                 MWAIT                           MWAITX
- * opcode          0f 01 c9           |            0f 01 fb
- * ECX[0]                  value of RFLAGS.IF seen by instruction
- * ECX[1]          unused/#GP if set  |            enable timer if set
- * ECX[31:2]                     unused/#GP if set
- * EAX                           unused (reserve for hint)
- * EBX[31:0]       unused             |            max wait time (P0 clocks)
- *
- *                 MONITOR                         MONITORX
- * opcode          0f 01 c8           |            0f 01 fa
- * EAX                     (logical) address to monitor
- * ECX                     #GP if not zero
- */
+
 static __always_inline void __mwaitx(unsigned long eax, unsigned long ebx,
 				     unsigned long ecx)
 {
-	/* No MDS buffer clear as this is AMD/HYGON only */
+	
 
-	/* "mwaitx %eax, %ebx, %ecx;" */
+	
 	asm volatile(".byte 0x0f, 0x01, 0xfb;"
 		     :: "a" (eax), "b" (ebx), "c" (ecx));
 }
@@ -90,21 +65,12 @@ static __always_inline void __mwaitx(unsigned long eax, unsigned long ebx,
 static __always_inline void __sti_mwait(unsigned long eax, unsigned long ecx)
 {
 	mds_idle_clear_cpu_buffers();
-	/* "mwait %eax, %ecx;" */
+	
 	asm volatile("sti; .byte 0x0f, 0x01, 0xc9;"
 		     :: "a" (eax), "c" (ecx));
 }
 
-/*
- * This uses new MONITOR/MWAIT instructions on P4 processors with PNI,
- * which can obviate IPI to trigger checking of need_resched.
- * We execute MONITOR against need_resched and enter optimized wait state
- * through MWAIT. Whenever someone changes need_resched, we would be woken
- * up from MWAIT (without an IPI).
- *
- * New with Core Duo processors, MWAIT can take some hints based on CPU
- * capability.
- */
+
 static __always_inline void mwait_idle_with_hints(unsigned long eax, unsigned long ecx)
 {
 	if (static_cpu_has_bug(X86_BUG_MONITOR) || !current_set_polling_and_test()) {
@@ -128,15 +94,10 @@ static __always_inline void mwait_idle_with_hints(unsigned long eax, unsigned lo
 	current_clr_polling();
 }
 
-/*
- * Caller can specify whether to enter C0.1 (low latency, less
- * power saving) or C0.2 state (saves more power, but longer wakeup
- * latency). This may be overridden by the IA32_UMWAIT_CONTROL MSR
- * which can force requests for C0.2 to be downgraded to C0.1.
- */
+
 static inline void __tpause(u32 ecx, u32 edx, u32 eax)
 {
-	/* "tpause %ecx, %edx, %eax;" */
+	
 	#ifdef CONFIG_AS_TPAUSE
 	asm volatile("tpause %%ecx\n"
 		     :
@@ -148,4 +109,4 @@ static inline void __tpause(u32 ecx, u32 edx, u32 eax)
 	#endif
 }
 
-#endif /* _ASM_X86_MWAIT_H */
+#endif 

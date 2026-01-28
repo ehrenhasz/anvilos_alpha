@@ -1,18 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NXP ISP1301 USB transceiver driver
- *
- * Copyright (C) 2012 Roland Stigge <stigge@antcom.de>
- */
+
+
 
 #ifndef __LINUX_USB_ISP1301_H
 #define __LINUX_USB_ISP1301_H
 
 #include <linux/of.h>
 
-/* I2C Register definitions: */
 
-#define ISP1301_I2C_MODE_CONTROL_1	0x04	/* u8 read, set, +1 clear */
+
+#define ISP1301_I2C_MODE_CONTROL_1	0x04	
 
 #define MC1_SPEED_REG			(1 << 0)
 #define MC1_SUSPEND_REG			(1 << 1)
@@ -23,7 +19,7 @@
 #define MC1_UART_EN			(1 << 6)
 #define MC1_MASK			0x7f
 
-#define ISP1301_I2C_MODE_CONTROL_2	0x12	/* u8 read, set, +1 clear */
+#define ISP1301_I2C_MODE_CONTROL_2	0x12	
 
 #define MC2_GLOBAL_PWR_DN		(1 << 0)
 #define MC2_SPD_SUSP_CTRL		(1 << 1)
@@ -34,7 +30,7 @@
 #define MC2_PSW_EN			(1 << 6)
 #define MC2_EN2V7			(1 << 7)
 
-#define ISP1301_I2C_OTG_CONTROL_1	0x06	/* u8 read, set, +1 clear */
+#define ISP1301_I2C_OTG_CONTROL_1	0x06	
 
 #define OTG1_DP_PULLUP			(1 << 0)
 #define OTG1_DM_PULLUP			(1 << 1)
@@ -45,7 +41,7 @@
 #define OTG1_VBUS_DISCHRG		(1 << 6)
 #define OTG1_VBUS_CHRG			(1 << 7)
 
-#define ISP1301_I2C_OTG_CONTROL_2	0x10	/* u8 readonly */
+#define ISP1301_I2C_OTG_CONTROL_2	0x10	
 
 #define OTG_B_SESS_END			(1 << 6)
 #define OTG_B_SESS_VLD			(1 << 7)
@@ -64,8 +60,8 @@
 #define INT_BDIS_ACON			(1 << 6)
 #define INT_CR_INT			(1 << 7)
 
-#define ISP1301_I2C_REG_CLEAR_ADDR	1	/* Register Address Modifier */
+#define ISP1301_I2C_REG_CLEAR_ADDR	1	
 
 struct i2c_client *isp1301_get_client(struct device_node *node);
 
-#endif /* __LINUX_USB_ISP1301_H */
+#endif 

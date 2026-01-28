@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _XT_STATISTIC_H
 #define _XT_STATISTIC_H
 
@@ -28,10 +28,10 @@ struct xt_statistic_info {
 		struct {
 			__u32	every;
 			__u32	packet;
-			__u32	count; /* unused */
+			__u32	count; 
 		} nth;
 	} u;
 	struct xt_statistic_priv *master __attribute__((aligned(8)));
 };
 
-#endif /* _XT_STATISTIC_H */
+#endif 

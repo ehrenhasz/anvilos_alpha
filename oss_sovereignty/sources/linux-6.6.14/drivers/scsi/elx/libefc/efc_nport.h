@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
 
-/**
- * EFC FC port (NPORT) exported declarations
- *
- */
+
+
+
 
 #ifndef __EFC_NPORT_H__
 #define __EFC_NPORT_H__
@@ -47,4 +41,4 @@ __efc_nport_attached(struct efc_sm_ctx *ctx,
 int
 efc_vport_start(struct efc_domain *domain);
 
-#endif /* __EFC_NPORT_H__ */
+#endif 

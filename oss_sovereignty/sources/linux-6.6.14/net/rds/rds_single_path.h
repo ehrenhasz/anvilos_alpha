@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _RDS_RDS_SINGLE_H
 #define _RDS_RDS_SINGLE_H
 
@@ -28,4 +28,4 @@
 #define c_unacked_packets	c_path[0].cp_unacked_packets
 #define c_unacked_bytes		c_path[0].cp_unacked_bytes
 
-#endif /* _RDS_RDS_SINGLE_H */
+#endif 

@@ -1,56 +1,56 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2014 Cisco Systems, Inc.  All rights reserved. */
+
+
 
 #ifndef __SNIC_STATS_H
 #define __SNIC_STATS_H
 
 struct snic_io_stats {
-	atomic64_t active;		/* Active IOs */
-	atomic64_t max_active;		/* Max # active IOs */
-	atomic64_t max_sgl;		/* Max # SGLs for any IO */
-	atomic64_t max_time;		/* Max time to process IO */
-	atomic64_t max_qtime;		/* Max time to Queue the IO */
-	atomic64_t max_cmpl_time;	/* Max time to complete the IO */
-	atomic64_t sgl_cnt[SNIC_MAX_SG_DESC_CNT]; /* SGL Counters */
-	atomic64_t max_io_sz;		/* Max IO Size */
-	atomic64_t compl;		/* IO Completions */
-	atomic64_t fail;		/* IO Failures */
-	atomic64_t req_null;		/* req or req info is NULL */
-	atomic64_t alloc_fail;		/* Alloc Failures */
+	atomic64_t active;		
+	atomic64_t max_active;		
+	atomic64_t max_sgl;		
+	atomic64_t max_time;		
+	atomic64_t max_qtime;		
+	atomic64_t max_cmpl_time;	
+	atomic64_t sgl_cnt[SNIC_MAX_SG_DESC_CNT]; 
+	atomic64_t max_io_sz;		
+	atomic64_t compl;		
+	atomic64_t fail;		
+	atomic64_t req_null;		
+	atomic64_t alloc_fail;		
 	atomic64_t sc_null;
-	atomic64_t io_not_found;	/* IO Not Found */
-	atomic64_t num_ios;		/* Number of IOs */
+	atomic64_t io_not_found;	
+	atomic64_t num_ios;		
 };
 
 struct snic_abort_stats {
-	atomic64_t num;		/* Abort counter */
-	atomic64_t fail;	/* Abort Failure Counter */
-	atomic64_t drv_tmo;	/* Abort Driver Timeouts */
-	atomic64_t fw_tmo;	/* Abort Firmware Timeouts */
-	atomic64_t io_not_found;/* Abort IO Not Found */
-	atomic64_t q_fail;	/* Abort Queuing Failed */
+	atomic64_t num;		
+	atomic64_t fail;	
+	atomic64_t drv_tmo;	
+	atomic64_t fw_tmo;	
+	atomic64_t io_not_found;
+	atomic64_t q_fail;	
 };
 
 struct snic_reset_stats {
-	atomic64_t dev_resets;		/* Device Reset Counter */
-	atomic64_t dev_reset_fail;	/* Device Reset Failures */
-	atomic64_t dev_reset_aborts;	/* Device Reset Aborts */
-	atomic64_t dev_reset_tmo;	/* Device Reset Timeout */
-	atomic64_t dev_reset_terms;	/* Device Reset terminate */
-	atomic64_t hba_resets;		/* hba/firmware resets */
-	atomic64_t hba_reset_cmpl;	/* hba/firmware reset completions */
-	atomic64_t hba_reset_fail;	/* hba/firmware failures */
-	atomic64_t snic_resets;		/* snic resets */
-	atomic64_t snic_reset_compl;	/* snic reset completions */
-	atomic64_t snic_reset_fail;	/* snic reset failures */
+	atomic64_t dev_resets;		
+	atomic64_t dev_reset_fail;	
+	atomic64_t dev_reset_aborts;	
+	atomic64_t dev_reset_tmo;	
+	atomic64_t dev_reset_terms;	
+	atomic64_t hba_resets;		
+	atomic64_t hba_reset_cmpl;	
+	atomic64_t hba_reset_fail;	
+	atomic64_t snic_resets;		
+	atomic64_t snic_reset_compl;	
+	atomic64_t snic_reset_fail;	
 };
 
 struct snic_fw_stats {
-	atomic64_t actv_reqs;		/* Active Requests */
-	atomic64_t max_actv_reqs;	/* Max Active Requests */
-	atomic64_t out_of_res;		/* Firmware Out Of Resources */
-	atomic64_t io_errs;		/* Firmware IO Firmware Errors */
-	atomic64_t scsi_errs;		/* Target hits check condition */
+	atomic64_t actv_reqs;		
+	atomic64_t max_actv_reqs;	
+	atomic64_t out_of_res;		
+	atomic64_t io_errs;		
+	atomic64_t scsi_errs;		
 };
 
 struct snic_misc_stats {
@@ -59,14 +59,14 @@ struct snic_misc_stats {
 	atomic64_t ack_isr_cnt;
 	atomic64_t cmpl_isr_cnt;
 	atomic64_t errnotify_isr_cnt;
-	atomic64_t max_cq_ents;		/* Max CQ Entries */
-	atomic64_t data_cnt_mismat;	/* Data Count Mismatch */
+	atomic64_t max_cq_ents;		
+	atomic64_t data_cnt_mismat;	
 	atomic64_t io_tmo;
 	atomic64_t io_aborted;
-	atomic64_t sgl_inval;		/* SGL Invalid */
-	atomic64_t abts_wq_alloc_fail;	/* Abort Path WQ desc alloc failure */
-	atomic64_t devrst_wq_alloc_fail;/* Device Reset - WQ desc alloc fail */
-	atomic64_t wq_alloc_fail;	/* IO WQ desc alloc failure */
+	atomic64_t sgl_inval;		
+	atomic64_t abts_wq_alloc_fail;	
+	atomic64_t devrst_wq_alloc_fail;
+	atomic64_t wq_alloc_fail;	
 	atomic64_t no_icmnd_itmf_cmpls;
 	atomic64_t io_under_run;
 	atomic64_t qfull;
@@ -88,7 +88,7 @@ struct snic_stats {
 void snic_stats_debugfs_init(struct snic *);
 void snic_stats_debugfs_remove(struct snic *);
 
-/* Auxillary function to update active IO counter */
+
 static inline void
 snic_stats_update_active_ios(struct snic_stats *s_stats)
 {
@@ -102,7 +102,7 @@ snic_stats_update_active_ios(struct snic_stats *s_stats)
 	atomic64_inc(&io->num_ios);
 }
 
-/* Auxillary function to update IO completion counter */
+
 static inline void
 snic_stats_update_io_cmpl(struct snic_stats *s_stats)
 {
@@ -112,4 +112,4 @@ snic_stats_update_io_cmpl(struct snic_stats *s_stats)
 	else
 		atomic64_inc(&s_stats->io.compl);
 }
-#endif /* __SNIC_STATS_H */
+#endif 

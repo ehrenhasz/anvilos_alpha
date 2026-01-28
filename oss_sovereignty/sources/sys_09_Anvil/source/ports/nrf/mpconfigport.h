@@ -1,38 +1,14 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2015 Glenn Ruben Bakke
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 
 #include <mpconfigboard.h>
 
 #ifndef MICROPY_CONFIG_ROM_LEVEL
 
-// Set default feature levels for each processor
+
 
 #if defined(NRF51822)
 #if defined(BLUETOOTH_SD)
-// If SoftDevice is used there is less flash/ram available for application
+
 #define MICROPY_CONFIG_ROM_LEVEL (MICROPY_CONFIG_ROM_LEVEL_MINIMUM)
 #else
 #define MICROPY_CONFIG_ROM_LEVEL (MICROPY_CONFIG_ROM_LEVEL_CORE_FEATURES)
@@ -51,16 +27,16 @@
   #pragma error "Device not defined"
 #endif
 
-#endif // MICROPY_CONFIG_ROM_LEVEL
+#endif 
 
-// pre-defined shortcuts to use below in #if queries or define values
+
 #define CORE_FEAT (MICROPY_CONFIG_ROM_LEVEL >= MICROPY_CONFIG_ROM_LEVEL_CORE_FEATURES)
 #define EXTRA_FEAT (MICROPY_CONFIG_ROM_LEVEL >= MICROPY_CONFIG_ROM_LEVEL_EXTRA_FEATURES)
 
-// options to control how MicroPython is built
 
-// Due to the use of LTO and the unknown distance between nlr.o and nlrthumb.o code,
-// MCUs using the Thumb 1 instruction set must enable this NLR long jump feature.
+
+
+
 #if defined(NRF51822)
 #define MICROPY_NLR_THUMB_USE_LONG_JUMP    (1)
 #endif
@@ -69,7 +45,7 @@
 #define MICROPY_VFS                        (CORE_FEAT)
 #endif
 
-// micro:bit filesystem
+
 #ifndef MICROPY_MBFS
 #define MICROPY_MBFS                       (!MICROPY_VFS)
 #endif
@@ -134,9 +110,9 @@
 #define MICROPY_ALLOC_GC_STACK_SIZE (32)
 #endif
 
-// fatfs configuration used in ffconf.h
+
 #define MICROPY_FATFS_ENABLE_LFN       (1)
-#define MICROPY_FATFS_LFN_CODE_PAGE    437 /* 1=SFN/ANSI 437=LFN/U.S.(OEM) */
+#define MICROPY_FATFS_LFN_CODE_PAGE    437 
 #define MICROPY_FATFS_USE_LABEL        (1)
 #define MICROPY_FATFS_RPATH            (2)
 #define MICROPY_FATFS_MULTI_PARTITION  (0)
@@ -247,7 +223,7 @@
 #define MICROPY_ENABLE_EMERGENCY_EXCEPTION_BUF   (1)
 #define MICROPY_EMERGENCY_EXCEPTION_BUF_SIZE  (0)
 
-// if sdk is in use, import configuration and enable some core features
+
 #if BLUETOOTH_SD
 #include "bluetooth_conf.h"
 #define MICROPY_BUILTIN_METHOD_CHECK_SELF_ARG (1)
@@ -298,7 +274,7 @@
 #define MICROPY_PY_BLE_NUS                       (0)
 #endif
 
-// type definitions for the specific machine
+
 
 #define MICROPY_MAKE_POINTER_CALLABLE(p) ((void *)((mp_uint_t)(p) | 1))
 
@@ -308,8 +284,8 @@
 #define INT_FMT "%d"
 #define HEX2_FMT "%02x"
 
-typedef int mp_int_t; // must be pointer size
-typedef unsigned int mp_uint_t; // must be pointer size
+typedef int mp_int_t; 
+typedef unsigned int mp_uint_t; 
 typedef long mp_off_t;
 
 #if MICROPY_HW_ENABLE_RNG
@@ -319,14 +295,14 @@ long unsigned int rng_generate_random_word(void);
 
 #if BOARD_SPECIFIC_MODULES
 #include "boardmodules.h"
-#endif // BOARD_SPECIFIC_MODULES
+#endif 
 
-// extra built in names to add to the global namespace
+
 #define MICROPY_PORT_BUILTINS \
     { MP_ROM_QSTR(MP_QSTR_help), MP_ROM_PTR(&mp_builtin_help_obj) }, \
     { MP_ROM_QSTR(MP_QSTR_open), MP_ROM_PTR(&mp_builtin_open_obj) }, \
 
-// extra constants
+
 #define MICROPY_PORT_CONSTANTS \
     { MP_ROM_QSTR(MP_QSTR_machine), MP_ROM_PTR(&mp_module_machine) }, \
 
@@ -347,7 +323,7 @@ long unsigned int rng_generate_random_word(void);
         __WFI(); \
     } while (0);
 
-// We need to provide a declaration/definition of alloca()
+
 #include <alloca.h>
 
 #define MICROPY_PIN_DEFS_PORT_H "pin_defs_nrf5.h"

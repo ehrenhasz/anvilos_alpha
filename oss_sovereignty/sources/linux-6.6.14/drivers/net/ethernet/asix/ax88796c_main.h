@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2010 ASIX Electronics Corporation
- * Copyright (c) 2020 Samsung Electronics
- *
- * ASIX AX88796C SPI Fast Ethernet Linux driver
- */
+
+
 
 #ifndef _AX88796C_MAIN_H
 #define _AX88796C_MAIN_H
@@ -14,12 +9,12 @@
 
 #include "ax88796c_spi.h"
 
-/* These identify the driver base version and may not be removed. */
+
 #define DRV_NAME	"ax88796c"
 #define ADP_NAME	"ASIX AX88796C SPI Ethernet Adapter"
 
-#define TX_QUEUE_HIGH_WATER		45	/* Tx queue high water mark */
-#define TX_QUEUE_LOW_WATER		20	/* Tx queue low water mark */
+#define TX_QUEUE_HIGH_WATER		45	
+#define TX_QUEUE_LOW_WATER		20	
 
 #define AX88796C_REGDUMP_LEN		256
 #define AX88796C_PHY_REGDUMP_LEN	14
@@ -52,7 +47,7 @@
 #define TX_HDR_EOP_SEQNUMBAR		0xF800
 #define TX_HDR_EOP_PKTLENBAR		0x07FF
 
-/* Rx header fields mask */
+
 #define RX_HDR1_MCBC			0x8000
 #define RX_HDR1_STUFF_PKT		0x4000
 #define RX_HDR1_MII_ERR			0x2000
@@ -96,7 +91,7 @@ struct ax88796c_device {
 
 	struct work_struct	ax_work;
 
-	struct mutex		spi_lock; /* device access */
+	struct mutex		spi_lock; 
 
 	struct sk_buff_head	tx_wait_q;
 
@@ -147,8 +142,8 @@ struct skb_data {
 	size_t len;
 };
 
-/* A88796C register definition */
-	/* Definition of PAGE0 */
+
+	
 #define P0_PSR		(0x00)
 	#define PSR_DEV_READY		BIT(7)
 	#define PSR_RESET		(0 << 15)
@@ -183,54 +178,54 @@ struct skb_data {
 	#define IMR_MASKALL		(0xFFFF)
 	#define IMR_DEFAULT		(IMR_TXERR)
 #define P0_WFCR		(0x0A)
-	#define WFCR_PMEIND		BIT(0) /* PME indication */
-	#define WFCR_PMETYPE		BIT(1) /* PME I/O type */
-	#define WFCR_PMEPOL		BIT(2) /* PME polarity */
-	#define WFCR_PMERST		BIT(3) /* Reset PME */
-	#define WFCR_SLEEP		BIT(4) /* Enable sleep mode */
-	#define WFCR_WAKEUP		BIT(5) /* Enable wakeup mode */
-	#define WFCR_WAITEVENT		BIT(6) /* Reserved */
-	#define WFCR_CLRWAKE		BIT(7) /* Clear wakeup */
-	#define WFCR_LINKCH		BIT(8) /* Enable link change */
-	#define WFCR_MAGICP		BIT(9) /* Enable magic packet */
-	#define WFCR_WAKEF		BIT(10) /* Enable wakeup frame */
-	#define WFCR_PMEEN		BIT(11) /* Enable PME pin */
-	#define WFCR_LINKCHS		BIT(12) /* Link change status */
-	#define WFCR_MAGICPS		BIT(13) /* Magic packet status */
-	#define WFCR_WAKEFS		BIT(14) /* Wakeup frame status */
-	#define WFCR_PMES		BIT(15) /* PME pin status */
+	#define WFCR_PMEIND		BIT(0) 
+	#define WFCR_PMETYPE		BIT(1) 
+	#define WFCR_PMEPOL		BIT(2) 
+	#define WFCR_PMERST		BIT(3) 
+	#define WFCR_SLEEP		BIT(4) 
+	#define WFCR_WAKEUP		BIT(5) 
+	#define WFCR_WAITEVENT		BIT(6) 
+	#define WFCR_CLRWAKE		BIT(7) 
+	#define WFCR_LINKCH		BIT(8) 
+	#define WFCR_MAGICP		BIT(9) 
+	#define WFCR_WAKEF		BIT(10) 
+	#define WFCR_PMEEN		BIT(11) 
+	#define WFCR_LINKCHS		BIT(12) 
+	#define WFCR_MAGICPS		BIT(13) 
+	#define WFCR_WAKEFS		BIT(14) 
+	#define WFCR_PMES		BIT(15) 
 #define P0_PSCR		(0x0C)
 	#define PSCR_PS_MASK		(0xFFF0)
 	#define PSCR_PS_D0		(0)
 	#define PSCR_PS_D1		BIT(0)
 	#define PSCR_PS_D2		BIT(1)
-	#define PSCR_FPS		BIT(3) /* Enable fiber mode PS */
-	#define PSCR_SWPS		BIT(4) /* Enable software */
-						 /* PS control */
-	#define PSCR_WOLPS		BIT(5) /* Enable WOL PS */
-	#define PSCR_SWWOL		BIT(6) /* Enable software select */
-						 /* WOL PS */
-	#define PSCR_PHYOSC		BIT(7) /* Internal PHY OSC control */
-	#define PSCR_FOFEF		BIT(8) /* Force PHY generate FEF */
-	#define PSCR_FOF		BIT(9) /* Force PHY in fiber mode */
-	#define PSCR_PHYPD		BIT(10) /* PHY power down. */
-						  /* Active high */
-	#define PSCR_PHYRST		BIT(11) /* PHY reset signal. */
-						  /* Active low */
-	#define PSCR_PHYCSIL		BIT(12) /* PHY cable energy detect */
-	#define PSCR_PHYCOFF		BIT(13) /* PHY cable off */
-	#define PSCR_PHYLINK		BIT(14) /* PHY link status */
-	#define PSCR_EEPOK		BIT(15) /* EEPROM load complete */
+	#define PSCR_FPS		BIT(3) 
+	#define PSCR_SWPS		BIT(4) 
+						 
+	#define PSCR_WOLPS		BIT(5) 
+	#define PSCR_SWWOL		BIT(6) 
+						 
+	#define PSCR_PHYOSC		BIT(7) 
+	#define PSCR_FOFEF		BIT(8) 
+	#define PSCR_FOF		BIT(9) 
+	#define PSCR_PHYPD		BIT(10) 
+						  
+	#define PSCR_PHYRST		BIT(11) 
+						  
+	#define PSCR_PHYCSIL		BIT(12) 
+	#define PSCR_PHYCOFF		BIT(13) 
+	#define PSCR_PHYLINK		BIT(14) 
+	#define PSCR_EEPOK		BIT(15) 
 #define P0_MACCR	(0x0E)
-	#define MACCR_RXEN		BIT(0) /* Enable RX */
-	#define MACCR_DUPLEX_FULL	BIT(1) /* 1: Full, 0: Half */
-	#define MACCR_SPEED_100		BIT(2) /* 1: 100Mbps, 0: 10Mbps */
+	#define MACCR_RXEN		BIT(0) 
+	#define MACCR_DUPLEX_FULL	BIT(1) 
+	#define MACCR_SPEED_100		BIT(2) 
 	#define MACCR_RXFC_ENABLE	BIT(3)
 	#define MACCR_RXFC_MASK		0xFFF7
 	#define MACCR_TXFC_ENABLE	BIT(4)
 	#define MACCR_TXFC_MASK		0xFFEF
-	#define MACCR_PSI		BIT(6) /* Software Cable-Off */
-					       /* Power Saving Interrupt */
+	#define MACCR_PSI		BIT(6) 
+					       
 	#define MACCR_PF		BIT(7)
 	#define MACCR_PMM_BITS		8
 	#define MACCR_PMM_MASK		(0x1F00)
@@ -277,7 +272,7 @@ struct skb_data {
 	#define RTWCR_RX_LATCH		BIT(15)
 #define P0_RCPHR	(0x1C)
 
-	/* Definition of PAGE1 */
+	
 #define P1_RPPER	(0x22)
 	#define RPPER_RXEN		BIT(0)
 #define P1_MRCR		(0x28)
@@ -292,7 +287,7 @@ struct skb_data {
 	#define MCR_SM			BIT(9)
 	#define MCR_CRCENLAN		BIT(11)
 	#define MCR_STP			BIT(12)
-	/* Definition of PAGE2 */
+	
 #define P2_CIR		(0x42)
 #define P2_PCR		(0x44)
 	#define PCR_POLL_EN		BIT(0)
@@ -348,7 +343,7 @@ struct skb_data {
 #define P2_JLCR		(0x58)
 #define P2_MPLR		(0x5C)
 
-	/* Definition of PAGE3 */
+	
 #define P3_MACASR0	(0x62)
 	#define P3_MACASR(x)		(P3_MACASR0 + 2 * (x))
 	#define MACASR_LOWBYTE_MASK	0x00FF
@@ -380,7 +375,7 @@ struct skb_data {
 	#define TPCR_RAND_PKT_EN	BIT(14)
 	#define TPCR_FIXED_PKT_EN	BIT(15)
 #define P3_TPLR		(0x7C)
-	/* Definition of PAGE4 */
+	
 #define P4_SPICR	(0x8A)
 	#define SPICR_RCEN		BIT(0)
 	#define SPICR_QCEN		BIT(1)
@@ -453,7 +448,7 @@ struct skb_data {
 #define P4_COECEDR	(0x9A)
 #define P4_L2CECR	(0x9C)
 
-	/* Definition of PAGE5 */
+	
 #define P5_WFTR		(0xA2)
 	#define WFTR_2MS		(0x01)
 	#define WFTR_4MS		(0x02)
@@ -492,7 +487,7 @@ struct skb_data {
 #define P5_WF2BMR0	(0xBA)
 #define P5_WF2BMR1	(0xBC)
 
-	/* Definition of PAGE6 */
+	
 #define P6_WF2CR	(0xC2)
 #define P6_WF2OBR	(0xC4)
 #define P6_WF3BMR0	(0xC6)
@@ -508,7 +503,7 @@ struct skb_data {
 #define P6_WF5CR	(0xDA)
 #define P6_WF5OBR	(0xDC)
 
-/* Definition of PAGE7 */
+
 #define P7_WF6BMR0	(0xE2)
 #define P7_WF6BMR1	(0xE4)
 #define P7_WF6CR	(0xE6)
@@ -524,27 +519,27 @@ struct skb_data {
 #define P7_WFPC0	(0xFA)
 #define P7_WFPC1	(0xFC)
 
-/* Tx headers structure */
+
 struct tx_sop_header {
-	/* bit 15-11: flags, bit 10-0: packet length */
+	
 	u16 flags_len;
-	/* bit 15-11: sequence number, bit 11-0: packet length bar */
+	
 	u16 seq_lenbar;
 };
 
 struct tx_segment_header {
-	/* bit 15-14: flags, bit 13-11: segment number */
-	/* bit 10-0: segment length */
+	
+	
 	u16 flags_seqnum_seglen;
-	/* bit 15-14: end offset, bit 13-11: start offset */
-	/* bit 10-0: segment length bar */
+	
+	
 	u16 eo_so_seglenbar;
 };
 
 struct tx_eop_header {
-	/* bit 15-11: sequence number, bit 10-0: packet length */
+	
 	u16 seq_len;
-	/* bit 15-11: sequence number bar, bit 10-0: packet length bar */
+	
 	u16 seqbar_lenbar;
 };
 
@@ -556,7 +551,7 @@ struct tx_pkt_info {
 	u16 seq_num;
 };
 
-/* Rx headers structure */
+
 struct rx_header {
 	u16 flags_len;
 	u16 seq_lenbar;
@@ -565,4 +560,4 @@ struct rx_header {
 
 extern unsigned long ax88796c_no_regs_mask[];
 
-#endif /* #ifndef _AX88796C_MAIN_H */
+#endif 

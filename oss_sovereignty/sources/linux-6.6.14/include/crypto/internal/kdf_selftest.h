@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 
-/*
- * Copyright (C) 2021, Stephan Mueller <smueller@chronox.de>
- */
+
+
 
 #ifndef _CRYPTO_KDF_SELFTEST_H
 #define _CRYPTO_KDF_SELFTEST_H
@@ -68,4 +66,4 @@ err:
 	return ret;
 }
 
-#endif /* _CRYPTO_KDF_SELFTEST_H */
+#endif 

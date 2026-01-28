@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 #ifndef MICROPY_INCLUDED_STM32_MPU_H
 #define MICROPY_INCLUDED_STM32_MPU_H
 
@@ -38,15 +14,15 @@
 #define MPU_REGION_SDRAM2   (MPU_REGION_NUMBER5)
 #define MPU_REGION_OPENAMP  (MPU_REGION_NUMBER15)
 
-// Only relevant on CPUs with D-Cache, must be higher priority than SDRAM
+
 #define MPU_REGION_DMA_UNCACHED_1 (MPU_REGION_NUMBER6)
 #define MPU_REGION_DMA_UNCACHED_2 (MPU_REGION_NUMBER7)
 
-// Attribute value to disable a region entirely, remove it from the MPU
-// (i.e. the MPU_REGION_ENABLE bit is unset.)
+
+
 #define MPU_CONFIG_DISABLE 0
 
-// Configure a region with all access disabled. Can also set a Subregion Disable mask.
+
 #define MPU_CONFIG_NOACCESS(srd, size) ( \
     MPU_INSTRUCTION_ACCESS_DISABLE << MPU_RASR_XN_Pos \
         | MPU_REGION_NO_ACCESS << MPU_RASR_AP_Pos \
@@ -139,18 +115,18 @@ static inline void mpu_config_end(uint32_t irq_state) {
 #define ST_DEVICE_SIGNATURE_BASE (0x08fff800)
 #define ST_DEVICE_SIGNATURE_LIMIT (0x08ffffff)
 
-// STM32H5 Cortex-M33 MPU works differently from older cores.
-// Macro only takes region size in bytes, Attributes are coded in mpu_config_region().
+
+
 #define MPU_CONFIG_ETH(size) (size)
 
 static inline void mpu_init(void) {
-    // Configure attribute 0, inner-outer non-cacheable (=0x44).
+    
     __DMB();
     MPU->MAIR0 = (MPU->MAIR0 & ~MPU_MAIR0_Attr0_Msk)
         | 0x44 << MPU_MAIR0_Attr0_Pos;
 
-    // Configure region 0 to make device signature non-cacheable.
-    // This allows the memory region at ST_DEVICE_SIGNATURE_BASE to be readable.
+    
+    
     __DMB();
     MPU->RNR = MPU_REGION_NUMBER0;
     MPU->RBAR = (ST_DEVICE_SIGNATURE_BASE & MPU_RBAR_BASE_Msk)
@@ -161,7 +137,7 @@ static inline void mpu_init(void) {
         | MPU_ATTRIBUTES_NUMBER0 << MPU_RLAR_AttrIndx_Pos
         | MPU_REGION_ENABLE << MPU_RLAR_EN_Pos;
 
-    // Enable the MPU.
+    
     MPU->CTRL = MPU_PRIVILEGED_DEFAULT | MPU_CTRL_ENABLE_Msk;
     SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
     __DMB();
@@ -174,24 +150,24 @@ static inline uint32_t mpu_config_start(void) {
 
 static inline void mpu_config_region(uint32_t region, uint32_t base_addr, uint32_t size) {
     if (region == MPU_REGION_ETH) {
-        // Configure region 1 to make DMA memory non-cacheable.
+        
 
         __DMB();
-        // Configure attribute 1, inner-outer non-cacheable (=0x44).
+        
         MPU->MAIR0 = (MPU->MAIR0 & ~MPU_MAIR0_Attr1_Msk)
             | 0x44 << MPU_MAIR0_Attr1_Pos;
         __DMB();
 
-        // RBAR
-        //  BASE          Bits [31:5] of base address
-        //  SH[4:3]  00 = Non-shareable
-        //  AP[2:1]  01 = Read/write by any privilege level
-        //  XN[0]:    1 = No execution
+        
+        
+        
+        
+        
 
-        // RLAR
-        //  LIMIT         Limit address. Contains bits[31:5] of the upper inclusive limit of the selected MPU memory region
-        //  AT[3:1] 001 = Attribute 1
-        //  EN[0]     1 = Enabled
+        
+        
+        
+        
         MPU->RNR = region;
         MPU->RBAR = (base_addr & MPU_RBAR_BASE_Msk)
             | MPU_ACCESS_NOT_SHAREABLE << MPU_RBAR_SH_Pos
@@ -218,4 +194,4 @@ static inline void mpu_init(void) {
 
 #endif
 
-#endif // MICROPY_INCLUDED_STM32_MPU_H
+#endif 

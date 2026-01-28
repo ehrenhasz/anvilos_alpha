@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Sysfs support declarations.
- *
- * Copyright (C) 2005-2014 Nippon Telegraph and Telephone Corporation.
- * Copyright (C) 2014 HGST, Inc., a Western Digital Company.
- *
- * Written by Vyacheslav Dubeyko <Vyacheslav.Dubeyko@hgst.com>
- */
+
+
 
 #ifndef _NILFS_SYSFS_H
 #define _NILFS_SYSFS_H
@@ -15,37 +8,25 @@
 
 #define NILFS_ROOT_GROUP_NAME	"nilfs2"
 
-/*
- * struct nilfs_sysfs_dev_subgroups - device subgroup kernel objects
- * @sg_superblock_kobj: /sys/fs/<nilfs>/<device>/superblock
- * @sg_superblock_kobj_unregister: completion state
- * @sg_segctor_kobj: /sys/fs/<nilfs>/<device>/segctor
- * @sg_segctor_kobj_unregister: completion state
- * @sg_mounted_snapshots_kobj: /sys/fs/<nilfs>/<device>/mounted_snapshots
- * @sg_mounted_snapshots_kobj_unregister: completion state
- * @sg_checkpoints_kobj: /sys/fs/<nilfs>/<device>/checkpoints
- * @sg_checkpoints_kobj_unregister: completion state
- * @sg_segments_kobj: /sys/fs/<nilfs>/<device>/segments
- * @sg_segments_kobj_unregister: completion state
- */
+
 struct nilfs_sysfs_dev_subgroups {
-	/* /sys/fs/<nilfs>/<device>/superblock */
+	
 	struct kobject sg_superblock_kobj;
 	struct completion sg_superblock_kobj_unregister;
 
-	/* /sys/fs/<nilfs>/<device>/segctor */
+	
 	struct kobject sg_segctor_kobj;
 	struct completion sg_segctor_kobj_unregister;
 
-	/* /sys/fs/<nilfs>/<device>/mounted_snapshots */
+	
 	struct kobject sg_mounted_snapshots_kobj;
 	struct completion sg_mounted_snapshots_kobj_unregister;
 
-	/* /sys/fs/<nilfs>/<device>/checkpoints */
+	
 	struct kobject sg_checkpoints_kobj;
 	struct completion sg_checkpoints_kobj_unregister;
 
-	/* /sys/fs/<nilfs>/<device>/segments */
+	
 	struct kobject sg_segments_kobj;
 	struct completion sg_segments_kobj_unregister;
 };
@@ -164,4 +145,4 @@ NILFS_CP_ATTR_STRUCT(snapshot);
 #define NILFS_SEGCTOR_ATTR_LIST(name) \
 	(&nilfs_segctor_attr_##name.attr)
 
-#endif /* _NILFS_SYSFS_H */
+#endif 

@@ -15,9 +15,9 @@ class RAMBlockDevice:
         for i in range(len(buf)):
             self.data[n * self.sec_size + i] = buf[i]
     def ioctl(self, op, arg):
-        if op == 4:  # MP_BLOCKDEV_IOCTL_BLOCK_COUNT
+        if op == 4:  
             return len(self.data) // self.sec_size
-        if op == 5:  # MP_BLOCKDEV_IOCTL_BLOCK_SIZE
+        if op == 5:  
             return self.sec_size
 try:
     import errno, os
@@ -44,8 +44,8 @@ for i in range(1024):
 for n in names:
     f = fs.open(n, "w")
     f.write(n)
-    f = None  # release f without closing
-gc.collect()  # should finalise at least the first N-1 files by closing them
+    f = None  
+gc.collect()  
 for n in names[:-1]:
     with fs.open(n, "r") as f:
         print(f.read())

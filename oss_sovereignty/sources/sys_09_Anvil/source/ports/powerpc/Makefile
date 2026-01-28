@@ -1,13 +1,13 @@
 include ../../py/mkenv.mk
 
-# qstr definitions (must come before including py.mk)
+
 QSTR_DEFS = qstrdefsport.h
 
-# include py core make definitions
+
 include $(TOP)/py/py.mk
 include $(TOP)/extmod/extmod.mk
 
-# potato or lpc_serial
+
 UART ?= potato
 
 ARCH = $(shell uname -m)

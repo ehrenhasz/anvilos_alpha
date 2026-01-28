@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM thermal
 
@@ -135,7 +135,7 @@ TRACE_EVENT(thermal_power_cpu_limit,
 		__get_bitmask(cpumask), __entry->freq, __entry->cdev_state,
 		__entry->power)
 );
-#endif /* CONFIG_CPU_THERMAL */
+#endif 
 
 #ifdef CONFIG_DEVFREQ_THERMAL
 TRACE_EVENT(thermal_power_devfreq_get_power,
@@ -192,8 +192,8 @@ TRACE_EVENT(thermal_power_devfreq_limit,
 		__get_str(type), __entry->freq, __entry->cdev_state,
 		__entry->power)
 );
-#endif /* CONFIG_DEVFREQ_THERMAL */
-#endif /* _TRACE_THERMAL_H */
+#endif 
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
@@ -201,5 +201,5 @@ TRACE_EVENT(thermal_power_devfreq_limit,
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE thermal_trace
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

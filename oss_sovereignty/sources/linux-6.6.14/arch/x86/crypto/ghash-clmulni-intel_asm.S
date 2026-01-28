@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Accelerated GHASH implementation with Intel PCLMULQDQ-NI
- * instructions. This file contains accelerated part of ghash
- * implementation. More information about PCLMULQDQ can be found at:
- *
- * https://www.intel.com/content/dam/develop/external/us/en/documents/clmul-wp-rev-2-02-2014-04-20.pdf
- *
- * Copyright (c) 2009 Intel Corp.
- *   Author: Huang Ying <ying.huang@intel.com>
- *	     Vinodh Gopal
- *	     Erdinc Ozturk
- *	     Deniz Karakoyunlu
- */
+
+
 
 #include <linux/linkage.h>
 #include <asm/frame.h>
@@ -31,18 +19,7 @@
 
 .text
 
-/*
- * __clmul_gf128mul_ble:	internal ABI
- * input:
- *	DATA:			operand1
- *	SHASH:			operand2, hash_key << 1 mod poly
- * output:
- *	DATA:			operand1 * operand2 mod poly
- * changed:
- *	T1
- *	T2
- *	T3
- */
+
 SYM_FUNC_START_LOCAL(__clmul_gf128mul_ble)
 	movaps DATA, T1
 	pshufd $0b01001110, DATA, T2
@@ -88,7 +65,7 @@ SYM_FUNC_START_LOCAL(__clmul_gf128mul_ble)
 	RET
 SYM_FUNC_END(__clmul_gf128mul_ble)
 
-/* void clmul_ghash_mul(char *dst, const le128 *shash) */
+
 SYM_FUNC_START(clmul_ghash_mul)
 	FRAME_BEGIN
 	movups (%rdi), DATA
@@ -102,10 +79,7 @@ SYM_FUNC_START(clmul_ghash_mul)
 	RET
 SYM_FUNC_END(clmul_ghash_mul)
 
-/*
- * void clmul_ghash_update(char *dst, const char *src, unsigned int srclen,
- *			   const le128 *shash);
- */
+
 SYM_FUNC_START(clmul_ghash_update)
 	FRAME_BEGIN
 	cmp $16, %rdx

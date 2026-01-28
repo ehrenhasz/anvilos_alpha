@@ -1,31 +1,31 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/**************************************************************************/
-/*                                                                        */
-/*  IBM System i and System p Virtual NIC Device Driver                   */
-/*  Copyright (C) 2014 IBM Corp.                                          */
-/*  Santiago Leon (santi_leon@yahoo.com)                                  */
-/*  Thomas Falcon (tlfalcon@linux.vnet.ibm.com)                           */
-/*  John Allen (jallen@linux.vnet.ibm.com)                                */
-/*                                                                        */
-/*                                                                        */
-/* This module contains the implementation of a virtual ethernet device   */
-/* for use with IBM i/pSeries LPAR Linux.  It utilizes the logical LAN    */
-/* option of the RS/6000 Platform Architecture to interface with virtual */
-/* ethernet NICs that are presented to the partition by the hypervisor.   */
-/*                                                                        */
-/**************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #define IBMVNIC_NAME		"ibmvnic"
 #define IBMVNIC_DRIVER_VERSION	"1.0.1"
 #define IBMVNIC_INVALID_MAP	-1
 #define IBMVNIC_OPEN_FAILED	3
 
-/* basic structures plus 100 2k buffers */
+
 #define IBMVNIC_IO_ENTITLEMENT_DEFAULT	610305
 
-/* Initial module_parameters */
+
 #define IBMVNIC_RX_WEIGHT		16
-/* when changing this, update IBMVNIC_IO_ENTITLEMENT_DEFAULT */
+
 #define IBMVNIC_BUFFS_PER_POOL	100
 #define IBMVNIC_MAX_QUEUES	16
 #define IBMVNIC_MAX_QUEUE_SZ   4096
@@ -36,45 +36,7 @@
 #define IBMVNIC_TSO_BUFS	64
 #define IBMVNIC_TSO_POOL_MASK	0x80000000
 
-/* A VNIC adapter has set of Rx and Tx pools (aka queues). Each Rx/Tx pool
- * has a set of buffers. The size of each buffer is determined by the MTU.
- *
- * Each Rx/Tx pool is also associated with a DMA region that is shared
- * with the "hardware" (VIOS) and used to send/receive packets. The DMA
- * region is also referred to as a Long Term Buffer or LTB.
- *
- * The size of the DMA region required for an Rx/Tx pool depends on the
- * number and size (MTU) of the buffers in the pool. At the max levels
- * of 4096 jumbo frames (MTU=9000) we will need about 9K*4K = 36MB plus
- * some padding.
- *
- * But the size of a single DMA region is limited by MAX_ORDER in the
- * kernel (about 16MB currently).  To support say 4K Jumbo frames, we
- * use a set of LTBs (struct ltb_set) per pool.
- *
- * IBMVNIC_ONE_LTB_MAX  - max size of each LTB supported by kernel
- * IBMVNIC_ONE_LTB_SIZE - current max size of each LTB in an ltb_set
- * (must be <= IBMVNIC_ONE_LTB_MAX)
- * IBMVNIC_LTB_SET_SIZE - current size of all LTBs in an ltb_set
- *
- * Each VNIC can have upto 16 Rx, 16 Tx and 16 TSO pools. The TSO pools
- * are of fixed length (IBMVNIC_TSO_BUF_SZ * IBMVNIC_TSO_BUFS) of 4MB.
- *
- * The Rx and Tx pools can have upto 4096 buffers. The max size of these
- * buffers is about 9588 (for jumbo frames, including IBMVNIC_BUFFER_HLEN).
- * So, setting the IBMVNIC_LTB_SET_SIZE for a pool to 4096 * 9588 ~= 38MB.
- *
- * There is a trade-off in setting IBMVNIC_ONE_LTB_SIZE. If it is large,
- * the allocation of the LTB can fail when system is low in memory. If
- * its too small, we would need several mappings for each of the Rx/
- * Tx/TSO pools but there is a limit of 255 mappings per vnic in the
- * VNIC protocol.
- *
- * So setting IBMVNIC_ONE_LTB_SIZE to 8MB. With IBMVNIC_LTB_SET_SIZE set
- * to 38MB, we will need 5 LTBs per Rx and Tx pool and 1 LTB per TSO
- * pool for the 4MB. Thus the 16 Rx and Tx queues require 32 * 5 = 160
- * plus 16 for the TSO pools for a total of 176 LTB mappings per VNIC.
- */
+
 #define IBMVNIC_ONE_LTB_MAX	((u32)((1 << MAX_ORDER) * PAGE_SIZE))
 #define IBMVNIC_ONE_LTB_SIZE	min((u32)(8 << 20), IBMVNIC_ONE_LTB_MAX)
 #define IBMVNIC_LTB_SET_SIZE	(38 << 20)
@@ -239,11 +201,11 @@ struct ibmvnic_acl_buffer {
 	u8 reserved2[80];
 } __packed __aligned(8);
 
-/* descriptors have been changed, how should this be defined?  1? 4? */
+
 
 #define IBMVNIC_TX_DESC_VERSIONS 3
 
-/* is this still needed? */
+
 struct ibmvnic_tx_comp_desc {
 	u8 first;
 	u8 num_comps;
@@ -251,11 +213,7 @@ struct ibmvnic_tx_comp_desc {
 	__be32 correlators[5];
 } __packed __aligned(8);
 
-/* some flags that included in v0 descriptor, which is gone
- * only used for IBMVNIC_TCP_CHKSUM and IBMVNIC_UDP_CHKSUM
- * and only in some offload_flags variable that doesn't seem
- * to be used anywhere, can probably be removed?
- */
+
 
 #define IBMVNIC_TCP_CHKSUM		0x20
 #define IBMVNIC_UDP_CHKSUM		0x08
@@ -352,7 +310,7 @@ struct ibmvnic_rx_buff_add_desc {
 } __packed __aligned(8);
 
 struct ibmvnic_rc {
-	u8 code; /* one of enum ibmvnic_rc_codes */
+	u8 code; 
 	u8 detailed_data[3];
 } __packed __aligned(4);
 
@@ -375,7 +333,7 @@ struct ibmvnic_version_exchange {
 struct ibmvnic_capability {
 	u8 first;
 	u8 cmd;
-	__be16 capability; /* one of ibmvnic_capabilities */
+	__be16 capability; 
 	__be64 number;
 	struct ibmvnic_rc rc;
 } __packed __aligned(8);
@@ -496,7 +454,7 @@ struct ibmvnic_multicast_ctrl {
 #define IBMVNIC_ENABLE_ALL		0x20
 #define IBMVNIC_DISABLE_ALL	0x10
 	u8 reserved1;
-	__be16 reserved2; /* was num_enabled_mc_addr; */
+	__be16 reserved2; 
 	struct ibmvnic_rc rc;
 } __packed __aligned(8);
 
@@ -785,7 +743,7 @@ struct ibmvnic_crq_queue {
 	union ibmvnic_crq *msgs;
 	int size, cur;
 	dma_addr_t msg_token;
-	/* Used for serialization of msgs, cur */
+	
 	spinlock_t lock;
 	bool active;
 	char name[32];
@@ -817,7 +775,7 @@ struct ibmvnic_sub_crq_queue {
 	unsigned int irq;
 	unsigned int pool_index;
 	int scrq_num;
-	/* Used for serialization of msgs, cur */
+	
 	spinlock_t lock;
 	struct sk_buff *rx_skb_top;
 	struct ibmvnic_adapter *adapter;
@@ -867,7 +825,7 @@ struct ibmvnic_rx_buff {
 
 struct ibmvnic_rx_pool {
 	struct ibmvnic_rx_buff *rx_buff;
-	int size;			/* # of buffers in the pool */
+	int size;			
 	int index;
 	int buff_size;
 	atomic_t available;
@@ -926,11 +884,11 @@ struct ibmvnic_adapter {
 	dma_addr_t ip_offload_ctrl_tok;
 	u32 msg_enable;
 
-	/* Vital Product Data (VPD) */
+	
 	struct ibmvnic_vpd *vpd;
 	char fw_version[32];
 
-	/* Statistics */
+	
 	struct ibmvnic_statistics stats;
 	dma_addr_t stats_token;
 	struct completion stats_done;
@@ -950,7 +908,7 @@ struct ibmvnic_adapter {
 	u32 speed;
 	u8 duplex;
 
-	/* login data */
+	
 	struct ibmvnic_login_buffer *login_buf;
 	dma_addr_t login_buf_token;
 	int login_buf_sz;
@@ -964,7 +922,7 @@ struct ibmvnic_adapter {
 	struct ibmvnic_sub_crq_queue **tx_scrq ____cacheline_aligned;
 	struct ibmvnic_sub_crq_queue **rx_scrq ____cacheline_aligned;
 
-	/* rx structs */
+	
 	struct napi_struct *napi;
 	struct ibmvnic_rx_pool *rx_pool;
 	u64 promisc;
@@ -976,7 +934,7 @@ struct ibmvnic_adapter {
 	int init_done_rc;
 
 	struct completion fw_done;
-	/* Used for serialization of device commands */
+	
 	struct mutex fw_lock;
 	int fw_done_rc;
 
@@ -984,11 +942,11 @@ struct ibmvnic_adapter {
 	int reset_done_rc;
 	bool wait_for_reset;
 
-	/* CPU hotplug instances for online & dead */
+	
 	struct hlist_node node;
 	struct hlist_node node_dead;
 
-	/* partner capabilities */
+	
 	u64 min_tx_queues;
 	u64 min_rx_queues;
 	u64 min_rx_add_queues;
@@ -1038,26 +996,22 @@ struct ibmvnic_adapter {
 
 	struct tasklet_struct tasklet;
 	enum vnic_state state;
-	/* Used for serialization of state field. When taking both state
-	 * and rwi locks, take state lock first.
-	 */
+	
 	spinlock_t state_lock;
 	enum ibmvnic_reset_reason reset_reason;
 	struct list_head rwi_list;
-	/* Used for serialization of rwi_list. When taking both state
-	 * and rwi locks, take state lock first
-	 */
+	
 	spinlock_t rwi_lock;
 	struct work_struct ibmvnic_reset;
 	struct delayed_work ibmvnic_delayed_reset;
 	unsigned long resetting;
-	/* last device reset time */
+	
 	unsigned long last_reset_time;
 
 	bool napi_enabled;
 	bool from_passive_init;
 	bool login_pending;
-	/* protected by rcu */
+	
 	bool tx_queues_active;
 	bool failover_pending;
 	bool force_reset_recovery;

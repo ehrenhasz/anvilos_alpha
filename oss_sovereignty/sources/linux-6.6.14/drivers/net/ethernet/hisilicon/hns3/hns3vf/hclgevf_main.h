@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2016-2017 Hisilicon Limited. */
+
+
 
 #ifndef __HCLGEVF_MAIN_H
 #define __HCLGEVF_MAIN_H
@@ -23,10 +23,7 @@
 #define HCLGEVF_GENERAL_TASK_INTERVAL	  5
 #define HCLGEVF_KEEP_ALIVE_TASK_INTERVAL  2
 
-/* This number in actual depends upon the total number of VFs
- * created by physical function. But the maximum number of
- * possible vector-per-VF is {VFn(1-32), VECTn(32 + 1)}.
- */
+
 #define HCLGEVF_MAX_VF_VECTOR_NUM	(32 + 1)
 
 #define HCLGEVF_VECTOR_REG_BASE		0x20000
@@ -34,11 +31,11 @@
 #define HCLGEVF_VECTOR_REG_OFFSET	0x4
 #define HCLGEVF_VECTOR_VF_OFFSET		0x100000
 
-/* bar registers for common func */
+
 #define HCLGEVF_GRO_EN_REG			0x28000
 #define HCLGEVF_RXD_ADV_LAYOUT_EN_REG		0x28008
 
-/* bar registers for rcb */
+
 #define HCLGEVF_RING_RX_ADDR_L_REG		0x80000
 #define HCLGEVF_RING_RX_ADDR_H_REG		0x80004
 #define HCLGEVF_RING_RX_BD_NUM_REG		0x80008
@@ -66,20 +63,20 @@
 #define HCLGEVF_RING_TX_BD_ERR_REG		0x80074
 #define HCLGEVF_RING_EN_REG			0x80090
 
-/* bar registers for tqp interrupt */
+
 #define HCLGEVF_TQP_INTR_CTRL_REG		0x20000
 #define HCLGEVF_TQP_INTR_GL0_REG		0x20100
 #define HCLGEVF_TQP_INTR_GL1_REG		0x20200
 #define HCLGEVF_TQP_INTR_GL2_REG		0x20300
 #define HCLGEVF_TQP_INTR_RL_REG			0x20900
 
-/* CMDQ register bits for RX event(=MBX event) */
+
 #define HCLGEVF_VECTOR0_RX_CMDQ_INT_B	1
-/* RST register bits for RESET event */
+
 #define HCLGEVF_VECTOR0_RST_INT_B	2
 
 #define HCLGEVF_TQP_RESET_TRY_TIMES	10
-/* Reset related Registers */
+
 #define HCLGEVF_RST_ING			0x20C00
 #define HCLGEVF_FUN_RST_ING_BIT		BIT(0)
 #define HCLGEVF_GLOBAL_RST_ING_BIT	BIT(5)
@@ -98,7 +95,7 @@
 
 #define HCLGEVF_TQP_MEM_SIZE		0x10000
 #define HCLGEVF_MEM_BAR			4
-/* in the bar4, the first half is for roce, and the second half is for nic */
+
 #define HCLGEVF_NIC_MEM_OFFSET(hdev)	\
 	(pci_resource_len((hdev)->pdev, HCLGEVF_MEM_BAR) >> 1)
 #define HCLGEVF_TQP_MEM_OFFSET(hdev, i)		\
@@ -119,9 +116,9 @@ enum hclgevf_evt_cause {
 	HCLGEVF_VECTOR0_EVENT_OTHER,
 };
 
-/* states of hclgevf device & tasks */
+
 enum hclgevf_states {
-	/* device states */
+	
 	HCLGEVF_STATE_DOWN,
 	HCLGEVF_STATE_DISABLED,
 	HCLGEVF_STATE_IRQ_INITED,
@@ -129,7 +126,7 @@ enum hclgevf_states {
 	HCLGEVF_STATE_NIC_REGISTERED,
 	HCLGEVF_STATE_ROCE_REGISTERED,
 	HCLGEVF_STATE_SERVICE_INITED,
-	/* task states */
+	
 	HCLGEVF_STATE_RST_SERVICE_SCHED,
 	HCLGEVF_STATE_RST_HANDLING,
 	HCLGEVF_STATE_MBX_SERVICE_SCHED,
@@ -174,13 +171,13 @@ struct hclgevf_misc_vector {
 };
 
 struct hclgevf_rst_stats {
-	u32 rst_cnt;			/* the number of reset */
-	u32 vf_func_rst_cnt;		/* the number of VF function reset */
-	u32 flr_rst_cnt;		/* the number of FLR */
-	u32 vf_rst_cnt;			/* the number of VF reset */
-	u32 rst_done_cnt;		/* the number of reset completed */
-	u32 hw_rst_done_cnt;		/* the number of HW reset completed */
-	u32 rst_fail_cnt;		/* the number of VF reset fail */
+	u32 rst_cnt;			
+	u32 vf_func_rst_cnt;		
+	u32 flr_rst_cnt;		
+	u32 vf_rst_cnt;			
+	u32 rst_done_cnt;		
+	u32 hw_rst_done_cnt;		
+	u32 rst_fail_cnt;		
 };
 
 enum HCLGEVF_MAC_ADDR_TYPE {
@@ -201,7 +198,7 @@ struct hclgevf_mac_addr_node {
 };
 
 struct hclgevf_mac_table_cfg {
-	spinlock_t mac_list_lock; /* protect mac address need to add/detele */
+	spinlock_t mac_list_lock; 
 	struct list_head uc_mac_list;
 	struct list_head mc_mac_list;
 };
@@ -223,31 +220,31 @@ struct hclgevf_dev {
 
 #define HCLGEVF_RESET_REQUESTED		0
 #define HCLGEVF_RESET_PENDING		1
-	unsigned long reset_state;	/* requested, pending */
+	unsigned long reset_state;	
 	struct hclgevf_rst_stats rst_stats;
 	u32 reset_attempts;
-	struct semaphore reset_sem;	/* protect reset process */
+	struct semaphore reset_sem;	
 
 	u32 fw_version;
 	u16 mbx_api_version;
-	u16 num_tqps;		/* num task queue pairs of this VF */
+	u16 num_tqps;		
 
-	u16 alloc_rss_size;	/* allocated RSS task queue */
-	u16 rss_size_max;	/* HW defined max RSS task queue */
+	u16 alloc_rss_size;	
+	u16 rss_size_max;	
 
-	u16 num_alloc_vport;	/* num vports this driver supports */
+	u16 num_alloc_vport;	
 	u32 numa_node_mask;
 	u16 rx_buf_len;
-	u16 num_tx_desc;	/* desc num of per tx queue */
-	u16 num_rx_desc;	/* desc num of per rx queue */
+	u16 num_tx_desc;	
+	u16 num_rx_desc;	
 	u8 hw_tc_map;
 	u8 has_pf_mac;
 
 	u16 num_msi;
 	u16 num_msi_left;
 	u16 num_msi_used;
-	u16 num_nic_msix;	/* Num of nic vectors for this VF */
-	u16 num_roce_msix;	/* Num of roce vectors for this VF */
+	u16 num_nic_msix;	
+	u16 num_roce_msix;	
 	u16 roce_base_msix_offset;
 	u16 *vector_status;
 	int *vector_irq;
@@ -258,8 +255,8 @@ struct hclgevf_dev {
 
 	struct hclgevf_mac_table_cfg mac_table;
 
-	struct hclgevf_mbx_resp_status mbx_resp; /* mailbox response */
-	struct hclgevf_mbx_arq_ring arq; /* mailbox async rx queue */
+	struct hclgevf_mbx_resp_status mbx_resp; 
+	struct hclgevf_mbx_arq_ring arq; 
 
 	struct delayed_work service_task;
 

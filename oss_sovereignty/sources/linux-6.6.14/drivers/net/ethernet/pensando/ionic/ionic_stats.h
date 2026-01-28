@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+
+
 
 #ifndef _IONIC_STATS_H_
 #define _IONIC_STATS_H_
@@ -35,7 +35,7 @@
 #define IONIC_NAPI_STAT_DESC(stat_name) \
 	IONIC_STAT_DESC(struct ionic_napi_stats, stat_name)
 
-/* Interface structure for a particalar stats group */
+
 struct ionic_stats_group_intf {
 	void (*get_strings)(struct ionic_lif *lif, u8 **buf);
 	void (*get_values)(struct ionic_lif *lif, u64 **buf);
@@ -56,4 +56,4 @@ struct ionic_stat_desc {
 	u64 offset;
 };
 
-#endif /* _IONIC_STATS_H_ */
+#endif 

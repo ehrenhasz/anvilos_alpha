@@ -3,4 +3,4 @@
 
 extern int illegal_passwd_chars(const char *str);
 
-#endif	/* UTIL_LINUX_CH_COMMON */
+#endif	

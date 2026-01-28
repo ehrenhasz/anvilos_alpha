@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef __USB_POWER_DELIVERY__
 #define __USB_POWER_DELIVERY__
@@ -27,4 +27,4 @@ struct usb_power_delivery *usb_power_delivery_find(const char *name);
 int usb_power_delivery_init(void);
 void usb_power_delivery_exit(void);
 
-#endif /* __USB_POWER_DELIVERY__ */
+#endif 

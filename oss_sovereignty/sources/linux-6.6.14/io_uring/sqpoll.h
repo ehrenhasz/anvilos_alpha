@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 struct io_sq_data {
 	refcount_t		refs;
 	atomic_t		park_pending;
 	struct mutex		lock;
 
-	/* ctx's that are using this sqd */
+	
 	struct list_head	ctx_list;
 
 	struct task_struct	*thread;

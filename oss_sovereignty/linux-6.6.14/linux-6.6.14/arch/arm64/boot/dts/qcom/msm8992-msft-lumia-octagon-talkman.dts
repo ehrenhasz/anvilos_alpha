@@ -1,8 +1,0 @@
-/dts-v1/;
-#include "msm8992.dtsi"
-#include "msm8994-msft-lumia-octagon.dtsi"
-/ {
-	model = "Microsoft Lumia 950";
-	compatible = "microsoft,talkman", "qcom,msm8992";
-	chassis-type = "handset";
-};

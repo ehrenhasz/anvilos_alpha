@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 
-/*
- * Xen dma-buf functionality for gntdev.
- *
- * Copyright (c) 2018 Oleksandr Andrushchenko, EPAM Systems Inc.
- */
+
+
 
 #ifndef _GNTDEV_DMABUF_H
 #define _GNTDEV_DMABUF_H

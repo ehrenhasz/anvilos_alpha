@@ -1,10 +1,6 @@
-/* Memory configuration */
 
-/* Reserved Area
- * Users can create a reserved area at the end of the flash memory via
- * 'reserved_size' variable. The size of the reserved area should be a multiple
- * of the sector size of the flash memory!
- */
+
+
 #if defined MICROPY_HW_FLASH_RESERVED
 reserved_size = MICROPY_HW_FLASH_RESERVED;
 #endif
@@ -16,7 +12,7 @@ flash_start         = 0x30000000;
 #endif
 flash_size      = MICROPY_HW_FLASH_SIZE;
 flash_end           = DEFINED(reserved_size) ? ((flash_start) + (flash_size - reserved_size)) : ((flash_start) + (flash_size));
-flash_config_start  = flash_start + 0x400;  /* TODO: check why config_start is on 0x400 instead of 0x0 offset */
+flash_config_start  = flash_start + 0x400;  
 flash_config_size   = 0x00000C00;
 ivt_start           = flash_start + 0x00001000;
 ivt_size            = 0x00001000;
@@ -44,7 +40,7 @@ sdram_start         = 0x80000000;
 sdram_size          = MICROPY_HW_SDRAM_SIZE;
 #endif
 
-/* 32kiB stack. */
+
 __stack_size__ = 0x8000;
 _estack = __StackTop;
 _sstack = __StackLimit;
@@ -53,11 +49,11 @@ _sstack = __StackLimit;
 _gc_heap_start = ORIGIN(m_sdram);
 _gc_heap_end = ORIGIN(m_sdram) + LENGTH(m_sdram);
 #else
-/* Use second OCRAM bank for GC heap. */
+
 _gc_heap_start = ORIGIN(m_ocrm);
 _gc_heap_end = ORIGIN(m_ocrm) + LENGTH(m_ocrm);
 #endif
 
-/* CM4 DTCM */
+
 _openamp_shm_region_start = 0x20220000;
 _openamp_shm_region_end  = 0x20230000;

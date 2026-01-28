@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __SUBCMD_UTIL_H
 #define __SUBCMD_UTIL_H
 
@@ -28,13 +28,7 @@ static __noreturn inline void die(const char *err, ...)
 
 #define alloc_nr(x) (((x)+16)*3/2)
 
-/*
- * Realloc the buffer pointed at by variable 'x' so that it can hold
- * at least 'nr' entries; the number of entries currently allocated
- * is 'alloc', using the standard growing factor alloc_nr() macro.
- *
- * DO NOT USE any expression with side-effect for 'x' or 'alloc'.
- */
+
 #define ALLOC_GROW(x, nr, alloc) \
 	do { \
 		if ((nr) > alloc) { \
@@ -72,4 +66,4 @@ static inline void astrcat(char **out, const char *add)
 	free(tmp);
 }
 
-#endif /* __SUBCMD_UTIL_H */
+#endif 

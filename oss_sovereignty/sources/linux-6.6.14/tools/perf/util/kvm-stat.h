@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_KVM_STAT_H
 #define __PERF_KVM_STAT_H
 
@@ -88,7 +88,7 @@ struct perf_kvm_stat {
 	const char *sort_key;
 	int trace_vcpu;
 
-	/* Used when process events */
+	
 	struct addr_location al;
 
 	struct exit_reasons_table *exit_reasons;
@@ -137,9 +137,7 @@ int setup_kvm_events_tp(struct perf_kvm_stat *kvm);
 		symbols, { -1, NULL }			\
 	}
 
-/*
- * arch specific callbacks and data structures
- */
+
 int cpu_isa_init(struct perf_kvm_stat *kvm, const char *cpuid);
 
 extern const char *kvm_events_tp[];
@@ -182,10 +180,10 @@ static inline struct kvm_info *kvm_info__new(void)
 	return ki;
 }
 
-#else /* HAVE_KVM_STAT_SUPPORT */
-// We use this unconditionally in hists__findnew_entry() and hist_entry__delete()
+#else 
+
 #define kvm_info__zput(ki) do { } while (0)
-#endif /* HAVE_KVM_STAT_SUPPORT */
+#endif 
 
 extern int kvm_add_default_arch_event(int *argc, const char **argv);
-#endif /* __PERF_KVM_STAT_H */
+#endif 

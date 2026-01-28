@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _UAPI_IF_TUNNEL_H_
 #define _UAPI_IF_TUNNEL_H_
 
@@ -92,7 +92,7 @@ enum tunnel_encap_types {
 #define TUNNEL_ENCAP_FLAG_CSUM6		(1<<1)
 #define TUNNEL_ENCAP_FLAG_REMCSUM	(1<<2)
 
-/* SIT-mode i_flags */
+
 #define	SIT_ISATAP	0x0001
 
 struct ip_tunnel_prl {
@@ -101,10 +101,10 @@ struct ip_tunnel_prl {
 	__u16			__reserved;
 	__u32			datalen;
 	__u32			__reserved2;
-	/* data follows */
+	
 };
 
-/* PRL flags */
+
 #define	PRL_DEFAULT		0x0001
 
 struct ip_tunnel_6rd {
@@ -145,7 +145,7 @@ enum {
 
 #define IFLA_GRE_MAX	(__IFLA_GRE_MAX - 1)
 
-/* VTI-mode i_flags */
+
 #define VTI_ISVTI ((__force __be16)0x0001)
 
 enum {
@@ -182,4 +182,4 @@ enum {
 		(TUNNEL_GENEVE_OPT | TUNNEL_VXLAN_OPT | TUNNEL_ERSPAN_OPT | \
 		TUNNEL_GTP_OPT)
 
-#endif /* _UAPI_IF_TUNNEL_H_ */
+#endif 

@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * low-level functions for the SWIM floppy controller
- *
- * needs assembly language because is very timing dependent
- * this controller exists only on macintosh 680x0 based
- *
- * Copyright (C) 2004,2008 Laurent Vivier <Laurent@lvivier.info>
- *
- * based on Alastair Bridgewater SWIM analysis, 2001
- * based on netBSD IWM driver (c) 1997, 1998 Hauke Fath.
- *
- * 2004-08-21 (lv) - Initial implementation
- * 2008-11-05 (lv) - add get_swim_mode
- */
+
+
 
 	.equ	write_data,	0x0000
 	.equ	write_mark,	0x0200
@@ -173,7 +160,7 @@ wait_data_init:
 	lea	sector_data_mark, %a0
 	moveq	#3, %d1
 
-	/* wait data address mark */
+	
 
 wait_data_mark_byte:
 
@@ -186,11 +173,11 @@ wait_data_mark_byte:
 	dbne	%d1, wait_data_mark_byte
 	bne	wait_data_init
 
-	/* read data */
+	
 
 	tstb	%a3@(read_error - read_mark)
 
-	movel	#sector_size-1, %d4		/* sector size */
+	movel	#sector_size-1, %d4		
 read_new_data:
 	movew	#max_retry, %d2
 read_data_loop:
@@ -206,7 +193,7 @@ read_data_loop:
 	dbra	%d4, read_new_data
 exit_loop:
 
-	/* read CRC */
+	
 
 	movew	#max_retry, %d2
 data_crc0:
@@ -231,7 +218,7 @@ data_crc1:
 
 	moveb	#0x18, %a3@(write_mode0 - read_mark)
 
-	/* return number of bytes read */
+	
 
 	movel	#sector_size, %d0
 	addw	#1, %d4

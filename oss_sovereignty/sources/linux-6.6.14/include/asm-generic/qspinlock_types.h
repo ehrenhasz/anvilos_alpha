@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Queued spinlock
- *
- * (C) Copyright 2013-2015 Hewlett-Packard Development Company, L.P.
- *
- * Authors: Waiman Long <waiman.long@hp.com>
- */
+
+
 #ifndef __ASM_GENERIC_QSPINLOCK_TYPES_H
 #define __ASM_GENERIC_QSPINLOCK_TYPES_H
 
@@ -15,11 +9,7 @@ typedef struct qspinlock {
 	union {
 		atomic_t val;
 
-		/*
-		 * By using the whole 2nd least significant byte for the
-		 * pending bit, we can allow better optimization of the lock
-		 * acquisition for the pending bit holder.
-		 */
+		
 #ifdef __LITTLE_ENDIAN
 		struct {
 			u8	locked;
@@ -43,27 +33,10 @@ typedef struct qspinlock {
 	};
 } arch_spinlock_t;
 
-/*
- * Initializier
- */
+
 #define	__ARCH_SPIN_LOCK_UNLOCKED	{ { .val = ATOMIC_INIT(0) } }
 
-/*
- * Bitfields in the atomic value:
- *
- * When NR_CPUS < 16K
- *  0- 7: locked byte
- *     8: pending
- *  9-15: not used
- * 16-17: tail index
- * 18-31: tail cpu (+1)
- *
- * When NR_CPUS >= 16K
- *  0- 7: locked byte
- *     8: pending
- *  9-10: tail index
- * 11-31: tail cpu (+1)
- */
+
 #define	_Q_SET_MASK(type)	(((1U << _Q_ ## type ## _BITS) - 1)\
 				      << _Q_ ## type ## _OFFSET)
 #define _Q_LOCKED_OFFSET	0
@@ -92,4 +65,4 @@ typedef struct qspinlock {
 #define _Q_LOCKED_VAL		(1U << _Q_LOCKED_OFFSET)
 #define _Q_PENDING_VAL		(1U << _Q_PENDING_OFFSET)
 
-#endif /* __ASM_GENERIC_QSPINLOCK_TYPES_H */
+#endif 

@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_QCOM_DISP_CC_SM8450_H
 #define _DT_BINDINGS_CLK_QCOM_DISP_CC_SM8450_H
 
-/* DISP_CC clocks */
+
 #define DISP_CC_MDSS_AHB1_CLK					0
 #define DISP_CC_MDSS_AHB_CLK					1
 #define DISP_CC_MDSS_AHB_CLK_SRC				2
@@ -91,12 +89,12 @@
 #define DISP_CC_XO_CLK						81
 #define DISP_CC_XO_CLK_SRC					82
 
-/* DISP_CC resets */
+
 #define DISP_CC_MDSS_CORE_BCR					0
 #define DISP_CC_MDSS_CORE_INT2_BCR				1
 #define DISP_CC_MDSS_RSCC_BCR					2
 
-/* DISP_CC GDSCR */
+
 #define MDSS_GDSC				0
 #define MDSS_INT2_GDSC				1
 

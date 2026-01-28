@@ -1,48 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2021 Intel Corporation. */
 
-/* Modeled on trace-events-sample.h */
 
-/* The trace subsystem name for ice will be "ice".
- *
- * This file is named ice_trace.h.
- *
- * Since this include file's name is different from the trace
- * subsystem name, we'll have to define TRACE_INCLUDE_FILE at the end
- * of this file.
- */
+
+
+
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ice
 
-/* See trace-events-sample.h for a detailed description of why this
- * guard clause is different from most normal include files.
- */
+
 #if !defined(_ICE_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _ICE_TRACE_H_
 
 #include <linux/tracepoint.h>
 #include "ice_eswitch_br.h"
 
-/* ice_trace() macro enables shared code to refer to trace points
- * like:
- *
- * trace_ice_example(args...)
- *
- * ... as:
- *
- * ice_trace(example, args...)
- *
- * ... to resolve to the PF version of the tracepoint without
- * ifdefs, and to allow tracepoints to be disabled entirely at build
- * time.
- *
- * Trace point should always be referred to in the driver via this
- * macro.
- *
- * Similarly, ice_trace_enabled(trace_name) wraps references to
- * trace_ice_<trace_name>_enabled() functions.
- * @trace_name: name of tracepoint
- */
+
 #define _ICE_TRACE_NAME(trace_name) (trace_##ice##_##trace_name)
 #define ICE_TRACE_NAME(trace_name) _ICE_TRACE_NAME(trace_name)
 
@@ -50,16 +22,13 @@
 
 #define ice_trace_enabled(trace_name) ICE_TRACE_NAME(trace_name##_enabled)()
 
-/* This is for events common to PF. Corresponding versions will be named
- * trace_ice_*. The ice_trace() macro above will select the right trace point
- * name for the driver.
- */
 
-/* Begin tracepoints */
 
-/* Global tracepoints */
 
-/* Events related to DIM, q_vectors and ring containers */
+
+
+
+
 DECLARE_EVENT_CLASS(ice_rx_dim_template,
 		    TP_PROTO(struct ice_q_vector *q_vector, struct dim *dim),
 		    TP_ARGS(q_vector, dim),
@@ -114,7 +83,7 @@ DEFINE_EVENT(ice_tx_dim_template, ice_tx_dim_work,
 	     TP_ARGS(q_vector, dim)
 );
 
-/* Events related to a vsi & ring */
+
 DECLARE_EVENT_CLASS(ice_tx_template,
 		    TP_PROTO(struct ice_tx_ring *ring, struct ice_tx_desc *desc,
 			     struct ice_tx_buf *buf),
@@ -330,15 +299,12 @@ DEFINE_EVENT(ice_esw_br_port_template,
 	     TP_ARGS(port)
 );
 
-/* End tracepoints */
 
-#endif /* _ICE_TRACE_H_ */
-/* This must be outside ifdef _ICE_TRACE_H */
 
-/* This trace include file is not located in the .../include/trace
- * with the kernel tracepoint definitions, because we're a loadable
- * module.
- */
+#endif 
+
+
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE

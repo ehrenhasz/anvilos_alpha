@@ -374,7 +374,7 @@ class SystemValues:
 		c = info['processor-version'] if 'processor-version' in info else ''
 		b = info['bios-version'] if 'bios-version' in info else ''
 		r = info['bios-release-date'] if 'bios-release-date' in info else ''
-		self.sysstamp = '# sysinfo | man:%s | plat:%s | cpu:%s | bios:%s | biosdate:%s | numcpu:%d | memsz:%d | memfr:%d' % \
+		self.sysstamp = '
 			(m, p, c, b, r, self.cpucount, self.memtotal, self.memfree)
 		if self.osversion:
 			self.sysstamp += ' | os:%s' % self.osversion
@@ -419,7 +419,7 @@ class SystemValues:
 		fmt = name+'-%m%d%y-%H%M%S'
 		testtime = datetime.now().strftime(fmt)
 		self.teststamp = \
-			'# '+testtime+' '+self.prefix+' '+self.suspendmode+' '+kver
+			'
 		ext = ''
 		if self.gzip:
 			ext = '.gz'
@@ -495,7 +495,7 @@ class SystemValues:
 		fp = open(file)
 		for i in fp.read().split('\n'):
 			i = i.strip()
-			if i and i[0] != '#':
+			if i and i[0] != '
 				list.append(i)
 		fp.close()
 		return list
@@ -794,20 +794,20 @@ class SystemValues:
 		return '\x1B[%d;40m%s\x1B[m' % (color, str)
 	def writeDatafileHeader(self, filename, testdata):
 		fp = self.openlog(filename, 'w')
-		fp.write('%s\n%s\n# command | %s\n' % (self.teststamp, self.sysstamp, self.cmdline))
+		fp.write('%s\n%s\n
 		for test in testdata:
 			if 'fw' in test:
 				fw = test['fw']
 				if(fw):
-					fp.write('# fwsuspend %u fwresume %u\n' % (fw[0], fw[1]))
+					fp.write('
 			if 'turbo' in test:
-				fp.write('# turbostat %s\n' % test['turbo'])
+				fp.write('
 			if 'wifi' in test:
-				fp.write('# wifi %s\n' % test['wifi'])
+				fp.write('
 			if 'netfix' in test:
-				fp.write('# netfix %s\n' % test['netfix'])
+				fp.write('
 			if test['error'] or len(testdata) > 1:
-				fp.write('# enter_sleep_error %s\n' % test['error'])
+				fp.write('
 		return fp
 	def sudoUserchown(self, dir):
 		if os.path.exists(dir) and self.sudouser:
@@ -865,7 +865,7 @@ class SystemValues:
 	def dlog(self, text):
 		if not self.dmesgfile:
 			return
-		self.putlog(self.dmesgfile, '# %s\n' % text)
+		self.putlog(self.dmesgfile, '
 	def flog(self, text):
 		self.putlog(self.ftracefile, text)
 	def b64unzip(self, data):
@@ -880,9 +880,9 @@ class SystemValues:
 	def platforminfo(self, cmdafter):
 		if not os.path.exists(self.ftracefile):
 			return False
-		footer = '#\n'
+		footer = '
 		if self.suspendmode == 'command' and self.testcommand:
-			footer += '# platform-testcmd: %s\n' % (self.testcommand)
+			footer += '
 		props = dict()
 		tp = TestProps()
 		tf = self.openlog(self.ftracefile, 'r')
@@ -940,9 +940,9 @@ class SystemValues:
 		out = ''
 		for dev in sorted(props):
 			out += props[dev].out(dev)
-		footer += '# platform-devinfo: %s\n' % self.b64zip(out)
+		footer += '
 		for name, cmdline, info in cmdafter:
-			footer += '# platform-%s: %s | %s\n' % (name, cmdline, self.b64zip(info))
+			footer += '
 		self.flog(footer)
 		return True
 	def commonPrefix(self, list):
@@ -1316,16 +1316,16 @@ class DeviceNode:
 		self.depth = nodedepth
 class Data:
 	phasedef = {
-		'suspend_prepare': {'order': 0, 'color': '#CCFFCC'},
-		        'suspend': {'order': 1, 'color': '#88FF88'},
-		   'suspend_late': {'order': 2, 'color': '#00AA00'},
-		  'suspend_noirq': {'order': 3, 'color': '#008888'},
-		'suspend_machine': {'order': 4, 'color': '#0000FF'},
-		 'resume_machine': {'order': 5, 'color': '#FF0000'},
-		   'resume_noirq': {'order': 6, 'color': '#FF9900'},
-		   'resume_early': {'order': 7, 'color': '#FFCC00'},
-		         'resume': {'order': 8, 'color': '#FFFF88'},
-		'resume_complete': {'order': 9, 'color': '#FFFFCC'},
+		'suspend_prepare': {'order': 0, 'color': '
+		        'suspend': {'order': 1, 'color': '
+		   'suspend_late': {'order': 2, 'color': '
+		  'suspend_noirq': {'order': 3, 'color': '
+		'suspend_machine': {'order': 4, 'color': '
+		 'resume_machine': {'order': 5, 'color': '
+		   'resume_noirq': {'order': 6, 'color': '
+		   'resume_early': {'order': 7, 'color': '
+		         'resume': {'order': 8, 'color': '
+		'resume_complete': {'order': 9, 'color': '
 	}
 	errlist = {
 		'HWERROR' : r'.*\[ *Hardware Error *\].*',
@@ -1350,17 +1350,17 @@ class Data:
 	}
 	def __init__(self, num):
 		idchar = 'abcdefghij'
-		self.start = 0.0 # test start
-		self.end = 0.0   # test end
-		self.hwstart = 0 # rtc test start
-		self.hwend = 0   # rtc test end
-		self.tSuspended = 0.0 # low-level suspend start
-		self.tResumed = 0.0   # low-level resume start
-		self.tKernSus = 0.0   # kernel level suspend start
-		self.tKernRes = 0.0   # kernel level resume end
-		self.fwValid = False  # is firmware data available
-		self.fwSuspend = 0    # time spent in firmware suspend
-		self.fwResume = 0     # time spent in firmware resume
+		self.start = 0.0 
+		self.end = 0.0   
+		self.hwstart = 0 
+		self.hwend = 0   
+		self.tSuspended = 0.0 
+		self.tResumed = 0.0   
+		self.tKernSus = 0.0   
+		self.tKernRes = 0.0   
+		self.fwValid = False  
+		self.fwSuspend = 0    
+		self.fwResume = 0     
 		self.html_device_id = 0
 		self.stamp = 0
 		self.outfile = ''
@@ -1369,13 +1369,13 @@ class Data:
 		self.turbostat = 0
 		self.enterfail = ''
 		self.currphase = ''
-		self.pstl = dict()    # process timeline
+		self.pstl = dict()    
 		self.testnumber = num
 		self.idstr = idchar[num]
-		self.dmesgtext = []   # dmesg text file in memory
-		self.dmesg = dict()   # root data structure
+		self.dmesgtext = []   
+		self.dmesg = dict()   
 		self.errorinfo = {'suspend':[],'resume':[]}
-		self.tLow = []        # time spent in low-level suspends (standby/freeze)
+		self.tLow = []        
 		self.devpids = []
 		self.devicegroups = 0
 	def sortedPhases(self):
@@ -2495,11 +2495,11 @@ class Timeline:
 	html_legend = '<div id="p{3}" class="square" style="left:{0}%;background:{1}">&nbsp;{2}</div>\n'
 	def __init__(self, rowheight, scaleheight):
 		self.html = ''
-		self.height = 0  # total timeline height
-		self.scaleH = scaleheight # timescale (top) row height
-		self.rowH = rowheight     # device row height
-		self.bodyH = 0   # body height
-		self.rows = 0    # total timeline rows
+		self.height = 0  
+		self.scaleH = scaleheight 
+		self.rowH = rowheight     
+		self.bodyH = 0   
+		self.rows = 0    
 		self.rowlines = dict()
 		self.rowheight = dict()
 	def createHeader(self, sv, stamp):
@@ -2685,25 +2685,25 @@ class Timeline:
 			output += htmlline
 		self.html += output+'</div>\n'
 class TestProps:
-	stampfmt = '# [a-z]*-(?P<m>[0-9]{2})(?P<d>[0-9]{2})(?P<y>[0-9]{2})-'+\
+	stampfmt = '
 				'(?P<H>[0-9]{2})(?P<M>[0-9]{2})(?P<S>[0-9]{2})'+\
 				' (?P<host>.*) (?P<mode>.*) (?P<kernel>.*)$'
-	wififmt    = '^# wifi *(?P<d>\S*) *(?P<s>\S*) *(?P<t>[0-9\.]+).*'
-	tstatfmt   = '^# turbostat (?P<t>\S*)'
-	testerrfmt = '^# enter_sleep_error (?P<e>.*)'
-	sysinfofmt = '^# sysinfo .*'
-	cmdlinefmt = '^# command \| (?P<cmd>.*)'
-	kparamsfmt = '^# kparams \| (?P<kp>.*)'
-	devpropfmt = '# Device Properties: .*'
-	pinfofmt   = '# platform-(?P<val>[a-z,A-Z,0-9,_]*): (?P<info>.*)'
-	tracertypefmt = '# tracer: (?P<t>.*)'
-	firmwarefmt = '# fwsuspend (?P<s>[0-9]*) fwresume (?P<r>[0-9]*)$'
+	wififmt    = '^
+	tstatfmt   = '^
+	testerrfmt = '^
+	sysinfofmt = '^
+	cmdlinefmt = '^
+	kparamsfmt = '^
+	devpropfmt = '
+	pinfofmt   = '
+	tracertypefmt = '
+	firmwarefmt = '
 	procexecfmt = 'ps - (?P<ps>.*)$'
 	procmultifmt = '@(?P<n>[0-9]*)\|(?P<ps>.*)$'
 	ftrace_line_fmt_fg = \
 		'^ *(?P<time>[0-9\.]*) *\| *(?P<cpu>[0-9]*)\)'+\
 		' *(?P<proc>.*)-(?P<pid>[0-9]*) *\|'+\
-		'[ +!#\*@$]*(?P<dur>[0-9\.]*) .*\|  (?P<msg>.*)'
+		'[ +!
 	ftrace_line_fmt_nop = \
 		' *(?P<proc>.*)-(?P<pid>[0-9]*) *\[(?P<cpu>[0-9]*)\] *'+\
 		'(?P<flags>\S*) *(?P<time>[0-9\.]*): *'+\
@@ -2780,7 +2780,7 @@ class TestProps:
 		data.stamp['kernel'] = m.group('kernel')
 		if re.match(self.sysinfofmt, self.sysinfo):
 			for f in self.sysinfo.split('|'):
-				if '#' in f:
+				if '
 					continue
 				tmp = f.strip().split(':', 1)
 				key = tmp[0]
@@ -3032,7 +3032,7 @@ def loadTraceLog():
 		line = line.replace('\r\n', '')
 		if tp.stampInfo(line, sysvals):
 			continue
-		if line[0] == '#':
+		if line[0] == '
 			continue
 		m = re.match(tp.ftrace_line_fmt, line)
 		if(not m):
@@ -3470,7 +3470,7 @@ def loadKernelLog():
 	if(os.path.exists(sysvals.dmesgfile) == False):
 		doError('%s does not exist' % sysvals.dmesgfile)
 	tp = TestProps()
-	tp.stamp = datetime.now().strftime('# suspend-%m%d%y-%H%M%S localhost mem unknown')
+	tp.stamp = datetime.now().strftime('
 	testruns = []
 	data = 0
 	lf = sysvals.openlog(sysvals.dmesgfile, 'r')
@@ -3812,17 +3812,17 @@ def summaryCSS(title, center=True):
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">\n\
 	<title>'+title+'</title>\n\
 	<style type=\'text/css\'>\n\
-		.stamp {width: 100%;text-align:center;background:#888;line-height:30px;color:white;font: 25px Arial;}\n\
+		.stamp {width: 100%;text-align:center;background:
 		table {width:100%;border-collapse: collapse;border:1px solid;}\n\
-		th {border: 1px solid black;background:#222;color:white;}\n\
+		th {border: 1px solid black;background:
 		td {font: 14px "Times New Roman";'+tdcenter+'}\n\
-		tr.head td {border: 1px solid black;background:#aaa;}\n\
-		tr.alt {background-color:#ddd;}\n\
+		tr.head td {border: 1px solid black;background:
+		tr.alt {background-color:
 		tr.notice {color:red;}\n\
-		.minval {background-color:#BBFFBB;}\n\
-		.medval {background-color:#BBBBFF;}\n\
-		.maxval {background-color:#FFBBBB;}\n\
-		.head a {color:#000;text-decoration: none;}\n\
+		.minval {background-color:
+		.medval {background-color:
+		.maxval {background-color:
+		.head a {color:
 	</style>\n</head>\n<body>\n'
 	return out
 def createHTMLSummarySimple(testruns, htmlfile, title):
@@ -3904,7 +3904,7 @@ def createHTMLSummarySimple(testruns, htmlfile, title):
 	if usewifi:
 		cols += 1
 	colspan = '%d' % cols
-	html += '<table>\n<tr>\n' + th.format('#') +\
+	html += '<table>\n<tr>\n' + th.format('
 		th.format('Mode') + th.format('Host') + th.format('Kernel') +\
 		th.format('Test Time') + th.format('Result') + th.format('Issues') +\
 		th.format('Suspend') + th.format('Resume') +\
@@ -3917,13 +3917,13 @@ def createHTMLSummarySimple(testruns, htmlfile, title):
 	html += th.format('Detail')+'</tr>\n'
 	head = '<tr class="head"><td>{0}</td><td>{1}</td>'+\
 		'<td colspan='+colspan+' class="sus">Suspend Avg={2} '+\
-		'<span class=minval><a href="#s{10}min">Min={3}</a></span> '+\
-		'<span class=medval><a href="#s{10}med">Med={4}</a></span> '+\
-		'<span class=maxval><a href="#s{10}max">Max={5}</a></span> '+\
+		'<span class=minval><a href="
+		'<span class=medval><a href="
+		'<span class=maxval><a href="
 		'Resume Avg={6} '+\
-		'<span class=minval><a href="#r{10}min">Min={7}</a></span> '+\
-		'<span class=medval><a href="#r{10}med">Med={8}</a></span> '+\
-		'<span class=maxval><a href="#r{10}max">Max={9}</a></span></td>'+\
+		'<span class=minval><a href="
+		'<span class=medval><a href="
+		'<span class=maxval><a href="
 		'</tr>\n'
 	headnone = '<tr class="head"><td>{0}</td><td>{1}</td><td colspan='+\
 		colspan+'></td></tr>\n'
@@ -3957,25 +3957,25 @@ def createHTMLSummarySimple(testruns, htmlfile, title):
 					tHigh[i] = ' id="%smax" class=maxval title="Maximum"' % tag
 				elif idx == iMed[i]:
 					tHigh[i] = ' id="%smed" class=medval title="Median"' % tag
-			html += td.format("%d" % (list[mode]['data'].index(d) + 1)) # row
-			html += td.format(mode)										# mode
-			html += td.format(d[0])										# host
-			html += td.format(d[1])										# kernel
-			html += td.format(d[2])										# time
-			html += td.format(d[6])										# result
-			html += td.format(d[7])										# issues
-			html += tdh.format('%.3f ms' % d[3], tHigh[0]) if d[3] else td.format('')	# suspend
-			html += tdh.format('%.3f ms' % d[4], tHigh[1]) if d[4] else td.format('')	# resume
-			html += td.format(d[8])										# sus_worst
-			html += td.format('%.3f ms' % d[9])	if d[9] else td.format('')		# sus_worst time
-			html += td.format(d[10])									# res_worst
-			html += td.format('%.3f ms' % d[11]) if d[11] else td.format('')	# res_worst time
+			html += td.format("%d" % (list[mode]['data'].index(d) + 1)) 
+			html += td.format(mode)										
+			html += td.format(d[0])										
+			html += td.format(d[1])										
+			html += td.format(d[2])										
+			html += td.format(d[6])										
+			html += td.format(d[7])										
+			html += tdh.format('%.3f ms' % d[3], tHigh[0]) if d[3] else td.format('')	
+			html += tdh.format('%.3f ms' % d[4], tHigh[1]) if d[4] else td.format('')	
+			html += td.format(d[8])										
+			html += td.format('%.3f ms' % d[9])	if d[9] else td.format('')		
+			html += td.format(d[10])									
+			html += td.format('%.3f ms' % d[11]) if d[11] else td.format('')	
 			if useturbo:
-				html += td.format(d[12])								# pkg_pc10
-				html += td.format(d[13])								# syslpi
+				html += td.format(d[12])								
+				html += td.format(d[13])								
 			if usewifi:
-				html += td.format(d[14])								# wifi
-			html += tdlink.format(d[5]) if d[5] else td.format('')		# url
+				html += td.format(d[14])								
+			html += tdlink.format(d[5]) if d[5] else td.format('')		
 			html += '</tr>\n'
 			num += 1
 	hf = open(htmlfile, 'w')
@@ -4025,12 +4025,12 @@ def createHTMLDeviceSummary(testruns, htmlfile, title):
 				continue
 			rcls = ['alt'] if num % 2 == 1 else []
 			html += '<tr class="'+(' '.join(rcls))+'">\n' if len(rcls) > 0 else '<tr>\n'
-			html += tdr.format(data['name'])				# name
-			html += td.format('%.3f ms' % data['average'])	# average
-			html += td.format(data['count'])				# count
-			html += td.format('%.3f ms' % data['worst'])	# worst
-			html += td.format(data['host'])					# host
-			html += tdlink.format(data['url'])				# url
+			html += tdr.format(data['name'])				
+			html += td.format('%.3f ms' % data['average'])	
+			html += td.format(data['count'])				
+			html += td.format('%.3f ms' % data['worst'])	
+			html += td.format(data['host'])					
+			html += tdlink.format(data['url'])				
 			html += '</tr>\n'
 			num += 1
 		html += '</table>\n'
@@ -4062,13 +4062,13 @@ def createHTMLIssuesSummary(testruns, issues, htmlfile, title, extra=''):
 		rate = '%d/%d (%.2f%%)' % (testtotal, total, 100*float(testtotal)/float(total))
 		rcls = ['alt'] if num % 2 == 1 else []
 		html += '<tr class="'+(' '.join(rcls))+'">\n' if len(rcls) > 0 else '<tr>\n'
-		html += td.format('left', e['line'])		# issue
-		html += td.format('center', e['count'])		# count
+		html += td.format('left', e['line'])		
+		html += td.format('center', e['count'])		
 		if multihost:
-			html += td.format('center', len(e['urls']))	# hosts
-		html += td.format('center', testtotal)		# test count
-		html += td.format('center', rate)			# test rate
-		html += td.format('center nowrap', '<br>'.join(links))	# links
+			html += td.format('center', len(e['urls']))	
+		html += td.format('center', testtotal)		
+		html += td.format('center', rate)			
+		html += td.format('center nowrap', '<br>'.join(links))	
 		html += '</tr>\n'
 		num += 1
 	hf = open(htmlfile, 'w')
@@ -4349,7 +4349,7 @@ def createHTML(testruns, testfail):
 	hf.write('<div id="devicedetail" style="display:none;">\n')
 	for data in testruns:
 		hf.write('<div id="devicedetail%d">\n' % data.testnumber)
-		pscolor = 'linear-gradient(to top left, #ccc, #eee)'
+		pscolor = 'linear-gradient(to top left, 
 		hf.write(devtl.html_phaselet.format('pre_suspend_process', \
 			'0', '0', pscolor))
 		for b in data.sortedPhases():
@@ -4439,8 +4439,8 @@ def addCSS(hf, sv, testcount=1, kerror=False, extra=''):
 		.time2 {font:15px Arial;border-bottom:1px solid;border-left:1px solid;border-right:1px solid;}\n\
 		.testfail {font:bold 22px Arial;color:red;border:1px dashed;}\n\
 		td {text-align:center;}\n\
-		r {color:#500000;font:15px Tahoma;}\n\
-		n {color:#505050;font:15px Tahoma;}\n\
+		r {color:
+		n {color:
 		.tdhl {color:red;}\n\
 		.hide {display:none;}\n\
 		.pf {display:none;}\n\
@@ -4448,16 +4448,16 @@ def addCSS(hf, sv, testcount=1, kerror=False, extra=''):
 		.pf:'+cgnchk+' ~ label {background:url(\'data:image/svg+xml;utf,<?xml version="1.0" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" version="1.1"><circle cx="9" cy="9" r="8" stroke="black" stroke-width="1" fill="white"/><rect x="4" y="8" width="10" height="2" style="fill:black;stroke-width:0"/></svg>\') no-repeat left center;}\n\
 		.pf:'+cgchk+' ~ *:not(:nth-child(2)) {display:none;}\n\
 		.zoombox {position:relative;width:100%;overflow-x:scroll;-webkit-user-select:none;-moz-user-select:none;user-select:none;}\n\
-		.timeline {position:relative;font-size:14px;cursor:pointer;width:100%; overflow:hidden;background:linear-gradient(#cccccc, white);}\n\
+		.timeline {position:relative;font-size:14px;cursor:pointer;width:100%; overflow:hidden;background:linear-gradient(
 		.thread {position:absolute;height:0%;overflow:hidden;z-index:7;line-height:30px;font-size:14px;border:1px solid;text-align:center;white-space:nowrap;}\n\
-		.thread.ps {border-radius:3px;background:linear-gradient(to top, #ccc, #eee);}\n\
+		.thread.ps {border-radius:3px;background:linear-gradient(to top, 
 		.thread:hover {background:white;border:1px solid red;'+hoverZ+'}\n\
 		.thread.sec,.thread.sec:hover {background:black;border:0;color:white;line-height:15px;font-size:10px;}\n\
 		.hover {background:white;border:1px solid red;'+hoverZ+'}\n\
 		.hover.sync {background:white;}\n\
 		.hover.bg,.hover.kth,.hover.sync,.hover.ps {background:white;}\n\
 		.jiffie {position:absolute;pointer-events: none;z-index:8;}\n\
-		.traceevent {position:absolute;font-size:10px;z-index:7;overflow:hidden;color:black;text-align:center;white-space:nowrap;border-radius:5px;border:1px solid black;background:linear-gradient(to bottom right,#CCC,#969696);}\n\
+		.traceevent {position:absolute;font-size:10px;z-index:7;overflow:hidden;color:black;text-align:center;white-space:nowrap;border-radius:5px;border:1px solid black;background:linear-gradient(to bottom right,
 		.traceevent:hover {color:white;font-weight:bold;border:1px solid white;}\n\
 		.phase {position:absolute;overflow:hidden;border:0px;text-align:center;}\n\
 		.phaselet {float:left;overflow:hidden;border:0px;text-align:center;min-height:100px;font-size:24px;}\n\
@@ -4473,8 +4473,8 @@ def addCSS(hf, sv, testcount=1, kerror=False, extra=''):
 		a:hover {color:white;}\n\
 		a:active {color:white;}\n\
 		.version {position:relative;float:left;color:white;font-size:10px;line-height:30px;margin-left:10px;}\n\
-		.tblock {position:absolute;height:100%;background:#ddd;}\n\
-		.tback {position:absolute;width:100%;background:linear-gradient(#ccc, #ddd);}\n\
+		.tblock {position:absolute;height:100%;background:
+		.tback {position:absolute;width:100%;background:linear-gradient(
 		.bg {z-index:1;}\n\
 '+extra+'\
 	</style>\n</head>\n<body>\n'
@@ -4799,7 +4799,7 @@ def addScriptCode(hf, testruns):
 	'			}\n'\
 	'		}\n'\
 	'		win.document.write("<style>e{color:red}</style>"+title+"<pre>"+html+"</pre>");\n'\
-	'		win.location.hash = "#target";\n'\
+	'		win.location.hash = "
 	'		win.document.close();\n'\
 	'	}\n'\
 	'	function logWindow(e) {\n'\
@@ -5507,7 +5507,7 @@ def rerunTest(htmlfile=''):
 def runTest(n=0, quiet=False):
 	sysvals.initTestOutput('suspend')
 	op = sysvals.writeDatafileHeader(sysvals.dmesgfile, [])
-	op.write('# EXECUTION TRACE START\n')
+	op.write('
 	op.close()
 	if n <= 1:
 		if sysvals.rs != 0:
@@ -5605,10 +5605,10 @@ def data_from_html(file, outpath, issues, fulldetail=False):
 				elist[err[0]] += 1
 		for i in elist:
 			ilist.append('%sx%d' % (i, elist[i]) if elist[i] > 1 else i)
-		line = find_in_html(log, '# wifi ', '\n')
+		line = find_in_html(log, '
 		if line:
 			extra['wifi'] = line
-		line = find_in_html(log, '# netfix ', '\n')
+		line = find_in_html(log, '
 		if line:
 			extra['netfix'] = line
 	low = find_in_html(html, 'freeze time: <b>', ' ms</b>')
@@ -5903,7 +5903,7 @@ def configFromFile(file):
 					if p[0] == 'color':
 						try:
 							color = int(p[1], 16)
-							color = '#'+p[1]
+							color = '
 						except:
 							color = p[1]
 				continue

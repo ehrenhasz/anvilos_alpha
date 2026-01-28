@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/* Copyright 2019, 2023 NXP */
+
+
 
 #ifndef CAAM_DEBUGFS_H
 #define CAAM_DEBUGFS_H
@@ -26,4 +26,4 @@ static inline void caam_debugfs_qi_congested(void) {}
 static inline void caam_debugfs_qi_init(struct caam_drv_private *ctrlpriv) {}
 #endif
 
-#endif /* CAAM_DEBUGFS_H */
+#endif 

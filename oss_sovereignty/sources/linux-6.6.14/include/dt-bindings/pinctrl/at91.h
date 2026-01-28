@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This header provides constants for most at91 pinctrl bindings.
- *
- * Copyright (C) 2013 Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
- */
+
+
 
 #ifndef __DT_BINDINGS_AT91_PINCTRL_H__
 #define __DT_BINDINGS_AT91_PINCTRL_H__
@@ -46,4 +42,4 @@
 #define ATMEL_PIO_DRVSTR_ME	2
 #define ATMEL_PIO_DRVSTR_HI	3
 
-#endif /* __DT_BINDINGS_AT91_PINCTRL_H__ */
+#endif 

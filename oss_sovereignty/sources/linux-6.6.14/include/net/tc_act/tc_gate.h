@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Copyright 2020 NXP */
+
+
 
 #ifndef __NET_TC_GATE_H
 #define __NET_TC_GATE_H

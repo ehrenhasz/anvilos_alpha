@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) Qu Wenruo 2017.  All rights reserved.
- */
+
+
 
 #ifndef BTRFS_TREE_CHECKER_H
 #define BTRFS_TREE_CHECKER_H
@@ -11,32 +9,19 @@
 struct extent_buffer;
 struct btrfs_chunk;
 
-/* All the extra info needed to verify the parentness of a tree block. */
+
 struct btrfs_tree_parent_check {
-	/*
-	 * The owner check against the tree block.
-	 *
-	 * Can be 0 to skip the owner check.
-	 */
+	
 	u64 owner_root;
 
-	/*
-	 * Expected transid, can be 0 to skip the check, but such skip
-	 * should only be utlized for backref walk related code.
-	 */
+	
 	u64 transid;
 
-	/*
-	 * The expected first key.
-	 *
-	 * This check can be skipped if @has_first_key is false, such skip
-	 * can happen for case where we don't have the parent node key,
-	 * e.g. reading the tree root, doing backref walk.
-	 */
+	
 	struct btrfs_key first_key;
 	bool has_first_key;
 
-	/* The expected level. Should always be set. */
+	
 	u8 level;
 };
 
@@ -53,10 +38,7 @@ enum btrfs_tree_block_status {
 	BTRFS_TREE_BLOCK_INVALID_OWNER,
 };
 
-/*
- * Exported simply for btrfs-progs which wants to have the
- * btrfs_tree_block_status return codes.
- */
+
 enum btrfs_tree_block_status __btrfs_check_leaf(struct extent_buffer *leaf);
 enum btrfs_tree_block_status __btrfs_check_node(struct extent_buffer *node);
 

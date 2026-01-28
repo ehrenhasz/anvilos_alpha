@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-// Copyright (c) 2021-2021 Hisilicon Limited.
+
+
 
 #ifndef __HCLGE_COMM_CMD_H
 #define __HCLGE_COMM_CMD_H
@@ -30,7 +30,7 @@
 
 #define HCLGE_COMM_CMDQ_CLEAR_WAIT_TIME		200
 
-/* bar registers for cmdq */
+
 #define HCLGE_COMM_NIC_CSQ_BASEADDR_L_REG	0x27000
 #define HCLGE_COMM_NIC_CSQ_BASEADDR_H_REG	0x27004
 #define HCLGE_COMM_NIC_CSQ_DEPTH_REG		0x27008
@@ -41,15 +41,15 @@
 #define HCLGE_COMM_NIC_CRQ_DEPTH_REG		0x27020
 #define HCLGE_COMM_NIC_CRQ_TAIL_REG		0x27024
 #define HCLGE_COMM_NIC_CRQ_HEAD_REG		0x27028
-/* Vector0 interrupt CMDQ event source register(RW) */
+
 #define HCLGE_COMM_VECTOR0_CMDQ_SRC_REG		0x27100
-/* Vector0 interrupt CMDQ event status register(RO) */
+
 #define HCLGE_COMM_VECTOR0_CMDQ_STATE_REG	0x27104
 #define HCLGE_COMM_CMDQ_INTR_EN_REG		0x27108
 #define HCLGE_COMM_CMDQ_INTR_GEN_REG		0x2710C
 #define HCLGE_COMM_CMDQ_INTR_STS_REG		0x27104
 
-/* this bit indicates that the driver is ready for hardware reset */
+
 #define HCLGE_COMM_NIC_SW_RST_RDY_B		16
 #define HCLGE_COMM_NIC_SW_RST_RDY		BIT(HCLGE_COMM_NIC_SW_RST_RDY_B)
 #define HCLGE_COMM_NIC_CMQ_DESC_NUM_S		3
@@ -58,7 +58,7 @@
 #define HCLGE_COMM_CMDQ_TX_TIMEOUT_500MS	500000
 
 enum hclge_opcode_type {
-	/* Generic commands */
+	
 	HCLGE_OPC_QUERY_FW_VER		= 0x0001,
 	HCLGE_OPC_CFG_RST_TRIGGER	= 0x0020,
 	HCLGE_OPC_GBL_RST_STATUS	= 0x0021,
@@ -94,7 +94,7 @@ enum hclge_opcode_type {
 
 	HCLGE_OPC_QUERY_DEV_SPECS	= 0x0050,
 
-	/* MAC command */
+	
 	HCLGE_OPC_CONFIG_MAC_MODE	= 0x0301,
 	HCLGE_OPC_CONFIG_AN_MODE	= 0x0304,
 	HCLGE_OPC_QUERY_LINK_STATUS	= 0x0307,
@@ -108,11 +108,11 @@ enum hclge_opcode_type {
 	HCLGE_OPC_CONFIG_FEC_MODE	= 0x031A,
 	HCLGE_OPC_QUERY_ROH_TYPE_INFO	= 0x0389,
 
-	/* PTP commands */
+	
 	HCLGE_OPC_PTP_INT_EN		= 0x0501,
 	HCLGE_OPC_PTP_MODE_CFG		= 0x0507,
 
-	/* PFC/Pause commands */
+	
 	HCLGE_OPC_CFG_MAC_PAUSE_EN      = 0x0701,
 	HCLGE_OPC_CFG_PFC_PAUSE_EN      = 0x0702,
 	HCLGE_OPC_CFG_MAC_PARA          = 0x0703,
@@ -124,7 +124,7 @@ enum hclge_opcode_type {
 	HCLGE_OPC_PRI_TO_TC_MAPPING     = 0x0709,
 	HCLGE_OPC_QOS_MAP               = 0x070A,
 
-	/* ETS/scheduler commands */
+	
 	HCLGE_OPC_TM_PG_TO_PRI_LINK	= 0x0804,
 	HCLGE_OPC_TM_QS_TO_PRI_LINK     = 0x0805,
 	HCLGE_OPC_TM_NQ_TO_QS_LINK      = 0x0806,
@@ -155,7 +155,7 @@ enum hclge_opcode_type {
 	HCLGE_OPC_TM_INTERNAL_STS_1	= 0x0852,
 	HCLGE_OPC_TM_FLUSH		= 0x0872,
 
-	/* Packet buffer allocate commands */
+	
 	HCLGE_OPC_TX_BUFF_ALLOC		= 0x0901,
 	HCLGE_OPC_RX_PRIV_BUFF_ALLOC	= 0x0902,
 	HCLGE_OPC_RX_PRIV_WL_ALLOC	= 0x0903,
@@ -163,10 +163,10 @@ enum hclge_opcode_type {
 	HCLGE_OPC_RX_COM_WL_ALLOC	= 0x0905,
 	HCLGE_OPC_RX_GBL_PKT_CNT	= 0x0906,
 
-	/* TQP management command */
+	
 	HCLGE_OPC_SET_TQP_MAP		= 0x0A01,
 
-	/* TQP commands */
+	
 	HCLGE_OPC_CFG_TX_QUEUE		= 0x0B01,
 	HCLGE_OPC_QUERY_TX_POINTER	= 0x0B02,
 	HCLGE_OPC_QUERY_TX_STATS	= 0x0B03,
@@ -179,31 +179,31 @@ enum hclge_opcode_type {
 	HCLGE_OPC_CFG_COM_TQP_QUEUE	= 0x0B20,
 	HCLGE_OPC_RESET_TQP_QUEUE	= 0x0B22,
 
-	/* PPU commands */
+	
 	HCLGE_OPC_PPU_PF_OTHER_INT_DFX	= 0x0B4A,
 
-	/* TSO command */
+	
 	HCLGE_OPC_TSO_GENERIC_CONFIG	= 0x0C01,
 	HCLGE_OPC_GRO_GENERIC_CONFIG    = 0x0C10,
 
-	/* RSS commands */
+	
 	HCLGE_OPC_RSS_GENERIC_CONFIG	= 0x0D01,
 	HCLGE_OPC_RSS_INDIR_TABLE	= 0x0D07,
 	HCLGE_OPC_RSS_TC_MODE		= 0x0D08,
 	HCLGE_OPC_RSS_INPUT_TUPLE	= 0x0D02,
 
-	/* Promisuous mode command */
+	
 	HCLGE_OPC_CFG_PROMISC_MODE	= 0x0E01,
 
-	/* Vlan offload commands */
+	
 	HCLGE_OPC_VLAN_PORT_TX_CFG	= 0x0F01,
 	HCLGE_OPC_VLAN_PORT_RX_CFG	= 0x0F02,
 
-	/* Interrupts commands */
+	
 	HCLGE_OPC_ADD_RING_TO_VECTOR	= 0x1503,
 	HCLGE_OPC_DEL_RING_TO_VECTOR	= 0x1504,
 
-	/* MAC commands */
+	
 	HCLGE_OPC_MAC_VLAN_ADD		    = 0x1000,
 	HCLGE_OPC_MAC_VLAN_REMOVE	    = 0x1001,
 	HCLGE_OPC_MAC_VLAN_TYPE_ID	    = 0x1002,
@@ -212,16 +212,16 @@ enum hclge_opcode_type {
 	HCLGE_OPC_MAC_ETHTYPE_ADD	    = 0x1010,
 	HCLGE_OPC_MAC_ETHTYPE_REMOVE	= 0x1011,
 
-	/* MAC VLAN commands */
+	
 	HCLGE_OPC_MAC_VLAN_SWITCH_PARAM	= 0x1033,
 
-	/* VLAN commands */
+	
 	HCLGE_OPC_VLAN_FILTER_CTRL	    = 0x1100,
 	HCLGE_OPC_VLAN_FILTER_PF_CFG	= 0x1101,
 	HCLGE_OPC_VLAN_FILTER_VF_CFG	= 0x1102,
 	HCLGE_OPC_PORT_VLAN_BYPASS	= 0x1103,
 
-	/* Flow Director commands */
+	
 	HCLGE_OPC_FD_MODE_CTRL		= 0x1200,
 	HCLGE_OPC_FD_GET_ALLOCATION	= 0x1201,
 	HCLGE_OPC_FD_KEY_CONFIG		= 0x1202,
@@ -232,10 +232,10 @@ enum hclge_opcode_type {
 	HCLGE_OPC_FD_QB_CTRL		= 0x1210,
 	HCLGE_OPC_FD_QB_AD_OP		= 0x1211,
 
-	/* MDIO command */
+	
 	HCLGE_OPC_MDIO_CONFIG		= 0x1900,
 
-	/* QCN commands */
+	
 	HCLGE_OPC_QCN_MOD_CFG		= 0x1A01,
 	HCLGE_OPC_QCN_GRP_TMPLT_CFG	= 0x1A02,
 	HCLGE_OPC_QCN_SHAPPING_CFG	= 0x1A03,
@@ -245,30 +245,30 @@ enum hclge_opcode_type {
 	HCLGE_OPC_QCN_AJUST_INIT	= 0x1A07,
 	HCLGE_OPC_QCN_DFX_CNT_STATUS    = 0x1A08,
 
-	/* Mailbox command */
+	
 	HCLGEVF_OPC_MBX_PF_TO_VF	= 0x2000,
 	HCLGEVF_OPC_MBX_VF_TO_PF	= 0x2001,
 
-	/* Led command */
+	
 	HCLGE_OPC_LED_STATUS_CFG	= 0xB000,
 
-	/* clear hardware resource command */
+	
 	HCLGE_OPC_CLEAR_HW_RESOURCE	= 0x700B,
 
-	/* NCL config command */
+	
 	HCLGE_OPC_QUERY_NCL_CONFIG	= 0x7011,
 
-	/* IMP stats command */
+	
 	HCLGE_OPC_IMP_STATS_BD		= 0x7012,
 	HCLGE_OPC_IMP_STATS_INFO		= 0x7013,
 	HCLGE_OPC_IMP_COMPAT_CFG		= 0x701A,
 
-	/* SFP command */
+	
 	HCLGE_OPC_GET_SFP_EEPROM	= 0x7100,
 	HCLGE_OPC_GET_SFP_EXIST		= 0x7101,
 	HCLGE_OPC_GET_SFP_INFO		= 0x7104,
 
-	/* Error INT commands */
+	
 	HCLGE_MAC_COMMON_INT_EN		= 0x030E,
 	HCLGE_TM_SCH_ECC_INT_EN		= 0x0829,
 	HCLGE_SSU_ECC_INT_CMD		= 0x0989,
@@ -300,14 +300,14 @@ enum hclge_opcode_type {
 	HCLGE_OPC_WOL_CFG		= 0x2202,
 	HCLGE_NCSI_INT_EN		= 0x2401,
 
-	/* ROH MAC commands */
+	
 	HCLGE_OPC_MAC_ADDR_CHECK	= 0x9004,
 
-	/* PHY command */
+	
 	HCLGE_OPC_PHY_LINK_KSETTING	= 0x7025,
 	HCLGE_OPC_PHY_REG		= 0x7026,
 
-	/* Query link diagnosis info command */
+	
 	HCLGE_OPC_QUERY_LINK_DIAGNOSIS	= 0x702A,
 };
 
@@ -357,7 +357,7 @@ enum HCLGE_COMM_API_CAP_BITS {
 	HCLGE_COMM_API_CAP_FLEX_RSS_TBL_B,
 };
 
-/* capabilities bits map between imp firmware and local driver */
+
 struct hclge_comm_caps_bit_map {
 	u16 imp_bit;
 	u16 local_bit;
@@ -387,7 +387,7 @@ struct hclge_comm_query_version_cmd {
 	__le32 firmware;
 	__le32 hardware;
 	__le32 api_caps;
-	__le32 caps[HCLGE_COMM_QUERY_CAP_LENGTH]; /* capabilities of device */
+	__le32 caps[HCLGE_COMM_QUERY_CAP_LENGTH]; 
 };
 
 #define HCLGE_DESC_DATA_LEN		6
@@ -410,8 +410,8 @@ struct hclge_comm_cmq_ring {
 	u16 desc_num;
 	int next_to_use;
 	int next_to_clean;
-	u8 ring_type; /* cmq ring type */
-	spinlock_t lock; /* Command queue lock */
+	u8 ring_type; 
+	spinlock_t lock; 
 };
 
 enum hclge_comm_cmd_status {

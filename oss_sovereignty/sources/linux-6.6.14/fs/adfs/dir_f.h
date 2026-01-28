@@ -1,17 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  linux/fs/adfs/dir_f.h
- *
- *  Copyright (C) 1999 Russell King
- *
- *  Structures of directories on the F format disk
- */
+
+
 #ifndef ADFS_DIR_F_H
 #define ADFS_DIR_F_H
 
-/*
- * Directory header
- */
+
 struct adfs_dirheader {
 	__u8 startmasseq;
 	__u8 startname[4];
@@ -20,9 +12,7 @@ struct adfs_dirheader {
 #define ADFS_NEWDIR_SIZE	2048
 #define ADFS_NUM_DIR_ENTRIES	77
 
-/*
- * Directory entries
- */
+
 struct adfs_direntry {
 #define ADFS_F_NAME_LEN 10
 	char dirobname[ADFS_F_NAME_LEN];
@@ -33,9 +23,7 @@ struct adfs_direntry {
 	__u8 newdiratts;
 } __attribute__((packed));
 
-/*
- * Directory tail
- */
+
 struct adfs_olddirtail {
 	__u8 dirlastmask;
 	char dirname[10];

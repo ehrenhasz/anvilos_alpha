@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+
+
 #ifndef __XFS_REFLINK_H
 #define __XFS_REFLINK_H 1
 
@@ -53,4 +50,4 @@ extern int xfs_reflink_remap_blocks(struct xfs_inode *src, loff_t pos_in,
 extern int xfs_reflink_update_dest(struct xfs_inode *dest, xfs_off_t newlen,
 		xfs_extlen_t cowextsize, unsigned int remap_flags);
 
-#endif /* __XFS_REFLINK_H */
+#endif 

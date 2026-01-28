@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #if !defined(_TRACE_QLA_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_QLA_H_
 
@@ -39,7 +39,7 @@ DEFINE_EVENT(qla_log_event, ql_dbg_log,
 	TP_ARGS(buf, vaf)
 );
 
-#endif /* _TRACE_QLA_H */
+#endif 
 
 #define TRACE_INCLUDE_FILE qla
 

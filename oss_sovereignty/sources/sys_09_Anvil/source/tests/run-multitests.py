@@ -81,11 +81,11 @@ instance{}()
 multitest.flush()
 """
 IGNORE_OUTPUT_MATCHES = (
-    "libusb: error ",  # It tries to open devices that it doesn't have access to (libusb prints unconditionally).
-    "hci_transport_h2_libusb.c",  # Same issue. We enable LOG_ERROR in btstack.
-    "USB Path: ",  # Hardcoded in btstack's libusb transport.
-    "hci_number_completed_packet",  # Warning from btstack.
-    "lld_pdu_get_tx_flush_nb HCI packet count mismatch (",  # From ESP-IDF, see https://github.com/espressif/esp-idf/issues/5105
+    "libusb: error ",  
+    "hci_transport_h2_libusb.c",  
+    "USB Path: ",  
+    "hci_number_completed_packet",  
+    "lld_pdu_get_tx_flush_nb HCI packet count mismatch (",  
 )
 def get_host_ip(_ip_cache=[]):
     if not _ip_cache:
@@ -414,10 +414,10 @@ def run_tests(test_files, instances_truth, instances_test):
                     test_file, num_instances, instances_truth
                 )
         if cmd_args.show_output:
-            print("### TEST ###")
+            print("
             print(output_test, end="")
             if not skip:
-                print("### TRUTH ###")
+                print("
                 print(output_truth, end="")
         if skip:
             print("skip")
@@ -429,11 +429,11 @@ def run_tests(test_files, instances_truth, instances_test):
             print("FAIL")
             failed_tests.append(test_file)
             if not cmd_args.show_output:
-                print("### TEST ###")
+                print("
                 print(output_test, end="")
-                print("### TRUTH ###")
+                print("
                 print(output_truth, end="")
-                print("### DIFF ###")
+                print("
                 print_diff(output_truth, output_test)
         if output_metrics:
             for metric in output_metrics:

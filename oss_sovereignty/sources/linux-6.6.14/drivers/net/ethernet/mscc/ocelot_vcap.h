@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/* Microsemi Ocelot Switch driver
- * Copyright (c) 2019 Microsemi Corporation
- */
+
+
 
 #ifndef _MSCC_OCELOT_VCAP_H_
 #define _MSCC_OCELOT_VCAP_H_
@@ -21,4 +19,4 @@ int ocelot_setup_tc_cls_flower(struct ocelot_port_private *priv,
 			       struct flow_cls_offload *f,
 			       bool ingress);
 
-#endif /* _MSCC_OCELOT_VCAP_H_ */
+#endif 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Pinctrl for Cirrus Logic Madera codecs
- *
- * Copyright (C) 2016-2017 Cirrus Logic
- */
+
+
 
 #ifndef PINCTRL_MADERA_H
 #define PINCTRL_MADERA_H
@@ -24,7 +20,7 @@ struct madera_pin_chip {
 struct madera_pin_private {
 	struct madera *madera;
 
-	const struct madera_pin_chip *chip; /* chip-specific groups */
+	const struct madera_pin_chip *chip; 
 
 	struct device *dev;
 	struct pinctrl_dev *pctl;

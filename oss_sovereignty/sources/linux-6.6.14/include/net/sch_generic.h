@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_SCHED_GENERIC_H
 #define __NET_SCHED_GENERIC_H
 
@@ -41,9 +41,7 @@ enum qdisc_state_t {
 };
 
 enum qdisc_state2_t {
-	/* Only for !TCQ_F_NOLOCK qdisc. Never access it directly.
-	 * Use qdisc_run_begin/end() or qdisc_is_running() instead.
-	 */
+	
 	__QDISC_STATE2_RUNNING,
 };
 
@@ -61,7 +59,7 @@ struct qdisc_size_table {
 	u16			data[];
 };
 
-/* similar to sk_buff_head, but skb->prev pointer is undefined. */
+
 struct qdisc_skb_head {
 	struct sk_buff	*head;
 	struct sk_buff	*tail;
@@ -79,21 +77,13 @@ struct Qdisc {
 #define TCQ_F_INGRESS		2
 #define TCQ_F_CAN_BYPASS	4
 #define TCQ_F_MQROOT		8
-#define TCQ_F_ONETXQUEUE	0x10 /* dequeue_skb() can assume all skbs are for
-				      * q->dev_queue : It can test
-				      * netif_xmit_frozen_or_stopped() before
-				      * dequeueing next packet.
-				      * Its true for MQ/MQPRIO slaves, or non
-				      * multiqueue device.
-				      */
+#define TCQ_F_ONETXQUEUE	0x10 
 #define TCQ_F_WARN_NONWC	(1 << 16)
-#define TCQ_F_CPUSTATS		0x20 /* run using percpu statistics */
-#define TCQ_F_NOPARENT		0x40 /* root of its hierarchy :
-				      * qdisc_tree_decrease_qlen() should stop.
-				      */
-#define TCQ_F_INVISIBLE		0x80 /* invisible by default in dump */
-#define TCQ_F_NOLOCK		0x100 /* qdisc does not require locking */
-#define TCQ_F_OFFLOADED		0x200 /* qdisc is offloaded to HW */
+#define TCQ_F_CPUSTATS		0x20 
+#define TCQ_F_NOPARENT		0x40 
+#define TCQ_F_INVISIBLE		0x80 
+#define TCQ_F_NOLOCK		0x100 
+#define TCQ_F_OFFLOADED		0x200 
 	u32			limit;
 	const struct Qdisc_ops	*ops;
 	struct qdisc_size_table	__rcu *stab;
@@ -109,15 +99,13 @@ struct Qdisc {
 	int			pad;
 	refcount_t		refcnt;
 
-	/*
-	 * For performance sake on SMP, we put highly modified fields at the end
-	 */
+	
 	struct sk_buff_head	gso_skb ____cacheline_aligned_in_smp;
 	struct qdisc_skb_head	q;
 	struct gnet_stats_basic_sync bstats;
 	struct gnet_stats_queue	qstats;
 	unsigned long		state;
-	unsigned long		state2; /* must be written under qdisc spinlock */
+	unsigned long		state2; 
 	struct Qdisc            *next_sched;
 	struct sk_buff_head	skb_bad_txq;
 
@@ -126,7 +114,7 @@ struct Qdisc {
 
 	struct rcu_head		rcu;
 	netdevice_tracker	dev_tracker;
-	/* private data */
+	
 	long privdata[] ____cacheline_aligned;
 };
 
@@ -144,9 +132,7 @@ static inline bool qdisc_refcount_dec_if_one(struct Qdisc *qdisc)
 	return refcount_dec_if_one(&qdisc->refcnt);
 }
 
-/* Intended to be used by unlocked users, when concurrent qdisc release is
- * possible.
- */
+
 
 static inline struct Qdisc *qdisc_refcount_inc_nz(struct Qdisc *qdisc)
 {
@@ -157,10 +143,7 @@ static inline struct Qdisc *qdisc_refcount_inc_nz(struct Qdisc *qdisc)
 	return NULL;
 }
 
-/* For !TCQ_F_NOLOCK qdisc: callers must either call this within a qdisc
- * root_lock section, or provide their own memory barriers -- ordering
- * against qdisc_run_begin/end() atomic bit operations.
- */
+
 static inline bool qdisc_is_running(struct Qdisc *qdisc)
 {
 	if (qdisc->flags & TCQ_F_NOLOCK)
@@ -185,27 +168,18 @@ static inline bool qdisc_is_empty(const struct Qdisc *qdisc)
 	return !READ_ONCE(qdisc->q.qlen);
 }
 
-/* For !TCQ_F_NOLOCK qdisc, qdisc_run_begin/end() must be invoked with
- * the qdisc root lock acquired.
- */
+
 static inline bool qdisc_run_begin(struct Qdisc *qdisc)
 {
 	if (qdisc->flags & TCQ_F_NOLOCK) {
 		if (spin_trylock(&qdisc->seqlock))
 			return true;
 
-		/* No need to insist if the MISSED flag was already set.
-		 * Note that test_and_set_bit() also gives us memory ordering
-		 * guarantees wrt potential earlier enqueue() and below
-		 * spin_trylock(), both of which are necessary to prevent races
-		 */
+		
 		if (test_and_set_bit(__QDISC_STATE_MISSED, &qdisc->state))
 			return false;
 
-		/* Try to take the lock again to make sure that we will either
-		 * grab it or the CPU that still has it will see MISSED set
-		 * when testing it in qdisc_run_end()
-		 */
+		
 		return spin_trylock(&qdisc->seqlock);
 	}
 	return !__test_and_set_bit(__QDISC_STATE2_RUNNING, &qdisc->state2);
@@ -216,10 +190,7 @@ static inline void qdisc_run_end(struct Qdisc *qdisc)
 	if (qdisc->flags & TCQ_F_NOLOCK) {
 		spin_unlock(&qdisc->seqlock);
 
-		/* spin_unlock() only has store-release semantic. The unlock
-		 * and test_bit() ordering is a store-load ordering, so a full
-		 * memory barrier is needed here.
-		 */
+		
 		smp_mb();
 
 		if (unlikely(test_bit(__QDISC_STATE_MISSED,
@@ -238,7 +209,7 @@ static inline bool qdisc_may_bulk(const struct Qdisc *qdisc)
 static inline int qdisc_avail_bulklimit(const struct netdev_queue *txq)
 {
 #ifdef CONFIG_BQL
-	/* Non-BQL migrated drivers will return 0, too. */
+	
 	return dql_avail(&txq->dql);
 #else
 	return 0;
@@ -247,7 +218,7 @@ static inline int qdisc_avail_bulklimit(const struct netdev_queue *txq)
 
 struct Qdisc_class_ops {
 	unsigned int		flags;
-	/* Child qdisc manipulation */
+	
 	struct netdev_queue *	(*select_queue)(struct Qdisc *, struct tcmsg *);
 	int			(*graft)(struct Qdisc *, unsigned long cl,
 					struct Qdisc *, struct Qdisc **,
@@ -255,7 +226,7 @@ struct Qdisc_class_ops {
 	struct Qdisc *		(*leaf)(struct Qdisc *, unsigned long cl);
 	void			(*qlen_notify)(struct Qdisc *, unsigned long);
 
-	/* Class manipulation routines */
+	
 	unsigned long		(*find)(struct Qdisc *, u32 classid);
 	int			(*change)(struct Qdisc *, u32, u32,
 					struct nlattr **, unsigned long *,
@@ -264,7 +235,7 @@ struct Qdisc_class_ops {
 					  struct netlink_ext_ack *);
 	void			(*walk)(struct Qdisc *, struct qdisc_walker * arg);
 
-	/* Filter manipulation */
+	
 	struct tcf_block *	(*tcf_block)(struct Qdisc *sch,
 					     unsigned long arg,
 					     struct netlink_ext_ack *extack);
@@ -272,16 +243,16 @@ struct Qdisc_class_ops {
 					u32 classid);
 	void			(*unbind_tcf)(struct Qdisc *, unsigned long);
 
-	/* rtnetlink specific */
+	
 	int			(*dump)(struct Qdisc *, unsigned long,
 					struct sk_buff *skb, struct tcmsg*);
 	int			(*dump_stats)(struct Qdisc *, unsigned long,
 					struct gnet_dump *);
 };
 
-/* Qdisc_class_ops flag values */
 
-/* Implements API that doesn't require rtnl lock */
+
+
 enum qdisc_class_ops_flags {
 	QDISC_CLASS_OPS_DOIT_UNLOCKED = 1,
 };
@@ -379,7 +350,7 @@ struct tcf_proto_ops {
 	struct tcf_exts *	(*get_exts)(const struct tcf_proto *tp,
 					    u32 handle);
 
-	/* rtnetlink specific */
+	
 	int			(*dump)(struct net*, struct tcf_proto*, void *,
 					struct sk_buff *skb, struct tcmsg*,
 					bool);
@@ -395,33 +366,28 @@ struct tcf_proto_ops {
 	int			flags;
 };
 
-/* Classifiers setting TCF_PROTO_OPS_DOIT_UNLOCKED in tcf_proto_ops->flags
- * are expected to implement tcf_proto_ops->delete_empty(), otherwise race
- * conditions can occur when filters are inserted/deleted simultaneously.
- */
+
 enum tcf_proto_ops_flags {
 	TCF_PROTO_OPS_DOIT_UNLOCKED = 1,
 };
 
 struct tcf_proto {
-	/* Fast access part */
+	
 	struct tcf_proto __rcu	*next;
 	void __rcu		*root;
 
-	/* called under RCU BH lock*/
+	
 	int			(*classify)(struct sk_buff *,
 					    const struct tcf_proto *,
 					    struct tcf_result *);
 	__be16			protocol;
 
-	/* All the rest */
+	
 	u32			prio;
 	void			*data;
 	const struct tcf_proto_ops	*ops;
 	struct tcf_chain	*chain;
-	/* Lock protects tcf_proto shared state and can be used by unlocked
-	 * classifiers to protect their private data.
-	 */
+	
 	spinlock_t		lock;
 	bool			deleting;
 	refcount_t		refcnt;
@@ -442,12 +408,12 @@ struct qdisc_skb_cb {
 typedef void tcf_chain_head_change_t(struct tcf_proto *tp_head, void *priv);
 
 struct tcf_chain {
-	/* Protects filter_chain. */
+	
 	struct mutex filter_chain_lock;
 	struct tcf_proto __rcu *filter_chain;
 	struct list_head list;
 	struct tcf_block *block;
-	u32 index; /* chain index */
+	u32 index; 
 	unsigned int refcnt;
 	unsigned int action_refcnt;
 	bool explicitly_created;
@@ -458,30 +424,28 @@ struct tcf_chain {
 };
 
 struct tcf_block {
-	/* Lock protects tcf_block and lifetime-management data of chains
-	 * attached to the block (refcnt, action_refcnt, explicitly_created).
-	 */
+	
 	struct mutex lock;
 	struct list_head chain_list;
-	u32 index; /* block index for shared blocks */
-	u32 classid; /* which class this block belongs to */
+	u32 index; 
+	u32 classid; 
 	refcount_t refcnt;
 	struct net *net;
 	struct Qdisc *q;
-	struct rw_semaphore cb_lock; /* protects cb_list and offload counters */
+	struct rw_semaphore cb_lock; 
 	struct flow_block flow_block;
 	struct list_head owner_list;
 	bool keep_dst;
-	atomic_t offloadcnt; /* Number of oddloaded filters */
-	unsigned int nooffloaddevcnt; /* Number of devs unable to do offload */
-	unsigned int lockeddevcnt; /* Number of devs that require rtnl lock. */
+	atomic_t offloadcnt; 
+	unsigned int nooffloaddevcnt; 
+	unsigned int lockeddevcnt; 
 	struct {
 		struct tcf_chain *chain;
 		struct list_head filter_chain_list;
 	} chain0;
 	struct rcu_head rcu;
 	DECLARE_HASHTABLE(proto_destroy_ht, 7);
-	struct mutex proto_destroy_lock; /* Lock for proto_destroy hashtable. */
+	struct mutex proto_destroy_lock; 
 };
 
 static inline bool lockdep_tcf_chain_is_locked(struct tcf_chain *chain)
@@ -747,7 +711,7 @@ static inline bool skb_skip_tc_classify(struct sk_buff *skb)
 	return false;
 }
 
-/* Reset all TX qdiscs greater than index of a device.  */
+
 static inline void qdisc_reset_all_tx_gt(struct net_device *dev, unsigned int i)
 {
 	struct Qdisc *qdisc;
@@ -762,7 +726,7 @@ static inline void qdisc_reset_all_tx_gt(struct net_device *dev, unsigned int i)
 	}
 }
 
-/* Are all TX queues of the device empty?  */
+
 static inline bool qdisc_all_tx_empty(const struct net_device *dev)
 {
 	unsigned int i;
@@ -781,7 +745,7 @@ static inline bool qdisc_all_tx_empty(const struct net_device *dev)
 	return true;
 }
 
-/* Are any of the TX qdiscs changing?  */
+
 static inline bool qdisc_tx_changing(const struct net_device *dev)
 {
 	unsigned int i;
@@ -796,7 +760,7 @@ static inline bool qdisc_tx_changing(const struct net_device *dev)
 	return false;
 }
 
-/* Is the device using the noop qdisc on all queues?  */
+
 static inline bool qdisc_tx_is_noop(const struct net_device *dev)
 {
 	unsigned int i;
@@ -814,7 +778,7 @@ static inline unsigned int qdisc_pkt_len(const struct sk_buff *skb)
 	return qdisc_skb_cb(skb)->pkt_len;
 }
 
-/* additional qdisc xmit flags (NET_XMIT_MASK in linux/netdevice.h) */
+
 enum net_xmit_qdisc_t {
 	__NET_XMIT_STOLEN = 0x00010000,
 	__NET_XMIT_BYPASS = 0x00020000,
@@ -1037,9 +1001,7 @@ static inline struct sk_buff *qdisc_dequeue_head(struct Qdisc *sch)
 	return skb;
 }
 
-/* Instead of calling kfree_skb() while root qdisc lock is held,
- * queue the skb for future freeing at end of __dev_xmit_skb()
- */
+
 static inline void __qdisc_drop(struct sk_buff *skb, struct sk_buff **to_free)
 {
 	skb->next = *to_free;
@@ -1080,18 +1042,18 @@ static inline struct sk_buff *qdisc_peek_head(struct Qdisc *sch)
 	return qh->head;
 }
 
-/* generic pseudo peek method for non-work-conserving qdisc */
+
 static inline struct sk_buff *qdisc_peek_dequeued(struct Qdisc *sch)
 {
 	struct sk_buff *skb = skb_peek(&sch->gso_skb);
 
-	/* we can reuse ->gso_skb because peek isn't called for root qdiscs */
+	
 	if (!skb) {
 		skb = sch->dequeue(sch);
 
 		if (skb) {
 			__skb_queue_head(&sch->gso_skb, skb);
-			/* it's still part of the queue */
+			
 			qdisc_qstats_backlog_inc(sch, skb);
 			sch->q.qlen++;
 		}
@@ -1126,7 +1088,7 @@ static inline void qdisc_update_stats_at_enqueue(struct Qdisc *sch,
 	}
 }
 
-/* use instead of qdisc->dequeue() for all qdiscs queried with ->peek() */
+
 static inline struct sk_buff *qdisc_dequeue_peeked(struct Qdisc *sch)
 {
 	struct sk_buff *skb = skb_peek(&sch->gso_skb);
@@ -1149,10 +1111,7 @@ static inline struct sk_buff *qdisc_dequeue_peeked(struct Qdisc *sch)
 
 static inline void __qdisc_reset_queue(struct qdisc_skb_head *qh)
 {
-	/*
-	 * We do not know the backlog in bytes of this list, it
-	 * is up to the caller to correct it
-	 */
+	
 	ASSERT_RTNL();
 	if (qh->qlen) {
 		rtnl_kfree_skbs(qh->head, qh->tail);
@@ -1217,7 +1176,7 @@ static inline int qdisc_drop_all(struct sk_buff *skb, struct Qdisc *sch,
 }
 
 struct psched_ratecfg {
-	u64	rate_bytes_ps; /* bytes per second */
+	u64	rate_bytes_ps; 
 	u32	mult;
 	u16	overhead;
 	u16	mpu;
@@ -1248,10 +1207,7 @@ static inline void psched_ratecfg_getrate(struct tc_ratespec *res,
 {
 	memset(res, 0, sizeof(*res));
 
-	/* legacy struct tc_ratespec has a 32bit @rate field
-	 * Qdisc using 64bit rate should add new attributes
-	 * in order to maintain compatibility.
-	 */
+	
 	res->rate = min_t(u64, r->rate_bytes_ps, ~0U);
 
 	res->overhead = r->overhead;
@@ -1260,7 +1216,7 @@ static inline void psched_ratecfg_getrate(struct tc_ratespec *res,
 }
 
 struct psched_pktrate {
-	u64	rate_pkts_ps; /* packets per second */
+	u64	rate_pkts_ps; 
 	u32	mult;
 	u8	shift;
 };
@@ -1273,9 +1229,7 @@ static inline u64 psched_pkt2t_ns(const struct psched_pktrate *r,
 
 void psched_ppscfg_precompute(struct psched_pktrate *r, u64 pktrate64);
 
-/* Mini Qdisc serves for specific needs of ingress/clsact Qdisc.
- * The fast path only needs to access filter list and to update stats
- */
+
 struct mini_Qdisc {
 	struct tcf_proto *filter_list;
 	struct tcf_block *block;
@@ -1312,7 +1266,7 @@ void mq_change_real_num_tx(struct Qdisc *sch, unsigned int new_real_tx);
 
 int sch_frag_xmit_hook(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb));
 
-/* Make sure qdisc is no longer in SCHED state. */
+
 static inline void qdisc_synchronize(const struct Qdisc *q)
 {
 	while (test_bit(__QDISC_STATE_SCHED, &q->state))

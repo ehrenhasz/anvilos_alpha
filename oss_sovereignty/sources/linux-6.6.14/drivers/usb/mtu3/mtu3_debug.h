@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mtu3_debug.h - debug header
- *
- * Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
+
+
 
 #ifndef __MTU3_DEBUG_H__
 #define __MTU3_DEBUG_H__
@@ -38,7 +32,7 @@ static inline void ssusb_dr_debugfs_init(struct ssusb_mtk *ssusb) {}
 static inline void ssusb_debugfs_create_root(struct ssusb_mtk *ssusb) {}
 static inline void ssusb_debugfs_remove_root(struct ssusb_mtk *ssusb) {}
 
-#endif /* CONFIG_DEBUG_FS */
+#endif 
 
 #if IS_ENABLED(CONFIG_TRACING)
 void mtu3_dbg_trace(struct device *dev, const char *fmt, ...);
@@ -46,6 +40,6 @@ void mtu3_dbg_trace(struct device *dev, const char *fmt, ...);
 #else
 static inline void mtu3_dbg_trace(struct device *dev, const char *fmt, ...) {}
 
-#endif /* CONFIG_TRACING */
+#endif 
 
-#endif /* __MTU3_DEBUG_H__ */
+#endif 

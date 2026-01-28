@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+
 
 #ifndef __DT_BINDINGS_RESET_BCM63268_H
 #define __DT_BINDINGS_RESET_BCM63268_H
@@ -27,4 +27,4 @@
 #define BCM63268_TRST_HW	30
 #define BCM63268_TRST_POR	31
 
-#endif /* __DT_BINDINGS_RESET_BCM63268_H */
+#endif 

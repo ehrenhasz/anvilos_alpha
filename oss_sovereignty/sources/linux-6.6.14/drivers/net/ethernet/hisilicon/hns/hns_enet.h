@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+
+
 
 #ifndef __HNS_ENET_H
 #define __HNS_ENET_H
@@ -33,14 +31,14 @@ enum hns_nic_state {
 struct hns_nic_ring_data {
 	struct hnae_ring *ring;
 	struct napi_struct napi;
-	cpumask_t mask; /* affinity mask */
+	cpumask_t mask; 
 	u32 queue_index;
 	int (*poll_one)(struct hns_nic_ring_data *, int, void *);
 	void (*ex_process)(struct hns_nic_ring_data *, struct sk_buff *);
 	bool (*fini_process)(struct hns_nic_ring_data *);
 };
 
-/* compatible the difference between two versions */
+
 struct hns_nic_ops {
 	void (*fill_desc)(struct hnae_ring *ring, void *priv,
 			  int size, dma_addr_t dma, int frag_end,
@@ -63,12 +61,10 @@ struct hns_nic_priv {
 
 	struct hns_nic_ops ops;
 
-	/* the cb for nic to manage the ring buffer, the first half of the
-	 * array is for tx_ring and vice versa for the second half
-	 */
+	
 	struct hns_nic_ring_data *ring_data;
 
-	/* The most recently read link state */
+	
 	int link;
 	u64 tx_timeout_count;
 
@@ -93,4 +89,4 @@ netdev_tx_t hns_nic_net_xmit_hw(struct net_device *ndev,
 				struct sk_buff *skb,
 				struct hns_nic_ring_data *ring_data);
 
-#endif	/**__HNS_ENET_H */
+#endif	

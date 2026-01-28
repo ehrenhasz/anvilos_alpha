@@ -9,7 +9,7 @@
         mp_handle_pending(true); \
     } while (0);
 
-// MIMXRT1170_EVK has 2 user LEDs
+
 #define MICROPY_HW_LED1_PIN (pin_GPIO_AD_04)
 #define MICROPY_HW_LED2_PIN (pin_GPIO_AD_26)
 #define MICROPY_HW_LED_OFF(pin) (mp_hal_pin_low(pin))
@@ -17,14 +17,14 @@
 
 #define MICROPY_HW_NUM_PIN_IRQS (6 * 32)
 
-// Define mapping hardware UART # to logical UART #
-// LPUART2  on D0/D1    -> 1
-// LPUART3  on D12/D11  -> 2
-// LPUART5  on D10/D13  -> 3
-// LPUART11 on D15/D14  -> 4
-// LPUART12 on D25/D26  -> 5
-// LPUART8  on D33/D34  -> 6
-// LPUART7  on D35/D36  -> 7
+
+
+
+
+
+
+
+
 
 #define MICROPY_HW_UART_NUM     (sizeof(uart_index_table) / sizeof(uart_index_table)[0])
 #define MICROPY_HW_UART_INDEX   { 1, 2, 3, 5, 11, 12, 8, 7 }
@@ -57,11 +57,11 @@
     { IOMUXC_GPIO_LPSR_10_LPUART11_CTS_B }, { IOMUXC_GPIO_LPSR_11_LPUART11_RTS_B }, \
     { IOMUXC_GPIO_LPSR_05_LPUART12_CTS_B }, { IOMUXC_GPIO_LPSR_04_LPUART12_RTS_B },
 
-// Define the mapping hardware SPI # to logical SPI #
-// SCK/CS/SDO/SDI  HW-SPI   Logical SPI
-// D13/D10/D11/D12 LPSPI1  ->  0
-// D26/D28/D25/D24 LPSPI6  ->  1
-// D24/ - /D14/D15 LPSPI5  ->  2
+
+
+
+
+
 
 #define MICROPY_HW_SPI_INDEX { 1, 6, 5 }
 
@@ -86,13 +86,13 @@
 #define DMA_REQ_SRC_TX { 0, kDmaRequestMuxLPSPI1Tx, kDmaRequestMuxLPSPI2Tx, \
                          kDmaRequestMuxLPSPI3Tx, kDmaRequestMuxLPSPI4Tx }
 
-// Define the mapping hardware I2C # to logical I2C #
-// SDA/SCL  HW-I2C    Logical I2C
-// D14/D15  LPI2C5 ->    0
-// D1/D0    LPI2C3 ->    1
-// A4/A5    LPI2C1 ->    2
-// D26/D25  LPI2C6 ->    3
-// D19/D18  LPI2C2 ->    4
+
+
+
+
+
+
+
 
 #define MICROPY_HW_I2C_INDEX   { 5, 3, 1, 6, 2 }
 
@@ -133,7 +133,7 @@
         I2S_GPIO(1, SD, TX, GPIO_AD_21, IOMUXC_GPIO_AD_21_SAI1_TX_DATA00), \
     }
 
-// USDHC1
+
 
 #define USDHC_DUMMY_PIN NULL, 0
 #define MICROPY_USDHC1 \
@@ -148,9 +148,9 @@
     }
 #define USDHC_DATA3_PULL_DOWN_ON_BOARD    (1)
 
-// Network definitions
 
-// Transceiver Phy Parameters
+
+
 #define ENET_PHY_ADDRESS    (2)
 #define ENET_PHY            KSZ8081
 #define ENET_PHY_OPS        phyksz8081_ops
@@ -167,15 +167,15 @@
     { IOMUXC_GPIO_AD_33_ENET_MDIO, 0, 0x06u }, \
     { IOMUXC_GPIO_AD_32_ENET_MDC, 0, 0x06u },
 
-// A second ETH port is present.
+
 #define ENET_DUAL_PORT         (1)
-// 1G Transceiver Phy Parameters
+
 #define ENET_1_PHY_ADDRESS     (1)
 #define ENET_1_PHY             RTL8211F
 #define ENET_1_PHY_OPS         phyrtl8211f_ops
 
-// 1G Ethernet PIN definitions
-// No INT pin for ENET_1G
+
+
 #define ENET_1_RESET_PIN       &pin_GPIO_DISP_B2_13
 #define ENET_1_INT_PIN         NULL
 
@@ -195,7 +195,7 @@
     { IOMUXC_GPIO_EMC_B2_20_ENET_1G_MDIO, 0, 0x06u }, \
     { IOMUXC_GPIO_EMC_B2_19_ENET_1G_MDC, 0, 0x06u },
 
-// --- SEMC --- //
+
 #define MIMXRT_IOMUXC_SEMC_DATA00 IOMUXC_GPIO_EMC_B1_00_SEMC_DATA00
 #define MIMXRT_IOMUXC_SEMC_DATA01 IOMUXC_GPIO_EMC_B1_01_SEMC_DATA01
 #define MIMXRT_IOMUXC_SEMC_DATA02 IOMUXC_GPIO_EMC_B1_02_SEMC_DATA02

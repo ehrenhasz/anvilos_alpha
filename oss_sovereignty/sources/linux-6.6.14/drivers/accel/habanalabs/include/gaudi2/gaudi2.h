@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2020-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
 
 #ifndef GAUDI2_H
 #define GAUDI2_H
@@ -12,44 +7,44 @@
 #define MSIX_BAR_ID		2
 #define DRAM_BAR_ID		4
 
-/* Refers to CFG_REGION_SIZE, BAR0_RSRVD_SIZE and SRAM_SIZE */
-#define CFG_BAR_SIZE		0x10000000ull		/* 256MB */
 
-#define MSIX_BAR_SIZE		0x4000ull		/* 16KB */
+#define CFG_BAR_SIZE		0x10000000ull		
+
+#define MSIX_BAR_SIZE		0x4000ull		
 
 #define CFG_BASE		0x1000007FF8000000ull
-#define CFG_SIZE		0x8000000ull		/* 96MB CFG + 32MB DBG*/
-#define CFG_REGION_SIZE		0xC000000ull		/* 192MB */
+#define CFG_SIZE		0x8000000ull		
+#define CFG_REGION_SIZE		0xC000000ull		
 
-#define STM_FLASH_BASE_ADDR	0x1000007FF4000000ull	/* Not 256MB aligned */
-#define STM_FLASH_ALIGNED_OFF	0x4000000ull		/* 256 MB alignment */
-#define STM_FLASH_SIZE		0x2000000ull		/* 32MB */
+#define STM_FLASH_BASE_ADDR	0x1000007FF4000000ull	
+#define STM_FLASH_ALIGNED_OFF	0x4000000ull		
+#define STM_FLASH_SIZE		0x2000000ull		
 
 #define SPI_FLASH_BASE_ADDR	0x1000007FF6000000ull
-#define SPI_FLASH_SIZE		0x1000000ull		/* 16MB */
+#define SPI_FLASH_SIZE		0x1000000ull		
 
 #define SCRATCHPAD_SRAM_ADDR	0x1000007FF7FE0000ull
-#define SCRATCHPAD_SRAM_SIZE	0x10000ull		/* 64KB */
+#define SCRATCHPAD_SRAM_SIZE	0x10000ull		
 
 #define PCIE_FW_SRAM_ADDR	0x1000007FF7FF0000ull
-#define PCIE_FW_SRAM_SIZE	0x8000			/* 32KB */
+#define PCIE_FW_SRAM_SIZE	0x8000			
 
 #define BAR0_RSRVD_BASE_ADDR	0x1000FFFFFC000000ull
-#define BAR0_RSRVD_SIZE		0x1000000ull		/* 16MB */
+#define BAR0_RSRVD_SIZE		0x1000000ull		
 
 #define SRAM_BASE_ADDR		0x1000FFFFFD000000ull
-#define SRAM_SIZE		0x3000000ull		/* 48MB */
+#define SRAM_SIZE		0x3000000ull		
 
 #define DRAM_PHYS_BASE		0x1001000000000000ull
 
-/* every hint address is masked accordingly */
-#define DRAM_VA_HINT_MASK	0xFFFFFFFFFFFFull	/* 48bit mask */
+
+#define DRAM_VA_HINT_MASK	0xFFFFFFFFFFFFull	
 
 #define HOST_PHYS_BASE_0	0x0000000000000000ull
-#define HOST_PHYS_SIZE_0	0x0100000000000000ull	/* 64PB (56 bits) */
+#define HOST_PHYS_SIZE_0	0x0100000000000000ull	
 
 #define HOST_PHYS_BASE_1	0xFF00000000000000ull
-#define HOST_PHYS_SIZE_1	0x0100000000000000ull	/* 64PB (56 bits) */
+#define HOST_PHYS_SIZE_1	0x0100000000000000ull	
 
 #define RESERVED_VA_RANGE_FOR_ARC_ON_HBM_START	0x1001500000000000ull
 #define RESERVED_VA_RANGE_FOR_ARC_ON_HBM_END	0x10016FFFFFFFFFFFull
@@ -67,15 +62,13 @@
 
 #define GAUDI2_MSIX_ENTRIES	512
 
-#define QMAN_PQ_ENTRY_SIZE	16			/* Bytes */
+#define QMAN_PQ_ENTRY_SIZE	16			
 
 #define MAX_ASID		2
 
 #define NUM_ARC_CPUS			69
 
-/* Every ARC cpu in the system contains a single DCCM block
- * except MME and Scheduler ARCs which contain 2 DCCM blocks
- */
+
 #define ARC_DCCM_BLOCK_SIZE		0x8000
 
 #define NUM_OF_DCORES			4
@@ -122,4 +115,4 @@
 
 #define DEVICE_CACHE_LINE_SIZE		128
 
-#endif /* GAUDI2_H */
+#endif 

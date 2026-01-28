@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 1999 - 2018 Intel Corporation. */
+
+
 
 #ifndef _E1000E_MANAGE_H_
 #define _E1000E_MANAGE_H_
@@ -34,14 +34,14 @@ enum e1000_mng_mode {
 #define E1000_VFTA_ENTRY_MASK			0x7F
 #define E1000_VFTA_ENTRY_BIT_SHIFT_MASK		0x1F
 
-#define E1000_HICR_EN			0x01	/* Enable bit - RO */
-/* Driver sets this bit when done to put command in RAM */
+#define E1000_HICR_EN			0x01	
+
 #define E1000_HICR_C			0x02
-#define E1000_HICR_SV			0x04	/* Status Validity */
+#define E1000_HICR_SV			0x04	
 #define E1000_HICR_FW_RESET_ENABLE	0x40
 #define E1000_HICR_FW_RESET		0x80
 
-/* Intel(R) Active Management Technology signature */
+
 #define E1000_IAMT_SIGNATURE		0x544D4149
 
 #endif

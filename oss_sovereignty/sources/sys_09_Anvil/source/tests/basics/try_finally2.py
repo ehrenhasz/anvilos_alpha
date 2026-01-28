@@ -5,8 +5,8 @@ def test1():
     try:
         raise ValueError()
     finally:
-        f1(2, 2) # use some stack
-        print(val) # check that the local variable is the same
+        f1(2, 2) 
+        print(val) 
 try:
     test1()
 except ValueError:
@@ -18,8 +18,8 @@ def test2():
     try:
         raise ValueError()
     finally:
-        f2(2, 2, 2) # use some stack
-        print(val) # check that the local variable is the same
+        f2(2, 2, 2) 
+        print(val) 
 try:
     test2()
 except ValueError:

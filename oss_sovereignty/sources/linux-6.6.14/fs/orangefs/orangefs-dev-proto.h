@@ -1,21 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * (C) 2001 Clemson University and The University of Chicago
- *
- * See COPYING in top-level directory.
- */
+
+
 
 #ifndef _ORANGEFS_DEV_PROTO_H
 #define _ORANGEFS_DEV_PROTO_H
 
-/*
- * types and constants shared between user space and kernel space for
- * device interaction using a common protocol
- */
 
-/*
- * valid orangefs kernel operation types
- */
+
+
 #define ORANGEFS_VFS_OP_INVALID           0xFF000000
 #define ORANGEFS_VFS_OP_FILE_IO        0xFF000001
 #define ORANGEFS_VFS_OP_LOOKUP         0xFF000002
@@ -42,15 +33,12 @@
 #define ORANGEFS_VFS_OP_FSYNC          0xFF00EE01
 #define ORANGEFS_VFS_OP_FSKEY             0xFF00EE02
 #define ORANGEFS_VFS_OP_READDIRPLUS       0xFF00EE03
-#define ORANGEFS_VFS_OP_FEATURES	0xFF00EE05 /* 2.9.6 */
+#define ORANGEFS_VFS_OP_FEATURES	0xFF00EE05 
 
-/* features is a 64-bit unsigned bitmask */
+
 #define ORANGEFS_FEATURE_READAHEAD 1
 
-/*
- * Misc constants. Please retain them as multiples of 8!
- * Otherwise 32-64 bit interactions will be messed up :)
- */
+
 #define ORANGEFS_MAX_DEBUG_STRING_LEN	0x00000800
 
 #define ORANGEFS_MAX_DIRENT_COUNT_READDIR 512

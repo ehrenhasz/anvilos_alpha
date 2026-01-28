@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+
+
 
 #ifndef _WQ_ENET_DESC_H_
 #define _WQ_ENET_DESC_H_
 
-/* Ethernet work queue descriptor: 16B */
+
 struct wq_enet_desc {
 	__le64 address;
 	__le16 length;
@@ -82,4 +79,4 @@ static inline void wq_enet_desc_dec(struct wq_enet_desc *desc,
 	*vlan_tag = le16_to_cpu(desc->vlan_tag);
 }
 
-#endif /* _WQ_ENET_DESC_H_ */
+#endif 

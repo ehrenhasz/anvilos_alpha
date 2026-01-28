@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+
 
 #if defined(_KERNEL)
 #if defined(HAVE_DECLARE_EVENT_CLASS)
@@ -38,13 +19,7 @@
 #define	TRACE_DBUF_MSG_MAX	512
 #endif
 
-/*
- * Generic support for two argument tracepoints of the form:
- *
- * DTRACE_PROBE2(...,
- *     dmu_buf_impl_t *, ...,
- *     zio_t *, ...);
- */
+
 
 #define	DBUF_TP_STRUCT_ENTRY					\
 	__dynamic_array(char,	os_spa,	TRACE_DBUF_MSG_MAX)	\
@@ -103,7 +78,7 @@
 	__entry->db_blkid, __entry->db_offset,			\
 	__entry->db_size, __entry->db_state, __entry->db_holds
 
-/* BEGIN CSTYLED */
+
 DECLARE_EVENT_CLASS(zfs_dbuf_class,
 	TP_PROTO(dmu_buf_impl_t *db, zio_t *zio),
 	TP_ARGS(db, zio),
@@ -119,7 +94,7 @@ DECLARE_EVENT_CLASS(zfs_dbuf_state_class,
 	TP_fast_assign(DBUF_TP_FAST_ASSIGN),
 	TP_printk("%s", __get_str(msg))
 );
-/* END CSTYLED */
+
 
 #define	DEFINE_DBUF_EVENT(name) \
 DEFINE_EVENT(zfs_dbuf_class, name, \
@@ -133,7 +108,7 @@ DEFINE_EVENT(zfs_dbuf_state_class, name, \
     TP_ARGS(db, why))
 DEFINE_DBUF_STATE_EVENT(zfs_dbuf__state_change);
 
-/* BEGIN CSTYLED */
+
 DECLARE_EVENT_CLASS(zfs_dbuf_evict_one_class,
 	TP_PROTO(dmu_buf_impl_t *db, multilist_sublist_t *mls),
 	TP_ARGS(db, mls),
@@ -141,7 +116,7 @@ DECLARE_EVENT_CLASS(zfs_dbuf_evict_one_class,
 	TP_fast_assign(DBUF_TP_FAST_ASSIGN),
 	TP_printk("%s", __get_str(msg))
 );
-/* END CSTYLED */
+
 
 #define	DEFINE_DBUF_EVICT_ONE_EVENT(name) \
 DEFINE_EVENT(zfs_dbuf_evict_one_class, name, \
@@ -149,7 +124,7 @@ DEFINE_EVENT(zfs_dbuf_evict_one_class, name, \
     TP_ARGS(db, mls))
 DEFINE_DBUF_EVICT_ONE_EVENT(zfs_dbuf__evict__one);
 
-#endif /* _TRACE_DBUF_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
@@ -163,5 +138,5 @@ DEFINE_DTRACE_PROBE2(blocked__read);
 DEFINE_DTRACE_PROBE2(dbuf__evict__one);
 DEFINE_DTRACE_PROBE2(dbuf__state_change);
 
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif 
+#endif 

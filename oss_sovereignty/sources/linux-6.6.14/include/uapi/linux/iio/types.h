@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/* industrial I/O data types needed both in and out of kernel
- *
- * Copyright (c) 2008 Jonathan Cameron
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
+
+
 
 #ifndef _UAPI_IIO_TYPES_H_
 #define _UAPI_IIO_TYPES_H_
@@ -123,4 +116,4 @@ enum iio_event_direction {
 	IIO_EV_DIR_DOUBLETAP,
 };
 
-#endif /* _UAPI_IIO_TYPES_H_ */
+#endif 

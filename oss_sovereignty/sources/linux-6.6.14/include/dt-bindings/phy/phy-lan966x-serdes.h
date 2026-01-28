@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
+
 
 #ifndef __PHY_LAN966X_SERDES_H__
 #define __PHY_LAN966X_SERDES_H__

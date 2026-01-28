@@ -1,7 +1,7 @@
-// Options to control how MicroPython is built for this port,
-// overriding defaults in py/mpconfig.h.
 
-// Board-specific definitions
+
+
+
 #include "mpconfigboard.h"
 
 #include <stdint.h>
@@ -16,20 +16,20 @@
 #define MICROPY_CONFIG_ROM_LEVEL            (MICROPY_CONFIG_ROM_LEVEL_EXTRA_FEATURES)
 #endif
 
-// object representation and NLR handling
+
 #define MICROPY_OBJ_REPR                    (MICROPY_OBJ_REPR_A)
 #define MICROPY_NLR_SETJMP                  (1)
 #if CONFIG_IDF_TARGET_ESP32C3
 #define MICROPY_GCREGS_SETJMP               (1)
 #endif
 
-// memory allocation policies
+
 #define MICROPY_ALLOC_PATH_MAX              (128)
 
-// Initial Python heap size.  This starts small but adds new heap areas on demand due to
-// the settings MICROPY_GC_SPLIT_HEAP and MICROPY_GC_SPLIT_HEAP_AUTO.  The value is
-// different for different MCUs and is chosen so they can grow the heap once (double it)
-// and still have enough internal RAM to start WiFi and make a HTTPS request.
+
+
+
+
 #ifndef MICROPY_GC_INITIAL_HEAP_SIZE
 #if CONFIG_IDF_TARGET_ESP32
 #define MICROPY_GC_INITIAL_HEAP_SIZE        (56 * 1024)
@@ -40,25 +40,25 @@
 #endif
 #endif
 
-// emitters
+
 #define MICROPY_PERSISTENT_CODE_LOAD        (1)
 #if !CONFIG_IDF_TARGET_ESP32C3
 #define MICROPY_EMIT_XTENSAWIN              (1)
 #endif
 
-// workaround for xtensa-esp32-elf-gcc esp-2020r3, which can generate wrong code for loops
-// see https://github.com/espressif/esp-idf/issues/9130
-// this was fixed in newer versions of the compiler by:
-//   "gas: use literals/const16 for xtensa loop relaxation"
-//   https://github.com/jcmvbkbc/binutils-gdb-xtensa/commit/403b0b61f6d4358aee8493cb1d11814e368942c9
+
+
+
+
+
 #define MICROPY_COMP_CONST_FOLDING_COMPILER_WORKAROUND (1)
 
-// optimisations
+
 #ifndef MICROPY_OPT_COMPUTED_GOTO
 #define MICROPY_OPT_COMPUTED_GOTO           (1)
 #endif
 
-// Python internal features
+
 #define MICROPY_READER_VFS                  (1)
 #define MICROPY_ENABLE_GC                   (1)
 #define MICROPY_ENABLE_EMERGENCY_EXCEPTION_BUF (1)
@@ -67,12 +67,12 @@
 #define MICROPY_WARNINGS                    (1)
 #define MICROPY_FLOAT_IMPL                  (MICROPY_FLOAT_IMPL_FLOAT)
 #define MICROPY_STREAMS_POSIX_API           (1)
-#define MICROPY_USE_INTERNAL_ERRNO          (0) // errno.h from xtensa-esp32-elf/sys-include/sys
-#define MICROPY_USE_INTERNAL_PRINTF         (0) // ESP32 SDK requires its own printf
+#define MICROPY_USE_INTERNAL_ERRNO          (0) 
+#define MICROPY_USE_INTERNAL_PRINTF         (0) 
 #define MICROPY_SCHEDULER_DEPTH             (8)
 #define MICROPY_VFS                         (1)
 
-// control over Python builtins
+
 #define MICROPY_PY_STR_BYTES_CMP_WARN       (1)
 #define MICROPY_PY_ALL_INPLACE_SPECIAL_METHODS (1)
 #define MICROPY_PY_BUILTINS_HELP_TEXT       esp32_help_text
@@ -87,7 +87,7 @@
 #define MICROPY_GC_SPLIT_HEAP               (1)
 #define MICROPY_GC_SPLIT_HEAP_AUTO          (1)
 
-// extended modules
+
 #ifndef MICROPY_PY_ESPNOW
 #define MICROPY_PY_ESPNOW                   (1)
 #endif
@@ -175,7 +175,7 @@
 #define MICROPY_HW_ENABLE_SDCARD            (1)
 #endif
 #define MICROPY_HW_SOFTSPI_MIN_DELAY        (0)
-#define MICROPY_HW_SOFTSPI_MAX_BAUDRATE     (esp_rom_get_cpu_ticks_per_us() * 1000000 / 200) // roughly
+#define MICROPY_HW_SOFTSPI_MAX_BAUDRATE     (esp_rom_get_cpu_ticks_per_us() * 1000000 / 200) 
 #define MICROPY_PY_SSL                      (1)
 #define MICROPY_SSL_MBEDTLS                 (1)
 #define MICROPY_PY_WEBSOCKET                (1)
@@ -184,20 +184,20 @@
 #define MICROPY_PY_SOCKET_EVENTS            (MICROPY_PY_WEBREPL)
 #define MICROPY_PY_BLUETOOTH_RANDOM_ADDR    (1)
 
-// fatfs configuration
+
 #define MICROPY_FATFS_ENABLE_LFN            (1)
 #define MICROPY_FATFS_RPATH                 (2)
 #define MICROPY_FATFS_MAX_SS                (4096)
-#define MICROPY_FATFS_LFN_CODE_PAGE         437 /* 1=SFN/ANSI 437=LFN/U.S.(OEM) */
+#define MICROPY_FATFS_LFN_CODE_PAGE         437 
 
-// task size
+
 #ifndef MICROPY_TASK_STACK_SIZE
 #define MICROPY_TASK_STACK_SIZE             (16 * 1024)
 #endif
 
 #define MP_STATE_PORT MP_STATE_VM
 
-// type definitions for the specific machine
+
 
 #define MICROPY_MAKE_POINTER_CALLABLE(p) ((void *)((mp_uint_t)(p)))
 void *esp_native_code_commit(void *, size_t, void *);
@@ -230,9 +230,9 @@ void *esp_native_code_commit(void *, size_t, void *);
     } while (0);
 #endif
 
-// Functions that should go in IRAM
-// For ESP32 with SPIRAM workaround, firmware is larger and uses more static IRAM,
-// so in that configuration don't put too many functions in IRAM.
+
+
+
 #if !(CONFIG_IDF_TARGET_ESP32 && CONFIG_SPIRAM && CONFIG_SPIRAM_CACHE_WORKAROUND)
 #define MICROPY_WRAP_MP_BINARY_OP(f) IRAM_ATTR f
 #endif
@@ -247,16 +247,16 @@ void *esp_native_code_commit(void *, size_t, void *);
 #define UINT_FMT "%u"
 #define INT_FMT "%d"
 
-typedef int32_t mp_int_t; // must be pointer size
-typedef uint32_t mp_uint_t; // must be pointer size
+typedef int32_t mp_int_t; 
+typedef uint32_t mp_uint_t; 
 typedef long mp_off_t;
-// ssize_t, off_t as required by POSIX-signatured functions in stream.h
+
 #include <sys/types.h>
 
-// board specifics
+
 #define MICROPY_PY_SYS_PLATFORM "esp32"
 
-// ESP32-S3 extended IO for 47 & 48
+
 #ifndef MICROPY_HW_ESP32S3_EXTENDED_IO
 #define MICROPY_HW_ESP32S3_EXTENDED_IO      (1)
 #endif
@@ -270,7 +270,7 @@ typedef long mp_off_t;
 #endif
 
 #ifndef MICROPY_BOARD_ENTER_BOOTLOADER
-// RTC has a register to trigger bootloader on these targets
+
 #if CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3 || CONFIG_IDF_TARGET_ESP32C2 || CONFIG_IDF_TARGET_ESP32C3
 #define MICROPY_ESP32_USE_BOOTLOADER_RTC    (1)
 #define MICROPY_BOARD_ENTER_BOOTLOADER(nargs, args) machine_bootloader_rtc()

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _XT_CONNBYTES_H
 #define _XT_CONNBYTES_H
 
@@ -18,10 +18,10 @@ enum xt_connbytes_direction {
 
 struct xt_connbytes_info {
 	struct {
-		__aligned_u64 from;	/* count to be matched */
-		__aligned_u64 to;	/* count to be matched */
+		__aligned_u64 from;	
+		__aligned_u64 to;	
 	} count;
-	__u8 what;		/* ipt_connbytes_what */
-	__u8 direction;	/* ipt_connbytes_direction */
+	__u8 what;		
+	__u8 direction;	
 };
 #endif

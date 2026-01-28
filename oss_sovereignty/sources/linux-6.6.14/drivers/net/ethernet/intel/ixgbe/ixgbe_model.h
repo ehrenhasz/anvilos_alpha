@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 1999 - 2018 Intel Corporation. */
+
+
 
 #ifndef _IXGBE_MODEL_H_
 #define _IXGBE_MODEL_H_
@@ -48,7 +48,7 @@ static struct ixgbe_mat_field ixgbe_ipv4_fields[] = {
 	  .type = IXGBE_ATR_FLOW_TYPE_IPV4},
 	{ .off = 16, .val = ixgbe_mat_prgm_dip,
 	  .type = IXGBE_ATR_FLOW_TYPE_IPV4},
-	{ .val = NULL } /* terminal node */
+	{ .val = NULL } 
 };
 
 static inline int ixgbe_mat_prgm_ports(struct ixgbe_fdir_filter *input,
@@ -66,25 +66,25 @@ static inline int ixgbe_mat_prgm_ports(struct ixgbe_fdir_filter *input,
 static struct ixgbe_mat_field ixgbe_tcp_fields[] = {
 	{.off = 0, .val = ixgbe_mat_prgm_ports,
 	 .type = IXGBE_ATR_FLOW_TYPE_TCPV4},
-	{ .val = NULL } /* terminal node */
+	{ .val = NULL } 
 };
 
 static struct ixgbe_mat_field ixgbe_udp_fields[] = {
 	{.off = 0, .val = ixgbe_mat_prgm_ports,
 	 .type = IXGBE_ATR_FLOW_TYPE_UDPV4},
-	{ .val = NULL } /* terminal node */
+	{ .val = NULL } 
 };
 
 struct ixgbe_nexthdr {
-	/* offset, shift, and mask of position to next header */
+	
 	unsigned int o;
 	u32 s;
 	u32 m;
-	/* match criteria to make this jump*/
+	
 	unsigned int off;
 	u32 val;
 	u32 mask;
-	/* location of jump to make */
+	
 	struct ixgbe_mat_field *jump;
 };
 
@@ -93,6 +93,6 @@ static struct ixgbe_nexthdr ixgbe_ipv4_jumps[] = {
 	  .off = 8, .val = 0x600, .mask = 0xff00, .jump = ixgbe_tcp_fields},
 	{ .o = 0, .s = 6, .m = 0xf,
 	  .off = 8, .val = 0x1100, .mask = 0xff00, .jump = ixgbe_udp_fields},
-	{ .jump = NULL } /* terminal node */
+	{ .jump = NULL } 
 };
-#endif /* _IXGBE_MODEL_H_ */
+#endif 

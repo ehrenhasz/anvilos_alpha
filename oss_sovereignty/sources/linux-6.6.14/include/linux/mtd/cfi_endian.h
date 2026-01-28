@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright © 2001-2010 David Woodhouse <dwmw2@infradead.org>
- */
+
+
 
 #include <asm/byteorder.h>
 

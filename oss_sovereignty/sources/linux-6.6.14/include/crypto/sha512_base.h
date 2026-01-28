@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * sha512_base.h - core logic for SHA-512 implementations
- *
- * Copyright (C) 2015 Linaro Ltd <ard.biesheuvel@linaro.org>
- */
+
+
 
 #ifndef _CRYPTO_SHA512_BASE_H
 #define _CRYPTO_SHA512_BASE_H
@@ -131,4 +127,4 @@ static inline int sha512_base_finish(struct shash_desc *desc, u8 *out)
 	return 0;
 }
 
-#endif /* _CRYPTO_SHA512_BASE_H */
+#endif 

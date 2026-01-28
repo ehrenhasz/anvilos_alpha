@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) 2020 ROHM Semiconductors */
+
+
 #ifndef BD99954_CHARGER_H
 #define BD99954_CHARGER_H
 
@@ -14,13 +14,13 @@
 #define BD99955_ID            0x221
 #define BD99956_ID            0x331
 
-/* Battery Charger Commands */
+
 #define    CHARGING_CURRENT   0x14
 #define    CHARGING_VOLTAGE   0x15
 #define    PROTECT_SET        0x3E
 #define    MAP_SET            0x3F
 
-/* Extended commands */
+
 #define    CHGSTM_STATUS       0x100
 #define    VBAT_VSYS_STATUS    0x101
 #define    VBUS_VCC_STATUS     0x102
@@ -826,7 +826,7 @@ static const struct reg_field bd9995x_reg_fields[] = {
 	    [F_DEBUG0x1A] = REG_FIELD(DEBUG0x1A, 0, 15),
 };
 
-/* CHGSTM_STATEs */
+
 #define CHGSTM_SUSPEND 0x00
 #define CHGSTM_TRICKLE_CHARGE 0x01
 #define CHGSTM_PRE_CHARGE 0x02
@@ -851,7 +851,7 @@ static const struct reg_field bd9995x_reg_fields[] = {
 #define CHGSTM_THERMAL_SHUT_DOWN_7 0x28
 #define CHGSTM_BATTERY_ERROR 0x40
 
-/* VBAT_VSYS_STATUS */
+
 #define STATUS_VSYS_OV BIT(15)
 #define STATUS_VSYS_SSD BIT(14)
 #define STATUS_VSYS_SCP BIT(13)
@@ -860,7 +860,7 @@ static const struct reg_field bd9995x_reg_fields[] = {
 #define STATUS_VBAT_OV BIT(3)
 #define STATUS_DEAD_BAT BIT(0)
 
-/* VBUS_VCC_STATUS */
+
 #define STATUS_VACP_DET BIT(12)
 #define STATUS_VCC_OVP BIT(11)
 #define STATUS_ILIM_VCC_MOD BIT(10)
@@ -871,9 +871,9 @@ static const struct reg_field bd9995x_reg_fields[] = {
 #define STATUS_VBUS_CLPS BIT(1)
 #define STATUS_VBUS_DET BIT(0)
 
-/* Interrupt set/status definitions */
 
-/* INT 0 */
+
+
 #define INT0_INT7_STATUS BIT(7)
 #define INT0_INT6_STATUS BIT(6)
 #define INT0_INT5_STATUS BIT(5)
@@ -884,7 +884,7 @@ static const struct reg_field bd9995x_reg_fields[] = {
 #define INT0_INT0_STATUS BIT(0)
 #define INT0_ALL 0xff
 
-/* INT 1 */
+
 #define VBUS_RBUV_DET BIT(15)
 #define VBUS_RBUV_RES BIT(14)
 #define VBUS_TH_DET BIT(9)
@@ -908,7 +908,7 @@ static const struct reg_field bd9995x_reg_fields[] = {
 		 VBUS_DET |\
 		 VBUS_RES)
 
-/* INT 2 */
+
 #define VCC_RBUV_DET BIT(15)
 #define VCC_RBUV_RES BIT(14)
 #define VCC_TH_DET BIT(9)
@@ -931,7 +931,7 @@ static const struct reg_field bd9995x_reg_fields[] = {
 		 VCC_CLPS_RES |\
 		 VCC_DET |\
 		 VCC_RES)
-/* INT 3 */
+
 #define TH_DET BIT(15)
 #define TH_RMV BIT(14)
 #define TMP_OUT_DET BIT(11)
@@ -957,7 +957,7 @@ static const struct reg_field bd9995x_reg_fields[] = {
 		 BAT_ASSIST_DET |\
 		 BAT_ASSIST_RES)
 
-/* INT 4 */
+
 #define VSYS_TH_DET BIT(9)
 #define VSYS_TH_RES BIT(8)
 #define VSYS_OV_DET BIT(5)
@@ -975,7 +975,7 @@ static const struct reg_field bd9995x_reg_fields[] = {
 		 VSYS_UV_DET |\
 		 VSYS_UV_RES)
 
-/* INT 5*/
+
 #define OTP_LOAD_DONE BIT(13)
 #define PWR_ON BIT(12)
 #define EXTIADP_TRNS BIT(11)
@@ -1003,7 +1003,7 @@ static const struct reg_field bd9995x_reg_fields[] = {
 		 TMP_TRNS |\
 		 CHG_TRNS)
 
-/* INT 6*/
+
 #define VBUS_UCD_PORT_DET BIT(13)
 #define VBUS_UCD_UCHG_DET BIT(12)
 #define VBUS_UCD_URID_RMV BIT(11)
@@ -1025,7 +1025,7 @@ static const struct reg_field bd9995x_reg_fields[] = {
 		 VCC_UCD_OTG_DET |\
 		 VCC_UCD_URID_MOD)
 
-/* INT 7 */
+
 #define PROCHOT_DET BIT(15)
 #define PROCHOT_RES BIT(14)
 #define VACP_DET BIT(11)
@@ -1055,14 +1055,14 @@ static const struct reg_field bd9995x_reg_fields[] = {
 		 IBATP_TH_DET |\
 		 IBATP_TH_RES)
 
-/* SYSTEM_CTRL_SET*/
+
 #define MONRST BIT(6)
 #define ALMRST BIT(5)
 #define CHGRST BIT(4)
 #define OTPLD  BIT(1)
 #define ALLRST BIT(0)
 
-/* F_BATTEMP */
+
 #define ROOM		0x0
 #define HOT1		0x1
 #define HOT2		0x2

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/pm_qos.h>
 
 static inline void device_pm_init_common(struct device *dev)
@@ -61,11 +61,9 @@ static inline void device_wakeup_detach_irq(struct device *dev)
 {
 }
 
-#endif /* CONFIG_PM_SLEEP */
+#endif 
 
-/*
- * sysfs.c
- */
+
 
 extern int dpm_sysfs_add(struct device *dev);
 extern void dpm_sysfs_remove(struct device *dev);
@@ -80,7 +78,7 @@ extern int pm_qos_sysfs_add_latency_tolerance(struct device *dev);
 extern void pm_qos_sysfs_remove_latency_tolerance(struct device *dev);
 extern int dpm_sysfs_change_owner(struct device *dev, kuid_t kuid, kgid_t kgid);
 
-#else /* CONFIG_PM */
+#else 
 
 static inline void pm_runtime_early_init(struct device *dev)
 {
@@ -100,11 +98,11 @@ static inline int dpm_sysfs_change_owner(struct device *dev, kuid_t kuid,
 
 #ifdef CONFIG_PM_SLEEP
 
-/* kernel/power/main.c */
+
 extern int pm_async_enabled;
 
-/* drivers/base/power/main.c */
-extern struct list_head dpm_list;	/* The active device list */
+
+extern struct list_head dpm_list;	
 
 static inline struct device *to_device(struct list_head *entry)
 {
@@ -124,14 +122,14 @@ static inline bool device_pm_initialized(struct device *dev)
 	return dev->power.in_dpm_list;
 }
 
-/* drivers/base/power/wakeup_stats.c */
+
 extern int wakeup_source_sysfs_add(struct device *parent,
 				   struct wakeup_source *ws);
 extern void wakeup_source_sysfs_remove(struct wakeup_source *ws);
 
 extern int pm_wakeup_source_sysfs_add(struct device *parent);
 
-#else /* !CONFIG_PM_SLEEP */
+#else 
 
 static inline void device_pm_sleep_init(struct device *dev) {}
 
@@ -160,7 +158,7 @@ static inline int pm_wakeup_source_sysfs_add(struct device *parent)
 	return 0;
 }
 
-#endif /* !CONFIG_PM_SLEEP */
+#endif 
 
 static inline void device_pm_init(struct device *dev)
 {

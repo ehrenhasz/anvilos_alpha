@@ -1,21 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Cadence CDNSP DRD Driver.
- * Trace support header file
- *
- * Copyright (C) 2020 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- *
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cdnsp-dev
 
-/*
- * The TRACE_SYSTEM_VAR defaults to TRACE_SYSTEM, but must be a
- * legitimate C variable. It is not exported to user space.
- */
+
 #undef TRACE_SYSTEM_VAR
 #define TRACE_SYSTEM_VAR cdnsp_dev
 
@@ -26,12 +15,7 @@
 #include "cdnsp-gadget.h"
 #include "cdnsp-debug.h"
 
-/*
- * There is limitation for single buffer size in TRACEPOINT subsystem.
- * By default TRACE_BUF_SIZE is 1024, so no all data will be logged.
- * To show more data this must be increased. In most cases the default
- * value is sufficient.
- */
+
 #define CDNSP_MSG_MAX 500
 
 DECLARE_EVENT_CLASS(cdnsp_log_ep,
@@ -813,9 +797,9 @@ TRACE_EVENT(cdnsp_stream_number,
 		  __entry->num_streams)
 );
 
-#endif /* __CDNSP_TRACE_H */
+#endif 
 
-/* this part must be outside header guard */
+
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

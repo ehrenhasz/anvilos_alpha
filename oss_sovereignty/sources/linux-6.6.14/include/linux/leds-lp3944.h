@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * leds-lp3944.h - platform data structure for lp3944 led controller
- *
- * Copyright (C) 2009 Antonio Ospite <ospite@studenti.unina.it>
- */
+
+
 
 #ifndef __LINUX_LEDS_LP3944_H
 #define __LINUX_LEDS_LP3944_H
@@ -43,4 +39,4 @@ struct lp3944_platform_data {
 	u8 leds_size;
 };
 
-#endif /* __LINUX_LEDS_LP3944_H */
+#endif 

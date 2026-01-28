@@ -200,9 +200,9 @@ class HeaderParser(object):
             except NoHelperFound:
                 break
     def parse_define_helpers(self):
-        self.seek_to('#define ___BPF_FUNC_MAPPER(FN, ctx...)',
+        self.seek_to('
                      'Could not find start of eBPF helper definition list')
-        p = re.compile(r'\s*FN\((\w+), (\d+), ##ctx\)|\\\\')
+        p = re.compile(r'\s*FN\((\w+), (\d+), 
         fn_defines_str = ''
         i = 0
         while True:
@@ -216,7 +216,7 @@ class HeaderParser(object):
             else:
                 break
             self.line = self.reader.readline()
-        self.define_unique_helpers = re.findall(r'FN\(\w+, \d+, ##ctx\)', fn_defines_str)
+        self.define_unique_helpers = re.findall(r'FN\(\w+, \d+, 
     def validate_helpers(self):
         last_helper = ''
         seen_helpers = set()
@@ -235,7 +235,7 @@ class HeaderParser(object):
                     raise Exception("Helper %s has multiple descriptions which are not grouped together" % name)
                 continue
             if enum_pos != i:
-                raise Exception("Helper %s (ID %d) comment order (#%d) must be aligned with its position (#%d) in enum bpf_func_id" % (name, enum_val, i + 1, enum_pos + 1))
+                raise Exception("Helper %s (ID %d) comment order (
             if enum_val in seen_enum_vals:
                 raise Exception("Helper %s has duplicated value %d" % (name, enum_val))
             seen_helpers.add(name)

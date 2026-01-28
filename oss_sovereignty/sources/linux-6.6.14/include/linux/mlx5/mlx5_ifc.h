@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies, Ltd.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
-*/
+
 #ifndef MLX5_IFC_H
 #define MLX5_IFC_H
 
@@ -315,7 +285,7 @@ enum {
 	MLX5_CMD_OP_MAX
 };
 
-/* Valid range for general commands that don't work over an object */
+
 enum {
 	MLX5_CMD_OP_GENERAL_START = 0xb00,
 	MLX5_CMD_OP_GENERAL_END = 0xd00,
@@ -413,7 +383,7 @@ struct mlx5_ifc_flow_table_fields_supported_bits {
 	u8         metadata_reg_c_0[0x1];
 };
 
-/* Table 2170 - Flow Table Fields Supported 2 Format */
+
 struct mlx5_ifc_flow_table_fields_supported_2_bits {
 	u8         reserved_at_0[0xe];
 	u8         bth_opcode[0x1];
@@ -10865,7 +10835,7 @@ union mlx5_ifc_pddr_troubleshooting_page_status_opcode_auto_bits {
 };
 
 enum {
-	/* Monitor opcodes */
+	
 	MLX5_PDDR_REG_TRBLSH_GROUP_OPCODE_MONITOR = 0x0,
 };
 
@@ -12556,4 +12526,4 @@ struct mlx5_ifc_modify_page_track_obj_in_bits {
 	struct mlx5_ifc_page_track_bits obj_context;
 };
 
-#endif /* MLX5_IFC_H */
+#endif 

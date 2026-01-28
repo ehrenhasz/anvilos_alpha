@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-//
-// Spreadtrum SC9860 platform clocks
-//
-// Copyright (C) 2017, Spreadtrum Communications Inc.
+
+
+
+
+
 
 #ifndef _DT_BINDINGS_CLK_SC9860_H_
 #define _DT_BINDINGS_CLK_SC9860_H_
@@ -420,4 +420,4 @@
 #define	CLK_SPI3_EB		20
 #define CLK_APAPB_GATE_NUM	(CLK_SPI3_EB + 1)
 
-#endif /* _DT_BINDINGS_CLK_SC9860_H_ */
+#endif 

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-only
+
 obj-$(CONFIG_NET_DSA_MSCC_FELIX_DSA_LIB) += mscc_felix_dsa_lib.o
 obj-$(CONFIG_NET_DSA_MSCC_FELIX) += mscc_felix.o
 obj-$(CONFIG_NET_DSA_MSCC_OCELOT_EXT) += mscc_ocelot_ext.o

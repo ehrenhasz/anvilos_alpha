@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# VxFS Makefile
-#
+
+
+
+
 
 obj-$(CONFIG_VXFS_FS) += freevxfs.o
 

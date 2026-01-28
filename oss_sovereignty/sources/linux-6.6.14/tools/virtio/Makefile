@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 all: test mod
 test: virtio_test vringh_test
 virtio_test: virtio_ring.o virtio_test.o
@@ -22,15 +22,15 @@ vpath %.c ../../drivers/virtio ../../drivers/vhost
 mod:
 	${MAKE} -C `pwd`/../.. M=`pwd`/vhost_test V=${V}
 
-#oot: build vhost as an out of tree module for a distro kernel
-#no effort is taken to make it actually build or work, but tends to mostly work
-#if the distro kernel is very close to upstream
-#unsupported! this is a development tool only, don't use the
-#resulting modules in production!
+
+
+
+
+
 OOT_KSRC=/lib/modules/$$(uname -r)/build
 OOT_VHOST=`pwd`/../../drivers/vhost
-#Everyone depends on vhost
-#Tweak the below to enable more modules
+
+
 OOT_CONFIGS=\
 	CONFIG_VHOST=m \
 	CONFIG_VHOST_NET=n \

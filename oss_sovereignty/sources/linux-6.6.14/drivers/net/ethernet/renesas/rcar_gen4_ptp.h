@@ -1,24 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Renesas R-Car Gen4 gPTP device driver
- *
- * Copyright (C) 2022 Renesas Electronics Corporation
- */
+
+
 
 #ifndef __RCAR_GEN4_PTP_H__
 #define __RCAR_GEN4_PTP_H__
 
 #include <linux/ptp_clock_kernel.h>
 
-#define PTPTIVC_INIT			0x19000000	/* 320MHz */
+#define PTPTIVC_INIT			0x19000000	
 #define RCAR_GEN4_PTP_CLOCK_S4		PTPTIVC_INIT
 #define RCAR_GEN4_GPTP_OFFSET_S4	0x00018000
 
-/* for rcar_gen4_ptp_init */
+
 enum rcar_gen4_ptp_reg_layout {
 	RCAR_GEN4_PTP_REG_LAYOUT_S4
 };
 
-/* driver's definitions */
+
 #define RCAR_GEN4_RXTSTAMP_ENABLED		BIT(0)
 #define RCAR_GEN4_RXTSTAMP_TYPE_V2_L2_EVENT	BIT(1)
 #define RCAR_GEN4_RXTSTAMP_TYPE_ALL		(RCAR_GEN4_RXTSTAMP_TYPE_V2_L2_EVENT | BIT(2))
@@ -57,7 +54,7 @@ struct rcar_gen4_ptp_private {
 	struct ptp_clock *clock;
 	struct ptp_clock_info info;
 	const struct rcar_gen4_ptp_reg_offset *offs;
-	spinlock_t lock;	/* For multiple registers access */
+	spinlock_t lock;	
 	u32 tstamp_tx_ctrl;
 	u32 tstamp_rx_ctrl;
 	s64 default_addend;
@@ -69,4 +66,4 @@ int rcar_gen4_ptp_register(struct rcar_gen4_ptp_private *ptp_priv,
 int rcar_gen4_ptp_unregister(struct rcar_gen4_ptp_private *ptp_priv);
 struct rcar_gen4_ptp_private *rcar_gen4_ptp_alloc(struct platform_device *pdev);
 
-#endif	/* #ifndef __RCAR_GEN4_PTP_H__ */
+#endif	

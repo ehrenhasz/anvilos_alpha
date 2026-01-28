@@ -1,7 +1,7 @@
 try:
     import time, gc, select, socket, _thread
-    time.time_ns  # Check for time_ns on MicroPython
-    select.poll  # Raises AttributeError for CPython implementations without poll()
+    time.time_ns  
+    select.poll  
 except (ImportError, AttributeError):
     print("SKIP")
     raise SystemExit

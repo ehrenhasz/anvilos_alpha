@@ -41,38 +41,64 @@ def get_schema_snapshot():
             return "\n".join([row[0] for row in cursor.fetchall()])
     except Exception as e:
         return f"Schema Error: {e}"
+import importlib
+
 def send_to_forge(limit=None):
-    """Sends Forge Directives to the Architect Daemon (sys_goals)."""
+    """Sends Forge Directives DIRECTLY to the Processor (card_stack)."""
     if not forge_directives:
         print("[ERROR] forge_directives.py not found.")
         return
+    
+    # Reload to ensure fresh data
+    try:
+        importlib.reload(forge_directives)
+    except Exception:
+        pass
+        
     db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
     print(f"[FORGE] Connecting to {db_path}...")
     try:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             directives = forge_directives.PHASE2_DIRECTIVES
+            
+            # Explicitly cast to list to be safe
+            if not isinstance(directives, list):
+                directives = list(directives)
+                
+            total_available = len(directives)
+            
             if limit:
                 directives = directives[:limit]
-                print(f"[FORGE] Limiting to {limit} cards.")
+                print(f"[FORGE] Limiting to {limit} cards (out of {total_available}).")
+            else:
+                print(f"[FORGE] Preparing to inject ALL {total_available} cards.")
+
             count = 0
             for card in directives:
-                goal_id = str(uuid.uuid4())
+                card_id = str(uuid.uuid4())
                 seq = card.get("seq", 999)
                 op = card.get("op", "unknown_op")
                 pld = card.get("pld", {})
-                goal_text = f"Phase 2 Directive (Seq {seq}): {op}. Payload: {json.dumps(pld)}"
+                
+                # Mark source as trusted
+                pld["_source"] = "COMMANDER"
+                
                 cursor.execute("""
-                    INSERT INTO sys_goals (goal, stat, timestamp)
-                    VALUES (?, 0, ?)
-                """, (goal_text, time.time()))
+                    INSERT INTO card_stack (id, seq, op, pld, stat, timestamp)
+                    VALUES (?, ?, ?, ?, 0, ?)
+                """, (card_id, seq, op, json.dumps(pld), time.time()))
                 count += 1
-                time.sleep(0.01)
+                if count % 100 == 0:
+                    sys.stdout.write(f"\r[FORGE] Injected {count}...")
+                    sys.stdout.flush()
+                    time.sleep(0.01) 
+            
             conn.commit()
-            print(f"[FORGE] Successfully sent {count} directives to The Forge (sys_goals).")
-            log_to_cortex("FORGE_SUBMIT", f"Sent {count} directives to The Forge.")
+            print(f"\n[FORGE] Successfully injected {count} directives directly into card_stack.")
+            log_to_cortex("FORGE_SUBMIT", f"Injected {count} directives.")
     except Exception as e:
-        print(f"[FORGE ERROR] Failed to send to forge: {e}")
+        print(f"[FORGE ERROR] Failed to inject: {e}")
         log_to_cortex("FORGE_FAIL", str(e))
 def execute_command(command: str):
     log_to_cortex("EXEC_ATTEMPT", command)
@@ -182,6 +208,36 @@ def main():
             if user_input.lower() in ["start", "start cards", "forge"]:
                 send_to_forge()
                 continue
+            
+            if user_input.lower() in ["status", "stack", "list"]:
+                db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
+                try:
+                    with sqlite3.connect(db_path) as conn:
+                        cursor = conn.cursor()
+                        # Counts
+                        cursor.execute("SELECT stat, COUNT(*) FROM card_stack GROUP BY stat")
+                        counts = dict(cursor.fetchall())
+                        print(f"\n[MAINFRAME STATUS]")
+                        print(f"PENDING (0): {counts.get(0, 0)}")
+                        print(f"PUNCHED (2): {counts.get(2, 0)}")
+                        print(f"JAMMED  (9): {counts.get(9, 0)}")
+                        print(f"DEAD   (99): {counts.get(99, 0)}")
+                        
+                        # Top Cards
+                        print("\n[TOP 10 PENDING CARDS]")
+                        cursor.execute("SELECT id, seq, op, pld FROM card_stack WHERE stat = 0 ORDER BY priority DESC, timestamp ASC LIMIT 10")
+                        rows = cursor.fetchall()
+                        if not rows:
+                            print("(None)")
+                        else:
+                            for row in rows:
+                                pld_preview = row[3][:60] + "..." if len(row[3]) > 60 else row[3]
+                                print(f"- [{row[1]}] {row[2]}: {pld_preview}")
+                        print("")
+                except Exception as e:
+                    print(f"[STATUS ERROR] {e}")
+                continue
+
             prompt = user_input
             if "fix" in user_input.lower():
                  prompt += " (MODE: AUTONOMOUS. Use the schema above. Reset status to 0 to retry. Loop until done.)"

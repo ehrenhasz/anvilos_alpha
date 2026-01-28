@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2018 Marvell.
- *
- */
+
+
 
 #ifndef RVU_REG_H
 #define RVU_REG_H
 
-/* Admin function registers */
+
 #define RVU_AF_MSIXTR_BASE                  (0x10)
 #define RVU_AF_ECO                          (0x20)
 #define RVU_AF_BLK_RST                      (0x30)
@@ -52,7 +48,7 @@
 #define RVU_AF_SMMU_ADDR_TLN		    (0x6018)
 #define RVU_AF_SMMU_TLN_FLIT0		    (0x6020)
 
-/* Admin function's privileged PF/VF registers */
+
 #define RVU_PRIV_CONST                      (0x8000000)
 #define RVU_PRIV_GEN_CFG                    (0x8000010)
 #define RVU_PRIV_CLK_CFG                    (0x8000020)
@@ -76,7 +72,7 @@
 #define RVU_PRIV_HWVFX_TIM_CFG              (0x8001340)
 #define RVU_PRIV_HWVFX_CPTX_CFG(a)          (0x8001350 | (a) << 3)
 
-/* RVU PF registers */
+
 #define	RVU_PF_VFX_PFVF_MBOX0		    (0x00000)
 #define	RVU_PF_VFX_PFVF_MBOX1		    (0x00008)
 #define RVU_PF_VFX_PFVF_MBOXX(a, b)         (0x0 | (a) << 12 | (b) << 3)
@@ -110,11 +106,11 @@
 #define RVU_PF_VF_MBOX_ADDR                 (0xC40)
 #define RVU_PF_LMTLINE_ADDR                 (0xC48)
 
-/* RVU VF registers */
+
 #define	RVU_VF_VFPF_MBOX0		    (0x00000)
 #define	RVU_VF_VFPF_MBOX1		    (0x00008)
 
-/* NPA block's admin function registers */
+
 #define NPA_AF_BLK_RST                  (0x0000)
 #define NPA_AF_CONST                    (0x0010)
 #define NPA_AF_CONST1                   (0x0018)
@@ -163,7 +159,7 @@
 #define NPA_PRIV_LFX_INT_CFG		(0x10020)
 #define NPA_AF_RVU_LF_CFG_DEBUG         (0x10030)
 
-/* NIX block's admin function registers */
+
 #define NIX_AF_CFG			(0x0000)
 #define NIX_AF_STATUS			(0x0010)
 #define NIX_AF_NDC_CFG			(0x0018)
@@ -272,8 +268,8 @@
 #define NIX_AF_DEBUG_NPC_RESP_DATAX(a)          (0x680 | (a) << 3)
 #define NIX_AF_SMQX_CFG(a)                      (0x700 | (a) << 16)
 #define NIX_AF_SQM_DBG_CTL_STATUS               (0x750)
-#define NIX_AF_DWRR_SDP_MTU                     (0x790) /* All CN10K except CN10KB */
-#define NIX_AF_DWRR_MTUX(a)			(0x790 | (a) << 16) /* Only for CN10KB */
+#define NIX_AF_DWRR_SDP_MTU                     (0x790) 
+#define NIX_AF_DWRR_MTUX(a)			(0x790 | (a) << 16) 
 #define NIX_AF_DWRR_RPM_MTU                     (0x7A0)
 #define NIX_AF_PSE_CHANNEL_LEVEL                (0x800)
 #define NIX_AF_PSE_SHAPER_CFG                   (0x810)
@@ -439,7 +435,7 @@
 #define NIX_AF_LINKX_RANGE_MASK		GENMASK_ULL(19, 16)
 #define NIX_AF_LINKX_MCS_CNT_MASK	GENMASK_ULL(33, 32)
 
-/* SSO */
+
 #define SSO_AF_CONST			(0x1000)
 #define SSO_AF_CONST1			(0x1008)
 #define SSO_AF_BLK_RST			(0x10f8)
@@ -448,13 +444,13 @@
 #define SSO_PRIV_LFX_HWGRP_CFG		(0x10000)
 #define SSO_PRIV_LFX_HWGRP_INT_CFG	(0x20000)
 
-/* SSOW */
+
 #define SSOW_AF_RVU_LF_HWS_CFG_DEBUG	(0x0010)
 #define SSOW_AF_LF_HWS_RST		(0x0030)
 #define SSOW_PRIV_LFX_HWS_CFG		(0x1000)
 #define SSOW_PRIV_LFX_HWS_INT_CFG	(0x2000)
 
-/* TIM */
+
 #define TIM_AF_CONST			(0x90)
 #define TIM_PRIV_LFX_CFG		(0x20000)
 #define TIM_PRIV_LFX_INT_CFG		(0x24000)
@@ -462,7 +458,7 @@
 #define TIM_AF_BLK_RST			(0x10)
 #define TIM_AF_LF_RST			(0x20)
 
-/* CPT */
+
 #define CPT_AF_CONSTANTS0               (0x0000)
 #define CPT_AF_CONSTANTS1               (0x1000)
 #define CPT_AF_DIAG                     (0x3000)
@@ -556,7 +552,7 @@
 
 #define NPC_AF_BLK_RST                  (0x00040)
 
-/* NPC */
+
 #define NPC_AF_CFG			(0x00000)
 #define NPC_AF_ACTIVE_PC		(0x00010)
 #define NPC_AF_CONST			(0x00020)
@@ -685,7 +681,7 @@
 		offset = (0x8000078ull | (a) << 8);			   \
 	offset; })							   \
 
-/* NDC */
+
 #define NDC_AF_CONST			(0x00000)
 #define NDC_AF_CLK_EN			(0x00020)
 #define NDC_AF_CTL			(0x00030)
@@ -715,7 +711,7 @@
 #define NDC_AF_BANKX_LINEX_METADATA(a, b) \
 		(0x10000 | (a) << 12 | (b) << 3)
 
-/* LBK */
+
 #define LBK_CONST			(0x10ull)
 #define LBK_LINK_CFG_P2X		(0x400ull)
 #define LBK_LINK_CFG_X2P		(0x408ull)
@@ -727,7 +723,7 @@
 #define LBK_LINK_CFG_ID_MASK		GENMASK_ULL(11, 6)
 #define LBK_LINK_CFG_BASE_MASK		GENMASK_ULL(5, 0)
 
-/* APR */
+
 #define	APR_AF_LMT_CFG			(0x000ull)
 #define	APR_AF_LMT_MAP_BASE		(0x008ull)
 #define	APR_AF_LMT_CTL			(0x010ull)
@@ -735,4 +731,4 @@
 #define APR_LMT_MAP_ENT_SCH_ENA_SHIFT		22
 #define APR_LMT_MAP_ENT_DIS_LINE_PREF_SHIFT	21
 
-#endif /* RVU_REG_H */
+#endif 

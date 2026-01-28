@@ -1,19 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/include/linux/sunrpc/debug.h
- *
- * Debugging support for sunrpc module
- *
- * Copyright (C) 1996, Olaf Kirch <okir@monad.swb.de>
- */
+
+
 #ifndef _LINUX_SUNRPC_DEBUG_H_
 #define _LINUX_SUNRPC_DEBUG_H_
 
 #include <uapi/linux/sunrpc/debug.h>
 
-/*
- * Debugging macros etc
- */
+
 #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
 extern unsigned int		rpc_debug;
 extern unsigned int		nfs_debug;
@@ -73,9 +65,7 @@ do {									\
 # define RPC_IFDEBUG(x)
 #endif
 
-/*
- * Sysctl interface for RPC debugging
- */
+
 
 struct rpc_clnt;
 struct rpc_xprt;
@@ -127,4 +117,4 @@ rpc_xprt_debugfs_unregister(struct rpc_xprt *xprt)
 }
 #endif
 
-#endif /* _LINUX_SUNRPC_DEBUG_H_ */
+#endif 

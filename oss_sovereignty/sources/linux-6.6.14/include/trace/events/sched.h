@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sched
 
@@ -10,9 +10,7 @@
 #include <linux/tracepoint.h>
 #include <linux/binfmts.h>
 
-/*
- * Tracepoint for calling kthread_stop, performed to end a kthread:
- */
+
 TRACE_EVENT(sched_kthread_stop,
 
 	TP_PROTO(struct task_struct *t),
@@ -32,9 +30,7 @@ TRACE_EVENT(sched_kthread_stop,
 	TP_printk("comm=%s pid=%d", __entry->comm, __entry->pid)
 );
 
-/*
- * Tracepoint for the return value of the kthread stopping:
- */
+
 TRACE_EVENT(sched_kthread_stop_ret,
 
 	TP_PROTO(int ret),
@@ -52,15 +48,7 @@ TRACE_EVENT(sched_kthread_stop_ret,
 	TP_printk("ret=%d", __entry->ret)
 );
 
-/**
- * sched_kthread_work_queue_work - called when a work gets queued
- * @worker:	pointer to the kthread_worker
- * @work:	pointer to struct kthread_work
- *
- * This event occurs when a work is queued immediately or once a
- * delayed work is actually queued (ie: once the delay has been
- * reached).
- */
+
 TRACE_EVENT(sched_kthread_work_queue_work,
 
 	TP_PROTO(struct kthread_worker *worker,
@@ -84,12 +72,7 @@ TRACE_EVENT(sched_kthread_work_queue_work,
 		  __entry->work, __entry->function, __entry->worker)
 );
 
-/**
- * sched_kthread_work_execute_start - called immediately before the work callback
- * @work:	pointer to struct kthread_work
- *
- * Allows to track kthread work execution.
- */
+
 TRACE_EVENT(sched_kthread_work_execute_start,
 
 	TP_PROTO(struct kthread_work *work),
@@ -109,13 +92,7 @@ TRACE_EVENT(sched_kthread_work_execute_start,
 	TP_printk("work struct %p: function %ps", __entry->work, __entry->function)
 );
 
-/**
- * sched_kthread_work_execute_end - called immediately after the work callback
- * @work:	pointer to struct work_struct
- * @function:   pointer to worker function
- *
- * Allows to track workqueue execution.
- */
+
 TRACE_EVENT(sched_kthread_work_execute_end,
 
 	TP_PROTO(struct kthread_work *work, kthread_work_func_t function),
@@ -135,9 +112,7 @@ TRACE_EVENT(sched_kthread_work_execute_end,
 	TP_printk("work struct %p: function %ps", __entry->work, __entry->function)
 );
 
-/*
- * Tracepoint for waking up a task:
- */
+
 DECLARE_EVENT_CLASS(sched_wakeup_template,
 
 	TP_PROTO(struct task_struct *p),
@@ -154,7 +129,7 @@ DECLARE_EVENT_CLASS(sched_wakeup_template,
 	TP_fast_assign(
 		memcpy(__entry->comm, p->comm, TASK_COMM_LEN);
 		__entry->pid		= p->pid;
-		__entry->prio		= p->prio; /* XXX SCHED_DEADLINE */
+		__entry->prio		= p->prio; 
 		__entry->target_cpu	= task_cpu(p);
 	),
 
@@ -163,25 +138,17 @@ DECLARE_EVENT_CLASS(sched_wakeup_template,
 		  __entry->target_cpu)
 );
 
-/*
- * Tracepoint called when waking a task; this tracepoint is guaranteed to be
- * called from the waking context.
- */
+
 DEFINE_EVENT(sched_wakeup_template, sched_waking,
 	     TP_PROTO(struct task_struct *p),
 	     TP_ARGS(p));
 
-/*
- * Tracepoint called when the task is actually woken; p->state == TASK_RUNNING.
- * It is not always called from the waking context.
- */
+
 DEFINE_EVENT(sched_wakeup_template, sched_wakeup,
 	     TP_PROTO(struct task_struct *p),
 	     TP_ARGS(p));
 
-/*
- * Tracepoint for waking up a new task:
- */
+
 DEFINE_EVENT(sched_wakeup_template, sched_wakeup_new,
 	     TP_PROTO(struct task_struct *p),
 	     TP_ARGS(p));
@@ -195,30 +162,20 @@ static inline long __trace_sched_switch_state(bool preempt,
 
 #ifdef CONFIG_SCHED_DEBUG
 	BUG_ON(p != current);
-#endif /* CONFIG_SCHED_DEBUG */
+#endif 
 
-	/*
-	 * Preemption ignores task state, therefore preempted tasks are always
-	 * RUNNING (we will not have dequeued if state != RUNNING).
-	 */
+	
 	if (preempt)
 		return TASK_REPORT_MAX;
 
-	/*
-	 * task_state_index() uses fls() and returns a value from 0-8 range.
-	 * Decrement it by 1 (except TASK_RUNNING state i.e 0) before using
-	 * it for left shift operation to get the correct task->state
-	 * mapping.
-	 */
+	
 	state = __task_state_index(prev_state, p->exit_state);
 
 	return state ? (1 << (state - 1)) : state;
 }
-#endif /* CREATE_TRACE_POINTS */
+#endif 
 
-/*
- * Tracepoint for task switches, performed by the scheduler:
- */
+
 TRACE_EVENT(sched_switch,
 
 	TP_PROTO(bool preempt,
@@ -246,7 +203,7 @@ TRACE_EVENT(sched_switch,
 		memcpy(__entry->prev_comm, prev->comm, TASK_COMM_LEN);
 		__entry->next_pid	= next->pid;
 		__entry->next_prio	= next->prio;
-		/* XXX SCHED_DEADLINE */
+		
 	),
 
 	TP_printk("prev_comm=%s prev_pid=%d prev_prio=%d prev_state=%s%s ==> next_comm=%s next_pid=%d next_prio=%d",
@@ -268,9 +225,7 @@ TRACE_EVENT(sched_switch,
 		__entry->next_comm, __entry->next_pid, __entry->next_prio)
 );
 
-/*
- * Tracepoint for a task being migrated:
- */
+
 TRACE_EVENT(sched_migrate_task,
 
 	TP_PROTO(struct task_struct *p, int dest_cpu),
@@ -288,7 +243,7 @@ TRACE_EVENT(sched_migrate_task,
 	TP_fast_assign(
 		memcpy(__entry->comm, p->comm, TASK_COMM_LEN);
 		__entry->pid		= p->pid;
-		__entry->prio		= p->prio; /* XXX SCHED_DEADLINE */
+		__entry->prio		= p->prio; 
 		__entry->orig_cpu	= task_cpu(p);
 		__entry->dest_cpu	= dest_cpu;
 	),
@@ -313,37 +268,29 @@ DECLARE_EVENT_CLASS(sched_process_template,
 	TP_fast_assign(
 		memcpy(__entry->comm, p->comm, TASK_COMM_LEN);
 		__entry->pid		= p->pid;
-		__entry->prio		= p->prio; /* XXX SCHED_DEADLINE */
+		__entry->prio		= p->prio; 
 	),
 
 	TP_printk("comm=%s pid=%d prio=%d",
 		  __entry->comm, __entry->pid, __entry->prio)
 );
 
-/*
- * Tracepoint for freeing a task:
- */
+
 DEFINE_EVENT(sched_process_template, sched_process_free,
 	     TP_PROTO(struct task_struct *p),
 	     TP_ARGS(p));
 
-/*
- * Tracepoint for a task exiting:
- */
+
 DEFINE_EVENT(sched_process_template, sched_process_exit,
 	     TP_PROTO(struct task_struct *p),
 	     TP_ARGS(p));
 
-/*
- * Tracepoint for waiting on task to unschedule:
- */
+
 DEFINE_EVENT(sched_process_template, sched_wait_task,
 	TP_PROTO(struct task_struct *p),
 	TP_ARGS(p));
 
-/*
- * Tracepoint for a waiting task:
- */
+
 TRACE_EVENT(sched_process_wait,
 
 	TP_PROTO(struct pid *pid),
@@ -359,16 +306,14 @@ TRACE_EVENT(sched_process_wait,
 	TP_fast_assign(
 		memcpy(__entry->comm, current->comm, TASK_COMM_LEN);
 		__entry->pid		= pid_nr(pid);
-		__entry->prio		= current->prio; /* XXX SCHED_DEADLINE */
+		__entry->prio		= current->prio; 
 	),
 
 	TP_printk("comm=%s pid=%d prio=%d",
 		  __entry->comm, __entry->pid, __entry->prio)
 );
 
-/*
- * Tracepoint for kernel_clone:
- */
+
 TRACE_EVENT(sched_process_fork,
 
 	TP_PROTO(struct task_struct *parent, struct task_struct *child),
@@ -394,9 +339,7 @@ TRACE_EVENT(sched_process_fork,
 		__entry->child_comm, __entry->child_pid)
 );
 
-/*
- * Tracepoint for exec:
- */
+
 TRACE_EVENT(sched_process_exec,
 
 	TP_PROTO(struct task_struct *p, pid_t old_pid,
@@ -429,10 +372,7 @@ TRACE_EVENT(sched_process_exec,
 #define DECLARE_EVENT_CLASS_SCHEDSTAT DECLARE_EVENT_CLASS_NOP
 #endif
 
-/*
- * XXX the below sched_stat tracepoints only apply to SCHED_OTHER/BATCH/IDLE
- *     adding sched_stat support to SCHED_FIFO/RR would be welcome.
- */
+
 DECLARE_EVENT_CLASS_SCHEDSTAT(sched_stat_template,
 
 	TP_PROTO(struct task_struct *tsk, u64 delay),
@@ -456,41 +396,27 @@ DECLARE_EVENT_CLASS_SCHEDSTAT(sched_stat_template,
 			(unsigned long long)__entry->delay)
 );
 
-/*
- * Tracepoint for accounting wait time (time the task is runnable
- * but not actually running due to scheduler contention).
- */
+
 DEFINE_EVENT_SCHEDSTAT(sched_stat_template, sched_stat_wait,
 	     TP_PROTO(struct task_struct *tsk, u64 delay),
 	     TP_ARGS(tsk, delay));
 
-/*
- * Tracepoint for accounting sleep time (time the task is not runnable,
- * including iowait, see below).
- */
+
 DEFINE_EVENT_SCHEDSTAT(sched_stat_template, sched_stat_sleep,
 	     TP_PROTO(struct task_struct *tsk, u64 delay),
 	     TP_ARGS(tsk, delay));
 
-/*
- * Tracepoint for accounting iowait time (time the task is not runnable
- * due to waiting on IO to complete).
- */
+
 DEFINE_EVENT_SCHEDSTAT(sched_stat_template, sched_stat_iowait,
 	     TP_PROTO(struct task_struct *tsk, u64 delay),
 	     TP_ARGS(tsk, delay));
 
-/*
- * Tracepoint for accounting blocked time (time the task is in uninterruptible).
- */
+
 DEFINE_EVENT_SCHEDSTAT(sched_stat_template, sched_stat_blocked,
 	     TP_PROTO(struct task_struct *tsk, u64 delay),
 	     TP_ARGS(tsk, delay));
 
-/*
- * Tracepoint for accounting runtime (time the task is executing
- * on a CPU).
- */
+
 DECLARE_EVENT_CLASS(sched_stat_runtime,
 
 	TP_PROTO(struct task_struct *tsk, u64 runtime, u64 vruntime),
@@ -521,10 +447,7 @@ DEFINE_EVENT(sched_stat_runtime, sched_stat_runtime,
 	     TP_PROTO(struct task_struct *tsk, u64 runtime, u64 vruntime),
 	     TP_ARGS(tsk, runtime, vruntime));
 
-/*
- * Tracepoint for showing priority inheritance modifying a tasks
- * priority.
- */
+
 TRACE_EVENT(sched_pi_setprio,
 
 	TP_PROTO(struct task_struct *tsk, struct task_struct *pi_task),
@@ -545,7 +468,7 @@ TRACE_EVENT(sched_pi_setprio,
 		__entry->newprio	= pi_task ?
 				min(tsk->normal_prio, pi_task->prio) :
 				tsk->normal_prio;
-		/* XXX SCHED_DEADLINE bits missing */
+		
 	),
 
 	TP_printk("comm=%s pid=%d oldprio=%d newprio=%d",
@@ -570,12 +493,9 @@ TRACE_EVENT(sched_process_hang,
 
 	TP_printk("comm=%s pid=%d", __entry->comm, __entry->pid)
 );
-#endif /* CONFIG_DETECT_HUNG_TASK */
+#endif 
 
-/*
- * Tracks migration of tasks from one runqueue to another. Can be used to
- * detect if automatic NUMA balancing is bouncing between nodes.
- */
+
 TRACE_EVENT(sched_move_numa,
 
 	TP_PROTO(struct task_struct *tsk, int src_cpu, int dst_cpu),
@@ -665,9 +585,7 @@ DEFINE_EVENT(sched_numa_pair_template, sched_swap_numa,
 );
 
 
-/*
- * Tracepoint for waking a polling cpu without an IPI.
- */
+
 TRACE_EVENT(sched_wake_idle_without_ipi,
 
 	TP_PROTO(int cpu),
@@ -685,12 +603,7 @@ TRACE_EVENT(sched_wake_idle_without_ipi,
 	TP_printk("cpu=%d", __entry->cpu)
 );
 
-/*
- * Following tracepoints are not exported in tracefs and provide hooking
- * mechanisms only for testing and debugging purposes.
- *
- * Postfixed with _tp to make them easily identifiable in the code.
- */
+
 DECLARE_TRACE(pelt_cfs_tp,
 	TP_PROTO(struct cfs_rq *cfs_rq),
 	TP_ARGS(cfs_rq));
@@ -735,7 +648,7 @@ DECLARE_TRACE(sched_update_nr_running_tp,
 	TP_PROTO(struct rq *rq, int change),
 	TP_ARGS(rq, change));
 
-#endif /* _TRACE_SCHED_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

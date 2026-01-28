@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef __SOUND_PCM_PARAMS_H
 #define __SOUND_PCM_PARAMS_H
 
-/*
- *  PCM params helpers
- *  Copyright (c) by Abramo Bagnara <abramo@alsa-project.org>
- */
+
 
 #include <sound/pcm.h>
 
@@ -18,7 +15,7 @@ int snd_pcm_hw_param_last(struct snd_pcm_substream *pcm,
 int snd_pcm_hw_param_value(const struct snd_pcm_hw_params *params,
 			   snd_pcm_hw_param_t var, int *dir);
 
-#define SNDRV_MASK_BITS	64	/* we use so far 64bits only */
+#define SNDRV_MASK_BITS	64	
 #define SNDRV_MASK_SIZE	(SNDRV_MASK_BITS / 32)
 #define MASK_OFS(i)	((i) >> 5)
 #define MASK_BIT(i)	(1U << ((i) & 31))
@@ -67,7 +64,7 @@ static inline void snd_mask_set(struct snd_mask *mask, unsigned int val)
 	mask->bits[MASK_OFS(val)] |= MASK_BIT(val);
 }
 
-/* Most of drivers need only this one */
+
 static inline void snd_mask_set_format(struct snd_mask *mask,
 				       snd_pcm_format_t format)
 {
@@ -128,7 +125,7 @@ static inline int snd_mask_test(const struct snd_mask *mask, unsigned int val)
 	return mask->bits[MASK_OFS(val)] & MASK_BIT(val);
 }
 
-/* Most of drivers need only this one */
+
 static inline int snd_mask_test_format(const struct snd_mask *mask,
 				       snd_pcm_format_t format)
 {
@@ -296,30 +293,21 @@ static inline int snd_interval_eq(const struct snd_interval *i1, const struct sn
 		i1->max == i2->max && i1->openmax == i2->openmax;
 }
 
-/**
- * params_access - get the access type from the hw params
- * @p: hw params
- */
+
 static inline snd_pcm_access_t params_access(const struct snd_pcm_hw_params *p)
 {
 	return (__force snd_pcm_access_t)snd_mask_min(hw_param_mask_c(p,
 		SNDRV_PCM_HW_PARAM_ACCESS));
 }
 
-/**
- * params_format - get the sample format from the hw params
- * @p: hw params
- */
+
 static inline snd_pcm_format_t params_format(const struct snd_pcm_hw_params *p)
 {
 	return (__force snd_pcm_format_t)snd_mask_min(hw_param_mask_c(p,
 		SNDRV_PCM_HW_PARAM_FORMAT));
 }
 
-/**
- * params_subformat - get the sample subformat from the hw params
- * @p: hw params
- */
+
 static inline snd_pcm_subformat_t
 params_subformat(const struct snd_pcm_hw_params *p)
 {
@@ -327,36 +315,20 @@ params_subformat(const struct snd_pcm_hw_params *p)
 		SNDRV_PCM_HW_PARAM_SUBFORMAT));
 }
 
-/**
- * params_period_bytes - get the period size (in bytes) from the hw params
- * @p: hw params
- */
+
 static inline unsigned int
 params_period_bytes(const struct snd_pcm_hw_params *p)
 {
 	return hw_param_interval_c(p, SNDRV_PCM_HW_PARAM_PERIOD_BYTES)->min;
 }
 
-/**
- * params_width - get the number of bits of the sample format from the hw params
- * @p: hw params
- *
- * This function returns the number of bits per sample that the selected sample
- * format of the hw params has.
- */
+
 static inline int params_width(const struct snd_pcm_hw_params *p)
 {
 	return snd_pcm_format_width(params_format(p));
 }
 
-/*
- * params_physical_width - get the storage size of the sample format from the hw params
- * @p: hw params
- *
- * This functions returns the number of bits per sample that the selected sample
- * format of the hw params takes up in memory. This will be equal or larger than
- * params_width().
- */
+
 static inline int params_physical_width(const struct snd_pcm_hw_params *p)
 {
 	return snd_pcm_format_physical_width(params_format(p));
@@ -368,4 +340,4 @@ params_set_format(struct snd_pcm_hw_params *p, snd_pcm_format_t fmt)
 	snd_mask_set_format(hw_param_mask(p, SNDRV_PCM_HW_PARAM_FORMAT), fmt);
 }
 
-#endif /* __SOUND_PCM_PARAMS_H */
+#endif 

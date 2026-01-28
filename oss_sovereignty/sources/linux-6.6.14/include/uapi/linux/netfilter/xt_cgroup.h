@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _UAPI_XT_CGROUP_H
 #define _UAPI_XT_CGROUP_H
 
@@ -18,7 +18,7 @@ struct xt_cgroup_info_v1 {
 	char		path[PATH_MAX];
 	__u32		classid;
 
-	/* kernel internal data */
+	
 	void		*priv __attribute__((aligned(8)));
 };
 
@@ -34,8 +34,8 @@ struct xt_cgroup_info_v2 {
 		__u32	classid;
 	};
 
-	/* kernel internal data */
+	
 	void		*priv __attribute__((aligned(8)));
 };
 
-#endif /* _UAPI_XT_CGROUP_H */
+#endif 

@@ -1,17 +1,6 @@
-/* $OpenBSD: authfd.h,v 1.52 2023/12/18 14:46:56 djm Exp $ */
 
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * Functions to interface with the SSH_AUTHENTICATION_FD socket.
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- */
+
+
 
 #ifndef AUTHFD_H
 #define AUTHFD_H
@@ -19,19 +8,19 @@
 struct sshbuf;
 struct sshkey;
 
-/* List of identities returned by ssh_fetch_identitylist() */
+
 struct ssh_identitylist {
 	size_t nkeys;
 	struct sshkey **keys;
 	char **comments;
 };
 
-/* Key destination restrictions */
+
 struct dest_constraint_hop {
-	char *user;	/* wildcards allowed */
-	char *hostname; /* used to matching cert principals and for display */
+	char *user;	
+	char *hostname; 
 	int is_ca;
-	u_int nkeys;	/* number of entries in *both* 'keys' and 'key_is_ca' */
+	u_int nkeys;	
 	struct sshkey **keys;
 	int *key_is_ca;
 };
@@ -68,7 +57,7 @@ int	ssh_agent_bind_hostkey(int sock, const struct sshkey *key,
     const struct sshbuf *session_id, const struct sshbuf *signature,
     int forwarding);
 
-/* Messages for the authentication agent connection. */
+
 #define SSH_AGENTC_REQUEST_RSA_IDENTITIES	1
 #define SSH_AGENT_RSA_IDENTITIES_ANSWER		2
 #define SSH_AGENTC_RSA_CHALLENGE		3
@@ -79,7 +68,7 @@ int	ssh_agent_bind_hostkey(int sock, const struct sshkey *key,
 #define SSH_AGENTC_REMOVE_RSA_IDENTITY		8
 #define SSH_AGENTC_REMOVE_ALL_RSA_IDENTITIES	9
 
-/* private OpenSSH extensions for SSH2 */
+
 #define SSH2_AGENTC_REQUEST_IDENTITIES		11
 #define SSH2_AGENT_IDENTITIES_ANSWER		12
 #define SSH2_AGENTC_SIGN_REQUEST		13
@@ -88,20 +77,20 @@ int	ssh_agent_bind_hostkey(int sock, const struct sshkey *key,
 #define SSH2_AGENTC_REMOVE_IDENTITY		18
 #define SSH2_AGENTC_REMOVE_ALL_IDENTITIES	19
 
-/* smartcard */
+
 #define SSH_AGENTC_ADD_SMARTCARD_KEY		20
 #define SSH_AGENTC_REMOVE_SMARTCARD_KEY		21
 
-/* lock/unlock the agent */
+
 #define SSH_AGENTC_LOCK				22
 #define SSH_AGENTC_UNLOCK			23
 
-/* add key with constraints */
+
 #define SSH_AGENTC_ADD_RSA_ID_CONSTRAINED	24
 #define SSH2_AGENTC_ADD_ID_CONSTRAINED		25
 #define SSH_AGENTC_ADD_SMARTCARD_KEY_CONSTRAINED 26
 
-/* generic extension mechanism */
+
 #define SSH_AGENTC_EXTENSION			27
 
 #define	SSH_AGENT_CONSTRAIN_LIFETIME		1
@@ -109,14 +98,14 @@ int	ssh_agent_bind_hostkey(int sock, const struct sshkey *key,
 #define	SSH_AGENT_CONSTRAIN_MAXSIGN		3
 #define	SSH_AGENT_CONSTRAIN_EXTENSION		255
 
-/* extended failure messages */
+
 #define SSH2_AGENT_FAILURE			30
 
-/* additional error code for ssh.com's ssh-agent2 */
+
 #define SSH_COM_AGENT2_FAILURE			102
 
 #define	SSH_AGENT_OLD_SIGNATURE			0x01
 #define	SSH_AGENT_RSA_SHA2_256			0x02
 #define	SSH_AGENT_RSA_SHA2_512			0x04
 
-#endif				/* AUTHFD_H */
+#endif				

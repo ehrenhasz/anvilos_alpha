@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Linaro Limited
- */
+
+
 
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SM8450_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SM8450_H

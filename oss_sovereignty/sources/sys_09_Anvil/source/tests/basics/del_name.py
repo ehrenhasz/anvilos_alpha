@@ -7,7 +7,7 @@ except NameError:
     print("NameError")
 try:
     del x
-except: # NameError:
+except: 
     print("NameError")
 class C:
     def f():

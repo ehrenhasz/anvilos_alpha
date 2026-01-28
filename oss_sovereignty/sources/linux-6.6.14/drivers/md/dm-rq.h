@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Internal header file for device mapper
- *
- * Copyright (C) 2016 Red Hat, Inc. All rights reserved.
- *
- * This file is released under the LGPL.
- */
+
+
 
 #ifndef DM_RQ_INTERNAL_H
 #define DM_RQ_INTERNAL_H
@@ -17,14 +11,7 @@
 
 struct mapped_device;
 
-/*
- * For request-based dm - the bio clones we allocate are embedded in these
- * structs.
- *
- * We allocate these with bio_alloc_bioset, using the front_pad parameter when
- * the bioset is created - this means the bio has to come at the end of the
- * struct.
- */
+
 struct dm_rq_clone_bio_info {
 	struct bio *orig;
 	struct dm_rq_target_io *tio;

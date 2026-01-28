@@ -4,4 +4,4 @@
 #define EXPORT_SYMBOL(x)
 #define EXPORT_SYMBOL_GPL(x)
 
-#endif /* _TOOLS_ASM_EXPORT_H */
+#endif 

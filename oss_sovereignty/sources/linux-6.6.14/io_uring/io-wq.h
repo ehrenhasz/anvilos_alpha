@@ -12,13 +12,13 @@ enum {
 	IO_WQ_WORK_UNBOUND	= 4,
 	IO_WQ_WORK_CONCURRENT	= 16,
 
-	IO_WQ_HASH_SHIFT	= 24,	/* upper 8 bits are used for hash key */
+	IO_WQ_HASH_SHIFT	= 24,	
 };
 
 enum io_wq_cancel {
-	IO_WQ_CANCEL_OK,	/* cancelled before started */
-	IO_WQ_CANCEL_RUNNING,	/* found, running, and attempted cancelled */
-	IO_WQ_CANCEL_NOTFOUND,	/* work not found */
+	IO_WQ_CANCEL_OK,	
+	IO_WQ_CANCEL_RUNNING,	
+	IO_WQ_CANCEL_NOTFOUND,	
 };
 
 typedef struct io_wq_work *(free_work_fn)(struct io_wq_work *);

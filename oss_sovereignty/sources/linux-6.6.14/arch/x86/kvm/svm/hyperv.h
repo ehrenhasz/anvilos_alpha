@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Common Hyper-V on KVM and KVM on Hyper-V definitions (SVM).
- */
+
+
 
 #ifndef __ARCH_X86_KVM_SVM_HYPERV_H__
 #define __ARCH_X86_KVM_SVM_HYPERV_H__
@@ -42,4 +40,4 @@ static inline bool nested_svm_l2_tlb_flush_enabled(struct kvm_vcpu *vcpu)
 
 void svm_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu);
 
-#endif /* __ARCH_X86_KVM_SVM_HYPERV_H__ */
+#endif 

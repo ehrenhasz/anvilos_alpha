@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for multiplexer devices.
-#
+
+
+
+
 
 mux-core-objs			:= core.o
 mux-adg792a-objs		:= adg792a.o

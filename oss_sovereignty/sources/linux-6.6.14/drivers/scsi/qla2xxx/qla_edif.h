@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Marvell Fibre Channel HBA Driver
- * Copyright (c)  2021    Marvell
- */
+
+
 #ifndef __QLA_EDIF_H
 #define __QLA_EDIF_H
 
@@ -19,12 +16,12 @@ struct edif_sa_ctl {
 #define	EDIF_SA_CTL_FLG_REPL		BIT_0
 #define	EDIF_SA_CTL_FLG_DEL		BIT_1
 #define EDIF_SA_CTL_FLG_CLEANUP_DEL BIT_4
-	// Invalidate Index bit and mirrors QLA_SA_UPDATE_FLAGS_DELETE
+	
 	unsigned long   state;
-#define EDIF_SA_CTL_USED	1	/* Active Sa update  */
-#define EDIF_SA_CTL_PEND	2	/* Waiting for slot */
-#define EDIF_SA_CTL_REPL	3	/* Active Replace and Delete */
-#define EDIF_SA_CTL_DEL		4	/* Delete Pending */
+#define EDIF_SA_CTL_USED	1	
+#define EDIF_SA_CTL_PEND	2	
+#define EDIF_SA_CTL_REPL	3	
+#define EDIF_SA_CTL_DEL		4	
 	struct fc_port	*fcport;
 	struct bsg_job *bsg_job;
 	struct qla_sa_update_frame sa_frame;
@@ -55,18 +52,18 @@ struct edif_dbell {
 	unsigned long bsg_expire;
 };
 
-#define SA_UPDATE_IOCB_TYPE            0x71    /* Security Association Update IOCB entry */
+#define SA_UPDATE_IOCB_TYPE            0x71    
 struct sa_update_28xx {
-	uint8_t entry_type;             /* Entry type. */
-	uint8_t entry_count;            /* Entry count. */
-	uint8_t sys_define;             /* System Defined. */
-	uint8_t entry_status;           /* Entry Status. */
+	uint8_t entry_type;             
+	uint8_t entry_count;            
+	uint8_t sys_define;             
+	uint8_t entry_status;           
 
-	uint32_t handle;                /* IOCB System handle. */
+	uint32_t handle;                
 
 	union {
-		__le16 nport_handle;  /* in: N_PORT handle. */
-		__le16 comp_sts;              /* out: completion status */
+		__le16 nport_handle;  
+		__le16 comp_sts;              
 #define CS_PORT_EDIF_UNAVAIL	0x28
 #define CS_PORT_EDIF_LOGOUT	0x29
 #define CS_PORT_EDIF_SUPP_NOT_RDY 0x64
@@ -77,21 +74,21 @@ struct sa_update_28xx {
 	uint8_t port_id[3];
 	uint8_t flags;
 #define SA_FLAG_INVALIDATE BIT_0
-#define SA_FLAG_TX	   BIT_1 // 1=tx, 0=rx
+#define SA_FLAG_TX	   BIT_1 
 
-	uint8_t sa_key[32];     /* 256 bit key */
+	uint8_t sa_key[32];     
 	__le32 salt;
 	__le32 spi;
 	uint8_t sa_control;
 #define SA_CNTL_ENC_FCSP        (1 << 3)
 #define SA_CNTL_ENC_OPD         (2 << 3)
-#define SA_CNTL_ENC_MSK         (3 << 3)  // mask bits 4,3
+#define SA_CNTL_ENC_MSK         (3 << 3)  
 #define SA_CNTL_AES_GMAC	(1 << 2)
 #define SA_CNTL_KEY256          (2 << 0)
 #define SA_CNTL_KEY128          0
 
 	uint8_t reserved_2;
-	__le16 sa_index;   // reserve: bit 11-15
+	__le16 sa_index;   
 	__le16 old_sa_info;
 	__le16 new_sa_info;
 };
@@ -147,4 +144,4 @@ struct enode {
 
 #define EDIF_CAP(_ha) (ql2xsecenable && IS_QLA28XX(_ha))
 
-#endif	/* __QLA_EDIF_H */
+#endif	

@@ -1,55 +1,55 @@
-#
-# Shown below is a simplified dependency graph of the OpenZFS provided
-# libraries.  Administrative commands (`zfs`, `zpool`, etc) interface with
-# the kernel modules using the `libzfs.so` and `libzfs_core.so` libraries.
-# These libraries provide a stable ABI across OpenZFS point releases.
-#
-# The `libzpool.so` library is a user space build of the DMU and SPA layers
-# used to implement debugging tools (zdb) and code validation tools (ztest).
-# These library interfaces are subject to change at any time.
-#
-#
-# CMDS:   zhack/ztest/zdb/            zfs/zpool/zed/
-#        raidz_{test,bench}          zinject/zstream
-#                |                          |
-# LIBS:          |                          |              libzfsbootenv*
-#                |                          |                    |
-#                |                          |                    |
-#             libzpool                   libzfs* ----------------+
-#             | | |  \                  / | | |
-#    libicp --/ | |   \                /  | | \------- libshare
-#               | |    \              /   | |
-#    libzstd ---/ |     \            /    | \--------- libuutil
-#                 |      \          /     \              | |
-#    libunicode --/       \        /       \             | |
-#                          \      /         \            | |
-#                          libzutil        libzfs_core*  | |
-#                          | | | | \          |     |    | |
-#                          | | | | |          |     |    | |
-#                          | | | | |          |     |    | |
-#    libtpool -------------/ | | | \---- libnvpair* |    | |
-#                            | | |                  |    | |
-#    libefi -----------------/ | \------ libavl* --------/ |
-#                              |                    |      |
-#                              \-------- libspl ----+------/
-#
-#
-# NB: GNU Automake Manual, Chapter 8.3.5: Libtool Convenience Libraries
-# These nine libraries are intermediary build components.
-#
-# * - A stable ABI is provided for these libraries;
-# when performing an ABI check the following options are applied:
-#
-# --no-unreferenced-symbols: Exclude symbols which are not referenced by
-# any debug information.  Without this _init() and _fini() are incorrectly
-# reported on CentOS7 for libuutil.so.
-#
-# --headers-dir1: Limit ABI checks to public OpenZFS headers, otherwise
-# changes in public system headers are also reported.
-#
-# --suppressions: Honor a suppressions file for each library to provide
-# a mechanism for suppressing harmless warnings.
-#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 noinst_LTLIBRARIES =
 lib_LTLIBRARIES =
@@ -93,7 +93,7 @@ allow_libabi_only_for_x86_64:
 	echo '*** not checking or storing ABI and assuming success.'
 
 if TARGET_CPU_X86_64
-# These should depend on $(lib_LTLIBRARIES), but this breaks on CI when bound into Docker
+
 checkabi: check_libabi_version
 	err=0; \
 	for lib in $(lib_LTLIBRARIES); do \

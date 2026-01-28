@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Measurements Specialties common sensor driver
- *
- * Copyright (c) 2015 Measurement-Specialties
- */
+
+
 
 #ifndef _MS_SENSORS_I2C_H
 #define _MS_SENSORS_I2C_H
@@ -13,36 +9,20 @@
 
 #define MS_SENSORS_TP_PROM_WORDS_NB		8
 
-/**
- * struct ms_ht_dev - Humidity/Temperature sensor device structure
- * @client:	i2c client
- * @lock:	lock protecting the i2c conversion
- * @res_index:	index to selected sensor resolution
- */
+
 struct ms_ht_dev {
 	struct i2c_client *client;
 	struct mutex lock;
 	u8 res_index;
 };
 
-/**
- * struct ms_hw_data - Temperature/Pressure sensor hardware data
- * @prom_len:		number of words in the PROM
- * @max_res_index:	maximum sensor resolution index
- */
+
 struct ms_tp_hw_data {
 	u8 prom_len;
 	u8 max_res_index;
 };
 
-/**
- * struct ms_tp_dev - Temperature/Pressure sensor device structure
- * @client:	i2c client
- * @lock:	lock protecting the i2c conversion
- * @prom:	array of PROM coefficients used for conversion. Added element
- *              for CRC computation
- * @res_index:	index to selected sensor resolution
- */
+
 struct ms_tp_dev {
 	struct i2c_client *client;
 	struct mutex lock;
@@ -71,4 +51,4 @@ int ms_sensors_read_temp_and_pressure(struct ms_tp_dev *dev_data,
 				      int *temperature,
 				      unsigned int *pressure);
 
-#endif /* _MS_SENSORS_I2C_H */
+#endif 

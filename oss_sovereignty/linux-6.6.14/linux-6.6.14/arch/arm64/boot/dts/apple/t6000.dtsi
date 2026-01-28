@@ -1,5 +1,0 @@
-#include "t6001.dtsi"
-/ {
-	compatible = "apple,t6000", "apple,arm-platform";
-};
-/delete-node/ &pmgr_south;

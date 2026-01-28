@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) Maxime Coquelin 2015
- * Copyright (C) STMicroelectronics 2017
- * Author:  Maxime Coquelin <mcoquelin.stm32@gmail.com>
- */
+
+
 #ifndef __PINCTRL_STM32_H
 #define __PINCTRL_STM32_H
 
@@ -19,7 +15,7 @@
 #define STM32_PIN_ANALOG	(STM32_PIN_AF(15) + 1)
 #define STM32_CONFIG_NUM	(STM32_PIN_ANALOG + 1)
 
-/*  package information */
+
 #define STM32MP_PKG_AA		BIT(0)
 #define STM32MP_PKG_AB		BIT(1)
 #define STM32MP_PKG_AC		BIT(2)
@@ -73,5 +69,5 @@ void stm32_pmx_get_mode(struct stm32_gpio_bank *bank,
 int stm32_pinctrl_suspend(struct device *dev);
 int stm32_pinctrl_resume(struct device *dev);
 
-#endif /* __PINCTRL_STM32_H */
+#endif 
 

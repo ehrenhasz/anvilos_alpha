@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Copyright (C) 1999-2002 Vojtech Pavlik
-*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
+
+
 #ifndef _UAPI_SERIO_H
 #define _UAPI_SERIO_H
 
@@ -15,17 +9,13 @@
 #define SPIOCSTYPE	_IOW('q', 0x01, unsigned long)
 
 
-/*
- * bit masks for use in "interrupt" flags (3rd argument)
- */
+
 #define SERIO_TIMEOUT	_BITUL(0)
 #define SERIO_PARITY	_BITUL(1)
 #define SERIO_FRAME	_BITUL(2)
 #define SERIO_OOB_DATA	_BITUL(3)
 
-/*
- * Serio types
- */
+
 #define SERIO_XT	0x00
 #define SERIO_8042	0x01
 #define SERIO_RS232	0x02
@@ -33,9 +23,7 @@
 #define SERIO_PS_PSTHRU	0x05
 #define SERIO_8042_XL	0x06
 
-/*
- * Serio protocols
- */
+
 #define SERIO_UNKNOWN	0x00
 #define SERIO_MSC	0x01
 #define SERIO_SUN	0x02
@@ -84,4 +72,4 @@
 #define SERIO_RAINSHADOW_CEC	0x41
 #define SERIO_FSIA6B	0x42
 
-#endif /* _UAPI_SERIO_H */
+#endif 

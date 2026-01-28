@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Konrad Dybcio <konrad.dybcio@somainline.org>
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SM6375_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SM6375_H
 
-/* Clocks */
+
 #define GPLL0						0
 #define GPLL0_OUT_EVEN					1
 #define GPLL0_OUT_ODD					2
@@ -197,7 +194,7 @@
 #define GCC_VIDEO_VENUS_CTL_CLK				186
 #define GCC_VIDEO_XO_CLK				187
 
-/* Resets */
+
 #define GCC_CAMSS_OPE_BCR				0
 #define GCC_CAMSS_TFE_BCR				1
 #define GCC_CAMSS_TOP_BCR				2
@@ -220,7 +217,7 @@
 #define GCC_USB3_DP_PHY_PRIM_BCR			19
 #define GCC_USB3_PHY_PRIM_SP0_BCR			20
 
-/* GDSCs */
+
 #define USB30_PRIM_GDSC					0
 #define UFS_PHY_GDSC					1
 #define CAMSS_TOP_GDSC					2

@@ -1,4 +1,4 @@
-/* Define output sections */
+
 SECTIONS
 {
     .text :
@@ -13,7 +13,7 @@ SECTIONS
         _etext = .;
     } >FLASH
 
-    /* For C++ exception handling */
+    
     .ARM :
     {
         __exidx_start = .;
@@ -21,7 +21,7 @@ SECTIONS
         __exidx_end = .;
     } >FLASH
 
-    /* Used by the start-up code to initialise data */
+    
     _sidata = LOADADDR(.data);
 
     .data :

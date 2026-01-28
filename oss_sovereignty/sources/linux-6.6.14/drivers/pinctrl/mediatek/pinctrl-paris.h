@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 MediaTek Inc.
- *
- * Author: Sean Wang <sean.wang@mediatek.com>
- *	   Zhiyong Tao <zhiyong.tao@mediatek.com>
- *	   Hongzhou.Yang <hongzhou.yang@mediatek.com>
- */
+
+
 #ifndef __PINCTRL_PARIS_H
 #define __PINCTRL_PARIS_H
 
@@ -64,4 +58,4 @@ ssize_t mtk_pctrl_show_one_pin(struct mtk_pinctrl *hw,
 
 extern const struct dev_pm_ops mtk_paris_pinctrl_pm_ops;
 
-#endif /* __PINCTRL_PARIS_H */
+#endif 

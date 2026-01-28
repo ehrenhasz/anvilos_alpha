@@ -20,7 +20,7 @@ export IP_FLAG
 "}
 lib_dir=$(dirname $0)/../../../net/forwarding
 NUM_NETIFS=2
-: ${TIMEOUT:=20000} # ms
+: ${TIMEOUT:=20000} 
 source $lib_dir/lib.sh
 setup_prepare()
 {

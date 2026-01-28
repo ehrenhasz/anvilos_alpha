@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * des3_ede-asm_64.S  -  x86-64 assembly implementation of 3DES cipher
- *
- * Copyright © 2014 Jussi Kivilinna <jussi.kivilinna@iki.fi>
- */
+
+
 
 #include <linux/linkage.h>
 
@@ -19,7 +15,7 @@
 #define s7 ((s6) + (64*8))
 #define s8 ((s7) + (64*8))
 
-/* register macros */
+
 #define CTX %rdi
 
 #define RL0 %r8
@@ -64,9 +60,7 @@
 #define RT2d %r14d
 #define RT3d %edx
 
-/***********************************************************************
- * 1-way 3DES
- ***********************************************************************/
+
 #define do_permutation(a, b, offset, mask) \
 	movl a, RT0d; \
 	shrl $(offset), RT0d; \
@@ -156,7 +150,7 @@
 #define load_next_key(n, RWx) \
 	movq (((n) + 1) * 8)(CTX), RWx;
 
-#define dummy2(a, b) /*_*/
+#define dummy2(a, b) 
 
 #define read_block(io, left, right) \
 	movl    (io), left##d; \
@@ -171,18 +165,14 @@
 	movl   right##d, 4(io);
 
 SYM_FUNC_START(des3_ede_x86_64_crypt_blk)
-	/* input:
-	 *	%rdi: round keys, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	pushq %rbx;
 	pushq %r12;
 	pushq %r13;
 	pushq %r14;
 	pushq %r15;
 
-	pushq %rsi; /* dst */
+	pushq %rsi; 
 
 	read_block(%rdx, RL0, RR0);
 	initial_permutation(RL0, RR0);
@@ -242,7 +232,7 @@ SYM_FUNC_START(des3_ede_x86_64_crypt_blk)
 
 	final_permutation(RR0, RL0);
 
-	popq %rsi /* dst */
+	popq %rsi 
 	write_block(%rsi, RR0, RL0);
 
 	popq %r15;
@@ -254,9 +244,7 @@ SYM_FUNC_START(des3_ede_x86_64_crypt_blk)
 	RET;
 SYM_FUNC_END(des3_ede_x86_64_crypt_blk)
 
-/***********************************************************************
- * 3-way 3DES
- ***********************************************************************/
+
 #define expand_to_64bits(val, mask) \
 	movl val##d, RT0d; \
 	rorl $4, RT0d; \
@@ -451,11 +439,7 @@ SYM_FUNC_END(des3_ede_x86_64_crypt_blk)
 	movq src, dst;
 
 SYM_FUNC_START(des3_ede_x86_64_crypt_blk_3way)
-	/* input:
-	 *	%rdi: ctx, round keys
-	 *	%rsi: dst (3 blocks)
-	 *	%rdx: src (3 blocks)
-	 */
+	
 
 	pushq %rbx;
 	pushq %r12;
@@ -463,9 +447,9 @@ SYM_FUNC_START(des3_ede_x86_64_crypt_blk_3way)
 	pushq %r14;
 	pushq %r15;
 
-	pushq %rsi /* dst */
+	pushq %rsi 
 
-	/* load input */
+	
 	movl 0 * 4(%rdx), RL0d;
 	movl 1 * 4(%rdx), RR0d;
 	movl 2 * 4(%rdx), RL1d;
@@ -546,7 +530,7 @@ SYM_FUNC_START(des3_ede_x86_64_crypt_blk_3way)
 	bswapl RR2d;
 	bswapl RL2d;
 
-	popq %rsi /* dst */
+	popq %rsi 
 	movl RR0d, 0 * 4(%rsi);
 	movl RL0d, 1 * 4(%rsi);
 	movl RR1d, 2 * 4(%rsi);

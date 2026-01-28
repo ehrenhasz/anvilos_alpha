@@ -80,7 +80,7 @@ def dfu_read(filename):
         vid_pid = "0x{:04x}:0x{:04x}".format(hdr[2], hdr[1])
     return vid_pid, elems
 def compress(data):
-    c = zlib.compressobj(level=9, memLevel=9, wbits=-15)  # wsize=15, no header
+    c = zlib.compressobj(level=9, memLevel=9, wbits=-15)  
     return c.compress(data) + c.flush()
 def encrypt(keys, data):
     return pyhy.hydro_secretbox_encrypt(data, 0, MBOOT_PACK_HYDRO_CONTEXT, keys.secretbox)

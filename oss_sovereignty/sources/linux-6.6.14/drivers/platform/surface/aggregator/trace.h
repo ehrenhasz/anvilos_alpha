@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Trace points for SSAM/SSH.
- *
- * Copyright (C) 2020-2022 Maximilian Luz <luzmaximilian@gmail.com>
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM surface_aggregator
@@ -101,14 +97,7 @@ TRACE_DEFINE_ENUM(SSAM_SSH_TC_POS);
 #ifndef _SURFACE_AGGREGATOR_TRACE_HELPERS
 #define _SURFACE_AGGREGATOR_TRACE_HELPERS
 
-/**
- * ssam_trace_ptr_uid() - Convert the pointer to a non-pointer UID string.
- * @ptr: The pointer to convert.
- * @uid_str: A buffer of length SSAM_PTR_UID_LEN where the UID will be stored.
- *
- * Converts the given pointer into a UID string that is safe to be shared
- * with userspace and logs, i.e. doesn't give away the real memory location.
- */
+
 static inline void ssam_trace_ptr_uid(const void *ptr, char *uid_str)
 {
 	char buf[2 * sizeof(void *) + 1];
@@ -120,13 +109,7 @@ static inline void ssam_trace_ptr_uid(const void *ptr, char *uid_str)
 	       SSAM_PTR_UID_LEN);
 }
 
-/**
- * ssam_trace_get_packet_seq() - Read the packet's sequence ID.
- * @p: The packet.
- *
- * Return: Returns the packet's sequence ID (SEQ) field if present, or
- * %SSAM_SEQ_NOT_APPLICABLE if not (e.g. flush packet).
- */
+
 static inline u16 ssam_trace_get_packet_seq(const struct ssh_packet *p)
 {
 	if (!p->data.ptr || p->data.len < SSH_MESSAGE_LENGTH(0))
@@ -135,14 +118,7 @@ static inline u16 ssam_trace_get_packet_seq(const struct ssh_packet *p)
 	return p->data.ptr[SSH_MSGOFFSET_FRAME(seq)];
 }
 
-/**
- * ssam_trace_get_request_id() - Read the packet's request ID.
- * @p: The packet.
- *
- * Return: Returns the packet's request ID (RQID) field if the packet
- * represents a request with command data, or %SSAM_RQID_NOT_APPLICABLE if not
- * (e.g. flush request, control packet).
- */
+
 static inline u32 ssam_trace_get_request_id(const struct ssh_packet *p)
 {
 	if (!p->data.ptr || p->data.len < SSH_COMMAND_MESSAGE_LENGTH(0))
@@ -151,14 +127,7 @@ static inline u32 ssam_trace_get_request_id(const struct ssh_packet *p)
 	return get_unaligned_le16(&p->data.ptr[SSH_MSGOFFSET_COMMAND(rqid)]);
 }
 
-/**
- * ssam_trace_get_request_tid() - Read the packet's request target ID.
- * @p: The packet.
- *
- * Return: Returns the packet's request target ID (TID) field if the packet
- * represents a request with command data, or %SSAM_SSH_TID_NOT_APPLICABLE
- * if not (e.g. flush request, control packet).
- */
+
 static inline u32 ssam_trace_get_request_tid(const struct ssh_packet *p)
 {
 	if (!p->data.ptr || p->data.len < SSH_COMMAND_MESSAGE_LENGTH(0))
@@ -167,14 +136,7 @@ static inline u32 ssam_trace_get_request_tid(const struct ssh_packet *p)
 	return get_unaligned_le16(&p->data.ptr[SSH_MSGOFFSET_COMMAND(tid)]);
 }
 
-/**
- * ssam_trace_get_request_sid() - Read the packet's request source ID.
- * @p: The packet.
- *
- * Return: Returns the packet's request source ID (SID) field if the packet
- * represents a request with command data, or %SSAM_SSH_TID_NOT_APPLICABLE
- * if not (e.g. flush request, control packet).
- */
+
 static inline u32 ssam_trace_get_request_sid(const struct ssh_packet *p)
 {
 	if (!p->data.ptr || p->data.len < SSH_COMMAND_MESSAGE_LENGTH(0))
@@ -183,14 +145,7 @@ static inline u32 ssam_trace_get_request_sid(const struct ssh_packet *p)
 	return get_unaligned_le16(&p->data.ptr[SSH_MSGOFFSET_COMMAND(sid)]);
 }
 
-/**
- * ssam_trace_get_request_tc() - Read the packet's request target category.
- * @p: The packet.
- *
- * Return: Returns the packet's request target category (TC) field if the
- * packet represents a request with command data, or %SSAM_SSH_TC_NOT_APPLICABLE
- * if not (e.g. flush request, control packet).
- */
+
 static inline u32 ssam_trace_get_request_tc(const struct ssh_packet *p)
 {
 	if (!p->data.ptr || p->data.len < SSH_COMMAND_MESSAGE_LENGTH(0))
@@ -199,7 +154,7 @@ static inline u32 ssam_trace_get_request_tc(const struct ssh_packet *p)
 	return get_unaligned_le16(&p->data.ptr[SSH_MSGOFFSET_COMMAND(tc)]);
 }
 
-#endif /* _SURFACE_AGGREGATOR_TRACE_HELPERS */
+#endif 
 
 #define ssam_trace_get_command_field_u8(packet, field) \
 	((!(packet) || (packet)->data.len < SSH_COMMAND_MESSAGE_LENGTH(0)) \
@@ -486,7 +441,7 @@ DECLARE_EVENT_CLASS(ssam_request_class,
 	TP_fast_assign(
 		const struct ssh_packet *p = &request->packet;
 
-		/* Use packet for UID so we can match requests to packets. */
+		
 		__entry->state = READ_ONCE(request->state);
 		__entry->rqid = ssam_trace_get_request_id(p);
 		ssam_trace_ptr_uid(p, __entry->uid);
@@ -536,7 +491,7 @@ DECLARE_EVENT_CLASS(ssam_request_status_class,
 	TP_fast_assign(
 		const struct ssh_packet *p = &request->packet;
 
-		/* Use packet for UID so we can match requests to packets. */
+		
 		__entry->state = READ_ONCE(request->state);
 		__entry->rqid = ssam_trace_get_request_id(p);
 		__entry->status = status;
@@ -691,9 +646,9 @@ DEFINE_SSAM_FREE_EVENT(ctrl_packet_free);
 DEFINE_SSAM_ALLOC_EVENT(event_item_alloc);
 DEFINE_SSAM_FREE_EVENT(event_item_free);
 
-#endif /* _SURFACE_AGGREGATOR_TRACE_H */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 

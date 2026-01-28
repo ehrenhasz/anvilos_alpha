@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * RapidIO interconnect services
- *
- * Copyright 2005 MontaVista Software, Inc.
- * Matt Porter <mporter@kernel.crashing.org>
- */
+
+
 
 #include <linux/device.h>
 #include <linux/list.h>
@@ -13,7 +8,7 @@
 #define RIO_MAX_CHK_RETRY	3
 #define RIO_MPORT_ANY		(-1)
 
-/* Functions internal to the RIO core code */
+
 
 extern u32 rio_mport_get_feature(struct rio_mport *mport, int local, u16 destid,
 				 u8 hopcount, int ftr);
@@ -46,7 +41,7 @@ extern void rio_attach_device(struct rio_dev *rdev);
 extern struct rio_mport *rio_find_mport(int mport_id);
 extern int rio_mport_scan(int mport_id);
 
-/* Structures internal to the RIO core code */
+
 extern const struct attribute_group *rio_dev_groups[];
 extern const struct attribute_group *rio_bus_groups[];
 extern const struct attribute_group *rio_mport_groups[];

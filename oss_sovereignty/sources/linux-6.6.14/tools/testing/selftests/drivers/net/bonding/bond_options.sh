@@ -207,7 +207,7 @@ garp_test()
 	exp_num=$(echo "${param}" | cut -f6 -d ' ')
 	sleep $((exp_num + 2))
 	active_slave=$(cmd_jq "ip -n ${s_ns} -d -j link show bond0" ".[].linkinfo.info_data.active_slave")
-	real_num=$(tc_rule_handle_stats_get "dev s${active_slave#eth} ingress" 101 ".packets" "-n ${g_ns}")
+	real_num=$(tc_rule_handle_stats_get "dev s${active_slave
 	if [ "${real_num}" -ne "${exp_num}" ]; then
 		echo "$real_num garp packets sent on active slave ${active_slave}"
 		RET=1

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+
+
 
 #ifndef _PDSC_H_
 #define _PDSC_H_
@@ -16,8 +16,8 @@
 
 #define PDSC_WATCHDOG_SECS	5
 #define PDSC_QUEUE_NAME_MAX_SZ  16
-#define PDSC_ADMINQ_MIN_LENGTH	16	/* must be a power of two */
-#define PDSC_NOTIFYQ_LENGTH	64	/* must be a power of two */
+#define PDSC_ADMINQ_MIN_LENGTH	16	
+#define PDSC_NOTIFYQ_LENGTH	64	
 #define PDSC_TEARDOWN_RECOVERY	false
 #define PDSC_TEARDOWN_REMOVING	true
 #define PDSC_SETUP_RECOVERY	false
@@ -62,7 +62,7 @@ struct pdsc_queue {
 		void *base;
 		struct pds_core_admin_cmd *adminq;
 	};
-	dma_addr_t base_pa;	/* must be page aligned */
+	dma_addr_t base_pa;	
 	unsigned int desc_size;
 	unsigned int pid;
 	char name[PDSC_QUEUE_NAME_MAX_SZ];
@@ -109,15 +109,15 @@ struct pdsc_cq {
 	unsigned int num_descs;
 	unsigned int desc_size;
 	void *base;
-	dma_addr_t base_pa;	/* must be page aligned */
+	dma_addr_t base_pa;	
 } ____cacheline_aligned_in_smp;
 
 struct pdsc_qcq {
 	struct pdsc *pdsc;
 	void *q_base;
-	dma_addr_t q_base_pa;	/* might not be page aligned */
+	dma_addr_t q_base_pa;	
 	void *cq_base;
-	dma_addr_t cq_base_pa;	/* might not be page aligned */
+	dma_addr_t cq_base_pa;	
 	u32 q_size;
 	u32 cq_size;
 	bool armed;
@@ -141,13 +141,13 @@ struct pdsc_viftype {
 	struct pds_auxiliary_dev *padev;
 };
 
-/* No state flags set means we are in a steady running state */
-enum pdsc_state_flags {
-	PDSC_S_FW_DEAD,		    /* stopped, wait on startup or recovery */
-	PDSC_S_INITING_DRIVER,	    /* initial startup from probe */
-	PDSC_S_STOPPING_DRIVER,	    /* driver remove */
 
-	/* leave this as last */
+enum pdsc_state_flags {
+	PDSC_S_FW_DEAD,		    
+	PDSC_S_INITING_DRIVER,	    
+	PDSC_S_STOPPING_DRIVER,	    
+
+	
 	PDSC_S_STATE_SIZE
 };
 
@@ -176,14 +176,14 @@ struct pdsc {
 	struct pdsc_devinfo dev_info;
 	struct pds_core_dev_identity dev_ident;
 	unsigned int nintrs;
-	struct pdsc_intr_info *intr_info;	/* array of nintrs elements */
+	struct pdsc_intr_info *intr_info;	
 
 	struct workqueue_struct *wq;
 
 	unsigned int devcmd_timeout;
-	struct mutex devcmd_lock;	/* lock for dev_cmd operations */
-	struct mutex config_lock;	/* lock for configuration operations */
-	spinlock_t adminq_lock;		/* lock for adminq operations */
+	struct mutex devcmd_lock;	
+	struct mutex config_lock;	
+	spinlock_t adminq_lock;		
 	struct pds_core_dev_info_regs __iomem *info_regs;
 	struct pds_core_dev_cmd_regs __iomem *cmd_regs;
 	struct pds_core_intr __iomem *intr_ctrl;
@@ -198,23 +198,7 @@ struct pdsc {
 	struct pdsc_viftype *viftype_status;
 };
 
-/** enum pds_core_dbell_bits - bitwise composition of dbell values.
- *
- * @PDS_CORE_DBELL_QID_MASK:	unshifted mask of valid queue id bits.
- * @PDS_CORE_DBELL_QID_SHIFT:	queue id shift amount in dbell value.
- * @PDS_CORE_DBELL_QID:		macro to build QID component of dbell value.
- *
- * @PDS_CORE_DBELL_RING_MASK:	unshifted mask of valid ring bits.
- * @PDS_CORE_DBELL_RING_SHIFT:	ring shift amount in dbell value.
- * @PDS_CORE_DBELL_RING:	macro to build ring component of dbell value.
- *
- * @PDS_CORE_DBELL_RING_0:	ring zero dbell component value.
- * @PDS_CORE_DBELL_RING_1:	ring one dbell component value.
- * @PDS_CORE_DBELL_RING_2:	ring two dbell component value.
- * @PDS_CORE_DBELL_RING_3:	ring three dbell component value.
- *
- * @PDS_CORE_DBELL_INDEX_MASK:	bit mask of valid index bits, no shift needed.
- */
+
 enum pds_core_dbell_bits {
 	PDS_CORE_DBELL_QID_MASK		= 0xffffff,
 	PDS_CORE_DBELL_QID_SHIFT		= 24,
@@ -309,4 +293,4 @@ irqreturn_t pdsc_adminq_isr(int irq, void *data);
 
 int pdsc_firmware_update(struct pdsc *pdsc, const struct firmware *fw,
 			 struct netlink_ext_ack *extack);
-#endif /* _PDSC_H_ */
+#endif 

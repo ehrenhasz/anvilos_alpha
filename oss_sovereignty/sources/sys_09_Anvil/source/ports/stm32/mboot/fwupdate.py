@@ -80,25 +80,25 @@ class Flash:
             self._sr_busy = 1 << 16
             self._cr = stm.FLASH + stm.FLASH_CR
             self._cr_lock = 1 << 31
-            self._cr_init_erase = lambda s: 2 << 8 | s << 3 | 1 << 1  # PSIZE=32-bits, SNB, SER
-            self._cr_start_erase = 1 << 16  # STRT
-            self._cr_init_write = 2 << 8 | 1 << 0  # PSIZE=32-bits, PG
+            self._cr_init_erase = lambda s: 2 << 8 | s << 3 | 1 << 1  
+            self._cr_start_erase = 1 << 16  
+            self._cr_init_write = 2 << 8 | 1 << 0  
             self._cr_flush = None
             self._write_multiple = 4
-            if dev_id == 0x451 and stm.mem32[0x1FFF_0008] & 1 << 13:  # check nDBANK
+            if dev_id == 0x451 and stm.mem32[0x1FFF_0008] & 1 << 13:  
                 self.sector0_size = 32 * 1024
             else:
                 self.sector0_size = 16 * 1024
         elif dev_id == 0x450:
             self._keyr = stm.FLASH + stm.FLASH_KEYR1
             self._sr = stm.FLASH + stm.FLASH_SR1
-            self._sr_busy = 1 << 2  # QW1
+            self._sr_busy = 1 << 2  
             self._cr = stm.FLASH + stm.FLASH_CR1
-            self._cr_lock = 1 << 0  # LOCK1
-            self._cr_init_erase = lambda s: s << 8 | 3 << 4 | 1 << 2  # SNB1, PSIZE1=64-bits, SER1
-            self._cr_start_erase = 1 << 7  # START1
-            self._cr_init_write = 3 << 4 | 1 << 1  # PSIZE1=64-bits, PG1=1
-            self._cr_flush = 1 << 6  # FW1=1
+            self._cr_lock = 1 << 0  
+            self._cr_init_erase = lambda s: s << 8 | 3 << 4 | 1 << 2  
+            self._cr_start_erase = 1 << 7  
+            self._cr_init_write = 3 << 4 | 1 << 1  
+            self._cr_flush = 1 << 6  
             self._write_multiple = 16
             self.sector0_size = 128 * 1024
         else:

@@ -162,7 +162,7 @@ verify() {
 	elif [ "$inner" = "6" ]; then
 		ping_dst="fdd4:96cf:4eae:443b::2"
 	elif [ "$inner" = "other" ]; then
-		ping_dst="198.19.0.3" # Generates ARPs which are not IPv4/IPv6
+		ping_dst="198.19.0.3" 
 	fi
 	if [ "$tos_ttl" = "inherit" ]; then
 		${RUN_NS0} ping -i 0.1 $ping_dst -Q "$expected_tos"          \

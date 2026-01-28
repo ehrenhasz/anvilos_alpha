@@ -1,23 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*---------------------------------------------------------------------------+
- |  fpu_emu.h                                                                |
- |                                                                           |
- | Copyright (C) 1992,1993,1994,1997                                         |
- |                       W. Metzenthen, 22 Parker St, Ormond, Vic 3163,      |
- |                       Australia.  E-mail   billm@suburbia.net             |
- |                                                                           |
- +---------------------------------------------------------------------------*/
+
+
 
 #ifndef _FPU_EMU_H_
 #define _FPU_EMU_H_
 
-/*
- * Define PECULIAR_486 to get a closer approximation to 80486 behaviour,
- * rather than behaviour which appears to be cleaner.
- * This is a matter of opinion: for all I know, the 80486 may simply
- * be complying with the IEEE spec. Maybe one day I'll get to see the
- * spec...
- */
+
 #define PECULIAR_486
 
 #ifdef __ASSEMBLY__
@@ -28,15 +15,14 @@
 #endif
 
 #define EXP_BIAS	Const(0)
-#define EXP_OVER	Const(0x4000)	/* smallest invalid large exponent */
-#define	EXP_UNDER	Const(-0x3fff)	/* largest invalid small exponent */
-#define EXP_WAY_UNDER   Const(-0x6000)	/* Below the smallest denormal, but
-					   still a 16 bit nr. */
+#define EXP_OVER	Const(0x4000)	
+#define	EXP_UNDER	Const(-0x3fff)	
+#define EXP_WAY_UNDER   Const(-0x6000)	
 #define EXP_Infinity    EXP_OVER
 #define EXP_NaN         EXP_OVER
 
 #define EXTENDED_Ebias Const(0x3fff)
-#define EXTENDED_Emin (-0x3ffe)	/* smallest valid exponent */
+#define EXTENDED_Emin (-0x3ffe)	
 
 #define SIGN_POS	Const(0)
 #define SIGN_NEG	Const(0x80)
@@ -44,41 +30,37 @@
 #define SIGN_Positive	Const(0)
 #define SIGN_Negative	Const(0x8000)
 
-/* Keep the order TAG_Valid, TAG_Zero, TW_Denormal */
-/* The following fold to 2 (Special) in the Tag Word */
-#define TW_Denormal     Const(4)	/* De-normal */
-#define TW_Infinity	Const(5)	/* + or - infinity */
-#define	TW_NaN		Const(6)	/* Not a Number */
-#define	TW_Unsupported	Const(7)	/* Not supported by an 80486 */
 
-#define TAG_Valid	Const(0)	/* valid */
-#define TAG_Zero	Const(1)	/* zero */
-#define TAG_Special	Const(2)	/* De-normal, + or - infinity,
-					   or Not a Number */
-#define TAG_Empty	Const(3)	/* empty */
-#define TAG_Error	Const(0x80)	/* probably need to abort */
 
-#define LOADED_DATA	Const(10101)	/* Special st() number to identify
-					   loaded data (not on stack). */
+#define TW_Denormal     Const(4)	
+#define TW_Infinity	Const(5)	
+#define	TW_NaN		Const(6)	
+#define	TW_Unsupported	Const(7)	
 
-/* A few flags (must be >= 0x10). */
+#define TAG_Valid	Const(0)	
+#define TAG_Zero	Const(1)	
+#define TAG_Special	Const(2)	
+#define TAG_Empty	Const(3)	
+#define TAG_Error	Const(0x80)	
+
+#define LOADED_DATA	Const(10101)	
+
+
 #define REV             0x10
 #define DEST_RM         0x20
 #define LOADED          0x40
 
-#define FPU_Exception   Const(0x80000000)	/* Added to tag returns. */
+#define FPU_Exception   Const(0x80000000)	
 
 #ifndef __ASSEMBLY__
 
 #include "fpu_system.h"
 
-#include <uapi/asm/sigcontext.h>	/* for struct _fpstate */
+#include <uapi/asm/sigcontext.h>	
 #include <asm/math_emu.h>
 #include <linux/linkage.h>
 
-/*
-#define RE_ENTRANT_CHECKING
- */
+
 
 #ifdef RE_ENTRANT_CHECKING
 extern u_char emulating;
@@ -87,7 +69,7 @@ extern u_char emulating;
 #else
 #  define RE_ENTRANT_CHECK_OFF
 #  define RE_ENTRANT_CHECK_ON
-#endif /* RE_ENTRANT_CHECKING */
+#endif 
 
 #define FWAIT_OPCODE 0x9b
 #define OP_SIZE_PREFIX 0x66
@@ -127,16 +109,14 @@ typedef void (*FUNC_ST0) (FPU_REG *st0_ptr, u_char st0_tag);
 typedef struct {
 	u_char address_size, operand_size, segment;
 } overrides;
-/* This structure is 32 bits: */
+
 typedef struct {
 	overrides override;
 	u_char default_mode;
 } fpu_addr_modes;
-/* PROTECTED has a restricted meaning in the emulator; it is used
-   to signal that the emulator needs to do special things to ensure
-   that protection is respected in a segmented model. */
+
 #define PROTECTED 4
-#define SIXTEEN   1		/* We rely upon this being 1 (true) */
+#define SIXTEEN   1		
 #define VM86      SIXTEEN
 #define PM16      (SIXTEEN | PROTECTED)
 #define SEG32     PROTECTED
@@ -153,7 +133,7 @@ extern u_char const data_sizes_16[32];
 
 #define poppop() { FPU_pop(); FPU_pop(); }
 
-/* push() does not affect the tags */
+
 #define push()	{ top--; }
 
 #define signbyte(a) (((u_char *)(a))[9])
@@ -185,8 +165,8 @@ static inline void reg_copy(FPU_REG const *x, FPU_REG *y)
 
 #define significand(x) ( ((unsigned long long *)&((x)->sigl))[0] )
 
-/*----- Prototypes for functions written in assembler -----*/
-/* extern void reg_move(FPU_REG *a, FPU_REG *b); */
+
+
 
 asmlinkage int FPU_normalize(FPU_REG *x);
 asmlinkage int FPU_normalize_nuo(FPU_REG *x);
@@ -213,6 +193,6 @@ asmlinkage int FPU_round(FPU_REG *arg, unsigned int extent, int dummy,
 #include "fpu_proto.h"
 #endif
 
-#endif /* __ASSEMBLY__ */
+#endif 
 
-#endif /* _FPU_EMU_H_ */
+#endif 

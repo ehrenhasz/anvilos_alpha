@@ -12,32 +12,32 @@
  *
  */
 
-#include <linux/clk-provider.h>
-#include <linux/fs.h>
-#include <linux/hrtimer.h>
-#include <linux/irq.h>
-#include <linux/mount.h>
-#include <linux/of_fdt.h>
-#include <linux/page_ext.h>
-#include <linux/radix-tree.h>
-#include <linux/slab.h>
-#include <linux/threads.h>
-#include <linux/vmalloc.h>
+
+
+
+
+
+
+
+
+
+
+
 
 /* We need to stringify expanded macros so that they can be parsed */
 
-#define STRING(x) #x
-#define XSTRING(x) STRING(x)
 
-#define LX_VALUE(x) LX_##x = x
-#define LX_GDBPARSED(x) LX_##x = gdb.parse_and_eval(XSTRING(x))
+
+
+
+
 
 /*
  * IS_ENABLED generates (a || b) which is not compatible with python
  * We can only switch on configuration items we know are available
  * Therefore - IS_BUILTIN() is more appropriate
  */
-#define LX_CONFIG(x) LX_##x = IS_BUILTIN(x)
+
 
 /* The build system will take care of deleting everything above this marker */
 <!-- end-c-headers -->

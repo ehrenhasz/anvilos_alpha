@@ -1,46 +1,43 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef __SOUND_SEQ_KERNEL_H
 #define __SOUND_SEQ_KERNEL_H
 
-/*
- *  Main kernel header file for the ALSA sequencer
- *  Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
- */
+
 #include <linux/time.h>
 #include <sound/asequencer.h>
 
 typedef struct snd_seq_real_time snd_seq_real_time_t;
 typedef union snd_seq_timestamp snd_seq_timestamp_t;
 
-/* maximum number of queues */
+
 #define SNDRV_SEQ_MAX_QUEUES		32
 
-/* max number of concurrent clients */
+
 #define SNDRV_SEQ_MAX_CLIENTS 		192
 
-/* max number of concurrent ports */
+
 #define SNDRV_SEQ_MAX_PORTS 		254
 
-/* max number of events in memory pool */
+
 #define SNDRV_SEQ_MAX_EVENTS		2000
 
-/* default number of events in memory pool */
+
 #define SNDRV_SEQ_DEFAULT_EVENTS	500
 
-/* max number of events in memory pool for one client (outqueue) */
+
 #define SNDRV_SEQ_MAX_CLIENT_EVENTS	2000
 
-/* default number of events in memory pool for one client (outqueue) */
+
 #define SNDRV_SEQ_DEFAULT_CLIENT_EVENTS	200
 
-/* max delivery path length */
-/* NOTE: this shouldn't be greater than MAX_LOCKDEP_SUBCLASSES */
+
+
 #define SNDRV_SEQ_MAX_HOPS		8
 
-/* max size of event size */
+
 #define SNDRV_SEQ_MAX_EVENT_LEN		0x3fffffff
 
-/* call-backs for kernel port */
+
 struct snd_seq_port_callback {
 	struct module *owner;
 	void *private_data;
@@ -50,10 +47,10 @@ struct snd_seq_port_callback {
 	int (*unuse)(void *private_data, struct snd_seq_port_subscribe *info);
 	int (*event_input)(struct snd_seq_event *ev, int direct, void *private_data, int atomic, int hop);
 	void (*private_free)(void *private_data);
-	/*...*/
+	
 };
 
-/* interface for kernel client */
+
 __printf(3, 4)
 int snd_seq_create_kernel_client(struct snd_card *card, int client_index,
 				 const char *name_fmt, ...);
@@ -75,7 +72,7 @@ int snd_seq_expand_var_event_at(const struct snd_seq_event *event, int count,
 int snd_seq_dump_var_event(const struct snd_seq_event *event,
 			   snd_seq_dump_func_t func, void *private_data);
 
-/* size of the event packet; it can be greater than snd_seq_event size */
+
 static inline size_t snd_seq_event_packet_size(struct snd_seq_event *ev)
 {
 	if (snd_seq_ev_is_ump(ev))
@@ -83,14 +80,14 @@ static inline size_t snd_seq_event_packet_size(struct snd_seq_event *ev)
 	return sizeof(struct snd_seq_event);
 }
 
-/* interface for OSS emulation */
+
 int snd_seq_set_queue_tempo(int client, struct snd_seq_queue_tempo *tempo);
 
-/* port callback routines */
+
 void snd_port_init_callback(struct snd_seq_port_callback *p);
 struct snd_seq_port_callback *snd_port_alloc_callback(void);
 
-/* port attach/detach */
+
 int snd_seq_event_port_attach(int client, struct snd_seq_port_callback *pcbp,
 			      int cap, int type, int midi_channels, int midi_voices, char *portname);
 int snd_seq_event_port_detach(int client, int port);
@@ -103,4 +100,4 @@ void snd_seq_autoload_exit(void);
 #define snd_seq_autoload_exit()
 #endif
 
-#endif /* __SOUND_SEQ_KERNEL_H */
+#endif 

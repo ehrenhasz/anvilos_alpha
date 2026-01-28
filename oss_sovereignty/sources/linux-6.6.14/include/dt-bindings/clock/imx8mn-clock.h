@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2018-2019 NXP
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_IMX8MN_H
 #define __DT_BINDINGS_CLOCK_IMX8MN_H
@@ -81,7 +79,7 @@
 #define IMX8MN_SYS_PLL2_500M			64
 #define IMX8MN_SYS_PLL2_1000M			65
 
-/* CORE CLOCK ROOT */
+
 #define IMX8MN_CLK_A53_SRC			66
 #define IMX8MN_CLK_GPU_CORE_SRC			67
 #define IMX8MN_CLK_GPU_SHADER_SRC		68
@@ -92,7 +90,7 @@
 #define IMX8MN_CLK_GPU_CORE_DIV			73
 #define IMX8MN_CLK_GPU_SHADER_DIV		74
 
-/* BUS CLOCK ROOT */
+
 #define IMX8MN_CLK_MAIN_AXI			75
 #define IMX8MN_CLK_ENET_AXI			76
 #define IMX8MN_CLK_NAND_USDHC_BUS		77
@@ -105,11 +103,11 @@
 #define IMX8MN_CLK_AHB				84
 #define IMX8MN_CLK_AUDIO_AHB			85
 
-/* IPG CLOCK ROOT */
+
 #define IMX8MN_CLK_IPG_ROOT			86
 #define IMX8MN_CLK_IPG_AUDIO_ROOT		87
 
-/* IP */
+
 #define IMX8MN_CLK_DRAM_CORE			88
 #define IMX8MN_CLK_DRAM_ALT			89
 #define IMX8MN_CLK_DRAM_APB			90

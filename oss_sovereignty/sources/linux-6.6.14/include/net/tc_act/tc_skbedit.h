@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2008, Intel Corporation.
- *
- * Author: Alexander Duyck <alexander.h.duyck@intel.com>
- */
+
+
 
 #ifndef __NET_TC_SKBEDIT_H
 #define __NET_TC_SKBEDIT_H
@@ -28,7 +24,7 @@ struct tcf_skbedit {
 };
 #define to_skbedit(a) ((struct tcf_skbedit *)a)
 
-/* Return true iff action is the one identified by FLAG. */
+
 static inline bool is_tcf_skbedit_with_flag(const struct tc_action *a, u32 flag)
 {
 #ifdef CONFIG_NET_CLS_ACT
@@ -44,7 +40,7 @@ static inline bool is_tcf_skbedit_with_flag(const struct tc_action *a, u32 flag)
 	return false;
 }
 
-/* Return true iff action is mark */
+
 static inline bool is_tcf_skbedit_mark(const struct tc_action *a)
 {
 	return is_tcf_skbedit_with_flag(a, SKBEDIT_F_MARK);
@@ -61,7 +57,7 @@ static inline u32 tcf_skbedit_mark(const struct tc_action *a)
 	return mark;
 }
 
-/* Return true iff action is ptype */
+
 static inline bool is_tcf_skbedit_ptype(const struct tc_action *a)
 {
 	return is_tcf_skbedit_with_flag(a, SKBEDIT_F_PTYPE);
@@ -78,7 +74,7 @@ static inline u32 tcf_skbedit_ptype(const struct tc_action *a)
 	return ptype;
 }
 
-/* Return true iff action is priority */
+
 static inline bool is_tcf_skbedit_priority(const struct tc_action *a)
 {
 	return is_tcf_skbedit_with_flag(a, SKBEDIT_F_PRIORITY);
@@ -106,13 +102,13 @@ static inline u16 tcf_skbedit_rx_queue_mapping(const struct tc_action *a)
 	return rx_queue;
 }
 
-/* Return true iff action is queue_mapping */
+
 static inline bool is_tcf_skbedit_queue_mapping(const struct tc_action *a)
 {
 	return is_tcf_skbedit_with_flag(a, SKBEDIT_F_QUEUE_MAPPING);
 }
 
-/* Return true if action is on ingress traffic */
+
 static inline bool is_tcf_skbedit_ingress(u32 flags)
 {
 	return flags & TCA_ACT_FLAGS_AT_INGRESS;
@@ -130,10 +126,10 @@ static inline bool is_tcf_skbedit_rx_queue_mapping(const struct tc_action *a)
 	       is_tcf_skbedit_ingress(a->tcfa_flags);
 }
 
-/* Return true iff action is inheritdsfield */
+
 static inline bool is_tcf_skbedit_inheritdsfield(const struct tc_action *a)
 {
 	return is_tcf_skbedit_with_flag(a, SKBEDIT_F_INHERITDSFIELD);
 }
 
-#endif /* __NET_TC_SKBEDIT_H */
+#endif 

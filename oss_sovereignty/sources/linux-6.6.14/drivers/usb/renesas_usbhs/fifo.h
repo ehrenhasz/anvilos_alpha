@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-1.0+ */
-/*
- * Renesas USB driver
- *
- * Copyright (C) 2011 Renesas Solutions Corp.
- * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- */
+
+
 #ifndef RENESAS_USB_FIFO_H
 #define RENESAS_USB_FIFO_H
 
@@ -16,9 +11,9 @@
 
 struct usbhs_fifo {
 	char *name;
-	u32 port;	/* xFIFO */
-	u32 sel;	/* xFIFOSEL */
-	u32 ctr;	/* xFIFOCTR */
+	u32 port;	
+	u32 sel;	
+	u32 ctr;	
 
 	struct usbhs_pipe	*pipe;
 
@@ -65,18 +60,14 @@ struct usbhs_pkt_handle {
 	int (*dma_done)(struct usbhs_pkt *pkt, int *is_done);
 };
 
-/*
- * fifo
- */
+
 int usbhs_fifo_probe(struct usbhs_priv *priv);
 void usbhs_fifo_remove(struct usbhs_priv *priv);
 void usbhs_fifo_init(struct usbhs_priv *priv);
 void usbhs_fifo_quit(struct usbhs_priv *priv);
 void usbhs_fifo_clear_dcp(struct usbhs_pipe *pipe);
 
-/*
- * packet info
- */
+
 extern const struct usbhs_pkt_handle usbhs_fifo_pio_push_handler;
 extern const struct usbhs_pkt_handle usbhs_fifo_pio_pop_handler;
 extern const struct usbhs_pkt_handle usbhs_ctrl_stage_end_handler;
@@ -99,4 +90,4 @@ struct usbhs_pkt *usbhs_pkt_pop(struct usbhs_pipe *pipe, struct usbhs_pkt *pkt);
 void usbhs_pkt_start(struct usbhs_pipe *pipe);
 struct usbhs_pkt *__usbhsf_pkt_get(struct usbhs_pipe *pipe);
 
-#endif /* RENESAS_USB_FIFO_H */
+#endif 

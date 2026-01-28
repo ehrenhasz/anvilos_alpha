@@ -106,12 +106,12 @@ parse_symbol() {
 			modcache[$module]=$objfile
 		fi
 	fi
-	symbol=${symbol#\(}
+	symbol=${symbol
 	symbol=${symbol%\)}
 	local segment
 	if [[ $symbol == *:* ]] ; then
 		segment=${symbol%%:*}:
-		symbol=${symbol#*:}
+		symbol=${symbol
 	fi
 	local name=${symbol%+*}
 	if [[ $aarray_support == true && "${cache[$module,$name]+isset}" == "isset" ]]; then
@@ -140,7 +140,7 @@ parse_symbol() {
 	if [[ $code == "??:0" ]]; then
 		return
 	fi
-	code=$(while read -r line; do echo "${line#$basepath/}"; done <<< "$code")
+	code=$(while read -r line; do echo "${line
 	code=${code//$'\n'/' '}
 	if [[ $name =~ ^_R && $cppfilt != "" ]] ; then
 		name=$("$cppfilt" "$cppfilt_opts" "$name")
@@ -148,7 +148,7 @@ parse_symbol() {
 	symbol="$segment$name ($code)"
 }
 debuginfod_get_vmlinux() {
-	local vmlinux_buildid=${1##* }
+	local vmlinux_buildid=${1
 	if [[ $vmlinux != "" ]]; then
 		return
 	fi
@@ -174,12 +174,12 @@ handle_line() {
 		module=""
 		symbol="kernel_init+0x0/0x0"
 		parse_symbol
-		basepath=${symbol#kernel_init (}
+		basepath=${symbol
 		basepath=${basepath%/init/main.c:*)}
 	fi
 	local words
 	read -a words <<<"$1"
-	local last=$(( ${#words[@]} - 1 ))
+	local last=$(( ${
 	for i in "${!words[@]}"; do
 		if [[ ${words[$i]} =~ \[\<([^]]+)\>\] ]]; then
 			unset words[$i]
@@ -196,9 +196,9 @@ handle_line() {
 	fi
 	if [[ ${words[$last]} =~ \[([^]]+)\] ]]; then
 		module=${words[$last]}
-		module=${module#\[}
+		module=${module
 		module=${module%\]}
-		modbuildid=${module#* }
+		modbuildid=${module
 		module=${module% *}
 		if [[ $modbuildid == $module ]]; then
 			modbuildid=
@@ -211,7 +211,7 @@ handle_line() {
 		modbuildid=
 	fi
 	unset words[$last]
-	parse_symbol # modifies $symbol
+	parse_symbol 
 	echo "${words[@]}" "$symbol $module"
 }
 while read line; do

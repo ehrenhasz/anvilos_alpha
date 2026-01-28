@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2016-2017 HiSilicon Limited. */
+
+
 
 #ifndef _SEC_DRV_H_
 #define _SEC_DRV_H_
@@ -14,7 +14,7 @@
 #define SEC_OUTORDER_RING		1
 #define SEC_DBG_RING			2
 
-/* A reasonable length to balance memory use against flexibility */
+
 #define SEC_QUEUE_LEN			512
 
 #define SEC_MAX_SGE_NUM   64
@@ -68,7 +68,7 @@ struct sec_bd_info {
 #define SEC_BD_W0_ICV_OR_SKEY_EN_M		GENMASK(28, 27)
 #define SEC_BD_W0_ICV_OR_SKEY_EN_S		27
 
-/* Multi purpose field - gran size bits for send, flag for recv */
+
 #define SEC_BD_W0_FLAG_M			GENMASK(30, 29)
 #define SEC_BD_W0_C_GRAN_SIZE_21_20_M		GENMASK(30, 29)
 #define SEC_BD_W0_FLAG_S			29
@@ -128,7 +128,7 @@ struct sec_bd_info {
 #define   SEC_KEY_LEN_3DES_2_KEY		3
 	u32 w3;
 
-	/* W4,5 */
+	
 	union {
 		u32 authkey_addr_lo;
 		u32 authiv_addr_lo;
@@ -138,23 +138,23 @@ struct sec_bd_info {
 		u32 authiv_addr_hi;
 	};
 
-	/* W6,7 */
+	
 	u32 cipher_key_addr_lo;
 	u32 cipher_key_addr_hi;
 
-	/* W8,9 */
+	
 	u32 cipher_iv_addr_lo;
 	u32 cipher_iv_addr_hi;
 
-	/* W10,11 */
+	
 	u32 data_addr_lo;
 	u32 data_addr_hi;
 
-	/* W12,13 */
+	
 	u32 mac_addr_lo;
 	u32 mac_addr_hi;
 
-	/* W14,15 */
+	
 	u32 cipher_destin_addr_lo;
 	u32 cipher_destin_addr_hi;
 };
@@ -169,14 +169,7 @@ enum sec_mem_region {
 #define SEC_Q_NUM				16
 
 
-/**
- * struct sec_queue_ring_cmd - store information about a SEC HW cmd ring
- * @used: Local counter used to cheaply establish if the ring is empty.
- * @lock: Protect against simultaneous adjusting of the read and write pointers.
- * @vaddr: Virtual address for the ram pages used for the ring.
- * @paddr: Physical address of the dma mapped region of ram used for the ring.
- * @callback: Callback function called on a ring element completing.
- */
+
 struct sec_queue_ring_cmd {
 	atomic_t used;
 	struct mutex lock;
@@ -227,18 +220,7 @@ enum sec_cipher_alg {
 	SEC_C_NULL,
 };
 
-/**
- * struct sec_alg_tfm_ctx - hardware specific tranformation context
- * @cipher_alg: Cipher algorithm enabled include encryption mode.
- * @key: Key storage if required.
- * @pkey: DMA address for the key storage.
- * @req_template: Request template to save time on setup.
- * @queue: The hardware queue associated with this tfm context.
- * @lock: Protect key and pkey to ensure they are consistent
- * @auth_buf: Current context buffer for auth operations.
- * @backlog: The backlog queue used for cases where our buffers aren't
- * large enough.
- */
+
 struct sec_alg_tfm_ctx {
 	enum sec_cipher_alg cipher_alg;
 	u8 *key;
@@ -250,27 +232,7 @@ struct sec_alg_tfm_ctx {
 	struct list_head backlog;
 };
 
-/**
- * struct sec_request - data associate with a single crypto request
- * @elements: List of subparts of this request (hardware size restriction)
- * @num_elements: The number of subparts (used as an optimization)
- * @lock: Protect elements of this structure against concurrent change.
- * @tfm_ctx: hardware specific context.
- * @len_in: length of in sgl from upper layers
- * @len_out: length of out sgl from upper layers
- * @dma_iv: initialization vector - phsyical address
- * @err: store used to track errors across subelements of this request.
- * @req_base: pointer to base element of associate crypto context.
- * This is needed to allow shared handling skcipher, ahash etc.
- * @cb: completion callback.
- * @backlog_head: list head to allow backlog maintenance.
- *
- * The hardware is limited in the maximum size of data that it can
- * process from a single BD.  Typically this is fairly large (32MB)
- * but still requires the complexity of splitting the incoming
- * skreq up into a number of elements complete with appropriate
- * iv chaining.
- */
+
 struct sec_request {
 	struct list_head elements;
 	int num_elements;
@@ -285,20 +247,7 @@ struct sec_request {
 	struct list_head backlog_head;
 };
 
-/**
- * struct sec_request_el - A subpart of a request.
- * @head: allow us to attach this to the list in the sec_request
- * @req: hardware block descriptor corresponding to this request subpart
- * @in: hardware sgl for input - virtual address
- * @dma_in: hardware sgl for input - physical address
- * @sgl_in: scatterlist for this request subpart
- * @out: hardware sgl for output - virtual address
- * @dma_out: hardware sgl for output - physical address
- * @sgl_out: scatterlist for this request subpart
- * @sec_req: The request which this subpart forms a part of
- * @el_length: Number of bytes in this subpart. Needed to locate
- * last ivsize chunk for iv chaining.
- */
+
 struct sec_request_el {
 	struct list_head head;
 	struct sec_bd_info req;
@@ -312,26 +261,7 @@ struct sec_request_el {
 	size_t el_length;
 };
 
-/**
- * struct sec_queue - All the information about a HW queue
- * @dev_info: The parent SEC device to which this queue belongs.
- * @task_irq: Completion interrupt for the queue.
- * @name: Human readable queue description also used as irq name.
- * @ring: The several HW rings associated with one queue.
- * @regs: The iomapped device registers
- * @queue_id: Index of the queue used for naming and resource selection.
- * @in_use: Flag to say if the queue is in use.
- * @expected: The next expected element to finish assuming we were in order.
- * @uprocessed: A bitmap to track which OoO elements are done but not handled.
- * @softqueue: A software queue used when chaining requirements prevent direct
- *   use of the hardware queues.
- * @havesoftqueue: A flag to say we have a queues - as we may need one for the
- *   current mode.
- * @queuelock: Protect the soft queue from concurrent changes to avoid some
- *   potential loss of data races.
- * @shadow: Pointers back to the shadow copy of the hardware ring element
- *   need because we can't store any context reference in the bd element.
- */
+
 struct sec_queue {
 	struct sec_dev_info *dev_info;
 	int task_irq;
@@ -351,32 +281,14 @@ struct sec_queue {
 	void *shadow[SEC_QUEUE_LEN];
 };
 
-/**
- * struct sec_hw_sge: Track each of the 64 element SEC HW SGL entries
- * @buf: The IOV dma address for this entry.
- * @len: Length of this IOV.
- * @pad: Reserved space.
- */
+
 struct sec_hw_sge {
 	dma_addr_t buf;
 	unsigned int len;
 	unsigned int pad;
 };
 
-/**
- * struct sec_hw_sgl: One hardware SGL entry.
- * @next_sgl: The next entry if we need to chain dma address. Null if last.
- * @entry_sum_in_chain: The full count of SGEs - only matters for first SGL.
- * @entry_sum_in_sgl: The number of SGEs in this SGL element.
- * @flag: Unused in skciphers.
- * @serial_num: Unsued in skciphers.
- * @cpuid: Currently unused.
- * @data_bytes_in_sgl: Count of bytes from all SGEs in this SGL.
- * @next: Virtual address used to stash the next sgl - useful in completion.
- * @reserved: A reserved field not currently used.
- * @sge_entries: The (up to) 64 Scatter Gather Entries, representing IOVs.
- * @node: Currently unused.
- */
+
 struct sec_hw_sgl {
 	dma_addr_t next_sgl;
 	u16 entry_sum_in_chain;
@@ -393,16 +305,7 @@ struct sec_hw_sgl {
 
 struct dma_pool;
 
-/**
- * struct sec_dev_info: The full SEC unit comprising queues and processors.
- * @sec_id: Index used to track which SEC this is when more than one is present.
- * @num_saas: The number of backed processors enabled.
- * @regs: iomapped register regions shared by whole SEC unit.
- * @dev_lock: Protects concurrent queue allocation / freeing for the SEC.
- * @queues: The 16 queues that this SEC instance provides.
- * @dev: Device pointer.
- * @hw_sgl_pool: DMA pool used to mimise mapping for the scatter gather lists.
- */
+
 struct sec_dev_info {
 	int sec_id;
 	int num_saas;
@@ -420,9 +323,9 @@ int sec_queue_stop_release(struct sec_queue *queue);
 struct sec_queue *sec_queue_alloc_start_safe(void);
 bool sec_queue_empty(struct sec_queue *queue);
 
-/* Algorithm specific elements from sec_algs.c */
+
 void sec_alg_callback(struct sec_bd_info *resp, void *ctx);
 int sec_algs_register(void);
 void sec_algs_unregister(void);
 
-#endif /* _SEC_DRV_H_ */
+#endif 

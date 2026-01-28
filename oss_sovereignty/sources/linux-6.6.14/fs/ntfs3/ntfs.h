@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *
- * Copyright (C) 2019-2021 Paragon Software GmbH, All rights reserved.
- *
- * on-disk ntfs structs
- */
 
-// clang-format off
+
+
+
 #ifndef _LINUX_NTFS3_NTFS_H
 #define _LINUX_NTFS3_NTFS_H
 
@@ -19,25 +14,18 @@
 
 #include "debug.h"
 
-/* TODO: Check 4K MFT record and 512 bytes cluster. */
 
-/* Check each run for marked clusters. */
+
+
 #define NTFS3_CHECK_FREE_CLST
 
 #define NTFS_NAME_LEN 255
 
-/*
- * ntfs.sys used 500 maximum links on-disk struct allows up to 0xffff.
- * xfstest generic/041 creates 3003 hardlinks.
- */
+
 #define NTFS_LINK_MAX 4000
 
-/*
- * Activate to use 64 bit clusters instead of 32 bits in ntfs.sys.
- * Logical and virtual cluster number if needed, may be
- * redefined to use 64 bit value.
- */
-//#define CONFIG_NTFS3_64BIT_CLUSTER
+
+
 
 #define NTFS_LZNT_MAX_CLUSTER	4096
 #define NTFS_LZNT_CUNIT		4
@@ -50,12 +38,7 @@ struct GUID {
 	u8 Data4[8];
 };
 
-/*
- * This struct repeats layout of ATTR_FILE_NAME
- * at offset 0x40.
- * It used to store global constants NAME_MFT/NAME_MIRROR...
- * most constant names are shorter than 10.
- */
+
 struct cpu_str {
 	u8 len;
 	u8 unused;
@@ -172,13 +155,13 @@ extern const __le16 SR_NAME[2];
 
 extern const __le16 BAD_NAME[4];
 extern const __le16 SDS_NAME[4];
-extern const __le16 WOF_NAME[17];	/* WofCompressedData */
+extern const __le16 WOF_NAME[17];	
 
-/* MFT record number structure. */
+
 struct MFT_REF {
-	__le32 low;	// The low part of the number.
-	__le16 high;	// The high part of the number.
-	__le16 seq;	// The sequence number of MFT record.
+	__le32 low;	
+	__le16 high;	
+	__le16 seq;	
 };
 
 static_assert(sizeof(__le64) == sizeof(struct MFT_REF));
@@ -193,63 +176,63 @@ static inline CLST ino_get(const struct MFT_REF *ref)
 }
 
 struct NTFS_BOOT {
-	u8 jump_code[3];	// 0x00: Jump to boot code.
-	u8 system_id[8];	// 0x03: System ID, equals "NTFS    "
+	u8 jump_code[3];	
+	u8 system_id[8];	
 
-	// NOTE: This member is not aligned(!)
-	// bytes_per_sector[0] must be 0.
-	// bytes_per_sector[1] must be multiplied by 256.
-	u8 bytes_per_sector[2];	// 0x0B: Bytes per sector.
+	
+	
+	
+	u8 bytes_per_sector[2];	
 
-	u8 sectors_per_clusters;// 0x0D: Sectors per cluster.
+	u8 sectors_per_clusters;
 	u8 unused1[7];
-	u8 media_type;		// 0x15: Media type (0xF8 - harddisk)
+	u8 media_type;		
 	u8 unused2[2];
-	__le16 sct_per_track;	// 0x18: number of sectors per track.
-	__le16 heads;		// 0x1A: number of heads per cylinder.
-	__le32 hidden_sectors;	// 0x1C: number of 'hidden' sectors.
+	__le16 sct_per_track;	
+	__le16 heads;		
+	__le32 hidden_sectors;	
 	u8 unused3[4];
-	u8 bios_drive_num;	// 0x24: BIOS drive number =0x80.
+	u8 bios_drive_num;	
 	u8 unused4;
-	u8 signature_ex;	// 0x26: Extended BOOT signature =0x80.
+	u8 signature_ex;	
 	u8 unused5;
-	__le64 sectors_per_volume;// 0x28: Size of volume in sectors.
-	__le64 mft_clst;	// 0x30: First cluster of $MFT
-	__le64 mft2_clst;	// 0x38: First cluster of $MFTMirr
-	s8 record_size;		// 0x40: Size of MFT record in clusters(sectors).
+	__le64 sectors_per_volume;
+	__le64 mft_clst;	
+	__le64 mft2_clst;	
+	s8 record_size;		
 	u8 unused6[3];
-	s8 index_size;		// 0x44: Size of INDX record in clusters(sectors).
+	s8 index_size;		
 	u8 unused7[3];
-	__le64 serial_num;	// 0x48: Volume serial number
-	__le32 check_sum;	// 0x50: Simple additive checksum of all
-				// of the u32's which precede the 'check_sum'.
+	__le64 serial_num;	
+	__le32 check_sum;	
+				
 
-	u8 boot_code[0x200 - 0x50 - 2 - 4]; // 0x54:
-	u8 boot_magic[2];	// 0x1FE: Boot signature =0x55 + 0xAA
+	u8 boot_code[0x200 - 0x50 - 2 - 4]; 
+	u8 boot_magic[2];	
 };
 
 static_assert(sizeof(struct NTFS_BOOT) == 0x200);
 
 enum NTFS_SIGNATURE {
-	NTFS_FILE_SIGNATURE = cpu_to_le32(0x454C4946), // 'FILE'
-	NTFS_INDX_SIGNATURE = cpu_to_le32(0x58444E49), // 'INDX'
-	NTFS_CHKD_SIGNATURE = cpu_to_le32(0x444B4843), // 'CHKD'
-	NTFS_RSTR_SIGNATURE = cpu_to_le32(0x52545352), // 'RSTR'
-	NTFS_RCRD_SIGNATURE = cpu_to_le32(0x44524352), // 'RCRD'
-	NTFS_BAAD_SIGNATURE = cpu_to_le32(0x44414142), // 'BAAD'
-	NTFS_HOLE_SIGNATURE = cpu_to_le32(0x454C4F48), // 'HOLE'
+	NTFS_FILE_SIGNATURE = cpu_to_le32(0x454C4946), 
+	NTFS_INDX_SIGNATURE = cpu_to_le32(0x58444E49), 
+	NTFS_CHKD_SIGNATURE = cpu_to_le32(0x444B4843), 
+	NTFS_RSTR_SIGNATURE = cpu_to_le32(0x52545352), 
+	NTFS_RCRD_SIGNATURE = cpu_to_le32(0x44524352), 
+	NTFS_BAAD_SIGNATURE = cpu_to_le32(0x44414142), 
+	NTFS_HOLE_SIGNATURE = cpu_to_le32(0x454C4F48), 
 	NTFS_FFFF_SIGNATURE = cpu_to_le32(0xffffffff),
 };
 
 static_assert(sizeof(enum NTFS_SIGNATURE) == 4);
 
-/* MFT Record header structure. */
+
 struct NTFS_RECORD_HEADER {
-	/* Record magic number, equals 'FILE'/'INDX'/'RSTR'/'RCRD'. */
-	enum NTFS_SIGNATURE sign; // 0x00:
-	__le16 fix_off;		// 0x04:
-	__le16 fix_num;		// 0x06:
-	__le64 lsn;		// 0x08: Log file sequence number,
+	
+	enum NTFS_SIGNATURE sign; 
+	__le16 fix_off;		
+	__le16 fix_num;		
+	__le64 lsn;		
 };
 
 static_assert(sizeof(struct NTFS_RECORD_HEADER) == 0x10);
@@ -259,7 +242,7 @@ static inline int is_baad(const struct NTFS_RECORD_HEADER *hdr)
 	return hdr->sign == NTFS_BAAD_SIGNATURE;
 }
 
-/* Possible bits in struct MFT_REC.flags. */
+
 enum RECORD_FLAG {
 	RECORD_FLAG_IN_USE	= cpu_to_le16(0x0001),
 	RECORD_FLAG_DIR		= cpu_to_le16(0x0002),
@@ -267,35 +250,28 @@ enum RECORD_FLAG {
 	RECORD_FLAG_INDEX	= cpu_to_le16(0x0008),
 };
 
-/* MFT Record structure. */
+
 struct MFT_REC {
-	struct NTFS_RECORD_HEADER rhdr; // 'FILE'
+	struct NTFS_RECORD_HEADER rhdr; 
 
-	__le16 seq;		// 0x10: Sequence number for this record.
-	__le16 hard_links;	// 0x12: The number of hard links to record.
-	__le16 attr_off;	// 0x14: Offset to attributes.
-	__le16 flags;		// 0x16: See RECORD_FLAG.
-	__le32 used;		// 0x18: The size of used part.
-	__le32 total;		// 0x1C: Total record size.
+	__le16 seq;		
+	__le16 hard_links;	
+	__le16 attr_off;	
+	__le16 flags;		
+	__le32 used;		
+	__le32 total;		
 
-	struct MFT_REF parent_ref; // 0x20: Parent MFT record.
-	__le16 next_attr_id;	// 0x28: The next attribute Id.
+	struct MFT_REF parent_ref; 
+	__le16 next_attr_id;	
 
-	__le16 res;		// 0x2A: High part of MFT record?
-	__le32 mft_record;	// 0x2C: Current MFT record number.
-	__le16 fixups[];	// 0x30:
+	__le16 res;		
+	__le32 mft_record;	
+	__le16 fixups[];	
 };
 
 #define MFTRECORD_FIXUP_OFFSET_1 offsetof(struct MFT_REC, res)
 #define MFTRECORD_FIXUP_OFFSET_3 offsetof(struct MFT_REC, fixups)
-/*
- * define MFTRECORD_FIXUP_OFFSET as MFTRECORD_FIXUP_OFFSET_3 (0x30)
- * to format new mft records with bigger header (as current ntfs.sys does)
- *
- * define MFTRECORD_FIXUP_OFFSET as MFTRECORD_FIXUP_OFFSET_1 (0x2A)
- * to format new mft records with smaller header (as old ntfs.sys did)
- * Both variants are valid.
- */
+
 #define MFTRECORD_FIXUP_OFFSET  MFTRECORD_FIXUP_OFFSET_1
 
 static_assert(MFTRECORD_FIXUP_OFFSET_1 == 0x2A);
@@ -324,66 +300,66 @@ static inline bool clear_rec_inuse(struct MFT_REC *rec)
 	return rec->flags &= ~RECORD_FLAG_IN_USE;
 }
 
-/* Possible values of ATTR_RESIDENT.flags */
+
 #define RESIDENT_FLAG_INDEXED 0x01
 
 struct ATTR_RESIDENT {
-	__le32 data_size;	// 0x10: The size of data.
-	__le16 data_off;	// 0x14: Offset to data.
-	u8 flags;		// 0x16: Resident flags ( 1 - indexed ).
-	u8 res;			// 0x17:
-}; // sizeof() = 0x18
+	__le32 data_size;	
+	__le16 data_off;	
+	u8 flags;		
+	u8 res;			
+}; 
 
 struct ATTR_NONRESIDENT {
-	__le64 svcn;		// 0x10: Starting VCN of this segment.
-	__le64 evcn;		// 0x18: End VCN of this segment.
-	__le16 run_off;		// 0x20: Offset to packed runs.
-	// Unit of Compression size for this stream, expressed
-	// as a log of the cluster size.
-	//
-	// 0 means file is not compressed
-	// 1, 2, 3, and 4 are potentially legal values if the
-	// stream is compressed, however the implementation
-	// may only choose to use 4, or possibly 3.
-        // Note that 4 means cluster size time 16.
-        // If convenient the implementation may wish to accept a
-	// reasonable range of legal values here (1-5?),
-	// even if the implementation only generates
-	// a smaller set of values itself.
-	u8 c_unit;		// 0x22:
-	u8 res1[5];		// 0x23:
-	__le64 alloc_size;	// 0x28: The allocated size of attribute in bytes.
-				// (multiple of cluster size)
-	__le64 data_size;	// 0x30: The size of attribute  in bytes <= alloc_size.
-	__le64 valid_size;	// 0x38: The size of valid part in bytes <= data_size.
-	__le64 total_size;	// 0x40: The sum of the allocated clusters for a file.
-				// (present only for the first segment (0 == vcn)
-				// of compressed attribute)
+	__le64 svcn;		
+	__le64 evcn;		
+	__le16 run_off;		
+	
+	
+	
+	
+	
+	
+	
+        
+        
+	
+	
+	
+	u8 c_unit;		
+	u8 res1[5];		
+	__le64 alloc_size;	
+				
+	__le64 data_size;	
+	__le64 valid_size;	
+	__le64 total_size;	
+				
+				
 
-}; // sizeof()=0x40 or 0x48 (if compressed)
+}; 
 
-/* Possible values of ATTRIB.flags: */
+
 #define ATTR_FLAG_COMPRESSED	  cpu_to_le16(0x0001)
 #define ATTR_FLAG_COMPRESSED_MASK cpu_to_le16(0x00FF)
 #define ATTR_FLAG_ENCRYPTED	  cpu_to_le16(0x4000)
 #define ATTR_FLAG_SPARSED	  cpu_to_le16(0x8000)
 
 struct ATTRIB {
-	enum ATTR_TYPE type;	// 0x00: The type of this attribute.
-	__le32 size;		// 0x04: The size of this attribute.
-	u8 non_res;		// 0x08: Is this attribute non-resident?
-	u8 name_len;		// 0x09: This attribute name length.
-	__le16 name_off;	// 0x0A: Offset to the attribute name.
-	__le16 flags;		// 0x0C: See ATTR_FLAG_XXX.
-	__le16 id;		// 0x0E: Unique id (per record).
+	enum ATTR_TYPE type;	
+	__le32 size;		
+	u8 non_res;		
+	u8 name_len;		
+	__le16 name_off;	
+	__le16 flags;		
+	__le16 id;		
 
 	union {
-		struct ATTR_RESIDENT res;     // 0x10
-		struct ATTR_NONRESIDENT nres; // 0x10
+		struct ATTR_RESIDENT res;     
+		struct ATTR_NONRESIDENT nres; 
 	};
 };
 
-/* Define attribute sizes. */
+
 #define SIZEOF_RESIDENT			0x18
 #define SIZEOF_NONRESIDENT_EX		0x48
 #define SIZEOF_NONRESIDENT		0x40
@@ -477,16 +453,16 @@ static inline void *attr_run(const struct ATTRIB *attr)
 	return Add2Ptr(attr, le16_to_cpu(attr->nres.run_off));
 }
 
-/* Standard information attribute (0x10). */
+
 struct ATTR_STD_INFO {
-	__le64 cr_time;		// 0x00: File creation file.
-	__le64 m_time;		// 0x08: File modification time.
-	__le64 c_time;		// 0x10: Last time any attribute was modified.
-	__le64 a_time;		// 0x18: File last access time.
-	enum FILE_ATTRIBUTE fa;	// 0x20: Standard DOS attributes & more.
-	__le32 max_ver_num;	// 0x24: Maximum Number of Versions.
-	__le32 ver_num;		// 0x28: Version Number.
-	__le32 class_id;	// 0x2C: Class Id from bidirectional Class Id index.
+	__le64 cr_time;		
+	__le64 m_time;		
+	__le64 c_time;		
+	__le64 a_time;		
+	enum FILE_ATTRIBUTE fa;	
+	__le32 max_ver_num;	
+	__le32 ver_num;		
+	__le32 class_id;	
 };
 
 static_assert(sizeof(struct ATTR_STD_INFO) == 0x30);
@@ -495,37 +471,37 @@ static_assert(sizeof(struct ATTR_STD_INFO) == 0x30);
 #define SECURITY_ID_FIRST 0x00000100
 
 struct ATTR_STD_INFO5 {
-	__le64 cr_time;		// 0x00: File creation file.
-	__le64 m_time;		// 0x08: File modification time.
-	__le64 c_time;		// 0x10: Last time any attribute was modified.
-	__le64 a_time;		// 0x18: File last access time.
-	enum FILE_ATTRIBUTE fa;	// 0x20: Standard DOS attributes & more.
-	__le32 max_ver_num;	// 0x24: Maximum Number of Versions.
-	__le32 ver_num;		// 0x28: Version Number.
-	__le32 class_id;	// 0x2C: Class Id from bidirectional Class Id index.
+	__le64 cr_time;		
+	__le64 m_time;		
+	__le64 c_time;		
+	__le64 a_time;		
+	enum FILE_ATTRIBUTE fa;	
+	__le32 max_ver_num;	
+	__le32 ver_num;		
+	__le32 class_id;	
 
-	__le32 owner_id;	// 0x30: Owner Id of the user owning the file.
-	__le32 security_id;	// 0x34: The Security Id is a key in the $SII Index and $SDS.
-	__le64 quota_charge;	// 0x38:
-	__le64 usn;		// 0x40: Last Update Sequence Number of the file. This is a direct
-				// index into the file $UsnJrnl. If zero, the USN Journal is
-				// disabled.
+	__le32 owner_id;	
+	__le32 security_id;	
+	__le64 quota_charge;	
+	__le64 usn;		
+				
+				
 };
 
 static_assert(sizeof(struct ATTR_STD_INFO5) == 0x48);
 
-/* Attribute list entry structure (0x20) */
-struct ATTR_LIST_ENTRY {
-	enum ATTR_TYPE type;	// 0x00: The type of attribute.
-	__le16 size;		// 0x04: The size of this record.
-	u8 name_len;		// 0x06: The length of attribute name.
-	u8 name_off;		// 0x07: The offset to attribute name.
-	__le64 vcn;		// 0x08: Starting VCN of this attribute.
-	struct MFT_REF ref;	// 0x10: MFT record number with attribute.
-	__le16 id;		// 0x18: struct ATTRIB ID.
-	__le16 name[3];		// 0x1A: Just to align. To get real name can use bNameOffset.
 
-}; // sizeof(0x20)
+struct ATTR_LIST_ENTRY {
+	enum ATTR_TYPE type;	
+	__le16 size;		
+	u8 name_len;		
+	u8 name_off;		
+	__le64 vcn;		
+	struct MFT_REF ref;	
+	__le16 id;		
+	__le16 name[3];		
+
+}; 
 
 static_assert(sizeof(struct ATTR_LIST_ENTRY) == 0x20);
 
@@ -535,7 +511,7 @@ static inline u32 le_size(u8 name_len)
 		     name_len * sizeof(short), 8);
 }
 
-/* Returns 0 if 'attr' has the same type and name. */
+
 static inline int le_cmp(const struct ATTR_LIST_ENTRY *le,
 			 const struct ATTRIB *attr)
 {
@@ -551,32 +527,32 @@ static inline __le16 const *le_name(const struct ATTR_LIST_ENTRY *le)
 	return Add2Ptr(le, le->name_off);
 }
 
-/* File name types (the field type in struct ATTR_FILE_NAME). */
+
 #define FILE_NAME_POSIX   0
 #define FILE_NAME_UNICODE 1
 #define FILE_NAME_DOS	  2
 #define FILE_NAME_UNICODE_AND_DOS (FILE_NAME_DOS | FILE_NAME_UNICODE)
 
-/* Filename attribute structure (0x30). */
-struct NTFS_DUP_INFO {
-	__le64 cr_time;		// 0x00: File creation file.
-	__le64 m_time;		// 0x08: File modification time.
-	__le64 c_time;		// 0x10: Last time any attribute was modified.
-	__le64 a_time;		// 0x18: File last access time.
-	__le64 alloc_size;	// 0x20: Data attribute allocated size, multiple of cluster size.
-	__le64 data_size;	// 0x28: Data attribute size <= Dataalloc_size.
-	enum FILE_ATTRIBUTE fa;	// 0x30: Standard DOS attributes & more.
-	__le16 ea_size;		// 0x34: Packed EAs.
-	__le16 reparse;		// 0x36: Used by Reparse.
 
-}; // 0x38
+struct NTFS_DUP_INFO {
+	__le64 cr_time;		
+	__le64 m_time;		
+	__le64 c_time;		
+	__le64 a_time;		
+	__le64 alloc_size;	
+	__le64 data_size;	
+	enum FILE_ATTRIBUTE fa;	
+	__le16 ea_size;		
+	__le16 reparse;		
+
+}; 
 
 struct ATTR_FILE_NAME {
-	struct MFT_REF home;	// 0x00: MFT record for directory.
-	struct NTFS_DUP_INFO dup;// 0x08:
-	u8 name_len;		// 0x40: File name length in words.
-	u8 type;		// 0x41: File name type.
-	__le16 name[];		// 0x42: File name.
+	struct MFT_REF home;	
+	struct NTFS_DUP_INFO dup;
+	u8 name_len;		
+	u8 type;		
+	__le16 name[];		
 };
 
 static_assert(sizeof(((struct ATTR_FILE_NAME *)NULL)->dup) == 0x38);
@@ -591,7 +567,7 @@ static inline struct ATTRIB *attr_from_name(struct ATTR_FILE_NAME *fname)
 
 static inline u16 fname_full_size(const struct ATTR_FILE_NAME *fname)
 {
-	/* Don't return struct_size(fname, name, fname->name_len); */
+	
 	return offsetof(struct ATTR_FILE_NAME, name) +
 	       fname->name_len * sizeof(short);
 }
@@ -605,35 +581,35 @@ static inline u8 paired_name(u8 type)
 	return FILE_NAME_POSIX;
 }
 
-/* Index entry defines ( the field flags in NtfsDirEntry ). */
+
 #define NTFS_IE_HAS_SUBNODES	cpu_to_le16(1)
 #define NTFS_IE_LAST		cpu_to_le16(2)
 
-/* Directory entry structure. */
+
 struct NTFS_DE {
 	union {
-		struct MFT_REF ref; // 0x00: MFT record number with this file.
+		struct MFT_REF ref; 
 		struct {
-			__le16 data_off;  // 0x00:
-			__le16 data_size; // 0x02:
-			__le32 res;	  // 0x04: Must be 0.
+			__le16 data_off;  
+			__le16 data_size; 
+			__le32 res;	  
 		} view;
 	};
-	__le16 size;		// 0x08: The size of this entry.
-	__le16 key_size;	// 0x0A: The size of File name length in bytes + 0x42.
-	__le16 flags;		// 0x0C: Entry flags: NTFS_IE_XXX.
-	__le16 res;		// 0x0E:
+	__le16 size;		
+	__le16 key_size;	
+	__le16 flags;		
+	__le16 res;		
 
-	// Here any indexed attribute can be placed.
-	// One of them is:
-	// struct ATTR_FILE_NAME AttrFileName;
-	//
+	
+	
+	
+	
 
-	// The last 8 bytes of this structure contains
-	// the VBN of subnode.
-	// !!! Note !!!
-	// This field is presented only if (flags & NTFS_IE_HAS_SUBNODES)
-	// __le64 vbn;
+	
+	
+	
+	
+	
 };
 
 static_assert(sizeof(struct NTFS_DE) == 0x10);
@@ -699,17 +675,17 @@ static inline bool de_has_vcn_ex(const struct NTFS_DE *e)
 	      NTFS_NAME_LEN * sizeof(short), 8)
 
 struct INDEX_HDR {
-	__le32 de_off;	// 0x00: The offset from the start of this structure
-			// to the first NTFS_DE.
-	__le32 used;	// 0x04: The size of this structure plus all
-			// entries (quad-word aligned).
-	__le32 total;	// 0x08: The allocated size of for this structure plus all entries.
-	u8 flags;	// 0x0C: 0x00 = Small directory, 0x01 = Large directory.
+	__le32 de_off;	
+			
+	__le32 used;	
+			
+	__le32 total;	
+	u8 flags;	
 	u8 res[3];
 
-	//
-	// de_off + used <= total
-	//
+	
+	
+	
 };
 
 static_assert(sizeof(struct INDEX_HDR) == 0x10);
@@ -757,9 +733,9 @@ static inline bool hdr_has_subnode(const struct INDEX_HDR *hdr)
 }
 
 struct INDEX_BUFFER {
-	struct NTFS_RECORD_HEADER rhdr; // 'INDX'
-	__le64 vbn; // 0x10: vcn if index >= cluster or vsn id index < cluster
-	struct INDEX_HDR ihdr; // 0x18:
+	struct NTFS_RECORD_HEADER rhdr; 
+	__le64 vbn; 
+	struct INDEX_HDR ihdr; 
 };
 
 static_assert(sizeof(struct INDEX_BUFFER) == 0x28);
@@ -776,31 +752,31 @@ static inline bool ib_is_leaf(const struct INDEX_BUFFER *ib)
 	return !(ib->ihdr.flags & 1);
 }
 
-/* Index root structure ( 0x90 ). */
+
 enum COLLATION_RULE {
 	NTFS_COLLATION_TYPE_BINARY	= cpu_to_le32(0),
-	// $I30
+	
 	NTFS_COLLATION_TYPE_FILENAME	= cpu_to_le32(0x01),
-	// $SII of $Secure and $Q of Quota
+	
 	NTFS_COLLATION_TYPE_UINT	= cpu_to_le32(0x10),
-	// $O of Quota
+	
 	NTFS_COLLATION_TYPE_SID		= cpu_to_le32(0x11),
-	// $SDH of $Secure
+	
 	NTFS_COLLATION_TYPE_SECURITY_HASH = cpu_to_le32(0x12),
-	// $O of ObjId and "$R" for Reparse
+	
 	NTFS_COLLATION_TYPE_UINTS	= cpu_to_le32(0x13)
 };
 
 static_assert(sizeof(enum COLLATION_RULE) == 4);
 
-//
+
 struct INDEX_ROOT {
-	enum ATTR_TYPE type;	// 0x00: The type of attribute to index on.
-	enum COLLATION_RULE rule; // 0x04: The rule.
-	__le32 index_block_size;// 0x08: The size of index record.
-	u8 index_block_clst;	// 0x0C: The number of clusters or sectors per index.
+	enum ATTR_TYPE type;	
+	enum COLLATION_RULE rule; 
+	__le32 index_block_size;
+	u8 index_block_clst;	
 	u8 res[3];
-	struct INDEX_HDR ihdr;	// 0x10:
+	struct INDEX_HDR ihdr;	
 };
 
 static_assert(sizeof(struct INDEX_ROOT) == 0x20);
@@ -810,12 +786,12 @@ static_assert(offsetof(struct INDEX_ROOT, ihdr) == 0x10);
 #define VOLUME_FLAG_RESIZE_LOG_FILE cpu_to_le16(0x0002)
 
 struct VOLUME_INFO {
-	__le64 res1;	// 0x00
-	u8 major_ver;	// 0x08: NTFS major version number (before .)
-	u8 minor_ver;	// 0x09: NTFS minor version number (after .)
-	__le16 flags;	// 0x0A: Volume flags, see VOLUME_FLAG_XXX
+	__le64 res1;	
+	u8 major_ver;	
+	u8 minor_ver;	
+	__le16 flags;	
 
-}; // sizeof=0xC
+}; 
 
 #define SIZEOF_ATTRIBUTE_VOLUME_INFO 0xc
 
@@ -827,240 +803,195 @@ struct VOLUME_INFO {
 #define NTFS_ATTR_MUST_BE_RESIDENT	cpu_to_le32(0x00000040)
 #define NTFS_ATTR_LOG_ALWAYS		cpu_to_le32(0x00000080)
 
-/* $AttrDef file entry. */
+
 struct ATTR_DEF_ENTRY {
-	__le16 name[0x40];	// 0x00: Attr name.
-	enum ATTR_TYPE type;	// 0x80: struct ATTRIB type.
-	__le32 res;		// 0x84:
-	enum COLLATION_RULE rule; // 0x88:
-	__le32 flags;		// 0x8C: NTFS_ATTR_XXX (see above).
-	__le64 min_sz;		// 0x90: Minimum attribute data size.
-	__le64 max_sz;		// 0x98: Maximum attribute data size.
+	__le16 name[0x40];	
+	enum ATTR_TYPE type;	
+	__le32 res;		
+	enum COLLATION_RULE rule; 
+	__le32 flags;		
+	__le64 min_sz;		
+	__le64 max_sz;		
 };
 
 static_assert(sizeof(struct ATTR_DEF_ENTRY) == 0xa0);
 
-/* Object ID (0x40) */
+
 struct OBJECT_ID {
-	struct GUID ObjId;	// 0x00: Unique Id assigned to file.
+	struct GUID ObjId;	
 
-	// Birth Volume Id is the Object Id of the Volume on.
-	// which the Object Id was allocated. It never changes.
-	struct GUID BirthVolumeId; //0x10:
+	
+	
+	struct GUID BirthVolumeId; 
 
-	// Birth Object Id is the first Object Id that was
-	// ever assigned to this MFT Record. I.e. If the Object Id
-	// is changed for some reason, this field will reflect the
-	// original value of the Object Id.
-	struct GUID BirthObjectId; // 0x20:
+	
+	
+	
+	
+	struct GUID BirthObjectId; 
 
-	// Domain Id is currently unused but it is intended to be
-	// used in a network environment where the local machine is
-	// part of a Windows 2000 Domain. This may be used in a Windows
-	// 2000 Advanced Server managed domain.
-	struct GUID DomainId;	// 0x30:
+	
+	
+	
+	
+	struct GUID DomainId;	
 };
 
 static_assert(sizeof(struct OBJECT_ID) == 0x40);
 
-/* O Directory entry structure ( rule = 0x13 ) */
+
 struct NTFS_DE_O {
 	struct NTFS_DE de;
-	struct GUID ObjId;	// 0x10: Unique Id assigned to file.
-	struct MFT_REF ref;	// 0x20: MFT record number with this file.
+	struct GUID ObjId;	
+	struct MFT_REF ref;	
 
-	// Birth Volume Id is the Object Id of the Volume on
-	// which the Object Id was allocated. It never changes.
-	struct GUID BirthVolumeId; // 0x28:
+	
+	
+	struct GUID BirthVolumeId; 
 
-	// Birth Object Id is the first Object Id that was
-	// ever assigned to this MFT Record. I.e. If the Object Id
-	// is changed for some reason, this field will reflect the
-	// original value of the Object Id.
-	// This field is valid if data_size == 0x48.
-	struct GUID BirthObjectId; // 0x38:
+	
+	
+	
+	
+	
+	struct GUID BirthObjectId; 
 
-	// Domain Id is currently unused but it is intended
-	// to be used in a network environment where the local
-	// machine is part of a Windows 2000 Domain. This may be
-	// used in a Windows 2000 Advanced Server managed domain.
-	struct GUID BirthDomainId; // 0x48:
+	
+	
+	
+	
+	struct GUID BirthDomainId; 
 };
 
 static_assert(sizeof(struct NTFS_DE_O) == 0x58);
 
-/* Q Directory entry structure ( rule = 0x11 ) */
+
 struct NTFS_DE_Q {
 	struct NTFS_DE de;
-	__le32 owner_id;	// 0x10: Unique Id assigned to file
+	__le32 owner_id;	
 
-	/* here is 0x30 bytes of user quota. NOTE: 4 byte aligned! */
-	__le32 Version;		// 0x14: 0x02
-	__le32 Flags;		// 0x18: Quota flags, see above
-	__le64 BytesUsed;	// 0x1C:
-	__le64 ChangeTime;	// 0x24:
-	__le64 WarningLimit;	// 0x28:
-	__le64 HardLimit;	// 0x34:
-	__le64 ExceededTime;	// 0x3C:
+	
+	__le32 Version;		
+	__le32 Flags;		
+	__le64 BytesUsed;	
+	__le64 ChangeTime;	
+	__le64 WarningLimit;	
+	__le64 HardLimit;	
+	__le64 ExceededTime;	
 
-	// SID is placed here
-}__packed; // sizeof() = 0x44
+	
+}__packed; 
 
 static_assert(sizeof(struct NTFS_DE_Q) == 0x44);
 
-#define SecurityDescriptorsBlockSize 0x40000 // 256K
-#define SecurityDescriptorMaxSize    0x20000 // 128K
+#define SecurityDescriptorsBlockSize 0x40000 
+#define SecurityDescriptorMaxSize    0x20000 
 #define Log2OfSecurityDescriptorsBlockSize 18
 
 struct SECURITY_KEY {
-	__le32 hash; //  Hash value for descriptor
-	__le32 sec_id; //  Security Id (guaranteed unique)
+	__le32 hash; 
+	__le32 sec_id; 
 };
 
-/* Security descriptors (the content of $Secure::SDS data stream) */
+
 struct SECURITY_HDR {
-	struct SECURITY_KEY key;	// 0x00: Security Key.
-	__le64 off;			// 0x08: Offset of this entry in the file.
-	__le32 size;			// 0x10: Size of this entry, 8 byte aligned.
-	/*
-	 * Security descriptor itself is placed here.
-	 * Total size is 16 byte aligned.
-	 */
+	struct SECURITY_KEY key;	
+	__le64 off;			
+	__le32 size;			
+	
 } __packed;
 
 static_assert(sizeof(struct SECURITY_HDR) == 0x14);
 
-/* SII Directory entry structure */
+
 struct NTFS_DE_SII {
 	struct NTFS_DE de;
-	__le32 sec_id;			// 0x10: Key: sizeof(security_id) = wKeySize
-	struct SECURITY_HDR sec_hdr;	// 0x14:
+	__le32 sec_id;			
+	struct SECURITY_HDR sec_hdr;	
 } __packed;
 
 static_assert(offsetof(struct NTFS_DE_SII, sec_hdr) == 0x14);
 static_assert(sizeof(struct NTFS_DE_SII) == 0x28);
 
-/* SDH Directory entry structure */
+
 struct NTFS_DE_SDH {
 	struct NTFS_DE de;
-	struct SECURITY_KEY key;	// 0x10: Key
-	struct SECURITY_HDR sec_hdr;	// 0x18: Data
-	__le16 magic[2];		// 0x2C: 0x00490049 "I I"
+	struct SECURITY_KEY key;	
+	struct SECURITY_HDR sec_hdr;	
+	__le16 magic[2];		
 };
 
 #define SIZEOF_SDH_DIRENTRY 0x30
 
 struct REPARSE_KEY {
-	__le32 ReparseTag;		// 0x00: Reparse Tag
-	struct MFT_REF ref;		// 0x04: MFT record number with this file
-}; // sizeof() = 0x0C
+	__le32 ReparseTag;		
+	struct MFT_REF ref;		
+}; 
 
 static_assert(offsetof(struct REPARSE_KEY, ref) == 0x04);
 #define SIZEOF_REPARSE_KEY 0x0C
 
-/* Reparse Directory entry structure */
+
 struct NTFS_DE_R {
 	struct NTFS_DE de;
-	struct REPARSE_KEY key;		// 0x10: Reparse Key.
-	u32 zero;			// 0x1c:
-}; // sizeof() = 0x20
+	struct REPARSE_KEY key;		
+	u32 zero;			
+}; 
 
 static_assert(sizeof(struct NTFS_DE_R) == 0x20);
 
-/* CompressReparseBuffer.WofVersion */
+
 #define WOF_CURRENT_VERSION		cpu_to_le32(1)
-/* CompressReparseBuffer.WofProvider */
+
 #define WOF_PROVIDER_WIM		cpu_to_le32(1)
-/* CompressReparseBuffer.WofProvider */
+
 #define WOF_PROVIDER_SYSTEM		cpu_to_le32(2)
-/* CompressReparseBuffer.ProviderVer */
+
 #define WOF_PROVIDER_CURRENT_VERSION	cpu_to_le32(1)
 
-#define WOF_COMPRESSION_XPRESS4K	cpu_to_le32(0) // 4k
-#define WOF_COMPRESSION_LZX32K		cpu_to_le32(1) // 32k
-#define WOF_COMPRESSION_XPRESS8K	cpu_to_le32(2) // 8k
-#define WOF_COMPRESSION_XPRESS16K	cpu_to_le32(3) // 16k
+#define WOF_COMPRESSION_XPRESS4K	cpu_to_le32(0) 
+#define WOF_COMPRESSION_LZX32K		cpu_to_le32(1) 
+#define WOF_COMPRESSION_XPRESS8K	cpu_to_le32(2) 
+#define WOF_COMPRESSION_XPRESS16K	cpu_to_le32(3) 
 
-/*
- * ATTR_REPARSE (0xC0)
- *
- * The reparse struct GUID structure is used by all 3rd party layered drivers to
- * store data in a reparse point. For non-Microsoft tags, The struct GUID field
- * cannot be GUID_NULL.
- * The constraints on reparse tags are defined below.
- * Microsoft tags can also be used with this format of the reparse point buffer.
- */
+
 struct REPARSE_POINT {
-	__le32 ReparseTag;	// 0x00:
-	__le16 ReparseDataLength;// 0x04:
+	__le32 ReparseTag;	
+	__le16 ReparseDataLength;
 	__le16 Reserved;
 
-	struct GUID Guid;	// 0x08:
+	struct GUID Guid;	
 
-	//
-	// Here GenericReparseBuffer is placed
-	//
+	
+	
+	
 };
 
 static_assert(sizeof(struct REPARSE_POINT) == 0x18);
 
-/* Maximum allowed size of the reparse data. */
+
 #define MAXIMUM_REPARSE_DATA_BUFFER_SIZE	(16 * 1024)
 
-/*
- * The value of the following constant needs to satisfy the following
- * conditions:
- *  (1) Be at least as large as the largest of the reserved tags.
- *  (2) Be strictly smaller than all the tags in use.
- */
+
 #define IO_REPARSE_TAG_RESERVED_RANGE		1
 
-/*
- * The reparse tags are a ULONG. The 32 bits are laid out as follows:
- *
- *   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
- *   1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- *  +-+-+-+-+-----------------------+-------------------------------+
- *  |M|R|N|R|	  Reserved bits     |	    Reparse Tag Value	    |
- *  +-+-+-+-+-----------------------+-------------------------------+
- *
- * M is the Microsoft bit. When set to 1, it denotes a tag owned by Microsoft.
- *   All ISVs must use a tag with a 0 in this position.
- *   Note: If a Microsoft tag is used by non-Microsoft software, the
- *   behavior is not defined.
- *
- * R is reserved.  Must be zero for non-Microsoft tags.
- *
- * N is name surrogate. When set to 1, the file represents another named
- *   entity in the system.
- *
- * The M and N bits are OR-able.
- * The following macros check for the M and N bit values:
- */
 
-/*
- * Macro to determine whether a reparse point tag corresponds to a tag
- * owned by Microsoft.
- */
+
+
 #define IsReparseTagMicrosoft(_tag)	(((_tag)&IO_REPARSE_TAG_MICROSOFT))
 
-/* Macro to determine whether a reparse point tag is a name surrogate. */
+
 #define IsReparseTagNameSurrogate(_tag)	(((_tag)&IO_REPARSE_TAG_NAME_SURROGATE))
 
-/*
- * The following constant represents the bits that are valid to use in
- * reparse tags.
- */
+
 #define IO_REPARSE_TAG_VALID_VALUES	0xF000FFFF
 
-/*
- * Macro to determine whether a reparse tag is a valid tag.
- */
+
 #define IsReparseTagValid(_tag)						       \
 	(!((_tag) & ~IO_REPARSE_TAG_VALID_VALUES) &&			       \
 	 ((_tag) > IO_REPARSE_TAG_RESERVED_RANGE))
 
-/* Microsoft tags for reparse points. */
+
 
 enum IO_REPARSE_TAG {
 	IO_REPARSE_TAG_SYMBOLIC_LINK	= cpu_to_le32(0),
@@ -1073,32 +1004,29 @@ enum IO_REPARSE_TAG {
 	IO_REPARSE_TAG_DEDUP		= cpu_to_le32(0x80000013),
 	IO_REPARSE_TAG_COMPRESS		= cpu_to_le32(0x80000017),
 
-	/*
-	 * The reparse tag 0x80000008 is reserved for Microsoft internal use.
-	 * May be published in the future.
-	 */
+	
 
-	/* Microsoft reparse tag reserved for DFS */
+	
 	IO_REPARSE_TAG_DFS	= cpu_to_le32(0x8000000A),
 
-	/* Microsoft reparse tag reserved for the file system filter manager. */
+	
 	IO_REPARSE_TAG_FILTER_MANAGER	= cpu_to_le32(0x8000000B),
 
-	/* Non-Microsoft tags for reparse points */
+	
 
-	/* Tag allocated to CONGRUENT, May 2000. Used by IFSTEST. */
+	
 	IO_REPARSE_TAG_IFSTEST_CONGRUENT = cpu_to_le32(0x00000009),
 
-	/* Tag allocated to ARKIVIO. */
+	
 	IO_REPARSE_TAG_ARKIVIO	= cpu_to_le32(0x0000000C),
 
-	/* Tag allocated to SOLUTIONSOFT. */
+	
 	IO_REPARSE_TAG_SOLUTIONSOFT	= cpu_to_le32(0x2000000D),
 
-	/* Tag allocated to COMMVAULT. */
+	
 	IO_REPARSE_TAG_COMMVAULT	= cpu_to_le32(0x0000000E),
 
-	/* OneDrive?? */
+	
 	IO_REPARSE_TAG_CLOUD	= cpu_to_le32(0x9000001A),
 	IO_REPARSE_TAG_CLOUD_1	= cpu_to_le32(0x9000101A),
 	IO_REPARSE_TAG_CLOUD_2	= cpu_to_le32(0x9000201A),
@@ -1120,76 +1048,67 @@ enum IO_REPARSE_TAG {
 
 #define SYMLINK_FLAG_RELATIVE		1
 
-/* Microsoft reparse buffer. (see DDK for details) */
+
 struct REPARSE_DATA_BUFFER {
-	__le32 ReparseTag;		// 0x00:
-	__le16 ReparseDataLength;	// 0x04:
+	__le32 ReparseTag;		
+	__le16 ReparseDataLength;	
 	__le16 Reserved;
 
 	union {
-		/* If ReparseTag == 0xA0000003 (IO_REPARSE_TAG_MOUNT_POINT) */
+		
 		struct {
-			__le16 SubstituteNameOffset; // 0x08
-			__le16 SubstituteNameLength; // 0x0A
-			__le16 PrintNameOffset;      // 0x0C
-			__le16 PrintNameLength;      // 0x0E
-			__le16 PathBuffer[];	     // 0x10
+			__le16 SubstituteNameOffset; 
+			__le16 SubstituteNameLength; 
+			__le16 PrintNameOffset;      
+			__le16 PrintNameLength;      
+			__le16 PathBuffer[];	     
 		} MountPointReparseBuffer;
 
-		/*
-		 * If ReparseTag == 0xA000000C (IO_REPARSE_TAG_SYMLINK)
-		 * https://msdn.microsoft.com/en-us/library/cc232006.aspx
-		 */
+		
 		struct {
-			__le16 SubstituteNameOffset; // 0x08
-			__le16 SubstituteNameLength; // 0x0A
-			__le16 PrintNameOffset;      // 0x0C
-			__le16 PrintNameLength;      // 0x0E
-			// 0-absolute path 1- relative path, SYMLINK_FLAG_RELATIVE
-			__le32 Flags;		     // 0x10
-			__le16 PathBuffer[];	     // 0x14
+			__le16 SubstituteNameOffset; 
+			__le16 SubstituteNameLength; 
+			__le16 PrintNameOffset;      
+			__le16 PrintNameLength;      
+			
+			__le32 Flags;		     
+			__le16 PathBuffer[];	     
 		} SymbolicLinkReparseBuffer;
 
-		/* If ReparseTag == 0x80000017U */
+		
 		struct {
-			__le32 WofVersion;  // 0x08 == 1
-			/*
-			 * 1 - WIM backing provider ("WIMBoot"),
-			 * 2 - System compressed file provider
-			 */
-			__le32 WofProvider; // 0x0C:
-			__le32 ProviderVer; // 0x10: == 1 WOF_FILE_PROVIDER_CURRENT_VERSION == 1
-			__le32 CompressionFormat; // 0x14: 0, 1, 2, 3. See WOF_COMPRESSION_XXX
+			__le32 WofVersion;  
+			
+			__le32 WofProvider; 
+			__le32 ProviderVer; 
+			__le32 CompressionFormat; 
 		} CompressReparseBuffer;
 
 		struct {
-			u8 DataBuffer[1];   // 0x08:
+			u8 DataBuffer[1];   
 		} GenericReparseBuffer;
 	};
 };
 
-/* ATTR_EA_INFO (0xD0) */
 
-#define FILE_NEED_EA 0x80 // See ntifs.h
-/*
- * FILE_NEED_EA, indicates that the file to which the EA belongs cannot be
- * interpreted without understanding the associated extended attributes.
- */
+
+#define FILE_NEED_EA 0x80 
+
 struct EA_INFO {
-	__le16 size_pack;	// 0x00: Size of buffer to hold in packed form.
-	__le16 count;		// 0x02: Count of EA's with FILE_NEED_EA bit set.
-	__le32 size;		// 0x04: Size of buffer to hold in unpacked form.
+	__le16 size_pack;	
+	__le16 count;		
+	__le32 size;		
 };
 
 static_assert(sizeof(struct EA_INFO) == 8);
 
-/* ATTR_EA (0xE0) */
+
 struct EA_FULL {
-	__le32 size;		// 0x00: (not in packed)
-	u8 flags;		// 0x04:
-	u8 name_len;		// 0x05:
-	__le16 elength;		// 0x06:
-	u8 name[];		// 0x08:
+	__le32 size;		
+	u8 flags;		
+	u8 name_len;		
+	__le16 elength;		
+	u8 name[];		
 };
 
 static_assert(offsetof(struct EA_FULL, name) == 8);
@@ -1234,5 +1153,5 @@ struct SID {
 };
 static_assert(offsetof(struct SID, SubAuthority) == 8);
 
-#endif /* _LINUX_NTFS3_NTFS_H */
-// clang-format on
+#endif 
+

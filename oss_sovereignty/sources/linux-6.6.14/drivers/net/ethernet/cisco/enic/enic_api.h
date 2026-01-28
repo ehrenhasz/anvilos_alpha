@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2013 Cisco Systems, Inc.  All rights reserved. */
+
+
 
 #ifndef __ENIC_API_H__
 #define __ENIC_API_H__

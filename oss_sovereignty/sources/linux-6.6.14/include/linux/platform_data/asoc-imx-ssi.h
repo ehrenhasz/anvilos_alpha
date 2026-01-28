@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __MACH_SSI_H
 #define __MACH_SSI_H
 
@@ -20,5 +20,5 @@ struct imx_ssi_platform_data {
 
 extern int mxc_set_irq_fiq(unsigned int irq, unsigned int type);
 
-#endif /* __MACH_SSI_H */
+#endif 
 

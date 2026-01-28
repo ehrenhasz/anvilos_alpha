@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LINUX_MEMORY_HOTPLUG_H
 #define __LINUX_MEMORY_HOTPLUG_H
 
@@ -17,28 +17,16 @@ struct vmem_altmap;
 struct dev_pagemap;
 
 #ifdef CONFIG_HAVE_ARCH_NODEDATA_EXTENSION
-/*
- * For supporting node-hotadd, we have to allocate a new pgdat.
- *
- * If an arch has generic style NODE_DATA(),
- * node_data[nid] = kzalloc() works well. But it depends on the architecture.
- *
- * In general, generic_alloc_nodedata() is used.
- *
- */
+
 extern pg_data_t *arch_alloc_nodedata(int nid);
 extern void arch_refresh_nodedata(int nid, pg_data_t *pgdat);
 
-#else /* CONFIG_HAVE_ARCH_NODEDATA_EXTENSION */
+#else 
 
 #define arch_alloc_nodedata(nid)	generic_alloc_nodedata(nid)
 
 #ifdef CONFIG_NUMA
-/*
- * XXX: node aware allocation can't work well to get new node's memory at this time.
- *	Because, pgdat for the new node is not allocated/initialized yet itself.
- *	To use new node's memory, more consideration will be necessary.
- */
+
 #define generic_alloc_nodedata(nid)				\
 ({								\
 	memblock_alloc(sizeof(*pgdat), SMP_CACHE_BYTES);	\
@@ -50,9 +38,9 @@ static inline void arch_refresh_nodedata(int nid, pg_data_t *pgdat)
 	node_data[nid] = pgdat;
 }
 
-#else /* !CONFIG_NUMA */
+#else 
 
-/* never called */
+
 static inline pg_data_t *generic_alloc_nodedata(int nid)
 {
 	BUG();
@@ -61,58 +49,38 @@ static inline pg_data_t *generic_alloc_nodedata(int nid)
 static inline void arch_refresh_nodedata(int nid, pg_data_t *pgdat)
 {
 }
-#endif /* CONFIG_NUMA */
-#endif /* CONFIG_HAVE_ARCH_NODEDATA_EXTENSION */
+#endif 
+#endif 
 
 #ifdef CONFIG_MEMORY_HOTPLUG
 struct page *pfn_to_online_page(unsigned long pfn);
 
-/* Types for control the zone type of onlined and offlined memory */
+
 enum {
-	/* Offline the memory. */
+	
 	MMOP_OFFLINE = 0,
-	/* Online the memory. Zone depends, see default_zone_for_pfn(). */
+	
 	MMOP_ONLINE,
-	/* Online the memory to ZONE_NORMAL. */
+	
 	MMOP_ONLINE_KERNEL,
-	/* Online the memory to ZONE_MOVABLE. */
+	
 	MMOP_ONLINE_MOVABLE,
 };
 
-/* Flags for add_memory() and friends to specify memory hotplug details. */
+
 typedef int __bitwise mhp_t;
 
-/* No special request */
+
 #define MHP_NONE		((__force mhp_t)0)
-/*
- * Allow merging of the added System RAM resource with adjacent,
- * mergeable resources. After a successful call to add_memory_resource()
- * with this flag set, the resource pointer must no longer be used as it
- * might be stale, or the resource might have changed.
- */
+
 #define MHP_MERGE_RESOURCE	((__force mhp_t)BIT(0))
 
-/*
- * We want memmap (struct page array) to be self contained.
- * To do so, we will use the beginning of the hot-added range to build
- * the page tables for the memmap array that describes the entire range.
- * Only selected architectures support it with SPARSE_VMEMMAP.
- * This is only a hint, the core kernel can decide to not do this based on
- * different alignment checks.
- */
+
 #define MHP_MEMMAP_ON_MEMORY   ((__force mhp_t)BIT(1))
-/*
- * The nid field specifies a memory group id (mgid) instead. The memory group
- * implies the node id (nid).
- */
+
 #define MHP_NID_IS_MGID		((__force mhp_t)BIT(2))
 
-/*
- * Extended parameters for memory hotplug:
- * altmap: alternative allocator for memmap array (optional)
- * pgprot: page protection flags to apply to newly created page tables
- *	(required)
- */
+
 struct mhp_params {
 	struct vmem_altmap *altmap;
 	pgprot_t pgprot;
@@ -122,13 +90,7 @@ struct mhp_params {
 bool mhp_range_allowed(u64 start, u64 size, bool need_mapping);
 struct range mhp_get_pluggable_range(bool need_mapping);
 
-/*
- * Zone resizing functions
- *
- * Note: any attempt to resize a zone should has pgdat_resize_lock()
- * zone_span_writelock() both held. This ensure the size of a zone
- * can't be changed while pgdat_resize_lock() held.
- */
+
 static inline unsigned zone_span_seqbegin(struct zone *zone)
 {
 	return read_seqbegin(&zone->span_seqlock);
@@ -152,7 +114,7 @@ static inline void zone_seqlock_init(struct zone *zone)
 extern void adjust_present_page_count(struct page *page,
 				      struct memory_group *group,
 				      long nr_pages);
-/* VM interface that may be used by firmware interface */
+
 extern int mhp_init_memmap_on_memory(unsigned long pfn, unsigned long nr_pages,
 				     struct zone *zone);
 extern void mhp_deinit_memmap_on_memory(unsigned long pfn, unsigned long nr_pages);
@@ -175,9 +137,9 @@ extern u64 max_mem_size;
 
 extern int mhp_online_type_from_str(const char *str);
 
-/* Default online_type (MMOP_*) when new memory blocks are added. */
+
 extern int mhp_default_online_type;
-/* If movable_node boot option specified */
+
 extern bool movable_node_enabled;
 static inline bool movable_node_is_enabled(void)
 {
@@ -188,7 +150,7 @@ extern void arch_remove_memory(u64 start, u64 size, struct vmem_altmap *altmap);
 extern void __remove_pages(unsigned long start_pfn, unsigned long nr_pages,
 			   struct vmem_altmap *altmap);
 
-/* reasonably generic interface to expand the physical pages */
+
 extern int __add_pages(int nid, unsigned long start_pfn, unsigned long nr_pages,
 		       struct mhp_params *params);
 
@@ -198,10 +160,10 @@ static inline int add_pages(int nid, unsigned long start_pfn,
 {
 	return __add_pages(nid, start_pfn, nr_pages, params);
 }
-#else /* ARCH_HAS_ADD_PAGES */
+#else 
 int add_pages(int nid, unsigned long start_pfn, unsigned long nr_pages,
 	      struct mhp_params *params);
-#endif /* ARCH_HAS_ADD_PAGES */
+#endif 
 
 void get_online_mems(void);
 void put_online_mems(void);
@@ -209,7 +171,7 @@ void put_online_mems(void);
 void mem_hotplug_begin(void);
 void mem_hotplug_done(void);
 
-/* See kswapd_is_running() */
+
 static inline void pgdat_kswapd_lock(pg_data_t *pgdat)
 {
 	mutex_lock(&pgdat->kswapd_lock);
@@ -225,7 +187,7 @@ static inline void pgdat_kswapd_lock_init(pg_data_t *pgdat)
 	mutex_init(&pgdat->kswapd_lock);
 }
 
-#else /* ! CONFIG_MEMORY_HOTPLUG */
+#else 
 #define pfn_to_online_page(pfn)			\
 ({						\
 	struct page *___page = NULL;		\
@@ -265,19 +227,13 @@ static inline bool movable_node_is_enabled(void)
 static inline void pgdat_kswapd_lock(pg_data_t *pgdat) {}
 static inline void pgdat_kswapd_unlock(pg_data_t *pgdat) {}
 static inline void pgdat_kswapd_lock_init(pg_data_t *pgdat) {}
-#endif /* ! CONFIG_MEMORY_HOTPLUG */
+#endif 
 
-/*
- * Keep this declaration outside CONFIG_MEMORY_HOTPLUG as some
- * platforms might override and use arch_get_mappable_range()
- * for internal non memory hotplug purposes.
- */
+
 struct range arch_get_mappable_range(void);
 
 #if defined(CONFIG_MEMORY_HOTPLUG) || defined(CONFIG_DEFERRED_STRUCT_PAGE_INIT)
-/*
- * pgdat resizing functions
- */
+
 static inline
 void pgdat_resize_lock(struct pglist_data *pgdat, unsigned long *flags)
 {
@@ -293,14 +249,12 @@ void pgdat_resize_init(struct pglist_data *pgdat)
 {
 	spin_lock_init(&pgdat->node_size_lock);
 }
-#else /* !(CONFIG_MEMORY_HOTPLUG || CONFIG_DEFERRED_STRUCT_PAGE_INIT) */
-/*
- * Stub functions for when hotplug is off
- */
+#else 
+
 static inline void pgdat_resize_lock(struct pglist_data *p, unsigned long *f) {}
 static inline void pgdat_resize_unlock(struct pglist_data *p, unsigned long *f) {}
 static inline void pgdat_resize_init(struct pglist_data *pgdat) {}
-#endif /* !(CONFIG_MEMORY_HOTPLUG || CONFIG_DEFERRED_STRUCT_PAGE_INIT) */
+#endif 
 
 #ifdef CONFIG_MEMORY_HOTREMOVE
 
@@ -326,7 +280,7 @@ static inline int remove_memory(u64 start, u64 size)
 }
 
 static inline void __remove_memory(u64 start, u64 size) {}
-#endif /* CONFIG_MEMORY_HOTREMOVE */
+#endif 
 
 #ifdef CONFIG_MEMORY_HOTPLUG
 extern void __ref free_area_init_core_hotplug(struct pglist_data *pgdat);
@@ -356,6 +310,6 @@ extern struct zone *zone_for_pfn_range(int online_type, int nid,
 extern int arch_create_linear_mapping(int nid, u64 start, u64 size,
 				      struct mhp_params *params);
 void arch_remove_linear_mapping(u64 start, u64 size);
-#endif /* CONFIG_MEMORY_HOTPLUG */
+#endif 
 
-#endif /* __LINUX_MEMORY_HOTPLUG_H */
+#endif 

@@ -15,7 +15,7 @@ def th(n, lo, hi):
         n_finished += 1
 lock = _thread.allocate_lock()
 n_repeat = 30
-n_range = 50  # 300 for stressful test (uses more heap)
+n_range = 50  
 n_thread = 4
 n_finished = 0
 for i in range(n_thread):

@@ -1,39 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *
- * Includes for cdc-acm.c
- *
- * Mainly take from usbnet's cdc-ether part
- *
- */
 
-/*
- * Major and minor numbers.
- */
+
+
+
 
 #define ACM_TTY_MAJOR		166
 #define ACM_TTY_MINORS		256
 
 #define ACM_MINOR_INVALID	ACM_TTY_MINORS
 
-/*
- * Requests.
- */
+
 
 #define USB_RT_ACM		(USB_TYPE_CLASS | USB_RECIP_INTERFACE)
 
-/*
- * Internal driver structures.
- */
 
-/*
- * The only reason to have several buffers is to accommodate assumptions
- * in line disciplines. They ask for empty space amount, receive our URB size,
- * and proceed to issue several 1-character writes, assuming they will fit.
- * The very first write takes a complete URB. Fortunately, this only happens
- * when processing onlcr, so we only need 2 buffers. These values must be
- * powers of 2.
- */
+
+
 #define ACM_NW  16
 #define ACM_NR  16
 
@@ -55,24 +36,24 @@ struct acm_rb {
 };
 
 struct acm {
-	struct usb_device *dev;				/* the corresponding usb device */
-	struct usb_interface *control;			/* control interface */
-	struct usb_interface *data;			/* data interface */
-	unsigned in, out;				/* i/o pipes */
-	struct tty_port port;			 	/* our tty port data */
-	struct urb *ctrlurb;				/* urbs */
-	u8 *ctrl_buffer;				/* buffers of urbs */
-	dma_addr_t ctrl_dma;				/* dma handles of buffers */
-	u8 *country_codes;				/* country codes from device */
-	unsigned int country_code_size;			/* size of this buffer */
-	unsigned int country_rel_date;			/* release date of version */
+	struct usb_device *dev;				
+	struct usb_interface *control;			
+	struct usb_interface *data;			
+	unsigned in, out;				
+	struct tty_port port;			 	
+	struct urb *ctrlurb;				
+	u8 *ctrl_buffer;				
+	dma_addr_t ctrl_dma;				
+	u8 *country_codes;				
+	unsigned int country_code_size;			
+	unsigned int country_rel_date;			
 	struct acm_wb wb[ACM_NW];
 	unsigned long read_urbs_free;
 	struct urb *read_urbs[ACM_NR];
 	struct acm_rb read_buffers[ACM_NR];
 	int rx_buflimit;
 	spinlock_t read_lock;
-	u8 *notification_buffer;			/* to reassemble fragmented notifications */
+	u8 *notification_buffer;			
 	unsigned int nb_index;
 	unsigned int nb_size;
 	int transmitting;
@@ -84,27 +65,27 @@ struct acm {
 #		define EVENT_RX_STALL	1
 #		define ACM_THROTTLED	2
 #		define ACM_ERROR_DELAY	3
-	unsigned long urbs_in_error_delay;		/* these need to be restarted after a delay */
-	struct usb_cdc_line_coding line;		/* bits, stop, parity */
-	struct delayed_work dwork;		        /* work queue entry for various purposes */
-	unsigned int ctrlin;				/* input control lines (DCD, DSR, RI, break, overruns) */
-	unsigned int ctrlout;				/* output control lines (DTR, RTS) */
-	struct async_icount iocount;			/* counters for control line changes */
-	struct async_icount oldcount;			/* for comparison of counter */
-	wait_queue_head_t wioctl;			/* for ioctl */
-	unsigned int writesize;				/* max packet size for the output bulk endpoint */
-	unsigned int readsize,ctrlsize;			/* buffer sizes for freeing */
-	unsigned int minor;				/* acm minor number */
-	unsigned char clocal;				/* termios CLOCAL */
-	unsigned int ctrl_caps;				/* control capabilities from the class specific header */
-	unsigned int susp_count;			/* number of suspended interfaces */
-	unsigned int combined_interfaces:1;		/* control and data collapsed */
+	unsigned long urbs_in_error_delay;		
+	struct usb_cdc_line_coding line;		
+	struct delayed_work dwork;		        
+	unsigned int ctrlin;				
+	unsigned int ctrlout;				
+	struct async_icount iocount;			
+	struct async_icount oldcount;			
+	wait_queue_head_t wioctl;			
+	unsigned int writesize;				
+	unsigned int readsize,ctrlsize;			
+	unsigned int minor;				
+	unsigned char clocal;				
+	unsigned int ctrl_caps;				
+	unsigned int susp_count;			
+	unsigned int combined_interfaces:1;		
 	u8 bInterval;
-	struct usb_anchor delayed;			/* writes queued for a device about to be woken */
+	struct usb_anchor delayed;			
 	unsigned long quirks;
 };
 
-/* constants describing various quirks and errors */
+
 #define NO_UNION_NORMAL			BIT(0)
 #define SINGLE_RX_URB			BIT(1)
 #define NO_CAP_LINE			BIT(2)

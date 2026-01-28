@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Platform data for ST STA350 ASoC codec driver.
- *
- * Copyright: 2014 Raumfeld GmbH
- * Author: Sven Brandau <info@brandau.biz>
- */
+
+
 #ifndef __LINUX_SND__STA350_H
 #define __LINUX_SND__STA350_H
 
@@ -50,4 +45,4 @@ struct sta350_platform_data {
 	unsigned int powerdown_master_vol:1;
 };
 
-#endif /* __LINUX_SND__STA350_H */
+#endif 

@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Register Map - Based on AN888_SMUforIEEE_SynchEther_82P33xxx_RevH.pdf
- *
- * Copyright (C) 2021 Integrated Device Technology, Inc., a Renesas Company.
- */
+
+
 #ifndef HAVE_IDT82P33_REG
 #define HAVE_IDT82P33_REG
 
 #define REG_ADDR(page, offset) (((page) << 0x7) | ((offset) & 0x7f))
 
-/* Register address */
+
 #define DPLL1_TOD_CNFG 0x134
 #define DPLL2_TOD_CNFG 0x1B4
 
@@ -45,29 +41,29 @@
 #define OUT_MUX_CNFG(outn) REG_ADDR(0x6, (0xC * (outn)))
 #define TOD_TRIGGER(wr_trig, rd_trig) ((wr_trig & 0xf) << 4 | (rd_trig & 0xf))
 
-/* Register bit definitions */
+
 #define SYNC_TOD BIT(1)
 #define PH_OFFSET_EN BIT(7)
 #define SQUELCH_ENABLE BIT(5)
 
-/* Bit definitions for the DPLL_MODE register */
+
 #define PLL_MODE_SHIFT		(0)
 #define PLL_MODE_MASK		(0x1F)
 #define COMBO_MODE_EN		BIT(5)
 #define COMBO_MODE_SHIFT	(6)
 #define COMBO_MODE_MASK		(0x3)
 
-/* Bit definitions for DPLL_OPERATING_STS register */
+
 #define OPERATING_STS_MASK	(0x7)
 #define OPERATING_STS_SHIFT	(0x0)
 
-/* Bit definitions for DPLL_TOD_TRIGGER register */
+
 #define READ_TRIGGER_MASK	(0xF)
 #define READ_TRIGGER_SHIFT	(0x0)
 #define WRITE_TRIGGER_MASK	(0xF0)
 #define WRITE_TRIGGER_SHIFT	(0x4)
 
-/* Bit definitions for REG_SOFT_RESET register */
+
 #define SOFT_RESET_EN		BIT(7)
 
 enum pll_mode {
@@ -101,7 +97,7 @@ enum hw_tod_trig_sel {
 	WR_TRIG_SEL_MAX = HW_TOD_WR_TRIG_SEL_MSB_TOD_CNFG,
 };
 
-/** @brief Enumerated type listing DPLL operational modes */
+
 enum dpll_state {
 	DPLL_STATE_FREERUN = 1,
 	DPLL_STATE_HOLDOVER = 2,

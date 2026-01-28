@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Maxime Ripard. All rights reserved.
- */
+
+
 
 #ifndef _CCU_PHASE_H_
 #define _CCU_PHASE_H_
@@ -39,4 +37,4 @@ static inline struct ccu_phase *hw_to_ccu_phase(struct clk_hw *hw)
 
 extern const struct clk_ops ccu_phase_ops;
 
-#endif /* _CCU_PHASE_H_ */
+#endif 

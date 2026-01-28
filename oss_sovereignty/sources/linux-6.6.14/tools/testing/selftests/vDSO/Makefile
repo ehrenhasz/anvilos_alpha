@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 include ../lib.mk
 
 uname_M := $(shell uname -m 2>/dev/null || echo not)

@@ -1,14 +1,4 @@
-/*
- * Ceph - scalable distributed file system
- *
- * Copyright (C) 2015 Intel Corporation All Rights Reserved
- *
- * This is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License version 2.1, as published by the Free Software
- * Foundation.  See file COPYING.
- *
- */
+
 
 #ifndef CEPH_CRUSH_LN_H
 #define CEPH_CRUSH_LN_H
@@ -19,10 +9,7 @@
 # include "crush_compat.h"
 #endif
 
-/*
- * RH_LH_tbl[2*k] = 2^48/(1.0+k/128.0)
- * RH_LH_tbl[2*k+1] = 2^48*log2(1.0+k/128.0)
- */
+
 static __s64 __RH_LH_tbl[128*2+2] = {
   0x0001000000000000ll, 0x0000000000000000ll, 0x0000fe03f80fe040ll, 0x000002dfca16dde1ll,
   0x0000fc0fc0fc0fc1ll, 0x000005b9e5a170b4ll, 0x0000fa232cf25214ll, 0x0000088e68ea899all,
@@ -91,9 +78,7 @@ static __s64 __RH_LH_tbl[128*2+2] = {
   0x0000800000000000ll, 0x0000ffff00000000ll,
 };
 
-/*
- * LL_tbl[k] = 2^48*log2(1.0+k/2^15)
- */
+
 static __s64 __LL_tbl[256] = {
   0x0000000000000000ull, 0x00000002e2a60a00ull, 0x000000070cb64ec5ull, 0x00000009ef50ce67ull,
   0x0000000cd1e588fdull, 0x0000000fb4747e9cull, 0x0000001296fdaf5eull, 0x0000001579811b58ull,

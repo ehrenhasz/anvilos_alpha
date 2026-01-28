@@ -1,17 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Helper routines for the NFS client caches
- *
- * Copyright (c) 2009 Trond Myklebust <Trond.Myklebust@netapp.com>
- */
+
+
 
 #include <linux/completion.h>
 #include <linux/sunrpc/cache.h>
 #include <linux/atomic.h>
 
-/*
- * Deferred request handling
- */
+
 struct nfs_cache_defer_req {
 	struct cache_req req;
 	struct cache_deferred_req deferred_req;

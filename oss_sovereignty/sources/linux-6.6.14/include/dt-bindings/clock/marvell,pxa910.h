@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __DTS_MARVELL_PXA910_CLOCK_H
 #define __DTS_MARVELL_PXA910_CLOCK_H
 
-/* fixed clocks and plls */
+
 #define PXA910_CLK_CLK32		1
 #define PXA910_CLK_VCTCXO		2
 #define PXA910_CLK_PLL1			3
@@ -23,7 +23,7 @@
 #define PXA910_CLK_UART_PLL		27
 #define PXA910_CLK_USB_PLL		28
 
-/* apb peripherals */
+
 #define PXA910_CLK_TWSI0		60
 #define PXA910_CLK_TWSI1		61
 #define PXA910_CLK_TWSI2		62
@@ -43,7 +43,7 @@
 #define PXA910_CLK_TIMER0		76
 #define PXA910_CLK_TIMER1		77
 
-/* axi peripherals */
+
 #define PXA910_CLK_DFC			100
 #define PXA910_CLK_SDH0			101
 #define PXA910_CLK_SDH1			102

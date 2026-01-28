@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "imx7s-tqma7.dtsi"
-#include "imx7-mba7.dtsi"
-/ {
-	model = "TQ-Systems TQMa7S board on MBa7 carrier board";
-	compatible = "tq,imx7s-mba7", "tq,imx7s-tqma7", "fsl,imx7s";
-};

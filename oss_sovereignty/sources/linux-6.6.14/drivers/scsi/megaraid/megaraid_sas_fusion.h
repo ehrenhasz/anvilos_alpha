@@ -1,26 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Linux MegaRAID driver for SAS based RAID controllers
- *
- *  Copyright (c) 2009-2013  LSI Corporation
- *  Copyright (c) 2013-2016  Avago Technologies
- *  Copyright (c) 2016-2018  Broadcom Inc.
- *
- *  FILE: megaraid_sas_fusion.h
- *
- *  Authors: Broadcom Inc.
- *           Manoj Jose
- *           Sumant Patro
- *           Kashyap Desai <kashyap.desai@broadcom.com>
- *           Sumit Saxena <sumit.saxena@broadcom.com>
- *
- *  Send feedback to: megaraidlinux.pdl@broadcom.com
- */
+
+
 
 #ifndef _MEGARAID_SAS_FUSION_H_
 #define _MEGARAID_SAS_FUSION_H_
 
-/* Fusion defines */
+
 #define MEGASAS_CHAIN_FRAME_SZ_MIN 1024
 #define MFI_FUSION_ENABLE_INTERRUPT_MASK (0x00000009)
 #define MEGASAS_MAX_CHAIN_SHIFT			5
@@ -40,7 +24,7 @@
 #define RDPQ_MAX_INDEX_IN_ONE_CHUNK		    16
 #define RDPQ_MAX_CHUNK_COUNT (MAX_MSIX_QUEUES_FUSION / RDPQ_MAX_INDEX_IN_ONE_CHUNK)
 
-/* Invader defines */
+
 #define MPI2_TYPE_CUDA				    0x2
 #define MPI25_SAS_DEVICE0_FLAGS_ENABLED_FAST_PATH   0x4000
 #define	MR_RL_FLAGS_GRANT_DESTINATION_CPU0	    0x00
@@ -50,7 +34,7 @@
 #define MR_RL_WRITE_THROUGH_MODE		    0x00
 #define MR_RL_WRITE_BACK_MODE			    0x01
 
-/* T10 PI defines */
+
 #define MR_PROT_INFO_TYPE_CONTROLLER                0x8
 #define MEGASAS_SCSI_VARIABLE_LENGTH_CMD            0x7f
 #define MEGASAS_SCSI_SERVICE_ACTION_READ32          0x9
@@ -62,9 +46,7 @@
 #define MPI2_SUP_REPLY_POST_HOST_INDEX_OFFSET   (0x0000030C)
 #define MPI2_REPLY_POST_HOST_INDEX_OFFSET	(0x0000006C)
 
-/*
- * Raid context flags
- */
+
 
 #define MR_RAID_CTX_RAID_FLAGS_IO_SUB_TYPE_SHIFT   0x4
 #define MR_RAID_CTX_RAID_FLAGS_IO_SUB_TYPE_MASK    0x30
@@ -79,9 +61,7 @@ enum MR_RAID_FLAGS_IO_SUB_TYPE {
 	MR_RAID_FLAGS_IO_SUB_TYPE_R56_DIV_OFFLOAD = 8
 };
 
-/*
- * Request descriptor types
- */
+
 #define MEGASAS_REQ_DESCRIPT_FLAGS_LD_IO           0x7
 #define MEGASAS_REQ_DESCRIPT_FLAGS_MFA             0x1
 #define MEGASAS_REQ_DESCRIPT_FLAGS_NO_LOCK	   0x2
@@ -95,10 +75,7 @@ enum MR_RAID_FLAGS_IO_SUB_TYPE {
 #define MEGASAS_REDUCE_QD_COUNT 64
 #define IOC_INIT_FRAME_SIZE 4096
 
-/*
- * Raid Context structure which describes MegaRAID specific IO Parameters
- * This resides at offset 0x60 where the SGL normally starts in MPT IO Frames
- */
+
 
 struct RAID_CONTEXT {
 #if   defined(__BIG_ENDIAN_BITFIELD)
@@ -127,54 +104,39 @@ struct RAID_CONTEXT {
 	u8 resvd2;
 };
 
-/*
- * Raid Context structure which describes ventura MegaRAID specific
- * IO Paramenters ,This resides at offset 0x60 where the SGL normally
- * starts in MPT IO Frames
- */
+
 struct RAID_CONTEXT_G35 {
 	#define RAID_CONTEXT_NSEG_MASK	0x00F0
 	#define RAID_CONTEXT_NSEG_SHIFT	4
 	#define RAID_CONTEXT_TYPE_MASK	0x000F
 	#define RAID_CONTEXT_TYPE_SHIFT	0
 	u16		nseg_type;
-	u16 timeout_value; /* 0x02 -0x03 */
-	u16		routing_flags;	// 0x04 -0x05 routing flags
-	u16 virtual_disk_tgt_id;   /* 0x06 -0x07 */
-	__le64 reg_lock_row_lba;      /* 0x08 - 0x0F */
-	u32 reg_lock_length;      /* 0x10 - 0x13 */
-	union {                     // flow specific
-		u16 rmw_op_index;   /* 0x14 - 0x15, R5/6 RMW: rmw operation index*/
-		u16 peer_smid;      /* 0x14 - 0x15, R1 Write: peer smid*/
-		u16 r56_arm_map;    /* 0x14 - 0x15, Unused [15], LogArm[14:10], P-Arm[9:5], Q-Arm[4:0] */
+	u16 timeout_value; 
+	u16		routing_flags;	
+	u16 virtual_disk_tgt_id;   
+	__le64 reg_lock_row_lba;      
+	u32 reg_lock_length;      
+	union {                     
+		u16 rmw_op_index;   
+		u16 peer_smid;      
+		u16 r56_arm_map;    
 
 	} flow_specific;
 
-	u8 ex_status;       /* 0x16 : OUT */
-	u8 status;          /* 0x17 status */
-	u8 raid_flags;		/* 0x18 resvd[7:6], ioSubType[5:4],
-				 * resvd[3:1], preferredCpu[0]
-				 */
-	u8 span_arm;            /* 0x1C span[7:5], arm[4:0] */
-	u16	config_seq_num;           /* 0x1A -0x1B */
+	u8 ex_status;       
+	u8 status;          
+	u8 raid_flags;		
+	u8 span_arm;            
+	u16	config_seq_num;           
 	union {
-		/*
-		 * Bit format:
-		 *	 ---------------------------------
-		 *	 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
-		 *	 ---------------------------------
-		 * Byte0 |    numSGE[7]- numSGE[0]	 |
-		 *	 ---------------------------------
-		 * Byte1 |SD | resvd     | numSGE 8-11   |
-		 *        --------------------------------
-		 */
+		
 		#define NUM_SGE_MASK_LOWER	0xFF
 		#define NUM_SGE_MASK_UPPER	0x0F
 		#define NUM_SGE_SHIFT_UPPER	8
 		#define STREAM_DETECT_SHIFT	7
 		#define STREAM_DETECT_MASK	0x80
 		struct {
-#if   defined(__BIG_ENDIAN_BITFIELD) /* 0x1C - 0x1D */
+#if   defined(__BIG_ENDIAN_BITFIELD) 
 			u16 stream_detected:1;
 			u16 reserved:3;
 			u16 num_sge:12;
@@ -186,7 +148,7 @@ struct RAID_CONTEXT_G35 {
 		} bits;
 		u8 bytes[2];
 	} u;
-	u8 resvd2[2];          /* 0x1E-0x1F */
+	u8 resvd2[2];          
 };
 
 #define MR_RAID_CTX_ROUTINGFLAGS_SLD_SHIFT	1
@@ -240,14 +202,14 @@ union RAID_CONTEXT_UNION {
 #define RAID_CTX_SPANARM_SPAN_SHIFT	(5)
 #define RAID_CTX_SPANARM_SPAN_MASK	(0xE0)
 
-/* LogArm[14:10], P-Arm[9:5], Q-Arm[4:0] */
+
 #define RAID_CTX_R56_Q_ARM_MASK		(0x1F)
 #define RAID_CTX_R56_P_ARM_SHIFT	(5)
 #define RAID_CTX_R56_P_ARM_MASK		(0x3E0)
 #define RAID_CTX_R56_LOG_ARM_SHIFT	(10)
 #define RAID_CTX_R56_LOG_ARM_MASK	(0x7C00)
 
-/* number of bits per index in U32 TrackStream */
+
 #define BITS_PER_INDEX_STREAM		4
 #define INVALID_STREAM_NUM              16
 #define MR_STREAM_BITMAP		0x76543210
@@ -255,9 +217,7 @@ union RAID_CONTEXT_UNION {
 #define ZERO_LAST_STREAM		0x0fffffff
 #define MAX_STREAMS_TRACKED		8
 
-/*
- * define region lock types
- */
+
 enum REGION_TYPE {
 	REGION_TYPE_UNUSED       = 0,
 	REGION_TYPE_SHARED_READ  = 1,
@@ -265,8 +225,8 @@ enum REGION_TYPE {
 	REGION_TYPE_EXCLUSIVE    = 3,
 };
 
-/* MPI2 defines */
-#define MPI2_FUNCTION_IOC_INIT              (0x02) /* IOC Init */
+
+#define MPI2_FUNCTION_IOC_INIT              (0x02) 
 #define MPI2_WHOINIT_HOST_DRIVER            (0x04)
 #define MPI2_VERSION_MAJOR                  (0x02)
 #define MPI2_VERSION_MINOR                  (0x00)
@@ -291,9 +251,9 @@ enum REGION_TYPE {
 #define MPI2_SCSIIO_EEDPFLAGS_CHECK_APPTAG          (0x0200)
 #define MPI2_SCSIIO_EEDPFLAGS_CHECK_GUARD           (0x0100)
 #define MPI2_SCSIIO_EEDPFLAGS_INSERT_OP             (0x0004)
-/* EEDP escape mode */
+
 #define MPI25_SCSIIO_EEDPFLAGS_DO_NOT_DISABLE_MODE  (0x0040)
-#define MPI2_FUNCTION_SCSI_IO_REQUEST               (0x00) /* SCSI IO */
+#define MPI2_FUNCTION_SCSI_IO_REQUEST               (0x00) 
 #define MPI2_FUNCTION_SCSI_TASK_MGMT                (0x01)
 #define MPI2_REQ_DESCRIPT_FLAGS_HIGH_PRIORITY       (0x03)
 #define MPI2_REQ_DESCRIPT_FLAGS_FP_IO               (0x06)
@@ -331,11 +291,11 @@ struct MPI2_SGE_SIMPLE_UNION {
 };
 
 struct MPI2_SCSI_IO_CDB_EEDP32 {
-	u8                      CDB[20];                    /* 0x00 */
-	__be32			PrimaryReferenceTag;        /* 0x14 */
-	__be16			PrimaryApplicationTag;      /* 0x18 */
-	__be16			PrimaryApplicationTagMask;  /* 0x1A */
-	__le32			TransferLength;             /* 0x1C */
+	u8                      CDB[20];                    
+	__be32			PrimaryReferenceTag;        
+	__be16			PrimaryApplicationTag;      
+	__be16			PrimaryApplicationTagMask;  
+	__le32			TransferLength;             
 };
 
 struct MPI2_SGE_CHAIN_UNION {
@@ -397,46 +357,44 @@ union MPI2_SCSI_IO_CDB_UNION {
 	struct MPI2_SGE_SIMPLE_UNION SGE;
 };
 
-/****************************************************************************
-*  SCSI Task Management messages
-****************************************************************************/
 
-/*SCSI Task Management Request Message */
+
+
 struct MPI2_SCSI_TASK_MANAGE_REQUEST {
-	u16 DevHandle;		/*0x00 */
-	u8 ChainOffset;		/*0x02 */
-	u8 Function;		/*0x03 */
-	u8 Reserved1;		/*0x04 */
-	u8 TaskType;		/*0x05 */
-	u8 Reserved2;		/*0x06 */
-	u8 MsgFlags;		/*0x07 */
-	u8 VP_ID;		/*0x08 */
-	u8 VF_ID;		/*0x09 */
-	u16 Reserved3;		/*0x0A */
-	u8 LUN[8];		/*0x0C */
-	u32 Reserved4[7];	/*0x14 */
-	u16 TaskMID;		/*0x30 */
-	u16 Reserved5;		/*0x32 */
+	u16 DevHandle;		
+	u8 ChainOffset;		
+	u8 Function;		
+	u8 Reserved1;		
+	u8 TaskType;		
+	u8 Reserved2;		
+	u8 MsgFlags;		
+	u8 VP_ID;		
+	u8 VF_ID;		
+	u16 Reserved3;		
+	u8 LUN[8];		
+	u32 Reserved4[7];	
+	u16 TaskMID;		
+	u16 Reserved5;		
 };
 
 
-/*SCSI Task Management Reply Message */
+
 struct MPI2_SCSI_TASK_MANAGE_REPLY {
-	u16 DevHandle;		/*0x00 */
-	u8 MsgLength;		/*0x02 */
-	u8 Function;		/*0x03 */
-	u8 ResponseCode;	/*0x04 */
-	u8 TaskType;		/*0x05 */
-	u8 Reserved1;		/*0x06 */
-	u8 MsgFlags;		/*0x07 */
-	u8 VP_ID;		/*0x08 */
-	u8 VF_ID;		/*0x09 */
-	u16 Reserved2;		/*0x0A */
-	u16 Reserved3;		/*0x0C */
-	u16 IOCStatus;		/*0x0E */
-	u32 IOCLogInfo;		/*0x10 */
-	u32 TerminationCount;	/*0x14 */
-	u32 ResponseInfo;	/*0x18 */
+	u16 DevHandle;		
+	u8 MsgLength;		
+	u8 Function;		
+	u8 ResponseCode;	
+	u8 TaskType;		
+	u8 Reserved1;		
+	u8 MsgFlags;		
+	u8 VP_ID;		
+	u8 VF_ID;		
+	u16 Reserved2;		
+	u16 Reserved3;		
+	u16 IOCStatus;		
+	u32 IOCLogInfo;		
+	u32 TerminationCount;	
+	u32 ResponseInfo;	
 };
 
 struct MR_TM_REQUEST {
@@ -447,9 +405,9 @@ struct MR_TM_REPLY {
 	char reply[128];
 };
 
-/* SCSI Task Management Request Message */
+
 struct MR_TASK_MANAGE_REQUEST {
-	/*To be type casted to struct MPI2_SCSI_TASK_MANAGE_REQUEST */
+	
 	struct MR_TM_REQUEST         TmRequest;
 	union {
 		struct {
@@ -468,7 +426,7 @@ struct MR_TASK_MANAGE_REQUEST {
 	};
 };
 
-/* TaskType values */
+
 
 #define MPI2_SCSITASKMGMT_TASKTYPE_ABORT_TASK           (0x01)
 #define MPI2_SCSITASKMGMT_TASKTYPE_ABRT_TASK_SET        (0x02)
@@ -480,7 +438,7 @@ struct MR_TASK_MANAGE_REQUEST {
 #define MPI2_SCSITASKMGMT_TASKTYPE_QRY_TASK_SET         (0x09)
 #define MPI2_SCSITASKMGMT_TASKTYPE_QRY_ASYNC_EVENT      (0x0A)
 
-/* ResponseCode values */
+
 
 #define MPI2_SCSITASKMGMT_RSP_TM_COMPLETE               (0x00)
 #define MPI2_SCSITASKMGMT_RSP_INVALID_FRAME             (0x02)
@@ -491,102 +449,97 @@ struct MR_TASK_MANAGE_REQUEST {
 #define MPI2_SCSITASKMGMT_RSP_TM_OVERLAPPED_TAG         (0x0A)
 #define MPI2_SCSITASKMGMT_RSP_IO_QUEUED_ON_IOC          (0x80)
 
-/*
- * RAID SCSI IO Request Message
- * Total SGE count will be one less than  _MPI2_SCSI_IO_REQUEST
- */
+
 struct MPI2_RAID_SCSI_IO_REQUEST {
-	__le16			DevHandle;                      /* 0x00 */
-	u8                      ChainOffset;                    /* 0x02 */
-	u8                      Function;                       /* 0x03 */
-	__le16			Reserved1;                      /* 0x04 */
-	u8                      Reserved2;                      /* 0x06 */
-	u8                      MsgFlags;                       /* 0x07 */
-	u8                      VP_ID;                          /* 0x08 */
-	u8                      VF_ID;                          /* 0x09 */
-	__le16			Reserved3;                      /* 0x0A */
-	__le32			SenseBufferLowAddress;          /* 0x0C */
-	__le16			SGLFlags;                       /* 0x10 */
-	u8                      SenseBufferLength;              /* 0x12 */
-	u8                      Reserved4;                      /* 0x13 */
-	u8                      SGLOffset0;                     /* 0x14 */
-	u8                      SGLOffset1;                     /* 0x15 */
-	u8                      SGLOffset2;                     /* 0x16 */
-	u8                      SGLOffset3;                     /* 0x17 */
-	__le32			SkipCount;                      /* 0x18 */
-	__le32			DataLength;                     /* 0x1C */
-	__le32			BidirectionalDataLength;        /* 0x20 */
-	__le16			IoFlags;                        /* 0x24 */
-	__le16			EEDPFlags;                      /* 0x26 */
-	__le32			EEDPBlockSize;                  /* 0x28 */
-	__le32			SecondaryReferenceTag;          /* 0x2C */
-	__le16			SecondaryApplicationTag;        /* 0x30 */
-	__le16			ApplicationTagTranslationMask;  /* 0x32 */
-	u8                      LUN[8];                         /* 0x34 */
-	__le32			Control;                        /* 0x3C */
-	union MPI2_SCSI_IO_CDB_UNION  CDB;			/* 0x40 */
-	union RAID_CONTEXT_UNION RaidContext;  /* 0x60 */
+	__le16			DevHandle;                      
+	u8                      ChainOffset;                    
+	u8                      Function;                       
+	__le16			Reserved1;                      
+	u8                      Reserved2;                      
+	u8                      MsgFlags;                       
+	u8                      VP_ID;                          
+	u8                      VF_ID;                          
+	__le16			Reserved3;                      
+	__le32			SenseBufferLowAddress;          
+	__le16			SGLFlags;                       
+	u8                      SenseBufferLength;              
+	u8                      Reserved4;                      
+	u8                      SGLOffset0;                     
+	u8                      SGLOffset1;                     
+	u8                      SGLOffset2;                     
+	u8                      SGLOffset3;                     
+	__le32			SkipCount;                      
+	__le32			DataLength;                     
+	__le32			BidirectionalDataLength;        
+	__le16			IoFlags;                        
+	__le16			EEDPFlags;                      
+	__le32			EEDPBlockSize;                  
+	__le32			SecondaryReferenceTag;          
+	__le16			SecondaryApplicationTag;        
+	__le16			ApplicationTagTranslationMask;  
+	u8                      LUN[8];                         
+	__le32			Control;                        
+	union MPI2_SCSI_IO_CDB_UNION  CDB;			
+	union RAID_CONTEXT_UNION RaidContext;  
 	union {
-		union MPI2_SGE_IO_UNION       SGL;		/* 0x80 */
+		union MPI2_SGE_IO_UNION       SGL;		
 		DECLARE_FLEX_ARRAY(union MPI2_SGE_IO_UNION, SGLs);
 	};
 };
 
-/*
- * MPT RAID MFA IO Descriptor.
- */
+
 struct MEGASAS_RAID_MFA_IO_REQUEST_DESCRIPTOR {
 	u32     RequestFlags:8;
 	u32     MessageAddress1:24;
 	u32     MessageAddress2;
 };
 
-/* Default Request Descriptor */
+
 struct MPI2_DEFAULT_REQUEST_DESCRIPTOR {
-	u8              RequestFlags;               /* 0x00 */
-	u8              MSIxIndex;                  /* 0x01 */
-	__le16		SMID;                       /* 0x02 */
-	__le16		LMID;                       /* 0x04 */
-	__le16		DescriptorTypeDependent;    /* 0x06 */
+	u8              RequestFlags;               
+	u8              MSIxIndex;                  
+	__le16		SMID;                       
+	__le16		LMID;                       
+	__le16		DescriptorTypeDependent;    
 };
 
-/* High Priority Request Descriptor */
+
 struct MPI2_HIGH_PRIORITY_REQUEST_DESCRIPTOR {
-	u8              RequestFlags;               /* 0x00 */
-	u8              MSIxIndex;                  /* 0x01 */
-	__le16		SMID;                       /* 0x02 */
-	__le16		LMID;                       /* 0x04 */
-	__le16		Reserved1;                  /* 0x06 */
+	u8              RequestFlags;               
+	u8              MSIxIndex;                  
+	__le16		SMID;                       
+	__le16		LMID;                       
+	__le16		Reserved1;                  
 };
 
-/* SCSI IO Request Descriptor */
+
 struct MPI2_SCSI_IO_REQUEST_DESCRIPTOR {
-	u8              RequestFlags;               /* 0x00 */
-	u8              MSIxIndex;                  /* 0x01 */
-	__le16		SMID;                       /* 0x02 */
-	__le16		LMID;                       /* 0x04 */
-	__le16		DevHandle;                  /* 0x06 */
+	u8              RequestFlags;               
+	u8              MSIxIndex;                  
+	__le16		SMID;                       
+	__le16		LMID;                       
+	__le16		DevHandle;                  
 };
 
-/* SCSI Target Request Descriptor */
+
 struct MPI2_SCSI_TARGET_REQUEST_DESCRIPTOR {
-	u8              RequestFlags;               /* 0x00 */
-	u8              MSIxIndex;                  /* 0x01 */
-	__le16		SMID;                       /* 0x02 */
-	__le16		LMID;                       /* 0x04 */
-	__le16		IoIndex;                    /* 0x06 */
+	u8              RequestFlags;               
+	u8              MSIxIndex;                  
+	__le16		SMID;                       
+	__le16		LMID;                       
+	__le16		IoIndex;                    
 };
 
-/* RAID Accelerator Request Descriptor */
+
 struct MPI2_RAID_ACCEL_REQUEST_DESCRIPTOR {
-	u8              RequestFlags;               /* 0x00 */
-	u8              MSIxIndex;                  /* 0x01 */
-	__le16		SMID;                       /* 0x02 */
-	__le16		LMID;                       /* 0x04 */
-	__le16		Reserved;                   /* 0x06 */
+	u8              RequestFlags;               
+	u8              MSIxIndex;                  
+	__le16		SMID;                       
+	__le16		LMID;                       
+	__le16		Reserved;                   
 };
 
-/* union of Request Descriptors */
+
 union MEGASAS_REQUEST_DESCRIPTOR_UNION {
 	struct MPI2_DEFAULT_REQUEST_DESCRIPTOR             Default;
 	struct MPI2_HIGH_PRIORITY_REQUEST_DESCRIPTOR       HighPriority;
@@ -603,60 +556,60 @@ union MEGASAS_REQUEST_DESCRIPTOR_UNION {
 	};
 };
 
-/* Default Reply Descriptor */
+
 struct MPI2_DEFAULT_REPLY_DESCRIPTOR {
-	u8              ReplyFlags;                 /* 0x00 */
-	u8              MSIxIndex;                  /* 0x01 */
-	__le16		DescriptorTypeDependent1;   /* 0x02 */
-	__le32		DescriptorTypeDependent2;   /* 0x04 */
+	u8              ReplyFlags;                 
+	u8              MSIxIndex;                  
+	__le16		DescriptorTypeDependent1;   
+	__le32		DescriptorTypeDependent2;   
 };
 
-/* Address Reply Descriptor */
+
 struct MPI2_ADDRESS_REPLY_DESCRIPTOR {
-	u8              ReplyFlags;                 /* 0x00 */
-	u8              MSIxIndex;                  /* 0x01 */
-	__le16		SMID;                       /* 0x02 */
-	__le32		ReplyFrameAddress;          /* 0x04 */
+	u8              ReplyFlags;                 
+	u8              MSIxIndex;                  
+	__le16		SMID;                       
+	__le32		ReplyFrameAddress;          
 };
 
-/* SCSI IO Success Reply Descriptor */
+
 struct MPI2_SCSI_IO_SUCCESS_REPLY_DESCRIPTOR {
-	u8              ReplyFlags;                 /* 0x00 */
-	u8              MSIxIndex;                  /* 0x01 */
-	__le16		SMID;                       /* 0x02 */
-	__le16		TaskTag;                    /* 0x04 */
-	__le16		Reserved1;                  /* 0x06 */
+	u8              ReplyFlags;                 
+	u8              MSIxIndex;                  
+	__le16		SMID;                       
+	__le16		TaskTag;                    
+	__le16		Reserved1;                  
 };
 
-/* TargetAssist Success Reply Descriptor */
+
 struct MPI2_TARGETASSIST_SUCCESS_REPLY_DESCRIPTOR {
-	u8              ReplyFlags;                 /* 0x00 */
-	u8              MSIxIndex;                  /* 0x01 */
-	__le16		SMID;                       /* 0x02 */
-	u8              SequenceNumber;             /* 0x04 */
-	u8              Reserved1;                  /* 0x05 */
-	__le16		IoIndex;                    /* 0x06 */
+	u8              ReplyFlags;                 
+	u8              MSIxIndex;                  
+	__le16		SMID;                       
+	u8              SequenceNumber;             
+	u8              Reserved1;                  
+	__le16		IoIndex;                    
 };
 
-/* Target Command Buffer Reply Descriptor */
+
 struct MPI2_TARGET_COMMAND_BUFFER_REPLY_DESCRIPTOR {
-	u8              ReplyFlags;                 /* 0x00 */
-	u8              MSIxIndex;                  /* 0x01 */
-	u8              VP_ID;                      /* 0x02 */
-	u8              Flags;                      /* 0x03 */
-	__le16		InitiatorDevHandle;         /* 0x04 */
-	__le16		IoIndex;                    /* 0x06 */
+	u8              ReplyFlags;                 
+	u8              MSIxIndex;                  
+	u8              VP_ID;                      
+	u8              Flags;                      
+	__le16		InitiatorDevHandle;         
+	__le16		IoIndex;                    
 };
 
-/* RAID Accelerator Success Reply Descriptor */
+
 struct MPI2_RAID_ACCELERATOR_SUCCESS_REPLY_DESCRIPTOR {
-	u8              ReplyFlags;                 /* 0x00 */
-	u8              MSIxIndex;                  /* 0x01 */
-	__le16		SMID;                       /* 0x02 */
-	__le32		Reserved;                   /* 0x04 */
+	u8              ReplyFlags;                 
+	u8              MSIxIndex;                  
+	__le16		SMID;                       
+	__le32		Reserved;                   
 };
 
-/* union of Reply Descriptors */
+
 union MPI2_REPLY_DESCRIPTORS_UNION {
 	struct MPI2_DEFAULT_REPLY_DESCRIPTOR                   Default;
 	struct MPI2_ADDRESS_REPLY_DESCRIPTOR                   AddressReply;
@@ -668,37 +621,37 @@ union MPI2_REPLY_DESCRIPTORS_UNION {
 	__le64                                             Words;
 };
 
-/* IOCInit Request message */
+
 struct MPI2_IOC_INIT_REQUEST {
-	u8                      WhoInit;                        /* 0x00 */
-	u8                      Reserved1;                      /* 0x01 */
-	u8                      ChainOffset;                    /* 0x02 */
-	u8                      Function;                       /* 0x03 */
-	__le16			Reserved2;                      /* 0x04 */
-	u8                      Reserved3;                      /* 0x06 */
-	u8                      MsgFlags;                       /* 0x07 */
-	u8                      VP_ID;                          /* 0x08 */
-	u8                      VF_ID;                          /* 0x09 */
-	__le16			Reserved4;                      /* 0x0A */
-	__le16			MsgVersion;                     /* 0x0C */
-	__le16			HeaderVersion;                  /* 0x0E */
-	u32                     Reserved5;                      /* 0x10 */
-	__le16			Reserved6;                      /* 0x14 */
-	u8                      HostPageSize;                   /* 0x16 */
-	u8                      HostMSIxVectors;                /* 0x17 */
-	__le16			Reserved8;                      /* 0x18 */
-	__le16			SystemRequestFrameSize;         /* 0x1A */
-	__le16			ReplyDescriptorPostQueueDepth;  /* 0x1C */
-	__le16			ReplyFreeQueueDepth;            /* 0x1E */
-	__le32			SenseBufferAddressHigh;         /* 0x20 */
-	__le32			SystemReplyAddressHigh;         /* 0x24 */
-	__le64			SystemRequestFrameBaseAddress;  /* 0x28 */
-	__le64			ReplyDescriptorPostQueueAddress;/* 0x30 */
-	__le64			ReplyFreeQueueAddress;          /* 0x38 */
-	__le64			TimeStamp;                      /* 0x40 */
+	u8                      WhoInit;                        
+	u8                      Reserved1;                      
+	u8                      ChainOffset;                    
+	u8                      Function;                       
+	__le16			Reserved2;                      
+	u8                      Reserved3;                      
+	u8                      MsgFlags;                       
+	u8                      VP_ID;                          
+	u8                      VF_ID;                          
+	__le16			Reserved4;                      
+	__le16			MsgVersion;                     
+	__le16			HeaderVersion;                  
+	u32                     Reserved5;                      
+	__le16			Reserved6;                      
+	u8                      HostPageSize;                   
+	u8                      HostMSIxVectors;                
+	__le16			Reserved8;                      
+	__le16			SystemRequestFrameSize;         
+	__le16			ReplyDescriptorPostQueueDepth;  
+	__le16			ReplyFreeQueueDepth;            
+	__le32			SenseBufferAddressHigh;         
+	__le32			SystemReplyAddressHigh;         
+	__le64			SystemRequestFrameBaseAddress;  
+	__le64			ReplyDescriptorPostQueueAddress;
+	__le64			ReplyFreeQueueAddress;          
+	__le64			TimeStamp;                      
 };
 
-/* mrpriv defines */
+
 #define MR_PD_INVALID 0xFFFF
 #define MR_DEVHANDLE_INVALID 0xFFFF
 #define MAX_SPAN_DEPTH 8
@@ -722,7 +675,7 @@ struct MPI2_IOC_INIT_REQUEST {
 #define MR_DCMD_LD_MAP_GET_INFO             0x0300e101
 #define MR_DCMD_SYSTEM_PD_MAP_GET_INFO      0x0200e102
 #define MR_DCMD_DRV_GET_TARGET_PROP         0x0200e103
-#define MR_DCMD_CTRL_SHARED_HOST_MEM_ALLOC  0x010e8485   /* SR-IOV HB alloc*/
+#define MR_DCMD_CTRL_SHARED_HOST_MEM_ALLOC  0x010e8485   
 #define MR_DCMD_LD_VF_MAP_GET_ALL_LDS_111   0x03200200
 #define MR_DCMD_LD_VF_MAP_GET_ALL_LDS       0x03150200
 #define MR_DCMD_CTRL_SNAPDUMP_GET_PROPERTIES	0x01200100
@@ -807,7 +760,7 @@ struct MR_IO_AFFINITY {
 			};
 		u32 word;
 		};
-	u8 maxCores;    /* Total cores + HW Path in ROC */
+	u8 maxCores;    
 	u8 reserved[3];
 };
 
@@ -884,38 +837,32 @@ struct {
 #endif
 	} flags;
 
-	u8	LUN[8]; /* 0x24 8 byte LUN field used for SCSI IO's */
-	u8	fpIoTimeoutForLd;/*0x2C timeout value used by driver in FP IO*/
-	/* Ox2D This LD accept priority boost of this type */
+	u8	LUN[8]; 
+	u8	fpIoTimeoutForLd;
+	
 	u8 ld_accept_priority_type;
-	u8 reserved2[2];	        /* 0x2E - 0x2F */
-	/* 0x30 - 0x33, Logical block size for the LD */
+	u8 reserved2[2];	        
+	
 	u32 logical_block_length;
 	struct {
 #ifndef __BIG_ENDIAN_BITFIELD
-	/* 0x34, P_I_EXPONENT from READ CAPACITY 16 */
+	
 	u32 ld_pi_exp:4;
-	/* 0x34, LOGICAL BLOCKS PER PHYSICAL
-	 *  BLOCK EXPONENT from READ CAPACITY 16
-	 */
+	
 	u32 ld_logical_block_exp:4;
-	u32 reserved1:24;           /* 0x34 */
+	u32 reserved1:24;           
 #else
-	u32 reserved1:24;           /* 0x34 */
-	/* 0x34, LOGICAL BLOCKS PER PHYSICAL
-	 *  BLOCK EXPONENT from READ CAPACITY 16
-	 */
+	u32 reserved1:24;           
+	
 	u32 ld_logical_block_exp:4;
-	/* 0x34, P_I_EXPONENT from READ CAPACITY 16 */
+	
 	u32 ld_pi_exp:4;
 #endif
-	};                               /* 0x34 - 0x37 */
-	 /* 0x38 - 0x3f, This will determine which
-	  *  core will process LD IO and PD IO.
-	  */
+	};                               
+	 
 	struct MR_IO_AFFINITY cpuAffinity;
-     /* Bit definiations are specified by MR_IO_AFFINITY */
-	u8 reserved3[0x80 - 0x40];    /* 0x40 - 0x7f */
+     
+	u8 reserved3[0x80 - 0x40];    
 };
 
 struct MR_LD_SPAN_MAP {
@@ -961,9 +908,9 @@ struct IO_REQUEST_INFO {
 	u8 start_span;
 	u8 do_fp_rlbypass;
 	u64 start_row;
-	u8  span_arm;	/* span[7:5], arm[4:0] */
+	u8  span_arm;	
 	u8  pd_after_lb;
-	u16 r1_alt_dev_handle; /* raid 1/10 only */
+	u16 r1_alt_dev_handle; 
 	bool ra_capable;
 	u8 data_arms;
 };
@@ -974,71 +921,50 @@ struct MR_LD_TARGET_SYNC {
 	__le16 seqNum;
 };
 
-/*
- * RAID Map descriptor Types.
- * Each element should uniquely idetify one data structure in the RAID map
- */
+
 enum MR_RAID_MAP_DESC_TYPE {
-	/* MR_DEV_HANDLE_INFO data */
+	
 	RAID_MAP_DESC_TYPE_DEVHDL_INFO    = 0x0,
-	/* target to Ld num Index map */
+	
 	RAID_MAP_DESC_TYPE_TGTID_INFO     = 0x1,
-	/* MR_ARRAY_INFO data */
+	
 	RAID_MAP_DESC_TYPE_ARRAY_INFO     = 0x2,
-	/* MR_LD_SPAN_MAP data */
+	
 	RAID_MAP_DESC_TYPE_SPAN_INFO      = 0x3,
 	RAID_MAP_DESC_TYPE_COUNT,
 };
 
-/*
- * This table defines the offset, size and num elements  of each descriptor
- * type in the RAID Map buffer
- */
+
 struct MR_RAID_MAP_DESC_TABLE {
-	/* Raid map descriptor type */
+	
 	u32 raid_map_desc_type;
-	/* Offset into the RAID map buffer where
-	 *  descriptor data is saved
-	 */
+	
 	u32 raid_map_desc_offset;
-	/* total size of the
-	 * descriptor buffer
-	 */
+	
 	u32 raid_map_desc_buffer_size;
-	/* Number of elements contained in the
-	 *  descriptor buffer
-	 */
+	
 	u32 raid_map_desc_elements;
 };
 
-/*
- * Dynamic Raid Map Structure.
- */
+
 struct MR_FW_RAID_MAP_DYNAMIC {
-	u32 raid_map_size;   /* total size of RAID Map structure */
-	u32 desc_table_offset;/* Offset of desc table into RAID map*/
-	u32 desc_table_size;  /* Total Size of desc table */
-	/* Total Number of elements in the desc table */
+	u32 raid_map_size;   
+	u32 desc_table_offset;
+	u32 desc_table_size;  
+	
 	u32 desc_table_num_elements;
 	u64	reserved1;
-	u32	reserved2[3];	/*future use */
-	/* timeout value used by driver in FP IOs */
+	u32	reserved2[3];	
+	
 	u8 fp_pd_io_timeout_sec;
 	u8 reserved3[3];
-	/* when this seqNum increments, driver needs to
-	 *  release RMW buffers asap
-	 */
+	
 	u32 rmw_fp_seq_num;
-	u16 ld_count;	/* count of lds. */
-	u16 ar_count;   /* count of arrays */
-	u16 span_count; /* count of spans */
+	u16 ld_count;	
+	u16 ar_count;   
+	u16 span_count; 
 	u16 reserved4[3];
-/*
- * The below structure of pointers is only to be used by the driver.
- * This is added in the ,API to reduce the amount of code changes
- * needed in the driver to support dynamic RAID map Firmware should
- * not update these pointers while preparing the raid map
- */
+
 	union {
 		struct {
 			struct MR_DEV_HANDLE_INFO  *dev_hndl_info;
@@ -1048,16 +974,13 @@ struct MR_FW_RAID_MAP_DYNAMIC {
 			};
 		u64 ptr_structure_size[RAID_MAP_DESC_TYPE_COUNT];
 		};
-/*
- * RAID Map descriptor table defines the layout of data in the RAID Map.
- * The size of the descriptor table itself could change.
- */
-	/* Variable Size descriptor Table. */
+
+	
 	struct MR_RAID_MAP_DESC_TABLE
 			raid_map_desc_table[RAID_MAP_DESC_TYPE_COUNT];
-	/* Variable Size buffer containing all data */
+	
 	u32 raid_map_desc_data[];
-}; /* Dynamicaly sized RAID MAp structure */
+}; 
 
 #define IEEE_SGE_FLAGS_ADDR_MASK            (0x03)
 #define IEEE_SGE_FLAGS_SYSTEM_ADDR          (0x00)
@@ -1108,17 +1031,14 @@ struct megasas_cmd_fusion {
 	u8 retry_for_fw_reset;
 	union MEGASAS_REQUEST_DESCRIPTOR_UNION  *request_desc;
 
-	/*
-	 * Context for a MFI frame.
-	 * Used to get the mfi cmd from list when a MFI cmd is completed
-	 */
+	
 	u32 sync_cmd_idx;
 	u32 index;
 	u8 pd_r1_lb;
 	struct completion done;
 	u8 pd_interface;
-	u16 r1_alt_dev_handle; /* raid 1/10 only*/
-	bool cmd_completed;  /* raid 1/10 fp writes status holder */
+	u16 r1_alt_dev_handle; 
+	bool cmd_completed;  
 
 };
 
@@ -1129,7 +1049,7 @@ struct LD_LOAD_BALANCE_INFO {
 	u64     last_accessed_block[MAX_PHYSICAL_DEVICES];
 };
 
-/* SPAN_SET is info caclulated from span info from Raid map per LD */
+
 typedef struct _LD_SPAN_SET {
 	u64  log_start_lba;
 	u64  log_end_lba;
@@ -1155,10 +1075,7 @@ struct MR_FW_RAID_MAP_ALL {
 } __attribute__ ((packed));
 
 struct MR_DRV_RAID_MAP {
-	/* total size of this structure, including this field.
-	 * This feild will be manupulated by driver for ext raid map,
-	 * else pick the value from firmware raid map.
-	 */
+	
 	__le32                 totalSize;
 
 	union {
@@ -1172,7 +1089,7 @@ struct MR_DRV_RAID_MAP {
 	__le32             version[5];
 	};
 
-	/* timeout value used by driver in FP IOs*/
+	
 	u8                  fpPdIoTimeoutSec;
 	u8                  reserved2[7];
 
@@ -1189,10 +1106,7 @@ struct MR_DRV_RAID_MAP {
 
 };
 
-/* Driver raid map size is same as raid map ext
- * MR_DRV_RAID_MAP_ALL is created to sync with old raid.
- * And it is mainly for code re-use purpose.
- */
+
 struct MR_DRV_RAID_MAP_ALL {
 
 	struct MR_DRV_RAID_MAP raidMap;
@@ -1202,7 +1116,7 @@ struct MR_DRV_RAID_MAP_ALL {
 
 
 struct MR_FW_RAID_MAP_EXT {
-	/* Not usred in new map */
+	
 	u32                 reserved;
 
 	union {
@@ -1230,9 +1144,7 @@ struct MR_FW_RAID_MAP_EXT {
 	struct MR_LD_SPAN_MAP      ldSpanMap[MAX_LOGICAL_DRIVES_EXT];
 };
 
-/*
- *  * define MR_PD_CFG_SEQ structure for system PDs
- *   */
+
 struct MR_PD_CFG_SEQ {
 	u16 seqNum;
 	u16 devHandle;
@@ -1255,27 +1167,27 @@ struct MR_PD_CFG_SEQ_NUM_SYNC {
 	struct MR_PD_CFG_SEQ seq[];
 } __packed;
 
-/* stream detection */
+
 struct STREAM_DETECT {
-	u64 next_seq_lba; /* next LBA to match sequential access */
-	struct megasas_cmd_fusion *first_cmd_fusion; /* first cmd in group */
-	struct megasas_cmd_fusion *last_cmd_fusion; /* last cmd in group */
-	u32 count_cmds_in_stream; /* count of host commands in this stream */
-	u16 num_sges_in_group; /* total number of SGEs in grouped IOs */
-	u8 is_read; /* SCSI OpCode for this stream */
-	u8 group_depth; /* total number of host commands in group */
-	/* TRUE if cannot add any more commands to this group */
+	u64 next_seq_lba; 
+	struct megasas_cmd_fusion *first_cmd_fusion; 
+	struct megasas_cmd_fusion *last_cmd_fusion; 
+	u32 count_cmds_in_stream; 
+	u16 num_sges_in_group; 
+	u8 is_read; 
+	u8 group_depth; 
+	
 	bool group_flush;
-	u8 reserved[7]; /* pad to 64-bit alignment */
+	u8 reserved[7]; 
 };
 
 struct LD_STREAM_DETECT {
-	bool write_back; /* TRUE if WB, FALSE if WT */
+	bool write_back; 
 	bool fp_write_enabled;
 	bool members_ssds;
 	bool fp_cache_bypass_capable;
-	u32 mru_bit_map; /* bitmap used to track MRU and LRU stream indicies */
-	/* this is the array of stream detect structures (one per stream) */
+	u32 mru_bit_map; 
+	
 	struct STREAM_DETECT stream_track[MAX_STREAMS_TRACKED];
 };
 
@@ -1332,7 +1244,7 @@ struct fusion_context {
 	struct MR_FW_RAID_MAP_DYNAMIC *ld_map[2];
 	dma_addr_t ld_map_phys[2];
 
-	/*Non dma-able memory. Driver local copy.*/
+	
 	struct MR_DRV_RAID_MAP_ALL *ld_drv_map[2];
 
 	u32 max_map_sz;
@@ -1393,4 +1305,4 @@ int megasas_check_mpio_paths(struct megasas_instance *instance,
 			      struct scsi_cmnd *scmd);
 void megasas_fusion_ocr_wq(struct work_struct *work);
 
-#endif /* _MEGARAID_SAS_FUSION_H_ */
+#endif 

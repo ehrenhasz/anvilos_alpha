@@ -1,11 +1,4 @@
-/*
- * SPDX-License-Identifier: GPL-2.0
- *
- * Copyright(C) 2015-2018 Linaro Limited.
- *
- * Author: Tor Jeremiassen <tor@ti.com>
- * Author: Mathieu Poirier <mathieu.poirier@linaro.org>
- */
+
 
 #ifndef INCLUDE__CS_ETM_DECODER_H__
 #define INCLUDE__CS_ETM_DECODER_H__
@@ -69,10 +62,7 @@ struct cs_etm_decoder_params {
 	void *data;
 };
 
-/*
- * The following enums are indexed starting with 1 to align with the
- * open source coresight trace decoder library.
- */
+
 enum {
 	CS_ETM_PROTO_ETMV3 = 1,
 	CS_ETM_PROTO_ETMV4i,
@@ -108,4 +98,4 @@ int cs_etm_decoder__get_packet(struct cs_etm_packet_queue *packet_queue,
 int cs_etm_decoder__reset(struct cs_etm_decoder *decoder);
 const char *cs_etm_decoder__get_name(struct cs_etm_decoder *decoder);
 
-#endif /* INCLUDE__CS_ETM_DECODER_H__ */
+#endif 

@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for encrypted keys
-#
+
+
+
+
 
 obj-$(CONFIG_ENCRYPTED_KEYS) += encrypted-keys.o
 

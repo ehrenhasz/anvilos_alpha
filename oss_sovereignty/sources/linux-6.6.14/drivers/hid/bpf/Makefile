@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for HID-BPF
-#
+
+
+
+
 
 LIBBPF_INCLUDE = $(srctree)/tools/lib
 

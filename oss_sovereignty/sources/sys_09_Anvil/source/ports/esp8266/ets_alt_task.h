@@ -9,4 +9,4 @@ extern uint32_t system_time_high_word;
 void system_time_update(void);
 bool ets_loop_iter(void);
 
-#endif // MICROPY_INCLUDED_ESP8266_ETS_ALT_TASK_H
+#endif 

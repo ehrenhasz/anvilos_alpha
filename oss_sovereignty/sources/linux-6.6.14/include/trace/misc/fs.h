@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Display helpers for generic filesystem items
- *
- * Author: Chuck Lever <chuck.lever@oracle.com>
- *
- * Copyright (c) 2020, Oracle and/or its affiliates.
- */
+
+
 
 #include <linux/fs.h>
 
@@ -67,7 +61,7 @@
 		{ F_OFD_GETLK,		"OFD_GETLK" }, \
 		{ F_OFD_SETLK,		"OFD_SETLK" }, \
 		{ F_OFD_SETLKW,		"OFD_SETLKW" })
-#else /* CONFIG_64BIT */
+#else 
 #define show_fs_fcntl_cmd(x) \
 	__print_symbolic(x, \
 		{ F_DUPFD,		"DUPFD" }, \
@@ -91,7 +85,7 @@
 		{ F_OFD_GETLK,		"OFD_GETLK" }, \
 		{ F_OFD_SETLK,		"OFD_SETLK" }, \
 		{ F_OFD_SETLKW,		"OFD_SETLKW" })
-#endif /* CONFIG_64BIT */
+#endif 
 
 #define show_fs_fcntl_lock_type(x) \
 	__print_symbolic(x, \

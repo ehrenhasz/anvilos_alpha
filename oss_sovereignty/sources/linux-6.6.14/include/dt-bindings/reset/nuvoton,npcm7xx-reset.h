@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-// Copyright (c) 2019 Nuvoton Technology corporation.
+
+
 
 #ifndef _DT_BINDINGS_NPCM7XX_RESET_H
 #define _DT_BINDINGS_NPCM7XX_RESET_H
@@ -8,7 +8,7 @@
 #define NPCM7XX_RESET_IPSRST2		0x24
 #define NPCM7XX_RESET_IPSRST3		0x34
 
-/* Reset lines on IP1 reset module (NPCM7XX_RESET_IPSRST1) */
+
 #define NPCM7XX_RESET_FIU3		1
 #define NPCM7XX_RESET_UDC1		5
 #define NPCM7XX_RESET_EMC1		6
@@ -36,7 +36,7 @@
 #define NPCM7XX_RESET_SMB0		30
 #define NPCM7XX_RESET_SMB1		31
 
-/* Reset lines on IP2 reset module (NPCM7XX_RESET_IPSRST2) */
+
 #define NPCM7XX_RESET_MFT0		0
 #define NPCM7XX_RESET_MFT1		1
 #define NPCM7XX_RESET_MFT2		2
@@ -63,7 +63,7 @@
 #define NPCM7XX_RESET_GMAC1		28
 #define NPCM7XX_RESET_CP		31
 
-/* Reset lines on IP3 reset module (NPCM7XX_RESET_IPSRST3) */
+
 #define NPCM7XX_RESET_PWM_M1		0
 #define NPCM7XX_RESET_SMB12		1
 #define NPCM7XX_RESET_SPIX		2

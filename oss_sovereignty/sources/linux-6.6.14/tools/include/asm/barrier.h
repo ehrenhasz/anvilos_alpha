@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/compiler.h>
 #if defined(__i386__) || defined(__x86_64__)
 #include "../../arch/x86/include/asm/barrier.h"
@@ -28,10 +28,7 @@
 #include <asm-generic/barrier.h>
 #endif
 
-/*
- * Generic fallback smp_*() definitions for archs that haven't
- * been updated yet.
- */
+
 
 #ifndef smp_rmb
 # define smp_rmb()	rmb()

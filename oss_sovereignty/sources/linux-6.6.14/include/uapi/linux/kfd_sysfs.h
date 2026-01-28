@@ -1,30 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR MIT */
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
+
 
 #ifndef KFD_SYSFS_H_INCLUDED
 #define KFD_SYSFS_H_INCLUDED
 
-/* Capability bits in node properties */
+
 #define HSA_CAP_HOT_PLUGGABLE			0x00000001
 #define HSA_CAP_ATS_PRESENT			0x00000002
 #define HSA_CAP_SHARED_WITH_GRAPHICS		0x00000004
@@ -48,7 +28,7 @@
 #define HSA_CAP_TRAP_DEBUG_WAVE_LAUNCH_MODE_SUPPORTED           0x00020000
 #define HSA_CAP_TRAP_DEBUG_PRECISE_MEMORY_OPERATIONS_SUPPORTED  0x00040000
 
-/* Old buggy user mode depends on this being 0 */
+
 #define HSA_CAP_RESERVED_WAS_SRAM_EDCSUPPORTED	0x00080000
 
 #define HSA_CAP_MEM_EDCSUPPORTED		0x00100000
@@ -61,7 +41,7 @@
 #define HSA_CAP_TRAP_DEBUG_FIRMWARE_SUPPORTED   0x20000000
 #define HSA_CAP_RESERVED			0xe00f8000
 
-/* debug_prop bits in node properties */
+
 #define HSA_DBG_WATCH_ADDR_MASK_LO_BIT_MASK     0x0000000f
 #define HSA_DBG_WATCH_ADDR_MASK_LO_BIT_SHIFT    0
 #define HSA_DBG_WATCH_ADDR_MASK_HI_BIT_MASK     0x000003f0
@@ -70,7 +50,7 @@
 #define HSA_DBG_WATCHPOINTS_EXCLUSIVE           0x00000800
 #define HSA_DBG_RESERVED                0xfffffffffffff000ull
 
-/* Heap types in memory properties */
+
 #define HSA_MEM_HEAP_TYPE_SYSTEM	0
 #define HSA_MEM_HEAP_TYPE_FB_PUBLIC	1
 #define HSA_MEM_HEAP_TYPE_FB_PRIVATE	2
@@ -78,19 +58,19 @@
 #define HSA_MEM_HEAP_TYPE_GPU_LDS	4
 #define HSA_MEM_HEAP_TYPE_GPU_SCRATCH	5
 
-/* Flag bits in memory properties */
+
 #define HSA_MEM_FLAGS_HOT_PLUGGABLE		0x00000001
 #define HSA_MEM_FLAGS_NON_VOLATILE		0x00000002
 #define HSA_MEM_FLAGS_RESERVED			0xfffffffc
 
-/* Cache types in cache properties */
+
 #define HSA_CACHE_TYPE_DATA		0x00000001
 #define HSA_CACHE_TYPE_INSTRUCTION	0x00000002
 #define HSA_CACHE_TYPE_CPU		0x00000004
 #define HSA_CACHE_TYPE_HSACU		0x00000008
 #define HSA_CACHE_TYPE_RESERVED		0xfffffff0
 
-/* Link types in IO link properties (matches CRAT link types) */
+
 #define HSA_IOLINK_TYPE_UNDEFINED	0
 #define HSA_IOLINK_TYPE_HYPERTRANSPORT	1
 #define HSA_IOLINK_TYPE_PCIEXPRESS	2
@@ -109,10 +89,7 @@
 #define HSA_IOLINK_TYPE_RDMA_OTHER	15
 #define HSA_IOLINK_TYPE_OTHER		16
 
-/* Flag bits in IO link properties (matches CRAT flags, excluding the
- * bi-directional flag, which is not offially part of the CRAT spec, and
- * only used internally in KFD)
- */
+
 #define HSA_IOLINK_FLAGS_ENABLED		(1 << 0)
 #define HSA_IOLINK_FLAGS_NON_COHERENT		(1 << 1)
 #define HSA_IOLINK_FLAGS_NO_ATOMICS_32_BIT	(1 << 2)

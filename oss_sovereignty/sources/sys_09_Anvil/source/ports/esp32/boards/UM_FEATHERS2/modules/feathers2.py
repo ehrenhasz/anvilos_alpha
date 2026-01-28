@@ -29,10 +29,10 @@ def set_ldo2_power(state):
     ldo2.value(state)
     if state:
         Pin(DOTSTAR_CLK, Pin.OUT)
-        Pin(DOTSTAR_DATA, Pin.OUT)  # If power is on, set CLK to be output, otherwise input
+        Pin(DOTSTAR_DATA, Pin.OUT)  
     else:
         Pin(DOTSTAR_CLK, Pin.IN)
-        Pin(DOTSTAR_DATA, Pin.IN)  # If power is on, set CLK to be output, otherwise input
+        Pin(DOTSTAR_DATA, Pin.IN)  
     time.sleep(0.035)
 def dotstar_color_wheel(wheel_pos):
     """Color wheel to allow for cycling through the rainbow of RGB colors."""

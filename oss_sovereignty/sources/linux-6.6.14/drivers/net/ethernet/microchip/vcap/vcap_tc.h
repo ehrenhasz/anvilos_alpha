@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
- * Microchip VCAP TC
- */
+
+
 
 #ifndef __VCAP_TC__
 #define __VCAP_TC__
@@ -29,4 +27,4 @@ int vcap_tc_flower_handler_tcp_usage(struct vcap_tc_flower_parse_usage *st);
 int vcap_tc_flower_handler_arp_usage(struct vcap_tc_flower_parse_usage *st);
 int vcap_tc_flower_handler_ip_usage(struct vcap_tc_flower_parse_usage *st);
 
-#endif /* __VCAP_TC__ */
+#endif 

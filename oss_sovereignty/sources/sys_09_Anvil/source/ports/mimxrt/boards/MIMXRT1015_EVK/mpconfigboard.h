@@ -1,8 +1,8 @@
 #define MICROPY_HW_BOARD_NAME "i.MX RT1015 EVK"
 #define MICROPY_HW_MCU_NAME   "MIMXRT1015DAF5A"
 
-// i.MX RT1015 EVK has 3 board LED
-// Todo: think about replacing the define with searching in the generated pins?
+
+
 #define MICROPY_HW_LED1_PIN (pin_GPIO_SD_B1_00)
 #define MICROPY_HW_LED2_PIN (pin_GPIO_SD_B1_01)
 #define MICROPY_HW_LED3_PIN (pin_GPIO_SD_B1_02)
@@ -12,13 +12,13 @@
 #define MICROPY_HW_NUM_PIN_IRQS (3 * 32)
 #define MICROPY_PY_MACHINE_SDCARD    (0)
 
-// Define mapping logical UART # to hardware UART #
-// RX/TX      HW-UART    Logical UART
-// DEBUG USB  LPUART1 -> 0
-// D3/D5      LPUART1
-// D0/D1      LPUART2 -> 1
-// D6/D9      LPUART3 -> 2
-// A0/A1      LPUART4 -> 5
+
+
+
+
+
+
+
 
 #define MICROPY_HW_UART_NUM     (sizeof(uart_index_table) / sizeof(uart_index_table)[0])
 #define MICROPY_HW_UART_INDEX   { 1, 4, 3 }
@@ -46,11 +46,11 @@
 
 #define DMA_REQ_SRC_TX { 0, kDmaRequestMuxLPSPI1Tx, kDmaRequestMuxLPSPI2Tx }
 
-// Define mapping hardware I2C # to logical I2C #
-// SDA/SCL  HW-I2C    Logical I2C
-// D14/D15  LPI2C4 ->    0
-// A4/A5    LPI2C1 ->    1
-// D0/D1    LPI2C2 ->    2
+
+
+
+
+
 
 #define MICROPY_HW_I2C_INDEX   { 1, 2 }
 

@@ -13,7 +13,7 @@ application_matches: Final = {
             libevdev.INPUT_PROP_ACCELEROMETER,
         ]
     ),
-    "Game Pad": EvdevMatch(  # in systemd, this is a lot more complex, but that will do
+    "Game Pad": EvdevMatch(  
         requires=[
             libevdev.EV_ABS.ABS_X,
             libevdev.EV_ABS.ABS_Y,
@@ -25,7 +25,7 @@ application_matches: Final = {
             libevdev.INPUT_PROP_ACCELEROMETER,
         ],
     ),
-    "Joystick": EvdevMatch(  # in systemd, this is a lot more complex, but that will do
+    "Joystick": EvdevMatch(  
         requires=[
             libevdev.EV_ABS.ABS_RX,
             libevdev.EV_ABS.ABS_RY,
@@ -128,11 +128,11 @@ class UHIDTestDevice(BaseDevice):
         self.name = name
 class BaseTestCase:
     class TestUhid(object):
-        syn_event = libevdev.InputEvent(libevdev.EV_SYN.SYN_REPORT)  # type: ignore
-        key_event = libevdev.InputEvent(libevdev.EV_KEY)  # type: ignore
-        abs_event = libevdev.InputEvent(libevdev.EV_ABS)  # type: ignore
-        rel_event = libevdev.InputEvent(libevdev.EV_REL)  # type: ignore
-        msc_event = libevdev.InputEvent(libevdev.EV_MSC.MSC_SCAN)  # type: ignore
+        syn_event = libevdev.InputEvent(libevdev.EV_SYN.SYN_REPORT)  
+        key_event = libevdev.InputEvent(libevdev.EV_KEY)  
+        abs_event = libevdev.InputEvent(libevdev.EV_ABS)  
+        rel_event = libevdev.InputEvent(libevdev.EV_REL)  
+        msc_event = libevdev.InputEvent(libevdev.EV_MSC.MSC_SCAN)  
         kernel_modules = []
         def assertInputEventsIn(self, expected_events, effective_events):
             effective_events = effective_events.copy()

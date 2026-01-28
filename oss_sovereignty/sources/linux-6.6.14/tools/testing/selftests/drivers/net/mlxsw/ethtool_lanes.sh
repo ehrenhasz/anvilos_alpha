@@ -4,7 +4,7 @@ ALL_TESTS="
 	autoneg_force_mode
 "
 NUM_NETIFS=2
-: ${TIMEOUT:=30000} # ms
+: ${TIMEOUT:=30000} 
 source $lib_dir/lib.sh
 source $lib_dir/ethtool_lib.sh
 setup_prepare()
@@ -30,7 +30,7 @@ check_lanes()
 	local max_speed=$1; shift
 	local chosen_lanes
 	chosen_lanes=$(ethtool $dev | grep 'Lanes:')
-	chosen_lanes=${chosen_lanes#*"Lanes: "}
+	chosen_lanes=${chosen_lanes
 	((chosen_lanes == lanes))
 	check_err $? "swp1 advertise $max_speed and $lanes, devs sync to $chosen_lanes"
 }
@@ -57,7 +57,7 @@ max_speed_and_lanes_get()
 	local -a lanes_arr
 	local -a speeds_arr
 	local -a max_values
-	for ((i=0; i<${#arr[@]}; i+=2)); do
+	for ((i=0; i<${
 		speeds_arr+=("${arr[$i]}")
 		lanes_arr+=("${arr[i+1]}")
 	done
@@ -70,7 +70,7 @@ search_linkmode()
 	local speed=$1; shift
 	local lanes=$1; shift
 	local arr=("$@")
-	for ((i=0; i<${#arr[@]}; i+=2)); do
+	for ((i=0; i<${
 		if [[ $speed -eq ${arr[$i]} && $lanes -eq ${arr[i+1]} ]]; then
 			return 1
 		fi

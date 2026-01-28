@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * NVMe over Fabrics common host code.
- * Copyright (c) 2015-2016 HGST, a Western Digital Company.
- */
+
+
 #ifndef _NVME_FABRICS_H
 #define _NVME_FABRICS_H 1
 
@@ -13,26 +10,15 @@
 #define NVMF_MAX_QUEUE_SIZE	1024
 #define NVMF_DEF_QUEUE_SIZE	128
 #define NVMF_DEF_RECONNECT_DELAY	10
-/* default to 600 seconds of reconnect attempts before giving up */
+
 #define NVMF_DEF_CTRL_LOSS_TMO		600
-/* default is -1: the fail fast mechanism is disabled  */
+
 #define NVMF_DEF_FAIL_FAST_TMO		-1
 
-/*
- * Reserved one command for internal usage.  This command is used for sending
- * the connect command, as well as for the keep alive command on the admin
- * queue once live.
- */
+
 #define NVMF_RESERVED_TAGS	1
 
-/*
- * Define a host as seen by the target.  We allocate one at boot, but also
- * allow the override it when creating controllers.  This is both to provide
- * persistence of the Host NQN over multiple boots, and to allow using
- * multiple ones, for example in a container scenario.  Because we must not
- * use different Host NQNs with the same Host ID we generate a Host ID and
- * use this structure to keep track of the relation between the two.
- */
+
 struct nvmf_host {
 	struct kref		ref;
 	struct list_head	list;
@@ -40,9 +26,7 @@ struct nvmf_host {
 	uuid_t			id;
 };
 
-/**
- * enum nvmf_parsing_opts - used to define the sysfs parsing options used.
- */
+
 enum {
 	NVMF_OPT_ERR		= 0,
 	NVMF_OPT_TRANSPORT	= 1 << 0,
@@ -72,44 +56,7 @@ enum {
 	NVMF_OPT_DHCHAP_CTRL_SECRET = 1 << 24,
 };
 
-/**
- * struct nvmf_ctrl_options - Used to hold the options specified
- *			      with the parsing opts enum.
- * @mask:	Used by the fabrics library to parse through sysfs options
- *		on adding a NVMe controller.
- * @max_reconnects: maximum number of allowed reconnect attempts before removing
- *		the controller, (-1) means reconnect forever, zero means remove
- *		immediately;
- * @transport:	Holds the fabric transport "technology name" (for a lack of
- *		better description) that will be used by an NVMe controller
- *		being added.
- * @subsysnqn:	Hold the fully qualified NQN subystem name (format defined
- *		in the NVMe specification, "NVMe Qualified Names").
- * @traddr:	The transport-specific TRADDR field for a port on the
- *              subsystem which is adding a controller.
- * @trsvcid:	The transport-specific TRSVCID field for a port on the
- *              subsystem which is adding a controller.
- * @host_traddr: A transport-specific field identifying the NVME host port
- *     to use for the connection to the controller.
- * @host_iface: A transport-specific field identifying the NVME host
- *     interface to use for the connection to the controller.
- * @queue_size: Number of IO queue elements.
- * @nr_io_queues: Number of controller IO queues that will be established.
- * @reconnect_delay: Time between two consecutive reconnect attempts.
- * @discovery_nqn: indicates if the subsysnqn is the well-known discovery NQN.
- * @kato:	Keep-alive timeout.
- * @host:	Virtual NVMe host, contains the NQN and Host ID.
- * @dhchap_secret: DH-HMAC-CHAP secret
- * @dhchap_ctrl_secret: DH-HMAC-CHAP controller secret for bi-directional
- *              authentication
- * @disable_sqflow: disable controller sq flow control
- * @hdr_digest: generate/verify header digest (TCP)
- * @data_digest: generate/verify data digest (TCP)
- * @nr_write_queues: number of queues for write I/O
- * @nr_poll_queues: number of queues for polling I/O
- * @tos: type of service
- * @fast_io_fail_tmo: Fast I/O fail timeout in seconds
- */
+
 struct nvmf_ctrl_options {
 	unsigned		mask;
 	int			max_reconnects;
@@ -137,31 +84,7 @@ struct nvmf_ctrl_options {
 	int			fast_io_fail_tmo;
 };
 
-/*
- * struct nvmf_transport_ops - used to register a specific
- *			       fabric implementation of NVMe fabrics.
- * @entry:		Used by the fabrics library to add the new
- *			registration entry to its linked-list internal tree.
- * @module:             Transport module reference
- * @name:		Name of the NVMe fabric driver implementation.
- * @required_opts:	sysfs command-line options that must be specified
- *			when adding a new NVMe controller.
- * @allowed_opts:	sysfs command-line options that can be specified
- *			when adding a new NVMe controller.
- * @create_ctrl():	function pointer that points to a non-NVMe
- *			implementation-specific fabric technology
- *			that would go into starting up that fabric
- *			for the purpose of conneciton to an NVMe controller
- *			using that fabric technology.
- *
- * Notes:
- *	1. At minimum, 'required_opts' and 'allowed_opts' should
- *	   be set to the same enum parsing options defined earlier.
- *	2. create_ctrl() must be defined (even if it does nothing)
- *	3. struct nvmf_transport_ops must be statically allocated in the
- *	   modules .bss section so that a pure module_get on @module
- *	   prevents the memory from beeing freed.
- */
+
 struct nvmf_transport_ops {
 	struct list_head	entry;
 	struct module		*module;
@@ -227,4 +150,4 @@ void nvmf_set_io_queues(struct nvmf_ctrl_options *opts, u32 nr_io_queues,
 void nvmf_map_queues(struct blk_mq_tag_set *set, struct nvme_ctrl *ctrl,
 		     u32 io_queues[HCTX_MAX_TYPES]);
 
-#endif /* _NVME_FABRICS_H */
+#endif 

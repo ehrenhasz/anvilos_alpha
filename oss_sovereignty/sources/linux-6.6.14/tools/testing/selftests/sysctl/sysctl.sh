@@ -505,7 +505,7 @@ run_bitmaptest() {
 	LENGTH=$((RANDOM % 65000))
 	BIT=$((RANDOM % 1024))
 	TEST_STR=$BIT
-	while [ "${#TEST_STR}" -le "$LENGTH" ]; do
+	while [ "${
 		BIT=$((BIT + $((2 + RANDOM % 10))))
 		TEST_STR="${TEST_STR},${BIT}"
 		if [ "$((RANDOM % 2))" -eq "1" ]; then
@@ -782,17 +782,17 @@ function run_all_tests()
 }
 function watch_log()
 {
-	if [ $# -ne 3 ]; then
+	if [ $
 		clear
 	fi
 	date
-	echo "Running test: $2 - run #$1"
+	echo "Running test: $2 - run 
 }
 function watch_case()
 {
 	i=0
 	while [ 1 ]; do
-		if [ $# -eq 1 ]; then
+		if [ $
 			test_num $1
 			watch_log $i ${TEST_NAME}_test_$1
 			${TEST_NAME}_test_$1
@@ -822,7 +822,7 @@ function test_case()
 }
 function parse_args()
 {
-	if [ $# -eq 0 ]; then
+	if [ $
 		run_all_tests
 	else
 		if [[ "$1" = "all" ]]; then

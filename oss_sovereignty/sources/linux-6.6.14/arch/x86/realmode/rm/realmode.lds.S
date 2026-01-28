@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * realmode.lds.S
- *
- * Linker script for the real-mode code
- */
+
+
 
 #include <asm/page_types.h>
 
@@ -62,7 +58,7 @@ SECTIONS
 		*(.bss*)
 	}
 
-	/* End signature for integrity checking */
+	
 	. = ALIGN(4);
 	.signature : {
 		*(.signature)

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * interface to the SCLP-read/write driver
- *
- * Copyright IBM Corporation 1999, 2009
- *
- * Author(s): Martin Peschke <mpeschke@de.ibm.com>
- *	      Martin Schwidefsky <schwidefsky@de.ibm.com>
- */
+
+
 
 #ifndef __SCLP_RW_H__
 #define __SCLP_RW_H__
@@ -54,29 +47,26 @@ struct msg_buf {
 	struct mdb mdb;
 } __attribute__((packed));
 
-/* The number of empty mto buffers that can be contained in a single sccb. */
+
 #define NR_EMPTY_MSG_PER_SCCB ((PAGE_SIZE - sizeof(struct sclp_buffer) - \
 			sizeof(struct sccb_header)) / sizeof(struct msg_buf))
 
-/*
- * data structure for information about list of SCCBs (only for writing),
- * will be located at the end of a SCCBs page
- */
+
 struct sclp_buffer {
-	struct list_head list;		/* list_head for sccb_info chain */
+	struct list_head list;		
 	struct sclp_req request;
 	void *sccb;
 	struct msg_buf *current_msg;
 	char *current_line;
 	int current_length;
 	int retry_count;
-	/* output format settings */
+	
 	unsigned short columns;
 	unsigned short htab;
-	/* statistics about this buffer */
-	unsigned int char_sum;		/* # chars in sccb */
-	unsigned int messages;		/* # messages in sccb */
-	/* Callback that is called after reaching final status. */
+	
+	unsigned int char_sum;		
+	unsigned int messages;		
+	
 	void (*callback)(struct sclp_buffer *, int);
 };
 
@@ -88,4 +78,4 @@ int sclp_write(struct sclp_buffer *buffer, const unsigned char *, int);
 int sclp_emit_buffer(struct sclp_buffer *,void (*)(struct sclp_buffer *,int));
 unsigned int sclp_chars_in_buffer(struct sclp_buffer *);
 
-#endif	/* __SCLP_RW_H__ */
+#endif	

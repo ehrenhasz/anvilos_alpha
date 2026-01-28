@@ -3,7 +3,7 @@ ERR_CODE=0
 . ./zram_lib.sh
 dev_num=1
 zram_max_streams="2"
-zram_sizes="1048576" # 1M
+zram_sizes="1048576" 
 zram_mem_limits="1M"
 check_prereqs
 zram_load

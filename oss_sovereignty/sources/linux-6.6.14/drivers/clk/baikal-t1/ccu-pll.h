@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
- *
- * Baikal-T1 CCU PLL interface driver
- */
+
+
 #ifndef __CLK_BT1_CCU_PLL_H__
 #define __CLK_BT1_CCU_PLL_H__
 
@@ -13,23 +9,10 @@
 #include <linux/bits.h>
 #include <linux/of.h>
 
-/*
- * CCU PLL private flags
- * @CCU_PLL_BASIC: Basic PLL required by the kernel as early as possible.
- */
+
 #define CCU_PLL_BASIC		BIT(0)
 
-/*
- * struct ccu_pll_init_data - CCU PLL initialization data
- * @id: Clock private identifier.
- * @name: Clocks name.
- * @parent_name: Clocks parent name in a fw node.
- * @base: PLL registers base address with respect to the sys_regs base.
- * @sys_regs: Baikal-T1 System Controller registers map.
- * @np: Pointer to the node describing the CCU PLLs.
- * @flags: PLL clock flags.
- * @features: PLL private features.
- */
+
 struct ccu_pll_init_data {
 	unsigned int id;
 	const char *name;
@@ -41,15 +24,7 @@ struct ccu_pll_init_data {
 	unsigned long features;
 };
 
-/*
- * struct ccu_pll - CCU PLL descriptor
- * @hw: clk_hw of the PLL.
- * @id: Clock private identifier.
- * @reg_ctl: PLL control register base.
- * @reg_ctl1: PLL control1 register base.
- * @sys_regs: Baikal-T1 System Controller registers map.
- * @lock: PLL state change spin-lock.
- */
+
 struct ccu_pll {
 	struct clk_hw hw;
 	unsigned int id;
@@ -69,4 +44,4 @@ struct ccu_pll *ccu_pll_hw_register(const struct ccu_pll_init_data *init);
 
 void ccu_pll_hw_unregister(struct ccu_pll *pll);
 
-#endif /* __CLK_BT1_CCU_PLL_H__ */
+#endif 

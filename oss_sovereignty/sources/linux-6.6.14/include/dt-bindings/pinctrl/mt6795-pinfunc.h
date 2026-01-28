@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022 Collabora Ltd.
- * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+
 
 #ifndef __DTS_MT6795_PINFUNC_H
 #define __DTS_MT6795_PINFUNC_H

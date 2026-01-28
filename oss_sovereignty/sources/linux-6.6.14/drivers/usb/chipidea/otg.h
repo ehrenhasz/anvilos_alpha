@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2013-2014 Freescale Semiconductor, Inc.
- *
- * Author: Peter Chen
- */
+
+
 
 #ifndef __DRIVERS_USB_CHIPIDEA_OTG_H
 #define __DRIVERS_USB_CHIPIDEA_OTG_H
@@ -22,4 +18,4 @@ static inline void ci_otg_queue_work(struct ci_hdrc *ci)
 		enable_irq(ci->irq);
 }
 
-#endif /* __DRIVERS_USB_CHIPIDEA_OTG_H */
+#endif 

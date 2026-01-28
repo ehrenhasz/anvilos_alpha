@@ -14,28 +14,28 @@ if ! nc -h >/dev/null 2>&1; then
 fi
 pattern="foo bar baz"
 patlen=11
-hdrlen=$((20 + 8)) # IPv4 + UDP
+hdrlen=$((20 + 8)) 
 ns="ns-$(mktemp -u XXXXXXXX)"
 trap 'ip netns del $ns' EXIT
 ip netns add "$ns"
 ip -net "$ns" link add d0 type dummy
 ip -net "$ns" link set d0 up
 ip -net "$ns" addr add 10.1.2.1/24 dev d0
-add_rule() { # (alg, from, to)
+add_rule() { 
 	ip netns exec "$ns" \
 		iptables -A OUTPUT -o d0 -m string \
 			--string "$pattern" --algo $1 --from $2 --to $3
 }
-showrules() { # ()
+showrules() { 
 	ip netns exec "$ns" iptables -v -S OUTPUT | grep '^-A'
 }
 zerorules() {
 	ip netns exec "$ns" iptables -Z OUTPUT
 }
-countrule() { # (pattern)
+countrule() { 
 	showrules | grep -c -- "$*"
 }
-send() { # (offset)
+send() { 
 	( for ((i = 0; i < $1 - $hdrlen; i++)); do
 		printf " "
 	  done

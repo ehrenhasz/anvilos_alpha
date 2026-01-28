@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the kernel tpm device drivers.
-#
+
+
+
+
 obj-$(CONFIG_TCG_TPM) += tpm.o
 tpm-y := tpm-chip.o
 tpm-y += tpm-dev-common.o

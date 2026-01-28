@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Header file for the compaq Micro MFD
- */
+
+
 
 #ifndef _MFD_IPAQ_MICRO_H_
 #define _MFD_IPAQ_MICRO_H_
@@ -14,10 +12,7 @@
 #define RX_BUF_SIZE	16
 #define CHAR_SOF	0x02
 
-/*
- * These are the different messages that can be sent to the microcontroller
- * to control various aspects.
- */
+
 #define MSG_VERSION		0x0
 #define MSG_KEYBOARD		0x2
 #define MSG_TOUCHSCREEN		0x3
@@ -28,39 +23,26 @@
 #define MSG_BATTERY		0x9
 #define MSG_SPI_READ		0xb
 #define MSG_SPI_WRITE		0xc
-#define MSG_BACKLIGHT		0xd /* H3600 only */
-#define MSG_CODEC_CTRL		0xe /* H3100 only */
-#define MSG_DISPLAY_CTRL	0xf /* H3100 only */
+#define MSG_BACKLIGHT		0xd 
+#define MSG_CODEC_CTRL		0xe 
+#define MSG_DISPLAY_CTRL	0xf 
 
-/* state of receiver parser */
+
 enum rx_state {
-	STATE_SOF = 0,     /* Next byte should be start of frame */
-	STATE_ID,          /* Next byte is ID & message length   */
-	STATE_DATA,        /* Next byte is a data byte           */
-	STATE_CHKSUM       /* Next byte should be checksum       */
+	STATE_SOF = 0,     
+	STATE_ID,          
+	STATE_DATA,        
+	STATE_CHKSUM       
 };
 
-/**
- * struct ipaq_micro_txdev - TX state
- * @len: length of message in TX buffer
- * @index: current index into TX buffer
- * @buf: TX buffer
- */
+
 struct ipaq_micro_txdev {
 	u8 len;
 	u8 index;
 	u8 buf[TX_BUF_SIZE];
 };
 
-/**
- * struct ipaq_micro_rxdev - RX state
- * @state: context of RX state machine
- * @chksum: calculated checksum
- * @id: message ID from packet
- * @len: RX buffer length
- * @index: RX buffer index
- * @buf: RX buffer
- */
+
 struct ipaq_micro_rxdev {
 	enum rx_state state;
 	unsigned char chksum;
@@ -70,16 +52,7 @@ struct ipaq_micro_rxdev {
 	u8            buf[RX_BUF_SIZE];
 };
 
-/**
- * struct ipaq_micro_msg - message to the iPAQ microcontroller
- * @id: 4-bit ID of the message
- * @tx_len: length of TX data
- * @tx_data: TX data to send
- * @rx_len: length of received RX data
- * @rx_data: RX data to receive
- * @ack: a completion that will be completed when RX is complete
- * @node: list node if message gets queued
- */
+
 struct ipaq_micro_msg {
 	u8 id;
 	u8 tx_len;
@@ -90,29 +63,14 @@ struct ipaq_micro_msg {
 	struct list_head node;
 };
 
-/**
- * struct ipaq_micro - iPAQ microcontroller state
- * @dev: corresponding platform device
- * @base: virtual memory base for underlying serial device
- * @sdlc: virtual memory base for Synchronous Data Link Controller
- * @version: version string
- * @tx: TX state
- * @rx: RX state
- * @lock: lock for this state container
- * @msg: current message
- * @queue: message queue
- * @key: callback for asynchronous key events
- * @key_data: data to pass along with key events
- * @ts: callback for asynchronous touchscreen events
- * @ts_data: data to pass along with key events
- */
+
 struct ipaq_micro {
 	struct device *dev;
 	void __iomem *base;
 	void __iomem *sdlc;
 	char version[5];
-	struct ipaq_micro_txdev tx;	/* transmit ISR state */
-	struct ipaq_micro_rxdev rx;	/* receive ISR state */
+	struct ipaq_micro_txdev tx;	
+	struct ipaq_micro_rxdev rx;	
 	spinlock_t lock;
 	struct ipaq_micro_msg *msg;
 	struct list_head queue;
@@ -146,4 +104,4 @@ ipaq_micro_tx_msg_async(struct ipaq_micro *micro,
 	return ipaq_micro_tx_msg(micro, msg);
 }
 
-#endif /* _MFD_IPAQ_MICRO_H_ */
+#endif 

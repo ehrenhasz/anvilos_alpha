@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * include/linux/irqflags.h
- *
- * IRQ flags tracing: follow the state of the hardirq and softirq flags and
- * provide callbacks for transitions between ON and OFF states.
- *
- * This file gets included from lowlevel asm headers too, to provide
- * wrapped versions of the local_irq_*() APIs, based on the
- * raw_local_irq_*() macros from the lowlevel headers.
- */
+
+
 #ifndef _LINUX_TRACE_IRQFLAGS_H
 #define _LINUX_TRACE_IRQFLAGS_H
 
@@ -17,7 +8,7 @@
 #include <asm/irqflags.h>
 #include <asm/percpu.h>
 
-/* Currently lockdep_softirqs_on/off is used only by lockdep */
+
 #ifdef CONFIG_PROVE_LOCKING
   extern void lockdep_softirqs_on(unsigned long ip);
   extern void lockdep_softirqs_off(unsigned long ip);
@@ -34,7 +25,7 @@
 
 #ifdef CONFIG_TRACE_IRQFLAGS
 
-/* Per-task IRQ trace events information. */
+
 struct irqtrace_events {
 	unsigned int	irq_events;
 	unsigned long	hardirq_enable_ip;
@@ -168,9 +159,7 @@ extern void warn_bogus_irq_restore(void);
 #define raw_check_bogus_irq_restore() do { } while (0)
 #endif
 
-/*
- * Wrap the arch provided IRQ routines to provide appropriate checks.
- */
+
 #define raw_local_irq_disable()		arch_local_irq_disable()
 #define raw_local_irq_enable()		arch_local_irq_enable()
 #define raw_local_irq_save(flags)			\
@@ -197,10 +186,7 @@ extern void warn_bogus_irq_restore(void);
 #define raw_irqs_disabled()		(arch_irqs_disabled())
 #define raw_safe_halt()			arch_safe_halt()
 
-/*
- * The local_irq_*() APIs are equal to the raw_local_irq*()
- * if !TRACE_IRQFLAGS.
- */
+
 #ifdef CONFIG_TRACE_IRQFLAGS
 
 #define local_irq_enable()				\
@@ -238,7 +224,7 @@ extern void warn_bogus_irq_restore(void);
 	} while (0)
 
 
-#else /* !CONFIG_TRACE_IRQFLAGS */
+#else 
 
 #define local_irq_enable()	do { raw_local_irq_enable(); } while (0)
 #define local_irq_disable()	do { raw_local_irq_disable(); } while (0)
@@ -246,15 +232,11 @@ extern void warn_bogus_irq_restore(void);
 #define local_irq_restore(flags) do { raw_local_irq_restore(flags); } while (0)
 #define safe_halt()		do { raw_safe_halt(); } while (0)
 
-#endif /* CONFIG_TRACE_IRQFLAGS */
+#endif 
 
 #define local_save_flags(flags)	raw_local_save_flags(flags)
 
-/*
- * Some architectures don't define arch_irqs_disabled(), so even if either
- * definition would be fine we need to use different ones for the time being
- * to avoid build issues.
- */
+
 #ifdef CONFIG_TRACE_IRQFLAGS_SUPPORT
 #define irqs_disabled()					\
 	({						\
@@ -262,9 +244,9 @@ extern void warn_bogus_irq_restore(void);
 		raw_local_save_flags(_flags);		\
 		raw_irqs_disabled_flags(_flags);	\
 	})
-#else /* !CONFIG_TRACE_IRQFLAGS_SUPPORT */
+#else 
 #define irqs_disabled()	raw_irqs_disabled()
-#endif /* CONFIG_TRACE_IRQFLAGS_SUPPORT */
+#endif 
 
 #define irqs_disabled_flags(flags) raw_irqs_disabled_flags(flags)
 

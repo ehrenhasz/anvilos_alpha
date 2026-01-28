@@ -6,7 +6,7 @@ main()
 		echo "$0: Please run it in selftests directory ..."
 		exit 1;
 	fi
-	if [ "$#" -eq 0 ]; then
+	if [ "$
 		echo "$0: Installing in default location - $install_dir ..."
 	elif [ ! -d "$1" ]; then
 		echo "$0: $1 doesn't exist!!"

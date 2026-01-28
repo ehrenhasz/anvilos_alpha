@@ -1,11 +1,4 @@
-/*
- * SPDX-License-Identifier: LGPL-2.1-or-later
- *
- * Copyright (C) 2023 Thomas Weißschuh <thomas@t-8ch.de>
- *
- * This file may be distributed under the terms of the
- * GNU Lesser General Public License.
- */
+
 #ifndef UTIL_LINUX_AUDIT_ARCH_H
 #define UTIL_LINUX_AUDIT_ARCH_H
 
@@ -63,4 +56,4 @@
 #    error Unknown target architecture
 #endif
 
-#endif /* UTIL_LINUX_AUDIT_ARCH_H */
+#endif 

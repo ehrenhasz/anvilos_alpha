@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * comedi_8254.h
- * Generic 8254 timer/counter support
- * Copyright (C) 2014 H Hartley Sweeten <hsweeten@visionengravers.com>
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
+
+
 
 #ifndef _COMEDI_8254_H
 #define _COMEDI_8254_H
@@ -17,9 +10,7 @@ struct comedi_device;
 struct comedi_insn;
 struct comedi_subdevice;
 
-/*
- * Common oscillator base values in nanoseconds
- */
+
 #define I8254_OSC_BASE_10MHZ	100
 #define I8254_OSC_BASE_5MHZ	200
 #define I8254_OSC_BASE_4MHZ	250
@@ -29,16 +20,12 @@ struct comedi_subdevice;
 #define I8254_OSC_BASE_10KHZ	100000
 #define I8254_OSC_BASE_1KHZ	1000000
 
-/*
- * I/O access size used to read/write registers
- */
+
 #define I8254_IO8		1
 #define I8254_IO16		2
 #define I8254_IO32		4
 
-/*
- * Register map for generic 8254 timer (I8254_IO8 with 0 regshift)
- */
+
 #define I8254_COUNTER0_REG		0x00
 #define I8254_COUNTER1_REG		0x01
 #define I8254_COUNTER2_REG		0x02
@@ -54,27 +41,10 @@ struct comedi_subdevice;
 #define I8254_CTRL_MSB_ONLY		I8254_CTRL_RW(2)
 #define I8254_CTRL_LSB_MSB		I8254_CTRL_RW(3)
 
-/* counter maps zero to 0x10000 */
+
 #define I8254_MAX_COUNT			0x10000
 
-/**
- * struct comedi_8254 - private data used by this module
- * @iobase:		PIO base address of the registers (in/out)
- * @mmio:		MMIO base address of the registers (read/write)
- * @iosize:		I/O size used to access the registers (b/w/l)
- * @regshift:		register gap shift
- * @osc_base:		cascaded oscillator speed in ns
- * @divisor:		divisor for single counter
- * @divisor1:		divisor loaded into first cascaded counter
- * @divisor2:		divisor loaded into second cascaded counter
- * #next_div:		next divisor for single counter
- * @next_div1:		next divisor to use for first cascaded counter
- * @next_div2:		next divisor to use for second cascaded counter
- * @clock_src;		current clock source for each counter (driver specific)
- * @gate_src;		current gate source  for each counter (driver specific)
- * @busy:		flags used to indicate that a counter is "busy"
- * @insn_config:	driver specific (*insn_config) callback
- */
+
 struct comedi_8254 {
 	unsigned long iobase;
 	void __iomem *mmio;
@@ -131,4 +101,4 @@ struct comedi_8254 *comedi_8254_mm_init(void __iomem *mmio,
 					unsigned int iosize,
 					unsigned int regshift);
 
-#endif	/* _COMEDI_8254_H */
+#endif	

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM context_tracking
 
@@ -24,13 +24,7 @@ DECLARE_EVENT_CLASS(context_tracking_user,
 	TP_printk("%s", "")
 );
 
-/**
- * user_enter - called when the kernel resumes to userspace
- * @dummy:	dummy arg to make trace event macro happy
- *
- * This event occurs when the kernel resumes to userspace  after
- * an exception or a syscall.
- */
+
 DEFINE_EVENT(context_tracking_user, user_enter,
 
 	TP_PROTO(int dummy),
@@ -38,13 +32,7 @@ DEFINE_EVENT(context_tracking_user, user_enter,
 	TP_ARGS(dummy)
 );
 
-/**
- * user_exit - called when userspace enters the kernel
- * @dummy:	dummy arg to make trace event macro happy
- *
- * This event occurs when userspace enters the kernel through
- * an exception or a syscall.
- */
+
 DEFINE_EVENT(context_tracking_user, user_exit,
 
 	TP_PROTO(int dummy),
@@ -53,7 +41,7 @@ DEFINE_EVENT(context_tracking_user, user_exit,
 );
 
 
-#endif /*  _TRACE_CONTEXT_TRACKING_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

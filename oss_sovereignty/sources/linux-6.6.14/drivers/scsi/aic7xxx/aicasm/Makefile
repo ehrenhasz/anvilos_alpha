@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 PROG=	aicasm
 
 OUTDIR ?= ./
@@ -15,7 +15,7 @@ GENSRCS=	$(addprefix ${OUTDIR}/,$(YSRCS:.y=.c) $(LSRCS:.l=.c))
 SRCS=	${CSRCS} ${GENSRCS}
 LIBS=	-ldb
 clean-files:= ${GENSRCS} ${GENHDRS} $(YSRCS:.y=.output) $(PROG)
-# Override default kernel CFLAGS.  This is a userland app.
+
 AICASM_CFLAGS:= -I/usr/include -I. -I$(OUTDIR)
 LEX= flex
 YACC= bison
@@ -43,17 +43,17 @@ $(OUTDIR):
 
 $(OUTDIR)/aicdb.h:
 	@if [ -e "/usr/include/db4/db_185.h" ]; then		\
-		echo "#include <db4/db_185.h>" > $@;	\
+		echo "
 	 elif [ -e "/usr/include/db3/db_185.h" ]; then		\
-		echo "#include <db3/db_185.h>" > $@;	\
+		echo "
 	 elif [ -e "/usr/include/db2/db_185.h" ]; then		\
-		echo "#include <db2/db_185.h>" > $@;	\
+		echo "
 	 elif [ -e "/usr/include/db1/db_185.h" ]; then		\
-		echo "#include <db1/db_185.h>" > $@;	\
+		echo "
 	 elif [ -e "/usr/include/db/db_185.h" ]; then		\
-		echo "#include <db/db_185.h>" > $@;	\
+		echo "
 	 elif [ -e "/usr/include/db_185.h" ]; then		\
-		echo "#include <db_185.h>" > $@;		\
+		echo "
 	 else							\
 		echo "*** Install db development libraries";	\
 	 fi

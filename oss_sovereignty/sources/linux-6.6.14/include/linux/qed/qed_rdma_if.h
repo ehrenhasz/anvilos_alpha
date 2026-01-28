@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+
 
 #ifndef _QED_RDMA_IF_H
 #define _QED_RDMA_IF_H
@@ -16,7 +13,7 @@
 
 #define QED_RDMA_MAX_CNQ_SIZE               (0xFFFF)
 
-/* rdma interface */
+
 
 enum qed_roce_qp_state {
 	QED_ROCE_QP_STATE_RESET,
@@ -82,56 +79,54 @@ struct qed_rdma_device {
 	u8 max_stats_queues;
 	u32 dev_caps;
 
-	/* Abilty to support RNR-NAK generation */
+	
 
 #define QED_RDMA_DEV_CAP_RNR_NAK_MASK                           0x1
 #define QED_RDMA_DEV_CAP_RNR_NAK_SHIFT                  0
-	/* Abilty to support shutdown port */
+	
 #define QED_RDMA_DEV_CAP_SHUTDOWN_PORT_MASK                     0x1
 #define QED_RDMA_DEV_CAP_SHUTDOWN_PORT_SHIFT                    1
-	/* Abilty to support port active event */
+	
 #define QED_RDMA_DEV_CAP_PORT_ACTIVE_EVENT_MASK         0x1
 #define QED_RDMA_DEV_CAP_PORT_ACTIVE_EVENT_SHIFT                2
-	/* Abilty to support port change event */
+	
 #define QED_RDMA_DEV_CAP_PORT_CHANGE_EVENT_MASK         0x1
 #define QED_RDMA_DEV_CAP_PORT_CHANGE_EVENT_SHIFT                3
-	/* Abilty to support system image GUID */
+	
 #define QED_RDMA_DEV_CAP_SYS_IMAGE_MASK                 0x1
 #define QED_RDMA_DEV_CAP_SYS_IMAGE_SHIFT                        4
-	/* Abilty to support bad P_Key counter support */
+	
 #define QED_RDMA_DEV_CAP_BAD_PKEY_CNT_MASK                      0x1
 #define QED_RDMA_DEV_CAP_BAD_PKEY_CNT_SHIFT                     5
-	/* Abilty to support atomic operations */
+	
 #define QED_RDMA_DEV_CAP_ATOMIC_OP_MASK                 0x1
 #define QED_RDMA_DEV_CAP_ATOMIC_OP_SHIFT                        6
 #define QED_RDMA_DEV_CAP_RESIZE_CQ_MASK                 0x1
 #define QED_RDMA_DEV_CAP_RESIZE_CQ_SHIFT                        7
-	/* Abilty to support modifying the maximum number of
-	 * outstanding work requests per QP
-	 */
+	
 #define QED_RDMA_DEV_CAP_RESIZE_MAX_WR_MASK                     0x1
 #define QED_RDMA_DEV_CAP_RESIZE_MAX_WR_SHIFT                    8
-	/* Abilty to support automatic path migration */
+	
 #define QED_RDMA_DEV_CAP_AUTO_PATH_MIG_MASK                     0x1
 #define QED_RDMA_DEV_CAP_AUTO_PATH_MIG_SHIFT                    9
-	/* Abilty to support the base memory management extensions */
+	
 #define QED_RDMA_DEV_CAP_BASE_MEMORY_EXT_MASK                   0x1
 #define QED_RDMA_DEV_CAP_BASE_MEMORY_EXT_SHIFT          10
 #define QED_RDMA_DEV_CAP_BASE_QUEUE_EXT_MASK                    0x1
 #define QED_RDMA_DEV_CAP_BASE_QUEUE_EXT_SHIFT                   11
-	/* Abilty to support multipile page sizes per memory region */
+	
 #define QED_RDMA_DEV_CAP_MULTI_PAGE_PER_MR_EXT_MASK             0x1
 #define QED_RDMA_DEV_CAP_MULTI_PAGE_PER_MR_EXT_SHIFT            12
-	/* Abilty to support block list physical buffer list */
+	
 #define QED_RDMA_DEV_CAP_BLOCK_MODE_MASK                        0x1
 #define QED_RDMA_DEV_CAP_BLOCK_MODE_SHIFT                       13
-	/* Abilty to support zero based virtual addresses */
+	
 #define QED_RDMA_DEV_CAP_ZBVA_MASK                              0x1
 #define QED_RDMA_DEV_CAP_ZBVA_SHIFT                             14
-	/* Abilty to support local invalidate fencing */
+	
 #define QED_RDMA_DEV_CAP_LOCAL_INV_FENCE_MASK                   0x1
 #define QED_RDMA_DEV_CAP_LOCAL_INV_FENCE_SHIFT          15
-	/* Abilty to support Loopback on QP */
+	
 #define QED_RDMA_DEV_CAP_LB_INDICATOR_MASK                      0x1
 #define QED_RDMA_DEV_CAP_LB_INDICATOR_SHIFT                     16
 	u64 page_size_caps;
@@ -168,9 +163,7 @@ struct qed_rdma_cnq_params {
 	u64 pbl_ptr;
 };
 
-/* The CQ Mode affects the CQ doorbell transaction size.
- * 64/32 bit machines should configure to 32/16 bits respectively.
- */
+
 enum qed_rdma_cq_mode {
 	QED_RDMA_CQ_MODE_16_BITS,
 	QED_RDMA_CQ_MODE_32_BITS,
@@ -180,10 +173,10 @@ struct qed_roce_dcqcn_params {
 	u8 notification_point;
 	u8 reaction_point;
 
-	/* fields for notification point */
+	
 	u32 cnp_send_timeout;
 
-	/* fields for reaction point */
+	
 	u32 rl_bc_rate;
 	u16 rl_max_rate;
 	u16 rl_r_ai;
@@ -271,7 +264,7 @@ struct qed_rdma_create_srq_in_params {
 	u16 pd_id;
 	u16 page_size;
 
-	/* XRC related only */
+	
 	bool reserved_key_en;
 	bool is_xrc;
 	u32 cq_cid;
@@ -452,9 +445,9 @@ struct qed_rdma_counters_out_params {
 #define QED_ROCE_TX_FRAG_FAILURE        (2)
 
 enum qed_iwarp_event_type {
-	QED_IWARP_EVENT_MPA_REQUEST,	  /* Passive side request received */
-	QED_IWARP_EVENT_PASSIVE_COMPLETE, /* ack on mpa response */
-	QED_IWARP_EVENT_ACTIVE_COMPLETE,  /* Active side reply received */
+	QED_IWARP_EVENT_MPA_REQUEST,	  
+	QED_IWARP_EVENT_PASSIVE_COMPLETE, 
+	QED_IWARP_EVENT_ACTIVE_COMPLETE,  
 	QED_IWARP_EVENT_DISCONNECT,
 	QED_IWARP_EVENT_CLOSE,
 	QED_IWARP_EVENT_IRQ_FULL,
@@ -492,7 +485,7 @@ struct qed_iwarp_cm_info {
 struct qed_iwarp_cm_event_params {
 	enum qed_iwarp_event_type event;
 	const struct qed_iwarp_cm_info *cm_info;
-	void *ep_context;	/* To be passed to accept call */
+	void *ep_context;	
 	int status;
 };
 
@@ -515,7 +508,7 @@ struct qed_iwarp_connect_out {
 
 struct qed_iwarp_listen_in {
 	iwarp_event_handler event_cb;
-	void *cb_context;	/* passed to event_cb */
+	void *cb_context;	
 	u32 max_backlog;
 	enum qed_tcp_ip_version ip_version;
 	u32 ip_addr[4];

@@ -1,23 +1,23 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*****************************************************************************/
-/* srp.h -- SCSI RDMA Protocol definitions                                   */
-/*                                                                           */
-/* Written By: Colin Devilbis, IBM Corporation                               */
-/*                                                                           */
-/* Copyright (C) 2003 IBM Corporation                                        */
-/*                                                                           */
-/*                                                                           */
-/* This file contains structures and definitions for IBM RPA (RS/6000        */
-/* platform architecture) implementation of the SRP (SCSI RDMA Protocol)     */
-/* standard.  SRP is used on IBM iSeries and pSeries platforms to send SCSI  */
-/* commands between logical partitions.                                      */
-/*                                                                           */
-/* SRP Information Units (IUs) are sent on a "Command/Response Queue" (CRQ)  */
-/* between partitions.  The definitions in this file are architected,        */
-/* and cannot be changed without breaking compatibility with other versions  */
-/* of Linux and other operating systems (AIX, OS/400) that talk this protocol*/
-/* between logical partitions                                                */
-/*****************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #ifndef VIOSRP_H
 #define VIOSRP_H
 #include <scsi/srp.h>
@@ -71,22 +71,20 @@ enum viosrp_crq_status {
 
 struct viosrp_crq {
 	union {
-		__be64 high;			/* High 64 bits */
+		__be64 high;			
 		struct {
-			u8 valid;		/* used by RPA */
-			u8 format;		/* SCSI vs out-of-band */
+			u8 valid;		
+			u8 format;		
 			u8 reserved;
-			u8 status;		/* non-scsi failure? (e.g. DMA failure) */
-			__be16 timeout;		/* in seconds */
-			__be16 IU_length;	/* in bytes */
+			u8 status;		
+			__be16 timeout;		
+			__be16 IU_length;	
 		};
 	};
-	__be64 IU_data_ptr;	/* the TCE for transferring data */
+	__be64 IU_data_ptr;	
 };
 
-/* MADs are Management requests above and beyond the IUs defined in the SRP
- * standard.
- */
+
 enum viosrp_mad_types {
 	VIOSRP_EMPTY_IU_TYPE = 0x01,
 	VIOSRP_ERROR_LOG_TYPE = 0x02,
@@ -123,9 +121,7 @@ enum viosrp_capability_flag {
 	CAP_LIST_DATA = 0x08,
 };
 
-/*
- * Common MAD header
- */
+
 struct mad_common {
 	__be32 type;
 	__be16 status;
@@ -133,13 +129,7 @@ struct mad_common {
 	__be64 tag;
 };
 
-/*
- * All SRP (and MAD) requests normally flow from the
- * client to the server.  There is no way for the server to send
- * an asynchronous message back to the client.  The Empty IU is used
- * to hang out a meaningless request to the server so that it can respond
- * asynchrouously with something like a SCSI AER
- */
+
 struct viosrp_empty_iu {
 	struct mad_common common;
 	__be64 buffer;
@@ -211,7 +201,7 @@ struct mad_adapter_info_data {
 #define SRP_MAD_OS_LINUX 2
 #define SRP_MAD_OS_AIX 3
 	__be32 os_type;
-	__be32 port_max_txu[8];	/* per-port maximum transfer */
+	__be32 port_max_txu[8];	
 };
 
 #endif

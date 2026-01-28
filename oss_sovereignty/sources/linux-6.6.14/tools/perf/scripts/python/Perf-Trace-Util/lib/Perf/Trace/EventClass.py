@@ -1,8 +1,8 @@
 from __future__ import print_function
 import struct
 EVTYPE_GENERIC  = 0
-EVTYPE_PEBS     = 1     # Basic PEBS event
-EVTYPE_PEBS_LL  = 2     # PEBS event with load latency info
+EVTYPE_PEBS     = 1     
+EVTYPE_PEBS_LL  = 2     
 EVTYPE_IBS      = 3
 def create_event(name, comm, dso, symbol, raw_buf):
         if (len(raw_buf) == 144):

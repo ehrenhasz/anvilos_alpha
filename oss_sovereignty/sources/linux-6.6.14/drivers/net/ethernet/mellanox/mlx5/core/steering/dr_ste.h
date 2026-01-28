@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2020 NVIDIA CORPORATION. All rights reserved. */
+
+
 
 #ifndef	_DR_STE_
 #define	_DR_STE_
@@ -21,7 +21,7 @@
 #define HDR_LEN_L2        (HDR_LEN_L2_MACS + HDR_LEN_L2_ETHER)
 #define HDR_LEN_L2_W_VLAN (HDR_LEN_L2 + HDR_LEN_L2_VLAN)
 
-/* Set to STE a specific value using DR_STE_SET */
+
 #define DR_STE_SET_VAL(lookup_type, tag, t_fname, spec, s_fname, value) do { \
 	if ((spec)->s_fname) { \
 		MLX5_SET(ste_##lookup_type, tag, t_fname, value); \
@@ -29,11 +29,11 @@
 	} \
 } while (0)
 
-/* Set to STE spec->s_fname to tag->t_fname set spec->s_fname as used */
+
 #define DR_STE_SET_TAG(lookup_type, tag, t_fname, spec, s_fname) \
 	DR_STE_SET_VAL(lookup_type, tag, t_fname, spec, s_fname, spec->s_fname)
 
-/* Set to STE -1 to tag->t_fname and set spec->s_fname as used */
+
 #define DR_STE_SET_ONES(lookup_type, tag, t_fname, spec, s_fname) \
 	DR_STE_SET_VAL(lookup_type, tag, t_fname, spec, s_fname, -1)
 
@@ -105,7 +105,7 @@ u16 mlx5dr_ste_conv_bit_to_byte_mask(u8 *bit_mask);
 static inline u8 *
 dr_ste_calc_flex_parser_offset(u8 *tag, u8 parser_id)
 {
-	/* Calculate tag byte offset based on flex parser id */
+	
 	return tag + 4 * (3 - (parser_id % 4));
 }
 
@@ -114,7 +114,7 @@ dr_ste_calc_flex_parser_offset(u8 *tag, u8 parser_id)
 				 struct mlx5dr_match_param *mask))
 
 struct mlx5dr_ste_ctx {
-	/* Builders */
+	
 	void DR_STE_CTX_BUILDER(eth_l2_src_dst);
 	void DR_STE_CTX_BUILDER(eth_l3_ipv6_src);
 	void DR_STE_CTX_BUILDER(eth_l3_ipv6_dst);
@@ -146,7 +146,7 @@ struct mlx5dr_ste_ctx {
 	void DR_STE_CTX_BUILDER(tnl_gtpu_flex_parser_0);
 	void DR_STE_CTX_BUILDER(tnl_gtpu_flex_parser_1);
 
-	/* Getters and Setters */
+	
 	void (*ste_init)(u8 *hw_ste_p, u16 lu_type,
 			 bool is_rx, u16 gvmi);
 	void (*set_next_lu_type)(u8 *hw_ste_p, u16 lu_type);
@@ -158,7 +158,7 @@ struct mlx5dr_ste_ctx {
 	void (*set_byte_mask)(u8 *hw_ste_p, u16 byte_mask);
 	u16  (*get_byte_mask)(u8 *hw_ste_p);
 
-	/* Actions */
+	
 	u32 actions_caps;
 	void (*set_actions_rx)(struct mlx5dr_domain *dmn,
 			       u8 *action_type_set,
@@ -198,7 +198,7 @@ struct mlx5dr_ste_ctx {
 	int (*alloc_modify_hdr_chunk)(struct mlx5dr_action *action);
 	void (*dealloc_modify_hdr_chunk)(struct mlx5dr_action *action);
 
-	/* Send */
+	
 	void (*prepare_for_postsend)(u8 *hw_ste_p, u32 ste_size);
 };
 
@@ -206,4 +206,4 @@ struct mlx5dr_ste_ctx *mlx5dr_ste_get_ctx_v0(void);
 struct mlx5dr_ste_ctx *mlx5dr_ste_get_ctx_v1(void);
 struct mlx5dr_ste_ctx *mlx5dr_ste_get_ctx_v2(void);
 
-#endif  /* _DR_STE_ */
+#endif  

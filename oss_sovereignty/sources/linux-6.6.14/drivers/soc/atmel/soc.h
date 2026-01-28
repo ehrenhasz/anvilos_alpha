@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2015 Atmel
- *
- * Boris Brezillon <boris.brezillon@free-electrons.com
- */
+
+
 
 #ifndef __AT91_SOC_H
 #define __AT91_SOC_H
@@ -139,4 +135,4 @@ at91_soc_init(const struct at91_soc *socs);
 #define SAMV70Q19_CIDR_MATCH		0x213d0a00
 #define SAMV70Q19_EXID_MATCH		0x00000002
 
-#endif /* __AT91_SOC_H */
+#endif 

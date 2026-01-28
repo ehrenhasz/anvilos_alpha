@@ -1,21 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * sorttable.h
- *
- * Added ORC unwind tables sort support and other updates:
- * Copyright (C) 1999-2019 Alibaba Group Holding Limited. by:
- * Shile Zhang <shile.zhang@linux.alibaba.com>
- *
- * Copyright 2011 - 2012 Cavium, Inc.
- *
- * Some of code was taken out of arch/x86/kernel/unwind_orc.c, written by:
- * Copyright (C) 2017 Josh Poimboeuf <jpoimboe@redhat.com>
- *
- * Some of this code was taken out of recordmcount.h written by:
- *
- * Copyright 2009 John F. Reiser <jreiser@BitWagon.com>. All rights reserved.
- * Copyright 2010 Steven Rostedt <srostedt@redhat.com>, Red Hat Inc.
- */
+
+
 
 #undef extable_ent_size
 #undef compare_extable
@@ -92,7 +76,7 @@
 #endif
 
 #if defined(SORTTABLE_64) && defined(UNWINDER_ORC_ENABLED)
-/* ORC unwinder only support X86_64 */
+
 #include <asm/orc_types.h>
 
 #define ERRSTR_MAXSZ	256
@@ -121,12 +105,7 @@ static int orc_sort_cmp(const void *_a, const void *_b)
 	if (a_val < b_val)
 		return -1;
 
-	/*
-	 * The "weak" section terminator entries need to always be on the left
-	 * to ensure the lookup code skips them in favor of real entries.
-	 * These terminator entries exist to handle any gaps created by
-	 * whitelisted .o files which didn't get objtool generation.
-	 */
+	
 	orc_a = g_orc_table + (a - g_orc_ip_table);
 	return orc_a->type == ORC_TYPE_UNDEFINED ? -1 : 1;
 }
@@ -162,7 +141,7 @@ static void *sort_orctable(void *arg)
 		pthread_exit(g_err);
 	}
 
-	/* initialize indices array, convert ip_table to absolute address */
+	
 	for (i = 0; i < num_entries; i++) {
 		idxs[i] = i;
 		tmp_orc_ip_table[i] = g_orc_ip_table[i] + i * sizeof(int);
@@ -175,7 +154,7 @@ static void *sort_orctable(void *arg)
 		if (idxs[i] == i)
 			continue;
 
-		/* convert back to relative address */
+		
 		g_orc_ip_table[i] = tmp_orc_ip_table[idxs[i]] - i * sizeof(int);
 		g_orc_table[i] = tmp_orc_table[idxs[i]];
 	}
@@ -208,7 +187,7 @@ struct elf_mcount_loc {
 	uint_t stop_mcount_loc;
 };
 
-/* Sort the addresses stored between __start_mcount_loc to __stop_mcount_loc in vmlinux */
+
 static void *sort_mcount_loc(void *arg)
 {
 	struct elf_mcount_loc *emloc = (struct elf_mcount_loc *)arg;
@@ -221,7 +200,7 @@ static void *sort_mcount_loc(void *arg)
 	return NULL;
 }
 
-/* Get the address of __start_mcount_loc and __stop_mcount_loc in System.map */
+
 static void get_mcount_loc(uint_t *_start, uint_t *_stop)
 {
 	FILE *file_start, *file_stop;
@@ -325,7 +304,7 @@ static int do_sort(Elf_Ehdr *ehdr,
 						      _r(&s->sh_offset));
 
 #ifdef MCOUNT_SORT_ENABLED
-		/* locate the .init.data section in vmlinux */
+		
 		if (!strcmp(secstrings + idx, ".init.data")) {
 			get_mcount_loc(&_start_mcount_loc, &_stop_mcount_loc);
 			mstruct.ehdr = ehdr;
@@ -336,7 +315,7 @@ static int do_sort(Elf_Ehdr *ehdr,
 #endif
 
 #if defined(SORTTABLE_64) && defined(UNWINDER_ORC_ENABLED)
-		/* locate the ORC unwind tables */
+		
 		if (!strcmp(secstrings + idx, ".orc_unwind_ip")) {
 			orc_ip_size = s->sh_size;
 			g_orc_ip_table = (int *)((void *)ehdr +
@@ -348,7 +327,7 @@ static int do_sort(Elf_Ehdr *ehdr,
 							     s->sh_offset);
 		}
 #endif
-	} /* for loop */
+	} 
 
 #if defined(SORTTABLE_64) && defined(UNWINDER_ORC_ENABLED)
 	if (!g_orc_ip_table || !g_orc_table) {
@@ -367,7 +346,7 @@ static int do_sort(Elf_Ehdr *ehdr,
 		goto out;
 	}
 
-	/* create thread to sort ORC unwind tables concurrently */
+	
 	if (pthread_create(&orc_sort_thread, NULL,
 			   sort_orctable, &orc_ip_size)) {
 		fprintf(stderr,
@@ -385,7 +364,7 @@ static int do_sort(Elf_Ehdr *ehdr,
 		goto out;
 	}
 
-	/* create thread to sort mcount_loc concurrently */
+	
 	if (pthread_create(&mcount_sort_thread, NULL, &sort_mcount_loc, &mstruct)) {
 		fprintf(stderr,
 			"pthread_create mcount_sort_thread failed '%s': %s\n",
@@ -421,11 +400,11 @@ static int do_sort(Elf_Ehdr *ehdr,
 		      extable_ent_size, compare_extable);
 	}
 
-	/* If there were relocations, we no longer need them. */
+	
 	if (relocs)
 		memset(relocs, 0, relocs_size);
 
-	/* find the flag main_extable_sort_needed */
+	
 	for (sym = (void *)ehdr + _r(&symtab_sec->sh_offset);
 	     sym < sym + _r(&symtab_sec->sh_size) / sizeof(Elf_Sym);
 	     sym++) {
@@ -453,7 +432,7 @@ static int do_sort(Elf_Ehdr *ehdr,
 		_r(&sort_needed_sym->st_value) -
 		_r(&sort_needed_sec->sh_addr);
 
-	/* extable has been sorted, clear the flag */
+	
 	w(0, sort_needed_loc);
 	rc = 0;
 
@@ -461,7 +440,7 @@ out:
 #if defined(SORTTABLE_64) && defined(UNWINDER_ORC_ENABLED)
 	if (orc_sort_thread) {
 		void *retval = NULL;
-		/* wait for ORC tables sort done */
+		
 		rc = pthread_join(orc_sort_thread, &retval);
 		if (rc) {
 			fprintf(stderr,
@@ -479,7 +458,7 @@ out:
 #ifdef MCOUNT_SORT_ENABLED
 	if (mcount_sort_thread) {
 		void *retval = NULL;
-		/* wait for mcount sort done */
+		
 		rc = pthread_join(mcount_sort_thread, &retval);
 		if (rc) {
 			fprintf(stderr,

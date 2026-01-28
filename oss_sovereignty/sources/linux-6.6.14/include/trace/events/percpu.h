@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM percpu
 
@@ -132,6 +132,6 @@ TRACE_EVENT(percpu_destroy_chunk,
 	TP_printk("base_addr=%p", __entry->base_addr)
 );
 
-#endif /* _TRACE_PERCPU_H */
+#endif 
 
 #include <trace/define_trace.h>

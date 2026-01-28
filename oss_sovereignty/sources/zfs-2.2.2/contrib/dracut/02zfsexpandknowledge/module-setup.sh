@@ -87,7 +87,7 @@ if [[ -n "$hostonly" ]]; then
             if [[ -d "/sys/dev/block/$majmin/slaves" ]] ; then
                 for _depdev in "/sys/dev/block/$majmin/slaves"/*; do
                     [[ -f "$_depdev/dev" ]] || continue
-                    _depdev="/dev/${_depdev##*/}"
+                    _depdev="/dev/${_depdev
                     _depdevname=$(udevadm info --query=property --name="$_depdev" | sed -n 's|^DEVNAME=||p')
                     _depdevtype=$(get_devtype "$_depdevname")
                     dinfo "zfsexpandknowledge: underlying block device backing ZFS dataset $mp: ${_depdevname//$'\n'/ }"

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Rewritten and vastly simplified by Rusty Russell for in-kernel
- * module loader:
- *   Copyright 2002 Rusty Russell <rusty@rustcorp.com.au> IBM Corporation
- */
+
+
 #ifndef _LINUX_KALLSYMS_H
 #define _LINUX_KALLSYMS_H
 
@@ -65,7 +62,7 @@ static inline void *dereference_symbol_descriptor(void *ptr)
 	return ptr;
 }
 
-/* How and when do we show kallsyms values? */
+
 extern bool kallsyms_show_value(const struct cred *cred);
 
 #ifdef CONFIG_KALLSYMS
@@ -75,20 +72,20 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, unsigned long),
 int kallsyms_on_each_match_symbol(int (*fn)(void *, unsigned long),
 				  const char *name, void *data);
 
-/* Lookup the address for a symbol. Returns 0 if not found. */
+
 unsigned long kallsyms_lookup_name(const char *name);
 
 extern int kallsyms_lookup_size_offset(unsigned long addr,
 				  unsigned long *symbolsize,
 				  unsigned long *offset);
 
-/* Lookup an address.  modname is set to NULL if it's in the kernel. */
+
 const char *kallsyms_lookup(unsigned long addr,
 			    unsigned long *symbolsize,
 			    unsigned long *offset,
 			    char **modname, char *namebuf);
 
-/* Look up a kernel symbol and return it in a text buffer. */
+
 extern int sprint_symbol(char *buffer, unsigned long address);
 extern int sprint_symbol_build_id(char *buffer, unsigned long address);
 extern int sprint_symbol_no_offset(char *buffer, unsigned long address);
@@ -97,7 +94,7 @@ extern int sprint_backtrace_build_id(char *buffer, unsigned long address);
 
 int lookup_symbol_name(unsigned long addr, char *symname);
 
-#else /* !CONFIG_KALLSYMS */
+#else 
 
 static inline unsigned long kallsyms_lookup_name(const char *name)
 {
@@ -165,11 +162,11 @@ static inline int kallsyms_on_each_match_symbol(int (*fn)(void *, unsigned long)
 {
 	return -EOPNOTSUPP;
 }
-#endif /*CONFIG_KALLSYMS*/
+#endif 
 
 static inline void print_ip_sym(const char *loglvl, unsigned long ip)
 {
 	printk("%s[<%px>] %pS\n", loglvl, (void *) ip, (void *) ip);
 }
 
-#endif /*_LINUX_KALLSYMS_H*/
+#endif 

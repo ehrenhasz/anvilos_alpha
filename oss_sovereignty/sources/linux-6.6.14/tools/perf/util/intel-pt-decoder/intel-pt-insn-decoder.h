@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * intel_pt_insn_decoder.h: Intel Processor Trace support
- * Copyright (c) 2013-2014, Intel Corporation.
- */
+
+
 
 #ifndef INCLUDE__INTEL_PT_INSN_DECODER_H__
 #define INCLUDE__INTEL_PT_INSN_DECODER_H__

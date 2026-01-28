@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2014 Christoph Hellwig.
- */
+
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM nfsd
 
@@ -763,7 +761,7 @@ TRACE_EVENT(nfsd_writeverf_reset,
 		__entry->xid = be32_to_cpu(rqstp->rq_xid);
 		__entry->error = error;
 
-		/* avoid seqlock inside TP_fast_assign */
+		
 		memcpy(__entry->verifier, nn->writeverf,
 		       NFS4_VERIFIER_SIZE);
 	),
@@ -870,9 +868,7 @@ DEFINE_EVENT(nfsd_clid_class, nfsd_clid_##name, \
 DEFINE_CLID_EVENT(fresh);
 DEFINE_CLID_EVENT(confirmed_r);
 
-/*
- * from fs/nfsd/filecache.h
- */
+
 #define show_nf_flags(val)						\
 	__print_flags(val, "|",						\
 		{ 1 << NFSD_FILE_HASHED,	"HASHED" },		\
@@ -1047,11 +1043,11 @@ DECLARE_EVENT_CLASS(nfsd_file_open_class,
 	TP_PROTO(const struct nfsd_file *nf, __be32 status),
 	TP_ARGS(nf, status),
 	TP_STRUCT__entry(
-		__field(void *, nf_inode)	/* cannot be dereferenced */
+		__field(void *, nf_inode)	
 		__field(int, nf_ref)
 		__field(unsigned long, nf_flags)
 		__field(unsigned long, nf_may)
-		__field(void *, nf_file)	/* cannot be dereferenced */
+		__field(void *, nf_file)	
 	),
 	TP_fast_assign(
 		__entry->nf_inode = nf->nf_inode;
@@ -1863,7 +1859,7 @@ TRACE_EVENT(nfsd_end_grace,
 	)
 );
 
-#endif /* _NFSD_TRACE_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

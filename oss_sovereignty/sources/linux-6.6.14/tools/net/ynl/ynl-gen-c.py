@@ -712,7 +712,7 @@ class Family(SpecFamily):
                         self.pure_nested_structs[nested].reply = True
         pns_key_list = list(self.pure_nested_structs.keys())
         pns_key_seen = set()
-        rounds = len(pns_key_list)**2  # it's basically bubble sort
+        rounds = len(pns_key_list)**2  
         for _ in range(rounds):
             if len(pns_key_list) == 0:
                 break
@@ -937,7 +937,7 @@ class CodeWriter:
                 longest = len(define[0])
         longest = ((longest + 8) // 8) * 8
         for define in defines:
-            line = '#define ' + define[0]
+            line = '
             line += '\t' * ((longest - len(define[0]) + 7) // 8)
             if type(define[1]) is int:
                 line += str(define[1])
@@ -946,7 +946,7 @@ class CodeWriter:
             self.p(line)
     def write_struct_init(self, members):
         longest = max([len(x[0]) for x in members])
-        longest += 1  # because we prepend a .
+        longest += 1  
         longest = ((longest + 8) // 8) * 8
         for one in members:
             line = '.' + one[0]
@@ -1663,8 +1663,8 @@ def uapi_enum_start(family, cw, obj, ckey='', enum_name='enum-name'):
     cw.block_start(line=start_line)
 def render_uapi(family, cw):
     hdr_prot = f"_UAPI_LINUX_{family.name.upper()}_H"
-    cw.p('#ifndef ' + hdr_prot)
-    cw.p('#define ' + hdr_prot)
+    cw.p('
+    cw.p('
     cw.nl()
     defines = [(family.fam_key, family["name"]),
                (family.ver_key, family.get('version', 1))]
@@ -1737,7 +1737,7 @@ def render_uapi(family, cw):
             cw.p(f"{attr_set.max_name} = {max_value}")
         cw.block_end(line=';')
         if max_by_define:
-            cw.p(f"#define {attr_set.max_name} {max_value}")
+            cw.p(f"
         cw.nl()
     separate_ntf = 'async-prefix' in family['operations']
     max_name = c_upper(family.get('cmd-max-name', f"{family.op_prefix}MAX"))
@@ -1760,7 +1760,7 @@ def render_uapi(family, cw):
         cw.p(f"{max_name} = {max_value}")
     cw.block_end(line=';')
     if max_by_define:
-        cw.p(f"#define {max_name} {max_value}")
+        cw.p(f"
     cw.nl()
     if separate_ntf:
         uapi_enum_start(family, cw, family['operations'], enum_name='async-enum')
@@ -1782,7 +1782,7 @@ def render_uapi(family, cw):
     if defines:
         cw.writes_defines(defines)
         cw.nl()
-    cw.p(f'#endif /* {hdr_prot} */')
+    cw.p(f'
 def _render_user_ntf_entry(ri, op):
     ri.cw.block_start(line=f"[{op.enum_name}] = ")
     ri.cw.p(f".alloc_sz\t= sizeof({type_name(ri, 'event')}),")
@@ -1876,40 +1876,40 @@ def main():
         return
     hdr_prot = f"_LINUX_{parsed.name.upper()}_GEN_H"
     if args.header:
-        cw.p('#ifndef ' + hdr_prot)
-        cw.p('#define ' + hdr_prot)
+        cw.p('
+        cw.p('
         cw.nl()
     if args.mode == 'kernel':
-        cw.p('#include <net/netlink.h>')
-        cw.p('#include <net/genetlink.h>')
+        cw.p('
+        cw.p('
         cw.nl()
         if not args.header:
             if args.out_file:
-                cw.p(f'#include "{os.path.basename(args.out_file[:-2])}.h"')
+                cw.p(f'
             cw.nl()
         headers = ['uapi/' + parsed.uapi_header]
     else:
-        cw.p('#include <stdlib.h>')
-        cw.p('#include <string.h>')
+        cw.p('
+        cw.p('
         if args.header:
-            cw.p('#include <linux/types.h>')
+            cw.p('
         else:
-            cw.p(f'#include "{parsed.name}-user.h"')
-            cw.p('#include "ynl.h"')
+            cw.p(f'
+            cw.p('
         headers = [parsed.uapi_header]
     for definition in parsed['definitions']:
         if 'header' in definition:
             headers.append(definition['header'])
     for one in headers:
-        cw.p(f"#include <{one}>")
+        cw.p(f"
     cw.nl()
     if args.mode == "user":
         if not args.header:
-            cw.p("#include <libmnl/libmnl.h>")
-            cw.p("#include <linux/genetlink.h>")
+            cw.p("
+            cw.p("
             cw.nl()
             for one in args.user_header:
-                cw.p(f'#include "{one}"')
+                cw.p(f'
         else:
             cw.p('struct ynl_sock;')
             cw.nl()
@@ -2070,6 +2070,6 @@ def main():
             cw.nl()
             render_user_family(parsed, cw, False)
     if args.header:
-        cw.p(f'#endif /* {hdr_prot} */')
+        cw.p(f'
 if __name__ == "__main__":
     main()

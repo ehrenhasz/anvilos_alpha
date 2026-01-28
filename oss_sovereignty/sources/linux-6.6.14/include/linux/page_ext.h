@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LINUX_PAGE_EXT_H
 #define __LINUX_PAGE_EXT_H
 
@@ -9,19 +9,7 @@
 struct pglist_data;
 
 #ifdef CONFIG_PAGE_EXTENSION
-/**
- * struct page_ext_operations - per page_ext client operations
- * @offset: Offset to the client's data within page_ext. Offset is returned to
- *          the client by page_ext_init.
- * @size: The size of the client data within page_ext.
- * @need: Function that returns true if client requires page_ext.
- * @init: (optional) Called to initialize client once page_exts are allocated.
- * @need_shared_flags: True when client is using shared page_ext->flags
- *                     field.
- *
- * Each Page Extension client must define page_ext_operations in
- * page_ext_ops array.
- */
+
 struct page_ext_operations {
 	size_t offset;
 	size_t size;
@@ -30,9 +18,7 @@ struct page_ext_operations {
 	bool need_shared_flags;
 };
 
-/*
- * The page_ext_flags users must set need_shared_flags to true.
- */
+
 enum page_ext_flags {
 	PAGE_EXT_OWNER,
 	PAGE_EXT_OWNER_ALLOCATED,
@@ -42,13 +28,7 @@ enum page_ext_flags {
 #endif
 };
 
-/*
- * Page Extension can be considered as an extended mem_map.
- * A page_ext page is associated with every page descriptor. The
- * page_ext helps us add more information about the page.
- * All page_ext are allocated at boot or memory hotplug event,
- * then the page_ext for pfn always exists.
- */
+
 struct page_ext {
 	unsigned long flags;
 };
@@ -94,7 +74,7 @@ static inline struct page_ext *page_ext_next(struct page_ext *curr)
 	return next;
 }
 
-#else /* !CONFIG_PAGE_EXTENSION */
+#else 
 struct page_ext;
 
 static inline bool early_page_ext_enabled(void)
@@ -126,5 +106,5 @@ static inline struct page_ext *page_ext_get(struct page *page)
 static inline void page_ext_put(struct page_ext *page_ext)
 {
 }
-#endif /* CONFIG_PAGE_EXTENSION */
-#endif /* __LINUX_PAGE_EXT_H */
+#endif 
+#endif 

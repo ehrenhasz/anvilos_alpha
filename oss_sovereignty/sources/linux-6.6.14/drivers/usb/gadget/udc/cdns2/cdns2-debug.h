@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Cadence USBHS-DEV Driver.
- * Debug header file.
- *
- * Copyright (C) 2023 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- */
+
+
 
 #ifndef __LINUX_CDNS2_DEBUG
 #define __LINUX_CDNS2_DEBUG
@@ -200,4 +193,4 @@ static inline const char *cdns2_decode_trb(char *str, size_t size, u32 flags,
 	return str;
 }
 
-#endif /*__LINUX_CDNS2_DEBUG*/
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef BLK_MQ_H
 #define BLK_MQ_H
 
@@ -22,46 +22,44 @@ enum rq_end_io_ret {
 
 typedef enum rq_end_io_ret (rq_end_io_fn)(struct request *, blk_status_t);
 
-/*
- * request flags */
+
 typedef __u32 __bitwise req_flags_t;
 
-/* drive already may have started this one */
+
 #define RQF_STARTED		((__force req_flags_t)(1 << 1))
-/* request for flush sequence */
+
 #define RQF_FLUSH_SEQ		((__force req_flags_t)(1 << 4))
-/* merge of different types, fail separately */
+
 #define RQF_MIXED_MERGE		((__force req_flags_t)(1 << 5))
-/* track inflight for MQ */
+
 #define RQF_MQ_INFLIGHT		((__force req_flags_t)(1 << 6))
-/* don't call prep for this one */
+
 #define RQF_DONTPREP		((__force req_flags_t)(1 << 7))
-/* use hctx->sched_tags */
+
 #define RQF_SCHED_TAGS		((__force req_flags_t)(1 << 8))
-/* use an I/O scheduler for this request */
+
 #define RQF_USE_SCHED		((__force req_flags_t)(1 << 9))
-/* vaguely specified driver internal error.  Ignored by the block layer */
+
 #define RQF_FAILED		((__force req_flags_t)(1 << 10))
-/* don't warn about errors */
+
 #define RQF_QUIET		((__force req_flags_t)(1 << 11))
-/* account into disk and partition IO statistics */
+
 #define RQF_IO_STAT		((__force req_flags_t)(1 << 13))
-/* runtime pm request */
+
 #define RQF_PM			((__force req_flags_t)(1 << 15))
-/* on IO scheduler merge hash */
+
 #define RQF_HASHED		((__force req_flags_t)(1 << 16))
-/* track IO completion time */
+
 #define RQF_STATS		((__force req_flags_t)(1 << 17))
-/* Look at ->special_vec for the actual data payload instead of the
-   bio chain. */
+
 #define RQF_SPECIAL_PAYLOAD	((__force req_flags_t)(1 << 18))
-/* The per-zone write lock is held for this request */
+
 #define RQF_ZONE_WRITE_LOCKED	((__force req_flags_t)(1 << 19))
-/* ->timeout has been called, don't expire again */
+
 #define RQF_TIMED_OUT		((__force req_flags_t)(1 << 21))
 #define RQF_RESV		((__force req_flags_t)(1 << 23))
 
-/* flags that prevent us from merging requests: */
+
 #define RQF_NOMERGE_FLAGS \
 	(RQF_STARTED | RQF_FLUSH_SEQ | RQF_SPECIAL_PAYLOAD)
 
@@ -71,18 +69,13 @@ enum mq_rq_state {
 	MQ_RQ_COMPLETE		= 2,
 };
 
-/*
- * Try to put the fields that are referenced together in the same cacheline.
- *
- * If you modify this structure, make sure to update blk_rq_init() and
- * especially blk_mq_rq_ctx_init() to take care of the added fields.
- */
+
 struct request {
 	struct request_queue *q;
 	struct blk_mq_ctx *mq_ctx;
 	struct blk_mq_hw_ctx *mq_hctx;
 
-	blk_opf_t cmd_flags;		/* op and common flags */
+	blk_opf_t cmd_flags;		
 	req_flags_t rq_flags;
 
 	int tag;
@@ -90,9 +83,9 @@ struct request {
 
 	unsigned int timeout;
 
-	/* the following two fields are internal, NEVER access directly */
-	unsigned int __data_len;	/* total data len */
-	sector_t __sector;		/* sector cursor */
+	
+	unsigned int __data_len;	
+	sector_t __sector;		
 
 	struct bio *bio;
 	struct bio *biotail;
@@ -104,28 +97,21 @@ struct request {
 
 	struct block_device *part;
 #ifdef CONFIG_BLK_RQ_ALLOC_TIME
-	/* Time that the first bio started allocating this request. */
+	
 	u64 alloc_time_ns;
 #endif
-	/* Time that this request was allocated for this IO. */
+	
 	u64 start_time_ns;
-	/* Time that I/O was submitted to the device. */
+	
 	u64 io_start_time_ns;
 
 #ifdef CONFIG_BLK_WBT
 	unsigned short wbt_flags;
 #endif
-	/*
-	 * rq sectors used for blk stats. It has the same value
-	 * with blk_rq_sectors(rq), except that it never be zeroed
-	 * by completion.
-	 */
+	
 	unsigned short stats_sectors;
 
-	/*
-	 * Number of scatter-gather DMA addr+len pairs after
-	 * physical address coalescing is performed.
-	 */
+	
 	unsigned short nr_phys_segments;
 
 #ifdef CONFIG_BLK_DEV_INTEGRITY
@@ -144,33 +130,19 @@ struct request {
 
 	unsigned long deadline;
 
-	/*
-	 * The hash is used inside the scheduler, and killed once the
-	 * request reaches the dispatch list. The ipi_list is only used
-	 * to queue the request for softirq completion, which is long
-	 * after the request has been unhashed (and even removed from
-	 * the dispatch list).
-	 */
+	
 	union {
-		struct hlist_node hash;	/* merge hash */
+		struct hlist_node hash;	
 		struct llist_node ipi_list;
 	};
 
-	/*
-	 * The rb_node is only used inside the io scheduler, requests
-	 * are pruned when moved to the dispatch queue. special_vec must
-	 * only be used if RQF_SPECIAL_PAYLOAD is set, and those cannot be
-	 * insert into an IO scheduler.
-	 */
+	
 	union {
-		struct rb_node rb_node;	/* sort/lookup */
+		struct rb_node rb_node;	
 		struct bio_vec special_vec;
 	};
 
-	/*
-	 * Three pointers are available for the IO schedulers, if they need
-	 * more they have to dynamically allocate it.
-	 */
+	
 	struct {
 		struct io_cq		*icq;
 		void			*priv[2];
@@ -183,9 +155,7 @@ struct request {
 
 	u64 fifo_time;
 
-	/*
-	 * completion callback.
-	 */
+	
 	rq_end_io_fn *end_io;
 	void *end_io_data;
 };
@@ -249,13 +219,7 @@ static inline unsigned short req_get_ioprio(struct request *req)
 #define rq_list_next(rq)	(rq)->rq_next
 #define rq_list_empty(list)	((list) == (struct request *) NULL)
 
-/**
- * rq_list_move() - move a struct request from one list to another
- * @src: The source list @rq is currently in
- * @dst: The destination list that @rq will be appended to
- * @rq: The request to move
- * @prev: The request preceding @rq in @src (NULL if @rq is the head)
- */
+
 static inline void rq_list_move(struct request **src, struct request **dst,
 				struct request *rq, struct request *prev)
 {
@@ -266,194 +230,113 @@ static inline void rq_list_move(struct request **src, struct request **dst,
 	rq_list_add(dst, rq);
 }
 
-/**
- * enum blk_eh_timer_return - How the timeout handler should proceed
- * @BLK_EH_DONE: The block driver completed the command or will complete it at
- *	a later time.
- * @BLK_EH_RESET_TIMER: Reset the request timer and continue waiting for the
- *	request to complete.
- */
+
 enum blk_eh_timer_return {
 	BLK_EH_DONE,
 	BLK_EH_RESET_TIMER,
 };
 
-#define BLK_TAG_ALLOC_FIFO 0 /* allocate starting from 0 */
-#define BLK_TAG_ALLOC_RR 1 /* allocate starting from last allocated tag */
+#define BLK_TAG_ALLOC_FIFO 0 
+#define BLK_TAG_ALLOC_RR 1 
 
-/**
- * struct blk_mq_hw_ctx - State for a hardware queue facing the hardware
- * block device
- */
+
 struct blk_mq_hw_ctx {
 	struct {
-		/** @lock: Protects the dispatch list. */
+		
 		spinlock_t		lock;
-		/**
-		 * @dispatch: Used for requests that are ready to be
-		 * dispatched to the hardware but for some reason (e.g. lack of
-		 * resources) could not be sent to the hardware. As soon as the
-		 * driver can send new requests, requests at this list will
-		 * be sent first for a fairer dispatch.
-		 */
+		
 		struct list_head	dispatch;
-		 /**
-		  * @state: BLK_MQ_S_* flags. Defines the state of the hw
-		  * queue (active, scheduled to restart, stopped).
-		  */
+		 
 		unsigned long		state;
 	} ____cacheline_aligned_in_smp;
 
-	/**
-	 * @run_work: Used for scheduling a hardware queue run at a later time.
-	 */
+	
 	struct delayed_work	run_work;
-	/** @cpumask: Map of available CPUs where this hctx can run. */
+	
 	cpumask_var_t		cpumask;
-	/**
-	 * @next_cpu: Used by blk_mq_hctx_next_cpu() for round-robin CPU
-	 * selection from @cpumask.
-	 */
+	
 	int			next_cpu;
-	/**
-	 * @next_cpu_batch: Counter of how many works left in the batch before
-	 * changing to the next CPU.
-	 */
+	
 	int			next_cpu_batch;
 
-	/** @flags: BLK_MQ_F_* flags. Defines the behaviour of the queue. */
+	
 	unsigned long		flags;
 
-	/**
-	 * @sched_data: Pointer owned by the IO scheduler attached to a request
-	 * queue. It's up to the IO scheduler how to use this pointer.
-	 */
+	
 	void			*sched_data;
-	/**
-	 * @queue: Pointer to the request queue that owns this hardware context.
-	 */
+	
 	struct request_queue	*queue;
-	/** @fq: Queue of requests that need to perform a flush operation. */
+	
 	struct blk_flush_queue	*fq;
 
-	/**
-	 * @driver_data: Pointer to data owned by the block driver that created
-	 * this hctx
-	 */
+	
 	void			*driver_data;
 
-	/**
-	 * @ctx_map: Bitmap for each software queue. If bit is on, there is a
-	 * pending request in that software queue.
-	 */
+	
 	struct sbitmap		ctx_map;
 
-	/**
-	 * @dispatch_from: Software queue to be used when no scheduler was
-	 * selected.
-	 */
+	
 	struct blk_mq_ctx	*dispatch_from;
-	/**
-	 * @dispatch_busy: Number used by blk_mq_update_dispatch_busy() to
-	 * decide if the hw_queue is busy using Exponential Weighted Moving
-	 * Average algorithm.
-	 */
+	
 	unsigned int		dispatch_busy;
 
-	/** @type: HCTX_TYPE_* flags. Type of hardware queue. */
+	
 	unsigned short		type;
-	/** @nr_ctx: Number of software queues. */
+	
 	unsigned short		nr_ctx;
-	/** @ctxs: Array of software queues. */
+	
 	struct blk_mq_ctx	**ctxs;
 
-	/** @dispatch_wait_lock: Lock for dispatch_wait queue. */
+	
 	spinlock_t		dispatch_wait_lock;
-	/**
-	 * @dispatch_wait: Waitqueue to put requests when there is no tag
-	 * available at the moment, to wait for another try in the future.
-	 */
+	
 	wait_queue_entry_t	dispatch_wait;
 
-	/**
-	 * @wait_index: Index of next available dispatch_wait queue to insert
-	 * requests.
-	 */
+	
 	atomic_t		wait_index;
 
-	/**
-	 * @tags: Tags owned by the block driver. A tag at this set is only
-	 * assigned when a request is dispatched from a hardware queue.
-	 */
+	
 	struct blk_mq_tags	*tags;
-	/**
-	 * @sched_tags: Tags owned by I/O scheduler. If there is an I/O
-	 * scheduler associated with a request queue, a tag is assigned when
-	 * that request is allocated. Else, this member is not used.
-	 */
+	
 	struct blk_mq_tags	*sched_tags;
 
-	/** @run: Number of dispatched requests. */
+	
 	unsigned long		run;
 
-	/** @numa_node: NUMA node the storage adapter has been connected to. */
+	
 	unsigned int		numa_node;
-	/** @queue_num: Index of this hardware queue. */
+	
 	unsigned int		queue_num;
 
-	/**
-	 * @nr_active: Number of active requests. Only used when a tag set is
-	 * shared across request queues.
-	 */
+	
 	atomic_t		nr_active;
 
-	/** @cpuhp_online: List to store request if CPU is going to die */
+	
 	struct hlist_node	cpuhp_online;
-	/** @cpuhp_dead: List to store request if some CPU die. */
+	
 	struct hlist_node	cpuhp_dead;
-	/** @kobj: Kernel object for sysfs. */
+	
 	struct kobject		kobj;
 
 #ifdef CONFIG_BLK_DEBUG_FS
-	/**
-	 * @debugfs_dir: debugfs directory for this hardware queue. Named
-	 * as cpu<cpu_number>.
-	 */
+	
 	struct dentry		*debugfs_dir;
-	/** @sched_debugfs_dir:	debugfs directory for the scheduler. */
+	
 	struct dentry		*sched_debugfs_dir;
 #endif
 
-	/**
-	 * @hctx_list: if this hctx is not in use, this is an entry in
-	 * q->unused_hctx_list.
-	 */
+	
 	struct list_head	hctx_list;
 };
 
-/**
- * struct blk_mq_queue_map - Map software queues to hardware queues
- * @mq_map:       CPU ID to hardware queue index map. This is an array
- *	with nr_cpu_ids elements. Each element has a value in the range
- *	[@queue_offset, @queue_offset + @nr_queues).
- * @nr_queues:    Number of hardware queues to map CPU IDs onto.
- * @queue_offset: First hardware queue to map onto. Used by the PCIe NVMe
- *	driver to map each hardware queue type (enum hctx_type) onto a distinct
- *	set of hardware queues.
- */
+
 struct blk_mq_queue_map {
 	unsigned int *mq_map;
 	unsigned int nr_queues;
 	unsigned int queue_offset;
 };
 
-/**
- * enum hctx_type - Type of hardware queue
- * @HCTX_TYPE_DEFAULT:	All I/O not otherwise accounted for.
- * @HCTX_TYPE_READ:	Just for READ I/O.
- * @HCTX_TYPE_POLL:	Polled I/O of any kind.
- * @HCTX_MAX_TYPES:	Number of types of hctx.
- */
+
 enum hctx_type {
 	HCTX_TYPE_DEFAULT,
 	HCTX_TYPE_READ,
@@ -462,39 +345,7 @@ enum hctx_type {
 	HCTX_MAX_TYPES,
 };
 
-/**
- * struct blk_mq_tag_set - tag set that can be shared between request queues
- * @ops:	   Pointers to functions that implement block driver behavior.
- * @map:	   One or more ctx -> hctx mappings. One map exists for each
- *		   hardware queue type (enum hctx_type) that the driver wishes
- *		   to support. There are no restrictions on maps being of the
- *		   same size, and it's perfectly legal to share maps between
- *		   types.
- * @nr_maps:	   Number of elements in the @map array. A number in the range
- *		   [1, HCTX_MAX_TYPES].
- * @nr_hw_queues:  Number of hardware queues supported by the block driver that
- *		   owns this data structure.
- * @queue_depth:   Number of tags per hardware queue, reserved tags included.
- * @reserved_tags: Number of tags to set aside for BLK_MQ_REQ_RESERVED tag
- *		   allocations.
- * @cmd_size:	   Number of additional bytes to allocate per request. The block
- *		   driver owns these additional bytes.
- * @numa_node:	   NUMA node the storage adapter has been connected to.
- * @timeout:	   Request processing timeout in jiffies.
- * @flags:	   Zero or more BLK_MQ_F_* flags.
- * @driver_data:   Pointer to data owned by the block driver that created this
- *		   tag set.
- * @tags:	   Tag sets. One tag set per hardware queue. Has @nr_hw_queues
- *		   elements.
- * @shared_tags:
- *		   Shared set of tags. Has @nr_hw_queues elements. If set,
- *		   shared by all @tags.
- * @tag_list_lock: Serializes tag_list accesses.
- * @tag_list:	   List of the request queues that use this tag set. See also
- *		   request_queue.tag_set_list.
- * @srcu:	   Use as lock when type of the request queue is blocking
- *		   (BLK_MQ_F_BLOCKING).
- */
+
 struct blk_mq_tag_set {
 	const struct blk_mq_ops	*ops;
 	struct blk_mq_queue_map	map[HCTX_MAX_TYPES];
@@ -517,12 +368,7 @@ struct blk_mq_tag_set {
 	struct srcu_struct	*srcu;
 };
 
-/**
- * struct blk_mq_queue_data - Data about a request inserted in a queue
- *
- * @rq:   Request pointer.
- * @last: If it is the last request in the queue.
- */
+
 struct blk_mq_queue_data {
 	struct request *rq;
 	bool last;
@@ -530,119 +376,61 @@ struct blk_mq_queue_data {
 
 typedef bool (busy_tag_iter_fn)(struct request *, void *);
 
-/**
- * struct blk_mq_ops - Callback functions that implements block driver
- * behaviour.
- */
+
 struct blk_mq_ops {
-	/**
-	 * @queue_rq: Queue a new request from block IO.
-	 */
+	
 	blk_status_t (*queue_rq)(struct blk_mq_hw_ctx *,
 				 const struct blk_mq_queue_data *);
 
-	/**
-	 * @commit_rqs: If a driver uses bd->last to judge when to submit
-	 * requests to hardware, it must define this function. In case of errors
-	 * that make us stop issuing further requests, this hook serves the
-	 * purpose of kicking the hardware (which the last request otherwise
-	 * would have done).
-	 */
+	
 	void (*commit_rqs)(struct blk_mq_hw_ctx *);
 
-	/**
-	 * @queue_rqs: Queue a list of new requests. Driver is guaranteed
-	 * that each request belongs to the same queue. If the driver doesn't
-	 * empty the @rqlist completely, then the rest will be queued
-	 * individually by the block layer upon return.
-	 */
+	
 	void (*queue_rqs)(struct request **rqlist);
 
-	/**
-	 * @get_budget: Reserve budget before queue request, once .queue_rq is
-	 * run, it is driver's responsibility to release the
-	 * reserved budget. Also we have to handle failure case
-	 * of .get_budget for avoiding I/O deadlock.
-	 */
+	
 	int (*get_budget)(struct request_queue *);
 
-	/**
-	 * @put_budget: Release the reserved budget.
-	 */
+	
 	void (*put_budget)(struct request_queue *, int);
 
-	/**
-	 * @set_rq_budget_token: store rq's budget token
-	 */
+	
 	void (*set_rq_budget_token)(struct request *, int);
-	/**
-	 * @get_rq_budget_token: retrieve rq's budget token
-	 */
+	
 	int (*get_rq_budget_token)(struct request *);
 
-	/**
-	 * @timeout: Called on request timeout.
-	 */
+	
 	enum blk_eh_timer_return (*timeout)(struct request *);
 
-	/**
-	 * @poll: Called to poll for completion of a specific tag.
-	 */
+	
 	int (*poll)(struct blk_mq_hw_ctx *, struct io_comp_batch *);
 
-	/**
-	 * @complete: Mark the request as complete.
-	 */
+	
 	void (*complete)(struct request *);
 
-	/**
-	 * @init_hctx: Called when the block layer side of a hardware queue has
-	 * been set up, allowing the driver to allocate/init matching
-	 * structures.
-	 */
+	
 	int (*init_hctx)(struct blk_mq_hw_ctx *, void *, unsigned int);
-	/**
-	 * @exit_hctx: Ditto for exit/teardown.
-	 */
+	
 	void (*exit_hctx)(struct blk_mq_hw_ctx *, unsigned int);
 
-	/**
-	 * @init_request: Called for every command allocated by the block layer
-	 * to allow the driver to set up driver specific data.
-	 *
-	 * Tag greater than or equal to queue_depth is for setting up
-	 * flush request.
-	 */
+	
 	int (*init_request)(struct blk_mq_tag_set *set, struct request *,
 			    unsigned int, unsigned int);
-	/**
-	 * @exit_request: Ditto for exit/teardown.
-	 */
+	
 	void (*exit_request)(struct blk_mq_tag_set *set, struct request *,
 			     unsigned int);
 
-	/**
-	 * @cleanup_rq: Called before freeing one request which isn't completed
-	 * yet, and usually for freeing the driver private data.
-	 */
+	
 	void (*cleanup_rq)(struct request *);
 
-	/**
-	 * @busy: If set, returns whether or not this queue currently is busy.
-	 */
+	
 	bool (*busy)(struct request_queue *);
 
-	/**
-	 * @map_queues: This allows drivers specify their own queue mapping by
-	 * overriding the setup-time function that builds the mq_map.
-	 */
+	
 	void (*map_queues)(struct blk_mq_tag_set *set);
 
 #ifdef CONFIG_BLK_DEBUG_FS
-	/**
-	 * @show_rq: Used by the debugfs implementation to show driver-specific
-	 * information about a request.
-	 */
+	
 	void (*show_rq)(struct seq_file *m, struct request *rq);
 #endif
 };
@@ -650,19 +438,13 @@ struct blk_mq_ops {
 enum {
 	BLK_MQ_F_SHOULD_MERGE	= 1 << 0,
 	BLK_MQ_F_TAG_QUEUE_SHARED = 1 << 1,
-	/*
-	 * Set when this device requires underlying blk-mq device for
-	 * completing IO:
-	 */
+	
 	BLK_MQ_F_STACKING	= 1 << 2,
 	BLK_MQ_F_TAG_HCTX_SHARED = 1 << 3,
 	BLK_MQ_F_BLOCKING	= 1 << 5,
-	/* Do not allow an I/O scheduler to be configured. */
+	
 	BLK_MQ_F_NO_SCHED	= 1 << 6,
-	/*
-	 * Select 'none' during queue registration in case of a single hwq
-	 * or shared hwqs instead of 'mq-deadline'.
-	 */
+	
 	BLK_MQ_F_NO_SCHED_BY_DEFAULT	= 1 << 7,
 	BLK_MQ_F_ALLOC_POLICY_START_BIT = 8,
 	BLK_MQ_F_ALLOC_POLICY_BITS = 1,
@@ -671,7 +453,7 @@ enum {
 	BLK_MQ_S_TAG_ACTIVE	= 1,
 	BLK_MQ_S_SCHED_RESTART	= 2,
 
-	/* hw queue is inactive after all its CPUs become offline */
+	
 	BLK_MQ_S_INACTIVE	= 3,
 
 	BLK_MQ_MAX_DEPTH	= 10240,
@@ -715,11 +497,11 @@ int blk_rq_poll(struct request *rq, struct io_comp_batch *iob,
 bool blk_mq_queue_inflight(struct request_queue *q);
 
 enum {
-	/* return when out of requests */
+	
 	BLK_MQ_REQ_NOWAIT	= (__force blk_mq_req_flags_t)(1 << 0),
-	/* allocate from reserved pool */
+	
 	BLK_MQ_REQ_RESERVED	= (__force blk_mq_req_flags_t)(1 << 1),
-	/* set RQF_PM */
+	
 	BLK_MQ_REQ_PM		= (__force blk_mq_req_flags_t)(1 << 2),
 };
 
@@ -729,9 +511,7 @@ struct request *blk_mq_alloc_request_hctx(struct request_queue *q,
 		blk_opf_t opf, blk_mq_req_flags_t flags,
 		unsigned int hctx_idx);
 
-/*
- * Tag address space map.
- */
+
 struct blk_mq_tags {
 	unsigned int nr_tags;
 	unsigned int nr_reserved_tags;
@@ -744,10 +524,7 @@ struct blk_mq_tags {
 	struct request **static_rqs;
 	struct list_head page_list;
 
-	/*
-	 * used to clear request reference in rqs[] before freeing one
-	 * request pool
-	 */
+	
 	spinlock_t lock;
 };
 
@@ -779,10 +556,7 @@ static inline u16 blk_mq_unique_tag_to_tag(u32 unique_tag)
 	return unique_tag & BLK_MQ_UNIQUE_TAG_MASK;
 }
 
-/**
- * blk_mq_rq_state() - read the current MQ_RQ_* state of a request
- * @rq: target request.
- */
+
 static inline enum mq_rq_state blk_mq_rq_state(struct request *rq)
 {
 	return READ_ONCE(rq->state);
@@ -798,22 +572,13 @@ static inline int blk_mq_request_completed(struct request *rq)
 	return blk_mq_rq_state(rq) == MQ_RQ_COMPLETE;
 }
 
-/*
- * 
- * Set the state to complete when completing a request from inside ->queue_rq.
- * This is used by drivers that want to ensure special complete actions that
- * need access to the request are called on failure, e.g. by nvme for
- * multipathing.
- */
+
 static inline void blk_mq_set_request_complete(struct request *rq)
 {
 	WRITE_ONCE(rq->state, MQ_RQ_COMPLETE);
 }
 
-/*
- * Complete the request directly instead of deferring it to softirq or
- * completing it another CPU. Useful in preemptible instead of an interrupt.
- */
+
 static inline void blk_mq_complete_request_direct(struct request *rq,
 		   void (*complete)(struct request *rq))
 {
@@ -826,10 +591,7 @@ void blk_mq_end_request(struct request *rq, blk_status_t error);
 void __blk_mq_end_request(struct request *rq, blk_status_t error);
 void blk_mq_end_request_batch(struct io_comp_batch *ib);
 
-/*
- * Only need start/end time stamping if we have iostat or
- * blk stats enabled, or using an IO scheduler.
- */
+
 static inline bool blk_mq_need_time_stamp(struct request *rq)
 {
 	return (rq->rq_flags & (RQF_IO_STAT | RQF_STATS | RQF_USE_SCHED));
@@ -840,18 +602,12 @@ static inline bool blk_mq_is_reserved_rq(struct request *rq)
 	return rq->rq_flags & RQF_RESV;
 }
 
-/*
- * Batched completions only work when there is no I/O error and no special
- * ->end_io handler.
- */
+
 static inline bool blk_mq_add_to_batch(struct request *req,
 				       struct io_comp_batch *iob, int ioerror,
 				       void (*complete)(struct io_comp_batch *))
 {
-	/*
-	 * blk_mq_end_request_batch() can't end request allocated from
-	 * sched tags
-	 */
+	
 	if (!iob || (req->rq_flags & RQF_SCHED_TAGS) || ioerror ||
 			(req->end_io && !blk_rq_is_passthrough(req)))
 		return false;
@@ -911,29 +667,13 @@ static inline bool blk_should_fake_timeout(struct request_queue *q)
 	return false;
 }
 
-/**
- * blk_mq_rq_from_pdu - cast a PDU to a request
- * @pdu: the PDU (Protocol Data Unit) to be casted
- *
- * Return: request
- *
- * Driver command data is immediately after the request. So subtract request
- * size to get back to the original request.
- */
+
 static inline struct request *blk_mq_rq_from_pdu(void *pdu)
 {
 	return pdu - sizeof(struct request);
 }
 
-/**
- * blk_mq_rq_to_pdu - cast a request to a PDU
- * @rq: the request to be casted
- *
- * Return: pointer to the PDU
- *
- * Driver command data is immediately after the request. So add request to get
- * the PDU.
- */
+
 static inline void *blk_mq_rq_to_pdu(struct request *rq)
 {
 	return rq + 1;
@@ -1020,14 +760,7 @@ struct req_iterator {
 		(_iter.bio->bi_next == NULL &&			\
 		 bio_iter_last(bvec, _iter.iter))
 
-/*
- * blk_rq_pos()			: the current sector
- * blk_rq_bytes()		: bytes left in the entire request
- * blk_rq_cur_bytes()		: bytes left in the current segment
- * blk_rq_sectors()		: sectors left in the entire request
- * blk_rq_cur_sectors()		: sectors left in the current segment
- * blk_rq_stats_sectors()	: sectors of the entire request used for stats
- */
+
 static inline sector_t blk_rq_pos(const struct request *rq)
 {
 	return rq->__sector;
@@ -1042,7 +775,7 @@ static inline int blk_rq_cur_bytes(const struct request *rq)
 {
 	if (!rq->bio)
 		return 0;
-	if (!bio_has_data(rq->bio))	/* dataless requests such as discard */
+	if (!bio_has_data(rq->bio))	
 		return rq->bio->bi_iter.bi_size;
 	return bio_iovec(rq->bio).bv_len;
 }
@@ -1062,12 +795,7 @@ static inline unsigned int blk_rq_stats_sectors(const struct request *rq)
 	return rq->stats_sectors;
 }
 
-/*
- * Some commands like WRITE SAME have a payload or data transfer size which
- * is different from the size of the request.  Any driver that supports such
- * commands using the RQF_SPECIAL_PAYLOAD flag needs to use this helper to
- * calculate the data transfer size.
- */
+
 static inline unsigned int blk_rq_payload_bytes(struct request *rq)
 {
 	if (rq->rq_flags & RQF_SPECIAL_PAYLOAD)
@@ -1075,10 +803,7 @@ static inline unsigned int blk_rq_payload_bytes(struct request *rq)
 	return blk_rq_bytes(rq);
 }
 
-/*
- * Return the first full biovec in the request.  The caller needs to check that
- * there are any bvecs before calling this helper.
- */
+
 static inline struct bio_vec req_bvec(struct request *rq)
 {
 	if (rq->rq_flags & RQF_SPECIAL_PAYLOAD)
@@ -1099,25 +824,12 @@ static inline unsigned int blk_rq_count_bios(struct request *rq)
 
 void blk_steal_bios(struct bio_list *list, struct request *rq);
 
-/*
- * Request completion related functions.
- *
- * blk_update_request() completes given number of bytes and updates
- * the request without completing it.
- */
+
 bool blk_update_request(struct request *rq, blk_status_t error,
 			       unsigned int nr_bytes);
 void blk_abort_request(struct request *);
 
-/*
- * Number of physical segments as sent to the device.
- *
- * Normally this is the number of discontiguous data segments sent by the
- * submitter.  But for data-less command like discard we might have no
- * actual data segments submitted, but the driver might have to add it's
- * own special payload.  In that case we still return 1 here so that this
- * special payload will be mapped.
- */
+
 static inline unsigned short blk_rq_nr_phys_segments(struct request *rq)
 {
 	if (rq->rq_flags & RQF_SPECIAL_PAYLOAD)
@@ -1125,10 +837,7 @@ static inline unsigned short blk_rq_nr_phys_segments(struct request *rq)
 	return rq->nr_phys_segments;
 }
 
-/*
- * Number of discard segments (or ranges) the driver needs to fill in.
- * Each discard bio merged into a request is counted as one segment.
- */
+
 static inline unsigned short blk_rq_nr_discard_segments(struct request *rq)
 {
 	return max_t(unsigned short, rq->nr_phys_segments, 1);
@@ -1156,12 +865,7 @@ static inline unsigned int blk_rq_zone_is_seq(struct request *rq)
 	return disk_zone_is_seq(rq->q->disk, blk_rq_pos(rq));
 }
 
-/**
- * blk_rq_is_seq_zoned_write() - Check if @rq requires write serialization.
- * @rq: Request to examine.
- *
- * Note: REQ_OP_ZONE_APPEND requests do not require serialization.
- */
+
 static inline bool blk_rq_is_seq_zoned_write(struct request *rq)
 {
 	return op_needs_zoned_write_locking(req_op(rq)) &&
@@ -1197,7 +901,7 @@ static inline bool blk_req_can_dispatch_to_zone(struct request *rq)
 		return true;
 	return !blk_req_zone_is_write_locked(rq);
 }
-#else /* CONFIG_BLK_DEV_ZONED */
+#else 
 static inline bool blk_rq_is_seq_zoned_write(struct request *rq)
 {
 	return false;
@@ -1224,6 +928,6 @@ static inline bool blk_req_can_dispatch_to_zone(struct request *rq)
 {
 	return true;
 }
-#endif /* CONFIG_BLK_DEV_ZONED */
+#endif 
 
-#endif /* BLK_MQ_H */
+#endif 

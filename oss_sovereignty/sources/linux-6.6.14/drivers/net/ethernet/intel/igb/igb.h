@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2007 - 2018 Intel Corporation. */
 
-/* Linux PRO/1000 Ethernet Driver main header file */
+
+
+
 
 #ifndef _IGB_H_
 #define _IGB_H_
@@ -25,13 +25,13 @@ struct igb_adapter;
 
 #define E1000_PCS_CFG_IGN_SD	1
 
-/* Interrupt defines */
-#define IGB_START_ITR		648 /* ~6000 ints/sec */
+
+#define IGB_START_ITR		648 
 #define IGB_4K_ITR		980
 #define IGB_20K_ITR		196
 #define IGB_70K_ITR		56
 
-/* TX/RX descriptor defines */
+
 #define IGB_DEFAULT_TXD		256
 #define IGB_DEFAULT_TX_WORK	128
 #define IGB_MIN_TXD		64
@@ -41,14 +41,14 @@ struct igb_adapter;
 #define IGB_MIN_RXD		64
 #define IGB_MAX_RXD		4096
 
-#define IGB_DEFAULT_ITR		3 /* dynamic */
+#define IGB_DEFAULT_ITR		3 
 #define IGB_MAX_ITR_USECS	10000
 #define IGB_MIN_ITR_USECS	10
 #define NON_Q_VECTORS		1
 #define MAX_Q_VECTORS		8
 #define MAX_MSIX_ENTRIES	10
 
-/* Transmit and receive queues */
+
 #define IGB_MAX_RX_QUEUES	8
 #define IGB_MAX_RX_QUEUES_82575	4
 #define IGB_MAX_RX_QUEUES_I211	2
@@ -59,7 +59,7 @@ struct igb_adapter;
 #define IGB_82576_VF_DEV_ID	0x10CA
 #define IGB_I350_VF_DEV_ID	0x1520
 
-/* NVM version defines */
+
 #define IGB_MAJOR_MASK		0xF000
 #define IGB_MINOR_MASK		0x0FF0
 #define IGB_BUILD_MASK		0x000F
@@ -73,7 +73,7 @@ struct igb_adapter;
 #define NVM_COMB_VER_OFF	0x0083
 #define NVM_COMB_VER_PTR	0x003d
 
-/* Transmit and receive latency (for PTP timestamps) */
+
 #define IGB_I210_TX_LATENCY_10		9542
 #define IGB_I210_TX_LATENCY_100		1024
 #define IGB_I210_TX_LATENCY_1000	178
@@ -81,7 +81,7 @@ struct igb_adapter;
 #define IGB_I210_RX_LATENCY_100		2213
 #define IGB_I210_RX_LATENCY_1000	448
 
-/* XDP */
+
 #define IGB_XDP_PASS		0
 #define IGB_XDP_CONSUMED	BIT(0)
 #define IGB_XDP_TX		BIT(1)
@@ -93,14 +93,14 @@ struct vf_data_storage {
 	u16 num_vf_mc_hashes;
 	u32 flags;
 	unsigned long last_nack;
-	u16 pf_vlan; /* When set, guest VLAN config not allowed. */
+	u16 pf_vlan; 
 	u16 pf_qos;
 	u16 tx_rate;
 	bool spoofchk_enabled;
 	bool trusted;
 };
 
-/* Number of unicast MAC filters reserved for the PF in the RAR registers */
+
 #define IGB_PF_MAC_FILTERS_RESERVED	3
 
 struct vf_mac_filter {
@@ -110,22 +110,12 @@ struct vf_mac_filter {
 	u8 vf_mac[ETH_ALEN];
 };
 
-#define IGB_VF_FLAG_CTS            0x00000001 /* VF is clear to send data */
-#define IGB_VF_FLAG_UNI_PROMISC    0x00000002 /* VF has unicast promisc */
-#define IGB_VF_FLAG_MULTI_PROMISC  0x00000004 /* VF has multicast promisc */
-#define IGB_VF_FLAG_PF_SET_MAC     0x00000008 /* PF has set MAC address */
+#define IGB_VF_FLAG_CTS            0x00000001 
+#define IGB_VF_FLAG_UNI_PROMISC    0x00000002 
+#define IGB_VF_FLAG_MULTI_PROMISC  0x00000004 
+#define IGB_VF_FLAG_PF_SET_MAC     0x00000008 
 
-/* RX descriptor control thresholds.
- * PTHRESH - MAC will consider prefetch if it has fewer than this number of
- *           descriptors available in its onboard memory.
- *           Setting this to 0 disables RX descriptor prefetch.
- * HTHRESH - MAC will only prefetch if there are at least this many descriptors
- *           available in host memory.
- *           If PTHRESH is 0, this should also be 0.
- * WTHRESH - RX descriptor writeback threshold - MAC will delay writing back
- *           descriptors until either it has this many to write back, or the
- *           ITR timer expires.
- */
+
 #define IGB_RX_PTHRESH	((hw->mac.type == e1000_i354) ? 12 : 8)
 #define IGB_RX_HTHRESH	8
 #define IGB_TX_PTHRESH	((hw->mac.type == e1000_i354) ? 20 : 8)
@@ -135,12 +125,12 @@ struct vf_mac_filter {
 #define IGB_TX_WTHRESH	((hw->mac.type == e1000_82576 && \
 			  (adapter->flags & IGB_FLAG_HAS_MSIX)) ? 1 : 16)
 
-/* this is the size past which hardware will drop packets when setting LPE=0 */
+
 #define MAXIMUM_ETHERNET_VLAN_SIZE 1522
 
 #define IGB_ETH_PKT_HDR_PAD	(ETH_HLEN + ETH_FCS_LEN + (VLAN_HLEN * 2))
 
-/* Supported Rx Buffer Sizes */
+
 #define IGB_RXBUFFER_256	256
 #define IGB_RXBUFFER_1536	1536
 #define IGB_RXBUFFER_2048	2048
@@ -148,16 +138,7 @@ struct vf_mac_filter {
 #define IGB_RX_HDR_LEN		IGB_RXBUFFER_256
 #define IGB_TS_HDR_LEN		16
 
-/* Attempt to maximize the headroom available for incoming frames.  We
- * use a 2K buffer for receives and need 1536/1534 to store the data for
- * the frame.  This leaves us with 512 bytes of room.  From that we need
- * to deduct the space needed for the shared info and the padding needed
- * to IP align the frame.
- *
- * Note: For cache line sizes 256 or larger this value is going to end
- *	 up negative.  In these cases we should fall back to the 3K
- *	 buffers.
- */
+
 #if (PAGE_SIZE < 8192)
 #define IGB_MAX_FRAME_BUILD_SKB (IGB_RXBUFFER_1536 - NET_IP_ALIGN)
 #define IGB_2K_TOO_SMALL_WITH_PADDING \
@@ -177,19 +158,13 @@ static inline int igb_skb_pad(void)
 {
 	int rx_buf_len;
 
-	/* If a 2K buffer cannot handle a standard Ethernet frame then
-	 * optimize padding for a 3K buffer instead of a 1.5K buffer.
-	 *
-	 * For a 3K buffer we need to add enough padding to allow for
-	 * tailroom due to NET_IP_ALIGN possibly shifting us out of
-	 * cache-line alignment.
-	 */
+	
 	if (IGB_2K_TOO_SMALL_WITH_PADDING)
 		rx_buf_len = IGB_RXBUFFER_3072 + SKB_DATA_ALIGN(NET_IP_ALIGN);
 	else
 		rx_buf_len = IGB_RXBUFFER_1536;
 
-	/* if needed make room for NET_IP_ALIGN */
+	
 	rx_buf_len -= NET_IP_ALIGN;
 
 	return igb_compute_pad(rx_buf_len);
@@ -200,8 +175,8 @@ static inline int igb_skb_pad(void)
 #define IGB_SKB_PAD	(NET_SKB_PAD + NET_IP_ALIGN)
 #endif
 
-/* How many Rx Buffers do we bundle into one write to the hardware ? */
-#define IGB_RX_BUFFER_WRITE	16 /* Must be power of 2 */
+
+#define IGB_RX_BUFFER_WRITE	16 
 
 #define IGB_RX_DMA_ATTR \
 	(DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING)
@@ -210,56 +185,50 @@ static inline int igb_skb_pad(void)
 #define IGB_EEPROM_APME		0x0400
 
 #ifndef IGB_MASTER_SLAVE
-/* Switch to override PHY master/slave setting */
+
 #define IGB_MASTER_SLAVE	e1000_ms_hw_default
 #endif
 
 #define IGB_MNG_VLAN_NONE	-1
 
 enum igb_tx_flags {
-	/* cmd_type flags */
+	
 	IGB_TX_FLAGS_VLAN	= 0x01,
 	IGB_TX_FLAGS_TSO	= 0x02,
 	IGB_TX_FLAGS_TSTAMP	= 0x04,
 
-	/* olinfo flags */
+	
 	IGB_TX_FLAGS_IPV4	= 0x10,
 	IGB_TX_FLAGS_CSUM	= 0x20,
 };
 
-/* VLAN info */
+
 #define IGB_TX_FLAGS_VLAN_MASK	0xffff0000
 #define IGB_TX_FLAGS_VLAN_SHIFT	16
 
-/* The largest size we can write to the descriptor is 65535.  In order to
- * maintain a power of two alignment we have to limit ourselves to 32K.
- */
+
 #define IGB_MAX_TXD_PWR	15
 #define IGB_MAX_DATA_PER_TXD	(1u << IGB_MAX_TXD_PWR)
 
-/* Tx Descriptors needed, worst case */
+
 #define TXD_USE_COUNT(S) DIV_ROUND_UP((S), IGB_MAX_DATA_PER_TXD)
 #define DESC_NEEDED (MAX_SKB_FRAGS + 4)
 
-/* EEPROM byte offsets */
+
 #define IGB_SFF_8472_SWAP		0x5C
 #define IGB_SFF_8472_COMP		0x5E
 
-/* Bitmasks */
+
 #define IGB_SFF_ADDRESSING_MODE		0x4
 #define IGB_SFF_8472_UNSUP		0x00
 
-/* TX resources are shared between XDP and netstack
- * and we need to tag the buffer type to distinguish them
- */
+
 enum igb_tx_buf_type {
 	IGB_TYPE_SKB = 0,
 	IGB_TYPE_XDP,
 };
 
-/* wrapper around a pointer to a socket buffer,
- * so a DMA handle can be stored along with the buffer
- */
+
 struct igb_tx_buffer {
 	union e1000_adv_tx_desc *next_to_watch;
 	unsigned long time_stamp;
@@ -304,52 +273,52 @@ struct igb_rx_queue_stats {
 };
 
 struct igb_ring_container {
-	struct igb_ring *ring;		/* pointer to linked list of rings */
-	unsigned int total_bytes;	/* total bytes processed this int */
-	unsigned int total_packets;	/* total packets processed this int */
-	u16 work_limit;			/* total work allowed per interrupt */
-	u8 count;			/* total number of rings in vector */
-	u8 itr;				/* current ITR setting for ring */
+	struct igb_ring *ring;		
+	unsigned int total_bytes;	
+	unsigned int total_packets;	
+	u16 work_limit;			
+	u8 count;			
+	u8 itr;				
 };
 
 struct igb_ring {
-	struct igb_q_vector *q_vector;	/* backlink to q_vector */
-	struct net_device *netdev;	/* back pointer to net_device */
+	struct igb_q_vector *q_vector;	
+	struct net_device *netdev;	
 	struct bpf_prog *xdp_prog;
-	struct device *dev;		/* device pointer for dma mapping */
-	union {				/* array of buffer info structs */
+	struct device *dev;		
+	union {				
 		struct igb_tx_buffer *tx_buffer_info;
 		struct igb_rx_buffer *rx_buffer_info;
 	};
-	void *desc;			/* descriptor ring memory */
-	unsigned long flags;		/* ring specific flags */
-	void __iomem *tail;		/* pointer to ring tail register */
-	dma_addr_t dma;			/* phys address of the ring */
-	unsigned int  size;		/* length of desc. ring in bytes */
+	void *desc;			
+	unsigned long flags;		
+	void __iomem *tail;		
+	dma_addr_t dma;			
+	unsigned int  size;		
 
-	u16 count;			/* number of desc. in the ring */
-	u8 queue_index;			/* logical index of the ring*/
-	u8 reg_idx;			/* physical index of the ring */
-	bool launchtime_enable;		/* true if LaunchTime is enabled */
-	bool cbs_enable;		/* indicates if CBS is enabled */
-	s32 idleslope;			/* idleSlope in kbps */
-	s32 sendslope;			/* sendSlope in kbps */
-	s32 hicredit;			/* hiCredit in bytes */
-	s32 locredit;			/* loCredit in bytes */
+	u16 count;			
+	u8 queue_index;			
+	u8 reg_idx;			
+	bool launchtime_enable;		
+	bool cbs_enable;		
+	s32 idleslope;			
+	s32 sendslope;			
+	s32 hicredit;			
+	s32 locredit;			
 
-	/* everything past this point are written often */
+	
 	u16 next_to_clean;
 	u16 next_to_use;
 	u16 next_to_alloc;
 
 	union {
-		/* TX */
+		
 		struct {
 			struct igb_tx_queue_stats tx_stats;
 			struct u64_stats_sync tx_syncp;
 			struct u64_stats_sync tx_syncp2;
 		};
-		/* RX */
+		
 		struct {
 			struct sk_buff *skb;
 			struct igb_rx_queue_stats rx_stats;
@@ -360,9 +329,9 @@ struct igb_ring {
 } ____cacheline_internodealigned_in_smp;
 
 struct igb_q_vector {
-	struct igb_adapter *adapter;	/* backlink */
-	int cpu;			/* CPU for DCA */
-	u32 eims_value;			/* EIMS mask value */
+	struct igb_adapter *adapter;	
+	int cpu;			
+	u32 eims_value;			
 
 	u16 itr_val;
 	u8 set_itr;
@@ -371,10 +340,10 @@ struct igb_q_vector {
 	struct igb_ring_container rx, tx;
 
 	struct napi_struct napi;
-	struct rcu_head rcu;	/* to avoid race with update stats on free */
+	struct rcu_head rcu;	
 	char name[IFNAMSIZ + 9];
 
-	/* for dynamic allocation of rings associated with this q_vector */
+	
 	struct igb_ring ring[] ____cacheline_internodealigned_in_smp;
 };
 
@@ -433,14 +402,14 @@ static inline unsigned int igb_rx_pg_order(struct igb_ring *ring)
 #define IGB_TX_CTXTDESC(R, i)	\
 	(&(((struct e1000_adv_tx_context_desc *)((R)->desc))[i]))
 
-/* igb_test_staterr - tests bits within Rx descriptor status and error fields */
+
 static inline __le32 igb_test_staterr(union e1000_adv_rx_desc *rx_desc,
 				      const u32 stat_err_bits)
 {
 	return rx_desc->wb.upper.status_error & cpu_to_le32(stat_err_bits);
 }
 
-/* igb_desc_unused - calculate if we have unused descriptors */
+
 static inline int igb_desc_unused(struct igb_ring *ring)
 {
 	if (ring->next_to_clean > ring->next_to_use)
@@ -472,15 +441,9 @@ struct hwmon_buff {
 	};
 #endif
 
-/* The number of L2 ether-type filter registers, Index 3 is reserved
- * for PTP 1588 timestamp
- */
+
 #define MAX_ETYPE_FILTER	(4 - 1)
-/* ETQF filter list: one static filter per filter consumer. This is
- * to avoid filter collisions later. Add new filters here!!
- *
- * Current filters:		Filter 3
- */
+
 #define IGB_ETQF_FILTER_1588	3
 
 #define IGB_N_EXTTS	2
@@ -497,13 +460,9 @@ enum igb_filter_match_flags {
 
 #define IGB_MAX_RXNFC_FILTERS 16
 
-/* RX network flow classification data structure */
+
 struct igb_nfc_input {
-	/* Byte layout in order, all values with MSB first:
-	 * match_flags - 1 byte
-	 * etype - 2 bytes
-	 * vlan_tci - 2 bytes
-	 */
+	
 	u8 match_flags;
 	__be16 etype;
 	__be16 vlan_tci;
@@ -523,7 +482,7 @@ struct igb_nfc_filter {
 struct igb_mac_addr {
 	u8 addr[ETH_ALEN];
 	u8 queue;
-	u8 state; /* bitmask */
+	u8 state; 
 };
 
 #define IGB_MAC_STATE_DEFAULT	0x1
@@ -531,7 +490,7 @@ struct igb_mac_addr {
 #define IGB_MAC_STATE_SRC_ADDR	0x4
 #define IGB_MAC_STATE_QUEUE_STEERING 0x8
 
-/* board specific private data structure */
+
 struct igb_adapter {
 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
 
@@ -544,19 +503,19 @@ struct igb_adapter {
 	unsigned int num_q_vectors;
 	struct msix_entry msix_entries[MAX_MSIX_ENTRIES];
 
-	/* Interrupt Throttle Rate */
+	
 	u32 rx_itr_setting;
 	u32 tx_itr_setting;
 	u16 tx_itr;
 	u16 rx_itr;
 
-	/* TX */
+	
 	u16 tx_work_limit;
 	u32 tx_timeout_count;
 	int num_tx_queues;
 	struct igb_ring *tx_ring[16];
 
-	/* RX */
+	
 	int num_rx_queues;
 	struct igb_ring *rx_ring[16];
 
@@ -573,7 +532,7 @@ struct igb_adapter {
 	u16 link_speed;
 	u16 link_duplex;
 
-	u8 __iomem *io_addr; /* Mainly for iounmap use */
+	u8 __iomem *io_addr; 
 
 	struct work_struct reset_task;
 	struct work_struct watchdog_task;
@@ -582,13 +541,13 @@ struct igb_adapter {
 	struct timer_list blink_timer;
 	unsigned long led_status;
 
-	/* OS defined structs */
+	
 	struct pci_dev *pdev;
 
 	spinlock_t stats64_lock;
 	struct rtnl_link_stats64 stats64;
 
-	/* structs defined in e1000_hw.h */
+	
 	struct e1000_hw hw;
 	struct e1000_hw_stats stats;
 	struct e1000_phy_info phy_info;
@@ -603,7 +562,7 @@ struct igb_adapter {
 	u32 eims_enable_mask;
 	u32 eims_other;
 
-	/* to not mess up cache alignment, always add to the bottom */
+	
 	u16 tx_ring_count;
 	u16 rx_ring_count;
 	unsigned int vfs_allocated_count;
@@ -653,22 +612,22 @@ struct igb_adapter {
 	struct e1000_info ei;
 	u16 eee_advert;
 
-	/* RX network flow classification support */
+	
 	struct hlist_head nfc_filter_list;
 	struct hlist_head cls_flower_list;
 	unsigned int nfc_filter_count;
-	/* lock for RX network flow classification filter */
+	
 	spinlock_t nfc_lock;
 	bool etype_bitmap[MAX_ETYPE_FILTER];
 
 	struct igb_mac_addr *mac_table;
 	struct vf_mac_filter vf_macs;
 	struct vf_mac_filter *vf_mac_list;
-	/* lock for VF resources */
+	
 	spinlock_t vfs_lock;
 };
 
-/* flags controlling PTP/1588 function */
+
 #define IGB_PTP_ENABLED		BIT(0)
 #define IGB_PTP_OVERFLOW_CHECK	BIT(1)
 
@@ -690,16 +649,16 @@ struct igb_adapter {
 #define IGB_FLAG_RX_LEGACY		BIT(16)
 #define IGB_FLAG_FQTSS			BIT(17)
 
-/* Media Auto Sense */
+
 #define IGB_MAS_ENABLE_0		0X0001
 #define IGB_MAS_ENABLE_1		0X0002
 #define IGB_MAS_ENABLE_2		0X0004
 #define IGB_MAS_ENABLE_3		0X0008
 
-/* DMA Coalescing defines */
+
 #define IGB_MIN_TXPBSIZE	20408
 #define IGB_TX_BUF_4096		4096
-#define IGB_DMCTLX_DCFLUSH_DIS	0x80000000  /* Disable DMA Coal Flush */
+#define IGB_DMCTLX_DCFLUSH_DIS	0x80000000  
 
 #define IGB_82576_TSYNC_SHIFT	19
 enum e1000_state_t {
@@ -807,4 +766,4 @@ int igb_add_mac_steering_filter(struct igb_adapter *adapter,
 int igb_del_mac_steering_filter(struct igb_adapter *adapter,
 				const u8 *addr, u8 queue, u8 flags);
 
-#endif /* _IGB_H_ */
+#endif 

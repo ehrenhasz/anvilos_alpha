@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _UAPI__ASM_GENERIC_PARAM_H
 #define _UAPI__ASM_GENERIC_PARAM_H
 
@@ -14,7 +14,7 @@
 #define NOGROUP		(-1)
 #endif
 
-#define MAXHOSTNAMELEN	64	/* max length of hostname */
+#define MAXHOSTNAMELEN	64	
 
 
-#endif /* _UAPI__ASM_GENERIC_PARAM_H */
+#endif 

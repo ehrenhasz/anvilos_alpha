@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _PERF_UI_UTIL_H_
 #define _PERF_UI_UTIL_H_ 1
 
@@ -21,4 +21,4 @@ struct perf_error_ops {
 int perf_error__register(struct perf_error_ops *eops);
 int perf_error__unregister(struct perf_error_ops *eops);
 
-#endif /* _PERF_UI_UTIL_H_ */
+#endif 

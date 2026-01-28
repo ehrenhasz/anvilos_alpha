@@ -39,8 +39,8 @@ R_386_GOTPC = 10
 R_ARM_THM_CALL = 10
 R_XTENSA_DIFF32 = 19
 R_XTENSA_SLOT0_OP = 20
-R_ARM_BASE_PREL = 25  # aka R_ARM_GOTPC
-R_ARM_GOT_BREL = 26  # aka R_ARM_GOT32
+R_ARM_BASE_PREL = 25  
+R_ARM_GOT_BREL = 26  
 R_ARM_THM_JUMP24 = 30
 R_X86_64_GOTPCREL = 9
 R_X86_64_REX_GOTPCRELX = 42
@@ -207,11 +207,11 @@ class LiteralEntry:
 class LinkEnv:
     def __init__(self, arch):
         self.arch = ARCH_DATA[arch]
-        self.sections = []  # list of sections in order of output
-        self.literal_sections = []  # list of literal sections (xtensa only)
-        self.known_syms = {}  # dict of symbols that are defined
-        self.unresolved_syms = []  # list of unresolved symbols
-        self.mpy_relocs = []  # list of relocations needed in the output .mpy file
+        self.sections = []  
+        self.literal_sections = []  
+        self.known_syms = {}  
+        self.unresolved_syms = []  
+        self.mpy_relocs = []  
     def check_arch(self, arch_name):
         if arch_name != self.arch.name:
             raise LinkError("incompatible arch")
@@ -349,7 +349,7 @@ def do_relocation_text(env, text_addr, r):
         and r_info_type in (R_ARM_REL32, R_ARM_THM_CALL, R_ARM_THM_JUMP24)
         or s_bind == "STB_LOCAL"
         and env.arch.name == "EM_XTENSA"
-        and r_info_type == R_XTENSA_32  # not GOT
+        and r_info_type == R_XTENSA_32  
     ):
         if hasattr(s, "resolved"):
             s = s.resolved
@@ -421,7 +421,7 @@ def do_relocation_text(env, text_addr, r):
     elif reloc_type == "thumb_b":
         b_h, b_l = struct.unpack_from("<HH", env.full_text, r_offset)
         existing = (b_h & 0x7FF) << 12 | (b_l & 0x7FF) << 1
-        if existing >= 0x400000:  # 2's complement
+        if existing >= 0x400000:  
             existing -= 0x800000
         new = existing + reloc
         b_h = (b_h & 0xF800) | (new >> 12) & 0x7FF
@@ -429,7 +429,7 @@ def do_relocation_text(env, text_addr, r):
         struct.pack_into("<HH", env.full_text, r_offset, b_h, b_l)
     elif reloc_type == "xtensa_l32r":
         l32r = unpack_u24le(env.full_text, r_offset)
-        assert l32r & 0xF == 1  # RI16 encoded l32r
+        assert l32r & 0xF == 1  
         l32r_imm16 = l32r >> 8
         l32r_imm16 = (l32r_imm16 + reloc >> 2) & 0xFFFF
         l32r = l32r & 0xFF | l32r_imm16 << 8
@@ -498,7 +498,7 @@ def load_object_file(env, felf):
         elf = elffile.ELFFile(f)
         env.check_arch(elf["e_machine"])
         symtab = list(elf.get_section_by_name(".symtab").iter_symbols())
-        sections_shndx = {}  # maps elf shndx to Section object
+        sections_shndx = {}  
         for idx, s in enumerate(elf.iter_sections()):
             if s.header.sh_type in ("SHT_PROGBITS", "SHT_NOBITS"):
                 if s.data_size == 0:
@@ -557,7 +557,7 @@ def link_objects(env, native_qstr_vals_len):
     )
     env.obj_table_section = Section(
         ".external.obj_table",
-        bytearray(0 * env.arch.word_size),  # currently empty
+        bytearray(0 * env.arch.word_size),  
         env.arch.word_size,
     )
     mp_fun_table_sec = Section(".external.mp_fun_table", b"", 0)
@@ -600,7 +600,7 @@ def link_objects(env, native_qstr_vals_len):
                 sym.mp_fun_table_offset = fun_table[sym.name]
             else:
                 raise LinkError("{}: undefined symbol: {}".format(sym.filename, sym.name))
-    env.full_text = bytearray(env.arch.asm_jump(8))  # dummy, to be filled in later
+    env.full_text = bytearray(env.arch.asm_jump(8))  
     env.full_rodata = bytearray(0)
     env.full_bss = bytearray(0)
     for sec in env.sections:
@@ -693,7 +693,7 @@ def build_mpy(env, entry_offset, fmpy, native_qstr_vals):
     )
     out.write_uint(1 + len(native_qstr_vals))
     out.write_uint(0)
-    out.write_qstr(fmpy)  # filename
+    out.write_qstr(fmpy)  
     for q in native_qstr_vals:
         out.write_qstr(q)
     out.write_uint(len(env.full_text) << 3 | (MP_CODE_NATIVE_VIPER - MP_CODE_BYTECODE))
@@ -757,16 +757,16 @@ def do_preprocess(args):
     static_qstrs, qstr_vals = extract_qstrs(args.files)
     with open(args.output, "w") as f:
         print(
-            "#include <stdint.h>\n"
+            "
             "typedef uintptr_t mp_uint_t;\n"
             "typedef intptr_t mp_int_t;\n"
             "typedef uintptr_t mp_off_t;",
             file=f,
         )
         for i, q in enumerate(static_qstrs):
-            print("#define %s (%u)" % (q, i + 1), file=f)
+            print("
         for i, q in enumerate(sorted(qstr_vals)):
-            print("#define %s (mp_native_qstr_table[%d])" % (q, i + 1), file=f)
+            print("
         print("extern const uint16_t mp_native_qstr_table[];", file=f)
         print("extern const mp_uint_t mp_native_obj_table[];", file=f)
 def do_link(args):
@@ -777,7 +777,7 @@ def do_link(args):
     if args.qstrs is not None:
         with open(args.qstrs) as f:
             for l in f:
-                m = re.match(r"#define MP_QSTR_([A-Za-z0-9_]*) \(mp_native_", l)
+                m = re.match(r"
                 if m:
                     native_qstr_vals.append(m.group(1))
     log(LOG_LEVEL_2, "qstr vals: " + ", ".join(native_qstr_vals))

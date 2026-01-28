@@ -1,21 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Linux network driver for QLogic BR-series Converged Network Adapter.
- */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014-2015 QLogic Corporation
- * All rights reserved
- * www.qlogic.com
- */
+
+
+
 #ifndef __BFA_DEFS_STATUS_H__
 #define __BFA_DEFS_STATUS_H__
 
-/* API status return values
- *
- * NOTE: The error msgs are auto generated from the comments. Only singe line
- * comments are supported
- */
+
 enum bfa_status {
 	BFA_STATUS_OK = 0,
 	BFA_STATUS_FAILED = 1,
@@ -205,4 +194,4 @@ enum bfa_eproto_status {
 	BFA_EPROTO_UNKNOWN_RSP = 1
 };
 
-#endif /* __BFA_DEFS_STATUS_H__ */
+#endif 

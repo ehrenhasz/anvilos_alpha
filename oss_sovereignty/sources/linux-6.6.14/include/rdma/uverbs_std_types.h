@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2017, Mellanox Technologies inc.  All rights reserved.
- */
+
+
 
 #ifndef _UVERBS_STD_TYPES__
 #define _UVERBS_STD_TYPES__
@@ -10,12 +8,7 @@
 #include <rdma/uverbs_ioctl.h>
 #include <rdma/ib_user_ioctl_verbs.h>
 
-/* Returns _id, or causes a compile error if _id is not a u32.
- *
- * The uobj APIs should only be used with the write based uAPI to access
- * object IDs. The write API must use a u32 for the object handle, which is
- * checked by this macro.
- */
+
 #define _uobj_check_id(_id) ((_id) * typecheck(u32, _id))
 
 #define uobj_get_type(_attrs, _object)                                         \
@@ -86,13 +79,7 @@ static inline void uobj_alloc_abort(struct ib_uobject *uobj,
 static inline void uobj_finalize_uobj_create(struct ib_uobject *uobj,
 					     struct uverbs_attr_bundle *attrs)
 {
-	/*
-	 * Tell the core code that the write() handler has completed
-	 * initializing the object and that the core should commit or
-	 * abort this object based upon the return code from the write()
-	 * method. Similar to what uverbs_finalize_uobj_create() does for
-	 * ioctl()
-	 */
+	
 	WARN_ON(attrs->uobject);
 	attrs->uobject = uobj;
 }

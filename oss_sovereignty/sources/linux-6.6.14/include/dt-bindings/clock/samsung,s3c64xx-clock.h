@@ -1,22 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2013 Tomasz Figa <tomasz.figa at gmail.com>
- *
- * Device Tree binding constants for Samsung S3C64xx clock controller.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLOCK_SAMSUNG_S3C64XX_CLOCK_H
 #define _DT_BINDINGS_CLOCK_SAMSUNG_S3C64XX_CLOCK_H
 
-/*
- * Let each exported clock get a unique index, which is used on DT-enabled
- * platforms to lookup the clock from a clock specifier. These indices are
- * therefore considered an ABI and so must not be changed. This implies
- * that new clocks should be added either in free spaces between clock groups
- * or at the end.
- */
 
-/* Core clocks. */
+
+
 #define CLK27M			1
 #define CLK48M			2
 #define FOUT_APLL		3
@@ -27,7 +17,7 @@
 #define HCLK			8
 #define PCLK			9
 
-/* HCLK bus clocks. */
+
 #define HCLK_3DSE		16
 #define HCLK_UHOST		17
 #define HCLK_SECUR		18
@@ -59,7 +49,7 @@
 #define HCLK_MFC		44
 #define HCLK_DDR0		45
 
-/* PCLK bus clocks. */
+
 #define PCLK_IIC1		48
 #define PCLK_IIS2		49
 #define PCLK_SKEY		50
@@ -88,7 +78,7 @@
 #define PCLK_UART0		73
 #define PCLK_MFC		74
 
-/* Special clocks. */
+
 #define SCLK_UHOST		80
 #define SCLK_MMC2_48		81
 #define SCLK_MMC1_48		82
@@ -120,14 +110,14 @@
 #define SCLK_JPEG		108
 #define SCLK_ONENAND		109
 
-/* MEM0 bus clocks - S3C6410-specific. */
+
 #define MEM0_CFCON		112
 #define MEM0_ONENAND1		113
 #define MEM0_ONENAND0		114
 #define MEM0_NFCON		115
 #define MEM0_SROM		116
 
-/* Muxes. */
+
 #define MOUT_APLL		128
 #define MOUT_MPLL		129
 #define MOUT_EPLL		130
@@ -148,7 +138,7 @@
 #define MOUT_TV27		145
 #define MOUT_AUDIO2		146
 
-/* Dividers. */
+
 #define DOUT_MPLL		160
 #define DOUT_SECUR		161
 #define DOUT_CAM		162
@@ -169,7 +159,7 @@
 #define DOUT_FIMC		177
 #define DOUT_AUDIO2		178
 
-/* Total number of clocks. */
+
 #define NR_CLKS			(DOUT_AUDIO2 + 1)
 
-#endif /* _DT_BINDINGS_CLOCK_SAMSUNG_S3C64XX_CLOCK_H */
+#endif 

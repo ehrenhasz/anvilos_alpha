@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2018-2021, Mellanox Technologies inc.  All rights reserved. */
+
+
 
 #ifndef __LIB_MLX5_EQ_H__
 #define __LIB_MLX5_EQ_H__
@@ -13,11 +13,11 @@ struct mlx5_eq_tasklet {
 	struct list_head      list;
 	struct list_head      process_list;
 	struct tasklet_struct task;
-	spinlock_t            lock; /* lock completion tasklet list */
+	spinlock_t            lock; 
 };
 
 struct mlx5_cq_table {
-	spinlock_t              lock;	/* protect radix tree */
+	spinlock_t              lock;	
 	struct radix_tree_root  tree;
 };
 
@@ -38,7 +38,7 @@ struct mlx5_eq {
 struct mlx5_eq_async {
 	struct mlx5_eq          core;
 	struct notifier_block   irq_nb;
-	spinlock_t              lock; /* To avoid irq EQ handle races with resiliency flows */
+	spinlock_t              lock; 
 };
 
 struct mlx5_eq_comp {
@@ -71,7 +71,7 @@ static inline void eq_update_ci(struct mlx5_eq *eq, int arm)
 	u32 val = (eq->cons_index & 0xffffff) | (eq->eqn << 24);
 
 	__raw_writel((__force u32)cpu_to_be32(val), addr);
-	/* We still want ordering, just not swabbing, so add a barrier */
+	
 	mb();
 }
 
@@ -97,7 +97,7 @@ void mlx5_debug_eq_remove(struct mlx5_core_dev *dev, struct mlx5_eq *eq);
 void mlx5_eq_debugfs_init(struct mlx5_core_dev *dev);
 void mlx5_eq_debugfs_cleanup(struct mlx5_core_dev *dev);
 
-/* This function should only be called after mlx5_cmd_force_teardown_hca */
+
 void mlx5_core_eq_free_irqs(struct mlx5_core_dev *dev);
 
 #ifdef CONFIG_RFS_ACCEL

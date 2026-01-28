@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * AHCI SATA platform driver
- *
- * Copyright 2004-2005  Red Hat, Inc.
- *   Jeff Garzik <jgarzik@pobox.com>
- * Copyright 2010  MontaVista Software, LLC.
- *   Anton Vorontsov <avorontsov@ru.mvista.com>
- */
+
+
 
 #ifndef _AHCI_PLATFORM_H
 #define _AHCI_PLATFORM_H
@@ -49,4 +42,4 @@ int ahci_platform_resume(struct device *dev);
 #define AHCI_PLATFORM_GET_RESETS	BIT(0)
 #define AHCI_PLATFORM_RST_TRIGGER	BIT(1)
 
-#endif /* _AHCI_PLATFORM_H */
+#endif 

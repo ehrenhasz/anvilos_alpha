@@ -81,7 +81,7 @@ class CommentLineException(Exception):
 	pass
 def parseLine(line):
 	line = line.strip()
-	if line.startswith("#"):
+	if line.startswith("
 		raise CommentLineException
 	m = re.match("[^]]+?\\] +([a-z.]+) +([0-9.]+): (\\w+) <-(\\w+)", line)
 	if m is None:

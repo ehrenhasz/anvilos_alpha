@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AMD Secure Processor driver
- *
- * Copyright (C) 2017-2019 Advanced Micro Devices, Inc.
- *
- * Author: Tom Lendacky <thomas.lendacky@amd.com>
- * Author: Gary R Hook <gary.hook@amd.com>
- * Author: Brijesh Singh <brijesh.singh@amd.com>
- */
+
+
 
 #ifndef __SP_DEV_H__
 #define __SP_DEV_H__
@@ -32,7 +24,7 @@
 
 #define PSP_FEATURE(psp, feat)	(psp->vdata && psp->vdata->platform_features & PLATFORM_FEATURE_##feat)
 
-/* Structure to hold CCP device data */
+
 struct ccp_device;
 struct ccp_vdata {
 	const unsigned int version;
@@ -78,7 +70,7 @@ struct psp_vdata {
 	const unsigned int platform_features;
 };
 
-/* Structure to hold SP device data */
+
 struct sp_dev_vdata {
 	const unsigned int bar;
 
@@ -95,16 +87,16 @@ struct sp_device {
 	unsigned int ord;
 	char name[SP_MAX_NAME_LEN];
 
-	/* Bus specific device information */
+	
 	void *dev_specific;
 
-	/* I/O area used for device communication. */
+	
 	void __iomem *io_map;
 
-	/* DMA caching attribute support */
+	
 	unsigned int axcache;
 
-	/* get and set master device */
+	
 	struct sp_device*(*get_psp_master_device)(void);
 	void (*set_psp_master_device)(struct sp_device *);
 	void (*clear_psp_master_device)(struct sp_device *);
@@ -154,7 +146,7 @@ void ccp_dev_destroy(struct sp_device *sp);
 void ccp_dev_suspend(struct sp_device *sp);
 void ccp_dev_resume(struct sp_device *sp);
 
-#else	/* !CONFIG_CRYPTO_DEV_SP_CCP */
+#else	
 
 static inline int ccp_dev_init(struct sp_device *sp)
 {
@@ -163,7 +155,7 @@ static inline int ccp_dev_init(struct sp_device *sp)
 static inline void ccp_dev_destroy(struct sp_device *sp) { }
 static inline void ccp_dev_suspend(struct sp_device *sp) { }
 static inline void ccp_dev_resume(struct sp_device *sp) { }
-#endif	/* CONFIG_CRYPTO_DEV_SP_CCP */
+#endif	
 
 #ifdef CONFIG_CRYPTO_DEV_SP_PSP
 
@@ -172,13 +164,13 @@ void psp_pci_init(void);
 void psp_dev_destroy(struct sp_device *sp);
 void psp_pci_exit(void);
 
-#else /* !CONFIG_CRYPTO_DEV_SP_PSP */
+#else 
 
 static inline int psp_dev_init(struct sp_device *sp) { return 0; }
 static inline void psp_pci_init(void) { }
 static inline void psp_dev_destroy(struct sp_device *sp) { }
 static inline void psp_pci_exit(void) { }
 
-#endif /* CONFIG_CRYPTO_DEV_SP_PSP */
+#endif 
 
 #endif

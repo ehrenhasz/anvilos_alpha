@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2016-2017, Linaro Ltd
- */
+
+
 
 #ifndef __QCOM_GLINK_NATIVE_H__
 #define __QCOM_GLINK_NATIVE_H__

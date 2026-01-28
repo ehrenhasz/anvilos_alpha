@@ -21,16 +21,16 @@ for sep in [
     print(s.getvalue())
     try:
         json.dump(123, 1, separators=sep)
-    except (AttributeError, OSError):  # CPython and uPy have different errors
+    except (AttributeError, OSError):  
         print("Exception")
     try:
         json.dump(123, {}, separators=sep)
-    except (AttributeError, OSError):  # CPython and uPy have different errors
+    except (AttributeError, OSError):  
         print("Exception")
 try:
     s = StringIO()
     json.dump(False, s, separators={"a": 1})
-except (TypeError, ValueError):  # CPython and uPy have different errors
+except (TypeError, ValueError):  
     print("Exception")
 for sep in [1, object()]:
     try:

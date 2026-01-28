@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/include/linux/sunrpc/addr.h
- *
- * Various routines for copying and comparing sockaddrs and for
- * converting them to and from presentation format.
- */
+
+
 #ifndef _LINUX_SUNRPC_ADDR_H
 #define _LINUX_SUNRPC_ADDR_H
 
@@ -93,7 +88,7 @@ static inline bool __rpc_copy_addr6(struct sockaddr *dst,
 	dsin6->sin6_scope_id = ssin6->sin6_scope_id;
 	return true;
 }
-#else	/* !(IS_ENABLED(CONFIG_IPV6) */
+#else	
 static inline bool rpc_cmp_addr6(const struct sockaddr *sap1,
 				   const struct sockaddr *sap2)
 {
@@ -105,18 +100,9 @@ static inline bool __rpc_copy_addr6(struct sockaddr *dst,
 {
 	return false;
 }
-#endif	/* !(IS_ENABLED(CONFIG_IPV6) */
+#endif	
 
-/**
- * rpc_cmp_addr - compare the address portion of two sockaddrs.
- * @sap1: first sockaddr
- * @sap2: second sockaddr
- *
- * Just compares the family and address portion. Ignores port, but
- * compares the scope if it's a link-local address.
- *
- * Returns true if the addrs are equal, false if they aren't.
- */
+
 static inline bool rpc_cmp_addr(const struct sockaddr *sap1,
 				const struct sockaddr *sap2)
 {
@@ -131,11 +117,7 @@ static inline bool rpc_cmp_addr(const struct sockaddr *sap1,
 	return false;
 }
 
-/**
- * rpc_cmp_addr_port - compare the address and port number of two sockaddrs.
- * @sap1: first sockaddr
- * @sap2: second sockaddr
- */
+
 static inline bool rpc_cmp_addr_port(const struct sockaddr *sap1,
 				     const struct sockaddr *sap2)
 {
@@ -144,16 +126,7 @@ static inline bool rpc_cmp_addr_port(const struct sockaddr *sap1,
 	return rpc_get_port(sap1) == rpc_get_port(sap2);
 }
 
-/**
- * rpc_copy_addr - copy the address portion of one sockaddr to another
- * @dst: destination sockaddr
- * @src: source sockaddr
- *
- * Just copies the address portion and family. Ignores port, scope, etc.
- * Caller is responsible for making certain that dst is large enough to hold
- * the address in src. Returns true if address family is supported. Returns
- * false otherwise.
- */
+
 static inline bool rpc_copy_addr(struct sockaddr *dst,
 				 const struct sockaddr *src)
 {
@@ -166,13 +139,7 @@ static inline bool rpc_copy_addr(struct sockaddr *dst,
 	return false;
 }
 
-/**
- * rpc_get_scope_id - return scopeid for a given sockaddr
- * @sa: sockaddr to get scopeid from
- *
- * Returns the value of the sin6_scope_id for AF_INET6 addrs, or 0 if
- * not an AF_INET6 address.
- */
+
 static inline u32 rpc_get_scope_id(const struct sockaddr *sa)
 {
 	if (sa->sa_family != AF_INET6)
@@ -181,4 +148,4 @@ static inline u32 rpc_get_scope_id(const struct sockaddr *sa)
 	return ((struct sockaddr_in6 *) sa)->sin6_scope_id;
 }
 
-#endif /* _LINUX_SUNRPC_ADDR_H */
+#endif 

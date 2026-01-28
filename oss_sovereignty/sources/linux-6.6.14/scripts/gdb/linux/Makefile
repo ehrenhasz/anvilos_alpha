@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 ifdef building_out_of_srctree
 

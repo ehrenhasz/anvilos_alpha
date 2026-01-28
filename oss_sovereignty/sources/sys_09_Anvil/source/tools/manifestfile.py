@@ -28,13 +28,13 @@ class ManifestUsePyPIException(Exception):
 ManifestOutput = namedtuple(
     "ManifestOutput",
     [
-        "file_type",  # FILE_TYPE_*.
-        "full_path",  # The input file full path.
-        "target_path",  # The target path on the device.
-        "timestamp",  # Last modified date of the input file.
-        "kind",  # KIND_*.
-        "metadata",  # Metadata for the containing package.
-        "opt",  # Optimisation level (or None).
+        "file_type",  
+        "full_path",  
+        "target_path",  
+        "timestamp",  
+        "kind",  
+        "metadata",  
+        "opt",  
     ],
 )
 class ManifestPackageMetadata:

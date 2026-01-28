@@ -69,7 +69,7 @@ while not uart1.any():
     pass
 time.sleep_us(100)
 print(uart1.any() == 3)
-print(uart1_int_count == 0)  # no interrupt triggered this time
+print(uart1_int_count == 0)  
 print(uart1_irq.flags() == 0)
 print(uart0_irq.flags() == 0)
 print(uart1.read() == b"123")
@@ -84,14 +84,14 @@ print(uart1_int_count > 0)
 print(uart1_irq.flags() == 0)
 print(uart0_irq.flags() == 0)
 print(uart1.read() == b"123")
-uart1_irq.init(trigger=UART.RX_ANY, handler=None)  # No handler
+uart1_irq.init(trigger=UART.RX_ANY, handler=None)  
 uart1_int_count = 0
 uart0.write(b"123")
 while not uart1.any():
     pass
 time.sleep_us(100)
 print(uart1.any() == 3)
-print(uart1_int_count == 0)  # no interrupt handler called
+print(uart1_int_count == 0)  
 print(uart1_irq.flags() == 0)
 print(uart0_irq.flags() == 0)
 print(uart1.read() == b"123")

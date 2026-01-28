@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef BTRFS_ZONED_H
 #define BTRFS_ZONED_H
@@ -14,18 +14,12 @@
 #define BTRFS_DEFAULT_RECLAIM_THRESH           			(75)
 
 struct btrfs_zoned_device_info {
-	/*
-	 * Number of zones, zone size and types of zones if bdev is a
-	 * zoned block device.
-	 */
+	
 	u64 zone_size;
 	u8  zone_size_shift;
 	u32 nr_zones;
 	unsigned int max_active_zones;
-	/*
-	 * Reserved active zones for one metadata and one system block group.
-	 * It can vary per-device depending on the allocation status.
-	 */
+	
 	int reserved_active_zones;
 	atomic_t active_zones_left;
 	unsigned long *seq_zones;
@@ -84,7 +78,7 @@ int btrfs_zone_finish_one_bg(struct btrfs_fs_info *fs_info);
 int btrfs_zoned_activate_one_bg(struct btrfs_fs_info *fs_info,
 				struct btrfs_space_info *space_info, bool do_finish);
 void btrfs_check_active_zone_reservation(struct btrfs_fs_info *fs_info);
-#else /* CONFIG_BLK_DEV_ZONED */
+#else 
 static inline int btrfs_get_dev_zone(struct btrfs_device *device, u64 pos,
 				     struct blk_zone *zone)
 {
@@ -104,10 +98,7 @@ static inline int btrfs_get_dev_zone_info(struct btrfs_device *device,
 
 static inline void btrfs_destroy_dev_zone_info(struct btrfs_device *device) { }
 
-/*
- * In case the kernel is compiled without CONFIG_BLK_DEV_ZONED we'll never call
- * into btrfs_clone_dev_zone_info() so it's safe to return NULL here.
- */
+
 static inline struct btrfs_zoned_device_info *btrfs_clone_dev_zone_info(
 						 struct btrfs_device *orig_dev)
 {
@@ -254,7 +245,7 @@ static inline int btrfs_zoned_activate_one_bg(struct btrfs_fs_info *fs_info,
 					      struct btrfs_space_info *space_info,
 					      bool do_finish)
 {
-	/* Consider all the block groups are active */
+	
 	return 0;
 }
 
@@ -312,10 +303,7 @@ static inline bool btrfs_check_device_zone_type(const struct btrfs_fs_info *fs_i
 						struct block_device *bdev)
 {
 	if (btrfs_is_zoned(fs_info)) {
-		/*
-		 * We can allow a regular device on a zoned filesystem, because
-		 * we will emulate the zoned capabilities.
-		 */
+		
 		if (!bdev_is_zoned(bdev))
 			return true;
 
@@ -323,16 +311,13 @@ static inline bool btrfs_check_device_zone_type(const struct btrfs_fs_info *fs_i
 			(bdev_zone_sectors(bdev) << SECTOR_SHIFT);
 	}
 
-	/* Do not allow Host Manged zoned device */
+	
 	return bdev_zoned_model(bdev) != BLK_ZONED_HM;
 }
 
 static inline bool btrfs_check_super_location(struct btrfs_device *device, u64 pos)
 {
-	/*
-	 * On a non-zoned device, any address is OK. On a zoned device,
-	 * non-SEQUENTIAL WRITE REQUIRED zones are capable.
-	 */
+	
 	return device->zone_info == NULL || !btrfs_dev_is_sequential(device, pos);
 }
 

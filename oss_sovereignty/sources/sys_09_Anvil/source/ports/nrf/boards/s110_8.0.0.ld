@@ -1,5 +1,5 @@
 
-/* GNU linker script for s110 SoftDevice version 8.0.0 */
+
 
 _sd_size = 0x00018000;
 _sd_ram  = 0x00002000;

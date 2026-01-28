@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_UNICODE_H
 #define _LINUX_UNICODE_H
 
@@ -31,16 +31,7 @@ static inline u8 unicode_rev(unsigned int age)
 	return age & 0xff;
 }
 
-/*
- * Two normalization forms are supported:
- * 1) NFDI
- *   - Apply unicode normalization form NFD.
- *   - Remove any Default_Ignorable_Code_Point.
- * 2) NFDICF
- *   - Apply unicode normalization form NFD.
- *   - Remove any Default_Ignorable_Code_Point.
- *   - Apply a full casefold (C + F).
- */
+
 enum utf8_normalization {
 	UTF8_NFDI = 0,
 	UTF8_NFDICF,
@@ -76,4 +67,4 @@ int utf8_casefold_hash(const struct unicode_map *um, const void *salt,
 struct unicode_map *utf8_load(unsigned int version);
 void utf8_unload(struct unicode_map *um);
 
-#endif /* _LINUX_UNICODE_H */
+#endif 

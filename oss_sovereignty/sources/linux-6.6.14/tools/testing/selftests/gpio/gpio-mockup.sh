@@ -207,7 +207,7 @@ insmod_test()
 	log "GPIO $module test with ranges: <$ranges>:"
 	gpiochip=$(find "$DEBUGFS/$module/" -name gpiochip* -type d | sort)
 	for chip in $gpiochip; do
-		gc=${chip##*/}
+		gc=${chip
 		[ "${1:-}" ] || fail "unexpected chip - $gc"
 		width=$1 ; shift
 		test_line $gc 0

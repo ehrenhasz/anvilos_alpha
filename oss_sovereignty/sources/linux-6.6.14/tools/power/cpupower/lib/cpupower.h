@@ -1,14 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __CPUPOWER_CPUPOWER_H__
 #define __CPUPOWER_CPUPOWER_H__
 
 struct cpupower_topology {
-	/* Amount of CPU cores, packages and threads per core in the system */
+	
 	unsigned int cores;
 	unsigned int pkgs;
-	unsigned int threads; /* per core */
+	unsigned int threads; 
 
-	/* Array gets mallocated with cores entries, holding per core info */
+	
 	struct cpuid_core_info *core_info;
 };
 
@@ -17,7 +17,7 @@ struct cpuid_core_info {
 	int core;
 	int cpu;
 
-	/* flags */
+	
 	unsigned int is_online:1;
 };
 

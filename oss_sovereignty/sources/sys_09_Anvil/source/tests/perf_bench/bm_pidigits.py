@@ -32,7 +32,7 @@ def bm_setup(params):
         nloop, ndig = params
         ndig = params[1]
         for _ in range(nloop):
-            state = None  # free previous result
+            state = None  
             state = gen_pi_digits(ndig)
     def result():
         return params[0] * params[1], "".join(str(d) for d in state)

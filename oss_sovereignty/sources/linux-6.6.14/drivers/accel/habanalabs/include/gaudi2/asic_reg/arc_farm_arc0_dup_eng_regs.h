@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_ARC_FARM_ARC0_DUP_ENG_REGS_H_
 #define ASIC_REG_ARC_FARM_ARC0_DUP_ENG_REGS_H_
 
-/*
- *****************************************
- *   ARC_FARM_ARC0_DUP_ENG
- *   (Prototype: ARC_DUP_ENG)
- *****************************************
- */
+
 
 #define mmARC_FARM_ARC0_DUP_ENG_DUP_TPC_ENG_ADDR_0 0x4E89000
 
@@ -572,4 +559,4 @@
 
 #define mmARC_FARM_ARC0_DUP_ENG_ARC_CID_OFFSET_63 0x4E896B0
 
-#endif /* ASIC_REG_ARC_FARM_ARC0_DUP_ENG_REGS_H_ */
+#endif 

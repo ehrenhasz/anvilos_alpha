@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
 
 #ifndef GAUDI_CORESIGHT_H
 #define GAUDI_CORESIGHT_H
@@ -364,4 +359,4 @@ enum gaudi_debug_spmu_regs_index {
 	GAUDI_SPMU_LAST = GAUDI_SPMU_TPC7_EML
 };
 
-#endif /* GAUDI_CORESIGHT_H */
+#endif 

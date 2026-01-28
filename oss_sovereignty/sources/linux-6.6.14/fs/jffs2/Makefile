@@ -1,8 +1,8 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Linux Journalling Flash File System v2 (JFFS2)
-#
-#
+
+
+
+
+
 
 obj-$(CONFIG_JFFS2_FS) += jffs2.o
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+
 
 #ifndef _UAPI_LINUX_CFM_BRIDGE_H_
 #define _UAPI_LINUX_CFM_BRIDGE_H_
@@ -37,19 +37,19 @@ enum br_cfm_opcodes {
 	BR_CFM_OPCODE_CCM = 0x1,
 };
 
-/* MEP domain */
+
 enum br_cfm_domain {
 	BR_CFM_PORT,
 	BR_CFM_VLAN,
 };
 
-/* MEP direction */
+
 enum br_cfm_mep_direction {
 	BR_CFM_MEP_DIRECTION_DOWN,
 	BR_CFM_MEP_DIRECTION_UP,
 };
 
-/* CCM interval supported. */
+
 enum br_cfm_ccm_interval {
 	BR_CFM_CCM_INTERVAL_NONE,
 	BR_CFM_CCM_INTERVAL_3_3_MS,

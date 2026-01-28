@@ -54,52 +54,52 @@ class BaseKeyboard(base.UHIDTestDevice):
         return [r]
 class PlainKeyboard(BaseKeyboard):
     report_descriptor = [
-        0x05, 0x01,                    # Usage Page (Generic Desktop)
-        0x09, 0x06,                    # Usage (Keyboard)
-        0xa1, 0x01,                    # Collection (Application)
-        0x85, 0x01,                    # .Report ID (1)
-        0x05, 0x07,                    # .Usage Page (Keyboard)
-        0x19, 0xe0,                    # .Usage Minimum (224)
-        0x29, 0xe7,                    # .Usage Maximum (231)
-        0x15, 0x00,                    # .Logical Minimum (0)
-        0x25, 0x01,                    # .Logical Maximum (1)
-        0x75, 0x01,                    # .Report Size (1)
-        0x95, 0x08,                    # .Report Count (8)
-        0x81, 0x02,                    # .Input (Data,Var,Abs)
-        0x19, 0x00,                    # .Usage Minimum (0)
-        0x29, 0x97,                    # .Usage Maximum (151)
-        0x15, 0x00,                    # .Logical Minimum (0)
-        0x25, 0x01,                    # .Logical Maximum (1)
-        0x75, 0x01,                    # .Report Size (1)
-        0x95, 0x98,                    # .Report Count (152)
-        0x81, 0x02,                    # .Input (Data,Var,Abs)
-        0xc0,                          # End Collection
+        0x05, 0x01,                    
+        0x09, 0x06,                    
+        0xa1, 0x01,                    
+        0x85, 0x01,                    
+        0x05, 0x07,                    
+        0x19, 0xe0,                    
+        0x29, 0xe7,                    
+        0x15, 0x00,                    
+        0x25, 0x01,                    
+        0x75, 0x01,                    
+        0x95, 0x08,                    
+        0x81, 0x02,                    
+        0x19, 0x00,                    
+        0x29, 0x97,                    
+        0x15, 0x00,                    
+        0x25, 0x01,                    
+        0x75, 0x01,                    
+        0x95, 0x98,                    
+        0x81, 0x02,                    
+        0xc0,                          
     ]
     def __init__(self, rdesc=report_descriptor, name=None, input_info=None):
         super().__init__(rdesc, name, input_info)
         self.default_reportID = 1
 class ArrayKeyboard(BaseKeyboard):
     report_descriptor = [
-        0x05, 0x01,                    # Usage Page (Generic Desktop)
-        0x09, 0x06,                    # Usage (Keyboard)
-        0xa1, 0x01,                    # Collection (Application)
-        0x05, 0x07,                    # .Usage Page (Keyboard)
-        0x19, 0xe0,                    # .Usage Minimum (224)
-        0x29, 0xe7,                    # .Usage Maximum (231)
-        0x15, 0x00,                    # .Logical Minimum (0)
-        0x25, 0x01,                    # .Logical Maximum (1)
-        0x75, 0x01,                    # .Report Size (1)
-        0x95, 0x08,                    # .Report Count (8)
-        0x81, 0x02,                    # .Input (Data,Var,Abs)
-        0x95, 0x06,                    # .Report Count (6)
-        0x75, 0x08,                    # .Report Size (8)
-        0x15, 0x00,                    # .Logical Minimum (0)
-        0x26, 0xa4, 0x00,              # .Logical Maximum (164)
-        0x05, 0x07,                    # .Usage Page (Keyboard)
-        0x19, 0x00,                    # .Usage Minimum (0)
-        0x29, 0xa4,                    # .Usage Maximum (164)
-        0x81, 0x00,                    # .Input (Data,Arr,Abs)
-        0xc0,                          # End Collection
+        0x05, 0x01,                    
+        0x09, 0x06,                    
+        0xa1, 0x01,                    
+        0x05, 0x07,                    
+        0x19, 0xe0,                    
+        0x29, 0xe7,                    
+        0x15, 0x00,                    
+        0x25, 0x01,                    
+        0x75, 0x01,                    
+        0x95, 0x08,                    
+        0x81, 0x02,                    
+        0x95, 0x06,                    
+        0x75, 0x08,                    
+        0x15, 0x00,                    
+        0x26, 0xa4, 0x00,              
+        0x05, 0x07,                    
+        0x19, 0x00,                    
+        0x29, 0xa4,                    
+        0x81, 0x00,                    
+        0xc0,                          
     ]
     def __init__(self, rdesc=report_descriptor, name=None, input_info=None):
         super().__init__(rdesc, name, input_info)
@@ -121,75 +121,75 @@ class ArrayKeyboard(BaseKeyboard):
         return data
 class LEDKeyboard(ArrayKeyboard):
     report_descriptor = [
-        0x05, 0x01,                    # Usage Page (Generic Desktop)
-        0x09, 0x06,                    # Usage (Keyboard)
-        0xa1, 0x01,                    # Collection (Application)
-        0x05, 0x07,                    # .Usage Page (Keyboard)
-        0x19, 0xe0,                    # .Usage Minimum (224)
-        0x29, 0xe7,                    # .Usage Maximum (231)
-        0x15, 0x00,                    # .Logical Minimum (0)
-        0x25, 0x01,                    # .Logical Maximum (1)
-        0x75, 0x01,                    # .Report Size (1)
-        0x95, 0x08,                    # .Report Count (8)
-        0x81, 0x02,                    # .Input (Data,Var,Abs)
-        0x95, 0x01,                    # .Report Count (1)
-        0x75, 0x08,                    # .Report Size (8)
-        0x81, 0x01,                    # .Input (Cnst,Arr,Abs)
-        0x95, 0x05,                    # .Report Count (5)
-        0x75, 0x01,                    # .Report Size (1)
-        0x05, 0x08,                    # .Usage Page (LEDs)
-        0x19, 0x01,                    # .Usage Minimum (1)
-        0x29, 0x05,                    # .Usage Maximum (5)
-        0x91, 0x02,                    # .Output (Data,Var,Abs)
-        0x95, 0x01,                    # .Report Count (1)
-        0x75, 0x03,                    # .Report Size (3)
-        0x91, 0x01,                    # .Output (Cnst,Arr,Abs)
-        0x95, 0x06,                    # .Report Count (6)
-        0x75, 0x08,                    # .Report Size (8)
-        0x15, 0x00,                    # .Logical Minimum (0)
-        0x26, 0xa4, 0x00,              # .Logical Maximum (164)
-        0x05, 0x07,                    # .Usage Page (Keyboard)
-        0x19, 0x00,                    # .Usage Minimum (0)
-        0x29, 0xa4,                    # .Usage Maximum (164)
-        0x81, 0x00,                    # .Input (Data,Arr,Abs)
-        0xc0,                          # End Collection
+        0x05, 0x01,                    
+        0x09, 0x06,                    
+        0xa1, 0x01,                    
+        0x05, 0x07,                    
+        0x19, 0xe0,                    
+        0x29, 0xe7,                    
+        0x15, 0x00,                    
+        0x25, 0x01,                    
+        0x75, 0x01,                    
+        0x95, 0x08,                    
+        0x81, 0x02,                    
+        0x95, 0x01,                    
+        0x75, 0x08,                    
+        0x81, 0x01,                    
+        0x95, 0x05,                    
+        0x75, 0x01,                    
+        0x05, 0x08,                    
+        0x19, 0x01,                    
+        0x29, 0x05,                    
+        0x91, 0x02,                    
+        0x95, 0x01,                    
+        0x75, 0x03,                    
+        0x91, 0x01,                    
+        0x95, 0x06,                    
+        0x75, 0x08,                    
+        0x15, 0x00,                    
+        0x26, 0xa4, 0x00,              
+        0x05, 0x07,                    
+        0x19, 0x00,                    
+        0x29, 0xa4,                    
+        0x81, 0x00,                    
+        0xc0,                          
     ]
     def __init__(self, rdesc=report_descriptor, name=None, input_info=None):
         super().__init__(rdesc, name, input_info)
 class PrimaxKeyboard(ArrayKeyboard):
     report_descriptor = [
-        0x05, 0x01,                    # Usage Page (Generic Desktop)
-        0x09, 0x06,                    # Usage (Keyboard)
-        0xA1, 0x01,                    # Collection (Application)
-        0x05, 0x07,                    # .Usage Page (Keyboard)
-        0x19, 0xE0,                    # .Usage Minimum (224)
-        0x29, 0xE7,                    # .Usage Maximum (231)
-        0x15, 0x00,                    # .Logical Minimum (0)
-        0x25, 0x01,                    # .Logical Maximum (1)
-        0x75, 0x01,                    # .Report Size (1)
-        0x95, 0x08,                    # .Report Count (8)
-        0x81, 0x02,                    # .Input (Data,Var,Abs)
-        0x75, 0x08,                    # .Report Size (8)
-        0x95, 0x01,                    # .Report Count (1)
-        0x81, 0x01,                    # .Input (Data,Var,Abs)
-        0x05, 0x08,                    # .Usage Page (LEDs)
-        0x19, 0x01,                    # .Usage Minimum (1)
-        0x29, 0x03,                    # .Usage Maximum (3)
-        0x75, 0x01,                    # .Report Size (1)
-        0x95, 0x03,                    # .Report Count (3)
-        0x91, 0x02,                    # .Output (Data,Var,Abs)
-        0x95, 0x01,                    # .Report Count (1)
-        0x75, 0x05,                    # .Report Size (5)
-        0x91, 0x01,                    # .Output (Constant)
-        0x15, 0x00,                    # .Logical Minimum (0)
-        0x26, 0xFF, 0x00,              # .Logical Maximum (255)
-        0x19, 0x00,                    # .Usage Minimum (0)
-        0x2A, 0xFF, 0x00,              # .Usage Maximum (255)
-        0x05, 0x07,                    # .Usage Page (Keyboard)
-        0x75, 0x08,                    # .Report Size (8)
-        0x95, 0x06,                    # .Report Count (6)
-        0x81, 0x00,                    # .Input (Data,Arr,Abs)
-        0xC0,                          # End Collection
+        0x05, 0x01,                    
+        0x09, 0x06,                    
+        0xA1, 0x01,                    
+        0x05, 0x07,                    
+        0x19, 0xE0,                    
+        0x29, 0xE7,                    
+        0x15, 0x00,                    
+        0x25, 0x01,                    
+        0x75, 0x01,                    
+        0x95, 0x08,                    
+        0x81, 0x02,                    
+        0x75, 0x08,                    
+        0x95, 0x01,                    
+        0x81, 0x01,                    
+        0x05, 0x08,                    
+        0x19, 0x01,                    
+        0x29, 0x03,                    
+        0x75, 0x01,                    
+        0x95, 0x03,                    
+        0x91, 0x02,                    
+        0x95, 0x01,                    
+        0x75, 0x05,                    
+        0x91, 0x01,                    
+        0x15, 0x00,                    
+        0x26, 0xFF, 0x00,              
+        0x19, 0x00,                    
+        0x2A, 0xFF, 0x00,              
+        0x05, 0x07,                    
+        0x75, 0x08,                    
+        0x95, 0x06,                    
+        0x81, 0x00,                    
+        0xC0,                          
     ]
     def __init__(self, rdesc=report_descriptor, name=None, input_info=None):
         super().__init__(rdesc, name, input_info)
@@ -288,7 +288,7 @@ class TestPlainKeyboard(BaseTest.TestKeyboard):
             [
                 "1 and !",
                 "2 and @",
-                "3 and #",
+                "3 and 
                 "4 and $",
                 "5 and %",
                 "6 and ^",
@@ -337,7 +337,7 @@ class TestArrayKeyboard(BaseTest.TestKeyboard):
             [
                 "1 and !",
                 "2 and @",
-                "3 and #",
+                "3 and 
                 "4 and $",
                 "5 and %",
                 "6 and ^",
@@ -357,7 +357,7 @@ class TestArrayKeyboard(BaseTest.TestKeyboard):
             [
                 "1 and !",
                 "2 and @",
-                "3 and #",
+                "3 and 
                 "4 and $",
                 "5 and %",
                 "6 and ^",

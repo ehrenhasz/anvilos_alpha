@@ -13,7 +13,7 @@ IFS=' '
 set -- $1
 min_tool_version=$(dirname $0)/min-tool-version.sh
 if [ "$1" = GNU -a "$2" = ld ]; then
-	shift $(($# - 1))
+	shift $(($
 	version=$1
 	min_version=$($min_tool_version binutils)
 	name=BFD
@@ -22,7 +22,7 @@ elif [ "$1" = GNU -a "$2" = gold ]; then
 	echo "gold linker is not supported as it is not capable of linking the kernel proper." >&2
 	exit 1
 else
-	while [ $# -gt 1 -a "$1" != "LLD" ]; do
+	while [ $
 		shift
 	done
 	if [ "$1" = LLD ]; then

@@ -1,13 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_PGTABLE_3LEVEL_H
 #define _ASM_X86_PGTABLE_3LEVEL_H
 
-/*
- * Intel Physical Address Extension (PAE) Mode - three-level page
- * tables on PPro+ CPUs.
- *
- * Copyright (C) 1999 Ingo Molnar <mingo@redhat.com>
- */
+
 
 #define pte_ERROR(e)							\
 	pr_err("%s:%d: bad pte %p(%08lx%08lx)\n",			\
@@ -26,13 +21,7 @@
 	native_make_##_pxx(_o);						\
 })
 
-/*
- * Rules for using set_pte: the pte being assigned *must* be
- * either not present or in a state where the hardware will
- * not attempt to update the pte.  In places where this is
- * not possible, use pte_get_and_clear to obtain the old pte
- * value and then use set_pte to update it.  -ben
- */
+
 static inline void native_set_pte(pte_t *ptep, pte_t pte)
 {
 	WRITE_ONCE(ptep->pte_high, pte.pte_high);
@@ -58,11 +47,7 @@ static inline void native_set_pud(pud_t *pudp, pud_t pud)
 	pxx_xchg64(pud, pudp, native_pud_val(pud));
 }
 
-/*
- * For PTEs and PDEs, we must clear the P-bit first when clearing a page table
- * entry, so clear the bottom half first and enforce ordering with a compiler
- * barrier.
- */
+
 static inline void native_pte_clear(struct mm_struct *mm, unsigned long addr,
 				    pte_t *ptep)
 {
@@ -86,16 +71,7 @@ static inline void pud_clear(pud_t *pudp)
 {
 	set_pud(pudp, __pud(0));
 
-	/*
-	 * According to Intel App note "TLBs, Paging-Structure Caches,
-	 * and Their Invalidation", April 2007, document 317080-001,
-	 * section 8.1: in PAE mode we explicitly have to flush the
-	 * TLB via cr3 if the top-level pgd is changed...
-	 *
-	 * Currently all places where pud_clear() is called either have
-	 * flush_tlb_mm() followed or don't need TLB flush (x86_64 code or
-	 * pud_clear_bad()), so we don't need TLB flush here.
-	 */
+	
 }
 
 
@@ -127,13 +103,9 @@ static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
 {
 	pmd_t old;
 
-	/*
-	 * If pmd has present bit cleared we can get away without expensive
-	 * cmpxchg64: we can update pmdp half-by-half without racing with
-	 * anybody.
-	 */
+	
 	if (!(pmd_val(pmd) & _PAGE_PRESENT)) {
-		/* xchg acts as a barrier before setting of the high bits */
+		
 		old.pmd_low = xchg(&pmdp->pmd_low, pmd.pmd_low);
 		old.pmd_high = READ_ONCE(pmdp->pmd_high);
 		WRITE_ONCE(pmdp->pmd_high, pmd.pmd_high);
@@ -145,28 +117,13 @@ static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
 }
 #endif
 
-/*
- * Encode/decode swap entries and swap PTEs. Swap PTEs are all PTEs that
- * are !pte_none() && !pte_present().
- *
- * Format of swap PTEs:
- *
- *   6 6 6 6 5 5 5 5 5 5 5 5 5 5 4 4 4 4 4 4 4 4 4 4 3 3 3 3 3 3 3 3
- *   3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2
- *   < type -> <---------------------- offset ----------------------
- *
- *   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
- *   1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- *   --------------------------------------------> 0 E 0 0 0 0 0 0 0
- *
- *   E is the exclusive marker that is not stored in swap entries.
- */
+
 #define SWP_TYPE_BITS		5
 #define _SWP_TYPE_MASK ((1U << SWP_TYPE_BITS) - 1)
 
 #define SWP_OFFSET_FIRST_BIT	(_PAGE_BIT_PROTNONE + 1)
 
-/* We always extract/encode the offset by shifting it all the way up, and then down again */
+
 #define SWP_OFFSET_SHIFT	(SWP_OFFSET_FIRST_BIT + SWP_TYPE_BITS)
 
 #define MAX_SWAPFILES_CHECK() BUILD_BUG_ON(MAX_SWAPFILES_SHIFT > SWP_TYPE_BITS)
@@ -175,35 +132,23 @@ static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
 #define __swp_entry(type, offset)	((swp_entry_t){((type) & _SWP_TYPE_MASK) \
 					| (offset) << SWP_TYPE_BITS})
 
-/*
- * Normally, __swp_entry() converts from arch-independent swp_entry_t to
- * arch-dependent swp_entry_t, and __swp_entry_to_pte() just stores the result
- * to pte. But here we have 32bit swp_entry_t and 64bit pte, and need to use the
- * whole 64 bits. Thus, we shift the "real" arch-dependent conversion to
- * __swp_entry_to_pte() through the following helper macro based on 64bit
- * __swp_entry().
- */
+
 #define __swp_pteval_entry(type, offset) ((pteval_t) { \
 	(~(pteval_t)(offset) << SWP_OFFSET_SHIFT >> SWP_TYPE_BITS) \
 	| ((pteval_t)(type) << (64 - SWP_TYPE_BITS)) })
 
 #define __swp_entry_to_pte(x)	((pte_t){ .pte = \
 		__swp_pteval_entry(__swp_type(x), __swp_offset(x)) })
-/*
- * Analogically, __pte_to_swp_entry() doesn't just extract the arch-dependent
- * swp_entry_t, but also has to convert it from 64bit to the 32bit
- * intermediate representation, using the following macros based on 64bit
- * __swp_type() and __swp_offset().
- */
+
 #define __pteval_swp_type(x) ((unsigned long)((x).pte >> (64 - SWP_TYPE_BITS)))
 #define __pteval_swp_offset(x) ((unsigned long)(~((x).pte) << SWP_TYPE_BITS >> SWP_OFFSET_SHIFT))
 
 #define __pte_to_swp_entry(pte)	(__swp_entry(__pteval_swp_type(pte), \
 					     __pteval_swp_offset(pte)))
 
-/* We borrow bit 7 to store the exclusive marker in swap PTEs. */
+
 #define _PAGE_SWP_EXCLUSIVE	_PAGE_PSE
 
 #include <asm/pgtable-invert.h>
 
-#endif /* _ASM_X86_PGTABLE_3LEVEL_H */
+#endif 

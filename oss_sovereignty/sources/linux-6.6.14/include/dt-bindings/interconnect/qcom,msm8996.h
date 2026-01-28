@@ -1,29 +1,25 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/*
- * Qualcomm MSM8996 interconnect IDs
- *
- * Copyright (c) 2021 Yassine Oudjana <y.oudjana@protonmail.com>
- */
+
+
 
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_MSM8996_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_MSM8996_H
 
-/* A0NOC */
+
 #define MASTER_PCIE_0			0
 #define MASTER_PCIE_1			1
 #define MASTER_PCIE_2			2
 
-/* A1NOC */
+
 #define MASTER_CNOC_A1NOC		0
 #define MASTER_CRYPTO_CORE0		1
 #define MASTER_PNOC_A1NOC		2
 
-/* A2NOC */
+
 #define MASTER_USB3			0
 #define MASTER_IPA			1
 #define MASTER_UFS			2
 
-/* BIMC */
+
 #define MASTER_AMPSS_M0			0
 #define MASTER_GRAPHICS_3D		1
 #define MASTER_MNOC_BIMC		2
@@ -33,7 +29,7 @@
 #define SLAVE_BIMC_SNOC_0		6
 #define SLAVE_BIMC_SNOC_1		7
 
-/* CNOC */
+
 #define MASTER_SNOC_CNOC		0
 #define MASTER_QDSS_DAP			1
 #define SLAVE_CNOC_A1NOC		2
@@ -75,7 +71,7 @@
 #define SLAVE_LPASS_SMMU_CFG		38
 #define SLAVE_CNOC_MNOC_MMSS_CFG	39
 
-/* MNOC */
+
 #define MASTER_CNOC_MNOC_CFG		0
 #define MASTER_CPP			1
 #define MASTER_JPEG			2
@@ -112,7 +108,7 @@
 #define SLAVE_SMMU_JPEG_CFG		33
 #define SLAVE_SMMU_VFE_CFG		34
 
-/* PNOC */
+
 #define MASTER_SNOC_PNOC		0
 #define MASTER_SDCC_1			1
 #define MASTER_SDCC_2			2
@@ -132,7 +128,7 @@
 #define SLAVE_PDM			16
 #define SLAVE_AHB2PHY			17
 
-/* SNOC */
+
 #define MASTER_HMSS			0
 #define MASTER_QDSS_BAM			1
 #define MASTER_SNOC_CFG			2

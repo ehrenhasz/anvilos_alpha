@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for CEPH filesystem.
-#
+
+
+
+
 
 obj-$(CONFIG_CEPH_FS) += ceph.o
 

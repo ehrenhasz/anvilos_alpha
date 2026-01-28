@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_KHUGEPAGED_H
 #define _LINUX_KHUGEPAGED_H
 
-#include <linux/sched/coredump.h> /* MMF_VM_HUGEPAGE */
+#include <linux/sched/coredump.h> 
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 extern struct attribute_group khugepaged_attr_group;
@@ -38,7 +38,7 @@ static inline void khugepaged_exit(struct mm_struct *mm)
 	if (test_bit(MMF_VM_HUGEPAGE, &mm->flags))
 		__khugepaged_exit(mm);
 }
-#else /* CONFIG_TRANSPARENT_HUGEPAGE */
+#else 
 static inline void khugepaged_fork(struct mm_struct *mm, struct mm_struct *oldmm)
 {
 }
@@ -63,6 +63,6 @@ static inline bool current_is_khugepaged(void)
 {
 	return false;
 }
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+#endif 
 
-#endif /* _LINUX_KHUGEPAGED_H */
+#endif 

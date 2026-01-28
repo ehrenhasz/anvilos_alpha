@@ -27,9 +27,9 @@ class UserFile(io.IOBase):
         return n
     def ioctl(self, req, arg):
         print("ioctl", req, arg)
-        if req == 4:  # MP_STREAM_CLOSE
+        if req == 4:  
             return 0
-        if req == 11:  # MP_STREAM_GET_BUFFER_SIZE
+        if req == 11:  
             return UserFile.buffer_size
         return -1
 class UserFS:

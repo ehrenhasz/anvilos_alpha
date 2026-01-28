@@ -29,7 +29,7 @@ process_arch()
 	arch="$1"
 	asm_errno=$(asm_errno_file "$arch")
 	$gcc $CFLAGS $include_path -E -dM -x c $asm_errno \
-		|grep -hE '^#define[[:blank:]]+(E[^[:blank:]]+)[[:blank:]]+([[:digit:]]+).*' \
+		|grep -hE '^
 		|awk '{ print $2","$3; }' \
 		|sort -t, -k2 -nu \
 		|IFS=, create_errno_lookup_func "$arch"

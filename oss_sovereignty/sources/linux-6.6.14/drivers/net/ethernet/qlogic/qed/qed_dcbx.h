@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+
 
 #ifndef _QED_DCBX_H
 #define _QED_DCBX_H
@@ -25,11 +22,11 @@ enum qed_mib_read_type {
 };
 
 struct qed_dcbx_app_data {
-	bool enable;		/* DCB enabled */
-	u8 update;		/* Update indication */
-	u8 priority;		/* Priority */
-	u8 tc;			/* Traffic Class */
-	bool dont_add_vlan0;	/* Do not insert a vlan tag with id 0 */
+	bool enable;		
+	u8 update;		
+	u8 priority;		
+	u8 tc;			
+	bool dont_add_vlan0;	
 };
 
 #define QED_DCBX_VERSION_DISABLED       0
@@ -91,7 +88,7 @@ int qed_dcbx_config_params(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 			   struct qed_dcbx_set *params, bool hw_commit);
 #endif
 
-/* QED local interface routines */
+
 int
 qed_dcbx_mib_update_event(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 			  enum qed_mib_read_type type);

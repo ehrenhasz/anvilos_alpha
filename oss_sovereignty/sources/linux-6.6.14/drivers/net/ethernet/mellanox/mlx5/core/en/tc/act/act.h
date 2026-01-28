@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 #ifndef __MLX5_EN_TC_ACT_H__
 #define __MLX5_EN_TC_ACT_H__
@@ -121,4 +121,4 @@ mlx5e_tc_act_set_next_post_act(struct mlx5e_tc_flow *flow,
 			       struct mlx5_flow_attr *attr,
 			       struct mlx5_flow_attr *next_attr);
 
-#endif /* __MLX5_EN_TC_ACT_H__ */
+#endif 

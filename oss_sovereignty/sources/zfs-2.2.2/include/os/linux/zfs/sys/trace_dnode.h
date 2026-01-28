@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+
 
 #if defined(_KERNEL)
 #if defined(HAVE_DECLARE_EVENT_CLASS)
@@ -34,15 +15,8 @@
 #include <linux/tracepoint.h>
 #include <sys/types.h>
 
-/*
- * Generic support for three argument tracepoints of the form:
- *
- * DTRACE_PROBE3(...,
- *     dnode_t *, ...,
- *     int64_t, ...,
- *     uint32_t, ...);
- */
-/* BEGIN CSTYLED */
+
+
 DECLARE_EVENT_CLASS(zfs_dnode_move_class,
 	TP_PROTO(dnode_t *dn, int64_t refcount, uint32_t dbufs),
 	TP_ARGS(dn, refcount, dbufs),
@@ -103,7 +77,7 @@ DECLARE_EVENT_CLASS(zfs_dnode_move_class,
 	    __entry->dn_maxblkid, __entry->dn_tx_holds, __entry->dn_holds,
 	    __entry->dn_have_spill, __entry->refcount, __entry->dbufs)
 );
-/* END CSTYLED */
+
 
 #define	DEFINE_DNODE_MOVE_EVENT(name) \
 DEFINE_EVENT(zfs_dnode_move_class, name, \
@@ -111,7 +85,7 @@ DEFINE_EVENT(zfs_dnode_move_class, name, \
     TP_ARGS(dn, refcount, dbufs))
 DEFINE_DNODE_MOVE_EVENT(zfs_dnode__move);
 
-#endif /* _TRACE_DNODE_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
@@ -123,5 +97,5 @@ DEFINE_DNODE_MOVE_EVENT(zfs_dnode__move);
 
 DEFINE_DTRACE_PROBE3(dnode__move);
 
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif 
+#endif 

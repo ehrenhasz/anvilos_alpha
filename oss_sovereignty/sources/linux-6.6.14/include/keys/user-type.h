@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* user-type.h: User-defined key type
- *
- * Copyright (C) 2005 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+
 
 #ifndef _KEYS_USER_TYPE_H
 #define _KEYS_USER_TYPE_H
@@ -13,21 +9,12 @@
 
 #ifdef CONFIG_KEYS
 
-/*****************************************************************************/
-/*
- * the payload for a key of type "user" or "logon"
- * - once filled in and attached to a key:
- *   - the payload struct is invariant may not be changed, only replaced
- *   - the payload must be read with RCU procedures or with the key semaphore
- *     held
- *   - the payload may only be replaced with the key semaphore write-locked
- * - the key's data length is the size of the actual data, not including the
- *   payload wrapper
- */
+
+
 struct user_key_payload {
-	struct rcu_head	rcu;		/* RCU destructor */
-	unsigned short	datalen;	/* length of this data */
-	char		data[] __aligned(__alignof__(u64)); /* actual data */
+	struct rcu_head	rcu;		
+	unsigned short	datalen;	
+	char		data[] __aligned(__alignof__(u64)); 
 };
 
 extern struct key_type key_type_user;
@@ -53,6 +40,6 @@ static inline struct user_key_payload *user_key_payload_locked(const struct key 
 	return (struct user_key_payload *)dereference_key_locked((struct key *)key);
 }
 
-#endif /* CONFIG_KEYS */
+#endif 
 
-#endif /* _KEYS_USER_TYPE_H */
+#endif 

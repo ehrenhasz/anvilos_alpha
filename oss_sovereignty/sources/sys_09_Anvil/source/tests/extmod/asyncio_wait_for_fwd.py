@@ -10,7 +10,7 @@ async def awaiting(t, return_if_fail):
     except asyncio.CancelledError as er:
         print("awaiting canceled")
         if return_if_fail:
-            return False  # return has no effect if Cancelled
+            return False  
         else:
             raise er
     except Exception as er:

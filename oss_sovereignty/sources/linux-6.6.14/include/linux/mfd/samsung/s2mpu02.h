@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2014 Samsung Electronics Co., Ltd
- *              http://www.samsung.com
- */
+
+
 
 #ifndef __LINUX_MFD_S2MPU02_H
 #define __LINUX_MFD_S2MPU02_H
 
-/* S2MPU02 registers */
+
 enum S2MPU02_reg {
 	S2MPU02_REG_ID,
 	S2MPU02_REG_INT1,
@@ -97,7 +94,7 @@ enum S2MPU02_reg {
 	S2MPU02_REG_DVSDATA,
 };
 
-/* S2MPU02 regulator ids */
+
 enum S2MPU02_regulators {
 	S2MPU02_LDO1,
 	S2MPU02_LDO2,
@@ -138,7 +135,7 @@ enum S2MPU02_regulators {
 	S2MPU02_REGULATOR_MAX,
 };
 
-/* Regulator constraints for BUCKx */
+
 #define S2MPU02_BUCK1234_MIN_600MV	600000
 #define S2MPU02_BUCK5_MIN_1081_25MV	1081250
 #define S2MPU02_BUCK6_MIN_1700MV	1700000
@@ -156,7 +153,7 @@ enum S2MPU02_regulators {
 
 #define S2MPU02_BUCK_RAMP_DELAY		12500
 
-/* Regulator constraints for different types of LDOx */
+
 #define S2MPU02_LDO_MIN_900MV		900000
 #define S2MPU02_LDO_MIN_1050MV		1050000
 #define S2MPU02_LDO_MIN_1600MV		1600000
@@ -173,17 +170,17 @@ enum S2MPU02_regulators {
 #define S2MPU02_ENABLE_MASK		(0x03 << S2MPU02_ENABLE_SHIFT)
 #define S2MPU02_ENABLE_SHIFT		6
 
-/* On/Off controlled by PWREN */
+
 #define S2MPU02_ENABLE_SUSPEND		(0x01 << S2MPU02_ENABLE_SHIFT)
 #define S2MPU02_DISABLE_SUSPEND		(0x11 << S2MPU02_ENABLE_SHIFT)
 #define S2MPU02_LDO_N_VOLTAGES		(S2MPU02_LDO_VSEL_MASK + 1)
 #define S2MPU02_BUCK_N_VOLTAGES		(S2MPU02_BUCK_VSEL_MASK + 1)
 
-/* RAMP delay for BUCK1234*/
+
 #define S2MPU02_BUCK1_RAMP_SHIFT	6
 #define S2MPU02_BUCK2_RAMP_SHIFT	4
 #define S2MPU02_BUCK3_RAMP_SHIFT	2
 #define S2MPU02_BUCK4_RAMP_SHIFT	0
 #define S2MPU02_BUCK1234_RAMP_MASK	0x3
 
-#endif /*  __LINUX_MFD_S2MPU02_H */
+#endif 

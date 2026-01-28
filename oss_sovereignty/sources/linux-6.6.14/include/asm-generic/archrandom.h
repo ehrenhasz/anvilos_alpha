@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __ASM_GENERIC_ARCHRANDOM_H__
 #define __ASM_GENERIC_ARCHRANDOM_H__
 

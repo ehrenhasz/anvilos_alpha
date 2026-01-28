@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* SDM660 interconnect IDs */
+
+
 
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SDM660_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SDM660_H
 
-/* A2NOC */
+
 #define MASTER_IPA			0
 #define MASTER_CNOC_A2NOC		1
 #define MASTER_SDCC_1			2
@@ -17,7 +17,7 @@
 #define MASTER_CRYPTO_C0		9
 #define SLAVE_A2NOC_SNOC		10
 
-/* BIMC */
+
 #define MASTER_GNOC_BIMC		0
 #define MASTER_OXILI			1
 #define MASTER_MNOC_BIMC		2
@@ -27,7 +27,7 @@
 #define SLAVE_HMSS_L3			6
 #define SLAVE_BIMC_SNOC			7
 
-/* CNOC */
+
 #define MASTER_SNOC_CNOC		0
 #define MASTER_QDSS_DAP			1
 #define SLAVE_CNOC_A2NOC		2
@@ -65,12 +65,12 @@
 #define SLAVE_USB3_0			34
 #define SLAVE_SRVC_CNOC			35
 
-/* GNOC */
+
 #define MASTER_APSS_PROC		0
 #define SLAVE_GNOC_BIMC			1
 #define SLAVE_GNOC_SNOC			2
 
-/* MNOC */
+
 #define MASTER_CPP			0
 #define MASTER_JPEG			1
 #define MASTER_MDP_P0			2
@@ -94,7 +94,7 @@
 #define SLAVE_SMMU_CFG			20
 #define SLAVE_SRVC_MNOC			21
 
-/* SNOC */
+
 #define MASTER_QDSS_ETR			0
 #define MASTER_QDSS_BAM			1
 #define MASTER_SNOC_CFG			2

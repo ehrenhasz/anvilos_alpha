@@ -17,11 +17,11 @@ a = A()
 print(getattr(a, 'foo'))
 setattr(a, 'bar', 2)
 delattr(a, 'baz')
-getattr(a, '__getattr__') # should not call A.__getattr__
-getattr(a, '__setattr__') # should not call A.__getattr__
-getattr(a, '__delattr__') # should not call A.__getattr__
-setattr(a, '__setattr__', 1) # should call A.__setattr__
-delattr(a, '__delattr__') # should call A.__delattr__
+getattr(a, '__getattr__') 
+getattr(a, '__setattr__') 
+getattr(a, '__delattr__') 
+setattr(a, '__setattr__', 1) 
+delattr(a, '__delattr__') 
 class B:
     def __init__(self, d):
         B.d = d

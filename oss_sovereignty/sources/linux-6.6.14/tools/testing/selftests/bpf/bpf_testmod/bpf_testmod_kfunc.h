@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef _BPF_TESTMOD_KFUNC_H
 #define _BPF_TESTMOD_KFUNC_H
@@ -75,9 +75,7 @@ int *bpf_kfunc_call_test_get_rdonly_mem(struct prog_test_ref_kfunc *p, const int
 int *bpf_kfunc_call_test_acq_rdonly_mem(struct prog_test_ref_kfunc *p, const int rdonly_buf_size) __ksym;
 void bpf_kfunc_call_int_mem_release(int *p) __ksym;
 
-/* The bpf_kfunc_call_test_static_unused_arg is defined as static,
- * but bpf program compilation needs to see it as global symbol.
- */
+
 #ifndef __KERNEL__
 u32 bpf_kfunc_call_test_static_unused_arg(u32 arg, u32 unused) __ksym;
 #endif
@@ -104,4 +102,4 @@ void bpf_kfunc_call_test_fail1(struct prog_test_fail1 *p);
 void bpf_kfunc_call_test_fail2(struct prog_test_fail2 *p);
 void bpf_kfunc_call_test_fail3(struct prog_test_fail3 *p);
 void bpf_kfunc_call_test_mem_len_fail1(void *mem, int len);
-#endif /* _BPF_TESTMOD_KFUNC_H */
+#endif 

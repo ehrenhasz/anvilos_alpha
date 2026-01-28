@@ -1,13 +1,13 @@
-TARGETLIB='ZLIB'                # Target OS/400 program library
-STATBNDDIR='ZLIB_A'             # Static binding directory.
-DYNBNDDIR='ZLIB'                # Dynamic binding directory.
-SRVPGM="ZLIB"                   # Service program.
-IFSDIR='/zlib'                  # IFS support base directory.
-TGTCCSID='500'                  # Target CCSID of objects
-DEBUG='*NONE'                   # Debug level
-OPTIMIZE='40'                   # Optimisation level
-OUTPUT='*NONE'                  # Compilation output option.
-TGTRLS='V6R1M0'                 # Target OS release
+TARGETLIB='ZLIB'                
+STATBNDDIR='ZLIB_A'             
+DYNBNDDIR='ZLIB'                
+SRVPGM="ZLIB"                   
+IFSDIR='/zlib'                  
+TGTCCSID='500'                  
+DEBUG='*NONE'                   
+OPTIMIZE='40'                   
+OUTPUT='*NONE'                  
+TGTRLS='V6R1M0'                 
 export TARGETLIB STATBNDDIR DYNBNDDIR SRVPGM IFSDIR
 export TGTCCSID DEBUG OPTIMIZE OUTPUT TGTRLS
 LIBIFSNAME="/QSYS.LIB/${TARGETLIB}.LIB"
@@ -132,12 +132,12 @@ if action_needed "${IFSFILE}" "${DEST}"
 then    rm -f "${IFSFILE}"
         ln -s "${DEST}" "${IFSFILE}"
 fi
-echo '#pragma comment(user, "ZLIB version '"${VERSION}"'")' > os400.c
-echo '#pragma comment(user, __DATE__)' >> os400.c
-echo '#pragma comment(user, __TIME__)' >> os400.c
-echo '#pragma comment(copyright, "Copyright (C) 1995-2017 Jean-Loup Gailly, Mark Adler. OS/400 version by P. Monnerat.")' >> os400.c
+echo '
+echo '
+echo '
+echo '
 make_module     OS400           os400.c
-LINK=                           # No need to rebuild service program yet.
+LINK=                           
 MODULES=
 CSOURCES=`sed -e '/<source name="/!d'                                   \
     -e 's/.* name="\([^"]*\)".*/\1/' < treebuild.xml`

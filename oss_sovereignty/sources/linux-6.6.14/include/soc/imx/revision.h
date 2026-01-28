@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2015 Linaro Ltd.
- */
+
+
 
 #ifndef __SOC_IMX_REVISION_H__
 #define __SOC_IMX_REVISION_H__
@@ -32,4 +30,4 @@ int mx53_revision(void);
 unsigned int imx_get_soc_revision(void);
 void imx_print_silicon_rev(const char *cpu, int srev);
 
-#endif /* __SOC_IMX_REVISION_H__ */
+#endif 

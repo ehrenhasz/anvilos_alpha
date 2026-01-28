@@ -1,17 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * hdlcdrv.h  -- HDLC packet radio network driver.
- * The Linux soundcard driver for 1200 baud and 9600 baud packet radio
- * (C) 1996-1998 by Thomas Sailer, HB9JNX/AE4WA
- */
+
+
 
 #ifndef _UAPI_HDLCDRV_H
 #define _UAPI_HDLCDRV_H
 
-/* -------------------------------------------------------------------- */
-/*
- * structs for the IOCTL commands
- */
+
+
 
 struct hdlcdrv_params {
 	int iobase;
@@ -24,12 +18,12 @@ struct hdlcdrv_params {
 };	
 
 struct hdlcdrv_channel_params {
-	int tx_delay;  /* the transmitter keyup delay in 10ms units */
-	int tx_tail;   /* the transmitter keyoff delay in 10ms units */
-	int slottime;  /* the slottime in 10ms; usually 10 = 100ms */
-	int ppersist;  /* the p-persistence 0..255 */
-	int fulldup;   /* some driver do not support full duplex, setting */
-	               /* this just makes them send even if DCD is on */
+	int tx_delay;  
+	int tx_tail;   
+	int slottime;  
+	int ppersist;  
+	int fulldup;   
+	               
 };	
 
 struct hdlcdrv_old_channel_state {
@@ -62,37 +56,29 @@ struct hdlcdrv_ioctl {
 	} data;
 };
 
-/* -------------------------------------------------------------------- */
 
-/*
- * ioctl values
- */
+
+
 #define HDLCDRVCTL_GETMODEMPAR       0
 #define HDLCDRVCTL_SETMODEMPAR       1
-#define HDLCDRVCTL_MODEMPARMASK      2  /* not handled by hdlcdrv */
+#define HDLCDRVCTL_MODEMPARMASK      2  
 #define HDLCDRVCTL_GETCHANNELPAR    10
 #define HDLCDRVCTL_SETCHANNELPAR    11
 #define HDLCDRVCTL_OLDGETSTAT       20
 #define HDLCDRVCTL_CALIBRATE        21
 #define HDLCDRVCTL_GETSTAT          22
 
-/*
- * these are mainly for debugging purposes
- */
+
 #define HDLCDRVCTL_GETSAMPLES       30
 #define HDLCDRVCTL_GETBITS          31
 
-/*
- * not handled by hdlcdrv, but by its depending drivers
- */
+
 #define HDLCDRVCTL_GETMODE          40
 #define HDLCDRVCTL_SETMODE          41
 #define HDLCDRVCTL_MODELIST         42
 #define HDLCDRVCTL_DRIVERNAME       43
 
-/*
- * mask of needed modem parameters, returned by HDLCDRVCTL_MODEMPARMASK
- */
+
 #define HDLCDRV_PARMASK_IOBASE      (1<<0)
 #define HDLCDRV_PARMASK_IRQ         (1<<1)
 #define HDLCDRV_PARMASK_DMA         (1<<2)
@@ -101,11 +87,11 @@ struct hdlcdrv_ioctl {
 #define HDLCDRV_PARMASK_PARIOBASE   (1<<5)
 #define HDLCDRV_PARMASK_MIDIIOBASE  (1<<6)
 
-/* -------------------------------------------------------------------- */
 
 
-/* -------------------------------------------------------------------- */
 
-#endif /* _UAPI_HDLCDRV_H */
 
-/* -------------------------------------------------------------------- */
+
+#endif 
+
+

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 #ifndef	_DR_STE_V1_
 #define	_DR_STE_V1_
@@ -94,4 +94,4 @@ void dr_ste_v1_build_tnl_gtpu_flex_parser_0_init(struct mlx5dr_ste_build *sb,
 void dr_ste_v1_build_tnl_gtpu_flex_parser_1_init(struct mlx5dr_ste_build *sb,
 						 struct mlx5dr_match_param *mask);
 
-#endif  /* _DR_STE_V1_ */
+#endif  

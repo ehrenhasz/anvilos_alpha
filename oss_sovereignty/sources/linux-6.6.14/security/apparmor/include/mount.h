@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AppArmor security module
- *
- * This file contains AppArmor file mediation function definitions.
- *
- * Copyright 2017 Canonical Ltd.
- */
+
+
 
 #ifndef __AA_MOUNT_H
 #define __AA_MOUNT_H
@@ -16,7 +10,7 @@
 #include "domain.h"
 #include "policy.h"
 
-/* mount perms */
+
 #define AA_MAY_PIVOTROOT	0x01
 #define AA_MAY_MOUNT		0x02
 #define AA_MAY_UMOUNT		0x04
@@ -57,4 +51,4 @@ int aa_pivotroot(const struct cred *subj_cred,
 		 struct aa_label *label, const struct path *old_path,
 		 const struct path *new_path);
 
-#endif /* __AA_MOUNT_H */
+#endif 

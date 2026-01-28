@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_MT8192_H
 #define _DT_BINDINGS_CLK_MT8192_H
 
-/* TOPCKGEN */
+
 
 #define CLK_TOP_AXI_SEL			0
 #define CLK_TOP_SPM_SEL			1
@@ -166,7 +163,7 @@
 #define CLK_TOP_SSUSB_PHY_REF		154
 #define CLK_TOP_NR_CLK			155
 
-/* INFRACFG */
+
 
 #define CLK_INFRA_PMIC_TMR		0
 #define CLK_INFRA_PMIC_AP		1
@@ -291,12 +288,12 @@
 #define CLK_INFRA_AP_DMA		120
 #define CLK_INFRA_NR_CLK		121
 
-/* PERICFG */
+
 
 #define CLK_PERI_PERIAXI		0
 #define CLK_PERI_NR_CLK			1
 
-/* APMIXEDSYS */
+
 
 #define CLK_APMIXED_MAINPLL		0
 #define CLK_APMIXED_UNIVPLL		1
@@ -311,12 +308,12 @@
 #define CLK_APMIXED_MIPID26M		10
 #define CLK_APMIXED_NR_CLK		11
 
-/* SCP_ADSP */
+
 
 #define CLK_SCP_ADSP_AUDIODSP		0
 #define CLK_SCP_ADSP_NR_CLK		1
 
-/* IMP_IIC_WRAP_C */
+
 
 #define CLK_IMP_IIC_WRAP_C_I2C10	0
 #define CLK_IMP_IIC_WRAP_C_I2C11	1
@@ -324,7 +321,7 @@
 #define CLK_IMP_IIC_WRAP_C_I2C13	3
 #define CLK_IMP_IIC_WRAP_C_NR_CLK	4
 
-/* AUDSYS */
+
 
 #define CLK_AUD_AFE			0
 #define CLK_AUD_22M			1
@@ -360,37 +357,37 @@
 #define CLK_AUD_I2S9_B			31
 #define CLK_AUD_NR_CLK			32
 
-/* IMP_IIC_WRAP_E */
+
 
 #define CLK_IMP_IIC_WRAP_E_I2C3		0
 #define CLK_IMP_IIC_WRAP_E_NR_CLK	1
 
-/* IMP_IIC_WRAP_S */
+
 
 #define CLK_IMP_IIC_WRAP_S_I2C7		0
 #define CLK_IMP_IIC_WRAP_S_I2C8		1
 #define CLK_IMP_IIC_WRAP_S_I2C9		2
 #define CLK_IMP_IIC_WRAP_S_NR_CLK	3
 
-/* IMP_IIC_WRAP_WS */
+
 
 #define CLK_IMP_IIC_WRAP_WS_I2C1	0
 #define CLK_IMP_IIC_WRAP_WS_I2C2	1
 #define CLK_IMP_IIC_WRAP_WS_I2C4	2
 #define CLK_IMP_IIC_WRAP_WS_NR_CLK	3
 
-/* IMP_IIC_WRAP_W */
+
 
 #define CLK_IMP_IIC_WRAP_W_I2C5		0
 #define CLK_IMP_IIC_WRAP_W_NR_CLK	1
 
-/* IMP_IIC_WRAP_N */
+
 
 #define CLK_IMP_IIC_WRAP_N_I2C0		0
 #define CLK_IMP_IIC_WRAP_N_I2C6		1
 #define CLK_IMP_IIC_WRAP_N_NR_CLK	2
 
-/* MSDC_TOP */
+
 
 #define CLK_MSDC_TOP_AES_0P		0
 #define CLK_MSDC_TOP_SRC_0P		1
@@ -409,17 +406,17 @@
 #define CLK_MSDC_TOP_AHB2AXI_BRG_AXI	14
 #define CLK_MSDC_TOP_NR_CLK		15
 
-/* MSDC */
+
 
 #define CLK_MSDC_AXI_WRAP		0
 #define CLK_MSDC_NR_CLK			1
 
-/* MFGCFG */
+
 
 #define CLK_MFG_BG3D			0
 #define CLK_MFG_NR_CLK			1
 
-/* MMSYS */
+
 
 #define CLK_MM_DISP_MUTEX0		0
 #define CLK_MM_DISP_CONFIG		1
@@ -459,7 +456,7 @@
 #define CLK_MM_32KHZ			35
 #define CLK_MM_NR_CLK			36
 
-/* IMGSYS */
+
 
 #define CLK_IMG_LARB9			0
 #define CLK_IMG_LARB10			1
@@ -467,7 +464,7 @@
 #define CLK_IMG_GALS			3
 #define CLK_IMG_NR_CLK			4
 
-/* IMGSYS2 */
+
 
 #define CLK_IMG2_LARB11			0
 #define CLK_IMG2_LARB12			1
@@ -477,7 +474,7 @@
 #define CLK_IMG2_GALS			5
 #define CLK_IMG2_NR_CLK			6
 
-/* VDECSYS_SOC */
+
 
 #define CLK_VDEC_SOC_LARB1		0
 #define CLK_VDEC_SOC_LAT		1
@@ -486,7 +483,7 @@
 #define CLK_VDEC_SOC_VDEC_ACTIVE	4
 #define CLK_VDEC_SOC_NR_CLK		5
 
-/* VDECSYS */
+
 
 #define CLK_VDEC_LARB1			0
 #define CLK_VDEC_LAT			1
@@ -495,7 +492,7 @@
 #define CLK_VDEC_ACTIVE			4
 #define CLK_VDEC_NR_CLK			5
 
-/* VENCSYS */
+
 
 #define CLK_VENC_SET0_LARB		0
 #define CLK_VENC_SET1_VENC		1
@@ -503,7 +500,7 @@
 #define CLK_VENC_SET5_GALS		3
 #define CLK_VENC_NR_CLK			4
 
-/* CAMSYS */
+
 
 #define CLK_CAM_LARB13			0
 #define CLK_CAM_DFP_VAD			1
@@ -523,28 +520,28 @@
 #define CLK_CAM_CAM2MM_GALS		15
 #define CLK_CAM_NR_CLK			16
 
-/* CAMSYS_RAWA */
+
 
 #define CLK_CAM_RAWA_LARBX		0
 #define CLK_CAM_RAWA_CAM		1
 #define CLK_CAM_RAWA_CAMTG		2
 #define CLK_CAM_RAWA_NR_CLK		3
 
-/* CAMSYS_RAWB */
+
 
 #define CLK_CAM_RAWB_LARBX		0
 #define CLK_CAM_RAWB_CAM		1
 #define CLK_CAM_RAWB_CAMTG		2
 #define CLK_CAM_RAWB_NR_CLK		3
 
-/* CAMSYS_RAWC */
+
 
 #define CLK_CAM_RAWC_LARBX		0
 #define CLK_CAM_RAWC_CAM		1
 #define CLK_CAM_RAWC_CAMTG		2
 #define CLK_CAM_RAWC_NR_CLK		3
 
-/* IPESYS */
+
 
 #define CLK_IPE_LARB19			0
 #define CLK_IPE_LARB20			1
@@ -556,7 +553,7 @@
 #define CLK_IPE_GALS			7
 #define CLK_IPE_NR_CLK			8
 
-/* MDPSYS */
+
 
 #define CLK_MDP_RDMA0			0
 #define CLK_MDP_TDSHP0			1
@@ -582,4 +579,4 @@
 #define CLK_MDP_IMG_DL_RELAY1_ASYNC1	21
 #define CLK_MDP_NR_CLK			22
 
-#endif /* _DT_BINDINGS_CLK_MT8192_H */
+#endif 

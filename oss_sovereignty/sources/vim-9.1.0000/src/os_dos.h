@@ -1,17 +1,6 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved	by Bram Moolenaar
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- */
 
-/*
- * Common MS-DOS and Win32 (Windows NT and Windows 95) defines.
- *
- * Names for the EXRC, HELP and temporary files.
- * Some of these may have been defined in the makefile or feature.h.
- */
+
+
 
 #ifndef SYS_VIMRC_FILE
 # define SYS_VIMRC_FILE		"$VIM\\vimrc"
@@ -93,24 +82,24 @@
 #endif
 
 #ifndef DFLT_BDIR
-# define DFLT_BDIR	".,$TEMP,c:\\tmp,c:\\temp" // default for 'backupdir'
+# define DFLT_BDIR	".,$TEMP,c:\\tmp,c:\\temp" 
 #endif
 
 #ifndef DFLT_VDIR
-# define DFLT_VDIR	"$HOME/vimfiles/view"	// default for 'viewdir'
+# define DFLT_VDIR	"$HOME/vimfiles/view"	
 #endif
 
 #ifndef DFLT_DIR
-# define DFLT_DIR	".,$TEMP,c:\\tmp,c:\\temp" // default for 'directory'
+# define DFLT_DIR	".,$TEMP,c:\\tmp,c:\\temp" 
 #endif
 
 #define DFLT_ERRORFILE		"errors.err"
 #define DFLT_RUNTIMEPATH	"$HOME/vimfiles,$VIM/vimfiles,$VIMRUNTIME,$HOME/vimfiles/after,$VIM/vimfiles/after"
 #define CLEAN_RUNTIMEPATH	"$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after"
 
-#define CASE_INSENSITIVE_FILENAME   // ignore case when comparing file names
+#define CASE_INSENSITIVE_FILENAME   
 #define SPACE_IN_FILENAME
 #define BACKSLASH_IN_FILENAME
-#define USE_CRNL		// lines end in CR-NL instead of NL
-#define HAVE_DUP		// have dup()
-#define HAVE_ST_MODE		// have stat.st_mode
+#define USE_CRNL		
+#define HAVE_DUP		
+#define HAVE_ST_MODE		

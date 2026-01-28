@@ -1,7 +1,4 @@
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- * Released under the terms of the GNU GPL v2.0.
- */
+
 
 #ifndef LKC_H
 #define LKC_H
@@ -59,15 +56,15 @@ void zconf_nextfile(const char *name);
 int zconf_lineno(void);
 char *zconf_curname(void);
 
-/* confdata.c */
+
 extern const char conf_def_filename[];
 
 char *conf_get_default_confname(void);
 
-/* kconfig_load.c */
+
 void kconfig_load(void);
 
-/* menu.c */
+
 void menu_init(void);
 struct menu *menu_add_menu(void);
 void menu_end_menu(void);
@@ -81,7 +78,7 @@ void menu_add_symbol(enum prop_type type, struct symbol *sym, struct expr *dep);
 void menu_finalize(struct menu *parent);
 void menu_set_type(int type);
 
-/* util.c */
+
 struct file *file_lookup(const char *name);
 int file_write_dep(const char *name);
 
@@ -96,7 +93,7 @@ void str_append(struct gstr *gs, const char *s);
 void str_printf(struct gstr *gs, const char *fmt, ...);
 const char *str_get(struct gstr *gs);
 
-/* symbol.c */
+
 void sym_init(void);
 void sym_clear_all_valid(void);
 void sym_set_changed(struct symbol *sym);
@@ -144,4 +141,4 @@ static inline bool sym_has_value(struct symbol *sym)
 }
 #endif
 
-#endif /* LKC_H */
+#endif 

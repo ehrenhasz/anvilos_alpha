@@ -1,18 +1,18 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Copyright (c) 2000-2005 Silicon Graphics, Inc.
-# All Rights Reserved.
-#
 
-ccflags-y += -I $(srctree)/$(src)		# needed for trace events
+
+
+
+
+
+ccflags-y += -I $(srctree)/$(src)		
 ccflags-y += -I $(srctree)/$(src)/libxfs
 
 obj-$(CONFIG_XFS_FS)		+= xfs.o
 
-# this one should be compiled first, as the tracing macros can easily blow up
+
 xfs-y				+= xfs_trace.o
 
-# build the libxfs code first
+
 xfs-y				+= $(addprefix libxfs/, \
 				   xfs_ag.o \
 				   xfs_alloc.o \
@@ -51,12 +51,12 @@ xfs-y				+= $(addprefix libxfs/, \
 				   xfs_trans_resv.o \
 				   xfs_types.o \
 				   )
-# xfs_rtbitmap is shared with libxfs
+
 xfs-$(CONFIG_XFS_RT)		+= $(addprefix libxfs/, \
 				   xfs_rtbitmap.o \
 				   )
 
-# highlevel code
+
 xfs-y				+= xfs_aops.o \
 				   xfs_attr_inactive.o \
 				   xfs_attr_list.o \
@@ -95,7 +95,7 @@ xfs-y				+= xfs_aops.o \
 				   xfs_xattr.o \
 				   kmem.o
 
-# low-level transaction/log code
+
 xfs-y				+= xfs_log.o \
 				   xfs_log_cil.o \
 				   xfs_bmap_item.o \
@@ -114,7 +114,7 @@ xfs-y				+= xfs_log.o \
 				   xfs_trans_ail.o \
 				   xfs_trans_buf.o
 
-# optional features
+
 xfs-$(CONFIG_XFS_QUOTA)		+= xfs_dquot.o \
 				   xfs_dquot_item.o \
 				   xfs_trans_dquot.o \
@@ -123,7 +123,7 @@ xfs-$(CONFIG_XFS_QUOTA)		+= xfs_dquot.o \
 				   xfs_qm.o \
 				   xfs_quotaops.o
 
-# xfs_rtbitmap is shared with libxfs
+
 xfs-$(CONFIG_XFS_RT)		+= xfs_rtalloc.o
 
 xfs-$(CONFIG_XFS_POSIX_ACL)	+= xfs_acl.o
@@ -131,17 +131,17 @@ xfs-$(CONFIG_SYSCTL)		+= xfs_sysctl.o
 xfs-$(CONFIG_COMPAT)		+= xfs_ioctl32.o
 xfs-$(CONFIG_EXPORTFS_BLOCK_OPS)	+= xfs_pnfs.o
 
-# notify failure
+
 ifeq ($(CONFIG_MEMORY_FAILURE),y)
 xfs-$(CONFIG_FS_DAX)		+= xfs_notify_failure.o
 endif
 
 xfs-$(CONFIG_XFS_DRAIN_INTENTS)	+= xfs_drain.o
 
-# online scrub/repair
+
 ifeq ($(CONFIG_XFS_ONLINE_SCRUB),y)
 
-# Tracepoints like to blow up, so build that before everything else
+
 
 xfs-y				+= $(addprefix scrub/, \
 				   trace.o \
@@ -177,7 +177,7 @@ xfs-$(CONFIG_XFS_RT)		+= $(addprefix scrub/, \
 
 xfs-$(CONFIG_XFS_QUOTA)		+= scrub/quota.o
 
-# online repair
+
 ifeq ($(CONFIG_XFS_ONLINE_REPAIR),y)
 xfs-y				+= $(addprefix scrub/, \
 				   agheader_repair.o \

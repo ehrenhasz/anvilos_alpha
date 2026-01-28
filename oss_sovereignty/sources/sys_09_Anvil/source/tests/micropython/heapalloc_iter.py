@@ -36,7 +36,7 @@ print(1 in l, -1 in l)
 print(1 in d, -1 in d)
 print(1 in s, -1 in s)
 heap_unlock()
-unp0 = unp1 = unp2 = None  # preallocate slots for globals
+unp0 = unp1 = unp2 = None  
 heap_lock()
 unp0, unp1, unp2 = t
 print(unp0, unp1, unp2)

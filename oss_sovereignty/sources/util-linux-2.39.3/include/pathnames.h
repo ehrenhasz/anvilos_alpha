@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef PATHNAMES_H
 #define PATHNAMES_H
 
@@ -13,10 +10,10 @@
 # error "we need an ANSI compiler"
 #endif
 
-/* used by kernel in /proc (e.g. /proc/swaps) for deleted files */
+
 #define PATH_DELETED_SUFFIX	" (deleted)"
 
-/* DEFPATHs from <paths.h> don't include /usr/local */
+
 #undef _PATH_DEFPATH
 
 #ifdef USE_USRDIR_PATHS_ONLY
@@ -56,7 +53,7 @@
 #define _PATH_TERMCOLORS_DIRNAME "terminal-colors.d"
 #define _PATH_TERMCOLORS_DIR	"/etc/" _PATH_TERMCOLORS_DIRNAME
 
-/* login paths */
+
 #define _PATH_PASSWD		"/etc/passwd"
 #define _PATH_GSHADOW		"/etc/gshadow"
 #define _PATH_GROUP		"/etc/group"
@@ -84,11 +81,11 @@
 
 #define _PATH_SD_UNITSLOAD	_PATH_RUNSTATEDIR "/systemd/systemd-units-load"
 
-/* misc paths */
+
 #define _PATH_WORDS             "/usr/share/dict/words"
 #define _PATH_WORDS_ALT         "/usr/share/dict/web2"
 
-/* mount paths */
+
 #define _PATH_FILESYSTEMS	"/etc/filesystems"
 #define _PATH_PROC		"/proc"
 #define _PATH_PROC_SWAPS	"/proc/swaps"
@@ -100,7 +97,7 @@
 #define _PATH_PROC_LOCKS        "/proc/locks"
 #define _PATH_PROC_CDROMINFO	"/proc/sys/dev/cdrom/info"
 
-/* unshare paths */
+
 #define _PATH_SUBUID		"/etc/subuid"
 #define _PATH_SUBGID		"/etc/subgid"
 #define _PATH_PROC_UIDMAP	"/proc/self/uid_map"
@@ -126,7 +123,7 @@
 #define _PATH_SYS_APPARMOR	"/sys/kernel/security/apparmor"
 
 #ifndef _PATH_MOUNTED
-# ifdef MOUNTED					/* deprecated */
+# ifdef MOUNTED					
 #  define _PATH_MOUNTED		MOUNTED
 # else
 #  define _PATH_MOUNTED		"/etc/mtab"
@@ -134,7 +131,7 @@
 #endif
 
 #ifndef _PATH_MNTTAB
-# ifdef MNTTAB					/* deprecated */
+# ifdef MNTTAB					
 #  define _PATH_MNTTAB		MNTTAB
 # else
 #  define _PATH_MNTTAB		"/etc/fstab"
@@ -142,9 +139,7 @@
 #endif
 
 #ifndef _PATH_DEV
-  /*
-   * The tailing '/' in _PATH_DEV is there for compatibility with libc.
-   */
+  
 # define _PATH_DEV		"/dev/"
 #endif
 
@@ -155,7 +150,7 @@
 #define _PATH_DEV_LOOP		"/dev/loop"
 #define _PATH_DEV_LOOPCTL	"/dev/loop-control"
 
-/* udev paths */
+
 #define _PATH_DEV_BYLABEL	"/dev/disk/by-label"
 #define _PATH_DEV_BYUUID	"/dev/disk/by-uuid"
 #define _PATH_DEV_BYID		"/dev/disk/by-id"
@@ -163,7 +158,7 @@
 #define _PATH_DEV_BYPARTLABEL	"/dev/disk/by-partlabel"
 #define _PATH_DEV_BYPARTUUID	"/dev/disk/by-partuuid"
 
-/* hwclock paths */
+
 #ifdef CONFIG_ADJTIME_PATH
 # define _PATH_ADJTIME		CONFIG_ADJTIME_PATH
 #else
@@ -176,15 +171,15 @@
 # define _PATH_RTC_DEV		"/dev/rtc0"
 #endif
 
-/* raw paths*/
+
 #define _PATH_RAWDEVDIR		"/dev/raw/"
 #define _PATH_RAWDEVCTL		_PATH_RAWDEVDIR "rawctl"
-/* deprecated */
+
 #define _PATH_RAWDEVCTL_OLD	"/dev/rawctl"
 
 #define _PATH_PROC_KERNEL	"/proc/sys/kernel"
 
-/* ipc paths */
+
 #define _PATH_PROC_SYSV_MSG	"/proc/sysvipc/msg"
 #define _PATH_PROC_SYSV_SEM	"/proc/sysvipc/sem"
 #define _PATH_PROC_SYSV_SHM	"/proc/sysvipc/shm"
@@ -196,35 +191,35 @@
 #define _PATH_PROC_IPC_SHMMAX	_PATH_PROC_KERNEL "/shmmax"
 #define _PATH_PROC_IPC_SHMMNI	_PATH_PROC_KERNEL "/shmmni"
 
-/* util clamp */
+
 #define _PATH_PROC_UCLAMP_MIN	_PATH_PROC_KERNEL "/sched_util_clamp_min"
 #define _PATH_PROC_UCLAMP_MAX	_PATH_PROC_KERNEL "/sched_util_clamp_max"
 
-/* sysctl fs paths */
+
 #define _PATH_PROC_SYS_FS	"/proc/sys/fs"
 #define _PATH_PROC_PIPE_MAX_SIZE	_PATH_PROC_SYS_FS "/pipe-max-size"
 
-/* irqtop paths */
+
 #define _PATH_PROC_INTERRUPTS	"/proc/interrupts"
 #define _PATH_PROC_SOFTIRQS	"/proc/softirqs"
 #define _PATH_PROC_UPTIME	"/proc/uptime"
 
-/* kernel command line */
+
 #define _PATH_PROC_CMDLINE	"/proc/cmdline"
 
 
-/* logger paths */
+
 #define _PATH_DEVLOG		"/dev/log"
 
-/* ctrlaltdel paths */
+
 #define _PATH_PROC_CTRL_ALT_DEL	"/proc/sys/kernel/ctrl-alt-del"
 
-/* lscpu paths */
+
 #define _PATH_PROC_CPUINFO	"/proc/cpuinfo"
 
-/* rfkill paths */
+
 #define _PATH_DEV_RFKILL	"/dev/rfkill"
 #define _PATH_SYS_RFKILL	"/sys/class/rfkill"
 
 
-#endif /* PATHNAMES_H */
+#endif 

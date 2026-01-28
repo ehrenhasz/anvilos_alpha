@@ -1,34 +1,34 @@
-#!/usr/bin/env @PYTHON_SHEBANG@
-#
-# Print out statistics for all cached dmu buffers.  This information
-# is available through the dbufs kstat and may be post-processed as
-# needed by the script.
-#
-# CDDL HEADER START
-#
-# The contents of this file are subject to the terms of the
-# Common Development and Distribution License, Version 1.0 only
-# (the "License").  You may not use this file except in compliance
-# with the License.
-#
-# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-# or https://opensource.org/licenses/CDDL-1.0.
-# See the License for the specific language governing permissions
-# and limitations under the License.
-#
-# When distributing Covered Code, include this CDDL HEADER in each
-# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
-# If applicable, add the following below this CDDL HEADER, with the
-# fields enclosed by brackets "[]" replaced with your own identifying
-# information: Portions Copyright [yyyy] [name of copyright owner]
-#
-# CDDL HEADER END
-#
-# Copyright (C) 2013 Lawrence Livermore National Security, LLC.
-# Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
-#
-# This script must remain compatible with and Python 3.6+.
-#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import sys
 import getopt
@@ -62,7 +62,7 @@ tincompat = ["object", "level", "blkid", "offset", "dbsize", "meta", "state",
              "bsize", "lvls", "dholds", "blocks", "dsize"]
 
 cols = {
-    # hdr:        [size, scale, description]
+    
     "pool":       [15,   -1, "pool name"],
     "objset":     [6,    -1, "dataset identification number"],
     "object":     [10,   -1, "object number"],
@@ -107,7 +107,7 @@ cols = {
 
 hdr = None
 xhdr = None
-sep = "  "  # Default separator is 2 spaces
+sep = "  "  
 cmd = ("Usage: dbufstat [-bdhnrtvx] [-i file] [-f fields] [-o file] "
        "[-s string] [-F filter]\n")
 raw = 0
@@ -115,7 +115,7 @@ raw = 0
 
 if sys.platform.startswith("freebsd"):
     import io
-    # Requires py-sysctl on FreeBSD
+    
     import sysctl
 
     def default_ifile():
@@ -204,7 +204,7 @@ def prettynum(sz, scale, num=0):
     if raw or scale == -1:
         return "%*s" % (sz, num)
 
-    # Rounding error, return 0
+    
     elif 0 < num < 1:
         num = 0
 
@@ -252,42 +252,42 @@ def print_header():
 def get_typestring(t):
     ot_strings = [
                     "DMU_OT_NONE",
-                    # general:
+                    
                     "DMU_OT_OBJECT_DIRECTORY",
                     "DMU_OT_OBJECT_ARRAY",
                     "DMU_OT_PACKED_NVLIST",
                     "DMU_OT_PACKED_NVLIST_SIZE",
                     "DMU_OT_BPOBJ",
                     "DMU_OT_BPOBJ_HDR",
-                    # spa:
+                    
                     "DMU_OT_SPACE_MAP_HEADER",
                     "DMU_OT_SPACE_MAP",
-                    # zil:
+                    
                     "DMU_OT_INTENT_LOG",
-                    # dmu:
+                    
                     "DMU_OT_DNODE",
                     "DMU_OT_OBJSET",
-                    # dsl:
+                    
                     "DMU_OT_DSL_DIR",
                     "DMU_OT_DSL_DIR_CHILD_MAP",
                     "DMU_OT_DSL_DS_SNAP_MAP",
                     "DMU_OT_DSL_PROPS",
                     "DMU_OT_DSL_DATASET",
-                    # zpl:
+                    
                     "DMU_OT_ZNODE",
                     "DMU_OT_OLDACL",
                     "DMU_OT_PLAIN_FILE_CONTENTS",
                     "DMU_OT_DIRECTORY_CONTENTS",
                     "DMU_OT_MASTER_NODE",
                     "DMU_OT_UNLINKED_SET",
-                    # zvol:
+                    
                     "DMU_OT_ZVOL",
                     "DMU_OT_ZVOL_PROP",
-                    # other; for testing only!
+                    
                     "DMU_OT_PLAIN_OTHER",
                     "DMU_OT_UINT64_OTHER",
                     "DMU_OT_ZAP_OTHER",
-                    # new object types:
+                    
                     "DMU_OT_ERROR_LOG",
                     "DMU_OT_SPA_HISTORY",
                     "DMU_OT_SPA_HISTORY_OFFSETS",
@@ -336,7 +336,7 @@ def get_typestring(t):
                     0xa4: "DMU_OTN_ZAP_ENC_DATA",
                     0xe4: "DMU_OTN_ZAP_ENC_METADATA"}
 
-    # If "-rr" option is used, don't convert to string representation
+    
     if raw > 1:
         return "%i" % t
 
@@ -360,7 +360,7 @@ def get_compstring(c):
                     "ZIO_COMPRESS_ZLE",     "ZIO_COMPRESS_LZ4",
                     "ZIO_COMPRESS_ZSTD",    "ZIO_COMPRESS_FUNCTION"]
 
-    # If "-rr" option is used, don't convert to string representation
+    
     if raw > 1:
         return "%i" % c
 
@@ -376,8 +376,8 @@ def parse_line(line, labels):
     new = dict()
     val = None
     for col in hdr:
-        # These are "special" fields computed in the update_dict
-        # function, prevent KeyError exception on labels[col] for these.
+        
+        
         if col not in ['bonus', 'cached', 'direct', 'indirect', 'spill']:
             val = line[labels[col]]
 
@@ -442,7 +442,7 @@ def skip_line(vals, filters):
     for key in vals:
         if key in filters:
             val = prettynum(cols[key][0], cols[key][1], vals[key]).strip()
-            # we want a full match here
+            
             if re.match("(?:" + filters[key] + r")\Z", val) is None:
                 return True
 
@@ -463,15 +463,15 @@ def dnodes_build_dict(filehandle):
     labels = dict()
     dnodes = dict()
 
-    # First 3 lines are header information, skip the first two
+    
     for i in range(2):
         next(filehandle)
 
-    # The third line contains the labels and index locations
+    
     for i, v in enumerate(next(filehandle).split()):
         labels[v] = i
 
-    # The rest of the file is buffer information
+    
     for line in filehandle:
         update_dict(dnodes, 'object', line.split(), labels)
 
@@ -482,15 +482,15 @@ def types_build_dict(filehandle):
     labels = dict()
     types = dict()
 
-    # First 3 lines are header information, skip the first two
+    
     for i in range(2):
         next(filehandle)
 
-    # The third line contains the labels and index locations
+    
     for i, v in enumerate(next(filehandle).split()):
         labels[v] = i
 
-    # The rest of the file is buffer information
+    
     for line in filehandle:
         update_dict(types, 'dtype', line.split(), labels)
 
@@ -500,18 +500,18 @@ def types_build_dict(filehandle):
 def buffers_print_all(filehandle, filters, noheader):
     labels = dict()
 
-    # First 3 lines are header information, skip the first two
+    
     for i in range(2):
         next(filehandle)
 
-    # The third line contains the labels and index locations
+    
     for i, v in enumerate(next(filehandle).split()):
         labels[v] = i
 
     if not noheader:
         print_header()
 
-    # The rest of the file is buffer information
+    
     for line in filehandle:
         vals = parse_line(line.split(), labels)
         if not skip_line(vals, filters):
@@ -616,7 +616,7 @@ def main():
     if vflag:
         detailed_usage()
 
-    # Ensure at most only one of b, d, or t flags are set
+    
     if (bflag and dflag) or (bflag and tflag) or (dflag and tflag):
         usage()
 
@@ -624,7 +624,7 @@ def main():
         hdr = bxhdr if xflag else bhdr
     elif tflag:
         hdr = txhdr if xflag else thdr
-    else:  # Even if dflag is False, it's the default if none set
+    else:  
         dflag = True
         hdr = dxhdr if xflag else dhdr
 

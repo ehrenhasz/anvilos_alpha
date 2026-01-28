@@ -1,21 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014- QLogic Corporation.
- * All rights reserved
- * www.qlogic.com
- *
- * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
- */
+
+
 #ifndef BFAD_BSG_H
 #define BFAD_BSG_H
 
 #include "bfa_defs.h"
 #include "bfa_defs_fcs.h"
 
-/* Definitions of vendor unique structures and command codes passed in
- * using FC_BSG_HST_VENDOR message code.
- */
+
 enum {
 	IOCMD_IOC_ENABLE = 0x1,
 	IOCMD_IOC_DISABLE,
@@ -209,13 +200,13 @@ struct bfa_bsg_ioc_info_s {
 	wwn_t		factorypwwn;
 	wwn_t		factorynwwn;
 	mac_t		mac;
-	mac_t		factory_mac; /* Factory mac address */
-	mac_t		current_mac; /* Currently assigned mac address */
+	mac_t		factory_mac; 
+	mac_t		current_mac; 
 	enum bfa_ioc_type_e	ioc_type;
-	u16		pvid; /* Port vlan id */
+	u16		pvid; 
 	u16		rsvd1;
 	u32		host;
-	u32		bandwidth; /* For PF support */
+	u32		bandwidth; 
 	u32		rsvd2;
 };
 
@@ -826,4 +817,4 @@ struct bfa_bsg_data {
 	(((__payload_len) != ((__hdrsz) + (__bufsz))) ?		\
 	 BFA_STATUS_FAILED : BFA_STATUS_OK)
 
-#endif /* BFAD_BSG_H */
+#endif 

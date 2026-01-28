@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm #define SM6350 interconnect IDs
- *
- * Copyright (C) 2022 Luca Weiss <luca.weiss@fairphone.com>
- */
+
+
 
 #ifndef __DRIVERS_INTERCONNECT_QCOM_SM6350_H
 #define __DRIVERS_INTERCONNECT_QCOM_SM6350_H

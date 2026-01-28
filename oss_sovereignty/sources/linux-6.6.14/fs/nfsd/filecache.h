@@ -3,31 +3,13 @@
 
 #include <linux/fsnotify_backend.h>
 
-/*
- * This is the fsnotify_mark container that nfsd attaches to the files that it
- * is holding open. Note that we have a separate refcount here aside from the
- * one in the fsnotify_mark. We only want a single fsnotify_mark attached to
- * the inode, and for each nfsd_file to hold a reference to it.
- *
- * The fsnotify_mark is itself refcounted, but that's not sufficient to tell us
- * how to put that reference. If there are still outstanding nfsd_files that
- * reference the mark, then we would want to call fsnotify_put_mark on it.
- * If there were not, then we'd need to call fsnotify_destroy_mark. Since we
- * can't really tell the difference, we use the nfm_mark to keep track of how
- * many nfsd_files hold references to the mark. When that counter goes to zero
- * then we know to call fsnotify_destroy_mark on it.
- */
+
 struct nfsd_file_mark {
 	struct fsnotify_mark	nfm_mark;
 	refcount_t		nfm_ref;
 };
 
-/*
- * A representation of a file that has been opened by knfsd. These are hashed
- * in the hashtable by inode pointer value. Note that this object doesn't
- * hold a reference to the inode by itself, so the nf_inode pointer should
- * never be dereferenced, only used for comparison.
- */
+
 struct nfsd_file {
 	struct rhlist_head	nf_rlist;
 	void			*nf_inode;
@@ -65,4 +47,4 @@ __be32 nfsd_file_acquire_opened(struct svc_rqst *rqstp, struct svc_fh *fhp,
 		  unsigned int may_flags, struct file *file,
 		  struct nfsd_file **nfp);
 int nfsd_file_cache_stats_show(struct seq_file *m, void *v);
-#endif /* _FS_NFSD_FILECACHE_H */
+#endif 

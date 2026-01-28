@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Xen Event Channels (internal header)
- *
- * Copyright (C) 2013 Citrix Systems R&D Ltd.
- */
+
+
 #ifndef __EVENTS_INTERNAL_H__
 #define __EVENTS_INTERNAL_H__
 
@@ -43,10 +39,7 @@ static inline unsigned xen_evtchn_max_channels(void)
 	return evtchn_ops->max_channels();
 }
 
-/*
- * Do any ABI specific setup for a bound event channel before it can
- * be unmasked and used.
- */
+
 static inline int xen_evtchn_port_setup(evtchn_port_t evtchn)
 {
 	if (evtchn_ops->setup)
@@ -108,4 +101,4 @@ static inline void xen_evtchn_resume(void)
 void xen_evtchn_2l_init(void);
 int xen_evtchn_fifo_init(void);
 
-#endif /* #ifndef __EVENTS_INTERNAL_H__ */
+#endif 

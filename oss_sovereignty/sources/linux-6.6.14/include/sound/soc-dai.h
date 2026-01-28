@@ -1,11 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * linux/sound/soc-dai.h -- ALSA SoC Layer
- *
- * Copyright:	2005-2008 Wolfson Microelectronics. PLC.
- *
- * Digital Audio Interface (DAI) API.
- */
+
 
 #ifndef __LINUX_SND_SOC_DAI_H
 #define __LINUX_SND_SOC_DAI_H
@@ -18,12 +11,7 @@ struct snd_pcm_substream;
 struct snd_soc_dapm_widget;
 struct snd_compr_stream;
 
-/*
- * DAI hardware audio formats.
- *
- * Describes the physical PCM data formating and clocking. Add new formats
- * to the end.
- */
+
 #define SND_SOC_DAIFMT_I2S		SND_SOC_DAI_FORMAT_I2S
 #define SND_SOC_DAIFMT_RIGHT_J		SND_SOC_DAI_FORMAT_RIGHT_J
 #define SND_SOC_DAIFMT_LEFT_J		SND_SOC_DAI_FORMAT_LEFT_J
@@ -32,16 +20,12 @@ struct snd_compr_stream;
 #define SND_SOC_DAIFMT_AC97		SND_SOC_DAI_FORMAT_AC97
 #define SND_SOC_DAIFMT_PDM		SND_SOC_DAI_FORMAT_PDM
 
-/* left and right justified also known as MSB and LSB respectively */
+
 #define SND_SOC_DAIFMT_MSB		SND_SOC_DAIFMT_LEFT_J
 #define SND_SOC_DAIFMT_LSB		SND_SOC_DAIFMT_RIGHT_J
 
-/* Describes the possible PCM format */
-/*
- * use SND_SOC_DAI_FORMAT_xx as eash shift.
- * see
- *	snd_soc_runtime_get_dai_fmt()
- */
+
+
 #define SND_SOC_POSSIBLE_DAIFMT_FORMAT_SHIFT	0
 #define SND_SOC_POSSIBLE_DAIFMT_FORMAT_MASK	(0xFFFF << SND_SOC_POSSIBLE_DAIFMT_FORMAT_SHIFT)
 #define SND_SOC_POSSIBLE_DAIFMT_I2S		(1 << SND_SOC_DAI_FORMAT_I2S)
@@ -52,53 +36,24 @@ struct snd_compr_stream;
 #define SND_SOC_POSSIBLE_DAIFMT_AC97		(1 << SND_SOC_DAI_FORMAT_AC97)
 #define SND_SOC_POSSIBLE_DAIFMT_PDM		(1 << SND_SOC_DAI_FORMAT_PDM)
 
-/*
- * DAI Clock gating.
- *
- * DAI bit clocks can be gated (disabled) when the DAI is not
- * sending or receiving PCM data in a frame. This can be used to save power.
- */
-#define SND_SOC_DAIFMT_CONT		(1 << 4) /* continuous clock */
-#define SND_SOC_DAIFMT_GATED		(0 << 4) /* clock is gated */
 
-/* Describes the possible PCM format */
-/*
- * define GATED -> CONT. GATED will be selected if both are selected.
- * see
- *	snd_soc_runtime_get_dai_fmt()
- */
+#define SND_SOC_DAIFMT_CONT		(1 << 4) 
+#define SND_SOC_DAIFMT_GATED		(0 << 4) 
+
+
+
 #define SND_SOC_POSSIBLE_DAIFMT_CLOCK_SHIFT	16
 #define SND_SOC_POSSIBLE_DAIFMT_CLOCK_MASK	(0xFFFF	<< SND_SOC_POSSIBLE_DAIFMT_CLOCK_SHIFT)
 #define SND_SOC_POSSIBLE_DAIFMT_GATED		(0x1ULL	<< SND_SOC_POSSIBLE_DAIFMT_CLOCK_SHIFT)
 #define SND_SOC_POSSIBLE_DAIFMT_CONT		(0x2ULL	<< SND_SOC_POSSIBLE_DAIFMT_CLOCK_SHIFT)
 
-/*
- * DAI hardware signal polarity.
- *
- * Specifies whether the DAI can also support inverted clocks for the specified
- * format.
- *
- * BCLK:
- * - "normal" polarity means signal is available at rising edge of BCLK
- * - "inverted" polarity means signal is available at falling edge of BCLK
- *
- * FSYNC "normal" polarity depends on the frame format:
- * - I2S: frame consists of left then right channel data. Left channel starts
- *      with falling FSYNC edge, right channel starts with rising FSYNC edge.
- * - Left/Right Justified: frame consists of left then right channel data.
- *      Left channel starts with rising FSYNC edge, right channel starts with
- *      falling FSYNC edge.
- * - DSP A/B: Frame starts with rising FSYNC edge.
- * - AC97: Frame starts with rising FSYNC edge.
- *
- * "Negative" FSYNC polarity is the one opposite of "normal" polarity.
- */
-#define SND_SOC_DAIFMT_NB_NF		(0 << 8) /* normal bit clock + frame */
-#define SND_SOC_DAIFMT_NB_IF		(2 << 8) /* normal BCLK + inv FRM */
-#define SND_SOC_DAIFMT_IB_NF		(3 << 8) /* invert BCLK + nor FRM */
-#define SND_SOC_DAIFMT_IB_IF		(4 << 8) /* invert BCLK + FRM */
 
-/* Describes the possible PCM format */
+#define SND_SOC_DAIFMT_NB_NF		(0 << 8) 
+#define SND_SOC_DAIFMT_NB_IF		(2 << 8) 
+#define SND_SOC_DAIFMT_IB_NF		(3 << 8) 
+#define SND_SOC_DAIFMT_IB_IF		(4 << 8) 
+
+
 #define SND_SOC_POSSIBLE_DAIFMT_INV_SHIFT	32
 #define SND_SOC_POSSIBLE_DAIFMT_INV_MASK	(0xFFFFULL << SND_SOC_POSSIBLE_DAIFMT_INV_SHIFT)
 #define SND_SOC_POSSIBLE_DAIFMT_NB_NF		(0x1ULL    << SND_SOC_POSSIBLE_DAIFMT_INV_SHIFT)
@@ -106,31 +61,25 @@ struct snd_compr_stream;
 #define SND_SOC_POSSIBLE_DAIFMT_IB_NF		(0x4ULL    << SND_SOC_POSSIBLE_DAIFMT_INV_SHIFT)
 #define SND_SOC_POSSIBLE_DAIFMT_IB_IF		(0x8ULL    << SND_SOC_POSSIBLE_DAIFMT_INV_SHIFT)
 
-/*
- * DAI hardware clock providers/consumers
- *
- * This is wrt the codec, the inverse is true for the interface
- * i.e. if the codec is clk and FRM provider then the interface is
- * clk and frame consumer.
- */
-#define SND_SOC_DAIFMT_CBP_CFP		(1 << 12) /* codec clk provider & frame provider */
-#define SND_SOC_DAIFMT_CBC_CFP		(2 << 12) /* codec clk consumer & frame provider */
-#define SND_SOC_DAIFMT_CBP_CFC		(3 << 12) /* codec clk provider & frame consumer */
-#define SND_SOC_DAIFMT_CBC_CFC		(4 << 12) /* codec clk consumer & frame consumer */
 
-/* previous definitions kept for backwards-compatibility, do not use in new contributions */
+#define SND_SOC_DAIFMT_CBP_CFP		(1 << 12) 
+#define SND_SOC_DAIFMT_CBC_CFP		(2 << 12) 
+#define SND_SOC_DAIFMT_CBP_CFC		(3 << 12) 
+#define SND_SOC_DAIFMT_CBC_CFC		(4 << 12) 
+
+
 #define SND_SOC_DAIFMT_CBM_CFM		SND_SOC_DAIFMT_CBP_CFP
 #define SND_SOC_DAIFMT_CBS_CFM		SND_SOC_DAIFMT_CBC_CFP
 #define SND_SOC_DAIFMT_CBM_CFS		SND_SOC_DAIFMT_CBP_CFC
 #define SND_SOC_DAIFMT_CBS_CFS		SND_SOC_DAIFMT_CBC_CFC
 
-/* when passed to set_fmt directly indicate if the device is provider or consumer */
+
 #define SND_SOC_DAIFMT_BP_FP		SND_SOC_DAIFMT_CBP_CFP
 #define SND_SOC_DAIFMT_BC_FP		SND_SOC_DAIFMT_CBC_CFP
 #define SND_SOC_DAIFMT_BP_FC		SND_SOC_DAIFMT_CBP_CFC
 #define SND_SOC_DAIFMT_BC_FC		SND_SOC_DAIFMT_CBC_CFC
 
-/* Describes the possible PCM format */
+
 #define SND_SOC_POSSIBLE_DAIFMT_CLOCK_PROVIDER_SHIFT	48
 #define SND_SOC_POSSIBLE_DAIFMT_CLOCK_PROVIDER_MASK	(0xFFFFULL << SND_SOC_POSSIBLE_DAIFMT_CLOCK_PROVIDER_SHIFT)
 #define SND_SOC_POSSIBLE_DAIFMT_CBP_CFP			(0x1ULL    << SND_SOC_POSSIBLE_DAIFMT_CLOCK_PROVIDER_SHIFT)
@@ -145,9 +94,7 @@ struct snd_compr_stream;
 
 #define SND_SOC_DAIFMT_MASTER_MASK	SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK
 
-/*
- * Master Clock Directions
- */
+
 #define SND_SOC_CLOCK_IN		0
 #define SND_SOC_CLOCK_OUT		1
 
@@ -167,7 +114,7 @@ struct snd_soc_dai_driver;
 struct snd_soc_dai;
 struct snd_ac97_bus_ops;
 
-/* Digital Audio Interface clocking API.*/
+
 int snd_soc_dai_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 	unsigned int freq, int dir);
 
@@ -179,7 +126,7 @@ int snd_soc_dai_set_pll(struct snd_soc_dai *dai,
 
 int snd_soc_dai_set_bclk_ratio(struct snd_soc_dai *dai, unsigned int ratio);
 
-/* Digital Audio interface formatting */
+
 int snd_soc_dai_get_fmt_max_priority(struct snd_soc_pcm_runtime *rtd);
 u64 snd_soc_dai_get_fmt(struct snd_soc_dai *dai, int priority);
 int snd_soc_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt);
@@ -193,7 +140,7 @@ int snd_soc_dai_set_channel_map(struct snd_soc_dai *dai,
 
 int snd_soc_dai_set_tristate(struct snd_soc_dai *dai, int tristate);
 
-/* Digital Audio Interface mute */
+
 int snd_soc_dai_digital_mute(struct snd_soc_dai *dai, int mute,
 			     int direction);
 
@@ -274,19 +221,16 @@ int snd_soc_dai_compr_get_metadata(struct snd_soc_dai *dai,
 const char *snd_soc_dai_name_get(struct snd_soc_dai *dai);
 
 struct snd_soc_dai_ops {
-	/* DAI driver callbacks */
+	
 	int (*probe)(struct snd_soc_dai *dai);
 	int (*remove)(struct snd_soc_dai *dai);
-	/* compress dai */
+	
 	int (*compress_new)(struct snd_soc_pcm_runtime *rtd, int num);
-	/* Optional Callback used at pcm creation*/
+	
 	int (*pcm_new)(struct snd_soc_pcm_runtime *rtd,
 		       struct snd_soc_dai *dai);
 
-	/*
-	 * DAI clocking configuration, all optional.
-	 * Called by soc_card drivers, normally in their hw_params.
-	 */
+	
 	int (*set_sysclk)(struct snd_soc_dai *dai,
 		int clk_id, unsigned int freq, int dir);
 	int (*set_pll)(struct snd_soc_dai *dai, int pll_id, int source,
@@ -294,10 +238,7 @@ struct snd_soc_dai_ops {
 	int (*set_clkdiv)(struct snd_soc_dai *dai, int div_id, int div);
 	int (*set_bclk_ratio)(struct snd_soc_dai *dai, unsigned int ratio);
 
-	/*
-	 * DAI format configuration
-	 * Called by soc_card drivers, normally in their hw_params.
-	 */
+	
 	int (*set_fmt)(struct snd_soc_dai *dai, unsigned int fmt);
 	int (*xlate_tdm_slot_mask)(unsigned int slots,
 		unsigned int *tx_mask, unsigned int *rx_mask);
@@ -316,16 +257,10 @@ struct snd_soc_dai_ops {
 			  void *stream, int direction);
 	void *(*get_stream)(struct snd_soc_dai *dai, int direction);
 
-	/*
-	 * DAI digital mute - optional.
-	 * Called by soc-core to minimise any pops.
-	 */
+	
 	int (*mute_stream)(struct snd_soc_dai *dai, int mute, int stream);
 
-	/*
-	 * ALSA PCM audio operations - all optional.
-	 * Called by soc-core during audio PCM operations.
-	 */
+	
 	int (*startup)(struct snd_pcm_substream *,
 		struct snd_soc_dai *);
 	void (*shutdown)(struct snd_pcm_substream *,
@@ -336,47 +271,30 @@ struct snd_soc_dai_ops {
 		struct snd_soc_dai *);
 	int (*prepare)(struct snd_pcm_substream *,
 		struct snd_soc_dai *);
-	/*
-	 * NOTE: Commands passed to the trigger function are not necessarily
-	 * compatible with the current state of the dai. For example this
-	 * sequence of commands is possible: START STOP STOP.
-	 * So do not unconditionally use refcounting functions in the trigger
-	 * function, e.g. clk_enable/disable.
-	 */
+	
 	int (*trigger)(struct snd_pcm_substream *, int,
 		struct snd_soc_dai *);
 	int (*bespoke_trigger)(struct snd_pcm_substream *, int,
 		struct snd_soc_dai *);
-	/*
-	 * For hardware based FIFO caused delay reporting.
-	 * Optional.
-	 */
+	
 	snd_pcm_sframes_t (*delay)(struct snd_pcm_substream *,
 		struct snd_soc_dai *);
 
-	/*
-	 * Format list for auto selection.
-	 * Format will be increased if priority format was
-	 * not selected.
-	 * see
-	 *	snd_soc_dai_get_fmt()
-	 */
+	
 	u64 *auto_selectable_formats;
 	int num_auto_selectable_formats;
 
-	/* probe ordering - for components with runtime dependencies */
+	
 	int probe_order;
 	int remove_order;
 
-	/* bit field */
+	
 	unsigned int no_capture_mute:1;
 	unsigned int mute_unmute_on_trigger:1;
 };
 
 struct snd_soc_cdai_ops {
-	/*
-	 * for compress ops
-	 */
+	
 	int (*startup)(struct snd_compr_stream *,
 			struct snd_soc_dai *);
 	int (*shutdown)(struct snd_compr_stream *,
@@ -397,29 +315,20 @@ struct snd_soc_cdai_ops {
 			struct snd_soc_dai *);
 };
 
-/*
- * Digital Audio Interface Driver.
- *
- * Describes the Digital Audio Interface in terms of its ALSA, DAI and AC97
- * operations and capabilities. Codec and platform drivers will register this
- * structure for every DAI they have.
- *
- * This structure covers the clocking, formating and ALSA operations for each
- * interface.
- */
+
 struct snd_soc_dai_driver {
-	/* DAI description */
+	
 	const char *name;
 	unsigned int id;
 	unsigned int base;
 	struct snd_soc_dobj dobj;
 	struct of_phandle_args *dai_args;
 
-	/* ops */
+	
 	const struct snd_soc_dai_ops *ops;
 	const struct snd_soc_cdai_ops *cops;
 
-	/* DAI capabilities */
+	
 	struct snd_soc_pcm_stream capture;
 	struct snd_soc_pcm_stream playback;
 	unsigned int symmetric_rate:1;
@@ -427,49 +336,45 @@ struct snd_soc_dai_driver {
 	unsigned int symmetric_sample_bits:1;
 };
 
-/* for Playback/Capture */
+
 struct snd_soc_dai_stream {
 	struct snd_soc_dapm_widget *widget;
 
-	unsigned int active;	/* usage count */
-	unsigned int tdm_mask;	/* CODEC TDM slot masks and params (for fixup) */
+	unsigned int active;	
+	unsigned int tdm_mask;	
 
-	void *dma_data;		/* DAI DMA data */
+	void *dma_data;		
 };
 
-/*
- * Digital Audio Interface runtime data.
- *
- * Holds runtime data for a DAI.
- */
+
 struct snd_soc_dai {
 	const char *name;
 	int id;
 	struct device *dev;
 
-	/* driver ops */
+	
 	struct snd_soc_dai_driver *driver;
 
-	/* DAI runtime info */
+	
 	struct snd_soc_dai_stream stream[SNDRV_PCM_STREAM_LAST + 1];
 
-	/* Symmetry data - only valid if symmetry is being enforced */
+	
 	unsigned int rate;
 	unsigned int channels;
 	unsigned int sample_bits;
 
-	/* parent platform/codec */
+	
 	struct snd_soc_component *component;
 
 	struct list_head list;
 
-	/* function mark */
+	
 	struct snd_pcm_substream *mark_startup;
 	struct snd_pcm_substream *mark_hw_params;
 	struct snd_pcm_substream *mark_trigger;
 	struct snd_compr_stream  *mark_compr_startup;
 
-	/* bit field */
+	
 	unsigned int probed:1;
 };
 
@@ -531,7 +436,7 @@ static inline void snd_soc_dai_tdm_mask_set(struct snd_soc_dai *dai, int stream,
 
 static inline unsigned int snd_soc_dai_stream_active(struct snd_soc_dai *dai, int stream)
 {
-	/* see snd_soc_dai_action() for setup */
+	
 	return dai->stream[stream].active;
 }
 
@@ -546,18 +451,7 @@ static inline void *snd_soc_dai_get_drvdata(struct snd_soc_dai *dai)
 	return dev_get_drvdata(dai->dev);
 }
 
-/**
- * snd_soc_dai_set_stream() - Configures a DAI for stream operation
- * @dai: DAI
- * @stream: STREAM (opaque structure depending on DAI type)
- * @direction: Stream direction(Playback/Capture)
- * Some subsystems, such as SoundWire, don't have a notion of direction and we reuse
- * the ASoC stream direction to configure sink/source ports.
- * Playback maps to source ports and Capture for sink ports.
- *
- * This should be invoked with NULL to clear the stream set previously.
- * Returns 0 on success, a negative error code otherwise.
- */
+
 static inline int snd_soc_dai_set_stream(struct snd_soc_dai *dai,
 					 void *stream, int direction)
 {
@@ -567,17 +461,7 @@ static inline int snd_soc_dai_set_stream(struct snd_soc_dai *dai,
 		return -ENOTSUPP;
 }
 
-/**
- * snd_soc_dai_get_stream() - Retrieves stream from DAI
- * @dai: DAI
- * @direction: Stream direction(Playback/Capture)
- *
- * This routine only retrieves that was previously configured
- * with snd_soc_dai_get_stream()
- *
- * Returns pointer to stream or an ERR_PTR value, e.g.
- * ERR_PTR(-ENOTSUPP) if callback is not supported;
- */
+
 static inline void *snd_soc_dai_get_stream(struct snd_soc_dai *dai,
 					   int direction)
 {

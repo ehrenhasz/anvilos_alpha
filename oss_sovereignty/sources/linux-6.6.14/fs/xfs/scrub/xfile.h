@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2018-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+
 #ifndef __XFS_SCRUB_XFILE_H__
 #define __XFS_SCRUB_XFILE_H__
 
@@ -33,10 +30,7 @@ ssize_t xfile_pread(struct xfile *xf, void *buf, size_t count, loff_t pos);
 ssize_t xfile_pwrite(struct xfile *xf, const void *buf, size_t count,
 		loff_t pos);
 
-/*
- * Load an object.  Since we're treating this file as "memory", any error or
- * short IO is treated as a failure to allocate memory.
- */
+
 static inline int
 xfile_obj_load(struct xfile *xf, void *buf, size_t count, loff_t pos)
 {
@@ -47,10 +41,7 @@ xfile_obj_load(struct xfile *xf, void *buf, size_t count, loff_t pos)
 	return 0;
 }
 
-/*
- * Store an object.  Since we're treating this file as "memory", any error or
- * short IO is treated as a failure to allocate memory.
- */
+
 static inline int
 xfile_obj_store(struct xfile *xf, const void *buf, size_t count, loff_t pos)
 {
@@ -74,4 +65,4 @@ int xfile_get_page(struct xfile *xf, loff_t offset, unsigned int len,
 		struct xfile_page *xbuf);
 int xfile_put_page(struct xfile *xf, struct xfile_page *xbuf);
 
-#endif /* __XFS_SCRUB_XFILE_H__ */
+#endif 

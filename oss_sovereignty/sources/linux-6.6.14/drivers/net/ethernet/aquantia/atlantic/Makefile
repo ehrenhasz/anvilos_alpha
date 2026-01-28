@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0-only
-################################################################################
-#
-# aQuantia Ethernet Controller AQtion Linux Driver
-# Copyright(c) 2014-2017 aQuantia Corporation.
-#
-################################################################################
+
+
+
+
+
+
+
 
 obj-$(CONFIG_AQTION) += atlantic.o
 

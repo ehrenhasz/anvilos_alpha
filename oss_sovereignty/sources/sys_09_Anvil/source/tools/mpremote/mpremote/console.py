@@ -40,31 +40,31 @@ class ConsolePosix:
         self.outfile.write(buf)
 class ConsoleWindows:
     KEY_MAP = {
-        b"H": b"A",  # UP
-        b"P": b"B",  # DOWN
-        b"M": b"C",  # RIGHT
-        b"K": b"D",  # LEFT
-        b"G": b"H",  # POS1
-        b"O": b"F",  # END
-        b"Q": b"6~",  # PGDN
-        b"I": b"5~",  # PGUP
-        b"s": b"1;5D",  # CTRL-LEFT,
-        b"t": b"1;5C",  # CTRL-RIGHT,
-        b"\x8d": b"1;5A",  #  CTRL-UP,
-        b"\x91": b"1;5B",  # CTRL-DOWN,
-        b"w": b"1;5H",  # CTRL-POS1
-        b"u": b"1;5F",  # CTRL-END
-        b"\x98": b"1;3A",  #  ALT-UP,
-        b"\xa0": b"1;3B",  # ALT-DOWN,
-        b"\x9d": b"1;3C",  #  ALT-RIGHT,
-        b"\x9b": b"1;3D",  # ALT-LEFT,
-        b"\x97": b"1;3H",  #  ALT-POS1,
-        b"\x9f": b"1;3F",  # ALT-END,
-        b"S": b"3~",  # DEL,
-        b"\x93": b"3;5~",  # CTRL-DEL
-        b"R": b"2~",  # INS
-        b"\x92": b"2;5~",  # CTRL-INS
-        b"\x94": b"Z",  # Ctrl-Tab = BACKTAB,
+        b"H": b"A",  
+        b"P": b"B",  
+        b"M": b"C",  
+        b"K": b"D",  
+        b"G": b"H",  
+        b"O": b"F",  
+        b"Q": b"6~",  
+        b"I": b"5~",  
+        b"s": b"1;5D",  
+        b"t": b"1;5C",  
+        b"\x8d": b"1;5A",  
+        b"\x91": b"1;5B",  
+        b"w": b"1;5H",  
+        b"u": b"1;5F",  
+        b"\x98": b"1;3A",  
+        b"\xa0": b"1;3B",  
+        b"\x9d": b"1;3C",  
+        b"\x9b": b"1;3D",  
+        b"\x97": b"1;3H",  
+        b"\x9f": b"1;3F",  
+        b"S": b"3~",  
+        b"\x93": b"3;5~",  
+        b"R": b"2~",  
+        b"\x92": b"2;5~",  
+        b"\x94": b"Z",  
     }
     def __init__(self):
         self.ctrl_c = 0
@@ -85,10 +85,10 @@ class ConsoleWindows:
             return b"\x03"
         if msvcrt.kbhit():
             ch = msvcrt.getch()
-            while ch in b"\x00\xe0":  # arrow or function key prefix?
+            while ch in b"\x00\xe0":  
                 if not msvcrt.kbhit():
                     return None
-                ch = msvcrt.getch()  # second call returns the actual key code
+                ch = msvcrt.getch()  
                 try:
                     ch = b"\x1b[" + self.KEY_MAP[ch]
                 except KeyError:

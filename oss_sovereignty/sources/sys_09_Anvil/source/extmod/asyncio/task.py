@@ -93,14 +93,14 @@ class TaskQueue:
         self.heap = ph_delete(self.heap, v)
 class Task:
     def __init__(self, coro, globals=None):
-        self.coro = coro  # Coroutine of this Task
-        self.data = None  # General data for queue it is waiting on
-        self.state = True  # None, False, True, a callable, or a TaskQueue instance
-        self.ph_key = 0  # Pairing heap
-        self.ph_child = None  # Paring heap
-        self.ph_child_last = None  # Paring heap
-        self.ph_next = None  # Paring heap
-        self.ph_rightmost_parent = None  # Paring heap
+        self.coro = coro  
+        self.data = None  
+        self.state = True  
+        self.ph_key = 0  
+        self.ph_child = None  
+        self.ph_child_last = None  
+        self.ph_next = None  
+        self.ph_rightmost_parent = None  
     def __iter__(self):
         if not self.state:
             self.state = False

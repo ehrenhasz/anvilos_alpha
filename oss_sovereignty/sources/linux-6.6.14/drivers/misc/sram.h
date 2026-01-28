@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Defines for the SRAM driver
- */
+
+
 #ifndef __SRAM_H
 #define __SRAM_H
 
@@ -59,5 +57,5 @@ static inline int sram_add_protect_exec(struct sram_partition *part)
 {
 	return -ENODEV;
 }
-#endif /* CONFIG_SRAM_EXEC */
-#endif /* __SRAM_H */
+#endif 
+#endif 

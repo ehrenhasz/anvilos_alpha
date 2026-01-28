@@ -1,18 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright IBM Corp. 2016
- *  Author(s): Holger Dengler (hd@linux.vnet.ibm.com)
- *	       Harald Freudenberger <freude@de.ibm.com>
- */
+
+
 #ifndef ZCRYPT_DEBUG_H
 #define ZCRYPT_DEBUG_H
 
 #include <asm/debug.h>
 
-#define DBF_ERR		3	/* error conditions   */
-#define DBF_WARN	4	/* warning conditions */
-#define DBF_INFO	5	/* informational      */
-#define DBF_DEBUG	6	/* for debugging only */
+#define DBF_ERR		3	
+#define DBF_WARN	4	
+#define DBF_INFO	5	
+#define DBF_DEBUG	6	
 
 #define RC2ERR(rc) ((rc) ? DBF_ERR : DBF_INFO)
 #define RC2WARN(rc) ((rc) ? DBF_WARN : DBF_INFO)
@@ -35,4 +31,4 @@ extern debug_info_t *zcrypt_dbf_info;
 int zcrypt_debug_init(void);
 void zcrypt_debug_exit(void);
 
-#endif /* ZCRYPT_DEBUG_H */
+#endif 

@@ -54,7 +54,7 @@ while getopts 'hvruS' OPTION; do
 	esac
 done
 shift $(( OPTIND - 1 ))
-[ $# -eq 0 ] || usage
+[ $
 kill_zed() {
 	if [ -f "$ZED_PIDFILE" ]; then
 		read -r PID <"$ZED_PIDFILE"
@@ -65,7 +65,7 @@ check_modules_linux() {
 	LOADED_MODULES=""
 	MISSING_MODULES=""
 	for KMOD in $KMOD_SPL $KMOD_ZFS; do
-		NAME="${KMOD##*/}"
+		NAME="${KMOD
 		NAME="${NAME%.ko}"
 		if lsmod | grep -E -q "^${NAME}"; then
 			LOADED_MODULES="$LOADED_MODULES\t$NAME\n"
@@ -127,7 +127,7 @@ unload_modules_freebsd() {
 unload_modules_linux() {
 	legacy_kmods="icp zzstd zlua zcommon zunicode znvpair zavl"
 	for KMOD in "$KMOD_ZFS" $legacy_kmods "$KMOD_SPL"; do
-		NAME="${KMOD##*/}"
+		NAME="${KMOD
 		NAME="${NAME%.ko}"
 		! [ -d "/sys/module/$NAME" ] || $DELMOD "$NAME" || return
 	done

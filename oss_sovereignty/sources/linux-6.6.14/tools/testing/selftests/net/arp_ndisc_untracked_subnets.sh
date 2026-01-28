@@ -117,7 +117,7 @@ arp_test_gratuitous() {
 arp_test_gratuitous_combinations() {
 	arp_test_gratuitous 0
 	arp_test_gratuitous 1
-	arp_test_gratuitous 2 0 # Second entry indicates subnet or not
+	arp_test_gratuitous 2 0 
 	arp_test_gratuitous 2 1
 }
 cleanup_tcpdump() {
@@ -191,7 +191,7 @@ ndisc_test_untracked_combinations() {
 usage()
 {
 	cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
 	-t <test>       Test(s) to run (default: all)
 			(options: $TESTS)
 EOF

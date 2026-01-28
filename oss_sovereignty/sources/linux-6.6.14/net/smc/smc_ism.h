@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Shared Memory Communications Direct over ISM devices (SMC-D)
- *
- * SMC-D ISM device structure definitions.
- *
- * Copyright IBM Corp. 2018
- */
+
+
 
 #ifndef SMCD_ISM_H
 #define SMCD_ISM_H
@@ -15,17 +10,17 @@
 
 #include "smc.h"
 
-struct smcd_dev_list {	/* List of SMCD devices */
+struct smcd_dev_list {	
 	struct list_head list;
-	struct mutex mutex;	/* Protects list of devices */
+	struct mutex mutex;	
 };
 
-extern struct smcd_dev_list	smcd_dev_list;	/* list of smcd devices */
+extern struct smcd_dev_list	smcd_dev_list;	
 
-struct smc_ism_vlanid {			/* VLAN id set on ISM device */
+struct smc_ism_vlanid {			
 	struct list_head list;
-	unsigned short vlanid;		/* Vlan id */
-	refcount_t refcnt;		/* Reference count */
+	unsigned short vlanid;		
+	refcount_t refcnt;		
 };
 
 struct smcd_dev;

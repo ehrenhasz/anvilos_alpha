@@ -1,11 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef __ASM_GENERIC_FB_H_
 #define __ASM_GENERIC_FB_H_
 
-/*
- * Only include this header file from your architecture's <asm/fb.h>.
- */
+
 
 #include <linux/io.h>
 #include <linux/mm_types.h>
@@ -31,14 +29,7 @@ static inline int fb_is_primary_device(struct fb_info *info)
 }
 #endif
 
-/*
- * I/O helpers for the framebuffer. Prefer these functions over their
- * regular counterparts. The regular I/O functions provide in-order
- * access and swap bytes to/from little-endian ordering. Neither is
- * required for framebuffers. Instead, the helpers read and write
- * raw framebuffer data. Independent operations can be reordered for
- * improved performance.
- */
+
 
 #ifndef fb_readb
 static inline u8 fb_readb(const volatile void __iomem *addr)
@@ -132,4 +123,4 @@ static inline void fb_memset_io(volatile void __iomem *addr, int c, size_t n)
 #define fb_memset fb_memset_io
 #endif
 
-#endif /* __ASM_GENERIC_FB_H_ */
+#endif 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (C) 2018 Microchip Technology Inc. */
+
+
 
 #ifndef _LAN743X_H
 #define _LAN743X_H
@@ -11,14 +11,14 @@
 #define DRIVER_DESC "LAN743x PCIe Gigabit Ethernet Driver"
 #define DRIVER_NAME "lan743x"
 
-/* Register Definitions */
+
 #define ID_REV				(0x00)
 #define ID_REV_ID_MASK_			(0xFFFF0000)
 #define ID_REV_ID_LAN7430_		(0x74300000)
 #define ID_REV_ID_LAN7431_		(0x74310000)
 #define ID_REV_ID_LAN743X_		(0x74300000)
-#define ID_REV_ID_A011_			(0xA0110000)	// PCI11010
-#define ID_REV_ID_A041_			(0xA0410000)	// PCI11414
+#define ID_REV_ID_A011_			(0xA0110000)	
+#define ID_REV_ID_A041_			(0xA0410000)	
 #define ID_REV_ID_A0X1_			(0xA0010000)
 #define ID_REV_IS_VALID_CHIP_ID_(id_rev)	    \
 	((((id_rev) & 0xFFF00000) == ID_REV_ID_LAN743X_) || \
@@ -91,7 +91,7 @@
 
 #define E2P_DATA			(0x044)
 
-/* Hearthstone top level & System Reg Addresses */
+
 #define ETH_CTRL_REG_ADDR_BASE		(0x0000)
 #define ETH_SYS_REG_ADDR_BASE		(0x4000)
 #define CONFIG_REG_ADDR_BASE		(0x0000)
@@ -258,11 +258,11 @@
 #define MAC_WUF_MASK2(index)		(MAC_WUF_MASK2_BEGIN + (0x10 * (index)))
 #define MAC_WUF_MASK3(index)		(MAC_WUF_MASK3_BEGIN + (0x10 * (index)))
 
-/* offset 0x400 - 0x500, x may range from 0 to 32, for a total of 33 entries */
+
 #define RFE_ADDR_FILT_HI(x)		(0x400 + (8 * (x)))
 #define RFE_ADDR_FILT_HI_VALID_		BIT(31)
 
-/* offset 0x404 - 0x504, x may range from 0 to 32, for a total of 33 entries */
+
 #define RFE_ADDR_FILT_LO(x)		(0x404 + (8 * (x)))
 
 #define RFE_CTL				(0x508)
@@ -311,7 +311,7 @@
 #define SGMII_CTL_LINK_STATUS_SOURCE_	BIT(8)
 #define SGMII_CTL_SGMII_POWER_DN_	BIT(1)
 
-/* Vendor Specific SGMII MMD details */
+
 #define SR_VSMMD_PCS_ID1		0x0004
 #define SR_VSMMD_PCS_ID2		0x0005
 #define SR_VSMMD_STS			0x0008
@@ -748,7 +748,7 @@
 #define OTP_STATUS				(0x1030)
 #define OTP_STATUS_BUSY_			BIT(0)
 
-/* Hearthstone OTP block registers */
+
 #define HS_OTP_BLOCK_BASE			(ETH_SYS_REG_ADDR_BASE + \
 						 ETH_OTP_REG_ADDR_BASE)
 #define HS_OTP_PWR_DN				(HS_OTP_BLOCK_BASE + 0x0)
@@ -762,7 +762,7 @@
 #define HS_OTP_CMD_GO				(HS_OTP_BLOCK_BASE + 0x28)
 #define HS_OTP_STATUS				(HS_OTP_BLOCK_BASE + 0x30)
 
-/* MAC statistics registers */
+
 #define STAT_RX_FCS_ERRORS			(0x1200)
 #define STAT_RX_ALIGNMENT_ERRORS		(0x1204)
 #define STAT_RX_FRAGMENT_ERRORS			(0x1208)
@@ -816,7 +816,7 @@
 #define STAT_EEE_TX_LPI_TIME			(0x12E0)
 #define STAT_TX_COUNTER_ROLLOVER_STATUS		(0x12FC)
 
-/* End of Register definitions */
+
 
 #define LAN743X_MAX_RX_CHANNELS		(4)
 #define LAN743X_MAX_TX_CHANNELS		(1)
@@ -838,8 +838,8 @@ struct lan743x_adapter;
 #error Invalid PCI11X1X_USED_TX_CHANNELS
 #endif
 
-/* PCI */
-/* SMSC acquired EFAR late 1990's, MCHP acquired SMSC 2012 */
+
+
 #define PCI_VENDOR_ID_SMSC		PCI_VENDOR_ID_EFAR
 #define PCI_DEVICE_ID_SMSC_LAN7430	(0x7430)
 #define PCI_DEVICE_ID_SMSC_LAN7431	(0x7431)
@@ -848,7 +848,7 @@ struct lan743x_adapter;
 
 #define PCI_CONFIG_LENGTH		(0x1000)
 
-/* CSR */
+
 #define CSR_LENGTH					(0x2000)
 
 #define LAN743X_CSR_FLAG_IS_A0				BIT(0)
@@ -862,7 +862,7 @@ struct lan743x_csr {
 	u32 fpga_rev;
 };
 
-/* INTERRUPTS */
+
 typedef void(*lan743x_vector_handler)(void *context, u32 int_sts, u32 flags);
 
 #define LAN743X_VECTOR_FLAG_IRQ_SHARED			BIT(0)
@@ -910,13 +910,13 @@ struct lan743x_intr {
 
 #define LAN743X_MAX_FRAME_SIZE			(9 * 1024)
 
-/* PHY */
+
 struct lan743x_phy {
 	bool	fc_autoneg;
 	u8	fc_request_control;
 };
 
-/* TX */
+
 struct lan743x_tx_descriptor;
 struct lan743x_tx_buffer_info;
 
@@ -940,7 +940,7 @@ struct lan743x_tx {
 	size_t	ring_allocation_size;
 	struct lan743x_tx_descriptor *ring_cpu_ptr;
 	dma_addr_t ring_dma_ptr;
-	/* ring_lock: used to prevent concurrent access to tx ring */
+	
 	spinlock_t ring_lock;
 	u32		frame_flags;
 	u32		frame_first;
@@ -963,7 +963,7 @@ void lan743x_tx_set_timestamping_mode(struct lan743x_tx *tx,
 				      bool enable_timestamping,
 				      bool enable_onestep_sync);
 
-/* RX */
+
 struct lan743x_rx_descriptor;
 struct lan743x_rx_buffer_info;
 
@@ -991,7 +991,7 @@ struct lan743x_rx {
 	struct sk_buff *skb_head, *skb_tail;
 };
 
-/* SGMII Link Speed Duplex status */
+
 enum lan743x_sgmii_lsd {
 	POWER_DOWN = 0,
 	LINK_DOWN,
@@ -1028,12 +1028,12 @@ struct lan743x_adapter {
 	struct lan743x_rx       rx[LAN743X_USED_RX_CHANNELS];
 	bool			is_pci11x1x;
 	bool			is_sgmii_en;
-	/* protect ethernet syslock */
+	
 	spinlock_t		eth_syslock_spinlock;
 	bool			eth_syslock_en;
 	u32			eth_syslock_acquire_cnt;
 	struct mutex		sgmii_rw_lock;
-	/* SGMII Link Speed & Duplex status */
+	
 	enum			lan743x_sgmii_lsd sgmii_lsd;
 	u8			max_tx_channels;
 	u8			used_tx_channels;
@@ -1076,7 +1076,7 @@ struct lan743x_adapter {
 #define DMAC_CHANNEL_STATE_STOP_PENDING DMAC_CHANNEL_STATE_SET(1, 1)
 #define DMAC_CHANNEL_STATE_STOPPED      DMAC_CHANNEL_STATE_SET(0, 1)
 
-/* TX Descriptor bits */
+
 #define TX_DESC_DATA0_DTYPE_MASK_		(0xC0000000)
 #define TX_DESC_DATA0_DTYPE_DATA_		(0x00000000)
 #define TX_DESC_DATA0_DTYPE_EXT_		(0x40000000)
@@ -1114,9 +1114,9 @@ struct lan743x_tx_buffer_info {
 
 #define LAN743X_TX_RING_SIZE    (128)
 
-/* OWN bit is set. ie, Descs are owned by RX DMAC */
+
 #define RX_DESC_DATA0_OWN_                (0x00008000)
-/* OWN bit is clear. ie, Descs are owned by host */
+
 #define RX_DESC_DATA0_FS_                 (0x80000000)
 #define RX_DESC_DATA0_LS_                 (0x40000000)
 #define RX_DESC_DATA0_FRAME_LENGTH_MASK_  (0x3FFF0000)
@@ -1164,4 +1164,4 @@ void lan743x_mac_flow_ctrl_set_enables(struct lan743x_adapter *adapter,
 				       bool tx_enable, bool rx_enable);
 int lan743x_sgmii_read(struct lan743x_adapter *adapter, u8 mmd, u16 addr);
 
-#endif /* _LAN743X_H */
+#endif 

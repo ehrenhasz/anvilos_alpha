@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * ARIA Cipher 64-way parallel algorithm (AVX512)
- *
- * Copyright (c) 2022 Taehee Yoo <ap420073@gmail.com>
- *
- */
+
+
 
 #include <linux/linkage.h>
 #include <asm/frame.h>
 #include <asm/asm-offsets.h>
 #include <linux/cfi_types.h>
 
-/* register macros */
+
 #define CTX %rdi
 
 
@@ -113,7 +108,7 @@
 	transpose_4x4(a3, b3, c3, d3, b0, b1);		\
 	vmovdqu64 st0, b0;				\
 	vmovdqu64 st1, b1;				\
-	/* does not adjust output bytes inside vectors */
+	
 
 #define debyteslice_16x16b(a0, b0, c0, d0,		\
 			   a1, b1, c1, d1,		\
@@ -165,9 +160,9 @@
 	transpose_4x4(c3, d3, a3, b3, b0, b1);		\
 	vmovdqu64 st0, b0;				\
 	vmovdqu64 st1, b1;				\
-	/* does not adjust output bytes inside vectors */
+	
 
-/* load blocks to registers and apply pre-whitening */
+
 #define inpack16_pre(x0, x1, x2, x3,			\
 		     x4, x5, x6, x7,			\
 		     y0, y1, y2, y3,			\
@@ -190,7 +185,7 @@
 	vmovdqu64 (14 * 64)(rio), y6;			\
 	vmovdqu64 (15 * 64)(rio), y7;
 
-/* byteslice pre-whitened blocks and store to temporary memory */
+
 #define inpack16_post(x0, x1, x2, x3,			\
 		      x4, x5, x6, x7,			\
 		      y0, y1, y2, y3,			\
@@ -270,7 +265,7 @@
 		       y0, y1, y2, y3,			\
 		       y4, y5, y6, y7,			\
 		       t0, rk, round)			\
-	/* AddRoundKey */                               \
+	                               \
 	vpbroadcastb ((round * 16) + 3)(rk), t0;	\
 	vpxorq t0, x0, x0;				\
 	vpbroadcastb ((round * 16) + 2)(rk), t0;	\
@@ -365,13 +360,13 @@
 
 #define aria_diff_m(x0, x1, x2, x3,			\
 		    t0, t1, t2, t3)			\
-	/* T = rotr32(X, 8); */				\
-	/* X ^= T */					\
+					\
+						\
 	vpxorq x0, x3, t0;				\
 	vpxorq x1, x0, t1;				\
 	vpxorq x2, x1, t2;				\
 	vpxorq x3, x2, t3;				\
-	/* X = T ^ rotr(X, 16); */			\
+				\
 	vpxorq t2, x0, x0;				\
 	vpxorq x1, t3, t3;				\
 	vpxorq t0, x2, x2;				\
@@ -382,37 +377,37 @@
 		       x4, x5, x6, x7,			\
 		       y0, y1, y2, y3,			\
 		       y4, y5, y6, y7)			\
-	/* t1 ^= t2; */					\
+						\
 	vpxorq y0, x4, x4;				\
 	vpxorq y1, x5, x5;				\
 	vpxorq y2, x6, x6;				\
 	vpxorq y3, x7, x7;				\
 							\
-	/* t2 ^= t3; */					\
+						\
 	vpxorq y4, y0, y0;				\
 	vpxorq y5, y1, y1;				\
 	vpxorq y6, y2, y2;				\
 	vpxorq y7, y3, y3;				\
 							\
-	/* t0 ^= t1; */					\
+						\
 	vpxorq x4, x0, x0;				\
 	vpxorq x5, x1, x1;				\
 	vpxorq x6, x2, x2;				\
 	vpxorq x7, x3, x3;				\
 							\
-	/* t3 ^= t1; */					\
+						\
 	vpxorq x4, y4, y4;				\
 	vpxorq x5, y5, y5;				\
 	vpxorq x6, y6, y6;				\
 	vpxorq x7, y7, y7;				\
 							\
-	/* t2 ^= t0; */					\
+						\
 	vpxorq x0, y0, y0;				\
 	vpxorq x1, y1, y1;				\
 	vpxorq x2, y2, y2;				\
 	vpxorq x3, y3, y3;				\
 							\
-	/* t1 ^= t2; */					\
+						\
 	vpxorq y0, x4, x4;				\
 	vpxorq y1, x5, x5;				\
 	vpxorq y2, x6, x6;				\
@@ -444,14 +439,7 @@
 		       x4, x5, x6, x7,			\
 		       y0, y1, y2, y3,			\
 		       y4, y5, y6, y7);			\
-	/* aria_diff_byte()				\
-	 * T3 = ABCD -> BADC				\
-	 * T3 = y4, y5, y6, y7 -> y5, y4, y7, y6	\
-	 * T0 = ABCD -> CDAB				\
-	 * T0 = x0, x1, x2, x3 -> x2, x3, x0, x1	\
-	 * T1 = ABCD -> DCBA				\
-	 * T1 = x4, x5, x6, x7 -> x7, x6, x5, x4	\
-	 */						\
+							\
 	aria_diff_word(x2, x3, x0, x1,			\
 		       x7, x6, x5, x4,			\
 		       y0, y1, y2, y3,			\
@@ -484,14 +472,7 @@
 		       x4, x5, x6, x7,			\
 		       y0, y1, y2, y3,			\
 		       y4, y5, y6, y7);			\
-	/* aria_diff_byte()				\
-	 * T1 = ABCD -> BADC				\
-	 * T1 = x4, x5, x6, x7 -> x5, x4, x7, x6	\
-	 * T2 = ABCD -> CDAB				\
-	 * T2 = y0, y1, y2, y3, -> y2, y3, y0, y1	\
-	 * T3 = ABCD -> DCBA				\
-	 * T3 = y4, y5, y6, y7 -> y7, y6, y5, y4	\
-	 */						\
+							\
 	aria_diff_word(x0, x1, x2, x3,			\
 		       x5, x4, x7, x6,			\
 		       y2, y3, y0, y1,			\
@@ -550,14 +531,14 @@
 .Lcounter1111_hi:
 	.quad 0, 1
 
-/* For CTR-mode IV byteswap */
+
 .Lbswap128_mask:
 	.byte 0x0f, 0x0e, 0x0d, 0x0c, 0x0b, 0x0a, 0x09, 0x08
 	.byte 0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00
 
 .section	.rodata.cst8, "aM", @progbits, 8
 .align 8
-/* AES affine: */
+
 #define tf_aff_const BV8(1, 1, 0, 0, 0, 1, 1, 0)
 .Ltf_aff_bitmatrix:
 	.quad BM8X8(BV8(1, 0, 0, 0, 1, 1, 1, 1),
@@ -569,7 +550,7 @@
 		    BV8(0, 0, 1, 1, 1, 1, 1, 0),
 		    BV8(0, 0, 0, 1, 1, 1, 1, 1))
 
-/* AES inverse affine: */
+
 #define tf_inv_const BV8(1, 0, 1, 0, 0, 0, 0, 0)
 .Ltf_inv_bitmatrix:
 	.quad BM8X8(BV8(0, 0, 1, 0, 0, 1, 0, 1),
@@ -581,7 +562,7 @@
 		    BV8(1, 0, 0, 1, 0, 1, 0, 0),
 		    BV8(0, 1, 0, 0, 1, 0, 1, 0))
 
-/* S2: */
+
 #define tf_s2_const BV8(0, 1, 0, 0, 0, 1, 1, 1)
 .Ltf_s2_bitmatrix:
 	.quad BM8X8(BV8(0, 1, 0, 1, 0, 1, 1, 1),
@@ -593,7 +574,7 @@
 		    BV8(0, 1, 1, 0, 0, 0, 1, 1),
 		    BV8(1, 1, 1, 1, 0, 1, 1, 0))
 
-/* X2: */
+
 #define tf_x2_const BV8(0, 0, 1, 1, 0, 1, 0, 0)
 .Ltf_x2_bitmatrix:
 	.quad BM8X8(BV8(0, 0, 0, 1, 1, 0, 0, 0),
@@ -605,7 +586,7 @@
 		    BV8(1, 0, 1, 1, 1, 1, 0, 1),
 		    BV8(1, 0, 0, 1, 0, 0, 1, 1))
 
-/* Identity matrix: */
+
 .Ltf_id_bitmatrix:
 	.quad BM8X8(BV8(1, 0, 0, 0, 0, 0, 0, 0),
 		    BV8(0, 1, 0, 0, 0, 0, 0, 0),
@@ -618,12 +599,7 @@
 
 .text
 SYM_FUNC_START_LOCAL(__aria_gfni_avx512_crypt_64way)
-	/* input:
-	 *      %r9: rk
-	 *      %rsi: dst
-	 *      %rdx: src
-	 *      %zmm0..%zmm15: byte-sliced blocks
-	 */
+	
 
 	FRAME_BEGIN
 
@@ -780,11 +756,7 @@ SYM_FUNC_START_LOCAL(__aria_gfni_avx512_crypt_64way)
 SYM_FUNC_END(__aria_gfni_avx512_crypt_64way)
 
 SYM_TYPED_FUNC_START(aria_gfni_avx512_encrypt_64way)
-	/* input:
-	 *      %rdi: ctx, CTX
-	 *      %rsi: dst
-	 *      %rdx: src
-	 */
+	
 
 	FRAME_BEGIN
 
@@ -805,11 +777,7 @@ SYM_TYPED_FUNC_START(aria_gfni_avx512_encrypt_64way)
 SYM_FUNC_END(aria_gfni_avx512_encrypt_64way)
 
 SYM_TYPED_FUNC_START(aria_gfni_avx512_decrypt_64way)
-	/* input:
-	 *      %rdi: ctx, CTX
-	 *      %rsi: dst
-	 *      %rdx: src
-	 */
+	
 
 	FRAME_BEGIN
 
@@ -830,13 +798,7 @@ SYM_TYPED_FUNC_START(aria_gfni_avx512_decrypt_64way)
 SYM_FUNC_END(aria_gfni_avx512_decrypt_64way)
 
 SYM_FUNC_START_LOCAL(__aria_gfni_avx512_ctr_gen_keystream_64way)
-	/* input:
-	 *      %rdi: ctx
-	 *      %rsi: dst
-	 *      %rdx: src
-	 *      %rcx: keystream
-	 *      %r8: iv (big endian, 128bit)
-	 */
+	
 
 	FRAME_BEGIN
 
@@ -847,7 +809,7 @@ SYM_FUNC_START_LOCAL(__aria_gfni_avx512_ctr_gen_keystream_64way)
 	vbroadcasti64x2 .Lcounter16161616_lo (%rip), %zmm24;
 	vbroadcasti64x2 .Lcounter1111_hi (%rip), %zmm25;
 
-	/* load IV and byteswap */
+	
 	movq 8(%r8), %r11;
 	movq (%r8), %r10;
 	bswapq %r11;
@@ -855,50 +817,50 @@ SYM_FUNC_START_LOCAL(__aria_gfni_avx512_ctr_gen_keystream_64way)
 	vbroadcasti64x2 (%r8), %zmm20;
 	vpshufb %zmm19, %zmm20, %zmm20;
 
-	/* check need for handling 64-bit overflow and carry */
+	
 	cmpq $(0xffffffffffffffff - 64), %r11;
 	ja .Lload_ctr_carry;
 
-	/* construct IVs */
-	vpaddq %zmm21, %zmm20, %zmm0;  /* +0:+1:+2:+3 */
-	vpaddq %zmm22, %zmm0, %zmm1; /* +4:+5:+6:+7 */
-	vpaddq %zmm23, %zmm0, %zmm2; /* +8:+9:+10:+11 */
-	vpaddq %zmm23, %zmm1, %zmm3; /* +12:+13:+14:+15 */
-	vpaddq %zmm24, %zmm0, %zmm4; /* +16... */
-	vpaddq %zmm24, %zmm1, %zmm5; /* +20... */
-	vpaddq %zmm24, %zmm2, %zmm6; /* +24... */
-	vpaddq %zmm24, %zmm3, %zmm7; /* +28... */
-	vpaddq %zmm24, %zmm4, %zmm8; /* +32... */
-	vpaddq %zmm24, %zmm5, %zmm9; /* +36... */
-	vpaddq %zmm24, %zmm6, %zmm10; /* +40... */
-	vpaddq %zmm24, %zmm7, %zmm11; /* +44... */
-	vpaddq %zmm24, %zmm8, %zmm12; /* +48... */
-	vpaddq %zmm24, %zmm9, %zmm13; /* +52... */
-	vpaddq %zmm24, %zmm10, %zmm14; /* +56... */
-	vpaddq %zmm24, %zmm11, %zmm15; /* +60... */
+	
+	vpaddq %zmm21, %zmm20, %zmm0;  
+	vpaddq %zmm22, %zmm0, %zmm1; 
+	vpaddq %zmm23, %zmm0, %zmm2; 
+	vpaddq %zmm23, %zmm1, %zmm3; 
+	vpaddq %zmm24, %zmm0, %zmm4; 
+	vpaddq %zmm24, %zmm1, %zmm5; 
+	vpaddq %zmm24, %zmm2, %zmm6; 
+	vpaddq %zmm24, %zmm3, %zmm7; 
+	vpaddq %zmm24, %zmm4, %zmm8; 
+	vpaddq %zmm24, %zmm5, %zmm9; 
+	vpaddq %zmm24, %zmm6, %zmm10; 
+	vpaddq %zmm24, %zmm7, %zmm11; 
+	vpaddq %zmm24, %zmm8, %zmm12; 
+	vpaddq %zmm24, %zmm9, %zmm13; 
+	vpaddq %zmm24, %zmm10, %zmm14; 
+	vpaddq %zmm24, %zmm11, %zmm15; 
 	jmp .Lload_ctr_done;
 
 .Lload_ctr_carry:
-	/* construct IVs */
-	add_le128(%zmm0, %zmm20, %zmm21, %zmm25);  /* +0:+1:+2:+3 */
-	add_le128(%zmm1, %zmm0, %zmm22, %zmm25); /* +4:+5:+6:+7 */
-	add_le128(%zmm2, %zmm0, %zmm23, %zmm25); /* +8:+9:+10:+11 */
-	add_le128(%zmm3, %zmm1, %zmm23, %zmm25); /* +12:+13:+14:+15 */
-	add_le128(%zmm4, %zmm0, %zmm24, %zmm25); /* +16... */
-	add_le128(%zmm5, %zmm1, %zmm24, %zmm25); /* +20... */
-	add_le128(%zmm6, %zmm2, %zmm24, %zmm25); /* +24... */
-	add_le128(%zmm7, %zmm3, %zmm24, %zmm25); /* +28... */
-	add_le128(%zmm8, %zmm4, %zmm24, %zmm25); /* +32... */
-	add_le128(%zmm9, %zmm5, %zmm24, %zmm25); /* +36... */
-	add_le128(%zmm10, %zmm6, %zmm24, %zmm25); /* +40... */
-	add_le128(%zmm11, %zmm7, %zmm24, %zmm25); /* +44... */
-	add_le128(%zmm12, %zmm8, %zmm24, %zmm25); /* +48... */
-	add_le128(%zmm13, %zmm9, %zmm24, %zmm25); /* +52... */
-	add_le128(%zmm14, %zmm10, %zmm24, %zmm25); /* +56... */
-	add_le128(%zmm15, %zmm11, %zmm24, %zmm25); /* +60... */
+	
+	add_le128(%zmm0, %zmm20, %zmm21, %zmm25);  
+	add_le128(%zmm1, %zmm0, %zmm22, %zmm25); 
+	add_le128(%zmm2, %zmm0, %zmm23, %zmm25); 
+	add_le128(%zmm3, %zmm1, %zmm23, %zmm25); 
+	add_le128(%zmm4, %zmm0, %zmm24, %zmm25); 
+	add_le128(%zmm5, %zmm1, %zmm24, %zmm25); 
+	add_le128(%zmm6, %zmm2, %zmm24, %zmm25); 
+	add_le128(%zmm7, %zmm3, %zmm24, %zmm25); 
+	add_le128(%zmm8, %zmm4, %zmm24, %zmm25); 
+	add_le128(%zmm9, %zmm5, %zmm24, %zmm25); 
+	add_le128(%zmm10, %zmm6, %zmm24, %zmm25); 
+	add_le128(%zmm11, %zmm7, %zmm24, %zmm25); 
+	add_le128(%zmm12, %zmm8, %zmm24, %zmm25); 
+	add_le128(%zmm13, %zmm9, %zmm24, %zmm25); 
+	add_le128(%zmm14, %zmm10, %zmm24, %zmm25); 
+	add_le128(%zmm15, %zmm11, %zmm24, %zmm25); 
 
 .Lload_ctr_done:
-	/* Byte-swap IVs and update counter. */
+	
 	addq $64, %r11;
 	adcq $0, %r10;
 	vpshufb %zmm19, %zmm15, %zmm15;
@@ -927,13 +889,7 @@ SYM_FUNC_START_LOCAL(__aria_gfni_avx512_ctr_gen_keystream_64way)
 SYM_FUNC_END(__aria_gfni_avx512_ctr_gen_keystream_64way)
 
 SYM_TYPED_FUNC_START(aria_gfni_avx512_ctr_crypt_64way)
-	/* input:
-	 *      %rdi: ctx
-	 *      %rsi: dst
-	 *      %rdx: src
-	 *      %rcx: keystream
-	 *      %r8: iv (big endian, 128bit)
-	 */
+	
 	FRAME_BEGIN
 
 	call __aria_gfni_avx512_ctr_gen_keystream_64way

@@ -3,4 +3,4 @@
 
 extern int is_local(const char *user);
 
-#endif /* UTIL_LINUX_LOGIN_ISLOCAL_H */
+#endif 

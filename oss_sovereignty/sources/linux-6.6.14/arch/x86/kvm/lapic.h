@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __KVM_X86_LAPIC_H
 #define __KVM_X86_LAPIC_H
 
@@ -45,14 +45,14 @@ enum lapic_lvt_entry {
 
 struct kvm_timer {
 	struct hrtimer timer;
-	s64 period; 				/* unit: ns */
+	s64 period; 				
 	ktime_t target_expiration;
 	u32 timer_mode;
 	u32 timer_mode_mask;
 	u64 tscdeadline;
 	u64 expired_tscdeadline;
 	u32 timer_advance_ns;
-	atomic_t pending;			/* accumulated triggered timers */
+	atomic_t pending;			
 	bool hv_timer_in_use;
 };
 
@@ -66,15 +66,11 @@ struct kvm_lapic {
 	bool sw_enabled;
 	bool irr_pending;
 	bool lvt0_in_nmi_mode;
-	/* Number of bits set in ISR. */
+	
 	s16 isr_count;
-	/* The highest vector set in ISR; if -1 - invalid, must scan ISR. */
+	
 	int highest_isr_cache;
-	/**
-	 * APIC register page.  The layout matches the register layout seen by
-	 * the guest 1:1, because it is accessed by the vmx microcode.
-	 * Note: Only one register, the TPR, is used by the microcode.
-	 */
+	
 	void *regs;
 	gpa_t vapic_addr;
 	struct gfn_to_hva_cache vapic_cache;
@@ -164,10 +160,7 @@ static inline void kvm_lapic_set_vector(int vec, void *bitmap)
 static inline void kvm_lapic_set_irr(int vec, struct kvm_lapic *apic)
 {
 	kvm_lapic_set_vector(vec, apic->regs + APIC_IRR);
-	/*
-	 * irr_pending must be true if any interrupt is pending; set it after
-	 * APIC_IRR to avoid race with apic_clear_irr
-	 */
+	
 	apic->irr_pending = true;
 }
 

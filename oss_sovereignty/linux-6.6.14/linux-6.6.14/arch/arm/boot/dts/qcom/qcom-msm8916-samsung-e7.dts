@@ -1,2 +1,0 @@
-#include "arm64/qcom/msm8916-samsung-e7.dts"
-#include "qcom-msm8916-smp.dtsi"

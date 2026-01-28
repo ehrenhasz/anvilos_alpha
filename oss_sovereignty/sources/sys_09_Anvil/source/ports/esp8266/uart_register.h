@@ -1,13 +1,10 @@
-// Generated at 2012-07-03 18:44:06
-/*
- *  Copyright (c) 2010 - 2011 Espressif System
- *
- */
+
+
 
 #ifndef UART_REGISTER_H_INCLUDED
 #define UART_REGISTER_H_INCLUDED
 #define REG_UART_BASE(i)  (0x60000000 + (i) * 0xf00)
-// version value:32'h062000
+
 
 #define UART_FIFO(i)                          (REG_UART_BASE(i) + 0x0)
 #define UART_RXFIFO_RD_BYTE 0x000000FF
@@ -125,4 +122,4 @@
 
 #define UART_DATE(i)                          (REG_UART_BASE(i) + 0x78)
 #define UART_ID(i)                            (REG_UART_BASE(i) + 0x7C)
-#endif // UART_REGISTER_H_INCLUDED
+#endif 

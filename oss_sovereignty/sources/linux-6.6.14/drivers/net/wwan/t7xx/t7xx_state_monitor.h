@@ -1,18 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *
- * Contributors:
- *  Eliot Lee <eliot.lee@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
 
 #ifndef __T7XX_MONITOR_H__
 #define __T7XX_MONITOR_H__
@@ -90,11 +76,11 @@ struct t7xx_fsm_ctl {
 	wait_queue_head_t	command_wq;
 	wait_queue_head_t	event_wq;
 	wait_queue_head_t	async_hk_wq;
-	spinlock_t		event_lock;		/* Protects event queue */
-	spinlock_t		command_lock;		/* Protects command queue */
+	spinlock_t		event_lock;		
+	spinlock_t		command_lock;		
 	struct task_struct	*fsm_thread;
 	bool			exp_flg;
-	spinlock_t		notifier_lock;		/* Protects notifier list */
+	spinlock_t		notifier_lock;		
 	struct list_head	notifier_list;
 };
 
@@ -134,4 +120,4 @@ unsigned int t7xx_fsm_get_ctl_state(struct t7xx_fsm_ctl *ctl);
 void t7xx_fsm_notifier_register(struct t7xx_modem *md, struct t7xx_fsm_notifier *notifier);
 void t7xx_fsm_notifier_unregister(struct t7xx_modem *md, struct t7xx_fsm_notifier *notifier);
 
-#endif /* __T7XX_MONITOR_H__ */
+#endif 

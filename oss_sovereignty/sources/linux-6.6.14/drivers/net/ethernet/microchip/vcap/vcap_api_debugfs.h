@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
- * Microchip VCAP API
- */
+
+
 
 #ifndef __VCAP_API_DEBUGFS__
 #define __VCAP_API_DEBUGFS__
@@ -18,7 +16,7 @@ void vcap_port_debugfs(struct device *dev, struct dentry *parent,
 		       struct vcap_control *vctrl,
 		       struct net_device *ndev);
 
-/* Create a debugFS entry for a vcap instance */
+
 struct dentry *vcap_debugfs(struct device *dev, struct dentry *parent,
 			    struct vcap_control *vctrl);
 
@@ -38,4 +36,4 @@ static inline struct dentry *vcap_debugfs(struct device *dev,
 }
 
 #endif
-#endif /* __VCAP_API_DEBUGFS__ */
+#endif 

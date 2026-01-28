@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * AEGIS common definitions
- *
- * Copyright (c) 2018 Ondrej Mosnacek <omosnacek@gmail.com>
- * Copyright (c) 2018 Red Hat, Inc. All rights reserved.
- */
+
+
 
 #ifndef _CRYPTO_AEGIS_H
 #define _CRYPTO_AEGIS_H
@@ -76,4 +71,4 @@ static __always_inline void crypto_aegis_aesenc(union aegis_block *dst,
 	dst->words32[3] = cpu_to_le32(d3) ^ key->words32[3];
 }
 
-#endif /* _CRYPTO_AEGIS_H */
+#endif 

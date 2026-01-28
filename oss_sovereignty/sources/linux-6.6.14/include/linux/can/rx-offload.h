@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * linux/can/rx-offload.h
- *
- * Copyright (c) 2014 David Jander, Protonic Holland
- * Copyright (c) 2014-2017, 2023 Pengutronix, Marc Kleine-Budde <kernel@pengutronix.de>
- */
+
+
 
 #ifndef _CAN_RX_OFFLOAD_H
 #define _CAN_RX_OFFLOAD_H
@@ -62,4 +57,4 @@ static inline void can_rx_offload_disable(struct can_rx_offload *offload)
 	napi_disable(&offload->napi);
 }
 
-#endif /* !_CAN_RX_OFFLOAD_H */
+#endif 

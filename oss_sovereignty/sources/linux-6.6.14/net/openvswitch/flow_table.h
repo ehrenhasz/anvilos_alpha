@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2007-2013 Nicira, Inc.
- */
+
+
 
 #ifndef FLOW_TABLE_H
 #define FLOW_TABLE_H 1
@@ -29,7 +27,7 @@ struct mask_cache_entry {
 
 struct mask_cache {
 	struct rcu_head rcu;
-	u32 cache_size;  /* Must be ^2 value. */
+	u32 cache_size;  
 	struct mask_cache_entry __percpu *mask_cache;
 };
 
@@ -112,4 +110,4 @@ void table_instance_flow_flush(struct flow_table *table,
 			       struct table_instance *ti,
 			       struct table_instance *ufid_ti);
 
-#endif /* flow_table.h */
+#endif 

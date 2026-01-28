@@ -1,8 +1,0 @@
-/dts-v1/;
-#include "r8a7744-iwg20m.dtsi"
-#include "iwg20d-q7-common.dtsi"
-#include "iwg20d-q7-dbcm-ca.dtsi"
-/ {
-	model = "iWave Systems RZ/G1N Qseven development platform with camera add-on";
-	compatible = "iwave,g20d", "iwave,g20m", "renesas,r8a7744";
-};

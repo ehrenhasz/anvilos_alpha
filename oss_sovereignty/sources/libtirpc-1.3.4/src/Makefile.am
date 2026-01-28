@@ -1,9 +1,9 @@
-## Process this file with automake to create Makefile.in.
 
-## NOTE: this file doesn't really try to be complete.  In particular
-## `make dist' won't work at all.  We're just aiming to get the
-## program built.  We also don't bother trying to assemble code, or
-## anything like that.
+
+
+
+
+
 
 noinst_HEADERS = rpc_com.h debug.h
 
@@ -30,14 +30,14 @@ if AUTHDES
 libtirpc_la_SOURCES += auth_des.c  authdes_prot.c  des_crypt.c  des_impl.c  des_soft.c  svc_auth_des.c
 endif
 
-## XDR
+
 libtirpc_la_SOURCES += xdr.c xdr_rec.c xdr_array.c xdr_float.c xdr_mem.c xdr_reference.c xdr_stdio.c xdr_sizeof.c
 
 if SYMVERS
     libtirpc_la_LDFLAGS += -Wl,--version-script=$(srcdir)/libtirpc.map
 endif
 
-## Secure-RPC
+
 if GSS
     libtirpc_la_SOURCES += auth_gss.c authgss_prot.c svc_auth_gss.c \
 			   rpc_gss_utils.c

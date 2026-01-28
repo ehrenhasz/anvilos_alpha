@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ci_func:  # names are functions in ci.sh
+        ci_func:  
           - stm32_pyb_build
           - stm32_nucleo_build
           - stm32_misc_build

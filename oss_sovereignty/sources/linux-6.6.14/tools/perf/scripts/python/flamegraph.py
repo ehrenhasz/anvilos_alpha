@@ -19,7 +19,7 @@ minimal_html = """<head>
   // Note, options is unused.
   const options = [/** @options_json **/];
   var chart = flamegraph();
-  d3.select("#chart")
+  d3.select("
         .datum(stacks[0])
         .call(chart);
   </script>
@@ -84,7 +84,7 @@ class FlameGraphCLI:
         try:
             output = subprocess.check_output(["perf", "report", "--header-only"])
             return output.decode("utf-8")
-        except Exception as err:  # pylint: disable=broad-except
+        except Exception as err:  
             print("Error reading report header: {}".format(err), file=sys.stderr)
             return ""
     def trace_end(self):

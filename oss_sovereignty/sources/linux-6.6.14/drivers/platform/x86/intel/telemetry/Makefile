@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Intel x86 Platform Specific Drivers
-#
+
+
+
+
 
 intel_telemetry_core-y			:= core.o
 obj-$(CONFIG_INTEL_TELEMETRY)		+= intel_telemetry_core.o

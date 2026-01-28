@@ -1,14 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2014 QLogic Corporation
- */
+
+
 
 #include "qla_def.h"
 
-/*
- * Firmware Dump structure definition
- */
+
 
 struct qla2300_fw_dump {
 	__be16 hccr;
@@ -232,7 +227,7 @@ struct qla2xxx_fce_chain {
 	__be32	eregs[8];
 };
 
-/* used by exchange off load and extended login offload */
+
 struct qla2xxx_offld_chain {
 	__be32	type;
 	__be32	chain_size;
@@ -310,14 +305,10 @@ struct qla2xxx_fw_dump {
 #define QL_MSGHDR "qla2xxx"
 #define QL_DBG_DEFAULT1_MASK    0x1e600000
 
-#define ql_log_fatal		0 /* display fatal errors */
-#define ql_log_warn		1 /* display critical errors */
-#define ql_log_info		2 /* display all recovered errors */
-#define ql_log_all		3 /* This value is only used by ql_errlev.
-				   * No messages will use this value.
-				   * This should be always highest value
-				   * as compared to other log levels.
-				   */
+#define ql_log_fatal		0 
+#define ql_log_warn		1 
+#define ql_log_info		2 
+#define ql_log_all		3 
 
 extern uint ql_errlev;
 
@@ -337,38 +328,30 @@ ql_log_pci(uint, struct pci_dev *pdev, uint, const char *fmt, ...);
 void __attribute__((format (printf, 4, 5)))
 ql_log_qp(uint32_t, struct qla_qpair *, int32_t, const char *fmt, ...);
 
-/* Debug Levels */
-/* The 0x40000000 is the max value any debug level can have
- * as ql2xextended_error_logging is of type signed int
- */
-#define ql_dbg_init	0x40000000 /* Init Debug */
-#define ql_dbg_mbx	0x20000000 /* MBX Debug */
-#define ql_dbg_disc	0x10000000 /* Device Discovery Debug */
-#define ql_dbg_io	0x08000000 /* IO Tracing Debug */
-#define ql_dbg_dpc	0x04000000 /* DPC Thead Debug */
-#define ql_dbg_async	0x02000000 /* Async events Debug */
-#define ql_dbg_timer	0x01000000 /* Timer Debug */
-#define ql_dbg_user	0x00800000 /* User Space Interations Debug */
-#define ql_dbg_taskm	0x00400000 /* Task Management Debug */
-#define ql_dbg_aer	0x00200000 /* AER/EEH Debug */
-#define ql_dbg_multiq	0x00100000 /* MultiQ Debug */
-#define ql_dbg_p3p	0x00080000 /* P3P specific Debug */
-#define ql_dbg_vport	0x00040000 /* Virtual Port Debug */
-#define ql_dbg_buffer	0x00020000 /* For dumping the buffer/regs */
-#define ql_dbg_misc	0x00010000 /* For dumping everything that is not
-				    * not covered by upper categories
-				    */
-#define ql_dbg_verbose	0x00008000 /* More verbosity for each level
-				    * This is to be used with other levels where
-				    * more verbosity is required. It might not
-				    * be applicable to all the levels.
-				    */
-#define ql_dbg_tgt	0x00004000 /* Target mode */
-#define ql_dbg_tgt_mgt	0x00002000 /* Target mode management */
-#define ql_dbg_tgt_tmr	0x00001000 /* Target mode task management */
-#define ql_dbg_tgt_dif  0x00000800 /* Target mode dif */
-#define ql_dbg_edif	0x00000400 /* edif and purex debug */
-#define ql_dbg_unsol	0x00000100 /* Unsolicited path debug */
+
+
+#define ql_dbg_init	0x40000000 
+#define ql_dbg_mbx	0x20000000 
+#define ql_dbg_disc	0x10000000 
+#define ql_dbg_io	0x08000000 
+#define ql_dbg_dpc	0x04000000 
+#define ql_dbg_async	0x02000000 
+#define ql_dbg_timer	0x01000000 
+#define ql_dbg_user	0x00800000 
+#define ql_dbg_taskm	0x00400000 
+#define ql_dbg_aer	0x00200000 
+#define ql_dbg_multiq	0x00100000 
+#define ql_dbg_p3p	0x00080000 
+#define ql_dbg_vport	0x00040000 
+#define ql_dbg_buffer	0x00020000 
+#define ql_dbg_misc	0x00010000 
+#define ql_dbg_verbose	0x00008000 
+#define ql_dbg_tgt	0x00004000 
+#define ql_dbg_tgt_mgt	0x00002000 
+#define ql_dbg_tgt_tmr	0x00001000 
+#define ql_dbg_tgt_dif  0x00000800 
+#define ql_dbg_edif	0x00000400 
+#define ql_dbg_unsol	0x00000100 
 
 extern int qla27xx_dump_mpi_ram(struct qla_hw_data *, uint32_t, uint32_t *,
 	uint32_t, void **);
@@ -396,7 +379,7 @@ ql_mask_match_ext(uint level, int *log_tunable)
 	return (level & *log_tunable) == level;
 }
 
-/* Assumes local variable pbuf and pbuf_ready present. */
+
 #define ql_ktrace(dbg_msg, level, pbuf, pdev, vha, id, fmt) do {	\
 	struct va_format _vaf;						\
 	va_list _va;							\
@@ -426,6 +409,6 @@ ql_mask_match_ext(uint level, int *log_tunable)
 #ifdef QLA_ENABLE_KERNEL_TRACING
 #define QLA_TRACE_ENABLE(_tr) \
 	trace_array_set_clr_event(_tr, "qla", NULL, true)
-#else /* QLA_ENABLE_KERNEL_TRACING */
+#else 
 #define QLA_TRACE_ENABLE(_tr)
-#endif /* QLA_ENABLE_KERNEL_TRACING */
+#endif 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright (c) 2021, Microsoft Corporation. */
+
+
 
 #ifndef _SHM_CHANNEL_H
 #define _SHM_CHANNEL_H
@@ -18,4 +18,4 @@ int mana_smc_setup_hwc(struct shm_channel *sc, bool reset_vf, u64 eq_addr,
 
 int mana_smc_teardown_hwc(struct shm_channel *sc, bool reset_vf);
 
-#endif /* _SHM_CHANNEL_H */
+#endif 

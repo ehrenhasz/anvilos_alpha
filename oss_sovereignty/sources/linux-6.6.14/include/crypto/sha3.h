@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Common values for SHA-3 algorithms
- */
+
+
 #ifndef __CRYPTO_SHA3_H__
 #define __CRYPTO_SHA3_H__
 

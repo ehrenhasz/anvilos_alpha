@@ -1,4 +1,4 @@
-if [ $# -ne 1 ] ; then
+if [ $
 	linux_header_dir=tools/include/uapi/linux
 else
 	linux_header_dir=$1

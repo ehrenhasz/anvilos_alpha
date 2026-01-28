@@ -11,4 +11,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* R_AGT_CFG_H_ */
+#endif 

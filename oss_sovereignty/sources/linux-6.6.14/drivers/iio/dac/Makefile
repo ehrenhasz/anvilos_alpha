@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for industrial I/O DAC drivers
-#
 
-# When adding new entries keep the list in alphabetical order
+
+
+
+
+
 obj-$(CONFIG_AD3552R) += ad3552r.o
 obj-$(CONFIG_AD5360) += ad5360.o
 obj-$(CONFIG_AD5380) += ad5380.o

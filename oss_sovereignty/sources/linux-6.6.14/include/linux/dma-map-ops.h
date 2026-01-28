@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header is for implementations of dma_map_ops and related code.
- * It should not be included in drivers just using the DMA API.
- */
+
+
 #ifndef _LINUX_DMA_MAP_OPS_H
 #define _LINUX_DMA_MAP_OPS_H
 
@@ -12,12 +9,7 @@
 
 struct cma;
 
-/*
- * Values for struct dma_map_ops.flags:
- *
- * DMA_F_PCI_P2PDMA_SUPPORTED: Indicates the dma_map_ops implementation can
- * handle PCI P2PDMA pages in the map_sg/unmap_sg operation.
- */
+
 #define DMA_F_PCI_P2PDMA_SUPPORTED     (1 << 0)
 
 struct dma_map_ops {
@@ -51,11 +43,7 @@ struct dma_map_ops {
 	void (*unmap_page)(struct device *dev, dma_addr_t dma_handle,
 			size_t size, enum dma_data_direction dir,
 			unsigned long attrs);
-	/*
-	 * map_sg should return a negative error code on error. See
-	 * dma_map_sgtable() for a list of appropriate error codes
-	 * and their meanings.
-	 */
+	
 	int (*map_sg)(struct device *dev, struct scatterlist *sg, int nents,
 			enum dma_data_direction dir, unsigned long attrs);
 	void (*unmap_sg)(struct device *dev, struct scatterlist *sg, int nents,
@@ -99,7 +87,7 @@ static inline void set_dma_ops(struct device *dev,
 {
 	dev->dma_ops = dma_ops;
 }
-#else /* CONFIG_DMA_OPS */
+#else 
 static inline const struct dma_map_ops *get_dma_ops(struct device *dev)
 {
 	return NULL;
@@ -108,7 +96,7 @@ static inline void set_dma_ops(struct device *dev,
 			       const struct dma_map_ops *dma_ops)
 {
 }
-#endif /* CONFIG_DMA_OPS */
+#endif 
 
 #ifdef CONFIG_DMA_CMA
 extern struct cma *dma_contiguous_default_area;
@@ -132,7 +120,7 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp);
 void dma_free_contiguous(struct device *dev, struct page *page, size_t size);
 
 void dma_contiguous_early_fixup(phys_addr_t base, unsigned long size);
-#else /* CONFIG_DMA_CMA */
+#else 
 static inline struct cma *dev_get_cma_area(struct device *dev)
 {
 	return NULL;
@@ -156,7 +144,7 @@ static inline bool dma_release_from_contiguous(struct device *dev,
 {
 	return false;
 }
-/* Use fallback alloc() and free() when CONFIG_DMA_CMA=n */
+
 static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
 		gfp_t gfp)
 {
@@ -167,7 +155,7 @@ static inline void dma_free_contiguous(struct device *dev, struct page *page,
 {
 	__free_pages(page, get_order(size));
 }
-#endif /* CONFIG_DMA_CMA*/
+#endif 
 
 #ifdef CONFIG_DMA_DECLARE_COHERENT
 int dma_declare_coherent_memory(struct device *dev, phys_addr_t phys_addr,
@@ -189,7 +177,7 @@ static inline int dma_declare_coherent_memory(struct device *dev,
 #define dma_release_from_dev_coherent(dev, order, vaddr) (0)
 #define dma_mmap_from_dev_coherent(dev, vma, vaddr, order, ret) (0)
 static inline void dma_release_coherent_memory(struct device *dev) { }
-#endif /* CONFIG_DMA_DECLARE_COHERENT */
+#endif 
 
 #ifdef CONFIG_DMA_GLOBAL_POOL
 void *dma_alloc_from_global_coherent(struct device *dev, ssize_t size,
@@ -213,15 +201,9 @@ static inline int dma_mmap_from_global_coherent(struct vm_area_struct *vma,
 {
 	return 0;
 }
-#endif /* CONFIG_DMA_GLOBAL_POOL */
+#endif 
 
-/*
- * This is the actual return value from the ->alloc_noncontiguous method.
- * The users of the DMA API should only care about the sg_table, but to make
- * the DMA-API internal vmaping and freeing easier we stash away the page
- * array as well (except for the fallback case).  This can go away any time,
- * e.g. when a vmap-variant that takes a scatterlist comes along.
- */
+
 struct dma_sgt_handle {
 	struct sg_table sgt;
 	struct page **pages;
@@ -270,42 +252,27 @@ static inline bool dev_is_dma_coherent(struct device *dev)
 {
 	return true;
 }
-#endif /* CONFIG_ARCH_HAS_DMA_COHERENCE_H */
+#endif 
 
-/*
- * Check whether potential kmalloc() buffers are safe for non-coherent DMA.
- */
+
 static inline bool dma_kmalloc_safe(struct device *dev,
 				    enum dma_data_direction dir)
 {
-	/*
-	 * If DMA bouncing of kmalloc() buffers is disabled, the kmalloc()
-	 * caches have already been aligned to a DMA-safe size.
-	 */
+	
 	if (!IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC))
 		return true;
 
-	/*
-	 * kmalloc() buffers are DMA-safe irrespective of size if the device
-	 * is coherent or the direction is DMA_TO_DEVICE (non-desctructive
-	 * cache maintenance and benign cache line evictions).
-	 */
+	
 	if (dev_is_dma_coherent(dev) || dir == DMA_TO_DEVICE)
 		return true;
 
 	return false;
 }
 
-/*
- * Check whether the given size, assuming it is for a kmalloc()'ed buffer, is
- * sufficiently aligned for non-coherent DMA.
- */
+
 static inline bool dma_kmalloc_size_aligned(size_t size)
 {
-	/*
-	 * Larger kmalloc() sizes are guaranteed to be aligned to
-	 * ARCH_DMA_MINALIGN.
-	 */
+	
 	if (size >= 2 * ARCH_DMA_MINALIGN ||
 	    IS_ALIGNED(kmalloc_size_roundup(size), dma_get_cache_alignment()))
 		return true;
@@ -313,19 +280,7 @@ static inline bool dma_kmalloc_size_aligned(size_t size)
 	return false;
 }
 
-/*
- * Check whether the given object size may have originated from a kmalloc()
- * buffer with a slab alignment below the DMA-safe alignment and needs
- * bouncing for non-coherent DMA. The pointer alignment is not considered and
- * in-structure DMA-safe offsets are the responsibility of the caller. Such
- * code should use the static ARCH_DMA_MINALIGN for compiler annotations.
- *
- * The heuristics can have false positives, bouncing unnecessarily, though the
- * buffers would be small. False negatives are theoretically possible if, for
- * example, multiple small kmalloc() buffers are coalesced into a larger
- * buffer that passes the alignment check. There are no such known constructs
- * in the kernel.
- */
+
 static inline bool dma_kmalloc_needs_bounce(struct device *dev, size_t size,
 					    enum dma_data_direction dir)
 {
@@ -344,12 +299,7 @@ void arch_dma_set_mask(struct device *dev, u64 mask);
 #endif
 
 #ifdef CONFIG_MMU
-/*
- * Page protection so that devices that can't snoop CPU caches can use the
- * memory coherently.  We default to pgprot_noncached which is usually used
- * for ioremap as a safe bet, but architectures can override this with less
- * strict semantics if possible.
- */
+
 #ifndef pgprot_dmacoherent
 #define pgprot_dmacoherent(prot)	pgprot_noncached(prot)
 #endif
@@ -359,9 +309,9 @@ pgprot_t dma_pgprot(struct device *dev, pgprot_t prot, unsigned long attrs);
 static inline pgprot_t dma_pgprot(struct device *dev, pgprot_t prot,
 		unsigned long attrs)
 {
-	return prot;	/* no protection bits supported without page tables */
+	return prot;	
 }
-#endif /* CONFIG_MMU */
+#endif 
 
 #ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE
 void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
@@ -371,7 +321,7 @@ static inline void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
 		enum dma_data_direction dir)
 {
 }
-#endif /* ARCH_HAS_SYNC_DMA_FOR_DEVICE */
+#endif 
 
 #ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU
 void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
@@ -381,7 +331,7 @@ static inline void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
 		enum dma_data_direction dir)
 {
 }
-#endif /* ARCH_HAS_SYNC_DMA_FOR_CPU */
+#endif 
 
 #ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
 void arch_sync_dma_for_cpu_all(void);
@@ -389,7 +339,7 @@ void arch_sync_dma_for_cpu_all(void);
 static inline void arch_sync_dma_for_cpu_all(void)
 {
 }
-#endif /* CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL */
+#endif 
 
 #ifdef CONFIG_ARCH_HAS_DMA_PREP_COHERENT
 void arch_dma_prep_coherent(struct page *page, size_t size);
@@ -397,7 +347,7 @@ void arch_dma_prep_coherent(struct page *page, size_t size);
 static inline void arch_dma_prep_coherent(struct page *page, size_t size)
 {
 }
-#endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
+#endif 
 
 #ifdef CONFIG_ARCH_HAS_DMA_MARK_CLEAN
 void arch_dma_mark_clean(phys_addr_t paddr, size_t size);
@@ -405,7 +355,7 @@ void arch_dma_mark_clean(phys_addr_t paddr, size_t size);
 static inline void arch_dma_mark_clean(phys_addr_t paddr, size_t size)
 {
 }
-#endif /* ARCH_HAS_DMA_MARK_CLEAN */
+#endif 
 
 void *arch_dma_set_uncached(void *addr, size_t size);
 void arch_dma_clear_uncached(void *addr, size_t size);
@@ -432,7 +382,7 @@ static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
 		u64 size, const struct iommu_ops *iommu, bool coherent)
 {
 }
-#endif /* CONFIG_ARCH_HAS_SETUP_DMA_OPS */
+#endif 
 
 #ifdef CONFIG_ARCH_HAS_TEARDOWN_DMA_OPS
 void arch_teardown_dma_ops(struct device *dev);
@@ -440,7 +390,7 @@ void arch_teardown_dma_ops(struct device *dev);
 static inline void arch_teardown_dma_ops(struct device *dev)
 {
 }
-#endif /* CONFIG_ARCH_HAS_TEARDOWN_DMA_OPS */
+#endif 
 
 #ifdef CONFIG_DMA_API_DEBUG
 void dma_debug_add_bus(struct bus_type *bus);
@@ -452,41 +402,21 @@ static inline void dma_debug_add_bus(struct bus_type *bus)
 static inline void debug_dma_dump_mappings(struct device *dev)
 {
 }
-#endif /* CONFIG_DMA_API_DEBUG */
+#endif 
 
 extern const struct dma_map_ops dma_dummy_ops;
 
 enum pci_p2pdma_map_type {
-	/*
-	 * PCI_P2PDMA_MAP_UNKNOWN: Used internally for indicating the mapping
-	 * type hasn't been calculated yet. Functions that return this enum
-	 * never return this value.
-	 */
+	
 	PCI_P2PDMA_MAP_UNKNOWN = 0,
 
-	/*
-	 * PCI_P2PDMA_MAP_NOT_SUPPORTED: Indicates the transaction will
-	 * traverse the host bridge and the host bridge is not in the
-	 * allowlist. DMA Mapping routines should return an error when
-	 * this is returned.
-	 */
+	
 	PCI_P2PDMA_MAP_NOT_SUPPORTED,
 
-	/*
-	 * PCI_P2PDMA_BUS_ADDR: Indicates that two devices can talk to
-	 * each other directly through a PCI switch and the transaction will
-	 * not traverse the host bridge. Such a mapping should program
-	 * the DMA engine with PCI bus addresses.
-	 */
+	
 	PCI_P2PDMA_MAP_BUS_ADDR,
 
-	/*
-	 * PCI_P2PDMA_MAP_THRU_HOST_BRIDGE: Indicates two devices can talk
-	 * to each other, but the transaction traverses a host bridge on the
-	 * allowlist. In this case, a normal mapping either with CPU physical
-	 * addresses (in the case of dma-direct) or IOVA addresses (in the
-	 * case of IOMMUs) should be used to program the DMA engine.
-	 */
+	
 	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE,
 };
 
@@ -500,13 +430,13 @@ struct pci_p2pdma_map_state {
 enum pci_p2pdma_map_type
 pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
 		       struct scatterlist *sg);
-#else /* CONFIG_PCI_P2PDMA */
+#else 
 static inline enum pci_p2pdma_map_type
 pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
 		       struct scatterlist *sg)
 {
 	return PCI_P2PDMA_MAP_NOT_SUPPORTED;
 }
-#endif /* CONFIG_PCI_P2PDMA */
+#endif 
 
-#endif /* _LINUX_DMA_MAP_OPS_H */
+#endif 

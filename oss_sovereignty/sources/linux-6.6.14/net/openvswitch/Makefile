@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for Open vSwitch.
-#
+
+
+
+
 
 obj-$(CONFIG_OPENVSWITCH) += openvswitch.o
 

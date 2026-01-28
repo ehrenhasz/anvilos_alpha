@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2019 Arm Ltd. */
+
+
 
 #ifndef __KVM_ARM_HYPERCALLS_H
 #define __KVM_ARM_HYPERCALLS_H

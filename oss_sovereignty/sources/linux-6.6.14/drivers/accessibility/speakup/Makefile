@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 obj-$(CONFIG_SPEAKUP_SYNTH_ACNTSA) += speakup_acntsa.o
 obj-$(CONFIG_SPEAKUP_SYNTH_ACNTPC) += speakup_acntpc.o
 obj-$(CONFIG_SPEAKUP_SYNTH_APOLLO) += speakup_apollo.o
@@ -35,7 +35,7 @@ speakup-$(CONFIG_SPEAKUP_SERIALIO) += serialio.o
 clean-files := mapdata.h speakupmap.h
 
 
-# Generate mapdata.h from headers
+
 hostprogs += makemapdata
 makemapdata-objs := makemapdata.o
 
@@ -48,7 +48,7 @@ $(obj)/mapdata.h: $(obj)/makemapdata
 	$(call cmd,mkmap)
 
 
-# Generate speakupmap.h from mapdata.h
+
 hostprogs += genmap
 genmap-objs := genmap.o
 $(obj)/genmap.o: $(obj)/mapdata.h
