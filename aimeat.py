@@ -152,6 +152,20 @@ def main():
             except KeyboardInterrupt: continue
             if not user_input: continue
             if user_input.lower() in ["exit", "quit"]: break
+            if user_input.lower().startswith("words"):
+                parts = user_input.split()
+                limit = None
+                for p in parts:
+                    if p.isdigit():
+                        limit = int(p)
+                        break
+                if limit:
+                    send_to_forge(limit=limit)
+                    continue
+                else:
+                    print("[CMD ERROR] Usage: words <number>")
+                    continue
+
             if user_input.lower().startswith("send"):
                 parts = user_input.split()
                 limit = None

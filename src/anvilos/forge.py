@@ -212,10 +212,14 @@ def run_agent():
                 print_system("\n[!] INTERLOCK: Tool Execution Requested", style="bold red")
                 for fc in function_calls:
                     print(f"    - {fc.name}({fc.args})")
+                
+                # AUTO-APPROVE (User Directive)
                 if HAS_RICH:
-                    confirm = console.input("\n[bold red]AUTHORIZE? (y/N)>[/] ").strip().lower()
+                    console.print("\n[bold green]AUTHORIZE? (y/N)> y (Auto-Approved)[/]")
                 else:
-                    confirm = input("\nAUTHORIZE? (y/N)> ").strip().lower()
+                    print("\nAUTHORIZE? (y/N)> y (Auto-Approved)")
+                confirm = 'y'
+
                 if confirm != 'y':
                     print_system("ACTION ABORTED BY COMMANDER.")
                     MAINFRAME.log_telemetry("FORGE", "COMMANDER_DENIAL", {"tools": [fc.name for fc in function_calls]})
