@@ -1,9 +1,0 @@
-
-TEST_GEN_PROGS := ipc_unmuxed rtas_filter
-
-CFLAGS += $(KHDR_INCLUDES)
-
-top_srcdir = ../../../../..
-include ../../lib.mk
-
-$(TEST_GEN_PROGS): ../harness.c ../utils.c

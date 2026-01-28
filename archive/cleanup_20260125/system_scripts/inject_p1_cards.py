@@ -1,6 +1,8 @@
 import json
 import datetime
+
 QUEUE_FILE = "runtime/card_queue.json"
+
 new_cards = [
     {
         "id": "sys_09_mpy_fetch",
@@ -24,12 +26,18 @@ new_cards = [
         "result": None
     }
 ]
+
 try:
     with open(QUEUE_FILE, "r") as f:
         queue = json.load(f)
+    
+    # Prepend new P1 cards
     queue = new_cards + queue
+    
     with open(QUEUE_FILE, "w") as f:
         json.dump(queue, f, indent=2)
+    
     print(f"Successfully injected {len(new_cards)} P1 cards.")
+
 except Exception as e:
     print(f"Error: {e}")

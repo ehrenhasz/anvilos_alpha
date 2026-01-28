@@ -1,9 +1,11 @@
 import sqlite3
 import os
 import sys
+
 USER_HOME = os.path.expanduser("~")
 CORTEX_DIR = os.path.join(USER_HOME, ".dnd_dm")
 CORTEX_DB_PATH = "/var/lib/anvilos/db/cortex.db"
+
 try:
     with sqlite3.connect(CORTEX_DB_PATH) as conn:
         cursor = conn.cursor()

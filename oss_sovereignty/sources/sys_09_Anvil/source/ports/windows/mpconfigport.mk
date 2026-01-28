@@ -1,9 +1,0 @@
-
-
-
-MICROPY_FORCE_32BIT ?= 0
-
-
-
-
-MICROPY_USE_READLINE ?= 1

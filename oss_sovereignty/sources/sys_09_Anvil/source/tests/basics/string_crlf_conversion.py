@@ -1,2 +1,0 @@
-print(repr("""abc
-def"""))

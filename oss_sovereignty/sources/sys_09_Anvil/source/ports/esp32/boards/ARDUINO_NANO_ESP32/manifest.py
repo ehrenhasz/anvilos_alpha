@@ -1,5 +1,0 @@
-include("$(PORT_DIR)/boards/manifest.py")
-require("time")
-require("senml")
-require("logging")
-require("aioble")

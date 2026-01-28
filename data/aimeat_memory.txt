@@ -1,2 +1,0 @@
-
-* [2026-01-28 08:57:07] SELECT id, seq, op, pld, stat, ret, timestamp, agent_id, priority, parent_id FROM card_stack LIMIT 10;

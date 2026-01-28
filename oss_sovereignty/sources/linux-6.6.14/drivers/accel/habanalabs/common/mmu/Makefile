@@ -1,3 +1,0 @@
-
-HL_COMMON_MMU_FILES := common/mmu/mmu.o common/mmu/mmu_v1.o \
-			common/mmu/mmu_v2_hr.o

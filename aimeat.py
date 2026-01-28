@@ -1,147 +1,148 @@
 #!/usr/bin/env python3
-import os
-import sys
-import subprocess
-import datetime
-import readline
-import atexit
-import sqlite3
-import glob
-import time
 import uuid
 import json
 try:
     import forge_directives
 except ImportError:
     forge_directives = None
+
+# --- CONFIG ---
 PROJECT_ROOT = os.getcwd()
-if os.path.exists(os.path.join(PROJECT_ROOT, "vendor")):
-    sys.path.append(os.path.join(PROJECT_ROOT, "vendor"))
-sys.path.append(os.path.join(PROJECT_ROOT, "src"))
-from google import genai
-from google.genai import types
-from google.genai.errors import ClientError
-TOKEN_PATH = os.path.join(PROJECT_ROOT, "config", "token")
-MEMORY_FILE = os.path.join(PROJECT_ROOT, "data", "aimeat_memory.txt")
+MEMORY_FILE = os.path.expanduser("~/.gemini/gemini.md")
+HISTORY_FILE = os.path.expanduser("~/.gemini/aimeat_history")
+TOKEN_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'token')
 MODEL_ID = "gemini-2.0-flash"
-def log_to_cortex(event_type: str, details: str):
-    db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
-    try:
-        with sqlite3.connect(db_path) as conn:
-            conn.execute("CREATE TABLE IF NOT EXISTS live_stream (id INTEGER PRIMARY KEY AUTOINCREMENT, agent_id TEXT, event_type TEXT, details TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
-            conn.execute("INSERT INTO live_stream (agent_id, event_type, details) VALUES (?, ?, ?)", ("AIMEAT", event_type, details))
-    except Exception: pass
+
+# --- ENV INJECTION ---
+current_dir = PROJECT_ROOT
+# Add vendor directory
+sys.path.append(os.path.join(current_dir, "vendor"))
+
+# Dynamically find and add venv site-packages
+for venv_dir in ["venv", ".venv"]:
+    lib_path = os.path.join(current_dir, venv_dir, "lib")
+    if os.path.exists(lib_path):
+        for py_dir in os.listdir(lib_path):
+            if py_dir.startswith("python"):
+                site_pkg = os.path.join(lib_path, py_dir, "site-packages")
+                if os.path.exists(site_pkg):
+                    sys.path.append(site_pkg)
+
+anvilos_path = os.path.join(current_dir, "anvilos")
+if "PYTHONPATH" not in os.environ:
+    os.environ["PYTHONPATH"] = ""
+os.environ["PYTHONPATH"] += f"{os.pathsep}{current_dir}{os.pathsep}{anvilos_path}"
+
+# --- SMART PROBE: The Cure for Stupidity ---
 def get_schema_snapshot():
+    """
+    Connects to data/cortex.db (or looks for others) and dumps the EXACT schema.
+    This runs BEFORE the AI starts, so it knows the column names perfectly.
+    """
+    snapshot = "--- LIVE DATABASE SCHEMA ---\n"
+    
+    # 1. Find the DB
+    target_db = "data/cortex.db"
+    if not os.path.exists(target_db):
+        # Fallback search
+        found = glob.glob("**/*.db", recursive=True)
+        if found: target_db = found[0]
+        else: return "CRITICAL: No .db file found. I am blind."
+
+    snapshot += f"DATABASE FILE: {target_db}\n"
+
+    try:
+        conn = sqlite3.connect(target_db)
+        cursor = conn.cursor()
+        
+        # 2. Get Tables
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = [r[0] for r in cursor.fetchall()]
+        
+        # 3. Get Columns for each table
+        for table in tables:
+            cursor.execute(f"PRAGMA table_info({table})")
+            columns = cursor.fetchall()
+            # Format: (cid, name, type, notnull, dflt_value, pk)
+            col_names = [f"{c[1]} ({c[2]})" for c in columns]
+            snapshot += f"  TABLE '{table}': {', '.join(col_names)}\n"
+            
+        conn.close()
+    except Exception as e:
+        snapshot += f"SCHEMA READ ERROR: {e}\n"
+        
+    return snapshot
+
+# --- SHELL HISTORY ---
+try:
+    readline.read_history_file(HISTORY_FILE)
+except FileNotFoundError:
+    pass
+atexit.register(readline.write_history_file, HISTORY_FILE)
+
+# --- AUTH ---
+os.environ.pop("GOOGLE_APPLICATION_CREDENTIALS", None)
+os.environ.pop("GOOGLE_CLOUD_PROJECT", None)
+os.environ.pop("GCLOUD_PROJECT", None)
+
+try:
+    from google import genai
+    from google.genai import types
+    from google.genai.errors import ClientError
+except ImportError:
+    print("CRITICAL: 'google-genai' not installed.")
+    sys.exit(1)
+
+# --- CORTEX TELEMETRY ---
+def log_to_cortex(event_type, details):
+    """Streams Aimeat's thoughts to the Cortex."""
     db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
-    if not os.path.exists(db_path): return "No Database Found."
     try:
         with sqlite3.connect(db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT sql FROM sqlite_master WHERE type='table'")
-            return "\n".join([row[0] for row in cursor.fetchall()])
-    except Exception as e:
-        return f"Schema Error: {e}"
-STATE_FILE = os.path.join(PROJECT_ROOT, "data", "aimeat_state.json")
+            conn.execute("""
+                INSERT INTO live_stream (agent_id, event_type, details, timestamp)
+                VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+            """, ("AIMEAT", event_type, str(details)))
+    except Exception: pass # Silent fail if DB locked/missing
 
-def get_state():
-    if os.path.exists(STATE_FILE):
-        try:
-            with open(STATE_FILE, 'r') as f:
-                return json.load(f)
-        except: pass
-    return {"index": 0}
-
-def save_state(index):
-    try:
-        with open(STATE_FILE, 'w') as f:
-            json.dump({"index": index}, f)
-    except: pass
-
-def send_to_forge(limit=None, reset=False):
-    """Sends Forge Directives to the Processor (card_stack). Tracks progress."""
+def inject_directives():
+    """Injects Forge Directives into the Mainframe card stack."""
     if not forge_directives:
         print("[ERROR] forge_directives.py not found.")
         return
-    
-    # Reload module
-    try: importlib.reload(forge_directives)
-    except: pass
-        
+
     db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
-    
-    # State Management
-    state = get_state()
-    start_index = state["index"]
-    
-    if reset:
-        start_index = 0
-        print("[STATE] Cursor reset to 0.")
-    
-    # Check DB to see if we should auto-reset (optional heuristic)
-    # If stack is empty and we are at 0, that's fine.
-    # If stack is empty and we are at 1000, maybe user cleared deck?
-    # For now, we trust the explicit 'reset' flag or the stored state.
+    print(f"[FORGE] Connecting to {db_path}...")
     
     try:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             
-            # Check if stack is empty to offer helpful hint
-            cursor.execute("SELECT COUNT(*) FROM card_stack")
-            stack_depth = cursor.fetchone()[0]
-            if stack_depth == 0 and start_index > 0 and not reset:
-                 print(f"[NOTICE] The Mainframe stack is empty, but my local cursor is at {start_index}.")
-                 print("         If you cleared the deck (F5), use 'reset' to start over.")
-                 # We continue anyway, treating this as "resume"
-            
-            directives = forge_directives.PHASE2_DIRECTIVES
-            if not isinstance(directives, list): directives = list(directives)
-            
-            total_available = len(directives)
-            
-            # Slice based on state
-            if start_index >= total_available:
-                print(f"[FORGE] All {total_available} cards have already been injected.")
-                return
-
-            if limit:
-                end_index = min(start_index + limit, total_available)
-                batch = directives[start_index:end_index]
-                print(f"[FORGE] Injecting cards {start_index} to {end_index} (Limit: {limit}).")
-            else:
-                batch = directives[start_index:]
-                end_index = total_available
-                print(f"[FORGE] Injecting remaining cards {start_index} to {end_index}.")
-
+            # Clear existing pending cards? No, append.
             count = 0
-            for card in batch:
+            for card in forge_directives.PHASE2_DIRECTIVES:
                 card_id = str(uuid.uuid4())
                 seq = card.get("seq", 999)
                 op = card.get("op", "unknown_op")
-                pld = card.get("pld", {})
-                pld["_source"] = "COMMANDER"
+                pld = json.dumps(card.get("pld", {}))
                 
+                # Check if exists to avoid dupes?
+                # For now, just insert.
                 cursor.execute("""
-                    INSERT INTO card_stack (id, seq, op, pld, stat, timestamp)
-                    VALUES (?, ?, ?, ?, 0, ?)
-                """, (card_id, seq, op, json.dumps(pld), time.time()))
+                    INSERT INTO card_stack (id, seq, op, pld, stat, agent_id, timestamp)
+                    VALUES (?, ?, ?, ?, 0, 'AIMEAT', CURRENT_TIMESTAMP)
+                """, (card_id, seq, op, pld))
                 count += 1
-                if count % 100 == 0:
-                    sys.stdout.write(f"\r[FORGE] Injected {count}...")
-                    sys.stdout.flush()
-                    time.sleep(0.01) 
             
             conn.commit()
-            
-            # Update State
-            save_state(end_index)
-            
-            print(f"\n[FORGE] Successfully injected {count} directives.")
-            log_to_cortex("FORGE_SUBMIT", f"Injected {count} directives (Index {start_index}-{end_index}).")
-            
+            print(f"[FORGE] Successfully injected {count} cards into the Mainframe.")
+            log_to_cortex("INJECT_CARDS", f"Injected {count} directives from forge.")
+
     except Exception as e:
-        print(f"[FORGE ERROR] Failed to inject: {e}")
-        log_to_cortex("FORGE_FAIL", str(e))
+        print(f"[FORGE ERROR] Failed to inject cards: {e}")
+        log_to_cortex("INJECT_FAIL", str(e))
+
+# --- TOOLS ---
 def execute_command(command: str):
     log_to_cortex("EXEC_ATTEMPT", command)
     try:
@@ -156,9 +157,11 @@ def execute_command(command: str):
             log_to_cortex("EXEC_FAIL", error[:100])
             return f"EXIT_CODE_{result.returncode}: {error}"
         log_to_cortex("EXEC_SUCCESS", output[:100])
-        return output if output else "Command executed silently."
+        return output[:4000] if output else "SUCCESS (No Output)"
     except Exception as e:
-        return f"Execution Error: {e}"
+        log_to_cortex("EXEC_ERROR", str(e))
+        return f"EXECUTION FAILED: {e}"
+
 def update_memory(text: str):
     log_to_cortex("MEMORY_UPDATE", text[:50])
     try:
@@ -168,9 +171,12 @@ def update_memory(text: str):
         return "Memory updated."
     except Exception as e:
         return f"Failed to write memory: {e}"
+
 def read_memory():
     if not os.path.exists(MEMORY_FILE): return "Identity: Aimeat."
     with open(MEMORY_FILE, "r") as f: return f.read()
+
+# --- MAIN ---
 def main():
     api_key = None
     if os.path.exists(TOKEN_PATH):
@@ -178,12 +184,17 @@ def main():
     if not api_key: api_key = os.environ.get("GOOGLE_API_KEY")
     if not api_key:
         print("[Auth Error] No token found."); return
+
     try:
         client = genai.Client(api_key=api_key)
         context = read_memory()
+        
+        # 1. GENERATE INTELLIGENCE
         print("... Scanning Database Schema ...")
         schema_data = get_schema_snapshot()
         print(f"\033[1;30m{schema_data}\033[0m") # Show user what we found
+        
+        # 2. INJECT INTELLIGENCE
         system_instruction = (
             f"{context}\n\n"
             "*** INTELLIGENCE PACK: DATABASE SCHEMA ***\n"
@@ -205,98 +216,50 @@ def main():
             "7. LOOPING:\n"
             "   - If a command fails, READ THE ERROR, adjust the SQL, and retry. Do not ask me.\n"
         )
+        
         chat = client.chats.create(
             model=MODEL_ID,
             config=types.GenerateContentConfig(
                 tools=[execute_command, update_memory],
-                system_instruction=system_instruction
+                system_instruction=system_instruction,
+                temperature=0.1,
+                automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=False, maximum_remote_calls=10)
             )
         )
-        print("\033[1;32m[AIMEAT ONLINE] Sovereign Interface Ready.\033[0m")
-        log_to_cortex("SESSION_START", "Operator connected.")
+        
+        print(f"\033[1;32mAIMEAT ONLINE (SCHEMA AWARE)\033[0m")
+
         while True:
             try:
                 user_input = input("\033[1;32m@aimeat>\033[0m ").strip()
             except KeyboardInterrupt: continue
             if not user_input: continue
             if user_input.lower() in ["exit", "quit"]: break
-            if user_input.lower() in ["reset", "reset forge"]:
-                send_to_forge(limit=0, reset=True)
-                continue
-
-            if user_input.lower().startswith("words"):
-                parts = user_input.split()
-                limit = None
-                for p in parts:
-                    if p.isdigit():
-                        limit = int(p)
-                        break
-                if limit:
-                    send_to_forge(limit=limit)
-                    continue
-                else:
-                    print("[CMD ERROR] Usage: words <number>")
-                    continue
-
-            if user_input.lower().startswith("send"):
-                parts = user_input.split()
-                limit = None
-                for p in parts:
-                    if p.isdigit():
-                        limit = int(p)
-                        break
-                if limit:
-                    send_to_forge(limit=limit)
-                    continue
-                else:
-                    print("[CMD ERROR] Could not parse number of cards.")
-                    continue
-            if user_input.lower() in ["start", "start cards", "forge"]:
-                send_to_forge() # Resumes from last state by default
-                continue
             
-            if user_input.lower() in ["status", "stack", "list"]:
-                db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
-                try:
-                    with sqlite3.connect(db_path) as conn:
-                        cursor = conn.cursor()
-                        # Counts
-                        cursor.execute("SELECT stat, COUNT(*) FROM card_stack GROUP BY stat")
-                        counts = dict(cursor.fetchall())
-                        print(f"\n[MAINFRAME STATUS]")
-                        print(f"PENDING (0): {counts.get(0, 0)}")
-                        print(f"PUNCHED (2): {counts.get(2, 0)}")
-                        print(f"JAMMED  (9): {counts.get(9, 0)}")
-                        print(f"DEAD   (99): {counts.get(99, 0)}")
-                        
-                        # Top Cards
-                        print("\n[TOP 10 PENDING CARDS]")
-                        cursor.execute("SELECT id, seq, op, pld FROM card_stack WHERE stat = 0 ORDER BY priority DESC, timestamp ASC LIMIT 10")
-                        rows = cursor.fetchall()
-                        if not rows:
-                            print("(None)")
-                        else:
-                            for row in rows:
-                                pld_preview = row[3][:60] + "..." if len(row[3]) > 60 else row[3]
-                                print(f"- [{row[1]}] {row[2]}: {pld_preview}")
-                        print("")
-                except Exception as e:
-                    print(f"[STATUS ERROR] {e}")
+            # --- LOCAL OVERRIDES ---
+            if user_input.lower() in ["start", "start cards", "forge"]:
+                inject_directives()
                 continue
 
             prompt = user_input
             if "fix" in user_input.lower():
                  prompt += " (MODE: AUTONOMOUS. Use the schema above. Reset status to 0 to retry. Loop until done.)"
+
+            # --- RATE LIMIT SHIELD ---
             max_retries = 3
             retry_count = 0
+            
             while retry_count < max_retries:
                 try:
                     response = chat.send_message(prompt)
+                    
+                    # Success! Print output and break the retry loop
                     if response.text:
                         clean_text = response.text.strip()
                         if "non-text parts" not in clean_text:
                             print(f"\n{clean_text}\n")
                     break # Break retry loop, go back to main input loop
+
                 except ClientError as e:
                     if e.code == 429:
                         retry_count += 1
@@ -310,6 +273,8 @@ def main():
                     if "concatenated text" not in str(e):
                         print(f"\n[CRASH] {e}\n")
                     break
+
     except Exception as e: print(f"[CRASH] {e}")
+
 if __name__ == "__main__":
     main()

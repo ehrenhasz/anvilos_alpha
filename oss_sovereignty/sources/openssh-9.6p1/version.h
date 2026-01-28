@@ -1,6 +1,0 @@
-
-
-#define SSH_VERSION	"OpenSSH_9.6"
-
-#define SSH_PORTABLE	"p1"
-#define SSH_RELEASE	SSH_VERSION SSH_PORTABLE
