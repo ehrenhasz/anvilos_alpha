@@ -2,7 +2,9 @@ import os
 import sys
 import json
 from google import genai
+
 API_KEY = "AIzaSyBABWH2xlKyec86z7fyioX_gs0q7wOYYFA"
+
 try:
     client = genai.Client(api_key=API_KEY)
     response = client.models.generate_content(

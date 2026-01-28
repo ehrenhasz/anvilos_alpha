@@ -1,7 +1,10 @@
 import json
 import os
 from datetime import datetime
+
+# Mapping of 16-Bit Systems
 BIT16_MAP = {
+    # --- CONSOLES ---
     "SNES": {
         "url": "https://github.com/snes9xgit/snes9x.git",
         "note": "Snes9x (Portable SNES Emulator)"
@@ -18,6 +21,8 @@ BIT16_MAP = {
         "url": "https://github.com/finalburnneo/FBNeo.git",
         "note": "FinalBurn Neo (Arcade/NeoGeo)"
     },
+    
+    # --- COMPUTERS ---
     "Amiga_Hardware": {
         "url": "https://github.com/FrodeSolheim/fs-uae.git",
         "note": "FS-UAE (Amiga Emulator)"
@@ -38,6 +43,8 @@ BIT16_MAP = {
         "url": "https://github.com/AZO234/NP2kai.git",
         "note": "Neko Project II Kai (PC-9801 Emulator)"
     },
+    
+    # --- TOOLCHAINS ---
     "M68k_Tools": {
         "url": "https://github.com/dbuchwald/vasm.git",
         "note": "vasm (Portable 68k Assembler)"
@@ -51,22 +58,31 @@ BIT16_MAP = {
         "note": "PVSnesLib (SNES C Development Kit)"
     }
 }
+
 QUEUE_FILE = "runtime/card_queue.json"
 ROOT_DIR = "oss_sovereignty/sys_16_16Bit_Revolution"
+
 def mint_16bit_cards():
     print(">> MINTING 16-BIT REVOLUTION CARDS...")
+    
     new_cards = []
     timestamp = datetime.now().isoformat()
+    
     for sys_name, data in BIT16_MAP.items():
+        # Determine target path
         target_path = None
         for root, dirs, files in os.walk(ROOT_DIR):
             if sys_name in dirs:
                 target_path = os.path.join(root, sys_name)
                 break
+        
         if not target_path:
+            # Fallback
             target_path = f"{ROOT_DIR}/00_Uncategorized/{sys_name}"
             if not os.path.exists(target_path):
                 os.makedirs(target_path, exist_ok=True)
+
+        # Create Card
         card = {
             "id": f"sov_16bit_{sys_name.lower()}",
             "description": f"16-BIT: Assimilate {sys_name} ({data['note']})",
@@ -79,14 +95,20 @@ def mint_16bit_cards():
             }
         }
         new_cards.append(card)
+
+    # Append to Queue
     if os.path.exists(QUEUE_FILE):
         with open(QUEUE_FILE, "r") as f:
             queue = json.load(f)
     else:
         queue = []
+        
     queue.extend(new_cards)
+    
     with open(QUEUE_FILE, "w") as f:
         json.dump(queue, f, indent=2)
+        
     print(f">> Minted {len(new_cards)} 16-BIT cards.")
+
 if __name__ == "__main__":
     mint_16bit_cards()

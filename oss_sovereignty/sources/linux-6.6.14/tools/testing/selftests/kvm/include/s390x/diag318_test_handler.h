@@ -1,8 +1,0 @@
-
-
-#ifndef SELFTEST_KVM_DIAG318_TEST_HANDLER
-#define SELFTEST_KVM_DIAG318_TEST_HANDLER
-
-uint64_t get_diag318_info(void);
-
-#endif

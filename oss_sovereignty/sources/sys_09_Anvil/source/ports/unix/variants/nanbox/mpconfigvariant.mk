@@ -1,3 +1,0 @@
-
-
-MICROPY_FORCE_32BIT = 1

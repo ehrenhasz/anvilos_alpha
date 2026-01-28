@@ -1,9 +1,0 @@
-
-
-
-
-
-obj-$(CONFIG_X86_ANDROID_TABLETS) += x86-android-tablets.o
-
-x86-android-tablets-y := core.o dmi.o shared-psy-info.o \
-			 asus.o lenovo.o other.o

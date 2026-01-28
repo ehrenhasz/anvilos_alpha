@@ -1,5 +1,0 @@
-import os
-toolchain_bin = '/mnt/anvil_temp/ascii_oss/ext/toolchain/bin'
-musl_gcc = '/usr/bin/x86_64-unknown-linux-musl-gcc'
-os.makedirs(toolchain_bin, exist_ok=True)
-os.symlink(musl_gcc, os.path.join(toolchain_bin, 'x86_64-unknown-linux-musl-gcc'))

@@ -1,1 +1,0 @@
-print(">> HELLO WORLD FROM THE ANVIL")

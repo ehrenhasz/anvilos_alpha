@@ -1,7 +1,0 @@
-
-
-selftest(sanitycheck, __sanitycheck__) 
-selftest(dma_fence, dma_fence)
-selftest(dma_fence_chain, dma_fence_chain)
-selftest(dma_fence_unwrap, dma_fence_unwrap)
-selftest(dma_resv, dma_resv)

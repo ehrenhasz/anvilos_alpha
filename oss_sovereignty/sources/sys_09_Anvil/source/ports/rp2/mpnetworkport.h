@@ -1,9 +1,0 @@
-
-#ifndef MICROPY_INCLUDED_RP2_MPNETWORKPORT_H
-#define MICROPY_INCLUDED_RP2_MPNETWORKPORT_H
-
-#if MICROPY_PY_NETWORK_CYW43
-extern void cyw43_irq_init(void);
-#endif
-
-#endif 

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 get_devtype() {
   local typ
   typ=$(udevadm info --query=property --name="$1" | sed -n 's|^ID_FS_TYPE=||p')
@@ -6,7 +8,9 @@ get_devtype() {
   fi
   echo "$typ"
 }
+
 get_pool_devices() {
+  # also present in 99zfssystemd
   local poolconfigtemp
   local poolconfigoutput
   local pooldev
@@ -27,6 +31,7 @@ get_pool_devices() {
   fi
   rm -f "$poolconfigtemp"
 }
+
 find_zfs_block_devices() {
     local dev
     local mp
@@ -38,18 +43,26 @@ find_zfs_block_devices() {
     else
         fields="_ _ _ _ mp _ _ _ fstype dev _"
     fi
+    # shellcheck disable=SC2086
     while read -r ${fields?} ; do
        [[ "$fstype" = "zfs" ]] || continue
        [[ "$mp" = "$1" ]] && get_pool_devices "${dev%%/*}"
     done < /proc/self/mountinfo
 }
+
 array_contains () {
   local e
   for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
   return 1
 }
+
 check() {
+    # https://github.com/dracutdevs/dracut/pull/1711 provides a zfs_devs
+    # function to detect the physical devices backing zfs pools. If this
+    # function exists in the version of dracut this module is being called
+    # from, then it does not need to run.
     type zfs_devs >/dev/null 2>&1 && return 1
+
     local mp
     local dev
     local blockdevs
@@ -58,7 +71,10 @@ check() {
     local _depdev
     local _depdevname
     local _depdevtype
+
+# shellcheck disable=SC2154
 if [[ -n "$hostonly" ]]; then
+
     for mp in \
         "/" \
         "/etc" \
@@ -105,6 +121,8 @@ if [[ -n "$hostonly" ]]; then
         do
         dinfo "zfsexpandknowledge: device $a of type ${host_fs_types[$a]}"
     done
+
 fi
+
 return 1
 }
