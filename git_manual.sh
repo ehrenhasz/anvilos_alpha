@@ -1,66 +1,40 @@
-#!/bin/bash
-
-# Configuration
 BRANCH="main"
 REMOTE="origin"
-
-# --- THEME (Dracula/Btop Style) ---
 CYAN="\033[38;5;117m"
 PURPLE="\033[38;5;141m"
 GREEN="\033[38;5;84m"
 GREY="\033[38;5;103m"
 RESET="\033[0m"
-
-# Helper to print colored status
 function status_msg {
     echo -e "${PURPLE}>>> ${CYAN}$1${RESET}"
 }
-
-# INTELLIGENT PUSH FUNCTION
 function attempt_push {
     PUSH_CMD="$1"
     TEMP_LOG=$(mktemp)
-
-    # Run the push, show output to user, but also save to temp file
     eval "$PUSH_CMD" 2>&1 | tee "$TEMP_LOG"
     GIT_EXIT_CODE=${PIPESTATUS[0]}
-
     if [ $GIT_EXIT_CODE -ne 0 ]; then
-        # Check if failure was due to file size
         if grep -q "exceeds GitHub's file size limit" "$TEMP_LOG"; then
             echo ""
             echo -e "${PURPLE}!!! LARGE FILE ERROR DETECTED !!!${RESET}"
-            
-            # Extract filenames
             LARGE_FILES=$(grep "exceeds GitHub's file size limit" "$TEMP_LOG" | awk '{print $4}')
-            
             echo -e "${GREY}The following files are blocking the push:${RESET}"
             echo -e "${CYAN}$LARGE_FILES${RESET}"
             echo ""
             echo -e "${GREY}These files are likely buried in your commit history.${RESET}"
             echo -e "${GREY}I will perform a DEEP CLEAN: Undo all local commits (keeping files safe), unstage these files, and re-commit.${RESET}"
-            
             echo -e -n "${GREEN}Apply DEEP CLEAN fix now? (y/n): ${RESET}"
             read fix_confirm
-            
             if [[ $fix_confirm == [yY] || $fix_confirm == [yY][eE][sS] ]]; then
-                # 1. Soft reset everything to match remote (Safe: keeps file changes)
                 status_msg "Resetting local history to match remote (files are safe)..."
                 git reset --soft $REMOTE/$BRANCH
-                
-                # 2. Unstage and ignore specific files
                 for f in $LARGE_FILES; do
-                    # Unstage the file
                     git reset HEAD "$f"
-                    # Add to gitignore
                     echo "$f" >> .gitignore
                     echo -e "${CYAN}Removed $f from commit list and added to .gitignore${RESET}"
                 done
-                
-                # 3. Re-add everything else and commit
                 git add .gitignore
                 git commit -m "Update repo (Auto-removed large files)"
-                
                 status_msg "Deep Clean complete. Retrying push..."
                 eval "$PUSH_CMD"
             else
@@ -70,14 +44,12 @@ function attempt_push {
     fi
     rm "$TEMP_LOG"
 }
-
 while true; do
     clear
     echo -e "${PURPLE}==========================================${RESET}"
     echo -e "${CYAN}   ANVILOS ALPHA ${GREY}|${GREEN} GIT CONTROL CENTER${RESET}"
     echo -e "${GREY}   Current Branch: ${PURPLE}$BRANCH${RESET}"
     echo -e "${PURPLE}==========================================${RESET}"
-    
     echo -e "${GREEN}1.${GREY} Git Add ${CYAN}(Stage all changes)${RESET}"
     echo -e "${GREEN}2.${GREY} Git Commit ${CYAN}(Save staged changes)${RESET}"
     echo -e "${GREEN}3.${GREY} Git Push ${CYAN}(Standard - Upload to GitHub)${RESET}"
@@ -90,10 +62,8 @@ while true; do
     echo -e "${PURPLE}------------------------------------------${RESET}"
     echo -e "${GREEN}Q.${GREY} Quit${RESET}"
     echo -e "${PURPLE}------------------------------------------${RESET}"
-    
     echo -e -n "${CYAN}Select an action: ${RESET}"
     read choice
-
     case $choice in
         1)
             status_msg "Executing: git add ."
@@ -135,14 +105,22 @@ while true; do
             fi
             ;;
         6)
-            status_msg "Executing: git clean -fd"
-            echo -e "${PURPLE}WARNING: Permanently deleting untracked files!${RESET}"
-            echo -e -n "${GREEN}Are you sure? (y/n): ${RESET}"
-            read confirm
-            if [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]]; then
-                git clean -fd
+            status_msg "Checking for untracked files..."
+            CLEAN_DRY_RUN=$(git clean -nfd)
+            if [ -z "$CLEAN_DRY_RUN" ]; then
+                echo -e "${GREEN}Repo is clean. No untracked files to delete.${RESET}"
             else
-                echo "Clean aborted."
+                echo -e "${PURPLE}The following files are untracked and will be DELETED:${RESET}"
+                echo -e "${RED}$CLEAN_DRY_RUN${RESET}"
+                echo ""
+                echo -e -n "${GREEN}DELETE these files? (y/n): ${RESET}"
+                read confirm
+                if [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]]; then
+                    status_msg "Executing: git clean -fd"
+                    git clean -fd
+                else
+                    echo "Clean aborted."
+                fi
             fi
             ;;
         7)
@@ -179,7 +157,6 @@ while true; do
             echo -e "${PURPLE}Invalid option.${RESET}"
             ;;
     esac
-
     echo ""
     echo -e -n "${GREY}Press [Enter] to return to menu...${RESET}"
     read

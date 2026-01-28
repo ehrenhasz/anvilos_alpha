@@ -3,12 +3,8 @@ import os
 import json
 sys.path.append("src")
 from anvilos.mainframe_client import MainframeClient
-
 MAINFRAME = MainframeClient("data/cortex.db")
-
-# PHASE 2 COMPLETE: THE ZFS MONOLITH
 CARDS = [
-    # --- 1. ZFS ACQUISITION ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -17,8 +13,6 @@ CARDS = [
         },
         "desc": "FETCH_ZFS_SOURCE"
     },
-    
-    # --- 2. ZFS USERLAND BUILD (The Muscles) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -27,13 +21,6 @@ CARDS = [
         },
         "desc": "BUILD_ZFS_USERLAND"
     },
-
-    # --- 3. KERNEL REFORGE (The Heart) ---
-    # We need to prep the kernel source with ZFS headers/code before building the module in-tree.
-    # Note: Building ZFS *into* the kernel (monolith) usually requires specific patching or config hooks.
-    # A simpler path for this prototype: Build ZFS as modules against the kernel we fetched.
-    # But directives say "CONFIG_ZFS=y (Built-in)".
-    # Strategy: We will configure ZFS to build kernel modules against our linux source.
     {
         "op": "SYS_CMD",
         "pld": {
@@ -42,7 +29,6 @@ CARDS = [
         },
         "desc": "BUILD_ZFS_KERNEL_MODULES"
     },
-    # Re-verify Kernel Config to ensure Loop and Initrd are set
     {
         "op": "SYS_CMD",
         "pld": {
@@ -59,8 +45,6 @@ CARDS = [
         },
         "desc": "REBUILD_KERNEL_IMAGE"
     },
-
-    # --- 4. ROOTFS CONSTRUCTION (The Body) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -85,8 +69,6 @@ CARDS = [
         },
         "desc": "INSTALL_BUSYBOX_SYMLINKS"
     },
-    # Install ZFS Binaries (Dynamically linked usually, but we hope for the best or copy libs)
-    # Ideally we'd statically link or copy libs. For prototype, we attempt copy.
     {
         "op": "SYS_CMD",
         "pld": {
@@ -95,7 +77,6 @@ CARDS = [
         },
         "desc": "INSTALL_ZFS_TOOLS"
     },
-    # Install ZFS Kernel Modules
     {
         "op": "SYS_CMD",
         "pld": {
@@ -104,8 +85,6 @@ CARDS = [
         },
         "desc": "INSTALL_ZFS_MODULES"
     },
-
-    # --- 5. INITRAMFS (The Key) ---
     {
         "op": "FILE_WRITE",
         "pld": {
@@ -130,8 +109,6 @@ CARDS = [
         },
         "desc": "PACK_INITRAMFS"
     },
-
-    # --- 6. ISO GENERATION (The Anvil) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -157,7 +134,6 @@ CARDS = [
         "desc": "WRITE_ISOLINUX_CFG"
     }
 ]
-
 print("[*] Injecting Phase 2 Complete (ZFS Monolith) Cards...")
 for i, card in enumerate(CARDS):
     res = MAINFRAME.inject_card(card["op"], card["pld"])

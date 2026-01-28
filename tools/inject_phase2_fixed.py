@@ -3,11 +3,8 @@ import os
 import json
 sys.path.append("src")
 from anvilos.mainframe_client import MainframeClient
-
 MAINFRAME = MainframeClient("data/cortex.db")
-
 CARDS = [
-    # --- 1. PREP & CLEAN ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -24,8 +21,6 @@ CARDS = [
         },
         "desc": "CLEAN_TREE"
     },
-
-    # --- 2. BUILD LIBUUID (Required for ZFS) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -34,8 +29,6 @@ CARDS = [
         },
         "desc": "BUILD_LIBUUID"
     },
-
-    # --- 3. BUILD ZFS USERLAND (With Explicit Libuuid Paths) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -44,8 +37,6 @@ CARDS = [
         },
         "desc": "BUILD_ZFS_USERLAND"
     },
-
-    # --- 4. PREP KERNEL ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -54,8 +45,6 @@ CARDS = [
         },
         "desc": "PREP_KERNEL"
     },
-
-    # --- 5. BUILD ZFS MODULES ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -64,19 +53,14 @@ CARDS = [
         },
         "desc": "BUILD_ZFS_MODULES"
     },
-
-    # --- 6. BUILD BUSYBOX (FIXED) ---
     {
         "op": "SYS_CMD",
         "pld": {
-            # Disable TC to fix compilation error
             "cmd": "cd oss_sovereignty/busybox-1.36.1 && make defconfig && sed -i 's/# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config && sed -i 's/CONFIG_TC=y/# CONFIG_TC is not set/' .config && sed -i 's/CONFIG_FEATURE_TC_INGRESS=y/# CONFIG_FEATURE_TC_INGRESS is not set/' .config && make -j$(nproc)",
             "timeout": 600
         },
         "desc": "BUILD_BUSYBOX"
     },
-
-    # --- 7. ROOTFS & ISO ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -158,7 +142,6 @@ CARDS = [
         "desc": "BURN_ISO"
     }
 ]
-
 print(f"[*] Injecting {len(CARDS)} Phase 2 (FIXED) Cards...")
 for i, card in enumerate(CARDS):
     res = MAINFRAME.inject_card(card["op"], card["pld"])

@@ -2,11 +2,8 @@ import sys
 import os
 sys.path.append("src")
 from anvilos.mainframe_client import MainframeClient
-
 MAINFRAME = MainframeClient("data/cortex.db")
-
 CARDS = [
-    # --- 1. SOURCE PREPARATION (The Foundation) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -31,9 +28,6 @@ CARDS = [
         },
         "desc": "Card 102: clean_busybox_source"
     },
-
-    # --- 2. USERLAND FORGING (The Muscles) ---
-    # Busybox
     {
         "op": "SYS_CMD",
         "pld": {
@@ -58,12 +52,9 @@ CARDS = [
         },
         "desc": "Card 202: install_busybox"
     },
-
-    # ZFS Utils (Static Chain: zlib -> util-linux -> zfs)
     {
         "op": "SYS_CMD",
         "pld": {
-            # Build Static Zlib
             "cmd": "cd oss_sovereignty/zlib-1.3.1 && ./configure --static --prefix=$(pwd)/../staging && make -j$(nproc) && make install",
             "timeout": 300
         },
@@ -72,7 +63,6 @@ CARDS = [
     {
         "op": "SYS_CMD",
         "pld": {
-            # Build Static libuuid & libblkid
             "cmd": "cd oss_sovereignty/util-linux-2.39.3 && ./configure --prefix=$(pwd)/../staging --disable-all-programs --enable-libuuid --enable-libblkid --enable-static && make -j$(nproc) && make install",
             "timeout": 600
         },
@@ -102,12 +92,9 @@ CARDS = [
         },
         "desc": "Card 213: install_zfs_utils"
     },
-
-    # --- 3. KERNEL FORGING (The Heart) ---
     {
         "op": "SYS_CMD",
         "pld": {
-            # Prepare kernel headers/env for module build
             "cmd": "cd oss_sovereignty/linux-6.6.14 && make defconfig && make modules_prepare",
             "timeout": 600
         },
@@ -116,7 +103,6 @@ CARDS = [
     {
         "op": "SYS_CMD",
         "pld": {
-            # Build ZFS modules against kernel source
             "cmd": "cd oss_sovereignty/zfs-2.2.2 && ./configure --with-config=kernel --with-linux=../linux-6.6.14 --with-linux-obj=../linux-6.6.14 && make -j$(nproc)",
             "timeout": 1200
         },
@@ -125,7 +111,6 @@ CARDS = [
     {
         "op": "SYS_CMD",
         "pld": {
-            # Configure kernel for Monolith/Initrd support
             "cmd": "cd oss_sovereignty/linux-6.6.14 && sed -i 's/# CONFIG_BLK_DEV_LOOP is not set/CONFIG_BLK_DEV_LOOP=y/' .config && sed -i 's/# CONFIG_BLK_DEV_INITRD is not set/CONFIG_BLK_DEV_INITRD=y/' .config && make olddefconfig",
             "timeout": 300
         },
@@ -155,8 +140,6 @@ CARDS = [
         },
         "desc": "Card 305: install_kernel_artifacts"
     },
-
-    # --- 4. THE ZFS ROOT (The Body) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -168,7 +151,6 @@ CARDS = [
     {
         "op": "SYS_CMD",
         "pld": {
-            # Attempting pool creation. This requires privilege.
             "cmd": "./build_artifacts/rootfs_stage/sbin/zpool create -o ashift=12 -O compression=lz4 -m legacy -f zroot $(pwd)/build_artifacts/rootfs.img && ./build_artifacts/rootfs_stage/sbin/zpool export zroot",
             "timeout": 120
         },
@@ -177,14 +159,11 @@ CARDS = [
     {
         "op": "SYS_CMD",
         "pld": {
-            # Import, populate, export.
             "cmd": "./build_artifacts/rootfs_stage/sbin/zpool import -d $(pwd)/build_artifacts/rootfs.img zroot && mkdir -p /tmp/zroot_mnt && mount -t zfs zroot /tmp/zroot_mnt && cp -a build_artifacts/rootfs_stage/* /tmp/zroot_mnt/ && umount /tmp/zroot_mnt && ./build_artifacts/rootfs_stage/sbin/zpool export zroot",
             "timeout": 300
         },
         "desc": "Card 402: mount_and_populate"
     },
-
-    # --- 5. THE INITRAMFS (The Key) ---
     {
         "op": "FILE_WRITE",
         "pld": {
@@ -201,8 +180,6 @@ CARDS = [
         },
         "desc": "Card 501: pack_initramfs"
     },
-
-    # --- 6. FINAL ARTIFACT (The Anvil) ---
     {
         "op": "FILE_WRITE",
         "pld": {
@@ -220,7 +197,6 @@ CARDS = [
         "desc": "Card 601: burn_iso"
     }
 ]
-
 print(f"[*] Injecting {len(CARDS)} Phase 2 (Compliant - V2 Static Chain) Cards...")
 for i, card in enumerate(CARDS):
     res = MAINFRAME.inject_card(card["op"], card["pld"])

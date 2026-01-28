@@ -3,11 +3,8 @@ import os
 import json
 sys.path.append("src")
 from anvilos.mainframe_client import MainframeClient
-
 MAINFRAME = MainframeClient("data/cortex.db")
-
 CARDS = [
-    # --- 1. CLEANUP (Safety First) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -19,14 +16,11 @@ CARDS = [
     {
         "op": "SYS_CMD",
         "pld": {
-            # Clean build trees to ensure no bad config remains
             "cmd": "make -C oss_sovereignty/linux-6.6.14 distclean && make -C oss_sovereignty/busybox-1.36.1 distclean",
             "timeout": 300
         },
         "desc": "CLEAN_BUILD_TREES"
     },
-
-    # --- 2. BUILD LIBUUID (Required for ZFS) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -35,8 +29,6 @@ CARDS = [
         },
         "desc": "BUILD_LIBUUID"
     },
-
-    # --- 3. BUILD ZFS USERLAND (With Explicit Libuuid Paths) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -45,8 +37,6 @@ CARDS = [
         },
         "desc": "BUILD_ZFS_USERLAND"
     },
-
-    # --- 4. PREP KERNEL ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -55,8 +45,6 @@ CARDS = [
         },
         "desc": "PREP_KERNEL"
     },
-
-    # --- 5. BUILD ZFS MODULES ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -65,19 +53,14 @@ CARDS = [
         },
         "desc": "BUILD_ZFS_MODULES"
     },
-
-    # --- 6. BUILD BUSYBOX (FIXED) ---
     {
         "op": "SYS_CMD",
         "pld": {
-            # Disable TC to fix compilation error
             "cmd": "cd oss_sovereignty/busybox-1.36.1 && make defconfig && sed -i 's/# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config && sed -i 's/CONFIG_TC=y/# CONFIG_TC is not set/' .config && sed -i 's/CONFIG_FEATURE_TC_INGRESS=y/# CONFIG_FEATURE_TC_INGRESS is not set/' .config && make -j$(nproc)",
             "timeout": 600
         },
         "desc": "BUILD_BUSYBOX"
     },
-
-    # --- 7. ROOTFS & ISO ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -159,7 +142,6 @@ CARDS = [
         "desc": "BURN_ISO"
     }
 ]
-
 print(f"[*] Injecting {len(CARDS)} Phase 2 (RESUME) Cards...")
 for i, card in enumerate(CARDS):
     res = MAINFRAME.inject_card(card["op"], card["pld"])

@@ -3,11 +3,8 @@ import os
 import json
 sys.path.append("src")
 from anvilos.mainframe_client import MainframeClient
-
 MAINFRAME = MainframeClient("data/cortex.db")
-
 CARDS = [
-    # --- 1. CLEANUP ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -24,8 +21,6 @@ CARDS = [
         },
         "desc": "CLEAN_BUILD_TREES"
     },
-
-    # --- 2. FETCH & BUILD ZLIB (Static) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -34,8 +29,6 @@ CARDS = [
         },
         "desc": "BUILD_ZLIB"
     },
-
-    # --- 3. BUILD LIBUUID & LIBBLKID (Static) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -44,8 +37,6 @@ CARDS = [
         },
         "desc": "BUILD_UTIL_LINUX_LIBS"
     },
-
-    # --- 4. BUILD ZFS USERLAND (With Explicit Flags) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -54,8 +45,6 @@ CARDS = [
         },
         "desc": "BUILD_ZFS_USERLAND"
     },
-
-    # --- 5. PREP KERNEL ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -64,8 +53,6 @@ CARDS = [
         },
         "desc": "PREP_KERNEL"
     },
-
-    # --- 6. BUILD ZFS MODULES ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -74,8 +61,6 @@ CARDS = [
         },
         "desc": "BUILD_ZFS_MODULES"
     },
-
-    # --- 7. BUILD BUSYBOX (FIXED) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -84,8 +69,6 @@ CARDS = [
         },
         "desc": "BUILD_BUSYBOX"
     },
-
-    # --- 8. ROOTFS & ISO ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -167,7 +150,6 @@ CARDS = [
         "desc": "BURN_ISO"
     }
 ]
-
 print(f"[*] Injecting {len(CARDS)} Phase 2 (FIXED V2) Cards...")
 for i, card in enumerate(CARDS):
     res = MAINFRAME.inject_card(card["op"], card["pld"])

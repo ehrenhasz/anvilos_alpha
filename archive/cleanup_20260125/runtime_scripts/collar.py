@@ -1,4 +1,3 @@
-
 import sys
 import os
 import subprocess
@@ -6,7 +5,6 @@ import json
 import time
 from typing import Any, Dict, Optional, Union
 from synapse import Synapse
-
 class TheCollar:
     """
     The Collar: An oversight mechanism that wraps operations to ensure
@@ -15,11 +13,9 @@ class TheCollar:
     def __init__(self, agent_id: str):
         self.synapse = Synapse(agent_id)
         self.agent_id = agent_id
-
     def log(self, event_type: str, context: str, success: bool, details: Dict[str, Any]):
         """Directly log an event."""
         self.synapse.log_experience(event_type, context, success, details)
-
     def guard(self, context: str, operation_name: str, func, *args, **kwargs) -> Any:
         """
         Wraps a Python function execution, logging the outcome.
@@ -28,7 +24,6 @@ class TheCollar:
         try:
             result = func(*args, **kwargs)
             duration = time.time() - start_time
-            
             self.synapse.log_experience(
                 "OP_SUCCESS",
                 context,
@@ -54,7 +49,6 @@ class TheCollar:
                 }
             )
             raise e
-
     def sh(self, command: str, context: str = "SHELL") -> subprocess.CompletedProcess:
         """
         Executes a shell command and enforces logging of the result.
@@ -62,16 +56,10 @@ class TheCollar:
         """
         start_time = time.time()
         try:
-            # Run the command
             result = subprocess.run(command, shell=True, capture_output=True, text=True)
             duration = time.time() - start_time
-            
             success = (result.returncode == 0)
             status = "SHELL_EXEC"
-            
-            # Determine "Everything Else" -> Partial success? Warning? 
-            # For now, we stick to boolean success, but we include full details.
-            
             details = {
                 "command": command,
                 "return_code": result.returncode,
@@ -79,15 +67,10 @@ class TheCollar:
                 "stderr": result.stderr.strip()[:1000],
                 "duration": f"{duration:.4f}s"
             }
-            
             self.synapse.log_experience(status, context, success, details)
-            
             return result
-            
         except Exception as e:
             self.synapse.log_experience("SHELL_CRASH", context, False, {"command": command, "error": str(e)})
             raise e
-
-# Singleton-like usage helper
 def attach_collar(agent_id: str) -> TheCollar:
     return TheCollar(agent_id)

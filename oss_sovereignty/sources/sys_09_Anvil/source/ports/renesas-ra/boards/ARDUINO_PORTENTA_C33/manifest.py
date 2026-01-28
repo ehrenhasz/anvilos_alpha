@@ -1,0 +1,8 @@
+include("$(PORT_DIR)/boards/manifest.py")
+require("bundle-networking")
+require("time")
+require("senml")
+require("logging")
+require("aioble")
+add_library("arduino-lib", "$(ARDUINO_LIB_DIR)")
+require("cmwx1", library="arduino-lib")

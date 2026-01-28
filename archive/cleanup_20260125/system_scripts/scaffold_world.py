@@ -1,9 +1,7 @@
 import os
 import json
 from datetime import datetime
-
 ROOT = "oss_sovereignty"
-
 SYSTEMS = {
     "sys_12_Languages": {
         "description": "THE TONGUE: Sovereign implementations of all major coding languages.",
@@ -42,18 +40,12 @@ SYSTEMS = {
         }
     }
 }
-
 def create_structure():
     print(f">> SCAFFOLDING THE WORLD IN {ROOT}...")
-    
     for sys_name, sys_data in SYSTEMS.items():
         sys_path = os.path.join(ROOT, sys_name)
-        
-        # Create System Root
         if not os.path.exists(sys_path):
             os.makedirs(sys_path)
-            
-        # System Metadata
         meta = {
             "description": sys_data["description"],
             "created_at": datetime.now().isoformat(),
@@ -61,21 +53,16 @@ def create_structure():
         }
         with open(os.path.join(sys_path, "metadata.json"), "w") as f:
             json.dump(meta, f, indent=2)
-            
-        # Create Categories and Items
         for cat_name, items in sys_data["categories"].items():
             cat_path = os.path.join(sys_path, cat_name)
             if not os.path.exists(cat_path):
                 os.makedirs(cat_path)
-                
             for item in items:
                 item_path = os.path.join(cat_path, item)
                 if not os.path.exists(item_path):
                     os.makedirs(item_path)
                     os.makedirs(os.path.join(item_path, "source"))
                     os.makedirs(os.path.join(item_path, "build"))
-                    
-                    # Item Metadata
                     item_meta = {
                         "id": f"{sys_name}.{item}",
                         "name": item,
@@ -85,8 +72,6 @@ def create_structure():
                     }
                     with open(os.path.join(item_path, "metadata.json"), "w") as f:
                         json.dump(item_meta, f, indent=2)
-                        
     print(">> SCAFFOLDING COMPLETE.")
-
 if __name__ == "__main__":
     create_structure()

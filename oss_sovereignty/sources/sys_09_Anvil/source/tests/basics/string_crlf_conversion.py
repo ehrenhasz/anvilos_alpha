@@ -1,0 +1,2 @@
+print(repr("""abc
+def"""))

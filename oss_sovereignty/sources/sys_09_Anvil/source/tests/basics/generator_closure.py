@@ -1,0 +1,25 @@
+def f():
+    x = 1 # closed over by g
+    def g():
+        yield x
+        yield x + 1
+    return g()
+for i in f():
+    print(i)
+def f():
+    x = 1 # closed over by g
+    def g():
+        return x + 1
+    yield g()
+    x = 2
+    yield g()
+for i in f():
+    print(i)
+generator_of_generators = (((x, y) for x in range(2)) for y in range(3))
+for i in generator_of_generators:
+    for j in i:
+        print(j)
+def genc():
+    foo = 1
+    repr(lambda: (yield foo))
+genc()

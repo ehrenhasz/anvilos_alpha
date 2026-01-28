@@ -1,0 +1,8 @@
+print(1 is 1)
+print(1 is 2)
+print(1 is not 1)
+print(1 is not 2)
+print("a" is "a")
+print("a" is "b")
+print("a" is not "a")
+print("a" is not "b")

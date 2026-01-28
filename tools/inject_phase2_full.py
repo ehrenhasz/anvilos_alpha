@@ -3,11 +3,8 @@ import os
 import json
 sys.path.append("src")
 from anvilos.mainframe_client import MainframeClient
-
 MAINFRAME = MainframeClient("data/cortex.db")
-
 CARDS = [
-    # --- 1. SOURCE ACQUISITION (ZFS + Util-Linux for libuuid) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -24,8 +21,6 @@ CARDS = [
         },
         "desc": "CLEAN_OLD_BUILDS"
     },
-
-    # --- 2. BUILD DEPENDENCIES (Libuuid) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -34,8 +29,6 @@ CARDS = [
         },
         "desc": "BUILD_LIBUUID"
     },
-
-    # --- 3. KERNEL PREPARATION ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -44,12 +37,9 @@ CARDS = [
         },
         "desc": "PREP_KERNEL_SOURCE"
     },
-
-    # --- 4. ZFS BUILD (Userland & Modules) ---
     {
         "op": "SYS_CMD",
         "pld": {
-            # Build ZFS Userland linked against local libuuid (using pkg-config path from staging)
             "cmd": "cd oss_sovereignty/zfs-2.2.2 && export PKG_CONFIG_PATH=../staging/lib/pkgconfig && ./configure --with-config=user --enable-static=yes --enable-shared=no --prefix=/ --libdir=/lib --sbindir=/sbin && make -j$(nproc)",
             "timeout": 1200
         },
@@ -58,14 +48,11 @@ CARDS = [
     {
         "op": "SYS_CMD",
         "pld": {
-            # Build ZFS Kernel Modules
             "cmd": "cd oss_sovereignty/zfs-2.2.2 && ./configure --with-config=kernel --with-linux=../linux-6.6.14 --with-linux-obj=../linux-6.6.14 && make -j$(nproc)",
             "timeout": 1200
         },
         "desc": "BUILD_ZFS_MODULES"
     },
-
-    # --- 5. BUSYBOX BUILD ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -74,8 +61,6 @@ CARDS = [
         },
         "desc": "BUILD_STATIC_BUSYBOX"
     },
-
-    # --- 6. ROOTFS CONSTRUCTION ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -108,8 +93,6 @@ CARDS = [
         },
         "desc": "INSTALL_ZFS_MODULES"
     },
-
-    # --- 7. KERNEL BUILD (BZIMAGE) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -118,8 +101,6 @@ CARDS = [
         },
         "desc": "BUILD_BZIMAGE"
     },
-
-    # --- 8. INITRAMFS PACK ---
     {
         "op": "FILE_WRITE",
         "pld": {
@@ -136,8 +117,6 @@ CARDS = [
         },
         "desc": "PACK_INITRAMFS"
     },
-
-    # --- 9. ISO GENERATION ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -171,7 +150,6 @@ CARDS = [
         "desc": "BURN_ISO"
     }
 ]
-
 print(f"[*] Injecting {len(CARDS)} Phase 2 (ZFS Monolith Fixed) Cards...")
 for i, card in enumerate(CARDS):
     res = MAINFRAME.inject_card(card["op"], card["pld"])

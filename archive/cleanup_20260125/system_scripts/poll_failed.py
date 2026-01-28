@@ -1,9 +1,6 @@
-#!/usr/bin/env python3
 import sqlite3
 import json
-
 DB_PATH = "/var/lib/anvilos/db/cortex.db"
-
 def poll_phase1_failures():
     """Queries the database for failed jobs related to Phase 1 and prints them."""
     try:
@@ -11,7 +8,6 @@ def poll_phase1_failures():
         c = conn.cursor()
         c.execute("SELECT correlation_id, payload, result FROM jobs WHERE status='FAILED'")
         failed_jobs = c.fetchall()
-        
         phase1_failures = []
         p1_contexts = [
             'purge_foreign', 
@@ -20,7 +16,6 @@ def poll_phase1_failures():
             'strip_kconfig', 
             'remove_firmware'
         ]
-        
         for job in failed_jobs:
             cid, payload, result = job
             try:
@@ -34,18 +29,15 @@ def poll_phase1_failures():
                     })
             except (json.JSONDecodeError, AttributeError):
                 continue
-                
         if not phase1_failures:
             print('No Phase 1 cards found with FAILED status.')
         else:
             print("--- FAILED PHASE 1 CARDS ---")
             print(json.dumps(phase1_failures, indent=2))
-            
     except sqlite3.Error as e:
         print(f"Database error: {e}")
     finally:
         if 'conn' in locals():
             conn.close()
-
 if __name__ == "__main__":
     poll_phase1_failures()

@@ -10,109 +10,48 @@ import glob
 import time
 import uuid
 import json
+
 try:
     import forge_directives
 except ImportError:
     forge_directives = None
 
-# --- CONFIG ---
 PROJECT_ROOT = os.getcwd()
-MEMORY_FILE = os.path.expanduser("~/.gemini/gemini.md")
-HISTORY_FILE = os.path.expanduser("~/.gemini/aimeat_history")
-TOKEN_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'token')
+# Add vendor to path if it exists
+if os.path.exists(os.path.join(PROJECT_ROOT, "vendor")):
+    sys.path.append(os.path.join(PROJECT_ROOT, "vendor"))
+
+# Add src to path
+sys.path.append(os.path.join(PROJECT_ROOT, "src"))
+
+from google import genai
+from google.genai import types
+from google.genai.errors import ClientError
+
+# --- CONFIG ---
+TOKEN_PATH = os.path.join(PROJECT_ROOT, "config", "token")
+MEMORY_FILE = os.path.join(PROJECT_ROOT, "data", "aimeat_memory.txt")
 MODEL_ID = "gemini-2.0-flash"
 
-# --- ENV INJECTION ---
-current_dir = PROJECT_ROOT
-# Add vendor directory
-sys.path.append(os.path.join(current_dir, "vendor"))
-
-# Dynamically find and add venv site-packages
-for venv_dir in ["venv", ".venv"]:
-    lib_path = os.path.join(current_dir, venv_dir, "lib")
-    if os.path.exists(lib_path):
-        for py_dir in os.listdir(lib_path):
-            if py_dir.startswith("python"):
-                site_pkg = os.path.join(lib_path, py_dir, "site-packages")
-                if os.path.exists(site_pkg):
-                    sys.path.append(site_pkg)
-
-anvilos_path = os.path.join(current_dir, "anvilos")
-if "PYTHONPATH" not in os.environ:
-    os.environ["PYTHONPATH"] = ""
-os.environ["PYTHONPATH"] += f"{os.pathsep}{current_dir}{os.pathsep}{anvilos_path}"
-
-# --- SMART PROBE: The Cure for Stupidity ---
-def get_schema_snapshot():
-    """
-    Connects to data/cortex.db (or looks for others) and dumps the EXACT schema.
-    This runs BEFORE the AI starts, so it knows the column names perfectly.
-    """
-    snapshot = "--- LIVE DATABASE SCHEMA ---\n"
-    
-    # 1. Find the DB
-    target_db = "data/cortex.db"
-    if not os.path.exists(target_db):
-        # Fallback search
-        found = glob.glob("**/*.db", recursive=True)
-        if found: target_db = found[0]
-        else: return "CRITICAL: No .db file found. I am blind."
-
-    snapshot += f"DATABASE FILE: {target_db}\n"
-
-    try:
-        conn = sqlite3.connect(target_db)
-        cursor = conn.cursor()
-        
-        # 2. Get Tables
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        tables = [r[0] for r in cursor.fetchall()]
-        
-        # 3. Get Columns for each table
-        for table in tables:
-            cursor.execute(f"PRAGMA table_info({table})")
-            columns = cursor.fetchall()
-            # Format: (cid, name, type, notnull, dflt_value, pk)
-            col_names = [f"{c[1]} ({c[2]})" for c in columns]
-            snapshot += f"  TABLE '{table}': {', '.join(col_names)}\n"
-            
-        conn.close()
-    except Exception as e:
-        snapshot += f"SCHEMA READ ERROR: {e}\n"
-        
-    return snapshot
-
-# --- SHELL HISTORY ---
-try:
-    readline.read_history_file(HISTORY_FILE)
-except FileNotFoundError:
-    pass
-atexit.register(readline.write_history_file, HISTORY_FILE)
-
-# --- AUTH ---
-os.environ.pop("GOOGLE_APPLICATION_CREDENTIALS", None)
-os.environ.pop("GOOGLE_CLOUD_PROJECT", None)
-os.environ.pop("GCLOUD_PROJECT", None)
-
-try:
-    from google import genai
-    from google.genai import types
-    from google.genai.errors import ClientError
-except ImportError:
-    print("CRITICAL: 'google-genai' not installed.")
-    sys.exit(1)
-
-# --- CORTEX TELEMETRY ---
-def log_to_cortex(event_type, details):
-    """Streams Aimeat's thoughts to the Cortex."""
+# --- CORTEX INTERFACE ---
+def log_to_cortex(event_type: str, details: str):
     db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
     try:
         with sqlite3.connect(db_path) as conn:
-            conn.execute("""
-                INSERT INTO live_stream (agent_id, event_type, details, timestamp)
-                VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-            """, ("AIMEAT", event_type, str(details)))
-    except Exception: pass # Silent fail if DB locked/missing
+            conn.execute("CREATE TABLE IF NOT EXISTS live_stream (id INTEGER PRIMARY KEY AUTOINCREMENT, agent_id TEXT, event_type TEXT, details TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
+            conn.execute("INSERT INTO live_stream (agent_id, event_type, details) VALUES (?, ?, ?)", ("AIMEAT", event_type, details))
+    except Exception: pass
+
+def get_schema_snapshot():
+    db_path = os.path.join(PROJECT_ROOT, "data", "cortex.db")
+    if not os.path.exists(db_path): return "No Database Found."
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT sql FROM sqlite_master WHERE type='table'")
+            return "\n".join([row[0] for row in cursor.fetchall()])
+    except Exception as e:
+        return f"Schema Error: {e}"
 
 def send_to_forge():
     """Sends Forge Directives to the Architect Daemon (sys_goals)."""
@@ -129,7 +68,7 @@ def send_to_forge():
             
             count = 0
             for card in forge_directives.PHASE2_DIRECTIVES:
-                # Generate a unique ID for the goal
+                # Generate a unique ID for the goal (unused by DB but good for logging)
                 goal_id = str(uuid.uuid4())
                 
                 # Extract details
@@ -143,9 +82,9 @@ def send_to_forge():
                 # Insert into sys_goals
                 # Status 0 = Pending
                 cursor.execute("""
-                    INSERT INTO sys_goals (id, goal, stat, timestamp)
-                    VALUES (?, ?, 0, ?)
-                """, (goal_id, goal_text, time.time()))
+                    INSERT INTO sys_goals (goal, stat, timestamp)
+                    VALUES (?, 0, ?)
+                """, (goal_text, time.time()))
                 
                 count += 1
                 # Small sleep to ensure timestamp ordering
@@ -174,10 +113,9 @@ def execute_command(command: str):
             log_to_cortex("EXEC_FAIL", error[:100])
             return f"EXIT_CODE_{result.returncode}: {error}"
         log_to_cortex("EXEC_SUCCESS", output[:100])
-        return output[:4000] if output else "SUCCESS (No Output)"
+        return output if output else "Command executed silently."
     except Exception as e:
-        log_to_cortex("EXEC_ERROR", str(e))
-        return f"EXECUTION FAILED: {e}"
+        return f"Execution Error: {e}"
 
 def update_memory(text: str):
     log_to_cortex("MEMORY_UPDATE", text[:50])
@@ -238,13 +176,12 @@ def main():
             model=MODEL_ID,
             config=types.GenerateContentConfig(
                 tools=[execute_command, update_memory],
-                system_instruction=system_instruction,
-                temperature=0.1,
-                automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=False, maximum_remote_calls=10)
+                system_instruction=system_instruction
             )
         )
-        
-        print(f"\033[1;32mAIMEAT ONLINE (SCHEMA AWARE)\033[0m")
+
+        print("\033[1;32m[AIMEAT ONLINE] Sovereign Interface Ready.\033[0m")
+        log_to_cortex("SESSION_START", "Operator connected.")
 
         while True:
             try:

@@ -1,0 +1,6 @@
+include("$(PORT_DIR)/boards/manifest.py")
+include("$(MPY_DIR)/extmod/asyncio")
+require("ssd1306")
+require("upysh")
+require("umqtt.simple")
+require("umqtt.robust")

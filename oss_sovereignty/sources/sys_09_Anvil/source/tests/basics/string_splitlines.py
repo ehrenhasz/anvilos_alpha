@@ -1,0 +1,25 @@
+try:
+    str.splitlines
+except:
+    print("SKIP")
+    raise SystemExit
+print("foo\nbar".splitlines())
+print("foo\nbar\n".splitlines())
+print("foo and\nbar\n".splitlines())
+print("foo\nbar\n\n".splitlines())
+print("foo\n\nbar\n\n".splitlines())
+print("\nfoo\nbar\n".splitlines())
+print("foo\rbar\r".splitlines())
+print("\rfoo and\r\rbar\r".splitlines())
+print("foo\r\nbar\r\n".splitlines())
+print("\r\nfoo and\r\n\r\nbar\r\n".splitlines())
+print("foo\nbar".splitlines(True))
+print("foo\nbar\n".splitlines(True))
+print("foo\nbar\n\n".splitlines(True))
+print("foo\rbar".splitlines(keepends=True))
+print("foo\rbar\r\r".splitlines(keepends=True))
+print("foo\r\nbar".splitlines(keepends=True))
+print("foo\r\nbar\r\n\r\n".splitlines(keepends=True))
+print(b"foo\nbar".splitlines())
+print(b"foo\nbar\n".splitlines())
+print(b"foo\r\nbar\r\n\r\n".splitlines(True))

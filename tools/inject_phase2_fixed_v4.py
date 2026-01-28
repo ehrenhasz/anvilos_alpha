@@ -3,11 +3,8 @@ import os
 import json
 sys.path.append("src")
 from anvilos.mainframe_client import MainframeClient
-
 MAINFRAME = MainframeClient("data/cortex.db")
-
 CARDS = [
-    # --- 1. PATCH ZFS (Fix Duplicate Symbol) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -16,8 +13,6 @@ CARDS = [
         },
         "desc": "PATCH_ZFS_ZSTREAM"
     },
-
-    # --- 2. BUILD ZFS USERLAND (Retry) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -26,8 +21,6 @@ CARDS = [
         },
         "desc": "BUILD_ZFS_USERLAND"
     },
-
-    # --- 3. PREP KERNEL ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -36,8 +29,6 @@ CARDS = [
         },
         "desc": "PREP_KERNEL"
     },
-
-    # --- 4. BUILD ZFS MODULES ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -46,8 +37,6 @@ CARDS = [
         },
         "desc": "BUILD_ZFS_MODULES"
     },
-
-    # --- 5. BUILD KERNEL IMAGE ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -56,8 +45,6 @@ CARDS = [
         },
         "desc": "BUILD_KERNEL_IMAGE"
     },
-
-    # --- 6. ROOTFS & INITRAMFS ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -107,7 +94,6 @@ CARDS = [
         "desc": "PACK_INITRAMFS"
     }
 ]
-
 print(f"[*] Injecting {len(CARDS)} Phase 2 (FIXED V4) Cards...")
 for i, card in enumerate(CARDS):
     res = MAINFRAME.inject_card(card["op"], card["pld"])

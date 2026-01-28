@@ -1,0 +1,17 @@
+def gen():
+    try:
+        yield 123
+    except GeneratorExit:
+        print('GeneratorExit')
+def gen2():
+    try:
+        yield from gen()
+    except GeneratorExit:
+        print('GeneratorExit outer')
+    yield 789
+g = gen2()
+print(next(g))
+print(g.throw(GeneratorExit))
+g = gen2()
+print(next(g))
+print(g.throw(GeneratorExit()))

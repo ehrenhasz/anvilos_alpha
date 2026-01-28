@@ -4,16 +4,10 @@ import json
 import uuid
 import time
 import logging
-
-# --- PATH RESOLUTION ---
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SYSTEM_DB = os.path.join(PROJECT_ROOT, "data", "cortex.db")
 TOKEN_PATH = os.path.join(PROJECT_ROOT, "config", "token")
-
-# Add vendor directory
 sys.path.append(os.path.join(PROJECT_ROOT, "vendor"))
-
-# Dynamically find and add venv site-packages
 for venv_dir in ["venv", ".venv"]:
     lib_path = os.path.join(PROJECT_ROOT, venv_dir, "lib")
     if os.path.exists(lib_path):
@@ -22,18 +16,11 @@ for venv_dir in ["venv", ".venv"]:
                 site_pkg = os.path.join(lib_path, py_dir, "site-packages")
                 if os.path.exists(site_pkg):
                     sys.path.append(site_pkg)
-
-# DEBUG
 print(f"DEBUG: sys.path = {sys.path}")
-
 sys.path.append(os.path.join(PROJECT_ROOT, "src"))
-
 from google import genai
 from google.genai import types
-
 from anvilos.cortex.db_interface import CortexDB
-
-# --- LOGGING ---
 os.makedirs(os.path.join(PROJECT_ROOT, "logs"), exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
@@ -45,40 +32,31 @@ logging.basicConfig(
 )
 logger = logging.getLogger()
 logger.info(f"DEBUG: sys.path = {sys.path}")
-
-# --- AUTHENTICATION ---
 API_KEY = None
 if os.path.exists(TOKEN_PATH):
     with open(TOKEN_PATH, 'r') as f:
         API_KEY = f.read().strip()
-
 if not API_KEY:
     logger.error("API Key not found. The Forge cannot reason.")
     sys.exit(1)
-
 CLIENT = genai.Client(api_key=API_KEY)
 DB = CortexDB(SYSTEM_DB)
-
 def architect_recipe(goal):
     """
     Uses Gemini to break down a goal into a series of MicroJSON punch cards.
     """
     logger.info(f"Forging recipe for goal: {goal}")
-    
     prompt = f"""
     You are THE FORGE of AnvilOS. Your job is to take a high-level goal and break it down into a sequence of atomic 'Punch Cards' for the PROCESSOR.
-    
     The schema for a card is:
     {{
         "op": "OPERATION_CODE",
         "pld": {{ ... payload ... }}
     }}
-    
     Supported OPs:
     - SYS_CMD: {{ "cmd": "bash command", "timeout": int }}
     - GEN_OP: {{ "type": "code/config/test", "prompt": "instruction" }}
     - FILE_WRITE: {{ "path": "path/to/file", "content": "text" }}
-    
     GUIDELINES:
     - Use 'sudo' for commands that require root privileges.
     - Use '/mnt/anvil_temp' for temporary storage. DO NOT use '/mnt' directly.
@@ -91,18 +69,27 @@ def architect_recipe(goal):
     - RESOURCE LIMITS:
         - ALWAYS limit 'make' and 'cargo build' concurrency to '-j2'.
         - If configuring a VM, restrict RAM to 50% of host (e.g. 512MB).
+    - OPTIMIZATION (THE COLLAR):
+        - STRIP ALL BINARIES: Use 'strip --strip-all' on final executables.
+        - MINIMAL KERNEL: Prefer 'make tinyconfig' or manually disable legacy drivers.
+        - CLEANUP: Remove source trees (rm -rf) after successful installation.
+    - MANIFEST (STRICT):
+        - ARCH: x86_64 ONLY.
+        - EDITOR: Vim ONLY.
+        - NETWORK: Basic hardline (iproute2, dhcpcd), OpenSSH (Client/Server).
+        - FILESYSTEM: Basic tools (coreutils, util-linux, zfs-utils).
+        - DOCS: Man pages for installed tools ONLY. Delete /usr/share/doc, /usr/share/gtk-doc.
+        - LOCALE: English (en_US.UTF-8) ONLY. Delete all other locales.
+        - EXCLUDED: Anything not explicitly required for the above (no X11, no Python runtime on target, no extra libs).
     - IMPORTANT: Each card runs in a SEPARATE shell. Shell variables (like STAGE3_URL) will NOT persist between cards.
     - To preserve state between steps, write to temporary files or bundle multiple related commands into a single 'SYS_CMD' using '&&' or a multi-line script.
     - For Gentoo Stage3, it is better to have one big SYS_CMD that downloads, verifies, and extracts in one go to keep variables local.
     - When creating a disk image, use 'losetup -P' to handle partitions.
     - Use 'mkfs.xfs -f' to force formatting.
     - Use 'losetup -f' to find a free loop device if needed, or assume the Processor will remap /dev/loop0.
-    
     Goal: {goal}
-    
     Return ONLY a JSON list of cards. No preamble, no markdown blocks.
     """
-    
     try:
         response = CLIENT.models.generate_content(
             model="gemini-2.0-flash",
@@ -112,50 +99,34 @@ def architect_recipe(goal):
                 response_mime_type="application/json"
             )
         )
-        
         recipe = json.loads(response.text)
         return recipe
     except Exception as e:
         logger.error(f"Reasoning Error: {e}")
         return None
-
 def main_loop():
     logger.info("The Forge Online. Monitoring sys_goals...")
-    
     while True:
         try:
             goal_row = DB.fetch_pending_goal()
-            
             if goal_row:
                 goal_id = goal_row['id']
                 goal_text = goal_row['goal']
-                
                 logger.info(f"Processing Goal {goal_id}: {goal_text}")
-                
-                # Mark goal as processing (stat=1)
                 DB.update_goal_status(goal_id, 1)
-                
                 recipe = architect_recipe(goal_text)
-                
                 if recipe:
                     logger.info(f"Recipe forged with {len(recipe)} cards.")
-                    # Insert cards into card_stack using CortexDB
                     for i, card in enumerate(recipe):
                         card_id = str(uuid.uuid4())
                         DB.push_card(card_id, i, card['op'], card['pld'])
-                    
-                    # Mark goal as completed (stat=2)
                     DB.update_goal_status(goal_id, 2)
                     logger.info(f"Goal {goal_id} committed to Card Stack.")
                 else:
-                    # Mark goal as failed (stat=9)
                     DB.update_goal_status(goal_id, 9)
                     logger.error(f"Failed to forge recipe for goal {goal_id}")
-                
         except Exception as e:
             logger.error(f"Loop Error: {e}")
-            
         time.sleep(5)
-
 if __name__ == "__main__":
     main_loop()

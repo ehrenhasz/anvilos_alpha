@@ -3,12 +3,8 @@ import os
 import json
 sys.path.append("src")
 from anvilos.mainframe_client import MainframeClient
-
 MAINFRAME = MainframeClient("data/cortex.db")
-
-# PHASE 2: THE REST OF THE OWL
 CARDS = [
-    # --- 1. ZFS ACQUISITION & BUILD ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -25,8 +21,6 @@ CARDS = [
         },
         "desc": "BUILD_ZFS_USERLAND"
     },
-    
-    # --- 2. ROOTFS CONSTRUCTION (The Body) ---
     {
         "op": "SYS_CMD",
         "pld": {
@@ -35,8 +29,6 @@ CARDS = [
         },
         "desc": "CREATE_ROOTFS_IMG"
     },
-    # Note: ZPOOL creation requires root/sudo and loopback. 
-    # For now, we will create a simple folder structure to simulate the rootfs for the INITRAMFS packing.
     {
         "op": "SYS_CMD",
         "pld": {
@@ -61,8 +53,6 @@ CARDS = [
         },
         "desc": "INSTALL_BUSYBOX_SYMLINKS"
     },
-
-    # --- 3. INITRAMFS (The Key) ---
     {
         "op": "FILE_WRITE",
         "pld": {
@@ -87,10 +77,6 @@ CARDS = [
         },
         "desc": "PACK_INITRAMFS"
     },
-
-    # --- 4. ISO GENERATION (The Anvil) ---
-    # Using 'genisoimage' or 'mkisofs' if 'xorriso' is missing. 
-    # We will assume a basic ISO creation for now.
     {
         "op": "SYS_CMD",
         "pld": {
@@ -115,11 +101,7 @@ CARDS = [
         },
         "desc": "WRITE_ISOLINUX_CFG"
     },
-    # Note: XORRISO is preferred but we'll try genisoimage if available, or just prep the dir.
-    # Since we can't easily install new packages, we will try to find a way.
-    # For now, we leave the artifacts ready for the final burn step.
 ]
-
 print("[*] Injecting Phase 2 (Part 2) Cards...")
 for i, card in enumerate(CARDS):
     res = MAINFRAME.inject_card(card["op"], card["pld"])
