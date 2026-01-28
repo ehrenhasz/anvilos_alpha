@@ -1,4 +1,6 @@
-BRANCH="main"
+#!/bin/bash
+# Auto-detect current branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
 REMOTE="origin"
 CYAN="\033[38;5;117m"
 PURPLE="\033[38;5;141m"
